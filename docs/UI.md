@@ -47,7 +47,7 @@ make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-61 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+62 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
@@ -56,17 +56,19 @@ transparent background, so the game can tint them. Every icon with its intended 
 | Faction emblems | 6 | the Haven, Bastion, the Red Hand, Halcyon, the infected, the Long Table |
 | Standing tiers | 8 | Stranger, Known, Trusted, Champion (dog tags with 0–3 marks), Watched (an eye), Hunted (a crosshair), Kill on Sight (a crossed-out target), and one mixed mark for Uneasy, Tolerated, Respected and Wildcard |
 | Mission types | 7 | contract, world event, puzzle, leader job, unarmed, Perimeter, story arc |
-| Map markers | 9 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint. Each sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints |
+| Map markers | 10 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, and the range ring. Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
 | Items | 18 | key, sample, antidote, stabiliser, low-grade med, noisemaker, battery, tyre, spark plugs, fuel can, wind-up radio, molotov, bandage, tin-can tripwire, spike trap, purification tablets, planks, jewellery |
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
 
 **Files.** Sources in `UI/Icons/src/`. White PNGs at 64 and 128 px in `UI/Icons/png/64/` and
-`png/128/`. Coloured map and emblem variants (24, with a dark backing behind the plated markers'
+`png/128/`. Coloured map and emblem variants (25, with a dark backing behind the plated markers'
 cut-out glyphs, and one per faction for strongholds, outposts and quartermasters) in
 `png/color/`. Re-render after editing: `node tools/render_ui.js icons` (needs Node and Playwright's
-Chromium, nothing else). The game reads the 60 white icons from one atlas,
+Chromium, nothing else). The game reads the white icons from one atlas,
 `UI/Textures/ReforgerZ/RZ_Icons.edds`, through the `RZ_Icons` imageset: after re-rendering, pack
-them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)).
+them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). The atlas
+PNG holds all 62; the imported `.edds` and the imageset are still the 61 before the range ring until
+it's imported again (steps 2 and 3 there).
 
 ## Screens
 
@@ -205,11 +207,12 @@ do. Never on the map. Selecting any row asks the server for that row's **detail*
 characters, a few a second at most): its "What you've found" and "Who it went to" go at the top of
 the clues block (`DetailClues`), so the journal's 6,000-character list is never cut for them.
 
-**The packs in the journal.** Each pack your character knows of is a row (kind EVENT, its id
-`-(200000 + pack)`): the place as the title, the level (Heard of, Read, Mapped) as "by", a direction to
-its rough area, and the names you've heard under the place with what you know as its brief and
-detail; your last character's fate is a row too ([INFECTED.md](INFECTED.md#knowing)). Text only: the
-map's range rings are planned.
+**The packs in the journal.** Each pack your character knows of is a row of kind PACK (the range ring
+icon, `marker_range`; its id `-(200000 + pack)`), listed by level: Mapped first, then Read, then Heard
+of. The place is the title, the level is "by" and stands where a job's time left goes, there's a
+direction to its rough area, and the names you've heard under the place with what you know as its
+brief and detail; the rewards line says what each level shows. Your last character's fate is a row
+too ([INFECTED.md](INFECTED.md#knowing)). On the map each is a range ring ([below](#the-map)).
 
 The notice board opens when you read a safehouse board, with **UI > Board menus** on.
 
@@ -411,8 +414,12 @@ be checked in play.
 
 `RZ_MapIconsUI` is a component on the map configuration: while the map is open it asks the server
 for this player's list (on open, then every 20 s) and draws one icon per place, in its colour
-(the faction's, hazard yellow for events and the sealed checkpoints, bone for the stations), with
-a label, following pan and zoom. The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
+(the faction's, hazard yellow for events, the sealed checkpoints and the packs, bone for the
+stations), with a label, following pan and zoom. The packs your character knows of are **range
+rings** (`marker_range`): a line's last field is a radius in metres, and the ring is sized to it on the
+map every frame (28 to 320 units across), so it grows and shrinks with the zoom: Heard of, half a
+kilometre round the rough area; Read and Mapped, the pack's ground (Mapped adds where it lies up to the
+label). The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
 contracts are never on it. With **UI > Map icon layout** set, the vanilla text markers for
 events and the lab are off; without it, the layer does nothing and those markers stay.
 

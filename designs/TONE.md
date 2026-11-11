@@ -46,7 +46,7 @@ the plan's "Decisions for you". Tone's own options are taken as recommended; the
 - **Dialogue is off by default** (decision 13). The vanilla fallback is what ships first, so its rules for dry
   lines (3.7) come first.
 - **Strangers only where one would make sense** (decision 14). Small side quests are spoken by a seeded person
-  at a place [ERRANDS.md](ERRANDS.md#where-a-stranger-can-find-you) allows, never by a timer (4.6b).
+  at a place [docs/ERRANDS.md](../docs/ERRANDS.md#strangers) allows, never by a timer (4.6b).
 - **The finale's lore is confirmed** (decision 2). Lines may use it, under its owners' rules: the captain's log
   is never quoted on air, and Command never answers.
 - **The PC_SETUP.md gap is gone.** The repo's Doc map already lists it.

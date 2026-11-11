@@ -189,6 +189,16 @@ class RZ_TribeBorders
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The Night of Many Calls (RZ_TribeGreat): every border reopens for 2 counted nights.
+	void ReopenAll()
+	{
+		foreach (RZ_Border br : m_aBorders)
+		{
+			br.m_iReopenUntil = m_Tribes.CountedNights() + 2;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Forget(int id)
 	{
 		for (int i = m_aBorders.Count() - 1; i >= 0; i--)
@@ -373,13 +383,19 @@ class RZ_TribeBorders
 				continue;
 
 			br.m_iFoughtNight = night;
-			bool cause = a.Band() >= 2 || b.Band() >= 2 || br.m_bCrossing || IsReopened(br);
+			// A frenzy night ignores borders: a frenzied side is always a cause, and twice as likely
+			// (still 2 Border Nights staged a night at most)
+			bool frenzy = a.m_fFrenzy > 0 || b.m_fFrenzy > 0;
+			bool cause = a.Band() >= 2 || b.Band() >= 2 || br.m_bCrossing || IsReopened(br) || frenzy;
 			if (!cause)
 				continue;
 
 			float chance = 0.2;
-			if (IsOld(br))
+			if (IsOld(br) && !frenzy)
 				chance = chance * 0.5;
+
+			if (frenzy)
+				chance = chance * 2;
 
 			if (IsReopened(br))
 				chance = chance * 2;

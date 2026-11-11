@@ -643,9 +643,9 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The packs this character knows of (docs/INFECTED.md, Knowing), as journal records: the place as
-	//! the title, the level as "by", a rough area, the names heard under the place. Journal text only;
-	//! the map's range rings are planned.
+	//! The packs this character knows of (docs/INFECTED.md, Knowing), as journal records of kind PACK
+	//! (the range ring icon), Mapped first, then Read, then Heard of: the place as the title, the level
+	//! as "by", a rough area, the names heard under the place. The map's rings are BuildMap's.
 	protected string BuildInfected(int playerId, IEntity ent, vector from)
 	{
 		RZ_Tribes tribes = m_GM.GetTribes();
@@ -666,7 +666,7 @@ class RZ_UIFeed
 				dir = RZ_Util.DirectionText(from, wheres[i]);
 
 			RZ_UILine ln = new RZ_UILine("M");
-			ln.AddInt(-(TRIBE_ID_BASE + tribe)).AddInt(RZ_EMissionKindUI.EVENT).AddInt(-1).Add(titles[i]).Add(bys[i]).Add(titles[i]).Add(dir);
+			ln.AddInt(-(TRIBE_ID_BASE + tribe)).AddInt(RZ_EMissionKindUI.PACK).AddInt(-1).Add(titles[i]).Add(bys[i]).Add(titles[i]).Add(dir);
 			ln.AddInt(-1).Add("").AddInt(0).AddInt(0).Add(briefs[i]).Add("0");
 			s += ln.End();
 		}
@@ -816,8 +816,9 @@ class RZ_UIFeed
 
 	//------------------------------------------------------------------------------------------------
 	//! What this player knows the place of, for the map's icon layer (UI/RZ_MapIcons.c). Contracts
-	//! are never on it: they give a rough area, in the journal.
-	//! P|icon|faction (-1 none)|x|z|label
+	//! are never on it: they give a rough area, in the journal. The packs they know of are range rings
+	//! sized to the ground (a radius in metres as the last field).
+	//! P|icon|faction (-1 none)|x|z|label[|radius]
 	protected string BuildMap(int playerId)
 	{
 		string s = "";
@@ -871,6 +872,21 @@ class RZ_UIFeed
 			foreach (vector cp : checkpoints)
 			{
 				s += MapEntry("marker_checkpoint", -1, cp, "Sealed checkpoint");
+			}
+		}
+
+		// The packs this character knows of: a ring round the ground (Heard of: round the rough area)
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (tribes && tribes.GetPeople().IsOn())
+		{
+			array<vector> rings = {};
+			array<float> radii = {};
+			array<string> labels = {};
+			tribes.GetPeople().MapFor(playerId, rings, radii, labels);
+			foreach (int r, vector ring : rings)
+			{
+				RZ_UILine lnR = new RZ_UILine("P");
+				s += lnR.Add("marker_range").AddInt(-1).AddInt(RZ_Util.RoundToInt(ring[0])).AddInt(RZ_Util.RoundToInt(ring[2])).Add(labels[r]).AddInt(RZ_Util.RoundToInt(radii[r])).End();
 			}
 		}
 

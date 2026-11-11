@@ -33,6 +33,7 @@ const VARIANTS = [
   ['faction_halcyon', '', C.halcyon], ['faction_infected', '', C.hazard], ['faction_longtable', '', C.longtable],
   ['marker_lab', '', C.halcyon], ['marker_safehouse', '', C.haven], ['marker_event', '', C.hazard],
   ['marker_power', '', C.hazard], ['marker_radio', '', C.bone], ['marker_checkpoint', '', C.hazard],
+  ['marker_range', '', C.hazard],
 ];
 for (const m of ['marker_stronghold', 'marker_outpost', 'marker_quartermaster']) {
   for (const f of ['haven', 'bastion', 'redhand', 'halcyon']) VARIANTS.push([m, '_' + f, C[f]]);

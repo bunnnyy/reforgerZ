@@ -476,9 +476,12 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 }
 
 //------------------------------------------------------------------------------------------------
-//! #6 Missing Patrol: find a squad's last position and deal with what's left of them.
+//! #6 Missing Patrol: find a squad's last position and deal with what's left of them. With a military
+//! pack within 3 km, they run with it now: its young, in its look.
 class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 {
+	protected ResourceName m_sTurned;	// a military pack's young ("": the usual infected)
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -505,6 +508,20 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 		m_sTitle = "Missing Patrol";
 		m_sDeed = "found the patrol near {town}";
 		m_sBrief = string.Format("A Bastion patrol went silent outside %1. Find their last position and put down whatever they've become.", s.m_sName);
+
+		// A military pack near: they're its new contacts now (docs/INFECTED.md, People)
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		if (tribes)
+		{
+			RZ_Tribe pack = tribes.GetPeople().NearMilitary(m_vPos, 3000);
+			if (pack)
+			{
+				m_sTurned = tribes.GetPeople().YoungPrefab(pack);
+				if (!m_sTurned.IsEmpty())
+					m_sBrief += string.Format(" Last contact puts them with %1.", tribes.GetPeople().NameAt(pack, RZ_EFaction.MILITARY));
+			}
+		}
+
 		return true;
 	}
 
@@ -515,7 +532,18 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 		if (!m_bSpawned && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
 		{
 			m_bSpawned = true;
-			SpawnGuards(gm, m_vPos, 4, 0, 20);
+			if (m_sTurned.IsEmpty())
+			{
+				SpawnGuards(gm, m_vPos, 4, 0, 20);
+			}
+			else
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					gm.GetSpawner().SpawnZombie(LandPointNear(m_vPos, 0, 20), false, m_iSettlement, m_iId, m_sTurned);
+				}
+			}
+
 			SpawnGuards(gm, m_vPos, 1, 0, 10, true);
 		}
 

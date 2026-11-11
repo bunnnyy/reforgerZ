@@ -48,6 +48,7 @@ class RZ_LiveCapture
 	protected vector m_vItemLastPos;
 	protected bool m_bItemWasCarried;
 	protected int m_iItemReturns;
+	protected ResourceName m_sPrefab;		// the special's prefab ("": the spawner's specials)
 
 	protected static const float SPAWN_RADIUS = 250;
 	protected static const float HOLD_SECONDS = 30;
@@ -103,6 +104,13 @@ class RZ_LiveCapture
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The special is this prefab (Live Capture and Stock the Pit: one of a pack's guard or young).
+	void UsePrefab(ResourceName prefab)
+	{
+		m_sPrefab = prefab;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsLost()
 	{
 		return m_eState == RZ_ECaptureState.LOST;
@@ -133,7 +141,7 @@ class RZ_LiveCapture
 
 		if (!m_bSpecialSpawned && RZ_Util.NearestDistance(m_vLair, players) <= SPAWN_RADIUS)
 		{
-			m_bSpecialSpawned = gm.GetSpawner().SpawnZombie(m_vLair, true, m_iSettlement, m_iMissionId) != null;
+			m_bSpecialSpawned = gm.GetSpawner().SpawnZombie(m_vLair, true, m_iSettlement, m_iMissionId, m_sPrefab) != null;
 			return;
 		}
 

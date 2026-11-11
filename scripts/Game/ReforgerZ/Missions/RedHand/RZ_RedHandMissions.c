@@ -221,6 +221,9 @@ class RZ_Mission_PharmacyHeist : RZ_Mission_Hold
 //! #5 Fight Pit: survive waves of infected in a ring while the Red Hand bets on you.
 class RZ_Mission_FightPit : RZ_Mission_Hold
 {
+	protected string m_sStockCrew;			// Stock the Pit: the caged young's crew ("" none)
+	protected ResourceName m_sStockPrefab;
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -251,6 +254,12 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 100);
 		m_sTitle = "Fight Pit";
 		m_sBrief = string.Format("The Red Hand runs a fight pit outside %1. Step into the ring and survive four minutes. They're betting on you.", s.m_sName);
+
+		// Stock the Pit: two caged young come out in the last round (docs/MISSIONS.md)
+		RZ_Tribes tribes = gm.GetTribes();
+		if (tribes && tribes.GetPeople().IsOn() && tribes.GetPeople().TakePitStock(m_sStockCrew, m_sStockPrefab))
+			m_sBrief += string.Format(" \"Fresh hires tonight, from %1.\"", m_sStockCrew);
+
 		return true;
 	}
 
@@ -258,6 +267,17 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 	override protected void OnWave(RZ_GameModeComponent gm, int wave)
 	{
 		NotifyParticipants(gm, m_sTitle, string.Format("Round %1! The crowd roars.", wave));
+		if (wave < m_iMaxWaves || m_sStockCrew.IsEmpty())
+			return;
+
+		// The caged ones, let out into the ring
+		for (int i = 0; i < 2; i++)
+		{
+			gm.GetSpawner().SpawnZombie(LandPointNear(m_vPos, 15, 22), false, m_iSettlement, m_iId, m_sStockPrefab);
+		}
+
+		NotifyParticipants(gm, m_sTitle, string.Format("They drag the cages up to the ring and kick the doors open. \"Fresh hires, from %1!\"", m_sStockCrew));
+		m_sStockCrew = "";
 	}
 }
 

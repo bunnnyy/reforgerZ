@@ -14,6 +14,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 	protected ref array<Widget> m_aIcons = {};
 	protected ref array<float> m_aX = {};
 	protected ref array<float> m_aZ = {};
+	protected ref array<float> m_aRadius = {};	// a range ring's radius in metres (0: a fixed-size icon)
 	protected int m_iSeen = -1;
 	protected float m_fAsk;
 	protected bool m_bOpen;
@@ -80,10 +81,11 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		m_aIcons.Clear();
 		m_aX.Clear();
 		m_aZ.Clear();
+		m_aRadius.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! P|icon|faction|x|z|label
+	//! P|icon|faction|x|z|label[|radius]
 	protected void Build(string payload, ResourceName layout)
 	{
 		Clear();
@@ -108,7 +110,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 			string icon = RZ_UIText.Str(f, 1);
 			if (faction >= 0)
 				c = RZ_UIColor.Faction(faction);
-			else if (icon == "marker_event" || icon == "marker_checkpoint")
+			else if (icon == "marker_event" || icon == "marker_checkpoint" || icon == "marker_range")
 				c = RZ_UIColor.Hazard();
 
 			RZ_UIW.Icon(w, "Icon", icon);
@@ -117,18 +119,31 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 			m_aIcons.Insert(w);
 			m_aX.Insert(RZ_UIText.Int(f, 3));
 			m_aZ.Insert(RZ_UIText.Int(f, 4));
+			m_aRadius.Insert(RZ_UIText.Int(f, 6));
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every frame while the map is open: the icons follow pan and zoom.
+	//! Every frame while the map is open: the icons follow pan and zoom; a range ring is sized to its
+	//! radius on the map (28 to 320 units across).
 	protected void Place()
 	{
 		foreach (int i, Widget w : m_aIcons)
 		{
 			float sx, sy;
-			if (RZ_UIW.MapToScreen(m_MapEntity, m_aX[i], m_aZ[i], sx, sy))
-				RZ_UIW.SetPos(w, sx - HALF, sy - HALF);
+			if (!RZ_UIW.MapToScreen(m_MapEntity, m_aX[i], m_aZ[i], sx, sy))
+				continue;
+
+			float half = HALF;
+			float ex, ey;
+			if (m_aRadius[i] > 0 && RZ_UIW.MapToScreen(m_MapEntity, m_aX[i] + m_aRadius[i], m_aZ[i], ex, ey))
+			{
+				half = Math.Clamp(Math.AbsFloat(ex - sx), HALF, 160);
+				RZ_UIW.SetSize(w, half * 2, half * 2);
+				RZ_UIW.SetSize(RZ_UIW.Find(w, "Icon"), half * 2, half * 2);
+			}
+
+			RZ_UIW.SetPos(w, sx - half, sy - half);
 		}
 	}
 }

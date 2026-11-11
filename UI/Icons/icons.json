@@ -180,6 +180,12 @@
   "plate": true
  },
  {
+  "name": "marker_range",
+  "category": "Map markers",
+  "use": "A pack's ground on the map: a broken ring with three claw marks, sized to the ground (Read and Mapped), or half a kilometre round a rough area (Heard of); the journal's pack rows",
+  "plate": false
+ },
+ {
   "name": "item_key",
   "category": "Items",
   "use": "A key for a real lock (tagged keys)",

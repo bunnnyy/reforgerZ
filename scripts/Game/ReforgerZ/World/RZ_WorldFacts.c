@@ -1477,7 +1477,8 @@ class RZ_WorldFacts
 	//! fact: {day} (14), {day_text} (Day 14), {days_since_command} (11) and {days_since_command_words}
 	//! (eleven), {cure_state}, {cure_percent}, {stage}, {stage_tone}, {time_of_day}, {lab_town},
 	//! {stolen_doses}, {town:N}, {owner:N}, {flag:key}, {canon:key}, {canon_town:key},
-	//! {leader:id}, {leader_short:id}, {leader_place:id}. Unknown tokens are left alone (a
+	//! {leader:id}, {leader_short:id}, {leader_place:id}, {tribe:N}, {alpha:N}, {young:N} (a pack in
+	//! a speaker's word: {tribe:N.bastion}). Unknown tokens are left alone (a
 	//! questline fills its own first). Mission briefs are filled when shown (RZ_Mission.GetBrief).
 	string Fill(string text)
 	{
@@ -1576,12 +1577,26 @@ class RZ_WorldFacts
 				value = m_GM.GetSettlement(canonTown).m_sName;
 				return true;
 			}
+			case "tribe": return PackText(arg, 0, value);
+			case "alpha": return PackText(arg, 1, value);
+			case "young": return PackText(arg, 2, value);
 			case "leader": return LeaderText(arg.ToInt(-1), 0, value);
 			case "leader_short": return LeaderText(arg.ToInt(-1), 1, value);
 			case "leader_place": return LeaderText(arg.ToInt(-1), 2, value);
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! {tribe:N}, {alpha:N} and {young:N}, in a speaker's own word ({tribe:N.bastion}): the packs'
+	//! people own them (RZ_TribePeople.TokenText). False with the packs off, or no such pack.
+	protected bool PackText(string arg, int what, out string value)
+	{
+		if (!m_GM || !m_GM.GetTribes() || !m_GM.GetTribes().GetPeople().IsOn())
+			return false;
+
+		return m_GM.GetTribes().GetPeople().TokenText(arg, what, value);
 	}
 
 	//------------------------------------------------------------------------------------------------

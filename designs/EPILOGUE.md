@@ -923,7 +923,7 @@ week, played live if anyone plays it, closed as data if nobody can.
 5. **Works without dialogue.** Dialogue is off by default (decision 13), so every topic, hand-in and choice here is also
    an action-menu action or a puzzle object.
 6. **Asked by the people it's about.** Givers are holdings' people, the queue, residents, leaders' "who to see" and the
-   wanderers who pass. A stranger asks only at one of errands' spots ([ERRANDS.md](ERRANDS.md#where-a-stranger-can-find-you)),
+   wanderers who pass. A stranger asks only at one of errands' spots ([docs/ERRANDS.md](../docs/ERRANDS.md#strangers)),
    never on a timer and never in the empty middle of nowhere. Unasked offers stay inside the interruption budget.
 7. **The world settles.** No closing work moves a holding; endings that would, say so in words.
 8. **One lane.** World effects come out of the epilogue's lane: morale ±5 per faction for the whole week, inside the

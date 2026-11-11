@@ -251,7 +251,8 @@ class RZ_TribeWays
 	//! none.
 	bool FearAvoids(RZ_Tribe t, vector pos)
 	{
-		if (!t || !IsOn())
+		// A frenzy night ignores fear places (its trails are worked out again at dusk and at dawn)
+		if (!t || !IsOn() || t.m_fFrenzy > 0)
 			return false;
 
 		foreach (RZ_FearPlace f : t.m_aFear)

@@ -20,7 +20,7 @@ alternatives that were not chosen are gone.
   would really be (a road or crossroads people use, a wanderer's route, a holding's approach, a
   campfire, a stopped car, a fresh event or a body, a town edge at dusk) from world facts, and deals
   one only there. The 15–25 minute gap and the interruption budget stay, as a ceiling only. See
-  [Where a stranger can find you](#where-a-stranger-can-find-you).
+  [the spots](../docs/ERRANDS.md#strangers) (built).
 - **One side-quest system** (the New Vegas plan, section 5). Errands now hold every small job:
   missions' 25 odd jobs become routines; missions' found hooks and fallout jobs, reputation's 11
   seeds and disguise's 10 side jobs become cards; dialogue's asks and strangers are how they're
@@ -88,7 +88,7 @@ alternatives that were not chosen are gone.
 15. [Who asks, and who gets asked](#15-who-asks-and-who-gets-asked)
 16. [Disguises](#16-disguises)
 17. [Chores at holdings](#17-chores-at-holdings)
-18. [Strangers](#18-strangers), with [Where a stranger can find you](#where-a-stranger-can-find-you)
+18. [Strangers](#18-strangers)
 19. [Locals, callbacks and threads](#19-locals-callbacks-and-threads)
 20. [The big stories, the finale and the lock](#20-the-big-stories-the-finale-and-the-lock)
 21. [The tribes](#21-the-tribes)

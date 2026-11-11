@@ -6,7 +6,9 @@
 //! #5 Lead Them Away (Haven): a horde is drifting toward a safehouse. Make noise to lead it
 //! (each loud noise within 200 m of it turns it there), step by step, to a quarry pit. It
 //! settles there: done. It reaches the safehouse: two people there don't get to the cellar.
-//! Noticed near it, it turns on you instead. Killing it all also ends it, for half.
+//! Noticed near it, it turns on you instead. Killing it all also ends it, for half. With the packs
+//! on and one whose ground is within 3 km of the house, it's that pack's hunting party, in its own
+//! look, coming from its side.
 class RZ_Mission_LeadThemAway : RZ_Mission
 {
 	protected int m_iHouse = -1;
@@ -56,13 +58,29 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 
 		m_vHouse = h.m_vPos;
 		vector start = LandPointNear(m_vHouse, 750, 950);
+
+		// A pack's hunting party, from its side (docs/INFECTED.md, People)
+		array<ResourceName> pack = null;
+		string partyOf = "";
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		if (tribes)
+		{
+			RZ_Tribe near = tribes.NearestTribe(m_vHouse, 3000);
+			if (near)
+			{
+				pack = tribes.GetPeople().PackHordePrefabs(near);
+				partyOf = tribes.GetPeople().NameAt(near, RZ_EFaction.SURVIVORS);
+				start = LandPointNear(RZ_Compass.PointAt(m_vHouse, RZ_Compass.Bearing(m_vHouse, near.RangeCentre()), 850), 0, 100);
+			}
+		}
+
 		float from = RZ_Compass.Bearing(m_vHouse, start);
 		m_vQuarry = LandPointNear(RZ_Compass.PointAt(m_vHouse, from + Math.RandomFloat(80, 140), Math.RandomFloat(550, 750)), 0, 40);
 		if (RZ_Util.IsWater(start) || RZ_Util.IsWater(m_vQuarry))
 			return false;
 
 		// Not one that must keep coming: leading it unseen is the job, so stealth may dull its senses (RZ_Stealth)
-		gm.GetSpawner().SpawnHordeAt(start, m_vHouse, m_iId, m_aHorde, false);
+		gm.GetSpawner().SpawnHordeAt(start, m_vHouse, m_iId, m_aHorde, false, pack);
 		if (m_aHorde.IsEmpty())
 			return false;
 
@@ -75,6 +93,10 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		m_sTitle = "Lead Them Away";
 		m_sBrief = string.Format("A horde is drifting toward the safehouse in %1. We can't fight it. Make noise, a bottle, a firecracker, anything, and lead it step by step to the old quarry pit (grid %2). Don't let it see you.",
 			h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
+		if (!partyOf.IsEmpty())
+			m_sBrief = string.Format("Some of %1 are out early and coming down toward the safehouse in %2. We can't fight them. Make noise, a bottle, a firecracker, anything, and lead them step by step to the old quarry pit (grid %3). Don't let them see you.",
+				partyOf, h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
+
 		return true;
 	}
 

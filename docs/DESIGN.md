@@ -1440,6 +1440,7 @@ notice) is filled only where you call `Fill` on it.
 | `{town:N}`, `{owner:N}`, `{flag:key}` | a settlement's name, who holds it ("the Haven", "nobody"), a season flag |
 | `{canon:key}`, `{canon_town:key}` | a canon fact as words (for the *words* and *number* kinds), the name of a canon *town*. Text never makes a new fact: only a built-in key or one already made is filled |
 | `{leader:id}`, `{leader_short:id}`, `{leader_place:id}` | who sits in that seat now ("Major Weber", "Weber"), and the seat's place; an empty seat reads as its title ("the outpost commander in Morton") |
+| `{tribe:N}`, `{alpha:N}`, `{young:N}` | a pack in a speaker's word with the place, its leader, its newest named young (`{tribe:N.bastion}` for Bastion's word; [INFECTED.md](INFECTED.md#the-words)) |
 
 **World changes and gossip.** `Changed(key, headline, rumour, moment, rumourHours, announce)`
 tells the world in one call: the headline goes to the server news (to everyone too with

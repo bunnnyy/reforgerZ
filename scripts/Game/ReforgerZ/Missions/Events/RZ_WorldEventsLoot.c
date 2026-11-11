@@ -214,10 +214,12 @@ class RZ_Event_AbandonedConvoy : RZ_Mission
 //! Bastion is still around (stage military presence 0.1 or more), anyone who gets within 4 m of
 //! a crate takes Bastion Infamy (Missions > Events > Camp Infamy): Bastion keeps lists. Camp
 //! prop: Missions > Events > Camp (look only). Never near a Bastion holding: an eighth of the
-//! map's span, 400 m to 1.5 km.
+//! map's span, 400 m to 1.5 km. With a military pack within 3 km, the turned soldiers are its young,
+//! in its look.
 class RZ_Event_RemnantCamp : RZ_Mission
 {
 	protected ref RZ_LootCache m_Cache = new RZ_LootCache();
+	protected ResourceName m_sTurned;	// a military pack's young ("": the usual infected)
 	protected ref array<int> m_aTaken = {};
 	protected bool m_bStirred;
 	protected bool m_bBastion;
@@ -292,6 +294,19 @@ class RZ_Event_RemnantCamp : RZ_Mission
 		else
 			m_sBrief = string.Format("A camp outside %1 from when Bastion still held the line. Its stores are still there, and so are its soldiers, after a fashion. Nobody's coming back for any of it.", s.m_sName);
 
+		// A military pack near: the soldiers left on guard run with it now (docs/INFECTED.md, People)
+		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
+		if (tribes)
+		{
+			RZ_Tribe pack = tribes.GetPeople().NearMilitary(m_vPos, 3000);
+			if (pack)
+			{
+				m_sTurned = tribes.GetPeople().YoungPrefab(pack);
+				if (!m_sTurned.IsEmpty())
+					m_sBrief += string.Format(" Some of them go out at night with %1.", tribes.GetPeople().NameAt(pack, RZ_EFaction.SURVIVORS));
+			}
+		}
+
 		return true;
 	}
 
@@ -301,7 +316,18 @@ class RZ_Event_RemnantCamp : RZ_Mission
 		if (!m_bStirred && CountPlayersNear(players, m_vPos, 300) > 0)
 		{
 			m_bStirred = true;
-			SpawnGuards(gm, m_vPos, 4, 6, 25);
+			if (m_sTurned.IsEmpty())
+			{
+				SpawnGuards(gm, m_vPos, 4, 6, 25);
+			}
+			else
+			{
+				for (int i = 0; i < 4; i++)
+				{
+					gm.GetSpawner().SpawnZombie(LandPointNear(m_vPos, 6, 25), false, m_iSettlement, m_iId, m_sTurned);
+				}
+			}
+
 			SpawnGuards(gm, m_vPos, 1, 10, 25, true);
 		}
 

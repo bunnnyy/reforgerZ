@@ -65,7 +65,7 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the 60 white icons from `UI/Icons/png/128/` into
+1. `py tools/icon_atlas.py` packs the white icons (62) from `UI/Icons/png/128/` into
    `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1024, eight 128-pixel cells to a row, in name
    order.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
@@ -78,7 +78,9 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 4. **UI > Icon imageset** on `RZ_GameMode.et` points at the imageset (already set).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
-steps 1 to 3 again. With **Icon imageset** empty, the scripts leave every image as the layout has
+steps 1 to 3 again. **To do now:** step 1 has been run for `marker_range` (the 62nd icon, the packs'
+range ring), so import the PNG again (step 2) and run step 3; until then the old atlas and imageset
+have no ring, and the cells after `marker_radio` would be off by one if only one of the two changed. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -596,7 +598,9 @@ lock is the door-lock icon from the imageset.
 One marker on the real map, created into the map's root by `RZ_MapIconsUI` on the map
 configuration when **UI > Map icon layout** names this file. Neither is set up yet
 ([UI.md](../docs/UI.md#built-and-planned)). The script centres the 28 × 28 icon on the spot and
-tints it.
+tints it. For a range ring (`marker_range`) it sets the root's and **Icon**'s size every frame to the
+pack's ground on the map (28 to 320 across), so **Icon** must sit in the root's frame slot, top-left,
+not stretched by anchors.
 
 ```
 Frame (root, 28 × 28, top-left anchor, ignores the cursor)

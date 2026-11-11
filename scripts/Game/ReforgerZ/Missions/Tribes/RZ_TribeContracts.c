@@ -1768,3 +1768,184 @@ class RZ_Mission_CaptureTheIndex : RZ_TribeContract
 			RZ_Util.DeleteUnit(m_Drop);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Stock the Pit (Red Hand, Known): two of a pack's young alive, one after the other, for the next
+//! Fight Pit ("Fresh hires, from the Postmen."). Live Capture's rules: bring it down without killing
+//! it and tie it, hold it 30 s while it fights, then the case to the Red Hand's drop by their nearest
+//! camp (within 6 km of the lair) before it wakes. Each one caught leaves the pack. Needs the drop
+//! point and mission item prefabs, and a pack with two young.
+class RZ_Mission_StockThePit : RZ_TribeContract
+{
+	protected ref RZ_LiveCapture m_Capture = new RZ_LiveCapture();
+	protected IEntity m_Drop;
+	protected int m_iCaged;
+	protected bool m_bTookOne;
+	protected string m_sCrew;
+	protected ResourceName m_sYoung;
+
+	protected static const float CAMP_REACH = 6000;
+
+	//------------------------------------------------------------------------------------------------
+	override void GetPropSpots(notnull array<vector> result)
+	{
+		super.GetPropSpots(result);
+		m_Capture.GetSpots(result);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Configure(RZ_GameModeComponent gm)
+	{
+		SetContract(RZ_EFaction.BANDITS, RZ_ETier.KNOWN, 20, 40);
+		m_fTimeLeft = 3600;
+		m_fParticipationRadius = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override float GetWeight(RZ_GameModeComponent gm)
+	{
+		if (!InOffer(gm) || !RZ_LiveCapture.HasRoom(gm) || gm.GetDropPointPrefab(RZ_EFaction.BANDITS).IsEmpty() || People(gm).HasPitStock())
+			return 0;
+
+		return 0.5;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Setup(RZ_GameModeComponent gm)
+	{
+		RZ_Tribes tribes = Tribes(gm);
+		RZ_Territory territory = gm.GetTerritory();
+		if (!tribes || !territory || !territory.IsActive())
+			return false;
+
+		foreach (RZ_Tribe t : tribes.GetTribeList())
+		{
+			if (!Free(gm, t) || t.Count(RZ_ETribePart.YOUNG) < 2)
+				continue;
+
+			RZ_Holding camp = territory.FindHolding(RZ_EFaction.BANDITS, t.m_vLair, CAMP_REACH);
+			ResourceName young = People(gm).YoungPrefab(t);
+			if (!camp || young.IsEmpty() || !TakeTribe(gm, t))
+				continue;
+
+			m_Drop = RZ_Util.SpawnPrefab(gm.GetDropPointPrefab(RZ_EFaction.BANDITS), RZ_Util.GroundPos(RZ_Util.RandomPointInRing(camp.m_vPos, 30, 60)), Math.RandomFloat(0, 360));
+			if (!m_Drop)
+				return false;
+
+			m_sYoung = young;
+			m_sCrew = People(gm).CrewName(t);
+			if (!BeginCatch(gm, t))
+				return false;
+
+			m_vPos = t.m_vLair;
+			m_sTitle = "Stock the Pit";
+			m_sDeed = "stocked the pit";
+			m_sBrief = string.Format("The pit wants fresh hires. Two of %1's new ones, alive: put one down without killing it, tie it, sit on it till it's under, and get the case to our drop by %2 before it wakes up. Then the other one.", People(gm).NameAt(t, RZ_EFaction.BANDITS), camp.GetTitle());
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A capture at the lair's edge, of one of its young.
+	protected bool BeginCatch(RZ_GameModeComponent gm, RZ_Tribe t)
+	{
+		if (!m_Capture.Begin(gm, m_iId, -1, LandPointNear(t.m_vLair, 60, 120), LandPointNear(t.m_vLair, 30, 80), 0))
+			return false;
+
+		m_Capture.UsePrefab(m_sYoung);
+		m_bTookOne = false;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		RZ_Tribe t = GetTribe(gm);
+		if (!t && m_iCaged == 0 && m_Capture.m_eState == RZ_ECaptureState.BAIT)
+		{
+			Withdraw("That lot broke up. Nothing left to catch.");
+			return;
+		}
+
+		m_Capture.Update(gm, dt, ids, players);
+		if (m_Capture.m_eState == RZ_ECaptureState.CAUGHT)
+		{
+			RZ_ContractHelp.AddNear(ids, players, m_Capture.m_vHeld, 30, m_aParticipants);
+			if (!m_bTookOne && t)
+			{
+				m_bTookOne = true;
+				Tribes(gm).GetLife().TakeMembers(t, RZ_ETribePart.YOUNG, 1);
+			}
+		}
+
+		if (m_Capture.IsLost())
+			m_eState = RZ_EMissionState.FAILED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnZombiesKilled(RZ_GameModeComponent gm, int settlementIdx, int missionId, bool special, vector pos, int count)
+	{
+		m_Capture.OnSpecialKilled(gm, missionId, special);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnItemDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction, IEntity drop)
+	{
+		if (faction != RZ_EFaction.BANDITS || drop != m_Drop || !m_Capture.Deliver())
+			return false;
+
+		AddParticipant(playerId);
+		m_iCaged++;
+		if (m_iCaged >= 2)
+		{
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			return true;
+		}
+
+		// The other one
+		m_Capture.Cleanup();
+		m_Capture = new RZ_LiveCapture();
+		RZ_Tribe t = GetTribe(gm);
+		if (!t || t.Count(RZ_ETribePart.YOUNG) < 1 || !BeginCatch(gm, t))
+		{
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			m_fRewardScale = 0.5;
+			return true;
+		}
+
+		gm.NotifyPlayer(playerId, m_sTitle, "\"One in the cage. Now the other.\"");
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		if (People(gm))
+			People(gm).StockThePit(m_sCrew, m_sYoung);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetSuccessText(RZ_GameModeComponent gm)
+	{
+		return string.Format("The pit has fresh hires, from %1.", m_sCrew);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		if (m_Capture.m_eState == RZ_ECaptureState.LOST)
+			return "Stock the Pit: it died, or it woke up. The pit wanted it breathing.";
+
+		return "Stock the Pit: the cages stayed empty.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		m_Capture.Cleanup();
+		if (m_Drop)
+			RZ_Util.DeleteUnit(m_Drop);
+	}
+}

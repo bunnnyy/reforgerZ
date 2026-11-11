@@ -56,6 +56,7 @@ class RZ_TribeLife
 
 	//------------------------------------------------------------------------------------------------
 	array<ref RZ_Tribe> GetRovers() { return m_aRovers; }
+	array<vector> GetAbandonedLairs() { return m_aLairPos; }
 
 	//------------------------------------------------------------------------------------------------
 	//! Zombies > Tribes > Life cycle (off: phase 2's tribes, where one of the guard takes the call).
@@ -1177,6 +1178,18 @@ class RZ_TribeLife
 	//! are one clan; a clan ends when one is left or they drift apart.
 	protected void Clans()
 	{
+		// After the great one dies: no clan for 8 season days (RZ_TribeGreat)
+		if (m_Tribes.GetGreat().ClansLocked())
+		{
+			foreach (RZ_Tribe lone : m_Tribes.GetTribeList())
+			{
+				lone.m_iClan = 0;
+				lone.m_iClanHold = 0;
+			}
+
+			return;
+		}
+
 		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 		{
 			RZ_Tribe m = m_Tribes.Find(t.m_iMother);
@@ -1279,7 +1292,8 @@ class RZ_TribeLife
 			return;
 		}
 
-		if (into >= 15 && !t.m_bChallenged)
+		// The great one doesn't die of age while its clan holds 3 packs (RZ_TribeGreat)
+		if (into >= 15 && !t.m_bChallenged && !m_Tribes.GetGreat().Ageless(t))
 			DieOfAge(t);
 	}
 
@@ -2247,6 +2261,7 @@ class RZ_TribeLife
 		}
 
 		Clans();
+		m_Tribes.GetGreat().SeasonDay();
 		m_Tribes.GetBorders().Merges();
 		NewTribes();
 		Splits();
