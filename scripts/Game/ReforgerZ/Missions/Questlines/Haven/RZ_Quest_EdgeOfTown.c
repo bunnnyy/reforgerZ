@@ -131,6 +131,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 			run.SetText("director", "Halcyon's research director");
 
 		run.SetText("realtext", "Make it real.");
+		run.SetText("count", "Eleven");
 		run.SetText("why", run.Fill("Nobody settled it. In {walkhouse} they still walk people to the edge of town at dusk."));
 		run.SetPlace(houses.Get(walkHouse).m_vPos, houses.Get(walkHouse).m_sName);
 		return true;
@@ -276,14 +277,18 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 				}
 				else if (outcome == OUT_WALKED || outcome == OUTCOME_DONE)
 				{
+					run.SetText("count", "Twelve");
 					run.Note("{man} was walked out at dusk, the way {walkhouse} does it. Twelve, now.");
 				}
 				else
 				{
-					if (run.Visits(S_WALK) < 2)
-						return S_WALK;
-
 					run.Note("Nobody walked {man} out. He waited at the edge of town as long as he could.");
+					if (run.Visits(S_WALK) < 2)
+					{
+						// Another dusk, another bite declared
+						run.SetText("man", RZ_HavenQuest.ManName(new RZ_Rng(Math.RandomInt(1, 2000000000))));
+						return S_WALK;
+					}
 				}
 
 				return S_TALLY;
@@ -292,7 +297,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 			{
 				if (outcome == OUT_TALLY || outcome == OUTCOME_DONE)
 				{
-					run.Note("Eleven graves at the edge of {walkhouse}, and eleven names in {walker}'s notebook, with the day and what they asked for last.");
+					run.Note("{count} graves at the edge of {walkhouse}, and the same names in {walker}'s notebook, with the day and what they asked for last.");
 					return S_NUMBERS;
 				}
 
@@ -729,8 +734,8 @@ class RZ_QM_EdgeTally : RZ_HavenQM
 
 		m_iSettlement = h.m_iSettlement;
 		m_vPos = m_vEdge;
-		m_iWalkerTalk = AddClue(QText(gm, "walker"), QFill(gm, "{walker} is on watch at the end of the road, where it turns to track. \"Eleven. Twelve, with the one last night. I don't do it because I like it. I do it because somebody has to hold their hand, and the lab doesn't.\""));
-		m_iBook = AddClue("His notebook", QFill(gm, "A school exercise book, wrapped in oilcloth and tucked under a stone. Eleven names, one to a page, each with a day and a line: what they asked for last. \"A cigarette.\" \"To see the sea.\" \"For you to look away.\" On the inside cover, in another hand, a nurse's: \"Eight in ten, {walker}. Eight.\""));
+		m_iWalkerTalk = AddClue(QText(gm, "walker"), QFill(gm, "{walker} is on watch at the end of the road, where it turns to track. \"{count}. I don't do it because I like it. I do it because somebody has to hold their hand, and the lab doesn't.\""));
+		m_iBook = AddClue("His notebook", QFill(gm, "A school exercise book, wrapped in oilcloth and tucked under a stone. The names, one to a page, each with a day and a line: what they asked for last. \"A cigarette.\" \"To see the sea.\" \"For you to look away.\" On the inside cover, in another hand, a nurse's: \"Eight in ten, {walker}. Eight.\""));
 		m_sTitle = "The Edge of Town: the walker's tally";
 		m_sBrief = QFill(gm, "{walker} keeps a grave for everyone he's walked out of {walkhouse}, at the edge of town, and their names in a notebook. I want the tally. Count the graves, and get the names, one way or another.");
 		return true;
@@ -799,7 +804,7 @@ class RZ_QM_EdgeTally : RZ_HavenQM
 		m_iTallyBy = playerId;
 		m_iTallyHow = RZ_EQuestApproach.TALK;
 		Remember(gm, playerId, RZ_EQuestApproach.TALK, "asked him for the names");
-		string text = QFill(gm, "He says them all, in order, without stopping, the way you'd say a prayer you learned as a child. Then he lights a cigarette. \"Twelve.\"");
+		string text = QFill(gm, "He says them all, in order, without stopping, the way you'd say a prayer you learned as a child. Then he lights a cigarette. \"{count}.\"");
 		if (RZ_QuestApproach.HasBackground(gm, playerId, "elder"))
 		{
 			SetQFlag(gm, "elder_asked", 1);

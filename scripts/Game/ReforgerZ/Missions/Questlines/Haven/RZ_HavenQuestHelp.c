@@ -196,6 +196,13 @@ class RZ_HavenQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Under pressure: hungry, or it has lost people lately (to hunger, raids, contracts).
+	static bool IsPressed(RZ_Safehouse h)
+	{
+		return h && (IsHungry(h) || h.m_iLost > 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Any safehouse that has gone hungry or lost people lately (to hunger, raids, contracts).
 	static bool AnyHungry(RZ_GameModeComponent gm)
 	{

@@ -82,9 +82,10 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Needs a hungry safehouse (not the chair's, not at the Preacher's prayers) with a Red Hand crew
-	//! within 6 km, the note, the object and the civilian. The Haven's version needs its council head
-	//! to be Independent or Rogue; the Red Hand's comes from the crew boss.
+	//! Needs a safehouse under pressure (hungry, or it has lost people lately; not the chair's, not at
+	//! the Preacher's prayers) with a Red Hand crew within 6 km, the note, the object and the
+	//! civilian. The Haven's version needs its council head to be Independent or Rogue; the Red
+	//! Hand's comes from the crew boss.
 	override bool CanStart(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (!RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || !RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
@@ -100,7 +101,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 		for (int i = 0; i < houses.Count(); i++)
 		{
 			RZ_Safehouse h = RZ_HavenQuest.LiveHouse(gm, i);
-			if (!h || i == chairHouse || h.m_iPopulation < 3 || !RZ_HavenQuest.IsHungry(h) || RZ_HavenQuest.IsPraying(gm, i))
+			if (!h || i == chairHouse || h.m_iPopulation < 3 || !RZ_HavenQuest.IsPressed(h) || RZ_HavenQuest.IsPraying(gm, i))
 				continue;
 
 			RZ_Leader head = RZ_HavenQuest.CouncilHead(gm, i);
@@ -673,7 +674,7 @@ class RZ_QM_DoorEnvelope : RZ_HavenQM
 			if (barn)
 				grid = RZ_HavenQuest.Grid(barn.m_vCenter);
 
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, string.Format("You lift the wax with a warm knife. A page from a notebook, in the council's hand: \"{exile}. Put out for the stores. Sleeps in the barn outside {barn}, grid %1.\" You seal it again. It almost looks untouched.", grid)));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, string.Format("You lift the wax with a warm knife. A page from a notebook, in careful pencil: \"{exile}. Put out for the stores. Sleeps in the barn outside {barn}, grid %1.\" You seal it again. It almost looks untouched.", grid)));
 		}
 		else if (option != 0)
 		{
@@ -796,7 +797,7 @@ class RZ_QM_DoorExile : RZ_HavenQM
 		m_vDrop = LandPointNear(boss.m_vPos, 150, 250);
 		m_vPos = m_vBarn;
 		m_iSettlement = QFlag(gm, "barn", -1);
-		m_iTalk = AddClue(QText(gm, "exile"), QFill(gm, "A man asleep in the straw with his boots on, who's awake before you've taken a step. \"I took bread. Two loaves, for a kid who wasn't on anyone's list. They put me out that night, no gun, no coat.\" He looks at your hands. \"Who sent you?\""));
+		m_iTalk = AddClue(QText(gm, "exile"), QFill(gm, "A man asleep in the straw with his boots on, who's awake before you've taken a step. \"I took bread. Two loaves, when there was nothing else. They put me out that night, no gun, no coat.\" He looks at your hands. \"Who sent you?\""));
 		m_Escort.m_sName = QText(gm, "exile");
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 0);
 		m_Escort.SetTalk(m_iId, OBJ_EXILE, "Warn him: they know where you sleep|Bring him back to plead his case|Walk him to the crew", m_iTalk, "Talk to " + QText(gm, "exile"));

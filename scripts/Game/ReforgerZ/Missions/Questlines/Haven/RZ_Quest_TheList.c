@@ -286,7 +286,7 @@ class RZ_Quest_TheList : RZ_Questline
 			{
 				if (outcome == OUT_COPIES || outcome == OUTCOME_DONE)
 				{
-					run.Note("Copies of the List from three places. Every one has lines through it, in the same council pencil.");
+					run.Note("Copies of the List from more than one house. Every one has lines through it, in the same council pencil.");
 					return S_PATTERN;
 				}
 
@@ -340,9 +340,15 @@ class RZ_Quest_TheList : RZ_Questline
 			return S_COPIES;
 		}
 
-		if (outcome == OUT_DEAD || outcome == OUTCOME_DONE)
+		if (outcome == OUT_DEAD)
 		{
 			run.Note("{husband} is dead. His last letter says they'd cross him off if he was late. They crossed him off before anyone knew.");
+			return S_COPIES;
+		}
+
+		if (outcome == OUTCOME_DONE)
+		{
+			run.Note("Someone followed {husband}'s trail to its end. {asker} still wants to know whose pencil it was.");
 			return S_COPIES;
 		}
 
@@ -559,6 +565,9 @@ class RZ_QM_ListHusband : RZ_HavenQM
 		{
 			array<int> options = {};
 			CollectSettlements(gm, from, 600, 1800, used, options);
+			if (options.IsEmpty())
+				CollectSettlements(gm, from, 300, 3500, used, options);
+
 			if (options.IsEmpty())
 				return false;
 
@@ -1574,14 +1583,15 @@ class RZ_QM_ListFarm : RZ_HavenQM
 //------------------------------------------------------------------------------------------------
 //! The List, stage 6 (Haven contract, Known): the chair's decision, at the chair's seat. The copies
 //! on a table, four choices: read it out at every house (Trusted, ★ Elder, or Known with the
-//! husband home as proof; Known with census.refused from B2), then hold the reading at the chair's
-//! house for 3 minutes while the bells bring two waves; give the copies to the chair; or carry them
+//! husband home as proof; Known with census.refused from B2), then hold the gate on the road in
+//! (60-80 m out) for 3 minutes while the bells bring two waves; give the copies to the chair; or carry them
 //! to the nearest Bastion seat or Red Hand crew, past two Haven lookouts (seen: the copies go back
 //! to the chair, +8 Haven Infamy). The Red Hand copy from stage 2 brings a runner to the edge of
 //! town instead, past one lookout.
 class RZ_QM_ListChair : RZ_HavenQM
 {
 	protected vector m_vTable;
+	protected vector m_vGate;
 	protected vector m_vBastion;
 	protected vector m_vRedHand;
 	protected string m_sBastionPlace;
@@ -1623,6 +1633,7 @@ class RZ_QM_ListChair : RZ_HavenQM
 			seat = chairHouse.m_vPos;
 
 		m_vTable = LandPointNear(seat, 5, 10);
+		m_vGate = LandPointNear(seat, 60, 80);
 		m_vPos = m_vTable;
 		m_iSettlement = gm.FindNearestSettlement(seat);
 
@@ -1679,9 +1690,9 @@ class RZ_QM_ListChair : RZ_HavenQM
 
 		if (m_bReading)
 		{
-			// The bells at supper: the infected hear them too
+			// The bells at supper: the infected hear them too. The reading is inside; the gate is held
 			gm.GetHeat().AddHeat(m_vTable, 0.5 * dt);
-			if (TickHold(gm, dt, ids, players, m_vTable, 30, READ_SECONDS, 60, 2))
+			if (TickHold(gm, dt, ids, players, m_vGate, 30, READ_SECONDS, 60, 2))
 			{
 				RZ_QuestRun run = Run(gm);
 				if (run && m_iReader > 0)
@@ -1770,7 +1781,7 @@ class RZ_QM_ListChair : RZ_HavenQM
 			m_iReader = playerId;
 			Remember(gm, playerId, RZ_EQuestApproach.TALK, "began the reading");
 			gm.GetHeat().AddHeat(m_vTable, 20);
-			NotifyParticipants(gm, m_sTitle, "The bells go for supper, and the houses listen. Every name, crossed lines and all. It takes three minutes, and the bells carry. Hold here while it's read.");
+			NotifyParticipants(gm, m_sTitle, string.Format("The bells go for supper, and the house listens. Every name, crossed lines and all. It takes three minutes, and the bells carry. Hold the gate on the road in while it's read: grid %1.", RZ_HavenQuest.Grid(m_vGate)));
 			return;
 		}
 
@@ -1870,6 +1881,9 @@ class RZ_QM_ListChair : RZ_HavenQM
 	override string GetWhereText(RZ_GameModeComponent gm, vector from)
 	{
 		string text = super.GetWhereText(gm, from);
+		if (m_bReading)
+			text += "\nThe gate to hold: " + RZ_Util.DirectionText(from, m_vGate);
+
 		if (m_iTo == OBJ_BASTION)
 			text += string.Format("\nBastion's census: %1, grid %2", m_sBastionPlace, RZ_HavenQuest.Grid(m_vBastion));
 		else if (m_iTo == OBJ_REDHAND)
