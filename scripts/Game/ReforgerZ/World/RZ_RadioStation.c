@@ -387,6 +387,9 @@ class RZ_RadioStation
 		m_fNextBroadcast = m_fClock + CooldownSeconds();
 		m_GM.NotifyAll("Radio: " + m_sName, text);
 		RZ_Log.Info(string.Format("Radio station: broadcast %1 by player %2.", option, playerId));
+		// The epilogue's reel keeps each player's latest broadcast from before the cure
+		if (RZ_Epilogue.Get())
+			RZ_Epilogue.Get().OnBroadcast(playerId, text);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -431,6 +434,10 @@ class RZ_RadioStation
 			}
 			case 3:
 			{
+				// Processing: the "Going home" preset (the epilogue week)
+				if (RZ_Epilogue.Get() && RZ_Epilogue.Get().Phase() >= 3)
+					return string.Format("\"This is %1, at %2. Going home.\"", name, m_sName);
+
 				int day = 11;
 				if (m_GM.GetBroadcast())
 					day = m_GM.GetBroadcast().GetDay();

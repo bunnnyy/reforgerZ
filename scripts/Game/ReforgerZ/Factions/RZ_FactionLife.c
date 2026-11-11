@@ -1133,6 +1133,14 @@ class RZ_FactionLife
 	//! Something true on a faction's open channel, "" if it has nothing to say.
 	protected string BuildChatter(int f)
 	{
+		// The epilogue week: the faction's open channel talks about the season half the time
+		if (RZ_Epilogue.Get())
+		{
+			string week = RZ_Epilogue.Get().ChatterLine(f);
+			if (!week.IsEmpty())
+				return week;
+		}
+
 		RZ_Territory territory = m_GM.GetTerritory();
 		RZ_SupplyLines supply = m_GM.GetSupply();
 		array<string> options = {};

@@ -1031,7 +1031,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 
 	//------------------------------------------------------------------------------------------------
 	//! Takes the first firearm in a weapon slot. False if there's none.
-	protected static bool TakeFirearm(IEntity me)
+	static bool TakeFirearm(IEntity me)
 	{
 		BaseWeaponManagerComponent wm = BaseWeaponManagerComponent.Cast(me.FindComponent(BaseWeaponManagerComponent));
 		if (!wm || !RZ_Util.IsArmed(me))

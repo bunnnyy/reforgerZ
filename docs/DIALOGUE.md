@@ -110,8 +110,8 @@ behind it.
 
 | Speaker | `for` | Memory key | Built verbs |
 |---|---|---|---|
-| Stronghold leaders | `stronghold:<faction>`, `leader:<faction>`, `leader` | `leader:<seat>:<generation>` (someone new in the chair starts fresh) | Ask for work, Heard anything?, What do you make of me? |
-| Seat leaders | `seat:haven/council_head`, `seat:bastion/outpost_lead`, `seat:redhand/crew_boss`, `seat:halcyon/field_lead`, `leader:<faction>`, `leader` | as above | as above |
+| Stronghold leaders | `stronghold:<faction>`, `leader:<faction>`, `leader` | `leader:<seat>:<generation>` (someone new in the chair starts fresh) | Ask for work, Heard anything?, What do you make of me?; in the epilogue week About the season, Where should I look? and the grey choice's two answers |
+| Seat leaders | `seat:haven/council_head`, `seat:bastion/outpost_lead`, `seat:redhand/crew_boss`, `seat:halcyon/field_lead`, `leader:<faction>`, `leader` | as above | as above (no grey choice) |
 | Wanderers | `wanderer:<role>` (trader, doctor, scavenger, deserter, preacher, courier, kid, mechanic), `wanderer` | `wanderer:<id>:<generation>` | the role's special, Share some food, the antidote while bitten (else Need a hand?, [errands](ERRANDS.md#the-wanderers-asks); the Mechanic: Ask about cars), Rob |
 | Safehouse occupants | `occupant` | `house:<index>` | Ask how things are |
 | A safehouse's named people (the first two occupants, [ERRANDS.md](ERRANDS.md#givers)) | none yet (no trees) | `house:<index>:<i>` (errands' regard) | Ask how things are, Anything need doing? |
@@ -394,5 +394,7 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 - **Planned** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): lies the player is *told*
   (`~lie` lines, `heard_lie`, the `[Evidence]` call-out); promises and callbacks through `later:`;
   claims in someone else's kit as conversation lines (the look itself is built); Make it right;
-  strangers', radio speakers' conversations and barks; the finale's commit and the epilogue's topics.
+  strangers', radio speakers' conversations and barks; the finale's commit and the epilogue's topics as
+  conversations (today they're the leaders' built replies: About the season, Where should I look? and a
+  stronghold's grey choice, [EPILOGUE.md](EPILOGUE.md#carriers)).
   One shipped conversation uses a scene (the bed by the stove); none uses lies yet.

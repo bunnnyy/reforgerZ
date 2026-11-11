@@ -1204,6 +1204,17 @@ class RZ_Search
 				text += " " + puzzle;
 		}
 
+		// The epilogue week: 3 in 10 are dated in it (never naming the farm's town)
+		if (RZ_Epilogue.Get())
+		{
+			string dated = RZ_Epilogue.Get().DatedReadable(place, town);
+			if (!dated.IsEmpty())
+			{
+				title = "A note";
+				text = dated;
+			}
+		}
+
 		line = string.Format("%1: %2", title, text);
 		return AddNote(title, text, loose);
 	}

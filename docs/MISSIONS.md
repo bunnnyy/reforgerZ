@@ -25,6 +25,7 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 | [Errands](ERRANDS.md) (not missions: asked in person) | 31 routines, 2 wanderers' asks, 18 strangers, 39 cards | the margin, lock and epilogue cards and about 20 more ([designs/ERRANDS.md](../designs/ERRANDS.md)) |
 | [Questlines](#questlines) | 15 questlines and the 4 majors, about 90 stage missions plus the majors' 15 scenes (not counted above) | the majors' parts still designed ([designs/MAJORS.md](../designs/MAJORS.md)) |
 | [The cure finale](#the-cure-finale) | 5 routes (20 scenes and 5 releases), 5 desks, 2 tissue hunts, Take the Lab's finale mode (not counted above) | the subjects' branches, the moves and the rest of each route's ways ([designs/FINALE.md](../designs/FINALE.md)) |
+| [The epilogue week](#the-epilogue-week) | the closure set's 11 items, 8 closing stages, the dose outlets, the four grey choices (not counted above) | the epilogue deck, the evening's own set pieces, the factions' jobs on the ridges ([designs/EPILOGUE.md](../designs/EPILOGUE.md)) |
 
 ## Who gets offered what
 
@@ -1037,6 +1038,28 @@ Each step pays its decider at most 10 Fame and 20 Favor (the Independent: 20 Hav
 | **Live tissue** (Act III, open) | Who It Was, Contact Captured, Fresh Stock, The Index, Nobody's Index: a leader taken alive (Capture the Index's rules, +2 at once) or one of its guard or young or a special (Live Capture's rules, +2 after 12 real hours); never picked at random | ✅ |
 | **The release** | The controller's route: its locked players choose the terms in 3 minutes at the lab | ✅ |
 | **Take the Lab** (the Red Hand route, at the stand, once a season) | The loading bay, 120 s, started by a Red Hand-locked player Trusted with the Red Hand; the room changes hands. With the finale off: as before, the batch is stolen | ✅ |
+
+## The epilogue week
+
+After the cure ([EPILOGUE.md](EPILOGUE.md)): the closing work, so that every story can end inside the
+week. None of it is offered on the radio; each is a choice on a person or a table at its place, a
+leader's reply, or a world change. Code: `Director/Epilogue/`.
+
+| Item | What you do | Status |
+|---|---|---|
+| **Last Rounds** | The majors' codas on the set-piece calendar ([QUESTLINES.md](QUESTLINES.md#the-majors)) | ✅ *built with the majors; the epilogue lists them and closes them* |
+| **Loose Ends** | One closing stage for each questline open at the cure, at its place, two or three ways each on a built ending ([QUESTLINES.md](QUESTLINES.md#loose-ends)) | ✅ *half pay is a fixed Fame 3 and Favor 5; endings' world effects as built* |
+| **Bring Them Home** | Take a named dead person's keepsake where it lies; hand it in at the nail, the book, the lab gate or a house; the Names board fills | ✅ *wanderers and notable players' characters only* |
+| **Quiet the Ridges** | The packs run down ([INFECTED.md](INFECTED.md#the-last-week)); the hall line names the last to call | ✅ *the factions' jobs (Cull, the last reading, the bet) aren't built* |
+| **Take Back a Town** | Clear a town that had 6 or more crawlers at the cure: a candle, the town log, a hall line | ✅ *no givers: the town itself is the job* |
+| **The Long Table's last week** | Find it out (as built), or the family packs at processing and leaves for the queue | ✅ *the family as text at the queue* |
+| **The Walk Out** | In processing: give your name at the north road's barrier, unarmed; put your name down in phase B | ✅ *no escorts; the queue walks as text* |
+| **Settle Accounts** | The parley; pay into the book at the crossroads; wanted posters; square with all four | ✅ |
+| **The Last Broadcast** | Say what the station tells the outside; the tally closes at processing and airs | ✅ *no lobbying lines, no airtime for sale* |
+| **Personal Goals** | Each built background's last goal | ✅ *on the epilogue's deeds* |
+| **The Last Entry** | Your line on the Names board | ✅ |
+| **The dose outlets** | Ask for the dose where the route gives it ([EPILOGUE.md](EPILOGUE.md#the-dose-outlets)) | ✅ |
+| **The grey choices** | The chair, the CO, the boss and the director each ask once a season, with the decide hold | ✅ |
 
 ## Backgrounds at a glance
 

@@ -1445,6 +1445,13 @@ class RZ_Majors
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The season story's records (the epilogue reads them).
+	array<ref RZ_StoryRecord> GetStories()
+	{
+		return m_aStories;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The epilogue line: the controlling faction's major first, then one line from each other major.
 	string EpilogueLine(int controller)
 	{

@@ -130,6 +130,17 @@ class RZ_NoticeBoard
 			text += string.Format("%1 asks: %2\n", h.m_sName, ask);
 		}
 
+		// The epilogue's pinned notes (they don't count toward the board's notes)
+		array<string> pinAuthors = {};
+		array<string> pinTexts = {};
+		if (RZ_Epilogue.Get())
+			RZ_Epilogue.Get().BoardNotes(idx, pinAuthors, pinTexts);
+
+		foreach (int pin, string pinned : pinTexts)
+		{
+			text += string.Format("%1: %2\n", pinAuthors[pin], pinned);
+		}
+
 		for (int n = h.m_aNotes.Count() - 1; n >= 0; n--)
 		{
 			RZ_Note note = h.m_aNotes[n];
@@ -208,11 +219,22 @@ class RZ_NoticeBoard
 		if (IsAdmin(playerId))
 			canClear = "1";
 
-		string s = head.Add(h.m_sName).AddInt(h.m_aNotes.Count() + asks.Count()).AddInt(m_Settings.m_iNoteLength).Add(canWrite).Add(canClear).End();
+		array<string> pinAuthors = {};
+		array<string> pinTexts = {};
+		if (RZ_Epilogue.Get())
+			RZ_Epilogue.Get().BoardNotes(BoardAt(playerId), pinAuthors, pinTexts);
+
+		string s = head.Add(h.m_sName).AddInt(h.m_aNotes.Count() + asks.Count() + pinTexts.Count()).AddInt(m_Settings.m_iNoteLength).Add(canWrite).Add(canClear).End();
 		foreach (string ask : asks)
 		{
 			RZ_UILine askLine = new RZ_UILine("N");
 			s += askLine.Add(h.m_sName + " asks").Add("today").Add(ask).End();
+		}
+
+		foreach (int pin, string pinned : pinTexts)
+		{
+			RZ_UILine pinLine = new RZ_UILine("N");
+			s += pinLine.Add(pinAuthors[pin]).Add("pinned").Add(pinned).End();
 		}
 
 		for (int n = h.m_aNotes.Count() - 1; n >= 0; n--)
@@ -342,6 +364,13 @@ class RZ_NoticeBoard
 		}
 
 		return last;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The note filter for other text (the epilogue's names and last entries).
+	string FilterText(string text)
+	{
+		return Filter(text);
 	}
 
 	//------------------------------------------------------------------------------------------------

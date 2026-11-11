@@ -1014,6 +1014,10 @@ class RZ_StoryArcs
 	//------------------------------------------------------------------------------------------------
 	protected bool StartConvoy()
 	{
+		// The world settles in the epilogue (docs/EPILOGUE.md): no Last Convoy
+		if (RZ_WorldFacts.Get().HoldingsFrozen())
+			return false;
+
 		RZ_Territory territory = m_GM.GetTerritory();
 		RZ_SupplyLines supply = m_GM.GetSupply();
 		if (!territory || !territory.IsActive() || !supply || !supply.IsActive() || !supply.IsFactionRunning(RZ_EFaction.MILITARY))

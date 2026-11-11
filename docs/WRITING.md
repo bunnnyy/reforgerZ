@@ -2,8 +2,11 @@
 
 How every line of player text in ReforgerZ is written: the tone, the voices, the rules each line
 follows, and the lint that checks them. Who the factions are as people, and the setting they speak
-from, is in [LORE.md](LORE.md). Running jokes, the race and route lines, the radio's joke memory
-and the epilogue's variants are designed in [designs/TONE.md](../designs/TONE.md) and not built yet.
+from, is in [LORE.md](LORE.md). The epilogue week's lines (route and terms, the lab, the queue,
+the leaders' verdicts, residents, the road, the open channels) are in
+`Director/Epilogue/RZ_EpilogueText.c` ([EPILOGUE.md](EPILOGUE.md)). Running jokes, the race and route
+lines, the radio's joke memory and the rest of the epilogue's variants are designed in
+[designs/TONE.md](../designs/TONE.md) and not built yet.
 
 ## Contents
 

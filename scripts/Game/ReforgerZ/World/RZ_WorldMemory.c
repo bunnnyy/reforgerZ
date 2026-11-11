@@ -441,6 +441,16 @@ class RZ_WorldMemory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every world record (the epilogue's side stories read them).
+	void AllRecords(notnull array<RZ_WorldRecord> result)
+	{
+		foreach (RZ_WorldRecord r : m_aRecords)
+		{
+			result.Insert(r);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_TownEntry TownBest(int settlement)
 	{
 		RZ_TownLog t = Town(settlement, false);

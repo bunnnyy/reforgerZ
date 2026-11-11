@@ -40,6 +40,11 @@ class RZ_HallData
 	ref array<string> standNames = {};		// who held this season's winning stand
 	string seasonLine;						// "The cure: the Haven, by force. The Zone's Fame: Bastion, 1640."
 	ref array<ref RZ_HallPast> past = {};
+	// The epilogue (docs/EPILOGUE.md): the records froze at the cure; the week adds only lines to
+	// the season block. The anonymous are kept across seasons (/anonymous)
+	bool frozen;
+	ref array<string> weekLines = {};
+	ref array<string> anonymous = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -109,6 +114,10 @@ class RZ_HallOfFame
 			data.standNames = new array<string>();
 		if (!data.past)
 			data.past = new array<ref RZ_HallPast>();
+		if (!data.weekLines)
+			data.weekLines = new array<string>();
+		if (!data.anonymous)
+			data.anonymous = new array<string>();
 
 		return data;
 	}
@@ -145,6 +154,8 @@ class RZ_HallOfFame
 		m_Data.seasonPlayers.Clear();
 		m_Data.standNames.Clear();
 		m_Data.seasonLine = "";
+		m_Data.frozen = false;
+		m_Data.weekLines.Clear();
 		m_bDirty = true;
 		SaveIfChanged();
 	}
@@ -159,6 +170,101 @@ class RZ_HallOfFame
 		m_Data.seasonLine = line;
 		m_bDirty = true;
 		SaveIfChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue's freeze: this season's and the all-time records stop counting at the cure.
+	void Freeze()
+	{
+		if (!m_bEnabled || m_Data.frozen)
+			return;
+
+		m_Data.frozen = true;
+		m_bDirty = true;
+		SaveIfChanged();
+		RZ_Log.Info("Hall of fame: the records froze at the cure.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsFrozen()
+	{
+		return m_Data.frozen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line the epilogue week adds to this season's block (by its fixed rules).
+	void AddWeekLine(string line)
+	{
+		if (!m_bEnabled || line.IsEmpty() || m_Data.weekLines.Contains(line))
+			return;
+
+		m_Data.weekLines.Insert(line);
+		m_bDirty = true;
+		SaveIfChanged();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who held the winning stand (names frozen then).
+	void GetStandNames(notnull array<string> result)
+	{
+		foreach (string n : m_Data.standNames)
+		{
+			result.Insert(n);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The last name an identity was recorded under, "" if none.
+	string NameOf(string ident)
+	{
+		foreach (RZ_HallPlayer p : m_Data.allTime)
+		{
+			if (p.ident == ident)
+				return p.name;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! /anonymous: kept out of the world's text, the reel and the hall (shown as "a survivor").
+	bool IsAnonymous(string ident)
+	{
+		return !ident.IsEmpty() && m_Data.anonymous.Contains(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Switch it (on: 1, off: 0, -1: the other way). Saved by identity, across seasons.
+	bool SetAnonymous(string ident, int on)
+	{
+		if (ident.IsEmpty())
+			return false;
+
+		bool now = IsAnonymous(ident);
+		bool want = !now;
+		if (on == 1)
+			want = true;
+		else if (on == 0)
+			want = false;
+
+		if (want && !now)
+			m_Data.anonymous.Insert(ident);
+		else if (!want && now)
+			m_Data.anonymous.RemoveItem(ident);
+
+		m_bDirty = true;
+		SaveIfChanged();
+		return want;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A name as the hall shows it: "a survivor" for the anonymous.
+	protected string ShowName(string ident, string name)
+	{
+		if (IsAnonymous(ident))
+			return "a survivor";
+
+		return name;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -200,6 +306,11 @@ class RZ_HallOfFame
 		p.lines = BuildLines(m_Data.seasonPlayers, m_Data.standNames);
 		if (!m_Data.seasonLine.IsEmpty())
 			p.lines = m_Data.seasonLine + "\n" + p.lines;
+
+		foreach (string week : m_Data.weekLines)
+		{
+			p.lines += week + "\n";
+		}
 		m_Data.past.InsertAt(p, 0);
 		while (m_Data.past.Count() > PAST_KEEP)
 		{
@@ -256,7 +367,7 @@ class RZ_HallOfFame
 	protected bool Records(int playerId, notnull array<RZ_HallPlayer> result)
 	{
 		result.Clear();
-		if (!m_bEnabled || playerId <= 0)
+		if (!m_bEnabled || playerId <= 0 || m_Data.frozen)
 			return false;
 
 		RZ_PlayerProfile profile = m_GM.FindProfile(playerId);
@@ -352,7 +463,7 @@ class RZ_HallOfFame
 	//! Fame with a faction reached in a life: the season's Champion is whoever reached the most.
 	void NoteFame(int playerId, int faction, int fame)
 	{
-		if (!m_bEnabled || faction < 0 || faction >= RZ_Factions.COUNT || fame <= 0)
+		if (!m_bEnabled || m_Data.frozen || faction < 0 || faction >= RZ_Factions.COUNT || fame <= 0)
 			return;
 
 		RZ_PlayerProfile profile = m_GM.FindProfile(playerId);
@@ -379,7 +490,7 @@ class RZ_HallOfFame
 	//! Once a minute: the longest lives so far (the life clock in the profile).
 	void Tick(float dt, array<int> ids)
 	{
-		if (!m_bEnabled)
+		if (!m_bEnabled || m_Data.frozen)
 			return;
 
 		m_fLifeTimer += dt;
@@ -504,7 +615,7 @@ class RZ_HallOfFame
 			float value;
 			RZ_HallPlayer p = Best(list, cat, value);
 			if (p)
-				text += string.Format("%1: %2 (%3)\n", CategoryName(cat), p.name, ValueText(cat, value));
+				text += string.Format("%1: %2 (%3)\n", CategoryName(cat), ShowName(p.ident, p.name), ValueText(cat, value));
 		}
 
 		return text;
@@ -542,6 +653,11 @@ class RZ_HallOfFame
 		string seasonLines = BuildLines(m_Data.seasonPlayers, m_Data.standNames);
 		if (!m_Data.seasonLine.IsEmpty())
 			seasonLines = m_Data.seasonLine + "\n" + seasonLines;
+
+		foreach (string week : m_Data.weekLines)
+		{
+			seasonLines += week + "\n";
+		}
 
 		if (!seasonLines.IsEmpty())
 			text += string.Format("Season %1:\n%2", m_Data.season, seasonLines);
@@ -595,7 +711,7 @@ class RZ_HallOfFame
 				if (p)
 				{
 					RZ_UILine lnS = new RZ_UILine("S");
-					s += lnS.AddInt(cat).Add(CategoryName(cat)).Add(p.name).Add(ValueText(cat, v)).End();
+					s += lnS.AddInt(cat).Add(CategoryName(cat)).Add(ShowName(p.ident, p.name)).Add(ValueText(cat, v)).End();
 				}
 			}
 
@@ -604,7 +720,7 @@ class RZ_HallOfFame
 			if (pa)
 			{
 				RZ_UILine lnA = new RZ_UILine("A");
-				s += lnA.AddInt(cat).Add(CategoryName(cat)).Add(pa.name).Add(ValueText(cat, va)).End();
+				s += lnA.AddInt(cat).Add(CategoryName(cat)).Add(ShowName(pa.ident, pa.name)).Add(ValueText(cat, va)).End();
 			}
 		}
 

@@ -1121,6 +1121,10 @@ class RZ_Territory
 				return;
 		}
 
+		// The world settles in the epilogue: only the floor is kept (docs/EPILOGUE.md)
+		if (RZ_WorldFacts.Get().HoldingsFrozen())
+			return;
+
 		array<int> order = {0, 1, 2, 3};
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		rng.ShuffleInts(order);
@@ -1277,6 +1281,13 @@ class RZ_Territory
 		RZ_Holding h = GetHolding(holdingId);
 		if (!m_bActive || !h || !RZ_Factions.IsValid(taker))
 			return false;
+
+		// The world settles in the epilogue: an ending that would hand over an outpost is words only
+		if (RZ_WorldFacts.Get().HoldingsFrozen())
+		{
+			RZ_Log.Info(string.Format("Territory: %1 stays as it is (the world settles in the epilogue).", h.m_sName));
+			return false;
+		}
 
 		array<int> ids = {};
 		array<IEntity> players = {};

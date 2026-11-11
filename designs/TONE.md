@@ -247,7 +247,7 @@ carry it.
   - **a wipe with no cure** (the majors' no-cure codas at the first wipe warning). No wry lines anywhere but the Red
     Hand's last line. The Haven reads names.
 - **The closing work speaks in the same voices.** Each closing stage, hand-in and scene of the week
-  ([EPILOGUE.md](EPILOGUE.md#finishing-everything)) uses its owner's register: a rushed or bitter ending is said
+  ([docs/EPILOGUE.md](../docs/EPILOGUE.md#the-closing-work)) uses its owner's register: a rushed or bitter ending is said
   plainly, never as a punchline, and a walk-out is a goodbye, never a joke.
 - **Every existing after-cure line must match the ending.** Today `HintAfterCure` (`Factions/RZ_LeaderVoice.c`)
   has Halcyon say Bastion's cure *"went out over every frequency instead"*, whoever won. That's false whenever

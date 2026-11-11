@@ -1618,6 +1618,7 @@ class RZ_CureFinale
 	int How() { return m_S.how; }
 	int Terms() { return m_S.terms; }
 	int Partner() { return m_S.partner; }
+	int Condition() { return m_S.condition; }
 
 	//------------------------------------------------------------------------------------------------
 	//! The stand was won (RZ_CureResearch.CompleteCure, before OnCureCompleted): whoever holds the

@@ -340,7 +340,7 @@ caps apply.
 | `scene`, `asker` | 16 agents together, and room in the budget | *Planned:* dialogue's scenes and askers |
 | `errand` | 10, and room | *Planned:* errand scenes |
 | `stranger` | 6, and room | *Planned:* strangers |
-| `epilogue` | 18 (3 scenes of 6), and room | *Planned:* the epilogue's scenes |
+| `epilogue` | 18 (3 scenes of 6), and room | The epilogue's people: the queue, the route's table, the lab gate, the barrier, Loose Ends' people ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)) |
 | `speaker` | Only within 100 m of a player, and room | *Planned:* post speakers |
 
 Faction AI, leaders, camp life, supply trucks and the Long Table keep their own limits; they share only
@@ -1310,8 +1310,9 @@ server's ridges go quiet too:
 - **Towns stay cleared.** The kill ledger stops halving (built before), and nothing raises a town's
   infection in the epilogue.
 - **Beats for the epilogue:** still calling (each leader alive at the cure), brought home, taken alive
-  for the lab, culled, burned out, the great one risen and fallen: kept in `state.json` (40 at most) and shown by `/tribes`, for the
-  epilogue's closing work when it's built ([designs/EPILOGUE.md](../designs/EPILOGUE.md)).
+  for the lab, culled, burned out, the great one risen and fallen: kept in `state.json` (40 at most) and shown by `/tribes`.
+  The epilogue reads the packs calling at the cure for its beats and Quiet the Ridges, and "taken alive"
+  for the director's grey choice ([EPILOGUE.md](EPILOGUE.md#the-closing-work)).
 
 ## The great one
 
@@ -1374,7 +1375,8 @@ What's left of the design, in [designs/INFECTED.md](../designs/INFECTED.md) and
   border moving the ranges, hunting grounds following the prey, stragglers, snow tracks).
 - **The people's rest:** the Haven's warnings about day parties in the fields; trucks taken on any road
   a trail crosses; the jobs' rest (Clear the Trail on a truck road and the others the design lists);
-  the questline hooks still to write; the epilogue reading the beats; Lead Them Away's crowd as a pack
+  the questline hooks still to write; the epilogue's beats from the other tribe beats (brought home,
+  culled, burned out) and the factions' jobs on the ridges; Lead Them Away's crowd as a pack
   on the move.
 - **The finale's live tissue's rest** ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)):
   the great one's +3, best first within reach, the same pack never twice in 6 season days, and

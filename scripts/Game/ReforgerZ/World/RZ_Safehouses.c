@@ -143,6 +143,8 @@ class RZ_SafehouseSave
 	int died;
 	float straggle;
 	ref array<ref RZ_Note> notes = {};
+	int seasonDied;
+	int seasonRescued;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -159,6 +161,8 @@ class RZ_Safehouse
 	bool m_bShort;		// the last upkeep ran short: the safehouse is under pressure
 	int m_iLost;		// people gone lately for any reason (left hungry, moved, taken, dead), fading by one an hour (story arcs)
 	int m_iDied;		// of those, the dead (RemoveDead), fading the same way
+	int m_iSeasonDied;		// the dead this season (the epilogue's candles; never fades)
+	int m_iSeasonRescued;	// rescued in this season
 	float m_fLostFade;
 	float m_fStraggleTimer;	// stragglers: one more person every few hours while fed
 	ref array<ref RZ_Note> m_aNotes = {};	// the notice board, oldest first (RZ_NoticeBoard)
@@ -267,6 +271,8 @@ class RZ_Safehouse
 		s.lost = m_iLost;
 		s.died = m_iDied;
 		s.straggle = m_fStraggleTimer;
+		s.seasonDied = m_iSeasonDied;
+		s.seasonRescued = m_iSeasonRescued;
 		foreach (RZ_Note n : m_aNotes)
 		{
 			s.notes.Insert(n);
@@ -290,6 +296,8 @@ class RZ_Safehouse
 		h.m_iLost = Math.Max(0, s.lost);
 		h.m_iDied = Math.Max(0, s.died);
 		h.m_fStraggleTimer = Math.Max(0, s.straggle);
+		h.m_iSeasonDied = Math.Max(0, s.seasonDied);
+		h.m_iSeasonRescued = Math.Max(0, s.seasonRescued);
 		if (s.notes)
 		{
 			foreach (RZ_Note n : s.notes)
@@ -904,7 +912,10 @@ class RZ_Safehouses
 			m_GM.GetHeadlines().OnRescue(joined, "the safehouse in " + h.m_sName);
 
 		if (h && joined > 0)
+		{
 			RZ_WorldWriters.Rescued(h.m_vPos, joined, rescuers);
+			h.m_iSeasonRescued = h.m_iSeasonRescued + joined;
+		}
 
 		// The hall of fame counts everyone brought in, safehouse or road
 		if (m_GM.GetHall() && rescuers)
@@ -949,6 +960,7 @@ class RZ_Safehouses
 		int dead = Math.Min(count, h.m_iPopulation);
 		RemovePopulation(idx, dead);
 		h.m_iDied = h.m_iDied + dead;
+		h.m_iSeasonDied = h.m_iSeasonDied + dead;
 		if (dead > 0)
 			RZ_ToneGuard.Death(h.m_vPos, RZ_EFaction.SURVIVORS, true);
 	}
@@ -1474,6 +1486,14 @@ class RZ_Safehouses
 			string fault = m_GM.GetErrands().GetFaults().HouseLine(m_aSafehouses.Find(h));
 			if (!fault.IsEmpty())
 				mood += "\n" + fault;
+		}
+
+		// The epilogue week: a resident's line about the season, in the first person
+		if (RZ_Epilogue.Get())
+		{
+			string week = RZ_Epilogue.Get().ResidentLine(m_aSafehouses.Find(h));
+			if (!week.IsEmpty())
+				mood = week;
 		}
 
 		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("%1 people live here (%2). Food for %3 more upkeeps.\nThey have %4.\n%5",

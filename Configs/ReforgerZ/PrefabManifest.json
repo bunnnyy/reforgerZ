@@ -603,6 +603,69 @@
    "notes": ""
   },
   {
+   "id": "EpilogueBoard",
+   "kind": "create",
+   "system": "Epilogue",
+   "path": "Prefabs/ReforgerZ/World/RZ_EpilogueBoard.et",
+   "basePrefab": "",
+   "baseFind": "SignBoard",
+   "baseHint": "a free-standing board or sign on posts (a notice board, a road sign); confirm the name in Workbench",
+   "components": [],
+   "actions": [],
+   "slots": ["m_EpilogueSettings.m_sBoardPrefab"],
+   "listSlot": false,
+   "slotLabel": "Director > Epilogue > Board prefab",
+   "required": false,
+   "minimum": false,
+   "use": "look only: the epilogue's marks (the stand board, the Names board, the price board, notices, posters, graves) on the verge; without it they're text only, an approach line",
+   "notes": ""
+  },
+  {
+   "id": "EpilogueCandle",
+   "kind": "create",
+   "system": "Epilogue",
+   "path": "Prefabs/ReforgerZ/World/RZ_EpilogueCandle.et",
+   "basePrefab": "",
+   "baseFind": "Candle",
+   "baseHint": "a candle or a jar lantern on the ground; confirm the name in Workbench",
+   "components": [],
+   "actions": [],
+   "slots": ["m_EpilogueSettings.m_sCandlePrefab"],
+   "listSlot": false,
+   "slotLabel": "Director > Epilogue > Candle prefab",
+   "required": false,
+   "minimum": false,
+   "use": "look only: a town taken back after the cure, the candles on a safehouse step (else the board, else text)",
+   "notes": ""
+  },
+  {
+   "id": "EpilogueTable",
+   "kind": "create",
+   "system": "Epilogue",
+   "path": "Prefabs/ReforgerZ/World/RZ_EpilogueTable.et",
+   "basePrefab": "",
+   "baseFind": "Table",
+   "baseHint": "a folding or trestle table (or a crate) with the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, an RplComponent) and its read and four choice actions",
+   "components": [
+    {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
+    {"cls": "RZ_ClueComponent", "values": [], "name": ""}
+   ],
+   "actions": [
+    {"cls": "RZ_ReadClueAction", "values": [], "name": "Read"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=0"], "name": "Choice 0"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=1"], "name": "Choice 1"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=2"], "name": "Choice 2"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=3"], "name": "Choice 3"}
+   ],
+   "slots": ["m_EpilogueSettings.m_sTablePrefab"],
+   "listSlot": false,
+   "slotLabel": "Director > Epilogue > Table prefab",
+   "required": false,
+   "minimum": false,
+   "use": "the tables, boards and crates players use at the epilogue's places (the dose, the Names board, the nail, the book); without it Puzzles > Object stands in",
+   "notes": ""
+  },
+  {
    "id": "MorseLamp",
    "kind": "create",
    "system": "Puzzles",
@@ -1950,7 +2013,11 @@
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=7"], "name": "Leave a note on the board"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=6"], "name": "Ask about the roads"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=6"], "name": "Ask about the roads"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=4"], "name": "Ask about the season"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=5"], "name": "Ask where to look"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=6"], "name": "Answer: the usual way"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=7"], "name": "Answer: the other way"}
    ],
    "slots": ["m_sQuartermasterHaven"],
    "listSlot": false,
@@ -1989,7 +2056,11 @@
      ],
      "name": "Buy"
     },
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=7"], "name": "Contact board"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=7"], "name": "Contact board"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=4"], "name": "Ask about the season"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=5"], "name": "Ask where to look"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=6"], "name": "Answer: the usual way"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=7"], "name": "Answer: the other way"}
    ],
    "slots": ["m_sQuartermasterBastion"],
    "listSlot": false,
@@ -2025,7 +2096,11 @@
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=8"], "name": "Map of the crews"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=9"], "name": "Tag frequencies"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=9"], "name": "Tag frequencies"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=4"], "name": "Ask about the season"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=5"], "name": "Ask where to look"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=6"], "name": "Answer: the usual way"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=7"], "name": "Answer: the other way"}
    ],
    "slots": ["m_sQuartermasterRedHand"],
    "listSlot": false,
@@ -2067,7 +2142,11 @@
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=10"], "name": "Range map"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=11"], "name": "Call box"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=11"], "name": "Call box"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=4"], "name": "Ask about the season"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=5"], "name": "Ask where to look"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=6"], "name": "Answer: the usual way"},
+    {"cls": "RZ_LeaderAction", "values": ["m_eKind=7"], "name": "Answer: the other way"}
    ],
    "slots": ["m_sQuartermasterHalcyon"],
    "listSlot": false,
@@ -4236,7 +4315,11 @@
    "baseFind": "",
    "baseHint": "a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg",
    "components": [{"cls": "RZ_NotebookGadgetComponent", "values": [], "name": ""}],
-   "actions": [{"cls": "RZ_DeadNameAction", "values": [], "name": "If I die: say my name, or don't"}],
+   "actions": [
+    {"cls": "RZ_DeadNameAction", "values": [], "name": "If I die: say my name, or don't"},
+    {"cls": "RZ_EpiNotebookAction", "values": ["m_eKind=0"], "name": "The season, as the Zone tells it"},
+    {"cls": "RZ_EpiNotebookAction", "values": ["m_eKind=1"], "name": "My name in the world"}
+   ],
    "slots": ["m_UISettings.m_sNotebookPrefab"],
    "listSlot": false,
    "slotLabel": "UI > Notebook prefab",
@@ -4766,6 +4849,12 @@
    "covers": "**Enabled** (on; needs Questlines on; off: research runs to 100 and the cure goes to the most season Fame), route worth (0.25), floor (150), ceiling (0: none), soft line (1.1), batch real hours (12) and play hours (2), seal call minutes (60), seal hour (-1: off), take seconds (90), take per point (5), take floor (45), overtime (180 s), clean room radius (10 m), bay seconds (120), **Contest** (Auto, Force, Tally), Coat Run, Take the Lab, pacts (on), groups at the lab (2), fight memory days (2), active lock days (2) and hours (2), Fame leader rule (on) ([FINALE.md](FINALE.md))"
   },
   {
+   "category": "Director",
+   "object": "Epilogue",
+   "field": "m_EpilogueSettings",
+   "covers": "**Enabled** (on), **Names** (Full, Titles only, Off), notables (12), towns (8), since-the-cure beats (20), the reel (on), **The world settles** (on), **Closing work** (on; off below 24 epilogue hours), **Walk Out** (on), empty server ends early (on), archive last entries (off), people per scene (6), **Test scale** (1; 0.008 runs a week in about 81 minutes), and the optional board, candle and table prefabs ([EPILOGUE.md](EPILOGUE.md))"
+  },
+  {
    "category": "Zombies",
    "object": "Zombie settings",
    "field": "m_ZombieSettings",
@@ -5024,6 +5113,7 @@
     "m_sRuleSets": "",
     "m_eWipeMode": "1",
     "m_fEpilogueHours": "168",
+    "m_fMinEpilogueHours": "56",
     "m_iWipeWeeks": "10",
     "m_fWarnHours": "24",
     "m_bHallOfFame": "1"
@@ -5165,6 +5255,27 @@
     "m_fActiveDays": "2",
     "m_fActiveHours": "2",
     "m_bFameLeaderRule": "1"
+   }
+  },
+  {
+   "field": "m_EpilogueSettings",
+   "category": "Director",
+   "label": "Epilogue",
+   "cls": "RZ_EpilogueSettings",
+   "defaults": {
+    "m_bEnabled": "1",
+    "m_eNames": "0",
+    "m_iNotables": "12",
+    "m_iTowns": "8",
+    "m_iSinceBeats": "20",
+    "m_bReel": "1",
+    "m_bWorldSettles": "1",
+    "m_bClosingWork": "1",
+    "m_bWalkOut": "1",
+    "m_bEmptyEndsEarly": "1",
+    "m_bArchiveLastEntries": "0",
+    "m_iScenePeople": "6",
+    "m_fTestScale": "1"
    }
   },
   {

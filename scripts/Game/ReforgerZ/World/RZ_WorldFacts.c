@@ -336,6 +336,25 @@ class RZ_WorldFacts
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! No cure, and an After-weeks wipe is under Season > Warn hours away (the Unsigned last day).
+	//! IsEpilogue stays false: research and the cure can still come.
+	bool IsLastDay()
+	{
+		if (IsCured() || !m_GM || !m_GM.GetSeasons())
+			return false;
+
+		return m_GM.GetSeasons().IsLastDay();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue with Epilogue > The world settles: no holding changes hands (docs/EPILOGUE.md).
+	bool HoldingsFrozen()
+	{
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		return epi && epi.HoldingsFrozen();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The final stand is running at the lab.
 	bool IsFinalStand()
 	{

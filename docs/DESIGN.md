@@ -440,7 +440,10 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
   lifted. Remain where you are. Processing will begin at the road checkpoints."*), once per
   approach. The checkpoint barriers and their guards stay: the gates open with the wipe. The line
   isn't open either: whoever walks into the kill zone, or up to a barrier, is turned back to the
-  warning zone, 40 m clear of it (a voice from past the line, no shot, no drone). The Perimeter
+  warning zone, 40 m clear of it (a voice from past the line, no shot, no drone). The one exception
+  is the Walk Out: in the epilogue's last day (processing), at the north road's barrier
+  (`day2.checkpoint`) only, an unarmed person hears *"Name?"* instead and may walk out for good
+  ([EPILOGUE.md](EPILOGUE.md#the-closing-work)). The Perimeter
   missions, Learning the Drones, the basement spawn scene and the perimeter tip stop with it
   (`RZ_WorldFacts.PerimeterSealed`); one running when the cure comes out is called off.
 
@@ -1458,6 +1461,8 @@ holds the shared engine's [world memory](#world-memory).
 |---|---|---|
 | The cure is out | `IsCured()` | cure research |
 | The season is over and waits for its wipe | `IsEpilogue()` | the cure, or the wipe came due ([Seasons](#seasons)) |
+| No cure, and the wipe is under Warn hours away (the Unsigned last day) | `IsLastDay()` | the wipe cycle ([EPILOGUE.md](EPILOGUE.md#edge-cases)) |
+| The epilogue week holds every holding where it is | `HoldingsFrozen()` | the epilogue ([EPILOGUE.md](EPILOGUE.md#the-world-settles)) |
 | The final stand is running; research (what the lab has worked through) | `IsFinalStand()`, `CurePercent()` | cure research |
 | Research waiting in the lab's backlog; the backlog is full; research waits at 90% for a finale | `LabWaiting()`, `LabFull()`, `AtFinaleGate()` | cure research |
 | Outbreak stage; how much of Bastion is still out | `Stage()`, `BastionPresence()` (0–1) | the Director's stage table |
@@ -1787,7 +1792,8 @@ until used up (`DrawTruth`, `FoundTruth`, `UseTruth`). 64 at most.
 **Season marks**: a town log entry of salience 3 or more puts a mark on the verge of the road into
 its town ([Marks](#marks), the season pool), with the entry's line; with no **Shared > Season mark
 prefab** it's text only, said once a session to a player passing within 40 m. Marks aren't saved:
-they're put back from the log at start. The epilogue will read the log and the records. Log lines:
+they're put back from the log at start. The epilogue reads the log and the records (its town and
+side-story beats, [EPILOGUE.md](EPILOGUE.md#beats)). Log lines:
 `World memory: reason <key> (<subject>) <text>`, `World memory: town <idx> <kind> <text>`.
 
 ### Lies and witnesses
@@ -1875,7 +1881,7 @@ is logged (`Budget: <lane> morale <n> for <faction> clipped to <n>`) and becomes
 | Majors | ±20 per faction a season; ±15 per major; ±10 a call | ±8; ±5 per major; ±5 a call | the majors ([The majors](#the-majors)) |
 | Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (planned) |
 | The finale | ±10 per faction, never clipped by the majors | ±5 per faction | the finale's terms ([FINALE.md](FINALE.md#the-release-terms-and-deciders)) |
-| The epilogue | ±5 per faction, inside the majors lane | — | the epilogue week (planned) |
+| The epilogue | ±5 per faction, inside the majors lane | — | the grey choices and the Last Broadcast ([EPILOGUE.md](EPILOGUE.md#the-grey-choices)) |
 
 Also kept: **the seat ledger** (contracts never take a leader's loyalty below 30, wired today; a
 major swings at most two seats and a faction three a season, never a stronghold), the one outpost a
@@ -1890,7 +1896,9 @@ dusk window (18:30–20:30) entered with a player online. One set piece an eveni
 `Hold(key, pos)` holds the evening until `Release(key)`; a set piece that finds it held waits for the
 next free one, and after two waits (**Shared > Set piece waits**) `MustRun` says it runs at the next
 free hour. Errands deal nothing within 600 m of the set piece holding the evening (`IsQuietAt`).
-Saved with the season. The majors' set pieces book it ([The majors](#the-majors)); the epilogue's pieces will (planned).
+Saved with the season. The majors' set pieces book it ([The majors](#the-majors)), their codas in the
+epilogue week too; the epilogue's own pieces (the supper reading, the 20:30 watch) are planned
+([designs/EPILOGUE.md](../designs/EPILOGUE.md)).
 
 ## Town memory
 
@@ -2409,7 +2417,9 @@ research missions (data, readings, live specimens) ─────────�
   ([World facts](#world-facts)). Work that stops with the cure and is running when it comes out is
   called off at once, with no pay and no penalty. The Perimeter stands down
   ([The Perimeter](#the-perimeter)); the broadcast stops its loop, and a first spawn and the
-  wind-up radio give the new order instead.
+  wind-up radio give the new order instead. The week that follows (the record, beats, the dose
+  outlets, the queue at the north road, the closing work, the Walk Out) is
+  [EPILOGUE.md](EPILOGUE.md).
 - **The season's end.** When the final stand is won, **whoever holds the clean room controls the
   cure** ([FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)): the faction whose rules apply
   in full is the controller's (the Independent's only by its "one side" terms). **Season Fame** (the
@@ -2622,8 +2632,14 @@ hand: **Wipe on start**, or delete `state.json`). Only *On cure* is on by defaul
 modes stay available for admins who want a fixed calendar, and are never used unless picked.
 
 - **On cure:** the world stays open for an **epilogue** of one week, 168 real hours (Aftermath, with the
-  ending, the line stood down) after the final stand is won. Its warnings and its last line speak
-  of processing at the checkpoints; the gates open with the wipe.
+  ending, the line stood down) after the final stand is won ([EPILOGUE.md](EPILOGUE.md)). Its warnings
+  and its last line speak of processing at the checkpoints; the gates open with the wipe, except the
+  north road's in its last day (the Walk Out). **Epilogue > Test scale** shortens the week with
+  every other epilogue clock.
+- **A late cure:** a cure under **Minimum epilogue hours** (56) before an After-weeks wipe pushes
+  that wipe back to the cure plus the minimum, and says so (also in *whichever comes first*).
+- **The Unsigned last day:** no cure and the wipe under **Warn hours** away: `IsLastDay()`; the
+  epilogue's record is built without a route ([EPILOGUE.md](EPILOGUE.md#edge-cases)).
 - **After weeks** (off unless picked): 10 real weeks after the season started (**Weeks**), cure or
   not; a season to the cure takes six or seven weeks with 5 regulars ([Season pacing](#season-pacing)).
   With no cure, the season record says nobody won, and the next season gets no winner's rules.
@@ -2659,7 +2675,10 @@ Saved to `hall_of_fame.json`, which no wipe touches. **Season > Hall of fame** (
 
 It's kept for **this season** and **all time**, plus a few lines for each of the last 10 seasons.
 With the finale the season's lines open with who controls the cure and the season's Fame leader:
-*"The cure: the Haven, by force. The Zone's Fame: Bastion, 1640."*
+*"The cure: the Haven, by force. The Zone's Fame: Bastion, 1640."* **The records freeze at the
+cure**: the epilogue week adds only lines to the season block, by fixed rules
+([EPILOGUE.md](EPILOGUE.md#the-hall-of-fame-and-the-season-block)). `/anonymous` keeps a player's
+name out of it across seasons ([EPILOGUE.md](EPILOGUE.md#names)).
 Players get it on their first spawn of a session, after the news, and the notebook's Hall of
 fame tab shows it in full ([UI.md](UI.md#the-notebook)).
 
@@ -2693,7 +2712,8 @@ supply stock, faction life, the Long Table, the power grid and radio station, st
 headlines, world interactions, the crawlers' ledgers, stir and kill sites, the time of day
 ([The clock](#the-clock)), the world facts (the season's seed, flags, canon, gossip and world
 memory; claims aren't saved) and the shared engine (waiting callbacks, the season budget, the
-set-piece calendar, the season's deeds; notice lanes and marks aren't saved). A save from another map is ignored. A profile that never spawned and holds nothing
+set-piece calendar, the season's deeds; notice lanes and marks aren't saved), and the epilogue week
+(its record, beats, closing work and outlet stocks). A save from another map is ignored. A profile that never spawned and holds nothing
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
 that is never stored, so no junk `local_` profiles pile up. Player bodies, inventories and vehicles use
