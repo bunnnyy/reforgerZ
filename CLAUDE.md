@@ -98,6 +98,8 @@ Write conservatively:
   dedicated server (Linux in the cloud; on the author's PC in Git Bash, see `docs/PC_SETUP.md`) and
   must exit 0 with no ReforgerZ errors or warnings.
 - Script folders are lowercase `scripts/` (the Linux server is case-sensitive).
+- Run `python3 tools/voice_lint.py` after changing player text: it must print `voice_lint: OK`
+  (the text lint; see `docs/WORKBENCH_SETUP.md`, "Text lint").
 - After changes to missions or cross-system logic, run `tools/runtime_test/run.sh` (60–90 min)
   and fix any script exception it reports.
 

@@ -121,7 +121,8 @@ installed and what's missing.
 5. **Python 3:** there only if `py -3 -c 'import sys; print(sys.version)'` (or the same with `python`)
    prints 3.x. "Python was not found" is Windows' Microsoft Store shortcut, not Python. It's needed
    by `tools/prefab_manifest.py`, `tools/pacing_sim.py`, `tools/tribe_sim.py`, `tools/icon_atlas.py`,
-   the runtime test and the zombie lab. `tools/icon_atlas.py` also needs **Pillow**: it's there if
+   `tools/strings_inventory.py`, `tools/voice_lint.py` (the text lint), the runtime test and the
+   zombie lab. `tools/icon_atlas.py` also needs **Pillow**: it's there if
    `py -c 'import PIL; print(PIL.__version__)'` prints a version.
 6. **Workshop mods** the game has downloaded: folders named like `BaconZombies_622120A5448725E3`
    under `<Documents>/My Games/ArmaReforger/addons`. Which mods ReforgerZ needs is in
@@ -172,6 +173,9 @@ applies:
 ```bash
 SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" tools/land_survey/run.sh
 ```
+
+The text lint needs only Python and takes a second
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`.
 
 Run them as [long commands](#how-claude-drives-the-pc). On Windows the server doesn't quit after
 compiling, so the script's `timeout` stops it: the compile check always takes about 3 minutes.

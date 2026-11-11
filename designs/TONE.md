@@ -794,44 +794,15 @@ Red Hand's tips, a crew with a stopwatch). But:
 |---|---|---|---|
 | **0. The guide** | WRITING.md (section 1); DESIGN.md's "Grey choices"; the roadmap; every link in section 1 | Docs, `CLAUDE.md`, `README.md`, code comments | The link check passes; the Doc map lists exactly `docs/` |
 | **1. Built contradictions** (text only) | The Red Hand's meal aside (5.5). `HintAfterCure`'s Halcyon line on Bastion: only when Bastion didn't control the cure, plus a Bastion-controlled line, and the Haven's "The scientists did it" only when Halcyon did. The Turned Player brief's quip. Halcyon's "Habit." | `Factions/RZ_FactionVoice.c`, `Factions/RZ_LeaderVoice.c`, `Missions/Events/RZ_WorldEvents.c`, and any doc that quotes them | `tools/compile_check.sh` exits 0; the docs match |
-| **2. Inventory and lint** | See below the table | `tools/` | The lint exits 0 on today's tree and fails on a planted bad line |
+| **2. Inventory and lint** | Built: `tools/strings_inventory.py`, `tools/voice_lint.py` and its baseline ([WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint)). Left for later phases: the lint learns reputation's `FillFor` tokens and the voice bank's context tokens (7) when they're built | `tools/` | Done |
 | **3. The voice bank** | Bank, `SeasonMood()`, temper, grief, joke memory, picker. Move the top-ranked pools (3.13) and tag their registers. The broadcast reads the mood and gains its two lines. Loudspeakers, the wipe line and guidance tips get the lint and a review, but stay out of the bank (few lines, or their own attribute class). `tools/voice_sim.py` | `Factions/RZ_FactionVoice.c`, `Factions/RZ_LeaderVoice.c`, `Factions/RZ_FactionLife.c` (chatter, secure channels), `Guidance/RZ_GuidanceText.c` (newcomer open channels), `World/RZ_Wanderers.c` (road news), `World/RZ_Safehouses.c`, `Director/RZ_Broadcast.c`; review only: `World/RZ_Perimeter.c`, `Core/RZ_Seasons.c`, `Guidance/RZ_GuidanceTips.c` | The simulator shows each mood's share inside 3.2 and no repeats inside the windows at the fastest cadence; the compile check passes. WRITING.md and DESIGN.md gain the mood, temper, grief and joke memory |
 | **4. Choice missions** | The grey test on every choice. Each cost line gets a world change behind it: a flag plus at least one reader. The three-beat outcome and system line. Who can choose; the clever way closes the honest one. Labels shortened. Honour Among Thieves' "let him keep it" becomes a branch. Then: Local Law, Shut the Door, The Ledger, Requisition, Protection Racket, Struck Off, No Reply, the three hard edges, Patients Not Samples, The Notebook, Private Collection, The Silent Village, The Witness, Rein In | `Missions/`, `Puzzles/` | Every choice passes 4.1; MISSIONS.md's Result text matches |
 | **5. Givers who lie** | About 12 briefs, each with 2–3 omissions plus an honest version, picked once a season: Learning the Drones, A Quiet Arrangement, Requisition, Names for Bastion, Off-Book Requisition, Rifles for Sale, The Real Orders, Unsanctioned Trial, Private Collection, Sell the Formula, The Pit's Debtor, Debt Collection. For each: the truth-finding approach open to everyone, the checks, the outcome lines, and the morale cap | Missions | No gotchas (4.3); no tag gives a lie away |
 | **6. State variants** | Majors' running jokes (3.10). Race lines and pitches. Route lines face to face. Lost-route and unsided lines. Saying the word and crew names. Disguise look lines. Epilogue lines with [EPILOGUE.md](EPILOGUE.md), for every ending including the slow cure, handed over and no cure, and the plain lines for a week. Every after-cure line made ending-aware | Voice bank | Every variant meets the minimum pool size (3.12) |
 | **7. Check** | `voice_sim.py` over three scripted seasons: season speed 1, season speed 2, and a gate that runs to the slow finish. The runtime test with the voice log on and Voice > Force mood cycling the moods, to catch script exceptions and confirm the in-game picker matches the simulator. The author reads one player's radio log for an hour | `tools/`, `tools/runtime_test/` | No exceptions; the shares and repeats in the simulator are inside the targets |
 
-**Phase 2 in detail.**
-- **`tools/strings_inventory.py`** lists every literal that reaches `NotifyPlayer`, `NotifyAll`, `Headline`,
-  `SpreadRumour`, `AddRumour`, `Changed`, briefs, `SpawnPerson`/`AddClue` labels and choices, and the guidance tip
-  fields. For each it gives:
-  - file:line;
-  - the channel, guessed from the call;
-  - the faction, guessed from the folder;
-  - repeats;
-  - a register guess, which the author confirms only for the pools being moved.
-- **`tools/voice_lint.py`** has per-kind limits:
-  - radio, hints, leader lines, rumours and headlines: 200 characters or fewer;
-  - briefs: a warning over 500;
-  - labels: an action part of 40 or fewer, and 64 or fewer overall.
-
-  It checks:
-  - `!` only in Red Hand lines and alarms;
-  - `%1`–`%9` only;
-  - tokens against the Fill, `FillFor` and bank tables;
-  - the never list;
-  - the Long Table word list in ambient pools;
-  - the infected's word list ("alpha", "tribe" and "crawler" out of player text; "strays" never for the infected);
-  - pronouns beside a seeded-person token;
-  - information kinds keep their tokens;
-  - ambient notices never match a clue;
-  - seeded names against LORE's named people;
-  - no punchline is used twice.
-- **`tools/voice_lint_baseline.txt`** holds today's findings (file plus a hash of the literal). The lint fails only on
-  new or changed text, and each phase shrinks the baseline.
-
 **Order.**
-- Phases 0–2 can land now.
+- Phase 0 can land now; phase 2 is built.
 - Phase 3 needs code.
 - In Phase 4, the label, outcome and eligibility fixes can start after Phase 2. New options wait for the mission-style
   and dialogue designs.
@@ -898,9 +869,8 @@ Red Hand's tips, a crew with a stopwatch). But:
 - **Lie variants:** each lying brief has a set of 2 to 3 omissions plus an honest version, picked once a season with
   `CanonPick`, kept in the one lie store. Making a caught lie public costs 1 morale, at most once per faction per real
   day and once per lie per season; an outpost leader caught loses 5 loyalty. No memory flag for catching a lie.
-- **Offline tools**, none run in the game: `tools/strings_inventory.py`; `tools/voice_lint.py` with
-  `tools/voice_lint_baseline.txt`; `tools/voice_sim.py` (parses `RZ_VoiceDefaults.c` and replays scripted seasons at
-  each guidance cadence, in the manner of `tools/pacing_sim.py`, reporting joke share by mood, repeats per window and
+- **Offline tools**, none run in the game (the inventory and the lint are built): `tools/voice_sim.py` (parses
+  `RZ_VoiceDefaults.c` and replays scripted seasons at each guidance cadence, in the manner of `tools/pacing_sim.py`, reporting joke share by mood, repeats per window and
   grief skips).
 - **Debug settings**, off by default: the voice log (`[RZ] voice: <channel> <faction> <register> <id> mood=<mood>
   listener=<identity or all>`) and **Voice > Force mood**, so the runtime test can cycle moods it wouldn't reach in

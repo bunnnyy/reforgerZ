@@ -187,6 +187,11 @@ tools/tribe_sim.py
                  simulates the infected tribes (planned) over a season on that pacing, on the
                  measured wild land of Arland, Everon and Cain and a Chernarus-size map, 2, 5 and
                  10 players
+tools/strings_inventory.py
+                 lists every line of player text in the scripts, with its channel and faction
+tools/voice_lint.py, tools/voice_lint_baseline.txt
+                 the text lint: checks player text against the writing rules; the baseline
+                 holds today's findings, so only new or changed text fails
 tools/compile_check.sh
                  compiles the scripts on the dedicated server, no Workbench needed (Linux,
                  or Windows in Git Bash)

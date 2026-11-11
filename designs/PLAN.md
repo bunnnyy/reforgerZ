@@ -635,7 +635,7 @@ out-of-sight spawn (strangers, day parties); road width; decals; Bacon Zombies f
 yes, always at a run).
 
 **Docs and tools in step 0:** `tools/strings_inventory.py` and one text lint with a baseline file, so it passes on
-today's tree. `docs/WRITING.md` (the writing guide moved out of LORE.md, every link fixed) is added in the same
+today's tree: built ([WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#text-lint)). `docs/WRITING.md` (the writing guide moved out of LORE.md, every link fixed) is added in the same
 commit as the lint, not before (decision 16).
 
 *Playable: today's game, fixed.*

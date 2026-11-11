@@ -1139,6 +1139,31 @@ What it can't do:
 | No behaviour is tested | It only compiles. Nothing runs until there's a world with the game mode in it |
 | Folder names must be lowercase `scripts/` | The Linux server is case-sensitive and only looks there. Windows doesn't care, so keep it lowercase for Linux-hosted servers |
 
+### Text lint
+
+`tools/voice_lint.py` checks every line of player text in the scripts against the writing rules
+(lengths by channel, `!`, `%1`–`%9`, tokens, the never list, the Long Table and infected word lists,
+pronouns for seeded people, information lines keeping their token, clues, seeded names, repeated
+punchlines). It reads the list that `tools/strings_inventory.py` makes. Python 3 only, no server,
+about a second. Run it before every commit that changes player text; it must print `voice_lint: OK`.
+
+```bash
+python3 tools/voice_lint.py                    # new findings only; exit 1 if any
+python3 tools/voice_lint.py --all              # every finding, the baseline's too
+python3 tools/voice_lint.py --self-test        # plants one bad line per check; each must be caught
+python3 tools/strings_inventory.py --summary   # how much text there is, by channel and faction
+python3 tools/strings_inventory.py --channel radio
+```
+
+`tools/voice_lint_baseline.txt` holds today's findings (the check, the file and a hash of the line),
+so the lint fails only on new or changed text. Fixing a line leaves a stale entry, which the lint
+reports; `--update-baseline` rewrites the file from what's found now. Don't regenerate it to get a
+new finding through: fix the line.
+
+| What it shows | What it can't |
+|---|---|
+| Text that breaks a rule a script can check, in literals the inventory finds | Whether a line is good. Text built from pieces (`"Talk to " + name`) is checked piece by piece. Channels and factions are guessed from the call, the folder and the nearest `case RZ_EFaction.X:` |
+
 ### Runtime test without Workbench
 
 `tools/runtime_test/run.sh` runs the game mode on the same server, in a sub-scene of Arland with
