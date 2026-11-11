@@ -103,12 +103,13 @@ nothing until its owner locks to that route; then it's a card played once, in th
 | **Standing** | One price a third lower, or one leader's check one step easier |
 
 Assets for other routes go dormant at the lock and lapse at the cure. No asset closes a route. Where
-they come from (`RZ_StoryKit.Record` hands every story record to `RZ_FinaleAssets.FromRecord`):
+they come from (`RZ_StoryKit.Record` hands every story record to `RZ_FinaleAssets.FromRecord`; one-choice
+jobs and a few others tag theirs by hand through `RZ_RouteAssets.Add`, [DESIGN.md](DESIGN.md#story-blocks)):
 
 | Outcome (record) | Asset |
 |---|---|
 | The black box burnt in the stove (`crash.box` stove) | Standing, Bastion |
-| The manifest read on the open channel (`crash.box` redhand:inventory) | Proof, Independent |
+| The manifest read on the open channel (`crash.box` aired) | Proof, Independent |
 | The box to the fence (`crash.box` redhand) / to Bastion (`crash.box` bastion) | Proof, the Red Hand / Bastion |
 | A trapped family to a house (`trapped.family` house, hungry) / to Bastion | Ally, the Haven / Bastion |
 | A deserter the Haven hid (`struck.fate` haven) / back on the roster / let go | Ally, the Haven / Standing, Bastion / Ally, Independent |
@@ -544,8 +545,8 @@ betrayals. Nobody is killed off-screen, and consent is a check in every draw and
 *Simplified:* the commit node needs **Dialogue > Trees** (off by default): with Trees off the desks
 take the names; the Independent commits at the Doctor or the Courier on the road, not on the open
 channel (radio speakers aren't built); `CanSideWith` is the finale's own (unless Hunted, owed, or the
-price door); assets come from the story records listed above (the other missions' leans aren't
-tagged yet), and an Ally doesn't open doors or carry items; the drain is immediate, not 20 s; a
+price door); assets come from the story records listed above and the jobs that tag them by hand (the other
+missions' leans aren't tagged yet), and an Ally doesn't open doors or carry items; the drain is immediate, not 20 s; a
 subject killed on-screen is blamed on the nearest player, not read from the kill; the deal needs no
 gate meeting; the clean room is a land point (a named child entity on the lab prefab is a VERIFY);
 unconscious players count while alive (VERIFY); Contest Auto plays as Force (reading the player-damage

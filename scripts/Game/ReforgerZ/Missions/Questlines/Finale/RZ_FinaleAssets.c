@@ -7,7 +7,8 @@
 //!   STANDING  one price a third lower, or one leader's check one step easier
 //! Assets for other routes go dormant at the lock and lapse at the cure. No asset closes a route.
 //! The missions' side: RZ_StoryKit.Record hands every story record here (FromRecord), and the table
-//! below says which outcomes lean where. Saved with the finale.
+//! below says which outcomes lean where; one-choice jobs and a few others tag theirs by hand
+//! (RZ_RouteAssets.Add). Saved with the finale.
 
 //------------------------------------------------------------------------------------------------
 class RZ_FinaleAssetsSave
@@ -182,7 +183,7 @@ class RZ_FinaleAssets
 				r = RZ_CureFinale.BASTION;		// the black box burnt in the stove
 				kind = STANDING;
 			}
-			else if (value == "redhand:inventory")
+			else if (value.StartsWith("aired"))
 			{
 				r = RZ_CureFinale.INDEP;		// the manifest read on the open channel
 				kind = PROOF;

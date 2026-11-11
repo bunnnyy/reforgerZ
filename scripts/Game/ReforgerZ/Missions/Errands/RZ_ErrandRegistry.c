@@ -15,6 +15,10 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Routine_Sandbags());
 		list.Insert(new RZ_Routine_RentsDue());
 		list.Insert(new RZ_Routine_TheNumber());
+		// The routines phase 8 added (RZ_ErrandRoutinesLate.c)
+		list.Insert(new RZ_Routine_HisLighter());
+		list.Insert(new RZ_Routine_Market());
+		list.Insert(new RZ_Routine_Receiver());
 
 		// The house
 		list.Insert(new RZ_Errand_SleeveDown());
@@ -66,6 +70,30 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_JarRun());
 		list.Insert(new RZ_Errand_ShoesInARow());
 		list.Insert(new RZ_Errand_NotPastChapel());
+		// Phase 8: to about 60 cards, every one with a live reason
+		list.Insert(new RZ_Errand_Notebook31());
+		list.Insert(new RZ_Errand_Paint());
+		list.Insert(new RZ_Errand_WrongWayRound());
+		list.Insert(new RZ_Errand_SpotTheTells());
+		list.Insert(new RZ_Errand_MasksOff());
+		list.Insert(new RZ_Errand_Civvies());
+		list.Insert(new RZ_Errand_LaundryDay());
+		list.Insert(new RZ_Errand_OtherHalf());
+		list.Insert(new RZ_Errand_TheDrawing());
+		list.Insert(new RZ_Errand_IsSheGone());
+		list.Insert(new RZ_Errand_BoardedUp());
+		list.Insert(new RZ_Errand_OldHabits());
+		list.Insert(new RZ_Errand_NamesOnTheCall());
+		list.Insert(new RZ_Errand_ChalkOnTheDoor());
+		list.Insert(new RZ_Errand_AfterTheNoise());
+		list.Insert(new RZ_Errand_LastOrders());
+		list.Insert(new RZ_Errand_NewNumber());
+		list.Insert(new RZ_Errand_LastApples());
+		// The margin cards (the majors' waits) and the lock cards (the finale's lock)
+		list.Insert(new RZ_Errand_CleanGlasses());
+		list.Insert(new RZ_Errand_CountForTheSitting());
+		list.Insert(new RZ_Errand_HandToHand());
+		list.Insert(new RZ_Errand_WithSide());
 	}
 }
 

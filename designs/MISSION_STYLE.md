@@ -6,7 +6,7 @@ errands and the Tier 0 audit's fallout lines. Built and described in
 [docs/DESIGN.md](../docs/DESIGN.md#story-blocks): the story kit, who took part and who
 decides (the hold, Object, Stand with), who benefits with `RZ_Mission_Choice` rebuilt on it (the
 switch-pay fix), the truth deck, world records and their writers, the reason lane and the one weight
-clamp, the journal's per-row detail. This file keeps the rest: route assets, talk scenes, tricks and
+clamp, the journal's per-row detail. This file keeps the rest: the other missions' route assets, talk scenes, tricks and
 trade, lies, failure as a branch and fallout errands, the conversion of every mission
 (waves 2 to 4), and the parts of wave 1 still listed below.
 
@@ -358,20 +358,12 @@ count it as help, a switch pays at most the base and leaves season Fame alone, "
 
 ### Route assets and the 90% lock
 
-The finale's side is built ([docs/FINALE.md](../docs/FINALE.md#before-the-gate-pitches-and-route-assets)):
-`RZ_FinaleAssets.Add(route, kind, identity, key)`, the limits, the lock card, playing an asset once, and the
-first story records that give one (`RZ_StoryKit.Record`). The missions' side still to build:
+Built: the finale's store and what an asset is worth, the story records that give one
+([docs/FINALE.md](../docs/FINALE.md#before-the-gate-pitches-and-route-assets)), one-choice options and the
+jobs that tag theirs by hand, and the lock's refusal ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)).
+Still to build: the other missions' leans, by these rules:
 
-| Asset | For example |
-|---|---|
-| **Ally** | A scientist who walked out (Independent); a deserter the Haven hid (the Haven) |
-| **Proof** | The manifest read on the open channel (Independent); the fence holding it (the Red Hand) |
-| **Standing** | The black box burnt in the stove (Bastion) |
-
-- Most jobs have no assets. A story job's result adds at most one. A player holds at most 3 for any one
-  route in a season (`Asset(route, kind, identity, key)`).
-- An asset does nothing until its owner locks to that route. Assets for other routes go dormant at the
-  lock and lapse at the cure.
+- Most jobs have no assets. A story job's result adds at most one.
 - The Independent route's assets come from the open channel, from "nobody", from letting people go, and
   from giving things to people rather than to factions.
 - **Before 90%, nothing is ever locked:**
@@ -379,13 +371,6 @@ first story records that give one (`RZ_StoryKit.Record`). The missions' side sti
   - a record makes a check at most one step harder;
   - a sulk lasts at most 2 hours of your play;
   - Infamy works off as usual.
-- **After you lock a route**, an option whose asset belongs to another route refuses you: *"You've
-  picked your side. This isn't it."* You can still do the work, and anyone not locked can still decide
-  it. The label doesn't change (labels are shared); the refusal comes when you pick it.
-- Everything without an asset is offered to locked players as usual. The finale's Acts I and III are open
-  to anyone not locked elsewhere (decision 8); its sworn acts and route work belong to the route's
-  locked players ([FINALE.md](FINALE.md), §5).
-- The lock is read with `RZ_Finale.RouteOf(identity)`: no route, or one of five.
 
 ## Who decides
 
@@ -720,107 +705,23 @@ The same pass gives the decider rules to the work-tier leader jobs that have a c
   Shelter.
 - **Unarmed, house and perimeter (3):** Trail of Clues, Letters (+ Silent Courier), The Crossing.
 
-**Tier B, one real choice (16):**
+**Tier B (16 one-choice jobs) and Tier C (68 work rows) are built**
+([MISSIONS.md](../docs/MISSIONS.md#one-choice-jobs-and-work)), simplified: each choice is asked by a
+stand-in person when the work is done, and the town tally is words in a brief.
 
-| Mission | The choice |
-|---|---|
-| Survivors Trapped | Which house, or Bastion's post (worked example 6) |
-| Radio Relay | Whose net it carries: the Haven's alone, or Bastion's too, in return for a patrol past the house |
-| Harvest Guard | Which house gets the food: the farm's own, or the hungriest |
-| Burn the Nest | Burn the crawlers' nest (as built), or leave it for Halcyon: take a sample first, and the research goes through the lab. The house that asked remembers |
-| Rescue the Kids | Which house, or the kids' aunt at Bastion's post (Bastion pays the base, and civilians sheltered goes up on that night's call) |
-| Checkpoint Duty (+ Quarantine Line) | People come to the barrier at the infested town's edge. Let them through (+2 people at a house; the town's spread pauses for less time) or turn them back (Bastion's way) |
-| Convoy Escort | The driver wants to drop two crates at a hungry house, "lost to raiders". Let him (+2 food at the house; if it's found out by events, +8 Bastion Infamy), or don't |
-| Blow the Bridge, Zombie Bait, Lead Them Away | Where the horde goes: an empty town, the edge of a Bastion post (Zombie Bait's pay) or a Red Hand camp. One shared choice block (Cull uses it too), and every answer is grey |
-| Fight Pit | Go down in round 3, so a debtor's bet clears his debt (you get half pay, and he walks free of the book), or fight it out |
-| Hijack the Convoy | The driver: let him walk, hand him to the crew (+5 Bastion Infamy and a record), or leave him tied for Bastion to find |
-| Kill the Officer | He offers his post's stores if you walk away. Take them (Bastion Favor from him, at most the base; the Red Hand pays nothing, and the boss remembers), or do the job |
-| Steal the Antidotes | The two doses go to the black market (as built), or to a Haven medic (no Red Hand pay; a house's sick get them; an asset for the Haven) |
-| Lab Defence | A raider surrenders. Send him to Bastion's stockade, give him back to the crew for Favor, or hand him to Halcyon "for the trial" |
-| Water Survey | Who hears about the town at risk: Halcyon only, or the Haven too (people move out: −1 person at that town's house, +1 at another) |
-
-**Tier C, work (68).** Each is one row in `RZ_MissionReasons.c`: the reasons it answers, the town tally
-it writes (or none), and a fallout line.
-- **The Haven (2):** Recover the Bus, Memorial.
-- **Bastion (5):** Retake the Town (+ Take Back the Town), Last Helicopter, Burn the Bodies (+
-  Decontamination), Recon, Fire Mission.
-- **The Red Hand (6):** Fence the Goods, Car Theft, Pharmacy Heist, Arson, Sabotage the Relay, Collect
-  the Bounty.
-- **Halcyon (11):** The Lone One, Field Samples, Power the Lab, Install Sensors, Blood Drive, Specimen
-  from the Nest, Hunt the Screamer, Medical Drone, Patient Zero, Live Capture, Mobile Lab.
-- **World events (8):** Abandoned Convoy, The Sniper, Stash Note, Mass Grave, Locked Bunker, Tunnel Rats,
-  Military Remnant Camp, Wedding Party.
-- **Puzzles (12):** The Numbers Station, Two Bearings, Patient Zero's Ledger, The Poisoned Well, The
-  Smuggler's Ledger, The Clockwork Horde, Time-Lock Safe, The Bell Order, Lights in the Window, Junction
-  Boxes, The Weighing Vault, The Last Experiment.
-- **Unarmed (2):** Distraction, Quiet Count.
-- **Perimeter (2):** The Blind Spot, Shot at the Line.
-- **Leader jobs (17):** Our Own First, Fetch the Family (the built "Bring Them Home", retitled), Over the
-  Fence, Ration Run, Names for Bastion, Training Day, Hidden Stores, Hearts and Minds, Rifles for Sale,
-  Burn the Ledger, Skim the Toll, The Soft Touch, Sell Out a Rival Crew, Second Opinion, Unsanctioned
-  Trial, Leak the Data, Sell the Formula.
-- **Story arcs (3):** The Deserter's Map, Fever Town: the water, Fever Town: get them out.
-
-For example, **Retake the Town**:
-- it answers `town.infested` near a lived-in town;
-- the giver is Bastion while it's around, and the Haven after (Take Back the Town merged in);
-- it writes the town tally (Haven chalk or a Bastion stencil, which the epilogue can show);
-- its fallout line is *"The town stays theirs."*;
-- pay is unchanged.
-
-**Conditions (9):** Horde Migration (The Tribe Moves), Night of the Dead (Every Ridge Calls), Fog Bank,
-Power Surge, Siren Test, Gas Station Fire, Bastion Shelling, Storm, Turned Player. They post reasons (a
-horde passed, a town was shelled) and answer none.
+**Conditions (9):** Horde Migration (The Tribe Moves) posts `horde.passed` (built). Still to post a reason:
+Night of the Dead (Every Ridge Calls), Fog Bank, Power Surge, Siren Test, Gas Station Fire, Bastion
+Shelling, Storm, Turned Player. They answer none.
 
 The 9 merges, the 12 dropped, the 7 that became errands (Rooftop Rescue is the stranger Up on the
 Roof) and the 5 stage-only missions are done ([MISSIONS.md](../docs/MISSIONS.md)).
 
 ## Worked examples
 
-**Built** (wave 3 and phase 4's second pass, [MISSIONS.md](../docs/MISSIONS.md)): Protection Racket, Lost Colleague, Crash Site,
-Distress Call (Fake Distress Call merged in), Struck Off (Hunt the Deserter merged in) and Survivors
-Trapped, each with its truths, the main ways, a world record, its lies and its fallout, as each row
-there says, simplified. What the six worked examples still add:
-
-| Job | Still to build |
-|---|---|
-| Protection Racket | Off the book (a Rogue boss; Rein In's drop pays the stronghold); the council head's regard; R3's season weight on time-up |
-| Lost Colleague | Sold (his sister, the fence); the step chain and shortcuts to him; the escort (or ★ Nurse patching him); the Haven medic for the notebook; the Doctor wanderer slot and the filter's water need; His Notebook (Notebook 31) as the hiding truth's fallout; the arc's ×3 |
-| Crash Site | The recovery team at minute 15; the sneak lift; the carriers' ways other than force (persuade, bribe, the trick with the flight order); the quiet commander's pay and loyalty; the nail (tags, 70%); the open channel by hand at the radio station; the 90% lock |
-| Distress Call | The Sneak out the back; the Nurse's dress-and-hide; "My sister's in {town}" and Bastion's post as destinations; the named young in a tribe's range |
-| Struck Off | Press and Trade at a Haven door; the commander's loyalty for the stores book; ★ Hunter and ★ Soldier finding shortcuts; let him go as a Deserter wanderer; the epilogue roll on the majors' coda |
-| Survivors Trapped | The Nurse's dress-and-hide and the "hid a bite" life record; reasons (`horde.passed`); civilians sheltered on Bastion's call; the Watched amends rule's exception for Bastion is built |
-
-### 7. After the lock
-
-(A contract in the last 10%.)
-
-Research is at 93%. Anna has locked herself to Bastion's route. Her friend Petr hasn't locked to any
-route.
-
-**The job.** A Crash Site is offered to both of them, and the truth is Inventory.
-
-**Anna:**
-- The stove (asset: Bastion) and the nail (no asset) work for her as usual.
-- If she picks "read it on the open channel" (asset: Independent) or carries the box to the fence (asset:
-  the Red Hand), she's refused: *"You've picked your side. This isn't it."*
-- The labels are the same for everyone. The refusal only comes when she picks.
-- She can still fight the horde, read the manifest and do the work.
-
-**Petr** can carry the box to the radio station and air it.
-- He decides. It's a hand-in, so it resolves at once.
-- Anna isn't in his vanilla group, so she isn't with him. She gets half the Favor from Bastion for
-  holding the wreck, with no Fame and no Infamy.
-- Petr gets a proof asset for the Independent route, one of his three for the season. It does nothing
-  unless he locks to the Independent route.
-
-**Errands:** Anna still gets house and post errands (they're not route work), and her own route's
-errands ([FINALE.md](FINALE.md)). Petr, unsided, can also do any route's open-act errands.
-
-**Before 90%:** neither of them could have been refused anything. Every asset only tilts a route, and
-nothing closes one.
-
-Errands' own worked example (one evening in Levie) is in [ERRANDS.md](ERRANDS.md).
+**Built** ([MISSIONS.md](../docs/MISSIONS.md)): the six worked examples with their remaining ways, simplified as
+each row there says. Still to build: Lost Colleague's escort and step chain to him, the Haven trader and the
+Scavenger's shortcuts; Crash Site's recovery squad as real AI (the team is text only); the "hid a bite" life
+record read by that house's people (+1 difficulty there).
 
 ## The MISSIONS.md block format
 
@@ -869,7 +770,7 @@ down."* The boss's *"Light this week."*
 | 1 **Framework** | 3 | **Built** ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)). Still from it: the look (with disguise), scene choice routing (`HandleChoice`/`HandleUse` for missions that aren't puzzles) and talk nodes, the four guidance tips | ~2,400 | — | ~50 |
 | 2 **Pilot** | 4 (the stop point) | The six worked examples; the 9 merges; the 12 dropped and 5 stage-only missions; the Tier 0 audit. Then a play-test. **After this wave the game is whole**, and what follows is growth | ~2,800 | ~3,000 | ~500 |
 | 3 **The other 22 story jobs** | 5, in parallel with the majors | A faction at a time, in two halves of 11, each followed by a play-test | ~3,300 | — | ~700 |
-| 4 **One-choice jobs and work** | 8 (growth) | The 16 Tier B choices and the 68 Tier C rows; the tribes' contracts on the kit as they're built | ~1,400 | — | ~300 |
+| 4 **One-choice jobs and work** | 8 (growth) | **Built** ([MISSIONS.md](../docs/MISSIONS.md#one-choice-jobs-and-work)). Still from it: the tribes' contracts on the kit | ~1,400 | — | ~300 |
 | **Total** | | | **~9,900** | **~3,000** | **~1,550** |
 
 The 7 missions that become errand routines leave the pool in phase 3, as their routines land. Every wave

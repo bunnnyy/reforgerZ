@@ -227,6 +227,32 @@ class RZ_Mission_PharmacyHeist : RZ_Mission_Hold
 class RZ_Mission_FightPit : RZ_Mission_Hold
 {
 	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_FightPit()
+	{
+		m_Story = new RZ_MissionStory("pit");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("Between rounds a man you don't know grabs the rope: \"I've my whole debt on you going down in this round. Go down and I'm out of the book. You'll get half. Please.\" Answer him at the rope.",
+			"Fight it out|Go down this round", "decide how the round ends", 0);
+		m_Choice.m_bManual = true;
+		m_Choice.m_bEnds = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		if (option != 1)
+		{
+			NotifyParticipants(gm, m_sTitle, "You fight on. The man at the rope stops shouting. Somebody in the book just got a little longer.");
+			return;
+		}
+
+		m_fRewardScale = 0.5;
+		NotifyParticipants(gm, m_sTitle, "You go down at the bell and stay down. The crowd boos. One man in it doesn't. He walks out of the book tonight.");
+		RZ_StoryKit.Record(this, "debtor", RZ_WorldFacts.PIT, "walked free", m_aParticipants);
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
 	{
 		result.Insert(RZ_WorldFacts.PIT);
@@ -280,6 +306,9 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 	override protected void OnWave(RZ_GameModeComponent gm, int wave)
 	{
 		NotifyParticipants(gm, m_sTitle, string.Format("Round %1! The crowd roars.", wave));
+		if (wave == 3)
+			m_Choice.Ask(gm, this, m_vPos);
+
 		if (wave < m_iMaxWaves || m_sStockCrew.IsEmpty())
 			return;
 
@@ -407,6 +436,34 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 //! ★ Radio Op: uses a radio to lure, twice the noise.
 class RZ_Mission_ZombieBait : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_ZombieBait()
+	{
+		m_Story = new RZ_MissionStory("bait");
+		m_Choice = new RZ_OneChoice();
+		RZ_HordeWhere.Set(m_Choice, RZ_HordeWhere.BASTION);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		// The crews pay for Bastion's long night; anything else is your own idea
+		int went = RZ_HordeWhere.Apply(gm, this, option);
+		if (went == RZ_HordeWhere.BASTION)
+			return;
+
+		m_bHasRival = false;
+		if (went == RZ_HordeWhere.EMPTY)
+		{
+			m_fRewardScale = 0.5;
+			NotifyParticipants(gm, m_sTitle, "\"Into an empty town. Lovely. Very kind. Half.\"");
+			return;
+		}
+
+		m_fRewardScale = 0;
+		NotifyParticipants(gm, m_sTitle, "\"Past our own camp. Our own. You're not getting paid for that, and you know why.\"");
+	}
+
 	protected static const float HEAT_NEEDED = 60;
 	protected static const float LURE_RADIUS = 60;
 
@@ -612,6 +669,33 @@ class RZ_Mission_SabotageRelay : RZ_Mission_DestroyTarget
 //! where they're kept (twice as fast).
 class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 {
+	protected int m_iWhere;		// the one choice: 0 the black market, 1 a Haven medic
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_StealAntidotes()
+	{
+		m_Story = new RZ_MissionStory("antidotes");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("You've the two doses. On the way out a Haven medic is waiting by the wire: \"There's a house with three sick and nothing. The crews will sell them for more than you'll ever see.\" Decide here.",
+			"To the black market|To the Haven medic", "decide where the doses go", 0);
+		m_Choice.Asset(1, RZ_EFaction.SURVIVORS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		m_iWhere = option;
+		if (option != 1)
+			return;
+
+		// No Red Hand pay: the doses go to a house's sick
+		m_fRewardScale = 0;
+		m_iFameReward = 0;
+		m_bNoLeaderCredit = true;
+		RZ_OneChoice.Morale(gm, RZ_EFaction.SURVIVORS, 1, "doses for a house's sick");
+		NotifyParticipants(gm, m_sTitle, "The medic takes them without a word and runs. The crews pay you nothing, and say so, at length.");
+	}
+
 	static const int STOLEN_DOSES = 2;
 
 	//------------------------------------------------------------------------------------------------
@@ -664,7 +748,9 @@ class RZ_Mission_StealAntidotes : RZ_Mission_Hold
 		if (gm.GetCure())
 			taken = gm.GetCure().StealLabAntidotes(STOLEN_DOSES);
 
-		if (taken > 0)
+		if (taken > 0 && m_iWhere == 1)
+			gm.NotifyAll("Halcyon", string.Format("Someone robbed the lab's antidote store: %1 doses gone. They turned up at a Haven house, in three arms, by morning.", taken));
+		else if (taken > 0)
 			gm.NotifyAll("Halcyon", string.Format("Someone robbed the lab's antidote store: %1 doses gone. The Red Hand will be selling them.", taken));
 		else
 			gm.NotifyAll("Halcyon", "Someone broke into the lab's store room. The shelves were already empty.");

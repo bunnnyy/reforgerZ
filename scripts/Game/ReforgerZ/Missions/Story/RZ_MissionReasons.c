@@ -62,6 +62,25 @@ class RZ_MissionReasons
 		// The lab's milestones
 		if (t == RZ_Mission_ColdChain || t == RZ_Mission_PowerTheLab)
 			result.Insert("cure.*");
+
+		// The one-choice jobs (each also has its one choice: Missions/Blocks/RZ_OneChoice.c)
+		if (t == RZ_Mission_SurvivorHoldout || t == RZ_Mission_RescueTheKids || t == RZ_Mission_LeadThemAway)
+			result.Insert("horde.passed");
+
+		if (t == RZ_Mission_RadioRelay || t == RZ_Mission_BurnTheNest || t == RZ_Mission_RescueTheKids || t == RZ_Mission_CheckpointDuty || t == RZ_Mission_WaterSurvey)
+			result.Insert("town.infested");
+
+		if (t == RZ_Mission_ZombieBait || t == RZ_Mission_KillTheOfficer)
+			result.Insert("town.shelled");
+
+		if (t == RZ_Mission_StealAntidotes)
+			result.Insert("house.bitten");
+
+		if (t == RZ_Mission_LabDefence)
+			result.Insert("cure.*");
+
+		// The work rows (RZ_WorkRows.c)
+		RZ_WorkRows.Reasons(t, result);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -151,7 +170,51 @@ class RZ_MissionReasons
 		if (t == RZ_Mission_ReinIn)
 			return "The outpost carries on as it likes. The stronghold notes it, and waits.";
 
-		return "";
+		// The one-choice jobs
+		if (t == RZ_Mission_RadioRelay)
+			return "The relay stays dark. The house listens to static at night and calls it quiet.";
+
+		if (t == RZ_Mission_HarvestGuard)
+			return "The field went to the infected. The farmer counts what they left, which is nothing.";
+
+		if (t == RZ_Mission_BurnTheNest)
+			return "The nest is still there, and fuller. The town breathes worse for it.";
+
+		if (t == RZ_Mission_RescueTheKids)
+			return "The school's quiet now. Nobody says why out loud.";
+
+		if (t == RZ_Mission_CheckpointDuty)
+			return "The barrier never went up. The town spreads as it likes.";
+
+		if (t == RZ_Mission_ConvoyEscort)
+			return "The post goes short this week. The truck's on the call, by number.";
+
+		if (t == RZ_Mission_BlowTheBridge || t == RZ_Mission_LeadThemAway)
+			return "They got where they were going. The house there will count heads in the morning.";
+
+		if (t == RZ_Mission_ZombieBait)
+			return "Bastion's post sleeps well tonight. The crews don't.";
+
+		if (t == RZ_Mission_FightPit)
+			return "The pit had a short night. The book didn't.";
+
+		if (t == RZ_Mission_HijackTheConvoy)
+			return "The truck got through. Bastion's call reads the delivery out loud, slowly.";
+
+		if (t == RZ_Mission_KillTheOfficer)
+			return "He's still running the post, and running it well.";
+
+		if (t == RZ_Mission_StealAntidotes)
+			return "The store room stays locked. The crews sell something else.";
+
+		if (t == RZ_Mission_LabDefence)
+			return "The lab lost a room tonight. The night shift sleeps in the corridor.";
+
+		if (t == RZ_Mission_WaterSurvey)
+			return "Nobody knows which town is next. Somebody finds out.";
+
+		// The work rows (RZ_WorkRows.c)
+		return RZ_WorkRows.Fallout(t);
 	}
 
 	//------------------------------------------------------------------------------------------------

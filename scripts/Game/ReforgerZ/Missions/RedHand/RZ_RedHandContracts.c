@@ -156,6 +156,9 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	protected int m_iTalk = -1;
 	protected int m_iReceiptClue = -1;
 	protected int m_iDaughterClue = -1;
+	protected int m_iRunnerClue = -1;
+	protected int m_iRogue = -1;			// Off the book: the Rogue boss who sent you
+	protected bool m_bOffBook;				// ... and someone found out
 	protected RZ_WorldRecord m_SpokeFor;		// "racket.speak_for" at this house: who promised (weak; the memory owns it)
 	protected ref array<int> m_aActs = {};
 	protected ref RZ_Ways m_Ways = new RZ_Ways("Protection Racket");
@@ -178,6 +181,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	protected static const int ACT_COUNCIL = 6;
 	protected static const int ACT_SIDE = 7;
 	protected static const int ACT_LEAVE = 8;
+	protected static const int ACT_STRONGHOLD = 9;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Mission_ProtectionRacket()
@@ -232,9 +236,13 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		// The last collection here: anyone who covered it is found out now
 		RZ_WorldFacts.Get().Memory().Lies().Test(gm, "racket.covered", HouseKey());
 
-		// The truth, kept per house: the cut never while The Ledger runs here
-		array<string> values = {"just_late", "paid_twice", "cut"};
-		array<float> weights = {0.45, 0.25, 0.2};
+		// The truth, kept per house: the cut never while The Ledger runs here; off the book needs a
+		// Rogue boss of the crews within 6 km
+		array<string> values = {"just_late", "paid_twice", "cut", "off_book"};
+		array<float> weights = {0.45, 0.25, 0.2, 0.1};
+		RZ_Leader rogue = RZ_StoryKit.RogueNear(gm, RZ_EFaction.BANDITS, h.m_vPos, 6000);
+		if (!rogue)
+			weights[3] = 0;
 		if (gm.GetMissions().IsTypeRunning(RZ_Mission_TheLedger))
 			weights[2] = 0;
 
@@ -251,6 +259,13 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		{
 			m_iReceiptClue = AddClue("A receipt", "Pinned up in the stores, in a crew's hand: \"Paid in full. Protected till the month's end.\" A red hand drawn under it, but not ours.");
 			SpawnClue(gm, RZ_EPuzzleProp.CLUE, LandPointNear(h.m_vPos, 3, 8), m_iReceiptClue, "Read the paper on the wall");
+		}
+
+		if (m_sTruth == "off_book" && rogue)
+		{
+			m_iRogue = rogue.m_iId;
+			m_iRunnerClue = AddClue("The boss's runner", "A lad with a red scarf leans on the fence, watching you more than the house. \"Keep it off the book. He said you'd understand.\"");
+			SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(h.m_vPos, 10, 18), m_iRunnerClue, "Talk to the lad at the fence");
 		}
 
 		if (m_sTruth == "cut")
@@ -308,6 +323,12 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			m_aActs.Insert(ACT_PRESS);
 			labels.Insert("Cover it yourself [4 food | 20 Red Hand Favor]");
 			m_aActs.Insert(ACT_COVER);
+			if (m_bOffBook)
+			{
+				labels.Insert("[Off the book] Collect for the stronghold");
+				m_aActs.Insert(ACT_STRONGHOLD);
+			}
+
 			if (m_bReceipt)
 			{
 				labels.Insert("[The receipt] Send it to the boss");
@@ -339,6 +360,13 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		{
 			m_bReceipt = true;
 			m_Story.Reveal(gm, this, HouseKey(), playerId, "receipt", "The house already paid another crew for the same weeks. Somebody wants a fight between crews.");
+			SetObjectLabels(0, "", Labels());
+		}
+
+		if (idx == m_iRunnerClue && !m_bOffBook)
+		{
+			m_bOffBook = true;
+			m_Story.Reveal(gm, this, HouseKey(), playerId, "runner", "Nobody at the stronghold sent a collector here. One boss is working for himself, and you're his hands.");
 			SetObjectLabels(0, "", Labels());
 		}
 
@@ -393,6 +421,22 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			Collect(gm, playerId, 1, 1, "secret", "She pays out of her hidden tins, one at a time, and doesn't thank you. Her daughter watches from the stairs.");
 		else if (act == ACT_COUNCIL)
 			Council(gm, playerId);
+		else if (act == ACT_STRONGHOLD)
+			Stronghold(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Off the book, found out: the collection goes to the stronghold's drop (Rein In's), which pays
+	//! the base; the Rogue boss gets nothing and remembers who did it.
+	protected void Stronghold(RZ_GameModeComponent gm, int playerId)
+	{
+		m_iLeaderId = -1;
+		m_bNoLeaderCredit = true;
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (leaders && m_iRogue >= 0)
+			leaders.Remember(m_iRogue, playerId, RZ_Leaders.MEM_CROSSED);
+
+		Collect(gm, playerId, FOOD, 0, "stronghold", "You collect, and the tins go up the road to the stronghold's drop, not to the man who sent you. The book gets a line it didn't expect.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -410,6 +454,14 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			gm.NotifyPlayer(playerId, m_sTitle, "\"We've nothing. That's all. Nothing.\" She doesn't look at the stairs.");
 			RZ_StoryKit.Read(gm, this, playerId, "police", "She's lying, and badly. Whatever's missing, she knows where it went.");
 			RZ_StoryKit.Read(gm, this, playerId, "nurse", "Empty antibiotic boxes in the bin by the door. Children's dose.");
+			return;
+		}
+
+		if (m_sTruth == "off_book")
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Again? Your lot came Tuesday. Different face. Same sack.\"");
+			RZ_StoryKit.Read(gm, this, playerId, "excon", "This isn't the crew's collection. It's one man's. You've seen it done before, from the inside.");
+			RZ_StoryKit.Read(gm, this, playerId, "radioham", string.Format("On the secure net, faint: \"Who sent a collector to %1?\" Nobody answers.", m_sHouse));
 			return;
 		}
 
@@ -517,6 +569,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (houses)
 			houses.RemovePopulation(m_iHouse, 1);
 
+		RZ_StoryKit.Remember(gm, RZ_EFaction.SURVIVORS, m_vPos, 3000, playerId, RZ_Leaders.MEM_HELPED);
 		Collect(gm, playerId, FOOD, 0, "council", "The council head pays from the stores and puts her out the same hour. A girl loses her mother's place by the stove.");
 	}
 
@@ -529,6 +582,9 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		m_bDone = true;
 		gm.AddInfamy(decider, RZ_EFaction.BANDITS, SIDE_INFAMY, "warned a house about a collection");
+		RZ_StoryKit.Remember(gm, RZ_EFaction.SURVIVORS, m_vPos, 3000, decider, RZ_Leaders.MEM_HELPED);
+		if (m_iLeaderId >= 0 && gm.GetLeaders())
+			gm.GetLeaders().Remember(m_iLeaderId, decider, RZ_Leaders.MEM_CROSSED);
 		array<int> who = {decider};
 		RZ_StoryKit.Record(this, m_iHouse.ToString(), HouseKey(), "warned", who);
 		gm.NotifyPlayer(decider, m_sTitle, "You tell the council head what's coming. By the time anyone else looks, the stores are under the floor. Nobody pays you. The boss will remember.");
@@ -605,6 +661,9 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		h.m_iFood = Math.Max(0, h.m_iFood - FOOD);
 		RZ_StoryKit.Fallout(gm, this, "pot", h.m_vPos, m_sHouse);
+
+		// The well story is told about the house: the crews collect a little harder this season
+		RZ_StoryKit.SeasonWeight(RZ_Mission_ProtectionRacket, 1.1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -630,6 +689,38 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 //! happens is paid. It arrives: failed. Big Bastion Infamy.
 class RZ_Mission_HijackTheConvoy : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_HijackTheConvoy()
+	{
+		m_Story = new RZ_MissionStory("hijack");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The driver's on his knees by the cab with his hands on his head. \"I've a wife at the post. I drive. That's all I do.\" Decide at the truck.",
+			"Let him walk|Hand him to the crew|Leave him tied for Bastion", "decide what happens to the driver", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		string value = "walked";
+		if (option == 1)
+		{
+			value = "to the crew";
+			m_Choice.BlameWith(gm, this, RZ_EFaction.MILITARY, 5, "handed a driver to the crews");
+			NotifyParticipants(gm, m_sTitle, "The crew take him with them. He drives for them now, or he doesn't drive at all. Bastion will know which by the weekend.");
+		}
+		else if (option == 2)
+		{
+			value = "tied";
+			NotifyParticipants(gm, m_sTitle, "You leave him tied to the wheel. Bastion finds him by dark. He'll tell them what he saw, and he saw you.");
+		}
+		else
+		{
+			NotifyParticipants(gm, m_sTitle, "He walks. He doesn't look back, and he doesn't take the road.");
+		}
+
+		RZ_StoryKit.Record(this, "driver", "convoy:" + RZ_SettlementScanner.GridReference(m_vPos), value, m_aParticipants);
+	}
+
 	protected ref RZ_ConvoyWatch m_Watch = new RZ_ConvoyWatch();
 	protected float m_fWaiting;
 
@@ -1341,6 +1432,35 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 //! Needs a killable body (Leaders > Bastion outpost commander or Bastion leader).
 class RZ_Mission_KillTheOfficer : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_KillTheOfficer()
+	{
+		m_Story = new RZ_MissionStory("officer");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("His aide comes out with his hands up and a key in one of them: \"The post's stores. All of it. Walk away and nobody writes anything down.\" Answer him at the post.",
+			"Take the stores, walk away|Do the job", "decide whether he lives", 1);
+		m_Choice.m_bManual = true;
+		m_Choice.m_bEnds = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		if (option != 0)
+			return;
+
+		// Bastion's Favor from him, at most the base; the Red Hand pays nothing, and the boss remembers
+		m_eGiver = RZ_EFaction.MILITARY;
+		m_bHasRival = false;
+		m_bNoLeaderCredit = true;
+		m_iLeaderId = -1;
+		m_iFameReward = 0;
+		m_fRewardScale = 0.5;
+		NotifyParticipants(gm, m_sTitle, "You take the key and walk. He's still there in the morning, running the post well. The crew's boss hears by noon.");
+		RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.Leader(m_iTarget), "bought off", m_aParticipants);
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
 	protected int m_iTarget = -1;
 	protected string m_sTarget;
 
@@ -1422,6 +1542,18 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 		if (l.m_bAlive)
 		{
 			RZ_ContractHelp.AddNear(ids, players, l.m_vPos, 150, m_aParticipants);
+			if (!m_Choice.m_bDone && !m_Choice.m_bAsking)
+			{
+				foreach (int i, IEntity p : players)
+				{
+					if (RZ_Util.DistXZ(p.GetOrigin(), l.m_vPos) <= 40 && IsEligible(gm, ids[i]))
+					{
+						m_Choice.Ask(gm, this, l.m_vPos);
+						break;
+					}
+				}
+			}
+
 			return;
 		}
 

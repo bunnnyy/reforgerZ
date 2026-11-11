@@ -303,6 +303,36 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 //! Arrives: paid to those who stayed with it. Robbed, destroyed or late: failed.
 class RZ_Mission_ConvoyEscort : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_ConvoyEscort()
+	{
+		m_Story = new RZ_MissionStory("convoy");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The truck's in. The driver catches your sleeve by the tailgate: \"Two crates fell off on the way. Raiders. You saw them. A hungry house is going to find them on its step tonight.\" Answer him at the truck.",
+			"Don't. They go in the store|Let him. Raiders took them", "decide what happened to two crates", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		if (option != 1)
+		{
+			RZ_StoryKit.Record(this, "crates", "convoy:" + RZ_SettlementScanner.GridReference(m_vPos), "in store", m_aParticipants);
+			return;
+		}
+
+		int house = RZ_OneChoice.HungriestHouse(gm);
+		if (house >= 0)
+			gm.GetSafehouses().AddFood(house, 2);
+
+		NotifyParticipants(gm, m_sTitle, "Two crates are \"lost to raiders\". Somewhere a hungry house finds them on its step and doesn't ask.");
+		if (decider > 0)
+			gm.GetFacts().Memory().Lies().Tell(gm, decider, "convoy.crates", "convoy:" + RZ_SettlementScanner.GridReference(m_vPos), RZ_EFaction.MILITARY, "", m_vPos, RZ_ELieTest.RUMOUR, 8,
+				"Bastion's quartermaster counted the house's crates back to the convoy's manifest. Two of them had the post's stencil. Somebody said raiders.");
+
+		RZ_StoryKit.Record(this, "crates", "convoy:" + RZ_SettlementScanner.GridReference(m_vPos), "lost to raiders", m_aParticipants);
+	}
+
 	protected ref RZ_ConvoyWatch m_Watch = new RZ_ConvoyWatch();
 	protected ref map<int, int> m_mNear = new map<int, int>();
 	protected int m_iChecks;
@@ -847,6 +877,20 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 //! the town. The horde is data (walking 1 m/s) until a player is within 600 m.
 class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_BlowTheBridge()
+	{
+		m_Story = new RZ_MissionStory("bridge");
+		m_Choice = new RZ_OneChoice();
+		RZ_HordeWhere.Set(m_Choice, RZ_HordeWhere.EMPTY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		RZ_HordeWhere.Apply(gm, this, option);
+	}
+
 	protected int m_iPack = -1;			// the pack crossing (-1: a horde from a town)
 	protected vector m_vTown;
 	protected vector m_vChoke;

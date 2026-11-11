@@ -9,6 +9,28 @@
 //! Pays food to the nearest safehouse.
 class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 {
+	protected int m_iWhere;		// the one choice: 0 the farm's own house, 1 the hungriest
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_HarvestGuard()
+	{
+		m_Story = new RZ_MissionStory("harvest");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The sacks are filled. The farmer leans on his spade: \"They're promised to our own house. I hear there's a hungrier one down the road. Your call, you stood the field.\" Answer him at the field.",
+			"The farm's own house|The hungriest house", "decide which house gets the food", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		m_iWhere = option;
+		string value = "own";
+		if (option == 1)
+			value = "hungriest";
+
+		RZ_StoryKit.Record(this, "went", RZ_WorldFacts.Town(m_iSettlement), value, m_aParticipants);
+	}
+
 	protected ref RZ_UnitWatch m_Farmers = new RZ_UnitWatch();
 	protected bool m_bBonusChecked;
 
@@ -96,6 +118,16 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 			return;
 
 		int idx = houses.FindNearest(m_vPos);
+		if (m_iWhere == 1)
+		{
+			int hungry = RZ_OneChoice.HungriestHouse(gm);
+			if (hungry >= 0 && hungry != idx)
+			{
+				idx = hungry;
+				NotifyParticipants(gm, m_sTitle, "The farm's own house watches the sacks go down the road to somebody else's. The farmer doesn't speak to you again this season.");
+			}
+		}
+
 		RZ_Safehouse h = houses.Get(idx);
 		if (!h)
 			return;

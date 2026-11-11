@@ -445,6 +445,31 @@ class RZ_Mission_Recon : RZ_Mission_VisitPoints
 //! ★ Police: holds faster.
 class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 {
+	protected int m_iWhere;		// the one choice: 0 turned back, 1 let through
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_CheckpointDuty()
+	{
+		m_Story = new RZ_MissionStory("barrier");
+		m_Choice = new RZ_OneChoice();
+		m_Choice.Set("The line held. Now a dozen people stand at the barrier with bags: \"We're not sick. Look at us.\" The sergeant says turn them back. He also says it's your call, since you're the one with the rifle on it.",
+			"Turn them back|Let them through", "decide who passes the barrier", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		m_iWhere = option;
+		string value = "turned back";
+		if (option == 1)
+		{
+			value = "let through";
+			m_bNoLeaderCredit = true;
+		}
+
+		RZ_StoryKit.Record(this, "barrier", RZ_WorldFacts.Town(m_iSettlement), value, m_aParticipants);
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -491,6 +516,17 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		if (!s)
 			return;
+
+		if (m_iWhere == 1)
+		{
+			// Let through: two reach a house; the seal is leakier for it
+			s.m_fNoSpreadSeconds = 900;
+			if (gm.GetSafehouses())
+				gm.GetSafehouses().AddRescued(m_vPos, 2, m_aParticipants);
+
+			gm.NotifyAll("Quarantine", s.m_sName + " has been sealed off, mostly. Some people came through first.");
+			return;
+		}
 
 		s.m_fNoSpreadSeconds = 1800;
 		gm.NotifyAll("Quarantine", s.m_sName + " has been sealed off. It won't spread the infection for a while.");
@@ -600,10 +636,24 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	protected vector m_vCamp;
 	protected ref RZ_EventGroup m_Carriers;
 	protected IEntity m_Cockpit;
+	protected IEntity m_Fire;					// Already taken: the carriers' fire, to talk at
 	protected ref array<int> m_aRead = {};
+	protected ref RZ_Ways m_Ways = new RZ_Ways("Crash Site");
+	protected float m_fAge;
+	protected float m_fFirstNear = -1;			// when someone first came within 150 m (the sneak lift's 90 s)
+	protected bool m_bTeam;						// the recovery team came at minute 15
+	protected bool m_bLifted;
+	protected float m_fAiring;					// the open channel: seconds the carrier has stood at the radio station
+	protected bool m_bAired;
 
 	protected static const float SECURE_SECONDS = 60;
 	protected static const int COCKPIT = 0;		// the cockpit's read (HandleTalk)
+	protected static const int OBJ_FIRE = 1;	// the carriers' fire (HandleObjectChoice)
+	protected static const float TEAM_SECONDS = 900;
+	protected static const float LIFT_WINDOW = 90;
+	protected static const float AIR_SECONDS = 10;
+	protected static const int BRIBE_FAVOR = 25;
+	protected static const int BRIBE_FOOD = 5;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Mission_CrashSite()
@@ -758,7 +808,22 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 			return;
 		}
 
-		if (m_bItemSpawned || CountPlayersNear(players, m_vPos, 25) == 0)
+		m_fAge += dt;
+		if (!m_bItemSpawned)
+		{
+			Sneak(gm, ids, players);
+			RecoveryTeam(gm, ids, players);
+			if (m_eState != RZ_EMissionState.ACTIVE)
+				return;
+		}
+
+		if (m_bItemSpawned)
+		{
+			OpenChannel(gm, dt);
+			return;
+		}
+
+		if (CountPlayersNear(players, m_vPos, 25) == 0 && m_fSecured < SECURE_SECONDS)
 			return;
 
 		float rate = 1;
@@ -782,6 +847,146 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The sneak lift: in the 90 s after someone first comes within 150 m, a player hidden within 8 m
+	//! of the wreck lifts the box before anything notices.
+	protected void Sneak(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	{
+		if (m_fFirstNear < 0 && RZ_ContractHelp.AnyNear(players, m_vPos, 150))
+			m_fFirstNear = m_fAge;
+
+		if (m_bLifted || m_fFirstNear < 0 || m_fAge - m_fFirstNear > LIFT_WINDOW)
+			return;
+
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), m_vPos) > 8 || !RZ_Stealth.IsHidden(ids[i]))
+				continue;
+
+			m_bLifted = true;
+			m_fSecured = SECURE_SECONDS;
+			m_Story.m_Deciding.Step(gm, ids[i]);
+			gm.NotifyPlayer(ids[i], m_sTitle, "You work the box out of its bay with your knife, slowly, and nothing turns its head. It's yours to carry.");
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Minute 15: Bastion's recovery truck stops at the road and shouts for the box. Trusted with
+	//! Bastion: they leave it to you. Only Known: they take it, and the job's paid at half. Watched or
+	//! worse: they fire over your heads (+5 Bastion Infamy).
+	protected void RecoveryTeam(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	{
+		if (m_bTeam || m_fAge < TEAM_SECONDS || m_sTruth == "line")
+			return;
+
+		array<int> near = {};
+		GetPlayersNear(ids, players, m_vPos, 150, near);
+		if (near.IsEmpty())
+			return;
+
+		m_bTeam = true;
+		bool trusted = false;
+		bool known = false;
+		foreach (int playerId : near)
+		{
+			RZ_ETier tier = gm.GetTier(playerId, RZ_EFaction.MILITARY);
+			if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED))
+				trusted = true;
+			else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
+				known = true;
+			else if (tier == RZ_ETier.WATCHED || RZ_Reputation.IsHunted(tier))
+			{
+				gm.AddInfamy(playerId, RZ_EFaction.MILITARY, 5, "at a crash site Bastion's team came for");
+				gm.NotifyPlayer(playerId, m_sTitle, "A truck stops on the road and somebody fires over your head. \"Away from the wreck. Now.\"");
+			}
+		}
+
+		if (trusted)
+		{
+			m_fSecured = SECURE_SECONDS;
+			RZ_ContractHelp.NotifyNear(gm, m_vPos, 150, m_sTitle, "Bastion's recovery truck stops on the road. A sergeant waves: \"Carry on. It's yours to bring in.\" They keep the infected off you while you pull it.");
+			return;
+		}
+
+		if (!known)
+			return;
+
+		// They take the box themselves: done for Bastion, at half pay
+		m_fRewardScale = 0.5;
+		m_bDelivered = true;
+		m_iDeliveredTo = RZ_EFaction.MILITARY;
+		foreach (int who : near)
+		{
+			if (!m_aParticipants.Contains(who))
+				m_aParticipants.Insert(who);
+		}
+
+		RZ_StoryKit.Record(this, "box", "wreck:" + RZ_SettlementScanner.GridReference(m_vPos), "team:" + m_sTruth, near);
+		RZ_ContractHelp.NotifyNear(gm, m_vPos, 150, m_sTitle, "Bastion's recovery team takes the box off the wreck themselves. \"Thanks for keeping it warm.\" You'll get half.");
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The open channel (Inventory): the box's carrier stands at the radio station for 10 s and reads
+	//! the manifest out. Nobody pays; Bastion morale -3, +10 Bastion Infamy, the commander remembers.
+	protected void OpenChannel(RZ_GameModeComponent gm, float dt)
+	{
+		if (m_bAired || m_bDelivered || m_sTruth != "inventory" || m_iCarrier <= 0 || !gm.GetRadioStation())
+			return;
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iCarrier);
+		if (!me || RZ_Util.DistXZ(me.GetOrigin(), gm.GetRadioStation().GetPosition()) > 20)
+		{
+			m_fAiring = 0;
+			return;
+		}
+
+		if (!RZ_RouteAssets.Refuse(gm, m_iCarrier, RZ_CureFinale.INDEP).IsEmpty())
+		{
+			gm.NotifyPlayer(m_iCarrier, m_sTitle, RZ_RouteAssets.Refuse(gm, m_iCarrier, RZ_CureFinale.INDEP));
+			m_fAiring = -600;
+			return;
+		}
+
+		m_fAiring += dt;
+		if (m_fAiring < AIR_SECONDS)
+			return;
+
+		m_bAired = true;
+		m_bDelivered = true;
+		m_iFameReward = 0;
+		m_iFavorReward = 0;
+		m_bNoLeaderCredit = true;
+		RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, -3, "the manifest read on the open channel");
+		gm.AddInfamy(m_iCarrier, RZ_EFaction.MILITARY, 10, "read Bastion's manifest on the open channel");
+		RZ_StoryKit.Remember(gm, RZ_EFaction.MILITARY, m_vPos, 5000, m_iCarrier, RZ_Leaders.MEM_CROSSED);
+		gm.NotifyAllAs("Open channel", "A voice nobody knows, reading slowly from a clipboard: twelve rifles, signed out on Day 9, routed via a Red Hand crossroads, for diesel. Then the date, and the signature.", RZ_ENoticeTag.EVENT);
+		array<int> who = {m_iCarrier};
+		RZ_Deeds.AddLifeRecord(gm.GetProfile(m_iCarrier), "aired", true);
+		RZ_StoryKit.Record(this, "box", "wreck:" + RZ_SettlementScanner.GridReference(m_vPos), "aired:" + m_sTruth, who);
+		m_aParticipants.Clear();
+		m_aParticipants.Insert(m_iCarrier);
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the lock: a player locked to another route can't hand the box to this side.
+	override bool OnItemDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction, IEntity drop)
+	{
+		if (!m_bDelivered && m_sTruth == "inventory")
+		{
+			string refusal = RZ_RouteAssets.Refuse(gm, playerId, faction);
+			if (!refusal.IsEmpty())
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, refusal);
+				return false;
+			}
+		}
+
+		return super.OnItemDelivered(gm, playerId, faction, drop);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Already taken: two carriers at their fire; the box is there once they're dead.
 	protected void UpdateCarriers(RZ_GameModeComponent gm, float dt, array<IEntity> players)
 	{
@@ -793,10 +998,103 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		{
 			if (m_Carriers.Spawn())
 				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Carriers.m_Unit, 200, true);
+
+			// Their fire: talk, pay, or a claim in Bastion kit with the flight order
+			ResourceName fire = gm.GetPuzzlePrefab(RZ_EPuzzleProp.OBJECT);
+			if (!fire.IsEmpty())
+			{
+				m_Fire = RZ_Util.SpawnPrefab(fire, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(m_vCamp, 2, 4)));
+				RZ_PuzzleObjectComponent.Tag(m_Fire, m_iId, OBJ_FIRE, "", "[Known · Red Hand] \"Bastion pays twice what the fence does\"|Pay them [25 Red Hand Favor | 5 food]|[Bastion kit] \"That's ours, lads\"");
+			}
 		}
 
 		if (m_Carriers.IsDead() && SpawnItem(gm, RZ_Util.RandomPointInRing(m_vCamp, 1, 3)))
 			RZ_ContractHelp.NotifyNear(gm, m_vCamp, 150, m_sTitle, "The box is by their fire, still in its cut straps. Now decide who gets it.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The carriers' fire: the ways other than a fight. Each that works sends them off without the box.
+	override void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
+	{
+		super.HandleObjectChoice(gm, playerId, objIdx, option);
+		if (objIdx != OBJ_FIRE || m_bItemSpawned || !m_Carriers || m_Carriers.IsDead())
+			return;
+
+		m_Story.m_Deciding.Step(gm, playerId);
+		bool gone = false;
+		if (option == 0)
+		{
+			if (!RZ_Reputation.IsAtLeast(gm.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.KNOWN))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"Who are you, then?\" Nobody here knows your face.");
+				return;
+			}
+
+			gone = m_Ways.TryTrust(gm, playerId, "carriers", RZ_EFaction.BANDITS, 1, "") == RZ_ECheck.PASS;
+			if (!gone)
+				gm.NotifyPlayer(playerId, m_sTitle, "\"The fence pays now. Bastion pays one day. Walk on.\"");
+		}
+		else if (option == 1)
+		{
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (me && RZ_HavenQuest.CountFood(gm, me) >= BRIBE_FOOD && RZ_HavenQuest.TakeFood(gm, me, BRIBE_FOOD))
+				gone = true;
+			else
+				gone = m_Ways.TryBribe(gm, playerId, RZ_EFaction.BANDITS, BRIBE_FAVOR);
+		}
+		else if (option == 2)
+		{
+			gone = Trick(gm, playerId);
+		}
+
+		if (!gone)
+			return;
+
+		m_Carriers.Delete();
+		RZ_Util.DeleteUnit(m_Fire);
+		m_Fire = null;
+		if (SpawnItem(gm, RZ_Util.RandomPointInRing(m_vCamp, 1, 3)))
+			RZ_ContractHelp.NotifyNear(gm, m_vCamp, 150, m_sTitle, "They kick dirt over the fire and walk off east without it. The box sits by the ashes in its cut straps. Now decide who gets it.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "That's ours, lads": a claim judged by the look, with the crew's flight order from the cockpit
+	//! as the cover detail (read it first). Caught: the catch, and the carriers walk off to the fence.
+	protected bool Trick(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_Disguise disguise = null;
+		if (gm.GetHostility())
+			disguise = gm.GetHostility().GetDisguise();
+
+		if (!disguise || !disguise.IsOn())
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "They look you up and down and laugh.");
+			return false;
+		}
+
+		string cannot = disguise.CannotClaim(playerId, RZ_EFaction.MILITARY);
+		if (!cannot.IsEmpty())
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, cannot);
+			return false;
+		}
+
+		string paper = "";
+		if (m_aRead.Contains(playerId))
+			paper = "The flight order";
+
+		if (disguise.Look(playerId, RZ_EFaction.MILITARY, 1, "crash:" + RZ_SettlementScanner.GridReference(m_vCamp), paper, 300))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "You read them the tail number off the flight order. They look at each other, and decide it isn't worth it.");
+			return true;
+		}
+
+		// Caught: they run for the fence with it
+		m_Carriers.Delete();
+		RZ_Util.DeleteUnit(m_Fire);
+		m_Fire = null;
+		m_eState = RZ_EMissionState.FAILED;
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -858,6 +1156,14 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "The commander thanks you, takes the box into his office, and you hear the stove door open. \"Weather,\" he says when he comes out. \"Write it down.\"");
 			went = "stove";
+			// The commander, quietly: his loyalty up, Bastion's standing for the one who brought it, and
+			// a silence that comes out if the manifest ever turns up another way
+			RZ_Leaders leaders = gm.GetLeaders();
+			if (leaders)
+				RZ_StoryKit.Loyalty(gm, leaders.FindNearest(RZ_EFaction.MILITARY, m_vPos, 5000), 5);
+
+			RZ_WorldFacts.Get().Memory().Lies().Tell(gm, playerId, "crash.stove", "wreck:" + RZ_SettlementScanner.GridReference(m_vPos), RZ_EFaction.MILITARY, "", m_vPos, RZ_ELieTest.RUMOUR, 10,
+				"A copy of a manifest is going round the posts: twelve rifles, Day 9, for diesel. Somebody remembers who carried a box into the commander's office.");
 		}
 		else if (faction == RZ_EFaction.BANDITS && m_sTruth == "inventory")
 		{
@@ -866,10 +1172,22 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 				errands.Morale(RZ_EFaction.MILITARY, -3, "the manifest on the open channel");
 
 			gm.NotifyAllAs("Open channel", "A Red Hand voice, reading slowly: \"Twelve rifles, signed correct, every one. Turns out they were signed to us.\" Laughter, then static.", RZ_ENoticeTag.EVENT);
+			RZ_Leaders crossed = gm.GetLeaders();
+			if (crossed)
+				RZ_StoryKit.Loyalty(gm, crossed.FindNearest(RZ_EFaction.MILITARY, m_vPos, 5000), -5);
 		}
 		else if (faction == RZ_EFaction.MILITARY)
 		{
 			epilogue = string.Format("Behind the radio at the post nearest %1, more tags on the nail. Under them, in grease pencil, the weather.", GetLocationName(gm));
+			// The nail (Weather): the crew's tags go up, morale +2, the names on tonight's call
+			if (m_sTruth == "weather")
+			{
+				went = "nail";
+				RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, 2, "the crew's tags on the nail");
+				RZ_Shared shared = gm.GetShared();
+				if (shared)
+					shared.GetCallbacks().Queue(playerId, "Bastion's nightly call", "The operator reads three names off the nail, slowly, and adds: \"Recovered by a civilian. Weather.\"", m_vPos);
+			}
 		}
 
 		array<int> who = {playerId};
@@ -898,6 +1216,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		super.Cleanup(gm);
 		RZ_Util.DeleteUnit(m_Wreck);
 		RZ_Util.DeleteUnit(m_Cockpit);
+		RZ_Util.DeleteUnit(m_Fire);
 		if (m_Carriers)
 			m_Carriers.Delete();
 	}

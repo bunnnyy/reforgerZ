@@ -68,6 +68,7 @@ class RZ_Mission
 	//! The story kit (Missions/Story/RZ_MissionStory.c): who took part and who decides, who benefits,
 	//! truths, records. Null: the mission runs exactly as before.
 	ref RZ_MissionStory m_Story;
+	ref RZ_OneChoice m_Choice;		// one real choice before it ends (Missions/Blocks/RZ_OneChoice.c), null for none
 	//! A mirror offer (Missions/Story/RZ_Mirror.c): a second giver for the same job. Null: one giver.
 	ref RZ_Mirror m_Mirror;
 	//! An amends job reserved for one player by a parley or a knock (Factions/RZ_Parley.c): offered to
@@ -204,6 +205,30 @@ class RZ_Mission
 	{
 		if (m_Story)
 			m_Story.m_Deciding.EndHold();
+
+		if (m_Choice)
+			m_Choice.HoldDone(gm, this, decider, option);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A one-choice job's question was answered (or its default taken, decider -1): what it does.
+	void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A one-choice job asks its question only on its own: never as a questline's stage (the stage's
+	//! story decides), and never in a subclass that reuses it (they override this).
+	bool AsksChoice()
+	{
+		return m_iQuestRun < 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a one-choice job's person turns up when its work is done.
+	vector ChoiceAt()
+	{
+		return m_vPos;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -384,6 +409,24 @@ class RZ_Mission
 			m_Mirror.Tick(gm, this, dt, ids);
 
 		OnUpdate(gm, dt, ids, players);
+
+		// One real choice: the work is done, so the question comes before it ends
+		if (m_Choice && !m_Choice.m_bDone && m_eState != RZ_EMissionState.FAILED && AsksChoice())
+		{
+			bool workDone = m_eState == RZ_EMissionState.SUCCEEDED;
+			if (m_Choice.m_bAsking)
+			{
+				if (workDone && m_Choice.m_bEnds)
+					m_eState = RZ_EMissionState.ACTIVE;
+
+				m_Choice.Tick(gm, this, dt);
+			}
+			else if (workDone && !m_Choice.m_bManual)
+			{
+				m_eState = RZ_EMissionState.ACTIVE;
+				m_Choice.Ask(gm, this, ChoiceAt());
+			}
+		}
 
 		if (m_eState == RZ_EMissionState.ACTIVE && m_fTimeLeft <= 0)
 			OnTimeUp(gm);
@@ -582,6 +625,8 @@ class RZ_Mission
 	//! A choice slot on a person or thing this (non-puzzle) mission tagged with RZ_PuzzleObjectComponent.
 	void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
 	{
+		if (m_Choice && objIdx == RZ_OneChoice.OBJECT_INDEX)
+			m_Choice.Handle(gm, this, playerId, option);
 	}
 
 	//------------------------------------------------------------------------------------------------

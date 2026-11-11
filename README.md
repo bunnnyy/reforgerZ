@@ -91,10 +91,10 @@ and one way to end it: **research the cure.**
   the choice missions pay fairly whichever side the result goes to.
 - **Errands**: small, true jobs named people ask in person: the cook whose pot is thin, the
   sergeant whose relief is asleep in a car, the technician whose freezers are short of fuel, the
-  Doctor on the road with a bitten stranger before dark. 31 routines at safehouses, posts, camps and
+  Doctor on the road with a bitten stranger before dark. 34 routines at safehouses, posts, camps and
   stations, the wanderers' asks, 18 strangers met only where one makes sense (a road people use, a
   campfire, a stopped car, a town edge at dusk), locals who remember what you did, board and radio
-  asks, and 39 hand-written cards; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
+  asks, and 61 hand-written cards, each true only while its reason is; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself only
   after the cure's epilogue week (the line stands down, the gates open with the wipe; a timed wipe is
@@ -170,7 +170,7 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Not built yet:** the approved designs for the rest of the season: the rest of the four majors,
-of the cure's finale and of the epilogue week, errands' margin, lock and epilogue cards and more,
+of the cure's finale and of the epilogue week, errands' epilogue cards and more,
 built in the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7,
 simplified: the record and the hall's freeze, beats and carriers, the dose outlets, the queue and
 the lab gate, the grey choices, the closure set, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
@@ -183,7 +183,9 @@ things everywhere (phase 3: errands' core, the mission style's framework and the
 writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
 jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
 dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
-board and radio asks and errands' phase 4 cards,
+board and radio asks and errands' phase 4 cards; and phase 8's growth: the worked examples'
+remaining ways, the 16 one-choice jobs and 68 work rows, errands to 61 cards with the margin and lock
+cards,
 [MISSIONS.md](docs/MISSIONS.md)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank, and talk's
 rest: lies you're told, promises, claims in kit, barks, strangers, the open channel, the season

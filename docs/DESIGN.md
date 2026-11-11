@@ -1103,7 +1103,15 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 - **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
   collection (found at the next collection there), saying a colleague turned or walking a deserter to
   the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
-  truck).
+  truck), a Nurse hiding a bite at a house's door (found within a season day), the commander's stove
+  (found by the rumour round).
+- **Season counts the story jobs keep** (season flags): Bastion's civilians sheltered
+  (`bastion.sheltered`, read on the call to those who brought them), and Struck Off's men walked home
+  or still out (`struck.home`, `struck.out`), read at the last roll in Bastion's coda
+  ([QUESTLINES.md](QUESTLINES.md#the-majors)).
+- **Leaders in a story job** (`RZ_StoryKit.Remember`, `Loyalty`): a story job may make one leader
+  remember a player as helped or crossed, and move one leader's loyalty at most 5 (never a
+  stronghold's, never below the seat ledger's floor of 30).
 - **Failure is a branch.** A failed story job can open one **fallout errand** at its subject
   (`RZ_StoryKit.Fallout`, `RZ_Errands.Fallout`): dealt to the job's participants first for 20 minutes,
   then to anyone for 3 hours, by a giver within 3 km, paying at most 30% of the job's base. None after
@@ -1115,6 +1123,26 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   to ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)).
 - **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice slots
   (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` (Survivors Trapped's mother).
+- **One real choice** (`Missions/Blocks/RZ_OneChoice.c`, `m_Choice`): when a one-choice job's work
+  is done (its state turns to succeeded), it stays open and a stand-in person (the civilian puzzle
+  prefab) appears beside it with the options as choice slots (object index 90). Picking one goes
+  through the decider rule and the 5-second hold; nobody in 90 s, or no prefab, takes the default.
+  The mission's `OnChosen` does what the option does, then it ends as done. A **manual** choice is
+  asked by the mission mid-job (Fight Pit's round 3, Kill the Officer's aide), and may leave the job
+  running. Never as a questline's stage (`AsksChoice`). Helpers: pay or blame those with the decider,
+  morale through the shared budget, the hungriest house, and **where the horde drifts**
+  (`RZ_HordeWhere`), one shared block. The jobs are in [MISSIONS.md](MISSIONS.md#one-choice-jobs-and-work).
+- **Route assets and the 90% lock** (`Missions/Story/RZ_RouteAssets.c`): an option can carry a route
+  asset for one of the finale's routes; the decider gets one, into the finale's store
+  ([FINALE.md](FINALE.md#before-the-gate-pitches-and-route-assets) owns what an asset is, its limits and
+  what it's worth). Story records give theirs on their own; one-choice options and a few jobs (the
+  notebook to a Haven medic, the sums left with the crews) tag theirs by hand. After a player locks to
+  a route, an option whose asset belongs to another route refuses them: *"You've picked your side.
+  This isn't it."* Before the lock nothing is refused.
+- **Work rows** (`Missions/Story/RZ_WorkRows.c`): the 68 work jobs each have a row: the reasons they
+  answer, whether they write the **town tally** (per town in the season flags: how often work was
+  done there and whose mark is on the wall now; read into the next work job's brief there), and a
+  fallout line ([MISSIONS.md](MISSIONS.md#one-choice-jobs-and-work)).
 - **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
   the mission manager may start one registered contract that answers it (`RZ_MissionReasons`: The
   Harvest Guard and Protection Racket answer a hungry house; Checkpoint Duty and Convoy Escort a
@@ -1138,7 +1166,7 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 Log lines: `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
 resolved by hand-in to <party> (...)`, `Story: <title> record <key> (<subject>) = <value>`, `Story:
 <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is <truth>` (and `colleague`,
-`crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Mirror: <title>
+`crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Story: <title> asks (<options>)`, `Story: <title> chose <n> (by <player>)`, `Story: tally <town> (<name>) = <n>, mark <faction+1> (<key>)`, `Mirror: <title>
 hinted to <faction>`, `Mirror: <title> won by <faction>` (or `by both, half each`).
 
 ### Errands
@@ -1804,7 +1832,7 @@ until used up (`DrawTruth`, `FoundTruth`, `UseTruth`). 64 at most.
 | Part | Written by |
 |---|---|
 | Signals | bites (a player's own: one per 10 minutes), deaths (the background and how long they lasted, never the name), supply trucks lost (who robbed them as the server-only cause), shells (the Fire Mission perk and contract; who called them as the cause), burned buildings, trial doses |
-| Reasons | `house.hungry` (safehouse upkeep: short posts it, fed clears it), `house.truck_lost` and `post.truck_lost` (supply trucks), `town.infested` (a town turning infested or overrun, checked every 30 s), `town.shelled`, `leader.died`, `wanderer.bitten`, `cure.<percent>` (the lab's milestones), `house.bitten` (a bite declared at a safehouse, or a man walked out of it), `house.lost_to` (errands' Somebody Should Tell Them) |
+| Reasons | `house.hungry` (safehouse upkeep: short posts it, fed clears it), `house.truck_lost` and `post.truck_lost` (supply trucks), `town.infested` (a town turning infested or overrun, checked every 30 s), `town.shelled`, `leader.died`, `wanderer.bitten`, `cure.<percent>` (the lab's milestones), `house.bitten` (a bite declared at a safehouse, or a man walked out of it), `house.lost_to` (errands' Somebody Should Tell Them), `horde.passed` (a pack's move, The Tribe Moves, at the town nearest its way) |
 | The town log | a contract or event finished in a town (the best slot: salience 2, 3 for an event or a questline stage, the paid players named) or failed there (the worst), people brought in (3), a town burned (4), an outpost taken (3) |
 | World records | errands ([ERRANDS.md](ERRANDS.md)), and who benefits (`<key>.went_to`) |
 
