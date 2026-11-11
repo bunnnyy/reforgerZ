@@ -1198,6 +1198,20 @@ class RZ_FactionLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One line on faction f's open channel now, to everyone who hears it (a caught impostor, never
+	//! named; the parley's word). Whoever hears that channel hears it, as chatter.
+	void OpenChannelLine(int f, string line)
+	{
+		if (line.IsEmpty())
+			return;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		SendChatter(f, line, ids, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A line on faction f's open channel right now, "" if it has nothing to say (house radios).
 	string ChatterFor(int f)
 	{

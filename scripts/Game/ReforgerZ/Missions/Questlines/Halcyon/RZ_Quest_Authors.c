@@ -18,7 +18,7 @@
 //! 4. The Red Hand's offer (mission): turn the boss's man down (the director refuses), take the
 //!    money (Red Hand Favor; Take the Lab is offered during the stand), or tell the CO (a Bastion
 //!    group on the lab's road during the stand).
-//! 5. Ready the lab (mission, from 75% research): Power the Lab, Decontamination or Lab Defence,
+//! 5. Ready the lab (mission, from 75% research): Power the Lab, Burn the Bodies at the lab or Lab Defence,
 //!    picked by the director from the flags.
 //! 6. The final stand (wait for it, then a mission that lasts as long as the stand): the Bastion
 //!    group at the gate, the road group, and with B3's samples flight one more Halcyon guard.
@@ -288,7 +288,7 @@ class RZ_Quest_Authors : RZ_Questline
 				return new RZ_QM_AuthorsPower();
 			}
 
-			if (task == TASK_DECON && !RZ_ContractHelp.CorpsePilePrefab(gm).IsEmpty() && !missions.IsTypeRunning(RZ_Mission_Decontamination))
+			if (task == TASK_DECON && !RZ_ContractHelp.CorpsePilePrefab(gm).IsEmpty() && !missions.IsTypeRunning(RZ_QM_AuthorsDecon))
 			{
 				run.SetFlag("task", TASK_DECON);
 				return new RZ_QM_AuthorsDecon();
@@ -1349,9 +1349,15 @@ class RZ_QM_AuthorsPower : RZ_Mission_PowerTheLab
 }
 
 //------------------------------------------------------------------------------------------------
-//! Authors, stage 5: Decontamination, picked by the director (the Haven's people will come).
-class RZ_QM_AuthorsDecon : RZ_Mission_Decontamination
+//! Authors, stage 5: Burn the Bodies at the lab, picked by the director (the Haven's people will come).
+class RZ_QM_AuthorsDecon : RZ_Mission_BurnTheBodies
 {
+	//------------------------------------------------------------------------------------------------
+	void RZ_QM_AuthorsDecon()
+	{
+		m_bForceLab = true;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{

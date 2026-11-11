@@ -803,6 +803,9 @@ class RZ_MissionManager
 		{
 			m.OnFailed(m_GM);
 			m.NotifyInterested(m_GM, "Mission failed", m.GetFailText(m_GM));
+			string fallout = RZ_MissionReasons.FalloutLine(m.Type());
+			if (!fallout.IsEmpty() && !m.m_bWithdrawn)
+				m.NotifyInterested(m_GM, m.m_sTitle, fallout);
 		}
 
 		// Leader memory, loyalty drift and discovery of rogue jobs

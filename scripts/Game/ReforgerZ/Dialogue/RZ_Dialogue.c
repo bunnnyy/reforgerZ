@@ -112,12 +112,66 @@ class RZ_Dialogue
 	protected ref map<int, float> m_mLastTalk = new map<int, float>();
 	protected int m_iSerial;
 	protected ref RZ_DialogueTrees m_Trees;
+	protected ref RZ_DialogueScenes m_Scenes;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Dialogue(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
 		m_Trees = new RZ_DialogueTrees(gm);
+		m_Scenes = new RZ_DialogueScenes(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The multiplayer layer (Dialogue/RZ_DialogueScenes.c).
+	RZ_DialogueScenes GetScenes() { return m_Scenes; }
+
+	//------------------------------------------------------------------------------------------------
+	//! On the game mode's tick: the scenes' holds.
+	void Tick(float dt)
+	{
+		m_Scenes.Tick(dt);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every open conversation with this speaker.
+	void SessionsWith(IEntity speaker, notnull array<RZ_TalkSession> result)
+	{
+		if (!speaker)
+			return;
+
+		foreach (int playerId, RZ_TalkSession s : m_mSessions)
+		{
+			if (s.m_Speaker == speaker)
+				result.Insert(s);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A deciding pick's hold ran out unobjected: it lands for the decider, if they're still talking.
+	void FinishHold(RZ_DSceneHold h)
+	{
+		RZ_TalkSession s = GetSession(h.m_iDecider);
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(h.m_iDecider);
+		if (!s || !s.m_Tree || s.m_Speaker != h.m_Speaker || !user)
+			return;
+
+		RZ_ECheck result = h.m_iResult;
+		s.m_aNew.Clear();
+		s.m_bCapturing = true;
+		bool goOn = m_Trees.FinishPick(s, h.m_iChoice, result, h.m_sVerdict, user);
+		s.m_bCapturing = false;
+		if (!m_mSessions.Contains(h.m_iDecider))
+			return;
+
+		if (!goOn)
+		{
+			End(h.m_iDecider, "", true);
+			return;
+		}
+
+		TakeNew(s);
+		SendNode(s, user);
 	}
 
 	//------------------------------------------------------------------------------------------------

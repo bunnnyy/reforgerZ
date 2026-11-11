@@ -422,21 +422,34 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #22 Struck Off: a soldier on a post's roster as killed in action has been seen alive. A Haven
-//! trader in a nearby town saw him (the Deserter wanderer, asked about Bastion, knows exactly
-//! where he sleeps). Find him and decide, at his kit or by talking to him:
-//! - **Back on duty:** the KIA is rubbed out; he walks with you to the post. 80% pay, Bastion
-//!   morale +3 and strength +1.
+//! #22 Struck Off (Hunt the Deserter merged in; story key `struck`): a soldier on a post's roster as
+//! killed in action has been seen alive. His pack by the post, a Haven trader in a nearby town, or
+//! the Deserter wanderer (asked about Bastion) leads to where he sleeps. The truth behind it, kept per
+//! name: he stole and ran, he was written off (he never took a tin), the quartermaster's gap (the
+//! rations were sold), or a Haven door (he's hiding at a house). Talking to him tells it to the room;
+//! the post's stores book, read at night, shows the last two. Then, at his kit:
+//! - **Back on duty:** persuade him (Trust with Bastion, difficulty 2, ★ Soldier +1). The KIA is
+//!   rubbed out; he walks with you to the post. 80% pay, Bastion morale +3 and strength +1.
 //! - **Arrest him:** he walks with you to the post and the stockade. Full pay.
 //! - **The Haven:** walk him to a safehouse (it gains one). The Haven pays instead (12 Fame,
-//!   15 Favor); 25% the post hears of it (+15 Bastion Infamy).
+//!   15 Favor). A lie to Bastion, found out by a Bastion-Known player at that house: +15 Infamy.
 //! - **Bastion's way:** he stays struck off. Carry his tag to the empty nail at the post: 60%.
+//! - **Let him go:** no pay; he walks off.
+//! - **The stores book** (written off or the gap, once read): report it from the board for +5
+//!   Bastion Fame, the chooser only.
 //! If he dies any other way, his tag is all that's left: the same 60% at the nail.
 //! In ten days only one soldier walked out (docs/LORE.md, Private Fiala on Day 7), so his KIA is
 //! dated from Day 11 to two days ago, the day the trader saw him: never before Day 13.
 class RZ_Mission_StruckOff : RZ_PuzzleMission
 {
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
+	protected ref RZ_StepChain m_Chain = new RZ_StepChain();
+	protected ref RZ_Ways m_Ways = new RZ_Ways("Struck Off");
+	protected string m_sTruth;
+	protected bool m_bBookRead;
+	protected bool m_bReported;
+	protected int m_iBookClue = -1;
+	protected int m_iPackClue = -1;
 	protected vector m_vPost;
 	protected string m_sPost;
 	protected vector m_vWitness;
@@ -453,7 +466,6 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	protected bool m_bHideShown;
 	protected bool m_bTold;
 	protected bool m_bFound;
-	protected bool m_bFoundOut;
 	protected IEntity m_Tag;
 	protected bool m_bTagSpawned;
 	protected vector m_vTagLast;
@@ -474,11 +486,18 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	protected static const float ROSTER_MORALE = 3;
 	protected static const int HAVEN_FAME = 12;
 	protected static const int HAVEN_FAVOR = 15;
-	protected static const float FOUND_OUT_CHANCE = 0.25;
 	protected static const int FOUND_OUT_INFAMY = 15;
+	protected static const int MODE_GONE = 5;
+	protected static const int REPORT_FAME = 5;
 	protected static const int MAX_TAG_SPAWNS = 4;
 	protected static const int FIRST_KIA_DAY = 11;	// after the first ten days (Fiala, Day 7, was the only one)
 	protected static const int MIN_DAY = 13;		// the trader saw him two days ago, on Day 11 or later
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_StruckOff()
+	{
+		m_Story = new RZ_MissionStory("struck");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -495,10 +514,10 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		if (!RZ_Escort.HasRoom(gm) || gm.GetMissionItemPrefab().IsEmpty() || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT) || !HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
 			return 0;
 
-		if (RZ_ContractHelp.CountSafehouses(gm) == 0 || gm.GetMissions().IsTypeRunning(RZ_Mission_HuntTheDeserter))
+		if (RZ_ContractHelp.CountSafehouses(gm) == 0)
 			return 0;
 
-		return 0.8;
+		return 1.2;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -531,10 +550,29 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 
 		string day = RZ_NoteText.Day(m_Rng.Int(FIRST_KIA_DAY, today - 1));
 
+		// The truth, kept per name: a Haven door needs a house within 3 km of where he sleeps
+		array<string> values = {"stole", "written_off", "qm_gap", "haven_door"};
+		array<float> weights = {0.35, 0.3, 0.2, 0};
+		if (RZ_Util.DistXZ(m_vHouse, m_vHide) <= 3000)
+			weights[3] = 0.15;
+
+		m_sTruth = m_Story.Truth(m_sName, values, weights);
+		if (m_sTruth == "haven_door")
+			m_vHide = LandPointNear(m_vHouse, 30, 90);
+
+		// The old trail: his pack by the post, pointing on to the town
+		m_Chain.SetMission(m_iId);
+		int postTown = gm.FindNearestSettlement(m_vPost);
+		RZ_ChainStep pack = m_Chain.AddStep(gm, postTown, LandPointNear(m_vPost, 250, 500), 6, 0);
+		pack.m_iClue = AddClue("A dropped pack", string.Format("Army issue, the name tape cut off. Two empty ration tins, and a map with %1 circled in pencil. Under the circle: grid %2.", s.m_sName, RZ_SettlementScanner.GridReference(m_vHide)));
+		pack.m_sReadLabel = "Go through the pack";
+		m_iPackClue = pack.m_iClue;
+
 		m_iWitnessClue = AddClue("A Haven trader", string.Format("\"Your lot's uniform, patch cut off. Paid me in rifle rounds for two tins of fish and asked if the Haven takes soldiers.\" She points past the last houses. \"He sleeps rough out there, grid %1. He jumps at every sound. Don't tell him it was me.\"",
 			RZ_SettlementScanner.GridReference(m_vHide)));
 		m_iTalk = AddClue(m_sName, string.Format("He doesn't reach for the rifle. \"%1. They wrote me up, didn't they? Killed in action, %2.\" A short laugh. \"I was. Most of me. I walked away from what was left of the section and nobody came looking. Until you.\"", m_sSurname, day));
 		m_iRosterClue = AddClue("The roster", string.Format("Grease pencil on the board: \"%1. KIA %2. Body not recovered.\" On the wall behind the radio, a row of nails with a tag on each. The one under his name is empty.", m_sName, day));
+		m_iBookClue = AddClue("The stores book", BookText());
 
 		m_Escort.m_sName = m_sName;
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 2);
@@ -543,14 +581,43 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 
 		m_vPos = m_vWitness;
 		m_sTitle = "Struck Off";
-		m_sBrief = string.Format("%1 is on the roster at %2 as killed in action. A Haven trader in %3 says she sold him fish two days ago. The roster has to account for him. Find him, and settle it.", m_sName, m_sPost, m_sTown);
+		m_sBrief = string.Format("%1 walked off post at %2 with a week's rations, they say. He's on the board as killed in action. A Haven trader in %3 says she sold him fish two days ago. Bring him back, or bring back his tag.", m_sName, m_sPost, m_sTown);
 		return m_Escort.Begin(gm, m_vHide);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected string ChoiceLabels()
 	{
-		return "Bring him back (the KIA is rubbed out)|Arrest him|Walk him to the Haven|Settle it Bastion's way";
+		return "[Trusted · Bastion] Talk him back|Arrest him|Walk him to the Haven|Settle it Bastion's way|Let him go";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The post's stores book: what it shows depends on the truth.
+	protected string BookText()
+	{
+		if (m_sTruth == "written_off")
+			return "The week he walked, the ration count is short by the same number it was short the week before. And the week before that. He never took a tin. Somebody needed a name to put it against.";
+
+		if (m_sTruth == "qm_gap")
+			return "A neat column of rations \"lost in transit\", in the quartermaster's hand, dated the night before he walked. The pages after it are in a different pen.";
+
+		return "The ration count drops by a week's worth on the day he walked. It's all there, signed for and missing.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What he says, by the truth (told to the room).
+	protected string HisSide()
+	{
+		if (m_sTruth == "written_off")
+			return "\"Rations? I never took a tin. Check the book. They needed the numbers to come out.\"";
+
+		if (m_sTruth == "qm_gap")
+			return "\"The quartermaster sold half the stores the night before. Me walking off was very handy for him.\"";
+
+		if (m_sTruth == "haven_door")
+			return "\"The tins went to two kids at the house. Their mum was in my section. Somebody had to.\"";
+
+		return "\"I took them. I'd take them again. I'm not going back to that post.\"";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -605,9 +672,34 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The stores book is only read when nobody's watching: after dark.
+	override string GetClueText(RZ_GameModeComponent gm, int playerId, int idx)
+	{
+		if (idx == m_iBookClue && !RZ_GameTime.IsNight())
+			return "The quartermaster sits right beside it, and he's looking at you. Come back after dark.";
+
+		return super.GetClueText(gm, playerId, idx);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
 	{
-		if (idx == m_iWitnessClue && !m_bTold)
+		m_Chain.OnClueRead(idx);
+		if (idx == m_iTalk)
+		{
+			m_Story.m_Deciding.Step(gm, playerId);
+			m_Story.Reveal(gm, this, m_sName, playerId, "talk", HisSide());
+		}
+
+		// The stores book shows it only to someone reading by night
+		if (idx == m_iBookClue && RZ_GameTime.IsNight() && (m_sTruth == "written_off" || m_sTruth == "qm_gap") && !m_bBookRead)
+		{
+			m_bBookRead = true;
+			m_Story.Reveal(gm, this, m_sName, playerId, "book", "The stores book doesn't add up the way the roster does.");
+			SetObjectLabels(OBJ_BOARD, "Hang his tag on the nail", "Report the stores book to the duty officer");
+		}
+
+		if ((idx == m_iWitnessClue || idx == m_iPackClue) && !m_bTold)
 		{
 			m_bTold = true;
 			if (m_iMode == MODE_NONE)
@@ -622,7 +714,11 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		{
 			m_bPostShown = true;
 			SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vPost, OBJ_BOARD, "Hang his tag on the nail", "", m_iRosterClue, "Read the roster");
+			SpawnClue(gm, RZ_EPuzzleProp.CLUE, LandPointNear(m_vPost, 3, 6), m_iBookClue, "Read the stores book");
 		}
+
+		if (!m_Chain.IsDone() && !m_bFound)
+			m_Chain.Update(gm, dt, ids, players, m_aParticipants);
 
 		if (!m_bWitnessShown && RZ_ContractHelp.AnyNear(players, m_vWitness, 300))
 		{
@@ -733,12 +829,44 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
 	{
-		if (objIdx != OBJ_KIT || m_iMode != MODE_NONE || option < 0 || option > 3)
+		if (objIdx == OBJ_BOARD)
+		{
+			OnReport(gm, playerId);
+			return;
+		}
+
+		if (objIdx != OBJ_KIT || m_iMode != MODE_NONE || option < 0 || option > 4)
 			return;
 
 		if (!IsEligible(gm, playerId))
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "He looks past you, at the road. \"You're not from the post. Who sent you?\"");
+			return;
+		}
+
+		if (!RZ_StoryKit.MayDecide(gm, this, playerId))
+			return;
+
+		// Talking him back is a persuade, once
+		if (option == 0)
+		{
+			if (m_Ways.TryTrust(gm, playerId, "deserter", RZ_EFaction.MILITARY, 2, "soldier") != RZ_ECheck.PASS)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "\"Back on duty? With them?\" He shakes his head. He won't hear it from you. Arrest him, or something else.");
+				return;
+			}
+		}
+
+		if (option == 4)
+		{
+			m_bFound = true;
+			m_iMode = MODE_GONE;
+			SetObjectLabels(OBJ_KIT, "", "");
+			array<int> chooser = {playerId};
+			RZ_StoryKit.Record(this, "fate", m_sName, "gone", chooser);
+			gm.NotifyPlayer(playerId, m_sTitle, "You step aside. He looks at you a long moment, then he's gone into the trees. On the board he's still dead. Nobody pays for this.");
+			m_Escort.Cleanup();
+			m_eState = RZ_EMissionState.FAILED;
 			return;
 		}
 
@@ -775,13 +903,24 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		m_eGiver = RZ_EFaction.SURVIVORS;
 		m_iFameReward = HAVEN_FAME;
 		m_iFavorReward = HAVEN_FAVOR;
-		if (m_Rng.Chance(FOUND_OUT_CHANCE))
-		{
-			m_bFoundOut = true;
-			SetRival(RZ_EFaction.MILITARY, FOUND_OUT_INFAMY);
-		}
 
 		gm.NotifyPlayer(playerId, m_sTitle, string.Format("He stares at you. \"You'd do that?\" Then he's up, kit on, before you can change your mind. The Haven safehouse in %1 (%2). On Bastion's books he's still dead.", m_sHouse, RZ_Util.DirectionText(m_Escort.m_vPos, m_vHouse)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stores book, reported from the board: the post's quartermaster answers for it. +5 Bastion
+	//! Fame for the chooser only; the job goes on.
+	protected void OnReport(RZ_GameModeComponent gm, int playerId)
+	{
+		if (!m_bBookRead || m_bReported || !RZ_StoryKit.MayDecide(gm, this, playerId))
+			return;
+
+		m_bReported = true;
+		SetObjectLabels(OBJ_BOARD, "Hang his tag on the nail", "");
+		gm.AddFame(playerId, RZ_EFaction.MILITARY, REPORT_FAME, false, RZ_RepFlag.SMALL);
+		array<int> chooser = {playerId};
+		RZ_StoryKit.Record(this, "book", m_sPost, m_sTruth, chooser);
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("The duty officer reads the page twice and closes the book on his thumb. \"Leave it with me.\" +%1 Bastion Fame.", REPORT_FAME));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -805,6 +944,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
+		RZ_StoryKit.Record(this, "fate", m_sName, ModeWord(), m_aParticipants, FateLine(), "radio");
 		if (m_iMode == MODE_ROSTER)
 		{
 			RZ_BastionLoreHelp.Morale(gm, ROSTER_MORALE);
@@ -825,16 +965,63 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 			return;
 
 		gm.GetSafehouses().AddRescued(m_vHouse, 1, m_aParticipants);
-		if (m_bFoundOut)
-			NotifyParticipants(gm, m_sTitle, string.Format("Someone at %1 hears he was seen going in. They don't change the roster. They change their mind about you.", m_sPost));
-		else
-			NotifyParticipants(gm, m_sTitle, "The Haven asks him nothing but his first name. On a board in a Bastion post, he's still dead.");
+		NotifyParticipants(gm, m_sTitle, "The Haven asks him nothing but his first name. On a board in a Bastion post, he's still dead.");
+
+		// Bastion's books say dead: a lie, found out when someone Bastion knows comes to that house
+		string found = string.Format("Someone from %1 saw %2 at the Haven house in %3. They don't change the roster. They change their mind about you.", m_sPost, m_sName, m_sHouse);
+		foreach (int playerId : m_aParticipants)
+		{
+			RZ_WorldFacts.Get().Memory().Lies().Tell(gm, playerId, "struck.haven", m_sName, RZ_EFaction.MILITARY, "", m_vHouse, RZ_ELieTest.VISIT, FOUND_OUT_INFAMY, found);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string ModeWord()
+	{
+		if (m_iMode == MODE_ROSTER)
+			return "roster";
+
+		if (m_iMode == MODE_ARREST)
+			return "stockade";
+
+		if (m_iMode == MODE_HAVEN)
+			return "haven";
+
+		if (m_iMode == MODE_TAG)
+			return "nail";
+
+		return "gone";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string FateLine()
+	{
+		if (m_iMode == MODE_ROSTER)
+			return string.Format("At the last roll at %1, %2 answers \"Here\".", m_sPost, m_sName);
+
+		if (m_iMode == MODE_TAG)
+			return string.Format("His tag hangs on the nail at %1. Nobody answers for %2.", m_sPost, m_sName);
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		if (m_iMode == MODE_GONE)
+			return;
+
+		// Time up: a hunter squad finds him, as data, and his tag goes on the nail
+		RZ_StoryKit.Record(this, "fate", m_sName, "nail", m_aParticipants, string.Format("Struck off twice: %1's tag hangs at %2.", m_sName, m_sPost), "board");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Struck Off: %1 is still out there, and the roster still says he's dead.", m_sName);
+		if (m_iMode == MODE_GONE)
+			return string.Format("Struck Off: %1 walked away, and the roster still says he's dead.", m_sName);
+
+		return string.Format("Struck Off: a hunter squad found %1 first. Struck off twice.", m_sName);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -842,5 +1029,6 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	{
 		super.Cleanup(gm);
 		m_Escort.Cleanup();
+		m_Chain.Cleanup();
 	}
 }

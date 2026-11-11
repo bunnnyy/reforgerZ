@@ -21,15 +21,9 @@ class RZ_EventSettings
 	[Attribute("10", desc: "Power Surge: real minutes a town's power stays on")]
 	float m_fSurgeMinutes;
 
-	// ---------------------------------------------------------------- Fire (Gas Station Fire, Burning Town)
+	// ---------------------------------------------------------------- Fire (Gas Station Fire)
 	[Attribute("8", desc: "Gas Station Fire: infection taken off the town when the station goes up")]
 	float m_fStationInfectionDrop;
-
-	[Attribute("8", desc: "Burning Town: most buildings that burn (and never more than 40% of the town)")]
-	int m_iBurnMax;
-
-	[Attribute("3", desc: "Burning Town: infection taken off the town for each building that burns (on top of the fire's own)")]
-	float m_fBurnInfectionDrop;
 
 	// ---------------------------------------------------------------- People
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Prison Break: escaped convicts, an armed AI group on BAND (the Red Hand takes them in). Empty = Missions > Red Hand group", "et")]

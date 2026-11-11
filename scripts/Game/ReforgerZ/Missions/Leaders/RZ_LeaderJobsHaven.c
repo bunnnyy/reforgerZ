@@ -135,7 +135,7 @@ class RZ_Job_BringThemHome : RZ_LeaderPuzzle
 		m_iTalk = AddClue("The " + m_sFamily + "s", string.Format("\"%1 sent you? Thank God. There are three of us.\" She glances at the back room. \"%2 got bitten on Tuesday. He says it's a scratch. It isn't, is it.\"", local, bitten));
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Bring all three home|Bring the two who are well|Leave them where they are", m_iTalk, "Talk to the " + m_sFamily + "s");
 
-		m_sTitle = "Bring Them Home";
+		m_sTitle = "Fetch the Family";
 		m_sBrief = string.Format("%1 hasn't slept since the gates closed. Her sister's family, the %2s, are holed up in %3. Bring them here. We'll find the beds. We always do.",
 			local, m_sFamily, s.m_sName);
 		return true;
@@ -225,59 +225,6 @@ class RZ_Job_OverTheFence : RZ_LeaderDelivery
 	override void OnRewardPlayer(RZ_GameModeComponent gm, int playerId)
 	{
 		RZ_LeaderJob.CrossFame(gm, playerId, RZ_EFaction.MILITARY, 3);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! Independent. Hold an old clinic in the next town while it's cleaned out: an annex.
-//! The town's infection -10 and one more person at the safehouse (a nurse moves in).
-class RZ_Job_OldClinic : RZ_LeaderHold
-{
-	protected vector m_vHome;
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetLeaderJob(RZ_EFaction.SURVIVORS, RZ_ELoyalty.INDEPENDENT, RZ_Leaders.TONE_HOPEFUL | RZ_Leaders.TONE_HARD, 8, 15);
-		m_fHoldNeeded = 180;
-		m_fHoldRadius = 25;
-		m_fWaveInterval = 60;
-		m_iMaxWaves = 2;
-		m_fWaveTimer = 30;
-		m_fParticipationRadius = 40;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		RZ_Leader l = GetLeader(gm);
-		if (!l)
-			return false;
-
-		m_vHome = l.m_vPos;
-		m_iSettlement = PickSettlementAway(gm, l.m_vPos, 500, 2500, 15, 75);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4);
-		RZ_Rng rng = new RZ_Rng(m_iId * 7919 + 13);
-		string nurse = RZ_NoteText.FirstName(rng);
-		m_sTitle = "The Old Clinic";
-		m_sBrief = string.Format("There's a clinic in %1: shelves, a bed, a door that locks. Hold it while we clear it out and it's ours, an annex. %2 says she'll move in and run it if someone makes it safe first.",
-			s.m_sName, nurse);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (s)
-			s.AddInfection(-10);
-
-		RZ_LeaderJob.AddPeople(gm, m_vHome, 1);
-		NotifyParticipants(gm, m_sTitle, "The clinic's open. Somebody paints a red cross on the door with a finger. One more name goes on the safehouse list: the nurse who'll run it.");
 	}
 }
 

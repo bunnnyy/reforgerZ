@@ -417,6 +417,23 @@ class RZ_DialogueMemory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Any key in a per-character list starting with `prefix` (a claim already told this speaker).
+	bool HasPrefix(int playerId, int which, string prefix)
+	{
+		RZ_DMemPlayer p = For(playerId);
+		if (!p)
+			return false;
+
+		foreach (string key : ListOf(p, which))
+		{
+			if (key.StartsWith(prefix))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Adds a key to a per-character list (SEEN, PASSED, CLAIMS, NOTES).
 	void Add(int playerId, int which, string key)
 	{

@@ -19,7 +19,6 @@ class RZ_LeaderJobRegistry
 		types.Insert(RZ_Job_OurOwnFirst);
 		types.Insert(RZ_Job_BringThemHome);
 		types.Insert(RZ_Job_OverTheFence);
-		types.Insert(RZ_Job_OldClinic);
 		types.Insert(RZ_Job_RationRun);
 		types.Insert(RZ_Job_NamesForBastion);
 		types.Insert(RZ_Job_ShutTheDoor);
@@ -36,17 +35,13 @@ class RZ_LeaderJobRegistry
 		types.Insert(RZ_Job_DesertionRoute);
 
 		// The Red Hand (RZ_LeaderJobsRedHand.c)
-		types.Insert(RZ_Job_OurCrossroads);
 		types.Insert(RZ_Job_HonourAmongThieves);
-		types.Insert(RZ_Job_HouseRules);
 		types.Insert(RZ_Job_DebtCollection);
 		types.Insert(RZ_Job_SoftTouch);
-		types.Insert(RZ_Job_CoupTalk);
 		types.Insert(RZ_Job_SellOutRivalCrew);
 		types.Insert(RZ_Job_SkimTheToll);
 
 		// Halcyon (RZ_LeaderJobsHalcyon.c)
-		types.Insert(RZ_Job_FieldStation);
 		types.Insert(RZ_Job_SecondOpinion);
 		types.Insert(RZ_Job_PatientsNotSamples);
 		types.Insert(RZ_Job_TheNotebook);

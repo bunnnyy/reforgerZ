@@ -862,8 +862,8 @@ class RZ_UIFeed
 		if (t == RZ_Mission_DeserterMap || t == RZ_Mission_FeverWater || t == RZ_Mission_FeverEvacuation)
 			return RZ_EMissionKindUI.ARC;
 
-		if (t == RZ_Mission_CarKeys || t == RZ_Mission_PharmacyLure || t == RZ_Mission_SilentCourier
-			|| t == RZ_Mission_LeadThemAway || t == RZ_Mission_RooftopRescue
+		if (t == RZ_Mission_CarKeys
+			|| t == RZ_Mission_LeadThemAway
 			|| t == RZ_Mission_TrailOfClues || t == RZ_Mission_BarterChain || t == RZ_Mission_Distraction || t == RZ_Mission_QuietCount)
 			return RZ_EMissionKindUI.UNARMED;
 

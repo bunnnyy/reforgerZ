@@ -1,12 +1,14 @@
 # Errands
 
-**Status: designed; phase 3 (the core) built.** Approved by the author on 2026-11-11. Built and
-described in [docs/ERRANDS.md](../docs/ERRANDS.md): the givers (named people at the four holding kinds and
-the wanderers' asks), the dealer's asked and called-out offers, soft holds and overtaking, the faults
-table, the small-pay ledger, 24 routines, the wanderers' asks, 16 cards, the journal row, telemetry and the
-admin view. This file keeps what's still to build: strangers and their spots, locals, twists, lies and
-witnesses, board and radio asks, found hooks and fallout, promises and callbacks, the other routines and
-cards, the margin, lock and epilogue cards.
+**Status: designed; phase 3 (the core) and part of phase 4 built.** Approved by the author on 2026-11-11.
+Built and described in [docs/ERRANDS.md](../docs/ERRANDS.md): the givers (named people at the four holding
+kinds and the wanderers' asks), the dealer's asked and called-out offers, soft holds and overtaking, the
+faults table, the small-pay ledger, 24 routines, the wanderers' asks, 18 cards (Buy It Back and Dress
+Rehearsal new), fallout errands, and strangers at four spot kinds with the footfall grid (decision 14:
+Up on the Roof and The Last Tin); the lie store and the witness rule are built in
+[docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses). This file keeps what's still to build: the other
+spot kinds and stranger routines, locals, twists, board and radio asks, found hooks, promises and
+callbacks, the other routines and cards (Borrowed Green among them), the margin, lock and epilogue cards.
 
 ## What changed in review
 

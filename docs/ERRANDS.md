@@ -26,6 +26,8 @@ Server only, except the journal row.
 - [The routines](#the-routines)
 - [The wanderers' asks](#the-wanderers-asks)
 - [The cards](#the-cards)
+- [Fallout](#fallout)
+- [Strangers](#strangers)
 - [Telemetry and the admin view](#telemetry-and-the-admin-view)
 - [Saving and performance](#saving-and-performance)
 - [Simplified, and not built yet](#simplified-and-not-built-yet)
@@ -251,15 +253,63 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **The Deserter's Way Round** | line, the Deserter | he likes you, a Bastion road post within 1.5 km | Meet him past the post (10 s): 4 Haven Favor; helped. Turn him in at the post: 2 Bastion Fame, a rumour, a world record |
 | **Nothing Goes Out** | line, a Bastion named person | the perimeter sealed, a sealed checkpoint within 1.65 km, Bastion morale under 50 | Leave his letter under a stone at the warning point, 150 m short (5 s), read or not: 3 Favor; the world record `errand.letter_at_line` with its epilogue line (carrier: a prop) |
 | **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it) | Bring his things back (15 s at the wreck): 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them to the fence: 5 Red Hand Favor, "kit lost" |
-| **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name) | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A world record with an epilogue line (carrier: the board) |
+| **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name), or the fallout of a Distress Call or Survivors Trapped whose people died | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A world record with an epilogue line (carrier: the board) |
 | **Not for the Crew** | crews, a Red Hand named person | a bite within 1 km in the last played hour, a Halcyon station within 1.5 km, before the cure | Walk him to the station: 4 Halcyon Favor, a world record. Your own antidote: 6 Red Hand Favor. Tell the book-keeper: 2 Red Hand Fame |
 | **Wildcard Money** | crews, a Red Hand named person | Wildcard or Tolerated with the Red Hand; another Red Hand holding within 1.5 km | Carry the cut there: 6 Favor; skim a little: 8 Favor; give it to a hungry house within 1.5 km: +2 food there, 2 Haven Fame, +8 Red Hand Infamy |
 | **Clean Slate** (amends) | any faction's named person | that faction Watches you | The worst shift going (a minute): amends |
+| **Dress Rehearsal** (disguises) | crews, a Red Hand named person; Known with the Red Hand, below Known with Bastion; disguises on | a Bastion road post within 2 km | Walk up to it in Bastion kit and pass the look, 10 s at the barrier, and walk back: 10 Favor, 2 Fame. At the barrier and not passing: it's over, and the open channel laughs at someone in borrowed green (no name) |
+| **Buy It Back** (fallout) | aftermath, a Bastion named person; Known with Bastion | Crash Site's fallout: the box not handed in, a post within 3 km of the wreck | A fence's runner sits on the box at the wreck: five tins there, or 25 Red Hand Favor (only offered if you have it), then hand it in: 6 Favor (at most the fallout's cap); the world record `crash.box` = bought back |
+
+## Fallout
+
+`RZ_Errands.Fallout`, called by a failed story job ([DESIGN.md](DESIGN.md#story-blocks)). One errand of
+the job's kind waits at its subject for 3 hours: for the first **20 minutes** only the job's
+participants can be dealt it, then anyone. A giver within 3 km of the subject deals it first (×3 its
+score), and it pays at most **30%** of the failed job's base, whatever the way says. Done, it's gone;
+a second fallout of the same kind at the same place replaces the first. Not saved.
+
+| Failed job | Fallout errand |
+|---|---|
+| Protection Racket (time up) | The Pot, at the house |
+| Crash Site (the box not handed in) | Buy It Back |
+| Distress Call (the people died), Survivors Trapped (all dead) | The Name on the Tag, their names to the nearest house |
+
+## Strangers
+
+`Missions/Errands/RZ_Strangers.c`, with **Missions > Errands > Strangers**. A passer-by who asks one
+small thing, met **only where one would make sense** (the author's decision 14), never because time
+passed. A player crossing empty country meets nobody, however long it's been.
+
+**Spots**, looked for 150, 250 and 350 m ahead along the way you've walked in the last 30 s (standing
+still meets nobody), from facts the server already has:
+
+| Spot | What makes it one |
+|---|---|
+| A road people use | the 250 m **footfall** cell has had players in it a lot lately (a count of player passes on the 30 s tick, halving every 6 real hours; not saved). By day |
+| An approach | 100–800 m from a safehouse or a holding, outside its wire |
+| A town edge at dusk | within 100 m of a settlement's edge, at dusk; fog counts as dusk |
+| A fresh event | within 400 m of a bite, death, fire or shelling in the last 2 played hours |
+
+**Never:** another player outside your vanilla group within 300 m; within 2 km of the Long Table's farm;
+driving; a shot within 60 m in 60 s or infected within 30 m; a running mission's 300 m; a storm; the
+first 5 minutes of a life; a spot that gave anyone a stranger in the last 2 real hours, or you one in a
+real day. **The ceiling** only ever stops one: one per player every 15–25 minutes, 6 on the server
+(the body budget's strangers). The routine's Why must also hold.
+
+| Stranger | Spots | Why | Ways |
+|---|---|---|---|
+| **Up on the Roof** (was Rooftop Rescue) | a fresh event; a town edge at dusk | a town the infected took, or a fresh shelling or fire, within 800 m | Talk them down when no infected is within 25 m: they go to the nearest house (+1 person), and the house sends 4 Haven Favor. Or leave them |
+| **The Last Tin** | a road people use; an approach | you carry 2+ food, and a house within 1.5 km is on half portions | Give him a tin: he tells you where the infected are thick (the world's own news). Or not today |
+
+They call out once when you're within 40 m, wait 5 minutes or until you're 150 m away, and go.
+*Simplified:* the stranger stands at the spot itself rather than at an out-of-sight point 60–90 m off
+(VERIFY); harm to a stranger has no rule of its own yet.
 
 ## Telemetry and the admin view
 
 - **Log lines**: every deal (`Errands: dealt <key> to <player> by <giver> (asked|called out)`), take,
-  done, overtake and fault; and every 30 minutes (**Telemetry**) a status line per family: dealt,
+  done, overtake and fault; every stranger (`Errands: stranger <kind> for <player> at <grid>`, `Errands:
+stranger <kind> done by <player>`); every fallout (`Errands: fallout <card> at <grid> from <title> (...)`); and every 30 minutes (**Telemetry**) a status line per family: dealt,
   declined, lapsed, overtaken, done, Favor, Fame and amends paid, and the ways taken.
 - **The admin view needs no typing**: on the talk screen a server admin sees one more reply on any
   named person, wanderer or occupant, **[Admin] Errands near here**: the live count, the nearest
@@ -280,8 +330,9 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 *Simplified:* a step's place is a point, with no scene person or prop at it yet (the scene-people
 spawner comes with strangers); the lines have two or three variants each, not always three; a card
 dealt counts toward the day's two even if declined. Not built yet, and designed in
-[designs/ERRANDS.md](../designs/ERRANDS.md): strangers at their spots and the footfall grid, locals,
-twists beyond Sleeve Down's truth, board and radio asks, found hooks and fallout errands, lies and
-the witness rule, promises, the rest of the cards (backgrounds, bad standing, traces, the margin,
+[designs/ERRANDS.md](../designs/ERRANDS.md): the other strangers and spots (crossroads, a wanderer's
+route, a campfire, a stopped car, their own place, the line), locals,
+twists beyond Sleeve Down's truth, board and radio asks, found hooks, the other fallout cards (His
+Notebook), errands' own lies (the store and the witness rule are built, [DESIGN.md](DESIGN.md#lies-and-witnesses)), promises, the rest of the cards (backgrounds, bad standing, traces, the margin,
 lock and epilogue cards), callbacks and threads from errands, and the `mission_errand` icon (the
 journal uses the unarmed icon).

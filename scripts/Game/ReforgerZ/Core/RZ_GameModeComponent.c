@@ -850,6 +850,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Interactions.Tick(dt, ids, players);
 		m_Missions.Tick(dt, ids, players);
 		m_Errands.Tick(dt, ids, players);
+		m_Dialogue.Tick(dt);
 		m_Perimeter.Tick(dt, ids, players);
 		m_Cure.Tick(dt, players);
 		m_Perks.Tick(dt, ids, players);
@@ -1314,6 +1315,22 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return profile;
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player id online now with this identity, or -1.
+	int FindPlayerByIdentity(string ident)
+	{
+		if (ident.IsEmpty())
+			return -1;
+
+		foreach (int id, string known : m_mIdentities)
+		{
+			if (known == ident && !GetGame().GetPlayerManager().GetPlayerName(id).IsEmpty())
+				return id;
+		}
+
+		return -1;
 	}
 
 	//------------------------------------------------------------------------------------------------

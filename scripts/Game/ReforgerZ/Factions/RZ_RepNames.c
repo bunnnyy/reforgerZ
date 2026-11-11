@@ -89,6 +89,15 @@ class RZ_ReputationSettings
 	[Attribute("1", desc: "Life-stamped memory: leaders and wanderers count what they remember of an earlier life at half (rounded toward zero), and met doesn't carry. Off = memory by identity, as before")]
 	bool m_bLifeMemory;
 
+	[Attribute("1", desc: "The company you keep: at a Bastion checkpoint, if one member of a vanilla group arriving together (within 50 m) would be searched, everyone there is; at a camp, the friend turned away waits outside")]
+	bool m_bGroupRules;
+
+	[Attribute("1", desc: "The parley: Bastion, Red Hand and Halcyon gates give the owed (Hunted or Kill on Sight with Earned Fame 15+ and a best deed) one hearing and one amends job, empty-handed and alone, once per 2 real hours; the Haven's version is the knock")]
+	bool m_bParley;
+
+	[Attribute("1", desc: "Settling up: Make amends at a quartermaster also takes 10 Fame for 5 Infamy, at most 10 Infamy a real day per faction, from the forgiveness budget")]
+	bool m_bSettling;
+
 	protected static ref RZ_ReputationSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------

@@ -941,7 +941,7 @@
    "slotLabel": "Missions > Contracts > Escort soldier",
    "required": false,
    "minimum": false,
-   "use": "Rescue the Pilot, Hunt the Deserter, Struck Off",
+   "use": "Rescue the Pilot, Struck Off",
    "notes": ""
   },
   {
@@ -1750,7 +1750,8 @@
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=5"], "name": "Ask for something for the fever"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=6"], "name": "Read the notice board"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=7"], "name": "Leave a note on the board"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"}
    ],
    "slots": ["m_sQuartermasterHaven"],
    "listSlot": false,
@@ -1777,6 +1778,7 @@
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=3"], "name": "Ask about standing"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"},
     {
      "cls": "RZ_FactionShopAction",
      "values": [
@@ -1820,7 +1822,8 @@
     },
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=0"], "name": "Fence"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=1"], "name": "Bounty board"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"}
    ],
    "slots": ["m_sQuartermasterRedHand"],
    "listSlot": false,
@@ -1859,7 +1862,8 @@
     },
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=3"], "name": "Medic"},
     {"cls": "RZ_FactionServiceAction", "values": ["m_eService=2"], "name": "Immunity booster"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"}
    ],
    "slots": ["m_sQuartermasterHalcyon"],
    "listSlot": false,
@@ -4223,7 +4227,8 @@
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=3"], "name": "Ask about standing"},
-    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"}
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=4"], "name": "Make amends"},
+    {"cls": "RZ_FactionServiceAction", "values": ["m_eService=5"], "name": "Settle up"}
    ],
    "why": "standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon)",
    "required": false,
@@ -5107,8 +5112,6 @@
     "m_fFogSpawnMult": "0.5",
     "m_fSurgeMinutes": "10",
     "m_fStationInfectionDrop": "8",
-    "m_iBurnMax": "8",
-    "m_fBurnInfectionDrop": "3",
     "m_iCampInfamy": "10",
     "m_sJewelleryWords": "jewel,necklace,bracelet,weddingring,wedding_ring",
     "m_fTunnelInfectionCap": "20"
@@ -5133,6 +5136,7 @@
     "m_fFaultChance": "0.25",
     "m_bCallOut": "1",
     "m_bWandererAsks": "1",
+    "m_bStrangers": "1",
     "m_bHelpedLine": "1",
     "m_fTelemetryMinutes": "30",
     "m_bDebugLog": "0"
@@ -5149,7 +5153,9 @@
     "m_fReasonGapMinutes": "30",
     "m_fReasonRange": "3000",
     "m_fWeightMin": "0.75",
-    "m_fWeightMax": "1.3"
+    "m_fWeightMax": "1.3",
+    "m_fMirrorChance": "0.1",
+    "m_bPvE": "0"
    }
   },
   {
@@ -5606,10 +5612,24 @@
     "m_bDisguises": "1",
     "m_sBastionUniformWords": "us_army,usarmy,bdu,m81,ocp,woodland_us",
     "m_sRedHandUniformWords": "bandit,redhand,red_hand,armband_red",
-    "m_sHalcyonUniformWords": "hazmat,labcoat,lab_coat,cbrn,scientist",
+    "m_sHalcyonUniformWords": "hazmat,labcoat,lab_coat,cbrn,scientist,respirator,gasmask,gas_mask",
+    "m_sBastionHeadWords": "helmet,pasgt,patrol_cap,cap_,beret,boonie",
+    "m_sRedHandHeadWords": "bandana,balaclava,shemagh",
+    "m_sHalcyonHeadWords": "respirator,gasmask,gas_mask,hood,mask",
+    "m_sServiceWeaponWords": "m16,m4a1,m249,m60,m21,m9,m1911",
     "m_iDisguiseItems": "2",
     "m_fDisguiseCheckSeconds": "10",
-    "m_fDisguiseBlownMinutes": "15",
+    "m_fDisguiseBlownMinutes": "60",
+    "m_iCatchesPerLife": "3",
+    "m_iImpersonationInfamy": "3",
+    "m_iImpersonationCap": "6",
+    "m_fGatePassMinutes": "10",
+    "m_bConfiscation": "1",
+    "m_iRedHandFine": "10",
+    "m_fBeatingShare": "0.2",
+    "m_bColours": "1",
+    "m_bClaimInFullKit": "1",
+    "m_fStandRadius": "1500",
     "m_sBastionKey": "MIL",
     "m_sRedHandKey": "BAND",
     "m_sHalcyonKey": "INST"
@@ -5696,7 +5716,10 @@
     "m_fChangeHoldSeconds": "30",
     "m_fChangeGapMinutes": "5",
     "m_bCrewNames": "1",
-    "m_bLifeMemory": "1"
+    "m_bLifeMemory": "1",
+    "m_bGroupRules": "1",
+    "m_bParley": "1",
+    "m_bSettling": "1"
    }
   },
   {

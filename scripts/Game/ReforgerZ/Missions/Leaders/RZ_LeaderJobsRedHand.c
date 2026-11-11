@@ -161,7 +161,6 @@ class RZ_Job_DebtCollection : RZ_LeaderPuzzle
 	protected string m_sDebtor;
 
 	protected static const int PAY_FAVOR = 15;
-	protected static const int THREAT_INFAMY = 3;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -200,7 +199,7 @@ class RZ_Job_DebtCollection : RZ_LeaderPuzzle
 		}
 
 		m_iTalk = AddClue(m_sDebtor, "\"Forty tins. I know. I had forty tins, and then I had a daughter with a fever and a doctor who wanted forty tins. You can see how the arithmetic went.\"");
-		string labels = string.Format("Talk %1 round|Threaten %1|Pay what %1 owes (%2 Red Hand Favor)", m_sDebtor, PAY_FAVOR);
+		string labels = string.Format("Talk %1 round|Threaten %1 [Threaten - +3 Infamy]|Pay what %1 owes (%2 Red Hand Favor)", m_sDebtor, PAY_FAVOR);
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to " + m_sDebtor);
 
 		m_sTitle = "Debt Collection";
@@ -233,13 +232,22 @@ class RZ_Job_DebtCollection : RZ_LeaderPuzzle
 
 		if (option == 1)
 		{
+			// The one Fear check: a wanderer debtor's Infamy is the Haven's; the threat itself costs +3
+			int listener = -1;
+			if (m_iWanderer >= 0)
+				listener = RZ_EFaction.SURVIVORS;
+
+			RZ_ECheck fear = RZ_Checks.Threaten(gm, playerId, "debt." + m_sDebtor, listener, RZ_EFaction.BANDITS, 1, false);
+			if (fear == RZ_ECheck.REFUSED)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 just looks at you. \"Go on, then. I've got nothing left to take.\" That won't do it.", m_sDebtor));
+				return;
+			}
+
 			RememberDebtor(wanderers, playerId, RZ_Wanderers.MEM_WRONGED);
 			string text = string.Format("You explain what happens to people who don't pay. %1 finds the tins. All forty.", m_sDebtor);
 			if (m_iWanderer >= 0)
-			{
-				gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, THREAT_INFAMY);
-				text += string.Format(" Every safehouse on their route will hear how you said it. (+%1 Haven Infamy)", THREAT_INFAMY);
-			}
+				text += " Every safehouse on their route will hear how you said it.";
 
 			gm.NotifyPlayer(playerId, m_sTitle, text);
 			m_eState = RZ_EMissionState.SUCCEEDED;

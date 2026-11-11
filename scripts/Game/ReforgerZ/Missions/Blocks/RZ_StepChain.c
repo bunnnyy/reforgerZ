@@ -1,5 +1,5 @@
 //! Multi-step chain block (docs/DESIGN.md, "Mission building blocks"): a mission made of
-//! ordered steps across towns (Patient Zero, Hunt the Deserter's trail). Only the current step
+//! ordered steps across towns (Patient Zero, Struck Off's trail). Only the current step
 //! is live: its guards and its clue appear when a player comes within 250 m of it, and go when
 //! the step is done.
 //!

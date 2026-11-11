@@ -2,48 +2,6 @@
 //! their own way (Independent) or behind the director's back (Rogue).
 
 //------------------------------------------------------------------------------------------------
-//! Independent. Hold a house in a quiet village while a field station is set up: +1 research.
-class RZ_Job_FieldStation : RZ_LeaderHold
-{
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetLeaderJob(RZ_EFaction.INSTITUTE, RZ_ELoyalty.INDEPENDENT, RZ_Leaders.TONE_HOPEFUL, 6, 20);
-		m_fHoldNeeded = 180;
-		m_fHoldRadius = 25;
-		m_fWaveInterval = 90;
-		m_iMaxWaves = 1;
-		m_fWaveTimer = 30;
-		m_fParticipationRadius = 40;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		RZ_Leader l = GetLeader(gm);
-		if (!l)
-			return false;
-
-		m_iSettlement = PickSettlementAway(gm, l.m_vPos, 800, 3000, 0, 50);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
-		m_sTitle = "Field Station";
-		m_sBrief = string.Format("The lab is one building. The outbreak is the whole Zone. I want a station in %1: sensors, a cold box, a radio. Hold the house for three minutes while it goes up. The director hasn't approved it. The director will like the data.",
-			s.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		gm.GetCure().AddResearch(1, "A field station near " + GetLocationName(gm) + " sent its first readings.");
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! Independent. Take the field lead's notes to a Haven medic for a second opinion: +1 research,
 //! a little Haven Fame.
 class RZ_Job_SecondOpinion : RZ_LeaderDelivery

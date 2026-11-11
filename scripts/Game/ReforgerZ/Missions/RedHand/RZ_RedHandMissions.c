@@ -262,48 +262,6 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 }
 
 //------------------------------------------------------------------------------------------------
-//! #6 Toll Road: set up a roadblock between two towns and hold it for 10 minutes.
-class RZ_Mission_TollRoad : RZ_Mission_Hold
-{
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.BANDITS, RZ_ETier.KNOWN, 20, 30);
-		SetRival(RZ_EFaction.SURVIVORS, 10);
-		m_fHoldNeeded = 600;
-		m_fHoldRadius = 30;
-		m_fWaveInterval = 180;
-		m_iMaxWaves = 2;
-		m_fTimeLeft = 2400;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 1;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 0, 70);
-		RZ_Settlement a = gm.GetSettlement(m_iSettlement);
-		if (!a)
-			return false;
-
-		int other = PickSettlementAway(gm, a.m_vCenter, 600, 2500, 0, 100);
-		RZ_Settlement b = gm.GetSettlement(other);
-		if (!b)
-			return false;
-
-		m_vPos = LandPointNear((a.m_vCenter + b.m_vCenter) * 0.5, 0, 40);
-		m_sTitle = "Toll Road";
-		m_sBrief = string.Format("Set up a Red Hand roadblock on the road between %1 and %2 and hold it for 10 minutes. Everyone pays.", a.m_sName, b.m_sName);
-		return true;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! #7 Smuggler's Run: carry a package across the map. Everyone else is told a
 //! courier is out, with a rough location every few minutes. ★ Hunter: the
 //! updates are less frequent (quiet route).
@@ -405,49 +363,6 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 			if (playerId != m_iCarrier)
 				gm.NotifyPlayer(playerId, "Radio chatter", "A Red Hand courier was seen " + where + ". Whatever they're carrying is worth a lot.");
 		}
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #8 Raid the Cache: beat the Haven to a supply cache. Only offered to players
-//! the Haven already watches.
-class RZ_Mission_RaidTheCache : RZ_Mission_Hold
-{
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.BANDITS, RZ_ETier.KNOWN, 15, 25);
-		m_Req.Need(RZ_EFaction.SURVIVORS, RZ_EStandingCheck.AT_LEAST_WATCHED);
-		SetRival(RZ_EFaction.SURVIVORS, 10);
-		m_fHoldNeeded = 60;
-		m_fHoldRadius = 25;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 1.5;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 0, 60);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
-		SpawnGuards(gm, m_vPos, 2, 15, 40);
-		m_sTitle = "Raid the Cache";
-		m_sBrief = string.Format("The Haven stashed supplies in %1. Get there before they do and hold it for a minute.", s.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		gm.SpawnRewardCrate(m_vPos);
 	}
 }
 

@@ -205,10 +205,10 @@ and choice missions, and puzzles:
 | (existing prefab) | Special Zombies, or Bacon heavy, exploding and ranged | — | Zombies > Special prefabs (list) | samples, the cure |
 | (existing prefab) | a large Bacon group | — | Zombies > Horde prefabs (list) | hordes |
 | (existing prefab) | vanilla AIWaypoint_Move.et | — | Zombies > Move waypoint | hordes toward noise, unarmed missions, hunter squads, supply trucks, favourite spots |
-| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), `RZ_FactionServiceAction` (Service AMENDS) | Factions > Haven quartermaster | the Haven shop, leader and safehouse services |
-| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | the Bastion shop and leader |
-| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 3 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS) | Factions > Red Hand quartermaster | the Red Hand black market and leader |
-| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 3 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS) | Factions > Halcyon quartermaster | the Halcyon shop, leader, antidotes and the trial dose |
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | Factions > Haven quartermaster | the Haven shop, leader and safehouse services |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | the Bastion shop and leader |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 4 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS, SETTLE) | Factions > Red Hand quartermaster | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 4 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS, SETTLE) | Factions > Halcyon quartermaster | the Halcyon shop, leader, antidotes and the trial dose |
 <!-- /manifest:minimum -->
 
 No towns, spawn points or lab need placing: they're generated at start. With only this,
@@ -460,7 +460,7 @@ and the UI files) need none, and seven have no base:
 |---|---|---|---|---|---|
 | `RZ_EscortCivilians.et` | an AI group of 2-4 unarmed civilians on SURV | — | Missions > Contracts > Escort civilians | optional | Refugee Column, Bust Out, Desertion Route, the debtors in Learning the Drones and The Pit's Debtor, the brother walked home in The Other Two (falls back to the survivor group, then data) |
 | `RZ_EscortScientist.et` | a one-man AI group on INST | — | Missions > Contracts > Escort scientist | optional | Escort the Scientist, Secure the Shipment, the field lead in The Three Weeks and the courier in The Other Two |
-| `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Hunt the Deserter, Struck Off |
+| `RZ_EscortSoldier.et` | a one-man AI group on MIL | — | Missions > Contracts > Escort soldier | optional | Rescue the Pilot, Struck Off |
 | `RZ_Cage.et` | a cage or box-trap prop | the generic set | Missions > Contracts > Cage trap | optional | Live Capture, Private Collection, The Three Weeks questline (falls back to the puzzle object) |
 | `RZ_Bus.et` | a drivable bus or truck (keeps its damage manager) | — | Missions > Contracts > Bus | optional | Recover the Bus (falls back to the Haven truck, then car prefabs) |
 | `RZ_BountyTarget.et` | an armed AI group or character on SURV (a loner, not a faction's man) | — | Missions > Contracts > Bounty target | optional | Collect the Bounty (falls back to the survivor group) |
@@ -523,10 +523,10 @@ and the UI files) need none, and seven have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), `RZ_FactionServiceAction` (Service AMENDS) | Factions > Haven quartermaster | **minimum** | the Haven shop, leader and safehouse services. Add RZ_FactionShopAction entries for vanilla stock by hand (suggested stock below) |
-| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | **minimum** | the Bastion shop and leader. Add one RZ_RequisitionAction per ammo or rations item, and shop actions for vanilla stock, by hand |
-| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 3 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS) | Factions > Red Hand quartermaster | **minimum** | the Red Hand black market and leader |
-| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 3 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS) | Factions > Halcyon quartermaster | **minimum** | the Halcyon shop, leader, antidotes and the trial dose |
+| `RZ_QM_Haven.et` | a civilian character without AI (damage off) | `RZ_QuartermasterComponent` (Faction SURVIVORS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 8 × `RZ_SafehouseAction` (Kind STATUS, DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | Factions > Haven quartermaster | **minimum** | the Haven shop, leader and safehouse services. Add RZ_FactionShopAction entries for vanilla stock by hand (suggested stock below) |
+| `RZ_QM_Bastion.et` | a soldier character without AI (damage off) | `RZ_QuartermasterComponent` (Faction MILITARY); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE), `RZ_FactionShopAction` (Faction MILITARY, Required tier CHAMPION, Favor cost 30, Item prefab `RZ_SignalSmoke.et`, Display name Signal smoke) | Factions > Bastion quartermaster | **minimum** | the Bastion shop and leader. Add one RZ_RequisitionAction per ammo or rations item, and shop actions for vanilla stock, by hand |
+| `RZ_QM_RedHand.et` | a civilian character without AI in rough clothes (damage off) | `RZ_QuartermasterComponent` (Faction BANDITS); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionShopAction` (Faction BANDITS, Required tier KNOWN, Favor cost 12, Item prefab `RZ_CutDose.et`, Display name Cut dose), 4 × `RZ_FactionServiceAction` (Service FENCE, BOUNTY_BOARD, AMENDS, SETTLE) | Factions > Red Hand quartermaster | **minimum** | the Red Hand black market and leader |
+| `RZ_QM_Halcyon.et` | a character in a lab coat without AI (damage off) | `RZ_QuartermasterComponent` (Faction INSTITUTE); `RZ_ShopOpenAction`, `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_TrialDoseAction`, `RZ_FactionShopAction` (Faction INSTITUTE, Required tier TRUSTED, Favor cost 60, Item prefab `RZ_Antidote.et`, Display name Antidote); `RZ_FactionShopAction` (Faction INSTITUTE, Required tier KNOWN, Favor cost 40, Item prefab `RZ_Stabiliser.et`, Display name Stabiliser), 4 × `RZ_FactionServiceAction` (Service MEDIC, BOOSTER, AMENDS, SETTLE) | Factions > Halcyon quartermaster | **minimum** | the Halcyon shop, leader, antidotes and the trial dose |
 
 #### Faction consequences
 
@@ -724,7 +724,7 @@ still to do:
 |---|---|---|---|
 | every player character prefab used by a loadout (the plugin's RZ_Loadout_*.et get it already) | `RZ_TreatOtherAction` | other players can treat you | required |
 | any vanilla radio prefab you want crackable | `RZ_TuneRadioAction` | secure radio channels (the wind-up radio gets it already) | optional |
-| quartermasters you placed by hand (not from the manifest) | `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), `RZ_FactionServiceAction` (Service AMENDS) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
+| quartermasters you placed by hand (not from the manifest) | `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused) | optional |
 | any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item or crate, never a vehicle or a car part (refused: cars are only found) | optional |
 | the player controller prefab the game mode uses (the repo's Prefabs/Characters/Core/RZ_PlayerController.et has it; RZ_GameMode.et's PlayerControllerPrefab points at it) | `RZ_PlayerUIComponent` | the UI's data feed: infection timer, secure radio, noise, standing, journal, backgrounds (docs/UI.md) | optional |
@@ -764,12 +764,12 @@ deserter or the researcher for 10 s still gets them moving.
 
 **World events** also reuse **Missions > Explosion** (Gas Station Fire's blast, optional),
 **Interactions > Traps > Fire effect** (every burning building), the power grid, and the generic
-puzzle object (Tunnel Rats' culverts, the tape in Fake Distress Call), **Puzzles > Civilian** (the
+puzzle object (Tunnel Rats' culverts, the tape in a Distress Call loop), **Puzzles > Civilian** (the
 people in Distress Call, Rival Survivors and Collapse Shelter) and **Missions > Red Hand group**
-(Fake Distress Call, the watchers at the Abandoned Convoy), **Puzzles > Keypad** and **Note** or
-**Body** (Locked Bunker). Gas Station Fire and Burning Town need **Traps > Fire** on. The convicts,
-the sniper and the Fake Distress Call's ambush fight through the hostility system's fights, so they
-must be on `BAND`. The newer contracts also reuse **Cars > Car prefabs** (Car Theft), **Supply >
+(Distress Call's crew in the trees, Crash Site's carriers, the watchers at the Abandoned Convoy),
+**Puzzles > Keypad** and **Note** or **Body** (Locked Bunker). Gas Station Fire needs **Traps > Fire**
+on. The convicts, the sniper, Distress Call's crew and Crash Site's carriers fight through the
+hostility system's fights, so they must be on `BAND`. The newer contracts also reuse **Cars > Car prefabs** (Car Theft), **Supply >
 Halcyon truck** (Mobile Lab's lab truck, falling back to the bus), **Supply > Haven truck** (the bus
 fallback), the four **supply trucks and crews** (Convoy Escort and Hijack the Convoy ride Bastion's
 real truck), **Leaders > Bastion outpost commander** (Kill the Officer needs a body that can die)
@@ -822,12 +822,16 @@ Suggested starting stock for the shop actions you add by hand (from [REPUTATION.
 "suppress" or "silenc".
 
 **Faction services and road posts** ([REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps)).
-The plugin's quartermasters get `RZ_FactionServiceAction`: Amends on all four, Fence and Bounty
-board on the Red Hand, Medic and Immunity booster on Halcyon; a Champion shop action on Bastion
+The plugin's quartermasters get `RZ_FactionServiceAction`: Amends and Settle up on all four, Fence
+and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon; a Champion shop action on Bastion
 sells the **signal smoke** (`RZ_SignalSmoke.et`: a throwable smoke grenade with
 `RZ_FireMissionSmokeComponent`; the shells are **Missions > Explosion**). Check **Services > Fence
 keywords** against your loot. The armband's prefab name should keep a Red Hand uniform keyword
-("armband_red") so it counts toward the disguise; the ribbon's must not carry a faction's. Road
+("armband_red") so it counts toward the Red Hand's kit; the ribbon's must not carry a faction's.
+Check **Hostility > Disguises**' uniform, head-piece and service-weapon keywords against your
+faction loadouts and loot: they decide colours (2 pieces), full kit (3, one on the head) and the
+wrong-weapon tell. Halcyon's must match the coat and the beak (a hood or mask with a respirator),
+and should not match ordinary dust masks. Road
 posts need territory, the road network and a crew: their own slot, else the territory guard
 (else the Red Hand group). Check the **contraband keywords** against your Red Hand stock.
 
@@ -1374,7 +1378,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **66** lines with the tag, all in the game scripts (one is the comment in
+There are **71** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 13 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1395,19 +1399,19 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:178` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (33)
+### Medium risk: big features, with a fallback (38)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Factions/RZ_Checkpoints.c:508` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
-| `Core/RZ_Util.c:734` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:879` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Factions/RZ_Checkpoints.c:514` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
+| `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
+| `Core/RZ_Util.c:894` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:907` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Core/RZ_Util.c:922` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Loot.c:178` | furniture inside buildings is found as static entities | Loose loot lies only on up to five floor points in each building's box |
 | `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
-| `Core/RZ_Util.c:663` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
+| `Core/RZ_Util.c:678` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
 | `World/RZ_Perimeter.c:872`, `:887` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
@@ -1416,8 +1420,10 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
 | `Interactions/RZ_Interactions.c:332` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:1015` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:1101` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:1030` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:1113`, `:1235` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
+| `Factions/RZ_Disguise.c:641`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken) |
+| `Core/RZ_Util.c:1199` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1177` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
@@ -1425,11 +1431,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `UI/RZ_LoadoutLock.c:49` | the server asks `SCR_LoadoutManager.CanAssignLoadout_S` before it assigns the loadout a player picks (1.9's `SCR_PlayerLoadoutComponent.Rpc_RequestLoadout_S` does) | A locked pick is assigned; the spawn check below still refuses it |
 | `Zombies/RZ_InfectedBodies.c:175` | a physics trace from a player's eyes (`TraceMove`, world and entities) is stopped by buildings, walls and trees, and 16 of them a server tick cost little (crawler spawns use it: no body within 300 m of a player who could see the spot) | If traces never hit, crawlers spawn only behind terrain or beyond 300 m, so towns fill thinner near players (watch `/tribes`: towns well under their base). If they show in the frame time, lower `TRACES_PER_TICK` in `RZ_InfectedBodies` (a spot counts as seen once they're used up) |
 | `UI/RZ_LoadoutLock.c:66` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
-| `Core/RZ_Util.c:458` | a smart-action waypoint set from script (`SetSmartActionEntity`) sends a ReforgerZ faction group to the composition's tagged sentinel, and vanilla's sit, lean and observation behaviours run for our groups in a mod world | People walk to the piece and stand by it: empty **Camp life > Smart action waypoint** and they loiter beside the pieces instead |
-| `Core/RZ_Util.c:540` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
+| `Core/RZ_Util.c:473` | a smart-action waypoint set from script (`SetSmartActionEntity`) sends a ReforgerZ faction group to the composition's tagged sentinel, and vanilla's sit, lean and observation behaviours run for our groups in a mod world | People walk to the piece and stand by it: empty **Camp life > Smart action waypoint** and they loiter beside the pieces instead |
+| `Core/RZ_Util.c:555` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
 | `Zombies/Behaviour/RZ_CrawlerLife.c:226` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
 | `Zombies/Behaviour/RZ_Behaviour.c:975` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
 | `Factions/RZ_CampLife.c:678` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Missions/Errands/RZ_Strangers.c:338` | a stranger is placed at the spot itself, 150–350 m ahead of the player (no line-of-sight test for the design's out-of-sight point 60–90 m off) | If one visibly pops in, set **Missions > Errands > Strangers** off |
 
 ### Low risk: contained or cosmetic (20)
 
@@ -1439,15 +1446,15 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
-| `Core/RZ_Util.c:849` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
-| `Core/RZ_Util.c:626` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
-| `Core/RZ_Util.c:682` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
+| `Core/RZ_Util.c:864` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
+| `Core/RZ_Util.c:641` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
+| `Core/RZ_Util.c:697` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_Search.c:824` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_KeyItem.c:95` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages |
-| `Core/RZ_Util.c:937` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
-| `Core/RZ_Util.c:924` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
+| `Core/RZ_Util.c:952` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
+| `Core/RZ_Util.c:939` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 | `Zombies/Behaviour/RZ_HuntPlan.c:1745` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
@@ -1472,7 +1479,7 @@ quartermaster's Buy actions, **UI > Reader** and **Subtitles** off for cards. Ho
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:943` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `Dialogue/RZ_Dialogue.c:440` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:494` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:167` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
@@ -1687,7 +1694,7 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 26 routines and 16 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 26 routines and 18 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
@@ -1695,8 +1702,18 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
 view: ...`; `Story: truth <key>.<subject> = <truth> (kept|new)` and `...; found by <how>`, `Story:
 errand.<key> talk pass|short|refused by <player>`, `Story: <key> resolved by hand-in to <party>
-(...)`, `Story: reason <key> (<subject>) started N '<title>' at <town>`, `Story: <title> hold by
+(...)`, `Story: reason <key> (<subject>) started N '<title>' at <town>`, `Mirror: <title> hinted to
+<faction>`, `Mirror: <title> won by <faction>` (or `won by both, half each`), `Story: <title> hold by
 <player> objected to by <player>`.
+
+Borrowed kit and the parley ([REPUTATION.md](REPUTATION.md#borrowed-kit)): `Disguise: <player> look
+by <faction> at <place>: N of D (pass|caught)`, `Disguise: <player> caught by <faction> (catch N this
+life)`, `Disguise: <player> exposed to <faction> (<why>)`, `Story: <title> trick pass|refused by
+<identity>`; `Parley: <player> at <place> (<faction>) opened`, `Parley: <player> heard by <faction>
+(offer: true|false)`, `Parley: <title> reserved for <player>`, `Parley: <player> at <place> broken`,
+`Parley: <player> knocked at <house>`; `Reputation: <player> settled up with <faction>: -10 Fame, -N
+Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger and Debt Collection
+too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
 `Dialogue: loaded 30 conversations, 97 nodes`, `Dialogue: memory for N players` (or `Dialogue:
@@ -1704,7 +1721,15 @@ memory from season N dropped (season M)` after a wipe) and `Dialogue: trees off`
 Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
 season mood <mood> (was <mood>)`, `Dialogue: budget reached <player> <faction>` (talk Favor for the
 day), `Reputation: crew name <name> for <player>`, `Dialogue debug: ...` (an admin's `/talkdebug`), and
-with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> listener=<identity>`.
+with **Voice > Log** on, `voice: face <faction> <register> <id> mood=<mood> listener=<identity>`. Several
+players: `Dialogue: scene <key> decided <value> by <player>`, `Dialogue: scene <key> hold by <player> objected to
+by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> vouched for <player>`. Lies: `Story:
+lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
+`Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
+`Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
+`Story: colleague <name> is <truth>`, `Story: crash at <grid> is <truth>`, `Errands: fallout <card> at <grid>
+from <title> (cap N Favor, N participant(s) first)`. Strangers: `Errands: stranger roof|tin for <player> at
+<grid>`, `Errands: stranger roof|tin done by <player>`.
 
 ## 8. Play-test checklist
 
@@ -2015,8 +2040,30 @@ when it happens)
 - [ ] Your deploy menu, chat and group stay on the Haven while you're on a variant.
 - [ ] An exile with a gun near a safehouse is shot; without one, the door is just shut.
 - [ ] Shooting a guard makes nearby guards of that faction fire back for about 3 minutes.
-- [ ] Disguise: with Bastion set to shoot from Watched, a Watched player in two Bastion uniform
-  pieces walks past Bastion AI and is told so; Infamy with Bastion while wearing it is doubled.
+- [ ] Borrowed kit: a Stranger in full Bastion kit at a checkpoint gets the look's tags at 150 m
+  ("[Full kit +2] ... 2 of 2"), walks to the barrier and is waved through unsearched. In colours
+  only, nothing happens until they talk to the speaker (**Dialogue > Trees**). Caught: held a moment,
+  searched, the kit taken (VERIFY), +3 Infamy (never into 15 on its own), blown 60 minutes; the
+  third catch says "Your description is on the board". Hunted in kit: no claim, surrender as built.
+- [ ] Colours: in Bastion green at a Red Hand roadblock you're turned round whatever your tier; in
+  the red armband at a Bastion checkpoint you're searched and the armband taken; a beak at a
+  roadblock pays 20. Watched at an outpost gate in its kit: the look lets you in for 10 minutes,
+  and a leader of theirs within 15 m catches you. Within 1.5 km of the lab during the stand no
+  disguise clears anything.
+- [ ] The parley: Hunted by Bastion with 15+ Earned Fame and a best deed, walk to a checkpoint
+  empty-handed and alone: the shout at 150 m, no fire while you close, 10 s at the barrier, the
+  leader's line and a reserved amends job (Burn the Bodies or Recon) you can take though Hunted.
+  Draw a rifle: broken. A friend within 150 m: no shout. Again within 2 real hours (relog too):
+  nothing. A Haven exile who's owed: talk to a safehouse's named person, unarmed: the knock.
+- [ ] Settle up at a quartermaster: -10 Fame, -5 Infamy, twice a real day at most; refused once
+  the forgiveness budget is spent. Group rules: a Known player arriving with a Watched friend is
+  searched ("We search the whole car.").
+- [ ] Several players at one speaker (**Dialogue > Trees** on, a test `.rzd` with `scene`, `decide`,
+  `public` and `check lie`): a deciding pick shows the room its 5 s hold, a second player's Object
+  stops it, unobjected it lands once and `jump decided` routes the next visitor. A Trusted friend's
+  Vouch adds +1 to your lie's tag; a believed lie is found out within a real day or not at all, and
+  costs the voucher too; a Call it out on a true claim costs the caller regard. Overheard lines
+  reach a third player within 8 m and not at 9 m.
 - [ ] Bounty: a player at Kill on Sight with two factions is killed by another player; only the
   killer is paid, once, by one faction. Die to the infected (or a fall) while at Kill on Sight:
   nobody is paid. Collect the Bounty on a player pays only whoever killed them. With no player
@@ -2032,8 +2079,9 @@ when it happens)
   didn't shoot can still drive it in for Fame; watch for that pattern.)
 - [ ] Retaliation in a crossfire: a Red Hand group attacking a Bastion outpost while you shoot
   infected 300 m away. If you get Bastion's retaliation for their hits, note it.
-- [ ] Wear a Bastion uniform and finish a Red Hand job: the rival Infamy with Bastion is not
-  doubled and the disguise isn't blown (shares never double). Kill a Bastion guard in it: doubled.
+- [ ] Passing as Bastion, finish a Red Hand job 3 km away: the rival Infamy with Bastion is not
+  doubled and nothing is blown (shares never double). Kill a Bastion guard while passing: doubled,
+  and caught within 35 m.
 - [ ] Start The Last Convoy (or wait for it), restart the server before the truck leaves: it
   still leaves within 10 minutes. Restart while it's on the road: the arc just ends.
 - [ ] Questlines (**Wait scale** 0.1, **Minutes between** 5, **Once per season** off): Short Weight starts and its first
@@ -2072,8 +2120,8 @@ when it happens)
   offered while the helicopter is dry. Fuel it, choose a load, bring the black box from the warning
   zone (never the kill zone), then on separate runs talk him down, report him, help him to the far
   LZ and sell him to the Red Hand: after Grounded there's no Last Helicopter for 2 real hours
-  (times **Wait scale**) and the next one names the new pilot; after the line, a Crashed Helicopter
-  event appears near the far LZ. Failing Rescue the Pilot also grounds the helicopter.
+  (times **Wait scale**) and the next one names the new pilot; after the line, Bastion's Crash Site
+  starts at his wreck near the far LZ (the line's truth, his name in the brief). Failing Rescue the Pilot also grounds the helicopter.
 - [ ] The Three Weeks (same settings): solve Patient Zero's Ledger, then it can begin. The driver
   sits at the edge of the town nearest the site, talks to someone Known with the Haven and not
   Trusted with Halcyon (or a Radio Operator), or after two shares of food; the site is well away
@@ -2243,8 +2291,8 @@ editor's time of day)
 - [ ] World events (raise a weight to start one): Fog Bank muffles heat and brings spawns closer
   only inside its radius, and both reset when it ends. Power Surge marks the town Powered for 10
   minutes (status log, the lights hook, electronics in searches) and dark again after, unless the
-  grid powers it. Gas Station Fire goes up after 3 minutes and burns at most three buildings;
-  Burning Town burns one building at a time and stops at its cap. Tunnel Rats' culverts each
+  grid powers it. Gas Station Fire goes up after 3 minutes and burns at most three buildings.
+  Tunnel Rats' culverts each
   send infected and can be collapsed only with none within 12 m.
 - [ ] People events: a Radio Operator gets a private line on both distress calls (live or a tape);
   the fake's two groups appear within 400 m, close in at 60 m and leave a Red Hand Known player
@@ -2307,10 +2355,46 @@ on the talk screen says why something wasn't dealt)
 - [ ] No Reply: the operator's bearing and the mast's cross within 45 m of the source; a Radio
   Operator away from the post gets a bearing every 2 minutes; the log choices appear on the
   operator only after the source is found, and only a player Known with Bastion can pick one.
-- [ ] Struck Off (offered from broadcast Day 13, so not on a fresh season's first two days): the
-  trader (or the Deserter wanderer) gives his grid; his KIA date on the roster is between Day 11 and
-  two days ago (the day the trader saw him), and always Day 11 on Day 13; the four choices are on his
-  kit; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
+- [ ] Struck Off (offered from broadcast Day 13, so not on a fresh season's first two days): his
+  pack by the post, the trader (or the Deserter wanderer) gives his grid; his KIA date on the roster
+  is between Day 11 and two days ago, and always Day 11 on Day 13; talking to him tells the room the
+  truth; the stores book by the board reads only after dark (and adds "Report the stores book" when
+  the truth is written off or the gap); the five choices are on his kit, "Talk him back" is a Trust
+  check; killing him drops a tag that the roster board at the post takes ("Hang his tag on the nail").
+
+**The story jobs** (wave 3; check the log's `Story:` lines for the truth drawn)
+- [ ] Protection Racket: the storekeeper's options change when the receipt (paid twice) or the girl
+  (her cut) has been read; Press costs Haven Infamy through the threat; Cover it takes 4 food or 20
+  Red Hand Favor and the next racket at that house finds the lie (`Story: lie racket.covered found
+  out by tick`); Side with the house waits 5 s and can be objected to; a non-contractor picking a
+  deciding option hears "It's not your call". Time up: `Errands: fallout pot ...`, and the house's cook
+  offers The Pot to the participant first.
+- [ ] Lost Colleague: hiding (choose at him), turned (kill him; the notebook's two choices) and walked
+  out (the camp's note, then the new man at the house with five choices); research +2 or +1.
+- [ ] Crash Site: the wreck and cockpit appear at 400 m; the cockpit read tells the room the truth;
+  already taken: two Red Hand carriers at a fire 300–600 m off, the box by the fire once they're dead;
+  inventory taken to the Red Hand puts the manifest on the open channel. The Last Pilot's line ending
+  starts a Crash Site at his wreck. Time up without the box: Buy It Back at a Bastion post within 3 km.
+- [ ] Distress Call: answering is told within 800 m (live, a loop, or "Say it again"); a loop springs
+  at 60 m; bait has "Cut them loose" (at night, quietly), "They're mine", Buy them, Side with the crew
+  (the hold; a Haven witness or Haven-Known player within 150 m: +12 Haven Infamy at once, else a lie
+  the next Tied Down finds). People dead: The Name on the Tag at the nearest house.
+- [ ] Survivors Trapped: after the hold the mother appears with three choices (a 5 s hold); nobody in
+  90 s sends them to the nearest house; a bitten father (one time in four) is seen by a Nurse or
+  Doctor and walked out at the door.
+- [ ] A Tier 0 job failing (Walk Him Out, The Rat) sends its fallout line after the fail text.
+
+**Strangers** (Missions > Errands > Strangers)
+- [ ] Walk a road you've used a lot (by day), toward a safehouse's approach, or to a town edge at dusk
+  or in fog: a stranger may stand 150–350 m ahead (`Errands: stranger ...`). Crossing empty country,
+  standing still, in a car, with another player outside your group within 300 m, or within 2 km of the
+  Long Table's farm: nobody, however long you wait.
+- [ ] Up on the Roof: "Talk them down" refuses with infected within 25 m; done, +1 at the nearest house
+  and 4 Haven Favor. The Last Tin (2+ food on you, a hungry house within 1.5 km): a tin for a true tip.
+- [ ] They call out once at 40 m and are gone 5 minutes later or once you're 150 m away; the next one
+  comes 15–25 minutes later at the earliest, never at the same spot within 2 hours.
+- [ ] Dress Rehearsal (Known with the Red Hand, a Bastion post within 2 km, disguises on): at the
+  barrier not passing as Bastion, it's over and the open channel laughs.
 - [ ] Live Capture: lure the special into the cage and drop the door within 4 m; it vanishes without
   a sample, the cage area gets loud, after 30 s the case appears; deliver it at the lab drop before
   12 minutes. Killing it fails; wounding it to a third and standing over it ties it.
@@ -2332,12 +2416,19 @@ on the talk screen says why something wasn't dealt)
   wanted. A player who isn't eligible delivers someone else's contract: only eligible people at
   the drop are paid. Take a choice item to the other side: it pays everyone with you whom that
   side doesn't hunt, and the giver's leader neither remembers it as help nor scales the pay.
+- [ ] Mirror offers (set **Missions > Story > Mirror chance** to 1): The Cache and The Armory tell
+  the second side 5 minutes in; The Cache goes to the side with more holders at the end (a draw is
+  half each), The Armory to whoever hands the case in, and dropping the case down the well pays
+  nobody and costs both sides. With **PvE** on, no mirror.
+- [ ] The merged jobs: Take Back the Town once Bastion is gone (Overrun+), Burn the Bodies at the
+  lab from Halcyon, Checkpoint Duty at an infested town pausing its spread, Medicine Run's infected
+  drawn off by a noise, and the Courier's letters through an infested town paying ×1.25 when quiet.
 - [ ] A personal notice (a mission brief, a tier change) shows only on its player's screen: with
   a second client watching its radio log, nothing of yours appears there. Broadcasts still reach
   both.
-- [ ] Carry a delivery item (Courier letters, a Bastion case, the capture case or
-  Restore Comms parts), then disconnect: the others are told and the item is back on the ground
-  where you were (or, for parts, at its first spot). Die with it and wait for the body to go: same.
+- [ ] Carry a delivery item (Courier letters, a Bastion case or the capture case), then
+  disconnect: the others are told and the item is back on the ground
+  where you were. Die with it and wait for the body to go: same.
   Check the log for an item that comes back twice from one disconnect.
 - [ ] The Courier's letters taken off the one who asked and delivered by someone else pay nobody.
 - [ ] Escort: the player the pilot or scientist follows disconnects or dies; the nearest player

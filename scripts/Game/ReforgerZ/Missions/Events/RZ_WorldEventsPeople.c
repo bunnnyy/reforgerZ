@@ -1,5 +1,5 @@
-//! World events about people (docs/MISSIONS.md, "World events"): Distress Call and its Red Hand
-//! twin, Prison Break, The Sniper, Rival Survivors, Collapse Shelter. AI groups are data until a
+//! World events about people (docs/MISSIONS.md, "World events"): Distress Call (its three
+//! truths), Prison Break, The Sniper, Rival Survivors, Collapse Shelter. AI groups are data until a
 //! player comes near (RZ_EventGroup); people you talk to are the puzzle framework's objects.
 
 //------------------------------------------------------------------------------------------------
@@ -102,8 +102,8 @@ class RZ_EventGroup
 }
 
 //------------------------------------------------------------------------------------------------
-//! What both distress calls share: the same title and the same voice, so nobody can tell them
-//! apart from the announcement. A Radio Operator can: they hear whether it's live or a loop.
+//! The distress call's announcement and the Radio Operator's ear: one voice, whatever the truth
+//! behind it (live, a loop or a crew telling her what to say).
 class RZ_Event_DistressBase : RZ_PuzzleMission
 {
 	protected vector m_vSpot;
@@ -162,103 +162,44 @@ class RZ_Event_DistressBase : RZ_PuzzleMission
 }
 
 //------------------------------------------------------------------------------------------------
-//! #5 Distress Call: two survivors are cornered in a house at the edge of a town. Get there,
-//! clear the infected from around it (they come once someone is close) and talk them out with
-//! nothing within 20 m. They join the nearest safehouse and leave you their stash. 25 minutes.
+//! #5 Distress Call (Fake Distress Call merged in): one announcement, three truths kept per town for a
+//! season day. Real: two survivors cornered in a house; clear the infected and talk them out. A loop:
+//! a tape on a crate and two Red Hand groups in the trees. Bait: two real people tied up in the house,
+//! and the crew waiting for whoever cuts them loose. Answering on your radio (on the way in, 800 m)
+//! tells the three apart; so does a Radio Operator's ear, a Hunter at 150 m and, for a Trusted Red
+//! Hand player, the secure net. 25 minutes. Story key `distress`.
 class RZ_Event_DistressCall : RZ_Event_DistressBase
 {
+	protected string m_sTruth;
 	protected bool m_bStirred;
+	protected bool m_bSprung;
+	protected bool m_bFreed;
+	protected bool m_bSold;
+	protected int m_iDead;
+	protected ref array<ref RZ_EventGroup> m_aGroups = {};
+	protected ref array<int> m_aSpared = {};
+	protected ref array<int> m_aAnswered = {};
+	protected ref array<int> m_aHunted = {};
+	protected ref RZ_Ways m_Ways = new RZ_Ways("Distress Call");
 
 	protected static const float CLEAR_RADIUS = 20;
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetEvent(false);
-		m_fTimeLeft = 1500;
-		m_fParticipationRadius = 40;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		if (!HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN) || gm.GetMissions().IsTypeRunning(RZ_Event_FakeDistress))
-			return 0;
-
-		return 0.8;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
-	{
-		if (!PickSpot(gm))
-			return false;
-
-		int talk = AddClue(m_sCaller, string.Format("%1, through a barricaded door, very quietly: \"Are they gone? Tell me when they're gone. She can't run.\"", m_sCaller));
-		return SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSpot, 0, "", "Tell them it's clear", talk, "Talk to " + m_sCaller) != null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected string RadioOpHint()
-	{
-		return "The voice breaks in different places every time, and once there's banging behind it. It's live. Someone really is out there.";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		HintRadioOps(gm, ids, players);
-		if (m_bStirred || CountPlayersNear(players, m_vSpot, 300) == 0)
-			return;
-
-		// The infected round the house, and more coming at the noise
-		m_bStirred = true;
-		SpawnGuards(gm, m_vSpot, 4, 6, 20);
-		gm.GetSpawner().SpawnHorde(m_vSpot, 250, m_iId);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
-	{
-		if (gm.GetSpawner().IsZombieNear(m_vSpot, CLEAR_RADIUS))
-		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Not yet! I can hear them!\" The door stays shut. Clear them away from the house first.");
-			return;
-		}
-
-		gm.NotifyPlayer(playerId, m_sTitle, string.Format("The barricade comes down a plank at a time. %1 comes out with a woman on his arm, grey and limping. \"There's a bag under the stairs. Take it. We won't need it where we're going.\"", m_sCaller));
-		m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		SpawnRewardAt(gm, m_vSpot);
-		RZ_Safehouses houses = gm.GetSafehouses();
-		if (houses && houses.Count() > 0)
-			houses.AddRescued(m_vSpot, 2, m_aParticipants);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetSuccessText(RZ_GameModeComponent gm)
-	{
-		return "Someone answered the distress call near " + GetLocationName(gm) + ". Two people walked out.";
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #19 Fake Distress Call: the same call, but it's a tape on a crate and the Red Hand is waiting
-//! in the trees. Two Red Hand groups (Missions > Red Hand group) appear when a player is within
-//! 400 m and close in when someone reaches the radio. They fight anyone near them except players
-//! Known or better with the Red Hand. Kill them all for their kit. Radio Operators are warned.
-class RZ_Event_FakeDistress : RZ_Event_DistressBase
-{
-	protected ref array<ref RZ_EventGroup> m_aGroups = {};
-	protected bool m_bSprung;
-	protected ref array<int> m_aSpared = {};
-
 	protected static const float SPAWN_RADIUS = 400;
 	protected static const float SPRING_RADIUS = 60;
+	protected static const float ANSWER_RADIUS = 800;
+	protected static const float HUNTER_RADIUS = 150;
+	protected static const int BUY_FAVOR = 30;
+	protected static const int CUT_FAVOR = 10;
+	protected static const int CUT_INFAMY = 12;
+
+	protected static const string REAL = "real";
+	protected static const string LOOP = "loop";
+	protected static const string BAIT = "bait";
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Event_DistressCall()
+	{
+		m_Story = new RZ_MissionStory("distress");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -271,13 +212,16 @@ class RZ_Event_FakeDistress : RZ_Event_DistressBase
 	//------------------------------------------------------------------------------------------------
 	override float GetWeight(RZ_GameModeComponent gm)
 	{
-		if (gm.GetRedHandGroupPrefab().IsEmpty() || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
+		if (!HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
 			return 0;
 
-		if (gm.GetMissions().IsTypeRunning(RZ_Event_DistressCall))
-			return 0;
+		return 1.1;
+	}
 
-		return 0.5;
+	//------------------------------------------------------------------------------------------------
+	protected bool CanBait(RZ_GameModeComponent gm)
+	{
+		return !gm.GetRedHandGroupPrefab().IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -286,28 +230,142 @@ class RZ_Event_FakeDistress : RZ_Event_DistressBase
 		if (!PickSpot(gm))
 			return false;
 
-		int look = AddClue("A radio", string.Format("A radio on an upturned crate, a cassette player taped to the handset. \"This is %1. There's two of us...\" Click. Hiss. \"This is %1.\" Nobody's here. Nobody ever was.", m_sCaller));
-		if (!SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vSpot, 0, "", "Switch it off", look, "Look at the radio"))
-			return false;
-
-		for (int i = 0; i < 2; i++)
+		// The truth, kept per town (the deck): a loop or bait needs the crew, and a loop the radio prop
+		array<string> values = {REAL, LOOP, BAIT};
+		array<float> weights = {0.5, 0, 0};
+		if (CanBait(gm))
 		{
-			m_aGroups.Insert(new RZ_EventGroup(gm.GetRedHandGroupPrefab(), LandPointNear(m_vSpot, 50, 90)));
+			if (HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
+				weights[1] = 0.3;
+
+			weights[2] = 0.2;
+			// The Cargo driver is out (R2): fewer people to tie up
+			if (gm.GetQuestlines() && gm.GetQuestlines().WorldFlag("cargo.driver") == 1)	// DRIVER_OUT
+				weights[2] = 0.1;
 		}
 
+		string town = "town:" + m_iSettlement.ToString();
+		m_sTruth = m_Story.Truth(town, values, weights);
+		if ((m_sTruth == LOOP && weights[1] <= 0) || (m_sTruth == BAIT && weights[2] <= 0))
+			m_sTruth = REAL;
+
+		if (m_sTruth == LOOP)
+		{
+			int look = AddClue("A radio", string.Format("A radio on an upturned crate, a cassette player taped to the handset. \"This is %1. There's two of us...\" Click. Hiss. \"This is %1.\" Nobody's here. Nobody ever was.", m_sCaller));
+			if (!SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vSpot, 0, "", "Switch it off", look, "Look at the radio"))
+				return false;
+		}
+		else if (m_sTruth == BAIT)
+		{
+			int tied = AddClue(m_sCaller, string.Format("%1 and a woman, tied back to back to a radiator. %1 shakes his head at you, very slightly, and looks at the window. \"They're in the trees,\" he breathes.", m_sCaller));
+			if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSpot, 0, "", "Cut them loose|[Known · Red Hand] \"They're mine.\"|Buy them [30 Red Hand Favor]|Side with the crew", tied, "Look at them"))
+				return false;
+		}
+		else
+		{
+			int talk = AddClue(m_sCaller, string.Format("%1, through a barricaded door, very quietly: \"Are they gone? Tell me when they're gone. She can't run.\"", m_sCaller));
+			if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSpot, 0, "", "Tell them it's clear", talk, "Talk to " + m_sCaller))
+				return false;
+		}
+
+		if (m_sTruth != REAL)
+		{
+			for (int i = 0; i < 2; i++)
+			{
+				m_aGroups.Insert(new RZ_EventGroup(gm.GetRedHandGroupPrefab(), LandPointNear(m_vSpot, 50, 90)));
+			}
+
+			TellTheNet(gm);
+		}
+
+		RZ_Log.Info(string.Format("Story: distress at %1 is %2", GetLocationName(gm), m_sTruth));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Trusted Red Hand player hears the secure net: the house is spoken for.
+	protected void TellTheNet(RZ_GameModeComponent gm)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int playerId : ids)
+		{
+			if (RZ_Reputation.IsAtLeast(gm.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.TRUSTED))
+				gm.NotifyPlayer(playerId, "Red Hand (secure)", string.Format("\"Leave the house outside %1 alone. It's spoken for.\"", GetLocationName(gm)));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected string RadioOpHint()
 	{
-		return "Same breath in the same place, the same crackle after \"Anyone\", every time. That's a tape. The Red Hand baits people with recordings like this. Go in careful, or don't go.";
+		if (m_sTruth == LOOP)
+			return "Same breath in the same place, the same crackle after \"Anyone\", every time. That's a tape. The Red Hand baits people with recordings like this. Go in careful, or don't go.";
+
+		if (m_sTruth == BAIT)
+			return "It's live. But there's a gap before every answer, and once a man's voice, off the mic, says \"Say it again.\" Someone is telling her what to say.";
+
+		return "The voice breaks in different places every time, and once there's banging behind it. It's live. Someone really is out there.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What your own radio gets when you answer the call (on the way in).
+	protected string RadioAnswer()
+	{
+		if (m_sTruth == LOOP)
+			return string.Format("You answer on the open band. \"This is %1. There's two of us...\" It doesn't stop for you. It doesn't answer.", m_sCaller);
+
+		if (m_sTruth == BAIT)
+			return string.Format("You answer on the open band. A woman starts to reply, \"Thank God, we're...\" and a man's voice, further off, says \"Say it again.\" She says it again: \"This is %1.\"", m_sCaller);
+
+		return string.Format("You answer on the open band. A gasp. \"You hear me? You actually hear me? We're in the house with the blue door. Hurry. Please.\" That's %1, and he's real.", m_sCaller);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
 		HintRadioOps(gm, ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			int playerId = ids[i];
+			float dist = RZ_Util.DistXZ(p.GetOrigin(), m_vSpot);
+			if (dist <= ANSWER_RADIUS && !m_aAnswered.Contains(playerId))
+			{
+				m_aAnswered.Insert(playerId);
+				gm.NotifyPlayer(playerId, m_sTitle, RadioAnswer());
+			}
+
+			if (m_sTruth != REAL && dist <= HUNTER_RADIUS && !m_aHunted.Contains(playerId))
+			{
+				m_aHunted.Insert(playerId);
+				RZ_StoryKit.Read(gm, this, playerId, "hunter", "Boots in the trees. Six, maybe eight. Nobody hunting walks like that.");
+			}
+		}
+
+		if (m_sTruth == REAL)
+		{
+			UpdateReal(gm, players);
+			return;
+		}
+
+		UpdateCrew(gm, dt, ids, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateReal(RZ_GameModeComponent gm, array<IEntity> players)
+	{
+		if (m_bStirred || CountPlayersNear(players, m_vSpot, 300) == 0)
+			return;
+
+		// The infected round the house, and more coming at the noise
+		m_bStirred = true;
+		SpawnGuards(gm, m_vSpot, 4, 6, 20);
+		gm.GetSpawner().SpawnHorde(m_vSpot, 250, m_iId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void UpdateCrew(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
 		foreach (RZ_EventGroup g : m_aGroups)
 		{
 			g.Tick(dt);
@@ -318,8 +376,9 @@ class RZ_Event_FakeDistress : RZ_Event_DistressBase
 				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, g.m_Unit, 300, true);
 		}
 
-		if (!m_bSprung && CountPlayersNear(players, m_vSpot, SPRING_RADIUS) > 0)
-			Spring(gm, ids, players);
+		// A loop springs when someone reaches the radio; bait waits for the knife
+		if (m_sTruth == LOOP && !m_bSprung && CountPlayersNear(players, m_vSpot, SPRING_RADIUS) > 0)
+			Spring(gm, "There's nobody here. Just a radio on a crate, playing the same words. Then a branch snaps in the treeline. It was never a call for help.");
 
 		// Players the Red Hand counts as friends are waved off once
 		foreach (int i, IEntity p : players)
@@ -335,12 +394,16 @@ class RZ_Event_FakeDistress : RZ_Event_DistressBase
 			gm.NotifyPlayer(playerId, m_sTitle, "A whistle from the trees, then a voice you half know: \"Not you. Keep walking, and keep your mouth shut about this.\"");
 		}
 
-		if (RZ_EventGroup.AllDead(m_aGroups))
+		if (!m_bSprung || !RZ_EventGroup.AllDead(m_aGroups))
+			return;
+
+		// The crew is dead: a loop is over, and bait's people walk out if they're still alive
+		if (m_sTruth == LOOP || m_bFreed)
 			m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Spring(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	protected void Spring(RZ_GameModeComponent gm, string line)
 	{
 		m_bSprung = true;
 		ResourceName wp = gm.GetSpawner().GetMoveWaypointPrefab();
@@ -350,27 +413,184 @@ class RZ_Event_FakeDistress : RZ_Event_DistressBase
 				RZ_Util.SendGroupTo(g.m_Unit, m_vSpot, wp);
 		}
 
-		RZ_ContractHelp.NotifyNear(gm, m_vSpot, 150, m_sTitle, "There's nobody here. Just a radio on a crate, playing the same words. Then a branch snaps in the treeline. It was never a call for help.");
+		RZ_ContractHelp.NotifyNear(gm, m_vSpot, 150, m_sTitle, line);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
 	{
-		gm.NotifyPlayer(playerId, m_sTitle, "Click. The voice stops. The quiet after it is worse.");
+		m_Story.m_Deciding.Step(gm, playerId);
+		if (m_sTruth == LOOP)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "Click. The voice stops. The quiet after it is worse.");
+			SetObjectLabels(0, "", "");
+			return;
+		}
+
+		if (m_sTruth == BAIT)
+		{
+			OnBaitChoice(gm, playerId, option);
+			return;
+		}
+
+		if (gm.GetSpawner().IsZombieNear(m_vSpot, CLEAR_RADIUS))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Not yet! I can hear them!\" The door stays shut. Clear them away from the house first.");
+			return;
+		}
+
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("The barricade comes down a plank at a time. %1 comes out with a woman on his arm, grey and limping. \"There's a bag under the stairs. Take it. We won't need it where we're going.\"", m_sCaller));
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnBaitChoice(RZ_GameModeComponent gm, int playerId, int option)
+	{
+		if (m_bFreed || m_bSold)
+			return;
+
+		// Cut them loose: quietly at night from the back, while the crew hasn't moved; otherwise they come
+		if (option == 0)
+		{
+			m_bFreed = true;
+			SetObjectLabels(0, "", "");
+			if (RZ_GameTime.IsNight() && !m_bSprung)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "You saw through the rope from the back, in the dark, a strand at a time. Nobody in the trees moves. The three of you go out the back like smoke.");
+				m_eState = RZ_EMissionState.SUCCEEDED;
+				return;
+			}
+
+			Spring(gm, "The rope parts, and somebody in the trees shouts. They were waiting for exactly this. Get them down and keep them down.");
+			return;
+		}
+
+		// "Not these two. They're mine.": Known with the Red Hand, persuade 2
+		if (option == 1)
+		{
+			if (!RZ_Reputation.IsAtLeast(gm.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.KNOWN))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "You'd need the Red Hand to know your face for that to mean anything.");
+				return;
+			}
+
+			if (m_Ways.TryTrust(gm, playerId, "crew", RZ_EFaction.BANDITS, 2, "excon") != RZ_ECheck.PASS)
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, "A laugh from the trees. \"Yours? Everything's yours today, is it?\" Nobody moves.");
+				return;
+			}
+
+			m_bFreed = true;
+			SetObjectLabels(0, "", "");
+			gm.NotifyPlayer(playerId, m_sTitle, "A long pause from the trees. \"Fine. Take them. You owe us one.\" Boots, going away.");
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			return;
+		}
+
+		// Buy them
+		if (option == 2)
+		{
+			if (!m_Ways.TryBribe(gm, playerId, RZ_EFaction.BANDITS, BUY_FAVOR))
+				return;
+
+			m_bFreed = true;
+			SetObjectLabels(0, "", "");
+			gm.NotifyPlayer(playerId, m_sTitle, "Someone comes out of the trees, counts nothing, and cuts the rope himself. \"Pleasure.\"");
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			return;
+		}
+
+		// Side with the crew: the speaker only, after the hold
+		if (!RZ_StoryKit.MayDecide(gm, this, playerId))
+			return;
+
+		m_Story.m_Deciding.StartHold(gm, this, playerId, 3, "walk away and leave these two to the crew");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnHoldDone(RZ_GameModeComponent gm, int decider, int option)
+	{
+		super.OnHoldDone(gm, decider, option);
+		if (option != 3 || m_bFreed || m_bSold)
+			return;
+
+		m_bSold = true;
 		SetObjectLabels(0, "", "");
+		gm.AddFavor(decider, RZ_EFaction.BANDITS, CUT_FAVOR);
+		gm.NotifyPlayer(decider, m_sTitle, string.Format("A man steps out of the trees and presses tins into your hand. \"Good lad.\" %1 doesn't look at you. +%2 Red Hand Favor.", m_sCaller, CUT_FAVOR));
+
+		// Seen by the Haven, or a Haven-Known player near: named now. Otherwise a lie the next Tied Down finds
+		if (RZ_Witness.Seen(gm, decider, m_vSpot, RZ_EFaction.SURVIVORS) || HavenKnownNear(gm, decider))
+		{
+			gm.AddInfamy(decider, RZ_EFaction.SURVIVORS, CUT_INFAMY, "sold a distress call to the crew");
+			gm.NotifyPlayer(decider, m_sTitle, "Somebody saw. The Haven will have your name by tonight.");
+		}
+		else
+		{
+			RZ_WorldFacts.Get().Memory().Lies().Tell(gm, decider, "distress.cut", m_sCaller, RZ_EFaction.SURVIVORS, "", m_vSpot, RZ_ELieTest.TICK, CUT_INFAMY,
+				string.Format("Tied Down freed a truckload, and %1 was in it. He told them who walked away.", m_sCaller));
+		}
+
+		array<int> who = {decider};
+		RZ_StoryKit.Record(this, "taken", m_sCaller, "crew", who, "", "");
+		m_eState = RZ_EMissionState.FAILED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool HavenKnownNear(RZ_GameModeComponent gm, int decider)
+	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (ids[i] != decider && RZ_Util.DistXZ(p.GetOrigin(), m_vSpot) <= 150 && RZ_Reputation.IsAtLeast(gm.GetTier(ids[i], RZ_EFaction.SURVIVORS), RZ_ETier.KNOWN))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnTimeUp(RZ_GameModeComponent gm)
 	{
-		m_eState = RZ_EMissionState.SUCCEEDED;
+		// A loop just goes quiet; real or bait people are lost
+		if (m_sTruth == LOOP)
+		{
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			return;
+		}
+
+		super.OnTimeUp(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		if (RZ_EventGroup.AllDead(m_aGroups))
-			SpawnRewardAt(gm, m_vSpot);
+		if (m_sTruth == LOOP)
+		{
+			if (RZ_EventGroup.AllDead(m_aGroups))
+				SpawnRewardAt(gm, m_vSpot);
+
+			return;
+		}
+
+		SpawnRewardAt(gm, m_vSpot);
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (houses && houses.Count() > 0)
+			houses.AddRescued(m_vSpot, 2, m_aParticipants);
+
+		RZ_StoryKit.Record(this, "saved", m_sCaller, m_sTruth, m_aParticipants, string.Format("In %1's school, a radio with the batteries taken out, and a note: \"In case we need to call again. We won't.\"", GetLocationName(gm)), "board");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		if (m_sTruth == LOOP || m_bSold)
+			return;
+
+		RZ_StoryKit.Record(this, "dead", m_sCaller, m_sTruth, m_aParticipants, "", "");
+		RZ_StoryKit.Fallout(gm, this, "name_on_tag", m_vSpot, string.Format("%1 and the woman from the distress call", m_sCaller));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -383,10 +603,15 @@ class RZ_Event_FakeDistress : RZ_Event_DistressBase
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		if (RZ_EventGroup.AllDead(m_aGroups))
-			return "The distress call near " + GetLocationName(gm) + " was a Red Hand trap. The people who set it won't set another.";
+		if (m_sTruth == LOOP)
+		{
+			if (RZ_EventGroup.AllDead(m_aGroups))
+				return "The distress call near " + GetLocationName(gm) + " was a Red Hand trap. The people who set it won't set another.";
 
-		return "The distress call near " + GetLocationName(gm) + " has gone quiet. It was a Red Hand trap: a tape on a crate.";
+			return "The distress call near " + GetLocationName(gm) + " has gone quiet. It was a Red Hand trap: a tape on a crate.";
+		}
+
+		return "Someone answered the distress call near " + GetLocationName(gm) + ". Two people walked out.";
 	}
 }
 

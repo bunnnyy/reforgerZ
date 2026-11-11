@@ -1034,21 +1034,22 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | Block | What it does | Used by |
 |---|---|---|
 | Hold, kill tagged, visit points, destroy, deliver, choice | The base classes: hold an area (optional waves and heat), kill what the mission spawned, stand at points, destroy a prop, carry the mission item to a drop, choose whose drop gets it. The first hand-in wins. If the item vanishes while it's in an inventory (the carrier left the server and took their character with them, or a body was cleared away), a new one is put on the ground where it was, up to 3 times, and everyone involved is told where; lost from the ground, it fails | most contracts |
-| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Hunt the Deserter, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two |
+| **Escort** (`RZ_Escort`) | People who walk a route or follow one player. Data until a player is within 300 m, then an AI group (it walks to move waypoints) or a standing figure. They only move while a player is within 150 m and no infected is within 25 m of them; the mission can stop and resume them. If the player they follow leaves or dies, they follow the nearest player within 20 m instead (or wait for one). An AI body that dies fails the job. At most 3 escorts at once | Refugee Column, Rescue the Pilot, Escort the Scientist, Secure the Shipment, Struck Off, Bust Out, Desertion Route, Learning the Drones, The Pit's Debtor; questline stages in The Three Weeks and The Other Two |
 | **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection; The Three Weeks (Dr Wolff) |
 | **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Tied Down and the Cargo questline (one van, `RZ_CargoVan`); Convoy Escort, Hijack the Convoy; questline stages in The Three Weeks and The Other Two |
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
-| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Hunt the Deserter, The Three Weeks, Tied Down; The Book (questline) |
-| **Disguises** (`Factions/RZ_Disguise.c`) | A faction's uniform gets you past its AI; caught, the Infamy doubles ([REPUTATION.md](REPUTATION.md#disguises)) | Bust Out; anywhere a faction shoots from Watched |
+| **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Struck Off (his pack), The Three Weeks, Tied Down; The Book (questline) |
+| **Borrowed kit** (`Factions/RZ_Disguise.c`, `RZ_Ways.PassAs`) | A claim in a faction's kit, judged by the fixed look (`RZ_Checks.LookScore`); a mission sets the difficulty, may give its paper as the cover detail and registers its people as watchers (`AddWatcher`). Caught: the one cost ([REPUTATION.md](REPUTATION.md#borrowed-kit)) plus the stage's own outcome. Approach `TRICK` | Bust Out (the claim at the stockade and the second look); road posts and gates |
 
 *Simplified:* escorted people without an AI body can't be hurt (only a body can die), and
 move in a straight line. A caught special is carried as a case, not dragged in its cage.
 
 ### Story blocks
 
-Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_MissionReasons.c`); settings **Missions > Story**.
-The mission style's framework (wave 1 of [designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md),
-which designs the rest). No mission's content changed with it.
+Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_StoryKit.c`, `RZ_MissionReasons.c`, `RZ_Mirror.c`);
+settings **Missions > Story**. The mission style ([designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md)
+designs what's left). The six story jobs on it (Protection Racket, Lost Colleague, Crash Site,
+Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 
 - **The story kit.** A mission may carry `m_Story` (null by default: it runs exactly as before),
   with a story key that is saved in records and never renamed. The mission forwards its tick to it.
@@ -1058,7 +1059,9 @@ which designs the rest). No mission's content changed with it.
   Who may decide: someone it was offered to (anyone, for a world event) who took part. **With the
   decider**: the decider, their vanilla group within 150 m, and anyone who chose Stand with. A scene
   decision is a 5-second hold announced to the room (30 m) that any other eligible participant may
-  object to once per job (by identity); no built mission has a scene decision yet.
+  object to once per job (by identity): Protection Racket's Side with the house, Distress Call's Side
+  with the crew, Survivors Trapped's where they go. `RZ_StoryKit.MayDecide` checks it for an option
+  that decides the job, and tells anyone else *"It's not your call. You weren't hired for this."*
 - **Who benefits** (`RZ_Beneficiaries`): 2–4 parties a result can go to. The side chosen pays those
   with the decider whom it doesn't hunt; a **switch** (the result to another side than the giver)
   pays at most the base, its Fame doesn't count toward season Fame (`RZ_RepFlag.SWITCH`), the giver
@@ -1067,12 +1070,29 @@ which designs the rest). No mission's content changed with it.
   "Nobody" pays nobody. The result is a world record (`<key>.went_to`, by the town). Every built
   choice mission (`RZ_Mission_Choice`: Crash Site, Research Data, Requisition) is built on it.
 - **Truths** are the truth deck ([World memory](#world-memory)): `m_Story.Truth(subject, ...)`
-  draws, `Reveal` tells the finder and the room (30 m) and adds the line to the journal. The errand
-  Sleeve Down uses one ([ERRANDS.md](ERRANDS.md#the-cards)); the pilot wave's story jobs will.
+  draws (the same for everyone at that subject while it's kept), `Reveal` tells the finder and the
+  room (30 m) and adds the line to the journal. A background read (`RZ_StoryKit.Read`) goes to that
+  player only and to the journal. The errand Sleeve Down and the six story jobs use them.
+- **Records** (`RZ_StoryKit.Record`): how a story job ended, as a world record `<key>.<what>` about its
+  subject, with who did it and, for some, an epilogue line (`racket.<house>`, `colleague.fate`,
+  `crash.box`, `distress.saved`, `struck.fate`, `trapped.family`).
+- **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
+  collection (found at the next collection there), saying a colleague turned or walking a deserter to
+  the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
+  truck).
+- **Failure is a branch.** A failed story job can open one **fallout errand** at its subject
+  (`RZ_StoryKit.Fallout`, `RZ_Errands.Fallout`): dealt to the job's participants first for 20 minutes,
+  then to anyone for 3 hours, by a giver within 3 km, paying at most 30% of the job's base. None after
+  a withdrawal. Protection Racket opens The Pot at the house, Crash Site Buy It Back, Distress Call and
+  Survivors Trapped The Name on the Tag ([ERRANDS.md](ERRANDS.md#fallout)). Jobs without one have a
+  **fallout line** (`RZ_MissionReasons.FalloutLine`): what the world says next, told after the fail
+  text (the Tier 0 audit's 16 jobs).
+- **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice slots
+  (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` (Survivors Trapped's mother).
 - **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
   the mission manager may start one registered contract that answers it (`RZ_MissionReasons`: The
   Harvest Guard and Protection Racket answer a hungry house; Checkpoint Duty and Convoy Escort a
-  post's lost truck; Retake the Town and Take Back the Town a town gone bad; Struck Off a dead
+  post's lost truck; Retake the Town a town gone bad; Struck Off a dead
   leader; Trail of Clues and Medicine Run a bitten wanderer; Cold Chain and Power the Lab the cure's
   milestones; Burn the Bodies a shelled town). At most one every **Reason lane gap** (30 min)
   server-wide, inside the contract cap and every check (`CanRunNow`, someone online eligible,
@@ -1080,11 +1100,20 @@ which designs the rest). No mission's content changed with it.
   Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.
 - **One weight clamp.** A contract's leader traits (±20%), its faction's needs (×0.85–1.2) and the
   majors' season weights multiply, and the product is clamped once to ×0.75–1.3.
+- **Mirror offers** (`RZ_Mirror`): one class with two givers, rolled once when the job is set up
+  (**Mirror chance**, 10%; never on a server with **PvE** on). The second side's eligible players
+  hear 5 minutes later with a rough area twice as wide, and only from then can they take part. A
+  hold mirror (The Cache) goes to the side with more eligible holders inside when the hold ends; a
+  draw is half each (each side pays 50%, neither leader counts it). A carry mirror (The Armory) goes
+  to whoever hands the case in, through who benefits. The losing side gets a line, never a fallout.
 - **The journal's detail**: selecting a row asks the server for that row's detail (at most 1,500
   characters): what you've found and who it went to ([UI.md](UI.md#the-notebook)).
 
 Log lines: `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
-resolved by hand-in to <party> (...)`, `Story: reason <key> (<subject>) started <id> '<title>'`.
+resolved by hand-in to <party> (...)`, `Story: <title> record <key> (<subject>) = <value>`, `Story:
+<title> read by <player> (<backgrounds>)`, `Story: distress at <town> is <truth>` (and `colleague`,
+`crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Mirror: <title>
+hinted to <faction>`, `Mirror: <title> won by <faction>` (or `by both, half each`).
 
 ### Errands
 
@@ -1513,14 +1542,28 @@ a stronghold leader; a person already threatened this season, by anyone; a speak
 failed to threaten in the last real day; and past three threats a life with that faction
 (**Reputation > Threats per life**), which still costs the Infamy. A refused threat bars that speaker
 for a real day. Saved in the season flags (`threat.<person>`, `threatbar.<ident>.<person>`).
+Also refused while you're passing in the listener's kit. At a leader or a leader's people
+(`FearDifficulty`): a Ruthless listener is one harder, a Paranoid one one easier, and a faction you
+worked against in a questline ending one harder (the life record `crossed.<f>`), never under 1.
+Free-standing talk threats are never made at a safehouse or inside a stronghold's or the lab's wire
+(`ThreatRefusedAt`); a threat a mission writes into its own scene stays. The Ledger's and Debt
+Collection's threats now run this check (+3 Infamy whatever happens; refused, they don't give in).
+The quiet success on the questlines' built FORCE stages is planned
+([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
+
+**The look** (`RZ_Checks.LookScore`): the disguise check, fixed and shown before you commit
+([REPUTATION.md](REPUTATION.md#borrowed-kit)). **A lie** (`RZ_Checks.Lie`): a tell catches it first
+(symptoms for a bite lie, other colours for "I'm with them", a different claim already held), else
+Trust against the difficulty.
 
 **Results.** Difficulty 1 (easy), 2 (normal) or 3 (hard): at or over it **Pass**; one under
 **Short** (a halfway deal at the price the option names); two or more under **Refused** (that person
 won't hear that approach from you again this job).
 
 **The price table.** One value is 5 Favor; food is 1, medical 2, a car part 3 (`ValueOf`,
-`FavorFor`). Tags: `TrustTag` "[Trusted - Haven]", `FearTag` "[Feared | +3 Infamy]" (with "you'd be
-Hunted" when the cost would take you there), `PriceTag` "[4 food | 20 Favor]".
+`FavorFor`). Tags: `TrustTag` "[Trusted - Haven]", `FearTag` "[Threaten - +3 Bastion Infamy - Fear 2 of 2]"
+(or "- this makes you Hunted]" when the cost would take you there; never the outcome), `PriceTag`
+"[4 food | 20 Favor]".
 
 **Ways** (`RZ_Ways`, one per job, keyed by identity so a rejoin keeps everything): one try per person
 per job per identity for every check (`TryTrust`, `TryPersuade`, `TryFear`); someone you threatened
@@ -1529,8 +1572,10 @@ or who refused you won't talk to you for the rest of the job; who took which app
 `TryMenace`); a place's stealth (`m_Quiet`). Questline stage missions (`RZ_QuestMission`) hand their
 `TryPersuade`, `TryBribe`, `Remember` and `TryMenace` to theirs. The approach enum
 (`RZ_EQuestApproach`) has **PRESS, TRADE, TRICK and LEAVE** appended once, in that order, so saved
-questline runs keep their numbers; built threat stages keep recording FORCE. The disguise look
-(TRICK's claims, `PassAs`) is planned with disguise's phase 1.
+questline runs keep their numbers; built threat stages keep recording FORCE. **A trick**
+(`PassAs`): a claim in someone's kit judged by the look at the mission's difficulty with its paper as
+the cover detail, once per player per person per job and one mission trick per life per faction per
+season day; recorded as TRICK.
 
 ### Deeds
 
@@ -1580,6 +1625,33 @@ its town ([Marks](#marks), the season pool), with the entry's line; with no **Sh
 prefab** it's text only, said once a session to a player passing within 40 m. Marks aren't saved:
 they're put back from the log at start. The epilogue will read the log and the records. Log lines:
 `World memory: reason <key> (<subject>) <text>`, `World memory: town <idx> <kind> <text>`.
+
+### Lies and witnesses
+
+Code: `World/RZ_Lies.c` (`RZ_Lies`, `RZ_Witness`), saved with the world memory. One lie store for
+missions, errands and dialogue: per player per season, 12 at most (the oldest goes), each with what
+would expose it. **Found out by events first**, never by hidden dice:
+
+| Test | What exposes it |
+|---|---|
+| Visit | A player Known or better with the faction lied to comes within 30 m of the subject's place |
+| Road news | A wanderer passes within 300 m of it |
+| The owner's tick | The owning system checks (`Lies().Test(key, subject)`): the next upkeep, the next collection |
+| Rumour | Only a claim nothing in the world can test: 15% at the next half-hour round and once more a real day later (+10 for a Talker), then it's buried |
+
+Found out, on the life it was told in: the speaker's regard *lied*, Infamy with the faction (2–5; a
+mission may name more), the life record `lied.<f>` (the liar count, −1 at Trust), and a voucher answers
+for it (+5). The life gone, the lie is buried with it. A lie never pays more than the truth: at most
+60% and no Fame (each caller's rule). The checks run on the errands' 30 s tick, errands on or not.
+
+**The witness rule** (`RZ_Witness.Seen`): "if seen" always means the act faction's people near the
+act (its holdings and road posts within 60 m; for the Haven a safehouse within 60 m or a wanderer within
+40 m), never a hidden player (stealth). Where no bodies are, a witness is rolled: 25% within 300 m of a
+lived-in place, else 5%. **Knowing:** dark acts count only when you knew: the tell was named to you, or
+the reply says it plainly; being tricked by a twist you never saw costs nothing.
+
+Log lines: `Story: lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <how>`,
+`Story: lie <key> caught now by <speaker>`.
 
 ### Callbacks
 
@@ -1949,7 +2021,7 @@ That one building burns: 30 heat, an optional fire effect, the town's infection 
 hours no loot there and no spawns within 30 m. Strongholds, outposts, safehouses, quartermasters
 and the lab can't burn (or be locked), and never show the prompt.
 
-The Gas Station Fire and Burning Town events ([MISSIONS.md](MISSIONS.md#world-events)) use the
+The Gas Station Fire event ([MISSIONS.md](MISSIONS.md#world-events)) uses the
 same fire, one building at a time; nothing burns a whole town at once.
 
 ### Water
@@ -2417,7 +2489,7 @@ Code: `Core/RZ_LooseItems.c`.
 
 Things the mode spawns for players are tracked: reward crates, dropped samples, key items, shop
 and requisition purchases, search finds, what infected bodies carry, loot taken from houses, crafted items and treatments, the wind-up radio, the
-Wedding Party's jewellery and the Crashed Helicopter's wreck. One that lies untouched
+Wedding Party's jewellery and The Last Pilot's wreck. One that lies untouched
 for **30 minutes** (**World > Loose item minutes**; 0 = off) with no player within 150 m is
 removed. Never removed: anything in a pack, a container or a vehicle's storage (its clock starts
 again when it's put down), vehicles (a fixed car isn't litter), and anything within 300 m of a

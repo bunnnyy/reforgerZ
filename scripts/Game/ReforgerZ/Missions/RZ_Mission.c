@@ -68,6 +68,11 @@ class RZ_Mission
 	//! The story kit (Missions/Story/RZ_MissionStory.c): who took part and who decides, who benefits,
 	//! truths, records. Null: the mission runs exactly as before.
 	ref RZ_MissionStory m_Story;
+	//! A mirror offer (Missions/Story/RZ_Mirror.c): a second giver for the same job. Null: one giver.
+	ref RZ_Mirror m_Mirror;
+	//! An amends job reserved for one player by a parley or a knock (Factions/RZ_Parley.c): offered to
+	//! them alone, though they're Hunted, and it works their Infamy off. "" = not reserved.
+	string m_sReservedFor;
 	bool m_bSwitched;				// its result went to another side than the giver's: pays at most the base
 	string m_sWhyNow;				// the reason it was started for ("Levie's on half portions."): the brief opens with it
 	vector m_vReasonAt;				// where that reason is: a reason-started contract must land near it
@@ -281,14 +286,27 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Reserve this amends job for one player for `seconds` (a parley's offer): theirs alone, though
+	//! they're Hunted, paid as amends (Infamy worked off through the forgiveness budget).
+	void Reserve(RZ_GameModeComponent gm, int playerId, float seconds)
+	{
+		m_sReservedFor = gm.GetProfile(playerId).m_sIdentity;
+		m_bAmends = true;
+		m_fTimeLeft = Math.Min(m_fTimeLeft, seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Contracts: does this player meet the requirements? World events are open to everyone.
 	bool IsEligible(RZ_GameModeComponent gm, int playerId)
 	{
 		if (!m_bContract)
 			return true;
 
+		if (!m_sReservedFor.IsEmpty())
+			return playerId > 0 && gm.GetProfile(playerId).m_sIdentity == m_sReservedFor;
+
 		if (!m_Req.IsEligible(gm, playerId))
-			return false;
+			return m_Mirror && m_Mirror.IsSide(gm, playerId);
 
 		// A leader's personal job: the leader decides who gets it
 		if (m_bInPersonOnly && m_iLeaderId >= 0 && gm.GetLeaders())
@@ -349,6 +367,9 @@ class RZ_Mission
 		RevealNear(gm, ids, players);
 		if (m_Story)
 			m_Story.Update(this, gm, dt, ids, players);
+
+		if (m_Mirror)
+			m_Mirror.Tick(gm, this, dt, ids);
 
 		OnUpdate(gm, dt, ids, players);
 
@@ -543,6 +564,12 @@ class RZ_Mission
 	bool HandleTalk(RZ_GameModeComponent gm, int playerId, int clueIdx)
 	{
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A choice slot on a person or thing this (non-puzzle) mission tagged with RZ_PuzzleObjectComponent.
+	void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------

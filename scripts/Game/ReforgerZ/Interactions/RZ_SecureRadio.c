@@ -323,7 +323,16 @@ class RZ_SecureRadio
 		}
 
 		m_aListeners.Insert(l);
-		m_GM.NotifyPlayer(playerId, "Cracked: " + ChannelName(f), string.Format("The voices come clear. You've got about %1 minutes before they change codes.\n%2", RZ_Util.RoundToInt(m_Settings.m_fListenMinutes), Traffic(f)));
+		string traffic = Traffic(f);
+		// Bastion's net carries the word at the wire (a cover detail at its looks, RZ_Disguise)
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (f == RZ_EFaction.MILITARY && hostility && hostility.GetDisguise().IsOn())
+		{
+			hostility.GetDisguise().LearnWord(playerId);
+			traffic += string.Format("\n\"...word at the wire is %1. Until the shift.\"", hostility.GetDisguise().WordToday());
+		}
+
+		m_GM.NotifyPlayer(playerId, "Cracked: " + ChannelName(f), string.Format("The voices come clear. You've got about %1 minutes before they change codes.\n%2", RZ_Util.RoundToInt(m_Settings.m_fListenMinutes), traffic));
 	}
 
 	//------------------------------------------------------------------------------------------------

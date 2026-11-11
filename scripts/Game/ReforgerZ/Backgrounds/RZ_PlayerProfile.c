@@ -64,6 +64,15 @@ class RZ_PlayerProfile
 	ref array<int> m_aForgiven = {0, 0, 0, 0};		// the forgiveness budget used (Forgive)
 	ref array<int> m_aThreats = {0, 0, 0, 0};		// Fear threats used (RZ_Checks.Threaten)
 	ref array<int> m_aRepSeen = {-1, -1, -1, -1};	// the reputation cell last told (RZ_ERep), -1 = not yet
+	// Borrowed kit this life (Factions/RZ_Disguise.c), per faction: catches, and blown until this
+	// many seconds of this life's play
+	ref array<int> m_aCatches = {0, 0, 0, 0};
+	ref array<float> m_aBlownUntil = {0, 0, 0, 0};
+	// The parley and settling up (Factions/RZ_Parley.c), per faction, in server time (a reconnect or
+	// a restart resets nothing): the last parley, the real day of the last settling and how much
+	ref array<int> m_aParleyUnix = {0, 0, 0, 0};
+	ref array<int> m_aSettleDay = {-1, -1, -1, -1};
+	ref array<int> m_aSettled = {0, 0, 0, 0};
 
 	// Deeds this life (Core/RZ_Deeds.c, life scope), per faction: the biggest single Fame gain and
 	// direct Infamy gain with their phrase and season day, and the tallies
@@ -154,6 +163,10 @@ class RZ_PlayerProfile
 			m_aInfamyDirect[i] = 0;
 			m_aForgiven[i] = 0;
 			m_aThreats[i] = 0;
+			m_aCatches[i] = 0;
+			m_aBlownUntil[i] = 0;
+			m_aSettleDay[i] = -1;
+			m_aSettled[i] = 0;
 			m_aRepSeen[i] = RZ_RepNames.GetRep(fame, infamy);
 			m_aBestDeed[i] = "";
 			m_aBestAmount[i] = 0;
@@ -270,6 +283,37 @@ class RZ_PlayerProfile
 		while (m_aThreats.Count() < RZ_Factions.COUNT)
 		{
 			m_aThreats.Insert(0);
+		}
+
+		if (!m_aCatches)
+			m_aCatches = new array<int>();
+		if (!m_aBlownUntil)
+			m_aBlownUntil = new array<float>();
+		if (!m_aParleyUnix)
+			m_aParleyUnix = new array<int>();
+		if (!m_aSettleDay)
+			m_aSettleDay = new array<int>();
+		if (!m_aSettled)
+			m_aSettled = new array<int>();
+		while (m_aCatches.Count() < RZ_Factions.COUNT)
+		{
+			m_aCatches.Insert(0);
+		}
+		while (m_aBlownUntil.Count() < RZ_Factions.COUNT)
+		{
+			m_aBlownUntil.Insert(0);
+		}
+		while (m_aParleyUnix.Count() < RZ_Factions.COUNT)
+		{
+			m_aParleyUnix.Insert(0);
+		}
+		while (m_aSettleDay.Count() < RZ_Factions.COUNT)
+		{
+			m_aSettleDay.Insert(-1);
+		}
+		while (m_aSettled.Count() < RZ_Factions.COUNT)
+		{
+			m_aSettled.Insert(0);
 		}
 
 		while (m_aRepSeen.Count() < RZ_Factions.COUNT)

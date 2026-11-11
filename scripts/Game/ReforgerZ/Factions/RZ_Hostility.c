@@ -89,7 +89,7 @@ class RZ_HostilitySettings
 	[Attribute("12", desc: "Retaliation: at most this much kill Infamy per player and faction per hour")]
 	int m_iRetaliationInfamyCap;
 
-	[Attribute("1", desc: "Disguises: wearing enough of a faction's uniform makes its AI look past you while you're not Hunted by it; Infamy with it doubles if you're caught (docs/REPUTATION.md)")]
+	[Attribute("1", desc: "Disguises: claims in a faction's kit, judged by the look at barriers, gates and in missions (docs/REPUTATION.md, Borrowed kit). Off: kit does nothing")]
 	bool m_bDisguises;
 
 	[Attribute("us_army,usarmy,bdu,m81,ocp,woodland_us", desc: "Disguises: keywords of Bastion uniform pieces (prefab names, lower case). Check them against your Bastion loadouts")]
@@ -98,17 +98,59 @@ class RZ_HostilitySettings
 	[Attribute("bandit,redhand,red_hand,armband_red", desc: "Disguises: keywords of Red Hand clothing (e.g. a red armband or bandana)")]
 	string m_sRedHandUniformWords;
 
-	[Attribute("hazmat,labcoat,lab_coat,cbrn,scientist", desc: "Disguises: keywords of Halcyon clothing")]
+	[Attribute("hazmat,labcoat,lab_coat,cbrn,scientist,respirator,gasmask,gas_mask", desc: "Disguises: keywords of Halcyon clothing: the coat, and the beak (a hood or mask with a respirator)")]
 	string m_sHalcyonUniformWords;
 
-	[Attribute("2", desc: "Disguises: pieces of one faction's uniform needed (jacket and trousers, say)")]
+	[Attribute("helmet,pasgt,patrol_cap,cap_,beret,boonie", desc: "Disguises: Bastion head pieces (full kit needs one); anything in the head slot that matches the uniform words counts too")]
+	string m_sBastionHeadWords;
+
+	[Attribute("bandana,balaclava,shemagh", desc: "Disguises: Red Hand head pieces")]
+	string m_sRedHandHeadWords;
+
+	[Attribute("respirator,gasmask,gas_mask,hood,mask", desc: "Disguises: Halcyon head pieces (the beak). The mask is never a tell: Halcyon always wears them outside the clean room")]
+	string m_sHalcyonHeadWords;
+
+	[Attribute("m16,m4a1,m249,m60,m21,m9,m1911", desc: "Disguises: Bastion's service weapons (prefab name keywords). Any other firearm on you is a tell at Bastion's look")]
+	string m_sServiceWeaponWords;
+
+	[Attribute("2", desc: "Disguises: pieces of one faction's uniform that make their colours (jacket and trousers, say); full kit is one more, on the head")]
 	int m_iDisguiseItems;
 
 	[Attribute("10", desc: "Disguises: seconds between checks of what each player wears")]
 	float m_fDisguiseCheckSeconds;
 
-	[Attribute("15", desc: "Disguises: real minutes a blown disguise stops working")]
+	[Attribute("60", desc: "Disguises: minutes of play a caught or exposed player is blown with that faction (their kit is only colours to them)")]
 	float m_fDisguiseBlownMinutes;
+
+	[Attribute("3", desc: "Disguises: catches per faction per life; after that, that faction can't be fooled again this life")]
+	int m_iCatchesPerLife;
+
+	[Attribute("3", desc: "Disguises: Infamy for a caught impersonation (never doubled; on its own it never takes you to 15)")]
+	int m_iImpersonationInfamy;
+
+	[Attribute("6", desc: "Disguises: impersonation Infamy per faction per hour at most")]
+	int m_iImpersonationCap;
+
+	[Attribute("10", desc: "Disguises: minutes a passed look at an outpost's gate lets you in")]
+	float m_fGatePassMinutes;
+
+	[Attribute("1", desc: "Disguises: caught, the faction's kit pieces you wear are taken (VERIFY: deleting worn items). Off: held, fined and blown, nothing taken")]
+	bool m_bConfiscation;
+
+	[Attribute("10", desc: "Disguises: the Red Hand's toll for liars (Red Hand Favor); without it, a beating")]
+	int m_iRedHandFine;
+
+	[Attribute("0.2", desc: "Disguises: the beating's share of health (never below the Health cost block's floor)")]
+	float m_fBeatingShare;
+
+	[Attribute("1", desc: "Disguises: colours. Everyone wearing a faction's colours takes on its enemies at their posts (refusals and the timed grudge only)")]
+	bool m_bColours;
+
+	[Attribute("1", desc: "Disguises: walking up to a barrier in full kit counts as the claim (with colours only, claim by talking to the post's speaker)")]
+	bool m_bClaimInFullKit;
+
+	[Attribute("1500", desc: "Disguises: within this distance (m) of the lab during the final stand no disguise works")]
+	float m_fStandRadius;
 
 	[Attribute("MIL", desc: "FactionManager key of Bastion's AI")]
 	string m_sBastionKey;
@@ -179,10 +221,16 @@ class RZ_Hostility
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Disguises (RZ_Disguise): who wears whose uniform.
+	//! Disguises (RZ_Disguise): who wears whose kit, and the looks.
 	RZ_Disguise GetDisguise()
 	{
 		return m_Disguise;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_HostilitySettings GetSettings()
+	{
+		return m_Settings;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -205,6 +253,7 @@ class RZ_Hostility
 	void OnPlayerShot(int playerId, vector pos)
 	{
 		m_Retaliation.OnPlayerShot(playerId, pos);
+		m_Disguise.OnPlayerShot(playerId, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------

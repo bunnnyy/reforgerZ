@@ -34,143 +34,6 @@ class RZ_BastionContractHelp
 }
 
 //------------------------------------------------------------------------------------------------
-//! #8 Restore Comms: a relay mast on high ground is dead. Bring the spare parts from a nearby
-//! town and fit them, then stand by it for a minute while it powers up (it hums, loudly).
-//! ★ Radio Op: rewires it by hand, no parts needed. Bastion shares horde intel on the radio.
-class RZ_Mission_RestoreComms : RZ_PuzzleMission
-{
-	protected vector m_vMast;
-	protected vector m_vParts;
-	protected bool m_bMastSpawned;
-	protected bool m_bPartsSpawned;
-	protected IEntity m_Parts;
-	protected bool m_bFitted;
-	protected float m_fPowered;
-	protected string m_sPartsTown;
-	protected int m_iPartsSpawns;
-
-	protected static const float POWER_SECONDS = 60;
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.MILITARY, RZ_ETier.KNOWN, 22, 20);
-		m_Req.Bonus("radioham");
-		m_fTimeLeft = 3000;
-		m_fParticipationRadius = 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		if (gm.GetMissionItemPrefab().IsEmpty() || !HasPrefab(gm, RZ_EPuzzleProp.OBJECT))
-			return 0;
-
-		return 1;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 0, 80);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		RZ_Settlement p = gm.GetSettlement(PickSettlementAway(gm, s.m_vCenter, 500, 2500, 0, 90));
-		if (!p)
-			return false;
-
-		m_vMast = HighPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 400);
-		m_vParts = LandPointNear(p.m_vCenter, 0, p.m_fRadius * 0.6);
-		m_sPartsTown = p.m_sName;
-		m_vPos = m_vMast;
-		m_sTitle = "Restore Comms";
-		m_sDeed = "got the radio working at {town}";
-		m_sBrief = string.Format("Our relay on the hill above %1 is dead. The spares are in a crate in %2. Fit them and keep the mast company while it powers up.", s.m_sName, p.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		if (!m_bMastSpawned && RZ_ContractHelp.AnyNear(players, m_vMast, 300))
-		{
-			m_bMastSpawned = true;
-			SpawnObject(gm, RZ_EPuzzleProp.RADIO_MAST, m_vMast, 0, "Fit the spare parts|Rewire it by hand (Radio Operator)", "");
-		}
-
-		// The spares went with a carrier who left (or a body that was cleared): they turn up in
-		// their crate again, a few times at most
-		if (m_bPartsSpawned && !m_Parts && !m_bFitted && m_iPartsSpawns < 4)
-			m_bPartsSpawned = false;
-
-		if (!m_bPartsSpawned && RZ_ContractHelp.AnyNear(players, m_vParts, 200))
-		{
-			m_bPartsSpawned = true;
-			m_iPartsSpawns++;
-			m_Parts = RZ_Util.SpawnPrefab(gm.GetMissionItemPrefab(), m_vParts + Vector(0, 0.3, 0));
-			RZ_MissionItemComponent.Tag(m_Parts, m_iId);
-			TrackProp(m_Parts);
-			if (m_iPartsSpawns == 1)
-				SpawnGuards(gm, m_vParts, 3, 8, 30);
-		}
-
-		if (!m_bFitted)
-			return;
-
-		if (!ReachedBy(ids, players, m_vMast, 25))
-			return;
-
-		gm.GetHeat().AddHeat(m_vMast, 0.5 * dt);
-		m_fPowered += dt;
-		if (m_fPowered >= POWER_SECONDS)
-			m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value, IEntity source, IEntity user)
-	{
-		if (objIdx != 0 || m_bFitted)
-			return;
-
-		if (value == 1)
-		{
-			if (!HasBonus(gm, playerId))
-			{
-				gm.NotifyPlayer(playerId, m_sTitle, "You stare at the wiring. It stares back. You'll need the spare parts.");
-				return;
-			}
-
-			Fitted(gm, "You strip two cables, bridge the dead board and coax the transmitter awake without a single spare.");
-			return;
-		}
-
-		if (!RZ_ContractHelp.CarriesItemOf(user, m_iId, true))
-		{
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You've nothing to fit. The spares are in %1.", m_sPartsTown));
-			return;
-		}
-
-		Fitted(gm, "The new boards slide in. Lights blink red, then amber. Stay by it while it warms up.");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void Fitted(RZ_GameModeComponent gm, string text)
-	{
-		m_bFitted = true;
-		SetObjectLabels(0, "", "");
-		RZ_ContractHelp.NotifyNear(gm, m_vMast, 60, m_sTitle, text + " It hums loud enough to carry.");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		RZ_BastionContractHelp.ShareHordeIntel(gm, m_aParticipants);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! #9 Curfew Patrol: walk four patrol points in a town at night (15 s at each) and put down six
 //! infected inside it. Offered only at or just before nightfall; it lasts until dawn.
 //! ★ Police: the beat goes 1.5 times faster.
@@ -260,19 +123,33 @@ class RZ_Mission_CurfewPatrol : RZ_Mission_VisitPoints
 }
 
 //------------------------------------------------------------------------------------------------
-//! #10 Weapons Cache: an armoury in an overrun town (a barracks or police station if the map has
-//! one). The case lies inside (like loose loot, placed once someone comes near); carry it to
-//! Bastion. Bastion gets stronger; you get paid, not armed.
-class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
+//! #10 The Armory (Weapons Cache, with Loot the Armory merged in): an armoury in an overrun town (a
+//! barracks or police station if the map has one). The case lies inside (like loose loot, placed
+//! once someone comes near); carry it to Bastion. Bastion gets stronger; you get paid, not armed.
+//! A mirror offer: one time in ten the Red Hand (Known) wants it too and hears 5 minutes later; its
+//! drop goes up then. Whoever carries the case to a drop decides (a choice: taken to the other side
+//! it's a switch). "Nobody": drop the case down the town's well (with the well prop): both sides
+//! are angry, nobody pays, and the world remembers. ★ Police knows the layout (the exact spot).
+class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 {
 	protected bool m_bGuarded;
+	protected bool m_bRedDrop;
+	protected vector m_vWell;
+	protected IEntity m_Well;
+	protected float m_fAtWell;
+
+	protected static const float WELL_SECONDS = 10;
+	protected static const int WELL_INFAMY = 5;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 30, 30);
+		m_Req.Bonus("police");
+		m_eChoiceOther = RZ_EFaction.BANDITS;
 		m_fTimeLeft = 3000;
 		m_fParticipationRadius = 0;
+		m_Mirror = new RZ_Mirror(RZ_EFaction.BANDITS, RZ_ETier.KNOWN);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -282,6 +159,16 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 			return 0;
 
 		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ★ Police: they know the layout, so it's exact for them.
+	override protected bool RoughByStanding(RZ_GameModeComponent gm, int playerId)
+	{
+		if (HasBonus(gm, playerId))
+			return false;
+
+		return super.RoughByStanding(gm, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -313,10 +200,14 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 		if (!SpawnDrop(gm, RZ_EFaction.MILITARY, meet))
 			return false;
 
+		if (!gm.GetPuzzlePrefab(RZ_EPuzzleProp.WELL).IsEmpty())
+			m_vWell = LandPointNear(s.m_vCenter, s.m_fRadius * 0.2, s.m_fRadius * 0.6);
+
 		PlaceInsideLater(m_vPos);
-		m_sTitle = "Weapons Cache";
+		m_sTitle = "The Armory";
 		m_sDeed = "found the rifles near {town}";
 		m_sBrief = string.Format("Our people left weapons in %1 in %2 when it fell: a long case with Bastion stencils, somewhere inside. Find it and bring it to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
+		m_Mirror.Roll();
 		return true;
 	}
 
@@ -329,19 +220,76 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Delivery
 			SpawnGuards(gm, m_vPos, 6, 8, 40, false);
 			SpawnGuards(gm, m_vPos, 1, 10, 30, true);
 		}
+
+		// The mirror's side has heard: the Red Hand's drop goes up
+		if (!m_bRedDrop && m_Mirror.IsHinted() && !gm.GetDropPointPrefab(RZ_EFaction.BANDITS).IsEmpty())
+		{
+			m_bRedDrop = true;
+			vector meet;
+			string meetName;
+			RZ_Settlement s = gm.GetSettlement(m_iSettlement);
+			if (s && RZ_LeaderJob.MeetingPoint(gm, RZ_EFaction.BANDITS, s.m_vCenter, meet, meetName))
+				SpawnDrop(gm, RZ_EFaction.BANDITS, meet);
+		}
+
+		TickWell(gm, dt, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override protected void OnDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
+	//! "Nobody": 10 s at the well with the case, and it goes down.
+	protected void TickWell(RZ_GameModeComponent gm, float dt, array<IEntity> players)
+	{
+		if (m_vWell == vector.Zero || m_eState != RZ_EMissionState.ACTIVE)
+			return;
+
+		if (!m_Well && RZ_ContractHelp.AnyNear(players, m_vWell, 300))
+			m_Well = RZ_Util.SpawnPrefab(gm.GetPuzzlePrefab(RZ_EPuzzleProp.WELL), RZ_Util.GroundPos(m_vWell), Math.RandomFloat(0, 360));
+
+		IEntity carrier = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iCarrier);
+		if (m_iCarrier <= 0 || !carrier || RZ_Util.DistXZ(carrier.GetOrigin(), m_vWell) > 6)
+		{
+			m_fAtWell = 0;
+			return;
+		}
+
+		if (m_fAtWell == 0)
+			gm.NotifyPlayer(m_iCarrier, m_sTitle, "The well. Ten seconds, and nobody gets these rifles. Nobody.");
+
+		m_fAtWell += dt;
+		if (m_fAtWell < WELL_SECONDS)
+			return;
+
+		// Nobody: both sides are angry, nobody pays, the world remembers
+		RZ_Beneficiaries parties = m_Story.m_Parties;
+		int nobody = parties.m_aParties.Count();
+		parties.AddNobody("the well");
+		m_Story.m_Deciding.Step(gm, m_iCarrier);
+		parties.Choose(gm, this, m_iCarrier, nobody, m_vWell);
+		gm.AddInfamy(m_iCarrier, RZ_EFaction.MILITARY, WELL_INFAMY, "armory well", RZ_RepFlag.ACT);
+		gm.AddInfamy(m_iCarrier, RZ_EFaction.BANDITS, WELL_INFAMY, "armory well", RZ_RepFlag.ACT);
+		RZ_WorldFacts.Get().Memory().Record("armory.case", RZ_WorldFacts.Town(m_iSettlement), "the well", RZ_WorldMemory.SOURCE_CHOICE, false);
+		NotifyInterested(gm, m_sTitle, "A long splash, a longer silence. The rifles are at the bottom of the well. Bastion and the Red Hand will both want a word.");
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnChoiceMade(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
 	{
 		if (gm.GetTerritory() && gm.GetTerritory().IsActive())
-			gm.GetTerritory().AddStrength(RZ_EFaction.MILITARY, 1);
+			gm.GetTerritory().AddStrength(faction, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string GetWhereText(RZ_GameModeComponent gm, vector from)
 	{
 		return super.GetWhereText(gm, from) + "\nDrop: " + RZ_Util.DirectionText(from, GetDropPos(0));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		super.Cleanup(gm);
+		RZ_Util.DeleteUnit(m_Well);
 	}
 }
 
@@ -742,245 +690,6 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
-		m_Escort.Cleanup();
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #14 Clear the Airfield: a flat field outside a town where the helicopter could set down, full
-//! of infected (spawned when someone comes within 400 m). Kill them all: the Last Helicopter runs
-//! twice as often for the next two hours.
-class RZ_Mission_ClearTheAirfield : RZ_Mission_KillTagged
-{
-	protected static const float BOOST_SECONDS = 7200;
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 30, 25);
-		m_Req.m_fMinMilitary = 0.2;
-		m_fTimeLeft = 2700;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		// Nothing to land while the helicopter is grounded or lost (The Last Pilot)
-		if (RZ_Quest_LastPilot.IsHelicopterDown(gm))
-			return 0;
-
-		return 0.8;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 10, 90);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 150, s.m_fRadius + 500);
-		m_fParticipationRadius = 150;
-		m_sTitle = "Clear the Airfield";
-		m_sBrief = string.Format("There's a strip of flat ground outside %1 the helicopter could use, if it weren't full of them. Clear it and it can fly more often.", s.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		if (!m_bSpawned && RZ_ContractHelp.AnyNear(players, m_vPos, 400))
-		{
-			m_bSpawned = true;
-			SpawnGuards(gm, m_vPos, 8, 5, 60, false);
-			SpawnGuards(gm, m_vPos, 1, 10, 40, true);
-		}
-
-		super.OnUpdate(gm, dt, ids, players);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		RZ_Mission_LastHelicopter.Boost(gm, BOOST_SECONDS);
-		NotifyParticipants(gm, "Task Force Bastion", "Strip's clear. The bird can set down there now: expect it more often.");
-		RZ_Quest_LastPilot.OnLzKept(gm);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #16 Hunt the Deserter: a soldier ran with supplies. Follow his trail (RZ_StepChain: his kit,
-//! then his fire, each with a note pointing on), find him, and **bring him in** (he follows you to
-//! Bastion: full pay) or **end it there** (60%). Killed some other way: 60%.
-class RZ_Mission_HuntTheDeserter : RZ_PuzzleMission
-{
-	protected ref RZ_StepChain m_Chain = new RZ_StepChain();
-	protected ref RZ_Escort m_Escort = new RZ_Escort();
-	protected vector m_vHide;
-	protected vector m_vDest;
-	protected string m_sDestName;
-	protected bool m_bFound;
-	protected bool m_bArrested;
-	protected bool m_bEnded;
-	protected float m_fBeside;
-	protected int m_iTalk = -1;
-
-	protected static const float ENDED_SCALE = 0.6;
-
-	//------------------------------------------------------------------------------------------------
-	override void GetPropSpots(notnull array<vector> result)
-	{
-		super.GetPropSpots(result);
-		m_Chain.GetSpots(result);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.MILITARY, RZ_ETier.TRUSTED, 35, 30);
-		m_fTimeLeft = 4200;
-		m_fParticipationRadius = 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		if (!RZ_Escort.HasRoom(gm) || !HasPrefab(gm, RZ_EPuzzleProp.CLUE) || !HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN))
-			return 0;
-
-		return 1;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected bool SetupPuzzle(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 0, 90);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		array<int> towns = {};
-		if (!RZ_StepChain.PickTowns(gm, s.m_vCenter, 1, 700, 2500, 0, 95, towns))
-			return false;
-
-		RZ_Settlement s2 = gm.GetSettlement(towns[0]);
-		m_vHide = LandPointNear(s2.m_vCenter, s2.m_fRadius + 150, s2.m_fRadius + 450);
-		if (!RZ_LeaderJob.MeetingPoint(gm, RZ_EFaction.MILITARY, m_vHide, m_vDest, m_sDestName))
-			return false;
-
-		m_Chain.SetMission(m_iId);
-		RZ_ChainStep kit = m_Chain.AddStep(gm, m_iSettlement, LandPointNear(s.m_vCenter, s.m_fRadius * 0.6, s.m_fRadius + 60), 6, 0);
-		kit.m_iClue = AddClue("A dropped pack", string.Format("Army issue, the name tape cut off. Inside: two empty ration tins and a map with %1 circled in pencil.", s2.m_sName));
-		kit.m_sReadLabel = "Go through the pack";
-		RZ_ChainStep fire = m_Chain.AddStep(gm, towns[0], LandPointNear(s2.m_vCenter, s2.m_fRadius * 0.4, s2.m_fRadius), 6, 0);
-		fire.m_iClue = AddClue("A cold fire", string.Format("Someone slept here last night. Boot prints head out of town toward grid %1, where the trees start.", RZ_SettlementScanner.GridReference(m_vHide)));
-		fire.m_sReadLabel = "Look around the fire";
-		fire.m_iGuards = 3;
-
-		m_iTalk = AddClue("The deserter", "He's young, and he doesn't raise the rifle. \"I'm not going back to that post. You don't know what they're doing out there.\"");
-		m_Escort.m_sName = "the deserter";
-		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 2);
-		m_Escort.m_bHide = false;
-		m_Escort.SetTalk(m_iId, 0, "Arrest him (he walks with you)|End it here", m_iTalk, "Talk to the deserter");
-
-		m_vPos = kit.m_vPos;
-		m_sTitle = "Hunt the Deserter";
-		m_sBrief = string.Format("A soldier walked out of his post with a week of rations. His trail starts at %1. Bring him back to %2 if you can. If you can't, end it.", s.m_sName, m_sDestName);
-		return m_Escort.Begin(gm, m_vHide);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
-	{
-		m_Chain.OnClueRead(idx);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		if (!m_Chain.IsDone())
-		{
-			int done = m_Chain.Update(gm, dt, ids, players, m_aParticipants);
-			RZ_ChainStep next = m_Chain.GetCurrent();
-			if (next)
-				m_vPos = next.m_vPos;
-			else
-				m_vPos = m_vHide;
-
-			if (done >= 0)
-				NotifyParticipants(gm, m_sTitle, "The trail goes on.");
-
-			return;
-		}
-
-		// His hideout: the body appears near players; talk to him
-		m_Escort.Update(gm, dt, ids, players);
-		m_vPos = m_Escort.m_vPos;
-		if (!m_bFound && ReachedBy(ids, players, m_vPos, 30))
-			m_bFound = true;
-
-		// Without talk components on his body: stand over him for 10 s and he gives up
-		if (m_bFound && !m_bArrested && !m_bEnded)
-		{
-			int beside = RZ_EscortHelp.PlayerBeside(ids, players, m_vPos, 4);
-			if (beside > 0)
-				m_fBeside += dt;
-
-			if (beside > 0 && m_fBeside >= 10)
-				OnChoice(gm, beside, 0, 0, null);
-		}
-
-		if (m_Escort.IsDead() && !m_bEnded)
-		{
-			m_bEnded = true;
-			m_fRewardScale = ENDED_SCALE;
-			m_eState = RZ_EMissionState.SUCCEEDED;
-			return;
-		}
-
-		if (m_bArrested)
-		{
-			RZ_ContractHelp.AddNear(ids, players, m_vPos, 100, m_aParticipants);
-			if (m_Escort.IsNear(m_vDest, 25))
-			{
-				m_Escort.Arrive();
-				m_eState = RZ_EMissionState.SUCCEEDED;
-			}
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
-	{
-		if (objIdx != 0 || m_bArrested || m_bEnded)
-			return;
-
-		if (option == 0)
-		{
-			m_bArrested = true;
-			m_Escort.Follow(playerId);
-			m_Escort.Go();
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("He looks at you for a long moment, then hands you the rifle, stock first. \"Walk in front of me, then.\" Take him to %1.", m_sDestName));
-			return;
-		}
-
-		if (option != 1)
-			return;
-
-		m_bEnded = true;
-		m_fRewardScale = ENDED_SCALE;
-		m_aParticipants.Clear();
-		m_aParticipants.Insert(playerId);
-		gm.NotifyPlayer(playerId, m_sTitle, "You do what they asked. Afterwards it's very quiet. Bastion pays for this too, a little less.");
-		m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void Cleanup(RZ_GameModeComponent gm)
-	{
-		super.Cleanup(gm);
-		m_Chain.Cleanup();
 		m_Escort.Cleanup();
 	}
 }

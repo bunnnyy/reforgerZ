@@ -279,6 +279,15 @@ class RZ_PuzzleActionHelper
 		}
 
 		// A safehouse's named person (World/RZ_NamedPeople.c)
+		// A stranger at a spot (Missions/Errands/RZ_Strangers.c)
+		if (comp.GetMissionId() == RZ_Strangers.TAG)
+		{
+			if (gm.GetErrands())
+				gm.GetErrands().GetStrangers().HandleChoice(playerId, comp.GetObjectIndex(), option, owner, user);
+
+			return true;
+		}
+
 		if (comp.GetMissionId() == RZ_NamedPeople.TAG_HOUSE)
 		{
 			if (gm.GetErrands())
@@ -530,7 +539,19 @@ class RZ_PuzzleActionHelper
 		int objectIndex;
 		RZ_PuzzleMission m = FindForObject(gm, owner, objectIndex);
 		if (m)
+		{
 			m.HandleChoice(gm, playerId, objectIndex, option, owner);
+			return;
+		}
+
+		// A person an ordinary mission put down with choices (Survivors Trapped's family)
+		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(owner.FindComponent(RZ_PuzzleObjectComponent));
+		if (!comp || comp.GetMissionId() < 0 || !gm.GetMissions())
+			return;
+
+		RZ_Mission plain = gm.GetMissions().FindById(comp.GetMissionId());
+		if (plain && plain.m_eState == RZ_EMissionState.ACTIVE)
+			plain.HandleObjectChoice(gm, playerId, comp.GetObjectIndex(), option);
 	}
 
 	//------------------------------------------------------------------------------------------------

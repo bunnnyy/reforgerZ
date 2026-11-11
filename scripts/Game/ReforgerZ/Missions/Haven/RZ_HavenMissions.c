@@ -1,8 +1,10 @@
 //! The Haven (Survivors) contracts. See docs/MISSIONS.md, "The Haven".
 
 //------------------------------------------------------------------------------------------------
-//! #1 Supply Cache: reach a spot in a town and hold it. Guarded by zombies.
-//! Players race each other to it, so expect PvP.
+//! #1 The Cache (Supply Cache, with Raid the Cache merged in): reach a spot in a town and hold it.
+//! Guarded by zombies. A mirror offer: one time in ten the Red Hand wants it too, for players the
+//! Haven Watches (they hear 5 minutes later); whoever has more holders there when the hold ends
+//! gets it, and a draw is half each. Players race each other to it, so expect PvP.
 class RZ_Mission_SupplyCache : RZ_Mission_Hold
 {
 	protected bool m_bGuarded;
@@ -13,6 +15,9 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.STRANGER, 10, 10);
 		m_fHoldNeeded = 60;
 		m_fHoldRadius = 25;
+		m_Mirror = new RZ_Mirror(RZ_EFaction.BANDITS, RZ_ETier.KNOWN);
+		m_Mirror.m_iNeedFaction = RZ_EFaction.SURVIVORS;
+		m_Mirror.m_eNeed = RZ_EStandingCheck.AT_LEAST_WATCHED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -30,9 +35,10 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
-		m_sTitle = "Supply Cache";
+		m_sTitle = "The Cache";
 		m_sDeed = "found a supply cache near {town}";
 		m_sBrief = string.Format("A Haven scout radioed about an untouched supply cache in %1. Secure it and hold the area for a minute.", s.m_sName);
+		m_Mirror.Roll();
 		return true;
 	}
 
@@ -52,22 +58,46 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
+		m_Mirror.Apply(gm, this, m_Mirror.HoldWinner(gm, this, m_vPos, m_fHoldRadius));
 		gm.SpawnRewardCrate(m_vPos);
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! #2 Survivors Trapped: reach a barricaded family, then hold out through three
-//! waves until help arrives. With a survivor group prefab the survivors are real
-//! AI (spawned when someone comes within 300 m), and the mission fails if they all die.
-//! Amends: works off Haven Infamy.
-//! ★ Nurse: the survivors leave healthier, bonus Fame (and one more of them makes it).
-//! The family (3, or 4 with a ★) joins the nearest Haven safehouse.
+//! #2 Survivors Trapped (story key `trapped`; one real choice): reach a barricaded family, then hold
+//! out through three waves until help arrives. With a survivor group prefab the survivors are real
+//! AI (spawned when someone comes within 300 m), and the mission fails if they all die (fallout:
+//! The Name on the Tag). Amends: works off Haven Infamy, except for a Watched player who sends them
+//! to Bastion. ★ Nurse: bonus Fame, and one more of them makes it.
+//! After the third wave the mother asks where they're going (anyone who took part, after the 5 s
+//! hold): the nearest house (3, or 4 with a ★), the hungriest house (the same, and Haven morale +1),
+//! or Bastion's post (Bastion pays the base instead; the Haven pays nothing). Nobody answers in
+//! 90 s: the nearest house. One time in four the father is bitten: ★ Nurse or Doctor sees it at once;
+//! everyone else when the house checks him at the door (he's walked out at dusk: one fewer arrives).
 class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 {
 	protected ref RZ_UnitWatch m_Survivors = new RZ_UnitWatch();
 	protected bool m_bShown;
 	protected bool m_bDied;
+	protected bool m_bAsking;
+	protected bool m_bChosen;
+	protected bool m_bBitten;
+	protected float m_fAsked;
+	protected int m_iWhere = WHERE_NEAREST;
+	protected string m_sSurname;
+	protected IEntity m_Mother;
+	protected ref array<int> m_aSeenBite = {};
+
+	protected static const int WHERE_NEAREST = 0;
+	protected static const int WHERE_HUNGRY = 1;
+	protected static const int WHERE_BASTION = 2;
+	protected static const float ASK_SECONDS = 90;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_SurvivorHoldout()
+	{
+		m_Story = new RZ_MissionStory("trapped");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -103,6 +133,9 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.6);
+		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
+		m_sSurname = RZ_NoteText.Surname(rng);
+		m_bBitten = rng.Chance(0.25);	// a fixed fact about this family, never a gotcha
 		m_sTitle = "Survivors Trapped";
 		m_sDeed = "got people out of {town}";
 		m_sBrief = string.Format("A family is barricaded inside a house in %1 and they're running out of time. Get to them and hold until help arrives.", s.m_sName);
@@ -127,7 +160,96 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			return;
 		}
 
+		// A Nurse or Doctor sees the bite on arrival
+		if (m_bBitten && m_bShown)
+		{
+			foreach (int i, IEntity p : players)
+			{
+				if (!m_aSeenBite.Contains(ids[i]) && RZ_Util.DistXZ(p.GetOrigin(), m_vPos) <= 30)
+				{
+					m_aSeenBite.Insert(ids[i]);
+					RZ_StoryKit.Read(gm, this, ids[i], "nurse,doctor", "The father keeps his left sleeve down and his arm close. He's bitten, and he knows you know.");
+				}
+			}
+		}
+
+		if (m_bAsking)
+		{
+			m_fAsked += dt;
+			if (m_fAsked >= ASK_SECONDS && !m_bChosen)
+				Choose(gm, -1, WHERE_NEAREST);
+
+			return;
+		}
+
 		super.OnUpdate(gm, dt, ids, players);
+
+		// Held: before they go, the mother asks where
+		if (m_eState == RZ_EMissionState.SUCCEEDED && !m_bChosen)
+		{
+			m_eState = RZ_EMissionState.ACTIVE;
+			Ask(gm);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Ask(RZ_GameModeComponent gm)
+	{
+		m_bAsking = true;
+		ResourceName prefab = gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+		if (!prefab.IsEmpty())
+		{
+			m_Mother = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(m_vPos, 3, 6)));
+			if (m_Mother)
+				RZ_PuzzleObjectComponent.Tag(m_Mother, m_iId, 0, "", "The nearest house|The hungriest house: \"They can work\"|Bastion's post: \"The soldiers\"");
+		}
+
+		if (!m_Mother)
+		{
+			Choose(gm, -1, WHERE_NEAREST);
+			return;
+		}
+
+		NotifyParticipants(gm, m_sTitle, string.Format("It's quiet. Mrs %1 has the kids by the hands. \"Where are we going? Tell me where.\" Talk to her.", m_sSurname));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void HandleObjectChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option)
+	{
+		if (!m_bAsking || m_bChosen || option < 0 || option > WHERE_BASTION)
+			return;
+
+		if (!RZ_StoryKit.MayDecide(gm, this, playerId))
+			return;
+
+		m_Story.m_Deciding.StartHold(gm, this, playerId, option, "decide where the family goes");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnHoldDone(RZ_GameModeComponent gm, int decider, int option)
+	{
+		super.OnHoldDone(gm, decider, option);
+		if (!m_bChosen)
+			Choose(gm, decider, option);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Choose(RZ_GameModeComponent gm, int decider, int where)
+	{
+		m_bChosen = true;
+		m_iWhere = where;
+		if (where == WHERE_BASTION)
+		{
+			m_eGiver = RZ_EFaction.MILITARY;
+			m_bAmends = false;
+			m_bNoLeaderCredit = true;
+			m_iLeaderId = -1;
+		}
+
+		if (decider > 0)
+			gm.NotifyPlayer(decider, m_sTitle, "She nods once and doesn't argue. They're ready.");
+
+		m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -149,8 +271,61 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 				rescued = 4;
 		}
 
-		if (gm.GetSafehouses())
-			gm.GetSafehouses().AddRescued(m_vPos, rescued, m_aParticipants);
+		// The house checks everyone at the door: a bitten father is walked out at dusk
+		if (m_bBitten && m_iWhere != WHERE_BASTION)
+		{
+			rescued--;
+			NotifyParticipants(gm, m_sTitle, "At the door the house checks everyone, as it always does. The father's arm. He goes out at dusk with a lamp, and nobody follows him.");
+		}
+
+		RZ_Safehouses houses = gm.GetSafehouses();
+		string went = "house";
+		if (m_iWhere == WHERE_BASTION)
+		{
+			went = "bastion";
+			NotifyParticipants(gm, m_sTitle, "Bastion's truck takes them to the post. The mother wanted the soldiers. Tonight the call will say three more civilians sheltered.");
+		}
+		else if (m_iWhere == WHERE_HUNGRY && houses && houses.Count() > 0)
+		{
+			went = "hungry";
+			int hungriest = Hungriest(gm);
+			houses.AddPopulationAt(hungriest, rescued);
+			if (gm.GetErrands())
+				gm.GetErrands().Morale(RZ_EFaction.SURVIVORS, 1, "a family came to work");
+		}
+		else if (houses && houses.Count() > 0)
+		{
+			houses.AddRescued(m_vPos, rescued, m_aParticipants);
+		}
+
+		string epilogue = string.Format("The %1s' boy chalks the days on %2's gym wall.", m_sSurname, GetLocationName(gm));
+		RZ_StoryKit.Record(this, "family", m_sSurname, went, m_aParticipants, epilogue, "board");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int Hungriest(RZ_GameModeComponent gm)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		int best = houses.FindNearest(m_vPos);
+		int lowest = 1000000;
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			if (h && h.m_iFood < lowest)
+			{
+				lowest = h.m_iFood;
+				best = i;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnFailed(RZ_GameModeComponent gm)
+	{
+		if (m_bDied)
+			RZ_StoryKit.Fallout(gm, this, "name_on_tag", m_vPos, string.Format("the %1 family", m_sSurname));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,6 +333,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	{
 		// The survivors leave with the rescue team (or they're gone)
 		m_Survivors.Delete();
+		RZ_Util.DeleteUnit(m_Mother);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -308,9 +484,18 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 //! like loose loot; the building nearest the middle if the town has no pharmacy) to a Haven
 //! safehouse. Amends: works off Haven Infamy. ★ Nurse/Doctor: bonus Fame and the exact grid of
 //! the pharmacy from the start (never the rough area).
+//! Pharmacy Lure merged in: [Sneak] throw something loud well away from the door and the infected in
+//! the aisles walk to the noise for a while; take the medicine unnoticed and it's the quiet way
+//! (the same pay, no extras). Noticed taking it, they turn on you. Open to anyone, unarmed.
 class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 {
 	protected bool m_bGuarded;
+	protected bool m_bLured;
+	protected bool m_bTaken;
+	protected float m_fLuredFor;
+	protected ref array<IEntity> m_aGuards = {};
+	protected ref array<IEntity> m_aWaypoints = {};
+	protected ref RZ_NoticeTracker m_Notice = new RZ_NoticeTracker();
 
 	//------------------------------------------------------------------------------------------------
 	//! ★ Nurse/Doctor: they know the pharmacy, so it's pre-marked for them.
@@ -323,14 +508,72 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The pharmacy's guards turn up when someone comes near.
+	//! The pharmacy's guards turn up when someone comes near; a noise well away from the door draws
+	//! them out for a while.
 	override protected void OnDeliveryTick(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
 		if (!m_bGuarded && RZ_ContractHelp.AnyNear(players, m_vPos, 300))
 		{
 			m_bGuarded = true;
-			SpawnGuards(gm, m_vPos, 3, 10, 35);
+			for (int i = 0; i < 3; i++)
+			{
+				RZ_TrackedZombie z = gm.GetSpawner().SpawnZombie(LandPointNear(m_vPos, 3, 12), false, m_iSettlement, m_iId);
+				if (z)
+					m_aGuards.Insert(z.m_Entity);
+			}
 		}
+
+		if (!m_bGuarded || m_bTaken || gm.GetSpawner().GetMoveWaypointPrefab().IsEmpty())
+			return;
+
+		m_Notice.Track(gm, ids, players, dt, m_vPos, 150);
+		vector noise;
+		if (gm.GetHeat().FindRecentNoise(m_vPos, RZ_UnarmedHelper.LURE_RADIUS, RZ_UnarmedHelper.LURE_AGE, noise) && RZ_Util.DistXZ(noise, m_vPos) > 25)
+		{
+			if (!m_bLured)
+				RZ_UnarmedHelper.SteerUnits(gm, m_aGuards, noise, m_aWaypoints);
+
+			m_bLured = true;
+			m_fLuredFor = 0;
+		}
+		else if (m_bLured)
+		{
+			m_fLuredFor += dt;
+			if (m_fLuredFor >= RZ_UnarmedHelper.LURE_HOLD)
+			{
+				m_bLured = false;
+				RZ_UnarmedHelper.SteerUnits(gm, m_aGuards, m_vPos, m_aWaypoints);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Taken while they were drawn off and nobody noticed: the quiet way.
+	override protected void OnCarrierChanged(RZ_GameModeComponent gm, int previous, int carrier)
+	{
+		super.OnCarrierChanged(gm, previous, carrier);
+		if (m_bTaken || carrier <= 0 || !m_bLured)
+			return;
+
+		m_bTaken = true;
+		IEntity player = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
+		if (player && m_Notice.IsNoticed(gm, player))
+		{
+			RZ_UnarmedHelper.SteerUnits(gm, m_aGuards, player.GetOrigin(), m_aWaypoints);
+			gm.NotifyPlayer(carrier, m_sTitle, m_Notice.GetReason(gm, player) + " They turn from the shelves toward you. Run.");
+			return;
+		}
+
+		RZ_Log.Info(string.Format("Story: medicine sneak pass by %1", RZ_Util.PlayerName(carrier)));
+		gm.NotifyPlayer(carrier, m_sTitle, "You sweep the boxes into your bag. Nothing in the aisles turns its head.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		super.Cleanup(gm);
+		RZ_UnarmedHelper.DeleteAll(m_aWaypoints);
+		m_aGuards.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -393,7 +636,7 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		PlaceInsideLater(m_vPos);
 		m_sTitle = "Medicine Run";
 		m_sDeed = "brought medicine to {town}";
-		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2: the supplies are on its shelves. Bring them back.", homeName, pharmacy.m_sName);
+		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2: the supplies are on its shelves, and something stands in the aisles. Fight it, or throw something loud well away from the door and walk in while it looks. Bring them back.", homeName, pharmacy.m_sName);
 		return true;
 	}
 
@@ -654,203 +897,6 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		vector stash = LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius);
 		gm.SpawnRewardCrate(stash);
 		gm.NotifyPlayer(playerId, "The scout's notes", string.Format("He marked a stash near %1, grid %2.", s.m_sName, RZ_SettlementScanner.GridReference(stash)));
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #10 Clear the Road: wrecks and infected block the road between two Haven
-//! towns. Kill everything on it. ★ Mechanic: bonus Fame (tows wrecks away).
-//! Each of the four stretches gets its infected when someone comes within 300 m of it.
-class RZ_Mission_ClearTheRoad : RZ_Mission_KillTagged
-{
-	protected int m_iOther = -1;
-	protected ref array<vector> m_aStretches = {};
-	protected ref array<bool> m_aStretchSpawned = {};
-	protected int m_iStretchesSpawned;
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.KNOWN, 15, 15);
-		m_Req.Bonus("mechanic");
-		m_fBonusFameMult = 1.5;
-		m_fTimeLeft = 2400;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 1.5;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 0, 50);
-		RZ_Settlement a = gm.GetSettlement(m_iSettlement);
-		if (!a)
-			return false;
-
-		m_iOther = PickSettlementAway(gm, a.m_vCenter, 700, 2500, 0, 60);
-		RZ_Settlement b = gm.GetSettlement(m_iOther);
-		if (!b)
-			return false;
-
-		// Blockers along the straight line between the two towns
-		vector from = a.m_vCenter;
-		vector to = b.m_vCenter;
-		m_vPos = RZ_Util.GroundPos((from + to) * 0.5);
-		m_fParticipationRadius = RZ_Util.DistXZ(from, to) * 0.5 + 100;
-		for (int i = 1; i <= 4; i++)
-		{
-			m_aStretches.Insert(RZ_Util.GroundPos(from + (to - from) * (i / 5.0)));
-			m_aStretchSpawned.Insert(false);
-		}
-
-		m_sTitle = "Clear the Road";
-		m_sDeed = "cleared the road at {town}";
-		m_sBrief = string.Format("The road from %1 to %2 is crawling with infected. Clear every one of them, so the Haven can use it again.", a.m_sName, b.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		foreach (int i, vector p : m_aStretches)
-		{
-			if (m_aStretchSpawned[i] || !RZ_ContractHelp.AnyNear(players, p, 300))
-				continue;
-
-			m_aStretchSpawned[i] = true;
-			m_iStretchesSpawned++;
-			SpawnGuards(gm, p, 2, 0, 25);
-		}
-
-		// Cleared once every stretch has had its infected and they're all dead
-		m_bSpawned = m_iStretchesSpawned >= m_aStretches.Count();
-		super.OnUpdate(gm, dt, ids, players);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		RZ_Settlement a = gm.GetSettlement(m_iSettlement);
-		RZ_Settlement b = gm.GetSettlement(m_iOther);
-		if (a)
-			a.AddInfection(-5);
-		if (b)
-			b.AddInfection(-5);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! #13 Signal Fires: light beacons on three hills within two minutes of each
-//! other. Needs at least three players online. Nearby towns' infection drops.
-class RZ_Mission_SignalFires : RZ_Mission
-{
-	protected ref array<vector> m_aHills = {};
-	protected ref array<float> m_aLitAt = {};
-	protected float m_fClock;
-
-	protected static const float WINDOW = 120;
-	protected static const float LIGHT_RADIUS = 10;
-
-	//------------------------------------------------------------------------------------------------
-	//! The beacons are listed by grid: never a rough area.
-	override bool NeedsExactLocation()
-	{
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void Configure(RZ_GameModeComponent gm)
-	{
-		SetContract(RZ_EFaction.SURVIVORS, RZ_ETier.TRUSTED, 25, 25);
-		m_Req.m_iMinPlayers = 3;
-		m_fTimeLeft = 2700;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override float GetWeight(RZ_GameModeComponent gm)
-	{
-		return 1;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool Setup(RZ_GameModeComponent gm)
-	{
-		m_iSettlement = PickSettlement(gm, 30, 100);
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		if (!s)
-			return false;
-
-		m_vPos = s.m_vCenter;
-		m_fParticipationRadius = s.m_fRadius + 900;
-		for (int i = 0; i < 3; i++)
-		{
-			// One hill per third of the circle around town
-			vector center = s.m_vCenter;
-			float angle = i * Math.PI2 / 3;
-			center[0] = center[0] + Math.Cos(angle) * (s.m_fRadius + 500);
-			center[2] = center[2] + Math.Sin(angle) * (s.m_fRadius + 500);
-			m_aHills.Insert(HighPointNear(center, 0, 250));
-			m_aLitAt.Insert(-1000);
-		}
-
-		m_sTitle = "Signal Fires";
-		m_sBrief = string.Format("Light the three beacons on the hills around %1 within two minutes of each other, so the Haven's people know it's safe to move. One person can't do this alone.", s.m_sName);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override string GetWhereText(RZ_GameModeComponent gm, vector from)
-	{
-		string grids = "";
-		foreach (int i, vector h : m_aHills)
-		{
-			if (i > 0)
-				grids += ", ";
-
-			grids += RZ_SettlementScanner.GridReference(h);
-		}
-
-		return super.GetWhereText(gm, from) + "\nBeacons (grid): " + grids;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
-	{
-		m_fClock += dt;
-		int lit = 0;
-		foreach (int i, vector hill : m_aHills)
-		{
-			if (CountPlayersNear(players, hill, LIGHT_RADIUS) > 0)
-			{
-				if (m_fClock - m_aLitAt[i] > WINDOW)
-					NotifyParticipants(gm, m_sTitle, "A beacon is burning.");
-
-				m_aLitAt[i] = m_fClock;
-			}
-
-			if (m_fClock - m_aLitAt[i] <= WINDOW)
-				lit++;
-		}
-
-		if (lit >= m_aHills.Count())
-			m_eState = RZ_EMissionState.SUCCEEDED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void OnSuccess(RZ_GameModeComponent gm)
-	{
-		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
-		foreach (RZ_Settlement other : gm.GetSettlements())
-		{
-			if (s && RZ_Util.DistXZ(other.m_vCenter, s.m_vCenter) <= 2000)
-				other.AddInfection(-10);
-		}
-
-		gm.NotifyAll("Signal Fires", "Three beacons are burning. The towns nearby take heart.");
 	}
 }
 

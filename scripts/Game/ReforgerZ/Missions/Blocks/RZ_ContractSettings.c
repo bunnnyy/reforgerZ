@@ -31,7 +31,7 @@ class RZ_ContractSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Escorted scientist: a one-man AI group on INST (Escort the Scientist, Secure the Shipment). Empty = the escorted civilians", "et")]
 	ResourceName m_sEscortScientist;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Escorted soldier: a one-man AI group on MIL (Rescue the Pilot, Hunt the Deserter). Empty = the escorted civilians", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Escorted soldier: a one-man AI group on MIL (Rescue the Pilot, Struck Off). Empty = the escorted civilians", "et")]
 	ResourceName m_sEscortSoldier;
 
 	// ---------------------------------------------------------------- Live capture (RZ_LiveCapture)

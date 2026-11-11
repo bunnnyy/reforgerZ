@@ -31,6 +31,10 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_WildcardMoney());
 		// Amends
 		list.Insert(new RZ_Errand_CleanSlate());
+		// Fallout: a failed story job's (RZ_StoryKit.Fallout; Name on the Tag takes one too)
+		list.Insert(new RZ_Errand_BuyItBack());
+		// Disguises
+		list.Insert(new RZ_Errand_DressRehearsal());
 	}
 }
 
