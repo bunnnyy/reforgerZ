@@ -649,6 +649,17 @@ class RZ_Wanderers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A mission is using this person (Hold): no body, no movement.
+	bool IsHeld(int id)
+	{
+		RZ_Wanderer w = Find(id);
+		if (!w)
+			return false;
+
+		return w.m_iHeldBy >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Living wanderers with a role in roleMask (shuffled), for missions and story arcs that
 	//! need people on the road without holding them.
 	void GetLiving(int roleMask, notnull array<int> result)
@@ -693,13 +704,19 @@ class RZ_Wanderers
 
 	//------------------------------------------------------------------------------------------------
 	//! A living Haven wanderer with a role in roleMask, not near any player, for a mission
-	//! to use as a character (it then holds them). -1 if none.
-	int FindForMission(int roleMask)
+	//! to use as a character (it then holds them). Never one a story has claimed
+	//! (RZ_WorldFacts), unless it's `asker`'s own story. -1 if none.
+	int FindForMission(int roleMask, RZ_Mission asker = null)
 	{
 		array<int> options = {};
+		RZ_WorldFacts facts = m_GM.GetFacts();
 		foreach (RZ_Wanderer w : m_aList)
 		{
 			if (!w.m_bAlive || w.m_iHeldBy >= 0 || w.m_bHasBody || w.IsBitten() || w.m_iEscortPlayer > 0)
+				continue;
+
+			string subject = RZ_WorldFacts.Wanderer(w.m_iId);
+			if (facts && facts.IsClaimed(subject) && (!asker || !asker.IsSubjectFree(m_GM, subject)))
 				continue;
 
 			if ((RoleBit(w.m_eRole) & roleMask) == 0)
@@ -2321,13 +2338,14 @@ class RZ_Wanderers
 		if (!job.IsEligible(m_GM, playerId) || !job.Prepare(m_GM, w.m_vPos, w.GetShortName(), playerId))
 			return;
 
-		if (!missions.StartMission(job))
+		// The same check as any mission (RZ_MissionManager.CanRunNow)
+		if (!missions.StartIfCan(job, GetGame().GetPlayerManager().GetPlayerCount()))
 			return;
 
 		m_mJobAt.Set(ident, m_fClock);
 		job.m_aOfferedTo.Insert(playerId);
 		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
-			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.m_sBrief, job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
+			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2556,7 +2574,8 @@ class RZ_Wanderers
 			return;
 		}
 
-		if (!missions.StartMission(job))
+		// The same check as any mission (RZ_MissionManager.CanRunNow)
+		if (!missions.StartIfCan(job, GetGame().GetPlayerManager().GetPlayerCount()))
 		{
 			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"I've letters, but nowhere they can go today. Ask me tomorrow.\"");
 			return;
@@ -2566,7 +2585,7 @@ class RZ_Wanderers
 		w.Remember(ident, MEM_HELPED);
 		job.m_aOfferedTo.Insert(playerId);
 		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
-			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.m_sBrief, job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
+			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
 	}
 
 	//------------------------------------------------------------------------------------------------

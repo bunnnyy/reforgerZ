@@ -1004,6 +1004,10 @@ class RZ_LongTable
 		if (leaders && leaders.FindNearest(-1, s.m_vCenter, gap))
 			return false;
 
+		// Not a town a running mission or story is using (world facts' claims), when it moves
+		if (m_GM.GetMissions() && m_GM.GetMissions().IsSettlementBusy(idx))
+			return false;
+
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
 			vector qm;

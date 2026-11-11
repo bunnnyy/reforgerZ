@@ -51,7 +51,7 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		RZ_Safehouses houses = gm.GetSafehouses();
 		m_iHouse = houses.PickRandom();
 		RZ_Safehouse h = houses.Get(m_iHouse);
-		if (!h || gm.GetMissions().IsSettlementBusy(h.m_iSettlement))
+		if (!h || IsTownBusy(gm, h.m_iSettlement))
 			return false;
 
 		m_vHouse = h.m_vPos;

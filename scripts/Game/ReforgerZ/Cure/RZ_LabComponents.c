@@ -120,6 +120,13 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 			return false;
 		}
 
+		return CanTakeNow();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On every machine, before the action shows as possible. Default: yes.
+	protected bool CanTakeNow()
+	{
 		return true;
 	}
 
@@ -190,6 +197,36 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 	{
 		gm.DeliverSamples(playerId, value);
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After the cure the lab takes no more samples (the replicated flag, so clients agree).
+	override protected bool CanTakeNow()
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.IsReplicatedCured())
+		{
+			SetCannotPerformReason("The cure is out");
+			return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the server, before anything is taken: the cure is out, so the samples stay with you.
+	override protected bool CanAccept(RZ_GameModeComponent gm, int playerId, IEntity receiver)
+	{
+		if (playerId <= 0)
+			return false;
+
+		if (gm.GetFacts().IsCured())
+		{
+			gm.NotifyPlayer(playerId, "Halcyon", "\"Keep them. The cure is out: we don't need them any more. I never thought I'd say that.\"");
+			return false;
+		}
+
+		return true;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -210,6 +247,13 @@ class RZ_SellSamplesToBanditsAction : RZ_SampleDeliveryActionBase
 	{
 		if (playerId <= 0)
 			return false;
+
+		// After the cure nobody pays for samples, not even the Red Hand
+		if (gm.GetFacts().IsCured())
+		{
+			gm.NotifyPlayer(playerId, "The Red Hand", "Nobody comes out to meet you. The cure is out: samples aren't worth anything to anyone now.");
+			return false;
+		}
 
 		return gm.GetMissions().CanSellToBandits(playerId, receiver);
 	}

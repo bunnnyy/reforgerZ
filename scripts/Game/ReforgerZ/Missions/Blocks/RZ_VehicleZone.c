@@ -264,10 +264,25 @@ class RZ_ConvoyWatch
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From the mission's OnTruckEvent.
+	//! From the mission's OnTruckEvent. TRUCK_CALLED_OFF counts before the truck has left too (the
+	//! request was cancelled), when it's for the post this watch is waiting on.
 	void OnTruckEvent(int faction, int what, vector pos, int driver)
 	{
-		if (!m_bFound || faction != m_iFaction || m_iResult >= 0)
+		if (faction != m_iFaction || m_iResult >= 0)
+			return;
+
+		if (what == RZ_SupplyLines.TRUCK_CALLED_OFF)
+		{
+			if (driver != m_iHolding)
+				return;
+
+			m_iResult = what;
+			m_vResultPos = pos;
+			m_iDriver = -1;
+			return;
+		}
+
+		if (!m_bFound)
 			return;
 
 		m_iResult = what;

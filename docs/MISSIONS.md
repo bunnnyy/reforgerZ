@@ -32,7 +32,11 @@ these missions as stages are in [QUESTLINES.md](QUESTLINES.md) (designed, not bu
    the Haven*. Some open *because* someone hates you.
 3. **Background.** Some contracts are locked to or from backgrounds (🔒), and some backgrounds
    get a better outcome (★).
-4. **World state.** Outbreak stage, cure progress, whether Bastion is still around, night.
+4. **World state.** Outbreak stage, cure progress, whether Bastion is still around, night. Once
+   the cure is out, Halcyon's contracts and events stop (its work is research), and so does any
+   mission at the line; one running when the cure comes out is called off (no pay, no penalty). A
+   mission can also wait on a season flag or stay away while a questline tells its story
+   ([DESIGN.md](DESIGN.md#world-facts)).
 
 How the code does it:
 
@@ -64,7 +68,9 @@ How the code does it:
   "Morale, needs, truces and feuds").
 - **Supply trucks aren't contracts.** Escorting, driving in or stealing one pays directly
   ([DESIGN.md](DESIGN.md), "Supply trucks"). Convoy Escort and Hijack the Convoy ask for
-  Bastion's next real truck, so those truck rewards are paid on top of the contract.
+  Bastion's next real truck, so those truck rewards are paid on top of the contract. If the post
+  it's going to changes hands first, the truck turns back and both are called off (no pay, no
+  penalty).
 - **Rescues** add population at the nearest Haven safehouse ([DESIGN.md](DESIGN.md), "Haven safehouses").
 - **Bodies on approach.** A contract's guards, AI people and raiders are spawned when a player
   comes within about 300 m of them; until then the job is data. A spawned AI group that is gone
@@ -182,7 +188,7 @@ Code: `Missions/RedHand/RZ_RedHandLoreMissions.c`.
 
 | # | Contract | From | Needs | Bg | What you do | Result | Status |
 |---|---|---|---|---|---|---|---|
-| 1 | Learning the Drones | Red Hand | Known, Perimeter on | ★ Radio Op: counts twice as fast, so he's out there half as long (shot 35%, not 55%) | A crew waits with a debtor 120–200 m outside the warning zone. **Walk him to the line**: he walks with you to a marker 20 m short of the kill zone, then on alone; stay within 50 m of the marker for 90 s and count. A warning shot, then maybe the second one. **Get him away**: he follows you to the nearest Haven safehouse (the crew fights you) | Walk: Fame, Favor, whether he lives or not (shot 55% of the time). Away: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy) | ✅ *spots from the Perimeter helper, so it works on land and sea edges (on a sea edge he wades out from the shore); never where the coast lies past the drones' reach. He is data out past the marker: the shots are effects, not a body. The crew is real only with the Red Hand group prefab* |
+| 1 | Learning the Drones | Red Hand | Known, Perimeter on and sealed (not after the cure) | ★ Radio Op: counts twice as fast, so he's out there half as long (shot 35%, not 55%) | A crew waits with a debtor 120–200 m outside the warning zone. **Walk him to the line**: he walks with you to a marker 20 m short of the kill zone, then on alone; stay within 50 m of the marker for 90 s and count. A warning shot, then maybe the second one. **Get him away**: he follows you to the nearest Haven safehouse (the crew fights you) | Walk: Fame, Favor, whether he lives or not (shot 55% of the time). Away: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy) | ✅ *spots from the Perimeter helper, so it works on land and sea edges (on a sea edge he wades out from the shore); never where the coast lies past the drones' reach. He is data out past the marker: the shots are effects, not a body. The crew is real only with the Red Hand group prefab* |
 | 2 | The Pit's Debtor | Red Hand | Known | ★ Ex-Con: caught rigging 10% (not 25%), half the chance of being seen walking him out | Nobody volunteered for the pit (the one Fight Pit and House Rules use), so a debtor goes in, and you're his second. **Pay what he owes** (25 Red Hand Favor), **rig the pens**, or **get him out** | Pay: half pay. Rig: caught, +10 Red Hand Infamy and failed; else keep him standing in the ring for 150 s (two rounds of three infected): full pay. Out: walk him to the Haven; seen near the pit (30% a check by day, 12% by night, every 5 s within 60 m): +8 Red Hand Infamy at once and the pit crew fights. Arrives: Haven Fame, Favor, he joins the safehouse (+15 Red Hand Infamy). Nobody chooses in 40 min: he goes in alone, failed | ✅ *only a player the Red Hand hired can pay, checked before the Favor is taken. The pit crew is real only with the Red Hand group prefab* |
 | 3 | Tied Down | Haven | Known | ★ Hunter: the crew sees you within 15 m, not 30 | A Red Hand truck carries people. Three steps: a lookout's note outside one town names the next; there the truck is parked (watch it from within 80 m for 20 s; seen, its crew fights and it leaves at once); then it drives on to a shed outside a third town. At the shed: **cut the lock** (12 s, the guards fight) and drive them to the Haven in the truck, **radio the Haven**, or ask the driver for **a cut** | Free: Fame, Favor, +3 at the safehouse (+15 Red Hand Infamy). Radio: 60% pay, +2 at the safehouse (+8 Red Hand Infamy). Cut: the Red Hand pays anyone it doesn't hunt, 10 Fame and 40 Favor (+15 Haven Infamy) | ✅ *the truck is Supply > Red Hand truck (needed); it's data while it moves and only parked trucks are seen, with no fuel until the lock is cut. It waits at the stop until someone has watched it. Its crew is Supply > Red Hand crew, the shed's guards the Red Hand group (each falls back to the other; neither = none). Freeing them needs a vehicle, so No Vehicles takes it out. Reaching the shed sets `cargo.truck_seen`, the Haven's way into the [Cargo questline](#cargo-the-red-hand-or-the-haven), which tells the long version with the same van and padlock; while it runs, Tied Down isn't offered* |
 
@@ -319,7 +325,7 @@ Time-Lock Safe), Breaker Sequence (Junction Boxes), Scout the Town (Recon) and N
 
 Jobs at the quarantine line ([DESIGN.md](DESIGN.md), "The Perimeter"). Nothing crosses the line in
 either direction; these happen at it. Rare and dangerous on purpose; nothing is built for them. They never appear while the Perimeter
-is off, and one that finds nowhere to happen on a map is never offered there ("Missions at the line" in [DESIGN.md](DESIGN.md), "The Perimeter"). Code: `Missions/Perimeter/`.
+is off or after the cure (the line has stood down), and one that finds nowhere to happen on a map is never offered there ("Missions at the line" in [DESIGN.md](DESIGN.md), "The Perimeter"). Code: `Missions/Perimeter/`.
 
 | # | Mission | From | Needs | What you do | Result | Status |
 |---|---|---|---|---|---|---|
@@ -351,6 +357,8 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
   with the other faction involved. Rewards never include loot.
 - **Rogue jobs can be discovered**, and most rogue deliveries have a second drop at the stronghold
   where you can **turn the leader in** instead.
+- **The same world rules as any contract:** a job's requirements, one of each job per leader at a
+  time, and Halcyon's jobs stop once the cure is out ([DESIGN.md](DESIGN.md#world-facts)).
 
 | # | Job | From | What you do | Result | Status |
 |---|---|---|---|---|---|
@@ -376,7 +384,7 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
 | 20 | Debt Collection | Red Hand, Independent | Collect from a debtor (a real wanderer if free): talk, threaten or pay | Talk: 60%. Threaten: full, +3 Haven Infamy. Pay it: 15 Red Hand Favor | ✅ |
 | 21 | The Soft Touch | Red Hand, Rogue | Secret medicine to a Haven safehouse | Haven Fame +5; infection −5 | ✅ |
 | 22 | Coup Talk | Red Hand, Rogue | Carry a word to two other crews | Never fully works: laughed off, or a purge | ✅ |
-| 23 | Sell Out a Rival Crew | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another crew boss dies | ✅ |
+| 23 | Sell Out a Rival Crew | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another crew boss dies (never one a mission or story is using; if a story takes them up before the raid, the camp is found empty) | ✅ |
 | 24 | Skim the Toll | Red Hand, Rogue | Take the boss's toll on the road for 5 min | Paid; +3 Haven Infamy | ✅ |
 | 25 | Field Station | Halcyon, Independent | Hold a house in a quiet village for 3 min | Research +1 | ✅ |
 | 26 | Second Opinion | Halcyon, Independent | Notes to a Haven medic | Research +1; Haven Fame +3 | ✅ |
@@ -402,7 +410,7 @@ missions exist only inside arcs and are never picked at random:
 | Mission | Arc | Kind | What you do | Result | Status |
 |---|---|---|---|---|---|
 | The Deserter's Map | The Deserter's Map | World event | Take a map piece from a dead deserter; get the other two from the wanderers it names; reach the bunker (four infected) | The bunker's stores (a reward crate). A holder dies first: fails | ✅ |
-| Fever Town: the water | Fever Town | Halcyon contract, Any, ★ Lab Tech | The Water Survey, starting at the sick safehouse's well | Fame, Favor; the arc goes on | ✅ |
+| Fever Town: the water | Fever Town | Halcyon contract, Any, ★ Lab Tech | The Water Survey, starting at the sick safehouse's well (not research: it still runs after the cure) | Fame, Favor; the arc goes on | ✅ |
 | Fever Town: get them out | Fever Town | Haven contract, Any, ★ Nurse/Doctor: faster | Hold the safehouse gate for 2 minutes (2 waves) | Fame, Favor; two people move, the added infection goes. Fails: two die | ✅ |
 
 ## Questlines

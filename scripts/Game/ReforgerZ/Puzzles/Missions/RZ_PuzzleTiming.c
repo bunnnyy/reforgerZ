@@ -299,7 +299,7 @@ class RZ_Mission_BellOrder : RZ_PuzzleMission
 		}
 
 		RZ_Settlement haven = gm.GetSettlement(m_iHaven);
-		if (!haven || gm.GetMissions().IsSettlementBusy(m_iHaven))
+		if (!haven || IsTownBusy(gm, m_iHaven))
 			return false;
 
 		if (house)

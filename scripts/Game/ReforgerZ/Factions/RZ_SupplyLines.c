@@ -198,6 +198,9 @@ class RZ_SupplyLines
 	static const int TRUCK_ROBBED = 2;
 	static const int TRUCK_LATE = 3;
 	static const int TRUCK_STOLEN = 4;
+	//! The post it was for changed hands or was abandoned: a request that never left, or a truck
+	//! that turned back. OnTruckEvent's `driver` is that holding's id instead of a player.
+	static const int TRUCK_CALLED_OFF = 5;
 
 	protected static const float CHECK_INTERVAL = 30;
 	protected static const float ARRIVE_RADIUS = 50;
@@ -403,13 +406,34 @@ class RZ_SupplyLines
 
 	//------------------------------------------------------------------------------------------------
 	//! Territory: an outpost changed hands or was abandoned. Its stock and shortage go with it,
-	//! and a truck still on its way there turns back: no delivery, no reward, no shortage.
+	//! and a truck still on its way there turns back: no delivery, no reward, no shortage. The
+	//! roads hear about it (RZ_WorldFacts.Changed), and The Last Convoy ends with it.
 	void OnHoldingChanged(int holdingId)
 	{
 		for (int i = m_aStates.Count() - 1; i >= 0; i--)
 		{
 			if (m_aStates[i].m_iKind == KIND_OUTPOST && m_aStates[i].m_iIndex == holdingId)
 				m_aStates.Remove(i);
+		}
+
+		// A convoy asked for and not yet gone: there's nothing left to send it to
+		RZ_StoryArcs arcs = m_GM.GetStoryArcs();
+		RZ_Holding post = m_GM.GetTerritory().GetHolding(holdingId);
+		for (int f = 0; f < m_aConvoyTo.Count(); f++)
+		{
+			if (m_aConvoyTo[f] != holdingId)
+				continue;
+
+			m_aConvoyTo[f] = -1;
+			if (arcs && post)
+				arcs.OnConvoyCalledOff(f, holdingId, post.m_sName);
+
+			// A mission waiting for that truck (Convoy Escort, Hijack the Convoy) hears it too
+			vector at = vector.Zero;
+			if (post)
+				at = post.m_vPos;
+
+			m_GM.GetMissions().OnTruckEvent(f, TRUCK_CALLED_OFF, at, holdingId);
 		}
 
 		foreach (RZ_SupplyTruck t : m_aTrucks)
@@ -421,7 +445,38 @@ class RZ_SupplyLines
 			t.m_bDone = true;
 			t.m_fDoneAt = t.m_fAge;
 			RZ_Log.Info(string.Format("Supply: %1 truck to %2 called off (the outpost changed hands or was abandoned).", RZ_Factions.GetShortName(t.m_eFaction), t.m_sDestName));
+			vector truckAt = t.m_vDest;
+			if (t.m_Vehicle)
+				truckAt = t.m_Vehicle.GetOrigin();
+
+			m_GM.GetMissions().OnTruckEvent(t.m_eFaction, TRUCK_CALLED_OFF, truckAt, holdingId);
+			if (t.m_bConvoy && arcs && arcs.OnConvoyCalledOff(t.m_eFaction, holdingId, t.m_sDestName))
+				continue;
+
+			TellCalledOff(t, post);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A truck turned back because its post changed hands (`post` has the new owner) or was
+	//! abandoned (`post` still has the old one, or is gone).
+	protected void TellCalledOff(RZ_SupplyTruck t, RZ_Holding post)
+	{
+		string who = RZ_Factions.GetNameInText(t.m_eFaction);
+		string headline;
+		string rumour;
+		if (post && post.m_eFaction != t.m_eFaction)
+		{
+			headline = string.Format("%1's truck for %2 turned round on the road: the post there is %3's now.", RZ_Util.Capitalize(who), t.m_sDestName, RZ_Factions.GetNameInText(post.m_eFaction));
+			rumour = string.Format("\"%1's truck for %2 came back full. No point unloading for %3.\"", RZ_Util.Capitalize(who), t.m_sDestName, RZ_Factions.GetNameInText(post.m_eFaction));
+		}
+		else
+		{
+			headline = string.Format("%1's truck for %2 turned round on the road. There's nobody left there to unload it.", RZ_Util.Capitalize(who), t.m_sDestName);
+			rumour = string.Format("\"%1 gave up on %2. Their truck turned round halfway and came back full.\"", RZ_Util.Capitalize(who), t.m_sDestName);
+		}
+
+		RZ_WorldFacts.Get().Changed(string.Format("supply.%1.called_off", t.m_eFaction), headline, rumour, "", 3);
 	}
 
 	//------------------------------------------------------------------------------------------------

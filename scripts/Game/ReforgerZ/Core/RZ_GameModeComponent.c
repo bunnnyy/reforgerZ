@@ -375,6 +375,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_LooseItems m_LooseItems;
 	protected ref RZ_UIFeed m_UIFeed;
 	protected ref RZ_Seasons m_Seasons;
+	protected ref RZ_WorldFacts m_Facts;
 	protected ref array<int> m_aSeasonFame = {0, 0, 0, 0};	// Fame earned with each faction this season, all players
 	protected int m_iSeasonWinner = -1;
 	protected float m_fStatusTimer;
@@ -550,6 +551,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// First: the season's rules (RZ_Seasons.Mods) are read by the systems below
 		m_Seasons = new RZ_Seasons(this, m_SeasonSettings);
+		// The shared world facts (season flags, canon, claims) every system and mission reads
+		m_Facts = new RZ_WorldFacts(this);
 		m_Heat = new RZ_HeatMap();
 		m_LooseItems = new RZ_LooseItems(this, m_fLooseItemMinutes);
 		m_Adaptation = new RZ_Adaptation(this, m_AdaptationSettings);
@@ -598,6 +601,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			RZ_Log.Info(string.Format("Last season (%1, season %2) the cure went to %3.", last.world, last.season, last.winnerName));
 
 		m_Seasons.Begin(loaded, last, wipedSeason);
+		// A fresh season (no save, or a wipe) starts with no flags, no canon and a new seed
+		m_Facts.Setup();
 
 		if (m_aSettlements.IsEmpty())
 		{
@@ -699,6 +704,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_UIFeed.Tick(dt, ids, players);
 		m_LooseItems.Tick(dt, players);
 		m_Seasons.Tick(dt, ids);
+		m_Facts.Tick(dt, ids);
 
 		foreach (int i, IEntity ent : players)
 		{
@@ -752,6 +758,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_UIFeed GetUIFeed() { return m_UIFeed; }
 	RZ_UISettings GetUISettings() { return m_UISettings; }
 	RZ_Seasons GetSeasons() { return m_Seasons; }
+	//! What's true in the world right now, for content (docs/DESIGN.md, "World facts").
+	RZ_WorldFacts GetFacts() { return m_Facts; }
 	int GetSeasonWinner() { return m_iSeasonWinner; }
 
 	//------------------------------------------------------------------------------------------------
@@ -1227,17 +1235,25 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			m_aWelcomed.Insert(playerId);
 			string lab = "";
-			if (m_bHasLab)
+			if (m_bHasLab && m_Cure.IsCured())
+			{
+				lab = string.Format("\nHalcyon's lab: %1. The cure is out; it takes no more samples.",
+					RZ_Util.DirectionText(controlledEntity.GetOrigin(), m_vLabPos));
+			}
+			else if (m_bHasLab)
 			{
 				lab = string.Format("\nHalcyon's lab: %1. Bring it samples from special infected.",
 					RZ_Util.DirectionText(controlledEntity.GetOrigin(), m_vLabPos));
 			}
 
-			NotifyPlayer(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()),
-				string.Format("Cure research: %1 percent.%2", RZ_Util.RoundToInt(m_Cure.m_fProgress), lab));
+			string research = string.Format("Cure research: %1 percent.", RZ_Util.RoundToInt(m_Cure.m_fProgress));
+			if (m_Cure.IsCured())
+				research = "The cure is out. The gates open when the season ends.";
 
-			if (!m_Cure.IsCured())
-				NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
+			NotifyPlayer(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()), research + lab);
+
+			// After the cure the broadcast reads the new order (RZ_Broadcast.GetText)
+			NotifyPlayer(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText());
 
 			// A final stand that was running (or restarted with the server) needs defenders
 			if (m_Cure.IsFinalStand())
@@ -1290,7 +1306,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (ent)
 				where = mission.GetWhereText(this, ent.GetOrigin());
 
-			NotifyPlayer(playerId, "World event: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.m_sBrief, where));
+			NotifyPlayer(playerId, "World event: " + mission.m_sTitle, string.Format("%1\n(%2)", mission.GetBrief(this), where));
 		}
 	}
 
@@ -1784,7 +1800,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (s)
 			s.AddInfection(-m_ZombieSettings.m_fInfectionDropPerKill * count);
 
-		if (special)
+		// After the cure nothing needs their tissue: no samples, no tip about them
+		if (special && !m_Cure.IsCured())
 		{
 			SpawnSamples(pos, 1);
 			m_Guidance.OnSpecialKilled(pos);
@@ -1806,6 +1823,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//------------------------------------------------------------------------------------------------
 	void SpawnSamples(vector pos, int count)
 	{
+		// After the cure nothing takes samples (the lab, the Red Hand): none drop
+		if (m_Cure && m_Cure.IsCured())
+			return;
+
 		for (int i = 0; i < count; i++)
 		{
 			TrackLooseItem(RZ_Util.SpawnPrefab(m_sSamplePrefab, RZ_Util.RandomPointInRing(pos, 0.3, 1.5) + Vector(0, 0.3, 0)));
@@ -2084,6 +2105,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_TownMemory.Restore(data.towns);
 		m_PowerGrid.Restore(data.power);
 		m_RadioStation.Restore(data.radio);
+		m_Facts.Restore(data.facts);
 		m_StoryArcs.Restore(data.story);
 		m_Questlines.Restore(data.questlines);
 		m_Headlines.Restore(data.news);
@@ -2156,6 +2178,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Questlines && m_Questlines.IsEnabled())
 			data.questlines = m_Questlines.Save();
+
+		if (m_Facts)
+			data.facts = m_Facts.Save();
 
 		if (m_Headlines)
 			data.news = m_Headlines.Save();

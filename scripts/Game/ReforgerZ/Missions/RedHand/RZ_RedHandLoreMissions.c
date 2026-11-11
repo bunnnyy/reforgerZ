@@ -151,6 +151,7 @@ class RZ_Mission_LearningTheDrones : RZ_PuzzleMission
 	override void Configure(RZ_GameModeComponent gm)
 	{
 		SetContract(RZ_EFaction.BANDITS, RZ_ETier.KNOWN, 20, 30);
+		m_Req.m_bNotCured = true;	// the line stands down after the cure (and a running one is called off)
 		m_Req.Bonus("radioham");
 		m_fTimeLeft = 2700;
 		m_fParticipationRadius = 0;
@@ -410,7 +411,7 @@ class RZ_Mission_LearningTheDrones : RZ_PuzzleMission
 		}
 
 		m_fTimed += dt * rate;
-		RZ_Perimeter perimeter = gm.GetPerimeter();
+		RZ_Perimeter perimeter = RZ_PerimeterMissionHelper.Get(gm);
 		if (!m_bWarned && m_fTimed >= TIMING * 0.35)
 		{
 			m_bWarned = true;

@@ -361,13 +361,18 @@ class RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! People in a safehouse, at most 3 either way (those who leave count as lost).
+	//! People in a safehouse, at most 3 either way (those who leave count as lost). Never below the
+	//! upkeep floor of 2 people (docs/QUESTLINES.md, "Limits every questline keeps").
 	static void ChangePopulation(RZ_GameModeComponent gm, int house, int delta)
 	{
-		if (!GetHouse(gm, house))
+		RZ_Safehouse h = GetHouse(gm, house);
+		if (!h)
 			return;
 
 		delta = Math.ClampInt(delta, -MAX_PEOPLE, MAX_PEOPLE);
+		if (delta < 0)
+			delta = Math.Min(0, Math.Max(delta, RZ_Safehouses.UPKEEP_FLOOR - h.m_iPopulation));
+
 		if (delta > 0)
 			gm.GetSafehouses().AddPopulationAt(house, delta);
 		else if (delta < 0)
@@ -376,13 +381,18 @@ class RZ_Questline
 
 	//------------------------------------------------------------------------------------------------
 	//! A leader leaves their seat and is replaced like after a death, with `headline`. Never a
-	//! stronghold leader. False if it can't happen (then say nothing about it).
-	static bool ReplaceLeader(RZ_GameModeComponent gm, int leaderId, string headline)
+	//! stronghold leader, nor one another story has claimed (a leader `run` claimed itself may go).
+	//! False if it can't happen (then say nothing about it).
+	static bool ReplaceLeader(RZ_GameModeComponent gm, int leaderId, string headline, RZ_QuestRun run = null)
 	{
 		if (!gm.GetLeaders())
 			return false;
 
-		return gm.GetLeaders().RemoveFromSeat(leaderId, headline);
+		string owner = "";
+		if (run)
+			owner = run.Owner();
+
+		return gm.GetLeaders().RemoveFromSeat(leaderId, headline, owner);
 	}
 
 	//------------------------------------------------------------------------------------------------

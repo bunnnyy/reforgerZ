@@ -512,7 +512,7 @@ class RZ_UIFeed
 
 			RZ_UILine lnM = new RZ_UILine("M");
 			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(m.GetLocationNameFor(m_GM, playerId, from)).Add(dir);
-			lnM.AddInt(RZ_Util.RoundToInt(m.m_fTimeLeft / 60)).Add(req).AddInt(m.m_iFameReward).AddInt(m.m_iFavorReward).Add(m.m_sBrief).Add(part);
+			lnM.AddInt(RZ_Util.RoundToInt(m.m_fTimeLeft / 60)).Add(req).AddInt(m.m_iFameReward).AddInt(m.m_iFavorReward).Add(m.GetBrief(m_GM)).Add(part);
 			s += lnM.End();
 			shown.Insert(m.m_iId);
 		}

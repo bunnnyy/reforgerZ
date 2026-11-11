@@ -278,7 +278,7 @@ class RZ_QM_ShortWeightAsk : RZ_QuestMission
 	{
 		m_iHouse = QFlag(gm, "house", -1);
 		RZ_Safehouse h = RZ_Questline.GetHouse(gm, m_iHouse);
-		if (!h || gm.GetMissions().IsSettlementBusy(h.m_iSettlement))
+		if (!h || IsTownBusy(gm, h.m_iSettlement))
 			return false;
 
 		m_iSettlement = h.m_iSettlement;

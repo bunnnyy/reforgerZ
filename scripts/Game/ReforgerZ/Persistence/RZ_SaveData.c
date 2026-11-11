@@ -75,8 +75,11 @@ class RZ_SaveData
 	ref RZ_HeadlineSave news;
 
 	// Questlines (Director/RZ_Questlines.c): the running ones (stage, flags, notes, timers, who
-	// did what), the ones that ended this season, and their rumours
+	// did what) and the ones that ended this season
 	ref RZ_QuestlinesSave questlines;
+
+	// World facts (World/RZ_WorldFacts.c): the season's seed, flags, canon and gossip
+	ref RZ_WorldFactsSave facts;
 
 	// World interactions: searched spots, opened locks, burned buildings, stripped wrecks, fixable cars
 	ref RZ_InteractionSave interactions;

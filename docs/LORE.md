@@ -411,7 +411,8 @@ nothing comes over it, but the line itself has its own small stories, rare and d
 in the drones' rotation that the Red Hand uses to reach the cache it hides in the kill zone, a
 Haven runner's medicine dropped at the waterline when a drone found her, a body at the line
 with papers on it. How the line works is in [DESIGN.md](DESIGN.md), "The Perimeter"; the three
-missions are in [MISSIONS.md](MISSIONS.md), "Perimeter missions".
+missions are in [MISSIONS.md](MISSIONS.md), "Perimeter missions". Once the cure is out the line
+stands down ([Endings](#endings)).
 
 ## The outside world: silent, watching
 
@@ -419,7 +420,7 @@ The outside doesn't act. It doesn't send aid, doesn't bomb, doesn't negotiate.
 It guards the line, and that's all. Every threat in the Zone comes from inside it.
 
 The only sign of the outside is the **government broadcast**, looping on every
-frequency. It never changes its message, but its tone shifts with the state of
+frequency. Until the cure it never changes its message, but its tone shifts with the state of
 the Zone. It's flavour only, with no mechanics behind it:
 
 | Zone state | Broadcast tone |
@@ -429,12 +430,18 @@ the Zone. It's flavour only, with no mechanics behind it:
 | Overrun, little progress | *"The perimeter will be maintained."* |
 | Long stall | *"The perimeter will be maintained indefinitely."* |
 | Cure breakthroughs | *"Reports of research inside the zone are being evaluated."* |
+| The cure is out | The loop stops. Anyone who tunes in hears the new order: *"The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints."* |
 
 ## Endings
 
 A season is won one way: **the cure is finished** and the final stand at the lab is held.
-The quarantine is lifted and the gates open. The cure goes to the faction the server gave
-the most Fame this season, and that faction decides how it reaches people:
+The quarantine is lifted. The line stands down at once: the drones go home, nobody at the edge
+fires again, and the loudspeakers read a new order about processing at the road checkpoints.
+The barriers stay closed until the season ends, and the gates open with it: whoever walks up to
+the line is told to turn around by a voice they never see, and walks back. Until then (the
+epilogue) the research is over: the lab takes no more samples and nobody pays for them. The cure
+goes to the faction the server gave the most Fame this season, and that faction decides how it
+reaches people:
 
 | Cure goes to | Aftermath | Next season starts with |
 |---|---|---|

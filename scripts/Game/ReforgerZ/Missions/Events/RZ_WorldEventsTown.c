@@ -26,47 +26,40 @@ class RZ_EventHelp
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A town where people live or a faction holds ground: a safehouse, a holding, the lab, the
-	//! Long Table's farm.
+	//! A town where people live or a faction holds ground: a safehouse, a holding, the lab
+	//! (RZ_WorldFacts.IsLivedIn, which owns the rule). For world events also the Long Table's farm:
+	//! nobody holds that town, but a family lives past it, and no event happens on their doorstep.
 	static bool IsLivedIn(RZ_GameModeComponent gm, int idx)
 	{
-		RZ_Safehouses houses = gm.GetSafehouses();
-		if (houses && houses.IsSafehouseTown(idx))
-			return true;
-
-		RZ_Territory territory = gm.GetTerritory();
-		if (territory && territory.IsActive() && territory.FindInTown(idx))
-			return true;
-
-		// The Long Table's farm: someone lives there, whatever else is true of it
 		if (gm.GetLongTable() && gm.GetLongTable().IsHouseTown(idx))
 			return true;
 
-		return gm.HasLab() && gm.GetLabSettlement() == idx;
+		return gm.GetFacts().IsLivedIn(idx);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Settlements within the infection range that nobody lives in (IsLivedIn) and no other
-	//! mission is using. Filtering here, not after a random pick, is what keeps an event from
-	//! failing on a map where most of its towns are held.
-	static void CollectEmptyTowns(RZ_GameModeComponent gm, float minInf, float maxInf, notnull array<int> result)
+	//! mission or story is using (with `asker`, what it or its story holds counts as free).
+	//! Filtering here, not after a random pick, is what keeps an event from failing on a map
+	//! where most of its towns are held. Other filters: RZ_WorldFacts.CollectTowns.
+	static void CollectEmptyTowns(RZ_GameModeComponent gm, float minInf, float maxInf, notnull array<int> result, RZ_Mission asker = null)
 	{
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
 			if (s.m_fInfection < minInf || s.m_fInfection > maxInf)
 				continue;
 
-			if (!gm.GetMissions().IsSettlementBusy(i) && !IsLivedIn(gm, i))
+			if (!gm.GetMissions().IsSettlementBusy(i, asker) && !IsLivedIn(gm, i))
 				result.Insert(i);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A random settlement from CollectEmptyTowns. -1 if there's none.
-	static int PickEmptyTown(RZ_GameModeComponent gm, float minInf, float maxInf)
+	static int PickEmptyTown(RZ_GameModeComponent gm, float minInf, float maxInf, RZ_Mission asker = null)
 	{
 		array<int> towns = {};
-		CollectEmptyTowns(gm, minInf, maxInf, towns);
+		CollectEmptyTowns(gm, minInf, maxInf, towns, asker);
 		if (towns.IsEmpty())
 			return -1;
 
