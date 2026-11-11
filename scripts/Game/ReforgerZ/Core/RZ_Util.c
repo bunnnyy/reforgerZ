@@ -681,14 +681,41 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Seats a character in a vehicle at once: the driver's seat, or a passenger seat.
+	//! True once a unit has all its members: a group whose spawn queue has filled every slot (they
+	//! spawn over several frames), or a character. False for nothing.
+	static bool HasAllMembers(IEntity unit)
+	{
+		if (!unit)
+			return false;
+
+		SCR_AIGroup group = SCR_AIGroup.Cast(unit);
+		if (!group)
+			return true;
+
+		return group.GetAgentsCount() > 0 && group.IsExpandComplete(); // VERIFY: IsExpandComplete turns true once SCR_AIWorld's spawn queue has given every member slot a living character
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whoever sits in a vehicle's driver's seat, or null.
+	static IEntity GetDriver(IEntity vehicle)
+	{
+		Vehicle v = Vehicle.Cast(vehicle);
+		if (!v)
+			return null;
+
+		return v.GetPilot();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seats a character in a vehicle at once: the driver's seat, or a passenger seat. False if
+	//! they're already in a seat or getting in, or there's no free seat of that kind.
 	static bool BoardVehicle(IEntity character, IEntity vehicle, bool driver)
 	{
 		if (!character || !vehicle)
 			return false;
 
 		SCR_CompartmentAccessComponent cac = SCR_CompartmentAccessComponent.Cast(character.FindComponent(SCR_CompartmentAccessComponent));
-		if (!cac)
+		if (!cac || cac.IsInCompartment() || cac.IsGettingIn())
 			return false;
 
 		ECompartmentType type = ECompartmentType.CARGO;

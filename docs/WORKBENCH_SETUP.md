@@ -1024,7 +1024,7 @@ test files are copied into a throwaway addon folder.
 grep -rn "VERIFY" scripts/
 ```
 
-There are **38** lines with the tag, all in the game scripts (one is the comment in
+There are **39** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 2 are in the UI). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1047,9 +1047,9 @@ No fallback. If this is wrong, nothing persists.
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
 | `Core/RZ_Util.c:580` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the deploy menu, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
-| `Core/RZ_Util.c:698` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck ever arrives. Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
-| `Factions/RZ_SupplyLines.c:898` | a seated AI group drives to a move waypoint | As above. Test one truck end to end first |
-| `Core/RZ_Util.c:726` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
+| `Core/RZ_Util.c:725` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
+| `Factions/RZ_SupplyLines.c:971` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
+| `Core/RZ_Util.c:753` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Interactions.c:703` | furniture inside buildings is found as static entities | Every building still gets one "Search the house" spot |
 | `Core/RZ_Util.c:529` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:246` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
@@ -1059,14 +1059,14 @@ No fallback. If this is wrong, nothing persists.
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: no door locks, the loot lock everywhere |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:834` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:920` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
+| `Core/RZ_Util.c:861` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:947` | worn clothing is attached to the character as child entities | No disguise is ever detected: read the loadout storage's slots in `GetWornNames`, or turn **Disguises** off |
 | `Cure/RZ_Infection.c:1160` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
 
-### Low risk: contained or cosmetic (13)
+### Low risk: contained or cosmetic (14)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1074,12 +1074,13 @@ No fallback. If this is wrong, nothing persists.
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:260` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: use **Set it alight** on the building instead |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
+| `Core/RZ_Util.c:695` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:492` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_KeyItem.c:81` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages, or leave **Key prefab** empty (data keys) |
-| `Core/RZ_Util.c:756` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
-| `Core/RZ_Util.c:743` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
+| `Core/RZ_Util.c:783` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
+| `Core/RZ_Util.c:770` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1162` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 
@@ -1171,6 +1172,7 @@ Warnings worth acting on:
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
 | `Key prefab has no RZ_KeyItemComponent (or didn't spawn) ...` | Add the component to the key prefab; until then keys are data |
+| `Supply: ... truck at ... has nobody to drive it after 90 s (...)` | Printed once per truck, while it waits in the stronghold's yard. Its crew didn't spawn, wasn't within 30 m of the truck, or couldn't take the driver's seat: check the crew prefab (an AI group on the faction) and that the truck has a driver's seat. The truck is lost as late at its deadline |
 | `Supply trucks are off. ...` / `Territory is off. ...` / `Long Table: off.` / `Stealth: off (...)` | Expected only if you turned them off |
 | `Stealth: on. ... searching 45 s: off (no move waypoint).` | Set Zombies > Move waypoint, or infected that lose a hidden player don't go and search |
 | `Stealth: some infected take no perception factor (...)` | Printed once, the first time infected near a player have no `PerceptionComponent`: the zombie mod uses its own senses. Stealth's factor does nothing for them, and losing them goes by distance ([DESIGN.md](DESIGN.md#stealth)) |
@@ -1190,7 +1192,7 @@ play in percent),
 `Cure: the lab's backlog is full; N of N research from a mission was lost.`,
 `Cure: research reached the finale's 90 percent gate.` and `Cure: finale research +N (faction N),
 now N percent.` (both only once a finale questline is registered),
-`Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...` and `... lost (...)`,
+`Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
 `Bastion checkpoint up near ...` / `Red Hand roadblock up near ...`,
@@ -1325,7 +1327,8 @@ session, tick off:
   nobody is paid. Collect the Bounty on a player pays only whoever killed them.
 - [ ] A Bastion outpost leader dies and is replaced (Replace minutes at 1): when that outpost is
   later abandoned or taken, the new leader leaves with it.
-- [ ] A supply truck leaves, is driven by its crew, and arrives.
+- [ ] A supply truck leaves, is driven by its crew, and arrives. Its whole crew gets in before it
+  pulls out of the stronghold's yard, and nobody is left standing there.
 - [ ] A leader answers Talk, Work, News and Standing.
 - [ ] Hunted by Bastion, stay put through three hunter rounds: never more than two squads after you.
 - [ ] Kill a truck crew from 300 m, then drive the truck in: no Fame. (Known gap: a friend who

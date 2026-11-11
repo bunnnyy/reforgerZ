@@ -29,7 +29,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Bastion checkpoints and Red Hand roadblocks inside the Zone (unsearched passage, tolls, searches), surrender, camps that warn and refuse, safe zones | [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps) |
 | Per-player AI hostility (hidden faction variants), retaliation, disguises, Outlaw fallback | [REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you) |
 | Territory: strongholds, outposts, the territory tick, faction strength | [Territory](DESIGN.md#territory) |
-| Real supply trucks with AI crews, shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
+| Real supply trucks with AI crews (the truck leaves its yard once the whole crew has spawned and got in), shortages, escort, drive-in and theft | [Supply trucks](DESIGN.md#supply-trucks) |
 | Faction life: needs, morale, chatter, life events, truces and feuds, moments, rumours | [Faction life](DESIGN.md#faction-life), [REPUTATION.md](REPUTATION.md#morale-needs-truces-and-feuds) |
 | Haven safehouses: population tiers, upkeep, rescues, house rules, exile, notice boards (notes between sessions, `/note`) | [Haven safehouses](DESIGN.md#haven-safehouses) |
 | Named wanderers: travel, reactions, memory, deaths in the news, lost outposts (rerouting, rumours, mood) | [Wanderers](DESIGN.md#wanderers) |
@@ -58,22 +58,18 @@ Work in this order: the fixes below, then one combined design for everything mar
 designed" (shown to the author before anything is built), then the build.
 
 ### Fixes from the build review (first)
-The prefabs were filled in by text edits on 2026-11-11; their reviewers found these. A fix run was
-stopped part-way: its edits to `RZ_Quartermaster.c` and `RZ_SupplyLines.c` are unreviewed, so
-check them first.
+The prefabs were filled in by text edits on 2026-11-11; their reviewers found these.
 - **Shops:** no vehicles and no car parts in any quartermaster's stock or requisitions. Replace or
   remove the Haven medkit (vanilla `MedicalKit_01_FIA` heals without limit). The Trusted
   machine-gun requisition hands out a Champion item.
 - **Cars:** make `RZ_Tyre.et` and `RZ_Planks.et` carryable inventory items. Make fixing harder, as
   `RZ_CarSettings` attributes: two or three missing parts, a wrench or toolkit to fit them, longer and
   louder hotwiring that can fail, rarer keys.
-- **Supply crews** board only once all their members have spawned (`RZ_SupplyLines`).
 - **People:** checkpoint guards get their rifles back; occupants lose their shop-tier armour; the
   council head and the bounty target's faction must fit their missions.
 - **Items and loadouts:** the tablet keywords must match `RZ_Tablets.et`; the server enforces
   locked loadouts.
 - **Docs** for all of the above: WORKBENCH_SETUP, MISSIONS, DESIGN, REPUTATION.
-- **Compile check** (`tools/compile_check.sh`): not run since the fixable-car change.
 - **Untested in play:** the fixable cars' names, the parked cars' lock, and the unarmed zombie
   groups (`Prefabs/ReforgerZ/Zombies/`).
 

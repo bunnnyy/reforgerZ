@@ -627,6 +627,12 @@ Code: `Factions/RZ_SupplyLines.c`.
 - **Departures** every 60–90 minutes, divided by the season speed (the first 10–40 minutes after a start), only while
   players are online and not while the stronghold is Under Pressure. The truck goes where it's
   needed most: a short place first, then the least stock, then the longest wait.
+- **Boarding:** the truck waits in its yard until its crew group has spawned every member (they
+  appear over several frames). Then the crew within 30 m of it get in, the driver first; nobody
+  is pulled in from further away. It goes once they're all aboard, or after 90 s with at least a
+  driver; anyone not aboard stays in the group and follows on foot, and is removed with the
+  truck. With nobody to drive it, it waits on (the log says so once) until it's late. A crew
+  killed in the yard counts as robbed.
 - **Stuck:** a truck that hasn't moved 8 m in 90 s, with no player within 1 km, is quietly
   moved 80–150 m on. With a player near, it stays stuck.
 - **Failure:** destroyed, robbed (its crew killed) or late. The destination is then **short**

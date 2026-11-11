@@ -857,8 +857,8 @@ class RZ_SupplyLines
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The truck and its crew near the stronghold. The crew boards on the next tick (the
-	//! group's members exist a moment after the group), then drives to a move waypoint.
+	//! The truck and its crew near the stronghold. The truck waits in the yard for its crew
+	//! (WaitInYard), then drives to a move waypoint.
 	protected RZ_SupplyTruck SpawnTruck(int f, RZ_Holding top, vector destPos)
 	{
 		vector at = RZ_Mission.LandPointNear(top.m_vPos, 20, 45);
@@ -888,17 +888,87 @@ class RZ_SupplyLines
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Board(RZ_SupplyTruck t)
+	//! In the yard, every tick until it goes. The crew group's members spawn over several frames,
+	//! so nobody is seated until all of them exist (or BOARD_WAIT has passed). Then those within
+	//! BOARD_RADIUS are seated, the driver first. It goes once they're all aboard, or after
+	//! BOARD_WAIT with at least a driver; anyone not aboard stays in the group and follows on foot
+	//! (and goes with the crew at cleanup). With nobody to drive it, it waits on until its deadline.
+	protected void WaitInYard(RZ_SupplyTruck t)
 	{
-		t.m_bBoarded = true;
-		array<IEntity> members = {};
-		RZ_Util.GetUnitMembers(t.m_Crew, members);
-		foreach (int i, IEntity member : members)
+		bool waited = t.m_fAge >= BOARD_WAIT;
+
+		// The crew was killed in the yard: the road's rules apply (robbed; a player may drive it off)
+		if (waited && RZ_Util.CountAlive(t.m_Crew) == 0)
 		{
-			RZ_Util.BoardVehicle(member, t.m_Vehicle, i == 0);
+			t.m_bBoarded = true;
+			return;
 		}
 
-		RZ_Util.SendGroupTo(t.m_Crew, t.m_vDest, m_GM.GetSpawner().GetMoveWaypointPrefab()); // VERIFY: an AI group seated in a vehicle drives to a move waypoint
+		if (!waited && !RZ_Util.HasAllMembers(t.m_Crew))
+			return;
+
+		array<IEntity> members = {};
+		RZ_Util.GetUnitMembers(t.m_Crew, members);
+		vector truckAt = t.m_Vehicle.GetOrigin();
+
+		// The driver first: the first member near enough who takes the seat
+		IEntity askedToDrive;
+		if (!RZ_Util.GetDriver(t.m_Vehicle))
+		{
+			foreach (IEntity candidate : members)
+			{
+				if (RZ_Util.DistXZ(candidate.GetOrigin(), truckAt) > BOARD_RADIUS)
+					continue;
+
+				if (RZ_Util.BoardVehicle(candidate, t.m_Vehicle, true))
+				{
+					askedToDrive = candidate;
+					break;
+				}
+			}
+		}
+
+		int aboard = 0;
+		foreach (IEntity member : members)
+		{
+			if (RZ_Util.GetVehicleOf(member) == t.m_Vehicle)
+			{
+				aboard++;
+				continue;
+			}
+
+			if (member != askedToDrive && RZ_Util.DistXZ(member.GetOrigin(), truckAt) <= BOARD_RADIUS)
+				RZ_Util.BoardVehicle(member, t.m_Vehicle, false);
+		}
+
+		IEntity driver = RZ_Util.GetDriver(t.m_Vehicle);
+		bool crewDrives = driver != null && members.Contains(driver);
+		if (crewDrives && (aboard >= members.Count() || waited))
+		{
+			Depart(t, aboard, members.Count());
+			return;
+		}
+
+		if (waited && !crewDrives && !t.m_bNoDriverLogged)
+		{
+			t.m_bNoDriverLogged = true;
+			RZ_Log.Warn(string.Format("Supply: %1 truck at %2 has nobody to drive it after %3 s (%4 crew; none within %5 m took the driver's seat). It waits until it's late.",
+				RZ_Factions.GetShortName(t.m_eFaction), t.m_sFromName, RZ_Util.RoundToInt(BOARD_WAIT), members.Count(), RZ_Util.RoundToInt(BOARD_RADIUS)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Out of the yard and on the road.
+	protected void Depart(RZ_SupplyTruck t, int aboard, int crew)
+	{
+		t.m_bBoarded = true;
+		t.m_vLastPos = t.m_Vehicle.GetOrigin();
+		t.m_fStill = 0;
+		t.m_fCheckTimer = 0;
+		if (aboard < crew)
+			RZ_Log.Info(string.Format("Supply: %1 truck goes with %2 of %3 crew aboard; the rest follow on foot.", RZ_Factions.GetShortName(t.m_eFaction), aboard, crew));
+
+		RZ_Util.SendGroupTo(t.m_Crew, t.m_vDest, m_GM.GetSpawner().GetMoveWaypointPrefab()); // VERIFY: an AI group seated in a vehicle drives to a move waypoint, and members on foot follow it
 	}
 
 	// ================================================================ On the road
@@ -920,14 +990,6 @@ class RZ_SupplyLines
 			return Cleanup(t, players);
 		}
 
-		if (!t.m_bBoarded)
-		{
-			if (t.m_fAge >= 2)
-				Board(t);
-
-			return false;
-		}
-
 		vector pos = t.m_Vehicle.GetOrigin();
 		if (RZ_Util.IsDestroyed(t.m_Vehicle))
 		{
@@ -936,6 +998,20 @@ class RZ_SupplyLines
 
 			t.m_bDone = true;
 			t.m_fDoneAt = t.m_fAge;
+			return false;
+		}
+
+		if (!t.m_bBoarded)
+		{
+			if (t.m_fAge >= t.m_fDeadline && !t.m_bFailed)
+			{
+				Fail(t, "late");
+				t.m_bDone = true;
+				t.m_fDoneAt = t.m_fAge;
+				return false;
+			}
+
+			WaitInYard(t);
 			return false;
 		}
 
