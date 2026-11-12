@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **324 prefab fields**: 46 on `RZ_GameModeComponent`, 267 in its settings objects, and 11 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **324 prefab fields**: 46 on `RZ_GameModeComponent`, 267 in its settings objects, and 11 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -743,7 +743,7 @@ and the UI files) need none, and eight have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every world interaction prompt (wells, pumps, stoves, bells, radios, generators, workbenches), the Clean the bite spot, and the Unlock/Lock/Force spot when Door spot is empty (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
+| `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every world interaction prompt (wells, pumps, stoves, bells, radios other than vanilla's small house radio, which carries its own set, generators, workbenches), the Clean the bite spot, and the Unlock/Lock/Force spot when Door spot is empty (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
 | `RZ_DoorSpot.et` | the interaction spot with a tiny interaction box (0.12 m) and a 0.35 m action radius | the generic set | Interactions > General > Door spot prefab | optional | a locked door's Unlock, Lock and Force, on the door leaf at handle height (empty = the Spot prefab, whose bigger box can cover vanilla's Open door). Built as text (set in the game mode). Keep its box tiny and its action context small, so vanilla's Open door at the handle stays reachable |
 | `RZ_WreckBoot.et` | an empty GenericEntity with a small interaction box (no mesh, no collision) and vanilla's open-storage action | `RZ_WreckBootStorageComponent`, `SCR_InventoryStorageManagerComponent`; `SCR_OpenStorageAction` | Interactions > Cars > Wreck boot prefab | optional | a car wreck's boot: one Open the boot prompt at its rear opens the vanilla inventory with what's in it (empty = wrecks hold nothing). Built as text (set in the game mode). Its storage holds up to 100000 volume, 200 kg and items up to 100 x 100 x 100; a loot item that doesn't fit lies beside the wreck (logged once) |
 | `RZ_FuelPumpStation.et` | an empty GenericEntity with an RplComponent, no mesh, no collision: vanilla's fuel point, like the fuel tank pump's (SCR_FuelManagerComponent with one fuel node of 60 litres that can provide fuel, and SCR_FuelSupportStationComponent from Prefabs/Components/SupportStations/Fuel/FuelSupportStation_FuelPump.ct) | `SCR_FuelManagerComponent`, `SCR_FuelSupportStationComponent` | Interactions > Cars > Fuel pump station | optional | a petrol station's pump as a vanilla fuel point near players: vanilla's jerrycan fills there with its own Refuel canister (empty = the hand pump, in the object menu). Copy the fuel node and support station from a vanilla fuel point (the FuelTank_02 pump); the script sets its litres. Check in play that a held vanilla jerrycan offers Refuel canister beside a petrol pump |
@@ -787,7 +787,7 @@ and the UI files) need none, and eight have no base:
 |---|---|---|---|---|---|
 | (existing prefab) | items from the loot pool | — | Interactions > Search > Loot tables (each table's three lists) | optional | exact loot per building type (optional; empty tables are filled from the pool by keywords) |
 | (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
-| `RZ_CookedMeat.et` | Metabolism's `MeatLeg_01.et` (its raw meat: 0.2 sickness), named "Cooked meat", with B_FoodWaterGadgetComponent's m_iFoodValue 0.3 and m_fSicknessChance 0. Metabolism has no cooked food of its own | — | Interactions > Crafting > Stove recipes: **Cook meat** (one `meatleg_01` in, 20 s) | optional | cookables at a stove (more recipes can be added the same way; none without this one) |
+| (existing prefab) | a cooked food item (e.g. Metabolism's cooked meat) | — | Interactions > Crafting > Stove recipes (each output) | optional | cookables at a stove (optional; none by default) |
 | (existing prefab) | vanilla items or crates (never a vehicle or a car part: refused) | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
 | (existing prefab) | vanilla ammo or rations the same quartermaster sells at Trusted or below | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
 
@@ -861,6 +861,7 @@ still to do:
 | Prefab | Add | Why | Need |
 |---|---|---|---|
 | any vanilla radio prefab you want crackable | `RZ_TuneRadioAction`, `RZ_RadioCallAction` | secure radio channels, and calling on the open channel with Dialogue > Trees on (the wind-up radio gets both already) | optional |
+| vanilla's small house radio, Prefabs/Props/Civilian/RadioSmall_01_Base.et (done in the repo: a copy with vanilla's GUID and these added, the actions in its own SCR_TurnOnAction context; its four colours inherit it) | `RZ_PuzzleObjectComponent` (Hidden until tagged on), `RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction` (Option 0-3) | the house radio is its own interaction spot: Listen to the radio (the object menu) sits in one prompt list with vanilla's Turn on/off, and its options need it switched on (docs/DESIGN.md, World interactions). Other radios, a mod's, keep an interaction spot | optional |
 | quartermasters you placed by hand (not from the manifest) | `RZ_TalkAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused) | optional |
 | any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item or crate, never a vehicle or a car part (refused: cars are only found) | optional |
@@ -1031,6 +1032,13 @@ which is visible), but **nothing lies in houses until the loot pool is filled**,
 whose output is empty stays quiet. Keep the interaction spot's box small and off the character
 collision layer, so it never blocks a door, a doorway or a player. Name parts with "battery",
 "tyre" and "spark", and the home remedy not with "vodka" or "herb".
+
+**The house radio is vanilla's own prefab.** `Prefabs/Props/Civilian/RadioSmall_01_Base.et` in the
+repo is vanilla's small radio copied whole, with vanilla's GUID in its `.meta`, plus our set: the
+puzzle object (**Hidden until tagged** on) and clue components, and the read and four choices in
+its `SCR_TurnOnAction` context, so they share one prompt list with vanilla's Turn on/off. Don't
+change its vanilla parts; if a game update changes vanilla's radio, copy the new one and add the
+set again. Another radio (a mod's) needs nothing: it gets an interaction spot.
 
 **Door locks need no prefab.** The vanilla door action is modded (`Interactions/RZ_DoorHooks.c`),
 so vanilla doors refuse players by themselves. If they don't, see the door rows in
@@ -1806,7 +1814,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **141** lines with the tag, all in the game scripts (one is the comment in
+There are **143** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 30 are in `UI/`: 25 of [the UI's](#the-ui-28), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/` and two are the radio screen's in `Interactions/`). The Workbench plugin has none left: its real
@@ -1828,10 +1836,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (75)
+### Medium risk: big features, with a fallback (77)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Interactions/RZ_Interactions.c:1468` | the repo's `Prefabs/Props/Civilian/RadioSmall_01_Base.et` (vanilla's GUID `{B68D3829D4442F80}`, a full copy of vanilla's with our set added) replaces vanilla's prefab, so every small radio on the map and in compositions, its four colours too, carries **Listen to the radio** and the four options in its own `SCR_TurnOnAction` context, beside vanilla's Turn on/off | The radio gets its own invisible spot again, a second prompt beside vanilla's (as before). In Workbench, open the radio's prefab: the Resource Browser should show the ReforgerZ copy, and its ActionsManagerComponent our five actions; if Workbench wants an override made its own way, use **Override in ReforgerZ** on vanilla's prefab and add the same set (the table in [Add to prefabs you already have](#add-to-prefabs-you-already-have)) |
+| `Interactions/RZ_SecureRadio.c:163` | vanilla's Turn on/off (`SCR_TurnOnAction`) runs on the server as well as on the player's machine, so `RadioBroadcastComponent.GetState()` on the server is what the player switched | Every option of a house radio stays dim with "Turn it on first", or works while it's off. Make `RZ_SecureRadio.IsSwitchedOff` return false: the options then work whether it's on or not |
 | `Interactions/RZ_Medical.c:15` | vanilla's consumable item component runs `ApplyItemEffect` on the server when a medic finishes vanilla's heal on another character (a bandage, tourniquet, morphine or saline used on them) | A Nurse or Doctor no longer slows a bite when treating someone: no line comes. Find the server-side point of vanilla's heal on another character (`SCR_HealingUserAction`, the health item's `ApplyEffect`) and move the hook there |
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
 | `Factions/RZ_Checkpoints.c:562` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
@@ -1848,7 +1858,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:67` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:79`, `:106` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
-| `Interactions/RZ_Interactions.c:414` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
+| `Interactions/RZ_Interactions.c:418` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_WreckBoots.c:30` | a wreck's boot (`RZ_WreckBoot.et`): the server's fill (`TryInsertItem` through the box's `SCR_InventoryStorageManagerComponent`) shows its things in vanilla's inventory on every client when **Open the boot** is used, and `RZ_WreckBootStorageComponent.CanStoreItem` refuses only what's dragged in from a character's inventory | Open a wreck's boot on a dedicated server with a second client: both see the same things, and dragging one of your own items in is refused. If the boot shows empty, delete the `CanStoreItem` override (the boot then takes anything, and what's put in comes back as a fresh copy of its prefab); with **Cars > Wreck boot prefab** empty, wrecks hold nothing |
 | `Interactions/RZ_FuelPumps.c:172` | a fuel pump station (`RZ_FuelPumpStation.et`): `SetTotalFuelPercentage` on the server replicates its litres, and a held vanilla jerrycan beside a petrol pump offers **Refuel canister**, drawing from it until it's empty | At a petrol pump with a vanilla jerrycan in hand: no Refuel canister, or it never runs dry. Empty **Cars > Fuel pump station**: the pump is the hand pump again, in the object menu |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
@@ -1903,7 +1913,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
-| `Interactions/RZ_Interactions.c:183` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
+| `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
@@ -2506,6 +2516,17 @@ session, tick off:
   **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
   bite and Douse the doorway are still single prompts. An infected closing in shuts it. Text reads
   from the sofa on a TV. Empty the slot: every prompt is back.
+- [ ] A house radio, with a pad (vanilla's small radio on a dresser or table in a house; the repo's
+  copy of `Prefabs/Props/Civilian/RadioSmall_01_Base.et`, VERIFY `Interactions/RZ_Interactions.c:1468`).
+  Far from players it shows only vanilla's **Turn on**. Walk up (within 30 m, then a few seconds):
+  looking at the radio shows one prompt list with **Turn on** and **Listen to the radio**, the
+  D-pad moves between them and A uses one; there's no second prompt floating beside it. Off, Listen
+  opens the menu "Radio" with "It's switched off. Turn it on first." and every option dim with
+  "Turn it on first". B, pick **Turn on** (the music starts), then Listen: the radio's line, and
+  Tune, Work on a scrambled channel, Call on the open channel and View radio work (VERIFY
+  `Interactions/RZ_SecureRadio.c:163`). A second player sees the same state. Walk 60 m off and
+  back: still one list. A radio in a camp's dressing (the radio table) shows only Turn on/off.
+  Empty **UI > Object row layout**: Listen and the options are prompts again, all on the radio beside Turn on.
 - [ ] The cooking screen, with a pad (**UI > Cook row layout** set): at a stove only **Use the
   stove** shows; it opens the crafting screen headed "Stove" with Boiled water, Home remedy and the
   stove recipes. With untreated water in your pack Boiled water is READY and the button says BOIL;
@@ -3660,8 +3681,9 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 - [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack (on the cooking
   screen, Home remedy).
 - [ ] The stove's prompt ("Look at the stove") shows on the stove, at about worktop height on its
-  front, not on the wall beside or behind it; the same for a workbench, a generator and a house
-  radio (VERIFY `Interactions/RZ_Interactions.c:183`).
+  front, not on the wall beside or behind it; the same for a workbench, a generator and a mod's
+  radio (VERIFY `Interactions/RZ_Interactions.c:187`). Vanilla's small house radio has no spot: its
+  prompts are at its own Turn on.
 - [ ] As a Nurse or Doctor, treat a bitten player (the infection has taken) with a bandage from
   your hands, vanilla's way: both of you get a line that the bite was cleaned properly, and their
   time left grows by about 15%; a second treatment that life does nothing more. There's no

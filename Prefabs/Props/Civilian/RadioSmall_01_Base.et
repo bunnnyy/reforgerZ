@@ -1,0 +1,98 @@
+GenericEntity : "{4CC2C69DE1AEF103}Prefabs/Props/Core/DestructibleMultiPhase_Props_Base.et" {
+ ID "5246C095726F8F40"
+ components {
+  SignalsManagerComponent "{54B2D26FB0868A48}" {
+  }
+  RadioBroadcastSoundComponent "{54B2D26E5EF7AA23}" {
+   Filenames {
+    "{5E99B1E3C56D39DA}Sounds/RadioBroadcast/RadioBroadcast_Actions.acp"
+   }
+   IncludeInactive 1
+  }
+  MeshObject "{5872F0EB7FA40561}" {
+   Object "{16B8DF2B48A440A2}Assets/Props/Civilian/RadioSmall_01/RadioSmall_01.xob"
+  }
+  RadioBroadcastComponent "{55210012F7D026E6}" {
+   TurnOnAction SCR_TurnOnAction "{565E9648693583C9}" {
+    ParentContextList {
+     "SCR_TurnOnAction"
+    }
+   }
+  }
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   ResponseIndex "TinyDestructible"
+   Static 1
+  }
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" : "{76DA308CC9E2AB84}Prefabs/Props/Core/DestructionMultiPhase_Base.ct" {
+   m_fBaseHealth 700
+   m_eMaterialSoundType BREAK_PLASTIC
+  }
+  RZ_ClueComponent "{33E0B8FC13F1564E}" {
+  }
+  RZ_PuzzleObjectComponent "{BD7296AF1D20E7DF}" {
+   m_bHiddenUntilTagged 1
+  }
+  ActionsManagerComponent "{52E71719F5BE5EBB}" {
+   ActionContexts {
+    UserActionContext "{52E71719FB29C551}" {
+     ContextName "SCR_TurnOnAction"
+     Position PointInfo "{52E7171928800124}" {
+      Offset -0.129 0.0296 0.0486
+     }
+     Radius 1.5
+     Omnidirectional 0
+    }
+   }
+   additionalActions {
+    RZ_ReadClueAction "{FC436238B7ABA4D8}" {
+     ParentContextList {
+      "SCR_TurnOnAction"
+     }
+     UIInfo UIInfo "{8E4313E6277383C1}" {
+      Name "Listen to the radio"
+     }
+    }
+    RZ_PuzzleChoiceAction "{25BA3DE53DF05CF6}" {
+     ParentContextList {
+      "SCR_TurnOnAction"
+     }
+     UIInfo UIInfo "{888CCB7A07232CA0}" {
+      Name "Choose"
+     }
+     m_iOption 0
+    }
+    RZ_PuzzleChoiceAction "{3A14AF8774B9EAA9}" {
+     ParentContextList {
+      "SCR_TurnOnAction"
+     }
+     UIInfo UIInfo "{23F47303F9F144F9}" {
+      Name "Choose"
+     }
+     m_iOption 1
+    }
+    RZ_PuzzleChoiceAction "{3A20EB08EC5E1275}" {
+     ParentContextList {
+      "SCR_TurnOnAction"
+     }
+     UIInfo UIInfo "{2A206AC571DF8EB1}" {
+      Name "Choose"
+     }
+     m_iOption 2
+    }
+    RZ_PuzzleChoiceAction "{B7F488E7676D5B89}" {
+     ParentContextList {
+      "SCR_TurnOnAction"
+     }
+     UIInfo UIInfo "{8B497B9B66D75863}" {
+      Name "Choose"
+     }
+     m_iOption 3
+    }
+   }
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

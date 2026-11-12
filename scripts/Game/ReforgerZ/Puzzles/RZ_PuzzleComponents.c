@@ -132,6 +132,9 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 
 	protected bool m_bMenuSet;		// SetMenu decided it (else: a labelled prop that isn't a person)
 
+	[Attribute("0", desc: "Hidden until tagged: its read and its slots show only while a system has labelled it. For a map object that carries a spot's prompts itself (the repo's vanilla house radio, docs/WORKBENCH_SETUP.md), so an untagged one shows only its own vanilla prompts")]
+	protected bool m_bHiddenUntilTagged;
+
 	protected ref array<string> m_aUse = {};
 	protected ref array<string> m_aChoice = {};
 	protected string m_sParsedUse;
@@ -169,6 +172,13 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 	bool WantsMenu()
 	{
 		return m_bMenu;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hidden until tagged and not labelled now: none of its puzzle actions show (on every machine).
+	bool IsDormant()
+	{
+		return m_bHiddenUntilTagged && !m_bLabelled;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -229,11 +239,12 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Hidden only when the mission labelled this object and left this slot empty.
-	//! If labels never arrived (replication not working), everything stays visible.
+	//! If labels never arrived (replication not working), everything stays visible, unless the
+	//! object is hidden until tagged.
 	bool IsSlotHidden(bool choice, int slot)
 	{
 		if (!m_bLabelled)
-			return false;
+			return m_bHiddenUntilTagged;
 
 		return GetSlotLabel(choice, slot).IsEmpty();
 	}

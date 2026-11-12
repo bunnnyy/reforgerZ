@@ -34,7 +34,7 @@ can't open it, the old prompts come back.
 
 ### Every interaction, by kind
 
-The audit of 2026-11-12: 8 vanilla, 21 menu, 11 quick.
+The audit of 2026-11-12: 9 vanilla, 20 menu, 11 quick.
 
 | Interaction | Kind | How |
 |---|---|---|
@@ -46,12 +46,13 @@ The audit of 2026-11-12: 8 vanilla, 21 menu, 11 quick.
 | Fuel into a car | Vanilla | A running car is fuelled with vanilla's jerrycan; a fixable car's Fuel job drains 5 litres from one and the can is kept |
 | A fixed car: engine, lights, lock, driving | Vanilla | Once it first starts it's an ordinary vanilla vehicle |
 | Opening and closing doors | Vanilla | Vanilla's door action (refused while the door is locked) |
+| A house radio: switching it on and off | Vanilla | Vanilla's **Turn on/off** and its music, on the radio; our **Listen to the radio** is in the same prompt list |
 | A workbench | Menu | [The crafting screen](#the-crafting-screen) |
 | A fixable car: look, parts, fuel, hotwire, start | Menu | [The car repair screen](#the-car-repair-screen) |
 | The power station: the door, the breakers, the generator, the main switch, its upkeep | Menu | [The power panel](#the-power-panel), one prompt (**Open the panel**) |
 | A stove: boil water, brew a remedy, cook | Menu | [The cooking screen](#the-cooking-screen); without its layout, [the object menu](#the-object-menu) |
 | A generator found in town: start, stop, refuel | Menu | The object menu |
-| A house radio: listen, tune, crack a channel, call, view | Menu | The object menu (the call opens the talk screen, **View radio** [the radio screen](#the-radio-screen)) |
+| A house radio: listen, tune, crack a channel, call, view | Menu | The object menu, from **Listen to the radio** on vanilla's radio itself, beside its **Turn on/off**; the options are dim until it's on (the call opens the talk screen, **View radio** [the radio screen](#the-radio-screen)) |
 | A well (**Interactions > Well spots** on) | Menu | The object menu |
 | Puzzle objects: read, use, choose | Menu | The object menu: the read is its text, the uses and choices its rows |
 | Keypads and terminals | Menu | The object menu: the twelve keys as rows, what's typed on the Enter row |
@@ -928,6 +929,14 @@ and `R|index|label|enabled|reason` per row; `X|reason` closes it. A pick goes ba
 that serial, the thing is there and you're within range, then runs that row's own `Run` (the code
 its world prompt runs); what it says is caught for the status line and the menu is sent again with
 the rows as they are now. A timed action's end or stop is caught the same way.
+
+**On vanilla's own prop.** A thing can carry the slots itself instead of an invisible spot, so its
+vanilla prompts and ours are one list: vanilla's small house radio does (the repo's copy of
+`RadioSmall_01_Base.et`, [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#add-to-prefabs-you-already-have)).
+Its read and four choices sit in its own `SCR_TurnOnAction` context, so looking at the radio shows
+**Turn on** (or **Turn off**) and **Listen to the radio** together: D-pad to pick, A to use. The
+puzzle object there is **Hidden until tagged**: none of ours show until a player is near and the
+server has labelled it (`RZ_Interactions.CanHost`), and they hide again when everyone leaves.
 
 **Fallbacks.** With **UI > Object row layout** empty, every action is a world prompt as before. A
 client that can't open the menu (no `RZ_ObjectMenu` preset or layout) shows the description as a

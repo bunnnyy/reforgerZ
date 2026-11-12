@@ -23,9 +23,14 @@ class RZ_ReadClueAction : RZ_GroupedAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hidden when the read label is RZ_ClueComponent.NO_READ (a burn spot has only its choice).
+	//! Hidden when the read label is RZ_ClueComponent.NO_READ (a burn spot has only its choice), and
+	//! on an object hidden until tagged that isn't (a vanilla house radio no spot uses now).
 	override bool Visible(IEntity user)
 	{
+		RZ_PuzzleObjectComponent obj = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
+		if (obj && obj.IsDormant())
+			return false;
+
 		RZ_ClueComponent comp = RZ_ClueComponent.Cast(GetOwner().FindComponent(RZ_ClueComponent));
 		return !comp || comp.GetReadLabel() != RZ_ClueComponent.NO_READ;
 	}
@@ -159,6 +164,20 @@ class RZ_PuzzleChoiceAction : RZ_GroupedAction
 		// A burn spot (world interactions): only for someone whose own hands hold fuel
 		if (comp && comp.GetSlotLabel(true, m_iOption) == RZ_Traps.BURN_LABEL)
 			return RZ_Traps.FireFuel(user) != null;
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On a vanilla house radio the options need it switched on: vanilla's Turn on is in the same
+	//! prompt list (RZ_SecureRadio.IsSwitchedOff). Dim with why in the object menu.
+	override bool CanBePerformedScript(IEntity user)
+	{
+		if (RZ_SecureRadio.IsSwitchedOff(GetOwner()))
+		{
+			SetCannotPerformReason(RZ_SecureRadio.SWITCHED_OFF_REASON);
+			return false;
+		}
 
 		return true;
 	}
