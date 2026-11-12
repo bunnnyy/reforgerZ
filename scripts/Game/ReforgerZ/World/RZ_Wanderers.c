@@ -2609,8 +2609,9 @@ class RZ_Wanderers
 
 		m_mJobAt.Set(ident, m_fClock);
 		job.Hire(playerId);
-		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
-			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
+		// Said by them (in the talk screen), and the job's start card (RZ_JobCards)
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("%1\n(%2)", job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
+		RZ_JobCards.MissionStarted(m_GM, playerId, job, w.GetShortName(), user);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2849,8 +2850,9 @@ class RZ_Wanderers
 		m_mJobAt.Set(ident, m_fClock);
 		w.Remember(ident, MEM_HELPED);
 		job.Hire(playerId);
-		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
-			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
+		// Said by them (in the talk screen), and the job's start card (RZ_JobCards)
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("%1\n(%2)", job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
+		RZ_JobCards.MissionStarted(m_GM, playerId, job, w.GetShortName(), user);
 	}
 
 	//------------------------------------------------------------------------------------------------

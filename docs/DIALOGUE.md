@@ -163,7 +163,9 @@ adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockR
 
 - **One reply a job, tagged by its kind** in front, New Vegas style, in the engine's tag style:
   **[Quest]** for a questline's or a major's stage, **[Job]** for a contract, a leader's own job and
-  a wanderer's job (the Courier's letters, Barter Chain), **[Errand]** for an errand. No event starts
+  a wanderer's job (the Courier's *Got anything that needs carrying?*, the Mechanic's *Know of any cars
+  round here that still run?*, Barter Chain: asked in one step, the job and its card come with their
+  answer), **[Errand]** for an errand. No event starts
   by talk. The reply is the job's title: *[Job] Recover the Bus*, *[Quest] The Other Two: his number*,
   *[Errand] Water for Morton*.
 - **Picking it explains it** (the pitch: what and why, where, the pay, the danger), and *I'll do it.*

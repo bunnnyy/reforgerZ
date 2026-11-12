@@ -1131,6 +1131,10 @@ class RZ_TalkNeeds
 	{
 		string l = label;
 		l.ToLower();
+		// A wanderer's job asked in one step (the Courier's letters, the Mechanic's car keys)
+		if (l == "ask for work" || l == "ask about cars")
+			return RZ_TalkReply.RANK_NEW;
+
 		if (l == "heard anything?" || l == "what do you make of me?" || l.StartsWith("ask how things are") || l.StartsWith("ask about ")
 			|| l == "read the notice board" || l == "about the season" || l == "where should i look?" || l == "the dead"
 			|| l == "what you didn't tell me" || l == "the cure" || l == "this place" || l == "me")
@@ -1146,7 +1150,7 @@ class RZ_TalkNeeds
 	{
 		string l = label;
 		l.ToLower();
-		if (l.Contains("work"))
+		if (l.Contains("work") || l == "ask about cars")
 			return "[Job]";
 		if (l.Contains("news") || l.Contains("heard anything") || l.Contains("how things are") || l.Contains("rumour"))
 			return "news";
