@@ -369,7 +369,12 @@ They're shown with the season in the hall's notice and menu, and archived with i
 **Frozen at the deed** (the name played under then), **filtered** (Haven > Note filter: a name the
 filter would change shows as the player's title), **opt-out**: `/anonymous` or the notebook's *My name
 in the world* keeps a player out of the world's text, the reel and the hall (*"a survivor"*), stored by
-identity in `hall_of_fame.json` across seasons. **Epilogue > Names**: Full, Titles only (*"the Haven's
+identity in `hall_of_fame.json` across seasons. One helper (`RZ_Names.Public`) gives every broadcast
+and every name a system keeps to show later (sample deliveries, a claimed bounty, *"has turned"*, town
+memory, boards' notes, the radio station's signature, headlines, records, traces): *"a survivor"* for
+a player who chose `/anonymous` or `/mydead hidden`, or whose name the **Name filter** catches. A
+live bounty's notice and the bounty contract name the hunted on purpose, as does the hungry house that
+sells an exile's name. **Epilogue > Names**: Full, Titles only (*"the Haven's
 Champion"*), Off (*"someone"*). `/epilogue strike <name or beat>` shows that name as a title, drops a
 beat, or removes a last entry; logged.
 

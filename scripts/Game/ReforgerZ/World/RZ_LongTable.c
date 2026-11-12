@@ -2691,7 +2691,7 @@ class RZ_LongTable
 			string name = "someone who sat at the table";
 			if (playerId > 0)
 			{
-				name = RZ_Util.PlayerName(playerId);
+				name = RZ_Names.Public(playerId);
 				m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, FAMILY_HAVEN_INFAMY);
 				m_GM.AddInfamy(playerId, RZ_EFaction.MILITARY, FAMILY_BASTION_INFAMY);
 				m_GM.NotifyPlayer(playerId, "The farm", string.Format("Everyone knows about the farm now, and your name is in its guestbook, without a cross. (+%1 Haven Infamy, +%2 Bastion Infamy)", FAMILY_HAVEN_INFAMY, FAMILY_BASTION_INFAMY));

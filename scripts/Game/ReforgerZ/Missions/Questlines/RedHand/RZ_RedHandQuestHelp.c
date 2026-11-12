@@ -296,7 +296,7 @@ class RZ_RedHandQuest
 	//! "Mara": a player's name, "someone" if they're gone.
 	static string NameOf(int playerId)
 	{
-		string name = RZ_Util.PlayerName(playerId);
+		string name = RZ_Names.Public(playerId);
 		if (name.IsEmpty())
 			return "someone";
 

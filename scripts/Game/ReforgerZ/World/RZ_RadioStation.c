@@ -396,7 +396,7 @@ class RZ_RadioStation
 	//! The preset messages, filled in with real places. Signed with the sender's name.
 	protected string Message(int option, int playerId, vector from)
 	{
-		string name = RZ_Util.PlayerName(playerId);
+		string name = RZ_Names.Public(playerId);
 		switch (option)
 		{
 			case 0:

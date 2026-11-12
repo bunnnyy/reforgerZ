@@ -2282,7 +2282,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			string name = "someone";
 			int pid = m_Questlines.OnlineId(ident);
 			if (pid > 0)
-				name = RZ_Util.PlayerName(pid);
+				name = RZ_Names.Public(pid);
 
 			if (p || pid > 0)
 				record.deciders.Insert(name);
@@ -2529,11 +2529,11 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// World event: the turned player roams with their gear nearby
 		RZ_Mission_TurnedPlayer turned = new RZ_Mission_TurnedPlayer();
 		turned.Configure(this);
-		turned.Prepare(RZ_Util.PlayerName(playerId), pos);
+		turned.Prepare(RZ_Names.Public(playerId), pos);
 		if (!m_Missions.StartMission(turned))
 		{
 			m_Spawner.SpawnZombie(pos, false, -1, -1);
-			NotifyAll("Turned", RZ_Util.PlayerName(playerId) + " has turned.");
+			NotifyAll("Turned", RZ_Names.Public(playerId) + " has turned.");
 		}
 	}
 

@@ -445,7 +445,7 @@ class RZ_Epilogue
 			pid = m_GM.GetQuestlines().OnlineId(ident);
 
 		if (pid > 0)
-			return RZ_Util.PlayerName(pid);
+			return RZ_Names.Public(pid);
 
 		RZ_HallOfFame hall = m_GM.GetHall();
 		if (hall)
@@ -972,7 +972,7 @@ class RZ_Epilogue
 		if (killer > 0)
 			killerIdent = m_GM.GetProfile(killer).m_sIdentity;
 
-		AddNamed(RZ_Util.PlayerName(victim), "their ID card", -1, at, killerIdent, p.m_sIdentity, role);
+		AddNamed(RZ_Names.Public(victim), "their ID card", -1, at, killerIdent, p.m_sIdentity, role);
 		m_Rest.OnWeekDeath(p.m_sIdentity, RZ_EpiNames.Now(victim), role, at, p.m_fLifeSeconds);
 	}
 

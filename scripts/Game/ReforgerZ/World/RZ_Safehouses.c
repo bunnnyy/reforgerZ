@@ -1776,7 +1776,7 @@ class RZ_Safehouses
 		// Grief: a Haven Champion remembered, near where they fell and on the Haven's radio
 		RZ_ToneGuard.Death(pos, RZ_EFaction.SURVIVORS);
 
-		string name = RZ_Util.PlayerName(playerId);
+		string name = RZ_Names.Public(playerId);
 		RZ_Leaders leaders = m_GM.GetLeaders();
 		if (leaders)
 			leaders.AddHeadline(string.Format("The Haven lost %1 near %2. Every safehouse lit a candle in the window last night.", name, place));

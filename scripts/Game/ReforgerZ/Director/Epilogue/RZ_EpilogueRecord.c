@@ -294,7 +294,7 @@ class RZ_EpiRecord
 			return;
 
 		string head = p.m_sIdentity + "|";
-		string entry = string.Format("%1%2|%3", head, RZ_Util.RoundToInt(p.m_fLifeSeconds), RZ_Util.PlayerName(victim));
+		string entry = string.Format("%1%2|%3", head, RZ_Util.RoundToInt(p.m_fLifeSeconds), RZ_Names.Public(victim));
 		foreach (int i, string l : R().lives)
 		{
 			if (!l.StartsWith(head))

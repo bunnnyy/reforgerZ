@@ -1573,27 +1573,41 @@ class RZ_TribePeople
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A player's character in public text: the name only with Your dead run on Named, the player
-	//! not opted out, and the name past the name filter; else the description.
+	//! A player's character in public text: the name only with Your dead run on Named and the name
+	//! allowed in public text (RZ_Names: not /anonymous, not opted out, past the name filter); else
+	//! the description.
 	string PublicName(int playerId, string name, string description)
 	{
 		RZ_TribeSettings s = m_Tribes.GetSettings();
 		if (s.m_eYourDeadRun != RZ_EDeadRun.NAMED || name.IsEmpty())
 			return description;
 
-		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
-		if (p && m_aHidden.Contains(p.m_sIdentity))
+		if (!RZ_Names.Allowed(playerId, name))
 			return description;
 
+		return name;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This identity chose /mydead hidden.
+	bool IsHidden(string ident)
+	{
+		return !ident.IsEmpty() && m_aHidden.Contains(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The name filter (Tribes > Name filter) catches this name.
+	bool Filtered(string name)
+	{
 		string low = name;
 		low.ToLower();
 		foreach (string word : m_aFilter)
 		{
 			if (!word.IsEmpty() && low.Contains(word))
-				return description;
+				return true;
 		}
 
-		return name;
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

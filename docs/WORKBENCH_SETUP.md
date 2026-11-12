@@ -2537,7 +2537,7 @@ when it happens)
   hall's *Walked out*; armed, you're turned back as before.
 - [ ] `/season` (or the notebook's action, or its The season tab with a pad: LB/RB to the last tab)
   lists the beats you've met, And you and Unfinished; `/anonymous` turns your name into *a survivor*
-  on boards and in the hall.
+  on boards and in the hall, and in broadcasts: deliver a sample, or turn, and everyone hears *a survivor*.
 - [ ] The evening calendar: once the Gate has run, at 18:30 the Haven's open channel reads six names;
   once the last call has run, at 20:30 Bastion's says *"Bastion listening. Nothing heard. Bastion
   out."* and the roster board's line counts the strokes; 8 real hours (× Test scale) after a coda, its

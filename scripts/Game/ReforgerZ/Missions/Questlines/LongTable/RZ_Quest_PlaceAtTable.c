@@ -165,7 +165,7 @@ class RZ_Quest_PlaceAtTable : RZ_Questline
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		run.SetText("ident", ident);
 		run.SetFlag("life", gm.GetProfile(playerId).m_iLives);
-		run.SetText("guest", RZ_Util.PlayerName(playerId));
+		run.SetText("guest", RZ_Names.Public(playerId));
 		run.SetText("stray", RZ_LongTable.ManName(rng));
 		run.SetText("stray_town", t.GetTownName());
 		run.SetText("name", t.ShortLost());

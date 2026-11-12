@@ -1076,7 +1076,7 @@ class RZ_FactionPerks
 		m_GM.AddFavor(killer, payer, BOUNTY_FAVOR);
 		m_GM.AddFame(killer, payer, BOUNTY_FAME, false);
 		m_GM.NotifyPlayer(killer, "Bounty claimed", string.Format("%1 pays you %2 Favor for %3.", RZ_Factions.GetName(payer), BOUNTY_FAVOR, RZ_Util.PlayerName(victim)));
-		m_GM.NotifyAll("Bounty", string.Format("The %1 bounty on %2 has been claimed.", RZ_Factions.GetShortName(payer), RZ_Util.PlayerName(victim)));
+		m_GM.NotifyAll("Bounty", string.Format("The %1 bounty on %2 has been claimed.", RZ_Factions.GetShortName(payer), RZ_Names.Public(victim)));
 		return true;
 	}
 

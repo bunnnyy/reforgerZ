@@ -218,7 +218,7 @@ class RZ_Deeds
 			return;
 
 		season.NoteTally(p.m_sIdentity, f, false);
-		season.Ledger(p.m_sIdentity, RZ_Util.PlayerName(playerId), what, f, against);
+		season.Ledger(p.m_sIdentity, RZ_Names.Public(playerId), what, f, against);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -303,7 +303,7 @@ class RZ_Deeds
 		if (!gm || !season)
 			return;
 
-		season.NoteCell(gm.GetProfile(playerId).m_sIdentity, RZ_Util.PlayerName(playerId), f, cell);
+		season.NoteCell(gm.GetProfile(playerId).m_sIdentity, RZ_Names.Public(playerId), f, cell);
 	}
 
 	//------------------------------------------------------------------------------------------------

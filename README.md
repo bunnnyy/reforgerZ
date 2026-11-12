@@ -266,7 +266,7 @@ scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
                  seasons (the winner's rules, rule sets, the wipe cycle), AI groups' move
                  orders (one held waypoint each); the shared engine: the clocks, deeds, the
-                 callback queue
+                 callback queue, names in public text
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid, the radio station, the world facts (what content
                  reads: season flags, canon, claims and soft holds, text tokens) and its world

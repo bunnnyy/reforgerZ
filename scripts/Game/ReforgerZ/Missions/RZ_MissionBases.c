@@ -446,7 +446,7 @@ class RZ_Mission_Delivery : RZ_Mission
 		m_iItemReturns++;
 		string who = "";
 		if (left > 0)
-			who = RZ_Util.PlayerName(left);
+			who = RZ_Names.Public(left);
 
 		if (who.IsEmpty())
 			who = "Whoever had it";
