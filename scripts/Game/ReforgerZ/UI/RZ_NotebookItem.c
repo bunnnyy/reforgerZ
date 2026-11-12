@@ -44,6 +44,34 @@ class RZ_NotebookGadgetComponent : SCR_GadgetComponent
 //! Finds the notebook item on a character (server).
 class RZ_NotebookItem
 {
+	protected static bool s_bWasHeld;
+
+	//------------------------------------------------------------------------------------------------
+	//! Client, on the HUD's 0.2 s refresh: the notebook item just taken into the hand opens the
+	//! notebook. The gadget's own IN_HAND mode switch didn't reach the client in play (2026-11-12),
+	//! so this watches the held gadget instead; it opens once per time the item is taken in hand.
+	static void CheckHeld()
+	{
+		PlayerController pc = GetGame().GetPlayerController();
+		if (!pc)
+			return;
+
+		IEntity character = pc.GetControlledEntity();
+		bool held = false;
+		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(character);
+		if (gadgets)
+		{
+			IEntity gadget = gadgets.GetHeldGadget();
+			if (gadget && gadget.FindComponent(RZ_NotebookGadgetComponent))
+				held = true;
+		}
+
+		if (held && !s_bWasHeld && !RZ_Notebook.IsOpen())
+			RZ_Notebook.OpenFromItem(character);
+
+		s_bWasHeld = held;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	static bool Carries(IEntity character)
 	{

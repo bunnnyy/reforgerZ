@@ -88,6 +88,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			return;
 
 		m_fRefresh = REFRESH;
+		RZ_NotebookItem.CheckHeld();
 		Refresh();
 	}
 

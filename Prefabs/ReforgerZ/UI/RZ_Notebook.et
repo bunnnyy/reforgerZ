@@ -42,6 +42,15 @@ GenericEntity : "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_Mar
     ItemPhysAttributes ItemPhysicalAttributes "{59827E68FFB78A9F}" {
      Weight 0.1
     }
+    ItemAnimationAttributes ItemAnimationAttributes "{6C1F4A7B92D3E0A1}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{6C1F4A7B92D3E0A2}" {
+       AnimGraph "{82906ACD75DF8523}Assets/Items/Equipment/workspaces/Flashlight_MX991.agr"
+       AnimInstance "{903E4A0B96B34B8F}Assets/Items/Equipment/workspaces/MX991_player.asi"
+       BindingName "Gadget"
+      }
+     }
+    }
    }
   }
  }

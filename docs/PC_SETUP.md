@@ -200,7 +200,10 @@ What each shows and can't show, and how long it takes, is in
    `-gproj` opens the project without the launcher. Workbench doesn't look in the game's Workshop
    folder by itself, so the dependencies in `addon.gproj` only load from a folder in `-addonsDir`.
    The list replaces Workbench's default, so the game's own `addons` folder must be in it, or
-   Workbench can't find the base game.
+   Workbench can't find the base game. Started from Steam or the Tools launcher instead, Workbench
+   shows **Missing Addon Dependencies** with every Workshop GUID. A desktop shortcut,
+   **ReforgerZ Workbench**, starts it with these arguments (made 2026-11-12; remake it with
+   `WScript.Shell`'s `CreateShortcut` if it's lost).
 2. Follow [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md) from
    [section 1.1](WORKBENCH_SETUP.md#11-before-you-start-project-and-dependencies), step 2, in order.
    Claude drives Workbench with computer use, or guides the author through it one step at a time.

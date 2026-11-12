@@ -211,7 +211,10 @@ needed.
 **The notebook item** (`Prefabs/ReforgerZ/UI/RZ_Notebook.et`, `RZ_NotebookGadgetComponent`): a
 small notebook every new life is given a few seconds after spawn (**UI > Notebook prefab**; one
 that doesn't fit lies at your feet). Taken into the hand by its owner it opens the notebook; when
-the notebook closes, it goes back. *Simplified:* it's given at spawn by script rather than added
+the notebook closes, it goes back. The item holds like a flashlight (its hold animation is the
+MX991's). The HUD's 0.2 s refresh watches the held gadget and opens the notebook once each time
+the item comes into the hand (`RZ_NotebookItem.CheckHeld`): the gadget's own IN_HAND switch
+didn't open it in play. *Simplified:* it's given at spawn by script rather than added
 to each of the 13 loadouts, so it works with any loadout.
 
 **The journal's errands and detail.** A held errand is a journal row of its own (kind ERRAND, the

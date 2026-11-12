@@ -1,7 +1,7 @@
 # Dialogue
 
 How talking to people works: the talk screen and its engine, the conversation trees on top of it
-(**Dialogue > Trees**, off by default), what people remember, the checks shown before you choose,
+(**Dialogue > Trees**, on in the repo's game mode since 2026-11-12; the attribute's default is off), what people remember, the checks shown before you choose,
 lies you're told, promises and callbacks, claims in someone else's kit, Make it right, who opens a
 conversation, barks, strangers, the radio (the open channel, the secure nets, distress calls), the
 finale's commit, the last week, the `.rzd` text format, its lint and simulator, and the conversations
@@ -108,7 +108,7 @@ nothing hides and Talk and the slots work as actions, with notices.
 
 ## Trees: hubs, topics and nodes
 
-✅ **Dialogue > Trees** (off by default, the author's decision 13, until the per-player label test
+✅ **Dialogue > Trees** (the attribute's default is off, the author's decision 13; the author turned it on in `RZ_GameMode.et` on 2026-11-12 for play-testing, before the per-player label test
 and a play-test pass). It needs the talk screen. **With Trees off, the talk screen is exactly the
 one above**, and nothing on this page below this line runs, except the memory file being read.
 

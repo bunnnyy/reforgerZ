@@ -1165,7 +1165,7 @@ for the Haven, its wanderers.
 Code: `Dialogue/`; the screen is `UI/RZ_TalkMenu.c`. Owned by [DIALOGUE.md](DIALOGUE.md): the
 talk screen and its engine (one engine that wraps every person's built Talk handler and replies,
 with what each reply needs shown before you choose and no dice), and the conversation trees on top
-(**Dialogue > Trees**, off by default: topics, checks shown before you pick, regard and memory, the
+(**Dialogue > Trees**, on in the repo's game mode, the attribute's default off: topics, checks shown before you pick, regard and memory, the
 `.rzd` text format and its tools, [the conversations](DIALOGUE.md#the-conversations)). How the screen looks is in
 [UI.md](UI.md#the-talk-screen).
 
