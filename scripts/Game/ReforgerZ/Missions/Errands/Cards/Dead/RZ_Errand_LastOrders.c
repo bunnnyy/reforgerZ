@@ -10,19 +10,19 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		m_sTitle = "Last Orders";
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("His book's still on his seat {subject_place}. His last orders. I'd like them before someone else reads them.",
-			"Whatever he decided last, it's written down {subject_place}. Bring it here. Don't read it. Or do. Just bring it.");
-		Over("The book's come in. Thank you all the same.");
+		Offer("We lost our leader yesterday, {subject_place}. The order book is still on the seat: whatever was decided last, about us, is written in it. I'd like it in my hands before anyone else reads it.",
+			"Our leader died {subject_place}, and the last orders are written in the book on the seat. Bring the book here. Don't read it. Or do. Just bring it.");
+		Over("The order book's come in. Thank you all the same.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring it in unread";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Fetch the order book from his seat {subject_place} (10 s there), and bring it to {giver} unread.";
+		w.m_sStep = "Fetch the dead leader's order book {subject_place} (10 s there), and bring it to {giver} unread.";
 		w.m_eProp = RZ_EErrandProp.PAPERS;
 		w.m_iFavor = 4;
-		w.Done("Unread. Thank you. I'll read it tonight, and then I'll decide whether anyone else does.");
+		w.Done("Unread. Thank you. I'll read it tonight, alone, and then I'll decide whether anyone else does.");
 
 		w = Way("do");
 		w.m_sLabel = "Read it on the way";
@@ -30,10 +30,10 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Fetch the order book from his seat {subject_place} (10 s there), read the last page, and bring it to {giver}.";
+		w.m_sStep = "Fetch the dead leader's order book {subject_place} (10 s there), read the last page, and bring it to {giver}.";
 		w.m_eProp = RZ_EErrandProp.PAPERS;
 		w.m_iFavor = 3;
-		w.Done("You read it. Of course you did. Well. Now two of us know.");
+		w.Done("You read it. Of course you did. Well. Now two of us know what the last page says.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,12 +60,12 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		if (w.m_iIndex != 1)
 			return;
 
-		string line = "The last page is a list of names, crossed out one at a time. The last one isn't crossed out. It's his.";
+		string line = "The last page is a list of names, crossed out one at a time. The last one isn't crossed out. It's the leader's own.";
 		switch (e.m_iFaction)
 		{
-			case RZ_EFaction.MILITARY: line = "The last page: \"Hold. No relief expected. Count the rounds twice.\" Then the weather."; break;
-			case RZ_EFaction.BANDITS: line = "The last page is who owes what, and a line under it in a different hand: \"Settled.\""; break;
-			case RZ_EFaction.INSTITUTE: line = "The last page is numbers, and at the bottom: \"If this is read by someone else, the samples in fridge 2 are mislabelled. On purpose.\""; break;
+			case RZ_EFaction.MILITARY: line = "The last page says 'Hold. No relief expected. Count the rounds twice.' Then the weather, like every page. That was our leader all over."; break;
+			case RZ_EFaction.BANDITS: line = "The last page is who owes what, and under it a line in a different hand: 'Settled.' Somebody's been at the book already."; break;
+			case RZ_EFaction.INSTITUTE: line = "The last page is numbers, and at the bottom: 'If this is read by someone else, the samples in fridge 2 are mislabelled. On purpose.' I'll have to go and look."; break;
 		}
 
 		said.Insert(line);

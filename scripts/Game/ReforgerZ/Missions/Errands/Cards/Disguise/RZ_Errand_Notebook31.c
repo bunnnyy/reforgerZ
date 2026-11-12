@@ -14,19 +14,19 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("{dead} did not come back from {where_place}. Notebook {number} was in the coat. The notes are the only copy. Please.",
-			"We have a coat and a notebook unaccounted for, {where_place}. Number {number}. And {dead}, of course. Mostly {dead}.");
-		Over("Notebook {number} has been returned. The record is complete, for once.");
+		Offer("{dead} did not come back from fieldwork {where_place}. Notebook {number} was in the coat pocket. The notes in it are the only copy of three weeks' readings, and a dead researcher's notebook belongs to the record. Please bring it back.",
+			"We have a numbered coat and notebook {number} unaccounted for, {where_place}. And {dead}, of course. Mostly {dead}. The name goes on the authors' list either way. The notebook decides what goes beside it.");
+		Over("Notebook {number} has been returned by someone else. The record is complete, for once.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring the coat and notebook back";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find {dead} {where_place} and take the coat and notebook {number} (15 s there), then bring them to {giver}.";
+		w.m_sStep = "Find the body of {dead} {where_place} and take the coat and notebook {number} (15 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFame = 2;
-		w.Done("Notebook {number}. It goes into the record tonight, and {dead} goes on the authors' list.");
+		w.Done("Notebook {number}. It will be read into the record tonight, page by page, and {dead} goes on the authors' list.");
 
 		w = Way("do");
 		w.m_sLabel = "Sell the notebook to the fence";
@@ -36,19 +36,19 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find {dead} {where_place}, take notebook {number} (15 s there), and sell it at the fence. Then tell {giver} it was gone.";
+		w.m_sStep = "Find the body of {dead} {where_place}, take notebook {number} (15 s there), and sell it at the Red Hand's fence. Then tell {giver} it was gone.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 15;
-		w.Done("Gone. Then the work is gone. We will start again. We are good at that.");
+		w.Done("Gone. Then three weeks of work are gone. We will start again. We are good at that.");
 
 		w = Way("lie");
 		w.m_sLabel = "Keep the notebook";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find {dead} {where_place} and pocket notebook {number} (15 s there). Then tell {giver} it was gone.";
+		w.m_sStep = "Find the body of {dead} {where_place} and pocket notebook {number} (15 s there). Then tell {giver} it was gone.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
-		w.Done("\"Gone. I see.\" A pause. \"If you ever do see it, the number is {number}.\"");
+		w.Done("Gone. I see. If you ever do come across it, the number is {number}. I'll leave that with you.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 				if (Math.RandomFloat01() < 0.35)
 				{
 					gm.AddInfamy(playerId, RZ_EFaction.INSTITUTE, 5, "sold a dead researcher's notebook", RZ_RepFlag.ACT);
-					dealer.Notify(e, e.Fill("Notebook {number} turned up on the Red Hand's channel, read aloud for laughs. The lab knows who carried it. +5 Halcyon Infamy."));
+					dealer.Notify(e, e.Fill("Notebook {number} turned up on the Red Hand's channel, read aloud for laughs, and the lab knows who carried it to the fence. +5 Halcyon Infamy."));
 				}
 
 				RZ_WorldFacts.Get().Memory().Record("errand.notebook_31", e.m_sSubject, "sold", RZ_WorldMemory.SOURCE_ERRAND, false, who);
@@ -118,7 +118,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 			{
 				marks.SetFate(e.m_iValue, RZ_DisguiseMarks.HOW_LOST);
 				disguise.GiveNotebook(playerId, RZ_DisguiseMarks.CoatNumber(n));
-				said.Insert(e.Fill("Notebook {number} is in your pocket. At one Halcyon look, the number will do some talking for you."));
+				said.Insert(e.Fill("You have notebook {number} in your pocket. At a Halcyon gate, that number will do some talking for you, once."));
 				RZ_WorldFacts.Get().Memory().Record("errand.notebook_31", e.m_sSubject, "kept", RZ_WorldMemory.SOURCE_ERRAND, false, who);
 				break;
 			}

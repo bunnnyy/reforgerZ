@@ -13,21 +13,21 @@ class RZ_Errand_NameOnTheTape : RZ_ErrandCard
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("{dead} went out {where_place} this morning and didn't come back. The tag's still out there. The nail behind the radio has a space.",
-			"We've someone down {where_place}. {dead}. Bring the tag and the jacket in, and the form is one page instead of four.");
-		Over("Someone brought {dead} in. The tag's on the nail. Thank you all the same.");
+		Offer("{dead} went out {where_place} this morning and didn't come back. One tag stays with the body, the other goes on the nail behind the radio, and right now the nail has a space. I can't spare anyone off the wire to fetch it.",
+			"We've one of ours down {where_place}: {dead}. Bring the tag and the jacket in, so the name can be read on tonight's call, and the form is one page instead of four.");
+		Over("Someone brought {dead}'s tag in. It's on the nail. Thank you all the same.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring the tag and jacket home";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find {dead} {where_place} and take the tag and the jacket (15 s there), then bring them to {giver}.";
+		w.m_sStep = "Find the body of {dead} {where_place} and take the tag and the jacket (15 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
-		w.Done("Tag on the nail, jacket in the stores. The name goes on tonight's call.",
-			"That's the one. The jacket's been through worse. So had {dead}.");
+		w.Done("Tag on the nail, jacket in the stores. The name goes on tonight's call, and the whole post will answer for it.",
+			"That's the tag. The jacket's been through worse. So had {dead}, more than once.");
 
 		w = Way("do");
 		w.m_sLabel = "Sell the jacket to the fence";
@@ -37,10 +37,10 @@ class RZ_Errand_NameOnTheTape : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find {dead} {where_place}, take the jacket (15 s there), and sell it to the fence: \"A name the army can't check twice.\" Then tell {giver} it was gone.";
+		w.m_sStep = "Find the body of {dead} {where_place}, take the jacket (15 s there), and sell it to the Red Hand's fence, who pays well for a name the army can't check twice. Then tell {giver} it was gone.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 10;
-		w.Done("Gone? Somebody got there first. {dead} goes on the board as kit lost.");
+		w.Done("Gone? Somebody got there first. {dead} goes on the board with kit lost, and the nail stays empty.");
 	}
 
 	//------------------------------------------------------------------------------------------------

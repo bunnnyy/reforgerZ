@@ -11,9 +11,9 @@ class RZ_Errand_CleanSlate : RZ_ErrandCard
 		m_sTitle = "Clean Slate";
 		m_sFamily = "amends";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("You want back in their good books? There's a pit out back that needs a shift. Nobody watches the one with the shovel.",
-			"The worst job going is yours if you want it. People notice who does the worst job. Eventually.");
-		Over("Shift's covered. Come back another day.");
+		Offer("You want back in our good books after what you did? There's a burial pit out back that needs a shift on the shovel: lime, then earth, then lime. Nobody likes the one with the shovel, but everybody notices who held it.",
+			"People here haven't forgotten you, and not kindly. The worst job going is yours if you want it: the pit behind the wire. People notice who does the worst job. Eventually.");
+		Over("The pit shift's covered today. Come back another day.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take the worst shift";
@@ -21,8 +21,8 @@ class RZ_Errand_CleanSlate : RZ_ErrandCard
 		w.m_fSeconds = 60;
 		w.m_fRadius = 30;
 		w.m_bAmends = true;
-		w.m_sStep = "Work the pit behind {here} (a minute there), then come back to {giver}.";
-		w.Done("Done? Wash first. Then we'll see about your name.");
+		w.m_sStep = "Work a shift at the burial pit behind {here} (a minute there), then come back to {giver}.";
+		w.Done("Done? Wash first, properly, with the carbolic. Then we'll see about your name.");
 	}
 
 	//------------------------------------------------------------------------------------------------

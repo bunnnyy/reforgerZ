@@ -14,18 +14,18 @@ class RZ_Errand_MasksOff : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("Someone in one of our coats has been taking samples from the bitten at {house}. We sent nobody. Coat number 17. Please find out who is inside it.",
-			"A coat and a respirator at {house}, with a tray and no paperwork. Number 17 is signed out to Dr Brandt, who has not left the lab.");
-		Over("Number 17 came back on its own, folded. We are choosing not to ask.");
+		Offer("Someone in one of our coats and a respirator has been at {house}, taking samples from the people who declared bites. We sent nobody. The coat is number 17, signed out to Dr Brandt, who has not left the lab this week. Please find out who is inside it.",
+			"The Haven tells us a beak came to {house} with a sample tray and no paperwork, and drew blood from the bitten. Coat number 17. It's signed out to Dr Brandt, who has not left the lab. Samples taken like that are sold, not studied. Find out who it is.");
+		Over("Coat number 17 came back to the lab on its own, folded. We are choosing not to ask.");
 
 		RZ_ErrandWay w = Way("report");
 		w.m_sLabel = "Turn the orderly in";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find the beak at {house} (15 s there): a Haven orderly with a tray of samples. Bring the coat back to {giver}, and the name.";
+		w.m_sStep = "Find the one in the Halcyon coat at {house} (15 s there): it's a Haven orderly with a tray of samples. Bring the coat and the orderly's name back to {giver}.";
 		w.m_iFame = 2;
-		w.Done("Number 17. Thank you. We will speak to the Haven about the orderly, politely.");
+		w.Done("Number 17, and a name. Thank you. We will speak to the Haven about the orderly, politely. The samples will be destroyed.");
 
 		w = Way("talk");
 		w.m_sLabel = "Let the orderly go";
@@ -33,17 +33,17 @@ class RZ_Errand_MasksOff : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find the beak at {house} (15 s there). Hear out the orderly, who has a daughter and no antidote. Then tell {giver} you found nobody.";
+		w.m_sStep = "Find the one in the Halcyon coat at {house} (15 s there) and hear out the orderly inside it, who has a daughter and no antidote. Then tell {giver} you found nobody.";
 		w.m_iFame = 2;
-		w.Done("Nobody. I see. We will keep looking, and so, I expect, will the coat.");
+		w.Done("Nobody. I see. We will keep looking, and so, I expect, will coat number 17.");
 
 		w = Way("take");
 		w.m_sLabel = "Take the coat for yourself";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find the beak at {house} (15 s there) and take the coat off the orderly. Then tell {giver} it was gone.";
-		w.Done("\"Gone. Number 17 is gone.\" Someone writes that down, carefully.");
+		w.m_sStep = "Find the one in the Halcyon coat at {house} (15 s there) and take the coat off the orderly for yourself. Then tell {giver} it was gone.";
+		w.Done("Gone. Number 17 is gone. I'll write that down, carefully, and somebody will count the coats again at the change of shift.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -98,11 +98,11 @@ class RZ_Errand_MasksOff : RZ_ErrandCard
 			if (marks)
 				marks.CoatOut();
 
-			said.Insert("It's a good coat. It's also number 17, and number 17 is signed out to Dr Brandt. No Halcyon guard will take you for anyone in it.");
+			said.Insert("It's a good coat, wherever it is. It's also number 17, and number 17 is signed out to Dr Brandt. No Halcyon guard would take anyone in it for one of us.");
 			if (Math.RandomFloat01() < 0.35)
 			{
 				gm.AddInfamy(playerId, RZ_EFaction.INSTITUTE, 3, "kept a numbered coat", RZ_RepFlag.ACT);
-				dealer.Notify(e, "The lab counted coats at the change of shift. Number 17 was seen on you. +3 Halcyon Infamy.");
+				dealer.Notify(e, "The lab counted its coats at the change of shift, and somebody had seen number 17 on you. +3 Halcyon Infamy.");
 			}
 		}
 

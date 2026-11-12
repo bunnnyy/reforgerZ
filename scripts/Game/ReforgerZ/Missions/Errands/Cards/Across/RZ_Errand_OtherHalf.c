@@ -11,18 +11,18 @@ class RZ_Errand_OtherHalf : RZ_ErrandCard
 		m_sTitle = "The Other Half";
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("You talk to that lot {subject_place}. Take them a message from us. Word for word.",
-			"They know your face over there. Tell them something from us. They won't like it. Say it anyway.");
-		Over("Never mind the message. They heard.");
+		Offer("You can walk up to the gate {subject_place} and that lot will listen to you. Take them a message from us, word for word: the next one of theirs we find on our road doesn't walk home. They won't like it. Say it anyway.",
+			"They know your face {subject_place}, and they don't know ours except down a rifle. Carry a warning to their gate for us: stay off our road. Word for word, if you would. I want them to hear the tone.");
+		Over("Never mind the message. They heard it on the radio already.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry it word for word";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Say the message at {subject_place} (5 s at the gate), then come back to {giver}.";
+		w.m_sStep = "Say the message word for word at the gate {subject_place} (5 s there), then come back to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("Word for word? Good. Did they go pale? Tell me they went pale.");
+		w.Done("Word for word? Good. Did they go pale at the gate? Tell me they went pale.");
 
 		w = Way("talk");
 		w.m_sLabel = "Soften it on the way";
@@ -30,9 +30,9 @@ class RZ_Errand_OtherHalf : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Say a softer version at {subject_place} (5 s at the gate), then come back to {giver}.";
+		w.m_sStep = "Say a softer version of the message at the gate {subject_place} (5 s there), then come back to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("They said what? 'Noted'? That's all? Huh.");
+		w.Done("They said what? 'Noted'? That's all? Huh. You softened it on the way, didn't you.");
 	}
 
 	//------------------------------------------------------------------------------------------------

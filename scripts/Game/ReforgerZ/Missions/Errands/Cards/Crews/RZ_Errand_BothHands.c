@@ -11,9 +11,9 @@ class RZ_Errand_BothHands : RZ_ErrandCard
 		m_sTitle = "Both Hands";
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("My brother's at {subject_place}, with the wrong people. You're the only one they'd let talk to him and the only one he'd listen to. Bring him home.",
-			"You're liked and you're feared. That's rare. There's a lad at {subject_place} who needs both. Talk him out.");
-		Over("He came home on his own. Or he didn't. Either way, it's done.");
+		Offer("My brother's at {subject_place}, with the wrong people, and he's too proud to walk out on his own. They'd let you in, and he'd listen to you, because you're liked and feared both. That's rare. Talk him out and bring him home.",
+			"You're liked and you're feared, and that's rare. There's a lad at {subject_place} in with people who'll get him killed. Kindness won't get him out and threats won't either. Both might. Talk him out.");
+		Over("He came home on his own. Or he didn't. Either way, it's done, and I'll not ask again.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Go and talk him out";
@@ -21,14 +21,14 @@ class RZ_Errand_BothHands : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find him at {subject_place} and talk him out (20 s there), then come back to {giver}.";
+		w.m_sStep = "Find the lad at {subject_place} and talk him into leaving (20 s there), then come back to {giver}.";
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
-		w.Done("He's back. Sulking, but back. I owe you, and I hate owing.");
+		w.Done("He's back. Sulking in the corner, but back. I owe you for that, and I hate owing.");
 
 		w = Way("leave");
 		w.m_sLabel = "Leave him where he is";
-		w.Done("He chose. I know. I still had to ask.");
+		w.Done("He chose them. I know. I still had to ask.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ class RZ_Errand_BothHands : RZ_ErrandCard
 		if (RZ_Witness.Seen(gm, playerId, e.m_vSubject, e.m_iValue))
 		{
 			gm.AddInfamy(playerId, e.m_iValue, 2, "talked one of theirs out", 0, "talked one of theirs into leaving");
-			said.Insert("His lot watched him walk out with you. They'll remember whose idea it was.");
+			said.Insert("His lot watched him walk out with you. They'll remember whose idea it was, so watch yourself near them.");
 		}
 	}
 }

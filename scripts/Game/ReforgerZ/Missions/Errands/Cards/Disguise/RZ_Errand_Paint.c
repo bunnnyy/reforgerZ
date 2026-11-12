@@ -15,18 +15,18 @@ class RZ_Errand_Paint : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_bTimed = true;
-		Offer("New faces paint a red hand on. There's a green post {where_place} tonight. Their barrier, our hand, and you walk back.",
-			"Tin of red, one barrier. The green post {where_place}. Everybody does it once.");
-		Over("The green post packed up. Paint a fence. Paint your boots. Doesn't count.");
+		Offer("New faces paint a red hand on, and you're a new face. Bastion has a post on the road {where_place} tonight. Their barrier, our hand, in red paint, and you walk back. Red hand means stop. They'll get the joke.",
+			"Here's a tin of red. There's a Bastion post on the road {where_place}, and its barrier hasn't got our hand on it yet. Everybody in the crews does it once. Tonight it's you.");
+		Over("The Bastion post packed up and went. Paint a fence. Paint your boots. Doesn't count.");
 
 		RZ_ErrandWay w = Way("trick");
 		w.m_sLabel = "In their kit: ask the crew for a light";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 20;
-		w.m_sStep = "Walk up to the Bastion post {where_place} in Bastion kit, pass their look, ask for a light and paint the hand while they smoke (20 s at the barrier). Then come back to {giver}.";
+		w.m_sStep = "Walk up to the Bastion post {where_place} in Bastion kit, pass their look, ask for a light and paint the hand on the barrier while they smoke (20 s there). Then come back to {giver}.";
 		w.m_iFame = 2;
-		w.Done("In their own green, with their own match. That's going round every fire tonight.");
+		w.Done("In their own green, with their own match? That's going round every fire tonight.");
 
 		w = Way("sneak");
 		w.m_sLabel = "From the back, unseen";
@@ -34,7 +34,7 @@ class RZ_Errand_Paint : RZ_ErrandCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 25;
 		w.m_bUnseen = true;
-		w.m_sStep = "Get to the back of the Bastion post {where_place} without being seen and paint the hand (20 s there, unseen). Then come back to {giver}.";
+		w.m_sStep = "Get to the back of the Bastion post {where_place} without being seen and paint the hand on the barrier (20 s there, unseen). Then come back to {giver}.";
 		w.m_iFame = 2;
 		w.Done("They'll find it at the shift change. I'd pay to see the sergeant's face.");
 
@@ -45,7 +45,7 @@ class RZ_Errand_Paint : RZ_ErrandCard
 		w.m_fRadius = 25;
 		w.m_sStep = "Walk up to the Bastion post {where_place} and paint the hand on the barrier in front of them (20 s there). They won't like it. Then come back to {giver}.";
 		w.m_iFame = 2;
-		w.Done("Under fire? You're mad. Sit down, have a drink.");
+		w.Done("In front of them, under fire? You're mad. Sit down, have a drink, and keep your head down near that post for a while.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ class RZ_Errand_Paint : RZ_ErrandCard
 		if (p.m_sCrewName.IsEmpty() && RZ_ReputationSettings.Get().m_bCrewNames)
 		{
 			p.m_sCrewName = "Brush";
-			said.Insert("Somebody at the fire calls you Brush. It sticks.");
+			said.Insert("Somebody at the fire's already calling you Brush. It'll stick. Crew names stick like paint.");
 			RZ_Log.Info(string.Format("Reputation: crew name Brush for %1 (Paint)", RZ_Util.PlayerName(playerId)));
 		}
 

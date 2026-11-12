@@ -13,18 +13,18 @@ class RZ_Errand_DressRehearsal : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("The green post {where_place}. Walk up in their kit, ask the sentry when the shift changes, and walk back. If you can do that, so can we.");
-		Over("Heard it on the open channel. Somebody in borrowed green, and the whole post laughing. Leave it.");
+		Offer("There's a Bastion post on the road {where_place}, and we'd like to know when its shift changes. Walk up in their green, ask the sentry like you belong there, and walk back. If you can do that, so can our lads, when it matters.");
+		Over("Heard it on the open channel: somebody in borrowed green at the barrier, and the whole post laughing. Leave it now.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk through in Bastion kit";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 20;
-		w.m_sStep = "Walk up to the Bastion post {where_place} in Bastion kit and pass their look, ask the sentry when the shift changes (10 s at the barrier), then come back to {giver}.";
+		w.m_sStep = "Walk up to the Bastion post {where_place} in Bastion kit, pass their look and ask the sentry when the shift changes (10 s at the barrier), then come back to {giver}.";
 		w.m_iFavor = 10;
 		w.m_iFame = 2;
-		w.Done("Six and six. Thank you. We'll pick a time that isn't either.");
+		w.Done("They change at six and six? Thank you. We'll pick a time that isn't either.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ class RZ_Errand_DressRehearsal : RZ_ErrandCard
 		if (gm.GetHostility().GetDisguise().IsPassing(e.m_iAsker, RZ_EFaction.MILITARY))
 			return true;
 
-		gm.NotifyAllAs("Open channel", "\"Someone just tried to walk through a green post in borrowed kit. Sleeves too short.\" Laughter, then static.", RZ_ENoticeTag.EVENT);
+		gm.NotifyAllAs("Open channel", "All posts, be advised: somebody just tried to walk through our barrier in borrowed green. Sleeves too short, boots too clean. The whole post saw it. Bastion out.", RZ_ENoticeTag.EVENT);
 		return false;
 	}
 }

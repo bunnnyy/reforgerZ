@@ -14,18 +14,18 @@ class RZ_Errand_Civvies : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("There's someone sleeping in the back who used to be a soldier. {deserter}. The board at the post says KIA. Help them stop looking like one.",
-			"{deserter} came in wearing green and won't take it off, because there's nothing else. Find something that isn't anybody's colours.");
-		Over("{deserter} left before light. Took the bread and left the jacket.");
+		Offer("There's someone sleeping in our back room who used to be a soldier: {deserter}. The board at Bastion's post says KIA, body not recovered, and Bastion sends someone to bring its struck-off people home. Help {deserter} stop looking like a soldier.",
+			"{deserter} came in wearing Bastion green and won't take it off, because there's nothing else to wear. Every patrol on the road looks twice at green. Find some clothes that aren't anybody's colours.");
+		Over("{deserter} left before light. Took the bread and left the green jacket on the chair.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring civilian clothes";
 		w.m_ePlace = RZ_EErrandPlace.NEXT_TOWN;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 60;
-		w.m_sStep = "Find clothes in {place} that aren't anybody's colours (20 s there), then bring them to {giver}.";
+		w.m_sStep = "Search the houses in {place} for plain clothes that aren't anybody's colours (20 s there), then bring them to {giver}.";
 		w.m_iFame = 2;
-		w.Done("\"Look at that. Just a person.\" {deserter} folds the green and puts it under the stove.");
+		w.Done("Look at that. Just a person, in a jumper two sizes too big. The green's folded under the stove, where nobody looks.");
 
 		w = Way("betray");
 		w.m_sLabel = "Sell where they sleep to the Red Hand";
@@ -35,9 +35,9 @@ class RZ_Errand_Civvies : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.OUT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 30;
-		w.m_sStep = "Meet a crew's runner {place} and say where {deserter} sleeps (10 s there). Then go back to {giver} as if nothing happened.";
+		w.m_sStep = "Meet a Red Hand crew's runner {place} and tell them where {deserter} sleeps (10 s there). Then go back to {giver} as if nothing happened.";
 		w.m_iFavor = 10;
-		w.Done("\"You'll keep it to yourself, I know.\" By morning the back room is empty.");
+		w.Done("You'll keep it to yourself that {deserter} is here, I know. Not everybody would.");
 	}
 
 	//------------------------------------------------------------------------------------------------

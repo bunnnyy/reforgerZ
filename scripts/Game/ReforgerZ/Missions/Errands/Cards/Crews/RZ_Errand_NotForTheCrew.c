@@ -12,8 +12,8 @@ class RZ_Errand_NotForTheCrew : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("The cut's for outsiders. And for lads worth less than a real one. Guess which I am. There's a station {where_place}. Walk me there?");
-		Over("Forget it. The boss found out. It's sorted. Don't ask how.");
+		Offer("I got bit on the road this morning. The crew's cut dose is for outsiders, and for lads worth less than a real dose, and the book says I'm one of those. The beaks at the Halcyon station {where_place} give the bitten a trial dose for nothing. Walk me there before the boss hears?");
+		Over("Forget it. The boss found out about the bite. It's sorted. Don't ask how.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk him to the station";
@@ -21,21 +21,21 @@ class RZ_Errand_NotForTheCrew : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 40;
 		w.m_iPayFaction = RZ_EFaction.INSTITUTE;
-		w.m_sStep = "Walk the lad to the Halcyon station {where_place}, weapons slung (at its gate), then come back to {giver}.";
+		w.m_sStep = "Walk the bitten lad to the Halcyon station {where_place} with your weapons slung (at its gate), then come back to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("They took him in. Patched and sent on to the lab. He'll be a number now. A living one.");
+		w.Done("They took him in at the station, patched him and sent him on to the lab. He'll be a number in somebody's notebook now. A living one, with luck.");
 
 		w = Way("give");
 		w.m_sLabel = "Give him your antidote";
 		w.m_eItem = RZ_EErrandItem.ANTIDOTE;
 		w.m_iItems = 1;
 		w.m_iFavor = 6;
-		w.Done("A real one? From your own pocket? Mad. Don't tell the others. They'll want one.");
+		w.Done("A real antidote? From your own pocket? You're mad. Don't tell the others, or they'll all want one.");
 
 		w = Way("report");
 		w.m_sLabel = "Tell the book-keeper";
 		w.m_iFame = 2;
-		w.Done("The book-keeper's seen to it. He's sent off before dark. The book's square.");
+		w.Done("The book-keeper's seen to it. He's to be sent off before dark, loud, the way we do. The book's square.");
 	}
 
 	//------------------------------------------------------------------------------------------------

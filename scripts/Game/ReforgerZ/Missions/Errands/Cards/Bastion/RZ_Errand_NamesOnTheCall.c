@@ -12,18 +12,18 @@ class RZ_Errand_NamesOnTheCall : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_sRoles = "radio operator,operator";
-		Offer("Every night I read 'civilians sheltered, {count}'. A number. Somebody at {subject_place} might want the names. Take them the list.",
-			"I've {count} names on a list nobody asked for. The house {subject_place} is missing people. Do the arithmetic. Take it.");
-		Over("Never mind the list. They came and read it themselves.");
+		Offer("Every night on the call I read Command 'civilians sheltered, {count}'. A number. I have the names behind it, every one, in a book nobody asked for. The Haven house {subject_place} is missing people. Take them the list.",
+			"I've {count} names of civilians this post has sheltered, on a list nobody asked for. The house {subject_place} has people they've stopped expecting. Do the arithmetic. Take it to them.");
+		Over("Never mind the list. Someone from the house came and read it at the gate themselves.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry the list to the house";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Pin the list of the sheltered on the board at {subject_place} (5 s at the door), then tell {giver}.";
+		w.m_sStep = "Pin the list of sheltered civilians on the board at {subject_place} (5 s at the door), then tell {giver}.";
 		w.m_iFavor = 4;
-		w.Done("Somebody found a name on it? Good. That's the first time the number's been for anything.");
+		w.Done("Somebody found a name on it? Good. That's the first time the number's been for anything but Command.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -14,9 +14,9 @@ class RZ_Errand_SpotTheTells : RZ_ErrandCard
 		m_sFamily = "bastion";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("Two civilians in our green this week, and now the sergeant says one of ours doesn't look like one of ours. Walk the line. Look at boots, rifles, caps.",
-			"Somebody here is wearing our kit and isn't ours. The sergeant can't tell. Can you?");
-		Over("Never mind. The sergeant counted heads and found one too many. It's sorted.");
+		Offer("Two civilians have been caught in our green this week, and now the sergeant says one of the three on duty doesn't look like one of ours. Probably a Red Hand scout, counting us. Walk the line and look at boots, rifles, caps.",
+			"Somebody on duty here is wearing our kit and isn't ours: a crew's scout, the sergeant thinks. The sergeant can't tell which. Can you? The wrong boots, the wrong rifle. Something.");
+		Over("Never mind. The sergeant counted heads at the shift change and found one too many. It's sorted.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Find the scout by the tells";
@@ -24,7 +24,7 @@ class RZ_Errand_SpotTheTells : RZ_ErrandCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 30;
 		w.m_sStep = "Talk to the three on duty at {here} and look at their kit (20 s there), then tell {giver} which one.";
-		w.Done("\"That one?\" A look at the boots. \"That one.\"");
+		w.Done("That one? Look at the boots. Yes. That one. The sergeant will want a word with whoever issued those.");
 
 		w = Way("lie");
 		w.m_sLabel = "Take the scout's money, point at Hollis";
@@ -34,9 +34,9 @@ class RZ_Errand_SpotTheTells : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 30;
-		w.m_sStep = "Talk to the three on duty at {here}. One of them presses Favor into your hand and nods at Private Hollis (20 s there). Then tell {giver}.";
+		w.m_sStep = "Talk to the three on duty at {here} (20 s there). One of them will pay you Red Hand Favor to point at Private Hollis. Then tell {giver}.";
 		w.m_iFavor = 10;
-		w.Done("\"Hollis? Hollis has been here since Day 1.\" A long look at the boy's boots.");
+		w.Done("Hollis? Hollis has been here since Day 1. Well. The boots are wrong, I'll give you that.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -66,11 +66,11 @@ class RZ_Errand_SpotTheTells : RZ_ErrandCard
 		array<int> who = {playerId};
 		if (w.m_iIndex == 1)
 		{
-			said.Insert("Private Hollis spends the night in the stockade for wearing the wrong boots. He's furious. He's also, technically, out of uniform.");
+			said.Insert("Private Hollis is spending the night in the stockade for wearing the wrong boots. He's furious. He's also, technically, out of uniform.");
 			if (Math.RandomFloat01() < 0.35)
 			{
 				gm.AddInfamy(playerId, RZ_EFaction.MILITARY, 5, "sold Hollis to the stockade", RZ_RepFlag.ACT);
-				dealer.Notify(e, "The scout talked in the stockade. Bastion knows who pointed at Hollis. +5 Bastion Infamy.");
+				dealer.Notify(e, "The scout talked in the stockade, and Bastion knows who pointed at Hollis. +5 Bastion Infamy.");
 			}
 
 			RZ_WorldFacts.Get().Memory().Record("errand.spot_the_tells", e.m_sSubject, "hollis", RZ_WorldMemory.SOURCE_ERRAND, false, who);
@@ -81,12 +81,12 @@ class RZ_Errand_SpotTheTells : RZ_ErrandCard
 		bool right = RZ_QuestApproach.HasBackground(gm, playerId, "soldier,police") || Math.RandomFloat01() < 0.67;
 		if (!right)
 		{
-			said.Insert("Private Hollis spends the night in the stockade for wearing the wrong boots. He's furious. He's also, technically, out of uniform.");
+			said.Insert("Private Hollis is spending the night in the stockade for wearing the wrong boots. He's furious. He's also, technically, out of uniform.");
 			RZ_WorldFacts.Get().Memory().Record("errand.spot_the_tells", e.m_sSubject, "wrong", RZ_WorldMemory.SOURCE_ERRAND, false, who);
 			return;
 		}
 
-		said.Insert("The scout goes to the stockade with the wrong boots on. The sergeant writes it up as a uniform inspection.");
+		said.Insert("The scout's in the stockade, wrong boots and all. The sergeant's writing it up as a uniform inspection.");
 		dealer.SmallFavor(playerId, RZ_EFaction.MILITARY, 5);
 		dealer.SmallFame(playerId, RZ_EFaction.MILITARY, 2);
 		RZ_WorldFacts.Get().Memory().Record("errand.spot_the_tells", e.m_sSubject, "found", RZ_WorldMemory.SOURCE_ERRAND, false, who);

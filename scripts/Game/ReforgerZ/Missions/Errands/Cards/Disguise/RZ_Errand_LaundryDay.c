@@ -17,17 +17,17 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("We wash the green post's uniforms for bread. The sack's ready, and there's a red roadblock in between. Don't wear any of it. Please.",
-			"Laundry for the soldiers {subject_place}. They pay in bread. The crews on the road pay in trouble.");
-		Over("The truce is off. They'll have to wash their own shirts.");
+		Offer("We've a truce with the Bastion post {subject_place}: we wash their uniforms, they pay in bread. This week's sack is ready, and there's a Red Hand roadblock on the road in between. The crews don't love anyone who does the army's washing. Don't wear any of it. Please.",
+			"The sack of laundry for the soldiers {subject_place} is ready. They pay in bread, and the house needs it. The crews at the roadblock on that road pay in trouble.");
+		Over("The truce with the post is off. They'll have to wash their own shirts, and we'll do without the bread.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Carry the sack round the roadblock";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 30;
-		w.m_sStep = "Carry the laundry to the Bastion post {subject_place}, the long way: never within 150 m of the red roadblock (10 s at the post). Then come back to {giver}.";
-		w.Done("Clean shirts and no trouble. The bread will come tomorrow.");
+		w.m_sStep = "Carry the laundry to the Bastion post {subject_place} the long way, never within 150 m of the Red Hand roadblock (10 s at the post). Then come back to {giver}.";
+		w.Done("Clean shirts delivered and no trouble on the road. The bread will come tomorrow, and the children will have it first.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay the toll twice";
@@ -36,8 +36,8 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 30;
-		w.m_sStep = "Carry the laundry to the Bastion post {subject_place}; your Favor gets it through the roadblock (10 s at the post). Then come back to {giver}.";
-		w.Done("Twice? For shirts? Thank you. Don't tell the soldiers what it cost.");
+		w.m_sStep = "Carry the laundry to the Bastion post {subject_place}, paying the roadblock's toll with your Red Hand Favor (10 s at the post). Then come back to {giver}.";
+		w.Done("They made you pay twice? For shirts? Thank you. Don't tell the soldiers what it cost. They'd only feel bad, and then they'd stop sending the bread.");
 
 		w = Way("betray");
 		w.m_sLabel = "Sell the sack to the fence";
@@ -47,9 +47,9 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take the sack to the red roadblock and sell it (10 s there). Then tell {giver} the crew took it.";
+		w.m_sStep = "Take the sack to the Red Hand roadblock and sell it (10 s there). Then tell {giver} the crew took it.";
 		w.m_iFavor = 15;
-		w.Done("Took it? All of it? Then there's no bread this week.");
+		w.Done("The crew took it? All of it? Then there's no bread this week, and a post full of soldiers with no clean shirts.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		if (!me || RZ_Util.DistXZ(me.GetOrigin(), e.m_vSubject2) > ROADBLOCK_RADIUS)
 			return true;
 
-		gm.NotifyPlayer(e.m_iAsker, "Errand: Laundry Day", "\"What's in the sack? Shirts? Army shirts?\" The crew keeps the sack.");
+		gm.NotifyPlayer(e.m_iAsker, "Errand: Laundry Day", "You came too close to the roadblock. The crew opened the sack, found Bastion's shirts and kept the lot. The house gets no bread for this week's washing.");
 		return false;
 	}
 
@@ -130,7 +130,7 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 			if (Math.RandomFloat01() < 0.35)
 			{
 				gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 3, "sold the house's laundry", RZ_RepFlag.ACT);
-				dealer.Notify(e, "The crew wore the shirts to the next toll. {house} saw them. +3 Haven Infamy.");
+				dealer.Notify(e, "The crew wore Bastion's shirts to the next toll, and somebody from {house} saw them. +3 Haven Infamy.");
 			}
 
 			RZ_WorldFacts.Get().Memory().Record("errand.laundry_day", e.m_sSubject, "sold", RZ_WorldMemory.SOURCE_ERRAND, false, who);

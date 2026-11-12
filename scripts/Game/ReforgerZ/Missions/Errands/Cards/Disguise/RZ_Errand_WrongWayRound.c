@@ -14,18 +14,18 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("Somebody's taking tolls on the road by {house} under our hand. Painted it backwards. Go and look, then tell me what you want done about it.",
-			"Red hands on a road we don't run, by {house}. Thumbs on the wrong side. That's either an insult or children.");
-		Over("The hands by {house} got painted over. Somebody else had a word.");
+		Offer("Somebody's taking tolls on the road by {house} under our red hand, and we don't run that road. Painted it backwards, too, thumb on the wrong side. Go and look who it is, then tell me what you want done about it.",
+			"There are red hands on a road we don't run, by {house}, and somebody's taking tins under them. Thumbs on the wrong side. That's either an insult or children. Go and find out which.");
+		Over("The hands by {house} got painted over. Somebody else had a word first.");
 
 		RZ_ErrandWay w = Way("report");
 		w.m_sLabel = "Tell the boss";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 60;
-		w.m_sStep = "Look at the tolls on the road by {house} (10 s there), then tell {giver} who's running them.";
+		w.m_sStep = "Watch the toll on the road by {house} (10 s there), then tell {giver} who's running it.";
 		w.m_iFame = 2;
-		w.Done("\"Lads from the house. Right. They'll be settled.\" Nobody says what that means.");
+		w.Done("Lads from the house, playing crews. Right. They'll be settled. Don't ask me what that means.");
 
 		w = Way("take");
 		w.m_sLabel = "Take a cut of their takings";
@@ -33,9 +33,9 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 60;
-		w.m_sStep = "Find the lads on the road by {house} and take your share of the tolls (10 s there). Then tell {giver} it was nobody.";
+		w.m_sStep = "Find the lads at the toll by {house} and take a share of their tins (10 s there). Then tell {giver} it was nobody.";
 		w.m_iFavor = 6;
-		w.Done("Nobody? Fine. Paint's paint.");
+		w.Done("Nobody? Fine. Paint's paint, and the rain will have it.");
 
 		w = Way("talk");
 		w.m_sLabel = "Warn them off";
@@ -43,9 +43,9 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 60;
-		w.m_sStep = "Find the lads on the road by {house} and tell them to paint over the hands before the crews come (10 s there). Then tell {giver} it was nothing.";
+		w.m_sStep = "Find the lads at the toll by {house} and tell them to paint over the hands before the crews come (10 s there). Then tell {giver} it was nothing.";
 		w.m_iFame = 2;
-		w.Done("Nothing? Then it'll be gone by the time I look.");
+		w.Done("Nothing? Then it'll be gone by the time I go and look myself.");
 
 		w = Way("press");
 		w.m_sLabel = "Recruit them";
@@ -54,9 +54,9 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 60;
-		w.m_sStep = "Find the lads on the road by {house} and tell them the Red Hand has work for people who can hold a road (10 s there). Then bring {giver} the news.";
+		w.m_sStep = "Find the lads at the toll by {house} and tell them the Red Hand has work for people who can hold a road (10 s there). Then bring {giver} the news.";
 		w.m_iFame = 2;
-		w.Done("Keen, are they? Good. Teach them which way round a hand goes.");
+		w.Done("Keen, are they? Good. Somebody teach them which way round a hand goes.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 				if (h && h.m_iPopulation > 2)
 					houses.RemoveDead(e.m_iValue, 1);
 
-				dealer.Notify(e, "{house} is one short at supper. Nobody asks where the lad went. Everybody knows. +5 Haven Infamy.");
+				dealer.Notify(e, "{house} is one short at supper. Nobody asks where the lad went. Everybody knows who told the boss. +5 Haven Infamy.");
 				break;
 			}
 			case 1:
@@ -112,7 +112,7 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 				if (Math.RandomFloat01() < 0.35)
 				{
 					gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 5, "took a cut of the house's tolls", RZ_RepFlag.ACT);
-					dealer.Notify(e, "{house} counted the tolls and found them short. They know whose hand was in it. +5 Haven Infamy.");
+					dealer.Notify(e, "{house} counted the lads' tins and found them short. They know whose hand was in it. +5 Haven Infamy.");
 				}
 
 				break;
@@ -122,7 +122,7 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 				if (h && h.m_iPopulation > 2)
 					houses.RemoveDead(e.m_iValue, 1);
 
-				said.Insert("One of the lads packs a bag that night. {house} lays one fewer place.");
+				said.Insert("One of the lads from {house} is packing a bag tonight to come and work for us. The house will lay one fewer place.");
 				break;
 			}
 		}
