@@ -108,10 +108,11 @@ modded class RZ_MissionManager
 					RZT_ObjCheck(m_RZTCur, "carried");
 			}
 
-			// The fake player can't hold a prompt: its work sites are done for it (the server's path)
-			if (RZ_WorkSites.Get())
+			// The fake player can't hold a prompt: the work sites he stands at are done for him (the
+			// server's path); the others wait until the tracker sends him there
+			if (RZ_WorkSites.Get() && RZT_Fake.s_Ent)
 			{
-				int worked = RZ_WorkSites.Get().CompleteAllFor(string.Format("mission.%1.", m_RZTCur.m_iId), RZT_Fake.ID);
+				int worked = RZ_WorkSites.Get().CompleteAllFor(string.Format("mission.%1.", m_RZTCur.m_iId), RZT_Fake.ID, RZT_Fake.s_Ent.GetOrigin(), 25);
 				if (worked > 0)
 					Print(string.Format("RZT work sites: %1 done for '%2'", worked, m_RZTCur.m_sTitle));
 			}

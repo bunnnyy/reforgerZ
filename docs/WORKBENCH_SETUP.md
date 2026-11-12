@@ -1766,8 +1766,8 @@ reasons the story jobs and the majors answer, a free player never refused a rout
 [work site](DESIGN.md#work-site) (the crate stands in as its site prefab: opened for the fake player,
 done for it, its after look up, a held step's line without its time)
 (`RZT story check: <name>: OK|FAILED (...)`, then `RZT story done: N checks OK, N FAILED`). From then
-on the fake player can't hold a prompt, so while it stands at a mission its open work sites are done
-for it (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
+on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
+it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
 to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
 a play (§8).
 

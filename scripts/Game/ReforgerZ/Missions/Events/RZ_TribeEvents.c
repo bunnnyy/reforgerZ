@@ -367,7 +367,8 @@ class RZ_Event_Gathering : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override bool Setup(RZ_GameModeComponent gm)
 	{
-		return true;
+		// Only Start gives it its wire: anything else has nowhere to hold
+		return m_vPos != vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------

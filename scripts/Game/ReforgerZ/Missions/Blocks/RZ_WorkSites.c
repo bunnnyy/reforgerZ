@@ -474,13 +474,17 @@ class RZ_WorkSites
 
 	//------------------------------------------------------------------------------------------------
 	//! Every open site whose key starts with `prefix`, done for `playerId` (the runtime test's fake
-	//! player at a mission's sites). Returns how many.
-	int CompleteAllFor(string prefix, int playerId)
+	//! player at a mission's sites), only those within `within` m of `at` when it's above 0 (the
+	//! sites he stands at). Returns how many.
+	int CompleteAllFor(string prefix, int playerId, vector at = vector.Zero, float within = 0)
 	{
 		int n = 0;
 		foreach (RZ_WorkSite s : m_aSites)
 		{
 			if (s.m_bDone || s.m_bClosed || s.m_sKey.IndexOf(prefix) != 0)
+				continue;
+
+			if (within > 0 && RZ_Util.DistXZ(s.m_vPos, at) > within)
 				continue;
 
 			Finish(s, playerId);
