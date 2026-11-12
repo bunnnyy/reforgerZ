@@ -228,7 +228,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**, pad **View + RB**) in `IngameContext`, and
 `RZ_RadioFilter` (**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**), `RZ_TurnPreview` (the pad's right
-stick) and `RZ_Reply1` to `RZ_Reply7` (**1** to **7**, pad **LT/RT + D-pad**) in `MenuContext`, and `RZ_MapLegend` (**I**, pad **Y**) in
+stick) and `RZ_Reply1` to `RZ_Reply5` (**1** to **5**, pad **LT/RT + D-pad**) in `MenuContext`, and `RZ_MapLegend` (**I**, pad **Y**) in
 `MapContext`. The list with
 the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
@@ -422,45 +422,49 @@ Frame SeasonPage (root)
 
 ## Talk screen: `RZ_TalkMenu.layout` and `RZ_TalkReply.layout`
 
-The talk screen (`RZ_TalkMenu` preset), from `UI/Mockups/talk.html`. Written as text.
+The talk screen (`RZ_TalkMenu` preset), New Vegas style: a compact panel in the lower middle, so
+the person stays in view. Written as text. Positions inside the panel are from its top left.
 
 ```
-Frame (root, full screen)
-├─ Image   Dim             full screen, #08090A at 55% (flat; the mockup's gradient would need a texture)
-└─ Frame   TalkPanel       full width, 660 high, anchored to the bottom
-   ├─ Image  (TalkBg)        #0F1113
+Frame (root, full screen; no dim, the world shows as it is)
+└─ Frame   TalkPanel       1,190 × 376, anchored bottom centre, its bottom 56 up (x 365–1555, y 648–1024)
+   ├─ Image  (TalkBg)        #121416 at 85%
+   ├─ Panel  (TalkLine)      border #2A2E31
    ├─ Image  TalkAccent      full width × 5, top edge, tinted with the faction colour
-   ├─ HorizontalLayout (TalkWho)  at (240, 34)
-   │  ├─ Text  TalkName      condensed bold 30, tinted with the faction colour
-   │  └─ Text  TalkSub       regular 21, dim, 18 after the name
-   ├─ ScrollLayout SaidScroll  at (240, 86), 1,340 × 170 (LB/RB and the wheel scroll it)
-   │  └─ SizeLayout (SaidWidth)  1,310 wide
-   │     └─ Text TalkSaid    regular 38, #F4F0E6, wraps
-   ├─ VerticalLayout Replies   at (240, 268), 1,120 wide: the reply rows
-   ├─ VerticalLayout Prompts   at (1400, 268), 280 wide: the footer prompts the script makes
-   ├─ Text   PromptsText     the same place, mono bold 18, dim: the static prompts, hidden once made
-   └─ Text   (KeysHint)      at (1400, 440), mono 18, faint: "1-7 OR D-PAD AND A: A REPLY. ESC / B LEAVES"
+   ├─ HorizontalLayout (TalkWho)  at (28, 14), 1,134 × 34
+   │  ├─ Text  TalkName      condensed bold 28, tinted with the faction colour
+   │  └─ Text  TalkSub       regular 20, dim, 16 after the name
+   ├─ ScrollLayout SaidScroll  at (28, 52), 1,134 × 94: three lines (LB/RB and the wheel scroll it)
+   │  └─ SizeLayout (SaidWidth)  1,104 wide
+   │     └─ Text TalkSaid    regular 26, #F4F0E6, wraps
+   ├─ VerticalLayout Replies   at (28, 152), 1,134 × 180: the reply rows, five at most
+   ├─ HorizontalLayout Prompts at (28, 336), 760 × 34: the footer prompts the script makes, one line
+   ├─ Text   PromptsText     at (28, 340), mono bold 18, dim: the static prompts, hidden once made
+   └─ Text   (KeysHint)      right-aligned, ending at (1162, 340), mono 18, faint: "1-5 OR D-PAD AND A: A REPLY"
 ```
 
 `RZ_TalkReply.layout` (**UI > Talk reply layout**), one row, created into `Replies`. The root
-is a `Button` named `ReplyRow` (a click says it):
+is a `Button` named `ReplyRow`: the script adds a handler that lights the row when the cursor comes
+onto it and says it on a click.
 
 ```
-Button ReplyRow (root, 4 below it)
-└─ SizeLayout (ReplySize)    1,120 × 52
+Button ReplyRow (root, 2 below it)
+└─ SizeLayout (ReplySize)    1,134 × 34
    └─ Overlay (ReplyBox)
       ├─ Image  ReplyBg       #1B1F22, shown on the selected row
-      ├─ Image  ReplyBar      5 × 52, left edge, tinted with the faction colour, shown on the selected row
-      └─ HorizontalLayout (ReplyLine)  padding 18 left, 20 right, centred vertically
-         ├─ SizeLayout (ReplyNumBox) 34 × 34, 20 before the text
+      ├─ Image  ReplyBar      4 × 34, left edge, tinted with the faction colour, shown on the selected row
+      └─ HorizontalLayout (ReplyLine)  padding 16 left and right, centred vertically
+         ├─ SizeLayout (ReplyNumBox) 28 × 28, 16 before the text
          │  └─ Overlay: Panel (ReplyNumLine, border #6B5222) and Text ReplyNum (mono bold 18, tinted)
-         ├─ Text   ReplyText     regular 25, fills the row (bright on the selected row, faint when it can't be picked)
+         ├─ Text   ReplyText     regular 25, fills the row (bright on the selected row, grey when there's
+         │                       nothing new behind it, faint when it can't be picked)
          ├─ Text   ReplyTag      mono 18, dim, right ("a job", "trade")
          └─ Text   ReplyNeed     mono 18, dim, right, hidden unless the reply can't be picked
 ```
 
-Unlike the mockup, the pad-key ring isn't rounded (a `Panel` border), and the selected row has
-no extra "A" key on its right (the prompts column shows it).
+Unlike the mockup (`UI/Mockups/talk.html`), the panel isn't full width and the world isn't dimmed,
+the pad-key ring isn't rounded (a `Panel` border), and the selected row has no extra "A" key on its
+right (the prompts line shows it).
 
 ## Reader: `RZ_ReaderMenu.layout`
 
@@ -690,15 +694,15 @@ Button RecipeRow (root, 4 below it)
 
 One marker on the real map, created into the map's root by `RZ_MapIconsUI` on the map
 configuration when **UI > Map icon layout** names this file. Neither is set up yet
-([UI.md](../docs/UI.md#built-and-planned)). The script centres the 28 × 28 icon on the spot and
+([UI.md](../docs/UI.md#built-and-planned)). The script centres the 48 × 48 icon on the spot and
 tints it. For a range ring (`marker_range`) it sets the root's and **Icon**'s size every frame to the
-pack's ground on the map (28 to 320 across), so **Icon** must sit in the root's frame slot, top-left,
+pack's ground on the map (48 to 320 across), so **Icon** must sit in the root's frame slot, top-left,
 not stretched by anchors.
 
 ```
-Frame (root, 28 × 28, top-left anchor, ignores the cursor)
-├─ Image  Icon       28 × 28, a marker_* icon (white; the script sets the image and tints it)
-└─ Text   Label      under the icon, offset (-60, 30), 148 wide, centred, 18, bone, a dark shadow offset by 1
+Frame (root, 48 × 48, top-left anchor, ignores the cursor)
+├─ Image  Icon       48 × 48, a marker_* icon (white; the script sets the image and tints it)
+└─ Text   Label      under the icon, offset (-116, 50), 280 wide, centred, condensed bold 26, bone, a dark shadow offset by 1
 ```
 
 ## Map legend: `RZ_MapLegend.layout`
@@ -711,23 +715,23 @@ event, the checkpoint and the range ring hazard yellow, the stations bone), and 
 with the zoom (`SetOpacity`; hidden at 0). Positions are from the root's top left.
 
 ```
-Frame MapLegend (root, 540 × 316, anchor bottom-left, offset (96, -190): above vanilla's key hints and scale bar)
+Frame MapLegend (root, 640 × 400, anchor bottom-left, offset (96, -190): above vanilla's key hints and scale bar)
 ├─ Image  (LegendBg)       #121416 at 90%
 ├─ Image  (LegendAccent)   full width × 5, top edge, bone
 ├─ Panel  (LegendLine)     border #2A2E31
-├─ Text   (LegendTitle)    at (20, 16), condensed bold 26, "MAP KEY"
-├─ Text   (LegendSub)      right-aligned, ending at (520, 22), mono bold 18, dim, "COLOUR: WHOSE IT IS"
-├─ Text   (label "WHO HOLDS WHAT") at (20, 60)        ├─ Text (label "THE WORLD") at (280, 60)
-├─ Image  Key_marker_stronghold   28 × 28 at (20, 92)  ├─ Image Key_marker_event       at (280, 92)
-├─ Image  Key_marker_outpost      at (20, 128)         ├─ Image Key_marker_checkpoint  at (280, 128)
-├─ Image  Key_marker_safehouse    at (20, 164)         ├─ Image Key_marker_power       at (280, 164)
-├─ Image  Key_marker_lab          at (20, 200)         ├─ Image Key_marker_radio       at (280, 200)
-│                                                     └─ Image Key_marker_range       at (280, 236)
-├─ Text   (KeyName_<icon>) beside each icon, 10 to its right, condensed bold 18, bone: Stronghold,
+├─ Text   (LegendTitle)    at (20, 16), condensed bold 28, "MAP KEY"
+├─ Text   (LegendSub)      right-aligned, ending at (620, 24), mono bold 20, dim, "COLOUR: WHOSE IT IS"
+├─ Text   (label "WHO HOLDS WHAT") at (20, 64), mono bold 20   ├─ Text (label "THE WORLD") at (330, 64)
+├─ Image  Key_marker_stronghold   40 × 40 at (20, 102)  ├─ Image Key_marker_event       at (330, 102)
+├─ Image  Key_marker_outpost      at (20, 152)          ├─ Image Key_marker_checkpoint  at (330, 152)
+├─ Image  Key_marker_safehouse    at (20, 202)          ├─ Image Key_marker_power       at (330, 202)
+├─ Image  Key_marker_lab          at (20, 252)          ├─ Image Key_marker_radio       at (330, 252)
+│                                                      └─ Image Key_marker_range       at (330, 302)
+├─ Text   (KeyName_<icon>) beside each icon, 12 to its right, condensed bold 22, bone: Stronghold,
 │         Outpost, Haven safehouse, Halcyon's lab; World event, Sealed checkpoint, Power station,
 │         Radio station, A pack's ground
 ├─ HorizontalLayout LegendPrompt   bottom left at (20, -14): the script makes the RZ_MapLegend prompt ("Hide the key")
-└─ Text   LegendPromptText         the same place, mono bold 18, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
+└─ Text   LegendPromptText         the same place, mono bold 20, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
 ```
 
 Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,

@@ -17,7 +17,6 @@ class RZ_DTalk
 	RZ_DNode m_Node;
 	string m_sPrev;
 	bool m_bInNode;
-	int m_iPage;
 	ref array<RZ_DConv> m_aTopics = {};
 	ref array<string> m_aHubSaid = {};	// what they said at the hub, to show again
 	int m_iFavorPaid;				// this conversation (10 at most)
@@ -29,10 +28,10 @@ class RZ_DTalk
 //------------------------------------------------------------------------------------------------
 class RZ_DialogueTrees
 {
-	static const int MORE = 98;
 	static const int TOPIC_BASE = 100;
 	static const int CHOICE_BASE = 200;
-	protected static const int MAX_REPLIES = 6;
+	protected static const int MAX_REPLIES = 6;		// a node's choices (the lint's limit too)
+	protected static const int HEARD_DEPTH = 6;		// how many nodes deep Heard looks
 	protected static const int FAVOR_PER_CONV = 10;
 	protected static const float FRESH_NODE = 1.5;
 	protected static const int MAX_JUMPS = 8;
@@ -272,8 +271,8 @@ class RZ_DialogueTrees
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The hub: the built replies (verbs) are already in `replies`; the topics follow, a page at a
-	//! time, with More... when they don't fit.
+	//! The hub: the built replies (verbs) are already in `replies`; the scenes' verbs and the topics
+	//! follow. The talk screen pages them (RZ_Dialogue.SendNode, Something else.).
 	void HubReplies(RZ_TalkSession s, notnull array<ref RZ_TalkReply> replies)
 	{
 		RZ_DTalk t = s.m_Tree;
@@ -284,31 +283,8 @@ class RZ_DialogueTrees
 		RZ_DialogueMakeRight.Verb(s, replies);
 
 		CollectTopics(t);
-		while (replies.Count() > MAX_REPLIES - 1 && !t.m_aTopics.IsEmpty())
+		foreach (int i, RZ_DConv c : t.m_aTopics)
 		{
-			replies.Remove(replies.Count() - 1);
-		}
-
-		int room = MAX_REPLIES - replies.Count();
-		if (t.m_aTopics.IsEmpty() || room <= 0)
-			return;
-
-		bool paged = t.m_aTopics.Count() > room;
-		int shown = room;
-		if (paged)
-			shown = room - 1;
-
-		if (shown <= 0)
-			shown = 1;
-
-		int pages = Math.Max(1, (t.m_aTopics.Count() + shown - 1) / shown);
-		if (t.m_iPage >= pages)
-			t.m_iPage = 0;
-
-		int from = t.m_iPage * shown;
-		for (int i = from; i < from + shown && i < t.m_aTopics.Count(); i++)
-		{
-			RZ_DConv c = t.m_aTopics[i];
 			RZ_TalkReply r = new RZ_TalkReply();
 			r.m_iId = TOPIC_BASE + i;
 			r.m_sLabel = RZ_DialogueText.Fill(t.m_Ctx, c.m_sLabel);
@@ -318,15 +294,83 @@ class RZ_DialogueTrees
 
 			replies.Insert(r);
 		}
+	}
 
-		if (paged && replies.Count() < MAX_REPLIES)
+	//------------------------------------------------------------------------------------------------
+	//! Nothing new behind a topic or a choice (the talk screen shows it grey; it still works). A
+	//! topic: its first node seen, and every choice there heard. A choice: the node it leads to (on a
+	//! pass) seen, and every choice there heard, a few nodes deep. A choice to the hub, back or the end
+	//! leads nowhere new: it never shows grey itself, and doesn't keep a node from being heard.
+	bool Heard(RZ_TalkSession s, int replyId)
+	{
+		RZ_DTalk t = s.m_Tree;
+		array<string> path = {};
+		array<string> done = {};
+		if (!t)
+			return false;
+
+		if (replyId >= CHOICE_BASE)
 		{
-			RZ_TalkReply more = new RZ_TalkReply();
-			more.m_iId = MORE;
-			more.m_sLabel = "Something else.";
-			more.m_bOwn = true;
-			replies.Insert(more);
+			int idx = replyId - CHOICE_BASE;
+			if (!t.m_bInNode || !t.m_Node || !t.m_Conv || idx < 0 || idx >= t.m_Node.m_aChoices.Count())
+				return false;
+
+			string target = t.m_Node.m_aChoices[idx].TargetFor(RZ_ECheck.PASS);
+			if (LeadsNowhere(target))
+				return false;
+
+			return NodeHeard(t, t.m_Conv, target, path, done, 0);
 		}
+
+		int topic = replyId - TOPIC_BASE;
+		if (replyId < TOPIC_BASE || topic >= t.m_aTopics.Count())
+			return false;
+
+		return NodeHeard(t, t.m_aTopics[topic], "start", path, done, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool LeadsNowhere(string target)
+	{
+		return target.IsEmpty() || target == "end" || target == "hub" || target == "back";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A node (after its jumps, as EnterNode takes them) seen, with every choice that shows there
+	//! heard. `path` stops a loop (a node already on the way counts as heard); `done` keeps the nodes
+	//! already found heard, so each is walked once.
+	protected bool NodeHeard(RZ_DTalk t, RZ_DConv c, string id, notnull array<string> path, notnull array<string> done, int depth)
+	{
+		RZ_DNode node = c.GetNode(id);
+		if (!node || depth > MAX_JUMPS)
+			return false;
+
+		foreach (RZ_DSay item : node.m_aItems)
+		{
+			if (item.m_bJump && RZ_DialogueCond.Holds(t.m_Ctx, item.m_Cond))
+				return NodeHeard(t, c, item.m_sText, path, done, depth + 1);
+		}
+
+		if (!m_Memory.Has(t.m_Ctx.m_iPlayer, RZ_DialogueMemory.SEEN, c.m_sId + "/" + node.m_sId))
+			return false;
+
+		if (done.Find(node.m_sId) >= 0 || path.Find(node.m_sId) >= 0 || depth >= HEARD_DEPTH)
+			return true;
+
+		path.Insert(node.m_sId);
+		foreach (RZ_DChoice ch : node.m_aChoices)
+		{
+			if (!RZ_DialogueCond.Holds(t.m_Ctx, ch.m_If) || !CalloutOpen(t.m_Ctx, ch))
+				continue;
+
+			string nextId = ch.TargetFor(RZ_ECheck.PASS);
+			if (!LeadsNowhere(nextId) && !NodeHeard(t, c, nextId, path, done, depth + 1))
+				return false;
+		}
+
+		path.Remove(path.Count() - 1);
+		done.Insert(node.m_sId);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -421,10 +465,10 @@ class RZ_DialogueTrees
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Our reply ids: topics, choices and More.
+	//! Our reply ids: topics, choices and the scenes' and Make it right's verbs.
 	static bool IsOurs(int replyId)
 	{
-		return replyId == MORE || replyId == RZ_DialogueMakeRight.VERB || replyId >= TOPIC_BASE || RZ_DialogueScenes.IsOurs(replyId);
+		return replyId == RZ_DialogueMakeRight.VERB || replyId >= TOPIC_BASE || RZ_DialogueScenes.IsOurs(replyId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -474,17 +518,11 @@ class RZ_DialogueTrees
 
 	// ================================================================ Picks
 	//------------------------------------------------------------------------------------------------
-	//! A topic, More or a choice. Lines go into s.m_aNew; false ends the conversation.
+	//! A topic, a verb or a choice. Lines go into s.m_aNew; false ends the conversation.
 	bool Pick(RZ_TalkSession s, int replyId, IEntity user)
 	{
 		RZ_DTalk t = s.m_Tree;
 		t.m_Ctx.m_User = user;
-		if (replyId == MORE)
-		{
-			t.m_iPage++;
-			return true;
-		}
-
 		if (replyId == RZ_DialogueMakeRight.VERB)
 		{
 			RZ_DialogueMakeRight.Pick(s);

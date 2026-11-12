@@ -6,10 +6,10 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
   OffsetLeft 96
   PositionY -190
   OffsetTop -190
-  SizeX 540
-  OffsetRight -636
-  SizeY 316
-  OffsetBottom -126
+  SizeX 640
+  OffsetRight -736
+  SizeY 400
+  OffsetBottom -210
   Alignment 0 1
  }
  {
@@ -72,16 +72,16 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     OffsetLeft 20
     PositionY 16
     OffsetTop 16
-    SizeX 200
-    OffsetRight -220
-    SizeY 32
-    OffsetBottom -48
+    SizeX 260
+    OffsetRight -280
+    SizeY 36
+    OffsetBottom -52
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "MAP KEY"
-   "Font Size" 26
-   "Min Font Size" 26
+   "Font Size" 28
+   "Min Font Size" 28
    FontProperties FontProperties "{6F9ACC5895CBCA5D}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -90,20 +90,20 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
    Name "LegendSub"
    Slot FrameWidgetSlot "{AC55FDEE370600A0}" {
     Anchor 0 0 0 0
-    PositionX 220
-    OffsetLeft 220
-    PositionY 22
-    OffsetTop 22
-    SizeX 300
-    OffsetRight -520
-    SizeY 24
-    OffsetBottom -46
+    PositionX 290
+    OffsetLeft 290
+    PositionY 24
+    OffsetTop 24
+    SizeX 330
+    OffsetRight -620
+    SizeY 28
+    OffsetBottom -52
     Alignment 0 0
    }
    Color 0.639 0.62 0.565 1
    Text "COLOUR: WHOSE IT IS"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 20
+   "Min Font Size" 20
    "Horizontal Alignment" Right
    FontProperties FontProperties "{5AE16912A0E51990}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
@@ -115,18 +115,18 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Anchor 0 0 0 0
     PositionX 20
     OffsetLeft 20
-    PositionY 60
-    OffsetTop 60
-    SizeX 240
-    OffsetRight -260
-    SizeY 24
-    OffsetBottom -84
+    PositionY 64
+    OffsetTop 64
+    SizeX 290
+    OffsetRight -310
+    SizeY 28
+    OffsetBottom -92
     Alignment 0 0
    }
    Color 0.639 0.62 0.565 1
    Text "WHO HOLDS WHAT"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 20
+   "Min Font Size" 20
    FontProperties FontProperties "{AF6DD1950000622E}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }
@@ -137,35 +137,35 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Anchor 0 0 0 0
     PositionX 20
     OffsetLeft 20
-    PositionY 92
-    OffsetTop 92
-    SizeX 28
-    OffsetRight -48
-    SizeY 28
-    OffsetBottom -120
+    PositionY 102
+    OffsetTop 102
+    SizeX 40
+    OffsetRight -60
+    SizeY 40
+    OffsetBottom -142
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{287C22CDC3021139}" {
    Name "KeyName_marker_stronghold"
    Slot FrameWidgetSlot "{932D439395ECF77A}" {
     Anchor 0 0 0 0
-    PositionX 58
-    OffsetLeft 58
-    PositionY 94
-    OffsetTop 94
-    SizeX 200
-    OffsetRight -258
-    SizeY 26
-    OffsetBottom -120
+    PositionX 72
+    OffsetLeft 72
+    PositionY 107
+    OffsetTop 107
+    SizeX 240
+    OffsetRight -312
+    SizeY 30
+    OffsetBottom -137
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Stronghold"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{B1F632890D58223C}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -176,35 +176,35 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Anchor 0 0 0 0
     PositionX 20
     OffsetLeft 20
-    PositionY 128
-    OffsetTop 128
-    SizeX 28
-    OffsetRight -48
-    SizeY 28
-    OffsetBottom -156
+    PositionY 152
+    OffsetTop 152
+    SizeX 40
+    OffsetRight -60
+    SizeY 40
+    OffsetBottom -192
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{D03F625A5C4A9CD3}" {
    Name "KeyName_marker_outpost"
    Slot FrameWidgetSlot "{58865C5F6B4E5B1B}" {
     Anchor 0 0 0 0
-    PositionX 58
-    OffsetLeft 58
-    PositionY 130
-    OffsetTop 130
-    SizeX 200
-    OffsetRight -258
-    SizeY 26
-    OffsetBottom -156
+    PositionX 72
+    OffsetLeft 72
+    PositionY 157
+    OffsetTop 157
+    SizeX 240
+    OffsetRight -312
+    SizeY 30
+    OffsetBottom -187
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Outpost"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{3BA3CD6464938BF1}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -215,35 +215,35 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Anchor 0 0 0 0
     PositionX 20
     OffsetLeft 20
-    PositionY 164
-    OffsetTop 164
-    SizeX 28
-    OffsetRight -48
-    SizeY 28
-    OffsetBottom -192
+    PositionY 202
+    OffsetTop 202
+    SizeX 40
+    OffsetRight -60
+    SizeY 40
+    OffsetBottom -242
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{709FE70809BECFB8}" {
    Name "KeyName_marker_safehouse"
    Slot FrameWidgetSlot "{478EF72087165E5D}" {
     Anchor 0 0 0 0
-    PositionX 58
-    OffsetLeft 58
-    PositionY 166
-    OffsetTop 166
-    SizeX 200
-    OffsetRight -258
-    SizeY 26
-    OffsetBottom -192
+    PositionX 72
+    OffsetLeft 72
+    PositionY 207
+    OffsetTop 207
+    SizeX 240
+    OffsetRight -312
+    SizeY 30
+    OffsetBottom -237
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Haven safehouse"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{D134C1DB7F92876D}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -254,35 +254,35 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Anchor 0 0 0 0
     PositionX 20
     OffsetLeft 20
-    PositionY 200
-    OffsetTop 200
-    SizeX 28
-    OffsetRight -48
-    SizeY 28
-    OffsetBottom -228
+    PositionY 252
+    OffsetTop 252
+    SizeX 40
+    OffsetRight -60
+    SizeY 40
+    OffsetBottom -292
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{390E11E2E5749275}" {
    Name "KeyName_marker_lab"
    Slot FrameWidgetSlot "{D43774F2EA939AA1}" {
     Anchor 0 0 0 0
-    PositionX 58
-    OffsetLeft 58
-    PositionY 202
-    OffsetTop 202
-    SizeX 200
-    OffsetRight -258
-    SizeY 26
-    OffsetBottom -228
+    PositionX 72
+    OffsetLeft 72
+    PositionY 257
+    OffsetTop 257
+    SizeX 240
+    OffsetRight -312
+    SizeY 30
+    OffsetBottom -287
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Halcyon's lab"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{3C7175FCD7DE098E}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -291,20 +291,20 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
    Name "Label280"
    Slot FrameWidgetSlot "{330452C4418D711C}" {
     Anchor 0 0 0 0
-    PositionX 280
-    OffsetLeft 280
-    PositionY 60
-    OffsetTop 60
-    SizeX 240
-    OffsetRight -520
-    SizeY 24
-    OffsetBottom -84
+    PositionX 330
+    OffsetLeft 330
+    PositionY 64
+    OffsetTop 64
+    SizeX 290
+    OffsetRight -620
+    SizeY 28
+    OffsetBottom -92
     Alignment 0 0
    }
    Color 0.639 0.62 0.565 1
    Text "THE WORLD"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 20
+   "Min Font Size" 20
    FontProperties FontProperties "{633E61A8D2A6CF62}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }
@@ -313,37 +313,37 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
    Name "Key_marker_event"
    Slot FrameWidgetSlot "{DF80E3BD36F8C3D7}" {
     Anchor 0 0 0 0
-    PositionX 280
-    OffsetLeft 280
-    PositionY 92
-    OffsetTop 92
-    SizeX 28
-    OffsetRight -308
-    SizeY 28
-    OffsetBottom -120
+    PositionX 330
+    OffsetLeft 330
+    PositionY 102
+    OffsetTop 102
+    SizeX 40
+    OffsetRight -370
+    SizeY 40
+    OffsetBottom -142
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{7A7B470ED6596C3B}" {
    Name "KeyName_marker_event"
    Slot FrameWidgetSlot "{77A72204B4BF295D}" {
     Anchor 0 0 0 0
-    PositionX 318
-    OffsetLeft 318
-    PositionY 94
-    OffsetTop 94
-    SizeX 200
-    OffsetRight -518
-    SizeY 26
-    OffsetBottom -120
+    PositionX 382
+    OffsetLeft 382
+    PositionY 107
+    OffsetTop 107
+    SizeX 240
+    OffsetRight -622
+    SizeY 30
+    OffsetBottom -137
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "World event"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{572B2FC15B5A195F}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -352,37 +352,37 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
    Name "Key_marker_checkpoint"
    Slot FrameWidgetSlot "{F2F3AF036C4A428F}" {
     Anchor 0 0 0 0
-    PositionX 280
-    OffsetLeft 280
-    PositionY 128
-    OffsetTop 128
-    SizeX 28
-    OffsetRight -308
-    SizeY 28
-    OffsetBottom -156
+    PositionX 330
+    OffsetLeft 330
+    PositionY 152
+    OffsetTop 152
+    SizeX 40
+    OffsetRight -370
+    SizeY 40
+    OffsetBottom -192
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{2CCDF62E876D3028}" {
    Name "KeyName_marker_checkpoint"
    Slot FrameWidgetSlot "{4BED43CFE749AA74}" {
     Anchor 0 0 0 0
-    PositionX 318
-    OffsetLeft 318
-    PositionY 130
-    OffsetTop 130
-    SizeX 200
-    OffsetRight -518
-    SizeY 26
-    OffsetBottom -156
+    PositionX 382
+    OffsetLeft 382
+    PositionY 157
+    OffsetTop 157
+    SizeX 240
+    OffsetRight -622
+    SizeY 30
+    OffsetBottom -187
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Sealed checkpoint"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{4DC09A65E4E756C8}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -391,37 +391,37 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
    Name "Key_marker_power"
    Slot FrameWidgetSlot "{8D9FEFF2DC7E522B}" {
     Anchor 0 0 0 0
-    PositionX 280
-    OffsetLeft 280
-    PositionY 164
-    OffsetTop 164
-    SizeX 28
-    OffsetRight -308
-    SizeY 28
-    OffsetBottom -192
+    PositionX 330
+    OffsetLeft 330
+    PositionY 202
+    OffsetTop 202
+    SizeX 40
+    OffsetRight -370
+    SizeY 40
+    OffsetBottom -242
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{9C4C7C071EBF3539}" {
    Name "KeyName_marker_power"
    Slot FrameWidgetSlot "{08B596FB99C37599}" {
     Anchor 0 0 0 0
-    PositionX 318
-    OffsetLeft 318
-    PositionY 166
-    OffsetTop 166
-    SizeX 200
-    OffsetRight -518
-    SizeY 26
-    OffsetBottom -192
+    PositionX 382
+    OffsetLeft 382
+    PositionY 207
+    OffsetTop 207
+    SizeX 240
+    OffsetRight -622
+    SizeY 30
+    OffsetBottom -237
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Power station"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{73FD59442B391EEF}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -430,37 +430,37 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
    Name "Key_marker_radio"
    Slot FrameWidgetSlot "{0B3F8B810313F6AF}" {
     Anchor 0 0 0 0
-    PositionX 280
-    OffsetLeft 280
-    PositionY 200
-    OffsetTop 200
-    SizeX 28
-    OffsetRight -308
-    SizeY 28
-    OffsetBottom -228
+    PositionX 330
+    OffsetLeft 330
+    PositionY 252
+    OffsetTop 252
+    SizeX 40
+    OffsetRight -370
+    SizeY 40
+    OffsetBottom -292
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{92392E8D21569A60}" {
    Name "KeyName_marker_radio"
    Slot FrameWidgetSlot "{A9DAF47059F68204}" {
     Anchor 0 0 0 0
-    PositionX 318
-    OffsetLeft 318
-    PositionY 202
-    OffsetTop 202
-    SizeX 200
-    OffsetRight -518
-    SizeY 26
-    OffsetBottom -228
+    PositionX 382
+    OffsetLeft 382
+    PositionY 257
+    OffsetTop 257
+    SizeX 240
+    OffsetRight -622
+    SizeY 30
+    OffsetBottom -287
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Radio station"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{BC73B970C8B6C77C}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -469,37 +469,37 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
    Name "Key_marker_range"
    Slot FrameWidgetSlot "{259730C874766E9B}" {
     Anchor 0 0 0 0
-    PositionX 280
-    OffsetLeft 280
-    PositionY 236
-    OffsetTop 236
-    SizeX 28
-    OffsetRight -308
-    SizeY 28
-    OffsetBottom -264
+    PositionX 330
+    OffsetLeft 330
+    PositionY 302
+    OffsetTop 302
+    SizeX 40
+    OffsetRight -370
+    SizeY 40
+    OffsetBottom -342
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Size 28 28
+   Size 40 40
   }
   TextWidgetClass "{F9F3A9D6238341CC}" {
    Name "KeyName_marker_range"
    Slot FrameWidgetSlot "{73D8E94C9001AAF3}" {
     Anchor 0 0 0 0
-    PositionX 318
-    OffsetLeft 318
-    PositionY 238
-    OffsetTop 238
-    SizeX 200
-    OffsetRight -518
-    SizeY 26
-    OffsetBottom -264
+    PositionX 382
+    OffsetLeft 382
+    PositionY 307
+    OffsetTop 307
+    SizeX 240
+    OffsetRight -622
+    SizeY 30
+    OffsetBottom -337
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "A pack's ground"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 22
+   "Min Font Size" 22
    FontProperties FontProperties "{257629D572F227C1}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -512,8 +512,8 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     OffsetLeft 20
     PositionY -14
     OffsetTop -14
-    SizeX 500
-    OffsetRight -520
+    SizeX 600
+    OffsetRight -620
     SizeY 40
     OffsetBottom -26
     Alignment 0 1
@@ -527,16 +527,16 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     OffsetLeft 20
     PositionY -20
     OffsetTop -20
-    SizeX 500
-    OffsetRight -520
-    SizeY 26
-    OffsetBottom -6
+    SizeX 600
+    OffsetRight -620
+    SizeY 28
+    OffsetBottom -8
     Alignment 0 1
    }
    Color 0.639 0.62 0.565 1
    Text "I / Y  HIDE THE KEY"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 20
+   "Min Font Size" 20
    FontProperties FontProperties "{6D9AF0ADB79813F7}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }

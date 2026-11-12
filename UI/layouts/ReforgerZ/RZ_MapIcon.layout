@@ -6,10 +6,10 @@ FrameWidgetClass "{98721C3D930BE900}" {
   OffsetLeft 0
   PositionY 0
   OffsetTop 0
-  SizeX 28
-  OffsetRight -28
-  SizeY 28
-  OffsetBottom -28
+  SizeX 48
+  OffsetRight -48
+  SizeY 48
+  OffsetBottom -48
   Alignment 0 0
  }
  Clipping False
@@ -23,36 +23,36 @@ FrameWidgetClass "{98721C3D930BE900}" {
     OffsetLeft 0
     PositionY 0
     OffsetTop 0
-    SizeX 28
-    OffsetRight -28
-    SizeY 28
-    OffsetBottom -28
+    SizeX 48
+    OffsetRight -48
+    SizeY 48
+    OffsetBottom -48
     Alignment 0 0
    }
    Color 1 1 1 1
-   Size 28 28
+   Size 48 48
   }
   TextWidgetClass "{DE8F1B932416DE2E}" {
    Name "Label"
    Slot FrameWidgetSlot "{50B4916BA760C3F3}" {
     Anchor 0 0 0 0
-    PositionX -60
-    OffsetLeft -60
-    PositionY 30
-    OffsetTop 30
-    SizeX 148
-    OffsetRight -88
-    SizeY 22
-    OffsetBottom -52
+    PositionX -116
+    OffsetLeft -116
+    PositionY 50
+    OffsetTop 50
+    SizeX 280
+    OffsetRight -164
+    SizeY 34
+    OffsetBottom -84
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
    Text "Morton"
-   "Font Size" 18
-   "Min Font Size" 18
+   "Font Size" 26
+   "Min Font Size" 26
    "Horizontal Alignment" Center
    FontProperties FontProperties "{A15EA06DAE21F912}" {
-    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
     ShadowSize 2
     ShadowOffset 1 1
     ShadowColor 0 0 0 0.9

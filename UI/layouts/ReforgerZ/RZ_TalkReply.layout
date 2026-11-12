@@ -3,7 +3,7 @@ ButtonWidgetClass "{1B03E97B54B5C5B4}" {
  Slot LayoutSlot "{8AE52052846D4CD9}" {
   HorizontalAlign 3
   VerticalAlign 0
-  Padding 0 0 0 4
+  Padding 0 0 0 2
  }
  style blank
  {
@@ -14,9 +14,9 @@ ButtonWidgetClass "{1B03E97B54B5C5B4}" {
     VerticalAlign 3
    }
    AllowWidthOverride 1
-   WidthOverride 1120
+   WidthOverride 1134
    AllowHeightOverride 1
-   HeightOverride 52
+   HeightOverride 34
    {
     OverlayWidgetClass "{C5BE7FB729794989}" {
      Name "ReplyBox"
@@ -43,14 +43,14 @@ ButtonWidgetClass "{1B03E97B54B5C5B4}" {
        }
        "Is Visible" 0
        Color 0.89 0.639 0.231 1
-       Size 5 52
+       Size 4 34
       }
       HorizontalLayoutWidgetClass "{0D170C864B5B1A66}" {
        Name "ReplyLine"
        Slot OverlayWidgetSlot "{05F355B1F2BBA982}" {
         HorizontalAlign 3
         VerticalAlign 1
-        Padding 18 0 20 0
+        Padding 16 0 16 0
        }
        {
         SizeLayoutWidgetClass "{A08EE94A00A2AD5E}" {
@@ -58,12 +58,12 @@ ButtonWidgetClass "{1B03E97B54B5C5B4}" {
          Slot LayoutSlot "{0B27060A4E2A66CB}" {
           HorizontalAlign 0
           VerticalAlign 1
-          Padding 0 0 20 0
+          Padding 0 0 16 0
          }
          AllowWidthOverride 1
-         WidthOverride 34
+         WidthOverride 28
          AllowHeightOverride 1
-         HeightOverride 34
+         HeightOverride 28
          {
           OverlayWidgetClass "{CCADBDDA0F5AC7BE}" {
            Name "ReplyNumRing"

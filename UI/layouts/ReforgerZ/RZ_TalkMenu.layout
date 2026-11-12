@@ -14,36 +14,19 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
  }
  "Ignore Cursor" 0
  {
-  ImageWidgetClass "{EE6CCCC85CA6BF8B}" {
-   Name "Dim"
-   Slot FrameWidgetSlot "{FA844DE25136AED9}" {
-    Anchor 0 0 1 1
-    PositionX 0
-    OffsetLeft 0
-    PositionY 0
-    OffsetTop 0
-    SizeX 0
-    OffsetRight 0
-    SizeY 0
-    OffsetBottom 0
-    Alignment 0 0
-   }
-   Color 0.031 0.035 0.039 0.55
-   Size 1 1
-  }
   FrameWidgetClass "{80C2B8E4E6F7512D}" {
    Name "TalkPanel"
    Slot FrameWidgetSlot "{9C3909F574E8EAE5}" {
-    Anchor 0 1 1 1
+    Anchor 0.5 1 0.5 1
     PositionX 0
     OffsetLeft 0
-    PositionY 0
-    OffsetTop 0
-    SizeX 0
-    OffsetRight 0
-    SizeY 660
-    OffsetBottom -660
-    Alignment 0 1
+    PositionY -56
+    OffsetTop -56
+    SizeX 1190
+    OffsetRight -1190
+    SizeY 376
+    OffsetBottom -320
+    Alignment 0.5 1
    }
    {
     ImageWidgetClass "{35A26A2079F8263D}" {
@@ -60,8 +43,25 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       OffsetBottom 0
       Alignment 0 0
      }
-     Color 0.059 0.067 0.075 1
+     Color 0.071 0.078 0.086 0.85
      Size 1 1
+    }
+    PanelWidgetClass "{21315967B863D576}" {
+     Name "TalkLine"
+     Slot FrameWidgetSlot "{98AC550363861564}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.165 0.18 0.192 1
+     style outline_2px
     }
     ImageWidgetClass "{6D13012521F24C7D}" {
      Name "TalkAccent"
@@ -84,14 +84,14 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
      Name "TalkWho"
      Slot FrameWidgetSlot "{B692E5A8946629AF}" {
       Anchor 0 0 0 0
-      PositionX 240
-      OffsetLeft 240
-      PositionY 34
-      OffsetTop 34
-      SizeX 1440
-      OffsetRight -1680
-      SizeY 40
-      OffsetBottom -74
+      PositionX 28
+      OffsetLeft 28
+      PositionY 14
+      OffsetTop 14
+      SizeX 1134
+      OffsetRight -1162
+      SizeY 34
+      OffsetBottom -48
       Alignment 0 0
      }
      {
@@ -103,8 +103,8 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
        }
        Color 0.89 0.639 0.231 1
        Text "Ines Calder"
-       "Font Size" 30
-       "Min Font Size" 30
+       "Font Size" 28
+       "Min Font Size" 28
        FontProperties FontProperties "{0235EB3AED143DFB}" {
         Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
        }
@@ -114,12 +114,12 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
        Slot LayoutSlot "{7344E3C6591B52E5}" {
         HorizontalAlign 0
         VerticalAlign 2
-        Padding 18 0 0 3
+        Padding 16 0 0 3
        }
        Color 0.639 0.62 0.565 1
        Text "The Haven - council head - knows your name"
-       "Font Size" 21
-       "Min Font Size" 21
+       "Font Size" 20
+       "Min Font Size" 20
        FontProperties FontProperties "{7A0352E891890CAD}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
@@ -130,14 +130,14 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
      Name "SaidScroll"
      Slot FrameWidgetSlot "{05C87DC59D744501}" {
       Anchor 0 0 0 0
-      PositionX 240
-      OffsetLeft 240
-      PositionY 86
-      OffsetTop 86
-      SizeX 1340
-      OffsetRight -1580
-      SizeY 170
-      OffsetBottom -256
+      PositionX 28
+      OffsetLeft 28
+      PositionY 52
+      OffsetTop 52
+      SizeX 1134
+      OffsetRight -1162
+      SizeY 94
+      OffsetBottom -146
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
@@ -150,7 +150,7 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
         VerticalAlign 0
        }
        AllowWidthOverride 1
-       WidthOverride 1310
+       WidthOverride 1104
        {
         TextWidgetClass "{A95FA9C20A06AA72}" {
          Name "TalkSaid"
@@ -160,8 +160,8 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
          }
          Color 0.957 0.941 0.902 1
          Text ""
-         "Font Size" 38
-         "Min Font Size" 38
+         "Font Size" 26
+         "Min Font Size" 26
          Wrap 1
          FontProperties FontProperties "{6EBA74159CC68A56}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
@@ -175,29 +175,29 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
      Name "Replies"
      Slot FrameWidgetSlot "{440B7A247F9920D4}" {
       Anchor 0 0 0 0
-      PositionX 240
-      OffsetLeft 240
-      PositionY 268
-      OffsetTop 268
-      SizeX 1120
-      OffsetRight -1360
-      SizeY 400
-      OffsetBottom -668
+      PositionX 28
+      OffsetLeft 28
+      PositionY 152
+      OffsetTop 152
+      SizeX 1134
+      OffsetRight -1162
+      SizeY 180
+      OffsetBottom -332
       Alignment 0 0
      }
     }
-    VerticalLayoutWidgetClass "{A4539A3E0434CC08}" {
+    HorizontalLayoutWidgetClass "{A4539A3E0434CC08}" {
      Name "Prompts"
      Slot FrameWidgetSlot "{25D5D88EBF4559BD}" {
       Anchor 0 0 0 0
-      PositionX 1400
-      OffsetLeft 1400
-      PositionY 268
-      OffsetTop 268
-      SizeX 280
-      OffsetRight -1680
-      SizeY 240
-      OffsetBottom -508
+      PositionX 28
+      OffsetLeft 28
+      PositionY 336
+      OffsetTop 336
+      SizeX 760
+      OffsetRight -788
+      SizeY 34
+      OffsetBottom -370
       Alignment 0 0
      }
     }
@@ -205,21 +205,20 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
      Name "PromptsText"
      Slot FrameWidgetSlot "{BBE4CF6A802FBAB7}" {
       Anchor 0 0 0 0
-      PositionX 1400
-      OffsetLeft 1400
-      PositionY 268
-      OffsetTop 268
-      SizeX 280
-      OffsetRight -1680
-      SizeY 160
-      OffsetBottom -428
+      PositionX 28
+      OffsetLeft 28
+      PositionY 340
+      OffsetTop 340
+      SizeX 760
+      OffsetRight -788
+      SizeY 26
+      OffsetBottom -366
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "D-PAD  CHOOSE    A  SAY IT    B  LEAVE    LB / RB  MORE"
+     Text "D-PAD  CHOOSE    A  SAY IT    B  LEAVE    LB / RB  SCROLL"
      "Font Size" 18
      "Min Font Size" 18
-     Wrap 1
      FontProperties FontProperties "{3CE328AFCAE189CF}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
@@ -228,21 +227,21 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
      Name "KeysHint"
      Slot FrameWidgetSlot "{D067E8ED357BD3EE}" {
       Anchor 0 0 0 0
-      PositionX 1400
-      OffsetLeft 1400
-      PositionY 440
-      OffsetTop 440
-      SizeX 280
-      OffsetRight -1680
-      SizeY 60
-      OffsetBottom -500
+      PositionX 790
+      OffsetLeft 790
+      PositionY 340
+      OffsetTop 340
+      SizeX 372
+      OffsetRight -1162
+      SizeY 26
+      OffsetBottom -366
       Alignment 0 0
      }
      Color 0.427 0.416 0.384 1
-     Text "1-7 OR D-PAD AND A: A REPLY. ESC / B LEAVES"
+     Text "1-5 OR D-PAD AND A: A REPLY"
      "Font Size" 18
      "Min Font Size" 18
-     Wrap 1
+     "Horizontal Alignment" Right
      FontProperties FontProperties "{967F8DDBEE1DE306}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }

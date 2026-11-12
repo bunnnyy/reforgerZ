@@ -249,33 +249,41 @@ The notice board opens when you read a safehouse board, with **UI > Board menus*
 
 ### The talk screen
 
-As approved (`talk.html`): the world stays in view, dimmed (#08090A at 55%); a panel 660 tall
-across the bottom (#0F1113) with a 5 px top border in their faction colour. Inside, 240 in from
-each side: their name in that colour (bold 30) and the sub-line, "The Haven - council head - knows
-your name" (21, dim); what they say (38, bright bone, in a box that scrolls with LB/RB or Q/E
-when it's long); your replies as a numbered list (25), the selected one lighter with an accent
-bar, a dim tag on the right ("a job", "news", "trade", "20 Haven Favor"), a reply you can't take
-dim with what it needs; the last is always "I'll be going.". The footer prompts sit in a column
-to the right of the replies.
+New Vegas style (unlike the mockup `talk.html`, whose full-width panel hid the person): the world
+isn't dimmed and the person stays in view; a compact panel, 1,190 × 376, sits in the lower middle
+of the screen (about 19% to 81% across and 60% to 95% down at 1920 × 1080, below their head and
+chest), #121416 at 85% with a 2 px border and a 5 px top border in their
+faction colour. Inside: their name in that colour (bold 28) and the sub-line, "The Haven - council
+head - knows your name" (20, dim); what they say (26, bright bone, three lines in a box that
+scrolls with LB/RB or Q/E when it's longer); your replies as a numbered list (25), **at most five**,
+the selected one lighter with an accent bar, a dim tag on the right ("a job", "news", "trade", "20
+Haven Favor"), a reply you can't take faint with what it needs, a reply with nothing new behind it
+**grey** (it still works); the last is always the way out, "I'll be going.". One line of footer
+prompts closes the panel, with "1-5 or D-pad and A: a reply" on its right.
+
+The list is built on the server ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)): longer lists come a
+page at a time, three replies and **Something else.** for the next page, then the way out; a server
+admin's replies sit under one **[Admin]** reply that opens them as their own list, with **Back.** as
+its way out (B and Esc go back too).
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
-| Choose | up/down, or **1–7** (`RZ_Reply1`–`7`) to say one at once | D-pad or left stick, or LT/RT + D-pad to say one at once ([Controllers](#controllers)) |
+| Choose | up/down, or **1–5** (`RZ_Reply1`–`5`) to say one at once; the cursor on a reply lights it | D-pad or left stick, or LT/RT + D-pad to say one at once ([Controllers](#controllers)) |
 | Say it | Enter, or click | A |
-| Leave | Esc | B |
+| Leave (Back. in the [Admin] list) | Esc | B |
 | Read more of a long line | Q/E, or the wheel | LB/RB |
 
 **With Dialogue > Trees on** ([DIALOGUE.md](DIALOGUE.md#trees-hubs-topics-and-nodes)) the same
 screen and payload carry the trees, with no new widgets: the person's built replies, then their
-topics (a "heard" tag on one you've had), **Something else.** for the next page of topics; in a
-node, its choices with the tag the check or price writes ("[Persuade - Haven - 1 of 2]", "[Fear 1
-of 2 - +3 Infamy]", "[2 food]", "[Doctor]"), dim with what it needs when you can't take one ("you
-have 1 food", "you've tried that"). What they say after a check opens with the result
-("[Persuaded]"). Tags are cut at 40 characters.
+topics (a "heard" tag on one you've opened that still has more in it, grey once there's nothing
+new); in a node, its choices with the tag the check or price writes ("[Persuade - Haven - 1 of 2]",
+"[Fear 1 of 2 - +3 Infamy]", "[2 food]", "[Doctor]"), faint with what it needs when you can't take
+one ("you have 1 food", "you've tried that"), grey when you've seen where it leads. What they say
+after a check opens with the result ("[Persuaded]"). Tags are cut at 40 characters.
 
 How it works is in [DIALOGUE.md](DIALOGUE.md#the-talk-screen). The screen reads `PAYLOAD_TALK`:
-`T|serial|faction|name|sub|said` (line breaks as `^`), then `R|id|label|tag|need|enabled` per
-reply; `X|reason` closes it. A pick goes back as `RpcAsk_TalkPick(serial, id)`; Esc, B or another
+`T|serial|faction|name|sub|said` (line breaks as `^`), then `R|id|label|tag|need|enabled|heard` per
+reply (five at most); `X|reason` closes it. A pick goes back as `RpcAsk_TalkPick(serial, id)`; Esc, B or another
 menu on top send Leave. If the menu can't open on a client, that client shows the line as a card,
 leaves, and shows the person's actions again (`RZ_TalkMenu.Available`).
 
@@ -531,9 +539,11 @@ the default background; the refusal itself is still to be checked in play.
 `RZ_MapIconsUI` is a component on the map configuration: while the map is open it asks the server
 for this player's list (on open, then every 20 s) and draws one icon per place, in its colour
 (the faction's, hazard yellow for events, the sealed checkpoints and the packs, bone for the
-stations), with a label, following pan and zoom. The packs your character knows of are **range
+stations), with a label, following pan and zoom. Icons are 48 across and their labels condensed
+bold 26 with a dark shadow, so they read on a TV.
+The packs your character knows of are **range
 rings** (`marker_range`): a line's last field is a radius in metres, and the ring is sized to it on the
-map every frame (28 to 320 units across), so it grows and shrinks with the zoom: Heard of, half a
+map every frame (48 to 320 units across), so it grows and shrinks with the zoom: Heard of, half a
 kilometre round the rough area; Read and Mapped, the pack's ground (Mapped adds where it lies up to the
 label). The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
 contracts are never on it. With **UI > Map icon layout** set, the vanilla text markers for
@@ -545,8 +555,8 @@ the scale bar, about the first 330 px across and the bottom 120 px) (`RZ_MapLege
 legend layout**; it needs the icon layer).
 It names what the icons mean in two columns, *Who holds what* (stronghold, outpost, Haven
 safehouse, Halcyon's lab) and *The world* (world event, sealed checkpoint, power station, radio
-station, a pack's ground), each with its icon in the colour the map draws it, and says the colour
-is whose it is. It's there in full while the map is zoomed out and fades as you zoom in: full while
+station, a pack's ground), each with its icon in the colour the map draws it (40 across, names 22),
+and says the colour is whose it is. It's there in full while the map is zoomed out and fades as you zoom in: full while
 a kilometre of map is at most **Legend full zoom** (150) units across on screen, gone at **Legend
 gone zoom** (450), fading in between, so it never covers the streets you're reading. One input
 shows or hides it, `RZ_MapLegend` (**I**, pad **Y**); its own prompt says so, and the choice lasts
@@ -573,7 +583,7 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | `RZ_OpenNotebook` | N | View + RB (also the pause menu's **Notebook** button, or the notebook item) | `IngameContext` |
 | `RZ_RadioFilter` | F | X | `MenuContext` |
 | `RZ_BoardClear` | Delete | X | `MenuContext`: the notice board's Clear, server admins only |
-| `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | LT + D-pad up, right, down, left for 1–4; RT + D-pad up, right, down for 5–7 (the D-pad and A also pick the focused reply) | `MenuContext` |
+| `RZ_Reply1` … `RZ_Reply5` | 1 … 5 | LT + D-pad up, right, down, left for 1–4; RT + D-pad up for 5 (the D-pad and A also pick the focused reply) | `MenuContext` |
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
 | `RZ_MapLegend` | I | Y | `MapContext`: show or hide the map key on the full-screen map |
@@ -602,8 +612,8 @@ share it, each only in its own screen.
 |---|---|---|
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
 | The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop and the crafting screen each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen opens by itself), close with B (the spawn screen's B opens the pause menu), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
-| Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-7 or D-pad and A") |
-| Hover, typing, chat | No screen uses hover or a tooltip. The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
+| Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5 or D-pad and A") |
+| Hover, typing, chat | No screen needs hover or a tooltip (the talk screen lights the reply under the cursor, as the D-pad does). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The reputation grid's headers now read "FAME" and "INFAMY UNDER 15" and so on, and its cells are condensed bold so the longest names fit. |
 
 **What needs Workbench** (it can't be checked as text):
@@ -705,7 +715,7 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 | | |
 |---|---|
 | Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop and the crafting screen). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
-| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting and spawn screens' and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting and spawn screen presets; N, 1–7, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
+| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting and spawn screens' and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting and spawn screen presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons; the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
 | Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
 | Planned | Mockups of the notice board and the hall of fame; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |
