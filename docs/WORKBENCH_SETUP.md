@@ -1435,9 +1435,19 @@ runtime test and the zombie lab drop Special Zombies the same way.
 tools/compile_check.sh
 ```
 
-Once `addon.gproj` lists Workshop dependencies (step 3 of [1.1](#11-before-you-start-project-and-dependencies)),
-set `EXTRA_ADDONS_DIR` to a folder holding them; the check warns when one is missing. On Windows it
-runs in Git Bash with `SERVER_DIR` pointing at the Steam server
+Set `EXTRA_ADDONS_DIR` to a folder holding the Workshop dependencies in `addon.gproj`
+(step 3 of [1.1](#11-before-you-start-project-and-dependencies)). **On Linux**, a dependency that
+isn't there is left out of the throwaway copy too, with a line for each (`Left out: dependency <id>
+isn't in EXTRA_ADDONS_DIR ...`), and the OK line ends `without N dependencies: <ids>`: the check then
+ran without those mods. That's safe because no ReforgerZ script references their classes (they only
+fill prefab slots); Bacon Zombies is the exception (the behaviour layer mods its classes), so without
+it the check fails. Without this the server refuses the whole addon (`dependency '<id>' can't be
+added`) and compiles none of it. The rule lives in `tools/strip_missing_deps.sh`, which the runtime
+test and the zombie lab use too. To fetch the dependencies on Linux, start the dedicated server
+once with a config whose `game.mods` lists them (it downloads each, with its own dependencies, into
+`-addonsDir`; about 1.1 GB for the whole stack) and stop it once the log says
+`Required addons are ready to use.` On Windows nothing is left out: the check runs in Git Bash with
+`SERVER_DIR` pointing at the Steam server and warns when a dependency is missing
 ([PC_SETUP.md](PC_SETUP.md#4-compile-check-and-runtime-test)).
 
 What it can't do:
@@ -1509,6 +1519,8 @@ Site), the dead drop, the fuel depot (Arson), the relay, the fallback landmark
 bounty target (Collect the Bounty, The Sniper) and the Bastion outpost commander (Kill the Officer);
 an FIA fire team for the rival group; the canteen for Plant a Tag's tag. Convoy Escort and Hijack the Convoy get a Bastion truck and
 crew, Mobile Lab a Halcyon truck and quiet towns near the lab, the Locked Bunker a keypad prop.
+Contact Report needs a pack with its voice; if the earlier pack jobs left Arland's one pack without
+one, a guard or hunter takes the call first (`RZT forced: a new voice for pack ...`).
 
 **Questlines.** Before the first: no town overrun, the season a couple of days old, every
 safehouse full and hungry, every seat but the strongholds Independent, a Long Table, a scavenger on
@@ -1563,7 +1575,8 @@ listed as loose ends, one closed live by a way and one as data; a named dead per
 and handed in at a house, an epilogue deck card (Take a Name to the Board) true and writing a name
 home, and the Last Entry; the chair's grey choice through its hold and a say at
 the station; a town with crawlers cleared and taken back, the ridges and the Long Table's week
-closed; processing, the broadcast's tally, the tester walking out at the barrier (then a new life);
+closed; processing, the broadcast's tally, the tester (a stranger to the route's faction) told to wait
+on processing's first day by the route's terms, then walking out at the barrier the day after (then a new life);
 and the wipe's lines, the names not brought home, `last_season.json`'s beats, every closing item at
 its end (`RZT epilogue check:
 <name>: OK|FAILED (...)`, then `RZT epilogue done: N checks OK, N FAILED`). Steps the test world can't
@@ -1586,12 +1599,18 @@ mission types started and which didn't, and how far each questline got. It takes
 Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
 in the line's band (The Blind Spot's does by design), and a death there would end the life a
 questline was following (A Place at the Table fizzles when its guest's life ends). It logs
-`RZT perimeter: ...` once per visit instead. If the fake player dies outside the Perimeter test
-anyway, it says where and respawns him.
+`RZT perimeter: ...` once per visit instead. In the Perimeter test itself the line shoots him
+(`Tester was shot at the quarantine line`, then `RZT fake player already dead (the Perimeter got him)`):
+that's the line working. If the fake player dies outside the Perimeter test anyway, it says where
+and respawns him.
 
 ```bash
-SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding the Workshop dependencies> tools/runtime_test/run.sh
 ```
+
+On Linux, dependencies missing from `EXTRA_ADDONS_DIR` are left out as in the
+[compile check](#compile-check-without-workbench) (a `Left out: ...` line each, and `Ran without N
+dependencies: <ids>` under the log's path); the test world uses none of their prefabs.
 
 | What it shows | What it can't |
 |---|---|
@@ -1649,7 +1668,8 @@ listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its
 None of this is part of the mod: the lab's files are copied into a throwaway addon folder whose
 `addon.gproj` gains Bacon Zombies as a dependency. The lab drops Special Zombies from that copy: with
 it among the dependencies, the 1.9 server compiles none of the addon's scripts, without an error
-(the lab tests Bacon only).
+(the lab tests Bacon only). On Linux it also drops any other dependency missing from
+`EXTRA_ADDONS_DIR`, as the [compile check](#compile-check-without-workbench) does.
 
 **Behaviour tests (B1-B20).** `ONLY=behaviour` runs, instead of the experiments above, the lab tests
 for the infected behaviour layer (our code driving the infected beyond attack range; built on their
