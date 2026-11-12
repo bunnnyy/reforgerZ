@@ -162,13 +162,13 @@ class RZ_UISettings
 	[Attribute("1", desc: "Subtitles: what people say outside the talk screen shows at the bottom centre (needs SubtitlePanel in the HUD layout). Off = notice cards, as before")]
 	bool m_bSubtitles;
 
-	[Attribute("2.5", desc: "Subtitles: shortest time a line stays (s)")]
+	[Attribute("4", desc: "Subtitles: shortest time a line stays (s)")]
 	float m_fSubtitleMin;
 
-	[Attribute("8", desc: "Subtitles: longest time a line stays (s); longer lines are split into parts shown in turn")]
+	[Attribute("12", desc: "Subtitles: longest time a line stays (s); longer lines are split into parts shown in turn")]
 	float m_fSubtitleMax;
 
-	[Attribute("18", desc: "Subtitles: reading speed (characters per second) that sets how long a line stays")]
+	[Attribute("11", desc: "Subtitles: reading speed (characters per second) that sets how long a line stays")]
 	float m_fSubtitleCps;
 
 	[Attribute("1", desc: "The reader: notes, letters, orders and flyers open on a sheet of paper (RZ_ReaderMenu). Off = notice cards, as before")]

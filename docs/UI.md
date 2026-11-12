@@ -536,8 +536,9 @@ broadcast. Paced like the subtitles; a long one is cut at about three rows (130 
 most six wait.
 
 The notice cards stay top right; the three places never mix. One line at a time in each place,
-on screen for **Subtitle shortest** to **longest** (2.5–8 s) by length at **reading speed** (18
-characters a second); a subtitle longer than two rows (130 characters) is split at sentence ends
+on screen for **Subtitle shortest** to **longest** (4–12 s) by length at **reading speed** (11
+characters a second, slow enough to read while moving; raised from 2.5–8 s at 18 after play-tests
+found the lines gone too soon); a subtitle longer than two rows (130 characters) is split at sentence ends
 into parts shown in turn. At most four subtitles wait; a newer line from the same speaker
 replaces theirs still waiting. While the reader is open both wait. Nothing to press, so nothing to
 bind. A spoken line goes only to its player (`RZ_GameModeComponent.Say`, `SayNear`). With **UI >
