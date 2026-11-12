@@ -638,7 +638,9 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! M|id|kind|giver (-1 none)|title|given by|where|direction and distance|minutes left|requirements|Fame|Favor|brief|taking part (0/1)
+	//! M|id|kind|giver (-1 none)|title|given by|where|direction and distance|minutes left|requirements|Fame|Favor|brief|taking part (0/1)|x|z|rough (0/1)
+	//!   x and z: the point the direction is worked from (the rough area's centre while rough, then
+	//!   rough 1), "" with no single place; the HUD tracker works its distance and arrow from them.
 	//! C|mission id|clue title|clue text
 	//! S|the lab's line ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.")
 	//! A questline the player is part of is an M record too: a negative id, kind QUESTLINE, its
@@ -694,6 +696,23 @@ class RZ_UIFeed
 			if (ent)
 				dir = m.GetDirectionFor(m_GM, from, playerId);
 
+			// The tracker's point: the same one the direction is worked from
+			string tx = "";
+			string tz = "";
+			int rough = 0;
+			if (!m.m_bGlobal)
+			{
+				vector at = m.m_vPos;
+				if (m.IsRoughFor(m_GM, playerId, from))
+				{
+					at = m.GetRoughCenter(m_GM);
+					rough = 1;
+				}
+
+				tx = RZ_Util.RoundToInt(at[0]).ToString();
+				tz = RZ_Util.RoundToInt(at[2]).ToString();
+			}
+
 			string req = "";
 			if (m.m_bContract)
 				req = m.m_Req.Describe();
@@ -710,6 +729,7 @@ class RZ_UIFeed
 			RZ_UILine lnM = new RZ_UILine("M");
 			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(m.GetLocationNameFor(m_GM, playerId, from)).Add(dir);
 			lnM.AddInt(RZ_Util.RoundToInt(m.m_fTimeLeft / 60)).Add(req).AddInt(m.m_iFameReward).AddInt(m.m_iFavorReward).Add(m.GetBrief(m_GM)).Add(part);
+			lnM.Add(tx).Add(tz).AddInt(rough);
 			s += lnM.End();
 			shown.Insert(m.m_iId);
 		}
@@ -758,9 +778,16 @@ class RZ_UIFeed
 			if (e.m_bStepDone && ent)
 				dir = RZ_Util.DirectionText(from, e.m_vGiver);
 
+			// The tracker's point: the step's place, then back to the giver
+			vector to = e.m_vPlace;
+			if (e.m_bStepDone)
+				to = e.m_vGiver;
+
 			RZ_UILine lnE = new RZ_UILine("M");
 			lnE.AddInt(-(ERRAND_ID_BASE + e.m_iId)).AddInt(RZ_EMissionKindUI.ERRAND).AddInt(e.m_iFaction).Add(e.Fill(e.m_Def.m_sTitle)).Add(e.m_sGiverTitle).Add(e.GetText("here")).Add(dir);
 			lnE.AddInt(errands.MinutesLeft(e)).Add("Asked of you").AddInt(0).AddInt(0).Add(errands.JournalText(e)).Add("1");
+			if (to != vector.Zero)
+				lnE.AddInt(RZ_Util.RoundToInt(to[0])).AddInt(RZ_Util.RoundToInt(to[2])).AddInt(0);
 			s += lnE.End();
 		}
 
@@ -974,6 +1001,8 @@ class RZ_UIFeed
 			RZ_UILine lnQ = new RZ_UILine("M");
 			lnQ.AddInt(id).AddInt(RZ_EMissionKindUI.QUESTLINE).AddInt(run.m_Line.m_iFaction).Add(run.m_Line.m_sTitle).Add(stageTitle).Add(where).Add(dir);
 			lnQ.AddInt(-1).Add("Whoever takes the next step").AddInt(0).AddInt(0).Add(q.JournalFor(run)).Add(part);
+			if (run.m_bHasPlace)
+				lnQ.AddInt(RZ_Util.RoundToInt(run.m_vPlace[0])).AddInt(RZ_Util.RoundToInt(run.m_vPlace[2])).AddInt(0);
 			s += lnQ.End();
 
 			foreach (int n, string note : run.m_aNotes)
