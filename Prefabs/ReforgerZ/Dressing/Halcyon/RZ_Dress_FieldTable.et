@@ -58,41 +58,49 @@ GenericEntity {
    }
    coords -0.2 0 -0.8
   }
-  GenericEntity : "{452C9FF31AAF2B82}Prefabs/Props/Services/Healthcare/CabinetMedical_01.et" {
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "31E1927B74393E59"
    components {
     Hierarchy "{C75EED8C9C84CED2}" {
     }
    }
-   coords 1.6 0 -0.9
-   angles 0 -80 0
+   coords 1.7 0 -0.1
+   angles 0 4 0
   }
-  GenericEntity {
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
    ID "175D1A80B30E6358"
    components {
-    SCR_AISmartActionSentinelComponent "{7477245B1CB57186}" {
+    Hierarchy "{7477245B1CB57186}" {
+    }
+   }
+   coords 1.7 1.0 -0.1
+  }
+  GenericEntity {
+   ID "53C1B6EE546458AF"
+   components {
+    SCR_AISmartActionSentinelComponent "{2B18F00700C09128}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0 1.6 -0.8
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{53C1B6EE546458AF}" {
+    Hierarchy "{53AB69A0E14FAA2E}" {
     }
    }
    coords 0.1 0 0.8
   }
   GenericEntity {
-   ID "2B18F00700C09128"
+   ID "8431752D4E1B4409"
    components {
-    SCR_AISmartActionSentinelComponent "{53AB69A0E14FAA2E}" {
+    SCR_AISmartActionSentinelComponent "{B6BC0537C463A9B9}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0 1.6 0.8
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{8431752D4E1B4409}" {
+    Hierarchy "{4466C1F4500604A0}" {
     }
    }
    coords -0.2 0 -0.8

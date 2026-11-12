@@ -11,7 +11,7 @@ by level and background, the town's summary, the journal's **Read on doors**, er
 thumbprint, the young come home, Bastion fading), **doors you can see** (decals drawn on each client,
 or boards beside the door, or text only), **player traces** (P1 to P5), **scenes** (the first days
 F1–F8 and the line N1–N2, vignettes V1–V8, live traces L1–L8), **sound and light** (S1–S8) and the
-**handover to the epilogue**, with its rest: one placer shared with camp life, pieces that age, scenes
+**handover to the epilogue**, with its rest: one placer (its ground reading shared with camp life), pieces that age, scenes
 on their buildings, indoor scenes (behind a setting), camp life's own lamp, generator and loudspeaker,
 the clue registry, the finer triggers and one kit with the epilogue. Every prop and sound is an optional kit prefab; with the kit empty every
 trace still tells its story as text. Phase 0, the Workbench spike that settles decals, lights, loops
@@ -367,10 +367,11 @@ questline's clue near <grid>"*. A point is dry, flat (under about 12°) and out 
 every building's footprint (2 m); verge points are 6–10 m off the road's centre line, so nothing blocks
 a truck (decision 11). When nothing fits: `Traces: no anchor for <kind> in <town>`, and nothing is dealt.
 
-**One placer** (`World/Traces/RZ_DressPlacer.c`): camp life's ground rules (dry, off the line, flat,
+**One placer** (`World/Traces/RZ_DressPlacer.c`): the scenes' ground rules (dry, off the line, flat,
 out of footprints by 2 m, 6 m off a road's centre line, apart from each other, clear of a quartermaster
-or the medic) are one placer that camp life and the scenes share, so a scene can be several pieces
-round its centre ([How scenes age](#how-scenes-age)).
+or the medic), so a scene can be several pieces round its centre ([How scenes age](#how-scenes-age)).
+Its reading of the buildings and roads near a place is camp life's too; camp life then fits each
+piece's whole footprint by its own rules ([DESIGN.md](DESIGN.md#camp-life)).
 
 **Indoor scenes** (decision 10; **World > Traces > Indoor scenes**, off until a play-test of the
 outdoor ones): the last meal (V1) is laid inside its house and the gym's beds (F3) stand inside the

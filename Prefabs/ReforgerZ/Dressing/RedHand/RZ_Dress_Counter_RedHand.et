@@ -1,0 +1,41 @@
+GenericEntity {
+ ID "4F8D9ED8D5E72EEE"
+ components {
+  RplComponent "{4FFE6DDB392B6B91}" {
+  }
+  Hierarchy "{A61F2C68861B90D6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.et" {
+   ID "03E06AA127D972BB"
+   components {
+    Hierarchy "{6BBB7984DCFF460A}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "BDEDC54C33734C91"
+   components {
+    Hierarchy "{14A81EBBC5D9F128}" {
+    }
+   }
+   coords -0.4 0.78 0.1
+  }
+  GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+   ID "8894ACDE300A50A3"
+   coords 0.35 0.78 0.05
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "43F923B566C05149"
+   components {
+    Hierarchy "{05BAA9A43339B7FB}" {
+    }
+   }
+   coords 1.15 0 -0.2
+   angles 0 84 0
+  }
+ }
+}

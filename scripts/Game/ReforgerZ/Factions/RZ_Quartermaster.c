@@ -68,6 +68,74 @@ class RZ_QuartermasterHelper
 {
 	protected static ref array<IEntity> s_aBought;		// weak: what quartermasters sold lately (the fence won't buy it)
 	protected static const int BOUGHT_MEMORY = 300;
+	protected static const float SERVE_LOOK = 5;		// how far each way he could face is looked down
+	protected static const float SERVE_ROOM = 2;		// a way with a wall closer than this is never his
+
+	//------------------------------------------------------------------------------------------------
+	//! The way a quartermaster standing at `at` serves from (docs/DESIGN.md, "Camp life", the
+	//! counter): of sixteen ways, the most open one (traced at waist and head height, up to 5 m),
+	//! the one toward `toward` (the customers' side) when it's about as open. Never a way with a wall
+	//! within 2 m while another has room, so he never faces a wall or into a corner; out of a kiosk
+	//! or a shop he faces its open side.
+	static float ServeYaw(vector at, vector toward)
+	{
+		float want = RZ_Compass.Bearing(at, toward);
+		float best = want;
+		float bestScore = -float.MAX;
+		for (int k = 0; k < 16; k++)
+		{
+			float bearing = k * 22.5;
+			float open = OpenTo(at, bearing);
+			float off = Math.AbsFloat(RZ_Compass.Normalize(bearing - want + 180) - 180);
+			float score = open - off / 60;
+			if (open < SERVE_ROOM)
+				score = score - 100;
+
+			if (score > bestScore)
+			{
+				bestScore = score;
+				best = bearing;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far he can see that way before a wall, a fence or a prop, up to SERVE_LOOK.
+	static float OpenTo(vector at, float bearing)
+	{
+		float rad = bearing * Math.DEG2RAD;
+		vector dir = Vector(Math.Sin(rad), 0, Math.Cos(rad));
+		float open = SERVE_LOOK;
+		for (int h = 0; h < 2; h++)
+		{
+			TraceParam param = new TraceParam();
+			param.Start = at + Vector(0, 1.0 + h * 0.5, 0);
+			param.End = param.Start + dir * SERVE_LOOK;
+			param.LayerMask = EPhysicsLayerPresets.Projectile;
+			param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+			float frac = ChimeraCharacter.TraceMoveWithoutCharacters(GetGame().GetWorld(), param);
+			open = Math.Min(open, Math.Clamp(frac, 0, 1) * SERVE_LOOK);
+		}
+
+		return open;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Turns a quartermaster (or anyone standing) to face `yaw`, where he stands.
+	static void Face(IEntity person, float yaw)
+	{
+		if (!person)
+			return;
+
+		vector mat[4];
+		person.GetWorldTransform(mat);
+		vector pos = mat[3];
+		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), mat);
+		mat[3] = pos;
+		person.SetWorldTransform(mat); // VERIFY: turning a standing AI character with SetWorldTransform on the server keeps it facing that way (it stands with no job) and replicates
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static int GetPlayerId(IEntity user)
