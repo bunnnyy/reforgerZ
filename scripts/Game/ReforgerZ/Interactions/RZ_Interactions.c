@@ -848,7 +848,8 @@ class RZ_Interactions
 		m_aCand.Clear();
 		m_vScanCenter = center;
 		BaseWorld world = GetGame().GetWorld();
-		world.QueryEntitiesBySphere(center, m_Settings.m_fScanRadius, OnScanEntity, null, EQueryEntitiesFlags.STATIC);
+		float reach = Math.Max(m_Settings.m_fScanRadius, m_Loot.GetSpawnRadius());
+		world.QueryEntitiesBySphere(center, reach, OnScanEntity, null, EQueryEntitiesFlags.STATIC);
 
 		// Nearest first (an index list, so the candidates themselves never move)
 		array<int> order = {};

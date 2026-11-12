@@ -4811,7 +4811,7 @@
    "slotLabel": "Interactions > Search > Loot pool (list)",
    "required": false,
    "minimum": false,
-   "use": "nothing lies in houses (and boots and bodies hold nothing) until it's filled; each must be a real item with vanilla's pick-up action",
+   "use": "what lies in houses and turns up in boots and on bodies (empty or short = the built-in vanilla items per building type); each must be a real item with vanilla's pick-up action",
    "notes": ""
   },
   {
@@ -7313,14 +7313,17 @@
    "cls": "RZ_LootSettings",
    "defaults": {
     "m_bEnabled": "1",
-    "m_fSpawnRadius": "35",
-    "m_fDespawnRadius": "60",
+    "m_fSpawnRadius": "45",
+    "m_fDespawnRadius": "70",
+    "m_fFreshDistance": "20",
     "m_fRefillMinutes": "60",
-    "m_iMaxLying": "220",
-    "m_iMaxHouse": "2",
-    "m_iMaxShop": "3",
-    "m_iMaxSpecial": "4",
-    "m_fTownLootPerItem": "0.015"
+    "m_iMaxLying": "350",
+    "m_iMaxHouse": "4",
+    "m_iMaxShop": "5",
+    "m_iMaxSpecial": "6",
+    "m_fSlotChance": "0.7",
+    "m_iSureItems": "1",
+    "m_fTownLootPerItem": "0.01"
    }
   },
   {

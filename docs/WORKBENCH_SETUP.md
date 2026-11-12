@@ -743,7 +743,7 @@ and the UI files) need none, and six have no base:
 | `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every searchable thing, the Unlock/Lock/Force spot, the Clean the bite spot (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
 | `RZ_Key.et` | a small item (a key or key ring) | `RZ_KeyItemComponent`; `RZ_ReadKeyTagAction` | Interactions > Search > Key prefab | optional | keys: they lie in houses next to letters, car keys in their car's town, and come off bodies and from the Mechanic (empty = no keys). It must be a real item that can be picked up: an InventoryItemComponent and vanilla's pick-up action. The notebook base may be a prop; if the key shows no pick-up prompt on the ground, rebase it on a small vanilla item |
 | `RZ_DoorBlocker.et` | an empty GenericEntity; add the collision-only box by hand (recipe below) | — | Interactions > Search > Doorway blocker | optional | keeps AI out of locked doorways near players. Needs only RplComponent, a collision-only MeshObject and a static RigidBody: see the doorway blocker recipe |
-| (existing prefab) | every item that can lie in a house or turn up in a car boot or on a body (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | nothing lies in houses (and boots and bodies hold nothing) until it's filled; each must be a real item with vanilla's pick-up action |
+| (existing prefab) | every item that can lie in a house or turn up in a car boot or on a body (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | what lies in houses and turns up in boots and on bodies (empty or short = the built-in vanilla items per building type); each must be a real item with vanilla's pick-up action |
 | (existing prefab) | the repo's parked copies of the Car prefabs (Prefabs/ReforgerZ/Interactions/Cars/), each with SCR_BaseLockComponent m_bIsLocked 1 | — | Interactions > Cars > Parked prefabs (list, the same order as Car prefabs) | optional | a fixable car before it runs: the same car, parked and locked. One per Car prefab, in the same order. A new car needs its own parked copy: inherit it and set its SCR_BaseLockComponent > m_bIsLocked |
 | (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
 | `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
@@ -1043,7 +1043,9 @@ a blocker comes or goes); off, AI walk into the blocker and stop there.
 **The loot pool** (Search > Loot pool) is one list of every item that can lie in a house or turn
 up in a car boot or on a body. Each building type takes the items whose prefab names contain its
 keywords (the lists are in `RZ_Search.TypeWords`). To control a type exactly, add a **Loot table**
-for it.
+for it. A type left thin (fewer than 8 everyday finds or 3 rare ones) gets the built-in vanilla
+items for it (`RZ_LootDefaults`, [DESIGN.md](DESIGN.md#loot-in-houses)), so loot works with the pool
+empty too; the log's `Search:` line shows each table's size.
 
 **Loose loot: by hand in Workbench.** Nothing new to build: **Interactions > Loot** comes with its
 defaults. Check that everything that can lie in a house is a real item that can be picked up (an
@@ -1736,7 +1738,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **117** lines with the tag, all in the game scripts (one is the comment in
+There are **119** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 21 are in `UI/`: 16 of [the UI's](#the-ui-17), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
@@ -1756,20 +1758,21 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
-| `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
+| `Interactions/RZ_Loot.c:1078` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (70)
+### Medium risk: big features, with a fallback (71)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Interactions/RZ_Medical.c:15` | vanilla's consumable item component runs `ApplyItemEffect` on the server when a medic finishes vanilla's heal on another character (a bandage, tourniquet, morphine or saline used on them) | A Nurse or Doctor no longer slows a bite when treating someone: no line comes. Find the server-side point of vanilla's heal on another character (`SCR_HealingUserAction`, the health item's `ApplyEffect`) and move the hook there |
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Factions/RZ_Checkpoints.c:542` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
+| `Factions/RZ_Checkpoints.c:549` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:809` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the spawn screen's places, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:954` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
-| `Factions/RZ_SupplyLines.c:1004` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
+| `Factions/RZ_SupplyLines.c:1016` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:982` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Loot.c:178` | furniture inside buildings is found as static entities | Loose loot lies only on up to five floor points in each building's box |
-| `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
+| `Interactions/RZ_Loot.c:201` | furniture inside buildings is found as static entities | Loose loot lies only on the floor points in each building's box |
+| `Interactions/RZ_Loot.c:1076` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:738` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:270` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
 | `World/RZ_Perimeter.c:952`, `:967` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
@@ -1777,7 +1780,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
-| `Interactions/RZ_Interactions.c:332` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
+| `Interactions/RZ_Interactions.c:408` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1106` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1311`, `:1189` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
@@ -1790,7 +1793,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_DisguiseMarks.c:225` | a worn piece's root parent is the character wearing it (kit marks saved across a restart) | Marks are never saved across a restart (no `kit mark put back` lines): after a restart a dead man's kit passes as clean, as before |
 | `Factions/RZ_DisguiseMarks.c:1019` | `TryDeleteItem` through the wearer's inventory manager takes a worn piece off (the last week's homecoming and handing back) | The piece stays on after "He's home. Mark him.": its mark is gone either way, so it passes as clean kit |
 | `Core/RZ_Util.c:1275` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
-| `Cure/RZ_Infection.c:1181` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
+| `Cure/RZ_Infection.c:1168` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
 | `Zombies/RZ_Stealth.c:200` | on the dedicated server, a player's character reports the stance the player is in | Every player counts as standing: speed, light, weather and noise still count. Check the HUD's visibility as you go prone |
@@ -1806,7 +1809,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:1849` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:1851` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
 | `Missions/Errands/RZ_Strangers.c:1188` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
@@ -1824,10 +1827,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (28)
+### Low risk: contained or cosmetic (29)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Interactions/RZ_Interactions.c:177` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
@@ -1840,7 +1844,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:757` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
-| `Interactions/RZ_Search.c:824` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
+| `Interactions/RZ_Search.c:862` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_KeyItem.c:95` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages |
 | `Core/RZ_Util.c:1012` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
 | `Core/RZ_Util.c:999` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
@@ -1850,11 +1854,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:47` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
-| `Factions/RZ_CampLife.c:3155` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:3252` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
-| `Factions/RZ_CampLife.c:1718` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) along a piece's footprint's sides and diagonals at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
+| `Factions/RZ_CampLife.c:3161` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:3258` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
+| `Factions/RZ_CampLife.c:1720` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) along a piece's footprint's sides and diagonals at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
-| `Factions/RZ_CampLife.c:3323` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:3329` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
 ### The UI (17)
 
@@ -1875,7 +1879,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Notebook.c:940` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse opens | Only hover is lost: up/down and a click still open and pin rows |
 | `UI/RZ_TalkMenu.c:37` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_UIData.c:964` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `Dialogue/RZ_Dialogue.c:700` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:799` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
@@ -1883,7 +1887,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Menus.c:306` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:19` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
-| `UI/RZ_MapIcons.c:189` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_MapIcons.c:235` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
 
 ## 7. Log lines to check
 
@@ -1913,10 +1917,10 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Territory: 8 holdings in 14 settlements (new, seed S). Haven 1+1, Bastion 1+1, Red Hand 1+1, Halcyon 1+1
 [ReforgerZ] Supply trucks: none (no truck or crew prefabs, or no move waypoint).
 [ReforgerZ] Long Table: the F farm past T at grid G (new), N of them, open, hunger 45, suspicion 10.
-[ReforgerZ] Search: 0 items in the loot pool, 0 tables set by hand.
+[ReforgerZ] Search: 0 items in the loot pool, 0 tables set by hand. Tables (common/rare/electronics): house 17/4/2, shop 10/3/2, farm 9/3/2, pharmacy 9/3/2, garage 8/3/2, police 8/4/2, body 7/3/2.
 [ReforgerZ] Locks: on the outside doors; keys are off (no key prefab).
 [ReforgerZ] Door blockers: off (no blocker prefab); AI door hook on.
-[ReforgerZ] Loose loot: on. Put out within 35 m, put away past 60 m, at most 220 items lying, refill 60 min.
+[ReforgerZ] Loose loot: on. Put out within 45 m, put away past 70 m, at most 350 items lying, refill 60 min; 4/5/6 items per house/shop/pharmacy.
 [ReforgerZ] World interactions: on. 0 fixable cars on the map.
 [ReforgerZ] Story arcs: on, running none.
 [ReforgerZ] Questlines: on, 17 registered (Short Weight, The List, The Price of the Door, The Edge of Town, Every Name, Await Relief, The Census, The Last Pilot, The Book Has to Balance, Cargo, The Well Story, The Three Weeks, The Other Two, Authors, Proof, The House That Went Quiet, A Place at the Table), at most 2 at once, running none.
@@ -2030,7 +2034,7 @@ roads all branch off roads that go on, so it has no road checkpoints):
 [ReforgerZ] Perimeter: 0 road checkpoints (from roads).
 [ReforgerZ] Perimeter: no road checkpoints on this map (the lines above say why). Place RZ_CheckpointMarkerEntity entities on roads to add them.
 [ReforgerZ] Supply trucks: Haven, Bastion, Red Hand, Halcyon.
-[ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand.
+[ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand. Tables (common/rare/electronics): house 10/5/2, shop 8/3/2, farm 10/3/2, pharmacy 9/3/2, garage 8/3/2, police 9/4/2, body 8/3/2.
 [ReforgerZ] Locks: on the outside doors; keys are key items.
 [ReforgerZ] World interactions: on. 5 fixable cars on the map.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
@@ -3314,14 +3318,20 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   tag), or lying beside the body if it has no room; sometimes a note lies by it ("Read it").
   Kill a big group at once: only the first 8 a minute carry anything. A special still drops its
   sample on the ground.
-- [ ] Loose loot: walk into a house and a shop. Up to 2 (3 in a shop) things from the loot pool lie
-  on worktops, desks and cupboards or the floor beside furniture, inside the walls, not floating or under the
-  floor; nothing in a building offers "Search". Pick one up with F (or from the inventory's nearby
-  list). Walk 100 m away for a minute and come back: what you left is still there. Empty a house
-  and come back after an hour (**Loot > Refill minutes** at 2 for a quick test): it has things
-  again. A pharmacy, police station or garage has up to 4; a locked one, once open, one more.
+- [ ] Walk into a house in a fresh town: items on the floor and shelves, usually 2 to 4 (up to 5 in
+  a shop, 6 in a pharmacy, police station or garage), on worktops, desks, tables and cupboards and on
+  the floors (upstairs too, in a two-storey house), inside the walls, not floating, not in a wall,
+  not under the floor and not on the roof; nothing in a building offers "Search". They suit the
+  building: medicine in a pharmacy, tools and jerrycans in a garage, food on a farm, magazines in a
+  police station, a bit of everything in a house. Pick one up with F (or from the inventory's
+  nearby list). Walk 100 m away for a minute and come back: what you left is still there. Empty a
+  house and come back after an hour (**Loot > Refill minutes** at 2 for a quick test): it has
+  things again, and nothing new ever appears while you stand inside. A locked one, once open, has
+  one more.
+- [ ] Loose loot thins: empty a dozen houses in one town, then walk into a fresh one there: it
+  has a thing or none. A faction's stronghold, outpost or a safehouse has no loose loot at all.
 - [ ] Loose loot and performance: walk into the middle of a town and note the server frame time
-  while the buildings around you are put out (three a tick).
+  while the buildings around you are put out (four a tick, up to 350 items on the server).
 - [ ] A letter lying in a house reads with **Read it**; now and then a key with a tag lies next to
   it and opens that kind of building in that town.
 - [ ] Car Keys: the Mechanic's keys lie in one of the five houses; picking them up starts the
