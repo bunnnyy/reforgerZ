@@ -256,7 +256,7 @@ the finale's **Groups at the lab** cap, the finisher's faction first:
 | Faction | Sends a group when | Where |
 |---|---|---|
 | The Haven | Proof ended The Whole of It (`proof.haven_gate`) and **Territory > Haven guard** is on | At the gate |
-| Bastion | The stance is 1 or 2; under 3 its checkpoint; never under 4 | 1–2 at the gate; 3 on the lab's road (150–250 m out) |
+| Bastion | The stance is 1 or 2; under 3 its checkpoint; HC3's terms (`authors.terms` 1–2) or its road post (`authors.road_post`); never under 4 | 1–2 and HC3's terms at the gate; 3 and HC3's road post on the lab's road (150–250 m out) |
 | The Red Hand | The last page balanced or stood for nothing (`book.last` 1–2), unless Bastion holds the road (stance 3) | On the lab's road |
 
 Take the Lab has one decider: the finale offers it to the Red Hand route unless the last page closed
@@ -895,7 +895,10 @@ the stand; the endings are paid after it, so after the winner is chosen when it'
 from the design: it starts only below 90% research (later it would only fizzle), and every stage
 waits out a stand and never runs after the cure. Stage 3 is a wait, then a mission at Bastion's
 adjutant; stage 5 waits for 75% research; stage 6 waits for the stand, then lasts as long as it.
-The Bastion checkpoint on the lab's road is a Bastion group there during the stand. With the boss
+The Bastion checkpoint on the lab's road is a Bastion group there during the stand. While the cure
+finale runs, stage 6 places no groups and pays nothing: its Bastion terms go to the finale's groups
+inside the lab's cap ([The stand's inputs](#the-stands-inputs)), never under Expended, and the
+pilot's extra Halcyon guard isn't sent (Halcyon never takes sides at the stand). With the boss
 paid, Take the Lab is offered to anyone Known with the Red Hand, not only Champions; while the cure
 finale runs, the controller offers it to the Red Hand route instead ([FINALE.md](FINALE.md#take-the-lab-and-the-coat-run)). The endings
 are taken in the order the Red Hand's batch, Bastion's guard, open doors, the lab alone. The money
@@ -1078,7 +1081,7 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `haven.rule`, `haven.counted`, `haven.paying` | the sittings | the muster ("Answer it yourself" at Known under 3), the voice bank | 1 the pot, 2 workers first, 3 Bastion's cards, 4 the arrangement |
 | `list.truth` | Every Name, act III | the second sitting | 1 the farm and whose hand, 2 only "a farm out that way" |
 | `proof.day_one`, `proof.copy`, `proof.weeks`, `proof.pages`, `proof.first_page`, `proof.haven_gate`, `proof.coda` | Proof | the muster (`day_one` 3), the reading, the last page | Who knows the date (1–4); a copy of the margin; HC1's ending (0 nobody asked, 1 record, 2 public, 3 Bastion); where the site-log pages went (1 stove, 3 read, 4 Bastion's file); the first page (1, 2, 4); a Haven group at the gate; the paper sealed |
-| `authors.terms` | HC3 stage 3 | the reading | 1 agreed, 2 bargained, 3 refused |
+| `authors.terms`, `authors.road_post` | HC3 stages 3–4 | the reading, the finale's groups at the stand | 1 agreed, 2 bargained, 3 refused; the CO was told of the Red Hand's offer |
 | `book.bastion` | R1 | B1, Bust Out | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if they're still in the chair (value: that commander's leader seat id + 1; 0 if nobody on the page is still in the chair). Bust Out ×1.2 |
 | `book.returned`, `book.kept`, `book.burnt` | R1 | — | What became of the page (or `book.bastion`) |
 | `book.thief` | R1 | — | The thief: 1 went in the pit, 2 someone took his place, 3 his debt was paid, 4 walked to the Haven, 5 ran |

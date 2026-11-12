@@ -1480,7 +1480,16 @@ class RZ_Majors
 
 				return RZ_MajorHelp.World(gm, "proof.haven_gate") != 0;
 			}
-			case RZ_EFaction.MILITARY: return stance >= 1 && stance <= 3;
+			case RZ_EFaction.MILITARY:
+			{
+				// HC3 Authors: Bastion's terms (agreed or bargained), or the CO was told of the Red
+				// Hand's offer; never under Expended
+				int authors = RZ_MajorHelp.World(gm, "authors.terms");
+				if (authors == 1 || authors == 2 || RZ_MajorHelp.World(gm, "authors.road_post") == 1)
+					return stance != 4;
+
+				return stance >= 1 && stance <= 3;
+			}
 			case RZ_EFaction.BANDITS:
 			{
 				int last = RZ_MajorHelp.World(gm, "book.last");
@@ -1493,11 +1502,16 @@ class RZ_Majors
 
 	//------------------------------------------------------------------------------------------------
 	//! The group stands on the lab's road (150-250 m out) rather than at the gate: Bastion's
-	//! checkpoint under stance 3, the Red Hand's crews by the last page.
+	//! checkpoint under stance 3 or HC3's road post (without its gate terms), the Red Hand's crews
+	//! by the last page.
 	static bool OnLabRoad(RZ_GameModeComponent gm, int faction)
 	{
 		if (faction == RZ_EFaction.MILITARY)
-			return RZ_MajorHelp.World(gm, "orders.stance") == 3;
+		{
+			int terms = RZ_MajorHelp.World(gm, "authors.terms");
+			bool post = RZ_MajorHelp.World(gm, "authors.road_post") == 1 && terms != 1 && terms != 2;
+			return RZ_MajorHelp.World(gm, "orders.stance") == 3 || post;
+		}
 
 		if (faction == RZ_EFaction.BANDITS)
 			return SendsStandGroup(gm, faction);

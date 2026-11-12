@@ -230,6 +230,7 @@ class RZ_CureFinale
 	protected float m_fStandHud;
 	protected int m_iLastCount;			// whole seconds of the leading count last told
 	protected ref array<IEntity> m_aGroups = {};		// the friendly groups at the stand (never saved)
+	protected ref array<int> m_aGroupFactions = {};		// and their factions
 	protected bool m_bStandPrep;						// the stand's groups and Take the Lab are due
 	protected ref array<int> m_aDesks = {-1, -1, -1, -1, -1};	// each route's desk mission
 	protected int m_iDeskTry;							// real time of the next desk and tissue hunt tries
@@ -2033,8 +2034,16 @@ class RZ_CureFinale
 				continue;
 
 			m_aGroups.Insert(grp);
+			m_aGroupFactions.Insert(g);
 			RZ_Log.Info(string.Format("Finale: %1's group stands at the lab.", RZ_Factions.GetName(g)));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A faction's group stands at the lab in this stand (HC3 reads it for authors.guard).
+	bool HasStandGroup(int f)
+	{
+		return m_bStandOn && m_aGroupFactions.Contains(f);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2061,6 +2070,7 @@ class RZ_CureFinale
 		}
 
 		m_aGroups.Clear();
+		m_aGroupFactions.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------

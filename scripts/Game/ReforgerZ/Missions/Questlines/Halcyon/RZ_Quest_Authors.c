@@ -515,6 +515,7 @@ class RZ_Quest_Authors : RZ_Questline
 		else if (outcome == OUT_TOLD_CO)
 		{
 			run.SetFlag("road_post", 1);
+			gm.GetQuestlines().SetWorldFlag("authors.road_post", 1);
 			run.Note("{co} heard about the Red Hand's offer. Bastion will have people on the lab's road during the stand.");
 		}
 		else if (outcome == OUTCOME_FAILED)
@@ -1433,6 +1434,8 @@ class RZ_QM_AuthorsDefence : RZ_Mission_LabDefence
 //! (Bastion's terms; Territory > Bastion guard), one on the road toward the Red Hand (if Bastion was
 //! told of the offer) and one more Halcyon guard (B3's pilot flew for the samples; Territory >
 //! Halcyon guard). Ends when the stand does: won (after the winner is chosen), lost, or stolen.
+//! Under the cure finale it places nothing and pays nothing: its terms go to the finale's groups
+//! (RZ_Majors.SendsStandGroup, inside the lab's cap), and Halcyon sends no group.
 class RZ_QM_AuthorsStand : RZ_QM_HalcyonScene
 {
 	protected bool m_bSides;
@@ -1442,7 +1445,12 @@ class RZ_QM_AuthorsStand : RZ_QM_HalcyonScene
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
-		SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.TRUSTED, 5, 10);
+		// Under the finale the stand pays by its own rules, nothing on top
+		if (RZ_CureFinale.IsOn())
+			SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.TRUSTED, 0, 0);
+		else
+			SetContract(RZ_EFaction.INSTITUTE, RZ_ETier.TRUSTED, 5, 10);
+
 		m_fTimeLeft = 7200;
 		m_fParticipationRadius = RZ_CureResearch.LAB_DEFENCE_RADIUS;
 		RZ_Quest_Authors.Voice(gm, this, false);
@@ -1462,7 +1470,17 @@ class RZ_QM_AuthorsStand : RZ_QM_HalcyonScene
 		m_sTitle = "Authors: the final stand";
 		m_sBrief = "The cure is being made. Stand at the lab until it's done. Whoever is standing here when it's made is who the paper remembers.";
 		int terms = run.Flag("terms");
-		if (terms == RZ_Quest_Authors.TERMS_AGREE || terms == RZ_Quest_Authors.TERMS_BARGAIN)
+		bool agreed = terms == RZ_Quest_Authors.TERMS_AGREE || terms == RZ_Quest_Authors.TERMS_BARGAIN;
+		if (RZ_CureFinale.IsOn())
+		{
+			// The finale's groups: Bastion comes as agreed unless its orders say Expended
+			if (agreed && RZ_MajorHelp.World(gm, "orders.stance") != 4)
+				m_sBrief += " Bastion said it would send people, as agreed.";
+
+			return true;
+		}
+
+		if (agreed)
 			m_sBrief += " Bastion's people are at the gate, as agreed.";
 
 		if (PilotFlew(gm))
@@ -1516,6 +1534,17 @@ class RZ_QM_AuthorsStand : RZ_QM_HalcyonScene
 		RZ_Territory territory = gm.GetTerritory();
 		if (!run || !territory)
 			return;
+
+		// Under the finale its groups stand for the story (SpawnGroups); a Bastion one counts as the guard
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && RZ_CureFinale.IsOn())
+		{
+			int agreed = run.Flag("terms");
+			if ((agreed == RZ_Quest_Authors.TERMS_AGREE || agreed == RZ_Quest_Authors.TERMS_BARGAIN) && finale.HasStandGroup(RZ_EFaction.MILITARY))
+				SetQFlag(gm, "guard_up", 1);
+
+			return;
+		}
 
 		vector lab = m_vPos;
 		int terms = run.Flag("terms");
