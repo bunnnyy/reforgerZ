@@ -61,6 +61,7 @@ modded class RZ_MissionManager
 				if (m_RZTCur.m_bContract)
 				{
 					HearOf(m_RZTCur, RZT_Fake.ID, RZT_Fake.s_Ent);
+					RZT_TalkOffer(m_RZTCur);
 					m_RZTCur.Hire(RZT_Fake.ID);
 				}
 				array<RZ_Mission> mine = {};
@@ -101,6 +102,36 @@ modded class RZ_MissionManager
 			m_iRZTPhase = 0;
 		}
 		return true;
+	}
+
+	//! The talk screen's offer path (docs/DIALOGUE.md, "Jobs on the first replies"): the giver's job
+	//! rows on the first open list this contract, open for an eligible tester or locked with its need,
+	//! and "I'll do it." takes it at once (RZ_TalkJobs.Take: hired, with the start card). A leader's
+	//! own job is listed by the leader only, so it isn't looked for here.
+	void RZT_TalkOffer(RZ_Mission m)
+	{
+		if (!m || !m.m_bHasGiver || m.m_bInPersonOnly || !RZT_Fake.s_Ent)
+			return;
+
+		array<int> ids = {};
+		array<ref RZ_TalkReply> rows = {};
+		RZ_TalkJobs.Build(m_GM, RZT_Fake.ID, RZT_Fake.s_Ent, m.m_Req.m_eGiver, null, ids, rows);
+		int at = ids.Find(m.m_iId);
+		if (at < 0)
+		{
+			Print(string.Format("RZT talk offer %1 '%2': NOT LISTED at its giver (%3 rows, eligible=%4, need '%5')", m.Type().ToString(), m.m_sTitle, rows.Count(), m.IsEligible(m_GM, RZT_Fake.ID), m.LockReason(m_GM, RZT_Fake.ID)));
+			return;
+		}
+
+		RZ_TalkReply row = rows[at];
+		if (!row.m_bEnabled)
+		{
+			Print(string.Format("RZT talk offer %1 '%2': locked %3 (%4)", m.Type().ToString(), m.m_sTitle, row.m_sTag, row.m_sNeed));
+			return;
+		}
+
+		RZ_TalkJobs.Take(m_GM, RZT_Fake.ID, m.m_iId, true, "RZT giver", m.m_Req.m_eGiver, "RZT giver", RZT_Fake.s_Ent);
+		Print(string.Format("RZT talk offer %1 '%2': %3 listed and taken in one conversation=%4", m.Type().ToString(), m.m_sTitle, row.m_sTag, m.IsOfferedTo(m_GM, RZT_Fake.ID)));
 	}
 
 	//! While a questline waits for its stage mission: every other mission (not a questline's stage)

@@ -952,6 +952,21 @@ class RZ_QM_CensusCount : RZ_QuestMission
 class RZ_QM_CensusCards : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_CrateA = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing a ration crate to a house: locked without one on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || choice || (objIdx != OBJ_A && objIdx != OBJ_B))
+			return need;
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!m_CrateA.IsWith(me) && !m_CrateB.IsWith(me))
+			return "Needs a ration crate on you";
+
+		return "";
+	}
 	protected ref RZ_QuestCarry m_CrateB = new RZ_QuestCarry();
 	protected int m_iHouseA = -1;
 	protected int m_iHouseB = -1;
@@ -1497,6 +1512,17 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 class RZ_QM_CensusContrib : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_Sack = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing the contribution in: locked without it on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && !choice && (objIdx == OBJ_CLERK || objIdx == OBJ_OTHER) && !m_Sack.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs the contribution on you";
+
+		return need;
+	}
 	protected int m_iHouse = -1;
 	protected int m_iOther = -1;
 	protected vector m_vKeeper;

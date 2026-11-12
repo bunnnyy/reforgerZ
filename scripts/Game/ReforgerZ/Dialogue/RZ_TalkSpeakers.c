@@ -662,6 +662,13 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	protected void Step(RZ_GameModeComponent gm, RZ_Mission m, int playerId, int objIdx, bool choice, int slot, RZ_TalkReply r)
 	{
 		r.m_iRank = RZ_TalkReply.RANK_ON;
+		// A hand-over for the job ("Hand over Bastion's rations", "Give the page to ...") is tagged by
+		// the job's kind, like any turn-in
+		string l = r.m_sLabel;
+		l.ToLower();
+		if (l.StartsWith("hand ") || l.StartsWith("give ") || l.StartsWith("deliver "))
+			r.m_sTag = RZ_TalkJobs.Tag(m.KindWord());
+
 		string need = m.ChoiceLock(gm, playerId, objIdx, choice, slot);
 		if (need.IsEmpty())
 			return;

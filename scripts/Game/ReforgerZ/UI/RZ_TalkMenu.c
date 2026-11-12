@@ -1074,6 +1074,9 @@ class RZ_TalkMenu : RZ_MenuBase
 			RZ_UIW.Show(row, "ReplyTag", !tag.IsEmpty());
 			RZ_UIW.SetText(row, "ReplyNeed", "(" + need + ")");
 			RZ_UIW.Show(row, "ReplyNeed", !enabled && !need.IsEmpty());
+			// A locked reply: the object menu's lock before it (docs/UI.md, "The talk screen")
+			RZ_UIW.Show(row, "ReplyLock", !enabled && !RZ_UISettings.Get().m_sIconImageset.IsEmpty());
+			RZ_UIW.Icon(row, "ReplyLock", "status_door_locked");
 			RZ_UIW.Tint(row, "ReplyBg", m_Accent);
 			RZ_UIW.Tint(row, "ReplyEdge", m_Accent);
 			RZ_UIW.SetTag(row, i);

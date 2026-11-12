@@ -634,6 +634,10 @@ class RZ_QM_PilotFuel : RZ_QuestMission
 		if (need.IsEmpty() && choice && objIdx == OBJ_FENCE && slot == 0)
 			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 0, RZ_EFaction.BANDITS);
 
+		// Handing the fuel over: locked without it on you
+		if (need.IsEmpty() && !choice && objIdx == OBJ_POINT && slot == 1 && !m_Fuel.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs the fuel on you";
+
 		return need;
 	}
 
@@ -1136,6 +1140,17 @@ class RZ_QM_PilotFlight : RZ_QM_PilotLZ
 class RZ_QM_PilotWreck : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_Box = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing the black box to the pilot: locked without it on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && !choice && objIdx == OBJ_PILOT && !m_Box.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs the black box on you";
+
+		return need;
+	}
 	protected vector m_vWreck;
 	protected vector m_vLZ;
 	protected vector m_vPilot;

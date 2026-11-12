@@ -53,6 +53,17 @@ ButtonWidgetClass "{1B03E97B54B5C5B4}" {
         Padding 14 0 14 0
        }
        {
+        ImageWidgetClass "{6C1F2A9D3B8E4A51}" {
+         Name "ReplyLock"
+         Slot LayoutSlot "{7D2E3B0A4C9F5B62}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 12 0
+         }
+         "Is Visible" 0
+         Color 0.431 0.416 0.376 1
+         Size 24 24
+        }
         TextWidgetClass "{097E88B38DC2FF5C}" {
          Name "ReplyTag"
          Slot LayoutSlot "{DD39195E95263683}" {

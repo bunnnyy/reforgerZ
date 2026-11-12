@@ -2387,6 +2387,17 @@ class RZ_QM_OrdersOperator : RZ_QuestMission
 class RZ_QM_OrdersPrice : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_Crate = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing the crate to the chair's clerk: locked without it on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && !choice && objIdx == OBJ_CLERK && !m_Crate.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs Bastion's crate on you";
+
+		return need;
+	}
 	protected vector m_vCrate;
 	protected vector m_vClerk;
 	protected int m_iHouse = -1;
