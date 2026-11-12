@@ -981,7 +981,7 @@ Five options show at once; more scroll (a keypad's twelve keys).
 
 The power station's panel (`RZ_PowerMenu` preset; behaviour in
 [UI.md](../docs/UI.md#the-power-panel)), in the object menu's style. Written as text by a small
-generator; no mockup. Positions inside `PowerPanel` are from its top left; inside `CardPanel` and
+generator; the mockup (`Mockups/power_panel.html`, preview `Previews/power_panel.png`) was drawn from this tree afterwards. Positions inside `PowerPanel` are from its top left; inside `CardPanel` and
 `BoardPanel`, from theirs.
 
 ```

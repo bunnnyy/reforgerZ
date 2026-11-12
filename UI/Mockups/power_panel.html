@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ power panel</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  /* RZ_PowerMenu.layout and RZ_PowerBreaker.layout (UI/LAYOUTS.md, "Power panel"), mid-restore:
+     the door forced, two of the card's three breakers closed, the third selected. */
+  :root { --amber: #E3A33B; --deep: #0F1113; --row: #1B1F22; --lit: #2A2E31; }
+  .mono, .callout { font-family: 'JetBrains Mono', Consolas, monospace; }
+  .cond { font-family: 'Inter', 'Segoe UI', sans-serif; font-stretch: condensed; }
+  .worlddim { position: absolute; inset: 0; z-index: 1; background: rgba(8,9,10,.6); }
+  .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+
+  .pp { position: absolute; left: 260px; top: 110px; width: 1400px; height: 860px; background: var(--deep); border-top: 5px solid var(--amber); box-shadow: 0 18px 60px rgba(0,0,0,.6); }
+  .pp > * { position: absolute; }
+  .title { left: 48px; top: 30px; width: 1200px; font: 700 34px/1 Inter, sans-serif; color: var(--bone); }
+  .sub { left: 48px; top: 76px; font: 400 22px/1 Inter, sans-serif; color: var(--dim); }
+  .close { left: 1308px; top: 30px; width: 44px; height: 44px; background: var(--row); color: var(--amber); display: flex; align-items: center; justify-content: center; font: 700 22px/1 'JetBrains Mono', monospace; }
+  .rule { left: 48px; top: 116px; width: 1304px; height: 2px; background: var(--amber); }
+  .text { left: 48px; top: 130px; width: 1304px; height: 96px; font: 400 24px/1.35 Inter, sans-serif; color: #D9D2BE; }
+
+  .card { left: 48px; top: 240px; width: 560px; height: 440px; background: #CFC7B1; box-shadow: inset 0 0 40px rgba(80,70,50,.25); }
+  .card .lbl { position: absolute; left: 24px; top: 18px; font: 700 18px/1 'JetBrains Mono', monospace; color: #57524A; letter-spacing: .08em; }
+  .card .body { position: absolute; left: 24px; top: 54px; width: 512px; font: 500 26px/1.5 Inter, sans-serif; color: #141414; }
+  .card .body .h { font-weight: 700; font-size: 22px; letter-spacing: .04em; }
+
+  .board { left: 632px; top: 240px; width: 720px; height: 440px; background: #0C0E0F; }
+  .board > * { position: absolute; }
+  .board .lbl { left: 24px; top: 18px; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); letter-spacing: .12em; }
+  .breakers { left: 12px; top: 52px; width: 700px; height: 300px; display: flex; gap: 12px; }
+  .bk { position: relative; width: 104px; height: 290px; background: var(--row); display: flex; flex-direction: column; align-items: center; padding-top: 16px; }
+  .bk.sel { background: var(--lit); }
+  .bk.sel::after { content: ''; position: absolute; left: 0; bottom: 0; width: 104px; height: 5px; background: var(--amber); }
+  .lamp { width: 22px; height: 22px; border-radius: 50%; background: #2b2f31; border: 2px solid #3a3f42; }
+  .lamp.on { background: var(--amber); border-color: #f6c56f; box-shadow: 0 0 14px rgba(227,163,59,.8); }
+  .slot { position: relative; width: 48px; height: 120px; margin-top: 14px; background: #08090A; }
+  .handle { position: absolute; left: 6px; width: 36px; height: 52px; background: var(--bone); }
+  .handle.up { top: 6px; } .handle.down { bottom: 6px; background: #8d887b; }
+  .bname { margin-top: 18px; width: 92px; text-align: center; font: 700 18px/1.2 'JetBrains Mono', monospace; color: var(--bone); }
+  .bstate { margin-top: 10px; font: 700 16px/1 'JetBrains Mono', monospace; color: var(--faint); letter-spacing: .08em; }
+  .bstate.on { color: var(--amber); }
+  .readylamp { left: 24px; top: 366px; width: 24px; height: 24px; border-radius: 50%; background: #1d2a1a; border: 2px solid #33402f; }
+  .readytext { left: 60px; top: 364px; font: 700 22px/1.2 'JetBrains Mono', monospace; color: var(--bone); }
+  .hint { left: 24px; top: 402px; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); }
+
+  .meter { left: 48px; top: 700px; width: 560px; font: 700 20px/1 'JetBrains Mono', monospace; color: var(--amber); }
+  .status { left: 48px; top: 752px; width: 560px; font: 400 22px/1.3 Inter, sans-serif; color: #F4F0E6; }
+  .act { top: 696px; width: 344px; height: 60px; background: var(--row); display: flex; align-items: center; justify-content: center; font: 700 24px/1 'JetBrains Mono', monospace; color: var(--amber); }
+  .act.off { color: #55524b; }
+  .need { top: 762px; width: 344px; text-align: center; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); }
+  .prompts { left: 48px; top: 812px; display: flex; gap: 30px; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--dim); }
+  .pk { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 6px; margin-right: 10px; border-radius: 15px; border: 2px solid #6b5222; color: var(--bone); font-size: 16px; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="worlddim"></div>
+<div class="layer">
+  <div class="callout" style="left:260px;top:72px">POWER PANEL · OPEN THE PANEL AT THE STATION'S CONTROL ▼ (THE WORLD STAYS IN VIEW, DIMMED)</div>
+
+  <div class="pp">
+    <div class="title">The power station outside Morton</div>
+    <div class="sub">Dark. The control room is open.</div>
+    <div class="close">X</div>
+    <div class="rule"></div>
+    <div class="text">Breakers all tripped. A card inside the door says how they go back. The generator has fuel in it. Starting it will be loud, and someone has to stay with it until it settles.</div>
+
+    <div class="card">
+      <div class="lbl">THE CARD INSIDE THE DOOR</div>
+      <div class="body">
+        <div class="h">AFTER A BLACKOUT, CLOSE IN THIS ORDER:</div>
+        <div>1.&nbsp; FEED B</div>
+        <div>2.&nbsp; CONTROL</div>
+        <div>3.&nbsp; TOWN 1</div>
+        <div style="margin-top:18px">Leave PUMPS open. It's burnt out.</div>
+      </div>
+    </div>
+
+    <div class="board">
+      <div class="lbl">BREAKERS</div>
+      <div class="breakers">
+        <div class="bk"><div class="lamp"></div><div class="slot"><div class="handle down"></div></div><div class="bname">YARD</div><div class="bstate">OPEN</div></div>
+        <div class="bk"><div class="lamp on"></div><div class="slot"><div class="handle up"></div></div><div class="bname">CONTROL</div><div class="bstate on">CLOSED</div></div>
+        <div class="bk"><div class="lamp"></div><div class="slot"><div class="handle down"></div></div><div class="bname">PUMPS</div><div class="bstate">OPEN</div></div>
+        <div class="bk sel"><div class="lamp"></div><div class="slot"><div class="handle down"></div></div><div class="bname">TOWN 1</div><div class="bstate">OPEN</div></div>
+        <div class="bk"><div class="lamp on"></div><div class="slot"><div class="handle up"></div></div><div class="bname">FEED B</div><div class="bstate on">CLOSED</div></div>
+        <div class="bk"><div class="lamp"></div><div class="slot"><div class="handle down"></div></div><div class="bname">LIGHTS</div><div class="bstate">OPEN</div></div>
+      </div>
+      <div class="readylamp"></div>
+      <div class="readytext">NOT READY</div>
+      <div class="hint">Close them in the card's order. A wrong one trips the lot.</div>
+    </div>
+
+    <div class="status">CONTROL holds.</div>
+    <div class="act off" style="left:632px">Start the generator</div>
+    <div class="need" style="left:632px">The breakers first</div>
+    <div class="prompts">
+      <span><span class="pk">✥</span>Pick</span>
+      <span><span class="pk">A</span>Flip</span>
+      <span><span class="pk">B</span>Close</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
