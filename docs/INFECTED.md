@@ -356,8 +356,9 @@ of room doesn't come (the status line counts `hordes refused`):
 | Horde | Room |
 |---|---|
 | Heat hordes, and the world's without a mission (the generator, the arcs) | Its cluster's share, and only in a tick that has spawned at most 4 agents |
-| **Set pieces:** a mission's hordes (missions, events, questlines, Red Hand) and the final stand's waves | The server's 100 agents **plus a reserve of 20**, ignoring the cluster share: at most 120 living infected, however many waves come. A wave with no room is thinner, never pushed past 120 | Group prefabs count the members they had the last time one spawned (4
-until then).
+| **Set pieces:** a mission's hordes (missions, events, questlines, Red Hand) and the final stand's waves | The server's 100 agents **plus a reserve of 20**, ignoring the cluster share: at most 120 living infected, however many waves come. A wave with no room is thinner, never pushed past 120 |
+
+Group prefabs count the members they had the last time one spawned (4 until then).
 
 ### The one body budget
 
