@@ -105,6 +105,11 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 - 2026-11-12 f0ffcfa: the author asks how to enter Game Master in Workbench play. Check whether `Worlds/RZ_Everon` (and RZ_Arland) let the host open Game Master (vanilla's default key is Y). If not, add what vanilla GM worlds use, so the author can open it in Workbench play, and tell them the steps. Wells: our own "Fill a bottle" is off by default (**Interactions > Well spots**), so check each well now shows one action.
 
+**From the cloud's play-test fixes: treating, spots and loot (2026-11-12)**
+- 2026-11-12 2e47cb9: remove `RZ_TreatOtherAction` from each `Prefabs/ReforgerZ/Loadouts/RZ_Loadout_*.et` (13, ActionsManagerComponent > additionalActions): the class is gone (treating is vanilla's heal now), so until then each logs an unknown class. Then as a Nurse treat a bitten player with a bandage, vanilla's way: both get the bite line (WBS §8; VERIFY `Interactions/RZ_Medical.c:15`).
+- 2026-11-12 b5a2859: the stove's, a workbench's, a generator's and a house radio's prompt sit on the prop's front, not on the wall beside it (WBS §8; VERIFY `Interactions/RZ_Interactions.c:177`). Report any prop whose prompt is still off, and where.
+- 2026-11-12 2c43c17: walk into a house in a fresh town: items on the floor and shelves, by building type, none in walls or on roofs, nothing new appearing while you stand inside; a looted town thin; no loot at strongholds and safehouses (WBS §8, loose loot). Check the new Loot settings came through: **Fresh roll distance** (20), **Slot chance** (0.7), **Sure items** (1), and the new defaults (45 m, 70 m, 350 items, 4/5/6 per building, 0.01 per item) (WBS §5). Report the `Search:` and `Loose loot:` log lines.
+
 ## For the cloud
 
 - 2026-11-12 (PC): merged from the author's play-test: the talk screen New Vegas style (compact box, 5 replies, [Admin] sub-list, grey when heard, keys 1-5), map icons 48 px, the Standing page as G2 (rows of icons, 9 new icons, no Fame/Infamy grid), 96 people looks with RZ_Looks.c and PickLook at every faction spawn, camp life laid out by plans (kits are plans now: m_vPlan, m_fPlanYaw, footprints; counters; SetGroupSmartAction finds the sentinel), the notebook item opened by the HUD's held-gadget check, Metabolism water (RZ_Water_Dirty). Claims cleared. Not yet seen in play.
