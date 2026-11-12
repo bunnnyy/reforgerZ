@@ -341,19 +341,19 @@ class RZ_DeathBrief
 	protected static string Closing(int cause, float seconds)
 	{
 		if (seconds < SHORT_LIFE)
-			return "Not long. It rarely is, out here.";
+			return "Not long. It rarely is, out here, for anyone who comes out of hiding.";
 
 		switch (cause)
 		{
-			case RZ_EDeathCause.TURNED: return "It took its time, and you used what it gave you.";
-			case RZ_EDeathCause.INFECTED: return "The street is quiet again. It won't stay that way.";
-			case RZ_EDeathCause.PLAYER: return "Someone made a choice out there. They'll carry it, or they won't.";
-			case RZ_EDeathCause.FACTION: return "Somebody will write it down as something else.";
-			case RZ_EDeathCause.SURVIVORS: return "Nobody fires first out here. Everybody says so.";
-			case RZ_EDeathCause.OWN: return "It happens. It happens more in the Zone.";
+			case RZ_EDeathCause.TURNED: return "It took its time, and you used what it gave you. In the Haven's houses, that's a name read at supper.";
+			case RZ_EDeathCause.INFECTED: return "The street is quiet again. It won't stay that way: the calls start again at dusk.";
+			case RZ_EDeathCause.PLAYER: return "Someone made a choice out there. They'll carry it, or they won't. Your kit is theirs now, or the next passer-by's.";
+			case RZ_EDeathCause.FACTION: return "Somebody will write it down as something else: engaged at the wire, a debt paid, a sample lost.";
+			case RZ_EDeathCause.SURVIVORS: return "Nobody fires first out here. Everybody says so, and nobody will say who did this time.";
+			case RZ_EDeathCause.OWN: return "It happens. It happens more in the Zone, where there's no doctor to call and nobody coming.";
 		}
 
-		return "Nobody saw it. Out here, that's most of them.";
+		return "Nobody saw it. Out here, that's most of them. Someone will find your things in a week and wonder.";
 	}
 
 	// ================================================================ Client

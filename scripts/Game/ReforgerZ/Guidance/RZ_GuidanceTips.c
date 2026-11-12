@@ -149,8 +149,8 @@ class RZ_GuidanceTips
 
 		t = Add(list, "hungry", false, 2, false, 30);
 		t.m_sHaven = "You look hungry. Sit. There's soup, and the quartermaster takes tins for the store if you find any.";
-		t.m_sBastion = "Rations are for personnel. The Haven feeds civilians. Try %1.";
-		t.m_sRedHand = "Hungry? Everything's for sale. Even soup.";
+		t.m_sBastion = "Rations are for personnel on the roster. The Haven feeds civilians. Try %1.";
+		t.m_sRedHand = "Hungry? Everything's for sale here. Even soup. Especially soup.";
 		t.m_sHalcyon = "Eat something. Low blood sugar makes people careless, and careless people get bitten.";
 		t.m_sWanderer = "When did you last eat? Cellars and kitchen cupboards. Tins keep.";
 		t.m_sRadio = "...there's soup at %1 tonight. Bring a tin for the next person.";
@@ -158,7 +158,7 @@ class RZ_GuidanceTips
 
 		t = Add(list, "tier", false, 2, true, 0);
 		t.m_sHaven = "People are starting to say your name nicely. %1 calls you %2 now. The quartermaster will open the better shelves.";
-		t.m_sBastion = "Your file's been updated. %1: %2. Some doors open.";
+		t.m_sBastion = "Your file's been updated. %1: %2. The quartermaster will see it, and some doors open.";
 		t.m_sRedHand = "Look at you, %2 with %1. Don't let it go to your head. The shops notice, though.";
 		t.m_sHalcyon = "Your standing with %1 is now %2. It changes what their quartermaster will give you.";
 		t.m_sWanderer = "Word gets round. %1 calls you %2 now. Their shop will treat you better.";
@@ -192,11 +192,11 @@ class RZ_GuidanceTips
 
 		t = Add(list, "perimeter", false, 2, true, 0);
 		t.m_sHaven = "Don't go further that way. The line's out there. Nobody gets through. My brother tried at the bridge.";
-		t.m_sBastion = "The quarantine line isn't ours. We can't get you through it. Nobody can. Turn around.";
+		t.m_sBastion = "The quarantine line isn't ours. The men behind it wear our badge, and they still turned us back on Day 2. You won't do better.";
 		t.m_sRedHand = "The edge? Drones, then a loudspeaker, then a bullet. We'd sell you a way out if there was one.";
 		t.m_sHalcyon = "The line won't open for anyone. Only proof that it's over will open it. That's what the research is for.";
 		t.m_sWanderer = "That way's the line. You hear a drone, you turn round. You don't argue with it.";
-		t.m_sRadio = "\"...the perimeter will be maintained. Do not approach the perimeter.\" The same words, over and over.";
+		t.m_sRadio = "...the perimeter will be maintained. Do not approach the perimeter. ...the perimeter will be maintained.";
 		t.m_sPlain = "The quarantine line is out that way: drones, a loudspeaker, then snipers you never see. Nobody gets through.";
 
 		t = Add(list, "loud", false, 2, false, 20);
@@ -225,7 +225,7 @@ class RZ_GuidanceTips
 		t = Add(list, "car", false, 2, true, 0);
 		t.m_sHaven = "That car might run. A jerrycan and some patience. Mind, an engine is a dinner bell.";
 		t.m_sBastion = "Vehicle looks serviceable. Fuel's scarce, and the noise carries.";
-		t.m_sRedHand = "Nice wheels. Toll's on the bridge road. Ha.";
+		t.m_sRedHand = "Nice wheels. Mind the tolls: one tin a car, every crossroads with a red hand on it. Ha.";
 		t.m_sWanderer = "That one could run with a bit of work. They'll hear you coming, mind.";
 		t.m_sPlain = "That car could run with fuel and a little work. Engines are loud.";
 
@@ -248,20 +248,20 @@ class RZ_GuidanceTips
 		t.m_sPlain = "A Haven safehouse. Weapons are fine here, firing them isn't. Declare a bite at the door.";
 
 		t = Add(list, "shortage", false, 2, false, 60);
-		t.m_sHaven = "We're short. The store's nearly empty and people will start leaving. Anything in a tin, give it to the quartermaster.";
-		t.m_sBastion = "Supply shortage. Requisitions are limited until the next delivery.";
+		t.m_sHaven = "We're short. The store's nearly empty, and when it's empty people start leaving. Anything in a tin, give it to the quartermaster.";
+		t.m_sBastion = "Supply shortage at this post. Requisitions are limited until the next truck gets through.";
 		t.m_sRedHand = "Stock's low, so prices aren't. Supply and demand.";
-		t.m_sHalcyon = "We're short of supplies. Some items won't be available until the next delivery.";
+		t.m_sHalcyon = "We're short until the next van gets through. Some stock won't be available until it does.";
 		t.m_sWanderer = "%1 is running out of food. They'd take anything you can carry.";
-		t.m_sRadio = "...%1 is short of food. Anything helps. Anything.";
+		t.m_sRadio = "...%1 is short of food. Tins, flour, a sack of potatoes. Anything helps.";
 		t.m_sPlain = "%1 is short of food. Tins handed to the quartermaster keep people from leaving.";
 
 		t = Add(list, "clue", false, 2, true, 0);
 		t.m_sHaven = "Notes like that usually point somewhere. Have a look at your map, love, and your compass.";
 		t.m_sBastion = "Treat it as intelligence. Map, compass, bearing. Then move.";
 		t.m_sRedHand = "Somebody wrote that for a reason. Map and compass, genius.";
-		t.m_sHalcyon = "Notes like that usually point somewhere. Check your map and compass.";
-		t.m_sWanderer = "Notes like that usually point somewhere. Check your map and compass.";
+		t.m_sHalcyon = "Notes are usually accurate about places, if nothing else. Check it against your map and compass.";
+		t.m_sWanderer = "I've read a hundred notes like that on the roads. Most of them point somewhere. Map and compass.";
 		t.m_sPlain = "Notes like that usually point somewhere. Check your map and compass.";
 
 		// The story jobs (docs/DESIGN.md, Story blocks): tags, truths, background reads, holds
@@ -270,12 +270,12 @@ class RZ_GuidanceTips
 
 		t = Add(list, "truth", false, 2, true, 0);
 		t.m_sHaven = "The brief is only what they told you, love. People tell you what they need you to hear.";
-		t.m_sPlain = "The brief is only what they told you.";
+		t.m_sPlain = "The brief is only what they told you. Someone else may tell it differently.";
 
 		t = Add(list, "read", false, 2, true, 0);
 		t.m_sPlain = "Your background notices things others don't. It's never the only way to find out.";
 
 		t = Add(list, "hold", false, 2, true, 0);
-		t.m_sPlain = "Someone is about to decide. You can object once, or stand with them.";
+		t.m_sPlain = "Someone is about to decide something you were part of. You can object once, or stand with them.";
 	}
 }

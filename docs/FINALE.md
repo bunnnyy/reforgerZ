@@ -351,7 +351,7 @@ half next season. Deals never move Fame.
 Route items drop where their carrier dies and are picked up by whoever walks over them: a rival keeps
 it, gives it back at the route's desk ("found it"), or lets it spoil. A dropped item nobody comes near
 goes back to its seat after 2 hours of play or a real day. **Last Mile:** when a route reaches 8,
-everyone hears *"One of them is close."*, and every 10 minutes the other routes' locked players get a
+everyone hears *"One of the routes is close to finishing the cure, and its people are moving what they need on the roads."*, and every 10 minutes the other routes' locked players get a
 rough area for any of its items on the move.
 
 ### The moves

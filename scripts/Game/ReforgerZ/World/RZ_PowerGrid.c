@@ -625,7 +625,7 @@ class RZ_PowerGrid
 		string text = string.Format("Somebody got %1 running. There are lights in %2 tonight, and the radios have something to run on. Everything for a mile can hear the generator.", m_sName, RegionNames());
 		m_GM.NotifyAll("Power", text);
 		if (m_GM.GetLeaders())
-			m_GM.GetLeaders().AddHeadline(string.Format("The power is back in %1. %2 is running again.", RegionNames(), m_sName), false);
+			m_GM.GetLeaders().AddHeadline(string.Format("The power is back in %1. %2 is running again, and there are lights in the windows tonight.", RegionNames(), m_sName), false);
 
 		RZ_Log.Info("Power grid: restored by player " + playerId);
 	}
@@ -638,7 +638,7 @@ class RZ_PowerGrid
 		ApplyPower(false);
 		NotifyRegion("Power", string.Format("%1 has quit. The lights in %2 are out again.", m_sName, RegionNames()));
 		if (m_GM.GetLeaders())
-			m_GM.GetLeaders().AddHeadline(string.Format("The power failed in %1. Nobody kept %2 going.", RegionNames(), m_sName), false);
+			m_GM.GetLeaders().AddHeadline(string.Format("The power failed in %1. Nobody kept %2 going, and the towns on it are dark again.", RegionNames(), m_sName), false);
 	}
 
 	//------------------------------------------------------------------------------------------------

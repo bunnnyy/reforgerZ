@@ -137,20 +137,20 @@ class RZ_StoryRules
 			case "book:10":
 			{
 				strength[RZ_EFaction.BANDITS] = strength[RZ_EFaction.BANDITS] + 2;
-				lines.Insert("The Red Hand's book balanced, and the crews remember it.");
+				lines.Insert("Last season the Red Hand's book balanced, every line paid. The crews are stronger on the roads for it.");
 				break;
 			}
 			case "book:11":
 			{
 				Weight("RZ_Mission_TraderCaravan", 1.1);
-				lines.Insert("Everyone bought their page back from the Red Hand, so traders cross the lines a bit more.");
+				lines.Insert("Last season everyone bought their page back from the Red Hand. Traders cross the lines a little more often now.");
 				break;
 			}
 			case "book:13":
 			{
 				strength[RZ_EFaction.MILITARY] = strength[RZ_EFaction.MILITARY] + 2;
 				strength[RZ_EFaction.BANDITS] = strength[RZ_EFaction.BANDITS] - 2;
-				lines.Insert("Bastion has last season's ledger. The crews are thinner for it.");
+				lines.Insert("Bastion took the Red Hand's ledger last season and used it. The crews are thinner on the roads.");
 				break;
 			}
 			case "book:14":
@@ -158,14 +158,14 @@ class RZ_StoryRules
 				m_iSeedFaction = RZ_EFaction.BANDITS;
 				m_iSeedTrait = RZ_ELeaderTrait.PARANOID;
 				Weight("RZ_Mission_TheRat", 1.1);
-				lines.Insert("The Red Hand's book never balanced. The new boss counts twice.");
+				lines.Insert("The Red Hand's book never balanced last season. The new boss trusts nobody and counts everything twice.");
 				break;
 			}
 			// Await Relief
 			case "orders:10":
 			{
 				Set().m_fBastionPostShare = 0.6;
-				lines.Insert("Bastion kept the call last season. More of the road posts are theirs.");
+				lines.Insert("Bastion kept the nightly call going last season. More of the road posts are theirs this time.");
 				break;
 			}
 			case "orders:11":
@@ -177,13 +177,13 @@ class RZ_StoryRules
 			case "orders:12":
 			{
 				strength[RZ_EFaction.MILITARY] = strength[RZ_EFaction.MILITARY] + 2;
-				lines.Insert("Bastion answered for Command last season, and still does.");
+				lines.Insert("Last season Bastion's stronghold answered for Command, and still does. Its posts are stronger for it.");
 				break;
 			}
 			case "orders:13":
 			{
 				strength[RZ_EFaction.MILITARY] = strength[RZ_EFaction.MILITARY] - 2;
-				lines.Insert("Bastion was told it was expended. Some of it believed that.");
+				lines.Insert("Last season Bastion's posts heard the word 'expended'. Some of them believed it, and Bastion is weaker for it.");
 				break;
 			}
 			// Every Name
@@ -197,7 +197,7 @@ class RZ_StoryRules
 			case "every_name:11":
 			{
 				m_aRumours.Insert("Somebody in the houses kept a book last season and never opened it. People still ask what was in it.");
-				lines.Insert("The Haven kept its book shut last season.");
+				lines.Insert("The Haven kept its book of names shut last season. Nobody outside the houses has read it.");
 				break;
 			}
 			case "every_name:12":
@@ -237,7 +237,7 @@ class RZ_StoryRules
 			{
 				Set().m_fSpecialMult = 1.05;
 				m_aRumours.Insert("Last season's paper said Day 1. Some people never believed it.");
-				lines.Insert("Last season's paper said Day 1, and the infected took no notice.");
+				lines.Insert("Last season's paper said Day 1, and the infected took no notice. There are a few more of the changed ones this time.");
 				break;
 			}
 			case "proof:14":

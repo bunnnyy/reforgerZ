@@ -306,7 +306,7 @@ class RZ_ScreenGuard
 			return;
 
 		if (reason == "danger" && !speaker.IsEmpty())
-			m_GM.Say(playerId, speaker, faction, "Not now!");
+			m_GM.Say(playerId, speaker, faction, "Not now. Something's coming. Get your gun up.");
 	}
 
 	//------------------------------------------------------------------------------------------------

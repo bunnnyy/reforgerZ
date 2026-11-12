@@ -1471,11 +1471,11 @@ class RZ_Safehouses
 	{
 		int need = h.FoodNeed(m_Settings.m_iPeoplePerFood);
 		int meals = h.m_iFood / need;
-		string mood = "We're managing. Don't tell anyone I said that.";
+		string mood = "We're managing, just about. Soup most nights, somebody on the roof, and nobody's left this week. Don't tell anyone I said that.";
 		if (h.m_iFood < need)
-			mood = "There's nothing left in the stores. People are talking about leaving.";
+			mood = "There's nothing left in the stores. People are talking about walking to another house, and some already have.";
 		else if (meals <= 1)
-			mood = "We've food for one more round, maybe. If you find tins, bring them here.";
+			mood = "We've food for one more round, maybe. After that it's half portions, and the children eat first. If you find tins, bring them here.";
 
 		string services = "a bed and a spawn point";
 		if (h.GuardCount() > 0)
@@ -1840,7 +1840,7 @@ class RZ_Safehouses
 	{
 		if (!h.HasRadio())
 		{
-			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "No radio here yet. A bigger safehouse would have one.");
+			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "No radio here yet. The bigger houses have one, and a medic to go with it.");
 			return;
 		}
 
@@ -1874,7 +1874,7 @@ class RZ_Safehouses
 		}
 
 		if (text.IsEmpty())
-			text = "Static, mostly. Nobody nearby is asking for anything.";
+			text = "Static, mostly, and the government loop under it. Nobody nearby is asking for anything tonight.";
 
 		m_GM.NotifyPlayer(playerId, "Safehouse radio: " + h.m_sName, text);
 	}

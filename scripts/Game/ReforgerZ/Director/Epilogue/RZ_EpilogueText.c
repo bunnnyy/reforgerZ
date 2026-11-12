@@ -278,7 +278,7 @@ class RZ_EpiText
 		{
 			switch (route)
 			{
-				case 0: return "\"Cure is with the civilians. Requesting instructions. Over.\" A long hiss. \"No reply.\"";
+				case 0: return "Command, Bastion. Cure is with the civilians. Requesting instructions. Over. ... No reply. Bastion out.";
 				case 1: return "Cure secured. Distribution by roster. All signed for.";
 				case 2: return "The Red Hand holds the cure. Bastion is buying it. Entered in the log as contribution.";
 				case 3: return "Published without clearance. Noted. Bastion out.";
@@ -570,7 +570,7 @@ class RZ_EpiText
 				if (names.IsEmpty())
 					return "This is the Zone. These are our dead. We don't have all their names. We've written down the ones we have.";
 
-				return "\"This is the Zone. These are our dead: " + names + ". And the ones we don't say.\"";
+				return "This is the Zone. These are our dead: " + names + ". And the ones we don't say.";
 			}
 			case 1: return "This is the Zone. The lab knew three weeks before Day 1. It's written in its own pages. We're reading them out.";
 			case 2: return "This is the Zone. Every page we found is in the open now: the List, the orders, the book's back page, the site log. Ask for them.";

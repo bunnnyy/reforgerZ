@@ -244,7 +244,7 @@ class RZ_RadioStation
 		if (!claimant || RZ_Util.DistXZ(claimant.GetOrigin(), m_vPos) > CONSOLE_RADIUS)
 		{
 			if (claimant)
-				m_GM.NotifyPlayer(m_iClaimant, "Radio station", "You walked away from the console. Nobody's on the air.");
+				m_GM.NotifyPlayer(m_iClaimant, "Radio station", "You walked away from the console. The station falls silent, and anyone can take it now.");
 
 			m_iClaimant = -1;
 			return;
@@ -263,7 +263,7 @@ class RZ_RadioStation
 		m_iHolder = m_iClaimant;
 		m_iClaimant = -1;
 		UpdateLabels();
-		m_GM.NotifyPlayer(m_iHolder, "Radio station", "The set warms up. The needle finds the band everyone listens to. The station is yours while you stay. Pick a message.");
+		m_GM.NotifyPlayer(m_iHolder, "Radio station", "The set warms up and the needle finds the band every radio in the Zone is tuned to, under the government loop. The station is yours while you stay. Pick a message.");
 	}
 
 	// ================================================================ The console
@@ -333,7 +333,7 @@ class RZ_RadioStation
 		if (m_iHolder > 0)
 			who = RZ_Util.PlayerName(m_iHolder);
 
-		string power = "It runs on a battery bank that's seen better days.";
+		string power = "It runs on a battery bank that's seen better days. Somebody has kept it charged anyway.";
 		if (RZ_PowerGrid.IsPoweredAt(m_vPos))
 			power = "There's mains power: the set hums, clear and strong.";
 
@@ -407,7 +407,7 @@ class RZ_RadioStation
 				if (m_GM.GetHeat().GetHottest(hot, heat) && heat >= 20)
 					where = NearTown(hot);
 
-				return string.Format("This is %1. There's a horde moving around %2. Stay clear of it, and keep it down if you're close.", name, where);
+				return string.Format("This is %1. There's a horde moving around %2, drawn in by the noise. Stay off those roads, and if you're close, no engines and no shooting.", name, where);
 			}
 			case 1:
 			{
@@ -424,13 +424,13 @@ class RZ_RadioStation
 				}
 
 				if (!hungry)
-					return string.Format("This is %1. If you've got food to spare, somebody near you needs it more. Share it.", name);
+					return string.Format("This is %1. If you've got a tin to spare, the Haven's houses are feeding more mouths than the trucks can. Take it to the nearest one.", name);
 
-				return string.Format("This is %1. The safehouse in %2 is running low. If you've got tins, that's where they should go.", name, hungry.m_sName);
+				return string.Format("This is %1. The Haven house in %2 is the hungriest in the Zone right now. If you've got tins, take them there before you eat them.", name, hungry.m_sName);
 			}
 			case 2:
 			{
-				return string.Format("This is %1, at %2, grid %3. We're friendly. Come quiet, come unarmed if you can.", name, m_sName, RZ_SettlementScanner.GridReference(m_vPos));
+				return string.Format("This is %1, at %2, grid %3. We're friendly, and there's room. Come quiet, come unarmed if you can.", name, m_sName, RZ_SettlementScanner.GridReference(m_vPos));
 			}
 			case 3:
 			{

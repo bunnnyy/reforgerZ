@@ -794,12 +794,12 @@ class RZ_Perimeter
 		if (GetCheckpointDistance(pos) < m_Settings.m_fCheckpointKillRadius && GetNearestCheckpoint(pos, checkpoint))
 		{
 			back = checkpoint + CheckpointInward(checkpoint) * (m_Settings.m_fCheckpointKillRadius + TURN_BACK_MARGIN);
-			text = "\"Back behind the barrier. You will be called for processing.\" Nobody raises a rifle, and nobody lets you closer either. You walk back up the road.";
+			text = "Return behind the barrier. You will be called for processing. Do not approach the barrier until you are called.";
 		}
 		else
 		{
 			back = pos + InwardAt(pos) * (m_fKill + TURN_BACK_MARGIN - EdgeDistance(pos));
-			text = "\"Stop. Turn around.\" The voice comes from past the line, close, from someone you never see. \"The quarantine is lifted. The line is not open. Processing will begin at the road checkpoints.\" You walk back to the trees.";
+			text = "Stop. Turn around. The quarantine order is lifted. The line is not open. Processing will begin at the road checkpoints. Return to the road.";
 		}
 
 		if (!RZ_Util.MovePlayer(playerId, back))
@@ -813,9 +813,9 @@ class RZ_Perimeter
 	protected string GetStoodDownText(vector pos)
 	{
 		if (GetCheckpointDistance(pos) < m_Settings.m_fCheckpointWarnRadius + LEAVE_MARGIN)
-			return "\"Attention. The quarantine order for this area has been lifted. This checkpoint will open for processing. Remain behind the barrier until you are called.\"\nNobody behind the concrete raises a rifle. Nobody opens the barrier either.";
+			return "Attention. The quarantine order for this area has been lifted. This checkpoint will open for processing. Remain behind the barrier until you are called.";
 
-		return "\"Attention. The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints.\"\nNo drone comes down. Somewhere out past the line, an engine starts and drives away.";
+		return "Attention. The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -888,9 +888,9 @@ class RZ_Perimeter
 	protected string GetWarningText(vector pos)
 	{
 		if (GetCheckpointDistance(pos) < m_Settings.m_fCheckpointWarnRadius + LEAVE_MARGIN)
-			return "This road is closed. You are approaching the quarantine line. Turn back.";
+			return "This road is closed by federal order. You are approaching a quarantine checkpoint. Return to your residence.";
 
-		return "You are approaching the quarantine line. Turn back.";
+		return "You are approaching the quarantine line. This area is under federal quarantine. Turn back.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -898,7 +898,7 @@ class RZ_Perimeter
 	{
 		SpawnEffect(RZ_Util.RandomPointInRing(player.GetOrigin(), 3, 6));
 		m_GM.Say(playerId, LOUDSPEAKER, -1, "Final warning. Turn back now.");
-		m_GM.NotifyPlayer(playerId, "The line", "A shot cracks past you and kicks up the ground. Get away from the line: the next one won't miss.");
+		m_GM.NotifyPlayer(playerId, "The line", "A shot cracks past you and kicks up the ground. Nobody on the line ever shows themselves. Get away from it: the next one won't miss.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -907,7 +907,7 @@ class RZ_Perimeter
 	{
 		SpawnEffect(player.GetOrigin());
 		RZ_Util.KillCharacter(player);
-		m_GM.NotifyPlayer(playerId, "The quarantine line", "You never saw the shooter.");
+		m_GM.NotifyPlayer(playerId, "The quarantine line", "You never saw the shooter. Nobody in the Zone ever has.");
 		RZ_Log.Info(string.Format("%1 was shot at the quarantine line at %2.", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(player.GetOrigin())));
 	}
 

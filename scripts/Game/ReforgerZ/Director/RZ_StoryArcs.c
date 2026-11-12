@@ -675,7 +675,7 @@ class RZ_StoryArcs
 		NextStep();
 		Headline(string.Format("Bastion's convoy has left for %1. Red Hand lookouts were seen on the ridge above the road.", dest));
 		NotifyKnown(RZ_EFaction.BANDITS, "The Red Hand", string.Format("Bastion's big convoy is on the road to %1. Lot of stock on one truck. Just saying.", dest));
-		NotifyKnown(RZ_EFaction.MILITARY, "Task Force Bastion", string.Format("Convoy rolling for %1. Anyone who wants to be useful, ride along.", dest));
+		NotifyKnown(RZ_EFaction.MILITARY, "Task Force Bastion", string.Format("Convoy rolling for %1, to bring the post and its stock home. Anyone who wants to be useful, ride escort. Bastion out.", dest));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -957,7 +957,7 @@ class RZ_StoryArcs
 				}
 
 				if (StepAge() >= RUMOUR_WAIT)
-					End("Nobody followed up on the missing Halcyon courier. The trail went cold.");
+					End("Nobody followed up on the missing Halcyon courier. The lab wrote 'presumed lost' in the log and sends the cases by another road now.");
 
 				return;
 			}
@@ -1053,10 +1053,10 @@ class RZ_StoryArcs
 	{
 		// Step 0 waits for the departure, step 1 for the truck: both come through hooks
 		if (m_Arc.m_iStep == 0 && StepAge() >= 2400)
-			End("Bastion's convoy never left. Someone up the chain changed their mind, again.");
+			End("Bastion's convoy never left. Someone at the stronghold changed their mind, again, and the post was told to hold.");
 
 		if (m_Arc.m_iStep == 1 && StepAge() >= 7200)
-			End(string.Format("Nobody knows what became of Bastion's convoy to %1. The post stopped answering about it.", m_Arc.S(0)));
+			End(string.Format("Nobody knows what became of Bastion's convoy to %1. The post stopped answering about it on the net.", m_Arc.S(0)));
 	}
 
 	// ================================================================ 3. The Preacher's Flock
@@ -1224,7 +1224,7 @@ class RZ_StoryArcs
 				}
 
 				if (StepAge() >= 2400)
-					End(string.Format("The fevers in %1 burned out on their own. Nobody came to look.", h.m_sName));
+					End(string.Format("The fevers in %1 burned out on their own. Nobody came to look, and nobody tested the well.", h.m_sName));
 
 				return;
 			}
@@ -1461,14 +1461,14 @@ class RZ_Mission_DeserterMap : RZ_PuzzleMission
 
 		AddParticipant(playerId);
 		if (m_aGiven[which])
-			return "I gave my piece away already. Ask around.";
+			return "I gave my piece away already, to the first one who asked. The others who had one are still out on the roads. Ask them.";
 
 		m_aGiven[which] = true;
-		string text = "They look around before they open their coat. \"He paid me to keep this. He's dead, then.\" A strip of oilcloth: a ridge line and a number.";
+		string text = "He paid me to keep this, and if you're asking for it, he's dead. Here. A strip of oilcloth: a ridge line and a number. I never knew what it was for.";
 		if (m_aGiven[0] && m_aGiven[1])
 		{
 			m_bRevealed = true;
-			text += string.Format(" Laid next to the others, it fits: the X is at grid %1.", RZ_SettlementScanner.GridReference(m_vBunker));
+			text += string.Format(" Put it next to your other pieces. See? It fits. The X is at grid %1.", RZ_SettlementScanner.GridReference(m_vBunker));
 		}
 
 		return text;
