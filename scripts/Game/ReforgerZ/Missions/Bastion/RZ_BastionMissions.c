@@ -733,7 +733,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 			if (!gm.GetRedHandGroupPrefab().IsEmpty())
 				weights[2] = 0.2;
 
-			m_sTruth = m_Story.Truth(wreckKey, values, weights);
+			m_sTruth = m_Story.Truth(wreckKey, values, weights, this);
 		}
 
 		m_vCamp = LandPointNear(m_vPos, 300, 600);
@@ -1044,7 +1044,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		else if (option == 1)
 		{
 			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-			if (me && RZ_HavenQuest.CountFood(gm, me) >= BRIBE_FOOD && RZ_HavenQuest.TakeFood(gm, me, BRIBE_FOOD))
+			if (me && RZ_HavenQuest.CountFood(gm, me) >= BRIBE_FOOD && RZ_StoryStats.TakeFood(gm, me, BRIBE_FOOD))
 				gone = true;
 			else
 				gone = m_Ways.TryBribe(gm, playerId, RZ_EFaction.BANDITS, BRIBE_FAVOR);

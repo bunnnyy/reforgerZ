@@ -1100,7 +1100,11 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   "Nobody" pays nobody. The result is a world record (`<key>.went_to`, by the town). Every built
   choice mission (`RZ_Mission_Choice`: Crash Site, Research Data, Requisition) is built on it.
 - **Truths** are the truth deck ([World memory](#world-memory)): `m_Story.Truth(subject, ...)`
-  draws (the same for everyone at that subject while it's kept), `Reveal` tells the finder and the
+  draws (the same for everyone at that subject while it's kept); a truth whose gate fails (no house
+  near, no Red Hand holding, no prefab) is given no weight, and a truth about a fixed fact is never
+  drawn: it reads canon. The leader who voices the job leans the deck by at most ±50% on the hidden
+  truths: Greedy and Paranoid givers hide more, Merciful, Idealist and Pragmatist ones less, Ruthless
+  and Veteran ones leave things out "by procedure"; a Talker's hidden truth leaks into the rumours. `Reveal` tells the finder and the
   room (30 m) and adds the line to the journal. A background read (`RZ_StoryKit.Read`) goes to that
   player only and to the journal. The errand Sleeve Down and the six story jobs use them.
 - **Background reads.** Each background reads one kind of thing, the same in every story job, so
@@ -1119,6 +1123,9 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   | Elder | families: names, who's kin to whom, a house's own story | crews |
   | Soldier | Bastion: rosters, unit codes, orders | crews |
   | Drifter | road news: one extra hint from wanderers | — |
+- **Signed thank-yous** (`RZ_StoryKit.BoardThanks`): a story job can leave a note on a house's board
+  signed by the people it's from (the notice board's system notes, `PostSigned`): Survivors Trapped's
+  family, *"Thank you for the barricade, and for taking it down. We're all here."* The Novaks.
 - **Records** (`RZ_StoryKit.Record`): how a story job ended, as a world record `<key>.<what>` about its
   subject, with who did it and, for some, an epilogue line (`racket.<house>`, `colleague.fate`,
   `crash.box`, `distress.saved`, `struck.fate`, `trapped.family`).
@@ -1200,7 +1207,12 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 - **The journal's detail**: selecting a row asks the server for that row's detail (at most 1,500
   characters): what you've found and who it went to ([UI.md](UI.md#the-notebook)).
 
-Log lines: `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
+**The hourly summary** (`Missions/Story/RZ_StoryStats.c`, one line a real hour): Fame and Favor per
+player-hour from the story jobs (and by job), how often a result was switched or given to nobody, food
+spent on trades, fallout errands started and the Favor they paid.
+
+Log lines: `Story | per player-hour: Fame N, Favor N | by job: ... | picks: ... | food on trades N |
+fallout: started N, paid N Favor`, `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
 resolved by hand-in to <party> (...)`, `Story: <title> record <key> (<subject>) = <value>`, `Story:
 <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is <truth>` (and `colleague`,
 `crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Story: <title> asks (<options>)`, `Story: <title> chose <n> (by <player>)`, `Story: tally <town> (<name>) = <n>, mark <faction+1> (<key>)`, `Mirror: <title>

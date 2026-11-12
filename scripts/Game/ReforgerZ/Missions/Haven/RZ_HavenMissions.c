@@ -322,6 +322,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 
 		RZ_Safehouses houses = gm.GetSafehouses();
 		string went = "house";
+		vector thanksAt = m_vPos;
 		if (m_iWhere == WHERE_BASTION)
 		{
 			went = "bastion";
@@ -332,6 +333,8 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			went = "hungry";
 			int hungriest = Hungriest(gm);
 			houses.AddPopulationAt(hungriest, rescued);
+			if (houses.Get(hungriest))
+				thanksAt = houses.Get(hungriest).m_vPos;
 			if (gm.GetErrands())
 				gm.GetErrands().Morale(RZ_EFaction.SURVIVORS, 1, "a family came to work");
 		}
@@ -339,6 +342,9 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		{
 			houses.AddRescued(m_vPos, rescued, m_aParticipants);
 		}
+
+		if (went != "bastion")
+			RZ_StoryKit.BoardThanks(gm, thanksAt, "Thank you for the barricade, and for taking it down. We're all here.", string.Format("The %1s", m_sSurname));
 
 		string epilogue = string.Format("The %1s' boy chalks the days on %2's gym wall.", m_sSurname, GetLocationName(gm));
 		RZ_StoryKit.Record(this, "family", m_sSurname, went, m_aParticipants, epilogue, "board");

@@ -569,7 +569,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		if (RZ_Util.DistXZ(m_vHouse, m_vHide) <= 3000)
 			weights[3] = 0.15;
 
-		m_sTruth = m_Story.Truth(m_sName, values, weights);
+		m_sTruth = m_Story.Truth(m_sName, values, weights, this);
 		if (m_sTruth == "haven_door")
 			m_vHide = LandPointNear(m_vHouse, 30, 90);
 
@@ -958,7 +958,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		if (option == 6)
 		{
 			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_HavenQuest.TakeFood(gm, me, TRADE_FOOD))
+			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_StoryStats.TakeFood(gm, me, TRADE_FOOD))
 			{
 				gm.NotifyPlayer(playerId, m_sTitle, "\"Four tins. For them, not me. Then I'll come.\"");
 				return;

@@ -61,6 +61,7 @@ class RZ_StoryKit
 
 		int cap = RZ_Util.RoundToInt(m.m_iFavorReward * 0.3);
 		errands.Fallout(card, at, m.m_aParticipants, cap, m.m_sTitle, who);
+		RZ_StoryStats.FalloutStarted();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -137,6 +138,16 @@ class RZ_StoryKit
 		int total = facts.Flag("bastion.sheltered") + people;
 		facts.SetFlag("bastion.sheltered", total);
 		m.NotifyParticipants(gm, m.m_sTitle, string.Format("Bastion's truck takes them to the post. On the nightly call: \"Civilians sheltered, %1.\" It's %2 more than last night.", total, people));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A thank-you on the board of the house nearest pos, signed by the people it's from (*"The
+	//! Novaks"*): a story job's echo, filtered and cut like any note.
+	static void BoardThanks(RZ_GameModeComponent gm, vector pos, string text, string signature)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (houses && houses.GetBoard())
+			houses.GetBoard().PostSigned(pos, text, signature);
 	}
 
 	//------------------------------------------------------------------------------------------------

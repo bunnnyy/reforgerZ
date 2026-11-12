@@ -251,7 +251,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (!leaders || !leaders.FindNearest(RZ_EFaction.BANDITS, h.m_vPos, 6000))
 			weights[1] = 0;
 
-		m_sTruth = m_Story.Truth(HouseKey(), values, weights);
+		m_sTruth = m_Story.Truth(HouseKey(), values, weights, this);
 
 		m_iTalk = AddClue("The storekeeper", "\"I know who sent you. We've nothing to spare. We've people to feed.\"");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", Labels(), m_iTalk, "Talk to the storekeeper");
@@ -540,7 +540,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	protected void Cover(RZ_GameModeComponent gm, int playerId, IEntity source)
 	{
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		bool paid = me && RZ_HavenQuest.CountFood(gm, me) >= COVER_FOOD && RZ_HavenQuest.TakeFood(gm, me, COVER_FOOD);
+		bool paid = me && RZ_HavenQuest.CountFood(gm, me) >= COVER_FOOD && RZ_StoryStats.TakeFood(gm, me, COVER_FOOD);
 		if (!paid)
 			paid = m_Ways.TryBribe(gm, playerId, RZ_EFaction.BANDITS, COVER_FAVOR);
 

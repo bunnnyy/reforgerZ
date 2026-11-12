@@ -462,7 +462,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 				weights[2] = 0.375;
 		}
 
-		m_sTruth = m_Story.Truth(m_sName, values, weights);
+		m_sTruth = m_Story.Truth(m_sName, values, weights, this);
 		if ((m_sTruth == "walked_out" && !h) || (m_sTruth == "sold" && !fence))
 			m_sTruth = "hiding";
 
@@ -814,7 +814,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		}
 
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		if (!me || !RZ_HavenQuest.TakeFood(gm, me, 1))
+		if (!me || !RZ_StoryStats.TakeFood(gm, me, 1))
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "\"A tin. A real one, with food in it.\"");
 			return;
@@ -885,7 +885,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 				return;
 			}
 
-			if (!me || RZ_HavenQuest.CountFood(gm, me) < BUY_FOOD || !RZ_HavenQuest.TakeFood(gm, me, BUY_FOOD))
+			if (!me || RZ_HavenQuest.CountFood(gm, me) < BUY_FOOD || !RZ_StoryStats.TakeFood(gm, me, BUY_FOOD))
 			{
 				gm.NotifyPlayer(playerId, m_sTitle, "\"Five tins. Not four. I can count.\"");
 				return;
@@ -944,7 +944,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (option == 2 || option == 3)
 		{
-			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_HavenQuest.TakeFood(gm, me, TRADE_FOOD))
+			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_StoryStats.TakeFood(gm, me, TRADE_FOOD))
 			{
 				gm.NotifyPlayer(playerId, m_sTitle, "\"Four tins, and the notes are yours. We need the tins more.\"");
 				return;

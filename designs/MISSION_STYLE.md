@@ -42,20 +42,10 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
   food delivery, the fence and errands refuse them: *"These are Levie's tins. Take them back to Levie."*
   VERIFY: how to tag an item.
 
-## Truths
-
-- **Gates:** a truth whose gate fails (a season flag, a free wanderer, a Rogue leader, a prefab, a place)
-  is never drawn.
-- **The giver's traits** move the weights by at most ±50%: Greedy and Paranoid hide more, Merciful and
-  Idealist less, a Pragmatist says it straight, Ruthless and Veteran leave things out "by procedure", and a
-  Talker's secrets leak into road news. Radio contracts use the voicing leader's traits.
-- **Canon wins:** a truth about a fixed fact (`bastion.orders`, `origin.*`) reads canon and never rolls.
-
 ## Lies and callbacks
 
 - **Caught lying:** a Paranoid giver won't give you their in-person jobs for 2 hours of your play.
-- **Callbacks** can also be a person at the door (a stand-in within 300 m) or a note on that house's
-  board signed with a name (the notice board taking system notes signed with a person's name).
+- **Callbacks** can also be a person at the door: a stand-in within 300 m saying the line.
 
 ## Reasons
 
@@ -75,8 +65,6 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
 
 ## Log lines and tests
 
-- An hourly summary: Fame and Favor per player-hour by way; how often switches and "nobody" are picked per
-  job; food spent on trades; fallout starts and their pay.
 - Runtime test additions: each check result, each truth revealed and one kept after a restart, each
   beneficiary with an objection, a fallout errand, a record written and read, a callback, a reason
   starting a contract, a lie found out by each kind of event, a locked player refused another route's

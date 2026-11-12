@@ -2105,7 +2105,8 @@ lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
 `Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join (N Fame, N Favor)`,
-`Story: <player> hid a bite at house N`,
+`Story: <player> hid a bite at house N`, every real hour `Story | per player-hour: Fame N, Favor N | by
+job: ... | picks: ... | food on trades N | fallout: started N, paid N Favor`,
 `Story: crash at <grid> is <truth>`, `Story: <title> group '<what>' at <grid> (N on the server)`,
 `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Errands: <key>
 prop <kind> at <grid>`, `Errands: stranger <kind> shot at by <player>`; the errands' status line ends with

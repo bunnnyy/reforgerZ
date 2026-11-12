@@ -86,10 +86,53 @@ class RZ_MissionStory
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The truth behind this job at `subject` (the deck: kept 3 season days, same for everyone).
-	string Truth(string subject, notnull array<string> values, notnull array<float> weights)
+	//! The truth behind this job at `subject` (the deck: kept 3 season days, same for everyone). The
+	//! first value is "as they said". With the mission, the leader who voices it leans the deck:
+	//! Greedy and Paranoid givers hide more, Merciful and Idealist ones less, a Pragmatist says it
+	//! straight, Ruthless and Veteran ones leave things out "by procedure" (at most +-50% on the
+	//! hidden truths), and a Talker's secret leaks into the rumours.
+	string Truth(string subject, notnull array<string> values, notnull array<float> weights, RZ_Mission m = null)
 	{
-		return RZ_WorldFacts.Get().Memory().DrawTruth(m_sKey, subject, values, weights);
+		RZ_Leader giver = Voice(m);
+		if (giver)
+		{
+			float hide = 1;
+			if (giver.HasTrait(RZ_ELeaderTrait.GREEDY) || giver.HasTrait(RZ_ELeaderTrait.PARANOID))
+				hide *= 1.5;
+
+			if (giver.HasTrait(RZ_ELeaderTrait.MERCIFUL) || giver.HasTrait(RZ_ELeaderTrait.IDEALIST) || giver.HasTrait(RZ_ELeaderTrait.PRAGMATIST))
+				hide *= 0.5;
+
+			if (giver.HasTrait(RZ_ELeaderTrait.RUTHLESS) || giver.HasTrait(RZ_ELeaderTrait.VETERAN))
+				hide *= 1.25;
+
+			hide = Math.Clamp(hide, 0.5, 1.5);
+			for (int i = 1; i < weights.Count(); i++)
+			{
+				weights[i] = weights[i] * hide;
+			}
+		}
+
+		string truth = RZ_WorldFacts.Get().Memory().DrawTruth(m_sKey, subject, values, weights);
+		if (giver && giver.HasTrait(RZ_ELeaderTrait.TALKER) && !values.IsEmpty() && truth != values[0] && RZ_WorldFacts.Get())
+			RZ_WorldFacts.Get().AddRumour(string.Format("Somebody near %1's people has a loose mouth: the job they're putting about isn't what they say it is.", giver.m_sName), 12);
+
+		return truth;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The leader who voices this job: its own, else the one the manager will give it (the nearest of
+	//! the giver's, as RZ_Leaders.AssignVoice does). Null for none.
+	protected static RZ_Leader Voice(RZ_Mission m)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!m || !gm || !gm.GetLeaders() || !m.m_bHasGiver)
+			return null;
+
+		if (m.m_iLeaderId >= 0)
+			return gm.GetLeaders().Get(m.m_iLeaderId);
+
+		return gm.GetLeaders().FindNearest(m.m_Req.m_eGiver, m.m_vPos, 100000, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -505,6 +548,7 @@ class RZ_Beneficiaries
 			m.SetRivalPublic(m_iOriginal, p.m_iRivalInfamy);
 		}
 
+		RZ_StoryStats.Picked(story.m_sKey, IsSwitch(), p.m_bNobody);
 		string subject = RZ_WorldFacts.Town(m.m_iSettlement);
 		RZ_WorldFacts.Get().Memory().Record(story.m_sKey + ".went_to", subject, p.m_sName, RZ_WorldMemory.SOURCE_CHOICE, false, m_aWith);
 		RZ_Log.Info(string.Format("Story: %1 resolved by hand-in to %2 (base Fame %3, Favor %4; with %5, others %6; switch %7)", story.m_sKey, p.m_sName,

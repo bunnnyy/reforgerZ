@@ -255,7 +255,7 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 		}
 
 		string town = "town:" + m_iSettlement.ToString();
-		m_sTruth = m_Story.Truth(town, values, weights);
+		m_sTruth = m_Story.Truth(town, values, weights, this);
 		if ((m_sTruth == LOOP && weights[1] <= 0) || (m_sTruth == BAIT && weights[2] <= 0))
 			m_sTruth = REAL;
 

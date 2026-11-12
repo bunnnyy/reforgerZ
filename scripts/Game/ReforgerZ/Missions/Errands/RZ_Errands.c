@@ -2337,8 +2337,12 @@ class RZ_Errands
 		int paid = Math.Min(RZ_Util.RoundToInt(favor), Math.Max(0, m_Settings.m_iFavorPerHour - ledger.hourFavor));
 		if (e.m_iCap >= 0)
 			paid = Math.Min(paid, e.m_iCap);	// a fallout: at most 30% of the failed job's base
+
 		if (paid > 0)
 		{
+			if (e.m_bFallout)
+				RZ_StoryStats.FalloutPaid(paid);
+
 			m_GM.AddFavor(playerId, f, paid);
 			ledger.hourFavor += paid;
 			stats.favor += paid;

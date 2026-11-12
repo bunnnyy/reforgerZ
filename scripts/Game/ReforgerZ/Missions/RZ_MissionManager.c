@@ -228,6 +228,7 @@ class RZ_MissionManager
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
+		RZ_StoryStats.Tick(dt, ids.Count());
 
 		for (int i = m_aActive.Count() - 1; i >= 0; i--)
 		{
@@ -957,6 +958,12 @@ class RZ_MissionManager
 				m_GM.AddFavor(playerId, m.m_eGiver, favor);
 				text += string.Format("\n+%1 Favor (%2 total).", favor, profile.GetFavor(m.m_eGiver));
 			}
+
+			int fameGiven = 0;
+			if (!forgiven)
+				fameGiven = fame;
+
+			RZ_StoryStats.Paid(m, fameGiven, favor);
 
 			if (m.m_bHasRival && m.m_iRivalInfamy > 0)
 			{
