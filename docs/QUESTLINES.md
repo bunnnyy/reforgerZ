@@ -268,8 +268,9 @@ it (`book.last` 1–4). Questlines hear the stand through `OnFinalStandStart` an
 ✅ Built.
 - **Epilogue lines** by who controls the cure: each ending has a line for when its own faction
   controls it (*"Command, Bastion. Cure secured. Requesting relief. Over." A long hiss. "Bastion
-  out."*), the one it wrote for another controller, and one for no cure (*"The gates never opened.
-  The book balanced anyway."*).
+  out."*), the one it wrote for another controller or the Independent, and one for no cure at all
+  (*"The gates never opened. The book balanced anyway."*). The own lines never say how the cure is
+  handed out: the finale's terms line says that ([FINALE.md](FINALE.md#endings-and-next-season)).
 - **The hall's lines** in the season block, under the epilogue's names policy
   ([EPILOGUE.md](EPILOGUE.md#names)): "The season's stories", one line a major with its ending and up
   to four who decided it, at the epilogue's commit (with no cure, at the wipe); "At the barrier",

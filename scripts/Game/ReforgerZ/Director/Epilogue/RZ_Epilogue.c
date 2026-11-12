@@ -590,7 +590,7 @@ class RZ_Epilogue
 		m_S.step = 0;
 		m_S.told.Clear();
 		RZ_WorldFacts.Get().SetFlag("story.built", 1);
-		StoryHallLines(m_S.faction);
+		StoryHallLines(m_S.faction, !m_S.lastDay);
 		m_Outlets.Setup();
 		m_bPlaced = false;
 		RZ_Log.Info(string.Format("Epilogue: story built (%1 beats, %2 players, %3 open items)", m_S.beats.Count(), m_S.playerIdents.Count(), m_Closing.OpenCount()));
@@ -1126,7 +1126,7 @@ class RZ_Epilogue
 				AddHallLine("The cure: nobody. Nobody won.");
 
 			if (IsOn())
-				StoryHallLines(-1);
+				StoryHallLines(-1, false);
 
 			return;
 		}
@@ -1176,14 +1176,15 @@ class RZ_Epilogue
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The majors' "The season's stories" lines, by who controls the cure (-1: no cure).
-	protected void StoryHallLines(int controller)
+	//! The majors' "The season's stories" lines, by who controls the cure (-1: nobody's or none) and
+	//! whether a cure came out.
+	protected void StoryHallLines(int controller, bool cured)
 	{
 		if (!RZ_Majors.Get())
 			return;
 
 		array<string> lines = {};
-		RZ_Majors.Get().HallLines(controller, lines);
+		RZ_Majors.Get().HallLines(controller, cured, lines);
 		foreach (string line : lines)
 		{
 			AddHallLine(line);
