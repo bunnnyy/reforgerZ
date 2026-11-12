@@ -66,7 +66,7 @@ class RZ_OneChoice
 			m_Person = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(at, 3, 6)));
 
 		if (m_Person)
-			RZ_PuzzleObjectComponent.Tag(m_Person, m.m_iId, OBJECT_INDEX, "", m_sLabels);
+			RZ_PuzzleObjectComponent.Tag(m_Person, m.m_iId, OBJECT_INDEX, "Leave it to them", m_sLabels);
 
 		if (!m_Person)
 		{
@@ -78,6 +78,13 @@ class RZ_OneChoice
 		m_fAsked = 0;
 		m.m_fTimeLeft = Math.Max(m.m_fTimeLeft, ASK_SECONDS + 60);
 		m.NotifyParticipants(gm, m.m_sTitle, m_sPrompt);
+		if (m_sLabels.Contains("["))
+		{
+			foreach (int part : m.m_aParticipants)
+			{
+				RZ_Guidance.Report(part, "tags");
+			}
+		}
 		RZ_Log.Info(string.Format("Story: %1 asks (%2)", m.m_sTitle, m_sLabels));
 		return true;
 	}

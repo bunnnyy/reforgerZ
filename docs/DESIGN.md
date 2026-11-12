@@ -1086,6 +1086,12 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   object to once per job (by identity): Protection Racket's Side with the house, Distress Call's Side
   with the crew, Survivors Trapped's where they go. `RZ_StoryKit.MayDecide` checks it for an option
   that decides the job, and tells anyone else *"It's not your call. You weren't hired for this."*
+  **Leave**, for you only: "Leave it to them" on a one-choice job's stand-in (its use slot) takes you
+  out of the job: no pay, no blame, and you can't decide it. **Amends need clean hands**: a Press, a
+  Trick, a switch or a hidden bite in a story job voids its Infamy work-off for that player (they're
+  paid Fame instead, as when the budget's spent). **Offline participants**: a story job done pays its
+  base, at their next join, to anyone who took part (a step, or 5 minutes in the area) and isn't online
+  when it ends (the errands' ledger keeps it; not for a switch or a leaver).
 - **Who benefits** (`RZ_Beneficiaries`): 2–4 parties a result can go to. The side chosen pays those
   with the decider whom it doesn't hunt; a **switch** (the result to another side than the giver)
   pays at most the base, its Fame doesn't count toward season Fame (`RZ_RepFlag.SWITCH`), the giver
@@ -1141,8 +1147,9 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   base mission's own (Crash Site's recovery team): at most 4 on the server and 2 a job, spawned only
   within 400 m of a player, counted in the one body budget as story bodies, deleted when the job ends.
   No prefab, or no room: the job goes on in words.
-- **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice slots
-  (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` (Survivors Trapped's mother).
+- **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice and use
+  slots (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` and `HandleObjectUse`
+  (Survivors Trapped's mother, the one-choice stand-in's Leave).
 - **One real choice** (`Missions/Blocks/RZ_OneChoice.c`, `m_Choice`): when a one-choice job's work
   is done (its state turns to succeeded), it stays open and a stand-in person (the civilian puzzle
   prefab) appears beside it with the options as choice slots (object index 90). Picking one goes
@@ -2367,6 +2374,10 @@ tips (critical ones don't wait). The table is data (**Guidance > Tips**, default
 | clue | your first puzzle clue | |
 | channel | a Radio Operator near a faction's chatter or starting to crack a channel | |
 | car | your first fixable car | |
+| tags | the first options you're shown with a tag on them (an errand's ways, a one-choice job's question) | |
+| truth | the first hidden truth you find in a story job | |
+| read | your background's first read in a story job | |
+| hold | the first time someone near you is about to decide a job (the 5 s hold) | |
 | hungry | **hook only:** waits for the hunger mod (or a bridge) to call `Report(playerId, "hungry", place)` | |
 
 ### Gentle start and first-life goal

@@ -555,6 +555,9 @@ class RZ_Errands
 			RZ_WorldFacts lieFacts = m_GM.GetFacts();
 			if (lieFacts)
 				lieFacts.Memory().Lies().Tick(m_GM, ids, players);
+
+			// A story job's pay for someone who wasn't online when it ended
+			PayPending(ids);
 		}
 
 		if (!IsOn())
@@ -1285,6 +1288,14 @@ class RZ_Errands
 
 		labels.Insert("Not now");
 		talk.m_aWays.Insert(-1);
+		foreach (string shown : labels)
+		{
+			if (shown.Contains("["))
+			{
+				RZ_Guidance.Report(e.m_iAsker, "tags");
+				break;
+			}
+		}
 		comp.SetLabels("", RZ_PuzzleLabels.Join(labels));
 		m_mTalks.Set(e.m_sGiver, talk);
 	}
@@ -1886,6 +1897,57 @@ class RZ_Errands
 		}
 
 		return "w" + p.m_iPlace.ToString();
+	}
+
+	// ================================================================ Pay at the next join
+	//------------------------------------------------------------------------------------------------
+	//! A story job's pay for someone who took part and wasn't online when it ended (RZ_StoryKit).
+	void AddPending(string ident, int faction, int fame, int favor, string title)
+	{
+		RZ_ErrandLedger ledger = Ledger(ident);
+		ledger.Ensure();
+		if (ledger.pending.Count() >= 8)
+			ledger.pending.Remove(0);
+
+		ledger.pending.Insert(string.Format("%1|%2|%3|%4", faction, fame, favor, title));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every 30 s: the online players' pending pay, through the usual Fame and Favor.
+	protected void PayPending(array<int> ids)
+	{
+		foreach (int pid : ids)
+		{
+			RZ_PlayerProfile profile = m_GM.GetProfile(pid);
+			if (!profile || !m_mLedgers.Contains(profile.m_sIdentity))
+				continue;
+
+			RZ_ErrandLedger ledger = Ledger(profile.m_sIdentity);
+			ledger.Ensure();
+			foreach (string owed : ledger.pending)
+			{
+				array<string> parts = {};
+				owed.Split("|", parts, false);
+				if (parts.Count() < 4)
+					continue;
+
+				int f = parts[0].ToInt();
+				int fame = parts[1].ToInt();
+				int favor = parts[2].ToInt();
+				if (!RZ_Factions.IsValid(f))
+					continue;
+
+				if (fame > 0)
+					m_GM.AddFame(pid, f, fame);
+
+				if (favor > 0)
+					m_GM.AddFavor(pid, f, favor);
+
+				m_GM.NotifyPlayerAs(pid, parts[3], string.Format("Finished while you were away. Your part counted: +%1 Fame, +%2 Favor with %3.", fame, favor, RZ_Factions.GetName(f)), RZ_ENoticeTag.MISSION);
+			}
+
+			ledger.pending.Clear();
+		}
 	}
 
 	// ================================================================ Threads

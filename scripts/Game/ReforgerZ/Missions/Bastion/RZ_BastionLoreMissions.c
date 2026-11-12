@@ -944,6 +944,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		// [Feared] Press him, at a Haven door: a threat the mission writes; he comes, under arrest
 		if (option == 5)
 		{
+			RZ_StoryKit.Dirty(gm, this, playerId);
 			if (m_Ways.TryFear(gm, playerId, "deserter." + m_sSurname, RZ_EFaction.SURVIVORS, RZ_EFaction.MILITARY, 2, false, PRESS_INFAMY, "excon,raider") == RZ_ECheck.REFUSED)
 			{
 				gm.NotifyPlayer(playerId, m_sTitle, "The kids stand in front of him. He isn't going anywhere with you, not like this.");

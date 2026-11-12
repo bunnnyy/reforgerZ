@@ -767,6 +767,7 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 				doorHouse = gm.GetSafehouses().FindNearest(m_vSpot);
 
 			RZ_StoryKit.HidBite(gm, m_iHidBite, doorHouse);
+			RZ_StoryKit.Dirty(gm, this, m_iHidBite);
 			gm.GetFacts().Memory().Lies().Tell(gm, m_iHidBite, "distress.bite", m_sCaller, RZ_EFaction.SURVIVORS, "", m_vSpot, RZ_ELieTest.TICK, HID_INFAMY,
 				"The woman with the limp turned in the night. The house found the dressing, and knows whose knots those are.");
 			return 2;

@@ -2104,6 +2104,8 @@ lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
+`Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join (N Fame, N Favor)`,
+`Story: <player> hid a bite at house N`,
 `Story: crash at <grid> is <truth>`, `Story: <title> group '<what>' at <grid> (N on the server)`,
 `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Errands: <key>
 prop <kind> at <grid>`, `Errands: stranger <kind> shot at by <player>`; the errands' status line ends with
@@ -3187,6 +3189,12 @@ on the talk screen says why something wasn't dealt)
   Call's Sneak out the back and the three destinations; Struck Off's Press and Trade at a Haven door,
   the Hunter's tracks and the Soldier's shortcut, and let go becoming the Deserter; Protection Racket's
   runner (Off the book) with a Rogue crew boss near. Each new outcome logs `Story: <title> record`.
+- [ ] Leave: at a one-choice job's stand-in, "Leave it to them" says you're out; you aren't paid when
+  it ends and can't pick its options. A Watched player who pressed or tricked in an amends job is paid
+  Fame, not amends. A story job finished while one who took part (5 minutes there) is offline: at their
+  next join, "Finished while you were away" with the base pay (`Story: <title> pays ...`).
+- [ ] The four tips, once each: the first tagged options (an errand's ways), the first truth found, the
+  first background read, the first hold someone near you starts.
 - [ ] "Hid a bite": as a Nurse, dress the hidden bite in Survivors Trapped or Distress Call; that
   house's errands then tag their talk one step harder for you (e.g. "[Trusted - Haven]" where it was
   "[Known - Haven]"), and Protection Racket's persuade at that house is one harder.

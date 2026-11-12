@@ -601,6 +601,18 @@ class RZ_PuzzleActionHelper
 		RZ_PuzzleMission m = FindForObject(gm, owner, objectIndex);
 		if (!m)
 		{
+			// A person an ordinary mission put down (the one-choice stand-in's Leave)
+			RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(owner.FindComponent(RZ_PuzzleObjectComponent));
+			RZ_Mission plain;
+			if (comp && comp.GetMissionId() >= 0 && gm.GetMissions())
+				plain = gm.GetMissions().FindById(comp.GetMissionId());
+
+			if (plain && plain.m_eState == RZ_EMissionState.ACTIVE)
+			{
+				plain.HandleObjectUse(gm, playerId, comp.GetObjectIndex(), value);
+				return;
+			}
+
 			gm.NotifyPlayer(playerId, "Nothing happens", "Whatever this was for, it's over.");
 			return;
 		}

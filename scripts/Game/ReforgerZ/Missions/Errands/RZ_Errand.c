@@ -368,6 +368,7 @@ class RZ_ErrandLedger
 	int sinceTwist = 9;						// errands dealt since the last twist (one in three at most)
 	ref array<string> threads = {};			// "place|giver|what you did", newest last, 12 at most
 	ref array<string> threadsSaid = {};		// the threads already said back to you
+	ref array<string> pending = {};			// "faction|fame|favor|title": a story job's pay, at the next join
 
 	//------------------------------------------------------------------------------------------------
 	void Ensure()
@@ -402,6 +403,9 @@ class RZ_ErrandLedger
 
 		if (!threads)
 			threads = new array<string>();
+
+		if (!pending)
+			pending = new array<string>();
 
 		if (!threadsSaid)
 			threadsSaid = new array<string>();

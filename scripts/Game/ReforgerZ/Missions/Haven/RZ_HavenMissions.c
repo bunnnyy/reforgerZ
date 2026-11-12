@@ -310,6 +310,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			}
 
 			RZ_StoryKit.HidBite(gm, m_iHidBite, doorHouse);
+			RZ_StoryKit.Dirty(gm, this, m_iHidBite);
 			gm.GetFacts().Memory().Lies().Tell(gm, m_iHidBite, "trapped.bite", m_sSurname, RZ_EFaction.SURVIVORS, "", m_vPos, RZ_ELieTest.TICK, HID_INFAMY,
 				string.Format("Mr %1 turned in the night. The house found the dressing under his sleeve, and knows whose knots those are.", m_sSurname));
 		}

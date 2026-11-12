@@ -928,6 +928,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 
 		if (option == 1)
 		{
+			RZ_StoryKit.Dirty(gm, this, playerId);
 			RZ_ECheck pressed = m_Ways.TryFear(gm, playerId, "colleague." + m_sName, RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE, 2, false, PRESS_INFAMY);
 			if (pressed == RZ_ECheck.REFUSED)
 			{

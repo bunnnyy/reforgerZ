@@ -248,5 +248,19 @@ class RZ_GuidanceTips
 		t.m_sHalcyon = "\"Notes like that usually point somewhere. Check your map and compass.\"";
 		t.m_sWanderer = "\"Notes like that usually point somewhere. Check your map and compass.\"";
 		t.m_sPlain = "Notes like that usually point somewhere. Check your map and compass.";
+
+		// The story jobs (docs/DESIGN.md, Story blocks): tags, truths, background reads, holds
+		t = Add(list, "tags", false, 2, true, 0);
+		t.m_sPlain = "Tags say what an option needs. [Trusted - Haven] means your standing with the Haven. They never say how it turns out.";
+
+		t = Add(list, "truth", false, 2, true, 0);
+		t.m_sHaven = "\"The brief is only what they told you, love. People tell you what they need you to hear.\"";
+		t.m_sPlain = "The brief is only what they told you.";
+
+		t = Add(list, "read", false, 2, true, 0);
+		t.m_sPlain = "Your background notices things others don't. It's never the only way to find out.";
+
+		t = Add(list, "hold", false, 2, true, 0);
+		t.m_sPlain = "Someone is about to decide. You can object once, or stand with them.";
 	}
 }

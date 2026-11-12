@@ -102,6 +102,8 @@ class RZ_MissionStory
 		if (!m_aFound.Contains(line))
 			m_aFound.Insert(line);
 
+		RZ_Guidance.Report(playerId, "truth");
+
 		IEntity finder = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!finder)
 			return;
@@ -146,6 +148,8 @@ class RZ_Deciding
 	protected ref map<string, float> m_mTime = new map<string, float>();	// identity -> seconds within 150 m
 	protected ref array<string> m_aStepped = {};
 	protected ref array<string> m_aObjected = {};
+	protected ref array<string> m_aLeft = {};		// identities who chose Leave: out of the job, no pay, no blame
+	protected ref array<string> m_aDirty = {};		// identities whose hands aren't clean here (Press, Trick, a switch, hiding something)
 	protected ref array<int> m_aStoodWith = {};
 	protected int m_iHolder = -1;
 	protected int m_iHoldOption = -1;
@@ -183,6 +187,9 @@ class RZ_Deciding
 	bool TookPart(RZ_GameModeComponent gm, int playerId)
 	{
 		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (m_aLeft.Contains(ident))
+			return false;
+
 		float t;
 		m_mTime.Find(ident, t);
 		return t >= PART_SECONDS || m_aStepped.Contains(ident);
@@ -215,6 +222,68 @@ class RZ_Deciding
 		}
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Leave (one way, for you only): you stop taking part in this job, with no pay and no blame.
+	void Leave(RZ_GameModeComponent gm, int playerId)
+	{
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (!m_aLeft.Contains(ident))
+			m_aLeft.Insert(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasLeft(string ident)
+	{
+		return m_aLeft.Contains(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Before the job pays: whoever chose Leave is out of it.
+	void DropLeft(RZ_GameModeComponent gm, notnull array<int> participants)
+	{
+		for (int i = participants.Count() - 1; i >= 0; i--)
+		{
+			RZ_PlayerProfile p = gm.GetProfile(participants[i]);
+			if (p && m_aLeft.Contains(p.m_sIdentity))
+				participants.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Amends need clean hands: Press, Trick, a switch or hiding something voids this job's Infamy
+	//! work-off for that player.
+	void Dirty(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		if (p && !m_aDirty.Contains(p.m_sIdentity))
+			m_aDirty.Insert(p.m_sIdentity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDirty(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		return p && m_aDirty.Contains(p.m_sIdentity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The identities who took part long enough to be paid if they weren't here at the end: a step
+	//! done, or `seconds` in the area. Leavers aren't among them.
+	void TookPartIdents(float seconds, notnull array<string> result)
+	{
+		foreach (string ident, float t : m_mTime)
+		{
+			if (t >= seconds && !m_aLeft.Contains(ident) && !result.Contains(ident))
+				result.Insert(ident);
+		}
+
+		foreach (string stepped : m_aStepped)
+		{
+			if (!m_aLeft.Contains(stepped) && !result.Contains(stepped))
+				result.Insert(stepped);
+		}
+	}
+
 	// ================================================================ The hold
 	//------------------------------------------------------------------------------------------------
 	//! A scene decision: a 5 s hold, announced to the room. False if one is already running.
@@ -233,6 +302,14 @@ class RZ_Deciding
 		m_vRoom = me.GetOrigin();
 		m_aStoodWith.Clear();
 		TellRoom(gm, m, string.Format("%1 is about to %2. You can object once, or stand with them.", RZ_Util.PlayerName(playerId), what));
+		array<int> roomIds = {};
+		array<IEntity> roomPlayers = {};
+		RZ_Util.GetAlivePlayers(roomIds, roomPlayers);
+		foreach (int r, IEntity rp : roomPlayers)
+		{
+			if (roomIds[r] != playerId && RZ_Util.DistXZ(rp.GetOrigin(), m_vRoom) <= ROOM)
+				RZ_Guidance.Report(roomIds[r], "hold");
+		}
 		return true;
 	}
 
@@ -407,6 +484,14 @@ class RZ_Beneficiaries
 
 		m.m_aParticipants.Clear();
 		m.m_aParticipants.InsertAll(paid);
+		if (IsSwitch())
+		{
+			foreach (int dirty : m_aWith)
+			{
+				story.m_Deciding.Dirty(gm, dirty);
+			}
+		}
+
 		if (p.m_bNobody)
 		{
 			m.m_bHasGiver = false;

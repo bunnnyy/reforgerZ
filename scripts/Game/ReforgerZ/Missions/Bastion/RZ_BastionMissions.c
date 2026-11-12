@@ -1069,6 +1069,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 	//! as the cover detail (read it first). Caught: the catch, and the carriers walk off to the fence.
 	protected bool Trick(RZ_GameModeComponent gm, int playerId)
 	{
+		RZ_StoryKit.Dirty(gm, this, playerId);
 		RZ_Disguise disguise = null;
 		if (gm.GetHostility())
 			disguise = gm.GetHostility().GetDisguise();

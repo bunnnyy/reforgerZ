@@ -34,14 +34,6 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
 - **Fallback** if the replicated-labels play-test fails: the line lists numbered options, and the
   choices read "Option 1" to "Option 4".
 
-## Who decides
-
-- **Leave**, per player: you stop taking part, with no pay and no blame.
-- **Offline participants** (a step done, or 5 minutes in the area) are paid on their saved profile at
-  their next join, through the questlines' path.
-- **Amends need clean hands:** Press, Trick, a switch or hiding something voids that job's Infamy
-  work-off for that player.
-
 ## Trade
 
 - **Background services** on the spot (a Nurse dresses a wound, a Mechanic fixes a pump) are worth 2 on
@@ -71,13 +63,6 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
 - **Order per player:** the journal and the quartermaster's list put first the jobs near you, those
   answering a reason where you have a record, and those from a giver you've helped. Only the order
   changes, never the odds.
-
-## Teaching it
-
-Four contextual guidance tips, each shown once: the first tag (*"Tags say what an option needs. [Trusted
-· Haven] means your standing with the Haven."*), the first truth found (*"The brief is only what they
-told you."*), the first background read (*"Your background notices things others don't."*), the first
-hold (*"Someone is about to decide. You can object once."*).
 
 ## The tribes and the conversion
 

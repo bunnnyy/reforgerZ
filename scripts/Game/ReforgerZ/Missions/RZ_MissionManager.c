@@ -810,9 +810,14 @@ class RZ_MissionManager
 			return;
 		}
 
+		// Leave: whoever stepped out isn't paid or blamed
+		if (m.m_Story)
+			m.m_Story.m_Deciding.DropLeft(m_GM, m.m_aParticipants);
+
 		if (success)
 		{
 			m.OnSuccess(m_GM);
+			RZ_StoryKit.PayOffline(m_GM, m);
 			foreach (int playerId : m.m_aParticipants)
 			{
 				if (!m.IsEligible(m_GM, playerId))
@@ -924,7 +929,9 @@ class RZ_MissionManager
 			// Amends work Infamy off through the one forgiveness budget (30 a life); once it's spent,
 			// the job pays ordinary Fame, rival shares and all
 			bool forgiven = false;
-			if (m.m_bAmends && fame > 0 && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(playerId, m.m_eGiver)))
+			// Amends need clean hands: Press, Trick, a switch or hiding something voids the work-off
+			bool clean = !m.m_Story || !m.m_Story.m_Deciding.IsDirty(m_GM, playerId);
+			if (m.m_bAmends && clean && fame > 0 && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(playerId, m.m_eGiver)))
 			{
 				int off = m_GM.Forgive(playerId, m.m_eGiver, fame, "amends contract");
 				if (off > 0)

@@ -503,6 +503,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (gm.GetQuestlines() && gm.GetQuestlines().WorldFlag("well.done") > 0)
 			difficulty = 1;		// the well story's been told
 
+		RZ_StoryKit.Dirty(gm, this, playerId);
 		RZ_ECheck result = m_Ways.TryFear(gm, playerId, "racket.keeper." + m_iHouse.ToString(), RZ_EFaction.SURVIVORS, RZ_EFaction.BANDITS, difficulty, false, PRESS_INFAMY, "excon,raider");
 		if (result == RZ_ECheck.PASS)
 		{
@@ -1030,6 +1031,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		{
 			// The claim: "Who sent you?" (the commander's name is the cover detail)
 			m_bClaimed = true;
+			RZ_StoryKit.Dirty(gm, this, playerId);
 			if (m_Ways.PassAs(gm, playerId, "stockade guard", RZ_EFaction.MILITARY, 2, Paper(gm, playerId)) == RZ_ECheck.PASS)
 				text = "A guard asks who sent you. You tell him, and he looks away. Cut, quietly.";
 			else
