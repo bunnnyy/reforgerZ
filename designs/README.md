@@ -1,15 +1,15 @@
 # Designs
 
-**Status: designed; phases 1 to 7, phase 8 in part and tribes phases 1 to 5 built.** Approved by the author on 2026-11-11.
+**Status: designed; phases 1 to 7, phase 8 in part, the infected and Traces built.** Approved by the author on 2026-11-11.
 
 This folder holds the approved designs for the rest of the game: who you are, what you do, how it sounds,
-the infected, and what's left of talk, errands, the mission style, borrowed kit and Traces. Phases 1 to 4 of the plan (the shared engine,
+and what's left of talk, errands, the mission style, reputation's names and tone. Phases 1 to 4 of the plan (the shared engine,
 reputation's names; talk: the trees, the voices, the season mood and the voice bank; small things everywhere:
 errands' core, the mission style's framework, the world memory's writers; the mission style in full), phases 5 to 7 (the four majors, the cure's finale and the epilogue week: their design files are done and gone), phase 8 in part (borrowed kit's phases 2 and 3) and tribes phases 1 to 5 (the crawlers, the land
 grid in use, the agent budget, which is also the one body budget; the tribes and the behaviour layer; their life cycle;
 the people's side: words, knowing, the packs' contracts and events, the cure's hooks, the last week; the great one, signs and
-sounds; the behaviour layer's rest and the close moves on the player's machine) are in code; they
-live in `docs/`.
+sounds; the behaviour layer's rest and the close moves on the player's machine; the small rules) and
+Traces in full are in code; they live in `docs/`, and their design files are gone.
 
 - **Designs are not docs.** Built behaviour is always described in `docs/` ([the Doc map](../CLAUDE.md#doc-map)).
   A design file only says what's designed, and never describes built behaviour.
@@ -29,5 +29,3 @@ live in `docs/`.
 | [DIALOGUE.md](DIALOGUE.md) | What's left of dialogue (the trees, lies both ways, promises and callbacks, claims in kit, the multiplayer layer and sittings, barks, strangers and the open channel, and the finale's commit are built, [docs/DIALOGUE.md](../docs/DIALOGUE.md)): asks as errands, the rest of lies and promises, cover details as choices, Make it right, the Independent's commit on air and the last week's conversations, distress calls and the secure nets, the rest of the format | Phases 2, 4, 6 and 8's talk built, 3 and 5 in part; phase 6 (the commit on air); phase 7 (the last week) |
 | [MISSION_STYLE.md](MISSION_STYLE.md) | What's left of the mission style (the rest is built: [docs/DESIGN.md](../docs/DESIGN.md#story-blocks), [docs/MISSIONS.md](../docs/MISSIONS.md)): the other 20 story jobs, talk scenes' nodes and speaker, trade's services and mission goods, a Paranoid giver's sulk, a callback at the door, the majors' reasons, the tribes' contracts on the kit, Tier 0's missing tags, the disguise tricks (a breaker, a trick that lasts), the runtime test's story checks | Phase 5 (the other story jobs) |
 | [ERRANDS.md](ERRANDS.md) | What's left of errands (the rest is built: [docs/ERRANDS.md](../docs/ERRANDS.md)): the dealer's context cache, factors and locals coming to you, pay in kind's rest, strangers' out-of-sight spawn, crossroads and robbery (each a VERIFY), the run-ups, locals near their knowers and at their spots, His Effects in full, the named body, the errand icon | Not scheduled: growth |
-| [INFECTED.md](INFECTED.md) | What's left of the tribes and crawlers (built: [docs/INFECTED.md](../docs/INFECTED.md)): the model's small rules, the call's and the hunt's rest, day parties, bodies, scouts' posts, the jobs' rest, the behaviour layer's untested levers, the epilogue reading the last week's beats, the rename table | Tribes phases 1 to 5, their rest, the questline hooks and the behaviour layer's small rules built; these not yet scheduled (the levers after a client check) |
-| [TRACES.md](TRACES.md) | What's left of Traces, the world's environmental storytelling (phases 1 to 7 are built: [docs/TRACES.md](../docs/TRACES.md)): one placer for scenery, pieces that age, scenes on their buildings, indoor scenes, camp life's pieces, finer triggers, the Digger, errands on traces, one kit with the epilogue | Built in part; the rest waits on other systems |

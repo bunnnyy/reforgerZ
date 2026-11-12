@@ -2096,6 +2096,10 @@ class RZ_Leaders
 			float roll = Math.RandomFloat01();
 			if (roll < bite)
 			{
+				// In the open near a pack's ground, the pack took them (docs/INFECTED.md, the taken)
+				if (m_GM.GetTribes())
+					m_GM.GetTribes().OnLeaderBitten(l.m_vPos, l.m_sName);
+
 				Die(l, BittenHow(l), -1);
 				continue;
 			}

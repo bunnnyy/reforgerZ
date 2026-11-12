@@ -32,6 +32,8 @@ class RZ_Scene
 	int faction = -1;
 	string text;		// V4 the town on the IOU, L1 who, L5 the stencil
 	bool epilogue;		// L5: one of the last four wrecks, the epilogue's for the week
+	bool inside;		// Indoor scenes: on a floor inside a building, at height y
+	float y;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -309,6 +311,83 @@ class RZ_Scenes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Scenes on their buildings: the scene stands `dist` m out from the outside door of the building
+	//! of kind `want` nearest `near` (within `radius`), facing out. False with none (it stays put).
+	protected bool OnDoor(RZ_Scene s, vector near, float radius, int want, float dist)
+	{
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(near, radius, buildings, 12);
+		IEntity bestDoor;
+		IEntity bestBuilding;
+		float bestDist = float.MAX;
+		foreach (IEntity b : buildings)
+		{
+			if (!b || RZ_DoorSlots.KindOf(b) != want)
+				continue;
+
+			array<IEntity> doors = {};
+			RZ_DoorGeometry.FindDoors(b, 0, doors);
+			foreach (IEntity door : doors)
+			{
+				if (!RZ_DoorGeometry.IsOuterDoor(b, door))
+					continue;
+
+				float d = RZ_Util.DistXZ(door.GetOrigin(), near);
+				if (d < bestDist)
+				{
+					bestDist = d;
+					bestDoor = door;
+					bestBuilding = b;
+				}
+			}
+		}
+
+		if (!bestDoor)
+			return false;
+
+		vector normal = RZ_DoorGeometry.WallNormal(bestBuilding, bestDoor);
+		vector at = RZ_DoorGeometry.OutsidePoint(bestBuilding, bestDoor, dist);
+		if (normal != vector.Zero)
+			at = RZ_Util.GroundPos(RZ_DoorGeometry.DoorwayCentre(bestDoor) + normal * dist);
+
+		s.x = at[0];
+		s.z = at[2];
+		if (normal != vector.Zero)
+			s.yaw = RZ_Compass.Bearing(at, at + normal);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Indoor scenes (decision 10, behind World > Traces > Indoor scenes): the scene moves onto one of
+	//! the loot's floor spots inside the building at `building` (a ground-floor one, by the height of
+	//! the ground outside). Left outside when the building has none.
+	protected void Indoors(RZ_Scene s, vector building)
+	{
+		if (!Settings().m_bIndoorScenes)
+			return;
+
+		IEntity b = RZ_LootAnchors.BuildingAt(building, 30);
+		if (!b)
+			return;
+
+		array<vector> anchors = {};
+		RZ_LootAnchors.Find(b, anchors, RZ_LootAnchors.MAX_ANCHORS);
+		float floor = RZ_Util.GroundPos(Pos(s))[1];
+		foreach (vector a : anchors)
+		{
+			if (a[1] < floor - 0.5 || a[1] > floor + 1)
+				continue;
+
+			s.inside = true;
+			s.x = a[0];
+			s.z = a[2];
+			s.y = a[1];
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A road point about `dist` metres from a barrier, inward (outside the warning zone), else a
 	//! point straight in from the edge.
 	protected vector LinePoint(vector cp, float minD, float maxD)
@@ -437,6 +516,13 @@ class RZ_Scenes
 			return null;
 		}
 
+		// 1 km off a running questline's clue of the same faction (RZ_TraceClues)
+		if (RZ_TraceClues.Near(m_GM, at, kind))
+		{
+			RZ_Log.Info(string.Format("Traces: %1 keeps off a questline's clue near %2", kind, RZ_SettlementScanner.GridReference(at)));
+			return null;
+		}
+
 		m_iDealt++;
 		RZ_Scene s = Make(kind, NewKey(kind), at, town, days);
 		return s;
@@ -457,7 +543,7 @@ class RZ_Scenes
 	//! A live trace: 24 at once (the oldest goes); a player's deed makes one a town a season day.
 	protected RZ_Scene Live(string kind, int town, vector at, float days, bool deed, bool lairs = true)
 	{
-		if (!LiveOn() || at == vector.Zero || !AllowedNow(at, lairs))
+		if (!LiveOn() || at == vector.Zero || !AllowedNow(at, lairs) || RZ_TraceClues.Near(m_GM, at, kind))
 			return null;
 
 		if (deed && town >= 0)
@@ -602,6 +688,10 @@ class RZ_Scenes
 			if (facts.IsLivedIn(gymTown))
 				f3.a = 1;	// camp life owns the rest: the bear and the list only
 
+			// On the gym's own door: the beds stacked by it (inside, with Indoor scenes)
+			OnDoor(f3, gym, 60, RZ_EDoorWant.PUBLIC, 2.5);
+			Indoors(f3, gym);
+
 			Add(f3, "first days");
 			n++;
 		}
@@ -609,7 +699,9 @@ class RZ_Scenes
 		vector church = Spot(facts, "day4.church", new RZ_TraceCanonChurch());
 		if (church != vector.Zero && Allowed(church))
 		{
-			Add(Make("F4", "f4", Ground(church, 6, 12), m_GM.FindNearestSettlement(church), -1), "first days");
+			RZ_Scene f4 = Make("F4", "f4", Ground(church, 6, 12), m_GM.FindNearestSettlement(church), -1);
+			OnDoor(f4, church, 60, RZ_EDoorWant.PUBLIC, 2.5);
+			Add(f4, "first days");
 			n++;
 		}
 
@@ -623,7 +715,12 @@ class RZ_Scenes
 		vector cross = facts.CanonPos("redhand.crossroads");
 		if (cross != vector.Zero && Allowed(cross))
 		{
-			Add(Make("F7", "f7", Ground(cross, 12, 50), m_GM.FindNearestSettlement(cross), -1), "first days");
+			// Rudi's red hand on a garage's own shutter within 60 m; the board only where there's none
+			RZ_Scene f7 = Make("F7", "f7", Ground(cross, 12, 50), m_GM.FindNearestSettlement(cross), -1);
+			if (OnDoor(f7, cross, 60, RZ_EDoorWant.GARAGE, 0.3))
+				f7.b = 1;
+
+			Add(f7, "first days");
 			n++;
 		}
 
@@ -650,7 +747,13 @@ class RZ_Scenes
 			if (!rng.Chance(0.2) || facts.IsLivedIn(i) || !Allowed(s.m_vCenter))
 				continue;
 
-			RZ_Scene f6 = Make("F6", "f6." + i.ToString(), Ground(s.m_vCenter, 5, 40), i, -1);
+			// At the square's landmark (the monument, the bank, the station), else near the middle
+			vector square = Ground(s.m_vCenter, 5, 40);
+			RZ_Landmark mark = RZ_LandmarkFinder.FindNearest(s.m_vCenter, Math.Max(80, s.m_fRadius * 0.7), {"monument", "bank", "station"});
+			if (mark)
+				square = Ground(mark.m_vPos, 4, 10);
+
+			RZ_Scene f6 = Make("F6", "f6." + i.ToString(), square, i, -1);
 			if (cp != vector.Zero && RZ_Util.DistXZ(s.m_vCenter, cp) < 4000)
 				f6.a = f6.a | 1;
 
@@ -771,8 +874,13 @@ class RZ_Scenes
 			at = Ground(BeforeDoor(d, 6), 0, 4);
 
 		RZ_Scene s = Deal("V1", town, at, 3, "town gone dark");
-		if (s)
-			Add(s, "town gone dark");
+		if (!s)
+			return;
+
+		if (d)
+			Indoors(s, d.m_vBuilding);
+
+		Add(s, "town gone dark");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -912,8 +1020,17 @@ class RZ_Scenes
 			}
 		}
 
-		RZ_Territory territory = m_GM.GetTerritory();
-		if (faction < 0 && territory && territory.IsActive() && territory.FindHolding(RZ_EFaction.MILITARY, pos, 3000))
+		// Bastion's stencil for a pack on its contact board (the site's pack: the nearest within 3 km)
+		int contact = 0;
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (tribes)
+		{
+			RZ_Tribe pack = tribes.NearestTribe(pos, 3000);
+			if (pack)
+				contact = pack.m_iContact;
+		}
+
+		if (faction < 0 && contact > 0)
 			faction = RZ_EFaction.MILITARY;
 
 		if (faction < 0)
@@ -940,7 +1057,7 @@ class RZ_Scenes
 
 		s.faction = faction;
 		s.b = RZ_WorldFacts.Get().Day();
-		s.a = 1 + RZ_Util.PickIndex(RZ_Util.RoundToInt(pos[0] + pos[2]), 9);
+		s.a = contact;
 		s.text = "someone";
 		if (who.StartsWith("someone who"))
 			s.text = who;
@@ -1220,7 +1337,11 @@ class RZ_Scenes
 		bool any = false;
 		foreach (int i, ResourceName prefab : prefabs)
 		{
-			if (!prefab.IsEmpty() && marks.Place(RZ_EMarkPool.TRACES, PieceKey(s, i), spots[i], prefab, "", 2, days, false, false, yaws[i]))
+			vector spot = spots[i];
+			if (s.inside && i == 0)
+				spot[1] = s.y;
+
+			if (!prefab.IsEmpty() && marks.Place(RZ_EMarkPool.TRACES, PieceKey(s, i), spot, prefab, "", 2, days, false, false, yaws[i], s.inside && i == 0))
 				any = true;
 		}
 
@@ -1271,8 +1392,74 @@ class RZ_Scenes
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The kit's prefabs for a scene and where each stands.
+	//! The kit's prefabs for a scene and where each stands, with the pieces that age (Kit > Pieces
+	//! that age): the scene's own piece swapped for its faded twin in its last third (the first days:
+	//! from Overrun), and its extra pieces 2-6 m round the centre by the shared placer
+	//! (RZ_DressPlacer), each gone from the age it drops at.
 	protected void Pieces(RZ_Scene s, notnull array<ResourceName> prefabs, notnull array<vector> spots, notnull array<float> yaws)
+	{
+		OwnPieces(s, prefabs, spots, yaws);
+		RZ_TraceKit kit = m_Traces.GetKit();
+		if (!kit || !kit.m_aPieces || kit.m_aPieces.IsEmpty())
+			return;
+
+		// Dealt scenes by thirds (1 weathered, 2 old); the first days by the outbreak's stage
+		// (1 Collapse, 2 Overrun)
+		int age = Stage(s);
+		RZ_DressGround ground;
+		array<vector> taken = {};
+		foreach (vector placed : spots)
+		{
+			taken.Insert(placed);
+		}
+
+		foreach (int pi, RZ_TracePiece piece : kit.m_aPieces)
+		{
+			if (!piece || piece.m_sScene != s.kind)
+				continue;
+
+			if (piece.m_sPrefab.IsEmpty())
+			{
+				if (!piece.m_sFaded.IsEmpty() && age >= 2 && !prefabs.IsEmpty())
+					prefabs[0] = piece.m_sFaded;
+
+				continue;
+			}
+
+			if (piece.m_eDropsAt == RZ_ETracePieceDrop.WEATHERED && age >= 1)
+				continue;
+
+			if (piece.m_eDropsAt == RZ_ETracePieceDrop.OLD && age >= 2)
+				continue;
+
+			if (prefabs.Count() >= PIECES || s.inside)
+				break;
+
+			if (!ground)
+			{
+				ground = new RZ_DressGround();
+				RZ_DressPlacer.ReadGround(Pos(s), ground);
+			}
+
+			vector at;
+			int seed = RZ_Util.RoundToInt(s.x * 3 + s.z * 7) + pi * 977;
+			if (!RZ_DressPlacer.Around(Pos(s), 2, 6, seed, ground, taken, 1.5, at))
+				continue;
+
+			ResourceName prefab = piece.m_sPrefab;
+			if (!piece.m_sFaded.IsEmpty() && age >= 2)
+				prefab = piece.m_sFaded;
+
+			taken.Insert(at);
+			prefabs.Insert(prefab);
+			spots.Insert(at);
+			yaws.Insert(RZ_Compass.Bearing(at, Pos(s)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The scene's own pieces from the kit.
+	protected void OwnPieces(RZ_Scene s, notnull array<ResourceName> prefabs, notnull array<vector> spots, notnull array<float> yaws)
 	{
 		RZ_TraceKit kit = m_Traces.GetKit();
 		vector at = Pos(s);
@@ -1326,7 +1513,16 @@ class RZ_Scenes
 			case "F4": Piece(kit.m_sChurchDoor, at, yaw, prefabs, spots, yaws); return;
 			case "F5": Piece(kit.m_sRoadblock, RZ_Marks.Verge(at, 6, 9), yaw, prefabs, spots, yaws); return;
 			case "F6": Piece(kit.m_sNoticeWall, at, yaw, prefabs, spots, yaws); return;
-			case "F7": Piece(kit.m_sShutter, at, yaw, prefabs, spots, yaws); return;
+			case "F7":
+			{
+				// On a garage's own shutter: the Red Hand's door board there, else the kit's shutter
+				if (s.b == 1 && !kit.m_sBoardRedHand.IsEmpty())
+					Piece(kit.m_sBoardRedHand, at, yaw, prefabs, spots, yaws);
+				else
+					Piece(kit.m_sShutter, at, yaw, prefabs, spots, yaws);
+
+				return;
+			}
 			case "F8": Piece(kit.m_sObservationPost, at, yaw, prefabs, spots, yaws); return;
 			case "N1":
 			{
@@ -1570,6 +1766,53 @@ class RZ_Scenes
 			newest.epilogue = true;
 			newest.until = -1;
 			Show(newest);
+			handed++;
+		}
+
+		return handed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For errands' dealer (designed cards anchored on traces): the nearest standing scene of one of
+	//! `kinds` ("V2", "L1", "L5,V7") within radius of pos, with its spot and key. False if none.
+	bool SceneNear(string kinds, vector pos, float radius, out vector at, out string key)
+	{
+		array<string> want = {};
+		kinds.Split(",", want, true);
+		float best = radius;
+		bool found = false;
+		foreach (RZ_Scene s : m_aScenes)
+		{
+			if (want.Find(s.kind) < 0)
+				continue;
+
+			float d = RZ_Util.DistXZ(Pos(s), pos);
+			if (d <= best)
+			{
+				best = d;
+				at = Pos(s);
+				key = s.key;
+				found = true;
+			}
+		}
+
+		return found;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! V7's fallen posts still standing at the cure pass to the epilogue: they stay for the week,
+	//! where the epilogue's outpost boards are (docs/EPILOGUE.md). How many.
+	int HandOverPosts()
+	{
+		int handed = 0;
+		foreach (RZ_Scene s : m_aScenes)
+		{
+			if (s.kind != "V7" || s.epilogue)
+				continue;
+
+			s.epilogue = true;
+			s.until = -1;
+			Show(s);
 			handed++;
 		}
 

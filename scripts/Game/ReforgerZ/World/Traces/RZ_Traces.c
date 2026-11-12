@@ -166,6 +166,39 @@ class RZ_TraceKit
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loudspeaker (optional, S7): a SoundComponent and RZ_CallSoundComponent, a chime and static. Empty = the subtitle only", "et")]
 	ResourceName m_sLoudspeaker;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Generator hum, night (optional, S5): the same hum, quieter, played after dark. Empty = the day's hum all night", "et")]
+	ResourceName m_sGeneratorHumNight;
+
+	[Attribute(desc: "Pieces that age (optional): more pieces for a scene, round its centre, each dropped once the scene is weathered or old; or a faded twin for a scene's own piece (Prefab empty, Faded set). Empty = each scene is its one composition")]
+	ref array<ref RZ_TracePiece> m_aPieces;
+}
+
+//------------------------------------------------------------------------------------------------
+//! One piece that ages (docs/TRACES.md, How scenes age): a scene's extra piece, or its own piece's
+//! faded twin. Made with RZ_Util.NewWithDefaults in code.
+[BaseContainerProps()]
+class RZ_TracePiece
+{
+	[Attribute("", desc: "Scene: the kind it belongs to, as the docs name it (F1-F8, N1, N2, V1-V8, L1, L2, L5, L6)")]
+	string m_sScene;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Piece: one more piece, 2-6 m from the scene's centre (a suitcase, a chair, a bucket). Empty with Faded set: Faded replaces the scene's own piece once it's old", "et")]
+	ResourceName m_sPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Faded (optional): this piece, or the scene's own, weathered: shown instead in the scene's last third (the first days: from Overrun)", "et")]
+	ResourceName m_sFaded;
+
+	[Attribute("0", UIWidgets.ComboBox, "Drops at: the piece is gone from this age on (a suitcase taken, a chair fallen). Never; Weathered (the scene's middle third, the first days from Collapse); Old (its last third, the first days from Overrun)", "", ParamEnumArray.FromEnum(RZ_ETracePieceDrop))]
+	RZ_ETracePieceDrop m_eDropsAt;
+}
+
+//------------------------------------------------------------------------------------------------
+enum RZ_ETracePieceDrop
+{
+	NEVER,
+	WEATHERED,
+	OLD
 }
 
 //------------------------------------------------------------------------------------------------
@@ -226,6 +259,9 @@ class RZ_TraceSettings
 
 	[Attribute("0", desc: "Lit windows: a small light inside the doors of lived-in buildings after dark, drawn on each client. Off until the Workbench spike shows it at the windows and not through the walls")]
 	bool m_bLitWindows;
+
+	[Attribute("0", desc: "Indoor scenes (decision 10): the last meal laid inside the house, and the gym's beds inside the gym, on the loot's floor spots, when the building has one. Off until a play-test of the outdoor scenes")]
+	bool m_bIndoorScenes;
 
 	[Attribute("0", desc: "Debug: log every door read and the drawn list's size")]
 	bool m_bDebug;
@@ -350,6 +386,47 @@ class RZ_Traces
 	bool DoorMarksOn() { return m_Settings.m_bEnabled && m_Settings.m_bDoorMarks; }
 	RZ_TraceSettings GetSettings() { return m_Settings; }
 	RZ_TraceKit GetKit() { return m_Settings.Kit(); }
+
+	//------------------------------------------------------------------------------------------------
+	//! One kit with the epilogue (docs/TRACES.md, The cure and the epilogue): Traces' own piece for
+	//! an epilogue mark whose own slot is empty, by the beat's key and words: a grave, a truck wreck,
+	//! the sheet on posts, the stencilled board, tape between posts, a board, the candle jars. "" if
+	//! the kit has none.
+	static ResourceName EpilogueKit(string key, string more)
+	{
+		RZ_TraceKit kit = RZ_TraceSettings.Get().Kit();
+		if (!kit)
+			return "";
+
+		if (key.StartsWith("grave.") || key.StartsWith("leaders."))
+			return kit.m_sGrave;
+
+		if (key.StartsWith("wreck."))
+			return kit.m_sTruckBastion;
+
+		if (key == "roster")
+			return kit.m_sSeasonStencil;
+
+		if (key.StartsWith("town."))
+		{
+			if (more.Contains("sheet"))
+				return kit.m_sSeasonSheet;
+
+			if (more.Contains("stencil"))
+				return kit.m_sSeasonStencil;
+
+			if (more.Contains("Tape"))
+				return kit.m_sSeasonTape;
+
+			if (more.Contains("candle"))
+				return kit.m_sCandleJars;
+		}
+
+		if (key.StartsWith("post.") || key == "station" || key.StartsWith("faction."))
+			return kit.m_sSeasonBoard;
+
+		return "";
+	}
 	RZ_DoorMarks GetDoors() { return m_Doors; }
 	RZ_DoorSlots GetSlots() { return m_Slots; }
 	RZ_TownHistory History() { return m_History; }
@@ -499,7 +576,8 @@ class RZ_Traces
 		m_bHanded = true;
 		int graves = m_Players.DropGraves();
 		int wrecks = m_Scenes.HandOver();
-		RZ_Log.Info(string.Format("Traces: handed over to the epilogue (%1 graves down, %2 wrecks kept for the week).", graves, wrecks));
+		int posts = m_Scenes.HandOverPosts();
+		RZ_Log.Info(string.Format("Traces: handed over to the epilogue (%1 graves down, %2 wrecks and %3 fallen posts kept for the week).", graves, wrecks, posts));
 	}
 
 	//------------------------------------------------------------------------------------------------

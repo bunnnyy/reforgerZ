@@ -214,10 +214,8 @@ class RZ_CampPlace
 
 //------------------------------------------------------------------------------------------------
 //! Ground near a place, read once while it's dressed.
-class RZ_CampGround
+class RZ_CampGround : RZ_DressGround
 {
-	ref array<IEntity> m_aBuildings = {};
-	ref array<vector> m_aRoad = {};		// road segments, two points each
 }
 
 //------------------------------------------------------------------------------------------------
@@ -368,9 +366,6 @@ class RZ_CampLife
 	protected static const float KEEP_CLEAR = 4;			// metres from a quartermaster, the medic, the barrier
 	protected static const float LEADER_CLEAR = 6;			// from a leader's seat (the body stands 2-5 m from it)
 	protected static const float PIECE_GAP = 5.5;
-	protected static const float ROAD_CLEAR = 6;			// from a road's centre line
-	protected static const float BUILDING_MARGIN = 2;
-	protected static const float FLAT_STEP = 0.64;			// height change over 3 m: about 12 degrees
 	protected static const float SHARE_RADIUS = 60;			// a place this close to a dressed one isn't dressed again
 	protected static const int TRIES = 10;
 
@@ -433,6 +428,21 @@ class RZ_CampLife
 	{
 		if (s_aPieces && e)
 			s_aPieces.RemoveItem(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Camp life's own pieces standing within radius of pos (Traces finds the table lamp, the Halcyon
+	//! generator and Bastion's loudspeaker pole among them: World/Traces/RZ_TraceSounds.c).
+	static void PiecesNear(vector pos, float radius, notnull array<IEntity> result)
+	{
+		if (!s_aPieces)
+			return;
+
+		foreach (IEntity e : s_aPieces)
+		{
+			if (e && RZ_Util.DistXZ(e.GetOrigin(), pos) <= radius && RZ_Util.GetPrefabName(e).Contains("RZ_Dress_"))
+				result.Insert(e);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -881,104 +891,29 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	protected bool GoodSpot(RZ_CampPlace p, RZ_CampGround ground, vector spot)
 	{
-		// Buildings (locked ones and their doorway blockers included) are checked below, from the
-		// one query ReadGround made
-		if (RZ_Util.IsWater(spot) || RZ_Perimeter.IsNearLineAt(spot))
-			return false;
-
-		if (!IsFlat(spot))
-			return false;
-
-		foreach (vector k : p.m_aKeepClear)
-		{
-			if (RZ_Util.DistXZ(k, spot) < KEEP_CLEAR)
-				return false;
-		}
-
 		foreach (vector seat : p.m_aLeaderSeats)
 		{
 			if (RZ_Util.DistXZ(seat, spot) < LEADER_CLEAR)
 				return false;
 		}
 
+		// The shared placer's rules (World/Traces/RZ_DressPlacer.c): dry, off the line, flat, clear
+		// of the quartermasters, the medic and the barrier, apart from the other pieces, off the
+		// roads and out of the buildings' footprints (locked ones and their doorway blockers too)
+		array<vector> taken = {};
 		foreach (RZ_CampPiece other : p.m_aPieces)
 		{
-			if (RZ_Util.DistXZ(other.m_vPos, spot) < PIECE_GAP)
-				return false;
+			taken.Insert(other.m_vPos);
 		}
 
-		for (int i = 0; i + 1 < ground.m_aRoad.Count(); i += 2)
-		{
-			if (DistToSegment(spot, ground.m_aRoad[i], ground.m_aRoad[i + 1]) < ROAD_CLEAR)
-				return false;
-		}
-
-		foreach (IEntity b : ground.m_aBuildings)
-		{
-			if (b && RZ_LockedSpots.InFootprint(b, spot, BUILDING_MARGIN))
-				return false;
-		}
-
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Slope under about 12 degrees, from four ground heights 1.5 m around the spot.
-	protected static bool IsFlat(vector spot)
-	{
-		BaseWorld world = GetGame().GetWorld();
-		float east = world.GetSurfaceY(spot[0] + 1.5, spot[2]);
-		float west = world.GetSurfaceY(spot[0] - 1.5, spot[2]);
-		float north = world.GetSurfaceY(spot[0], spot[2] + 1.5);
-		float south = world.GetSurfaceY(spot[0], spot[2] - 1.5);
-		return Math.AbsFloat(east - west) < FLAT_STEP && Math.AbsFloat(north - south) < FLAT_STEP;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static float DistToSegment(vector pt, vector a, vector b)
-	{
-		float dx = b[0] - a[0];
-		float dz = b[2] - a[2];
-		float len2 = dx * dx + dz * dz;
-		if (len2 < 0.01)
-			return RZ_Util.DistXZ(pt, a);
-
-		float t = ((pt[0] - a[0]) * dx + (pt[2] - a[2]) * dz) / len2;
-		t = Math.Clamp(t, 0, 1);
-		vector proj = a;
-		proj[0] = a[0] + dx * t;
-		proj[2] = a[2] + dz * t;
-		return RZ_Util.DistXZ(pt, proj);
+		return RZ_DressPlacer.Good(spot, ground, p.m_aKeepClear, KEEP_CLEAR, taken, PIECE_GAP);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Buildings and road segments near the place, and which way its approach faces.
 	protected void ReadGround(RZ_CampPlace p, RZ_CampGround ground)
 	{
-		RZ_BuildingQuery.FindBuildings(p.m_vPos, 70, ground.m_aBuildings);
-
-		RoadNetworkManager roads = RZ_Perimeter.GetRoadNetwork();
-		if (roads)
-		{
-			float r = 160;
-			vector mins = Vector(p.m_vPos[0] - r, -1000, p.m_vPos[2] - r);
-			vector maxs = Vector(p.m_vPos[0] + r, 10000, p.m_vPos[2] + r);
-			array<BaseRoad> found = {};
-			roads.GetRoadsInAABB(mins, maxs, found); // VERIFY: the road network's points follow every drivable road, so pieces keep off them (else a piece can stand on a road)
-			foreach (BaseRoad road : found)
-			{
-				if (!road)
-					continue;
-
-				array<vector> points = {};
-				road.GetPoints(points);
-				for (int i = 1; i < points.Count(); i++)
-				{
-					ground.m_aRoad.Insert(points[i - 1]);
-					ground.m_aRoad.Insert(points[i]);
-				}
-			}
-		}
+		RZ_DressPlacer.ReadGround(p.m_vPos, ground);
 
 		// The approach faces the nearest road point at least 15 m out, else the nearest other town
 		float best = float.MAX;

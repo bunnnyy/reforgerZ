@@ -144,6 +144,13 @@ class RZ_TribeSettings
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Great call sound prefab (optional): the great one's dusk call, deeper. Empty: the call sound", "et")]
 	ResourceName m_sGreatCallSoundPrefab;
+
+	// The small rules (Zombies/RZ_TribeRest.c)
+	[Attribute("0", desc: "Prime after Halcyon: after a season Halcyon won, the next season's seeded packs start with leaders in their prime (6-9 season days into leading) instead of Rising. Off by default")]
+	bool m_bPrimeAfterHalcyon;
+
+	[Attribute("", desc: "Rival faction (optional): a faction key in the faction manager, hostile to the infected's own. During a staged Border Night the second side's hunter bodies at the border join it, so the two sides really fight; they go back when it's settled. Empty: the fight is heard, then found, as before")]
+	string m_sRivalFaction;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -167,6 +174,7 @@ class RZ_Tribes
 	protected ref RZ_TribePeople m_People;
 	protected ref RZ_TribeGreat m_Great;
 	protected ref RZ_TribeProps m_Props;
+	protected ref RZ_TribeRest m_Rest;
 	protected RZ_Tribe m_ScoreFor;			// weak: the tribe whose trails are being worked out (fear, burned land)
 	protected int m_iLastSeasonDay = -1;
 	protected bool m_bContested;
@@ -193,7 +201,6 @@ class RZ_Tribes
 	protected ref map<int, float> m_mTrackToldAt = new map<int, float>();
 	protected ref map<int, int> m_mTakenDay = new map<int, int>();		// player: the season day they last fed a tribe
 	protected ref map<int, bool> m_mCalledTo = new map<int, bool>();	// players told a dusk call this dusk
-	protected int m_iLastWandererNight = -10;
 	protected bool m_bMoonTell;				// a bright moon tonight: told to players near a pack once
 
 	static const float DATA_SECONDS = 60;
@@ -216,6 +223,7 @@ class RZ_Tribes
 		m_People = new RZ_TribePeople(gm, this);
 		m_Great = new RZ_TribeGreat(gm, this);
 		m_Props = new RZ_TribeProps(gm, this);
+		m_Rest = new RZ_TribeRest(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -231,6 +239,7 @@ class RZ_Tribes
 	RZ_TribePeople GetPeople() { return m_People; }
 	RZ_TribeGreat GetGreat() { return m_Great; }
 	RZ_TribeProps GetProps() { return m_Props; }
+	RZ_TribeRest GetRest() { return m_Rest; }
 	array<ref RZ_Tribe> GetRovers() { return m_Life.GetRovers(); }
 	int CountedNights() { return m_iCountedNights; }
 
@@ -425,6 +434,7 @@ class RZ_Tribes
 		m_Bodies.Tick(dt, ids, players);
 		m_People.Tick(dt, ids, players);
 		m_Props.Tick(dt, players);
+		m_Rest.RivalTick(dt);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -489,7 +499,7 @@ class RZ_Tribes
 
 		foreach (RZ_Tribe t : m_aTribes)
 		{
-			if (m_ePhase == RZ_ETribePhase.DAY && !t.m_bDayOut && (noClock || h >= 7))
+			if (m_ePhase == RZ_ETribePhase.DAY && !t.m_bDayOut && (noClock || h >= m_Rest.DayOutHour(t)))
 				DayOut(t);
 
 			if (m_ePhase == RZ_ETribePhase.DAY && t.m_bDayOut && !t.m_bDayBack && h >= 18)
@@ -549,11 +559,16 @@ class RZ_Tribes
 				DawnCount(t, players, ids);
 		}
 
+		// The stragglers after a bad night come home between 06:00 and 07:30
+		if (m_ePhase == RZ_ETribePhase.DAY)
+			m_Rest.StragglerTick(h, ids, players);
+
 		// A vacuum's silence, for players near it who heard no call
 		if (m_ePhase == RZ_ETribePhase.DUSK && h >= 18.8 && m_bContested && !m_bVacuumTold)
 		{
 			m_bVacuumTold = true;
 			m_People.AfterCalls(ids, players);
+			m_Rest.ClanRelay(ids, players);
 			foreach (int i, IEntity p : players)
 			{
 				string quiet = m_Life.VacuumLine(p.GetOrigin());
@@ -624,7 +639,7 @@ class RZ_Tribes
 
 			taken.Insert(lair);
 			RZ_Tribe t = NewTribe(lair, Math.RandomIntInclusive(10, 14), column);
-			t.m_fLedSince = RZ_SeasonClock.Days() - Math.RandomFloat(2, 5);
+			t.m_fLedSince = m_Rest.SeedLedSince();
 		}
 
 		LogTribes("seeded");
@@ -922,7 +937,7 @@ class RZ_Tribes
 		}
 
 		if (t.m_fRadius <= 0 || !m_Restored)
-			t.m_fRadius = Math.Clamp(lo + wild * 25, lo, hi);
+			t.m_fRadius = m_Rest.LookRange(t, Math.Clamp(lo + wild * 25, lo, hi), hi);
 
 		t.m_aGrounds.Clear();
 		t.m_aTrails.Clear();
@@ -961,6 +976,9 @@ class RZ_Tribes
 			AddGround(t, edge);
 		}
 
+		// The grounds it followed its prey to
+		t.m_aPrey.Clear();
+		m_Rest.PreyGrounds(t);
 		BuildTrails(t);
 		Posts(t);
 	}
@@ -986,6 +1004,7 @@ class RZ_Tribes
 		}
 
 		m_ScoreFor = null;
+		m_Rest.RoadCrossings(t);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1119,7 +1138,8 @@ class RZ_Tribes
 	protected void Posts(RZ_Tribe t)
 	{
 		RZ_Land land = m_GM.GetLand();
-		int reach = t.m_fRadius / RZ_Land.CELL;
+		float postRange = t.m_fRadius * m_Rest.PostReach(t);
+		int reach = postRange / RZ_Land.CELL;
 		reach++;
 		array<vector> best = {};
 		array<float> bestH = {};
@@ -1128,7 +1148,7 @@ class RZ_Tribes
 			for (int dx = -reach; dx <= reach; dx++)
 			{
 				vector p = t.m_vLair + Vector(dx * RZ_Land.CELL, 0, dz * RZ_Land.CELL);
-				if (RZ_Util.DistXZ(p, t.m_vLair) > t.m_fRadius || RZ_Util.DistXZ(p, t.m_vLair) < 150)
+				if (RZ_Util.DistXZ(p, t.m_vLair) > postRange || RZ_Util.DistXZ(p, t.m_vLair) < 150)
 					continue;
 
 				int idx = land.CellAt(p);
@@ -1235,6 +1255,8 @@ class RZ_Tribes
 			case RZ_ETribePart.YOUNG: r = 55; break;
 		}
 
+		// A dust-grey pack lies up close, under cover
+		r = r * m_Rest.RingScale(t);
 		p.m_vRest = RZ_Util.GroundPos(t.m_vLair + RZ_Behaviour.RandomDir() * r);
 		p.m_vPos = p.m_vRest;
 		p.m_sNote = t.m_sPlace;
@@ -1253,11 +1275,12 @@ class RZ_Tribes
 			t.m_bDayBack = false;
 			t.m_bCalled = false;
 			t.m_bSetOut = false;
-			t.m_fSetOutHour = Math.RandomFloat(19.5, 20.5);
+			t.m_fSetOutHour = m_Rest.SetOutHour(t);
 			if (!t.m_bLateHome)
 				SendHome(t, false);
 
 			t.m_bMoon = false;
+			m_Rest.Posts(t, false);
 		}
 
 		m_Life.RoversAtPhase(RZ_ETribePhase.DAY);
@@ -1465,6 +1488,22 @@ class RZ_Tribes
 			centre = (t.m_vLair + nextLair) * 0.5;
 		}
 
+		// Furious: its walkers walk the capture road toward the lab, as far as half again its range
+		array<vector> capture = {};
+		if (m_People.IsFurious(t) && FuriousTrail(t, capture))
+		{
+			foreach (vector cp : capture)
+			{
+				if (RZ_Util.DistXZ(cp, t.m_vLair) > t.m_fRadius * 1.5)
+					break;
+
+				walk.Insert(cp);
+			}
+
+			walk.Insert(t.m_vLair);
+			return;
+		}
+
 		m_ScoreFor = t;
 		walk.Insert(t.m_vLair);
 		int points = Math.RandomIntInclusive(3, 5);
@@ -1571,7 +1610,7 @@ class RZ_Tribes
 			t.m_bDawnCalled = false;
 			t.m_aBlocked.Clear();
 			t.m_aDeafTo.Clear();
-			t.m_fSetOutHour = Math.RandomFloat(19.5, 20.5);
+			t.m_fSetOutHour = m_Rest.SetOutHour(t);
 		}
 
 		m_Life.OnDusk();
@@ -1614,18 +1653,35 @@ class RZ_Tribes
 		t.m_bCalled = true;
 		bool silent = t.m_bFed;
 		t.m_bFed = false;
+		m_Rest.OnCall(t, silent);
+		float reach = m_Rest.CallReach(t);
 		foreach (int i, IEntity p : players)
 		{
 			int id = ids[i];
 			if (m_mCalledTo.Contains(id))
 				continue;
 
+			// A call from a ridge carries further, relayed ridge to ridge, to whoever has no nearer one
 			RZ_Tribe nearest = NearestTribe(p.GetOrigin(), CALL_RANGE);
+			bool relayed = false;
+			if (!nearest && reach > CALL_RANGE && NearestTribe(p.GetOrigin(), reach) == t)
+			{
+				nearest = t;
+				relayed = true;
+			}
+
 			if (nearest != t)
 				continue;
 
 			m_mCalledTo.Set(id, true);
-			m_GM.NotifyPlayer(id, "At dusk", CallLine(t, silent));
+			string line = CallLine(t, silent);
+			if (relayed && !silent)
+				line = "Far off, carried from ridge to ridge. " + line;
+
+			if (!silent)
+				line += m_Rest.SkillLine(t, id, p.GetOrigin());
+
+			m_GM.NotifyPlayer(id, "At dusk", line);
 		}
 
 		// The call as a sound at the lair (the great one's has its own, made by RZ_TribeGreat)
@@ -1665,6 +1721,7 @@ class RZ_Tribes
 		if (t.Stage() == 2)
 			return string.Format("A ragged call from %1, an old voice. %2 answer it.", place, answers) + more;
 
+		more += m_Rest.ShortHanded(t);
 		if (t.Band() >= 2)
 			return string.Format("A long call from %1, and %2 answering. They'll be out early tonight.", place, answers) + more;
 
@@ -1733,10 +1790,20 @@ class RZ_Tribes
 			t.m_aTrailsTonight.Insert(first);
 		}
 
-		// A frenzy night: three trails, and the wire whatever its hunger
+		// A frenzy night: three trails, and the wire whatever its hunger; a clan's first trail runs
+		// to one ground, the wire nearest the clan's middle
 		bool frenzy = t.m_fFrenzy > 0 && furious.IsEmpty();
 		if (frenzy)
 			trails = 3;
+
+		vector clanGround;
+		if (frenzy && m_Rest.ClanGround(t, clanGround))
+		{
+			array<vector> toClan = {};
+			BuildTrail(t.m_vLair, clanGround, toClan);
+			tonight[0] = toClan;
+			t.m_aTrailsTonight.Clear();
+		}
 
 		bool noWire = t.m_iNoWireNight == m_iCountedNights;
 		for (int extra = 1; extra < trails; extra++)
@@ -1799,6 +1866,7 @@ class RZ_Tribes
 
 		Habits(t);
 		m_Ways.OnSetOut(t);
+		m_Rest.DuskPosts(t, tonight[0]);
 		RZ_Log.Info(string.Format("Tribes: %1 sets out on %2 trails (core out %3).", t.m_sPlace, tonight.Count(), coreOut));
 	}
 
@@ -2076,6 +2144,7 @@ class RZ_Tribes
 		}
 
 		m_Ways.OnCountedNight();
+		m_Rest.OnCountedNight();
 		m_Life.Starvation();
 		RZ_Log.Info(string.Format("Tribes: a counted night (%1 so far).", m_iCountedNights));
 	}
@@ -2105,6 +2174,9 @@ class RZ_Tribes
 			if (m_aTribes.Find(t) < 0)
 				continue;
 
+			// A bad night leaves stragglers out, to come home late
+			m_Rest.Dawn(t);
+
 			// Echoes: a soldier's tribe comes home at 05:30, a farmer's at first light by the fields;
 			// the column walks toward the line first
 			m_Ways.ColumnDawn(t);
@@ -2128,6 +2200,10 @@ class RZ_Tribes
 				continue;
 
 			if (coreOnly && !p.IsCore())
+				continue;
+
+			// A straggler after a bad night comes home late, on its own (RZ_TribeRest)
+			if (m_Rest.IsStraggler(p))
 				continue;
 
 			PathHome(t, p);
@@ -2172,6 +2248,7 @@ class RZ_Tribes
 	protected void EndVigil(RZ_Tribe t)
 	{
 		t.m_bVigil = false;
+		m_Rest.VigilEnds(t);
 		if (t.m_bHasAlpha)
 			return;
 
@@ -2302,6 +2379,18 @@ class RZ_Tribes
 		}
 
 		ReadTracks(ids, players);
+		m_Rest.SeePrey(players);
+		m_Rest.TrucksAtCrossings();
+		if (m_ePhase == RZ_ETribePhase.DAY)
+		{
+			RZ_Environment env = m_GM.GetEnvironment();
+			bool fog = env && env.IsFoggy();
+			foreach (RZ_Tribe pt : m_aTribes)
+			{
+				m_Rest.Posts(pt, fog);
+			}
+		}
+
 		int day = RZ_SeasonClock.Day();
 		m_iLastSeasonDay = day;
 		m_Life.Tick(dt, ids, players);
@@ -2443,7 +2532,7 @@ class RZ_Tribes
 	//------------------------------------------------------------------------------------------------
 	//! Takings as data (rule 7), at night with no player within 1 km: a wanderer near a hunting
 	//! part's trail is taken one time in ten, at most one a tribe every 3 counted nights. Trucks
-	//! taken as data are planned.
+	//! taken as data: RZ_TribeLife.TryTruck, and where a trail crosses a road (RZ_TribeRest).
 	protected void Take(RZ_Tribe t, RZ_TribePart p, array<IEntity> players)
 	{
 		if (m_ePhase != RZ_ETribePhase.NIGHT || !p.m_bOut || !p.IsHunting() || p.HasBody() || t.IsRover())
@@ -2456,14 +2545,15 @@ class RZ_Tribes
 		if (m_Life.TryTruck(t, p))
 			return;
 
-		if (m_iCountedNights - m_iLastWandererNight < 3 || Math.RandomFloat01() > 0.1)
+		// A wanderer a tribe every 3 counted nights (decision 15)
+		if (m_iCountedNights - t.m_iLastWandererNight < 3 || Math.RandomFloat01() > 0.1)
 			return;
 
 		RZ_Wanderers wanderers = m_GM.GetWanderers();
 		if (!wanderers || !wanderers.TakeNear(p.m_vPos, 150))
 			return;
 
-		m_iLastWandererNight = m_iCountedNights;
+		t.m_iLastWandererNight = m_iCountedNights;
 		// Traces' V5: a runner taken within 3 km of the lab or a Halcyon field station leaves his case
 		// in the ditch (World/Traces/RZ_Scenes.c)
 		RZ_Traces traces = m_GM.GetTraces();
@@ -2642,6 +2732,22 @@ class RZ_Tribes
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An outpost's or a safehouse's leader bitten off-screen (RZ_Leaders): in the open near a pack's
+	//! range, the pack took them (the taken, rule 4); in a town, they're the town's.
+	void OnLeaderBitten(vector at, string name)
+	{
+		if (!IsEnabled() || m_aTribes.IsEmpty() || InTown(at))
+			return;
+
+		RZ_Tribe t = TribeForOpen(at);
+		if (!t)
+			return;
+
+		Taken(t, at, name, true);
+		m_People.OnNamedTaken(t, name, at, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Inside a settlement's radius + 100 m.
 	protected bool InTown(vector at)
 	{
@@ -2745,6 +2851,7 @@ class RZ_Tribes
 
 		t.AddTaken(who);
 		m_Ways.OnTaken(t, at, who);
+		m_Rest.OnTaken(t, at);
 		string low = who;
 		low.ToLower();
 		if (young && (low.Contains("soldier") || low.Contains("patrol") || low.Contains("deserter")))
@@ -2829,6 +2936,9 @@ class RZ_Tribes
 		}
 
 		m_Bodies.OnLoss(t, p);
+		if (!silent)
+			m_Rest.OnDied(t, at);
+
 		if (!silent && (z.m_eRole == RZ_EInfectedRole.YOUNG || (p && p.m_eKind == RZ_ETribePart.YOUNG)))
 			m_People.OnYoungDown(t, at, RZ_TribeContract.WantedYoung(m_GM, t, at));
 
@@ -2854,17 +2964,21 @@ class RZ_Tribes
 				m_People.OnLeaderKilled(t, at);
 
 			StartVigil(t, at);
+			int n = 0;
 			if (!silent && PlayerWithin(at, 150) && !Cured() && t.m_iAlphaSamples < 3 && stage > 0)
 			{
-				int n = 2;
+				n = 2;
 				if (stage == 2)
 					n = 3;
 
 				t.m_iAlphaSamples++;
-				m_GM.SpawnSamples(at, n);
 				OnSample(n, true);
-				m_People.OnSampleNear(t, at);
 			}
+
+			// Its samples and its body are kept through the vigil (RZ_TribeRest)
+			m_Rest.VigilKeep(t, z, at, n);
+			if (n > 0)
+				m_People.OnSampleNear(t, at);
 
 			return;
 		}
@@ -3232,6 +3346,7 @@ class RZ_Tribes
 		data.life = m_Life.Save();
 		data.people = m_People.Save();
 		data.great = m_Great.Save();
+		data.restPatrolNight = m_Rest.GetPatrolNight();
 		m_Borders.Save(data.borders);
 		foreach (RZ_Tribe r : m_Life.GetRovers())
 		{
@@ -3292,6 +3407,21 @@ class RZ_Tribes
 		RZ_TribeWays.SaveTribe(t, s);
 		RZ_TribePeople.SaveTribe(t, s);
 		s.great = t.m_bGreat;
+		foreach (int pi, vector pa : t.m_aPreyAt)
+		{
+			s.preyX.Insert(pa[0]);
+			s.preyZ.Insert(pa[2]);
+			s.preyHits.Insert(t.m_aPreyHits[pi]);
+		}
+
+		foreach (vector pg : t.m_aPreyGrounds)
+		{
+			s.preyGroundX.Insert(pg[0]);
+			s.preyGroundZ.Insert(pg[2]);
+		}
+
+		s.takenAliveAt = t.m_fTakenAliveAt;
+		s.voicedLeader = t.m_fVoicedLeader;
 		return s;
 	}
 
@@ -3309,6 +3439,7 @@ class RZ_Tribes
 		m_Life.Restore(data.life);
 		m_People.Restore(data.people);
 		m_Great.Restore(data.great);
+		m_Rest.SetPatrolNight(data.restPatrolNight);
 		m_Borders.Restore(data.borders);
 		m_fNightOnline = data.nightOnline;
 		m_fTribeSamples = data.tribeSamples;
@@ -3409,6 +3540,26 @@ class RZ_Tribes
 		RZ_TribeWays.RestoreTribe(t, s);
 		RZ_TribePeople.RestoreTribe(t, s);
 		t.m_bGreat = s.great && t.m_bHasAlpha;
+		if (s.preyX && s.preyZ && s.preyHits)
+		{
+			for (int pi = 0; pi < s.preyX.Count() && pi < s.preyZ.Count() && pi < s.preyHits.Count(); pi++)
+			{
+				t.m_aPreyAt.Insert(Vector(s.preyX[pi], 0, s.preyZ[pi]));
+				t.m_aPreyHits.Insert(s.preyHits[pi]);
+				t.m_aPreyNight.Insert(-1);
+			}
+		}
+
+		if (s.preyGroundX && s.preyGroundZ)
+		{
+			for (int gi = 0; gi < s.preyGroundX.Count() && gi < s.preyGroundZ.Count(); gi++)
+			{
+				t.m_aPreyGrounds.Insert(RZ_Util.GroundPos(Vector(s.preyGroundX[gi], 0, s.preyGroundZ[gi])));
+			}
+		}
+
+		t.m_fTakenAliveAt = s.takenAliveAt;
+		t.m_fVoicedLeader = s.voicedLeader;
 		if (t.m_sAlphaName.IsEmpty() && t.m_bHasAlpha)
 			m_Ways.NameAlpha(t);
 
@@ -3488,6 +3639,7 @@ class RZ_Tribes
 			RZ_Log.Info("Status | " + m_People.StatusText());
 
 		RZ_Log.Info(string.Format("Status | the great one: %1 | %2", m_Great.StatusText(), m_Props.StatusText()));
+		RZ_Log.Info("Status | tribes' " + m_Rest.StatusText());
 	}
 
 	//------------------------------------------------------------------------------------------------

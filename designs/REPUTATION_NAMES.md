@@ -500,7 +500,7 @@ Reputation lands in four steps across the plan's build order.
 - "You're the one who gave Bastion the book" is step 1 of the opening chain.
 - The majors' own "Red Hand Talk checks need one tier more" is unchanged.
 
-**The tribes** ([INFECTED.md](INFECTED.md)):
+**The tribes** ([INFECTED.md](../docs/INFECTED.md)):
 - Laying down a tribe's leader is a deed, in each faction's word ([§10](#10-deeds-and-tallies)). For the Red Hand it
   gives Bailiff.
 - "Strays" stays the crews' word for the Haven's exiles.

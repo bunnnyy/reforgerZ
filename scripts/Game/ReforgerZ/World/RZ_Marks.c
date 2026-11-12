@@ -44,6 +44,7 @@ class RZ_Mark
 	bool m_bTextOnly;
 	IEntity m_Entity;
 	float m_fUpAt;			// the spawner's clock when the prop went up
+	bool m_bExact;			// stands exactly at m_vPos (a floor inside a building), not on the ground below
 }
 
 //------------------------------------------------------------------------------------------------
@@ -161,7 +162,7 @@ class RZ_Marks
 	//! pool is full, the oldest of the lowest salience that isn't protected makes room; if none can,
 	//! the new mark is text only. yaw: the facing in degrees (a board facing out of a wall), < 0 any.
 	//! True if it has a prop.
-	bool Place(RZ_EMarkPool pool, string key, vector at, ResourceName prefab, string text, int salience = 1, float days = -1, bool protect = false, bool onVerge = true, float yaw = -1)
+	bool Place(RZ_EMarkPool pool, string key, vector at, ResourceName prefab, string text, int salience = 1, float days = -1, bool protect = false, bool onVerge = true, float yaw = -1, bool exact = false)
 	{
 		if (key.IsEmpty())
 			return false;
@@ -180,6 +181,7 @@ class RZ_Marks
 
 		m.m_sPrefab = prefab;
 		m.m_sText = text;
+		m.m_bExact = exact && !onVerge;
 		m.m_iSalience = salience;
 		m.m_bProtected = protect;
 		if (days >= 0)
@@ -291,7 +293,11 @@ class RZ_Marks
 			bool clear = m.m_ePool != RZ_EMarkPool.TRACES || m.m_Entity || closest > SpawnRadius(m.m_ePool) || RZ_TraceSpotClear.IsClear(m.m_vPos, closest);
 			if (!m.m_Entity && clear && closest <= SpawnRadius(m.m_ePool) && (cluster <= 0 || SpawnedNear(m.m_ePool, m.m_vPos) < cluster))
 			{
-				m.m_Entity = RZ_Util.SpawnPrefab(m.m_sPrefab, RZ_Util.GroundPos(m.m_vPos), m.m_fYaw);
+				vector spawnAt = RZ_Util.GroundPos(m.m_vPos);
+				if (m.m_bExact)
+					spawnAt = m.m_vPos;
+
+				m.m_Entity = RZ_Util.SpawnPrefab(m.m_sPrefab, spawnAt, m.m_fYaw);
 				m.m_fUpAt = m_fClock;
 				if (!m.m_Entity)
 					m.m_bTextOnly = true;	// a broken prefab: text from now on

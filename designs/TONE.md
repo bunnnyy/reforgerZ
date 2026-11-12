@@ -35,7 +35,7 @@ the plan's "Decisions for you". Tone's own options are taken as recommended; the
   over); the lab alone is `finale.finisher` 0. The lock is per identity for the season, survives death and
   ends at the cure ([FINALE.md](../docs/FINALE.md#the-lock)), so the option on lock scope is gone.
 - **Tribes replace Grounds** (conflicts 42 and 43). The infected's words come from
-  [INFECTED.md](INFECTED.md#people). Player text never says "alpha", "tribe" or "crawler", and "strays" means
+  [INFECTED.md](../docs/INFECTED.md#people). Player text never says "alpha", "tribe" or "crawler", and "strays" means
   only the people the Haven turned out.
 - **Mood is `SeasonMood()`** (the plan's renames). "Mood" means only the season mood now.
 - **The epilogue lasts one week** (decision 12). The epilogue's people are revisited for a week, not two
@@ -62,7 +62,7 @@ Where it meets the other designs, it owns the **voice**, and they own the mechan
 | Finale ([FINALE.md](../docs/FINALE.md)): routes, the 90% lock | The routes, the lock and its scope, who can choose, the fight | Wording rules for the pitches. Lines for players on the route (in-group), on another route (out-group), not yet sided (unsided), on a route that lost, and on the Independent route, all face to face (3.4) |
 | Epilogue ([EPILOGUE.md](../docs/EPILOGUE.md)) | Which places react, the props, the boards of record, the closing work of the week | Phrasing, variety and honour-line rules (3.5) |
 | Majors ([MAJORS.md](../docs/QUESTLINES.md#the-majors)) | The four codas (the Gate, the last call and the last roll, the last line, the paper), their lines, the page states | Running jokes switched by their flags (3.10). Nothing at their scenes |
-| Infected ([INFECTED.md](INFECTED.md)) | The marks at a range's edge, "Read the mark", each faction's words for the infected | Its word list joins the lint (6), and its rules for writing the infected move into WRITING.md |
+| Infected ([INFECTED.md](../docs/INFECTED.md)) | The marks at a range's edge, "Read the mark", each faction's words for the infected | Its word list joins the lint (6), and its rules for writing the infected move into WRITING.md |
 | Mission style ([MISSION_STYLE.md](MISSION_STYLE.md)) | Approaches by mission kind: one table in DESIGN.md | Two columns for that table: who pays, and what to watch for (4.6) |
 | Dialogue ([DIALOGUE.md](DIALOGUE.md)) | Nodes, checks, the vanilla fallback | Dry lines and their limits (3.7) |
 | Disguise ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) | The look, being caught | Lines that follow the look's results (3.9) |
@@ -129,7 +129,7 @@ Still to build:
 - **A short house** jokes about the soup, the potatoes and the chores *more*, never about who eats, and not at
   all in the 30 minutes after a death there. The narrator never jokes about a shortage.
 - **Feud or truce** on the channels (face to face is built: [WRITING.md](../docs/WRITING.md#the-voice-bank)).
-- **The infected.** [INFECTED.md](INFECTED.md#people) owns the marks and each faction's words for them. Only the
+- **The infected.** [INFECTED.md](../docs/INFECTED.md#people) owns the marks and each faction's words for them. Only the
   Red Hand jokes about the infected, in its own words ("the furniture", a crew nickname for a pack, "the boss"
   for its leader); the Haven names a pack's leader fondly, by who it was ("the big one" when nobody knew);
   Halcyon never says "him" or "her" about them; near a pack's range at dusk (or in fog) the Haven's people go
@@ -464,7 +464,7 @@ Built: [WRITING.md](../docs/WRITING.md#dark-humour-not-edginess) (5.1–5.5) and
 - **5.2:** a joke about the walk out, once the Walk Out is built ([EPILOGUE.md](../docs/EPILOGUE.md)).
 - **5.4:** the infected's row (each speaker's word, always with the place: the Haven's name or "the big one",
   Bastion's contact and "the heavy", the Red Hand's crew nickname and "the boss", Halcyon's pack number and "the
-  index"), with the tribes ([INFECTED.md](INFECTED.md#people)).
+  index"), with the tribes ([INFECTED.md](../docs/INFECTED.md#people)).
 - **5.6:** the planned tokens, as each is built: reputation's `FillFor` tokens, the infected's `{tribe:N}`,
   `{alpha:N}` and `{young:N}` (each in the speaker's own word), and the voice bank's context tokens (7), with
   `{count}` only once the majors' `orders.count` exists (until then Bastion's call says *"Strength as last

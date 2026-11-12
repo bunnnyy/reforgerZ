@@ -373,7 +373,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **279 prefab fields**: 40 on `RZ_GameModeComponent`, 232 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **284 entries**: 176 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 75 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **282 prefab fields**: 40 on `RZ_GameModeComponent`, 233 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **286 entries**: 177 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 76 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -514,6 +514,8 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | `LampKerosene_01_green.et`'s lit twin, its light on LIT_ON_SPAWN, no switch action (`RZ_Trace_Lantern_Lit.et`) | — | World > Traces > Kit > Lantern, lit | optional | S1, a lantern at the lived-in places nearest players after dark; empty = no lanterns. VERIFY 4 of the Traces spike: it lights on clients that stream it in |
 | `RZ_Sound_RadioHiss.et` | a new GenericEntity prefab with an RplComponent, a static radio mesh (no radio actions) and a SoundComponent whose project (.acp) has a looped static hiss on the event SOUND_LOOP | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Radio hiss | optional | S3, the hiss at the last meal and the Day 1 roadblock, 2 at most; empty = the broadcast's line only. Manual: the sound itself. VERIFY 6: the loop plays until the entity goes |
 | `RZ_Sound_GeneratorHum.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a looped generator hum on the event SOUND_LOOP; no mesh needed | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Generator hum | optional | S5, at the lab and Halcyon's outposts; empty = silent. Manual: the sound itself. As the radio |
+| `RZ_Sound_GeneratorHumNight.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has the generator hum, quieter, looped on the event SOUND_LOOP; no mesh needed | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Generator hum, night | optional | S5 after dark, quieter; empty = the day's hum all night. Manual: the sound itself. As the generator hum |
+| (existing prefab) | compositions built like the scenes' own (Prefabs/ReforgerZ/Traces/): one more piece for a scene (a suitcase, a chair, a bucket) and its faded twin, or a faded twin of a scene's own piece (section 4, Traces) | — | World > Traces > Kit > Pieces that age (each entry's Piece and Faded) | optional | scenes that drop a piece as they age, and boards with a fresh and a faded look; empty = each scene is its one composition |
 | `RZ_Sound_Dogs.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a few dogs barking that stop dead on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Dogs | optional | S4, 5 minutes before a pack's hunt, at a town by its lair; empty = the Hunter's line only. Manual: the sound itself. As the tribes' call sound |
 | `RZ_Sound_Bell.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has one stroke of a church bell (carrying 1.2 km) on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Bell | optional | S6, at the Day 4 church at 18:30 after a Remembered name; empty = the line only. Manual: the sound itself. VERIFY 9: it carries to 1.2 km |
 | `RZ_Sound_Loudspeaker.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a loudspeaker's chime and static on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Loudspeaker | optional | S7, at Bastion's holdings at 05:30 and 17:30; empty = the subtitle only. Manual: the sound itself. As the tribes' call sound |
@@ -1329,7 +1331,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | World | Power grid | `m_PowerSettings` | Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
-| World | Traces | `m_TraceSettings` | **Enabled** (on), **Door marks** (on), doors a town (6, 8 in a stronghold's town), layers a door (3), live writes a season day (20, 2 a town), **First days** (on), **Player traces** (on), **First days' scenes** (on: the column, the gym, the church, the roadblock, the squares' notices, Rudi's shutter, the hill, the crosses and the Day 1 sheets), **Vignettes** (on), at once (12) and dealt a season day (3), **Live traces** (on) at once (24), **Sound and light** (on), **Lit windows** (off until the spike), **Door drawing** (Decals: from the kit's atlas, boards without it, else text; Boards; Text), props on the server (40) and a cluster (12), **Debug** (off: logs every door read; lets admins write a mark), and the **Kit** of optional prefabs and materials ([TRACES.md](TRACES.md)) |
+| World | Traces | `m_TraceSettings` | **Enabled** (on), **Door marks** (on), doors a town (6, 8 in a stronghold's town), layers a door (3), live writes a season day (20, 2 a town), **First days** (on), **Player traces** (on), **First days' scenes** (on: the column, the gym, the church, the roadblock, the squares' notices, Rudi's shutter, the hill, the crosses and the Day 1 sheets), **Vignettes** (on), at once (12) and dealt a season day (3), **Live traces** (on) at once (24), **Sound and light** (on), **Lit windows** (off until the spike), **Indoor scenes** (off until a play-test of the outdoor ones), **Door drawing** (Decals: from the kit's atlas, boards without it, else text; Boards; Text), props on the server (40) and a cluster (12), **Debug** (off: logs every door read; lets admins write a mark), and the **Kit** of optional prefabs and materials ([TRACES.md](TRACES.md)) |
 | Director | Stages (list) |  | Per-stage overrides; empty = the built-in four (40, 80 and 120 hours played, spread 0.01 to 0.02 a minute; [DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread)) |
 | Director | (top level) |  | **Broadcast minutes** (25; 0 = only on first join) |
 | Director | Environment | `m_EnvironmentSettings` | Night heat spread (0.25), night specials (×1.25), rain and fog thresholds, storm thresholds, storm grounds the helicopter |
@@ -1341,7 +1343,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Zombies | Zombie settings | `m_ZombieSettings` | Common, special, horde prefabs, Move waypoint, **Empty group** (runtime groups), per-size spawns (4), activation (600 m), despawn (1.1 km), min distance (120 m), caps (60, 4 per tick), ambient per player (2), kill infection (1.5), horde heat (80), horde gap (600 s) |
 | Zombies | Adaptation | `m_AdaptationSettings` | Specials per breakthrough (0.05, cap 0.15), trait prefabs, trait share (0.15), screamers, favourite spots |
 | Zombies | Stealth | `m_StealthSettings` | **Enabled** (off: infected perception is never touched), update (1 s), radius (60 m), cap (40 an update), the visibility weights (stance with prone 0.5, speed, light by the clock and from the engine, fog, rain, storm, the surroundings floor 0.55, noise), base factors (common 1, special 1.2, horde 0.9), perception factor (×0.3 hidden, ×1 at normal visibility, up to ×1.2 in plain sight), hidden below (0.35: the HUD and losing them), losing them (8 s, search 45 s, contact 20 m), mission sight (0.6) and notice (0.35) ([DESIGN.md](DESIGN.md#stealth)) |
-| Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described), **Life cycle** (on), hunger a counted night (3), split at (24), the looks' prefabs, **People** (on: words, knowing, the packs' contracts and events, the moat, the call box, the stand's waves, the last week), **Name filter** (words), the **ID card**, **tag** and **call box** prefabs, the map of the crews (15 Favor) and the tag frequencies (25 Favor), **Great one** (on: the great one, the Gathering, the Night of Many Calls), **Bright moon** (0.85; 0 = off), and the optional sign prefabs: kill-site things (a list), the abandoned lair, the four marks and the two call sounds (empty: the lines only) ([INFECTED.md](INFECTED.md#tribes), [People](INFECTED.md#people), [The great one](INFECTED.md#the-great-one), [Signs and sounds](INFECTED.md#signs-and-sounds)) |
+| Zombies | Tribes | `m_TribeSettings` | **Enabled** (on; off: no land grid, no tribes, and the countryside's roamers and heat hordes as before), **Slots** (0 = from the land), wild km² per slot (5), the **agent budget** (100 living infected, counted in agents; also the crawlers'), cluster share (28 within 600 m), agents per tick (8), **active-AI limit** (160, for all AI; 0 = the engine's 128), land squares read a second (20), the **role prefabs** (alpha, guard, hunter, scout, young; empty lists fall back), **Day party share** (0.2; 0 = none), day party group (2-3), day party bodies near a cluster (6), **Counted night minutes** (20), **Scout sight** (120 m), **Your dead run** (Described), **Life cycle** (on), hunger a counted night (3), split at (24), the looks' prefabs, **People** (on: words, knowing, the packs' contracts and events, the moat, the call box, the stand's waves, the last week), **Name filter** (words), the **ID card**, **tag** and **call box** prefabs, the map of the crews (15 Favor) and the tag frequencies (25 Favor), **Great one** (on: the great one, the Gathering, the Night of Many Calls), **Bright moon** (0.85; 0 = off), the optional sign prefabs: kill-site things (a list), the abandoned lair, the four marks and the two call sounds (empty: the lines only), **Prime after Halcyon** (off: the next season's seeded leaders start Rising), and **Rival faction** (empty; a faction key hostile to the infected's own makes Border Nights real fights) ([INFECTED.md](INFECTED.md#tribes), [People](INFECTED.md#people), [The great one](INFECTED.md#the-great-one), [Signs and sounds](INFECTED.md#signs-and-sounds)) |
 | Zombies | Behaviour | `m_BehaviourSettings` | **Enabled** (on; off: tribe groups take held waypoints and Bacon's own senses), steer factor (0 = blind), contact radius (8 m), take-back multiple (2.5), sight checks a second (12), **notice rate** (0.15, tune in play), hunter sight (220/190 m), shot hearing (170 m), spacing (3 m), flank radius (140/100 m) and angle (70), stalk distance (115/75 m), **Strategies** (on: rush, stalk, pincer, encircle, flush, bait, herd, ambush), **Own attacks** (on: the hunter's lunge, the young's leap, the alpha's charge), **Client effects** (on: the hold, the stagger and the knockdown; needs `RZ_PlayerEffectsComponent` on the player controller), hold seconds (3), hold kicks (3), **Young sprint** (on), young sprint seconds (7) and young rest seconds (5), **Weak door words** (Shed,Barn,Garage,Wood; empty: no door breaks), order gap (5 s), orders per 5 s (40), special move gap (10 s), **Climb limit** (1.4 m grab height), unstick out of sight (on), LOD bands (60,150,300 m), debug log, **Crawler life** (on), **Sleep lying crawlers** (on), **Crawler speed cap** (0 = Bacon's speed; see the lab's slow-motion note) ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | Zombies | Crawlers | `m_CrawlerSettings` | **Enabled** (on; off: towns as before), **Prefabs** (Bacon's civilian characters; empty = Common), bloated prefabs and share (0.05, towns at 70+ from Overrun), group size (1-3), kill ledger half-life (30 played minutes), reinforcement distance (200 m), drift radius (300 m) and seconds (90), stir (stirred at 50, -20 an hour, 5 heat a minute up to 60), siege minutes (10), scavengers (2-4) ([INFECTED.md](INFECTED.md#towns-the-crawlers)) |
 | Zombies | (top level) |  | Presence heat (0.5/tick), vehicle heat (+4/tick) |
@@ -1676,7 +1678,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **101** lines with the tag, all in the game scripts (one is the comment in
+There are **104** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1697,7 +1699,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:207` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (63)
+### Medium risk: big features, with a fallback (65)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1744,9 +1746,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:772` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:782` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:947` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Zombies/RZ_TribeProps.c:68`, `:348` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
+| `Zombies/RZ_TribeRest.c:987` | a dead leader's body withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stays where it fell through the vigil, and goes when it's inserted again at dawn | The body goes with the engine's usual cleanup; the vigil, its samples and its lines are unchanged |
+| `Zombies/RZ_TribeRest.c:1069` | with **Zombies > Tribes > Rival faction** set, Bacon's infected fight bodies moved onto a faction the faction manager makes hostile to theirs, mid-fight, during a staged Border Night | Nothing is seen fighting: the Border Night is heard, then found, as before. Leave **Rival faction** empty |
 | `Cure/RZ_CureFinale.c:1483` | the cure finale's clean room and loading bay: child entities named `RZ_CleanRoom` and `RZ_LoadingBay` on the lab prefab come back by `GetName()` through `GetChildren`/`GetSibling` on the server | Without them a land point 15–25 m from the lab (the bay 25 m on the far side) stands in: check it's somewhere players can stand and fight |
 | `Cure/RZ_CureFinale.c:1513` | `CharacterControllerComponent.IsUnconscious()` is true on the server for a downed player, so a downed player doesn't count in the clean room | If it's always false, a downed player holds the room until killed: fine for a first play-test |
 | `Cure/RZ_CureFinale.c:2014` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
@@ -1756,12 +1760,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (22)
+### Low risk: contained or cosmetic (23)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
-| `Director/Epilogue/RZ_EpilogueRest.c:575` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
-| `Director/Epilogue/RZ_EpilogueRest.c:673` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
+| `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
+| `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
@@ -1778,9 +1782,10 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
-| `Factions/RZ_CampLife.c:967` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
-| `Factions/RZ_CampLife.c:1523` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:1590` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `World/Traces/RZ_DressPlacer.c:37` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
+| `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
+| `Factions/RZ_CampLife.c:1458` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:1525` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
 ### The UI (14)
 
@@ -1883,6 +1888,13 @@ releases N, take-backs N, unsticks N, moves landed N, hand-offs N, leaps N, char
 young sprints N, holds N (kicked free N), staggers N, knockdowns N, sound leads N, blood leads N,
 shrieks N, doors: went round N, broken N, regroups N, rings asleep N (woken N) |
 town life: asleep N agents, slept N, woken N, herded N`.
+
+The small rules add `Status | tribes' small rules: grounds moved to prey N, habits starved N, patrols
+taken N, crossings N, starving walkers N, rivals now N`, and events: `Tribes: <place> follows its prey:
+a new hunting ground at <grid>.`, `Tribes: <place> had a bad night; N of it are stragglers, home late.`,
+`Tribes: one of <place> crossed in the night to <place>.`, `Tribes: <place> loses a habit: nothing comes
+past its place any more.`, `Tribes: <place> burned out with N of it dead: N break off.`, `Tribes: the
+factions speak of <place>'s new leader.`
 
 The life cycle adds (with **Zombies > Tribes > Life cycle** on): `Status | tribes' life: rovers: lone
 N, splinters N; vacuums N, burned N, abandoned lairs N, open taken N | borders N (old N), fights N
@@ -2177,9 +2189,9 @@ each live write (`#-1` while the town's doors aren't resolved yet), `Traces: ove
 <author>`, `Traces: scene grave|pyre at <grid> (a player's)`, `Traces: scene <key> at <grid> (<trigger>)`
 for each vignette and live trace (`town gone dark`, `a bite declared`, `a truck lost`, `a death at the
 line: N crosses`...), `Traces: scene <key> gone (its days are up|made room)`, `Traces: no anchor for
-<kind> in <town>`, `Traces: prop budget full (<grid>)`, `Traces: the young come home to <town>#<slot>
-(<pack>)`, and once at the cure `Traces: handed over to the epilogue (N graves down, N wrecks kept for
-the week).`; every 5 minutes `Status | Traces: doors N (drawn M), scenes S, props P/40, lights L, loops
+<kind> in <town>`, `Traces: <kind> keeps off a questline's clue near <grid>`, `Traces: prop budget full
+(<grid>)`, `Traces: the young come home to <town>#<slot> (<pack>)`, and once at the cure `Traces: handed
+over to the epilogue (N graves down, N wrecks and N fallen posts kept for the week).`; every 5 minutes `Status | Traces: doors N (drawn M), scenes S, props P/40, lights L, loops
 O`; `/traces` writes `Traces: <town>#<slot> <key> at <grid>: [<author> <symbol> D<day> <first days|live|old
 mark>] | <the line>`, `Traces: scene <key> (<kind>) at <grid>, stage N, props|text | <the line>` and
 `Traces: <town> history: Day N <kind> (<faction>) xN`; with **Debug** on, `Traces: player N read
@@ -2471,6 +2483,27 @@ when it happens)
 - [ ] **The last week:** after the cure, the dusk call reads *"… still calls. There's hardly anyone left
   to come."*; kill a pack's leader and next morning it's gone; with **Epilogue hours** low, the last dusk
   is *"Nothing answers it."* and the packs are gone at dawn.
+- [ ] **The small rules** ([INFECTED.md](INFECTED.md); the status log's `tribes' small rules` line):
+  stand by a pack's hunting ground three nights and its first trail goes there more often; stand in
+  its range away from every ground three nights and at the next season day the log says it `follows
+  its prey`. Keep players and trucks off a habit's place a night and the habit weakens. After a bad
+  night (kill a quarter of a hunt) a group comes home late, 06:00–07:30, with the stragglers' line. As
+  a Hunter, a dusk call adds which way and how far; heard before, it's named by its call. A cunning
+  pack's second group comes from behind you, not the side. Go into a house: a scout never calls on you
+  there. At dusk the scouts sit above tonight's trail; in fog they sit lower. Kill a leader with you
+  near: its samples and body are still there at the end of the vigil (VERIFY). A new leader a season
+  day on: the Haven (and Bastion for a board pack) say who leads it now. Burn a lair after killing 4
+  there: a splinter breaks off. Walk up to an abandoned lair with someone's things: 1–2 items lie at
+  its back.
+- [ ] **The behaviour layer's untested levers** (not in the code; each needs a client first): lever
+  L6, a forced prone pose for crawlers with `ForceStance` (a prone `SetStanceChange` didn't hold in
+  B12): does a crawler stay flat and still fight within 12 m? L16, a scripted `AIDangerEventWeaponFire`
+  near an engaged body: does it pull it the way a real shot does? L23, a straight-path cost per kind in
+  `SCR_CreateAIExtraMoveParams` (×1 young, ×3 hunters; the hook loads and fires, B2): does a hunter's
+  chase curve? Report each here; one that works goes in as a behaviour setting.
+- [ ] **Notice rate:** time how long a steered group takes to notice you at each stance and distance of
+  phase 0's ladder, set **Zombies > Behaviour > Notice rate** to match, and run `python3
+  tools/tribe_sim.py` again with it.
 - [ ] **Crawlers' life:** by day a town's crawlers stand hunched and don't turn until you're within 40 m
   or shoot (the status log's `asleep` count); one groan as they wake. At night they drift the streets in
   slow herds; with a pack's group passing through they step aside. **Sleep lying crawlers** off: they
@@ -3003,6 +3036,16 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   its hunt, *"The dogs in ... have stopped."* (not on a night it doesn't set out); after a Haven Champion's death, one bell at 18:30 and the church's jars.
 - [ ] Status line: lights and loops count up and down as you come and go; nothing stays up after you
   leave. With **Sound and light** off, nothing at all.
+- [ ] **Traces' rest:** the gym's beds and the church's board stand at their buildings' own doors;
+  Rudi's red hand is on a garage's shutter near the crossroads (with the kit's Red Hand board); a
+  square's notices stand by its monument, bank or station. With **Kit > Pieces that age** entries, a
+  scene's extra pieces stand round it and drop as it ages, and a board shows its faded twin when old.
+  With **Indoor scenes** on, a town gone dark's last meal is laid inside the house. After dark at a camp
+  the lantern sits exactly on camp life's table lamp; a Halcyon station hums from its generator piece
+  (quieter at night with the night hum); a Bastion holding's chime comes from its loudspeaker pole. A
+  walk-out who's ended leaves no chair; one who walks on does. While a questline's clue is near, no
+  scene of its faction is dealt within 1 km (the log line). A Specimen from the Nest job puts a ringed
+  beak on a door by the nest as it starts.
 - [ ] The cure: `Traces: handed over to the epilogue`; the graves come down; no new scene or mark but
   the epilogue's (a name chalked as a candle at a safehouse, GONE HOME by its door); the epilogue's
   town beats end with the census (*"Four candles on the doors in Brod, and one bear."*).

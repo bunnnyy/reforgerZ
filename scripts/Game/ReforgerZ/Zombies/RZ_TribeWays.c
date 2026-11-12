@@ -464,6 +464,7 @@ class RZ_TribeWays
 			{
 				h.m_fStrength = Math.Min(100, h.m_fStrength + add);
 				h.m_fHour = RZ_GameTime.GetHour();
+				h.m_iPreyNight = m_Tribes.CountedNights();
 				return;
 			}
 		}
@@ -485,6 +486,7 @@ class RZ_TribeWays
 		nh.m_vPos = at;
 		nh.m_fHour = RZ_GameTime.GetHour();
 		nh.m_fStrength = add;
+		nh.m_iPreyNight = m_Tribes.CountedNights();
 		t.m_aHabits.Insert(nh);
 		RZ_Log.Info(string.Format("Tribes: %1 learns a habit: %2 at %3.", t.m_sPlace, typename.EnumToString(RZ_EHabit, kind), RZ_SettlementScanner.GridReference(at)));
 	}
@@ -692,6 +694,8 @@ class RZ_TribeWays
 			if (t.Echo(RZ_EAlphaKind.DRIVER) && idx >= 0 && (land.GetRoadWidth(idx) > 0 || land.HasBit(idx, RZ_Land.BIT_BRIDGE) || land.HasBit(idx, RZ_Land.BIT_FORD)))
 				weight += 2;
 
+			// Where the prey is (RZ_TribeRest): up to +4
+			weight += m_Tribes.GetRest().PreyWeight(t, i);
 			if (winner && RZ_Util.DistXZ(ground, winner.RangeCentre()) < RZ_Util.DistXZ(ground, t.RangeCentre()))
 				weight = 0.01;
 

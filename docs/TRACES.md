@@ -5,20 +5,24 @@ who died in a house, where a pack took someone. Traces makes some of that visibl
 only, and never leaves anything behind. How player text is written is in [WRITING.md](WRITING.md);
 the town log and the season marks Traces dresses are in [DESIGN.md](DESIGN.md#world-memory).
 
-**Status.** Phases 1 to 7 of the Traces design are built, simplified where marked: **door marks**
+**Status.** The whole Traces design is built, simplified where marked: **door marks**
 (the grammar of six authors, the first days seeded from canon, live writes from what happens, reading
 by level and background, the town's summary, the journal's **Read on doors**, errands' old mark, the
 thumbprint, the young come home, Bastion fading), **doors you can see** (decals drawn on each client,
 or boards beside the door, or text only), **player traces** (P1 to P5), **scenes** (the first days
 F1–F8 and the line N1–N2, vignettes V1–V8, live traces L1–L8), **sound and light** (S1–S8) and the
-**handover to the epilogue**. Every prop and sound is an optional kit prefab; with the kit empty every
+**handover to the epilogue**, with its rest: one placer shared with camp life, pieces that age, scenes
+on their buildings, indoor scenes (behind a setting), camp life's own lamp, generator and loudspeaker,
+the clue registry, the finer triggers and one kit with the epilogue. Every prop and sound is an optional kit prefab; with the kit empty every
 trace still tells its story as text. Phase 0, the Workbench spike that settles decals, lights, loops
 and wrecks, is the author's ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)).
-What's left is in [designs/TRACES.md](../designs/TRACES.md). Nothing here has been play-tested.
+Errands' dealer can anchor its designed cards on a standing scene (`RZ_Scenes.SceneNear`): that's
+errands' to wire ([designs/ERRANDS.md](../designs/ERRANDS.md)). Nothing here has been play-tested.
 
 Code: `World/Traces/` (`RZ_Traces.c` the owner, settings and kit, the epilogue's asks; `RZ_DoorMarks.c`
 the grammar; `RZ_DoorSlots.c` doors on the map; `RZ_FirstDays.c` Days 1–10 and the new canon;
 `RZ_TraceWriters.c` the hooks and the watch; `RZ_TownHistory.c`; `RZ_TraceText.c` every door line;
+`RZ_DressPlacer.c` the placer camp life shares; `RZ_TraceClues.c` the clue registry;
 `RZ_TraceDraw.c` decals' list and boards; `RZ_PlayerTraces.c`; `RZ_Scenes.c` and `RZ_SceneText.c` the
 scenes and their lines; `RZ_TraceSounds.c` sound and light), and `UI/RZ_DoorMarkClient.c` (decals on
 clients), `UI/RZ_TraceLightsClient.c` (lit windows on clients). Settings: **World > Traces**
@@ -294,11 +298,11 @@ a restart, never saved (**World > Traces > First days' scenes**).
 |---|---|---|---|---|
 | F1 | **The column's tail**: 4–8 cars nose to tail on the verge, all facing the barrier | Back from `day2.queue`, 400 m in from the north barrier | *"Cars on the verge, all pointing the same way, all the doors open."* Collapse: one burnt out; Overrun: grass through the wheels. The dashboard sheet: *"NUMBER 31. PROCEED TO NORTH ROAD CHECKPOINT..."* | ★ Police Officer: the ticket numbers. ★ Hunter: old scratches on the last car |
 | F2 | **Where they turned back**: suitcases across the verge | 360 m in from the barrier, outside the warning zone | Set down neatly; from Collapse, two opened | ★ Soldier: *"...the men behind it, in our badge."* |
-| F3 | **The gym**: camp beds, blankets, GYM OPEN, the bus | `day2.gym` (no props if its town is lived in now: camp life owns it) | The bear with a patch on its belly; the list: eleven first names, ticked, *"All at the house. Lock up after you."* | ★ Elder: *"They all made it."* |
-| F4 | **The Day 4 church**: a chair, a blanket, the board | `day4.church` | The board: *"CHURCH OPEN. ALL WELCOME. DECLARE YOUR BITE."* | ★ Nurse: whoever sat here watched somebody inside |
+| F3 | **The gym**: camp beds, blankets, GYM OPEN, the bus | By the gym's own door at `day2.gym` (the public building within 60 m; inside it with **Indoor scenes**), else beside the spot (no props if its town is lived in now: camp life owns it) | The bear with a patch on its belly; the list: eleven first names, ticked, *"All at the house. Lock up after you."* | ★ Elder: *"They all made it."* |
+| F4 | **The Day 4 church**: a chair, a blanket, the board | By the church's own door at `day4.church` (within 60 m), else beside the spot | The board: *"CHURCH OPEN. ALL WELCOME. DECLARE YOUR BITE."* | ★ Nurse: whoever sat here watched somebody inside |
 | F5 | **The cordon's Day 1 roadblock**: sandbags, the pole, a field radio | `day1.roadblock` | The log sheet, ending *"Leaving the pole down."* The radio hisses until Overrun (S3) | ★ Soldier, ★ Radio Operator |
-| F6 | **The square's notices**, pasted over each other | One town in five nobody lives in, near its centre | The paper, newest on top: *"AID IS ON ITS WAY"*, the crews' diesel (3 km of the crossroads), Halcyon's flyer (4 km of the lab), GYM OPEN (5 km of the gym), the Day 2 order (*"TURNED BACK 1400"* within 4 km of the north road), the Day 1 order | ★ Police Officer: signed Lt H. Sedlak |
-| F7 | **Rudi's shutter** | By `redhand.crossroads` | *"...The crews call it Rudi's."* Nothing more, ever | ★ Ex-Con: *"Nobody parks in front of it."* |
+| F6 | **The square's notices**, pasted over each other | One town in five nobody lives in, at its square's landmark (the monument, the bank, the station), else near its centre | The paper, newest on top: *"AID IS ON ITS WAY"*, the crews' diesel (3 km of the crossroads), Halcyon's flyer (4 km of the lab), GYM OPEN (5 km of the gym), the Day 2 order (*"TURNED BACK 1400"* within 4 km of the north road), the Day 1 order | ★ Police Officer: signed Lt H. Sedlak |
+| F7 | **Rudi's shutter** | On the shutter of a garage within 60 m of `redhand.crossroads` (the kit's Red Hand door board flush on it); the shutter board beside the spot only where no garage stands | *"...The crews call it Rudi's."* Nothing more, ever | ★ Ex-Con: *"Nobody parks in front of it."* |
 | F8 | **The hill over the north road** | `day4.hill` (none when no point qualifies) | *"On the post, cut with a knife: 05:41."* | ★ Soldier; Known with Bastion |
 | N1 | **Crosses** of fence palings, up to 7 | Just outside the warning zone, 320–420 m in from a barrier | Two at the north road from the start (D4, D6); one more for each death in the kill zone within 1 km of a barrier. Saved | — |
 | N2 | **The Day 1 sheets** in the hedges | 350–700 m in from every barrier (decision 3) | *"BY ORDER. THIS AREA IS UNDER QUARANTINE..."* | — |
@@ -314,7 +318,7 @@ town). Once placed a vignette lives its days even if the town changes: it's hist
 |---|---|---|---|---|
 | V1 | **The last meal**: a table laid for four | A town nobody holds goes dark (85) | A garden 6 m in front of a house's door (the town's middle if its doors aren't known) | 3 days |
 | V2 | **Someone held out**: planks, casings, a tally of 19 on the door; the note on the step | Survivors Trapped or Collapse Shelter failed, or a town went infested with a player's barricade standing | Before the house nearest the job | 3 days |
-| V3 | **The chair at the edge**, facing out | A bite declared at a safehouse (`house.bitten`), or Walk Him Out done | 150 m out from the house, toward the nearest pack | 2 days; its jars lit its first two evenings (S8) |
+| V3 | **The chair at the edge**, facing out | A bite declared at a safehouse (`house.bitten`), or Walk Him Out's *walk on* (its record `walk.out`: "walked on") | 150 m out from the house, toward the nearest pack | 2 days; its jars lit its first two evenings (S8) |
 | V4 | **The honest shop**: IOUs on the door | A town nobody holds whose doors are known, with a shop, a Haven house within 2 km and no Red Hand holding within 1.5 km (tried once a town a run, about a third deal) | Before the shop's door | The season; when the crews take ground within 1.5 km, *"PAID"* across them in red, then 3 days |
 | V5 | **The dropped run**: an empty sample case in the ditch; the notebook page | A Halcyon sample or escort job failed, or a Halcyon truck lost | The verge where it happened | 2 days |
 | V6 | **The waiting room**: six chairs, *"DOCTOR BACK 1400"*, ticket 31 | Once a season (canon `traces.v6`) | A clinic in a town nobody holds, never the first patient's town | The season |
@@ -328,14 +332,14 @@ makes at most one of a kind a town a season day.
 
 | # | Trace | Trigger | Where | Lasts |
 |---|---|---|---|---|
-| L1 | **After a kill site**: a candle chalked on a gatepost with who (the Haven), or *"CONTACT P-n · 1 LOST · Dn"* (Bastion) | A tribes' kill site ends (its second dawn) within 3 km of a Haven house with people, else of a Bastion holding; with nobody knowing, nothing | The verge by the site | 2 days |
+| L1 | **After a kill site**: a candle chalked on a gatepost with who (the Haven), or *"CONTACT P-n · 1 LOST · Dn"* (Bastion, n its board number) | A tribes' kill site ends (its second dawn) within 3 km of a Haven house with people, else when its pack (the nearest within 3 km) is on Bastion's contact board; with nobody knowing, nothing | The verge by the site | 2 days |
 | L2 | **Scorch** from the doorway, the Haven's *"WE CHECKED"* chalk when a Haven job was running there | A building burned (the fire system's report) | The doorway | 2 days |
 | L3 | **Overpainted** | A holding taken or founded | The town's doors ([layers](#door-marks)) | As door marks |
 | L4 | **The young come home** | [Above](#where-marks-come-from) | A ringed bear's door | A season day |
 | L5 | **The truck**: a wreck on its side with the destination stencilled, a red hand on the door if robbed, gouges on the cab if a pack took it | A supply truck lost (robbed, destroyed or taken) | The verge where it was lost | 2 days; at the cure the last four stay for the week |
 | L6 | **Bastion fading**: sandbags and a HALT sign on its side | A Bastion road post pulled; and no new Bastion marks under 0.25 presence | Where the post stood | 2 days |
 | L7 | **Red hands spreading** | [Above](#where-marks-come-from) | Shops and garages first | As door marks |
-| L8 | **Halcyon's beaks** | Halcyon's sample jobs ([above](#where-marks-come-from)) | As door marks | As door marks |
+| L8 | **Halcyon's beaks** | Halcyon's sample jobs ([above](#where-marks-come-from)), and a ringed beak by a nest under study: while Specimen from the Nest runs, once a job, on the door nearest the nest | As door marks | As door marks |
 
 ### How a reader meets a scene
 
@@ -354,9 +358,22 @@ No action, no button, no typing: the same with a pad.
 Never in the warning zone or the kill zone, within 2 km of the Long Table's farm, within 300 m of the
 closed site (`origin.site`) or within 60 m of a lived-in place. Vignettes and live traces also keep
 300 m off a running job, 600 m off a lair (the chair and the kill site's chalk aside: they're about
-packs) and off the evening's set piece (`IsQuietAt`). A point is dry, flat (under about 12°) and out of
+packs), off the evening's set piece (`IsQuietAt`), and 1 km off an active questline clue of the same
+faction (`World/Traces/RZ_TraceClues.c`: each running questline's place and its stage job's spot; the
+Haven's V2, V3, V4 and V8, Halcyon's V5, Bastion's V7 and L6): *"Traces: <kind> keeps off a
+questline's clue near <grid>"*. A point is dry, flat (under about 12°) and out of
 every building's footprint (2 m); verge points are 6–10 m off the road's centre line, so nothing blocks
 a truck (decision 11). When nothing fits: `Traces: no anchor for <kind> in <town>`, and nothing is dealt.
+
+**One placer** (`World/Traces/RZ_DressPlacer.c`): camp life's ground rules (dry, off the line, flat,
+out of footprints by 2 m, 6 m off a road's centre line, apart from each other, clear of a quartermaster
+or the medic) are one placer that camp life and the scenes share, so a scene can be several pieces
+round its centre ([How scenes age](#how-scenes-age)).
+
+**Indoor scenes** (decision 10; **World > Traces > Indoor scenes**, off until a play-test of the
+outdoor ones): the last meal (V1) is laid inside its house and the gym's beds (F3) stand inside the
+gym, on one of the loot's ground-floor spots, when the building has one; else they stay outside. An
+indoor scene is its one composition.
 
 ### How scenes age
 
@@ -365,19 +382,26 @@ Aftermath: the column, the suitcases and the radio change their words); vignette
 thirds of their life (fresh, weathered, old: the last meal's jug knocked over, then its chairs
 fallen); a season-long one by its days. A scene whose stage changes is shown again.
 
+**Pieces that age** (**Kit > Pieces that age**, each entry a scene's kind, a piece, an optional faded
+twin, and when it drops): a scene's extra pieces stand 2–6 m round its centre by the shared placer (the
+same spots after a restart, 9 pieces at most), each gone from its age on (weathered: a dealt scene's
+middle third, the first days from Collapse; old: the last third, from Overrun), and shown as its faded
+twin when old. An entry with no piece and a faded twin swaps the scene's own piece (a board's fresh and
+faded looks) once it's old.
+
 ## Sound and light
 
 **World > Traces > Sound and light** (on). Each needs its kit prefab; the lines come without.
 
 | # | What | Where and when | Text |
 |---|---|---|---|
-| S1 | **Lanterns where people live**: a lit lantern (light on spawn) | The 4 lived-in places (holdings, safehouses with people) nearest players within 200 m, 20:30–05:00, from 18:30 in rain or fog. Never in a town nobody holds | — |
+| S1 | **Lanterns where people live**: a lit lantern (light on spawn) | The 4 lived-in places (holdings, safehouses with people) nearest players within 200 m, 20:30–05:00, from 18:30 in rain or fog: exactly where camp life's own table lamp stands (its lit twin over it), else near the place's middle. Never in a town nobody holds | — |
 | S2 | **Lit windows**: a small warm light 1.5 m inside the outside doors of lived-in buildings, drawn on each client | **Lit windows** (off until the spike shows it at the windows, not through the walls; decision 9). As S1, 12 at most | — |
 | S3 | **A radio in an empty house**: the hiss loops | The last meal and the Day 1 roadblock (until Overrun), 2 at most | The broadcast's line, [above](#how-a-reader-meets-a-scene) |
 | S4 | **Dogs, then nothing**: a few barks that stop dead | 5 real minutes before a pack's set-out hour, at the town nearest its lair (within 1.5 km), one a pack a night, players within 800 m | ★ Hunter: *"The dogs in Levie have stopped."* |
-| S5 | **A generator's hum** | The lab and Halcyon's outposts | — |
+| S5 | **A generator's hum** | The lab, and Halcyon's outposts on camp life's own generator piece when the station has one; after dark the kit's quieter night hum (**Generator hum, night**) when it's set | — |
 | S6 | **One stroke of the bell** (decision 8) | At the Day 4 church, the next 18:30 after a Haven Champion dies (P3b); 10 heat there; never at night | *"One stroke of a church bell, from the direction of ..."* to everyone within 1.2 km |
-| S7 | **The town loudspeaker**: a chime and static | Bastion's holdings, 05:30 and 17:30, within 300 m; silent after the cure | A subtitle: presence 0.25 or more *"Remain indoors. Relief is on its way."*, under it *"Remain indoors."* ★ Soldier: one line more |
+| S7 | **The town loudspeaker**: a chime and static | Bastion's holdings, 05:30 and 17:30, within 300 m, from camp life's loudspeaker pole (`RZ_Dress_Loudspeaker` in Bastion's kit) when the holding has one, else its middle; silent after the cure | A subtitle: presence 0.25 or more *"Remain indoors. Relief is on its way."*, under it *"Remain indoors."* ★ Soldier: one line more |
 | S8 | **Jars on the step** (the kit's candle jars) | The Day 4 church on the bell's evening, and a walk-out's chair its first two evenings, dusk to 22:00 | — |
 
 Lights: 12 on the server within 200 m of a player. Loops (`RZ_AmbientLoopComponent` on the prefab): 4,
@@ -390,9 +414,13 @@ keep their own calls ([INFECTED.md](INFECTED.md#signs-and-sounds)); Traces adds 
 [EPILOGUE.md](EPILOGUE.md) owns the week; Traces owns how its marks look.
 
 - **The handover**, once, when the cure is out: Traces' in-season graves come down (the epilogue places
-  its own from the record), the last four lost-truck wrecks stay standing for the week, and nothing new
-  is dealt or written but what the epilogue asks for. Running vignettes and live traces finish their
+  its own from the record), the last four lost-truck wrecks and every fallen post's roll (V7) still
+  standing stay for the week (where the epilogue's outpost boards are), and nothing new is dealt or
+  written but what the epilogue asks for. Running vignettes and live traces finish their
   days; the first days stay. Log: `Traces: handed over to the epilogue (...)`.
+- **One kit:** an epilogue mark whose own slot is empty takes Traces' piece for it: a grave, a truck
+  wreck, the sheet on posts, the stencilled board, tape between posts, a board, the candle jars
+  (`RZ_Traces.EpilogueKit`).
 - **The census**: each of the epilogue's town beats ends with its doors counted, at a glance:
   *"Four candles on the doors in Brod, and one bear."* (candles by their number, bears ringed or not,
   hands and tallies, beaks, gouged doors; painted-over layers don't count).
@@ -476,15 +504,15 @@ The author approved all 16 as recommended (2026-11-11).
 | Who sees a town's summary and a door line | A character on foot within the town's radius (+30 m); standing 2 s means two one-second checks within 5 m, not a speed test |
 | The first days' sweep | "Within 3 km of the roads into `origin.site`" is within 3 km of the line from the site to the roadblock; at most 12 towns nearest first |
 | P3's notable death | A life of 2 hours or more, or dying at a running job's site; the stand and a pack's kill aren't told apart. The Digger stranger's grave, once you've dug it with her, stays by the road with whoever she was told it was (or SOMEONE) |
-| The thumbprint | Exiles are players Hunted by the Haven; their minutes in a town, and a thumbprint that's due, are saved across a restart. The Long Table's exile isn't one |
-| Scene placement | Traces' own ground test (dry, flat, off the line, out of footprints); camp life's placer isn't shared. Most scenes are one composition at one point (the column's cars, the crosses, the sheets and the gym's bus aside), so old scenes age in their words, not by dropping pieces. A prop never comes up while a player or a vehicle is within 8 m of its spot; nothing checks for an active clue 1 km away |
+| The thumbprint | Exiles are players Hunted by the Haven; their minutes in a town, and a thumbprint that's due, are saved across a restart. The Long Table never makes a player its exile, so it has none to count |
+| Scene placement | A scene's own point by Traces' ground test, its extra pieces by the shared placer; with no **Pieces that age** set, each scene is its one composition and ages in its words. A prop never comes up while a player or a vehicle is within 8 m of its spot |
 | The column (F1) | 4–8 cars along the road from the queue's point (400 m back from the barrier) to 1.2 km back, never within 25 m of a junction (three road ends meeting); where the road can't be followed, the rest 9 m apart back from the queue's point |
-| The gym, the church, the shutter (F3, F4, F7) | Beside the canon spot, not on the building's own door; F7's red hand isn't a door layer on a garage. F4's jars are only the lit ones (S8) |
-| The square's notices (F6) | One town in five nobody lives in, near its centre (no square looked for) |
-| Vignettes' triggers | V3 on any walk-out (not only *walk on*); V5 from failed Halcyon jobs and trucks, and a pack taking a runner as data within 3 km of the lab or a Halcyon field station; V4 tried once a town a run; "not the same player's trigger twice a day" is one a town |
-| L1 after a kill site | In a town (within 60 m of it), the Haven's candle goes on the nearest door; elsewhere its chalk is a scene on the verge by the site; Bastion's stencil when a Bastion holding is within 3 km, not for a pack on Bastion's board |
-| L3, L8 | The door writes built in phase 1 (overpaint on a take, beaks from sample jobs); no beaks at a nest under study |
+| The gym, the church, the shutter (F3, F4, F7) | On the building's own door when one stands within 60 m; F7's red hand is the kit's Red Hand door board flush on the garage's shutter, not a decal layer (the door marks are a town's, and the crossroads lies outside one). F4's jars are only the lit ones (S8) |
+| The square's notices (F6) | One town in five nobody lives in, at its monument, bank or station when one is near the centre (no square as such) |
+| Vignettes' triggers | V5 from failed Halcyon jobs and trucks, and a pack taking a runner as data within 3 km of the lab or a Halcyon field station; V4 tried once a town a run; "not the same player's trigger twice a day" is one a town |
+| L1 after a kill site | In a town (within 60 m of it), the Haven's candle goes on the nearest door; elsewhere its chalk is a scene on the verge by the site. The site's pack is the nearest within 3 km |
+| L3, L8 | The door writes built in phase 1 (overpaint on a take, beaks from sample jobs); a nest under study is a running Specimen from the Nest |
 | L6 | From the road posts that go between two looks (30 s), not a saved list of the last six |
-| S1, S5, S7 | The lantern and the hum stand near the place's middle, not on camp life's pieces (its table lamp isn't swapped, the hum isn't quieter at night); no loudspeaker pole: the chime comes from the holding's middle |
+| S1, S5, S7 | The lit lantern stands over camp life's own lamp (the unlit one stays under it); quieter at night is a second hum prefab; the loudspeaker pole is a composition the PC builds (`RZ_Dress_Loudspeaker`) |
 | S4 | Before the pack's set-out hour on a night it will set out (not weakened, holding a vigil or sleeping off a feed), at the town the night's first trail passes (else the town nearest the lair); the Hunter's line comes with the barking |
-| The handover | Fallen posts (V7) finish their days rather than passing to the epilogue's outpost boards; the epilogue's props are its own slots, not Traces' kit |
+| The handover | Fallen posts (V7) stand for the week near the epilogue's outpost boards rather than becoming them; Traces' kit only fills an epilogue slot that's empty |

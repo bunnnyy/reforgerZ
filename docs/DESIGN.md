@@ -690,7 +690,8 @@ The full list of compositions, and each faction's kit, is in
   the road. A spot is used only on flat
   ground (under about 12°, from four ground heights), out of the water and away from the line,
   at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
-  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece. A piece with no good
+  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece (the rules
+  are one placer, `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). A piece with no good
   spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
   safehouse at its own stronghold) isn't dressed twice.
 - **Nothing to abuse.** `RZ_DressingGuard` checks every piece and its children as it spawns and

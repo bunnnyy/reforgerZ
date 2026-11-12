@@ -377,7 +377,9 @@ class RZ_TribeBodies
 			for (int i = 0; i < 6; i++)
 			{
 				vector cand;
-				if (p.m_bPack)
+				if (p.m_bBackTrail)
+					cand = tp - Rotate(RZ_Behaviour.Facing(target), Math.RandomFloat(-25, 25)) * Math.RandomFloat(150, 200);
+				else if (p.m_bPack)
 					cand = tp + Rotate(lairward, Math.RandomFloat(-30, 30)) * Math.RandomFloat(150, 200);
 				else if (p.IsCore())
 					cand = tp + Rotate(lairward, Math.RandomFloat(-20, 20)) * Math.RandomFloat(150, 250);
@@ -758,6 +760,10 @@ class RZ_TribeBodies
 			if (groups == 1)
 				next.m_iSide = -1;
 
+			// A cunning pack puts its second group on your back trail
+			if (groups == 1 && t.m_eTemper == RZ_ETemperament.CUNNING && m_Tribes.GetSettings().m_bLifeCycle)
+				next.m_bBackTrail = true;
+
 			used += next.m_iCount;
 			groups++;
 		}
@@ -818,6 +824,7 @@ class RZ_TribeBodies
 	//! A part joins a hunt: as data it closes on the target; with bodies its plan joins at once.
 	protected void Target(RZ_Tribe t, RZ_TribePart p, int playerId, int wave)
 	{
+		p.m_bBackTrail = false;
 		p.m_iTarget = playerId;
 		p.m_iWave = wave;
 		p.m_bOut = true;
@@ -1292,7 +1299,8 @@ class RZ_TribeBodies
 					if (m_Tribes.GetWays().Knows(t, id, pl.GetOrigin()))
 						radius = radius * 1.5;
 
-					bool inSight = d <= radius && !RZ_InfectedBodies.TerrainBlocks(sp, pl.GetOrigin());
+					// A player inside a building is never seen (the building query, RZ_TribeRest)
+					bool inSight = d <= radius && !RZ_InfectedBodies.TerrainBlocks(sp, pl.GetOrigin()) && !m_Tribes.GetRest().IsInside(id, pl);
 					if (inSight && d <= 80 && bh)
 						inSight = bh.LineOfSight(scout, pl);
 

@@ -1597,7 +1597,9 @@ class RZ_ZombieSpawner
 			bool special = Math.RandomFloat01() < GetSpecialChance(stage) * 0.5;
 			vector goal;
 			int town;
-			if (special || !PickLooseGoal(p, goal, town))
+			// A starving pack's walkers on their way into a town are loose ones too (RZ_TribeRest)
+			bool starving = !special && m_GM.GetTribes() && m_GM.GetTribes().IsEnabled() && m_GM.GetTribes().GetRest().WalkerGoal(p, goal, town);
+			if (!starving && (special || !PickLooseGoal(p, goal, town)))
 			{
 				vector old;
 				if (!FindSpawnPos(p, m_Settings.m_fMinSpawnDistance + 30, AMBIENT_RADIUS - 50, players, old))
