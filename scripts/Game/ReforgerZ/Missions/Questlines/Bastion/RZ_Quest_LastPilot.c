@@ -84,8 +84,8 @@ class RZ_Quest_LastPilot : RZ_Questline
 		wreck.GiveUp(4, "Nobody went to {friend}'s wreck. {pilot} stopped asking.");
 		wreck.Visits(2);
 
-		RZ_QuestStage decide = MissionStage(S_DECIDE, "He decides", "{pilot} wants to fly for the line. Talk him down, report him to {co}, help him fuel a far LZ, or sell the plan to the Red Hand.");
-		decide.GiveUp(4, "{pilot} kept his plan to himself, and {co} kept him on the ground.");
+		RZ_QuestStage decide = MissionStage(S_DECIDE, "The pilot decides", "{pilot} wants to fly for the line, the way the Day 3 medevac did. Talk the pilot out of it, report it to {co}, help fuel a far LZ near the line, or sell the plan to the Red Hand.");
+		decide.GiveUp(4, "{pilot} kept the plan quiet, and {co} kept the helicopter on the ground.");
 		decide.Visits(2);
 
 		RZ_QuestStage last = MissionStage(S_LAST, "The last of it", "However it ends, it ends at an LZ.");
@@ -416,7 +416,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 			case OUT_GROUNDED:
 			{
 				run.SetBranch(BRANCH_GROUNDED);
-				run.Note("{co} knows. {pilot} is grounded: someone has to walk him to {stronghold}.");
+				run.Note("{co} knows. {pilot} is grounded, and someone has to walk the pilot to {stronghold}.");
 				return S_LAST;
 			}
 			case OUT_LINE:
@@ -452,7 +452,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 				if (outcome == OUT_RUN)
 				{
 					run.SetFlag("ran", 1);
-					return Finish(run, E_STAYS, "He stays. {pilot} flew one more run with the LZ clear, and he's still on the roster.");
+					return Finish(run, E_STAYS, "The pilot stays. {pilot} flew one more run with the LZ clear, and the name is still on the roster in grease pencil.");
 				}
 
 				if (run.Visits(S_LAST) < 2)
@@ -461,13 +461,13 @@ class RZ_Quest_LastPilot : RZ_Questline
 				return Finish(run, E_STAYS, "He stays. Nobody kept the LZ for his last run, but he flew it anyway, and came back.");
 			}
 			case BRANCH_GROUNDED:
-				return Finish(run, E_GROUNDED, "Grounded. {pilot} walked into {stronghold} and handed in his helmet. The helicopter stays on the pad until someone else can fly it.");
+				return Finish(run, E_GROUNDED, "Grounded. {pilot} walked into {stronghold} and handed in the flight helmet. The helicopter stays on the pad until someone else can fly it.");
 			case BRANCH_LINE:
 			{
 				if (outcome == OUT_LIFTED)
-					return Finish(run, E_LINE, "He flew for the line. The line shot him down short of it, like {friend} before him.");
+					return Finish(run, E_LINE, "The pilot flew for the line. The line shot the helicopter down short of it, the same as {friend} on Day 3.");
 
-				return Finish(run, E_GROUNDED, "Grounded. {pilot} couldn't get off the ground at {far}, and Bastion found him there.");
+				return Finish(run, E_GROUNDED, "Grounded. {pilot} couldn't get off the ground at {far}, and that's where Bastion's patrol found the pilot.");
 			}
 			case BRANCH_REDHAND:
 			{
@@ -692,7 +692,7 @@ class RZ_QM_PilotFuel : RZ_QuestMission
 	//------------------------------------------------------------------------------------------------
 	override protected bool SpawnScene(RZ_GameModeComponent gm)
 	{
-		int talk = AddClue(QText(gm, "pilot"), QFill(gm, "{pilot} is sitting in the open door with his helmet on his knee. \"Dry as a bone. Two cans gets her to the next base and back.\" He looks past you, toward the edge of the Zone. \"Further, if you were careful.\""));
+		int talk = AddClue(QText(gm, "pilot"), QFill(gm, "{pilot} is sitting in the open door, flight helmet on one knee. \"Dry as a bone. Two cans gets her to the next base and back.\" A look past you, toward the edge of the Zone. \"Further, if you were careful.\""));
 		if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPilot, OBJ_PILOT, "", "", talk, "Talk to " + QText(gm, "pilot")))
 			return false;
 
@@ -801,7 +801,7 @@ class RZ_QM_PilotFuel : RZ_QuestMission
 			return;
 		}
 
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{pilot} runs her up for a minute, just to hear it. \"There she is.\""));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{pilot} runs the engine up for a minute, just to hear it. \"Listen to that. Two cans, and it still wants to fly.\""));
 		Resolve(gm, playerId, RZ_EQuestApproach.NONE, RZ_Quest_LastPilot.OUT_FUELLED, "brought the fuel");
 	}
 
@@ -999,7 +999,7 @@ class RZ_QM_PilotFlight : RZ_QM_PilotLZ
 	//------------------------------------------------------------------------------------------------
 	override protected bool SpawnScene(RZ_GameModeComponent gm)
 	{
-		int talk = AddClue(QText(gm, "pilot"), QFill(gm, "{pilot} has three manifests on his knee. \"Halcyon wants its samples run to the lab. The Haven has two people who won't walk again unless a doctor sees them. And {co} wants the ammunition moved. One trip.\""));
+		int talk = AddClue(QText(gm, "pilot"), QFill(gm, "{pilot} has three manifests spread on one knee. \"Halcyon wants its samples run to the lab. The Haven has two people who won't walk again unless a doctor sees them. And {co} wants the ammunition moved. One trip.\""));
 		string labels = "Load Halcyon's samples|Load the Haven's wounded|Load Bastion's ammunition";
 		return SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPilot, OBJ_PILOT, "", labels, talk, "Talk to " + QText(gm, "pilot")) != null;
 	}
@@ -1284,7 +1284,7 @@ class RZ_QM_PilotWreck : RZ_QuestMission
 			{
 				m_bPlayed = true;
 				SetQFlag(gm, "played", 1);
-				gm.NotifyPlayer(listener, m_sTitle, QFill(gm, "You patch the box into your set and play the last minute. Tracer, close. A voice on the line's frequency: \"Turn back. Turn back.\" Then {friend}, very calm, talking to the wounded behind him the whole way down. Then nothing."));
+				gm.NotifyPlayer(listener, m_sTitle, QFill(gm, "You patch the box into your set and play the last minute. Tracer, close. A voice on the line's frequency: \"Turn back. Turn back.\" Then {friend}, very calm, talking to the wounded in the back the whole way down. Then nothing."));
 				Remember(gm, listener, RZ_EQuestApproach.TALK, "played the black box at the wreck");
 			}
 		}
@@ -1473,9 +1473,9 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 		if (!m_bPadShown && RZ_ContractHelp.AnyNear(players, m_vPilot, 300))
 		{
 			m_bPadShown = true;
-			string talk = "{pilot} has a map on his knee, the edge of the Zone in pencil. \"Fuel for an hour, from a field near the line. I'd go low. {friend} went high.\" He folds it. \"Somebody has to try again. Or somebody has to stop me.\"";
+			string talk = "{pilot} has a map open on one knee, the edge of the Zone in pencil. \"Fuel for an hour, from a field near the line. I'd go low. {friend} went high.\" The map gets folded. \"Somebody has to try again. Or somebody has to stop me.\"";
 			if (QFlag(gm, "heard") == 1)
-				talk = "{pilot} has a map on his knee, and the black box beside it. \"You heard them. Turn back, and then they fired. On a medevac.\" He folds the map. \"Somebody has to try again. Or somebody has to stop me.\"";
+				talk = "{pilot} has a map open on one knee, and the black box beside it. \"You heard them. Turn back, and then they fired. On a medevac.\" The map gets folded, small. \"Somebody has to try again. Or somebody has to stop me.\"";
 
 			int clue = AddClue(QText(gm, "pilot"), QFill(gm, talk));
 			string labels = "Talk him down";
@@ -1637,7 +1637,7 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 			return "The Last Pilot: the Red Hand knows when Bastion's pad is quiet. Bastion won't thank you.";
 
 		if (m_iChosen == OBJ_FAR)
-			return QFill(gm, "The Last Pilot: {pilot} has his fuel. Bastion won't thank you.");
+			return QFill(gm, "The Last Pilot: {pilot} has fuel for the far field. Bastion won't thank you.");
 
 		return QFill(gm, "The Last Pilot: nobody talked to {pilot}.");
 	}
@@ -1678,12 +1678,12 @@ class RZ_QM_PilotRun : RZ_QM_PilotLZ
 		if (m_bLine)
 		{
 			m_sTitle = "The Last Pilot: the far LZ";
-			m_sBrief = QFill(gm, "{pilot} is coming to {far} for the fuel you left him, and then he's going. Keep the field clear while he lifts off. Nobody at {stronghold} knows.");
+			m_sBrief = QFill(gm, "{pilot} is coming to {far} for the fuel you left in the field, and then the helicopter goes for the line. Keep the field clear of infected until it lifts off. Nobody at {stronghold} knows, and nobody should hear it from you.");
 			return true;
 		}
 
 		m_sTitle = "The Last Pilot: one more run";
-		m_sBrief = QFill(gm, "{pilot} flies one more run from the pad by {stronghold}, to show he meant it. Keep the LZ clear until he lifts off.");
+		m_sBrief = QFill(gm, "{pilot} has agreed to stay, and flies one more run from the pad by {stronghold} to show the post it's meant. The rotors will pull in every infected for a kilometre. Keep the LZ clear until the helicopter is up.");
 		return true;
 	}
 
@@ -1704,7 +1704,7 @@ class RZ_QM_PilotRun : RZ_QM_PilotLZ
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return QFill(gm, "The Last Pilot: {pilot} flew his run.");
+		return QFill(gm, "The Last Pilot: {pilot} flew the run and came back.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1752,7 +1752,7 @@ class RZ_QM_PilotWalk : RZ_QuestMission
 		m_vLZ = RZ_Quest_LastPilot.GetPos(run, "lz");
 		m_vDest = co.m_vPos;
 		m_iSettlement = gm.FindNearestSettlement(m_vLZ);
-		int talk = AddClue(QText(gm, "pilot"), QFill(gm, "{pilot} has his helmet in his hand and nothing else. \"I know. {co} told me.\" He stands up. \"Let's get it done.\""));
+		int talk = AddClue(QText(gm, "pilot"), QFill(gm, "{pilot} has a flight helmet in one hand and nothing else. \"I know. {co} told me.\" A long breath, then up off the step. \"Let's get it done.\""));
 		m_Him.m_sName = QText(gm, "pilot");
 		m_Him.m_sPrefab = RZ_Escort.PrefabFor(gm, 2);
 		m_Him.m_bHide = false;
@@ -1820,7 +1820,7 @@ class RZ_QM_PilotWalk : RZ_QuestMission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return QFill(gm, "The Last Pilot: {pilot} walked to {stronghold} on his own.");
+		return QFill(gm, "The Last Pilot: {pilot} walked to {stronghold} unescorted, helmet in hand.");
 	}
 
 	//------------------------------------------------------------------------------------------------

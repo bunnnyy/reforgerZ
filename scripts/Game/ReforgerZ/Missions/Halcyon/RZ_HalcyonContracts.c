@@ -87,7 +87,7 @@ class RZ_Mission_PowerTheLab : RZ_PuzzleMission
 		m_iSettlement = gm.GetLabSettlement();
 		m_sTitle = "Power the Lab";
 		m_sDeed = "kept the lab's power on";
-		m_sBrief = string.Format("The lab's generator is running on fumes and a cracked regulator. There's a replacement at %1. Bring it and a jerrycan of fuel.", m_sPartPlace);
+		m_sBrief = string.Format("The lab's generator is running on fumes and a cracked regulator. When it stops, the freezers warm up, and every sample since Day 1 goes with them. There's a replacement regulator at %1. Bring it back, and a jerrycan of fuel, before the night shift dims the lights again.", m_sPartPlace);
 		return true;
 	}
 
@@ -210,7 +210,7 @@ class RZ_Mission_InstallSensors : RZ_Mission_VisitPoints
 		m_fParticipationRadius = 0;
 		m_sTitle = "Install Sensors";
 		m_sDeed = "put the sensors up near {town}";
-		m_sBrief = string.Format("Halcyon wants sensors in three infested towns, starting with %1. Fifteen seconds to set each one up. They'll draw the specials in; that's the point.", s.m_sName);
+		m_sBrief = string.Format("We need readings from inside the infection, not from behind our fence. Place sensors in three infested towns, starting with %1: fifteen seconds to set up each one. They hum, and the specials come to see what's humming. That's the point, and it's why we're asking you and not a researcher.", s.m_sName);
 		return true;
 	}
 
@@ -260,7 +260,7 @@ class RZ_Mission_BloodDrive : RZ_PuzzleMission
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Give blood", m_iTalk, "Talk to the nurse");
 		m_sTitle = "Blood Drive";
 		m_sDeed = "gave blood when it was asked for";
-		m_sBrief = "The lab needs clean blood to test against. Come and give some. You'll feel it for a while.";
+		m_sBrief = "Every trial dose is measured against blood that's never met the virus, and our clean supply is down to a few tubes. Come to the lab and give some. A needle, a chair and a biscuit after. You'll feel light-headed for a while.";
 		return true;
 	}
 
@@ -367,7 +367,7 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 
 		m_sTitle = "Cold Chain";
 		m_sDeed = "kept the cold chain cold";
-		m_sBrief = string.Format("A batch of antidotes for the clinic at the safehouse in %1. Once it's out of the cold box you have fifteen minutes. Run.", h.m_sName);
+		m_sBrief = string.Format("A batch of antidotes for the clinic at the Haven safehouse in %1, where the bitten are waiting on it. Once it's out of our cold box it's good for fifteen minutes, and after that it's water. Run.", h.m_sName);
 		m_iHouse = idx;
 		Truth(gm, h);
 		return true;
@@ -593,7 +593,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		m_Escort.SetTalk(m_iId, 0, "Lead the way (she follows you)", m_iTalk, "Talk to the researcher");
 		m_sTitle = "Escort the Scientist";
 		m_sDeed = "walked a researcher through {town}";
-		m_sBrief = string.Format("One of our researchers needs readings from %1, %2 and %3. Collect her at the lab and keep her alive.", m_aSiteNames[0], m_aSiteNames[1], m_aSiteNames[2]);
+		m_sBrief = string.Format("One of our field researchers needs readings from %1, %2 and %3, and they can't be taken from behind a fence. Collect her at the lab and walk her round all three. She'll be watching her instruments, not the hedges. You watch the hedges.", m_aSiteNames[0], m_aSiteNames[1], m_aSiteNames[2]);
 		if (!m_Escort.Begin(gm, m_vPos))
 			return false;
 
@@ -844,7 +844,7 @@ class RZ_Mission_SpecimenFromTheNest : RZ_Mission_Delivery
 			return false;
 
 		m_sTitle = "Specimen from the Nest";
-		m_sBrief = string.Format("There's a hive in %1. We need living tissue from inside it. Cut a sample and bring it to the lab. Don't burn it, whatever you do.", s.m_sName);
+		m_sBrief = string.Format("There's a hive in %1, where they lie up together through the day. Living tissue from inside it tells us more about what they're becoming than any body on the slab. Cut a sample and bring it to the lab. Don't burn it, whatever the Haven tells you. Burnt tissue is just ash.", s.m_sName);
 		return true;
 	}
 
@@ -946,7 +946,7 @@ class RZ_Mission_MedicalDrone : RZ_Mission_Delivery
 			return false;
 
 		m_sTitle = "Medical Drone";
-		m_sBrief = string.Format("Our prototype drone dropped out of the sky near %1. Its last ping was grid %2, give or take 250 m. We need its core back.", s.m_sName, RZ_SettlementScanner.GridReference(m_vPos));
+		m_sBrief = string.Format("Our prototype drone dropped out of the sky near %1: the one we built from parts to watch the packs without walking out among them. Its last ping was grid %2, give or take 250 m. The airframe doesn't matter. The core holds every flight it made. Bring it back.", s.m_sName, RZ_SettlementScanner.GridReference(m_vPos));
 		return true;
 	}
 
@@ -1081,7 +1081,7 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 
 		m_vPos = m_Chain.GetStep(0).m_vPos;
 		m_sTitle = "Patient Zero";
-		m_sBrief = string.Format("We think we can trace the outbreak back to the first case. It starts in %1: a body with a hospital bracelet. Follow where it leads.", s.m_sName);
+		m_sBrief = string.Format("We think we can trace the outbreak back to the first case, and so could anyone else who went looking. It starts in %1: a body with a hospital bracelet. Follow where it leads, and bring what you find to us before you show it to anyone.", s.m_sName);
 		return true;
 	}
 
@@ -1414,7 +1414,7 @@ class RZ_Mission_SerumTrial : RZ_PuzzleMission
 		m_iTalk = AddClue("The trial lead", "\"It's not ready. It might never be. But you're dying anyway, and we're out of time. Your choice.\"");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Take the serum", m_iTalk, "Talk to the trial lead");
 		m_sTitle = "Serum Trial";
-		m_sBrief = "You're bitten. We have something that might stop it, or might not. Come to the lab if you want to find out.";
+		m_sBrief = "You're bitten. We have a trial dose: eight in ten walk out, and we write down what happens to the other two. Anyone bitten may volunteer once, for nothing. Come to the lab if you want it, and come before the fever does.";
 		return true;
 	}
 
@@ -1524,7 +1524,7 @@ class RZ_Mission_MobileLab : RZ_Mission
 		m_iSettlement = gm.GetLabSettlement();
 		m_Zone.SetZone(LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4), 35);
 		m_sTitle = "Mobile Lab";
-		m_sBrief = string.Format("We're setting up a field annex in %1, where it's quieter. The lab truck is outside the lab, loaded. Drive it there in one piece.", m_sDest);
+		m_sBrief = string.Format("We're setting up a field annex in %1, where it's quieter: sensors, a cold box and a radio, like the other field stations. The lab truck is outside the lab with all of it loaded. Drive it there in one piece. The centrifuge in the back is worth more than the truck.", m_sDest);
 		return true;
 	}
 

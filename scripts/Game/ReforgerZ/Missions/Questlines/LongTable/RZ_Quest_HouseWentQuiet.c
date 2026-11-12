@@ -965,7 +965,7 @@ class RZ_QM_TableGuest : RZ_QM_TableBase
 
 		t.Remember(playerId, RZ_LongTable.MEM_BLESSED);
 		SetQFlag(gm, "boots_seen", 1);
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} looks at your arm, and something in his face goes careful. \"Thank you for saying.\" He takes you as far as the yard, where {mother} blesses you with her hand on your head and gives you bread in a cloth. By the door there's a row of boots, in too many sizes. \"Go on, now, while it's light.\""));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} looks at your arm, and something in the face goes careful. \"Thank you for saying.\" You're taken as far as the yard, where {mother} blesses you with her hand on your head and gives you bread in a cloth. By the door there's a row of boots, in too many sizes. \"Go on, now, while it's light.\""));
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_HouseWentQuiet.OUT_BLESSED, "declared a bite, and was blessed and sent on");
 	}
 

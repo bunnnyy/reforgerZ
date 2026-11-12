@@ -176,7 +176,7 @@ class RZ_Quest_ShortWeight : RZ_Questline
 			return "{keeper} was walked back to the council.";
 
 		if (run.Flag("mended") == 1)
-			return "{keeper} was talked out of it, and carried it home himself.";
+			return "{keeper} was talked out of it, and carried the food back to the stores by hand.";
 
 		if (run.Flag("ran_off") == 1)
 			return "{runner} was run off at gunpoint.";
@@ -285,7 +285,7 @@ class RZ_QM_ShortWeightAsk : RZ_QuestMission
 		m_vPos = h.m_vPos;
 		m_vKeeper = LandPointNear(h.m_vPos, 6, 18);
 		m_vLedger = LandPointNear(h.m_vPos, 20, 35);
-		m_iTalk = AddClue(QText(gm, "keeper"), QFill(gm, "{keeper} is counting tins with his lips moving. \"Short? Mice. Damp. People with long arms.\" He doesn't look at the shelves. He keeps touching his coat pocket."));
+		m_iTalk = AddClue(QText(gm, "keeper"), QFill(gm, "{keeper} is counting tins under their breath. \"Short? Mice. Damp. People with long arms.\" Eyes anywhere but the shelves, and a hand that keeps going to a coat pocket."));
 		m_iLedger = AddClue("The stores ledger", QFill(gm, "Tins, rice and flour in a careful hand. Every fourth day the same line with no name: '6 tins, 2 rice - R.' Under it, smaller: 'amoxicillin x10, for {girl}.' The next one says 'the old bus shelter, outside town'."));
 		m_Quiet.Watch(h.m_vPos, 60);
 		m_sTitle = "Short Weight";
@@ -546,7 +546,7 @@ class RZ_QM_ShortWeightHandover : RZ_QuestMission
 			SetQFlag(gm, "ran_off", 1);
 			gm.GetHeat().AddHeat(m_vPos, 15);
 			RZ_QuestApproach.SideWith(gm, playerId, -1, RZ_EFaction.BANDITS, 0, 5);
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{runner} backs off with his hands up. \"Fine. Keep your tins. We'll remember the face.\""));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{runner} backs off with both hands up. \"Fine. Keep your tins. We'll remember the face.\""));
 			Resolve(gm, playerId, RZ_EQuestApproach.FORCE, RZ_Quest_ShortWeight.OUT_STOPPED, "ran the runner off");
 			return;
 		}

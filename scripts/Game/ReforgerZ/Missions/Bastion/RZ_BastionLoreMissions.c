@@ -185,7 +185,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 
 		m_vPos = m_vPost;
 		m_sTitle = "No Reply";
-		m_sBrief = string.Format("The radio operator at %1 wants a word. Something about last night's call. Go and hear him out. Keep it off the open channel.", m_sPost);
+		m_sBrief = string.Format("The radio operator at %1 wants a word, in person. Something about last night's call to Command, after the numbers were read and 'No reply' written in the log. Go and hear the operator out. Keep it off the open channel: a post that starts waiting again stops looking after itself.", m_sPost);
 		return true;
 	}
 
@@ -275,7 +275,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 		if (!m_bMastShown && RZ_ContractHelp.AnyNear(players, m_vMast, 300))
 		{
 			m_bMastShown = true;
-			SpawnObject(gm, RZ_EPuzzleProp.RADIO_MAST, m_vMast, OBJ_MAST, "Listen on the Command net and take a bearing", "");
+			SpawnObject(gm, RZ_EPuzzleProp.RADIO_MAST, m_vMast, OBJ_MAST, "Take a bearing on the Command net", "");
 			SpawnGuards(gm, m_vMast, 3, 15, 40);
 		}
 

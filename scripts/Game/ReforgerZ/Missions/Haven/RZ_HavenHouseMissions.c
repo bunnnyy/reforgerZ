@@ -421,7 +421,7 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	protected string PickName(RZ_GameModeComponent gm)
 	{
-		array<string> names = {"Pavel", "Henri", "Tomas", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon"};
+		array<string> names = {"Pavel", "Henri", "Radim", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon"};
 		return m_Rng.Pick(names);
 	}
 

@@ -11,7 +11,7 @@ class RZ_RedHandEdges
 	//! A debtor's name: "a lad in the book".
 	static string DebtorName(RZ_Rng rng)
 	{
-		array<string> names = {"Pavel", "Henri", "Tomas", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon"};
+		array<string> names = {"Pavel", "Henri", "Radim", "Emil", "Anton", "Viktor", "Karel", "Oskar", "Milan", "Jakub", "Bruno", "Leon"};
 		return rng.Pick(names);
 	}
 

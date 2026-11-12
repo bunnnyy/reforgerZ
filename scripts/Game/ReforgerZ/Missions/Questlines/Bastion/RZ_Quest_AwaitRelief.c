@@ -790,7 +790,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 		{
 			run.SetBranch(BRANCH_READ);
 			RZ_BastionQuest.SetWorld(gm, KEY + ".read", 1);
-			run.Note("{cmd} read the page to his men at the shift change, every word that's left.");
+			run.Note("{cmd} read the page to the whole post at the shift change, every word that's left.");
 			return S_WAIT;
 		}
 
@@ -820,7 +820,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 		if (run.m_iBranch == BRANCH_READ && !RZ_BastionQuest.Kept(gm, run, "cmd"))
 		{
 			run.SetFlag("gone", 1);
-			return Finish(run, E_READ, "The men were told. By the time {co}'s squad came for {cmd}, he was already gone from {post}.");
+			return Finish(run, E_READ, "The men were told. By the time {co}'s squad came for {cmd}, the commander's bunk at {post} was already empty.");
 		}
 
 		// The stove: only a copy of the tape can still get out
@@ -856,7 +856,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 					if (run.Flag("cmd_dead") == 1)
 						return Finish(run, E_READ, "The men were told. {cmd} never reached {stronghold}.");
 
-					return Finish(run, E_READ, "The men were told. {cmd} walked into {stronghold} under arrest, and nobody had to drag him.");
+					return Finish(run, E_READ, "The men were told. {cmd} walked into {stronghold} under arrest, and nobody had to drag anyone.");
 				}
 
 				if (outcome == OUT_TALKED)
@@ -1081,7 +1081,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 		switch (run.m_iBranch)
 		{
 			case BRANCH_STOVE: return run.Fill("The page went into the stove at {stronghold}. {operator} has been moved there, for his own good. The log at {post} says \"No reply\".");
-			case BRANCH_READ: return run.Fill("{cmd} read the page to his men at the shift change. Two of them walked off {post} before dawn. The stronghold will have heard by now.");
+			case BRANCH_READ: return run.Fill("{cmd} read the page to the whole post at the shift change, 'expended' and all. Two of the men walked off {post} before dawn. The stronghold will have heard by now.");
 			case BRANCH_MOCKED: return run.Fill("The Red Hand reads \"expended\" on the open channel every hour. Bastion's channel has gone quiet. Somebody at {stronghold} wants to know who leaked it.");
 			case BRANCH_HAVEN: return run.Fill("The chair keeps the page in a locked drawer. She says nothing, yet.");
 		}
@@ -1246,7 +1246,7 @@ class RZ_QM_OrdersTape : RZ_QuestMission
 		if (!m_bPostShown && RZ_ContractHelp.AnyNear(players, m_vPost, 300))
 		{
 			m_bPostShown = true;
-			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vOperator, OBJ_OPERATOR, "", "Take the tape|Copy it onto your own set while he isn't looking", m_iOperatorClue, "Talk to " + QText(gm, "operator"));
+			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vOperator, OBJ_OPERATOR, "", "Take the tape|Copy it onto your own set unseen", m_iOperatorClue, "Talk to " + QText(gm, "operator"));
 			m_Quiet.Watch(m_vPost, 60);
 			RZ_GuidanceSettings guide = gm.GetGuidanceSettings();
 			if (guide && !guide.m_sTableRadioPrefab.IsEmpty())
@@ -1452,7 +1452,7 @@ class RZ_QM_OrdersRunner : RZ_QuestMission
 		fire.m_iGuards = 2;
 
 		RZ_ChainStep body = m_Chain.AddStep(gm, towns[2], LandPointNear(s3.m_vCenter, s3.m_fRadius * 0.3, s3.m_fRadius), 8, 0);
-		m_iPageClue = AddClue(QText(gm, "runner"), QFill(gm, "{runner}, or what the infected left of him. One tag still round his neck. In his breast pocket, folded twice, a page of signal decoded by hand, water-stained: \"...TF CORDON... HOLD THE LINE... NO RELIEF WILL... AUTHORISED TO... EXPENDED.\" The rest has run. You leave it where it is for now."));
+		m_iPageClue = AddClue(QText(gm, "runner"), QFill(gm, "{runner}, or what the infected left. One tag still on its chain. In the breast pocket, folded twice, a page of signal decoded by hand, water-stained: \"...TF CORDON... HOLD THE LINE... NO RELIEF WILL... AUTHORISED TO... EXPENDED.\" The rest has run. You leave it where it is for now."));
 		body.m_iClue = m_iPageClue;
 		body.m_eClueProp = RZ_EPuzzleProp.BODY;
 		body.m_sReadLabel = "Search the runner";
@@ -1525,7 +1525,7 @@ class RZ_QM_OrdersRunner : RZ_QuestMission
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return QFill(gm, "Await Relief: you found {runner}, and you've read what he carried.");
+		return QFill(gm, "Await Relief: you found {runner} in the ditch, and you've read the page the runner carried since Day 3.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1982,8 +1982,8 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 		m_vSergeant = LandPointNear(m_vPost, 8, 14);
 		m_iSettlement = gm.FindNearestSettlement(m_vPost);
 
-		int talk = AddClue(cmd.m_sShort, QFill(gm, "{cmd} has his kit packed. \"They're coming for me. I told my own men the truth, and that's the charge.\" He doesn't reach for his rifle. \"If it's going to be anyone, I'd rather it was you.\""));
-		m_iSergeantClue = AddClue("The squad's sergeant", QFill(gm, "\"Orders from {co}: {cmd} to {stronghold}, under arrest.\" He doesn't look happy about it. \"I'd rather walk back with him than carry him.\""));
+		int talk = AddClue(cmd.m_sShort, QFill(gm, "{cmd} has a kit bag packed by the door. \"They're coming for me. I told my own men the truth, and that's the charge.\" The rifle stays on its hook. \"If it's going to be anyone, I'd rather it was you.\""));
+		m_iSergeantClue = AddClue("The squad's sergeant", QFill(gm, "\"Orders from {co}: {cmd} to {stronghold}, under arrest.\" The sergeant doesn't look happy about it. \"I'd rather we all walked back than carried anyone.\""));
 		m_Him.m_sName = cmd.m_sShort;
 		m_Him.m_sPrefab = RZ_Escort.PrefabFor(gm, 2);
 		m_Him.m_bHide = false;
@@ -1991,7 +1991,7 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 
 		m_vPos = m_vPost;
 		m_sTitle = "Await Relief: the reckoning";
-		m_sBrief = QFill(gm, "{cmd} read classified traffic to his men and two of them walked. A squad is on its way to {post} to bring him in. Go with them. See it done properly.");
+		m_sBrief = QFill(gm, "{cmd} read the decoded Day 3 signal, 'expended' and all, to the whole post, and two men walked off the roster that night. A squad from the stronghold is on its way to {post} to make the arrest. Go with them and see it's done properly: nobody hurt, and nobody shot for telling the truth.");
 		return m_Him.Begin(gm, LandPointNear(m_vPost, 2, 4));
 	}
 
@@ -2022,7 +2022,7 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 		if (!m_bShown && RZ_ContractHelp.AnyNear(players, m_vPost, 400))
 		{
 			m_bShown = true;
-			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSergeant, OBJ_SERGEANT, "", QFill(gm, "Talk {co} down on his radio (Champion, or Trusted and a Soldier)|Stand aside and let them take him"), m_iSergeantClue, "Talk to the sergeant");
+			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSergeant, OBJ_SERGEANT, "", QFill(gm, "Talk {co} down on the radio (Champion, or Trusted and a Soldier)|Stand aside and let them make the arrest"), m_iSergeantClue, "Talk to the sergeant");
 			ResourceName squad = RZ_Mission_BustOut.SquadPrefab(gm);
 			if (!squad.IsEmpty() && m_Squad.Spawn(squad, LandPointNear(m_vPost, 20, 35)))
 			{
@@ -2119,7 +2119,7 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 		if (option == 1)
 		{
 			m_fRewardScale = 0.5;
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You step aside. They're not rough about it. {cmd} walks between two of them and doesn't look back at his post."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You step aside. They're not rough about it. {cmd} walks between two of them and doesn't look back at the post."));
 			Resolve(gm, playerId, RZ_EQuestApproach.NONE, RZ_Quest_AwaitRelief.OUT_TAKEN, "stood aside");
 		}
 	}

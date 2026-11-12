@@ -100,7 +100,7 @@ class RZ_NoteText
 	//------------------------------------------------------------------------------------------------
 	static string FirstName(RZ_Rng rng)
 	{
-		array<string> names = {"Marta", "Pavel", "Henri", "Jana", "Tomas", "Lucie", "Emil", "Ruth", "Anton", "Irena",
+		array<string> names = {"Marta", "Pavel", "Henri", "Jana", "Radim", "Lucie", "Emil", "Ruth", "Anton", "Irena",
 			"Viktor", "Elise", "Karel", "Nadia", "Oskar", "Vera", "Milan", "Sabine", "Jakub", "Ilse", "Bruno", "Dana", "Leon", "Agata"};
 		return rng.Pick(names);
 	}

@@ -178,7 +178,7 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 			return false;
 
 		m_sTitle = "Wandering Trader";
-		m_sBrief = string.Format("A trader has parked outside %1 for the next 20 minutes. Rare goods. Protect him, or rob him.", s.m_sName);
+		m_sBrief = string.Format("A wandering trader has pulled his wagon up outside %1 for the next 20 minutes, with things nobody has seen on a shelf since the gates closed. Everyone on the open channel knows he's there. Protect him, or rob him.", s.m_sName);
 		Truth(gm);
 		return true;
 	}
@@ -330,7 +330,7 @@ class RZ_Event_BastionShelling : RZ_Mission
 		RZ_Settlement s = gm.GetSettlement(m_iSettlement);
 		m_vPos = s.m_vCenter;
 		m_sTitle = "Bastion Shelling";
-		m_sBrief = string.Format("Bastion's mortar crews will shell %1 in five minutes. They don't check for survivors. Get out, or loot fast.", s.m_sName);
+		m_sBrief = string.Format("Bastion's mortar crews will shell %1 in five minutes: the town has gone over, and containment says it goes. The loudspeaker gave the warning once. They don't check for survivors after. Get out, or loot fast.", s.m_sName);
 		return true;
 	}
 
@@ -400,7 +400,7 @@ class RZ_Event_MassGrave : RZ_Mission
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 300);
 		gm.SpawnSamples(m_vPos, 3);
 		m_sTitle = "Mass Grave";
-		m_sBrief = string.Format("Someone found a mass grave outside %1. There are samples in it. Something underneath is still moving.", s.m_sName);
+		m_sBrief = string.Format("Someone found a mass grave outside %1: the first week's dead, from before anyone had time to dig them separate holes. Halcyon pays for samples from a site like that. Something underneath is still moving.", s.m_sName);
 		return true;
 	}
 

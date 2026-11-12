@@ -554,7 +554,7 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 
 		if (gm.GetSpawner().IsZombieNear(m_vSpot, CLEAR_RADIUS))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Not yet! I can hear them!\" The door stays shut. Clear them away from the house first.");
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Not yet. I can hear them right outside.\" The door stays shut. Lead the infected away from the house, or put them down, then knock again.");
 			return;
 		}
 
