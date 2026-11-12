@@ -670,6 +670,8 @@ class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_DRIVER, m_iTalk, "Talk to " + QText(gm, "driver"), choices, QFill(gm, "{driver}, at the edge of {site_town}"));
 		m_sTitle = "The Three Weeks: the driver";
 		m_sBrief = QFill(gm, "On Day 3 {driver} drove Dr Wolff up to the closed site and came back alone. He sits where he left the van, at the edge of {site_town}, and he won't talk to anyone in a lab coat. Get him to say where the site is, and what he saw.");
+		// The quiet threat (Reputation > Quiet success): Fear first, so he doesn't tell the houses
+		m_Ways.m_iMenaceDifficulty = RZ_ReputationSettings.QuietDifficulty();
 		return true;
 	}
 
@@ -769,6 +771,13 @@ class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 		if (!user || !RZ_Util.IsArmed(user))
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{driver} looks at your empty hands. \"With what?\""));
+			return;
+		}
+
+		// Quiet success: said low, with nobody about; he won't tell the houses who leaned on him
+		if (TryMenace(gm, playerId, "weeks.driver", RZ_EFaction.SURVIVORS, false))
+		{
+			Named(gm, playerId, QFill(gm, "You say it low, with nobody about. {driver} nods once. He won't be telling the houses about this."), RZ_EQuestApproach.FORCE, "threatened him quietly");
 			return;
 		}
 

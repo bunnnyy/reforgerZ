@@ -513,13 +513,14 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! H|player name|background|life
+	//! H|player name|background|life|the whole picture (RZ_RepNamesPage.Header)
 	//! F|faction|fame|infamy|favor|tier|need|need line|rep (RZ_ERep)|notoriety|word|note|left to forgive (-1 no budget)|owed (0/1)
 	//! The fields after the need line are new (docs/REPUTATION.md, "Reputations"): older layouts
 	//! read the first eight and ignore the rest. The word is what the faction calls you; owed is 1 while
 	//! they owe you a hearing (the parley), and the note then says so.
 	//! L|faction|name|title|what they think of you
 	//! K|faction|borrowed kit with them (shown above the leaders they know)
+	//! W|faction|the word as a sentence|the nearest met leader's verdict (the leaders column's first two lines)
 	//! R|kind (0 truce, 1 feud)|faction a|faction b|minutes left
 	protected string BuildStanding(int playerId)
 	{
@@ -530,7 +531,12 @@ class RZ_UIFeed
 			bgName = bg.m_sName;
 
 		RZ_UILine head = new RZ_UILine("H");
-		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).End();
+		string s = head.Add(RZ_Util.PlayerName(playerId)).Add(bgName).AddInt(p.m_iLives).Add(RZ_RepNamesPage.Header(m_GM, playerId)).End();
+		IEntity standingEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		vector standingAt = vector.Zero;
+		if (standingEnt)
+			standingAt = standingEnt.GetOrigin();
+
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
@@ -576,6 +582,13 @@ class RZ_UIFeed
 			{
 				RZ_UILine lnK = new RZ_UILine("K");
 				s += lnK.AddInt(f).Add(kit).End();
+			}
+
+			// The word and the nearest met leader's verdict open the leaders column (RZ_RepNamesPage)
+			if (RZ_ReputationSettings.Get().m_bNames)
+			{
+				RZ_UILine lnW = new RZ_UILine("W");
+				s += lnW.AddInt(f).Add(RZ_RepNamesPage.WordLine(m_GM, playerId, f)).Add(RZ_RepNamesPage.Verdict(m_GM, playerId, f, standingAt)).End();
 			}
 		}
 
@@ -627,7 +640,13 @@ class RZ_UIFeed
 		if (m_GM.HasLab() && m_GM.GetCure())
 		{
 			RZ_UILine lnS = new RZ_UILine("S");
-			lab = lnS.Add(m_GM.GetCure().Describe()).End();
+			// The lab door's sheet, a board of record (Missions/Story/RZ_Grey.c)
+			string labLine = m_GM.GetCure().Describe();
+			string sheet = RZ_RecordBoards.LabSheet();
+			if (!sheet.IsEmpty())
+				labLine = labLine + " " + sheet;
+
+			lab = lnS.Add(labLine).End();
 		}
 
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -662,6 +681,11 @@ class RZ_UIFeed
 			string req = "";
 			if (m.m_bContract)
 				req = m.m_Req.Describe();
+
+			// A parley's amends job says so (RZ_RepNamesPage)
+			string amends = RZ_RepNamesPage.JournalLine(m_GM, m, playerId);
+			if (!amends.IsEmpty())
+				req = amends;
 
 			string part = "0";
 			if (m.m_aParticipants.Contains(playerId))

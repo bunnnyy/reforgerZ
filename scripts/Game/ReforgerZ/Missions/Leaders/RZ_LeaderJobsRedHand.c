@@ -106,7 +106,16 @@ class RZ_Job_HonourAmongThieves : RZ_LeaderPuzzle
 
 		if (option == 2)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "You tell him to keep them. He'll need them where he's going. The crew boss won't see it that way.");
+			// A branch, not only a failure: he walks off in the boots, it's a deed, and it comes back
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You tell him to keep them. He'll need them where he's going. The crew boss won't see it that way. %1 doesn't say thank you. He laces them tighter.", m_sThief));
+			RZ_PlayerProfile kind = gm.FindProfile(playerId);
+			if (kind)
+				RZ_Deeds.Callback(kind, "honour." + m_sThief, "let " + m_sThief + " keep his boots", RZ_Deeds.MEDIUM);
+
+			RZ_Shared shared = gm.GetShared();
+			if (shared && shared.GetCallbacks())
+				shared.GetCallbacks().Queue(playerId, m_sThief, string.Format("A man in good boots lifts a hand to you from across the road. \"Still got them,\" %1 calls. \"Still walking.\"", m_sThief), m_vPos, -1, "");
+
 			m_eState = RZ_EMissionState.FAILED;
 		}
 	}

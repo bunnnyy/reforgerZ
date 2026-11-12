@@ -214,7 +214,7 @@ system's caps.
 | `learn` | `learn:haven.list`, `learn:bastion.word:6h` | Something you now know (`knows:` keys): for the season, or a **passing fact** for that many real hours (32 at most) |
 | `rumour` | `rumour:"..."@6` | Gossip on the roads (the world's rumours) |
 | `call` | `call:slot:2`, `call:hand_in:2`, `call:toll`, `call:post_wave`, `call:standing` | Built behaviour, unchanged: the person's own reply N; the safehouse food hand-in for N items (paid as built); the Red Hand toll at this roadblock (Known or better, as built); this post lets you through once while it stands; what they make of you, in their voice |
-| `call` (more) | `call:season`, `call:look`, `call:declare_bite`, `call:caught_bite`, `call:distress`, `call:net_word`, `call:net_lost` | A leader's epilogue carriers, as built (the season at this seat; where to look); the safehouse's bite service, as built; a bite lie caught at a safehouse counts as caught hiding that bite; a distress caller sent to a house's gate; the word at the wire from Bastion's net; codes changed on an intruder ([The radio](#the-radio)). The lint holds each to its own speaker |
+| `call` (more) | `call:season`, `call:look`, `call:declare_bite`, `call:caught_bite`, `call:distress`, `call:net_word`, `call:net_lost`, `call:brief_public` | A leader's epilogue carriers, as built (the season at this seat; where to look); the safehouse's bite service, as built; a bite lie caught at a safehouse counts as caught hiding that bite; a distress caller sent to a house's gate; the word at the wire from Bastion's net; codes changed on an intruder ([The radio](#the-radio)); a giver's lie taken public ([DESIGN.md](DESIGN.md#story-blocks)). The lint holds each to its own speaker |
 | `decide` | `decide:all_in` | In a conversation with a `scene`: the pick waits 5 s for objections ([Several players](#several-players)), then writes the scene's record (who, which), once for the world |
 | `sway` | `sway:council.workers` | In a conversation with a `scene`: one contribution per player to a count its owner reads (`tally.<name>`) |
 | `offer` | `offer:leader_job` | A leader's personal job (the built Ask for work) |
@@ -606,7 +606,7 @@ is off.
 | Factions | `truce:redhand`, `feud:bastion` | the speaker's faction and that one have a truce or a feud now |
 | Where | `radio` | on the open channel |
 | This conversation | `bound`, `bound:target`, `scene_lied:<scene>`, `talk:<key>` | the topic's bindings were picked (that one); a lie was believed in that scene; a scene's own flag (`set:`) |
-| The season's story | `cure_held:bastion` (`haven`, `redhand`, `halcyon`, `everyone`, `nobody`, `slow`, `any`), `ending:every_name`, `ending:every_name=every_name`, `was:book`, `lean:every_name.first.pot`, `q:every_name.act=1` | after the cure, who holds it (the epilogue's record); a major ended (that way: its ending's name, lower case, without "the"); you were one of those who decided it; the speaker's own voter leans to that option; a running questline's own flag |
+| The season's story | `cure_held:bastion` (`haven`, `redhand`, `halcyon`, `everyone`, `nobody`, `slow`, `any`; `none`: no cure by the wipe), `ending:every_name`, `ending:every_name=every_name`, `was:book`, `lean:every_name.first.pot`, `q:every_name.act=1` | after the cure, who holds it (the epilogue's record; `none` is the last day with no cure); a major ended (that way: its ending's name, lower case, without "the"); you were one of those who decided it; the speaker's own voter leans to that option; a running questline's own flag |
 | The infected, you, the room | `tribe`, `alpha`, `declared`, `symptoms`, `group` | a pack's range takes in the speaker's place; that pack has its leader; you told a safehouse about your bite; visible symptoms; another of your group within 150 m |
 | The radio | `secure`, `secure:bastion`, `power`, `distress` | you're listening to a cracked net (that one); the radio has power; a distress call is on air for you |
 | Kit and cover | `kit:issued`, `kit:signed_other`, `kit:dead_mans`, `kit:off_turned`, `cover:name` (`dead`, `crew`, `notebook`, `paper`), `claimed` | what the kit itself says; you have that cover detail to give the speaker's faction; you've spoken a claim line to this speaker this life |
@@ -680,8 +680,8 @@ place), `{claim:<key>}` (what you told this speaker for that claim, in your own 
 Script, `scripts/Game/ReforgerZ/Dialogue/Pack/RZ_DialoguePack_<area>.c` (functions of at most 150
 calls) and `RZ_DialoguePacks.c`. The server compiles them once at start into typed records indexed
 by speaker kind. The packs are committed; never edit them by hand. They're the one text source, so a
-text fix needs a mod update (reading `.rzd` files from the addon waits for an engine check,
-[designs/DIALOGUE.md](../designs/DIALOGUE.md)). A lie's mark and a choice's `truth` and `callout` go into
+text fix needs a mod update (see [Simplified](#simplified-and-not-built-yet) for reading `.rzd` files
+from the addon). A lie's mark and a choice's `truth` and `callout` go into
 the packs as `Mark` and `ChoiceExtra` calls, `tell always` and `found` as `ChoiceMore`, bindings as
 `Bind`.
 
@@ -723,7 +723,7 @@ always` (an ordinary lie, believable and never true).
 
 ## The conversations
 
-✅ 153 conversations, 334 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
+✅ 157 conversations, 346 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
 
 | Speaker | Conversations |
 |---|---|
@@ -731,7 +731,7 @@ always` (an ordinary lie, believable and never true).
 | Bastion leaders | The board on the wall (the roster: nobody is coming, they're all they have; [Soldier], [Police]; being signed on); whether Command ever answers |
 | Red Hand leaders | The book (the first line, Rudi, persuade to see your own page, which reads it out in the book's voice); why the hand is red |
 | Halcyon leaders | Why they're called the beaks ([Lab Technician], [Doctor], [Nurse]: the notebooks); how close the cure is (the other two); a field lead on the volunteers ("They're comfortable": a lie, with [Lab Technician], [Doctor], a persuade and an [Evidence] call-out to the room at the back) |
-| Every leader | The name, not the face (a new life greeted by the season's title, once); a lie found out, said at the next greeting, once |
+| Every leader | The name, not the face (a new life greeted by the season's title, once); a lie found out, said at the next greeting, once; what a brief left out, told or kept (a giver's lie you found, at any leader of that faction for a week: `leaders/briefs.rzd`, [DESIGN.md](DESIGN.md#story-blocks)) |
 | Haven leaders at a sitting | Every Name's first and second sittings: a persuade to sway the speaker's vote to an option on the table (one sway a sitting) |
 | The 8 wanderer roles | The Trader's prices; the Doctor's work ([Doctor], [Nurse]); where the Scavenger has been (persuade: is it true); why the Deserter left ([Soldier], [Police]); the Preacher's bells; the Courier's letters; what still runs ([Mechanic]); the Kid's name; the Scavenger's clean chemist's (a lie for a tin, [Hunter] or [Police] see through it, [Evidence] once the Doctor tells you, and a callback greet 6 hours on); the Doctor on the chemist's and on Halcyon's back room (the truths); what Bastion makes of you, as the Deserter reads it |
 | Occupants | A fed house (leave a tin: 2 Haven Favor); the candle in the window after a death (a greet, and a topic: staying for the name is remembered 6 hours on); the bear on the door; who gets the bed by the stove (a short house: a public scene per house that someone Known with the Haven decides, with a sway for the room); a short house's promise of two tins (kept by the hand-in, with greets for kept and broken) |
@@ -781,5 +781,9 @@ always` (an ordinary lie, believable and never true).
 - *Simplified:* a claim the world tests isn't saved: a restart forgets a test still waiting.
 - *Simplified:* a binding lasts the session (it's picked again when the topic opens next), and a world
   predicate waits 3 real hours and isn't saved.
-- **Waits for an engine check** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): the text source read
-  from the addon, with server-only `$profile` overrides.
+- *Simplified (waits for an engine check):* the generated packs are the one text source. Reading the
+  `.rzd` files from the addon at start, with server-only `$profile:ReforgerZ/dialogue/*.rzd` overrides by
+  conversation id (a text fix with no mod update, and twists kept off clients' disks), needs `FileIO` to
+  open files inside the addon on the dedicated server (VERIFY, on the PC's list in `.claude/HANDOFF.md`).
+  If it can, the reader is the packer's parser ported, with the overrides on top; if it can't, only the
+  `$profile` overrides would be worth a runtime reader.

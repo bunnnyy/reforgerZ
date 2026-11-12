@@ -134,6 +134,8 @@ class RZ_Guidance
 	protected ref array<ref RZ_GuidanceTip> m_aTips = {};
 	protected ref map<int, ref RZ_GuidePlayer> m_mPlayers = new map<int, ref RZ_GuidePlayer>();
 	protected ref map<string, float> m_mTipAt = new map<string, float>();
+	protected ref map<int, string> m_mHeldTips = new map<int, string>();	// playerId -> "tip\ta\tb", held by the approach
+	protected ref map<int, float> m_mHeldAt = new map<int, float>();
 	protected ref array<vector> m_aGentlePos = {};
 	protected ref array<float> m_aGentleMult = {};
 	protected float m_fClock;
@@ -291,6 +293,7 @@ class RZ_Guidance
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
+		RetryHeldTips();
 		m_aGentlePos.Clear();
 		m_aGentleMult.Clear();
 
@@ -544,6 +547,15 @@ class RZ_Guidance
 		if (!tip.m_bCritical && m_fClock - st.m_fLastTip < m_Settings.m_fTipGapSeconds)
 			return false;
 
+		// One per approach: a tip waits behind the gate's line and a change notice, retried on the
+		// tick, and is dropped once it has waited past 2 minutes (UI/RZ_NoticeLanes.c)
+		RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
+		if (!tip.m_bCritical && lanes && lanes.ApproachHolds(playerId, RZ_EApproachRank.TIP))
+		{
+			HoldTip(playerId, tipId, a, b);
+			return false;
+		}
+
 		bool said;
 		if (full)
 		{
@@ -565,6 +577,9 @@ class RZ_Guidance
 		if (!said)
 			return false;
 
+		if (lanes)
+			lanes.NoteApproachLine(playerId, RZ_EApproachRank.TIP);
+
 		st.m_aLifeTips.Insert(tipId);
 		st.m_fLastTip = m_fClock;
 		m_mTipAt.Set(key, m_fClock);
@@ -572,6 +587,56 @@ class RZ_Guidance
 			p.m_aGuideSeen.Insert(tipId);
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A tip held by the approach: one per player (the newest), retried by RetryHeldTips.
+	protected void HoldTip(int playerId, string tipId, string a, string b)
+	{
+		if (!m_mHeldTips.Contains(playerId))
+			m_mHeldAt.Set(playerId, m_fClock);
+
+		m_mHeldTips.Set(playerId, tipId + "\t" + a + "\t" + b);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The held tips: said once the approach lets them, dropped past 2 minutes.
+	protected void RetryHeldTips()
+	{
+		if (m_mHeldTips.IsEmpty())
+			return;
+
+		array<int> pids = {};
+		foreach (int pid, string held : m_mHeldTips)
+		{
+			pids.Insert(pid);
+		}
+
+		RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
+		foreach (int heldPid : pids)
+		{
+			float since = m_mHeldAt.Get(heldPid);
+			if (m_fClock - since > RZ_NoticeLanes.APPROACH_DROP)
+			{
+				m_mHeldTips.Remove(heldPid);
+				m_mHeldAt.Remove(heldPid);
+				continue;
+			}
+
+			if (lanes && lanes.ApproachHolds(heldPid, RZ_EApproachRank.TIP))
+				continue;
+
+			array<string> parts = {};
+			m_mHeldTips.Get(heldPid).Split("\t", parts, false);
+			m_mHeldTips.Remove(heldPid);
+			m_mHeldAt.Remove(heldPid);
+			while (parts.Count() < 3)
+			{
+				parts.Insert("");
+			}
+
+			Fire(heldPid, parts[0], parts[1], parts[2]);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

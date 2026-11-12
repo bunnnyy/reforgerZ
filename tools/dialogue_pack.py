@@ -99,7 +99,7 @@ COND_KEYS = {
     "fresh": (False, False),
 }
 QUIET_KEYS = {"stranger"}
-CURE_HELD = {"any", "haven", "bastion", "redhand", "halcyon", "everyone", "indep", "nobody", "slow"}
+CURE_HELD = {"any", "haven", "bastion", "redhand", "halcyon", "everyone", "indep", "nobody", "slow", "none"}
 MAJORS = {"every_name", "orders", "book", "proof"}
 FINALE_WORDS = {"soon", "pitch", "open", "locked", "voice"}
 COMMIT_ROUTES = {"haven", "bastion", "redhand", "halcyon", "indep"}
@@ -132,7 +132,7 @@ NUMBER_RE = re.compile(r"[0-9]|\{cure_percent\}|\b(one|two|three|four|five|six|s
 GENERIC_SPEAKERS = {"occupant", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
-CALLS = re.compile(r"^(slot:[0-9]|hand_in:[0-9]+|toll|post_wave|standing|season|look|distress|net_word|net_lost|declare_bite|caught_bite)$")
+CALLS = re.compile(r"^(slot:[0-9]|hand_in:[0-9]+|toll|post_wave|standing|season|look|distress|net_word|net_lost|declare_bite|caught_bite|brief_public)$")
 CHECKS = {"persuade", "threaten", "lie", "look"}
 LATER_CHECKS = {"vouch", "commit"}
 SCENE_SCOPES = {"speaker", "season"}

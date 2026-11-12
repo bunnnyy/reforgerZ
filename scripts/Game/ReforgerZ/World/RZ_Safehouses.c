@@ -1504,11 +1504,32 @@ class RZ_Safehouses
 		}
 
 		// The epilogue week: a resident's line about the season, in the first person
+		bool weekLine = false;
 		if (RZ_Epilogue.Get())
 		{
 			string week = RZ_Epilogue.Get().ResidentLine(m_aSafehouses.Find(h));
 			if (!week.IsEmpty())
+			{
 				mood = week;
+				weekLine = true;
+			}
+		}
+
+		// The council's pinned notes, a board of record (Missions/Story/RZ_Grey.c), in the season
+		if (!weekLine)
+		{
+			string pinned = RZ_RecordBoards.Council();
+			if (!pinned.IsEmpty())
+				mood += "\n" + pinned;
+		}
+
+		// A short house jokes about the soup, the potatoes and the chores more, never about who eats,
+		// and not at all in the 30 minutes after a death there (the voice bank's grief)
+		if (h.m_bShort && !weekLine)
+		{
+			string soup = RZ_VoiceBank.PickFor(m_GM, "house_short", RZ_EFaction.SURVIVORS, "", null, playerId, h.m_vPos, h.m_sName, 2);
+			if (!soup.IsEmpty())
+				mood += "\n" + soup;
 		}
 
 		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("%1 people live here (%2). Food for %3 more upkeeps.\nThey have %4.\n%5",

@@ -914,6 +914,26 @@ class RZ_Disguise
 			m_mHourInfamy.Set(hourKey, used + infamy);
 		}
 
+		// A hostile post (their standing would shoot you; only the kit held them): a failed look goes
+		// straight to the guns. No hold, no search, no kit taken, one line (docs/WRITING.md)
+		RZ_Hostility hostility = m_GM.GetHostility();
+		bool guns = hostility && hostility.ShootsByStanding(playerId, f);
+		if (guns)
+		{
+			string gunsText = GunsLine(playerId, f, me);
+			if (infamy > 0)
+				gunsText += string.Format(" +%1 Infamy with %2.", infamy, RZ_Factions.GetNameInText(f));
+
+			if (me)
+				hostility.AddGrudge(playerId, f, me.GetOrigin());
+
+			m_GM.NotifyPlayerAs(playerId, RZ_Factions.GetName(f), gunsText, RZ_ENoticeTag.URGENT);
+			m_Marks.OnCaught(playerId, f, "on the road", kitText, named);
+			Public(f);
+			RZ_Log.Info(string.Format("Disguise: %1 caught by %2 at a hostile post: straight to the guns (catch %3 this life)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), catches));
+			return;
+		}
+
 		string taken = TakeKit(me, f);
 		string text = line + " " + CaughtLine(f);
 		string face = FaceLine(playerId, f);
@@ -930,7 +950,6 @@ class RZ_Disguise
 			text += " \"Your description is on the board at every post.\"";
 
 		// Held: a moment's stand-down while they deal with you, never over a fight
-		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hostility && me && !hostility.IsFightFor(playerId, f, me.GetOrigin(), 300))
 			hostility.StandDown(playerId, f, HELD_SECONDS, false);
 		else if (hostility && me)
@@ -954,6 +973,21 @@ class RZ_Disguise
 
 		RunningJoke(f);
 		RZ_Log.Info(string.Format("Disguise: %1 caught by %2 (catch %3 this life)", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), catches));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Straight to the guns, in the faction's voice: the bank's `look_guns` line, else a plain one.
+	protected string GunsLine(int playerId, int f, IEntity me)
+	{
+		vector at = vector.Zero;
+		if (me)
+			at = me.GetOrigin();
+
+		string line = RZ_VoiceBank.PickFor(m_GM, "look_guns", f, "", null, playerId, at);
+		if (!line.IsEmpty())
+			return line;
+
+		return "They know what you are. Nobody's talking now. Run.";
 	}
 
 	//------------------------------------------------------------------------------------------------

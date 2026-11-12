@@ -795,10 +795,14 @@ class RZ_Mission
 
 	//------------------------------------------------------------------------------------------------
 	//! The deed phrase for the giver's best deed (docs/REPUTATION.md, "Deeds and tallies"): the
-	//! contract's own, else "did a job for us near {town}"; {town} is the nearest named settlement.
+	//! contract's own, else its class's (RZ_RepDeeds), else "did a job for us near {town}"; {town} is
+	//! the nearest named settlement.
 	string DeedPhrase(RZ_GameModeComponent gm)
 	{
 		string phrase = m_sDeed;
+		if (phrase.IsEmpty())
+			phrase = RZ_RepDeeds.ForMission(this);
+
 		if (phrase.IsEmpty())
 			phrase = "did a job for us near {town}";
 

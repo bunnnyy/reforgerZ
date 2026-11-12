@@ -825,8 +825,8 @@ still to do:
 | Single characters: quartermasters, leaders, occupants, wanderers | Vanilla civilian, US and FIA characters. Their faction affiliation was set afterwards, as their names say | They keep their vanilla kits: set them by hand. Halcyon's people are FIA medics; the kid is an adult |
 | `RZ_Antidote.et`; `RZ_Stabiliser.et` and `RZ_CutDose.et` | Saline; morphine, with their consumable effects set to `RZ_ConsumableAntidote` and `RZ_ConsumableMed` | They look like saline and morphine |
 | `RZ_Molotov.et`, `RZ_Bottle.et`, `RZ_TinRattle.et` | Smoke grenades with the beer bottle mesh (the tin can mesh for the tin), the smoke cleared, their own names | They throw as grenades do; a real throwable item is the fix |
-| `RZ_Explosion.et` | The vanilla mortar effect module | A real HE round: it damages what's near it |
-| `RZ_Nest.et` | Special Zombies' `ZombieHive_Minor` | It spawns its own infected |
+| `RZ_Explosion.et` | The vanilla mortar effect module (`EffectModule_MortarShell`) | A real HE round: it damages what's near it. **Make it look and sound only, no damage.** The scripts decide every harm themselves, as data (Fire Mission's strike, the infection Bastion Shelling takes off, Gas Station Fire's kills), and the same prefab goes off where players stand by design: the convoy's tripwire at the crates, the bridge charges they set, the burning helicopter they watch, Bastion's guns on the farm. Rebuild it the way `Perimeter/RZ_WarningShot.et` is built: base `Prefabs/Weapons/Warheads/Warhead_Base.et`; a `TimerTriggerComponent` (TIMER 0.05) whose PROJECTILE_EFFECTS hold one `SpawnParticleEffect` with `Particles/Weapon/Blast_Mortar_Dirt.ptc` and the explosion's sound event; a `SoundComponent` with `Sounds/Weapons/Ammo/MortarShells/Weapons_Ammo_MortarShell_8xmm_HE.acp` (use the event name that file's explosion plays); `SignalsManagerComponent` and `RplComponent`; no explosion damage effect and no `HitEffectComponent` damage. Check in play: a character 3 m from one, and a car 5 m from one, are untouched |
+| `RZ_Nest.et` | Special Zombies' `ZombieHive_Minor` | It spawns its own infected (a child `Bacon_622120A5448725E3_InfectedSpawnerEntity`, ID 69BD219DDB924140) and blows up when destroyed (`Warhead_Exploder_HiveBlast.et`). **The nest must not spawn:** Burn the Nest and Specimen from the Nest bring their own guards through the spawner, inside the agent budget ([INFECTED.md](INFECTED.md)); the hive's spawner would double them, outside it. Keep the hive's look and that it burns, and drop both: in `RZ_Nest.et` delete the spawner child; if Workbench won't delete an inherited child, build `RZ_Nest.et` as a plain `GenericEntity` instead with the hive's `MeshObject` (`HaystackSmall_01.xob` with its two Hive materials), `RigidBody` (Static 1, ResponseIndex MediumDestructible, ModelGeometry 1), `SCR_DestructionMultiPhaseComponent` (base health 750, Incendiary, Explosive and Fragmentation multipliers 20, Kinetic 0.01; on destruction only the `Blast_huge_Hive.ptc` particle, no `SCR_PrefabSpawnable` warhead), a `SoundComponent` with `Environment_Hive.acp`, and an `RplComponent`. Check in play: 5 minutes beside it bring nothing but the mission's guards, and a grenade destroys it |
 | `RZ_Lab.et` | A vanilla US tent | It can be destroyed (1000 HP) |
 | The packs' signs | Kill sites: suitcases, a UAZ tyre, a folded blanket; the old lair: a bunk-bed mattress; the marks: a stone verge post (the Haven), the minefield sign (Bastion), the FIA graffiti decal (the Red Hand), a no-entry sign (Halcyon) | Close enough to read; swap in better props when there are any |
 | Camp life's compositions | Vanilla props only: the barrel fire is `Particles/Campfire_burning.et`, the cooler a small crate and an autoclave drum, Halcyon's tent `TentSmall_03_white` with a medical table, the civilian tents `TentSmall_02_red` and `TentBig_01_orange` | No new meshes or decals (the red hand, the bear, the plague doctor, chalk, the ball, vegetables, boots, the axe, tubes): those spots are left out or are a plank |
@@ -1424,12 +1424,18 @@ so the test forces them (each logged as `RZT forced: ...`).
 **Missions.** Before each mission the towns go back to a spread of infection (20, 45, 75 and 95 in
 turn), whatever earlier missions did to them. A Setup that misses (a random spot in the sea, every
 town of its range busy) gets up to 8 goes, as the manager would try again later (`tries=` in the
-log line). An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
+log line), and each go after the first shifts the spread by one town: on Arland 13 of the 14
+settlements are lived in, so the one or two empty towns that most contracts need must pass through
+every band. A mission that still doesn't start logs `RZT mission <type> why: ...`: who holds what it
+claims, what else runs, how many towns are held, busy and free, the packs and its weight. The test
+world sets **Zombies > Tribes > Slots** to 2, so Arland (under the wild-land floor) has a pack for the
+packs' contracts; their first go is at the clock as it is, the others in the contract's offer window
+(dusk for Not Tonight, dawn for Escort at Dawn; `RZT forced: the clock into ...`). An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
 left set: a crate for the nest (Burn the Nest, Specimen from the Nest), the helicopter wreck (Crash
 Site), the dead drop, the fuel depot (Arson), the relay, the fallback landmark
 (The Smuggler's Ledger) and the scale crate (The Weighing Vault); a civilian for the trader, the
 bounty target (Collect the Bounty, The Sniper) and the Bastion outpost commander (Kill the Officer);
-an FIA fire team for the rival group. Convoy Escort and Hijack the Convoy get a Bastion truck and
+an FIA fire team for the rival group; the canteen for Plant a Tag's tag. Convoy Escort and Hijack the Convoy get a Bastion truck and
 crew, Mobile Lab a Halcyon truck and quiet towns near the lab, the Locked Bunker a keypad prop.
 
 **Questlines.** Before the first: no town overrun, the season a couple of days old, every
@@ -1438,7 +1444,12 @@ the roads, a Red Hand van and the clock held at dusk. Before each, the flags and
 reads: Walk Him Out done, Bastion short of supplies, the Last Helicopter's LZ kept, Patient Zero's
 ledger solved, the farm found, the host's offer to the tester (who is made a stranger to the Haven
 for it, and put back after: the offer is for someone the Haven doesn't take in), research at 80
-percent and, for Authors, the final stand, stopped again after. The Well Story runs before Cargo
+percent and, for Authors, the final stand, stopped again after. Before each, too, every seat the
+mission phase emptied is filled and every leader a finished mission still holds is let go (a season
+fills a seat after **Leaders > Replace minutes**), and The Three Weeks gets a scavenger again. A
+questline that doesn't start logs `RZT quest <key> why: ...` (the Red Hand's and Halcyon's seats, the
+puzzle prefabs, and what its own start reads). The two majors with no built questline under them
+(Every Name, Proof) are left to the majors' phase. The Well Story runs before Cargo
 (Cargo's purge ending dismisses the one crew boss it needs). While a questline waits for its stage
 mission, every mission that isn't a questline stage is ended, so a contract on the board can't hold
 the stage's town for the hour it lasts (a real stage waits hours before it gives up; the test's
@@ -1460,7 +1471,9 @@ with a scripted take by the pact's side and the tester in the clean room running
 (20 s), the stand's HUD line naming the holder's route; the win, the controller, the winner rule, the
 route's chunk and `finale.came`; and the release's terms
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
-five routes are left out of the questlines' phase: they only start at the gate.
+five routes are left out of the questlines' phase: they only start at the gate. The stand finds who
+stands in the clean room (and at the bay) by their character, and the fake player has no engine id,
+so the test's patch tells it which character is his.
 
 **The story checks.** 150 s in, from the errands' tick (`RZT_Story.c`), the mission style's and
 errands' data paths run once: a truth kept for its subject, the check results, a record written and
@@ -1497,7 +1510,12 @@ tab's lines and the stand's groups by Bastion's stance (`RZT majors check:
 Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
-mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes. If the fake player dies outside the Perimeter test (a mission or the line got him), it says where and respawns him.
+mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes.
+Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
+in the line's band (The Blind Spot's does by design), and a death there would end the life a
+questline was following (A Place at the Table fizzles when its guest's life ends). It logs
+`RZT perimeter: ...` once per visit instead. If the fake player dies outside the Perimeter test
+anyway, it says where and respawns him.
 
 ```bash
 SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
@@ -1510,7 +1528,17 @@ SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
 A mission or questline that still doesn't start needs a world state the test doesn't create (an
 outpost of the right faction, a spot on the map, the weather). Expected on Arland: **Gas Station
 Fire** starts only when the island's petrol station is in a town nobody holds, which depends on the
-season's territory roll (about one run in three). The test world has no AI navigation (`No AIWorld`
+season's territory roll (about one run in three). The same roll decides how many towns are lived in
+(11 to 13 of Arland's 14), so the jobs that need towns well clear of where people live (**Fire
+Mission**, **Install Sensors**, **Bastion Shelling**, **Bust Out**, **Lead Them Away**) start in some
+runs and not others. Arland's one pack is a fresh one, so the packs' contracts that need a pack's
+history or a second pack are expected misses: **Bring Them Home** (a named young who was someone's),
+**Break the Habit** (a habit come due), **Cull** (12 or more round a heavy, near a Bastion holding),
+**Capture the Index** and **Plant a Tag** (a pack at stage 1 with its heavy; Capture also an alpha
+prefab, which the test world doesn't set), **Burn the Lair** (a player who has mapped the lair),
+**Stock the Pit** (two young and a Red Hand camp), **Bait the Crew** (two packs that border), **Escort
+at Dawn** (the pack between two safehouses 0.8 to 3.5 km apart), and **Not Tonight** and **Track Them
+Home** unless the pack is coming back to a house or has a party walking at that moment. The test world has no AI navigation (`No AIWorld`
 in the log), so a spawned group has no members, and a mission built on one may end by itself early
 (`ended by itself` in the log). None of this is part of the mod: the test files are copied into a throwaway addon folder.
 
@@ -1617,7 +1645,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **108** lines with the tag, all in the game scripts (one is the comment in
+There are **110** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1638,7 +1666,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:207` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (65)
+### Medium risk: big features, with a fallback (66)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1661,8 +1689,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1046` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1251`, `:1129` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
-| `Factions/RZ_Disguise.c:1033`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
-| `Factions/RZ_DisguiseWatch.c:185` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
+| `Factions/RZ_Disguise.c:1067`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
+| `Factions/RZ_DisguiseWatch.c:193` | a character's world transform's forward axis (`mat[2]`) is where its body faces | If it's another axis, guards count as turned to you at the wrong angle: again looks and their noticing line come too often or never. Check by standing behind a Bastion sentry in their kit after a passed look |
+| `Factions/RZ_DisguiseWatch.c:206` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
 | `Factions/RZ_DisguiseMarks.c:341`, `:390` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
 | `Factions/RZ_Disguise.c:805` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
 | `Factions/RZ_DisguiseMarks.c:544` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
@@ -1703,7 +1732,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (23)
+### Low risk: contained or cosmetic (24)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1712,6 +1741,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
+| `Factions/RZ_RepNamesThrows.c:59` | the same `OnGrenadeThrown` event fires on the server for a thrown smoke grenade, naming the grenade | Nobody is ever called Smoke by the crews; every other crew name still works |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
 | `Core/RZ_Util.c:864` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:641` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
@@ -2093,7 +2123,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 153 conversations, 334 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 157 conversations, 346 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2112,12 +2142,12 @@ answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<c
 predicate), `Dialogue: lie <key> found out: its found effects ran`, `Dialogue: Talk test: N conversations ...`
 (an admin's `/talkdebug test`, and the runtime test's `RZT Talk test: ...`), `Dialogue: scene <key> reset by
 an admin`. Reputation's voice: `Reputation: gate bark at <place> for <player>`, `Reputation: <player>
-laid a pack's leader down`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
+laid a pack's leader down`, `Reputation: <player> threw a smoke`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
 `Parley: <player>'s fire paused <player>'s parley`; the runtime test's `RZT Reputation test: ...` and `RZT
 voice <mood> faction N: radio [...] face [...]` (Voice > Force mood cycled).
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
-`Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <key> at <subject> is <truth>` (the story
+`Story: lie <key> caught now by <speaker>`. Givers who lie: `Story: brief <key> leaves something out (version N)` (or `is honest this season`), `Story: brief <key>'s truth found by <player>`, `Story: brief <key>'s lie made public by <player>`. Grief: `Voice: grief for <name>, the <role> at <place>`. Story jobs: `Story: <key> at <subject> is <truth>` (the story
 job's kit), `Story: <title> way <n> at <person> by <player>`, `Story: <title> decided <n> at <person> (by
 <player>)`, `Story: <title> service <n> at <person> by <player>`, `Story: <title> scene with <person> has no
 person (no civilian prefab)`, `Callbacks: <title> at the door for <player>`, `Story: prison bell rung at
@@ -2703,6 +2733,43 @@ when it happens)
   checkpoint searches you ("Arms out"); leaving the barrier early costs 6 Infamy. A Red Hand
   roadblock asks 20 Favor.
 - [ ] `/rep <your name>` as an admin prints the four factions; as a non-admin it's refused.
+- [ ] Known with the Red Hand and no crew name yet, throw a vanilla smoke grenade: the log has
+  `Reputation: <you> threw a smoke` and the notice says the crews call you Smoke. Throw a bottle: no
+  line (the throw hook, VERIFY).
+- [ ] The Standing page: the header has the whole picture after your name; each faction's column
+  opens with the word as a sentence ("The crews call you Smoke.") and the nearest leader you've met
+  there with what they make of you. Take a parley's amends job: the journal's requirements read
+  "Amends: works off Infamy · finishes where the job says".
+- [ ] One per approach: walk up to a Bastion post's gate with a name change pending and a tip due: the
+  gate's bark first (with a rival-colours remark in the same line, in another faction's armband), the
+  change notice 30 s later, then the tip 30 s after that.
+- [ ] In Bastion kit while Bastion's AI would shoot you by standing (Watched with **Hostility** set so),
+  fail a look at a road post: one urgent line ("Nobody asks you to stand still.") and they open fire;
+  no search, kit still on. At a post that wouldn't shoot you, a failed look holds and searches as
+  before. After a passed look, stand behind a sentry when the again look is due: no "turns your way"
+  line until he faces you.
+- [ ] A holding's named person killed: the log has `Voice: grief for ...`, the leader there says no
+  joke for 10 minutes, and the next time the holding is shown the role has a new name.
+- [ ] A short safehouse (let an upkeep run short): Ask how things are sometimes ends with a soup or
+  potato joke; none for 30 minutes after a death in that house.
+- [ ] The epilogue week (Trees on): visit a stronghold leader twice in one real day: the second visit
+  sometimes opens with a joke for the ending (none with no cure, except the Red Hand's).
+- [ ] Givers who lie: take Learning the Drones (or any of the twelve, docs/MISSIONS.md) until the log
+  says `leaves something out`; stand 15 s at its spot: the truth comes, and anyone within 30 m hears
+  it; finish it: the outcome names it. With Trees on, a Red Hand leader then has "Tell the crew what
+  the job left out."; telling costs the Red Hand 1 morale once, and the topic goes.
+- [ ] A one-choice job (Checkpoint Duty): the decider's group gets the giver's reaction after the
+  outcome; another player who took part but stood apart gets "Someone else made the call..."; let
+  the 90 s run out once: "Nobody gave the order, so the standing order stood." Press someone in Fight
+  Pit before the choice: "Fight it out" refuses.
+- [ ] Callback deeds (Trees on): after a one-choice job, visit a leader on another day: one time in
+  three "You're the one who decided ...".
+- [ ] Boards of record: after Await Relief's call, a Bastion road post's speaker adds the roster board;
+  pay a Red Hand toll and the roadblock's speaker shows the tally; a safehouse's Ask how things are
+  shows the council's pinned notes once the house rule is set.
+- [ ] Quiet success: Cargo's driver, Threaten him, with 40+ Red Hand Infamy this life: he talks and the
+  next stage's camp isn't on guard; with none, the built line ("you can guess who he's running to
+  tell").
 - [ ] Notice lanes ([DESIGN.md](DESIGN.md#notice-lanes)): walk past two leaders who have work for
   you within 4 minutes: only the first catches your eye; the second does once the 4 minutes are up.
 - [ ] Contracts and the season budget: finish several contracts for one faction in one session; the

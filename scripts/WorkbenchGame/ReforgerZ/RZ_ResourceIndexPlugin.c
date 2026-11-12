@@ -246,6 +246,14 @@ class RZ_ShowcasePlugin : WorkbenchPlugin
 		int cols = 4;
 		float spaceX = 9;
 		float spaceZ = 10;
+		// "# Title @3" lays the group out 3 m apart (people, small items)
+		int at = title.IndexOf("@");
+		if (at > 0)
+		{
+			spaceX = title.Substring(at + 1, title.Length() - at - 1).ToFloat();
+			spaceZ = spaceX;
+			cols = 6;
+		}
 		foreach (int i, string prefab : items)
 		{
 			int row = i / cols;
@@ -253,7 +261,10 @@ class RZ_ShowcasePlugin : WorkbenchPlugin
 			float x = origin[0] + col * spaceX;
 			float z = origin[2] + row * spaceZ;
 			vector pos = Vector(x, api.GetTerrainSurfaceY(x, z), z);
-			IEntitySource src = api.CreateEntity(prefab, "", api.GetCurrentEntityLayerId(), null, pos, vector.Zero);
+			vector ang = vector.Zero;
+			if (at > 0)
+				ang = Vector(0, 180, 0);	// people face the camera
+			IEntitySource src = api.CreateEntity(prefab, "", api.GetCurrentEntityLayerId(), null, pos, ang);
 			if (src)
 				s_aPlaced.Insert(src);
 		}
@@ -263,8 +274,18 @@ class RZ_ShowcasePlugin : WorkbenchPlugin
 		float cx = origin[0] + (cols - 1) * spaceX * 0.5;
 		float cz = origin[2] + (rows - 1) * spaceZ * 0.5;
 		float back = 11 + rows * 6;
-		vector eye = Vector(cx, api.GetTerrainSurfaceY(cx, cz) + 5 + rows * 3, cz - back);
+		float up = 5 + rows * 3;
+		if (at > 0)
+		{
+			// people and small items: close, at chest height
+			back = 4 + rows * 2.5;
+			up = 1.6 + rows * 0.7;
+		}
+		vector eye = Vector(cx, api.GetTerrainSurfaceY(cx, cz) + up, cz - back);
 		vector target = Vector(cx, api.GetTerrainSurfaceY(cx, cz), cz);
+		if (at > 0)
+			target[1] = target[1] + 1.0;
+		api.ClearEntitySelection();
 		api.SetCamera(eye, (target - eye).Normalized());
 		Print(string.Format("[ReforgerZ] Showcase: group %1 '%2', %3 pieces", s_iGroup, title, items.Count()));
 		s_iGroup++;
@@ -300,5 +321,54 @@ class RZ_ShowcasePlugin : WorkbenchPlugin
 	override void Configure()
 	{
 		Workbench.ScriptDialog("ReforgerZ: Show the next composition group", "", this);
+	}
+}
+
+//! Moves the World Editor camera to the next place in $profile:RZ_Goto.txt ("name x z" per line),
+//! standing 30 m south of it at eye height and looking north at it, so Play from Camera Position
+//! starts there. Each run takes the next line, then starts over.
+[WorkbenchPluginAttribute(name: "ReforgerZ: Camera to the next place", description: "Point the camera at the next place in the list, for Play from Camera Position", wbModules: {"WorldEditor"}, awesomeFontCode: 0xF030)]
+class RZ_GotoPlugin : WorkbenchPlugin
+{
+	[Attribute("$profile:RZ_Goto.txt", desc: "The list: name x z, one per line")]
+	protected string m_sListPath;
+
+	protected static int s_iNext;
+
+	override void Run()
+	{
+		WorldEditorAPI api = RZ_WB.Api();
+		FileHandle file = FileIO.OpenFile(m_sListPath, FileMode.READ);
+		if (!api || !file)
+			return;
+		array<string> lines = {};
+		string line;
+		while (file.ReadLine(line) >= 0)
+		{
+			line.Trim();
+			if (!line.IsEmpty())
+				lines.Insert(line);
+		}
+		file.Close();
+		if (lines.IsEmpty())
+			return;
+		if (s_iNext >= lines.Count())
+			s_iNext = 0;
+		array<string> bits = {};
+		lines[s_iNext].Split(" ", bits, true);
+		s_iNext++;
+		if (bits.Count() < 3)
+			return;
+		float x = bits[1].ToFloat();
+		float z = bits[2].ToFloat();
+		vector target = Vector(x, api.GetTerrainSurfaceY(x, z) + 1.5, z);
+		vector eye = Vector(x, api.GetTerrainSurfaceY(x, z - 30) + 1.8, z - 30);
+		api.SetCamera(eye, (target - eye).Normalized());
+		Print("[ReforgerZ] Camera: " + bits[0] + " at " + x.ToString() + " " + z.ToString());
+	}
+
+	override void Configure()
+	{
+		Workbench.ScriptDialog("ReforgerZ: Camera to the next place", "", this);
 	}
 }

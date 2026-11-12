@@ -571,6 +571,25 @@ class RZ_Territory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A named guard or occupant died (RZ_ToneGuard.NamedDeaths): a newcomer takes the role, under a
+	//! new name, so the dead one isn't back at the next spawn. The dead one's name, "" if none.
+	string ReplacePerson(int holdingId, int idx)
+	{
+		RZ_Holding h = GetHolding(holdingId);
+		if (!h || idx < 0 || idx >= h.m_aPeople.Count())
+			return "";
+
+		string dead = h.m_aPeople[idx];
+		RZ_Rng rng = new RZ_Rng(m_iSeed + h.m_iId * 6007 + idx * 131 + RZ_Util.RoundToInt(m_fClock));
+		string name = RZ_FactionVoice.PersonName(rng, h.m_eFaction);
+		if (h.m_aPeople.Contains(name) || name == dead)
+			name = RZ_FactionVoice.PersonName(rng, h.m_eFaction);
+
+		h.m_aPeople[idx] = name;
+		return dead;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Two or three named guards and occupants, seeded from the holding.
 	protected void GeneratePeople(RZ_Holding h)
 	{

@@ -31,7 +31,7 @@ class RZ_RepVoice
 	static const int CREW_POCKETS = 4;	// three things taken at one Bastion search
 	static const int CREW_BAILIFF = 5;	// laid down a pack's leader (with the tribes)
 	static const int CREW_SORRY = 6;	// killed a crewman, then did a Red Hand job the same day
-	static const int CREW_SMOKE = 7;	// threw a signal smoke (planned: needs a throw hook)
+	static const int CREW_SMOKE = 7;	// threw a smoke grenade (RZ_RepThrows, the throw hook)
 
 	//------------------------------------------------------------------------------------------------
 	static bool TreesOn()
@@ -713,6 +713,15 @@ class RZ_RepVoice
 			return FillFor(gm, playerId, l.m_eFaction, route);
 
 		string manner = VoiceManner(gm, playerId, l.m_eFaction, l);
+		// The epilogue week, after the day's plain opener: now and then a joke for the ending in the
+		// faction's voice (the bank's `week` lines; mood, grief and joke memory apply)
+		if (manner != "hostile" && manner != "owed" && gm.GetFacts() && gm.GetFacts().IsEpilogue())
+		{
+			string weekJoke = RZ_VoiceBank.PickFor(gm, "week", l.m_eFaction, "", l, playerId, l.m_vPos);
+			if (!weekJoke.IsEmpty())
+				return weekJoke;
+		}
+
 		if (manner != "hostile" && manner != "owed")
 		{
 			// Kin of a fallen Haven Champion, at the Haven's seats, once a life per leader
@@ -726,6 +735,20 @@ class RZ_RepVoice
 			string aside = WhoYouWorkFor(gm, playerId, l);
 			if (!aside.IsEmpty())
 				return aside;
+
+			// One time in three, a callback deed from this life, at most once a visit (a real day)
+			string callKey = seat + "|callback";
+			if (trees && RZ_Deeds.CallbackCount(p) > 0 && Math.RandomInt(0, 3) == 0)
+			{
+				int calledAt = trees.GetMemory().TopicAt(playerId, callKey);
+				if (calledAt <= 0 || RZ_SeasonClock.Now() - calledAt >= RZ_DialogueMemory.DAY)
+				{
+					trees.GetMemory().NoteTopic(playerId, callKey);
+					string called = RZ_Deeds.CallbackPhrase(p, Math.RandomInt(0, 3));
+					if (!called.IsEmpty())
+						return string.Format("\"You're the one who %1.\"", called);
+				}
+			}
 
 			// One time in three, the best thing they know you did
 			string best = p.m_aBestDeed[l.m_eFaction];

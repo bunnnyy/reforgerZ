@@ -128,7 +128,25 @@ class RZ_ReputationSettings
 	[Attribute("1", desc: "Others hear: at notoriety 3, in your own colours, other players within 30 m of the gate hear the bark too, once per 10 minutes per place, under the names policy")]
 	bool m_bOthersHear;
 
+	[Attribute("1", desc: "Quiet success: a questline stage's threat (Read the Page, Collect, The Driver, Meet the Driver) first tries Fear at the difficulty below; passed, the stage gets its better outcome (nobody tells, nobody's on guard), still recorded as force (docs/REPUTATION.md, The Fear check)")]
+	bool m_bQuietSuccess;
+
+	[Attribute("2", UIWidgets.Slider, "Quiet success: the Fear difficulty", "1 4 1")]
+	int m_iQuietDifficulty;
+
 	protected static ref RZ_ReputationSettings s_Defaults;
+
+	//------------------------------------------------------------------------------------------------
+	//! A FORCE stage's quiet-threat difficulty for RZ_Ways.m_iMenaceDifficulty: 0 (none) with Quiet
+	//! success off.
+	static int QuietDifficulty()
+	{
+		RZ_ReputationSettings s = Get();
+		if (!s.m_bQuietSuccess)
+			return 0;
+
+		return Math.ClampInt(s.m_iQuietDifficulty, 1, 4);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The game mode's settings, else the defaults (always non-null).
@@ -349,6 +367,7 @@ class RZ_RepNames
 class RZ_RepWatch
 {
 	protected ref RZ_RepGates m_Gates;
+	protected ref RZ_RepThrows m_Throws;
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<string, float> m_mPendingAt = new map<string, float>();	// "playerId:f" -> clock when the new cell appeared
 	protected ref map<string, float> m_mToldAt = new map<string, float>();		// "playerId:f" -> clock of the last name notice
@@ -359,6 +378,7 @@ class RZ_RepWatch
 	{
 		m_GM = gm;
 		m_Gates = new RZ_RepGates(gm);
+		m_Throws = new RZ_RepThrows(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -407,6 +427,7 @@ class RZ_RepWatch
 	{
 		m_fClock += dt;
 		m_Gates.Tick(dt);
+		m_Throws.Tick(dt);
 		if (m_mPendingAt.IsEmpty())
 			return;
 
@@ -421,15 +442,29 @@ class RZ_RepWatch
 			if (m_mToldAt.Find(key, told) && m_fClock - told < settings.m_fChangeGapMinutes * 60)
 				continue;
 
-			done.Insert(key);
 			array<string> parts = {};
 			key.Split(":", parts, false);
 			if (parts.Count() < 2)
+			{
+				done.Insert(key);
 				continue;
+			}
 
 			int playerId = parts[0].ToInt();
 			int faction = parts[1].ToInt();
+			// One per approach: the change notice waits 30 s after the gate's own line (UI/RZ_NoticeLanes.c)
+			RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
+			if (lanes && lanes.ApproachHolds(playerId, RZ_EApproachRank.CHANGE))
+			{
+				lanes.NoteChangeWaiting(playerId);
+				continue;
+			}
+
+			done.Insert(key);
 			Tell(playerId, faction);
+			if (lanes)
+				lanes.NoteApproachLine(playerId, RZ_EApproachRank.CHANGE);
+
 			m_mToldAt.Set(key, m_fClock);
 		}
 

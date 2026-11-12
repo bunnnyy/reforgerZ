@@ -39,6 +39,8 @@ class RZ_RepGates
 			return;
 
 		m_fNext = m_fClock + EVERY;
+		// Grief for a holding's named people (RZ_ToneGuard), on the same 5 s check
+		RZ_ToneGuard.NamedDeaths(m_GM);
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);
@@ -59,8 +61,14 @@ class RZ_RepGates
 			if (!GateNear(me.GetOrigin(), f, place, at))
 				continue;
 
-			Bark(ids[i], me, f, place, at, ids, players);
-			RivalColours(ids[i], f, place);
+			// The gate's own line: the bark, with a rival-colours remark folded in (one per approach)
+			string colours = RivalColours(ids[i], f, place);
+			if (!Bark(ids[i], me, f, place, at, ids, players, colours) && !colours.IsEmpty())
+			{
+				RZ_NoticeLanes colourLanes = RZ_NoticeLanes.Get();
+				if (!colourLanes || colourLanes.TryGate(ids[i], "colours|" + place))
+					m_GM.Say(ids[i], Who(f, place), f, colours);
+			}
 		}
 	}
 
@@ -167,20 +175,21 @@ class RZ_RepGates
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Bark(int pid, IEntity me, int f, string place, vector at, array<int> ids, array<IEntity> players)
+	//! The bark, if one is due, with `colours` (a rival-colours remark, "" none) folded in. True if said.
+	protected bool Bark(int pid, IEntity me, int f, string place, vector at, array<int> ids, array<IEntity> players, string colours)
 	{
 		RZ_PlayerProfile p = m_GM.GetProfile(pid);
 		if (!p || p.m_sIdentity.IsEmpty())
-			return;
+			return false;
 
 		// Never while claiming in someone's kit, never to the Hostile manner
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (hostility && hostility.GetDisguise().IsOn() && hostility.GetDisguise().InTheirKit(pid, f))
-			return;
+			return false;
 
 		string manner = RZ_RepVoice.VoiceManner(m_GM, pid, f, null);
 		if (manner == "hostile")
-			return;
+			return false;
 
 		p.EnsureArrays();
 		int cell = RZ_RepNames.GetRep(p.GetFame(f), p.GetInfamy(f));
@@ -189,27 +198,31 @@ class RZ_RepGates
 		string key = p.m_sIdentity + "|" + place;
 		int last;
 		if (m_mLast.Find(key, last) && last == stamp)
-			return;
+			return false;
 
 		RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
-		if (lanes && !lanes.TryAmbient(pid, "gate|" + place))
-			return;
+		if (lanes && !lanes.TryGate(pid, "gate|" + place))
+			return false;
 
 		m_mLast.Set(key, stamp);
 		string line = Line(pid, f, deed, last == 0);
-		m_GM.Say(pid, Who(f, place), f, line);
+		string said = line;
+		if (!colours.IsEmpty() && (!lanes || lanes.TryGate(pid, "colours|" + place)))
+			said = line + " " + colours;
+
+		m_GM.Say(pid, Who(f, place), f, said);
 		RZ_Log.Info(string.Format("Reputation: gate bark at %1 for %2", place, RZ_Util.PlayerName(pid)));
 
 		// Others hear it at notoriety 3, in your own colours, once per 10 minutes per place
 		if (!RZ_ReputationSettings.Get().m_bOthersHear || RZ_RepNames.Notoriety(p.GetFame(f), p.GetInfamy(f)) < 3)
-			return;
+			return true;
 
 		if (hostility && hostility.GetDisguise().IsOn() && hostility.GetDisguise().Wearing(pid) >= 0 && !hostility.GetDisguise().IsOwnColours(pid, hostility.GetDisguise().Wearing(pid)))
-			return;
+			return true;
 
 		float heard;
 		if (m_mOthers.Find(place, heard) && m_fClock - heard < OTHERS_GAP)
-			return;
+			return true;
 
 		m_mOthers.Set(place, m_fClock);
 		string name = RZ_EpiNames.Now(pid);
@@ -222,26 +235,28 @@ class RZ_RepGates
 			if (ids[i] != pid && RZ_Util.DistXZ(other.GetOrigin(), at) <= HEAR_RADIUS)
 				m_GM.Say(ids[i], Who(f, place), f, told);
 		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Earned colours say whose you are (the amber ribbon, the red armband, armour bought at Trusted or
 	//! Champion): a guard who sees a rival's on you makes one plain remark, once a visit, saying only
-	//! what their hostility already does.
-	protected void RivalColours(int pid, int f, string place)
+	//! what their hostility already does. The remark if one is due ("" none); the caller says it.
+	protected string RivalColours(int pid, int f, string place)
 	{
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (!hostility || !hostility.GetDisguise().IsOn())
-			return;
+			return "";
 
 		RZ_Disguise d = hostility.GetDisguise();
 		int rival = d.Wearing(pid);
 		if (rival < 0 || rival == f || !d.IsOwnColours(pid, rival))
-			return;
+			return "";
 
 		RZ_NoticeLanes lanes = RZ_NoticeLanes.Get();
-		if (lanes && !lanes.TryAmbient(pid, "colours|" + place))
-			return;
+		if (lanes && lanes.PlaceUsed(pid, "colours|" + place))
+			return "";
 
 		bool hostile = RZ_Reputation.IsHunted(m_GM.GetTier(pid, f));
 		string theirs = RZ_Factions.GetNameInText(rival);
@@ -261,7 +276,7 @@ class RZ_RepGates
 			default: line = "\"We don't mind whose colours. Leave the rifle by the door.\""; break;
 		}
 
-		m_GM.Say(pid, Who(f, place), f, line);
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -69,11 +69,17 @@ class RZ_DialogueWorld
 	// ================================================================ The season's story
 	//------------------------------------------------------------------------------------------------
 	//! cure_held:<who> after the cure: haven, bastion, redhand, halcyon, everyone (the Independent),
-	//! nobody (handed over), slow (the lab on its own), any.
+	//! nobody (handed over), slow (the lab on its own), any; none: no cure by the wipe (the last day).
 	static bool CureHeld(RZ_GameModeComponent gm, string who)
 	{
 		RZ_Epilogue epi = RZ_Epilogue.Get();
-		if (!epi || !epi.IsBuilt() || epi.Data().lastDay)
+		if (!epi || !epi.IsBuilt())
+			return false;
+
+		if (who == "none")
+			return epi.Data().lastDay;
+
+		if (epi.Data().lastDay)
 			return false;
 
 		int route = epi.Route();
