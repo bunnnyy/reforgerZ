@@ -359,6 +359,11 @@ class RZ_Mission_Delivery : RZ_Mission
 			return false;
 
 		RZ_MissionItemComponent.Tag(m_Item, m_iId);
+		// A delivery's food is the giver's goods: nobody else takes it for pay
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (houses && RZ_FoodHelper.IsFood(m_Item, houses.GetFoodKeywords()))
+			RZ_MissionGoods.Tag(m_Item, RZ_Factions.GetNameInText(m_eGiver));
+
 		m_bItemSpawned = true;
 		m_sItemPrefab = prefab;
 		m_vItemLastPos = m_Item.GetOrigin();

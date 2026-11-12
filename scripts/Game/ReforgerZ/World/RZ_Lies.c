@@ -209,6 +209,8 @@ class RZ_Lies
 	protected void FoundOut(RZ_GameModeComponent gm, RZ_Lie lie, string how)
 	{
 		RZ_Log.Info(string.Format("Story: lie %1 found out by %2", lie.key, how));
+		// A Paranoid giver's sulk, and on a dead life the next errand's line (Missions/Story/RZ_StoryKit.c)
+		RZ_StoryKit.LieFound(gm, lie.ident, lie.life, lie.faction);
 		int playerId = gm.FindPlayerByIdentity(lie.ident);
 		RZ_PlayerProfile profile;
 		if (playerId > 0)

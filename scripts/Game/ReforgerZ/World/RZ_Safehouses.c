@@ -379,6 +379,10 @@ class RZ_FoodHelper
 	//------------------------------------------------------------------------------------------------
 	static bool IsFood(IEntity item, array<string> keywords)
 	{
+		// Someone's goods (a delivery's, a post's ration paid in kind) count for nobody's trade
+		if (RZ_MissionGoods.IsGoods(item))
+			return false;
+
 		string name = RZ_Util.GetPrefabName(item);
 		if (name.IsEmpty())
 			return false;
@@ -1517,6 +1521,13 @@ class RZ_Safehouses
 		int taken = RZ_FoodHelper.TakeFood(user, m_aFoodWords, maxCount);
 		if (taken <= 0)
 		{
+			string goods = RZ_MissionGoods.Refusal(user);
+			if (!goods.IsEmpty())
+			{
+				m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, goods);
+				return;
+			}
+
 			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "You've nothing they can eat. Tins, rations, bread: anything helps.");
 			return;
 		}

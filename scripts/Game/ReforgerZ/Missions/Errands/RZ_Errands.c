@@ -29,6 +29,18 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Parts (optional): a toolbox or a machine part on the ground (Filter Parts, Buy It Back's box). Empty = words only", "et")]
 	ResourceName m_sParts;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Pay ration (optional): a Bastion ration a post pays in kind, one errand in three, never while Bastion is short (tagged: nobody else takes it for pay). Empty = Favor only", "et")]
+	ResourceName m_sPayRation;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Pay magazine (optional): a magazine a Red Hand camp pays in kind, the same way. Empty = Favor only", "et")]
+	ResourceName m_sPayMagazine;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Carried (optional): what a carried way puts in your pack (His Effects' effects, The Name on the Tag's ID): an item with RZ_MissionItemComponent that can't be equipped. Empty = the mission item", "et")]
+	ResourceName m_sCarried;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Watch (optional): The Last Tin's watch, a real wristwatch traded for two tins. Empty = a common find", "et")]
+	ResourceName m_sWatch;
+
 	//------------------------------------------------------------------------------------------------
 	ResourceName For(RZ_EErrandProp kind)
 	{
@@ -138,6 +150,18 @@ class RZ_ErrandSettings
 
 	[Attribute("0", desc: "Errands debug log: every deal and why the rest weren't dealt")]
 	bool m_bDebugLog;
+
+	[Attribute("1", desc: "Pay in kind: a Bastion post pays a ration (a Red Hand camp a magazine) in place of 3 Favor, one errand in three, never while it's short (needs Props > Pay ration or Pay magazine)")]
+	bool m_bPayInKind;
+
+	[Attribute("1", desc: "Meals as pay: a house errand at a house fed above one upkeep pays supper (the house -1 food, a little healing, 2 Favor) in place of 4 Favor or less")]
+	bool m_bMeals;
+
+	[Attribute("1", desc: "When the truck comes: a post short of supplies pays its errands at its next truck, to the life that earned it (a real day at most)")]
+	bool m_bTruckPay;
+
+	[Attribute("2", UIWidgets.Slider, "Errand headlines a real day, at most (a stranger's or a card's)", "0 10 1")]
+	int m_iHeadlinesPerDay;
 
 	[Attribute(desc: "Props a step's place shows while it's open (all optional; empty = words only)")]
 	ref RZ_ErrandProps m_Props;
@@ -280,6 +304,83 @@ class RZ_Errands
 		m_Faults = new RZ_Faults(gm);
 		m_Strangers = new RZ_Strangers(gm, this);
 		m_Locals = new RZ_Locals(gm);
+		m_PayKinds = new RZ_ErrandsPay(this);
+		m_More = new RZ_ErrandsDealer(this);
+	}
+
+	protected ref RZ_ErrandsPay m_PayKinds;
+	protected ref RZ_ErrandsDealer m_More;
+
+	//------------------------------------------------------------------------------------------------
+	RZ_ErrandsDealer Dealer() { return m_More; }
+
+	//------------------------------------------------------------------------------------------------
+	RZ_ErrandsPay PayKinds() { return m_PayKinds; }
+
+	//------------------------------------------------------------------------------------------------
+	//! A supply truck event (RZ_MissionManager.OnTruckEvent): pay waiting for the truck goes out.
+	void OnTruck(int faction, int what, vector pos)
+	{
+		if (what == RZ_SupplyLines.TRUCK_ARRIVED)
+			m_PayKinds.OnTruck(faction, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! His Effects in full (docs/ERRANDS.md, the dead): at the fence, a held His Effects whose step is
+	//! done and whose effects this player carries sells for the jacket (3) and the photo frame (10 Red
+	//! Hand Favor); seen by the giver's people (the witness rule), +5 Infamy with them. A kit piece off
+	//! a man you killed is refused ("You'd know. You were there.", +3 Infamy with his faction). True if
+	//! the fence dealt with it.
+	bool SellEffects(int playerId, IEntity user)
+	{
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_eState != RZ_EErrandState.HELD || e.m_Def.m_sKey != "his_effects" || !e.m_bStepDone || !e.m_Carried)
+				continue;
+
+			if (RZ_ErrandsPay.Carrier(e) != playerId)
+				continue;
+
+			if (RZ_ErrandCard.CausedBy(e.m_sValue, playerId))
+			{
+				if (RZ_Factions.IsValid(e.m_iFaction))
+					m_GM.AddInfamy(playerId, e.m_iFaction, 3, "sold a dead man's things you'd made dead");
+
+				m_GM.NotifyPlayer(playerId, "The fence", "He turns the jacket over and hands it back. \"You'd know. You were there.\"");
+				End(e, "refused at the fence");
+				return true;
+			}
+
+			SmallFavor(playerId, RZ_EFaction.BANDITS, 3);
+			SmallFavor(playerId, RZ_EFaction.BANDITS, 10);
+			if (RZ_Factions.IsValid(e.m_iFaction) && e.m_iFaction != RZ_EFaction.BANDITS && RZ_Witness.Seen(m_GM, playerId, user.GetOrigin(), e.m_iFaction))
+				m_GM.AddInfamy(playerId, e.m_iFaction, 5, "sold a dead man's things");
+
+			m_GM.NotifyPlayer(playerId, "The fence", "The jacket goes on a hook and the photo frame under the counter, face down. \"People like a frame. Nobody wants the photo.\"");
+			array<int> seller = {playerId};
+			RZ_WorldFacts.Get().Memory().Record("errand.his_effects", e.m_sSubject, "sold", RZ_WorldMemory.SOURCE_ERRAND, true, seller);
+			ConsumeCarried(e);
+			End(e, "sold at the fence");
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The carried item handed over: out of the pack and gone.
+	protected void ConsumeCarried(RZ_Errand e)
+	{
+		if (!e.m_Carried)
+			return;
+
+		IEntity root = e.m_Carried.GetRootParent();
+		if (root && root != e.m_Carried)
+			RZ_MissionItemHelper.RemoveItem(root, e.m_Carried);
+		else
+			RZ_Util.DeleteUnit(e.m_Carried);
+
+		e.m_Carried = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -565,6 +666,7 @@ class RZ_Errands
 
 		TickSteps(dt, ids, players);
 		m_Strangers.TickSteps(dt, ids, players);
+		m_More.Tick(dt, ids, players);
 		if (slow)
 		{
 			m_Faults.Tick(players, m_Settings.m_fFaultChance);
@@ -664,6 +766,13 @@ class RZ_Errands
 					continue;
 				}
 
+				if (w.m_bCarry)
+				{
+					m_PayKinds.GiveCarried(e, me);
+					m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), e.Fill("You have it. Carry it back to {giver} at {here} yourself: nobody else can hand it in."));
+					continue;
+				}
+
 				m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), e.Fill("That's done. Go back to {giver} at {here}."));
 				continue;
 			}
@@ -672,6 +781,30 @@ class RZ_Errands
 			vector giverAt = e.m_vGiver;
 			if (e.m_iWanderer >= 0 && m_GM.GetWanderers())
 				m_GM.GetWanderers().GetPosition(e.m_iWanderer, giverAt);
+
+			// A carried item: only the asker or a helper hands it in; anyone else has spoiled it
+			if (w.m_bCarry && e.m_Carried)
+			{
+				int carrier = RZ_ErrandsPay.Carrier(e);
+				if (m_PayKinds.Stolen(e, carrier))
+				{
+					End(e, "carried item taken");
+					continue;
+				}
+
+				IEntity carrierEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
+				if (carrier > 0 && carrierEnt && RZ_Util.DistXZ(carrierEnt.GetOrigin(), giverAt) <= RETURN_RANGE)
+					Resolve(e, w);
+
+				continue;
+			}
+
+			if (w.m_bCarry && e.m_bStepDone && !e.m_Carried && m_PayKinds.HadCarried(e))
+			{
+				Say(e, Pick(e.m_Def.m_aOver), true);
+				End(e, "carried item lost");
+				continue;
+			}
 
 			if (RZ_Util.DistXZ(at, giverAt) <= RETURN_RANGE)
 				Resolve(e, w);
@@ -888,6 +1021,12 @@ class RZ_Errands
 
 		e.m_eState = RZ_EErrandState.DONE;
 		RemoveProp(e);
+		if (e.m_Carried)
+		{
+			RZ_Util.DeleteUnit(e.m_Carried);
+			e.m_Carried = null;
+		}
+
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		if (facts)
 			facts.SoftReleaseAll(e.Owner());
@@ -1568,7 +1707,7 @@ class RZ_Errands
 		if (e.m_Def.m_bCard)
 		{
 			RZ_ErrandLedger ledger = Ledger(e.m_sIdent);
-			string doneKey = CardDoneKey(e.m_Def, e.m_sSubject);
+			string doneKey = CardDoneKey(e.m_Def, e.m_sSubject, e.m_iLife);
 			if (!ledger.cards.Contains(doneKey))
 				ledger.cards.Insert(doneKey);
 		}
@@ -1585,6 +1724,15 @@ class RZ_Errands
 
 		e.m_vPlace = PlaceFor(e, w.m_ePlace);
 		e.SetText("place", PlaceText(e, w.m_ePlace, user.GetOrigin()));
+		// A local's spot at its hour (the gate at dusk, the stove at supper), for someone who knows them
+		vector spot;
+		string localName;
+		if (w.m_ePlace == RZ_EErrandPlace.HERE && m_More.LocalSpot(e, spot, localName))
+		{
+			e.m_vPlace = spot;
+			m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), string.Format("%1 is there at this hour. Do it where they are.", localName));
+		}
+
 		PlaceProp(e, w);
 		Say(e, Pick(w.m_aTake), false);
 		string step = e.Fill(w.m_sStep);
@@ -1636,8 +1784,10 @@ class RZ_Errands
 			// The epilogue deck: only in the week, outside the day's cards, once per subject (below)
 			if (d.m_bAfterCure && !RZ_SeasonClock.IsEpilogue())
 				no = "only after the cure";
-			else if (d.m_bCard && !d.m_bAfterCure && ledger.cards.Contains(d.m_sKey))
+			else if (d.m_bCard && !d.m_bAfterCure && d.m_iPerLife <= 0 && ledger.cards.Contains(d.m_sKey))
 				no = "done this season";
+			else if (d.m_iPerLife > 0 && PerLifeCount(ledger, d, profile.m_iLives) >= d.m_iPerLife)
+				no = "enough of these this life";
 			else if (d.m_bCard && !d.m_bAfterCure && ledger.cardsToday >= m_Settings.m_iCardsPerDay)
 				no = "two cards today";
 			else if (!d.m_bCard && (ledger.CoolUntil(d.m_sKey) > now || ledger.CoolUntil(d.m_sKey + "|" + place) > now))
@@ -1661,6 +1811,10 @@ class RZ_Errands
 					no = "not true";
 				}
 				else if (d.m_bAfterCure && ledger.cards.Contains(CardDoneKey(d, e.m_sSubject)))
+				{
+					no = "done for this one";
+				}
+				else if (d.m_iPerLife > 0 && PerSubjectDone(ledger, d, e.m_sSubject))
 				{
 					no = "done for this one";
 				}
@@ -1770,6 +1924,7 @@ class RZ_Errands
 		else
 			m_iAskedDeals++;
 
+		m_More.OpenWithLie(dealt);
 		why = string.Format("dealt %1. ", dealt.m_Def.m_sKey) + why;
 		RZ_Log.Info(string.Format("Errands: dealt %1 to %2 by %3 (%4)", dealt.m_Def.m_sKey, RZ_Util.PlayerName(playerId), p.m_sName, AskedWord(unasked)));
 		return dealt;
@@ -1777,13 +1932,43 @@ class RZ_Errands
 
 	//------------------------------------------------------------------------------------------------
 	//! What a taken card is remembered by in the ledger: its key, and for the epilogue deck its key
-	//! and subject (once per identity per beat or place).
-	static string CardDoneKey(RZ_ErrandDef d, string subject)
+	//! and subject (once per identity per beat or place); a card dealt per subject a few times a life
+	//! (His Effects: once per dead man, 3 a life) by key, life and subject.
+	static string CardDoneKey(RZ_ErrandDef d, string subject, int life = 0)
 	{
+		if (d.m_iPerLife > 0)
+			return string.Format("%1|L%2|%3", d.m_sKey, life, subject);
+
 		if (!d.m_bAfterCure)
 			return d.m_sKey;
 
 		return d.m_sKey + "|" + subject;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int PerLifeCount(RZ_ErrandLedger ledger, RZ_ErrandDef d, int life)
+	{
+		string prefix = string.Format("%1|L%2|", d.m_sKey, life);
+		int n = 0;
+		foreach (string c : ledger.cards)
+		{
+			if (c.StartsWith(prefix))
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool PerSubjectDone(RZ_ErrandLedger ledger, RZ_ErrandDef d, string subject)
+	{
+		foreach (string c : ledger.cards)
+		{
+			if (c.StartsWith(d.m_sKey + "|L") && c.EndsWith("|" + subject))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1857,6 +2042,9 @@ class RZ_Errands
 		if (e.m_iHouse >= 0 && ledger.shy.Contains(e.m_iHouse))
 			s *= 0.5;
 
+		// Nearness and freshness (the context cache), and a lie found out on a dead life
+		s *= m_More.Factor(e);
+		s *= RZ_ErrandsDealer.LiedFactor(ledger, e.m_iFaction);
 		return s;
 	}
 
@@ -2216,6 +2404,7 @@ class RZ_Errands
 			Say(e, line, false);
 		}
 
+		ConsumeCarried(e);
 		string pay = Pay(e, w, e.m_iAsker, false);
 		if (!pay.IsEmpty())
 			m_GM.NotifyPlayerAs(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), pay, RZ_ENoticeTag.MISSION);
@@ -2326,6 +2515,28 @@ class RZ_Errands
 		if (w.m_bAmends && infamy >= AMENDS_FLOOR)
 			favor = 0;
 
+		// The asker's pay may come another way: supper at a fed house, or part of it in kind
+		if (!helper && favor > 0)
+		{
+			string meal = m_PayKinds.Meal(e, w, playerId);
+			if (!meal.IsEmpty())
+			{
+				favor = 0;
+				text += meal + " ";
+			}
+
+			string kindLine;
+			int cut = 0;
+			if (favor > 0)
+				cut = m_PayKinds.InKind(e, w, playerId, kindLine);
+
+			if (cut > 0)
+			{
+				favor = Math.Max(0, favor - cut);
+				text += kindLine + " ";
+			}
+		}
+
 		if (!e.m_bNoisy)
 			favor *= w.m_fQuietMult;
 
@@ -2337,6 +2548,14 @@ class RZ_Errands
 		int paid = Math.Min(RZ_Util.RoundToInt(favor), Math.Max(0, m_Settings.m_iFavorPerHour - ledger.hourFavor));
 		if (e.m_iCap >= 0)
 			paid = Math.Min(paid, e.m_iCap);	// a fallout: at most 30% of the failed job's base
+
+		// A post short of supplies pays when its truck comes
+		if (paid > 0 && !helper && m_PayKinds.Defer(e, playerId, f, paid))
+		{
+			ledger.hourFavor += paid;
+			text += string.Format("\"When the truck comes, you'll have it.\" (%1 %2 Favor, waiting) ", paid, RZ_Factions.GetName(f));
+			paid = 0;
+		}
 
 		if (paid > 0)
 		{

@@ -235,6 +235,55 @@ class RZ_StoryKit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A lie found out (World/RZ_Lies.c): on the life it was told in, that faction's Paranoid givers
+	//! won't give this player their in-person jobs for 2 hours of their play; on a dead life, that
+	//! giver kind's next errand opens with "The last one who said that lied" (RZ_ErrandsDealer).
+	static void LieFound(RZ_GameModeComponent gm, string ident, int life, int faction)
+	{
+		if (!gm || ident.IsEmpty() || !RZ_Factions.IsValid(faction))
+			return;
+
+		int playerId = gm.FindPlayerByIdentity(ident);
+		RZ_PlayerProfile p;
+		if (playerId > 0)
+			p = gm.GetProfile(playerId);
+
+		if (p && p.m_iLives == life)
+		{
+			if (gm.GetFacts())
+				gm.GetFacts().SetFlag(SulkKey(ident, life, faction), RZ_Util.RoundToInt(p.m_fLifeSeconds) + SULK_SECONDS);
+
+			return;
+		}
+
+		if (p && gm.GetErrands())
+			gm.GetErrands().Dealer().LiedOnDeadLife(ident, faction);
+	}
+
+	static const int SULK_SECONDS = 7200;
+
+	//------------------------------------------------------------------------------------------------
+	protected static string SulkKey(string ident, int life, int faction)
+	{
+		return string.Format("sulk.%1.%2.%3", ident, life, faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Paranoid leader caught out by this player's lie this life (2 hours of play): no in-person jobs.
+	static bool Sulks(RZ_GameModeComponent gm, int leaderId, int playerId)
+	{
+		if (!gm || !gm.GetLeaders() || !gm.GetFacts() || playerId <= 0)
+			return false;
+
+		RZ_Leader l = gm.GetLeaders().Get(leaderId);
+		if (!l || !l.HasTrait(RZ_ELeaderTrait.PARANOID))
+			return false;
+
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		return p.m_fLifeSeconds < gm.GetFacts().Flag(SulkKey(p.m_sIdentity, p.m_iLives, l.m_eFaction));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Leave: this player stops taking part (no pay, no blame); they're told so.
 	static void Leave(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
 	{

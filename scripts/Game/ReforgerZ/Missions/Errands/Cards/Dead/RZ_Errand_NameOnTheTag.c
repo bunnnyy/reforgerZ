@@ -27,6 +27,18 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 		w.m_iFavor = 4;
 		w.Done("\"A cairn. That's more than most get. That's a long time, now, out there.\"");
 
+		// A fallout's dead at a job's site: the named body, its ID carried to the house or post it names
+		w = Way("do");
+		w.m_sLabel = "Take the ID from the body";
+		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
+		w.m_fSeconds = 10;
+		w.m_fRadius = 40;
+		w.m_sStep = "Find the body {where_place} and take the ID (10 s there), then carry it to {giver} yourself.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
+		w.m_bCarry = true;
+		w.m_iFavor = 0;
+		w.Done("\"That's the name. We'll see it gets to the people it belongs to.\"");
+
 		w = Way("talk");
 		w.m_sLabel = "Pin the line to the board";
 		w.Done("\"On the board, then. Someone will read it and know who it was. Or won't. It's there.\"");
@@ -64,8 +76,30 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The named body's way only for a job's own dead (a fallout).
+	override bool Offers(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w)
+	{
+		return w.m_iIndex != 1 || e.m_bFallout;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Resolve(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, int playerId, notnull array<string> said)
 	{
+		// The ID home: 4 Favor from the faction it names; the Red Hand doesn't bury its dead, so thanks only
+		if (w.m_iIndex == 1)
+		{
+			int f = RZ_EFaction.SURVIVORS;
+			if (e.m_sValue.Contains("Bastion"))
+				f = RZ_EFaction.MILITARY;
+			else if (e.m_sValue.Contains("crew"))
+				f = RZ_EFaction.BANDITS;
+
+			if (f == RZ_EFaction.BANDITS)
+				said.Insert("\"The crew won't want it back. They don't bury theirs. We'll keep it on the board.\"");
+			else
+				dealer.SmallFavor(playerId, f, 4);
+		}
+
 		array<int> who = {playerId};
 		string line = RZ_Util.Capitalize(e.m_sValue) + ". Somebody brought the satchel home.";
 		RZ_WorldFacts.Get().Memory().Record("errand.name_on_tag", e.m_sSubject, e.m_sValue, RZ_WorldMemory.SOURCE_ERRAND, true, who, line, "board");

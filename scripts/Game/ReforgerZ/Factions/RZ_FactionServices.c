@@ -556,9 +556,20 @@ class RZ_FactionServices
 			return;
 		}
 
+		// A dead man's effects from an errand (His Effects) sell here, under the witness rule
+		if (m_GM.GetErrands() && m_GM.GetErrands().SellEffects(playerId, user))
+			return;
+
 		int sold = TakeFenceable(user, maxItems);
 		if (sold <= 0)
 		{
+			string goods = RZ_MissionGoods.Refusal(user);
+			if (!goods.IsEmpty())
+			{
+				m_GM.NotifyPlayer(playerId, title, goods);
+				return;
+			}
+
 			m_GM.NotifyPlayer(playerId, title, "\"Nothing here I can move. And don't bring me shop goods: I know my own stock.\"");
 			return;
 		}

@@ -127,8 +127,21 @@ running clock for timed ones; for whom (standing, background); **Why** (the live
 the places and the text); **Still**; the subject free; a way that fits here. Each scores
 weight × need × fit × novelty × story: ×1.2 if it answers the giver faction's need, ×1.2 if the
 giver has the role, ×1.2 if they remember you well (regard 2+), ×0.8 if uneasy, ×0.3 if its family
-was one of your last three, ×1.5 for a card. The pick is weighted among the top three. At most 12
+was one of your last three, ×1.5 for a card; **nearness**, ×1.2 when its own place (its subject, else
+the giver) is within 600 m of you, ×0.85 past 1.2 km; **freshness**, ×1.2 when something fresh happened at
+its subject (a death, a bite, a fire, shells in the last 2 played hours); and ×0.8 for a real day from a
+faction a dead life of yours lied to (below). The pick is weighted among the top three. At most 12
 errands live on the server.
+
+**The context cache** (`Missions/Errands/RZ_ErrandsDealer.c`, `RZ_ErrandContext`): per online player,
+remade every 30 s: the settlement you're in and who holds it, a holding within 600 m, a pack's range
+within 1.5 km, a road people use, in a car, a fight (a shot within 60 m in a minute), near a running job
+or set piece, minutes into the life, your tiers and your finale route. The score and locals read it;
+the admin view prints it.
+
+**"The last one who said that lied."** A lie found out on a dead life (the lie store's events): that
+faction's next errand for your identity opens with the line, and its givers' errands score ×0.8 for a
+real day.
 
 **Chore slots.** A holding or a house has 1 routine live at once, plus 1 per 5 players online (3 at
 most), and one of them per player there; cards don't count.
@@ -195,6 +208,17 @@ Through the one small-pay ledger, per identity for the season (`RZ_ErrandLedger`
   out doses, crates, kit or keys.
 - **"Most people helped"**: each errand done counts on the hall of fame's line of that name, until
   the cure. It pays nothing.
+
+**Other kinds of pay** (`Missions/Errands/RZ_ErrandsPay.c`; each a setting on **Missions > Errands**):
+
+| Kind | When | What |
+|---|---|---|
+| **In kind** | a Bastion post (a Red Hand camp), one errand in three paying 4+ Favor, never while that faction needs food or supplies | a ration (a magazine) off its own shelf in place of 3 Favor, in your pack, **tagged** as the giver's goods: food delivery, the fence and every errand refuse it for pay (*"These are Levie's. Take them back to Levie."*, [mission goods](DESIGN.md#story-blocks)). Needs **Props > Pay ration** (**Pay magazine**); empty, Favor only |
+| **A meal** | a house errand paying 4 Favor or less, at a house fed above one upkeep | supper: the house −1 food, 15% of your health back, 2 Haven Favor, in place of the Favor |
+| **When the truck comes** | a post whose faction needs supplies | the Favor waits for its next truck there (a real day at most) and goes to the life that earned it, if it's online when the truck comes in |
+| **Carried items** | a way marked carried (His Effects' effects, The Name on the Tag's ID) | the step puts an item in your pack (**Props > Carried**, else the mission item: it can't be equipped, no mission's drop takes it). Only you or a helper can hand it in; taken by anyone else, the errand is spoiled and the thief takes +3 Infamy with the giver's people; lost, it's over |
+
+**Headlines**: errands put out at most **2** a real day (**Headlines a day**).
 
 ## The faults table
 
@@ -285,8 +309,8 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **The Trader's Detour** | lost, a Trader | his destination's town at 60+ infection, or a mission there | Scout his road ahead (20 s): 4 Haven Favor; he remembers you helped |
 | **The Deserter's Way Round** | line, the Deserter | he likes you, a Bastion road post within 1.5 km | Meet him past the post (10 s): 4 Haven Favor; helped. Turn him in at the post: 2 Bastion Fame, a rumour, a world record |
 | **Nothing Goes Out** | line, a Bastion named person | the perimeter sealed, a sealed checkpoint within 1.65 km, Bastion morale under 50 | Leave his letter under a stone at the warning point, 150 m short (5 s), read or not: 3 Favor; the world record `errand.letter_at_line` with its epilogue line (carrier: a prop) |
-| **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it) | Bring his things back (15 s at the wreck): 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them to the fence: 5 Red Hand Favor, "kit lost" |
-| **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name), or the fallout of a Distress Call or Survivors Trapped whose people died | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A world record with an epilogue line (carrier: the board) |
+| **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it); once per dead man, 3 times a life (not once a season) | The effects are a **carried item**: gathered at the wreck (15 s), only you or a helper can hand them in. Bring his things back: 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them at the fence: the jacket 3 and the photo frame 10 Red Hand Favor, a record "sold"; seen by the giver's people (the witness rule), +5 Infamy with them. A kit piece off a man you killed is refused (*"You'd know. You were there."*, +3 Infamy with his faction) |
+| **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name), or the fallout of a Distress Call or Survivors Trapped whose people died | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A fallout's **named body** at the job's site: take the ID (10 s, a carried item) and carry it in yourself: 4 Favor from the faction it names (a Red Hand crewman's: thanks only, crews don't bury their dead). A world record with an epilogue line (carrier: the board) |
 | **Not for the Crew** | crews, a Red Hand named person | a bite within 1 km in the last played hour, a Halcyon station within 1.5 km, before the cure | Walk him to the station: 4 Halcyon Favor, a world record. Your own antidote: 6 Red Hand Favor. Tell the book-keeper: 2 Red Hand Fame |
 | **Wildcard Money** | crews, a Red Hand named person | Wildcard or Tolerated with the Red Hand; another Red Hand holding within 1.5 km | Carry the cut there: 6 Favor; skim a little: 8 Favor; give it to a hungry house within 1.5 km: +2 food there, 2 Haven Fame, +8 Red Hand Infamy |
 | **Clean Slate** (amends) | any faction's named person | that faction Watches you | The worst shift going (a minute): amends |
@@ -492,8 +516,17 @@ did for them (helped, saved, lied to, crossed, sold, promised).
 Each memo has three lines, turning with the hour. **Missions > Errands > Pinned locals** (30) and
 **Unpinned locals** (20) set the caps.
 
-*Simplified:* a local is shown while any player is near the house (not only one who knows them: action
-labels are the same for everyone).
+- **Shown near those who know them.** A local's body is labelled (Talk to, Ask how they are) only while a
+  player who knows them is within 100 m; otherwise it's a plain occupant.
+- **Coming to you.** Passing 80–250 m from a local's house, someone they remember helping or saving
+  them may see them walk up (a stand-in beside you for 90 s) with their line and *"They could use a hand
+  there"*; once a real day per local per player, one on the server at a time, never in a fight, a car
+  or near a job.
+- **Their spot as a place.** A house errand's "here" step, for someone who knows a local there, is
+  that local's spot at its hour: the gate at dusk, the stove or the bench at supper.
+
+*Simplified:* while a knower is near, everyone near sees the same labels (VERIFY: per-player action
+labels; today a label is the same for everyone).
 
 ## Threads and callbacks
 
@@ -566,7 +599,9 @@ found by events (a visit, a road, a rumour round, the next real reading).
 
 *Simplified:* a step's place is a point with no scene person (strangers are the only scene
 people); the lines have two or three variants each, not always three; a card dealt counts toward
-the day's two even if declined; pay in kind is an effect (errands hand out no items; a stranger's gift
-is one common find). The margin cards read the majors' waits (the run's stage), and the lock cards read
+the day's two even if declined; pay in kind is an effect, except a post's tagged ration or magazine
+and a carried item (errands hand out no doses, crates, kit or keys); a deferred pay waiting for its
+truck is runtime only (a restart forgets it); the goods' tag is a server-side list (VERIFY in
+[DESIGN.md](DESIGN.md#story-blocks)). The margin cards read the majors' waits (the run's stage), and the lock cards read
 the finale's lock (`RouteOfPlayer`). Not built yet: what
 [designs/ERRANDS.md](../designs/ERRANDS.md) lists (the journal row uses the unarmed icon).

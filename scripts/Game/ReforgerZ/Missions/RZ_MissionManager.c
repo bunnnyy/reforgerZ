@@ -362,6 +362,10 @@ class RZ_MissionManager
 		{
 			m.OnTruckEvent(m_GM, faction, what, pos, driver);
 		}
+
+		// Errand pay that waits for the truck (docs/ERRANDS.md, "Pay: nothing for free")
+		if (m_GM.GetErrands())
+			m_GM.GetErrands().OnTruck(faction, what, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------

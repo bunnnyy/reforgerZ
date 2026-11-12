@@ -6,16 +6,6 @@ checks, who decides, who benefits, truths, records, lies, fallout, reasons, rout
 and [docs/MISSIONS.md](../docs/MISSIONS.md) (the six story jobs, the Tier 0 audit, the one-choice jobs
 and the work rows). This file keeps only the parts not in code yet.
 
-## Trade
-
-- **Mission goods** (anything a mission spawned) are tagged, never count for Trade, and quartermasters,
-  food delivery, the fence and errands refuse them: *"These are Levie's tins. Take them back to Levie."*
-  VERIFY: how to tag an item.
-
-## Lies and callbacks
-
-- **Caught lying:** a Paranoid giver won't give you their in-person jobs for 2 hours of your play.
-
 ## Reasons
 
 - **The majors' reasons** (`major.<act>`), posted by the majors as an act opens, for their stage missions

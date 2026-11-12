@@ -1228,6 +1228,16 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   ways (the job's own, and at its person one that needs no gun and one that needs no standing: a
   tin or two, or a service), parties beyond the giver (often "nobody"), one or two records, a
   callback, a fallout line and the reasons they answer.
+- **Mission goods** (`Missions/RZ_MissionGoods.c`): what a mission or an errand put in your hands as
+  goods (a delivery's food, a post's ration or magazine paid in kind, an errand's carried item) is
+  tagged with whose it is. It never counts for Trade, and food delivery, the fence, the quartermasters
+  and every errand refuse it: *"These are Levie's. Take them back to Levie."* *Simplified:* the tag
+  is a server-side list of the items (like the fence's bought list), forgotten at a restart (VERIFY:
+  an item keeps its entity through inventory moves, a body and a car's boot).
+- **Caught lying** (`RZ_StoryKit.LieFound`, from the lie store): on the life the lie was told in, that
+  faction's **Paranoid** leaders won't give you their in-person jobs for 2 hours of your play
+  (`sulk.<identity>.<life>.<faction>` in the season flags); on a dead life, that faction's next errand
+  opens with *"The last one who said that lied"* ([ERRANDS.md](ERRANDS.md#the-dealer)).
 - **Talk scenes** (`RZ_TalkScene`): a scene person (the civilian puzzle prefab, object index 91)
   stands at the job's place, spawned once someone is within 80 m; no prefab, no person, and the job
   goes on its own ways. It has 2 or 3 **nodes**: a line and up to four options on its choice slots,

@@ -373,7 +373,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **279 prefab fields**: 40 on `RZ_GameModeComponent`, 232 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **284 entries**: 176 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 75 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **283 prefab fields**: 40 on `RZ_GameModeComponent`, 236 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **288 entries**: 177 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 78 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -541,6 +541,10 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | a small wooden supply crate or a cardboard box of odds and ends (`RZ_ErrandProp_Crate.et`) | — | Missions > Errands > Props > Crate | optional | The Truck Didn't Come, Clean Glasses, Pack for the Queue: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
 | (existing prefab) | a ledger or a few papers on a stool (`RZ_ErrandProp_Papers.et`; a vanilla notebook or clipboard prop will do) | — | Missions > Errands > Props > Papers | optional | Last Orders' order book at his seat: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
 | (existing prefab) | a toolbox or a machine part on the ground (`RZ_ErrandProp_Parts.et`; a vanilla toolbox or battery prop will do) | — | Missions > Errands > Props > Parts | optional | Filter Parts' pump housing, Buy It Back's box at the wreck: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
+| (existing prefab) | a vanilla ration or tin item (an existing food prefab whose name holds one of the food words, e.g. `ration`) | — | Missions > Errands > Props > Pay ration | optional | a Bastion post's pay in kind, one errand in three, in place of 3 Favor; empty = Favor only. Put in the player's pack (or at their feet), tagged as the post's goods: food delivery, the fence and every errand refuse it |
+| (existing prefab) | a vanilla rifle magazine item (an existing prefab) | — | Missions > Errands > Props > Pay magazine | optional | a Red Hand camp's pay in kind, the same way; empty = Favor only. Tagged as the camp's goods, as the ration |
+| `RZ_ErrandCarried.et` | a small item with an InventoryItemComponent that can't be equipped (a bundle, a satchel, a small box; the mission item prefab will do), plus RZ_MissionItemComponent | `RZ_MissionItemComponent` | Missions > Errands > Props > Carried | optional | a carried way's item: His Effects' effects, The Name on the Tag's ID; only the asker or a helper hands it in; empty = the mission item. Tagged with a negative mission id (no mission's drop takes it) and as the giver's goods |
+| (existing prefab) | a vanilla wristwatch item (an existing prefab) | — | Missions > Errands > Props > Watch | optional | The Last Tin's watch, traded for two tins; empty = a common find. Put in the player's pack |
 
 #### Contracts
 

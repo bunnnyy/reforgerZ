@@ -1242,7 +1242,7 @@ class RZ_Stranger_Line : RZ_StrangerKind
 		}
 
 		RZ_Leaders leaders = gm.GetLeaders();
-		if (leaders)
+		if (leaders && gm.GetErrands().PayKinds().MayHeadline())
 			leaders.AddHeadline("A woman from the north road waves at the line every evening. The Haven leaves a chair there now.", false);
 
 		s.Finish(v, playerId, "You leave her waving. When you look back she's still at it, steady, like a lighthouse.", false);

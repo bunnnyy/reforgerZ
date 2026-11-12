@@ -93,6 +93,7 @@ class RZ_ErrandWay
 	float m_fBefore = -1;		// must be done before this game hour (20.5 = half past eight), -1 none
 	string m_sStep;				// the system line: "Search the farm buildings at {place}."
 	RZ_EErrandProp m_eProp = RZ_EErrandProp.NONE;	// a prop at the place while the step is open
+	bool m_bCarry;				// the step gives a carried item: only the asker or a helper hands it in (RZ_ErrandsPay)
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")
 	int m_iFavor;
@@ -167,6 +168,7 @@ class RZ_ErrandDef
 	string m_sFamily = "chore";	// telemetry and novelty: chore, house, aftermath, lost, line, dead, crews, amends, wanderer
 	bool m_bCard;				// once per player per season, at most Cards a day
 	bool m_bAfterCure;			// the epilogue deck: dealt only in the epilogue week, once per identity per subject, outside Cards a day
+	int m_iPerLife;				// > 0: dealt once per subject, this many times a life (His Effects: 3), not once a season
 	RZ_EErrandAnchor m_eAnchor;
 	int m_iFaction = -1;		// the giver's faction (ANY_HOLDING: the card picks)
 	string m_sRoles;			// roles that give it first ("cook,storekeeper"); others may speak for them
@@ -295,6 +297,8 @@ class RZ_Errand
 	float m_fOfflineSince = -1;
 	bool m_bTold;				// the "come back" line has been said
 	ref array<int> m_aHelpers = {};
+	IEntity m_Carried;			// a carried way's item, weak (RZ_ErrandsPay); null on the ground's loss
+	bool m_bCarried;			// it was given (so a null m_Carried means lost)
 	ref map<int, float> m_mWith = new map<int, float>();	// group members near the asker: seconds
 	ref map<string, string> m_mText = new map<string, string>();
 
@@ -369,6 +373,9 @@ class RZ_ErrandLedger
 	ref array<string> threads = {};			// "place|giver|what you did", newest last, 12 at most
 	ref array<string> threadsSaid = {};		// the threads already said back to you
 	ref array<string> pending = {};			// "faction|fame|favor|title": a story job's pay, at the next join
+	int liedFaction = -1;					// a lie found out on a dead life: that faction's givers...
+	int liedUntil;							// ...open with it, fit x0.8, until this real time
+	bool liedSaid;
 
 	//------------------------------------------------------------------------------------------------
 	void Ensure()

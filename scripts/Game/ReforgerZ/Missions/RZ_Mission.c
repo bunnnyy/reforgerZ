@@ -363,9 +363,9 @@ class RZ_Mission
 		if (!m_Req.IsEligible(gm, playerId))
 			return m_Mirror && m_Mirror.IsSide(gm, playerId);
 
-		// A leader's personal job: the leader decides who gets it
+		// A leader's personal job: the leader decides who gets it (a Paranoid one sulks after a lie)
 		if (m_bInPersonOnly && m_iLeaderId >= 0 && gm.GetLeaders())
-			return gm.GetLeaders().CanWorkFor(m_iLeaderId, playerId);
+			return !RZ_StoryKit.Sulks(gm, m_iLeaderId, playerId) && gm.GetLeaders().CanWorkFor(m_iLeaderId, playerId);
 
 		return true;
 	}

@@ -13,6 +13,7 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		m_sTitle = "His Effects";
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
+		m_iPerLife = 3;
 		Offer("\"The truck that went over {where_place}. The crew's things are still in the cab. Somebody should bring them home.\"",
 			"\"There's a wreck {where_place}, and a man's papers in it. I'd like his name said properly.\"");
 		Over("\"Someone brought his things in this morning. Thank you all the same.\"");
@@ -24,6 +25,7 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Go to the wreck {where_place} and gather what the crew left (15 s there), then bring it to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
+		w.m_bCarry = true;
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("\"I'll read his name tonight. The rest goes in the box, for when the gates open.\"",
@@ -37,9 +39,10 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Go to the wreck {where_place}, take what the crew left (15 s there), and sell it at the fence. Then tell {giver} it was gone.";
+		w.m_sStep = "Go to the wreck {where_place}, take what the crew left (15 s there), and sell it at the fence: the jacket and the photo frame.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
-		w.m_iFavor = 5;
+		w.m_bCarry = true;
+		w.m_iFavor = 0;
 		w.Done("\"Gone? Somebody got there first. Listed as kit lost. That's how it goes.\"");
 	}
 
@@ -52,6 +55,7 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 
 		e.m_vSubject = RZ_Util.GroundPos(Vector(s.x, 0, s.z));
 		e.m_sSubject = "wreck:" + RZ_SettlementScanner.GridReference(e.m_vSubject);
+		e.m_sValue = s.cause;
 		e.SetText("where_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
 		e.SetText("subject_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
 		if (e.m_iFaction == RZ_EFaction.MILITARY)
