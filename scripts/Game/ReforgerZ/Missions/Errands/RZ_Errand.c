@@ -548,4 +548,5 @@ class RZ_ErrandsSave
 	ref array<string> counterKeys = {};		// the server's errand counters (per house: turns done)
 	ref array<int> counterValues = {};
 	ref array<ref RZ_Local> locals = {};		// World/RZ_Locals.c
+	ref array<ref RZ_ErrandDeferred> deferred = {};	// pay waiting for a post's next truck (RZ_ErrandsPay)
 }

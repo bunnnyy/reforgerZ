@@ -2853,7 +2853,10 @@ when it happens)
   killer is paid, once, by one faction. Die to the infected (or a fall) while at Kill on Sight:
   nobody is paid. Collect the Bounty on a player pays only whoever killed them. With no player
   wanted, the hiding man (Bounty target, on SURV) shoots back at whoever comes near, and killing
-  him pays.
+  him pays. A teammate's kill pays no Kill on Sight bounty.
+- [ ] Restart with a bounty posted, a Requisition just signed out and the fence at its hourly cap:
+  after it, `Perks: restored N bounty postings, N last killers, N Requisition cooldowns`; the posting
+  is still up, the next requisition still waits, and the fence still says to come back.
 - [ ] A Bastion outpost leader dies and is replaced (Replace minutes at 1): when that outpost is
   later abandoned or taken, the new leader leaves with it.
 - [ ] A supply truck leaves, is driven by its crew, and arrives. Its whole crew gets in before it

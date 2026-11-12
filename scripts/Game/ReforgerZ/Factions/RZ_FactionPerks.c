@@ -35,7 +35,22 @@ class RZ_PostedBounty
 	string m_sTargetName;
 	int m_iPaid;			// what the poster paid
 	int m_iPayout;			// what the killer gets
-	float m_fUntil;
+	int m_iUntilUnix;		// real time it comes down (saved)
+}
+
+//------------------------------------------------------------------------------------------------
+//! What perks and services keep across a restart, by identity and real time (RZ_SaveData.perks).
+class RZ_PerksSave
+{
+	ref array<ref RZ_PostedBounty> posted = {};
+	ref array<string> killerVictims = {};		// victim identity -> killer identity and name
+	ref array<string> killerIdents = {};
+	ref array<string> killerNames = {};
+	ref array<string> requisitionIdents = {};	// the Requisition cooldown: when each last signed out
+	ref array<int> requisitionUnix = {};
+	ref array<string> fenceIdents = {};			// the fence's hour: its start and what it paid
+	ref array<int> fenceUnix = {};
+	ref array<int> fenceEarned = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -51,7 +66,7 @@ class RZ_FactionPerks
 	protected ref map<string, float> m_mGreeted = new map<string, float>();
 
 	// Perk timers
-	protected ref map<string, float> m_mRequisitionAt = new map<string, float>();
+	protected ref map<string, int> m_mRequisitionAt = new map<string, int>();	// identity -> real time of the last one
 	protected float m_fScanTimer;
 	protected float m_fNeighbourTimer;
 
@@ -508,10 +523,11 @@ class RZ_FactionPerks
 		}
 
 		string ident = m_GM.GetProfile(playerId).m_sIdentity;
-		float last;
-		if (m_mRequisitionAt.Find(ident, last) && m_fClock - last < REQUISITION_COOLDOWN)
+		int last;
+		int nowUnix = RZ_SeasonClock.Now();
+		if (m_mRequisitionAt.Find(ident, last) && nowUnix - last < REQUISITION_COOLDOWN)
 		{
-			int minutes = RZ_Util.RoundToInt((REQUISITION_COOLDOWN - (m_fClock - last)) / 60);
+			int minutes = RZ_Util.RoundToInt((REQUISITION_COOLDOWN - (nowUnix - last)) / 60);
 			m_GM.NotifyPlayer(playerId, bastion, string.Format("Your next requisition is approved in about %1 minutes.", minutes));
 			return false;
 		}
@@ -583,7 +599,7 @@ class RZ_FactionPerks
 		if (hostility && hostility.GetDisguise().MarksOn())
 			hostility.GetDisguise().GetMarks().OnSold(signedOut, playerId, RZ_EFaction.MILITARY);
 
-		m_mRequisitionAt.Set(ident, m_fClock);
+		m_mRequisitionAt.Set(ident, RZ_SeasonClock.Now());
 		string from = "Bastion stock";
 		if (stock)
 		{
@@ -1082,6 +1098,78 @@ class RZ_FactionPerks
 
 	// ================================================================ The bounty board
 	//------------------------------------------------------------------------------------------------
+	// ================================================================ Save
+	//------------------------------------------------------------------------------------------------
+	//! The bounty board, who killed whom last and the Requisition cooldown (the fence's hour is
+	//! added by RZ_FactionServices.Save).
+	RZ_PerksSave Save()
+	{
+		RZ_PerksSave data = new RZ_PerksSave();
+		foreach (RZ_PostedBounty b : m_aPosted)
+		{
+			if (b)
+				data.posted.Insert(b);
+		}
+
+		foreach (string victim, string killer : m_mLastKiller)
+		{
+			string name;
+			m_mLastKillerName.Find(victim, name);
+			data.killerVictims.Insert(victim);
+			data.killerIdents.Insert(killer);
+			data.killerNames.Insert(name);
+		}
+
+		int now = RZ_SeasonClock.Now();
+		foreach (string ident, int at : m_mRequisitionAt)
+		{
+			if (now - at >= REQUISITION_COOLDOWN)
+				continue;
+
+			data.requisitionIdents.Insert(ident);
+			data.requisitionUnix.Insert(at);
+		}
+
+		return data;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Older saves have none: the board, the kills and the cooldowns start empty.
+	void Restore(RZ_PerksSave data)
+	{
+		if (!data)
+			return;
+
+		if (data.posted)
+		{
+			foreach (RZ_PostedBounty b : data.posted)
+			{
+				if (b && !b.m_sTarget.IsEmpty() && !b.m_sPoster.IsEmpty())
+					m_aPosted.Insert(b);
+			}
+		}
+
+		if (data.killerVictims && data.killerIdents && data.killerNames)
+		{
+			for (int k = 0; k < data.killerVictims.Count() && k < data.killerIdents.Count() && k < data.killerNames.Count(); k++)
+			{
+				m_mLastKiller.Set(data.killerVictims[k], data.killerIdents[k]);
+				m_mLastKillerName.Set(data.killerVictims[k], data.killerNames[k]);
+			}
+		}
+
+		if (data.requisitionIdents && data.requisitionUnix)
+		{
+			for (int r = 0; r < data.requisitionIdents.Count() && r < data.requisitionUnix.Count(); r++)
+			{
+				m_mRequisitionAt.Set(data.requisitionIdents[r], data.requisitionUnix[r]);
+			}
+		}
+
+		RZ_Log.Info(string.Format("Perks: restored %1 bounty postings, %2 last killers, %3 Requisition cooldowns", m_aPosted.Count(), m_mLastKiller.Count(), m_mRequisitionAt.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Who killed whom last, by identity: the only person a Champion can post a bounty on.
 	protected void RememberKiller(int victim, int killer)
 	{
@@ -1197,7 +1285,7 @@ class RZ_FactionPerks
 		b.m_sTargetName = targetName;
 		b.m_iPaid = cost;
 		b.m_iPayout = Math.Min(settings.m_iBountyPayout, cost);
-		b.m_fUntil = m_fClock + Math.Max(0.25, settings.m_fBountyHours) * 3600;
+		b.m_iUntilUnix = RZ_SeasonClock.Now() + RZ_Util.RoundToInt(Math.Max(0.25, settings.m_fBountyHours) * 3600);
 		m_aPosted.Insert(b);
 
 		m_GM.NotifyPlayer(playerId, title, string.Format("Your name goes up next to %1's, in red paint. %2 Favor to whoever puts them down.", targetName, b.m_iPayout));
@@ -1237,10 +1325,11 @@ class RZ_FactionPerks
 	//! Unclaimed postings come down; the poster gets half back, online or not.
 	protected void ExpirePostings()
 	{
+		int now = RZ_SeasonClock.Now();
 		for (int i = m_aPosted.Count() - 1; i >= 0; i--)
 		{
 			RZ_PostedBounty b = m_aPosted[i];
-			if (m_fClock < b.m_fUntil)
+			if (now < b.m_iUntilUnix)
 				continue;
 
 			m_aPosted.Remove(i);

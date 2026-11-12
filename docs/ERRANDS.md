@@ -608,6 +608,6 @@ found by events (a visit, a road, a rumour round, the next real reading).
 people); the lines have two or three variants each, not always three; a card dealt counts toward
 the day's two even if declined; pay in kind is an effect, except a post's tagged ration or magazine
 and a carried item (errands hand out no doses, crates, kit or keys); a deferred pay waiting for its
-truck is runtime only (a restart forgets it); the goods' tag is a server-side list (VERIFY in
+truck is saved (a real day at most) and still waits after a restart; the goods' tag is a server-side list (VERIFY in
 [DESIGN.md](DESIGN.md#story-blocks)). The margin cards read the majors' waits (the run's stage), and the lock cards read
 the finale's lock (`RouteOfPlayer`). The journal's errand row uses the `mission_errand` icon.

@@ -486,6 +486,7 @@ class RZ_Errands
 
 			m_People.Restore(m_Restored.houses);
 			m_Locals.Restore(m_Restored.locals);
+			m_PayKinds.Restore(m_Restored.deferred);
 			if (m_Restored.counterKeys && m_Restored.counterValues)
 			{
 				for (int i = 0; i < m_Restored.counterKeys.Count() && i < m_Restored.counterValues.Count(); i++)
@@ -531,6 +532,7 @@ class RZ_Errands
 
 		m_People.Save(data.houses);
 		m_Locals.Save(data.locals);
+		m_PayKinds.Save(data.deferred);
 		foreach (string key, int value : m_mCounters)
 		{
 			data.counterKeys.Insert(key);

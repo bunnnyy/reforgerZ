@@ -416,7 +416,9 @@ the same rough "last seen". It's paid the same way as any bounty: once, to the k
 player kill. The killer gets 40 Red Hand Favor, less than it cost, so a pair of friends can't farm
 it; and never the poster, anyone in the poster's or the target's group, or someone the Red Hand
 hunts. One posting per poster and per target, three on the server at once; unclaimed after 2 hours,
-it comes down and the poster gets half back. Postings aren't saved. *Simplified:* "friends" means
+it comes down and the poster gets half back. Postings, who last killed whom, the Requisition
+cooldown and the fence's hourly cap are saved by identity and real time, so a restart changes none
+of them (the 2 hours run on in real time while the server is down). *Simplified:* "friends" means
 the same vanilla player group; a poster in no group excludes only themselves.
 
 | Hunted | — | Red Hand AI shoots you ✅; hunter squads come for you ✅ |

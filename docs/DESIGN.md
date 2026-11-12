@@ -3038,7 +3038,9 @@ headlines, world interactions, the crawlers' ledgers, stir and kill sites, the t
 ([The clock](#the-clock)), the world facts (the season's seed, flags, canon, gossip and world
 memory; claims aren't saved) and the shared engine (waiting callbacks, the season budget, the
 set-piece calendar, the season's deeds; notice lanes and marks aren't saved), and the epilogue week
-(its record, beats, closing work and outlet stocks). A save from another map is ignored. A profile that never spawned and holds nothing
+(its record, beats, closing work and outlet stocks), the bounty board's postings, who last killed
+whom, the Requisition cooldown and the fence's hour (by identity and real time), and errand pay
+waiting for a truck. A save from another map is ignored. A profile that never spawned and holds nothing
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
 that is never stored, so no junk `local_` profiles pile up. Player bodies, inventories and vehicles use

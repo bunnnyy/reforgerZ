@@ -2928,6 +2928,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		m_Tribes.Restore(data.tribes);
 		m_Hostility.GetDisguise().GetMarks().Restore(data.disguise);
+		m_Perks.Restore(data.perks);
+		m_Services.Restore(data.perks);
 
 		if (data.hasTimeOfDay)
 			m_fSavedHour = data.timeOfDay;
@@ -3042,6 +3044,13 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		if (m_Hostility && m_Hostility.GetDisguise().IsOn())
 			data.disguise = m_Hostility.GetDisguise().GetMarks().Save();
+
+		if (m_Perks)
+		{
+			data.perks = m_Perks.Save();
+			if (m_Services)
+				m_Services.Save(data.perks);
+		}
 
 		// Dialogue memory has its own file, written only when something changed
 		if (m_Dialogue)
