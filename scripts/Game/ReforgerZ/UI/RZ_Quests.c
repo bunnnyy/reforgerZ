@@ -484,6 +484,13 @@ class RZ_QuestTracker
 		if (w)
 			step = e.Fill(w.m_sStep);
 
+		// An opening's last step ends where it's done: nobody to go back to
+		if (w && w.m_bEndsThere)
+		{
+			list.Add(step, RZ_EObjState.CURRENT);
+			return;
+		}
+
 		string back = e.Fill("Go back to {giver}.");
 		if (e.m_bStepDone)
 		{
@@ -520,6 +527,18 @@ class RZ_QuestTracker
 		}
 
 		Push(playerId, ent, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Another system wants this job followed now (an opening's next step, Guidance/RZ_Openings.c):
+	//! tracked, and the tracker sent at once.
+	void Follow(int playerId, int id, string title)
+	{
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		p.m_iTrackedId = id;
+		p.m_sTrackedTitle = title;
+		p.m_bTrackOff = false;
+		Push(playerId, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId), true);
 	}
 
 	//------------------------------------------------------------------------------------------------

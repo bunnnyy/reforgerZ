@@ -1075,7 +1075,8 @@ class RZ_UIFeed
 			if (!m_mGear.Find(bg.m_sLoadoutName, gear))
 				gear = bg.m_sGear;
 
-			s += lnB.AddInt(bg.GetStartRep(RZ_EFaction.BANDITS)).AddInt(bg.GetStartRep(RZ_EFaction.INSTITUTE)).Add(gear).End();
+			lnB.AddInt(bg.GetStartRep(RZ_EFaction.BANDITS)).AddInt(bg.GetStartRep(RZ_EFaction.INSTITUTE)).Add(gear);
+			s += lnB.Add(RZ_OpeningText.ScreenPhrase(bg.m_sId)).End();
 		}
 
 		return s;

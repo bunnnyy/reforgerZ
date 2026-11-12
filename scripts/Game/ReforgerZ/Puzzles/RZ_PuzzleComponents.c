@@ -314,6 +314,16 @@ class RZ_PuzzleActionHelper
 			return true;
 		}
 
+		// An opening's contact, someone from before (Guidance/RZ_Openings.c)
+		if (comp.GetMissionId() == RZ_Openings.TAG)
+		{
+			RZ_Openings openings = RZ_Openings.Get();
+			if (openings)
+				openings.HandleChoice(playerId, comp.GetObjectIndex(), option, owner);
+
+			return true;
+		}
+
 		// A safehouse's named person (World/RZ_NamedPeople.c)
 		// A stranger at a spot (Missions/Errands/RZ_Strangers.c)
 		if (comp.GetMissionId() == RZ_Strangers.TAG)
@@ -456,6 +466,16 @@ class RZ_PuzzleActionHelper
 		{
 			if (gm.GetEpilogue())
 				gm.GetEpilogue().GetSpots().HandleRead(playerId, comp.GetClueIndex());
+
+			return true;
+		}
+
+		// An opening's contact (Guidance/RZ_Openings.c): their line, and what they need now
+		if (comp.GetMissionId() == RZ_Openings.TAG)
+		{
+			RZ_Openings contact = RZ_Openings.Get();
+			if (contact)
+				contact.HandleTalk(playerId, comp.GetClueIndex(), owner);
 
 			return true;
 		}

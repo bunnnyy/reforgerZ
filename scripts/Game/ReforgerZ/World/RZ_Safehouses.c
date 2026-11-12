@@ -174,7 +174,6 @@ class RZ_Safehouse
 	ref array<IEntity> m_aBodies = {};
 	bool m_bSpawned;
 	int m_iSpawnedTier = -1;
-	IEntity m_SpawnPoint;
 
 	//------------------------------------------------------------------------------------------------
 	RZ_ESafehouseTier GetTier()
@@ -562,11 +561,6 @@ class RZ_Safehouses
 		}
 
 		m_aRestored.Clear();
-		foreach (RZ_Safehouse h : m_aSafehouses)
-		{
-			h.m_SpawnPoint = m_GM.SpawnNamedSpawnPoint(RZ_Mission.LandPointNear(h.m_vPos, 6, 14), "Haven safehouse, " + h.m_sName);
-		}
-
 		RZ_Log.Info(string.Format("Haven safehouses: %1 (%2).", m_aSafehouses.Count(), source));
 	}
 

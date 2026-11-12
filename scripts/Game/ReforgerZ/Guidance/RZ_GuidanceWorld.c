@@ -108,7 +108,8 @@ class RZ_GuidanceWorld
 		st.m_fRadioTimer = RadioInterval(level) * 0.5;
 		st.m_fNudgeAt = Math.RandomFloat(120, 420);
 
-		if (m_Settings.m_bScenarios)
+		// An opening has its own scene and someone already there (RZ_Openings)
+		if (m_Settings.m_bScenarios && !st.m_bOpening)
 			RunScenario(playerId, ent, p, level);
 	}
 
@@ -405,6 +406,21 @@ class RZ_GuidanceWorld
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! An opening's scene (RZ_Openings): props removed with the clues.
+	void TrackProp(IEntity e)
+	{
+		TrackScenery(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An opening's readable thing (the calendar): the Puzzles > Note prefab at pos, read with the
+	//! clues' reader and removed with them. False if it couldn't be placed.
+	bool PlaceReadable(vector pos, string label, string title, string text)
+	{
+		return PlaceClue("", RZ_EPuzzleProp.CLUE, true, pos, label, title, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Scenery to remove with the clues (a barricade).
 	protected void TrackScenery(IEntity e)
 	{
@@ -656,7 +672,7 @@ class RZ_GuidanceWorld
 	//! Brand-new players: a Courier or a Scavenger comes looking for them a few minutes in.
 	protected void PollWanderer(int playerId, RZ_PlayerProfile p, RZ_GuidePlayer st, int level)
 	{
-		if (level != RZ_Guidance.LEVEL_NEW || !m_Settings.m_bWandererFinds || st.m_bNudged)
+		if (level != RZ_Guidance.LEVEL_NEW || !m_Settings.m_bWandererFinds || st.m_bNudged || st.m_bOpening)
 			return;
 
 		if (p.m_fLifeSeconds < st.m_fNudgeAt)

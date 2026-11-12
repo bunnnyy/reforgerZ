@@ -20,6 +20,7 @@ class RZ_PlayerProfile
 	int m_iGuideRefreshLeft;			// counted lives left with refreshed (stronger) guidance
 	int m_iGuideLastScenario = -1;		// the last spawn scenario, so the next one differs
 	ref array<string> m_aGuideSeen = {};	// once-only tips already given
+	ref array<float> m_aStarts = {};	// openings (Guidance/RZ_Openings.c): the last two starts, x and z, newest first
 
 	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
 	int m_iTrackedId;					// its journal row id, 0 = none
@@ -223,6 +224,8 @@ class RZ_PlayerProfile
 			m_aUnlocked = new array<string>();
 		if (!m_aGuideSeen)
 			m_aGuideSeen = new array<string>();
+		if (!m_aStarts)
+			m_aStarts = new array<float>();
 		if (!m_aAmendsPaid)
 			m_aAmendsPaid = new array<int>();
 		if (!m_aAmendsWorked)

@@ -684,149 +684,26 @@ FrameWidgetClass "{46B0C682EA0C47FA}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }
   }
-  ButtonWidgetClass "{80A629B91685350C}" {
-   Name "PlacePrev"
-   Slot FrameWidgetSlot "{D8BF84FDFEE1CBDD}" {
-    Anchor 0 0 0 0
-    PositionX 788
-    OffsetLeft 788
-    PositionY 922
-    OffsetTop 922
-    SizeX 40
-    OffsetRight -828
-    SizeY 40
-    OffsetBottom -962
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{2EF20F5A70E786AF}" {
-     Name "PlacePrevBox"
-     Slot ButtonWidgetSlot "{7EB662B4AC5ABF9F}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{16C762AEE22AF9AB}" {
-       Name "PlacePrevBg"
-       Slot OverlayWidgetSlot "{97D9060560E969E6}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.102 0.114 0.125 1
-       Size 1 1
-      }
-      TextWidgetClass "{8739CF40337BE5F1}" {
-       Name "PlacePrevText"
-       Slot OverlayWidgetSlot "{CCA31AD9C27F580C}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.91 0.886 0.816 1
-       Text "<"
-       "Font Size" 24
-       "Min Font Size" 24
-       FontProperties FontProperties "{A01937C86BFADCA9}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
   TextWidgetClass "{F09FC688249BCBDD}" {
    Name "PlaceName"
    Slot FrameWidgetSlot "{AA293EE6A55B3043}" {
     Anchor 0 0 0 0
-    PositionX 838
-    OffsetLeft 838
+    PositionX 788
+    OffsetLeft 788
     PositionY 924
     OffsetTop 924
-    SizeX 420
-    OffsetRight -1258
+    SizeX 660
+    OffsetRight -1448
     SizeY 36
     OffsetBottom -960
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Text "Morton"
+   Text "A clinic, or a house near one"
    "Font Size" 28
    "Min Font Size" 28
-   "Horizontal Alignment" Center
    FontProperties FontProperties "{E82D49BEF0A0F08F}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-   }
-  }
-  ButtonWidgetClass "{987E311F9681CC25}" {
-   Name "PlaceNext"
-   Slot FrameWidgetSlot "{70007FCCB3095C4F}" {
-    Anchor 0 0 0 0
-    PositionX 1268
-    OffsetLeft 1268
-    PositionY 922
-    OffsetTop 922
-    SizeX 40
-    OffsetRight -1308
-    SizeY 40
-    OffsetBottom -962
-    Alignment 0 0
-   }
-   style blank
-   {
-    OverlayWidgetClass "{75176A4B80055021}" {
-     Name "PlaceNextBox"
-     Slot ButtonWidgetSlot "{46E8AD3DE2026904}" {
-      HorizontalAlign 3
-      VerticalAlign 3
-     }
-     {
-      ImageWidgetClass "{78FC6A45D457B1B8}" {
-       Name "PlaceNextBg"
-       Slot OverlayWidgetSlot "{2C77C50A2B70CFD7}" {
-        HorizontalAlign 3
-        VerticalAlign 3
-       }
-       Color 0.102 0.114 0.125 1
-       Size 1 1
-      }
-      TextWidgetClass "{C5AFB5C953ED260D}" {
-       Name "PlaceNextText"
-       Slot OverlayWidgetSlot "{17E541E91DD599CC}" {
-        HorizontalAlign 1
-        VerticalAlign 1
-       }
-       Color 0.91 0.886 0.816 1
-       Text ">"
-       "Font Size" 24
-       "Min Font Size" 24
-       FontProperties FontProperties "{A2F5499C81743F41}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-     }
-    }
-   }
-  }
-  TextWidgetClass "{FDEB6E12FF7F69F0}" {
-   Name "PlaceCount"
-   Slot FrameWidgetSlot "{963273434A7CE91B}" {
-    Anchor 0 0 0 0
-    PositionX 1322
-    OffsetLeft 1322
-    PositionY 930
-    OffsetTop 930
-    SizeX 140
-    OffsetRight -1462
-    SizeY 24
-    OffsetBottom -954
-    Alignment 0 0
-   }
-   Color 0.639 0.62 0.565 1
-   Text "2 OF 7"
-   "Font Size" 18
-   "Min Font Size" 18
-   FontProperties FontProperties "{99A12D2C409002FE}" {
-    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }
   }
   TextWidgetClass "{CCF867E6137A373B}" {
