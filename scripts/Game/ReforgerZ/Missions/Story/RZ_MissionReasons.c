@@ -80,7 +80,7 @@ class RZ_MissionReasons
 			result.Insert("cure.*");
 
 		// The reasons read from other systems' facts (RZ_ReasonPosts)
-		if (t == RZ_Mission_CheckpointDuty || t == RZ_Mission_ConvoyEscort)
+		if (t == RZ_Mission_CheckpointDuty || t == RZ_Mission_ConvoyEscort || t == RZ_Mission_MissingPatrol)
 			result.Insert("post.pressure");
 
 		if (t == RZ_Mission_WaterSurvey)

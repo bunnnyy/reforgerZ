@@ -540,6 +540,22 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 {
 	protected ResourceName m_sTurned;	// a military pack's young ("": the usual infected)
+	protected string m_sTruth;			// turned (as they said), ambushed (a crew took their rifles), orders (sent to the line)
+	protected string m_sCall;			// "Patrol Two-Six"
+	protected string m_sCrew;			// ambushed: the crew's holding
+	protected ref array<int> m_aRead = {};
+
+	protected static const int OPT_NAIL = 0;
+	protected static const int OPT_BURY = 1;
+	protected static const int OPT_THIRD = 2;	// ambushed: tell the post; orders: the open channel
+	protected static const int OPT_SELL = 3;	// ambushed: a quiet word to the crew
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_MissingPatrol()
+	{
+		m_Story = new RZ_MissionStory("patrol");
+		m_Choice = new RZ_OneChoice();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -564,6 +580,9 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 600);
+		array<string> calls = {"Two-Six", "Four-One", "Three-Three", "One-Nine", "Five-Two"};
+		m_sCall = "Patrol " + calls[Math.AbsInt(RZ_WorldFacts.Get().GetSeed() + m_iSettlement * 7) % calls.Count()];
+		Truth(gm, s);
 		m_sTitle = "Missing Patrol";
 		m_sDeed = "found the patrol near {town}";
 		m_sBrief = string.Format("A Bastion patrol went silent outside %1. Find their last position and put down whatever they've become.", s.m_sName);
@@ -582,6 +601,122 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The truth (story key `patrol`, kept per patrol for 3 season days): they turned, as the post says;
+	//! a crew took their rifles (a Red Hand holding within 5 km); or they were sent to the line. Then
+	//! the question the post's runner asks when the work's done.
+	protected void Truth(RZ_GameModeComponent gm, RZ_Settlement s)
+	{
+		array<string> values = {"turned", "ambushed", "orders"};
+		array<float> weights = {0.45, 0, 0.25};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 5000);
+		if (crew)
+		{
+			weights[1] = 0.3;
+			m_sCrew = crew.m_sName;
+		}
+
+		m_sTruth = m_Story.Truth(m_sCall, values, weights, this);
+		if (m_sTruth == "ambushed" && !crew)
+			m_sTruth = "turned";
+
+		string prompt = string.Format("A private from the post has come out on a bike. He looks at what's left of %1, not at you. \"Tags to the nail? Or leave them with their lads?\"", m_sCall);
+		string labels = "Their tags to the nail|Bury them here, tags and all";
+		if (m_sTruth == "ambushed")
+		{
+			prompt = string.Format("A private from the post has come out on a bike. Their rifles are gone, every one. A toll chit in the sergeant's pocket, from %1. \"That's a red hand on it,\" he says, and waits.", m_sCrew);
+			labels += "|Tell the post a crew did it|Sell the crew a quiet word";
+		}
+		else if (m_sTruth == "orders")
+		{
+			prompt = string.Format("A private from the post has come out on a bike. The sergeant's log is open on his knee. Last order: proceed to the line, grid %1, weather permitting. Signed by the CO. \"Weather,\" the private says.", RZ_SettlementScanner.GridReference(m_vPos));
+			labels += "|Read their last order on the open channel";
+		}
+
+		m_Choice.Set(prompt, labels, "decide what's done with the patrol", OPT_NAIL);
+		m_Choice.Asset(OPT_NAIL, RZ_EFaction.MILITARY);
+		m_Choice.Asset(OPT_BURY, RZ_CureFinale.INDEP);
+		if (m_sTruth == "ambushed")
+			m_Choice.Asset(OPT_SELL, RZ_EFaction.BANDITS);
+		else if (m_sTruth == "orders")
+			m_Choice.Asset(OPT_THIRD, RZ_CureFinale.INDEP);
+
+		RZ_Log.Info(string.Format("Story: patrol %1 is %2", m_sCall, m_sTruth));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads at the last position: a Soldier the unit codes, an Ex-Con or Raider the chit, a Hunter the
+	//! ground. Each once a player; the truth is also in the runner's question, so nobody needs one.
+	protected void Reads(RZ_GameModeComponent gm, array<int> ids, array<IEntity> players)
+	{
+		foreach (int i, IEntity p : players)
+		{
+			if (m_aRead.Contains(ids[i]) || RZ_Util.DistXZ(p.GetOrigin(), m_vPos) > 30)
+				continue;
+
+			m_aRead.Insert(ids[i]);
+			if (m_sTruth == "orders")
+				RZ_StoryKit.Read(gm, this, ids[i], "soldier", "The unit code on their kit's for the line sector, not this one. Somebody sent them the long way round, and wrote it down.");
+			else if (m_sTruth == "ambushed")
+				RZ_StoryKit.Read(gm, this, ids[i], "excon,raider", string.Format("Clean work: rifles, not tins. That's %1's way. They don't take what they can't sell.", m_sCrew));
+
+			RZ_StoryKit.Read(gm, this, ids[i], "hunter", "Boot prints in, and only some of them out. The rest went on as something else.");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The runner's question, answered (the decider rule and the 5 s hold ran in RZ_OneChoice).
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		if (option == OPT_BURY)
+		{
+			m_bHasGiver = false;
+			RZ_StoryKit.Record(this, "fate", m_sCall, "buried", who, string.Format("Four helmets on four sticks outside %1. Nobody from the post has been out to them.", GetLocationName(gm)), "board");
+			NotifyParticipants(gm, m_sTitle, "You bury them where they fell, tags and all. The post's nail list stays a name short. Nobody pays for that.");
+			return;
+		}
+
+		if (option == OPT_THIRD && m_sTruth == "ambushed")
+		{
+			m_Choice.BlameWith(gm, this, RZ_EFaction.BANDITS, 4, "named a crew to Bastion");
+			RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, -1, "a patrol robbed by a crew");
+			RZ_StoryKit.Record(this, "fate", m_sCall, "crew", who);
+			NotifyParticipants(gm, m_sTitle, string.Format("The post logs it: %1, rifles taken, %2. The Red Hand hears who told them.", m_sCall, m_sCrew));
+			return;
+		}
+
+		if (option == OPT_SELL && m_sTruth == "ambushed")
+		{
+			m_bHasGiver = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
+			gm.GetFacts().Memory().Lies().Tell(gm, decider, "patrol.crew", m_sCall, RZ_EFaction.MILITARY, "", m_vPos, RZ_ELieTest.ROAD, 5,
+				string.Format("\"%1 didn't turn. A crew had their rifles, and someone told the crew we knew.\"", m_sCall));
+			RZ_StoryKit.Record(this, "fate", m_sCall, "sold", who);
+			NotifyParticipants(gm, m_sTitle, "The crew pays for a quiet word: the post will hear they turned, and nothing about rifles. Bastion pays nothing for what it doesn't know.");
+			return;
+		}
+
+		if (option == OPT_THIRD && m_sTruth == "orders")
+		{
+			m_bHasGiver = false;
+			m_Choice.BlameWith(gm, this, RZ_EFaction.MILITARY, 5, "read a patrol's orders on the air");
+			RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, -2, "a patrol's orders read on the air");
+			RZ_StoryKit.Record(this, "fate", m_sCall, "aired", who, string.Format("Somebody chalked a grid reference on %1's bus shelter, and 'weather permitting' under it.", GetLocationName(gm)), "chalk");
+			NotifyParticipants(gm, m_sTitle, string.Format("You read it on the open channel: %1, sent to the line, weather permitting. Nobody pays you. Everybody hears it.", m_sCall));
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", m_sCall, "home", who, string.Format("%1's tags on the nail at the post, four in a row. The paint under them says weather.", m_sCall), "board");
+		NotifyParticipants(gm, m_sTitle, "Their tags go on the nail at the post. The sergeant reads the names on the call.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string GetFailText(RZ_GameModeComponent gm)
+	{
+		return string.Format("%1 (%2): nobody went. Their tags stay out there.", m_sTitle, GetLocationName(gm));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -605,6 +740,9 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 
 			SpawnGuards(gm, m_vPos, 1, 0, 10, true);
 		}
+
+		if (m_bSpawned)
+			Reads(gm, ids, players);
 
 		super.OnUpdate(gm, dt, ids, players);
 	}
