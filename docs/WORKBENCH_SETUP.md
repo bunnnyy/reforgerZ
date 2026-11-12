@@ -1585,6 +1585,9 @@ The talk pass ([WRITING.md](WRITING.md#talk)) added `quote`, `speaker`, `reply`,
 `ellipsis`; most of the baseline is their findings in the conversation files and the errands' cards,
 and each rewrite shrinks it. A rewritten line that still breaks one fails the lint.
 
+The objectives pass added `objective` (with an empty baseline): a new mission whose class sets a
+brief without an `m_sObjective` fails it, and so does an objective, step or stage title that leans on
+a pronoun ([WRITING.md](WRITING.md#objective-lines)).
 
 | What it shows | What it can't |
 |---|---|

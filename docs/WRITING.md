@@ -594,6 +594,8 @@ so it never leans on the brief.
 | Secure it and hold the area for a minute. | Hold the cellar cache in Levie for a minute. |
 | Find him. | Find the downed pilot outside Morton and walk the pilot to Levie. |
 
+The text lint's `objective` check holds the pronoun and length rules, and that every mission with a
+brief names its objective ([Checking text](#checking-text)).
 
 ## Dark humour, not edginess
 
@@ -731,7 +733,7 @@ Two tools check the scripts' text; how to run them is in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint).
 
 - **`tools/strings_inventory.py`** lists every literal that can reach a player: notices, headlines,
-  rumours, briefs, labels and choices, clues, journal lines, outcomes,
+  rumours, briefs, objective lines (`objective`), labels and choices, clues, journal lines, outcomes,
   the guidance tips, the voice pools and the voice bank, the replies the talk screen's code builds (`reply`: `Reply`, `OwnRow`, a
   scene's `Verb`, and what `RZ_TalkWords` returns), and every line of the conversation files
   (`dialogue/**/*.rzd`: says as talk-screen lines, labels as choices; the generated packs are skipped). For each: its file and line, the channel (guessed from the call, the assignment or the
@@ -758,6 +760,7 @@ Two tools check the scripts' text; how to run them is in
 | `clue-echo` | An ambient line never repeats a clue's text |
 | `seed-name` | Seeded name lists never use a name LORE.md gives a person |
 | `punchline` | A short last sentence ends one line only |
+| `objective` | An objective line ([Objective lines](#objective-lines): `m_sObjective`, `ObjSteps`, an errand's or opening's `m_sStep`, a finale route's `StageObjective`, the lines `UI/RZ_Quests.c` and the step chain build) has no he, she, him, her, his, they, them or their without a person named in the same line (a capitalised name, a person's `{token}` or a `%1`), and three words or more. A stage title never leans on a pronoun ("His number"). Every class that sets a mission's brief (`m_sBrief`, or `scene.m_sBrief`) also sets its `m_sObjective` |
 
 `tools/voice_lint_baseline.txt` holds the findings in today's text (the check, the file and a hash of
 the line), so the lint fails only on new or changed text. Each writing pass fixes lines and shrinks
