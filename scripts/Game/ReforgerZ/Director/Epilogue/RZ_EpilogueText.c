@@ -560,6 +560,11 @@ class RZ_EpiText
 			case "labtech": return "Into the record: carry a name home to the lab, or bring something to the station's last broadcast.";
 			case "radioham": return "Sign off: bring something to the station's last broadcast.";
 			case "unemployed": return "Something to do: finish two pieces of closing work of any kind.";
+			case "soldier": return "Stand down: sit out a pack's last call on the ridges, or carry one of the dead home.";
+			case "doctor": return "The last clinic: be there when two people are dosed, or sit with someone who's bitten.";
+			case "raider": return "Square it: pay into the book at the crossroads, or buy a keepsake back from the fence.";
+			case "elder": return "Read them out: hear the names at the long table at supper.";
+			case "drifter": return "Somewhere to stop: put your name down for the walk, or walk someone to their kitchen.";
 		}
 
 		return "";

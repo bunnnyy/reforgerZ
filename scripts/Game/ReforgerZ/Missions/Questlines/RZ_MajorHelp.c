@@ -208,6 +208,8 @@ class RZ_MajorHelp
 		if (idents.IsEmpty())
 			return;
 
+		string epithet = label;
+		epithet.ToLower();
 		string names = "";
 		foreach (int i, string ident : idents)
 		{
@@ -215,6 +217,7 @@ class RZ_MajorHelp
 				names += ", ";
 
 			names += RZ_EpiNames.Show(ident, epi.KnownName(ident));
+			epi.GetRest().AddEpithet(ident, epithet);
 		}
 
 		epi.AddHallLine(string.Format("%1: %2.", label, names));

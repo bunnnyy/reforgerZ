@@ -102,6 +102,9 @@ class RZ_Marks
 		if (pool == RZ_EMarkPool.TRACES)
 			return RZ_TraceSettings.Get().m_iPropsCluster;
 
+		if (pool == RZ_EMarkPool.EPILOGUE && RZ_Epilogue.Get())
+			return RZ_Epilogue.Get().GetSettings().m_iMarksPerCluster;
+
 		return 0;
 	}
 

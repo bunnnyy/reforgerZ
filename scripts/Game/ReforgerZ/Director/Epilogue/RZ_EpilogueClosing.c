@@ -691,6 +691,7 @@ class RZ_EpiClosing
 			case "read": ReadNames(playerId, spot); break;
 			case "book": PayBook(playerId, spot); break;
 			case "basket": Basket(playerId); break;
+			default: m_Epi.GetRest().Verb(playerId, verb, spot, user); break;
 		}
 	}
 
@@ -739,6 +740,11 @@ class RZ_EpiClosing
 			if (w.StartsWith(p.m_sIdentity + "|"))
 				return "\"You've been through once. Nobody comes back.\"";
 		}
+
+		// The order by the route's terms (processing's first day)
+		string order = m_Epi.GetRest().WalkOrder(playerId);
+		if (!order.IsEmpty())
+			return order;
 
 		return "";
 	}
@@ -1407,6 +1413,10 @@ class RZ_EpiClosing
 			if (s.townTaken[i] > 0 || m_Epi.TownCrawlers(idx) > 0)
 				continue;
 
+			// A candle only while fewer than 8 towns carry marks
+			if (!m_Epi.GetRest().CandleRoom())
+				return;
+
 			s.townTaken[i] = Math.Max(1, Day());
 			RZ_Settlement st = m_GM.GetSettlement(idx);
 			if (!st)
@@ -1937,7 +1947,7 @@ class RZ_EpiClosing
 		bool done = false;
 		switch (bg)
 		{
-			case "nurse": done = (kind == "cup" && Count(string.Format("deed|%1|cup", ident)) >= 2) || kind == "witness"; break;
+			case "nurse": done = (kind == "cup" && Count(string.Format("deed|%1|cup", ident)) >= 2) || kind == "witness" || kind == "sit"; break;
 			case "mechanic": done = kind == "car"; break;
 			case "hunter": done = kind == "home" || kind == "cup"; break;
 			case "police": done = kind == "home"; break;
@@ -1945,6 +1955,11 @@ class RZ_EpiClosing
 			case "labtech": done = kind == "record" || kind == "say"; break;
 			case "radioham": done = kind == "say"; break;
 			case "unemployed": done = Count("deeds|" + ident) >= 2; break;
+			case "soldier": done = kind == "ridge" || kind == "home"; break;
+			case "doctor": done = (kind == "witness" && Count(string.Format("deed|%1|witness", ident)) >= 2) || kind == "sit"; break;
+			case "raider": done = kind == "book" || kind == "buyback"; break;
+			case "elder": done = kind == "read"; break;
+			case "drifter": done = kind == "down" || kind == "kitchen"; break;
 		}
 
 		if (!done)
@@ -2127,7 +2142,7 @@ class RZ_EpiClosing
 				if (!walked.IsEmpty())
 					walked += ", ";
 
-				walked += string.Format("%1, Day %2", RZ_EpiNames.Show(parts[0], parts[1]), parts[2]);
+				walked += string.Format("%1, Day %2", m_Epi.GetRest().Named(parts[0], RZ_EpiNames.Show(parts[0], parts[1])), parts[2]);
 				shown++;
 			}
 
@@ -2150,7 +2165,7 @@ class RZ_EpiClosing
 				if (!names.IsEmpty())
 					names += ", ";
 
-				names += RZ_EpiNames.Show(ident, s.playerNames[pi]);
+				names += m_Epi.GetRest().Named(ident, RZ_EpiNames.Show(ident, s.playerNames[pi]));
 				n2++;
 			}
 
@@ -2160,6 +2175,8 @@ class RZ_EpiClosing
 
 		if (!s.goals.IsEmpty())
 			m_Epi.AddHallLine(string.Format("%1 finished what they came for.", s.goals.Count()));
+
+		m_Epi.GetRest().HallLines();
 	}
 
 	// ================================================================ The journal

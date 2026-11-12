@@ -51,6 +51,19 @@ class RZ_EpiBeats
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A beat from the fuller record (RZ_EpiRecord): the roads, the stations, the characters, one a
+	//! faction. Never twice.
+	RZ_EpiBeat AddRecord(string key, string slot, string place, vector pos, string text, string echo, int faction)
+	{
+		if (Find(key))
+			return null;
+
+		RZ_EpiBeat b = Add(key, slot, place, pos, text, echo);
+		b.faction = faction;
+		return b;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	RZ_EpiBeat Find(string key)
 	{
 		foreach (RZ_EpiBeat b : List())
@@ -117,6 +130,7 @@ class RZ_EpiBeats
 		BuildWanted();
 		BuildGraves();
 		Weigh();
+		m_Epi.GetRecord().OnBeats(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -636,7 +650,7 @@ class RZ_EpiBeats
 		}
 
 		if (b.key.StartsWith("house."))
-			return HouseText(b, step);
+			return HouseText(b, step) + b.more;
 
 		if (b.key.StartsWith("wanted."))
 		{
@@ -668,7 +682,7 @@ class RZ_EpiBeats
 			return text;
 		}
 
-		return text;
+		return text + b.more;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -732,10 +746,59 @@ class RZ_EpiBeats
 	//! Every beat's home mark (after the commit, after a restart, at each step).
 	void PlaceAll()
 	{
+		// The cure's, the lab's and the queue's home marks first, then by weight; at most 3 in any
+		// 300 m (the rest stay text: approach lines). The marks pool keeps the server and cluster caps.
+		array<RZ_EpiBeat> order = {};
 		foreach (RZ_EpiBeat b : List())
 		{
-			Place(b);
+			int at = order.Count();
+			for (int i = 0; i < order.Count(); i++)
+			{
+				if (Rank(b) > Rank(order[i]))
+				{
+					at = i;
+					break;
+				}
+			}
+
+			order.InsertAt(b, at);
 		}
+
+		array<vector> up = {};
+		RZ_Marks marks = RZ_Marks.Get();
+		foreach (RZ_EpiBeat o : order)
+		{
+			vector p = Pos(o);
+			int near = 0;
+			foreach (vector u : up)
+			{
+				if (RZ_Util.DistXZ(u, p) <= 300)
+					near++;
+			}
+
+			if (near >= 3 && o.slot != "cure" && o.slot != "hub")
+			{
+				if (marks)
+					marks.Remove("epi." + o.key);
+
+				continue;
+			}
+
+			Place(o);
+			up.Insert(p);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static float Rank(RZ_EpiBeat b)
+	{
+		if (b.slot == "cure")
+			return 1000 + b.weight;
+
+		if (b.key == "queue" || b.key == "names" || b.slot == "hub")
+			return 500 + b.weight;
+
+		return b.weight;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -760,6 +823,7 @@ class RZ_EpiBeats
 				prefab = m_Epi.GetSettings().m_sCandlePrefab;
 		}
 
+		prefab = m_Epi.GetRest().PrefabFor(b, prefab);
 		int salience = RZ_Util.RoundToInt(Math.Clamp(b.weight, 1, 5));
 		bool protect = b.slot == "cure" || b.slot == "hub";
 		marks.Place(RZ_EMarkPool.EPILOGUE, key, Pos(b), prefab, text, salience, -1, protect, b.slot != "cure");

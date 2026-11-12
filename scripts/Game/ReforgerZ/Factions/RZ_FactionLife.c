@@ -464,6 +464,7 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	void OnTruckArrived(int f, string place)
 	{
+		RZ_EpiRecord.Note("truck.ok", f);
 		AddMorale(f, 4);
 	}
 
@@ -472,6 +473,7 @@ class RZ_FactionLife
 	//! holding may start a feud; a burning convoy is remembered.
 	void OnTruckLost(int f, string place, string driver, string why, vector at)
 	{
+		RZ_EpiRecord.Note("truck.lost", f);
 		if (!m_bActive)
 			return;
 
@@ -507,6 +509,7 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	void OnLeaderDied(int f, string name, string place, int killer)
 	{
+		RZ_EpiRecord.Note("leader.lost", f, name);
 		if (!m_bActive)
 			return;
 
@@ -520,6 +523,8 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	void OnOutpostLost(int f, string place, int by)
 	{
+		RZ_EpiRecord.Note("post.lost", f, place);
+		RZ_EpiRecord.Note("post.won", by, place);
 		if (!m_bActive)
 			return;
 

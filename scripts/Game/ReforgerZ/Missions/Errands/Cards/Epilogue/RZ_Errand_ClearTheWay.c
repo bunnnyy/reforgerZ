@@ -1,5 +1,6 @@
 //! Clear the Way (the epilogue deck): the Haven asks for the road to the queue walked and kept clear
-//! for a minute at a bend 300-500 m up from it, where people on their way have turned back. Whatever
+//! for a minute at a bend 300-500 m up from it, where people on their way have turned back: only
+//! while infected are on the road there. Whatever
 //! is on the road comes to the noise as usual. Before processing, while the queue stands.
 class RZ_Errand_ClearTheWay : RZ_EpiCard
 {
@@ -26,7 +27,7 @@ class RZ_Errand_ClearTheWay : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_Epilogue epi = Week();
 		if (!epi || epi.Phase() >= 3)
@@ -34,6 +35,10 @@ class RZ_Errand_ClearTheWay : RZ_EpiCard
 
 		vector bend = UpTheRoad(e.m_vGiver, 400);
 		if (bend == vector.Zero || RZ_Util.DistXZ(bend, e.m_vGiver) > 4000)
+			return false;
+
+		// Only when something is on the road: infected within 80 m of the bend
+		if (InfectedNear(dealer.GetGM(), bend, 80, 1) < 1)
 			return false;
 
 		e.m_vSubject = bend;

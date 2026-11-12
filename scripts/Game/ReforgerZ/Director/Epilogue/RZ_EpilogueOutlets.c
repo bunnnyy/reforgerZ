@@ -109,10 +109,16 @@ class RZ_EpiOutlets
 				if (m_iTerms == 4)
 					refill = 90;
 
+				// Her house first (her terms): the woman's house has the dose whatever its size
+				int hers = -1;
+				RZ_CureFinale finH = RZ_CureFinale.Get();
+				if (m_iTerms == 1 && finH && finH.GetPeople())
+					hers = finH.GetPeople().WomanHouseNow();
+
 				for (int i = 0; houses && i < houses.Count(); i++)
 				{
 					RZ_Safehouse h = houses.Get(i);
-					if (h.GetTier() >= RZ_ESafehouseTier.COMMUNITY)
+					if (h.GetTier() >= RZ_ESafehouseTier.COMMUNITY || i == hers)
 						AddOutlet("house." + i.ToString(), RZ_EFaction.SURVIVORS, RZ_Mission.LandPointNear(h.m_vPos, 6, 10), h.m_sName, 2, refill, i, "Ask for the dose");
 				}
 
@@ -142,7 +148,12 @@ class RZ_EpiOutlets
 				AddOutlet("board", RZ_EFaction.BANDITS, spots.CrossroadsPos(), "Rudi's crossroads", 4, 20, -1, "Pay the board for a dose");
 				if (m_iTerms == 3 && houses)
 				{
+					// The first pan at the cook's sister's house while she lives, else the house nearest the crossroads
 					int pan = houses.FindNearest(spots.CrossroadsPos());
+					RZ_CureFinale fin = RZ_CureFinale.Get();
+					if (fin && fin.GetPeople() && fin.GetPeople().IsAlive("sister"))
+						pan = houses.FindNearest(fin.GetPeople().Pos("sister"));
+
 					RZ_Safehouse ph = houses.Get(pan);
 					if (ph)
 						AddOutlet("pan", RZ_EFaction.SURVIVORS, RZ_Mission.LandPointNear(ph.m_vPos, 6, 10), ph.m_sName, 2, 60, pan, "Ask for the dose");
@@ -300,6 +311,13 @@ class RZ_EpiOutlets
 			return;
 		}
 
+		// The search below Known at Bastion's and the crews' tables: weapons on the table first
+		if ((o.faction == RZ_EFaction.MILITARY || o.faction == RZ_EFaction.BANDITS) && RZ_Util.IsArmed(user) && !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, o.faction), RZ_ETier.KNOWN))
+		{
+			m_GM.NotifyPlayer(playerId, title, "\"Arms out. Weapons on the table first.\" They don't know you, so they search you. You're still holding one.");
+			return;
+		}
+
 		if (Stock(key) <= 0)
 		{
 			m_GM.NotifyPlayer(playerId, title, string.Format("\"None left. Come back in about %1 minutes.\"", MinutesToNext(o)));
@@ -342,6 +360,10 @@ class RZ_EpiOutlets
 
 		if (!paid.IsEmpty())
 			m_GM.NotifyPlayer(playerId, title, paid);
+
+		// Bastion's census takes your name and background with the dose
+		if (o.faction == RZ_EFaction.MILITARY)
+			m_GM.NotifyPlayer(playerId, title, Census(playerId));
 
 		RZ_Log.Info(string.Format("Epilogue: a dose at %1 (%2 left).", o.key, s.outletStock[i]));
 		m_Epi.GetClosing().OnDose(playerId, o.pos);
@@ -419,7 +441,8 @@ class RZ_EpiOutlets
 				if (o.key == "pan")
 					return true;
 
-				if (m_iTerms == 1 && o.house == RZ_HavenQuest.ChairHouse(m_GM))
+				// Her house first: free at the chair's house and at hers (the woman's)
+				if (m_iTerms == 1 && (o.house == RZ_HavenQuest.ChairHouse(m_GM) || o.house == WomanHouse()))
 					return true;
 
 				if (m_iTerms == 2 && o.house == FarHouse())
@@ -593,5 +616,28 @@ class RZ_EpiOutlets
 			return "Nobody's giving it out near here.";
 
 		return string.Format("The nearest dose is at %1.", best.place);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The house the finale's woman lives in now, -1 without her.
+	protected int WomanHouse()
+	{
+		RZ_CureFinale fin = RZ_CureFinale.Get();
+		if (!fin || !fin.GetPeople() || !fin.GetPeople().IsAlive("woman"))
+			return -1;
+
+		return fin.GetPeople().WomanHouseNow();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion's census at the table: your name and your background, read back.
+	protected string Census(int playerId)
+	{
+		RZ_Background bg = m_GM.GetPlayerBackground(playerId);
+		string what = "survivor";
+		if (bg)
+			what = bg.m_sName;
+
+		return string.Format("The census clerk writes it down: \"%1. %2.\" Then, without looking up: \"Next.\"", RZ_EpiNames.Now(playerId), what);
 	}
 }

@@ -4,7 +4,7 @@ The small, personal jobs one named person asks of one player, each true because 
 world is true right now, and over the moment it stops being true. Contracts are the factions' work
 on the radio ([MISSIONS.md](MISSIONS.md)); questlines are the long stories
 ([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. What's still to build (the
-the epilogue deck's last six, the other margin cards, promises and threads, His Effects in full) is
+the other margin cards, promises and threads, His Effects in full) is
 designed in [designs/ERRANDS.md](../designs/ERRANDS.md). In the epilogue week a few of the epilogue
 deck's asks stand at the week's places instead of on the dealer: *Bring a cup* at the queue, *Read
 the names at supper* at a house, taking a name home ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)).
@@ -328,33 +328,39 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 
 ### The epilogue deck
 
-✅ 13 built (`Cards/Epilogue/`, `RZ_EpiCard`). The last errands, for the week after the cure
+✅ 20 built (`Cards/Epilogue/`, `RZ_EpiCard`). The last errands, for the week after the cure
 ([EPILOGUE.md](EPILOGUE.md#the-closing-work)): dealt by the same dealer, only while the epilogue runs
 (`m_bAfterCure`), once per identity per subject (a name, a house, a holding, a day's road), and
-outside the two cards a day. They read the epilogue's record (the route, its terms, the queue, the
-Names board, the named dead, who held each holding at the cure) and pay through the small-pay ledger;
-nothing carries into next season. *Simplified:* any number may be offered at once, as with any
-errand; the ones a beat would deal are dealt by their condition, not by the beat.
+outside the two cards a day. A card is dealt from a beat: only with one of the week's beats within
+3 km of its giver, and **at most two of the deck offered or held by one player within 3 km** at once
+(`RZ_EpiCard.DeckRoom`, after the card's own reason). They read the epilogue's record (the route, its
+terms, the queue, the Names board, the named dead, who held each holding at the cure) and pay through
+the small-pay ledger; nothing carries into next season. *Simplified:* any beat near the giver deals a
+card (not the card's own beat).
 
 | Card | Family, giver | True when | Ways |
 |---|---|---|---|
-| **Carry the Dose** | epilogue, a named person of the faction whose rules hold | the route has dose outlets, before processing | Carry the sealed box to a holdout in an empty village (15 s at the door): 6 Favor, 1 Fame. Open it yourself: the dose, if you're bitten and haven't had an outlet dose this life; 10 Infamy with the giver's faction either way |
+| **Carry the Dose** | epilogue, a named person of the faction whose rules hold | the route has dose outlets, before processing | Carry the sealed box to a holdout in an empty village (15 s at the door, where the holdout stands in the doorway while the box is on its way): 6 Favor, 1 Fame. Open it yourself: the dose, if you're bitten and haven't had an outlet dose this life; 10 Infamy with the giver's faction either way |
 | **Pack for the Queue** | epilogue, a Haven named person; Known with the Haven | the house has people and the queue stands, before processing | Fetch both things from their old house in an empty village (30 s): 4 Favor, 1 Fame. Bring one and say the other was gone (10 s): 2 Favor |
 | **Borrowed** | epilogue, the storekeeper or cook | this house short, a fed house within 1.5 km | Ask that house for it back (10 s at its gate): 4 Favor, 2 food comes back. Say you couldn't find them: nothing moves |
 | **Take a Name to the Board** | epilogue, a Haven named person | a named dead person still lying out within 4 km, the Names board stands | Write the name on the board (10 s there): 3 Favor, 1 Fame; the wall lists it as home, by you |
 | **The Toll Man's Last Debt** | epilogue, a Red Hand named person | the Red Hand's route or its book balanced, a house within 3 km, before processing | Carry the tins to the house (at the gate): 5 Favor, +2 food there. Sell them back to the crew: 4 Favor, +5 Haven Infamy |
 | **Sign Here** | epilogue, a Bastion named person; Known with Bastion | Bastion's route on the roster or the column, the queue stands | Take three names at the queue (30 s): 5 Favor, 1 Fame. Write three yourself: 5 Favor; three in ten the corporal notices, +4 Bastion Infamy |
-| **Copies for the Far House** | epilogue, a Halcyon named person | Halcyon's route, the method published | Carry the method to the lived-in house farthest from the lab (10 s): 6 Favor, 1 Fame. Sell the copies to the fence: 6 Red Hand Favor, +5 Halcyon Infamy |
-| **Clear the Way** | epilogue, a Haven named person | the queue within 4 km, before processing | Hold the bend 400 m up the queue road for a minute: 5 Favor, 1 Fame (whatever's on the road comes to the noise) |
-| **The Last Watch** | epilogue, an outpost's named person; Known with them | the holding was theirs at the cure | Stand the gate for ten minutes: 8 Favor, 2 Fame |
-| **Last Letters** | epilogue, the Courier | the queue stands, before processing | Carry the bag to the queue (20 s): 4 Haven Favor, 1 Fame |
+| **Copies for the Far House** | epilogue, a Halcyon named person | Halcyon's route, the method published | Carry the method to the lived-in house farthest from the lab (10 s, unarmed: a gun in your hands there spoils it): 6 Favor, 1 Fame. Sell the copies to the fence: 6 Red Hand Favor, +5 Halcyon Infamy |
+| **Clear the Way** | epilogue, a Haven named person | the queue within 4 km, infected within 80 m of the bend, before processing | Hold the bend 400 m up the queue road for a minute: 5 Favor, 1 Fame (whatever's on the road comes to the noise) |
+| **The Last Watch** | epilogue, an outpost's named person; Known with them | the holding was theirs at the cure; the evening change of watch (17:00–21:00) | Stand the gate for ten minutes, done before 21:30: 8 Favor, 2 Fame |
+| **Last Letters** | epilogue, the Courier | the queue stands, before processing | Carry the bag to the queue (20 s, unarmed): 4 Haven Favor, 1 Fame |
 | **One Last Toll** | epilogue, a Red Hand named person | the Red Hand's route or its book balanced, the queue stands, before processing | Stand the toll at the bend for two minutes: 6 Favor, +3 Haven Infamy. Talk the crew out of it (Trust 2 with the Red Hand): 3 Haven Favor |
 | **Into the Record** | epilogue, a Halcyon named person | one of Halcyon's named dead lies out within 4 km | Fetch the notebook (15 s where they fell): 5 Favor, 1 Fame; the name goes home to the lab |
 | **Come In** (amends) | epilogue, any holding's named person; Watched or Hunted by them | before processing | Walk up to the gate and wait a minute: amends (2 Infamy off) |
+| **The Key Where It Was** | epilogue, a Haven named person | you read Petr's note in the empty kitchen (a new face's first spawn in the week), the queue stands, before processing | Take the key up to Petr in the queue (10 s): 5 Favor, 1 Fame. Use it yourself (30 s in his house in an empty village): his larder, +5 Haven Infamy |
+| **The Tags** (His Effects, the epilogue's variant) | epilogue, a Bastion named person | a Bastion name still lying out within 1.5 km of the post | Bring the tags in (15 s where they lie): 6 Favor, 1 Fame; the name goes home to the nail. Sell the photo frame to the fence: 6 Red Hand Favor, +5 Bastion Infamy; the name is never brought home |
+| **The Wreck's Name** (His Effects, the epilogue's variant) | epilogue, a named person of the faction that lost the truck | one of its trucks lost within 1.5 km in the last 60 season days | Fetch the driver's papers from the wreck (20 s): 5 Favor, 1 Fame; a hall line names the driver again. Sell the photo frame to the fence: 5 Red Hand Favor, +5 Infamy with the giver's faction |
+| **Somebody Should Tell Them** (the epilogue's version of the lost card) | epilogue, a Haven named person | a pack within 3 km runs with a named young (never a player's character) | Read the marks below its ground (30 s unseen): 5 Favor, 1 Fame; the name joins Bring Them Home with an ID card to carry home. Tell them plainly: an empty grave by the house fence (a since-the-cure beat) |
+| **The Boy** | epilogue, a Haven named person | the Kid walks within 3 km, the queue stands | Walk the Kid to the queue, or bring him to this house (one more mouth): 15 s together, 5 Favor, 1 Fame; the Kid leaves the roads (`table.boy_home`) |
+| **Processing** | epilogue, a Haven named person | a pinned local at this house, the queue within 1.5 km | Walk them up to the queue (20 s, unarmed): 4 Favor, 1 Fame; they sit in the queue (`queued`). Talk them into supper (`supper`): they stay |
+| **What the Cure Costs Here** (card 41) | epilogue, a Haven named person | a local at this house the terms don't reach (no outlet of its own, no Haven or open-crate outlet within 2 km) | Only the way the outlet table allows, by whose rules: Bastion's (register them at a post's list, 20 s; or vouch, Trusted with Bastion), the Red Hand's (pay 15 Red Hand Favor, put it on their line in the book, or haggle for 8, Trusted), anyone else's (sit with them a minute). Dosed: they tell people who brought it |
 
-*Not built* (designed in [designs/EPILOGUE.md](../designs/EPILOGUE.md#the-epilogue-deck-last-errands)):
-The Key Where It Was (needs the newcomer's scenario), His Effects' epilogue variants, Somebody Should
-Tell Them's epilogue version, The Boy, Processing and What the Cure Costs Here.
 
 ## Fallout
 
@@ -525,7 +531,7 @@ scene people); the lines have two or three variants each, not always three; a ca
 the day's two even if declined; pay in kind is an effect (errands hand out no items; a stranger's gift
 is one common find). The margin cards read the majors' waits (the run's stage), and the lock cards read
 the finale's lock (`RouteOfPlayer`). Not built yet, and designed in
-[designs/ERRANDS.md](../designs/ERRANDS.md): the epilogue deck's last six ([above](#the-epilogue-deck)), the other
+[designs/ERRANDS.md](../designs/ERRANDS.md): the other
 majors' margin cards, promises
 and callbacks from errands, threads, His Effects in full (the effects as an item, a body near a post),
 chore slots per holding, and the `mission_errand` icon (the journal uses the unarmed icon).

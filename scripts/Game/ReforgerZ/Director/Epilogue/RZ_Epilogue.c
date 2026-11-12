@@ -33,6 +33,8 @@ class RZ_Epilogue
 	protected ref RZ_EpiSpots m_Spots;
 	protected ref RZ_EpiClosing m_Closing;
 	protected ref RZ_EpiCalendar m_Calendar;
+	protected ref RZ_EpiRest m_Rest;
+	protected ref RZ_EpiRecord m_Record;
 
 	protected int m_iBuildStep = -1;		// ticks of the build after the cure (-1: none)
 	protected float m_fCheck;
@@ -56,6 +58,8 @@ class RZ_Epilogue
 		m_Spots = new RZ_EpiSpots(gm, this);
 		m_Closing = new RZ_EpiClosing(gm, this);
 		m_Calendar = new RZ_EpiCalendar(gm, this);
+		m_Rest = new RZ_EpiRest(gm, this);
+		m_Record = new RZ_EpiRecord(gm, this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -77,6 +81,8 @@ class RZ_Epilogue
 	RZ_EpiOutlets GetOutlets() { return m_Outlets; }
 	RZ_EpiSpots GetSpots() { return m_Spots; }
 	RZ_EpiClosing GetClosing() { return m_Closing; }
+	RZ_EpiRest GetRest() { return m_Rest; }
+	RZ_EpiRecord GetRecord() { return m_Record; }
 	bool IsBuilt() { return IsOn() && m_S.built; }
 	int Route() { return m_S.route - 1; }
 	int Terms() { return m_S.terms; }
@@ -390,6 +396,8 @@ class RZ_Epilogue
 			}
 		}
 
+		m_Record.Snapshot();
+
 		// Players: names frozen now; the wanted at the cure (Kill on Sight)
 		m_S.playerIdents.Clear();
 		m_S.playerNames.Clear();
@@ -411,7 +419,8 @@ class RZ_Epilogue
 			m_S.playerLines.Insert(BuildLines(p, name));
 			for (int f = 0; f < RZ_Factions.COUNT; f++)
 			{
-				if (p.GetTier(f) != RZ_ETier.KILL_ON_SIGHT || m_S.wantIdents.Count() >= 8)
+				// Wanted: Kill on Sight for 4 or more hours played in that life before the cure
+				if (p.GetTier(f) != RZ_ETier.KILL_ON_SIGHT || m_S.wantIdents.Count() >= 8 || !m_Record.LongWanted(p.m_sIdentity, p.m_iLives))
 					continue;
 
 				m_S.wantIdents.Insert(p.m_sIdentity);
@@ -630,6 +639,9 @@ class RZ_Epilogue
 		if (!IsOn())
 			return;
 
+		// The fuller record, all season (Kill on Sight hours)
+		m_Record.SeasonTick(dt, ids);
+
 		if (m_iBuildStep >= 0)
 		{
 			BuildTick();
@@ -673,7 +685,13 @@ class RZ_Epilogue
 		m_fCheck = 0;
 		Phases(ids);
 		if (m_S.lastDay)
+		{
+			string stall = m_Rest.LongStall();
+			if (!stall.IsEmpty() && !ids.IsEmpty())
+				m_GM.NotifyAll(RZ_Broadcast.TITLE, stall);
+
 			return;
+		}
 
 		m_Outlets.Tick();
 		Reel(step, ids, players);
@@ -681,6 +699,7 @@ class RZ_Epilogue
 		{
 			m_Closing.Tick(step, ids, players);
 			m_Calendar.Tick();
+			m_Rest.Tick(step, ids, players);
 			foreach (int playerId : ids)
 			{
 				TellFirst(playerId);
@@ -907,6 +926,7 @@ class RZ_Epilogue
 			m_aNewsTold.Insert(playerId);
 
 		m_Closing.OnSpawn(playerId);
+		m_Rest.OnSpawn(playerId, ent);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -932,6 +952,8 @@ class RZ_Epilogue
 		if (IsBuilt())
 			m_Closing.OnDied(victim, killer, at);
 
+		m_Record.OnDied(victim);
+
 		// A notable life (2 hours or more, not by their own hand): a name to bring home all season
 		if (killer == victim || p.m_fLifeSeconds < 7200 * Math.Min(1, Scale() * 10))
 			return;
@@ -946,6 +968,7 @@ class RZ_Epilogue
 			killerIdent = m_GM.GetProfile(killer).m_sIdentity;
 
 		AddNamed(RZ_Util.PlayerName(victim), "their ID card", -1, at, killerIdent, p.m_sIdentity, role);
+		m_Rest.OnWeekDeath(p.m_sIdentity, RZ_EpiNames.Now(victim), role, at, p.m_fLifeSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1150,6 +1173,7 @@ class RZ_Epilogue
 		ids.Insert(40);
 		labels.Insert("Where should I look?");
 		ids.Insert(41);
+		m_Rest.Topics(l, playerId, labels, ids);
 		int which = m_Closing.ChoiceOf(l);
 		if (which < 0 || m_S.choices[which] != 0 || !m_Closing.ChoiceOpen(which))
 			return;
@@ -1178,6 +1202,9 @@ class RZ_Epilogue
 			m_GM.NotifyPlayer(playerId, l.GetHeader(), SeasonTopic(l, playerId));
 			return;
 		}
+
+		if (m_Rest.PickTopic(l, playerId, replyId))
+			return;
 
 		if (replyId == 41)
 		{
@@ -1240,18 +1267,29 @@ class RZ_Epilogue
 		if (house < m_S.houseTier.Count() && h.GetTier() > m_S.houseTier[house])
 			grew = h.m_iPopulation;
 
-		return RZ_EpiText.Resident(Step(), h.m_sName, h.m_iSeasonDied, grew);
+		string line = RZ_EpiText.Resident(Step(), h.m_sName, h.m_iSeasonDied, grew);
+		string routeLine = m_Rest.ResidentLine(house);
+		if (!routeLine.IsEmpty() && Math.RandomFloat01() < 0.5)
+			return routeLine;
+
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A wanderer's road news in the week, "" before it.
-	string WandererLine(int role, vector pos)
+	string WandererLine(int role, vector pos, RZ_Wanderer w = null, int playerId = -1)
 	{
 		if (!IsBuilt() || m_S.lastDay)
 			return "";
 
 		string where = m_Outlets.NearestText(pos);
-		return RZ_EpiText.Road(role, where, m_Beats.NearestEcho(pos, 3000));
+		string road = RZ_EpiText.Road(role, where, m_Beats.NearestEcho(pos, 3000));
+		// A wanderer who remembers you says your line first
+		string first = m_Rest.WandererFirst(w, playerId);
+		if (!first.IsEmpty())
+			return "\"I know you. " + first + "\"\n" + road;
+
+		return road;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1357,6 +1395,10 @@ class RZ_Epilogue
 		{
 			zone.Insert(b);
 		}
+
+		// The fuller record: the factions, the roads, the longest life
+		if (!m_S.lastDay)
+			m_Record.Lines(zone);
 
 		for (int i = 0; i < 3; i++)
 		{
