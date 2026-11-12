@@ -935,5 +935,163 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
     }
    }
   }
+  FrameWidgetClass "{82A3FA405966F025}" {
+   Name "TrackPanel"
+   Slot FrameWidgetSlot "{6D41890747E99B25}" {
+    Anchor 0 0 0 0
+    PositionX 96
+    OffsetLeft 96
+    PositionY 126
+    OffsetTop 126
+    SizeX 440
+    OffsetRight -536
+    SizeY 82
+    OffsetBottom -208
+    Alignment 0 0
+   }
+   "Is Visible" 0
+   "Ignore Cursor" 1
+   {
+    ImageWidgetClass "{19A5EF23E253688E}" {
+     Name "TrackBg"
+     Slot FrameWidgetSlot "{777AE300FABD690F}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.85
+     Size 1 1
+    }
+    ImageWidgetClass "{95AC783F94D18EAF}" {
+     Name "TrackAccent"
+     Slot FrameWidgetSlot "{1F1E5F5E172DCBDE}" {
+      Anchor 0 0 0 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 4
+      OffsetRight -4
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.949 0.761 0.188 1
+     Size 1 1
+    }
+    ImageWidgetClass "{B2809646357A2072}" {
+     Name "TrackIcon"
+     Slot FrameWidgetSlot "{D5ACCD37D0B00E28}" {
+      Anchor 0 0 0 0
+      PositionX 14
+      OffsetLeft 14
+      PositionY 10
+      OffsetTop 10
+      SizeX 30
+      OffsetRight -44
+      SizeY 30
+      OffsetBottom -40
+      Alignment 0 0
+     }
+     Color 0.949 0.761 0.188 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "mission_contract"
+     Size 30 30
+    }
+    TextWidgetClass "{D1CA9F3F6E65BA6E}" {
+     Name "TrackTitle"
+     Slot FrameWidgetSlot "{C5E0819E510ADECE}" {
+      Anchor 0 0 0 0
+      PositionX 54
+      OffsetLeft 54
+      PositionY 8
+      OffsetTop 8
+      SizeX 290
+      OffsetRight -344
+      SizeY 30
+      OffsetBottom -38
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text ""
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{5658F991309596C8}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{1D96FA1D9B6AAEB4}" {
+     Name "TrackTime"
+     Slot FrameWidgetSlot "{4173063543CAAB1B}" {
+      Anchor 0 0 0 0
+      PositionX 334
+      OffsetLeft 334
+      PositionY 12
+      OffsetTop 12
+      SizeX 96
+      OffsetRight -430
+      SizeY 24
+      OffsetBottom -36
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{BD3A11E42362A27C}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    ImageWidgetClass "{9C567FE450C18A58}" {
+     Name "TrackArrow"
+     Slot FrameWidgetSlot "{8C01C2B8710B1F5A}" {
+      Anchor 0 0 0 0
+      PositionX 54
+      OffsetLeft 54
+      PositionY 44
+      OffsetTop 44
+      SizeX 28
+      OffsetRight -82
+      SizeY 28
+      OffsetBottom -72
+      Alignment 0 0
+     }
+     Color 0.949 0.761 0.188 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "marker_self"
+     Size 28 28
+    }
+    TextWidgetClass "{D9CF3F1C960751C8}" {
+     Name "TrackDist"
+     Slot FrameWidgetSlot "{DB006AF85A4FEE60}" {
+      Anchor 0 0 0 0
+      PositionX 92
+      OffsetLeft 92
+      PositionY 46
+      OffsetTop 46
+      SizeX 338
+      OffsetRight -430
+      SizeY 26
+      OffsetBottom -72
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text ""
+     "Font Size" 20
+     "Min Font Size" 20
+     FontProperties FontProperties "{1F4036A2C291C741}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+   }
+  }
  }
 }

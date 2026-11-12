@@ -2,6 +2,8 @@
 //! window, the secure-radio indicator, a subtle noise meter with how visible you are above it
 //! (Stealth on), and the styled notice cards.
 //!
+//! The tracker: one job from the journal (RZ_Tracker), with its distance, an arrow and its time.
+//!
 //! An SCR_InfoDisplay: add it to the HUD manager's info displays on the player controller and
 //! give it the layout from UI/LAYOUTS.md ("HUD"). It reads only RZ_PlayerUIComponent's client
 //! cache, redraws five times a second, and changes nothing in the game.
@@ -30,8 +32,132 @@ class RZ_QueuedNotice
 }
 
 //------------------------------------------------------------------------------------------------
+//! The job tracked on the HUD (client, this session): the one the player picked in the journal
+//! (A on a row, or its Track button), else the nearest job with a place. Stop tracking hides it
+//! until the player picks one again.
+class RZ_Tracker
+{
+	protected static int s_iId;
+	protected static bool s_bPicked;	// s_iId was picked in the journal
+	protected static bool s_bOff;		// the player stopped tracking
+	protected static int s_iVersion;
+	protected static float s_fToggledAt = -1;
+
+	//------------------------------------------------------------------------------------------------
+	static int GetVersion()
+	{
+		return s_iVersion;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsOff()
+	{
+		return s_bOff;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tracks journal row `id`, or stops tracking if `tracked` (it's the one shown now).
+	static void Toggle(int id, bool tracked)
+	{
+		// A on a focused row may come both as MenuSelect and as the row's click: one toggle
+		float now = RZ_UIW.Now();
+		if (now - s_fToggledAt < 0.2)
+			return;
+
+		s_fToggledAt = now;
+		if (tracked)
+		{
+			s_bOff = true;
+			s_bPicked = false;
+		}
+		else
+		{
+			s_iId = id;
+			s_bPicked = true;
+			s_bOff = false;
+		}
+
+		s_iVersion++;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A journal row that can be tracked: not a pack, the doors or the finale page.
+	static bool Trackable(array<string> m)
+	{
+		int kind = RZ_UIText.Int(m, 2);
+		return kind != RZ_EMissionKindUI.PACK && kind != RZ_EMissionKindUI.DOORS && kind != RZ_EMissionKindUI.FINALE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The row carries the point its direction is worked from (M fields 14 and 15).
+	static bool HasPoint(array<string> m)
+	{
+		return m.Count() > 15 && !RZ_UIText.Str(m, 14).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static vector Point(array<string> m)
+	{
+		return Vector(RZ_UIText.Float(m, 14), 0, RZ_UIText.Float(m, 15));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The index of the tracked row in `rows` (journal M records), -1 for none: the one picked,
+	//! else the nearest with a place, else the first with a direction.
+	static int Pick(array<ref array<string>> rows, IEntity me)
+	{
+		if (s_bOff)
+			return -1;
+
+		if (s_bPicked)
+		{
+			foreach (int i, array<string> m : rows)
+			{
+				if (RZ_UIText.Int(m, 1) == s_iId)
+					return i;
+			}
+
+			s_bPicked = false;	// done or gone: back to the nearest
+		}
+
+		vector from = vector.Zero;
+		if (me)
+			from = me.GetOrigin();
+
+		int best = -1;
+		float bestDist = -1;
+		int firstDir = -1;
+		foreach (int j, array<string> r : rows)
+		{
+			if (!Trackable(r))
+				continue;
+
+			if (me && HasPoint(r))
+			{
+				float d = RZ_Util.DistXZ(from, Point(r));
+				if (best < 0 || d < bestDist)
+				{
+					best = j;
+					bestDist = d;
+				}
+			}
+			else if (firstDir < 0 && !RZ_UIText.Str(r, 7).IsEmpty())
+			{
+				firstDir = j;
+			}
+		}
+
+		if (best >= 0)
+			return best;
+
+		return firstDir;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_HudDisplay : SCR_InfoDisplayExtended
 {
+	protected static const float TRACK_ASK = 30;	// seconds between journal asks for the tracker
 	protected static const float REFRESH = 0.2;
 
 	protected static RZ_HudDisplay s_Instance;
@@ -48,6 +174,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected float m_fSubUntil = -1;		// the line showing stays until then; -1 none showing
 	protected static const int SUB_WAITING = 4;
 	protected static const int SUB_CHARS = 130;	// about two lines at 32 px in 1,044 units
+	protected float m_fTrackAsk;		// counts down to the tracker's next journal ask
+	protected int m_iTrackSeen = -1;	// the journal copy the rows were read from
+	protected float m_fTrackAt;		// when it arrived (RZ_UIW.Now), for the minutes' countdown
+	protected ref array<ref array<string>> m_aTrackRows = {};
 
 	//------------------------------------------------------------------------------------------------
 	override protected void DisplayStartDraw(IEntity owner)
@@ -116,9 +246,11 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			DrawNoise(ui, settings);
 			DrawStand(ui);
 			DrawLook(ui);
+			DrawTracker(ui);
 		}
 		else
 		{
+			RZ_UIW.Show(m_wRoot, "TrackPanel", false);
 			RZ_UIW.Show(m_wRoot, "StandPanel", false);
 			RZ_UIW.Show(m_wRoot, "LookPanel", false);
 			RZ_UIW.Show(m_wRoot, "InfectionPanel", false);
@@ -259,6 +391,101 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_UIW.Show(m_wRoot, "StandPanel", !line.IsEmpty());
 		if (!line.IsEmpty())
 			RZ_UIW.SetText(m_wRoot, "StandText", line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tracker (TrackPanel, top left under the radio's place): the tracked job's icon and title,
+	//! its time left, and from here its distance and compass point with an arrow turned to it from
+	//! where you face ("ABOUT" while it's a rough area). A row without a place shows its direction as
+	//! the journal had it, without the arrow. It asks for the journal every 30 s while it's in the
+	//! layout and tracking isn't stopped; between copies the minutes count down here.
+	protected void DrawTracker(RZ_PlayerUIComponent ui)
+	{
+		if (!RZ_UIW.Find(m_wRoot, "TrackPanel"))
+			return;
+
+		if (RZ_Tracker.IsOff())
+		{
+			RZ_UIW.Show(m_wRoot, "TrackPanel", false);
+			return;
+		}
+
+		m_fTrackAsk -= REFRESH;
+		if (m_fTrackAsk <= 0)
+		{
+			m_fTrackAsk = TRACK_ASK;
+			ui.Ask(RZ_UIFeed.PAYLOAD_JOURNAL);
+		}
+
+		if (ui.GetJournalVersion() != m_iTrackSeen)
+		{
+			m_iTrackSeen = ui.GetJournalVersion();
+			m_fTrackAt = RZ_UIW.Now();
+			m_aTrackRows.Clear();
+			array<ref array<string>> recs = {};
+			RZ_MenuBase.Records(ui.GetJournal(), recs);
+			foreach (array<string> rec : recs)
+			{
+				if (RZ_UIText.Str(rec, 0) == "M")
+					m_aTrackRows.Insert(rec);
+			}
+		}
+
+		IEntity me = RZ_UIW.LocalEntity();
+		int idx = RZ_Tracker.Pick(m_aTrackRows, me);
+		RZ_UIW.Show(m_wRoot, "TrackPanel", idx >= 0);
+		if (idx < 0)
+			return;
+
+		array<string> m = m_aTrackRows[idx];
+		int kind = RZ_UIText.Int(m, 2);
+		int giver = RZ_UIText.Int(m, 3);
+		Color accent = RZ_UIColor.Hazard();
+		if (giver >= 0)
+			accent = RZ_UIColor.Faction(giver);
+
+		RZ_UIW.Tint(m_wRoot, "TrackAccent", accent);
+		RZ_UIW.Icon(m_wRoot, "TrackIcon", RZ_UIText.MissionIcon(kind));
+		RZ_UIW.Tint(m_wRoot, "TrackIcon", accent);
+		string title = RZ_UIText.Str(m, 4);
+		if (title.Length() > 30)
+			title = title.Substring(0, 28) + "...";
+
+		RZ_UIW.SetText(m_wRoot, "TrackTitle", title);
+
+		// The minutes left, counted down since the copy came; none for a questline (-1)
+		string timeText = "";
+		int minutes = RZ_UIText.Int(m, 8);
+		if (minutes >= 0)
+		{
+			float left = minutes - (RZ_UIW.Now() - m_fTrackAt) / 60;
+			int shownMinutes = RZ_Util.RoundToInt(Math.Ceil(left));
+			if (shownMinutes < 0)
+				shownMinutes = 0;
+
+			timeText = string.Format("%1 MIN", shownMinutes);
+		}
+
+		RZ_UIW.SetText(m_wRoot, "TrackTime", timeText);
+
+		string dist = RZ_UIText.Str(m, 7);
+		bool arrow = false;
+		if (me)
+			arrow = RZ_Tracker.HasPoint(m);
+		if (arrow)
+		{
+			vector here = me.GetOrigin();
+			vector there = RZ_Tracker.Point(m);
+			dist = RZ_Util.DirectionText(here, there);
+			if (RZ_UIText.Int(m, 16) == 1)
+				dist = "about " + dist;
+
+			RZ_UIW.Rotate(m_wRoot, "TrackArrow", RZ_UIW.Bearing(here, there) - RZ_UIW.Heading(me));
+		}
+
+		dist.ToUpper();
+		RZ_UIW.SetText(m_wRoot, "TrackDist", dist);
+		RZ_UIW.Show(m_wRoot, "TrackArrow", arrow);
 	}
 
 	//------------------------------------------------------------------------------------------------

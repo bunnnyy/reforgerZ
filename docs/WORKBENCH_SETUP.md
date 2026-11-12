@@ -1717,8 +1717,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **117** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 21 are in `UI/`: 16 of [the UI's](#the-ui-17), the loadout
+There are **118** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 22 are in `UI/`: 17 of [the UI's](#the-ui-18), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1727,7 +1727,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-17)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-18)
 come last.
 
 ### High risk: the core loop (2)
@@ -1837,7 +1837,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
 | `Factions/RZ_CampLife.c:3323` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
-### The UI (17)
+### The UI (18)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -1849,13 +1849,14 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `UI/RZ_UIData.c:941` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_Notebook.c:198` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:953` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
+| `UI/RZ_Notebook.c:961` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:37` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_UIData.c:964` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1062` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the HUD tracker's arrow | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
 | `Dialogue/RZ_Dialogue.c:700` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
@@ -1864,7 +1865,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Menus.c:306` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:19` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
-| `UI/RZ_MapIcons.c:189` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_MapIcons.c:315` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
 
 ## 7. Log lines to check
 
@@ -2813,6 +2814,14 @@ when it happens)
 - [ ] Open the map: the lab, the safehouses, the strongholds and a world event show with their
   icons and stay on their spots while you pan and zoom; an outpost appears after you've been near
   it (or once you're Known with its faction); no contract is ever on it.
+- [ ] You are here: open the map and a yellow arrow on a dark disc sits where you stand, above the
+  other icons; turn round and it turns with you (an arrow pointing the wrong way, or turning about a
+  corner, is the rotation VERIFY); it follows you in a car; dead, it's gone.
+- [ ] The tracker: with a contract open and nothing picked, the HUD's top-left block shows the
+  nearest job, its minutes and "1.2 KM NE" with an arrow that turns as you turn. In the journal, A
+  on another row (or its Track button) tracks that one and the button reads STOP TRACKING; A again
+  hides the block until you pick one. A rough contract reads "ABOUT ...". It never covers a notice
+  card or the noise bars, and it reads from a couch.
 - [ ] The map key: open the full-screen map zoomed out and the key is in the bottom-left, its icons
   in their colours; zoom in on a town and it fades out, zoom out and it comes back. I (pad Y) hides
   it and shows it again, and it stays hidden the next time you open the map. It covers none of

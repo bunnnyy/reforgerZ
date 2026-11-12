@@ -143,6 +143,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 		// Footer prompts by device (vanilla input buttons); the layout's static line otherwise
 		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabLeft", "");
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Tabs") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Open / Track") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "RZ_RadioFilter", "Radio filter") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
@@ -433,6 +434,7 @@ class RZ_StandingPage : RZ_NotebookPage
 
 	protected static int s_iSelected;		// the highlighted row (faction 0-3), kept for the session
 	protected static int s_iOpen = -1;		// the open row, -1 none; kept for the session
+	protected static float s_fToggledAt = -1;
 	protected ref RZ_StandingRowHandler m_RowHandler;
 
 	//------------------------------------------------------------------------------------------------
@@ -530,6 +532,12 @@ class RZ_StandingPage : RZ_NotebookPage
 	//------------------------------------------------------------------------------------------------
 	protected void Toggle(int idx)
 	{
+		// A on a focused row may come both as MenuSelect and as the row's click: one toggle
+		float now = RZ_UIW.Now();
+		if (now - s_fToggledAt < 0.2)
+			return;
+
+		s_fToggledAt = now;
 		if (s_iOpen == idx)
 			s_iOpen = -1;
 		else
@@ -984,7 +992,7 @@ class RZ_JournalPage : RZ_NotebookPage
 		if (!ui)
 			return m_iSelected;
 
-		return ui.GetJournalVersion() * 10000 + ui.GetDetailVersion() * 100 + m_iSelected;
+		return (ui.GetJournalVersion() * 10000 + ui.GetDetailVersion() * 100 + m_iSelected) * 31 + RZ_Tracker.GetVersion();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -993,6 +1001,8 @@ class RZ_JournalPage : RZ_NotebookPage
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
 			ui.Ask(RZ_UIFeed.PAYLOAD_JOURNAL);
+
+		RZ_UIW.OnClick(m_wRoot, "TrackButton", m_Click);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1012,7 +1022,8 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A or Enter: the row with the focus becomes the selected one.
+	//! A or Enter: the row with the focus becomes the selected one; on the selected row (where the
+	//! D-pad leaves the focus) it tracks it on the HUD, or stops tracking it. On the Track button too.
 	override void Select()
 	{
 		WorkspaceWidget ws = GetGame().GetWorkspace();
@@ -1020,9 +1031,36 @@ class RZ_JournalPage : RZ_NotebookPage
 			return;
 
 		Widget focused = ws.GetFocusedWidget();
+		if (focused && focused.GetName() == "TrackButton")
+		{
+			ToggleTrack();
+			return;
+		}
+
 		int idx = RZ_UIW.GetTag(focused);
-		if (focused && focused.GetName() == "MissionRow" && idx >= 0 && idx < m_aMissions.Count())
+		if (!focused || focused.GetName() != "MissionRow" || idx < 0 || idx >= m_aMissions.Count())
+			return;
+
+		if (idx == m_iSelected)
+			ToggleTrack();
+		else
 			m_iSelected = idx;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The selected row: tracked on the HUD, or no longer if it was (RZ_Tracker).
+	protected void ToggleTrack()
+	{
+		if (m_aMissions.IsEmpty())
+			return;
+
+		int sel = Math.Min(m_iSelected, m_aMissions.Count() - 1);
+		array<string> m = m_aMissions[sel];
+		if (!RZ_Tracker.Trackable(m))
+			return;
+
+		bool tracked = RZ_Tracker.Pick(m_aMissions, RZ_UIW.LocalEntity()) == sel;
+		RZ_Tracker.Toggle(RZ_UIText.Int(m, 1), tracked);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1105,9 +1143,16 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A click on a row (its root, MissionRow, is a Button) selects it.
+	//! A click on a row (its root, MissionRow, is a Button) selects it; on the Track button, tracks
+	//! the selected row or stops.
 	override void OnClick(Widget w, string name)
 	{
+		if (name == "TrackButton")
+		{
+			ToggleTrack();
+			return;
+		}
+
 		int idx = RZ_UIW.GetTag(w);
 		if (name == "MissionRow" && idx >= 0 && idx < m_aMissions.Count())
 			m_iSelected = idx;
@@ -1130,6 +1175,17 @@ class RZ_JournalPage : RZ_NotebookPage
 		RZ_UIW.Tint(m_wRoot, "DetailIcon", accent);
 		RZ_UIW.Icon(m_wRoot, "DetailIcon", icon);
 		RZ_UIW.SetText(m_wRoot, "DetailTitle", RZ_UIText.Str(m, 4));
+		// Track / Stop tracking: this row on the HUD (RZ_Tracker); not for packs, doors or the finale
+		bool trackable = RZ_Tracker.Trackable(m);
+		RZ_UIW.Show(m_wRoot, "TrackButton", trackable);
+		if (trackable)
+		{
+			string trackText = "TRACK";
+			if (RZ_Tracker.Pick(m_aMissions, RZ_UIW.LocalEntity()) == m_iSelected)
+				trackText = "STOP TRACKING";
+
+			RZ_UIW.SetText(m_wRoot, "TrackText", trackText);
+		}
 		string by = RZ_UIText.Str(m, 5);
 		if (by.IsEmpty() && giver >= 0)
 			by = RZ_Factions.GetName(giver);

@@ -47,7 +47,7 @@ make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-72 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+74 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
@@ -56,7 +56,7 @@ transparent background, so the game can tint them. Every icon with its intended 
 | Faction emblems | 6 | the Haven, Bastion, the Red Hand, Halcyon, the infected, the Long Table |
 | Standing tiers | 8 | Stranger, Known, Trusted, Champion (dog tags with 0–3 marks), Watched (an eye), Hunted (a crosshair), Kill on Sight (a crossed-out target), and one mixed mark for Uneasy, Tolerated, Respected and Wildcard |
 | Mission types | 8 | contract, world event, puzzle, leader job, unarmed, errand, Perimeter, story arc |
-| Map markers | 10 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, and the range ring. Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
+| Map markers | 12 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, the range ring, and you-are-here (an arrow, with a disc to sit it on). Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
 | Items | 18 | key, sample, antidote, stabiliser, low-grade med, noisemaker, battery, tyre, spark plugs, fuel can, wind-up radio, molotov, bandage, tin-can tripwire, spike trap, purification tablets, planks, jewellery |
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
 | Standing and needs | 9 | the Standing page's Favor (a coin), leader met, their kit, the next name and how they see you; four of a faction's needs (food, people, security, revenge; supplies and samples use `status_shortage` and `item_sample`) |
@@ -68,9 +68,10 @@ cut-out glyphs, and one per faction for strongholds, outposts and quartermasters
 Chromium, nothing else). The game reads the white icons from one atlas,
 `UI/Textures/ReforgerZ/RZ_Icons.edds`, through the `RZ_Icons` imageset: after re-rendering, pack
 them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). The atlas
-PNG and the imageset hold all 72; the imported `.edds` is still the 63 before the Standing page's
-nine until the PNG is imported again (step 2 there). The nine were rendered with headless Chrome the
-way `render_ui.js` does (no Playwright on the author's PC), so the contact sheet doesn't show them yet.
+PNG and the imageset hold all 74; the imported `.edds` is still the 72 before `marker_self` and
+`marker_self_back` until the PNG is imported again (step 2 there). The Standing page's nine and these
+two were rendered with headless Chrome the way `render_ui.js` does (no Playwright on the author's
+PC), so the contact sheet doesn't show them yet.
 
 ## Screens
 
@@ -79,10 +80,10 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 
 | Screen | Preview | What it shows | Script | Status |
 |---|---|---|---|---|
-| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on). Under the noise meter during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Nothing to press, so it's the same on a pad | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line and the look line not seen yet |
+| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on). Under the noise meter during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). **The tracker**, top left under the radio indicator's place: the job you track in the journal (the nearest with a place until you pick one): its icon and title, its minutes left (counted down between copies), and its distance and compass point with an arrow turned to it from where you face ("ABOUT 1.2 KM NE" while a contract is a rough area; a job without a place shows its direction as the journal had it, no arrow); gone while you've stopped tracking ([below](#the-tracker)). Nothing to press, so it's the same on a pad | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line, the look line and the tracker not seen yet |
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
 | Notebook: Standing | `standing.png` (the old four-column page; the page is now design G2) | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). One row per faction, stacked down the page with the faction's colour as a left bar, mostly icons: the emblem and name; **what they call you**, large (the reputation's name, or the tier word with Reputation > Names off; the tier icon beside it, both in the tier's colour); Favor (a coin and the number); the leaders you've met (a bust and how many, or NONE); what they need (its icon and word, or NONE); and a kit tell (a jacket, only for Bastion, the Red Hand and Halcyon with borrowed kit on: dim while they don't know you, yellow once they know your face or caught you, red while you're blown). No Fame or Infamy numbers, bars or grid. Up/down or the mouse only **highlights** a row (a bone wash and border); a click, A or Enter **opens** it (or closes it again). At most one row is open, filling the free space while the others shrink to their strip; with none open (the start) the four share the page. The open row has four blocks: *How they see you* (their word as a sentence, what the name counts as, what's left to forgive while there's Infamy, a line when they hunt you, and **Next**: the next name up with what earns it, "TRUSTED: 12 more Fame" or "KNOWN: work off 8 Infamy", none at the top), *Leaders you've met* (names and titles, then the nearest one's verdict), *What they need* (the need and its line) and *In their kit* (whether they know your face, catches, blown time, their tells, what their enemies do to their colours: the payload's `K` records). The other rows stay one line, so all four names are always on screen. Under the rows, **between the factions**: the truces and feuds on one line | `RZ_StandingPage` | Page built, not checked in play |
-| Notebook: Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). With Dialogue > Trees on, a **Promises** row (each open promise with its play left) and a **What you know** row (the lies you've seen through), as ordinary rows ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalPage` | Page built, not checked in play; the mockup has no lab line yet |
+| Notebook: Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). With Dialogue > Trees on, a **Promises** row (each open promise with its play left) and a **What you know** row (the lies you've seen through), as ordinary rows ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalPage` | Page built, not checked in play; the mockup has no lab line or Track button yet |
 | Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
 | Notebook: Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallPage` | Page built, not checked in play; no mockup |
 | Notebook: The season | — | The four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)) | `RZ_SeasonPage` | Page built, not checked in play; no mockup |
@@ -182,8 +183,9 @@ map key isn't a tab: it's on the map ([The map](#the-map)).
 - It opens on the tab you last used this session (the first time: Journal).
 - LB/RB or Q/E switch tabs; clicking a tab works too. Up/down (D-pad, stick, arrows) move in the
   journal's list, highlight the next faction's row on the Standing page, and scroll the other
-  tabs' lists; A or Enter selects the journal row with the focus, and
-  on the Standing page opens the highlighted row or closes it; X or F (or a click on the chip)
+  tabs' lists; A or Enter on the journal's selected row tracks it on the HUD (or stops), as the
+  detail's **Track** / **Stop tracking** button does, and on the Standing page opens the
+  highlighted row or closes it; X or F (or a click on the chip)
   cycles the Radio filter; B or Esc closes.
 - On the Standing page the mouse highlights the row it's over and a click opens it (a click on the
   open row closes it). Rows open only on a click, A or Enter; one at most, and with none open the
@@ -257,6 +259,28 @@ the HUD's update (`RZ_HudDisplay`) also draws the marked doors near you as decal
 press: a door's words come by standing at it ([TRACES.md](TRACES.md#doors-you-can-see)).
 
 The notice board opens when you read a safehouse board, with **UI > Board menus** on (the default).
+
+### The tracker
+
+A small block on the HUD, top left at (96, 126) under the radio indicator's place, away from the
+notice cards (top right) and the noise and visibility bars (bottom left): one job, its icon in its
+giver's colour, its title, its minutes left, and from where you stand its distance and compass point
+with an arrow turned toward it relative to where you face.
+
+- **Which job.** The one you pick in the journal: A or Enter on the selected row, or a click on the
+  detail's **Track** button. Until you pick one, the nearest open job with a place. A or the button
+  on the tracked row says **Stop tracking**, and the block goes until you pick one again. When the
+  tracked job ends, it falls back to the nearest. Packs, the doors and the finale page aren't
+  tracked. The choice lives on your machine for the session.
+- **Where.** The journal's `M` records carry the point their direction is worked from (fields 14
+  and 15, x and z, and 16, 1 while it's a contract's rough area): the tracker works its distance and
+  arrow from them every 0.2 s, so it follows you between copies. A contract you only know roughly
+  reads "ABOUT ...", and the point is the rough area's centre, never the spot, until you learn it.
+  A questline stage without a place, and the Promises row, show the journal's direction text
+  without an arrow.
+- **Data.** It asks for the journal every 30 s while the HUD has `TrackPanel` and tracking isn't
+  stopped (the server's own spam guard still applies), and counts the minutes down between copies.
+  Without `TrackPanel` in the HUD layout it does nothing.
 
 ### The talk screen
 
@@ -560,6 +584,13 @@ label). The list is what this player may know ([DESIGN.md](DESIGN.md#settlements
 contracts are never on it. With **UI > Map icon layout** set, the vanilla text markers for
 events and the lab are off; without it, the layer does nothing and those markers stay.
 
+**You are here.** Above the other icons, the layer draws your own position: a hazard-yellow arrow
+(`marker_self`) on a dark disc (`marker_self_back`), 60 across, turned to where your character (or
+the vehicle you're in) faces, moved every frame while the map is open. It's worked out on your
+machine from the entity you control; nothing is sent, and it's hidden while you control nothing
+(dead, spectating). It needs only **UI > Map icon layout**, so it shows whatever vanilla's map
+config does; whether vanilla can show its own player marker in this game mode hasn't been checked.
+
 **The map key** sits on the map, not in the notebook: a compact legend in the bottom-left corner,
 inside the safe area and 190 px up, above vanilla's own bottom-left widgets (the map's key hints and
 the scale bar, about the first 330 px across and the bottom 120 px) (`RZ_MapLegend.layout`, **UI > Map
@@ -657,14 +688,15 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair, shop and crafting screens and closes them in danger (below) |
 | `RZ_PlayerEffectsComponent` | on the player controller | The infected's close moves on the owner's machine: a hold (with the hint and Jump to kick free), a stagger, a knockdown; the server decides each one ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
-| `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
+| `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards, the subtitles and the tracker |
+| `RZ_Tracker` | client | Which journal row the HUD tracks: the one picked, else the nearest with a place; Stop tracking hides it until the next pick |
 | `RZ_DoorMarkClient` | client, from the HUD's update | Traces' door marks as decals near the player, from the game mode's replicated list and the kit's atlas ([TRACES.md](TRACES.md#doors-you-can-see)); nothing without the atlas |
 | `RZ_TraceLightsClient` | client, from the HUD's update | Traces' lit windows (S2) near the player, from the game mode's replicated list: a small warm point light each within 150 m ([TRACES.md](TRACES.md#sound-and-light)); nothing unless **World > Traces > Lit windows** is on |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |
 | `RZ_SpawnMenu`, `SCR_PlayerDeployMenuHandlerComponent` (modded, `RZ_SpawnMenu.c`) | client (`ChimeraMenuBase`) | The spawn screen in place of vanilla's deploy menu: the backgrounds, where you start, Deploy through the vanilla loadout and spawn requests ([above](#the-spawn-screen)) |
 | `SCR_BasePlayerLoadout`, `SCR_LoadoutManager`, `SCR_BaseGameMode` (modded, `RZ_LoadoutLock.c`) | server (the client only marks the loadout unavailable in vanilla's deploy menu) | Never assigns or spawns a locked background's loadout |
-| `RZ_MapIconsUI` | client (map component) | The icon layer on the map, and the map key in its corner ([The map](#the-map)) |
+| `RZ_MapIconsUI` | client (map component) | The icon layer on the map, you-are-here, and the map key in its corner ([The map](#the-map)) |
 | `RZ_NoticeStyle` | client | Classifies a notice by its title (faction names, leader titles, channel names) into a kind, a faction and a priority for its card and the Radio tab; a server tag (`RZ_ENoticeTag`) decides where there is one. The 600-odd plain `NotifyPlayer` calls are unchanged |
 | `RZ_UIW`, `RZ_UIText`, `RZ_UIColor` | client | Every engine UI call in one helper; payload text; the palette |
 
@@ -726,7 +758,7 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop and the crafting screen). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop and the crafting screen). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer with you-are-here and the map key on the map, the HUD's job tracker, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting and spawn screens' and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting and spawn screen presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons; the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
 | Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |

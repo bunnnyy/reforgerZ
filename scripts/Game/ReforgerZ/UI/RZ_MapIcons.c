@@ -4,6 +4,10 @@
 //! stations, the sealed checkpoints, world events; never contracts, which give a rough area only)
 //! and sends it to this player alone when the map opens, then every 20 s while it's open.
 //!
+//! You are here: the local player's own marker, an arrow on a dark disc turned to where they face,
+//! drawn above the other icons and moved every frame while the map is open. It's client-side only,
+//! from the controlled entity; nothing is sent. It shows with or without vanilla's markers.
+//!
 //! The map key sits on the map too: a compact legend in the bottom-left (UI > Map legend layout),
 //! shown while the map is zoomed out and faded as you zoom in. RZ_MapLegend (I, pad Y) shows or
 //! hides it; the choice lasts the session.
@@ -15,11 +19,14 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 {
 	protected static const float HALF = 24;	// half the icon's size (48), to centre it on the spot
 	protected static const float LABEL_MERGE = 40;	// markers this close (m) share one label
+	protected static const float SELF_HALF = 30;	// half the you-are-here marker's size (60)
 	protected static const string LEGEND_ACTION = "RZ_MapLegend";
 
 	protected static bool s_bLegendHidden;	// the player hid the legend (this session)
 
 	protected Widget m_wLegend;
+	protected Widget m_wSelfBack;	// you are here: the dark disc
+	protected Widget m_wSelf;		// and the arrow on it
 
 	protected ref array<Widget> m_aIcons = {};
 	protected ref array<float> m_aX = {};
@@ -39,6 +46,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		m_fAsk = 0;
 		Ask();
 		MakeLegend();
+		MakeSelf();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,6 +54,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 	{
 		m_bOpen = false;
 		Clear();
+		RemoveSelf();
 		RemoveLegend();
 		super.OnMapClose(config);
 	}
@@ -73,6 +82,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		}
 
 		Place();
+		PlaceSelf();
 		FadeLegend(settings);
 	}
 
@@ -139,6 +149,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		}
 
 		MergeLabels();
+		MakeSelf();	// made again after the icons, so it's drawn above them
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -203,6 +214,75 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 
 			RZ_UIW.SetPos(w, sx - half, sy - half);
 		}
+	}
+
+	// ================================================================ You are here
+	//------------------------------------------------------------------------------------------------
+	//! Two map icons from UI > Map icon layout, 60 across: marker_self_back tinted dark, and the
+	//! marker_self arrow in hazard yellow on it. Nothing without the layout.
+	protected void MakeSelf()
+	{
+		RemoveSelf();
+		RZ_UISettings settings = RZ_UISettings.Get();
+		if (!m_RootWidget || !settings.UsesMapIcons())
+			return;
+
+		m_wSelfBack = SelfIcon(settings.m_sMapIconLayout, "marker_self_back", Color.FromRGBA(22, 24, 27, 225));
+		m_wSelf = SelfIcon(settings.m_sMapIconLayout, "marker_self", RZ_UIColor.Hazard());
+		PlaceSelf();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected Widget SelfIcon(ResourceName layout, string icon, Color c)
+	{
+		Widget w = RZ_UIW.Create(layout, m_RootWidget);
+		if (!w)
+			return null;
+
+		RZ_UIW.Icon(w, "Icon", icon);
+		RZ_UIW.Tint(w, "Icon", c);
+		RZ_UIW.SetText(w, "Label", "");
+		RZ_UIW.SetSize(w, SELF_HALF * 2, SELF_HALF * 2);
+		RZ_UIW.SetSize(RZ_UIW.Find(w, "Icon"), SELF_HALF * 2, SELF_HALF * 2);
+		return w;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveSelf()
+	{
+		RZ_UIW.Remove(m_wSelfBack);
+		RZ_UIW.Remove(m_wSelf);
+		m_wSelfBack = null;
+		m_wSelf = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every frame: on the player's own spot, the arrow turned to where they face. Hidden while
+	//! there's no controlled entity (dead, spectating).
+	protected void PlaceSelf()
+	{
+		if (!m_wSelf)
+			return;
+
+		IEntity me = RZ_UIW.LocalEntity();
+		float sx, sy;
+		bool shown = false;
+		if (me)
+		{
+			vector at = me.GetOrigin();
+			shown = RZ_UIW.MapToScreen(m_MapEntity, at[0], at[2], sx, sy);
+		}
+
+		m_wSelf.SetVisible(shown);
+		if (m_wSelfBack)
+			m_wSelfBack.SetVisible(shown);
+
+		if (!shown)
+			return;
+
+		RZ_UIW.SetPos(m_wSelfBack, sx - SELF_HALF, sy - SELF_HALF);
+		RZ_UIW.SetPos(m_wSelf, sx - SELF_HALF, sy - SELF_HALF);
+		RZ_UIW.Rotate(m_wSelf, "Icon", RZ_UIW.Heading(me));
 	}
 
 	// ================================================================ The legend

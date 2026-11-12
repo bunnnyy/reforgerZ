@@ -201,8 +201,8 @@ FrameWidgetClass "{7F5BF82F17F978D7}" {
       OffsetLeft 105
       PositionY 30
       OffsetTop 30
-      SizeX 930
-      OffsetRight -1035
+      SizeX 700
+      OffsetRight -805
       SizeY 40
       OffsetBottom -70
       Alignment 0 0
@@ -235,6 +235,108 @@ FrameWidgetClass "{7F5BF82F17F978D7}" {
      "Min Font Size" 18
      FontProperties FontProperties "{A5AD7D36DAB67847}" {
       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{89930A9B41E85818}" {
+     Name "TrackButton"
+     Slot FrameWidgetSlot "{9E65CED191DB06C4}" {
+      Anchor 0 0 0 0
+      PositionX 818
+      OffsetLeft 818
+      PositionY 26
+      OffsetTop 26
+      SizeX 216
+      OffsetRight -1034
+      SizeY 44
+      OffsetBottom -70
+      Alignment 0 0
+     }
+     style blank
+     {
+      FrameWidgetClass "{3B634E76290CE32C}" {
+       Name "TrackFrame"
+       Slot ButtonWidgetSlot "{A7CC4010464D88EC}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{86E667A054445324}" {
+         Name "TrackButtonBg"
+         Slot FrameWidgetSlot "{4E107D98D7AACF38}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.102 0.114 0.125 1
+         Size 1 1
+        }
+        PanelWidgetClass "{9A1FDA72182726CF}" {
+         Name "TrackButtonLine"
+         Slot FrameWidgetSlot "{FF6D8C7C20D26B76}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.165 0.18 0.192 1
+         style outline_2px
+        }
+        ImageWidgetClass "{F2300FD5D4BDBF57}" {
+         Name "TrackButtonIcon"
+         Slot FrameWidgetSlot "{0845683784EB4611}" {
+          Anchor 0 0 0 0
+          PositionX 14
+          OffsetLeft 14
+          PositionY 11
+          OffsetTop 11
+          SizeX 22
+          OffsetRight -36
+          SizeY 22
+          OffsetBottom -33
+          Alignment 0 0
+         }
+         Color 0.949 0.761 0.188 1
+         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+         Image "marker_self"
+         Size 22 22
+        }
+        TextWidgetClass "{7B4AF3A22394894C}" {
+         Name "TrackText"
+         Slot FrameWidgetSlot "{E5A7C5E6AB321B14}" {
+          Anchor 0 0 0 0
+          PositionX 44
+          OffsetLeft 44
+          PositionY 10
+          OffsetTop 10
+          SizeX 170
+          OffsetRight -214
+          SizeY 24
+          OffsetBottom -34
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "TRACK"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{39A0F9E48C5272D6}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
      }
     }
     VerticalLayoutWidgetClass "{ED73F23F8BA9BCFA}" {

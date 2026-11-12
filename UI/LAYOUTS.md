@@ -68,8 +68,8 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (72) from `UI/Icons/png/128/` into
-   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1152, eight 128-pixel cells to a row, in name
+1. `py tools/icon_atlas.py` packs the white icons (74) from `UI/Icons/png/128/` into
+   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1280, eight 128-pixel cells to a row, in name
    order.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
    becomes `RZ_Icons.edds`.
@@ -81,10 +81,9 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 4. **UI > Icon imageset** on `RZ_GameMode.et` points at the imageset (already set).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
-steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for the Standing page's nine icons
-(`standing_*` and `need_*`, 72 in all), so import the PNG again (step 2). Until then the imported
-`.edds` is the 63-icon atlas while the imageset lists 72 in a taller atlas, so icons show the wrong
-cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
+steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for you-are-here (`marker_self` and
+`marker_self_back`, 74 in all), so import the PNG again (step 2). Until then the imported `.edds` is
+the 72-icon atlas while the imageset lists 74 in a taller atlas, so icons show the wrong cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -119,6 +118,14 @@ Frame  (root, full screen)
 │  ├─ Image   RadioIcon         34 × 34 at (12, 13)                 status_secure_radio, static, tinted
 │  ├─ Text    RadioChannel      at (60, 10), mono bold 13           faction colour
 │  └─ Text    RadioSub          at (60, 32), mono 18, dim
+├─ Frame  TrackPanel            440 × 82, anchor top-left, offset (96, 126), ignores the cursor; hidden until there's a job to track
+│  ├─ Image   TrackBg           panel, #121416 85%
+│  ├─ Image   TrackAccent       4 × full height, left edge          the giver's colour, else hazard
+│  ├─ Image   TrackIcon         30 × 30 at (14, 10)                 mission_* icon (static mission_contract), tinted
+│  ├─ Text    TrackTitle        at (54, 8), 290 × 30, condensed bold 22, bone (cut at 30 characters)
+│  ├─ Text    TrackTime         at (334, 12), 96 wide, mono bold 18, dim, right-aligned ("12 MIN"; empty without a clock)
+│  ├─ Image   TrackArrow        28 × 28 at (54, 44)                 marker_self (static), hazard; turned to the job, hidden without a place
+│  └─ Text    TrackDist         at (92, 46), 338 × 26, mono bold 20, bone ("1.2 KM NE", "ABOUT 800 M SW")
 ├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (552, -62), 10 apart, 85% opacity
 │  ├─ Image   (status_noise icon, 26 × 26, bone, static)
 │  ├─ HorizontalLayout (3 apart)
@@ -310,8 +317,12 @@ Frame JournalPage (root)
 └─ Frame  (detail panel, at (750, 168), 1098 × 840)
    ├─ Image  DetailAccent     full width × 5, top
    ├─ Image  DetailIcon       56 × 56 at (34, 31)
-   ├─ Text   DetailTitle      at (108, 30), condensed bold 34
+   ├─ Text   DetailTitle      at (108, 30), 700 wide, condensed bold 34
    ├─ Text   DetailBy         at (108, 72), 18, dim
+   ├─ Button TrackButton      216 × 44 at (818, 26), style blank: tracks the selected row on the HUD
+   │  └─ Frame TrackFrame (fills it): Image TrackButtonBg #1A1D20, Panel TrackButtonLine border,
+   │     Image TrackButtonIcon 22 at (14, 11) marker_self (static, hazard), Text TrackText at (44, 10),
+   │     mono bold 18: TRACK or STOP TRACKING (hidden for packs, the doors and the finale)
    └─ VerticalLayout (detail body, at (34, 112), 1030 × 712)
       ├─ Text   DetailBrief   italic 18, wraps, on a faint panel with a 3-unit faint bar on its left
       ├─ (WHERE and REWARDS side by side)
@@ -724,6 +735,11 @@ Frame (root, 48 × 48, top-left anchor, ignores the cursor)
 ├─ Image  Icon       48 × 48, a marker_* icon (white; the script sets the image and tints it)
 └─ Text   Label      under the icon, offset (-116, 50), 280 × 130 (up to four lines), centred, condensed bold 26, bone, a dark shadow offset by 1
 ```
+
+**You are here** is two more of these, made after the others so they're drawn above them, 60 × 60
+(the script sets the root's and **Icon**'s size): `marker_self_back` tinted dark under `marker_self`
+in hazard yellow, whose **Icon** the script turns to the player's heading every frame. Their labels
+are empty.
 
 Markers within 40 m of an earlier one share its label, one line each (`RZ_MapIconsUI.MergeLabels`); their
 own labels are empty, so a stronghold, its quartermaster and a job at the same house never draw their
