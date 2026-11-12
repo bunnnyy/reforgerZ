@@ -1,0 +1,357 @@
+FrameWidgetClass "{24D9A0AAF3969428}" {
+ Name "DeathBriefMenu"
+ Slot FrameWidgetSlot "{B3429D8613675729}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ "Ignore Cursor" 0
+ {
+  ImageWidgetClass "{CFAA69AF8B92A829}" {
+   Name "Dim"
+   Slot FrameWidgetSlot "{0F296838E6AE778C}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.031 0.035 0.039 0.8
+   Size 1 1
+  }
+  ButtonWidgetClass "{5028B50D3E1F5107}" {
+   Name "DismissArea"
+   Slot FrameWidgetSlot "{083852335F79C711}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   style blank
+  }
+  FrameWidgetClass "{C17163E109C29D8E}" {
+   Name "BriefPanel"
+   Slot FrameWidgetSlot "{E03A9A511A820845}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 1040
+    OffsetRight -1040
+    SizeY 700
+    OffsetBottom -700
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass "{E66C67E73DD853D7}" {
+     Name "BriefBg"
+     Slot FrameWidgetSlot "{A112BBD8BF3A97D1}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.97
+     Size 1 1
+    }
+    ImageWidgetClass "{6DD49EDC6068C5BD}" {
+     Name "BriefAccent"
+     Slot FrameWidgetSlot "{5EC9503615E84E7C}" {
+      Anchor 0 0 1 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 4
+      OffsetBottom -4
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Size 1 1
+    }
+    TextWidgetClass "{DE8DF22357A854C8}" {
+     Name "BriefKicker"
+     Slot FrameWidgetSlot "{8DAB2DB55458A38A}" {
+      Anchor 0 0 0 0
+      PositionX 64
+      OffsetLeft 64
+      PositionY 44
+      OffsetTop 44
+      SizeX 912
+      OffsetRight -976
+      SizeY 28
+      OffsetBottom -72
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "DAY 14, NEAR MORTON"
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{5D143DE64061A5B8}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6E4A1E76A4F2D792}" {
+     Name "BriefName"
+     Slot FrameWidgetSlot "{0151F12EB3D229D4}" {
+      Anchor 0 0 0 0
+      PositionX 64
+      OffsetLeft 64
+      PositionY 76
+      OffsetTop 76
+      SizeX 912
+      OffsetRight -976
+      SizeY 58
+      OffsetBottom -134
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text "MARA"
+     "Font Size" 48
+     "Min Font Size" 48
+     FontProperties FontProperties "{281346C6F738F32E}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{07D0A0BB3497FBE2}" {
+     Name "BriefWho"
+     Slot FrameWidgetSlot "{90E24DD8C679EFF6}" {
+      Anchor 0 0 0 0
+      PositionX 64
+      OffsetLeft 64
+      PositionY 140
+      OffsetTop 140
+      SizeX 912
+      OffsetRight -976
+      SizeY 34
+      OffsetBottom -174
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "Nurse, life 3"
+     "Font Size" 26
+     "Min Font Size" 26
+     FontProperties FontProperties "{6098D8456CD02D42}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ImageWidgetClass "{488ACE1BD80FF59F}" {
+     Name "BriefRule"
+     Slot FrameWidgetSlot "{90E0E931E7D44E5C}" {
+      Anchor 0 0 0 0
+      PositionX 64
+      OffsetLeft 64
+      PositionY 192
+      OffsetTop 192
+      SizeX 912
+      OffsetRight -976
+      SizeY 2
+      OffsetBottom -194
+      Alignment 0 0
+     }
+     Color 0.165 0.18 0.192 1
+     Size 1 1
+    }
+    TextWidgetClass "{9EDBF03B6D12E363}" {
+     Name "BriefLabels"
+     Slot FrameWidgetSlot "{5E94BD32649AB984}" {
+      Anchor 0 0 0 0
+      PositionX 64
+      OffsetLeft 64
+      PositionY 216
+      OffsetTop 216
+      SizeX 320
+      OffsetRight -384
+      SizeY 280
+      OffsetBottom -496
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "How it ended\nLived\nInfected put down\nJobs done\nTravelled"
+     "Font Size" 26
+     "Min Font Size" 26
+     FontProperties FontProperties "{A62353839C3AE561}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    TextWidgetClass "{13E387A86F22CEA8}" {
+     Name "BriefValues"
+     Slot FrameWidgetSlot "{E6FA01AA72C58E22}" {
+      Anchor 0 0 0 0
+      PositionX 400
+      OffsetLeft 400
+      PositionY 216
+      OffsetTop 216
+      SizeX 576
+      OffsetRight -976
+      SizeY 280
+      OffsetBottom -496
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text "The infected\n41 minutes, Day 3\n12\nNone\n3.4 km"
+     "Font Size" 26
+     "Min Font Size" 26
+     FontProperties FontProperties "{DDF99952D82753FB}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    ImageWidgetClass "{CDECF8DC2263DF68}" {
+     Name "BriefRule2"
+     Slot FrameWidgetSlot "{790B21CBDADCB3E2}" {
+      Anchor 0 0 0 0
+      PositionX 64
+      OffsetLeft 64
+      PositionY 514
+      OffsetTop 514
+      SizeX 912
+      OffsetRight -976
+      SizeY 2
+      OffsetBottom -516
+      Alignment 0 0
+     }
+     Color 0.165 0.18 0.192 1
+     Size 1 1
+    }
+    TextWidgetClass "{F18453AA73F9A997}" {
+     Name "BriefClosing"
+     Slot FrameWidgetSlot "{8712A8E84996D38F}" {
+      Anchor 0 0 0 0
+      PositionX 64
+      OffsetLeft 64
+      PositionY 536
+      OffsetTop 536
+      SizeX 912
+      OffsetRight -976
+      SizeY 72
+      OffsetBottom -608
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text ""
+     "Font Size" 26
+     "Min Font Size" 26
+     Wrap 1
+     FontProperties FontProperties "{87D517FEC395C9C3}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    HorizontalLayoutWidgetClass "{3747DDFE06D0A563}" {
+     Name "Prompts"
+     Slot FrameWidgetSlot "{2A42B458D9B5B9EC}" {
+      Anchor 0 1 0 1
+      PositionX 64
+      OffsetLeft 64
+      PositionY -30
+      OffsetTop -30
+      SizeX 600
+      OffsetRight -664
+      SizeY 44
+      OffsetBottom -14
+      Alignment 0 1
+     }
+    }
+    TextWidgetClass "{99888C8F10369695}" {
+     Name "PromptsText"
+     Slot FrameWidgetSlot "{5DF2D415F22562A5}" {
+      Anchor 0 1 0 1
+      PositionX 64
+      OffsetLeft 64
+      PositionY -38
+      OffsetTop -38
+      SizeX 600
+      OffsetRight -664
+      SizeY 30
+      OffsetBottom 8
+      Alignment 0 1
+     }
+     Color 0.639 0.62 0.565 1
+     Text "A / SPACE  CONTINUE"
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{6E643EBB8C65D3B2}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    ButtonWidgetClass "{CC23293D77C72CFB}" {
+     Name "CloseButton"
+     Slot FrameWidgetSlot "{25DCD98E3B15EBAB}" {
+      Anchor 1 1 1 1
+      PositionX -64
+      OffsetLeft -64
+      PositionY -30
+      OffsetTop -30
+      SizeX 240
+      OffsetRight -176
+      SizeY 48
+      OffsetBottom -18
+      Alignment 1 1
+     }
+     style blank
+     {
+      OverlayWidgetClass "{F11267197A3A4391}" {
+       Name "CloseBox"
+       Slot ButtonWidgetSlot "{5AF1C3AC69468769}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{529AC32F398DD87C}" {
+         Name "CloseBg"
+         Slot OverlayWidgetSlot "{8CD85DD0F23A2A70}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.165 0.18 0.192 1
+         Size 1 1
+        }
+        TextWidgetClass "{EC05C74B8107159F}" {
+         Name "CloseText"
+         Slot OverlayWidgetSlot "{6A247358DB999D76}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "CONTINUE"
+         "Font Size" 24
+         "Min Font Size" 24
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{486BB16846F9E6C4}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}
