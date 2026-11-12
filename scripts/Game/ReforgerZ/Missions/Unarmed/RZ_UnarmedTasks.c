@@ -296,6 +296,17 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The horde (its place follows it) until you're with it; then the quarry it's led to (it's done
+	//! when the horde is within 70 m of it).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_aParticipants.Contains(playerId))
+			return RZ_ObjPlace.Spot(m_vQuarry, ARRIVE_QUARRY);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		RZ_UnarmedHelper.DeleteAll(m_aWaypoints);

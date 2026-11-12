@@ -927,6 +927,16 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 	{
 		return "Authors: the director's letter never reached Bastion.";
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The duty officer at the lab; once someone has the letter, the CO's adjutant.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (HasHolder())
+			return RZ_ObjPlace.Spot(SpotPos(m_iCoSpot));
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -937,6 +947,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 {
 	protected int m_iLead = -1;
 	protected int m_iLeadSpot = -1;
+	protected int m_iClinicSpot = -1;
 	protected float m_fCold = -1;
 	protected bool m_bWarned;
 
@@ -994,7 +1005,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 		m_iLeadSpot = AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_LEAD, talk, "Talk to " + l.m_sShort, "Take the cold case", string.Format("%1 at the field station in %2", l.m_sShort, l.m_sPlace));
 
 		int medic = AddClue("The clinic's medic", "The medic at the safehouse clinic has cleared a shelf in the cold box and is pretending she hasn't.");
-		AddSpot(LandPointNear(clinic.m_vPos, 4, 8), RZ_EPuzzleProp.CIVILIAN, OBJ_CLINIC, medic, "Talk to the medic", "Hand over the method", "the clinic at the safehouse in " + clinic.m_sName);
+		m_iClinicSpot = AddSpot(LandPointNear(clinic.m_vPos, 4, 8), RZ_EPuzzleProp.CIVILIAN, OBJ_CLINIC, medic, "Talk to the medic", "Hand over the method", "the clinic at the safehouse in " + clinic.m_sName);
 
 		int duty = AddClue("The duty officer", "The duty officer at the lab writes down everything you say, and the time.");
 		AddSpot(LandPointNear(gm.GetLabPosition(), 6, 12), RZ_EPuzzleProp.CIVILIAN, OBJ_DUTY, duty, "Talk to the duty officer", QFill(gm, "Report {lead_short} to the director"), "the duty officer at the lab");
@@ -1143,6 +1154,16 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		return "Authors: the field lead's cold case went nowhere.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The field lead; once someone has the cold case, the clinic she packed it for.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (HasHolder())
+			return RZ_ObjPlace.Spot(SpotPos(m_iClinicSpot));
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 }
 

@@ -73,6 +73,16 @@ class RZ_Mission_Hold : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The ground to hold, within its radius (the rough area until you know the spot).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (IsRoughFor(gm, playerId, from))
+			return AreaPlace(gm, playerId, from);
+
+		return RZ_ObjPlace.Spot(m_vPos, m_fHoldRadius);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Override to pause holding (e.g. until something else happened).
 	protected bool CanHold(RZ_GameModeComponent gm)
 	{
@@ -155,6 +165,55 @@ class RZ_Mission_VisitPoints : RZ_Mission
 	override bool NeedsExactLocation()
 	{
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next point to visit: the nearest one not done yet (their grids are given).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		int best = NextPoint(from);
+		if (best < 0)
+			return super.ObjectivePlace(gm, playerId, from);
+
+		return RZ_ObjPlace.Spot(m_aPoints[best], VisitRadius());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest point not done yet from `from` (the first without a position), -1 for none.
+	int NextPoint(vector from)
+	{
+		int best = -1;
+		float bestDist = 0;
+		foreach (int i, vector p : m_aPoints)
+		{
+			if (m_aDone[i])
+				continue;
+
+			if (from == vector.Zero)
+				return i;
+
+			float d = RZ_Util.DistXZ(from, p);
+			if (best < 0 || d < bestDist)
+			{
+				best = i;
+				bestDist = d;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The points not done yet, and how close counts (the runtime test's check).
+	float GetOpenPoints(notnull array<vector> result)
+	{
+		foreach (int i, vector p : m_aPoints)
+		{
+			if (!m_aDone[i])
+				result.Insert(p);
+		}
+
+		return VisitRadius();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -265,6 +324,16 @@ class RZ_Mission_DestroyTarget : RZ_Mission
 	{
 		if (!m_Target || IsDestroyed(m_Target))
 			m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The target itself (the rough area until you know the spot).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (!m_Target || IsRoughFor(gm, playerId, from))
+			return super.ObjectivePlace(gm, playerId, from);
+
+		return RZ_ObjPlace.Spot(m_Target.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -384,6 +453,84 @@ class RZ_Mission_Delivery : RZ_Mission
 		m_sItemPrefab = prefab;
 		m_vItemLastPos = m_Item.GetOrigin();
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the work is (docs/MISSIONS.md, "Objectives"): the thing where it lies (the search area
+	//! while you know only that), then, once someone carries it, the drop it goes to (ObjectiveDrop).
+	//! Before the thing is out (a scene hands it over), the mission's own place.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bDelivered)
+			return super.ObjectivePlace(gm, playerId, from);
+
+		if (IsCarried())
+		{
+			int idx = ObjectiveDrop(playerId, from);
+			if (idx >= 0 && idx < m_aDrops.Count() && m_aDrops[idx])
+				return RZ_ObjPlace.Spot(m_aDrops[idx].GetOrigin(), DropRadius());
+		}
+
+		vector lies = vector.Zero;
+		if (m_bItemSpawned && m_Item)
+			lies = m_vItemLastPos;
+		else if (m_bInsideLater)
+			lies = m_vInside;
+
+		if (lies == vector.Zero)
+			return super.ObjectivePlace(gm, playerId, from);
+
+		// The rough rule: a thing lying at the contract's hidden place is a search area until you're close
+		if (IsRoughFor(gm, playerId, from) && RZ_Util.DistXZ(lies, m_vPos) <= RoughRadius(gm))
+			return AreaPlace(gm, playerId, from);
+
+		return RZ_ObjPlace.Spot(lies);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Picking the thing up counts you as there: "Get to" points where it lies.
+	override RZ_ObjPlace GetTherePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (!m_bDelivered && !IsCarried() && ((m_bItemSpawned && m_Item) || m_bInsideLater))
+			return ObjectivePlace(gm, playerId, from);
+
+		return super.GetTherePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone has the thing (a player, a body, a vehicle): it goes to a drop now.
+	bool IsCarried()
+	{
+		return m_bItemSpawned && m_Item && !m_bDelivered && (m_iCarrier > 0 || m_bItemWasCarried);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Which drop the carried thing is pointed to: the first, the one the job names (a mission with a
+	//! second drop that's only a way out, "or turn it in at the stronghold", keeps the first). -1: none.
+	int ObjectiveDrop(int playerId, vector from)
+	{
+		if (m_aDrops.IsEmpty())
+			return -1;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How close to a drop counts for the tracker's arrow: handing in is done at the drop itself.
+	protected float DropRadius()
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The drops' places, in order (the runtime test reads where a delivery can be done).
+	void GetDropSpots(notnull array<vector> result)
+	{
+		foreach (IEntity drop : m_aDrops)
+		{
+			if (drop)
+				result.Insert(drop.GetOrigin());
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

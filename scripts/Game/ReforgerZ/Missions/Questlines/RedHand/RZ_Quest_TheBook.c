@@ -1977,6 +1977,16 @@ class RZ_QM_BookThief : RZ_QuestMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The pit; walking him out, the refuge.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iPath == PATH_OUT && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(m_vRefuge, 25);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);

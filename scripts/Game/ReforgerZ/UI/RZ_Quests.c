@@ -10,6 +10,11 @@
 //! Objectives come from the job itself: a mission's GetObjectives (its own steps, or the
 //! framework's default), a questline's GetObjectives (its stages), an errand's way. A step shows
 //! only once the player has learned of it: nothing hidden, no placeholders.
+//!
+//! Each objective carries its own place (RZ_ObjPlace): where that step is done (a delivery's drop
+//! once you carry the thing, the next point to visit, the giver again for "go back"). The tracker's
+//! area line and arrow, the map's diamond or search area and the Quests tab's row all follow the
+//! current objective's place; the job's own place is only the fallback for an objective without one.
 
 //------------------------------------------------------------------------------------------------
 //! One objective's state, New Vegas style: the current one bright, the known next one dim, the
@@ -24,23 +29,100 @@ enum RZ_EObjState
 }
 
 //------------------------------------------------------------------------------------------------
-//! A job's objectives, in order.
+//! Where one objective is done (docs/UI.md, "The quest tracker"): a spot known to the player, or a
+//! search area (its centre off the hidden spot, never the spot itself).
+class RZ_ObjPlace
+{
+	static const float ARRIVE_MAX = 50;	// a step's own radius, at most this: the arrow leads into a big site
+
+	vector m_vPos;			// the spot, or the search area's centre
+	float m_fArrive = 25;	// within this of the spot it's reached: the tracker's arrow hides
+	float m_fSearch;		// the search area's radius (m); 0 for a known spot
+
+	//------------------------------------------------------------------------------------------------
+	//! A known spot, reached within `radius` (the step's own, widened to the Arrive radius, at most 50 m).
+	static RZ_ObjPlace Spot(vector pos, float radius = 0)
+	{
+		if (pos == vector.Zero)
+			return null;
+
+		RZ_ObjPlace p = new RZ_ObjPlace();
+		p.m_vPos = pos;
+		p.m_fArrive = Math.Min(RZ_Arrive.Spot(radius), ARRIVE_MAX);
+		return p;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A search area: the rough circle's centre and radius. Never the hidden spot.
+	static RZ_ObjPlace Area(vector centre, float radius)
+	{
+		if (centre == vector.Zero)
+			return null;
+
+		RZ_ObjPlace p = new RZ_ObjPlace();
+		p.m_vPos = centre;
+		p.m_fSearch = Math.Max(radius, 0);
+		p.m_fArrive = Math.Min(RZ_Arrive.Spot(), ARRIVE_MAX);
+		return p;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsRough()
+	{
+		return m_fSearch > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place in words, alone ("East of Levie"): the objective rows' place.
+	string Words(RZ_GameModeComponent gm)
+	{
+		return RZ_QuestText.RoughArea(gm, vector.Zero, m_vPos);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A job's objectives, in order, each with its place if it has one.
 class RZ_ObjList
 {
 	static const int MAX = 8;
 
 	ref array<string> m_aLines = {};
 	ref array<int> m_aStates = {};
+	ref array<ref RZ_ObjPlace> m_aPlaces = {};
 
 	//------------------------------------------------------------------------------------------------
-	void Add(string text, int state)
+	//! A line in `state`, done at `at` (null: no place of its own, the job's is used). False if it
+	//! wasn't added (empty, a repeat, or the list is full).
+	bool Add(string text, int state, RZ_ObjPlace at = null)
 	{
 		string t = text.Trim();
 		if (t.IsEmpty() || m_aLines.Count() >= MAX || m_aLines.Contains(t))
-			return;
+			return false;
 
 		m_aLines.Insert(t);
 		m_aStates.Insert(state);
+		m_aPlaces.Insert(at);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place of the first line in `state`, null if there's none or it has no place.
+	RZ_ObjPlace PlaceOf(int state)
+	{
+		foreach (int i, string line : m_aLines)
+		{
+			if (m_aStates[i] == state)
+				return m_aPlaces[i];
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current objective's place, null if none.
+	RZ_ObjPlace Now()
+	{
+		return PlaceOf(RZ_EObjState.CURRENT);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -70,7 +152,7 @@ class RZ_ObjList
 		{
 			int st = other.m_aStates[i];
 			if (st == RZ_EObjState.CURRENT || st == RZ_EObjState.NEXT || st == RZ_EObjState.OPTIONAL)
-				Add(line, st);
+				Add(line, st, other.m_aPlaces[i]);
 		}
 	}
 }
@@ -293,6 +375,20 @@ class RZ_QuestJob
 	bool m_bRough;			// they know only the rough area: the map's search area, not the spot
 	float m_fRadius;		// the search area's radius (m), while rough
 	float m_fArrive = 25;	// within this of the spot it's reached (unless the job says): the tracker's arrow hides
+
+	//------------------------------------------------------------------------------------------------
+	//! The job points where this objective is done (its current one); null leaves the job's own place.
+	void PointAt(RZ_ObjPlace at)
+	{
+		if (!at)
+			return;
+
+		m_bHasPlace = true;
+		m_vPlace = at.m_vPos;
+		m_bRough = at.IsRough();
+		m_fRadius = at.m_fSearch;
+		m_fArrive = at.m_fArrive;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -384,6 +480,9 @@ class RZ_QuestTracker
 				// Reached once it counts you as there (its participation radius), at most 50 m
 				j.m_fArrive = Math.Min(RZ_Arrive.Spot(m.m_fParticipationRadius), ARRIVE_MAX);
 
+				// The job's own place, for an objective without one: where its work is now
+				j.PointAt(m.ObjectivePlace(m_GM, playerId, from));
+
 				result.Insert(j);
 			}
 		}
@@ -417,6 +516,10 @@ class RZ_QuestTracker
 				jq.m_bTaken = took;
 				jq.m_bHasPlace = run.m_bHasPlace;
 				jq.m_vPlace = run.m_vPlace;
+				// A stage running: where its work is now, not where the questline began
+				if (stageMission)
+					jq.PointAt(stageMission.ObjectivePlace(m_GM, playerId, from));
+
 				result.Insert(jq);
 			}
 		}
@@ -446,7 +549,7 @@ class RZ_QuestTracker
 
 				if (e.m_bStepDone)
 				{
-					je.m_vPlace = e.m_vGiver;
+					je.m_vPlace = errands.GiverAt(e);
 					je.m_fArrive = RZ_Arrive.Spot(ERRAND_RETURN);
 				}
 
@@ -519,26 +622,35 @@ class RZ_QuestTracker
 
 		RZ_ErrandWay w = e.GetWay();
 		string step = "";
+		float wayR = 0;
 		if (w)
+		{
 			step = e.Fill(w.m_sStep);
+			wayR = w.m_fRadius;
+		}
+
+		// The step where the way is done (a subject that walks moves it); back: the giver where
+		// they stand now (a wanderer walks on)
+		RZ_ObjPlace stepAt = RZ_ObjPlace.Spot(e.m_vPlace, wayR);
+		RZ_ObjPlace backAt = RZ_ObjPlace.Spot(errands.GiverAt(e), ERRAND_RETURN);
 
 		// An opening's last step ends where it's done: nobody to go back to
 		if (w && w.m_bEndsThere)
 		{
-			list.Add(step, RZ_EObjState.CURRENT);
+			list.Add(step, RZ_EObjState.CURRENT, stepAt);
 			return;
 		}
 
 		string back = e.Fill("Go back to {giver}.");
 		if (e.m_bStepDone)
 		{
-			list.Add(step, RZ_EObjState.DONE);
-			list.Add(back, RZ_EObjState.CURRENT);
+			list.Add(step, RZ_EObjState.DONE, stepAt);
+			list.Add(back, RZ_EObjState.CURRENT, backAt);
 			return;
 		}
 
-		list.Add(step, RZ_EObjState.CURRENT);
-		list.Add(back, RZ_EObjState.NEXT);
+		list.Add(step, RZ_EObjState.CURRENT, stepAt);
+		list.Add(back, RZ_EObjState.NEXT, backAt);
 	}
 
 	// ================================================================ Tracking
@@ -680,11 +792,13 @@ class RZ_QuestTracker
 
 	//------------------------------------------------------------------------------------------------
 	//! T|id|kind|giver|title|kind label|rough area|place|x|z|arrive|search
-	//!   place: the area's place alone ("East of Levie"); x, z: where it points (the rough circle's
-	//!   centre while rough, never the hidden spot), empty without a place; arrive: the spot is
-	//!   reached within it (m); search: the rough circle's radius (m), 0 for a known spot. The HUD
-	//!   turns them into an arrow and metres within a km (RZ_HudDisplay.DrawTrackerDir).
-	//! O|state|line (the tracked job's current objective and the known next one)
+	//!   all of the CURRENT objective's place (the job's own when it has none): place: the area's
+	//!   place alone ("East of Levie"); x, z: where it points (the rough circle's centre while rough,
+	//!   never the hidden spot), empty without a place; arrive: the spot is reached within it (m);
+	//!   search: the rough circle's radius (m), 0 for a known spot. The HUD turns them into an arrow
+	//!   and metres within a km (RZ_HudDisplay.DrawTrackerDir).
+	//! O|state|line|place (the tracked job's current objective and the known next one; the next
+	//!   one's place in words only when it's somewhere else than the current one's)
 	//! Only the tracked job: the other jobs taken are the Quests tab's, never the HUD's.
 	//! "" when nothing is tracked: the box hides.
 	protected string Build(int playerId, IEntity ent, RZ_QuestJob tracked)
@@ -695,6 +809,11 @@ class RZ_QuestTracker
 		vector from = vector.Zero;
 		if (ent)
 			from = ent.GetOrigin();
+
+		// Where the current objective is done, not the job's start (the job's place without one)
+		RZ_ObjList list = new RZ_ObjList();
+		Objectives(playerId, tracked.m_iId, from, list);
+		tracked.PointAt(list.Now());
 
 		string area = "";
 		string place = "";
@@ -719,22 +838,67 @@ class RZ_QuestTracker
 		lnT.AddInt(tracked.m_iId).AddInt(tracked.m_iKind).AddInt(tracked.m_iGiver).Add(tracked.m_sTitle).Add(RZ_QuestText.KindLabel(tracked.m_iKind, tracked.m_bMajor)).Add(area);
 		string s = lnT.Add(place).Add(x).Add(z).AddInt(RZ_Util.RoundToInt(tracked.m_fArrive)).AddInt(search).End();
 
-		RZ_ObjList list = new RZ_ObjList();
-		Objectives(playerId, tracked.m_iId, from, list);
 		string now = list.First(RZ_EObjState.CURRENT);
 		string next = list.First(RZ_EObjState.NEXT);
 		if (now.IsEmpty())
 			now = tracked.m_sTitle;
 
 		RZ_UILine lnNow = new RZ_UILine("O");
-		s += lnNow.AddInt(RZ_EObjState.CURRENT).Add(now).End();
+		s += lnNow.AddInt(RZ_EObjState.CURRENT).Add(now).Add(place).End();
 		if (!next.IsEmpty())
 		{
+			// The next one's place in words when it's somewhere else ("Go back to Mara" · Morton)
+			string nextPlace = OtherPlace(list.PlaceOf(RZ_EObjState.NEXT), place);
 			RZ_UILine lnNext = new RZ_UILine("O");
-			s += lnNext.AddInt(RZ_EObjState.NEXT).Add(next).End();
+			s += lnNext.AddInt(RZ_EObjState.NEXT).Add(next).Add(nextPlace).End();
 		}
 
 		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An objective's place in words ("East of Levie"), "" without one or when it's `same`.
+	string OtherPlace(RZ_ObjPlace at, string same)
+	{
+		if (!at)
+			return "";
+
+		string words = at.Words(m_GM);
+		if (words == same)
+			return "";
+
+		return words;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where one of this player's jobs points now (the journal's row): its current objective's place,
+	//! null when that has none (the job's own place then).
+	RZ_ObjPlace NowPlace(int playerId, int id, vector from)
+	{
+		RZ_ObjList list = new RZ_ObjList();
+		Objectives(playerId, id, from, list);
+		return list.Now();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of this player's jobs as the tracker shows it: its place is its current objective's
+	//! (the job's own without one), its objectives in `list`. Null if it isn't theirs. `ent`: the
+	//! player's character (where "from" is), null for none.
+	RZ_QuestJob JobFor(int playerId, int id, IEntity ent, notnull RZ_ObjList list)
+	{
+		array<ref RZ_QuestJob> jobs = {};
+		Jobs(playerId, ent, jobs);
+		RZ_QuestJob j = FindJob(jobs, id);
+		if (!j)
+			return null;
+
+		vector from = vector.Zero;
+		if (ent)
+			from = ent.GetOrigin();
+
+		Objectives(playerId, id, from, list);
+		j.PointAt(list.Now());
+		return j;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -749,24 +913,14 @@ class RZ_QuestTracker
 		if (id == 0)
 			return "";
 
-		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		array<ref RZ_QuestJob> jobs = {};
-		Jobs(playerId, ent, jobs);
-		RZ_QuestJob j = FindJob(jobs, id);
+		RZ_ObjList list = new RZ_ObjList();
+		RZ_QuestJob j = JobFor(playerId, id, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId), list);
 		if (!j || !j.m_bHasPlace || j.m_vPlace == vector.Zero)
 			return "";
 
-		vector from = vector.Zero;
-		if (ent)
-			from = ent.GetOrigin();
-
 		string now = j.m_sTitle;
 		if (now.IsEmpty())
-		{
-			RZ_ObjList list = new RZ_ObjList();
-			Objectives(playerId, id, from, list);
 			now = list.First(RZ_EObjState.CURRENT);
-		}
 
 		int x = RZ_Util.RoundToInt(j.m_vPlace[0]);
 		int z = RZ_Util.RoundToInt(j.m_vPlace[2]);

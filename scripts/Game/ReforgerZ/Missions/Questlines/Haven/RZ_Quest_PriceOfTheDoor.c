@@ -733,6 +733,16 @@ class RZ_QM_DoorEnvelope : RZ_HavenQM
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The loose board, then (someone carries the envelope) the crew's drop.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iCarrier >= 0)
+			return RZ_ObjPlace.Spot(m_vDrop);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
 		return QFill(gm, "The Price of the Door: {house}'s price reached the crew.");
@@ -954,6 +964,21 @@ class RZ_QM_DoorExile : RZ_HavenQM
 			return QFill(gm, "The Price of the Door: {exile} didn't make it.");
 
 		return QFill(gm, "The Price of the Door: nobody went to the barn outside {barn}. The crew did.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Him at the barn, then (he walks with you) home or the crew's drop.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Escort.GetFollowed() > 0 && !m_Escort.IsArrived())
+		{
+			if (m_iTo == TO_HOME)
+				return RZ_ObjPlace.Spot(m_vHouse, 30);
+
+			return RZ_ObjPlace.Spot(m_vDrop, 25);
+		}
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1198,6 +1223,16 @@ class RZ_QM_DoorCollect : RZ_HavenQM
 			text += string.Format("\nBastion's post: %1, grid %2", m_sPost, RZ_HavenQuest.Grid(m_vPost));
 
 		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The gate; carrying the house's bread, Bastion's post.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iCarrier > 0 && m_bPost)
+			return RZ_ObjPlace.Spot(m_vPost);
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

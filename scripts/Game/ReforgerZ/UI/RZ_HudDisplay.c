@@ -412,7 +412,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			else if (tag == "O" && RZ_UIText.Int(f, 1) == RZ_EObjState.CURRENT && now.IsEmpty())
 				now = RZ_UIText.Str(f, 2);
 			else if (tag == "O" && RZ_UIText.Int(f, 1) == RZ_EObjState.NEXT && next.IsEmpty())
-				next = RZ_UIText.Str(f, 2);
+				next = NextLine(f);
 		}
 
 		RZ_UIW.Show(m_wRoot, "TrackerPanel", head != null);
@@ -446,6 +446,19 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		m_sTrackLine = "-";
 		m_iTrackArrow = -1;
 		DrawTrackerDir();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The known next objective's line (O|state|line|place): its place after it when that's somewhere
+	//! else than the current one's ("Go back to Mara · Morton").
+	protected static string NextLine(array<string> f)
+	{
+		string line = RZ_UIText.Str(f, 2);
+		string place = RZ_UIText.Str(f, 3);
+		if (place.IsEmpty())
+			return line;
+
+		return line + " · " + place;
 	}
 
 	//------------------------------------------------------------------------------------------------

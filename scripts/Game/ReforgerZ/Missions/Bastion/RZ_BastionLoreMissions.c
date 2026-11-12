@@ -1163,6 +1163,23 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The trail (the chain), then him; walking with you, where you take him; his tag, then the nail
+	//! at the post.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iMode == MODE_TAG)
+			return CarryPlace(m_Tag, m_vTagLast, m_vPost);
+
+		if (m_iMode == MODE_HAVEN)
+			return RZ_ObjPlace.Spot(m_vHouse, 25);
+
+		if (m_iMode == MODE_ROSTER || m_iMode == MODE_ARREST)
+			return RZ_ObjPlace.Spot(m_vPost, 25);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);

@@ -200,6 +200,39 @@ class RZ_Escort
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the escort's objective is done (docs/MISSIONS.md, "Objectives"): before they set off,
+	//! where they wait (go to them); walking a route, its end; following a player, `dest` (where the
+	//! mission takes them; zero: with them, where they are). Null once they're there or dead.
+	RZ_ObjPlace ObjPlace(vector dest = vector.Zero)
+	{
+		if (m_eState == RZ_EEscortState.DEAD || m_eState == RZ_EEscortState.ARRIVED)
+			return null;
+
+		if (!m_bStarted)
+			return RZ_ObjPlace.Spot(m_vPos);
+
+		if (m_iFollow > 0)
+		{
+			if (dest != vector.Zero)
+				return RZ_ObjPlace.Spot(dest, m_fArriveRadius);
+
+			return RZ_ObjPlace.Spot(m_vPos);
+		}
+
+		if (!m_aRoute.IsEmpty())
+			return RZ_ObjPlace.Spot(m_aRoute[m_aRoute.Count() - 1], m_fArriveRadius);
+
+		return RZ_ObjPlace.Spot(m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Started: walking, stopped on the way, or following.
+	bool IsStarted()
+	{
+		return m_bStarted;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Mark them arrived (follow mode: the mission decides where "there" is).
 	void Arrive()
 	{

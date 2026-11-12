@@ -162,7 +162,7 @@ and one way to end it: **research the cure.**
   emblems, a spawn screen in place of vanilla's deploy menu (with a short card of the life just
   ended over it at each death), an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance (one card at spawn, the rest into the notebook),
-  a small quest tracker top left with the tracked job's objectives, a you-are-here
+  a small quest tracker top left with the tracked job's objectives, each pointing where its own step is done, a you-are-here
   arrow on the map, a notebook (standing, quests, radio, a journal of
   past jobs and what you know, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks (one Talk prompt a person, their lines typed out a box at a time, small

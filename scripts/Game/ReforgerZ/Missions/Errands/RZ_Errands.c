@@ -790,9 +790,7 @@ class RZ_Errands
 			}
 
 			// Done: back to the giver (a wanderer: where they stand now)
-			vector giverAt = e.m_vGiver;
-			if (e.m_iWanderer >= 0 && m_GM.GetWanderers())
-				m_GM.GetWanderers().GetPosition(e.m_iWanderer, giverAt);
+			vector giverAt = GiverAt(e);
 
 			// A carried item: only the asker or a helper hands it in; anyone else has spoiled it
 			if (w.m_bCarry && e.m_Carried)
@@ -3222,6 +3220,19 @@ class RZ_Errands
 	void Notify(RZ_Errand e, string text)
 	{
 		m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), e.Fill(text));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the giver is to be found now, for "go back": a wanderer where they walk, else where it
+	//! was asked (TickSteps counts you back there; the tracker points there).
+	vector GiverAt(RZ_Errand e)
+	{
+		vector giverAt = e.m_vGiver;
+		vector walking;
+		if (e.m_iWanderer >= 0 && m_GM.GetWanderers() && m_GM.GetWanderers().GetPosition(e.m_iWanderer, walking))
+			giverAt = walking;
+
+		return giverAt;
 	}
 
 	//------------------------------------------------------------------------------------------------

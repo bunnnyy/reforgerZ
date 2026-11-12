@@ -198,7 +198,9 @@ exist here isn't offered. You're at a place within the way's own radius or 15 m,
 in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)).
 
 **Done** is coming back: to the giver's place, arriving as above (a wanderer: where they stand now), or
-asking them again. **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
+asking them again. The tracker, the map and the Quests tab point at the step's place (within the
+way's radius) until it's done, then at the giver where they stand now (15 m), the same spot the
+errand counts you at (`RZ_Errands.GiverAt`; [MISSIONS.md](MISSIONS.md#where-each-objective-points)). **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
 step was done, three at most.
 
 ## Pay: nothing for free
@@ -631,7 +633,7 @@ opening pays its own Fame at the end of the walk); the owner drops it quietly (`
 when the contact dies or the chain ends. Everything else is an errand's: the take and done lines in
 the giver's voice (into the talk screen while it's open on them), the step notice, the journal row,
 the Quests tab and the tracker, which the opening points at each step (and each talk objective,
-whose map diamond is the contact) as it starts. While a
+whose map diamond is the contact, where they stand now) as it starts. While a
 player's chain runs, nobody waves them over for another errand. Two hooks serve them: a handed
 errand's way puts its prop at the place as a taken one does, and `RZ_ErrandDef.StepCounts` (true for
 every other errand) lets a step 2 stop its clock while its own system isn't met, or move its place

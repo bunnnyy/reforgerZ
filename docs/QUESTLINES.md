@@ -13,7 +13,10 @@ lines. Their sections below stay as their own stages' reference.
 How a questline runs (stages, waits, conditions, flags, who
 takes part, saving) is in [DESIGN.md](DESIGN.md), "Questlines". Who the people are is in
 [LORE.md](LORE.md); standing, tiers and leaders are in [REPUTATION.md](REPUTATION.md); the
-missions the stages reuse are in [MISSIONS.md](MISSIONS.md).
+missions the stages reuse are in [MISSIONS.md](MISSIONS.md). A questline's tracker, map mark and
+Quests row point where its stage's current objective is done (a letter's addressee once you carry it,
+the Census's storekeepers once a crate is on your back, an escort's destination), not where the
+questline began; between stages, its own place ([MISSIONS.md](MISSIONS.md#where-each-objective-points)).
 
 ## The questlines
 

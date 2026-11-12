@@ -1192,6 +1192,29 @@ class RZ_QM_CargoLoad : RZ_QuestMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The van at the camp; once it runs (or they're out on foot), where the asker wants them: the
+	//! Haven's refuge, else the drop it was meant for.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bOut)
+			return RZ_ObjPlace.Spot(m_vRefuge, 25);
+
+		if (m_bStarted && m_Load.m_Van)
+		{
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (!me || RZ_Util.GetVehicleOf(me) != m_Load.m_Van)
+				return RZ_ObjPlace.Spot(m_Load.m_Van.GetOrigin());
+
+			if (RZ_Quest_Cargo.IsHaven(Run(gm)))
+				return RZ_ObjPlace.Spot(m_vRefuge, 30);
+
+			return RZ_ObjPlace.Spot(m_vDrop, m_DropZone.m_fRadius);
+		}
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1835,6 +1858,19 @@ class RZ_QM_CargoFate : RZ_QuestMission
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		return QFill(gm, "Cargo: nobody went back for {driver_short}.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The driver by the pit (the ring and the raid are there too); walking him out, the refuge.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iPath == PATH_OUT && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(m_vRefuge, 25);
+
+		if (m_iPath == PATH_RING || m_iBranch == RZ_Quest_Cargo.OUT_RAID)
+			return RZ_ObjPlace.Spot(m_vDriver, 25);
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

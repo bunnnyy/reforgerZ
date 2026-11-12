@@ -803,6 +803,20 @@ class RZ_Mission_EscortAtDawn : RZ_TribeContract
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The walkers at the door (the rough area until you know it), then where they walk to.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (!m_Escort.IsStarted() && IsRoughFor(gm, playerId, from))
+			return AreaPlace(gm, playerId, from);
+
+		RZ_ObjPlace at = m_Escort.ObjPlace();
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		m_Escort.Cleanup();
@@ -1974,6 +1988,21 @@ class RZ_Mission_CaptureTheIndex : RZ_TribeContract
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The cage, the held leader, the case, then the lab's drop (RZ_LiveCapture.ObjPlace).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		vector drop = vector.Zero;
+		if (m_Drop)
+			drop = m_Drop.GetOrigin();
+
+		RZ_ObjPlace at = m_Capture.ObjPlace(drop);
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		RZ_Tribe t = GetTribe(gm);
@@ -2166,6 +2195,21 @@ class RZ_Mission_StockThePit : RZ_TribeContract
 			return "Stock the Pit: it died, or it woke up. The pit wanted it breathing.";
 
 		return "Stock the Pit: the cages stayed empty.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cage, the held one, the case, then the crew's drop (RZ_LiveCapture.ObjPlace).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		vector drop = vector.Zero;
+		if (m_Drop)
+			drop = m_Drop.GetOrigin();
+
+		RZ_ObjPlace at = m_Capture.ObjPlace(drop);
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

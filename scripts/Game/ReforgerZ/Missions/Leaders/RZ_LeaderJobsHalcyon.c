@@ -538,6 +538,21 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The cage, the held special, the case, then the drop at the director's seat.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		vector drop = vector.Zero;
+		if (m_SeatDrop)
+			drop = m_SeatDrop.GetOrigin();
+
+		RZ_ObjPlace at = m_Capture.ObjPlace(drop);
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);

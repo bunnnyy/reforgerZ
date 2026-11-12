@@ -692,6 +692,16 @@ class RZ_QM_EdgeWalk : RZ_Mission_WalkHimOut
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Him at the edge of town, then (he walks with you) the lab.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bToLab && m_Escort.GetFollowed() > 0 && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(gm.GetLabPosition(), LAB_RADIUS);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1330,6 +1340,16 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 	override string GetWhereText(RZ_GameModeComponent gm, vector from)
 	{
 		return super.GetWhereText(gm, from) + QFill(gm, "\n{nursehouse}: grid ") + RZ_HavenQuest.Grid(m_vClinic);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The crew's drop, then (someone carries the crate) the nurse's house.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iCarrier >= 0)
+			return RZ_ObjPlace.Spot(m_vClinic);
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

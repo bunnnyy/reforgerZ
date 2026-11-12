@@ -1225,6 +1225,29 @@ class RZ_QM_CensusCards : RZ_QuestMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The store until a crate is carried; then the nearest storekeeper still waiting; a crate left
+	//! lying, where it lies.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_CrateA.IsCarried() || m_CrateB.IsCarried())
+		{
+			vector keeper = m_vKeeperA;
+			if (m_bGotA || (!m_bGotB && from != vector.Zero && RZ_Util.DistXZ(from, m_vKeeperB) < RZ_Util.DistXZ(from, m_vKeeperA)))
+				keeper = m_vKeeperB;
+
+			return RZ_ObjPlace.Spot(keeper);
+		}
+
+		if (m_CrateA.IsOnGround())
+			return RZ_ObjPlace.Spot(m_CrateA.GetPos());
+
+		if (m_CrateB.IsOnGround())
+			return RZ_ObjPlace.Spot(m_CrateB.GetPos());
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1695,6 +1718,17 @@ class RZ_QM_CensusContrib : RZ_QuestMission
 			return string.Format("The Census: the contribution went to %1 instead. Bastion won't thank you.", m_sOther);
 
 		return QFill(gm, "The Census: nobody collected the contribution from {town_c}.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The keeper; the sack where it lies, then (carried) Bastion's clerk.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		RZ_ObjPlace at = m_Sack.ObjPlace(m_vClerk);
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------
