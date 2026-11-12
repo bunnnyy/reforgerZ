@@ -131,8 +131,23 @@ class RZ_Mission_CurfewPatrol : RZ_Mission_VisitPoints
 //! drop goes up then. Whoever carries the case to a drop decides (a choice: taken to the other side
 //! it's a switch). "Nobody": drop the case down the town's well (with the well prop): both sides
 //! are angry, nobody pays, and the world remembers. ★ Police knows the layout (the exact spot).
+//! A story job (its key `weaponscache`, kept per town): rifles, as they said; emptied (others got there
+//! first: one case left, 70%); or sold (the post's own sergeant sold them to a crew within 6 km). The
+//! caretaker (the talk scene): [Known - Bastion] or a tin and he shows you the case (no gun, no
+//! standing); sold: name the sergeant to the post (Bastion morale -1, the nearest Bastion leader's
+//! loyalty -3, +3 Red Hand Infamy).
 class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 {
+	protected string m_sCrew = "a crew";
+	protected static const int WAY_SHOW = 0;
+	protected static const int WAY_NAME = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_WeaponsCache()
+	{
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected bool m_bGuarded;
 	protected bool m_bRedDrop;
 	protected vector m_vWell;
@@ -210,7 +225,71 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		m_sDeed = "found the rifles near {town}";
 		m_sBrief = string.Format("Our people left weapons in %1 in %2 when it fell: a long case with Bastion stencils, somewhere inside. Find it and bring it to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
 		m_Mirror.Roll();
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"rifles", "emptied", "sold"};
+		array<float> weights = {0.5, 0.25, 0};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 6000);
+		if (crew)
+		{
+			weights[2] = 0.25;
+			m_sCrew = crew.m_sName;
+		}
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		if (truth == "emptied")
+			m_fRewardScale = 0.7;
+
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.Read("emptied", "police", "The caretaker's lying about nobody having been. Not about the rest.");
+		m_Job.Read("sold", "soldier", "The rack log's last line: 'released, by order', a sergeant's signature, no order number.");
+		m_Job.Read("sold", "excon,raider", string.Format("Crew chalk on the door frame: %1's hand and a price. Somebody was paid for these.", m_sCrew));
+
+		string reveal = "\"Nobody. Crows. A dog once. The dog took nothing.\"";
+		if (truth == "emptied")
+			reveal = "\"Scavengers, a week back. Took what they could carry. One case was too heavy for them.\"";
+		else if (truth == "sold")
+			reveal = string.Format("\"Your sergeant came with a lorry. %1 paid him at the gate. I swept up after.\"", m_sCrew);
+
+		RZ_TalkScene sc = m_Job.Scene("The caretaker", "armory.caretaker", LandPointNear(m_vPos, 5, 10));
+		int n0 = sc.Node("An old man with a broom. \"Nobody's been. Except everybody.\"");
+		int n1 = sc.Node("He leans on the broom. \"I sweep. I see. Nobody asks the man with the broom.\"");
+		sc.Ask(n0, "\"Who's everybody?\"", n1, reveal, true);
+		sc.Way(n0, "\"Show me where.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_SHOW, "He takes you through the back and kicks the case out from under a bench.", "\"Show you? You've got the uniform and still no idea.\"");
+		sc.Way(n0, "A tin for the keys", RZ_TalkScene.FOOD, -1, 1, WAY_SHOW, "He drops a ring of keys in your hand and points with the broom.");
+		if (truth == "sold")
+			sc.Decide(n1, "Name the sergeant to the post", "name the sergeant to the post", WAY_NAME, "You'll put his name on the form. The caretaker sweeps a little more cheerfully.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (way == WAY_SHOW)
+		{
+			vector at = m_vPos;
+			if (m_Job.m_Scene)
+				at = m_Job.m_Scene.m_vAt;
+
+			PutItemAt(gm, at);
+			return;
+		}
+
+		// The sergeant named: the post hears it, the crew hears who
+		RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, -1, "a sergeant sold the rifles");
+		RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.BANDITS, 3, "named a crew's seller");
+		RZ_Leader l = RZ_StoryKit.Remember(gm, RZ_EFaction.MILITARY, m_vPos, 100000, playerId, RZ_Leaders.MEM_HELPED);
+		RZ_StoryKit.Loyalty(gm, l, -3);
+		array<int> who = {playerId};
+		RZ_StoryKit.Record(this, "sold", RZ_WorldFacts.Town(m_iSettlement), "named", who);
+		RZ_StoryKit.Later(gm, playerId, "Bastion's nightly call", "The operator reads a sergeant's name and the words 'reduced to the ranks'. Then the weather, at the same speed.", m_vPos);
+		// The scene's done, but the case still has to come out: the next scene person never comes
+		if (m_Job.m_Scene)
+			m_Job.m_Scene.m_bDone = true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -553,8 +632,32 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 //! #12 Rescue the Pilot: a Bastion pilot went down outside a town. Reach him, help him up and he
 //! follows you (RZ_Escort) to Bastion. He's bleeding: 20 minutes from when you find him, unless a
 //! Nurse or Doctor patches him up (★). An AI body that dies fails it.
+//! A story job (key `pilot`, kept per helicopter): a crash, as they said; he put her down on purpose
+//! (the flight plan ends at the line); or he carried a crew's cargo (a Red Hand holding within 6 km).
+//! The farmer whose cabbages he landed in (the talk scene) lends a cart ([Known - Bastion], or two
+//! tins): he rides in, no bleeding, in under three minutes. At the post the sergeant asks: the
+//! engine; ditched: report it (Bastion morale -1) or say it was the engine (a lie the rumour round
+//! can find, 60%, an Independent asset); cargo: tell the crew he's home (10 Red Hand Favor, Bastion
+//! pays nothing); a crash: ask the post to pay the farmer (half pay, a callback at his gate).
 class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 {
+	protected bool m_bCart;
+	protected float m_fCart;
+	protected string m_sCrew = "a crew";
+
+	protected static const int WAY_CART = 0;
+	protected static const float CART_SECONDS = 150;
+	protected static const int OPT_POST = 0;
+	protected static const int OPT_OTHER = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_RescueThePilot()
+	{
+		m_Story = new RZ_MissionStory("pilot");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! The helicopter's crash is the story: it holds the helicopter (a claim, docs/DESIGN.md "World facts")
 	override void GetClaims(RZ_GameModeComponent gm, notnull array<string> result)
@@ -623,7 +726,118 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_sTitle = "Rescue the Pilot";
 		m_sDeed = "brought the pilot in from {town}";
 		m_sBrief = string.Format("The last helicopter put down hard outside %1 on its run. The mechanics will get the airframe back; the pilot is still out there, hurt, and Bastion has nobody else to fly it. Find him and walk him to %2.", s.m_sName, m_sDestName);
-		return m_Escort.Begin(gm, LandPointNear(m_vWreck, 3, 8));
+		if (!m_Escort.Begin(gm, LandPointNear(m_vWreck, 3, 8)))
+			return false;
+
+		Truth(gm);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"crash", "ditched", "cargo"};
+		array<float> weights = {0.5, 0.3, 0};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vWreck, 6000);
+		if (crew)
+		{
+			weights[2] = 0.2;
+			m_sCrew = crew.m_sName;
+		}
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.HELI, values, weights);
+		m_Job.m_vReadAt = m_vWreck;
+		m_Job.Read("crash", "mechanic", "A hydraulic line split clean through. She didn't land. She fell, and he flew the fall.");
+		m_Job.Read("ditched", "mechanic", "Nothing wrong with this engine. He put her down gently and walked away from a good aircraft.");
+		m_Job.Read("ditched", "soldier", "The flight plan clipped in the cockpit doesn't end at the post. It ends at the line.");
+		m_Job.Read("cargo", "excon,raider", string.Format("Handcart ruts from the cargo door to the road. That's %1's pickup, and they knew where to wait.", m_sCrew));
+
+		string reveal = "\"Smoke, then a bang, then cabbages everywhere. He swore all the way down. I liked him.\"";
+		if (truth == "ditched")
+			reveal = "\"No smoke. He came down slow as you like, sat a while, then tried to walk off east. His leg had other ideas.\"";
+		else if (truth == "cargo")
+			reveal = "\"Two men with a handcart got here before me. They took a crate and left him. Polite about it.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The farmer", "pilot.farmer", LandPointNear(m_vWreck, 12, 20));
+		int n0 = sc.Node("A farmer leans on a fence. \"He landed in my cabbages. I'd like that written down somewhere.\"");
+		int n1 = sc.Node("\"He asked me not to tell anyone. So I'm telling you quietly.\"");
+		sc.Ask(n0, "\"What did you see?\"", n1, reveal, true);
+		sc.Way(n0, "\"Lend us your cart.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_CART, "He brings the cart round and you lift the pilot on. \"Mind the cabbages.\"", "\"Bastion borrowed my last cart. I'm still waiting.\"");
+		sc.Way(n0, "Two tins for the cart", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "The tins buy the cart and the farmer's silence about the cabbages.");
+		sc.Service(n1, "Fix his water pump", "mechanic", 25, WAY_CART, "The pump coughs and runs. \"Take the cart. Take the pump if you like.\"");
+
+		string labels = "Engine failure";
+		if (truth == "ditched")
+		{
+			labels = "Report what he did|Say it was the engine";
+			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
+		}
+		else if (truth == "cargo")
+		{
+			labels = "Report the cargo|Tell the crew he's home";
+			m_Choice.Asset(OPT_OTHER, RZ_EFaction.BANDITS);
+		}
+		else
+		{
+			labels += "|Ask the post to pay the farmer";
+		}
+
+		m_Choice.Set("The post's medic gets him on a stretcher. The duty sergeant has a form. \"What happened out there?\"", labels, "decide what goes on the form", OPT_POST);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return m_vDest;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		m_bCart = true;
+		m_bFound = true;
+		m_bPatched = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string truth = m_Job.m_sTruth;
+		if (truth == "ditched" && option == OPT_POST)
+		{
+			RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, -1, "a pilot who tried for the line");
+			RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.HELI, "reported", who);
+			return;
+		}
+
+		if (truth == "ditched")
+		{
+			m_fRewardScale = 0.6;
+			RZ_StoryKit.Dirty(gm, this, decider);
+			gm.GetFacts().Memory().Lies().Tell(gm, decider, "pilot.engine", RZ_WorldFacts.HELI, RZ_EFaction.MILITARY, "", m_vDest, RZ_ELieTest.RUMOUR, 6, "\"The engine was fine. You knew. He told the mechanic, the mechanic told the cook.\"");
+			RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.HELI, "covered", who);
+			return;
+		}
+
+		if (truth == "cargo" && option == OPT_OTHER)
+		{
+			m_bHasGiver = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
+			RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.HELI, "crew", who);
+			NotifyParticipants(gm, m_sTitle, string.Format("The form says engine failure. %1 hears he's home and keeps paying him.", m_sCrew));
+			return;
+		}
+
+		if (truth == "crash" && option == OPT_OTHER)
+		{
+			m_fRewardScale = 0.5;
+			RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.HELI, "farmer", who);
+			RZ_StoryKit.LaterWith(gm, this, "The farmer", "A man at the gate with a sack. \"Bastion paid for the cabbages. In tins. Four of them are cabbages.\"", m_vWreck, true);
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.HELI, truth, who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -641,6 +855,18 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		{
 			m_bFound = true;
 			RZ_ContractHelp.NotifyNear(gm, m_Escort.m_vPos, 40, m_sTitle, "He's alive, propped against a tree with his sidearm in his lap. He's lost a lot of blood. Twenty minutes, maybe.");
+		}
+
+		// The farmer's cart: he rides in, and is there in under three minutes
+		if (m_bCart)
+		{
+			m_fCart += dt;
+			if (m_fCart >= CART_SECONDS)
+			{
+				m_Escort.Arrive();
+				m_eState = RZ_EMissionState.SUCCEEDED;
+				return;
+			}
 		}
 
 		if (m_bFound && !m_bPatched)

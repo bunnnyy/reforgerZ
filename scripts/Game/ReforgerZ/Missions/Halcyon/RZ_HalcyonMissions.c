@@ -1035,8 +1035,23 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 //! or floor, like loose loot), or, in a town with none, where a courier fell near the middle. It's
 //! placed once a player comes near. Choice: Halcyon (research) or sell it to Bastion (Halcyon
 //! Infamy).
+//! A story job (its key `researchdata`, kept per town): research, as they said; a trial log with
+//! Haven names in it (a house within 5 km); or already copied (Bastion has it: the lab gets +1, Bastion
+//! pays half). The orderly sweeping the glass (the talk scene): [Known - Halcyon] or a tin and he
+//! brings the drive (no gun, no standing); trials: give the names to the house (it ends: 8 Haven
+//! Favor, +5 Halcyon Infamy, nobody else pays, a Haven route asset).
 class RZ_Mission_ResearchData : RZ_Mission_Choice
 {
+	protected int m_iHouse = -1;
+	protected static const int WAY_SHOW = 0;
+	protected static const int WAY_HOUSE = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_ResearchData()
+	{
+		m_Job = new RZ_StoryJob();
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
 	{
@@ -1110,16 +1125,80 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		else
 			m_sBrief = string.Format("A Halcyon courier went down near the middle of %1 with a hard drive of our research. It's lying where they fell. Find it and take it to the lab. Bastion's drop in %2 would pay for it too.", s.m_sName, b.m_sName);
 
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"research", "trials", "copied"};
+		array<float> weights = {0.5, 0, 0.2};
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(m_vPos, 5000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.Read("trials", "labtech", "The folder names on the drive's label are surnames. Haven surnames. This is a trial log, not research.");
+		m_Job.Read("trials", "nurse,doctor", "Bite charts on the clinic wall, dated and initialled. People were treated here, and written down.");
+		m_Job.Read("copied", "labtech", "The access sticker's been peeled and put back. Somebody read this drive two days ago, on a machine that isn't the lab's.");
+
+		string reveal = "\"Numbers. Lots of numbers. The doctor said they'd save us. Then he left.\"";
+		if (truth == "trials")
+			reveal = "\"They tried things on people from the house. Paid them in tins. The names are all on there.\"";
+		else if (truth == "copied")
+			reveal = "\"A soldier came Tuesday with a laptop. Sat right there an hour. Said thank you. Lovely manners.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The orderly", "researchdata.orderly", LandPointNear(m_vPos, 4, 8));
+		int n0 = sc.Node("A man in a stained orderly's coat sweeps broken glass into neat piles. \"Mind the floor. I just did it.\"");
+		int n1 = sc.Node("He leans the broom on the wall. \"Somebody should know what was on it. I'm somebody, I suppose.\"");
+		sc.Ask(n0, "\"What happened here?\"", n1, reveal, true);
+		sc.Way(n0, "\"Where's the drive?\"", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHOW, "He fetches it from a drawer and wipes it on his coat before he hands it over.", "\"Which drive? There are no drives. There's a floor.\"");
+		sc.Way(n0, "A tin for the drive", RZ_TalkScene.FOOD, -1, 1, WAY_SHOW, "He takes the tin and points under the counter with the broom.");
+		if (truth == "trials")
+			sc.Decide(n1, "Give the names to the house", "give the trial's names to the house", WAY_HOUSE, "The drive goes to the house that's on it. Halcyon will hear where.", RZ_EFaction.SURVIVORS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (way == WAY_SHOW)
+		{
+			vector at = m_vPos;
+			if (m_Job.m_Scene)
+				at = m_Job.m_Scene.m_vAt;
+
+			PutItemAt(gm, at);
+			return;
+		}
+
+		array<int> who = {playerId};
+		RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.SURVIVORS, 8);
+		RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.INSTITUTE, 5, "gave a trial log to the people in it");
+		RZ_StoryKit.Record(this, "names", RZ_WorldFacts.Town(m_iSettlement), "house", who);
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		if (h)
+			RZ_StoryKit.Later(gm, playerId, h.m_sName, "An old man at the door with a printout folded small. \"My number was 31. I always wondered.\"", h.m_vPos, true);
+
+		RZ_StoryKit.EndedOtherWay(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnChoiceMade(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
 	{
-		if (faction == RZ_EFaction.INSTITUTE)
+		bool copied = m_Job && m_Job.m_sTruth == "copied";
+		if (faction == RZ_EFaction.INSTITUTE && copied)
+			gm.GetCure().AddResearch(1, "Recovered research data reached the lab. Bastion has a copy.");
+		else if (faction == RZ_EFaction.INSTITUTE)
 			gm.GetCure().AddResearch(3, "Recovered research data reached the lab.");
 		else
 			gm.NotifyAll("Halcyon", "Our research data was sold to Bastion. We know who did it.");
+
+		if (faction == RZ_EFaction.MILITARY && copied)
+			m_fRewardScale = 0.5;
 	}
 }
 

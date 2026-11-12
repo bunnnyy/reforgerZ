@@ -360,8 +360,29 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 //! with it. Lock-on: one shot destroys the package (not the carrier) and the mission
 //! fails. Deliver it to the Haven drop at the safehouse in the least infected town (with no
 //! safehouses, a drop in the safest town).
+//! A story job (key `crossing`, kept per grid): medicine, as they said; forged Bastion line passes (a
+//! Bastion holding on the map); or the runner's drawings of the drones' turns. A woodcutter (or a
+//! fisherman, at the waterline) inland of the package (the talk scene): [Known - Haven] or two tins and
+//! he tells you when the drone turns (twice as long before it locks on). At the house the runner asks:
+//! the house (default); medicine: let her take it home (nobody pays, an Independent asset); passes: to
+//! Bastion's post (8 Bastion Favor, the Haven pays nothing); the turns: sell them to the crew (10 Red
+//! Hand Favor, +4 Haven Infamy) or burn them (80%).
 class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 {
+	protected float m_fLockSeconds = LOCK_SECONDS;
+	protected static const int WAY_GAP = 0;
+	protected static const int OPT_HOUSE = 0;
+	protected static const int OPT_SECOND = 1;
+	protected static const int OPT_THIRD = 2;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_TheCrossing()
+	{
+		m_Story = new RZ_MissionStory("crossing");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected float m_fExposed;
 	protected bool m_bHalfWarned;
 	protected string m_sSpotKind = "treeline";
@@ -471,7 +492,115 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 
 		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found her. She dropped the package at the %1 at grid %2, %3, and ran. She made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to %4. And be careful.",
 			m_sSpotKind, RZ_SettlementScanner.GridReference(spot), under, destination);
+		Truth(gm, spot, dropAt);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm, vector spot, vector dropAt)
+	{
+		array<string> values = {"medicine", "passes", "turns"};
+		array<float> weights = {0.5, 0, 0.2};
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, spot, 100000))
+			weights[1] = 0.3;
+
+		string truth = m_Job.Draw(this, "grid:" + RZ_SettlementScanner.GridReference(spot), values, weights);
+		m_Job.m_vReadAt = spot;
+		m_Job.m_fReadRange = 15;
+		m_Job.Read("passes", "soldier", "Through the torn wrapping: Bastion line passes, stamped, unsigned. Forged, and well.");
+		m_Job.Read("turns", "radioop", "Pencil drawings in the wrapping: the drones' turns, timed to the second. She was mapping the line.");
+		m_Job.Read("medicine", "nurse,doctor", "Real antidote, by the vials' colour, packed by someone who'd done it before.");
+
+		// The woodcutter stands inland of the package, clear of the drones
+		float dist = RZ_Util.DistXZ(spot, dropAt);
+		vector inland = spot;
+		if (dist > 1)
+			inland = RZ_ContractHelp.Between(spot, dropAt, Math.Min(0.9, 140 / dist));
+
+		string who = "The woodcutter";
+		string line = "A woodcutter sits on a stump, not cutting wood. \"The drone turns every few minutes. I know because I've been sitting here every few minutes.\"";
+		if (m_sSpotKind == "waterline")
+		{
+			who = "The fisherman";
+			line = "A fisherman with no line in the water. \"The drone turns every few minutes. The fish don't. I've stopped asking them.\"";
+		}
+
+		RZ_TalkScene sc = m_Job.Scene(who, "crossing.watcher", LandPointNear(inland, 0, 10));
+		int n0 = sc.Node(line);
+		sc.Way(n0, "\"When does it turn?\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GAP, "\"Watch me. When I scratch my ear, go.\" He scratches his ear a lot.", "\"Turns when it likes. Like a cat.\"");
+		sc.Way(n0, "Two tins for its turns", RZ_TalkScene.FOOD, -1, 2, WAY_GAP, "He takes the tins and counts the turns out loud for you, slowly.");
+
+		string labels = "Give it to the house";
+		if (truth == "medicine")
+		{
+			labels += "|Let her take it home";
+			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
+		}
+		else if (truth == "passes")
+		{
+			labels += "|Take the passes to Bastion's post";
+			m_Choice.Asset(OPT_SECOND, RZ_EFaction.MILITARY);
+		}
+		else
+		{
+			labels += "|Sell the turns to the crew|Burn the drawings";
+			m_Choice.Asset(OPT_SECOND, RZ_EFaction.BANDITS);
+			m_Choice.Asset(OPT_THIRD, RZ_CureFinale.INDEP);
+		}
+
+		m_Choice.Set("The runner meets you at the door, arm in a sling. \"I ran. The drone was faster. I'd like that to be the last thing I learn about drones.\"", labels, "decide where the package goes", OPT_HOUSE);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		m_fLockSeconds = LOCK_SECONDS * 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return GetDropPos(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string subject = "grid:" + RZ_SettlementScanner.GridReference(m_vPos);
+		string truth = m_Job.m_sTruth;
+		if (option == OPT_SECOND && truth == "medicine")
+		{
+			m_bHasGiver = false;
+			RZ_StoryKit.Record(this, "package", subject, "runner", who);
+			RZ_StoryKit.LaterWith(gm, this, "The runner", "The runner, out of her sling, nods to you across a road. \"Mum's walking again. Don't tell the house.\"", GetDropPos(0), true);
+			return;
+		}
+
+		if (option == OPT_SECOND && truth == "passes")
+		{
+			m_bHasGiver = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 8);
+			RZ_StoryKit.Record(this, "package", subject, "bastion", who);
+			return;
+		}
+
+		if (option == OPT_SECOND)
+		{
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
+			m_Choice.BlameWith(gm, this, RZ_EFaction.SURVIVORS, 4, "sold a runner's drawings");
+			RZ_StoryKit.Record(this, "package", subject, "crew", who);
+			return;
+		}
+
+		if (option == OPT_THIRD)
+		{
+			m_fRewardScale = 0.8;
+			RZ_StoryKit.Record(this, "package", subject, "burned", who);
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "package", subject, "house", who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -528,13 +657,13 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 			return;
 
 		m_fExposed += dt;
-		if (!m_bHalfWarned && m_fExposed >= LOCK_SECONDS * 0.5)
+		if (!m_bHalfWarned && m_fExposed >= m_fLockSeconds * 0.5)
 		{
 			m_bHalfWarned = true;
 			gm.NotifyPlayer(carrier, RZ_Perimeter.LOUDSPEAKER, "The drone's light swings onto you and stays there. It's tracking the package. Get out of the warning zone.");
 		}
 
-		if (m_fExposed < LOCK_SECONDS)
+		if (m_fExposed < m_fLockSeconds)
 			return;
 
 		// Locked on: one shot, at the package

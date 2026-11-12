@@ -2151,7 +2151,11 @@ The finale's commit: `Dialogue: <player> committed to <route> at <speaker>`.
 Promises and barks: `Dialogue: promise <key> made|kept|broken by <player>`, `Dialogue: bark <conv> to <player>`.
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
-`Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
+`Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <key> at <subject> is <truth>` (the story
+job's kit), `Story: <title> way <n> at <person> by <player>`, `Story: <title> decided <n> at <person> (by
+<player>)`, `Story: <title> service <n> at <person> by <player>`, `Story: <title> scene with <person> has no
+person (no civilian prefab)`, `Callbacks: <title> at the door for <player>`, `Story: prison bell rung at
+<grid>`, `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
 `Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join (N Fame, N Favor)`,
@@ -3198,6 +3202,19 @@ on the talk screen says why something wasn't dealt)
   A player it wasn't offered to picking one of its choices hears "It's not your call".
 - [ ] Walk Him Out, let walk on: at dusk the next season day, near a holding's approach, the stranger
   Still Walking may ask the way to the lab.
+- [ ] A talk scene (any of the twenty kit jobs, e.g. The Cache's scavenger): its person appears at 80 m;
+  Talk says the first node's line to you and anyone within 8 m; an ask opens the second node; a
+  second player picking a check while the first holds the floor hears "... is talking to them";
+  "Leave it" goes back to the first node; a Decide runs the 5 s hold, and the use slots read Talk,
+  Object, Stand with while it runs; Object cancels it and gives the objector the floor. With a pad:
+  every slot reachable, no mouse. With **Missions > Story > Numbered scenes** on, the line lists the
+  options and the slots read Option 1 to Option 4.
+- [ ] A service (a Nurse at The Cache's scavenger, a Mechanic at the pilot's farmer): stay within 4 m
+  for its seconds and the way passes; walk off and it ends.
+- [ ] Each kit job once: its truth in the log, a read for the right background at its place, the tins
+  way and the check way at its person, the end question's options by truth, and its record. A
+  callback at the door (The Cache's family, the boy from Bust Out) turns up as a person beside you
+  some hours of play later, then goes.
 - [ ] Protection Racket: a Short persuade, then the next collection at that house: the brief mentions
   the promise. Collected: a note at the house comes back some hours of play later.
 - [ ] The bed by the stove (Dialogue > Trees on, a short house): someone Known with the Haven decides;

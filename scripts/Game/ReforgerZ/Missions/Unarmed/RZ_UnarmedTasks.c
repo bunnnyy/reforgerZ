@@ -308,8 +308,29 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 //! to their bag in a second, which leads to where they ended up in a third. Each clue only
 //! appears once the one before it has been read. Half the time they're alive (bring them home:
 //! they join a safehouse); otherwise their last letter (less Fame). ★ Police: grid references.
+//! A story job (key `trail`, kept per first town): lost, as they said (alive half the time); found
+//! (alive, with their bitten mother, and staying); or taken in by a crew (a Red Hand holding within 5
+//! km of the last town). The neighbour at the first house (the talk scene): [Known - Haven] or a tin
+//! and she saw which way (straight to the last town: no gun, no standing). At the end: found: leave
+//! them together (nobody pays, an Independent asset); crew: the lookout lets the kid go ([Known - Red
+//! Hand] or three tins), or leave the kid with the crew (5 Red Hand Favor, the Haven pays nothing).
 class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 {
+	protected string m_sCrew = "a crew";
+	protected bool m_bFree;
+
+	protected static const int WAY_SKIP = 0;
+	protected static const int WAY_STAY = 1;
+	protected static const int WAY_FREE = 2;
+	protected static const int WAY_CREW = 3;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_TrailOfClues()
+	{
+		m_Story = new RZ_MissionStory("trail");
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected ref array<int> m_aTowns = {};
 	protected ref array<vector> m_aSpots = {};
 	protected string m_sName;
@@ -379,7 +400,92 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 		m_sTitle = "Trail of Clues";
 		m_sBrief = string.Format("%1 walked out of %2 three days ago and nobody's heard since. Their family asked a wanderer, the wanderer asked us. Start at the house in %2. Follow what they left behind.",
 			m_sName, first.m_sName);
+		Truth(gm, third);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm, RZ_Settlement third)
+	{
+		array<string> values = {"lost", "found", "crew"};
+		array<float> weights = {0.5, 0.3, 0};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, third.m_vCenter, 5000);
+		if (crew)
+		{
+			weights[2] = 0.2;
+			m_sCrew = crew.m_sName;
+		}
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_aTowns[0]), values, weights);
+		if (truth != "lost")
+			m_bAlive = true;
+
+		m_Job.m_vReadAt = m_aSpots[0];
+		m_Job.Read("", "elder", string.Format("The family photo on the dresser has a gap in it where someone took one out. %1 took Mum with them.", m_sName));
+		m_Job.Read("crew", "excon,raider", string.Format("A red chalk mark by the gate, a crew's 'pick up here'. %1 recruits young.", m_sCrew));
+
+		RZ_TalkScene sc = m_Job.Scene("The neighbour", "trail.neighbour", LandPointNear(m_aSpots[0], 6, 10));
+		int n0 = sc.Node("A neighbour hangs out washing that won't dry. \"Gone three days. The dog came back on the second. Make of that what you like.\"");
+		sc.Way(n0, "\"Which way did they go?\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_SKIP, "She points with a peg, past the next town and the one after. \"Walking fast, like they'd decided.\"", "\"I don't watch the road. I watch the washing.\"");
+		sc.Way(n0, "A tin for what she saw", RZ_TalkScene.FOOD, -1, 1, WAY_SKIP, "She pockets the tin and tells you exactly where, down to the gate.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! At the last town: Mum, or the crew's lookout (a second scene).
+	protected void LastScene(RZ_GameModeComponent gm)
+	{
+		string truth = m_Job.m_sTruth;
+		if (truth == "lost")
+			return;
+
+		if (m_Job.m_Scene)
+			m_Job.m_Scene.Cleanup();
+
+		if (truth == "found")
+		{
+			RZ_TalkScene mum = m_Job.Scene("Their mother", "trail.mum", LandPointNear(m_aSpots[2], 3, 6));
+			int m0 = mum.Node(string.Format("A woman with a bandaged arm sits by %1. \"Don't make me send them home. Don't make me keep them either.\"", m_sName));
+			mum.Decide(m0, "Leave them together", "leave them with their mother", WAY_STAY, "You'll tell the house you didn't find them. Nobody pays for that.", RZ_CureFinale.INDEP);
+			return;
+		}
+
+		RZ_TalkScene look = m_Job.Scene("The crew's lookout", "trail.lookout", LandPointNear(m_aSpots[2], 4, 8));
+		int l0 = look.Node(string.Format("A crew lookout sits on a wall by %1. \"New hire. Keen. Can't shoot, but keen.\"", m_sName));
+		look.Way(l0, "\"Let the kid go home.\"", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FREE, "He shrugs. \"Go on, then. We'll keep your bunk.\"", "\"The kid signed. Well. Drew a hand.\"");
+		look.Way(l0, "Three tins for the kid", RZ_TalkScene.FOOD, -1, 3, WAY_FREE, "\"Sold.\" He counts the tins twice.");
+		look.Decide(l0, "Leave the kid with the crew", "leave the kid with the crew", WAY_CREW, "\"Smart.\" The lookout nods to you like a colleague.", RZ_EFaction.BANDITS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		array<int> who = {playerId};
+		string subject = RZ_WorldFacts.Town(m_aTowns[0]);
+		if (way == WAY_SKIP)
+		{
+			OnClueRead(gm, playerId, 0, null);
+			OnClueRead(gm, playerId, 1, null);
+			return;
+		}
+
+		if (way == WAY_FREE)
+		{
+			m_bFree = true;
+			return;
+		}
+
+		if (way == WAY_STAY)
+		{
+			RZ_StoryKit.Record(this, "fate", subject, "stayed", who);
+			RZ_StoryKit.Later(gm, playerId, "A note", string.Format("A note under a stone where you'll find it: \"Mum's arm is better. We're not coming back. Thank you for not making us.\" %1", m_sName), m_aSpots[2]);
+		}
+		else
+		{
+			RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.BANDITS, 5);
+			RZ_StoryKit.Record(this, "fate", subject, "crew", who);
+		}
+
+		RZ_StoryKit.EndedOtherWay(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -417,6 +523,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 			{
 				int voice = AddClue(m_sName, "Thin, dirty, alive. \"I couldn't find her. I couldn't go back without her.\"");
 				SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_aSpots[2], 0, "", "Bring them home", voice, "Talk to " + m_sName);
+				LastScene(gm);
 			}
 			else
 			{
@@ -464,6 +571,16 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 	{
 		if (m_iStep < 2 || !m_bAlive)
 			return;
+
+		if (m_Job.m_sTruth == "crew" && !m_bFree)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "The lookout steps between you, friendly as anything. \"Talk to me first.\"");
+			return;
+		}
+
+		array<int> home = {playerId};
+		RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.Town(m_aTowns[0]), "home", home);
+		RZ_StoryKit.Later(gm, playerId, "At the house", string.Format("%1 is on the house's step, peeling potatoes badly. They wave the knife at you, which is a wave.", m_sName), m_aSpots[0], true);
 
 		gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 nods and follows you. \"Is it far?\"", m_sName));
 		m_eState = RZ_EMissionState.SUCCEEDED;

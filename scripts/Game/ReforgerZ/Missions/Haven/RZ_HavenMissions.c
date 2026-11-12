@@ -5,9 +5,30 @@
 //! Guarded by zombies. A mirror offer: one time in ten the Red Hand wants it too, for players the
 //! Haven Watches (they hear 5 minutes later); whoever has more holders there when the hold ends
 //! gets it, and a draw is half each. Players race each other to it, so expect PvP.
+//! A story job (key `cache`, kept per town): a cache, as they said; a family's larder (a house
+//! within 4 km: the jars have their name on); or a crew's stash (a Red Hand holding within 5 km:
+//! their thumbprint on every lid). A scavenger sits on the crates (the talk scene): talk him off
+//! ([Known - Haven]) or pay him two tins, and the hold is done without a shot. Then the question:
+//! the Haven, the family (nobody pays; their house +3 food, a callback at the door), or leave the
+//! crew's stash be (8 Red Hand Favor, the Haven pays nothing). Emptied anyway: +4 Red Hand Infamy.
 class RZ_Mission_SupplyCache : RZ_Mission_Hold
 {
 	protected bool m_bGuarded;
+	protected int m_iHouse = -1;		// larder: the family's house
+	protected string m_sCrew;			// bait: whose stash it is
+
+	protected static const int WAY_TALK = 0;
+	protected static const int WAY_TINS = 1;
+	protected static const int OPT_HAVEN = 0;
+	protected static const int OPT_OTHER = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_SupplyCache()
+	{
+		m_Story = new RZ_MissionStory("cache");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -39,7 +60,105 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 		m_sDeed = "found a supply cache near {town}";
 		m_sBrief = string.Format("A Haven scout radioed about an untouched supply cache in %1. Secure it and hold the area for a minute.", s.m_sName);
 		m_Mirror.Roll();
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"cache", "larder", "stash"};
+		array<float> weights = {0.5, 0, 0};
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(m_vPos, 4000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 5000);
+		if (crew)
+		{
+			weights[2] = 0.2;
+			m_sCrew = crew.m_sName;
+		}
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		string house = "a house nearby";
+		if (m_iHouse >= 0)
+			house = gm.GetSafehouses().Get(m_iHouse).m_sName;
+
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.Read("larder", "elder", string.Format("The jar labels are in a child's hand, and the surname's one you know from %1. This is somebody's larder.", house));
+		m_Job.Read("stash", "excon,raider", string.Format("A thumbprint in red on every lid. That's %1's bank, and banks have tellers who come back.", m_sCrew));
+		m_Job.Read("", "hunter", "Boot prints round the crates, a week old at least. Whoever stacked these meant to come back.");
+
+		string reveal = "Army tins and a crate of candles. Nobody's name on anything. Lucky you.";
+		if (truth == "larder")
+			reveal = string.Format("Jam jars with a family's name on the labels, the same one as a door in %1.", house);
+		else if (truth == "stash")
+			reveal = string.Format("A red thumbprint on every lid. %1 keeps its money in tins.", m_sCrew);
+
+		RZ_TalkScene sc = m_Job.Scene("The scavenger", "cache.scavenger", LandPointNear(m_vPos, 4, 8));
+		int n0 = sc.Node("A man sits on the crates eating out of one. \"Finders keepers. I found it. I'm keeping it, mostly.\"");
+		int n1 = sc.Node("He taps a lid with his spoon. \"What's in it is one question. Who it's for is the other.\"");
+		sc.Way(n0, "\"The Haven sent me.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_TALK, "He pockets two tins and stands. \"Tell them I guarded it. Very carefully.\"", "\"The Haven sends everybody. I'm still sitting here.\"");
+		sc.Way(n0, "Two tins and you walk", RZ_TalkScene.FOOD, -1, 2, WAY_TINS, "He weighs the tins in his hands and walks off whistling.");
+		sc.Ask(n0, "\"Whose is it?\"", n1);
+		sc.Ask(n1, "Look at the lids", -1, reveal, true);
+		sc.Service(n1, "Dress his cut hand", "nurse,doctor", 20, WAY_TINS, "\"That's better than tins.\" He flexes the hand and walks off, waving it.");
+
+		string labels = "Take it to the Haven";
+		if (truth == "larder")
+		{
+			labels += "|Leave it for the family";
+			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
+		}
+		else if (truth == "stash")
+		{
+			labels += "|Leave the crew's stash alone";
+			m_Choice.Asset(OPT_OTHER, RZ_EFaction.BANDITS);
+		}
+
+		m_Choice.Set("The Haven's scout comes up the street with a handcart. \"All of it? It's ours now, isn't it?\"", labels, "decide whose the cache is", OPT_HAVEN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Talked off or paid off: nobody's left to hold it against.
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (m_eState == RZ_EMissionState.ACTIVE)
+			m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (option == OPT_OTHER && m_Job.m_sTruth == "larder" && m_iHouse >= 0)
+		{
+			m_bHasGiver = false;
+			RZ_Safehouse h = gm.GetSafehouses().Get(m_iHouse);
+			gm.GetSafehouses().AddFood(m_iHouse, 3);
+			RZ_StoryKit.Record(this, "went_to", town, "family", who);
+			RZ_StoryKit.LaterWith(gm, this, h.m_sName, "A girl with a jam jar under each arm stops at the door. \"Mum says thank you for not eating our larder. She says most people would.\"", h.m_vPos, true);
+			NotifyParticipants(gm, m_sTitle, string.Format("The scout's cart goes back empty. The jars go to %1, and nobody pays you for them.", h.m_sName));
+			return;
+		}
+
+		if (option == OPT_OTHER && m_Job.m_sTruth == "stash")
+		{
+			m_bHasGiver = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 8);
+			RZ_StoryKit.Record(this, "went_to", town, "crew", who);
+			NotifyParticipants(gm, m_sTitle, string.Format("You leave the tins where they are. Someone from %1 hears who left them, and pays for manners.", m_sCrew));
+			return;
+		}
+
+		if (m_Job.m_sTruth == "stash")
+			m_Choice.BlameWith(gm, this, RZ_EFaction.BANDITS, 4, "emptied a crew's stash");
+
+		RZ_StoryKit.Record(this, "went_to", town, "haven", who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -58,6 +177,9 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
+		if (!m_bHasGiver)
+			return;
+
 		m_Mirror.Apply(gm, this, m_Mirror.HoldWinner(gm, this, m_vPos, m_fHoldRadius));
 		gm.SpawnRewardCrate(m_vPos);
 	}
@@ -595,8 +717,29 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 //! Pharmacy Lure merged in: [Sneak] throw something loud well away from the door and the infected in
 //! the aisles walk to the noise for a while; take the medicine unnoticed and it's the quiet way
 //! (the same pay, no extras). Noticed taking it, they turn on you. Open to anyone, unarmed.
+//! A story job (key `medicine`, kept per town): the shelves are stocked, as they said; a crew took
+//! half and is coming back for the rest (a Red Hand holding within 5 km); or the chemist still lives
+//! upstairs and counts her boxes. The woman in the doorway (the talk scene): [Known - Haven] "It's for
+//! the house" or three tins and she brings the box down (no gun, no standing); split it with the
+//! chemist (60%, an Independent route asset), or sell it to the crew's runner (12 Red Hand Favor, +5
+//! Haven Infamy, the Haven pays nothing). Record `medicine.went_to`.
 class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 {
+	protected string m_sHomeName;
+	protected string m_sCrew = "a crew";
+	protected string m_sWent = "house";
+
+	protected static const int WAY_GIVE = 0;
+	protected static const int WAY_SPLIT = 1;
+	protected static const int WAY_SELL = 2;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_MedicineRun()
+	{
+		m_Story = new RZ_MissionStory("medicine");
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected bool m_bGuarded;
 	protected bool m_bLured;
 	protected bool m_bTaken;
@@ -745,7 +888,90 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		m_sTitle = "Medicine Run";
 		m_sDeed = "brought medicine to {town}";
 		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2: the supplies are on its shelves, and something stands in the aisles. Fight it, or throw something loud well away from the door and walk in while it looks. Bring them back.", homeName, pharmacy.m_sName);
+		m_sHomeName = homeName;
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"stock", "looted", "upstairs"};
+		array<float> weights = {0.5, 0, 0.3};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 5000);
+		if (crew)
+		{
+			weights[1] = 0.3;
+			m_sCrew = crew.m_sName;
+		}
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.Read("looted", "labtech", "The stock book's last page is a list in another hand, every line ticked. Somebody shopped here with an order.");
+		m_Job.Read("looted", "excon,raider", string.Format("Chalk on the till: %1's mark and a date. They'll be back for the rest.", m_sCrew));
+		m_Job.Read("upstairs", "elder", "Washing on the line upstairs, one woman's, and a chair by the window facing the door. She still lives here.");
+
+		string line = "A woman leans in the doorway. \"Help yourself. I'm only the neighbour. The chemist's been dead since spring, God rest his prices.\"";
+		string reveal = "\"Nobody wants it but you and the things in the aisles. They don't read labels.\"";
+		if (truth == "looted")
+		{
+			line = "A woman leans in the doorway, watching the road. \"Half's gone already. A crew came Tuesday with a list.\"";
+			reveal = string.Format("\"%1. Their runner's due back for the other half. He's polite, if you're quick.\"", m_sCrew);
+		}
+		else if (truth == "upstairs")
+		{
+			line = "A woman leans in the doorway with a ledger. \"That's my shop. I live upstairs. I count the boxes every night.\"";
+			reveal = "\"Mine. Every box. I've kept people alive on that shelf since the trucks stopped. Ask nicely.\"";
+		}
+
+		RZ_TalkScene sc = m_Job.Scene("The woman in the doorway", "medicine.door", LandPointNear(m_vPos, 6, 10));
+		int n0 = sc.Node(line);
+		int n1 = sc.Node("\"So. What's it to be?\"");
+		sc.Way(n0, "\"It's for the house.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GIVE, string.Format("She sighs and brings the box down herself. \"For %1, then. Tell them who.\"", m_sHomeName), "\"Everybody says that. Everybody's for a house.\"");
+		sc.Way(n0, "Three tins for the box", RZ_TalkScene.FOOD, -1, 3, WAY_GIVE, "She counts the tins twice and goes in for the box.");
+		sc.Ask(n0, "\"Who else wants it?\"", n1, reveal, true);
+		if (truth == "upstairs")
+			sc.Decide(n1, "Split it with her", "split the medicine with the chemist", WAY_SPLIT, "\"Half, then. Half's more than anyone's offered.\" She brings down what she'll part with.", RZ_CureFinale.INDEP);
+		else if (truth == "looted")
+			sc.Decide(n1, "Sell it to the crew's runner", "sell the medicine to the crew", WAY_SELL, "The runner turns up on a bicycle, counts out the price and takes the box. He thanks you nicely.", RZ_EFaction.BANDITS);
+		else
+			sc.Ask(n1, "\"Why are you still here?\"", -1, "\"Where would I go? I'm the only one left who can read his handwriting.\"");
+
+		sc.Service(n1, "See to her cough", "nurse,doctor", 20, WAY_GIVE, "\"Fine. You've earned a box.\" She brings it down herself.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		vector at = m_vPos;
+		if (m_Job.m_Scene)
+			at = m_Job.m_Scene.m_vAt;
+
+		if (way == WAY_SELL)
+		{
+			m_sWent = "sold";
+			RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.BANDITS, 12);
+			RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.SURVIVORS, 5, "sold a house's medicine");
+			RZ_StoryKit.Dirty(gm, this, playerId);
+			RZ_StoryKit.EndedOtherWay(this);
+			return;
+		}
+
+		if (way == WAY_SPLIT)
+		{
+			m_sWent = "split";
+			m_fRewardScale = 0.6;
+			RZ_StoryKit.Later(gm, playerId, "The chemist", "A note through the safehouse door in neat capitals: \"The cough in the end house is better. You can have the other half back when it's empty. You won't.\"", at, true);
+		}
+
+		m_bTaken = true;
+		PutItemAt(gm, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnSuccess(RZ_GameModeComponent gm)
+	{
+		RZ_StoryKit.Record(this, "went_to", RZ_WorldFacts.Town(m_iSettlement), m_sWent, m_aParticipants);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1120,6 +1346,12 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 //! #16 Trader Caravan: defend a Haven trader at a crossroads from a Red Hand raid.
 //! Needs the survivor group and Red Hand group prefabs. The trader is there in body once someone
 //! comes within 300 m; the raid comes 90 s after someone reaches him.
+//! A story job (key `caravan`, kept per town): a raid, as they said; a debt (he owes a crew within 6
+//! km and they're collecting); or Bastion's stores (a Bastion holding on the map: stencils under his
+//! paint). His boy minds the cart (the talk scene): [Known - Haven] pack up and go before they come
+//! (no gun: the raid finds an empty road, half pay), pay his debt (4 tins or 20 Red Hand Favor: the
+//! collectors take it and go). Then the question: tell the Haven (default), keep his secret (nobody;
+//! the crate stays), or send Bastion's goods back (8 Bastion Favor, the Haven pays nothing).
 class RZ_Mission_TraderCaravan : RZ_Mission
 {
 	protected ref RZ_UnitWatch m_Trader = new RZ_UnitWatch();
@@ -1127,6 +1359,22 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 	protected float m_fRaidIn = 90;
 	protected bool m_bRaidSent;
 	protected bool m_bShown;
+	protected bool m_bPaid;			// the debt paid: the collectors take it and go
+	protected bool m_bPacked;		// packed up and gone: the raid finds an empty road
+	protected string m_sCrew = "a crew";
+
+	protected static const int WAY_PACK = 0;
+	protected static const int WAY_PAY = 1;
+	protected static const int OPT_HAVEN = 0;
+	protected static const int OPT_OTHER = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_TraderCaravan()
+	{
+		m_Story = new RZ_MissionStory("caravan");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1158,12 +1406,119 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
 		m_sTitle = "Trader Caravan";
 		m_sBrief = string.Format("A Haven trader stopped at the crossroads outside %1. The Red Hand knows. Get there and keep him alive.", s.m_sName);
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"raid", "debt", "stores"};
+		array<float> weights = {0.5, 0, 0};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 6000);
+		if (crew)
+		{
+			weights[1] = 0.35;
+			m_sCrew = crew.m_sName;
+		}
+
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, m_vPos, 100000))
+			weights[2] = 0.2;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.Read("debt", "excon,raider", string.Format("The cart's tally has a column headed in red. That's %1's interest, and it's a debt, not a raid.", m_sCrew));
+		m_Job.Read("stores", "soldier", "The tins have Bastion lot numbers under the new paint. These came off a post's shelf.");
+		m_Job.Read("stores", "labtech", "Forty tins on the cart, and the manifest says twelve. Somebody can't count, or doesn't want to.");
+
+		string reveal = "\"They want the cart. Everybody wants the cart. It's a very good cart.\"";
+		if (truth == "debt")
+			reveal = string.Format("The boy looks at his feet. \"Dad owes %1. They're not raiding. They're collecting.\"", m_sCrew);
+		else if (truth == "stores")
+			reveal = "The boy scratches at a tin with his thumbnail. Under the paint, a Bastion stencil.";
+
+		RZ_TalkScene sc = m_Job.Scene("The trader's boy", "caravan.boy", LandPointNear(m_vPos, 5, 9));
+		int n0 = sc.Node("A boy sits on the cart's shaft. \"Prices are fair. Dad says fair for him is what fair means.\"");
+		int n1 = sc.Node("\"Dad won't leave the goods. He'd leave me first, he says. He's joking. Mostly.\"");
+		sc.Ask(n0, "\"Why are they coming?\"", n1, reveal, true);
+		sc.Way(n1, "\"Pack up. Go now.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_PACK, "The boy whistles and his dad starts throwing sacks on the cart. They're gone up the side road in a minute.", "\"He won't go for you. He says you look expensive.\"");
+		if (truth == "debt")
+		{
+			sc.Way(n1, "Pay what he owes", RZ_TalkScene.FOOD, -1, 4, WAY_PAY, "The boy runs the tins to the trees. Nobody comes out of them shooting.");
+			sc.Way(n1, "Settle it in Favor", RZ_TalkScene.FAVOR, RZ_EFaction.BANDITS, 20, WAY_PAY, "Word goes up the road that the debt's settled. The collectors wave from the trees.");
+		}
+
+		string labels = "Tell the Haven what happened";
+		if (truth == "debt")
+		{
+			labels += "|Keep his secret";
+			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
+		}
+		else if (truth == "stores")
+		{
+			labels += "|Send Bastion's goods back";
+			m_Choice.Asset(OPT_OTHER, RZ_EFaction.MILITARY);
+		}
+
+		m_Choice.Set("The trader wipes his hands on his coat. \"Well. What do you tell them in the house?\"", labels, "decide what the house hears", OPT_HAVEN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (way == WAY_PACK)
+		{
+			m_bPacked = true;
+			m_fRewardScale = 0.5;
+			m_Trader.Delete();
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			return;
+		}
+
+		m_bPaid = true;
+		if (m_bRaidSent)
+		{
+			m_Raiders.Delete();
+			m_eState = RZ_EMissionState.SUCCEEDED;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (option == OPT_OTHER && m_Job.m_sTruth == "debt")
+		{
+			m_bHasGiver = false;
+			RZ_StoryKit.Record(this, "fate", town, "secret", who);
+			NotifyParticipants(gm, m_sTitle, "The house hears the Red Hand came and went. The trader slips you a wink and nothing else.");
+			RZ_StoryKit.LaterWith(gm, this, "The trader", "The trader passes you on the road and tips his hat. His cart's lighter. So's his debt, he says.", m_vPos);
+			return;
+		}
+
+		if (option == OPT_OTHER && m_Job.m_sTruth == "stores")
+		{
+			m_bHasGiver = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 8);
+			RZ_StoryKit.Record(this, "fate", town, "returned", who);
+			NotifyParticipants(gm, m_sTitle, "Bastion's tins go back to Bastion's post. The trader takes it badly. The post takes it well.");
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", town, m_Job.m_sTruth, who);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		// Packed up and gone before the raid: nobody left to raid
+		if (m_bPacked)
+		{
+			m_eState = RZ_EMissionState.SUCCEEDED;
+			return;
+		}
+
 		if (!m_bShown)
 		{
 			if (!RZ_ContractHelp.AnyNear(players, m_vPos, 300))
@@ -1189,6 +1544,13 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 			// The raid starts once someone is there to see it
 			if (CountPlayersNear(players, m_vPos, 120) == 0)
 				return;
+
+			// The debt's paid before they came: they don't
+			if (m_bPaid)
+			{
+				m_eState = RZ_EMissionState.SUCCEEDED;
+				return;
+			}
 
 			m_fRaidIn -= dt;
 			if (m_fRaidIn > 0)
@@ -1218,7 +1580,8 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 3, 6));
+		if (!m_bPacked)
+			gm.SpawnRewardCrate(RZ_Util.RandomPointInRing(m_vPos, 3, 6));
 	}
 
 	//------------------------------------------------------------------------------------------------

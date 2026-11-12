@@ -69,6 +69,8 @@ class RZ_Mission
 	//! truths, records. Null: the mission runs exactly as before.
 	ref RZ_MissionStory m_Story;
 	ref RZ_OneChoice m_Choice;		// one real choice before it ends (Missions/Blocks/RZ_OneChoice.c), null for none
+	//! A story job's truth, reads and talk scene (Missions/Story/RZ_TalkScene.c). Null for none.
+	ref RZ_StoryJob m_Job;
 	//! A mirror offer (Missions/Story/RZ_Mirror.c): a second giver for the same job. Null: one giver.
 	ref RZ_Mirror m_Mirror;
 	//! An amends job reserved for one player by a parley or a knock (Factions/RZ_Parley.c): offered to
@@ -206,8 +208,24 @@ class RZ_Mission
 		if (m_Story)
 			m_Story.m_Deciding.EndHold();
 
+		// A talk scene's decision
+		if (option >= RZ_TalkScene.HOLD_BASE)
+		{
+			if (m_Job && m_Job.m_Scene)
+				m_Job.m_Scene.HoldDone(gm, this, decider, option);
+
+			return;
+		}
+
 		if (m_Choice)
 			m_Choice.HoldDone(gm, this, decider, option);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A way through at a talk scene's person passed, or its decision settled (RZ_TalkScene): `way`
+	//! is the mission's own number for it.
+	void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -404,6 +422,9 @@ class RZ_Mission
 		RevealNear(gm, ids, players);
 		if (m_Story)
 			m_Story.Update(this, gm, dt, ids, players);
+
+		if (m_Job)
+			m_Job.Tick(gm, this, dt, ids, players);
 
 		if (m_Mirror)
 			m_Mirror.Tick(gm, this, dt, ids);
@@ -627,6 +648,9 @@ class RZ_Mission
 	{
 		if (m_Choice && objIdx == RZ_OneChoice.OBJECT_INDEX)
 			m_Choice.Handle(gm, this, playerId, option);
+
+		if (m_Job && m_Job.m_Scene && objIdx == RZ_TalkScene.OBJECT_INDEX)
+			m_Job.m_Scene.Handle(gm, this, playerId, option);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -634,8 +658,19 @@ class RZ_Mission
 	//! "Leave it to them" (Leave: no pay, no blame).
 	void HandleObjectUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value)
 	{
-		if (m_Choice && objIdx == RZ_OneChoice.OBJECT_INDEX && value == 0)
-			RZ_StoryKit.Leave(gm, this, playerId);
+		if (m_Choice && objIdx == RZ_OneChoice.OBJECT_INDEX)
+		{
+			// Leave it to them; Object and Stand with while a hold runs
+			if (value == 0)
+				RZ_StoryKit.Leave(gm, this, playerId);
+			else if (value == 1 && m_Story)
+				m_Story.m_Deciding.Object(gm, this, playerId);
+			else if (value == 2 && m_Story)
+				m_Story.m_Deciding.StandWith(playerId);
+		}
+
+		if (m_Job && m_Job.m_Scene && objIdx == RZ_TalkScene.OBJECT_INDEX)
+			m_Job.m_Scene.Use(gm, this, playerId, value);
 	}
 
 	//------------------------------------------------------------------------------------------------

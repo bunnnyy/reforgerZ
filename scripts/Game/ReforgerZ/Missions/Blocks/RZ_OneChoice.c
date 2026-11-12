@@ -66,7 +66,7 @@ class RZ_OneChoice
 			m_Person = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(at, 3, 6)));
 
 		if (m_Person)
-			RZ_PuzzleObjectComponent.Tag(m_Person, m.m_iId, OBJECT_INDEX, "Leave it to them", m_sLabels);
+			RZ_PuzzleObjectComponent.Tag(m_Person, m.m_iId, OBJECT_INDEX, "Leave it to them|Object|Stand with", m_sLabels);
 
 		if (!m_Person)
 		{

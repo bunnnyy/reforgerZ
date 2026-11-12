@@ -125,9 +125,27 @@ class RZ_Event_Storm : RZ_Event_Timed
 //------------------------------------------------------------------------------------------------
 //! #9 Wandering Trader: a neutral merchant parks somewhere for 20 minutes.
 //! Needs the trader prefab (e.g. a Shop System trader).
+//! A story job (key `trader`, kept per town): honest goods, as they said; a dead house's stores (a
+//! house within 6 km: its name on the crates); or he sells the roads (who passed, to a crew within 6
+//! km). His wife on the wagon (the talk scene): stolen: send the crates home (the house +3 food, 8
+//! Haven Favor, he leaves early, a Haven asset); roads: tell the house he's selling them (Haven morale
+//! +1, +4 Red Hand Infamy, he leaves) or two tins for his silence about you (nothing else changes).
 class RZ_Event_WanderingTrader : RZ_Event_Timed
 {
 	protected IEntity m_Trader;
+	protected int m_iHouse = -1;
+	protected string m_sCrew = "a crew";
+
+	protected static const int WAY_HOME = 0;
+	protected static const int WAY_TELL = 1;
+	protected static const int WAY_QUIET = 2;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Event_WanderingTrader()
+	{
+		m_Story = new RZ_MissionStory("trader");
+		m_Job = new RZ_StoryJob();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -161,7 +179,88 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 
 		m_sTitle = "Wandering Trader";
 		m_sBrief = string.Format("A trader has parked outside %1 for the next 20 minutes. Rare goods. Protect him, or rob him.", s.m_sName);
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"honest", "stolen", "roads"};
+		array<float> weights = {0.5, 0, 0};
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(m_vPos, 6000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 6000);
+		if (crew)
+		{
+			weights[2] = 0.2;
+			m_sCrew = crew.m_sName;
+		}
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		string house = "a house";
+		if (m_iHouse >= 0)
+			house = gm.GetSafehouses().Get(m_iHouse).m_sName;
+
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.m_fReadRange = 20;
+		m_Job.Read("stolen", "elder", string.Format("The crates are stencilled with a house's name: %1's. That house had stores, once.", house));
+		m_Job.Read("stolen", "labtech", "His price list has tins at a quarter of what they're worth. Goods you didn't pay for are cheap to sell.");
+		m_Job.Read("roads", "excon,raider", string.Format("A notebook in his coat with times and number plates. %1 buys that kind of list.", m_sCrew));
+
+		string reveal = "\"Bought, swapped, found. Mostly found. Nobody minds where.\"";
+		if (truth == "stolen")
+			reveal = string.Format("\"Off a cart outside %1. The people who owned it weren't using it any more. Not in the way you'd think.\"", house);
+		else if (truth == "roads")
+			reveal = "\"He writes down who passes. Somebody pays for that. Don't look at his notebook, he's shy.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The trader's wife", "trader.wife", LandPointNear(m_vPos, 4, 7));
+		int n0 = sc.Node("A woman sits on the wagon's step, shelling peas. \"Everything's half price. The other half's what it costs you.\"");
+		int n1 = sc.Node("\"So you know. Now what?\"");
+		sc.Ask(n0, "\"Where's it all from?\"", n1, reveal, true);
+		if (truth == "stolen" && m_iHouse >= 0)
+			sc.Decide(n1, "Send the crates home", "send the trader's crates back to the house", WAY_HOME, "She sighs and starts loading the crates back. \"He'll sulk for a week.\"", RZ_EFaction.SURVIVORS);
+		else if (truth == "roads")
+		{
+			sc.Decide(n1, "Tell the house he sells roads", "tell the house the trader sells the roads", WAY_TELL, "\"Then we'll be going.\" She whistles for him and the wagon's moving in a minute.");
+			sc.Way(n1, "Two tins and I wasn't here", RZ_TalkScene.FOOD, -1, 2, WAY_QUIET, "She tears a page out of his notebook and gives it to you. Your page.");
+		}
+		else
+			sc.Ask(n1, "\"Where are you headed?\"", -1, "\"Wherever the road's least shot at. It moves about.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		array<int> who = {playerId};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (way == WAY_QUIET)
+		{
+			RZ_StoryKit.Record(this, "fate", town, "quiet", who);
+			return;
+		}
+
+		if (way == WAY_HOME)
+		{
+			gm.GetSafehouses().AddFood(m_iHouse, 3);
+			RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.SURVIVORS, 8);
+			RZ_StoryKit.Record(this, "fate", town, "home", who);
+			RZ_Safehouse h = gm.GetSafehouses().Get(m_iHouse);
+			RZ_StoryKit.Later(gm, playerId, h.m_sName, "The crates are stacked by the house's door with the stencil facing out. Somebody's chalked 'HOME' under it.", h.m_vPos);
+		}
+		else
+		{
+			RZ_OneChoice.Morale(gm, RZ_EFaction.SURVIVORS, 1, "a trader who sold the roads, found out");
+			RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.BANDITS, 4, "spoiled a crew's road list");
+			RZ_StoryKit.Record(this, "fate", town, "told", who);
+		}
+
+		// He packs up early
+		m_fTimeLeft = Math.Min(m_fTimeLeft, 5);
 	}
 
 	//------------------------------------------------------------------------------------------------

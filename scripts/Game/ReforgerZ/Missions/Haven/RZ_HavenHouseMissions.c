@@ -6,8 +6,22 @@
 //! The Courier wanderer's job: carry letters to a safehouse (or a quiet town) 0.8-4 km
 //! away. No fighting needed. Never picked at random: RZ_Wanderers starts it when a player
 //! asks a Courier for work. Needs the mission item and the Haven drop point.
+//! A story job (key `letters`, kept per destination): letters, as they said; to the man from himself;
+//! or a crew's sealed letter among them (a Red Hand holding within 6 km: a toll list for the house).
+//! The ways are the road, the quiet way and the Hunter's quieter one. The woman at the door (the talk
+//! scene, at the drop): who they're for; the crew's: burn the red one (4 Haven Favor, +3 Red Hand
+//! Infamy, a Haven asset).
 class RZ_Mission_CourierJob : RZ_Mission_Delivery
 {
+	protected static const int WAY_BURN = 0;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_CourierJob()
+	{
+		m_Story = new RZ_MissionStory("letters");
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected vector m_vStart;
 	protected string m_sCourier;
 	protected bool m_bPrepared;
@@ -110,10 +124,40 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 			m_sBrief += string.Format(" \"The short way is straight through %1. Quiet in there pays better. Loud, and you'd better hope the letters are worth it.\"", quiet.m_sName);
 
 		// Who the letter is really for (a truth, kept per destination for 3 season days)
-		array<string> truths = {"as_said", "the_writer"};
-		array<float> weights = {0.7, 0.3};
-		m_sTruth = RZ_WorldFacts.Get().Memory().DrawTruth("letters", RZ_WorldFacts.Town(m_iSettlement), truths, weights);
+		array<string> truths = {"as_said", "the_writer", "crew"};
+		array<float> weights = {0.5, 0.3, 0};
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, dest, 6000))
+			weights[2] = 0.2;
+
+		m_sTruth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), truths, weights);
+		m_Job.m_vReadAt = m_vStart;
+		m_Job.m_fReadRange = 15;
+		m_Job.Read("the_writer", "elder", "Every envelope's in the same hand, and so is the name on the back of each.");
+		m_Job.Read("crew", "excon,raider", "One envelope's sealed with red wax and a thumbprint. A crew's letter, riding in the Haven's post.");
+
+		string reveal = "\"Mothers, mostly. Mothers write. Sons don't.\"";
+		if (m_sTruth == "the_writer")
+			reveal = "\"Him again. He writes to himself so someone brings him the post. We all pretend.\"";
+		else if (m_sTruth == "crew")
+			reveal = "She holds the red-sealed one up to the light. \"That's a toll list, that is. In our own post.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The woman at the door", "letters.door", LandPointNear(dest, 3, 6));
+		int n0 = sc.Node("A woman at the door takes the bundle before you've offered it. \"Anything for me? There never is. I check anyway.\"");
+		int n1 = sc.Node("\"Go on, then. What do you want done with it?\"");
+		sc.Ask(n0, "\"Who are they for?\"", n1, reveal, true);
+		if (m_sTruth == "crew")
+			sc.Decide(n1, "Burn the red one", "burn the crew's letter", WAY_BURN, "The red-sealed letter goes in the stove. The rest go on the shelf by the door.", RZ_EFaction.SURVIVORS);
+
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		array<int> who = {playerId};
+		RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.SURVIVORS, 4);
+		RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.BANDITS, 3, "burned a crew's letter");
+		RZ_StoryKit.Record(this, "post", RZ_WorldFacts.Town(m_iSettlement), "burned", who);
 	}
 
 	protected int m_iQuietTown = -1;
@@ -181,6 +225,7 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 			string line = "The woman at the door reads the top letter and laughs, once. \"This one's to him from him. He writes to himself so someone brings him the post.\"";
 			gm.NotifyPlayerAs(playerId, m_sTitle, line, RZ_ENoticeTag.MISSION);
 			RZ_WorldFacts.Get().Memory().FoundTruth("letters", RZ_WorldFacts.Town(m_iSettlement), "delivery");
+			RZ_StoryKit.Later(gm, playerId, "The man who writes to himself", "An old man raises his cup to you from a doorstep. \"Got a letter this week. From a very good friend.\"", m_vPos, true);
 		}
 	}
 }

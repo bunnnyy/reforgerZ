@@ -424,7 +424,8 @@ class RZ_Checks
 	//! kind: "food", "medical", "part".
 	static int ValueOf(string kind)
 	{
-		if (kind == "medical")
+		// A background's service on the spot (a talk scene's): two, plus the time
+		if (kind == "medical" || kind == "service")
 			return 2;
 
 		if (kind == "part")

@@ -34,6 +34,9 @@ class RZ_MissionStorySettings
 	[Attribute("0", desc: "A PvE server: mirror offers are off (they turn into races between players)")]
 	bool m_bPvE;
 
+	[Attribute("0", desc: "Numbered scenes: a talk scene's line lists its options by number and its choice slots read Option 1 to Option 4 (the fallback if the replicated labels don't show in play)")]
+	bool m_bNumberedScenes;
+
 	protected static ref RZ_MissionStorySettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------

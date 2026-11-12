@@ -4,10 +4,27 @@
 //! #1 Dead Drop: the betrayal path. The Red Hand buys samples, paying in loot
 //! and Favor. Every sample sold is one the lab never sees, and Halcyon finds out.
 //! ★ Ex-Con: 25% better pay.
+//! A story job (key `deaddrop`, kept per town): samples sold on, as they said; cut into fake doses for
+//! the houses; or bought back off the books by Halcyon's own (a Halcyon station on the map). The buyer
+//! (the talk scene): [Known - Red Hand] be paid in person (the Ex-Con's rate for anyone); cut: warn
+//! the houses (it ends: nobody pays, +5 Red Hand Infamy, Haven morale +1, a Haven route asset); Halcyon:
+//! take them to the lab instead (10 Halcyon Favor, the crew pays nothing, a Halcyon asset).
 class RZ_Mission_BanditDeadDrop : RZ_Mission
 {
 	protected IEntity m_Drop;
 	protected int m_iSold;
+	protected ref array<int> m_aInPerson = {};
+
+	protected static const int WAY_FACE = 0;
+	protected static const int WAY_WARN = 1;
+	protected static const int WAY_LAB = 2;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_BanditDeadDrop()
+	{
+		m_Story = new RZ_MissionStory("deaddrop");
+		m_Job = new RZ_StoryJob();
+	}
 
 	protected static const int BANDIT_FAME_PER_SAMPLE = 8;
 	protected static const int BANDIT_FAVOR_PER_SAMPLE = 15;
@@ -50,7 +67,71 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 
 		m_sTitle = "Dead Drop";
 		m_sBrief = string.Format("The Red Hand is paying well for infected samples. No questions asked. There's a drop near %1.", s.m_sName);
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"samples", "cut", "halcyon"};
+		array<float> weights = {0.5, 0.3, 0};
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.INSTITUTE, m_vPos, 100000))
+			weights[2] = 0.2;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.m_fReadRange = 20;
+		m_Job.Read("cut", "labtech", "A label maker in the buyer's box, and a roll of blank antidote labels. These aren't going to a lab.");
+		m_Job.Read("halcyon", "labtech", "The cool box is Halcyon's. The number's scratched off, but the lab's tape is still on the hinge.");
+		m_Job.Read("samples", "excon,raider", "The usual price at the usual drop. This crew sells on to someone who pays better.");
+
+		string reveal = "\"Somebody pays more than me. That's all anybody's for.\"";
+		if (truth == "cut")
+			reveal = "\"Mixed with saline, a label on, sold to the houses as the cure. Don't make that face. It's mostly saline.\"";
+		else if (truth == "halcyon")
+			reveal = "\"Between us? A man from the lab buys them back. His bosses think he finds them.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The buyer", "deaddrop.buyer", LandPointNear(m_vPos, 4, 8));
+		int n0 = sc.Node("A man in rubber gloves sits by the drop. \"Fresh, please. I'm not paying for last week's.\"");
+		int n1 = sc.Node("\"You're asking a lot of questions for a seller.\"");
+		sc.Ask(n0, "\"What are they for?\"", n1, reveal, true);
+		sc.Way(n0, "\"Pay me in person.\"", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FACE, "\"Face to face, then. Better rate. Longer memory.\"", "\"In the drop, like everyone.\"");
+		if (truth == "cut")
+			sc.Decide(n1, "Warn the houses", "warn the houses about the doses", WAY_WARN, "You'll put it on the house radio: the cheap cure is saline. The buyer packs his box without a word.", RZ_EFaction.SURVIVORS);
+		else if (truth == "halcyon")
+			sc.Decide(n1, "Take them to the lab instead", "take the samples to the lab", WAY_LAB, "\"Your funeral. Theirs pays worse.\" He shuts the box.", RZ_EFaction.INSTITUTE);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		array<int> who = {playerId};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (way == WAY_FACE)
+		{
+			if (!m_aInPerson.Contains(playerId))
+				m_aInPerson.Insert(playerId);
+
+			m_Job.m_Scene.m_bDone = false;
+			return;
+		}
+
+		if (way == WAY_WARN)
+		{
+			RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.BANDITS, 5, "warned the houses about the doses");
+			RZ_OneChoice.Morale(gm, RZ_EFaction.SURVIVORS, 1, "the houses warned about the doses");
+			RZ_StoryKit.Record(this, "went_to", town, "warned", who);
+			RZ_StoryKit.Later(gm, playerId, "A house radio", "The house radio, between songs: \"If someone sold you the cure for four tins, it's salt water. Someone told us. Drink it anyway, it's clean.\"", m_vPos);
+		}
+		else
+		{
+			RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.INSTITUTE, 10);
+			RZ_StoryKit.Record(this, "went_to", town, "lab", who);
+		}
+
+		m_iSold = Math.Max(m_iSold, 1);
+		RZ_StoryKit.EndedOtherWay(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -67,7 +148,7 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 			m_aParticipants.Insert(playerId);
 
 		float pay = 1;
-		if (HasBonus(gm, playerId))
+		if (HasBonus(gm, playerId) || m_aInPerson.Contains(playerId))
 			pay = 1.25;
 
 		int fame = RZ_Util.RoundToInt(BANDIT_FAME_PER_SAMPLE * value * pay);
@@ -98,6 +179,10 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
+		if (!m_bHasGiver)
+			return;
+
+		RZ_StoryKit.Record(this, "went_to", RZ_WorldFacts.Town(m_iSettlement), m_Job.m_sTruth, m_aParticipants);
 		gm.NotifyAll("Halcyon", string.Format("Someone sold %1 samples to the Red Hand. That's research we'll never get back.", m_iSold));
 	}
 

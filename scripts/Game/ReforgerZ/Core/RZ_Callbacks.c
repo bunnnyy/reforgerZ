@@ -135,6 +135,7 @@ class RZ_Callbacks
 			return;
 
 		m_fTimer = 0;
+		RZ_DoorCallers.Tick(CHECK_SECONDS);
 		Expire();
 		if (m_aList.IsEmpty() || ids.IsEmpty())
 			return;
@@ -172,8 +173,14 @@ class RZ_Callbacks
 			RZ_Callback due = m_aList[pick];
 			m_aList.Remove(pick);
 			m_mLastAt.Set(p.m_sIdentity, p.m_fLifeSeconds);
-			m_GM.NotifyPlayerAs(playerId, due.title, due.text, RZ_ENoticeTag.AUTO);
-			RZ_Log.Info(string.Format("Callbacks: told %1: %2", RZ_Util.PlayerName(playerId), due.title));
+			// A story job's callback at the door: a stand-in says it (Missions/Story/RZ_DoorCallers.c)
+			string plain;
+			if (RZ_DoorCallers.Strip(due.title, plain))
+				RZ_DoorCallers.Say(m_GM, playerId, plain, due.text, Vector(due.x, 0, due.z));
+			else
+				m_GM.NotifyPlayerAs(playerId, due.title, due.text, RZ_ENoticeTag.AUTO);
+
+			RZ_Log.Info(string.Format("Callbacks: told %1: %2", RZ_Util.PlayerName(playerId), plain));
 		}
 	}
 

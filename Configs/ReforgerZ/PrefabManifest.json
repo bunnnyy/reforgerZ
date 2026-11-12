@@ -6868,7 +6868,8 @@
     "m_fWeightMin": "0.75",
     "m_fWeightMax": "1.3",
     "m_fMirrorChance": "0.1",
-    "m_bPvE": "0"
+    "m_bPvE": "0",
+    "m_bNumberedScenes": "0"
    }
   },
   {

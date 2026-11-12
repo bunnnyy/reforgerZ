@@ -107,6 +107,43 @@ class RZ_MissionReasons
 			result.Insert("racket.ran");
 		}
 
+		// The other story jobs (docs/MISSIONS.md: each has its row's "story key")
+		if (t == RZ_Mission_SupplyCache || t == RZ_Mission_TraderCaravan)
+			result.Insert("house.hungry");
+
+		if (t == RZ_Mission_MedicineRun || t == RZ_Mission_TrailOfClues || t == RZ_Mission_TheCrossing)
+			result.Insert("house.bitten");
+
+		if (t == RZ_Mission_RefugeeColumn)
+		{
+			result.Insert("horde.passed");
+			result.Insert("town.infested");
+		}
+
+		if (t == RZ_Mission_TraderCaravan || t == RZ_Mission_TheInformant || t == RZ_Mission_RaidRedHand)
+			result.Insert("racket.ran");
+
+		if (t == RZ_Mission_TheInformant || t == RZ_Mission_RaidRedHand)
+			result.Insert("crew.skimmed");
+
+		if (t == RZ_Mission_RescueThePilot || t == RZ_Mission_WeaponsCache || t == RZ_Mission_BustOut)
+			result.Insert("post.pressure");
+
+		if (t == RZ_Mission_WeaponsCache)
+			result.Insert("town.infested");
+
+		if (t == RZ_Mission_DoubleAgent)
+			result.Insert("post.truck_lost");
+
+		if (t == RZ_Mission_BanditDeadDrop || t == RZ_Mission_ResearchData || t == RZ_Mission_TheCrossing)
+			result.Insert("lab.short");
+
+		if (t == RZ_Mission_ResearchData || t == RZ_Mission_EscortTheScientist)
+			result.Insert("cure.*");
+
+		if (t == RZ_Mission_EscortTheScientist)
+			result.Insert("house.water");
+
 		// The work rows (RZ_WorkRows.c)
 		RZ_WorkRows.Reasons(t, result);
 	}
@@ -271,6 +308,67 @@ class RZ_MissionReasons
 
 		if (t == RZ_Mission_WaterSurvey)
 			return "Nobody knows which town is next. Somebody finds out.";
+
+		// The other story jobs
+		if (t == RZ_Mission_SupplyCache)
+			return "The cache went to whoever got there next. Someone's eating well tonight, and it isn't the house.";
+
+		if (t == RZ_Mission_MedicineRun)
+			return "The house goes without. The medic boils the same bandages twice and calls them new.";
+
+		if (t == RZ_Mission_RefugeeColumn)
+			return "The column broke up on the road. Some of them will turn up at a door one day, and some won't.";
+
+		if (t == RZ_Mission_TraderCaravan)
+			return "The cart's on its side at the crossroads. The trader's boy sells what's left of it to anyone passing.";
+
+		if (t == RZ_Mission_TheInformant)
+			return "The crew's runs go on as before. The house keeps its door shut on Tuesdays.";
+
+		if (t == RZ_Mission_RescueThePilot)
+			return "The post reads his name on the call and the word 'grounded' after it.";
+
+		if (t == RZ_Mission_RaidRedHand)
+			return "The camp's still there. The crew moved its fire, not its mind.";
+
+		if (t == RZ_Mission_WeaponsCache)
+			return "The rifles are someone else's now. The post finds out whose the hard way.";
+
+		if (t == RZ_Mission_BanditDeadDrop)
+			return "The buyer packs up and goes. Nobody knows where the samples would have ended up, which suits him.";
+
+		if (t == RZ_Mission_BustOut)
+			return "They're still in the stockade. The crew puts their names in the book, under 'owing'.";
+
+		if (t == RZ_Mission_DoubleAgent)
+			return "The dossier never got there. The crew asks who it trusted with it, and writes the answer down.";
+
+		if (t == RZ_Mission_ResearchData)
+			return "The drive stays where it fell. The lab writes the same week's work again from memory.";
+
+		if (t == RZ_Mission_ColdChain)
+			return "The vials went warm on the road. The house's nurse waits at the door until dark anyway.";
+
+		if (t == RZ_Mission_EscortTheScientist)
+			return "Her readings stop halfway. The lab files them under 'incomplete', with her name.";
+
+		if (t == RZ_Event_WanderingTrader)
+			return "The trader's wagon is gone by morning, and so is whatever he knew.";
+
+		if (t == RZ_Event_PrisonBreak)
+			return "The convicts are wherever they were going now. The cells stay open.";
+
+		if (t == RZ_Event_CollapseShelter)
+			return "Nobody from the shelter made it out. The warden keeps the list in his coat.";
+
+		if (t == RZ_Mission_TrailOfClues)
+			return "The trail goes cold in the third town. The family leaves a lamp in the window.";
+
+		if (t == RZ_Mission_CourierJob)
+			return "The letters never came. The house says the post is slow these days, and laughs.";
+
+		if (t == RZ_Mission_TheCrossing)
+			return "The package stays at the line. The drones fly over it every night, very carefully.";
 
 		// The work rows (RZ_WorkRows.c)
 		return RZ_WorkRows.Fallout(t);

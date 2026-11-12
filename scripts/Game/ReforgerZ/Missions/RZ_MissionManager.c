@@ -807,6 +807,9 @@ class RZ_MissionManager
 
 			m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
 			RZ_StoryGroups.Release(m.m_iId);
+			if (m.m_Job)
+				m.m_Job.Cleanup();
+
 			m.Cleanup(m_GM);
 			return;
 		}
@@ -880,6 +883,9 @@ class RZ_MissionManager
 
 		if (m.m_Choice)
 			m.m_Choice.Cleanup();
+
+		if (m.m_Job)
+			m.m_Job.Cleanup();
 
 		// Whatever it held (RZ_WorldFacts claims) is free again
 		m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));

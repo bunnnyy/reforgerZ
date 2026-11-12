@@ -334,6 +334,14 @@ class RZ_PuzzleMission : RZ_Mission
 		if (m_eState != RZ_EMissionState.ACTIVE || !CheckLockout(gm, playerId))
 			return;
 
+		// A one-choice person or a talk scene's person (Missions/Story/RZ_TalkScene.c)
+		if (objIdx >= RZ_OneChoice.OBJECT_INDEX)
+		{
+			AddParticipant(playerId);
+			HandleObjectChoice(gm, playerId, objIdx, option);
+			return;
+		}
+
 		// The Tier 0 audit's decider rule: a contract's choices belong to someone it was offered to
 		if (m_bContract && !m_Story && !RZ_MissionReasons.Tier0Key(Type()).IsEmpty() && !IsEligible(gm, playerId))
 		{
@@ -353,6 +361,12 @@ class RZ_PuzzleMission : RZ_Mission
 			return;
 
 		AddParticipant(playerId);
+		if (objIdx >= RZ_OneChoice.OBJECT_INDEX)
+		{
+			HandleObjectUse(gm, playerId, objIdx, value);
+			return;
+		}
+
 		OnUse(gm, playerId, objIdx, value, source, user);
 	}
 

@@ -331,6 +331,23 @@ class RZ_Mission_Delivery : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Someone hands it over (a talk scene's way): the item is put on the ground at pos, or moved
+	//! there if it lies loose. Not while someone carries it.
+	protected void PutItemAt(RZ_GameModeComponent gm, vector pos)
+	{
+		vector at = RZ_Util.GroundPos(pos) + Vector(0, 0.3, 0);
+		if (!m_bItemSpawned)
+		{
+			m_bInsideLater = false;
+			PlaceItem(gm, at, "");
+			return;
+		}
+
+		if (m_Item && m_iCarrier <= 0 && m_Item.GetRootParent() == m_Item)
+			m_Item.SetOrigin(at);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Exactly at pos.
 	protected bool PlaceItem(RZ_GameModeComponent gm, vector pos, ResourceName prefab)
 	{

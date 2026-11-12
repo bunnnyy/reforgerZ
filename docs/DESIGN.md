@@ -1082,9 +1082,9 @@ move in a straight line. A caught special is carried as a case, not dragged in i
 ### Story blocks
 
 Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_StoryKit.c`, `RZ_MissionReasons.c`, `RZ_Mirror.c`);
-settings **Missions > Story**. The mission style ([designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md)
-designs what's left). The story jobs on it (Protection Racket, Lost Colleague, Crash Site,
-Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout, Smuggler's Run) are in [MISSIONS.md](MISSIONS.md).
+settings **Missions > Story**. The story jobs on it (Protection Racket, Lost Colleague, Crash Site,
+Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout, Smuggler's Run, and the
+twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered-what).
 
 - **The story kit.** A mission may carry `m_Story` (null by default: it runs exactly as before),
   with a story key that is saved in records and never renamed. The mission forwards its tick to it.
@@ -1221,6 +1221,28 @@ Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout, Smu
   to whoever hands the case in, through who benefits. The losing side gets a line, never a fallout.
 - **The journal's detail**: selecting a row asks the server for that row's detail (at most 1,500
   characters): what you've found and who it went to ([UI.md](UI.md#the-notebook)).
+- **The story job's kit** (`Missions/Story/RZ_TalkScene.c`, `RZ_StoryJob`, on a mission as `m_Job`):
+  the truth drawn for the job (2 or 3 values, "as they said" first and never under 30%, a value whose
+  gate fails never drawn), its background reads at one place (once per player, to that player
+  alone, as the table above), and its talk scene. The twenty jobs built on it each have 3 or more
+  ways (the job's own, and at its person one that needs no gun and one that needs no standing: a
+  tin or two, or a service), parties beyond the giver (often "nobody"), one or two records, a
+  callback, a fallout line and the reasons they answer.
+- **Talk scenes** (`RZ_TalkScene`): a scene person (the civilian puzzle prefab, object index 91)
+  stands at the job's place, spawned once someone is within 80 m; no prefab, no person, and the job
+  goes on its own ways. It has 2 or 3 **nodes**: a line and up to four options on its choice slots,
+  the last always "Leave it" (back to the first node). Options ask (a line, maybe a truth found,
+  maybe the next node: anyone in the room may pick them), check (Trust, Fear, a trick in a kit, with
+  the usual tags and one try per player per person), pay (tins, which need no standing, or Favor),
+  offer a **service** (a background's work, worth 2 on the price table, a timed stand-by within 4 m),
+  or **decide** (the decider rule and the 5-second hold). **The speaker**: the first eligible
+  participant to pick an option holds the floor for 60 s after each pick, 3 minutes at most; others
+  may only ask (*"... is talking to them. Ask, or wait your turn."*). During a hold its use slots read
+  Talk, Object and Stand with; **an objector** cancels the hold and takes the floor for 60 s (the
+  one-choice stand-in's use slots are Leave it to them, Object and Stand with too). **Lines**: a
+  node's line goes to the speaker and anyone within 8 m, each on their own notice. **The fallback**:
+  **Missions > Story > Numbered scenes** (off) lists the options by number under the line and labels
+  the slots Option 1 to Option 4, for a play-test where the replicated labels don't show.
 
 **The hourly summary** (`Missions/Story/RZ_StoryStats.c`, one line a real hour): Fame and Favor per
 player-hour from the story jobs (and by job), how often a result was switched or given to nobody, food
@@ -1968,7 +1990,13 @@ Code: `Core/RZ_Callbacks.c`. One queue for missions' echoes, errands' follow-ups
 - **At death** (or expiry) a waiting one with a board line becomes an unsigned note on the nearest
   safehouse board, filtered like any note.
 
-Saved with the season (**Shared > Callbacks** and the numbers above). Nothing queues one yet.
+Saved with the season (**Shared > Callbacks** and the numbers above). The story jobs queue theirs
+(`RZ_StoryKit.Later`), as do errands and dialogue.
+
+- **At the door** (`Missions/Story/RZ_DoorCallers.c`): a story job's callback can be a person: when
+  it comes due within 300 m of its place, a stand-in (the civilian puzzle prefab) turns up 4–7 m from
+  the player as the line is told, and goes after 90 s. One at a time on the server; no prefab, or
+  further off, the line alone.
 
 ### Notice lanes
 

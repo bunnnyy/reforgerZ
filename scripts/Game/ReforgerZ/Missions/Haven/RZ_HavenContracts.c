@@ -154,14 +154,39 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 //! #12 Refugee Column: a group waits at the edge of a bad town. Walk them along the road to a
 //! safehouse 0.8-3.5 km away (RZ_Escort). They only walk while someone is with them and hide
 //! when infected come close. Three join the safehouse. Big Fame.
+//! A story job (key `column`, kept per town): a family, as they said; one of them bitten (a cousin with
+//! his sleeve down); or one who owes a crew within 6 km. The grandmother (the talk scene): a nearer
+//! house ([Known - Haven], when there is one) or two tins for a carter (they ride: in two minutes
+//! they're there). At the door the house asks: all in, or Bastion's post (sheltered, 5 Bastion Favor,
+//! the Haven pays nothing); bitten: tell them (two join) or say nothing (three; a lie a visit finds
+//! out, 60%); owed: hand him to the crew (two join, 10 Red Hand Favor, +4 Haven Infamy, half pay).
 class RZ_Mission_RefugeeColumn : RZ_Mission
 {
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
 	protected int m_iHouse = -1;
 	protected bool m_bMet;
 	protected string m_sDestName;
+	protected int m_iJoin = PEOPLE;
+	protected int m_iNearer = -1;
+	protected string m_sCrew = "a crew";
+	protected string m_sSurname;
+	protected bool m_bCart;
+	protected float m_fCart;
 
 	protected static const int PEOPLE = 3;
+	protected static const int WAY_NEAR = 0;
+	protected static const int WAY_CART = 1;
+	protected static const float CART_SECONDS = 120;
+	protected static const int OPT_IN = 0;
+	protected static const int OPT_OTHER = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_RefugeeColumn()
+	{
+		m_Story = new RZ_MissionStory("column");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -201,13 +226,175 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		m_Escort.SetRoute(route);
 		m_sTitle = "Refugee Column";
 		m_sBrief = string.Format("A family group is waiting at the edge of %1 with everything they own. Walk them to %2. They won't move without someone with them.", s.m_sName, m_sDestName);
-		return m_Escort.Begin(gm, m_vPos);
+		if (!m_Escort.Begin(gm, m_vPos))
+			return false;
+
+		int nearest = gm.GetSafehouses().FindNearest(m_vPos, 3500);
+		if (nearest >= 0 && nearest != m_iHouse)
+			m_iNearer = nearest;
+
+		Truth(gm);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"family", "bitten", "owed"};
+		array<float> weights = {0.5, 0.25, 0};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 6000);
+		if (crew)
+		{
+			weights[2] = 0.25;
+			m_sCrew = crew.m_sName;
+		}
+
+		RZ_Rng rng = new RZ_Rng(RZ_WorldFacts.Get().GetSeed() + m_iSettlement * 131 + 7);
+		m_sSurname = RZ_NoteText.Surname(rng);
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.Read("bitten", "nurse,doctor", "The cousin keeps his left sleeve down in this heat. Under it, a bite, a day old at most.");
+		m_Job.Read("owed", "excon,raider", string.Format("The thin one won't look up the east road. That's a man who owes %1, and knows it.", m_sCrew));
+		m_Job.Read("", "elder", string.Format("Three generations of %1s and one pram. The grandmother is pushing the pram, and the pram is full of spoons.", m_sSurname));
+
+		string reveal = string.Format("\"The %1s. All of us, and the spoons. Nobody else.\"", m_sSurname);
+		if (truth == "bitten")
+			reveal = "\"My nephew. He fell on a dog.\" The nephew nods too quickly.";
+		else if (truth == "owed")
+			reveal = string.Format("\"And him. He married in. He owes %1 for the wedding, if you can believe it.\"", m_sCrew);
+
+		RZ_TalkScene sc = m_Job.Scene("The grandmother", "column.gran", LandPointNear(m_vPos, 4, 7));
+		int n0 = sc.Node("An old woman sits on a suitcase. \"We packed the good spoons. Priorities.\"");
+		int n1 = sc.Node("\"So where are you walking us, and how slow?\"");
+		sc.Ask(n0, "\"Who's with you?\"", n1, reveal, true);
+		if (m_iNearer >= 0)
+			sc.Way(n1, "\"There's a nearer house.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_NEAR, string.Format("\"Nearer is better.\" She points the pram at %1.", gm.GetSafehouses().Get(m_iNearer).m_sName), "\"Nearer to what? We were told the other one.\"");
+
+		sc.Way(n1, "Two tins for a carter", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "A man with a horse cart takes the tins and the grandmother. The rest climb on after her.");
+		sc.Service(n1, "Fix the carter's axle", "mechanic", 25, WAY_CART, "The axle holds. The carter takes the grandmother first, then the spoons, then the rest.");
+
+		string labels = "Let them all in";
+		if (truth == "bitten")
+		{
+			labels = "Tell them about the arm|Say nothing";
+		}
+		else if (truth == "owed")
+		{
+			labels += "|Hand him to the crew";
+			m_Choice.Asset(OPT_OTHER, RZ_EFaction.BANDITS);
+		}
+		else if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, m_vPos, 100000))
+		{
+			labels += "|Send them on to Bastion's post";
+			m_Choice.Asset(OPT_OTHER, RZ_EFaction.MILITARY);
+		}
+
+		m_Choice.Set("The house's door opens a crack. \"How many, and are they all well?\"", labels, "decide who goes in", OPT_IN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(RZ_GameModeComponent.GetInstance(), m_iHouse);
+		if (h)
+			return h.m_vPos;
+
+		return m_vPos;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (way == WAY_CART)
+		{
+			m_bCart = true;
+			m_bMet = true;
+			return;
+		}
+
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iNearer);
+		if (!h)
+			return;
+
+		m_iHouse = m_iNearer;
+		m_sDestName = "the safehouse in " + h.m_sName;
+		array<vector> route = {h.m_vPos};
+		m_Escort.SetRoute(route);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		string truth = m_Job.m_sTruth;
+		if (truth == "bitten" && option == OPT_IN)
+		{
+			m_iJoin = PEOPLE - 1;
+			RZ_StoryKit.Record(this, "fate", town, "told", who);
+			NotifyParticipants(gm, m_sTitle, "The house takes the nephew out to the field at dusk. The grandmother goes with him and comes back alone.");
+			return;
+		}
+
+		if (truth == "bitten")
+		{
+			m_fRewardScale = 0.6;
+			RZ_StoryKit.Dirty(gm, this, decider);
+			if (h)
+				gm.GetFacts().Memory().Lies().Tell(gm, decider, "column.bite", town, RZ_EFaction.SURVIVORS, "", h.m_vPos, RZ_ELieTest.VISIT, 8, "\"You walked a bitten man through our door and said nothing.\"");
+
+			RZ_StoryKit.Record(this, "fate", town, "hid", who);
+			return;
+		}
+
+		if (truth == "owed" && option == OPT_OTHER)
+		{
+			m_iJoin = PEOPLE - 1;
+			m_fRewardScale = 0.5;
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
+			m_Choice.BlameWith(gm, this, RZ_EFaction.SURVIVORS, 4, "handed a refugee to a crew");
+			RZ_StoryKit.Record(this, "fate", town, "handed", who);
+			NotifyParticipants(gm, m_sTitle, string.Format("Two men from %1 are waiting by the road. He goes with them without a word. The grandmother doesn't watch.", m_sCrew));
+			return;
+		}
+
+		if (option == OPT_OTHER)
+		{
+			m_bHasGiver = false;
+			m_iJoin = 0;
+			m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 5);
+			RZ_StoryKit.Sheltered(gm, this, PEOPLE);
+			RZ_StoryKit.Record(this, "fate", town, "bastion", who);
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", town, "in", who);
+		if (h)
+		{
+			RZ_StoryKit.BoardThanks(gm, h.m_vPos, "The good spoons are on the long table now. Thank you for walking slowly.", string.Format("The %1s", m_sSurname));
+			RZ_StoryKit.LaterWith(gm, this, h.m_sName, "The grandmother is on the bench by the door, polishing a spoon. \"You walk too fast. Sit.\"", h.m_vPos, true);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
 		RZ_ContractHelp.AddNear(ids, players, m_Escort.m_vPos, 120, m_aParticipants);
+		// Two tins for a carter: they ride, and are there in two minutes
+		if (m_bCart)
+		{
+			m_fCart += dt;
+			if (m_fCart >= CART_SECONDS && !m_Escort.IsArrived())
+				m_Escort.Arrive();
+
+			if (m_Escort.IsArrived())
+			{
+				m_eState = RZ_EMissionState.SUCCEEDED;
+				return;
+			}
+		}
+
 		if (!m_bMet && CountPlayersNear(players, m_Escort.m_vPos, 30) > 0)
 		{
 			m_bMet = true;
@@ -227,8 +414,8 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
-		if (h)
-			gm.GetSafehouses().AddRescued(h.m_vPos, PEOPLE, m_aParticipants);
+		if (h && m_iJoin > 0)
+			gm.GetSafehouses().AddRescued(h.m_vPos, m_iJoin, m_aParticipants);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -314,8 +501,29 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 //! take what you heard to any safehouse. Some sellers notice who's asking: a little Red Hand
 //! Infamy for the buyer the moment they're spotted (more likely carrying a gun). Only for players the Red Hand
 //! is already wary of (Watched or worse); not for Police or Soldiers (they'd be made at once).
+//! A story job (key `informant`, kept per town): the names, as they said; bait (he knows what you are
+//! and sells you the wrong names); or he sells to Bastion too (a Bastion holding on the map). The
+//! seller is the talk scene: buy (the old way: spotted 20%, +30% armed), pay in tins (no standing:
+//! never spotted), or [Red Hand kit] "Mira sent me" (a trick: the full list, never spotted). At the
+//! house the council asks: the names to the Haven; bait: burn the list (half pay, a record); Bastion:
+//! sell Bastion a copy (10 Bastion Favor, a lie a Haven-Known visitor to the house finds out).
 class RZ_Mission_TheInformant : RZ_PuzzleMission
 {
+	protected int m_iHouse = -1;
+	protected static const int WAY_BUY = 0;
+	protected static const int WAY_TINS = 1;
+	protected static const int WAY_KIT = 2;
+	protected static const int OPT_GIVE = 0;
+	protected static const int OPT_OTHER = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_TheInformant()
+	{
+		m_Story = new RZ_MissionStory("informant");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected float m_fWaited;
 	protected bool m_bContact;
 	protected bool m_bBought;
@@ -385,7 +593,7 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 				return;
 
 			m_bContact = true;
-			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vPos, 3, 6), 0, "", "Buy what he's selling|Walk away", m_iTalk, "Talk to the seller");
+			Seller(gm);
 			RZ_ContractHelp.NotifyNear(gm, m_vPos, 40, m_sTitle, "Someone comes up the path with his hands in his pockets, and stops a few metres off.");
 			return;
 		}
@@ -395,7 +603,93 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 
 		IEntity buyer = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iBuyer);
 		if (buyer && gm.GetSafehouses().FindNearest(buyer.GetOrigin(), 30) >= 0)
+		{
+			m_iHouse = gm.GetSafehouses().FindNearest(buyer.GetOrigin(), 30);
 			m_eState = RZ_EMissionState.SUCCEEDED;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The seller is the talk scene; the truth is drawn when he turns up.
+	protected void Seller(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"names", "bait", "both"};
+		array<float> weights = {0.5, 0.3, 0};
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, m_vPos, 100000))
+			weights[2] = 0.2;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.m_fReadRange = 20;
+		m_Job.Read("bait", "excon,raider", "The price is too low. Nobody sells names that cheap unless they're the wrong ones.");
+		m_Job.Read("both", "radioop", "A handset in his coat, set to a Bastion channel. He sells twice and calls it business.");
+
+		RZ_TalkScene sc = m_Job.Scene("The seller", "informant.seller", LandPointNear(m_vPos, 3, 6));
+		int n0 = sc.Node("A thin man in a good coat, who looks at your hands before your face. \"You're new. What are you buying?\"");
+		int n1 = sc.Node("\"Everyone pays something. The question's what.\"");
+		sc.Way(n0, "Buy what he's selling", RZ_TalkScene.WAY, -1, 0, WAY_BUY, "He counts your money and talks while he counts.");
+		sc.Ask(n0, "\"How do you pay, then?\"", n1, "\"Money, tins, a name. Names are the dearest. Don't ask who's buying yours.\"");
+		sc.Way(n1, "Pay in tins", RZ_TalkScene.FOOD, -1, 2, WAY_TINS, "He likes tins. Tins don't ask questions either.");
+		sc.Way(n1, "\"Mira sent me.\"", RZ_TalkScene.TRICK, RZ_EFaction.BANDITS, 1, WAY_KIT, "\"Why didn't you say?\" He gives you the long list, the one for friends.", "\"Mira's been dead a month.\" He walks off fast.");
+
+		string labels = "Give the Haven the names";
+		if (truth == "bait")
+			labels += "|Burn the list";
+		else if (truth == "both")
+		{
+			labels += "|Sell Bastion a copy";
+			m_Choice.Asset(OPT_OTHER, RZ_EFaction.MILITARY);
+		}
+
+		m_Choice.Set("The council's clerk holds out a hand for the list. \"Is it good?\"", labels, "decide where the names go", OPT_GIVE);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		bool safe = way != WAY_BUY;
+		Buy(gm, playerId, safe);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		IEntity buyer = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iBuyer);
+		if (buyer)
+			return buyer.GetOrigin();
+
+		return m_vPos;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (option == OPT_OTHER && m_Job.m_sTruth == "bait")
+		{
+			m_fRewardScale = 0.5;
+			RZ_StoryKit.Record(this, "names", town, "burned", who);
+			NotifyParticipants(gm, m_sTitle, "The list goes in the stove. The clerk writes 'wrong names, burned' in the book, and underlines it.");
+			return;
+		}
+
+		if (option == OPT_OTHER && m_Job.m_sTruth == "both")
+		{
+			m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 10);
+			RZ_StoryKit.Dirty(gm, this, decider);
+			RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+			if (h)
+				gm.GetFacts().Memory().Lies().Tell(gm, decider, "informant.copy", town, RZ_EFaction.SURVIVORS, "", h.m_vPos, RZ_ELieTest.VISIT, 5, "\"Bastion knew the crew's runs before we did. Funny, that.\"");
+
+			RZ_StoryKit.Record(this, "names", town, "copied", who);
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "names", town, "haven", who);
+		RZ_Safehouse home = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		if (home)
+			RZ_StoryKit.LaterWith(gm, this, "The council's clerk", "The clerk stops you at the door. \"The Tuesday run didn't come. Your names did that.\"", home.m_vPos);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -414,12 +708,24 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 		if (option != 0 || m_bBought)
 			return;
 
+		Buy(gm, playerId, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bought: the names, and maybe the seller made you. Tins or a good trick never get you made.
+	protected void Buy(RZ_GameModeComponent gm, int playerId, bool safe)
+	{
+		if (m_bBought)
+			return;
+
 		m_bBought = true;
 		m_iBuyer = playerId;
 		m_aParticipants.Clear();
 		m_aParticipants.Insert(playerId);
 
 		float chance = SPOT_CHANCE;
+		if (safe)
+			chance = -1;
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (user && RZ_Util.IsArmed(user))
 			chance += ARMED_CHANCE;

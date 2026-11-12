@@ -830,8 +830,28 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 //! -1 for the look already passed. Fail either and it's the alarm: a fight, so you're never held.
 //! Without Bastion kit, the guards see you and it's a fight. Then walk the prisoners (RZ_Escort) to a
 //! Red Hand drop, whose crew never reacts to colours on the mission's players. Bastion Infamy.
+//! A story job (key `bustout`, kept per town): crew, as they said; a Haven house's boy among them (a
+//! house within 5 km); or one who talked to get his cell. The prisoner at the wire (the talk scene):
+//! four tins for the night key opens the gate with no cut (no gun, no standing). At the drop the crew's
+//! man counts heads: all to the crew; the boy home (8 Haven Favor, the house +1, 80%, a Haven asset);
+//! the one who talked named (10 Red Hand Favor) or let slip away (80%, an Independent asset); crew:
+//! walk them past the drop (they scatter: the crew pays nothing).
 class RZ_Mission_BustOut : RZ_PuzzleMission
 {
+	protected int m_iHouse = -1;
+	protected static const int WAY_KEY = 0;
+	protected static const int OPT_CREW = 0;
+	protected static const int OPT_SECOND = 1;
+	protected static const int OPT_THIRD = 2;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_BustOut()
+	{
+		m_Story = new RZ_MissionStory("bustout");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
 	protected vector m_vGate;
 	protected vector m_vMeet;
@@ -946,7 +966,123 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		m_sTitle = "Bust Out";
 		m_sDeed = "broke one of ours out at {town}";
 		m_sBrief = string.Format("Bastion is holding some of ours in a stockade near %1. They owe us, and nobody pays from a stockade. Cut them out and walk them to %2. In one of their uniforms, the guards won't look twice.", postName, m_sMeetName);
-		return m_Escort.Begin(gm, LandPointNear(m_vGate, 3, 6));
+		if (!m_Escort.Begin(gm, LandPointNear(m_vGate, 3, 6)))
+			return false;
+
+		Truth(gm);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"crew", "boy", "talked"};
+		array<float> weights = {0.5, 0, 0.2};
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(m_vGate, 5000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vGate;
+		m_Job.m_fReadRange = 20;
+		m_Job.Read("boy", "elder", "One of them's a boy of fifteen with Haven chalk on his jacket. He's nobody's crew.");
+		m_Job.Read("talked", "excon,raider", "One stands apart and the others let him. In a cell, that means he talked.");
+		m_Job.Read("crew", "soldier", "The stockade board says 'looters, holding for transfer'. Transfer to where, it doesn't say.");
+
+		string reveal = "\"Four. All crew. All innocent, obviously.\"";
+		if (truth == "boy")
+			reveal = "\"Four. Three of us, and a kid they picked up stealing bread. He cries at night. We let him.\"";
+		else if (truth == "talked")
+			reveal = "\"Four. Well. Three, and him. Ask him how he got the cell with the window.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The prisoner at the wire", "bustout.wire", LandPointNear(m_vGate, 3, 6));
+		int n0 = sc.Node("A man at the wire with his fingers through it. \"Room service. About time.\"");
+		int n1 = sc.Node("\"The night guard sells the key for tins. Everyone knows. Nobody's had tins.\"");
+		sc.Ask(n0, "\"How many of you?\"", n1, reveal, true);
+		sc.Way(n1, "Four tins for the night key", RZ_TalkScene.FOOD, -1, 4, WAY_KEY, "The tins go through the wire. A key comes back the other way, warm from somebody's pocket.");
+
+		string labels = "All of them to the crew";
+		if (truth == "boy")
+		{
+			labels += "|Let the boy go home";
+			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
+		}
+		else if (truth == "talked")
+		{
+			labels += "|Tell them which one talked|Let him slip away";
+			m_Choice.Asset(OPT_THIRD, RZ_CureFinale.INDEP);
+		}
+		else
+		{
+			labels += "|Walk them past the drop";
+			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
+		}
+
+		m_Choice.Set("The crew's man counts heads at the drop. \"All ours?\"", labels, "decide who the crew gets", OPT_CREW);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return m_vMeet;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The night key: the gate opens without a cut, and nobody's alarmed.
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (m_bOpen)
+			return;
+
+		m_bOpen = true;
+		m_Escort.Go();
+		RZ_ContractHelp.NotifyNear(gm, m_vGate, 80, m_sTitle, string.Format("The key turns. Four thin men come out quietly. Walk them to %1.", m_sMeetName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		string truth = m_Job.m_sTruth;
+		if (truth == "boy" && option == OPT_SECOND)
+		{
+			m_fRewardScale = 0.8;
+			m_Choice.PayWith(gm, this, RZ_EFaction.SURVIVORS, 8);
+			RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+			if (h)
+			{
+				gm.GetSafehouses().AddPopulationAt(m_iHouse, 1);
+				RZ_StoryKit.LaterWith(gm, this, h.m_sName, "A woman at the door holds a boy by the collar like he might run again. \"He says you got him out. He says it was nothing. Was it nothing?\"", h.m_vPos, true);
+			}
+
+			RZ_StoryKit.Record(this, "fate", town, "boy_home", who);
+			return;
+		}
+
+		if (truth == "talked" && option == OPT_SECOND)
+		{
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
+			RZ_StoryKit.Record(this, "fate", town, "named", who);
+			NotifyParticipants(gm, m_sTitle, "You point. The crew's man nods slowly and says nothing to him at all. They walk him off separately.");
+			return;
+		}
+
+		if (option == OPT_THIRD || (truth == "crew" && option == OPT_SECOND))
+		{
+			if (truth == "crew")
+				m_bHasGiver = false;
+			else
+				m_fRewardScale = 0.8;
+
+			RZ_StoryKit.Record(this, "fate", town, "scattered", who);
+			NotifyParticipants(gm, m_sTitle, "You don't stop at the drop. By the next bend they've scattered into the fields.");
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", town, "crew", who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1092,10 +1228,27 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 //! may see through it (35%, 15% for a Police officer they believe; certain in Red Hand colours): +20
 //! Bastion Infamy for whoever
 //! handed it in. Believed: a little Bastion Fame too, and Bastion wastes a patrol on ghosts.
+//! A story job (key `double`, kept per town): fake, as they said; real (the grid references are round a
+//! Haven house within 5 km: believed, Bastion raids it, the house -1 and Haven morale -2); or a test
+//! (blank pages but one: the crew wants to know who opens it). The clerk at the drop (the talk scene):
+//! [Known - Bastion] or two tins and it goes on top of the pile (never caught); real: warn the house
+//! instead (it ends: 10 Haven Favor, +6 Red Hand Infamy, the crew pays nothing, a Haven asset).
 class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 {
 	protected int m_iAgent = -1;
 	protected bool m_bCaught;
+	protected bool m_bTop;
+	protected int m_iHouse = -1;
+
+	protected static const int WAY_TOP = 0;
+	protected static const int WAY_WARN = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_DoubleAgent()
+	{
+		m_Story = new RZ_MissionStory("double");
+		m_Job = new RZ_StoryJob();
+	}
 
 	protected static const float CAUGHT_CHANCE = 0.35;
 	protected static const float POLICE_CHANCE = 0.15;
@@ -1147,7 +1300,60 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 
 		m_sTitle = "Double Agent";
 		m_sBrief = string.Format("Pick up a dossier from %1 and hand it to Bastion at %2 like you're doing them a favour. Patrol routes, a camp that isn't there. Look them in the eye.", fromName, meetName);
+		Truth(gm, meet);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm, vector meet)
+	{
+		array<string> values = {"fake", "real", "test"};
+		array<float> weights = {0.5, 0, 0.2};
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(meet, 5000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.m_fReadRange = 15;
+		m_Job.Read("fake", "labtech", "The patrol times don't add up: one squad in two places at once. It's fake, and well made.");
+		m_Job.Read("real", "labtech", "The grid references are real, and they're all round a Haven house. That's not a camp that isn't there.");
+		m_Job.Read("real", "soldier", "These are Bastion's own unit codes, current. Somebody inside sold them, and this sells them back.");
+		m_Job.Read("test", "police", "Whoever packed this wanted to know who'd open it. There's a hair across the seal.");
+
+		string reveal = "\"The lieutenant. He believes everything until lunch.\"";
+		if (truth == "real" && m_iHouse >= 0)
+			reveal = string.Format("He glances at the cover. \"Grid round %1? Oh, he'll love that. He's been wanting a reason.\"", gm.GetSafehouses().Get(m_iHouse).m_sName);
+
+		RZ_TalkScene sc = m_Job.Scene("The clerk", "double.clerk", LandPointNear(meet, 4, 8));
+		int n0 = sc.Node("A clerk with ink to the elbow. \"Another dossier. Everybody's a patriot this week.\"");
+		int n1 = sc.Node("\"Leave it in the tray. Or don't. I'm not your mother.\"");
+		sc.Ask(n0, "\"Who reads these?\"", n1, reveal, truth == "real");
+		sc.Way(n1, "\"Put this on top of the pile.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_TOP, "\"On top it goes. He reads the top one properly.\"", "\"Everybody wants the top.\"");
+		sc.Way(n1, "Two tins for the clerk", RZ_TalkScene.FOOD, -1, 2, WAY_TOP, "The tins vanish into a drawer. The pile gets a new top.");
+		if (truth == "real")
+			sc.Decide(n1, "Warn the house instead", "warn the house and keep the dossier", WAY_WARN, "You keep the dossier. The house will hear before Bastion does.", RZ_EFaction.SURVIVORS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (way == WAY_TOP)
+		{
+			m_bTop = true;
+			return;
+		}
+
+		array<int> who = {playerId};
+		RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.SURVIVORS, 10);
+		RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.BANDITS, 6, "kept a crew's dossier");
+		RZ_StoryKit.Record(this, "dossier", RZ_WorldFacts.Town(m_iSettlement), "warned", who);
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		if (h)
+			RZ_StoryKit.Later(gm, playerId, h.m_sName, "The house's door has a new bar across it, and somebody's painted 'thank you' on the bar.", h.m_vPos, true);
+		RZ_StoryKit.EndedOtherWay(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1163,6 +1369,9 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 		// The colours rule: handed in wearing the Red Hand's colours, Bastion sees through it at once
 		RZ_Hostility hostility = gm.GetHostility();
 		bool redColours = hostility && hostility.GetDisguise().WearsColours(playerId, RZ_EFaction.BANDITS);
+		if (m_bTop)
+			chance = 0;
+
 		m_bCaught = redColours || Math.RandomFloat01() < chance;
 		if (m_bCaught && redColours)
 		{
@@ -1176,9 +1385,26 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 			return;
 		}
 
+		array<int> who = {playerId};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (m_Job.m_sTruth == "real" && m_iHouse >= 0)
+		{
+			gm.NotifyPlayer(playerId, "Task Force Bastion", "The lieutenant reads it twice and smiles. By morning a squad is kicking in doors round a Haven house.");
+			gm.GetSafehouses().RemovePopulation(m_iHouse, 1);
+			RZ_OneChoice.Morale(gm, RZ_EFaction.SURVIVORS, -2, "a house raided on a crew's word");
+			RZ_StoryKit.Record(this, "dossier", town, "raided", who, "A door at the Haven house that doesn't shut right any more, with a Bastion boot print on it nobody's painted over.", "board");
+			return;
+		}
+
 		gm.NotifyPlayer(playerId, "Task Force Bastion", "The lieutenant reads it, nods, thanks you. By tonight a patrol will be walking toward a camp that isn't there.");
 		if (gm.GetTerritory() && gm.GetTerritory().IsActive())
 			gm.GetTerritory().AddStrength(RZ_EFaction.MILITARY, -1);
+
+		// A test: the crew wanted to know who'd carry it unopened
+		if (m_Job.m_sTruth == "test")
+			RZ_StoryKit.Remember(gm, RZ_EFaction.BANDITS, m_vPos, 100000, playerId, RZ_Leaders.MEM_HELPED);
+
+		RZ_StoryKit.Record(this, "dossier", town, m_Job.m_sTruth, who);
 	}
 
 	//------------------------------------------------------------------------------------------------

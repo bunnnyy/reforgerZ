@@ -1379,12 +1379,35 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 //------------------------------------------------------------------------------------------------
 //! #15 Raid the Red Hand: assault a Red Hand camp. Needs the Red Hand group prefab.
 //! Not for Ex-Cons or Raiders unless they're Champions of Bastion.
+//! A story job (key `raid`, kept per town): a camp, as they said; people held there (a house within 5
+//! km); or Bastion's own deserters in red paint (a Bastion holding on the map). The lookout on its
+//! edge (the talk scene): [Threaten] tell them to clear out (Fear 2: the camp is gone without a shot),
+//! or three tins and he leaves the gate (one group fewer). Done, the question: the camp burned
+//! (default); held: walk them to the house (10 Haven Favor, the house +2) or Bastion's truck
+//! (sheltered); deserters: their tags to the post (Bastion morale -1) or burn the paint and say
+//! nothing (nobody pays, an Independent asset); a camp: leave its stores to the scavengers (no crate).
 class RZ_Mission_RaidRedHand : RZ_Mission
 {
 	protected ref array<ref RZ_UnitWatch> m_aGroups = {};
 	protected bool m_bSpawned;
+	protected bool m_bFewer;
+	protected bool m_bGone;
+	protected bool m_bCrate = true;
+	protected int m_iHouse = -1;
 
 	protected static const int GROUPS = 2;
+	protected static const int WAY_GO = 0;
+	protected static const int WAY_GATE = 1;
+	protected static const int OPT_BURN = 0;
+	protected static const int OPT_OTHER = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_RaidRedHand()
+	{
+		m_Story = new RZ_MissionStory("raid");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1420,7 +1443,136 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 		m_fParticipationRadius = 250;
 		m_sTitle = "Raid the Red Hand";
 		m_sBrief = string.Format("The Red Hand has a camp outside %1. Bastion wants it gone.", s.m_sName);
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"camp", "held", "deserters"};
+		array<float> weights = {0.5, 0, 0};
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(m_vPos, 5000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, m_vPos, 100000))
+			weights[2] = 0.2;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.m_fReadRange = 60;
+		m_Job.Read("deserters", "soldier", "Bastion boots under the red paint, laced the Bastion way. These were ours.");
+		m_Job.Read("held", "elder", "A child's shoe by the fire, and a name scratched on a post. Somebody's people are held here.");
+		m_Job.Read("held", "hunter", "Two sets of tracks in from the road with short steps. Feet tied together.");
+		m_Job.Read("camp", "excon,raider", "Lookouts on a rota and a latrine dug properly. This crew's been here a while and got comfortable.");
+
+		string reveal = "\"Lads. Rifles. A pot. Mostly the pot.\"";
+		if (truth == "held")
+			reveal = "\"Some people from a house. They're for trading. Don't look at me like that, I only look.\"";
+		else if (truth == "deserters")
+			reveal = "\"Half of them were Bastion last month. They still salute when they're drunk.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The lookout", "raid.lookout", LandPointNear(m_vPos, 60, 90));
+		int n0 = sc.Node("A lad with a rifle too big for him. \"I'm the lookout. I looked. I'd like to stop looking now.\"");
+		int n1 = sc.Node("\"They'll kill me if you get in. You'll kill me if you don't. It's not a great job.\"");
+		sc.Ask(n0, "\"Who's in there?\"", n1, reveal, true);
+		sc.Way(n1, "Tell them to clear out", RZ_TalkScene.FEAR, RZ_EFaction.BANDITS, 2, WAY_GO, "He runs. A minute later the camp is packing up, fast and badly.", "He laughs, and shouts for the others.");
+		sc.Way(n1, "Three tins and you never saw me", RZ_TalkScene.FOOD, -1, 3, WAY_GATE, "He takes the tins and walks off into the trees. One fire fewer in the camp tonight.");
+
+		string labels = "Burn the camp";
+		if (truth == "held")
+		{
+			labels = "Bastion's truck takes them|Walk them to the house";
+			m_Choice.Asset(OPT_OTHER, RZ_EFaction.SURVIVORS);
+		}
+		else if (truth == "deserters")
+		{
+			labels = "Their tags to the post|Burn the paint and say nothing";
+			m_Choice.Asset(OPT_OTHER, RZ_CureFinale.INDEP);
+		}
+		else
+		{
+			labels += "|Leave the stores to scavengers";
+		}
+
+		m_Choice.Set("The camp's quiet now. Bastion's corporal walks up the track with a clipboard. \"Well?\"", labels, "decide what's done with the camp", OPT_BURN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		if (way == WAY_GATE)
+		{
+			m_bFewer = true;
+			if (m_aGroups.Count() > 1)
+			{
+				m_aGroups[0].Delete();
+				m_aGroups.Remove(0);
+			}
+
+			return;
+		}
+
+		m_bGone = true;
+		foreach (RZ_UnitWatch watch : m_aGroups)
+		{
+			watch.Delete();
+		}
+
+		m_aGroups.Clear();
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		string truth = m_Job.m_sTruth;
+		if (truth == "held" && option == OPT_OTHER)
+		{
+			m_Choice.PayWith(gm, this, RZ_EFaction.SURVIVORS, 10);
+			if (m_iHouse >= 0)
+				gm.GetSafehouses().AddPopulationAt(m_iHouse, 2);
+
+			RZ_StoryKit.Record(this, "fate", town, "walked", who);
+			RZ_StoryKit.LaterWith(gm, this, "At the house", "A man with rope marks on his wrists is splitting wood by the door. He stops, and nods, and goes back to it.", m_vPos, true);
+			return;
+		}
+
+		if (truth == "held")
+		{
+			RZ_StoryKit.Sheltered(gm, this, 2);
+			RZ_StoryKit.Record(this, "fate", town, "truck", who);
+			return;
+		}
+
+		if (truth == "deserters" && option == OPT_OTHER)
+		{
+			m_bHasGiver = false;
+			RZ_StoryKit.Record(this, "fate", town, "burned", who, "A burned patch outside the town where the red paint ran into the grass. Nobody from the post asked whose boots.", "board");
+			NotifyParticipants(gm, m_sTitle, "The paint goes in the fire with the jackets. The corporal writes 'Red Hand camp, cleared' and nothing else. Bastion pays for none of it.");
+			return;
+		}
+
+		if (truth == "deserters")
+		{
+			RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, -1, "deserters in red paint");
+			RZ_StoryKit.Record(this, "fate", town, "tags", who);
+			return;
+		}
+
+		if (option == OPT_OTHER)
+		{
+			m_bCrate = false;
+			RZ_StoryKit.Record(this, "fate", town, "left", who);
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", town, "burned", who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1433,7 +1585,14 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 				return;
 
 			m_bSpawned = true;
-			for (int i = 0; i < GROUPS; i++)
+			int groups = GROUPS;
+			if (m_bFewer)
+				groups = GROUPS - 1;
+
+			if (m_bGone)
+				groups = 0;
+
+			for (int i = 0; i < groups; i++)
 			{
 				RZ_UnitWatch g = new RZ_UnitWatch();
 				if (!g.Spawn(gm.GetRedHandGroupPrefab(), LandPointNear(m_vPos, 0, 25)))
@@ -1443,9 +1602,15 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 				RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, g.m_Unit); // the camp shoots back
 			}
 
-			if (m_aGroups.IsEmpty())
+			if (m_aGroups.IsEmpty() && !m_bGone)
 				m_eState = RZ_EMissionState.FAILED;
 
+			return;
+		}
+
+		if (m_bGone)
+		{
+			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}
 
@@ -1464,7 +1629,15 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.SpawnRewardCrate(m_vPos);
+		if (m_bGone)
+		{
+			gm.NotifyAll("Red Hand", "A Red Hand camp near " + GetLocationName(gm) + " packed up and left in a hurry. Somebody frightened it.");
+			return;
+		}
+
+		if (m_bCrate)
+			gm.SpawnRewardCrate(m_vPos);
+
 		gm.NotifyAll("Red Hand", "Someone wiped out a Red Hand camp near " + GetLocationName(gm) + ". The Red Hand is out for blood.");
 	}
 

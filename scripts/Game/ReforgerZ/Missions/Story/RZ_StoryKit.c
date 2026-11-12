@@ -151,6 +151,90 @@ class RZ_StoryKit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A story job's callback: `text` from `title` comes back to this player some hours of their play
+	//! later, near `at` (Core/RZ_Callbacks.c). atDoor: said by a stand-in at the door (RZ_DoorCallers).
+	static void Later(RZ_GameModeComponent gm, int playerId, string title, string text, vector at, bool atDoor = false, string boardNote = "")
+	{
+		RZ_Shared shared = gm.GetShared();
+		if (!shared || !shared.GetCallbacks() || playerId <= 0)
+			return;
+
+		string title2 = title;
+		if (atDoor)
+			title2 = RZ_DoorCallers.MARK + title;
+
+		shared.GetCallbacks().Queue(playerId, title2, text, at, -1, boardNote);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The decider and those with them (their group within 150 m, anyone who stood with them).
+	static void With(RZ_GameModeComponent gm, RZ_Mission m, int decider, notnull array<int> result)
+	{
+		if (decider <= 0 || !m.m_Story)
+		{
+			result.InsertAll(m.m_aParticipants);
+			return;
+		}
+
+		vector at = m.m_vPos;
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(decider);
+		if (me)
+			at = me.GetOrigin();
+
+		m.m_Story.m_Deciding.WithDecider(gm, decider, at, result);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Favor from `faction` to the decider and those with them (never to someone it hunts).
+	static void PayDecider(RZ_GameModeComponent gm, RZ_Mission m, int decider, int faction, int favor)
+	{
+		array<int> with = {};
+		With(gm, m, decider, with);
+		foreach (int playerId : with)
+		{
+			if (!RZ_Reputation.IsHunted(gm.GetTier(playerId, faction)))
+				gm.AddFavor(playerId, faction, favor);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Infamy with `faction` for the decider and those with them.
+	static void BlameDecider(RZ_GameModeComponent gm, RZ_Mission m, int decider, int faction, int infamy, string why)
+	{
+		array<int> with = {};
+		With(gm, m, decider, with);
+		foreach (int playerId : with)
+		{
+			gm.AddInfamy(playerId, faction, infamy, why);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A scene decided the job another way than the giver's: the giver pays nothing, the job ends done.
+	static void EndedOtherWay(RZ_Mission m)
+	{
+		m.m_bHasGiver = false;
+		if (m.m_eState == RZ_EMissionState.ACTIVE)
+			m.m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Later() for everyone with the decider.
+	static void LaterWith(RZ_GameModeComponent gm, RZ_Mission m, string title, string text, vector at, bool atDoor = false)
+	{
+		array<int> with = {};
+		if (m.m_Choice)
+			m.m_Choice.With(gm, m, with);
+		else
+			with.InsertAll(m.m_aParticipants);
+
+		foreach (int playerId : with)
+		{
+			Later(gm, playerId, title, text, at, atDoor);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Leave: this player stops taking part (no pay, no blame); they're told so.
 	static void Leave(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
 	{

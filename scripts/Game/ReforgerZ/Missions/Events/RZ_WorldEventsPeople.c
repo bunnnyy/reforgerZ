@@ -825,8 +825,25 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 //! or better with the Red Hand. Stop them all: what they took is where the last one fell. If any
 //! reach the camp (or the time runs out), the Red Hand takes them in: a little stronger, and its
 //! friends who walked in with them get a little Fame.
+//! A story job (key `prison`, kept per town): convicts, as they said; half held for nothing (Bastion's
+//! curfew sweep: a Bastion holding on the map); or a crew opened the cells from outside (a Red Hand
+//! camp they walk to). The jailer with no keys (the talk scene): [Known - Bastion] or two tins and he
+//! rings the town's bell, and the infected come for the convicts (no gun, no standing); swept: tell
+//! the curfew lot to go home (one group fewer, the nearest house +2, a Haven asset); opened: tell
+//! Bastion's post who opened it (5 Bastion Favor, +4 Red Hand Infamy, a Bastion asset).
 class RZ_Event_PrisonBreak : RZ_Mission
 {
+	protected static const int WAY_BELL = 0;
+	protected static const int WAY_HOME = 1;
+	protected static const int WAY_TELL = 2;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Event_PrisonBreak()
+	{
+		m_Story = new RZ_MissionStory("prison");
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected ref array<ref RZ_EventGroup> m_aGroups = {};
 	protected vector m_vTarget;
 	protected string m_sTarget;
@@ -912,7 +929,81 @@ class RZ_Event_PrisonBreak : RZ_Mission
 		m_vLast = start;
 		m_sTitle = "Prison Break";
 		m_sBrief = string.Format("The holding cells in %1 didn't hold. A dozen convicts are out and armed with whatever they found, walking toward %2. The Red Hand will take in anyone who gets there. Stop them on the road, or stay out of their way.", s.m_sName, m_sTarget);
+		Truth(gm, start);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm, vector start)
+	{
+		array<string> values = {"convicts", "swept", "opened"};
+		array<float> weights = {0.5, 0, 0};
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, start, 100000))
+			weights[1] = 0.3;
+
+		if (m_bToRedHand)
+			weights[2] = 0.2;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = start;
+		m_Job.Read("swept", "police", "The charge sheets say 'out after curfew', twelve times, in one hand. That's a sweep, not a crime wave.");
+		m_Job.Read("opened", "mechanic", "The lock wasn't picked. It was cut from the outside, with good cutters.");
+		m_Job.Read("", "hunter", "Twelve sets of prints, fresh, all one way. They're not running. They know where they're going.");
+
+		string reveal = "\"Thieves, mostly. One poet. I'd have let the poet go if he'd stopped reciting.\"";
+		if (truth == "swept")
+			reveal = "\"Half of them were only out after curfew. Bastion brought them in by the lorry. I said I hadn't the room.\"";
+		else if (truth == "opened")
+			reveal = string.Format("\"Men with red on their hands came at two and cut the lock. Said they were from %1, and to thank you for the hospitality.\"", m_sTarget);
+
+		RZ_TalkScene sc = m_Job.Scene("The jailer", "prison.jailer", LandPointNear(start, 4, 8));
+		int n0 = sc.Node("A jailer stands by the open cells. \"They took the keys. I had them on a string. They took the string.\"");
+		int n1 = sc.Node("\"The bell's still mine. They didn't think to take the bell.\"");
+		sc.Ask(n0, "\"Who was in there?\"", n1, reveal, true);
+		sc.Way(n1, "\"Ring the bell.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_BELL, "He hauls on the rope. The whole town hears it, and so does everything in it.", "\"For you? They'd hang me for it.\"");
+		sc.Way(n1, "Two tins and he rings it", RZ_TalkScene.FOOD, -1, 2, WAY_BELL, "He pockets the tins and rings like he means it.");
+		if (truth == "swept")
+			sc.Decide(n0, "Tell the curfew lot to go home", "send the curfew lot home", WAY_HOME, "Half of them stop on the road, look at each other, and walk off toward the houses.", RZ_EFaction.SURVIVORS);
+		else if (truth == "opened")
+			sc.Decide(n0, "Tell the post who opened it", "tell Bastion who opened the cells", WAY_TELL, "You'll tell the post. The jailer writes it down for you, slowly, in capitals.", RZ_EFaction.MILITARY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		array<int> who = {playerId};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (way == WAY_BELL)
+		{
+			// The bell brings the infected down on whoever's on the road
+			gm.GetHeat().AddHeat(m_vLast, 60);
+			gm.GetSpawner().SpawnHorde(m_vLast, 120, m_iId);
+			RZ_Log.Info(string.Format("Story: prison bell rung at %1", RZ_SettlementScanner.GridReference(m_vLast)));
+			if (m_Job.m_Scene)
+				m_Job.m_Scene.m_bDone = false;
+
+			return;
+		}
+
+		if (way == WAY_HOME)
+		{
+			if (m_aGroups.Count() > 1)
+			{
+				m_aGroups[0].Delete();
+				m_aGroups.Remove(0);
+			}
+
+			if (gm.GetSafehouses())
+				gm.GetSafehouses().AddPopulation(m_vLast, 2);
+
+			RZ_StoryKit.Record(this, "fate", town, "sent_home", who);
+			RZ_StoryKit.Later(gm, playerId, "Bastion's nightly call", "The operator reads the curfew numbers and stops halfway. \"Correction. Six fewer.\"", m_vLast);
+			return;
+		}
+
+		RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.MILITARY, 5);
+		RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.BANDITS, 4, "named a crew to Bastion");
+		RZ_StoryKit.Record(this, "fate", town, "named", who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1432,8 +1523,26 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 //! and tell them the way to the safehouse (nothing within 15 m of them) before they turn: the
 //! first in 15 minutes, the others a little later. Each one saved joins the nearest safehouse.
 //! The Haven pays its Fame and Favor to the rescuers, scaled by how many were saved.
+//! A story job (key `shelter`, kept per town): overrun, as they said; it started inside (the warden
+//! hid a bite on his list); or the doors were chained from outside (a Bastion chain: a Bastion holding
+//! on the map). The warden on the steps (the talk scene): [Known - Haven] "Where would they hide?"
+//! (five more minutes for each still hiding, the grids exact) or two tins for his whistle (the nearest
+//! still hiding comes to him: saved, no gun, no standing); inside: tell the house it was him (Haven
+//! morale -1); chained: take the chain to the house (6 Haven Favor, +3 Bastion Infamy, a Haven asset).
 class RZ_Event_CollapseShelter : RZ_PuzzleMission
 {
+	protected static const int WAY_LIST = 0;
+	protected static const int WAY_WHISTLE = 1;
+	protected static const int WAY_NAME = 2;
+	protected static const int WAY_CHAIN = 3;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Event_CollapseShelter()
+	{
+		m_Story = new RZ_MissionStory("shelter");
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected vector m_vShelter;
 	protected ref array<vector> m_aPeople = {};
 	protected ref array<IEntity> m_aBodies = {};
@@ -1503,7 +1612,101 @@ class RZ_Event_CollapseShelter : RZ_PuzzleMission
 		m_vPos = m_vShelter;
 		m_sTitle = "Collapse Shelter";
 		m_sBrief = string.Format("The shelter in %1 (%2) was overrun in the night. Four people got out and scattered round the town. They're hiding, and some of them are bitten. Find them before they turn and point them to a safehouse.", s.m_sName, shelter);
+		Truth(gm);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"overrun", "inside", "chained"};
+		array<float> weights = {0.5, 0.3, 0};
+		if (RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, m_vShelter, 100000))
+			weights[2] = 0.2;
+
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vShelter;
+		m_Job.m_fReadRange = 40;
+		m_Job.Read("inside", "nurse,doctor", "The first bodies are by the cots, not the doors. It started inside, with someone who was already bitten.");
+		m_Job.Read("chained", "soldier", "A Bastion padlock on the outside of the shelter's doors, opened since. Somebody sealed it with them in.");
+		m_Job.Read("", "hunter", "Four sets of prints run out of the back, each a different way. They scattered like they were told to.");
+
+		string reveal = "\"They came through the windows. I counted them in. I'd counted everyone in.\"";
+		if (truth == "inside")
+			reveal = "He looks at his list. \"Number nine had a bandage. He said it was a dog. I wrote 'dog'.\"";
+		else if (truth == "chained")
+			reveal = "\"Bastion chained the doors at dusk. For our safety, the corporal said. We broke a window to get out.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The warden", "shelter.warden", LandPointNear(m_vShelter, 5, 10));
+		int n0 = sc.Node("A man in a warden's armband sits on the steps. \"I was in charge of the shelter. I'd like that to stop being true.\"");
+		int n1 = sc.Node("\"Forty-one names on the list. I've been crossing them off.\"");
+		sc.Ask(n0, "\"What happened?\"", n1, reveal, true);
+		sc.Way(n0, "\"Where would they hide?\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_LIST, "He runs a finger down the list and names doorways. You've a few more minutes than you thought.", "\"How would I know? I'm only the warden.\"");
+		sc.Way(n0, "Two tins for his whistle", RZ_TalkScene.FOOD, -1, 2, WAY_WHISTLE, "He blows three short notes. Somewhere near, someone who knows that whistle starts running toward it.");
+		if (truth == "inside")
+			sc.Decide(n1, "Tell the house it was number nine", "tell the house how it started", WAY_NAME, "You'll tell them. He nods and goes on crossing out names.");
+		else if (truth == "chained")
+			sc.Decide(n1, "Take the chain to the house", "take Bastion's chain to the house", WAY_CHAIN, "The chain goes in your pack, padlock and all. The house will want to see it.", RZ_EFaction.SURVIVORS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		array<int> who = {playerId};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		if (way == WAY_LIST)
+		{
+			foreach (int i, int state : m_aState)
+			{
+				if (state == 0)
+					m_aLeft[i] = m_aLeft[i] + 300;
+			}
+
+			gm.NotifyPlayer(playerId, m_sTitle, GetWhereText(gm, m_vShelter));
+			ReopenScene();
+			return;
+		}
+
+		if (way == WAY_WHISTLE)
+		{
+			int best = -1;
+			float bestDist = 100000;
+			foreach (int j, vector p : m_aPeople)
+			{
+				float d = RZ_Util.DistXZ(p, m_vShelter);
+				if (m_aState[j] == 0 && d < bestDist)
+				{
+					best = j;
+					bestDist = d;
+				}
+			}
+
+			if (best >= 0)
+				Save(gm, playerId, best);
+
+			ReopenScene();
+			return;
+		}
+
+		if (way == WAY_NAME)
+		{
+			RZ_OneChoice.Morale(gm, RZ_EFaction.SURVIVORS, -1, "a shelter lost to a hidden bite");
+			RZ_StoryKit.Record(this, "fate", town, "named", who);
+			return;
+		}
+
+		RZ_StoryKit.PayDecider(gm, this, playerId, RZ_EFaction.SURVIVORS, 6);
+		RZ_StoryKit.BlameDecider(gm, this, playerId, RZ_EFaction.MILITARY, 3, "showed a house Bastion's chain");
+		RZ_StoryKit.Record(this, "fate", town, "chain", who);
+		RZ_StoryKit.Later(gm, playerId, "At the house", "Bastion's padlock hangs on a nail by the house's door, under a sign: 'For our safety.'", m_vShelter);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The warden still talks after a way (the choice in his second node stays open).
+	protected void ReopenScene()
+	{
+		if (m_Job.m_Scene)
+			m_Job.m_Scene.m_bDone = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1585,10 +1788,18 @@ class RZ_Event_CollapseShelter : RZ_PuzzleMission
 			return;
 		}
 
-		m_aState[objIdx] = 1;
+		Save(gm, playerId, objIdx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone from the shelter sets off for the safehouse.
+	protected void Save(RZ_GameModeComponent gm, int playerId, int idx)
+	{
+		vector p = m_aPeople[idx];
+		m_aState[idx] = 1;
 		m_iSaved++;
 		AddParticipant(playerId);
-		RZ_Util.DeleteUnit(m_aBodies[objIdx]);
+		RZ_Util.DeleteUnit(m_aBodies[idx]);
 		array<int> rescuer = {playerId};
 		gm.GetSafehouses().AddRescued(p, 1, rescuer);
 		gm.NotifyPlayer(playerId, m_sTitle, string.Format("They nod, and go, keeping low. %1 of %2 found.", m_iSaved + m_iLost, PEOPLE));

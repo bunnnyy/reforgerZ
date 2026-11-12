@@ -301,10 +301,30 @@ class RZ_Mission_BloodDrive : RZ_PuzzleMission
 //------------------------------------------------------------------------------------------------
 //! #9 Cold Chain: an antidote batch for a Haven safehouse's clinic. It spoils 15 minutes after
 //! it's picked up (25 for a Nurse, who packs it properly). Fame with Halcyon and the Haven.
+//! A story job (key `coldchain`, kept per house): a batch, as they said; short (two doses gone: the
+//! manifest says twelve); or a trial batch with no lot number (the house is the trial). The porter at
+//! the lab's door (the talk scene): [Known - Halcyon] or two tins and he packs it properly (the
+//! Nurse's 25 minutes for anyone). At the house's clinic: hand it over; short: tell them two are
+//! missing (+3 Halcyon Infamy, 5 Haven Favor, a Haven asset); trial: tell the nurse (she refuses it:
+//! Halcyon pays nothing, 5 Haven Favor, an Independent asset).
 class RZ_Mission_ColdChain : RZ_Mission_Delivery
 {
 	protected float m_fSpoilLeft = -1;
 	protected bool m_bWarned;
+	protected bool m_bPacked;
+	protected int m_iHouse = -1;
+
+	protected static const int WAY_PACK = 0;
+	protected static const int OPT_HAND = 0;
+	protected static const int OPT_TELL = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_ColdChain()
+	{
+		m_Story = new RZ_MissionStory("coldchain");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
 
 	protected static const float SPOIL_SECONDS = 900;
 	protected static const float NURSE_SECONDS = 1500;
@@ -348,7 +368,93 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 		m_sTitle = "Cold Chain";
 		m_sDeed = "kept the cold chain cold";
 		m_sBrief = string.Format("A batch of antidotes for the clinic at the safehouse in %1. Once it's out of the cold box you have fifteen minutes. Run.", h.m_sName);
+		m_iHouse = idx;
+		Truth(gm, h);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm, RZ_Safehouse h)
+	{
+		array<string> values = {"batch", "short", "trial"};
+		array<float> weights = {0.5, 0.3, 0.2};
+		string truth = m_Job.Draw(this, "house:" + m_iHouse.ToString(), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.m_fReadRange = 15;
+		m_Job.Read("short", "labtech", "Twelve slots in the cold box and ten vials in them. The manifest says twelve.");
+		m_Job.Read("trial", "labtech", "No batch number. Lot codes like these are for trials, not clinics.");
+		m_Job.Read("trial", "nurse,doctor", "The dose on the label's wrong for a clinic. It's a trial dose, and someone means to watch what it does.");
+
+		string reveal = "\"Antidotes, they tell me. I carry boxes. I'm not paid to read them.\"";
+		if (truth == "short")
+			reveal = "\"Ten, where it says twelve. The tech who packed it has a sister in a house. I'm only saying.\"";
+		else if (truth == "trial")
+			reveal = "\"No number on it. The ones with no number come back with forms.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The porter", "coldchain.porter", LandPointNear(m_vPos, 3, 6));
+		int n0 = sc.Node("A porter with frost on his gloves. \"Fifteen minutes, they say. I've seen it done in twelve. I've also seen it not done.\"");
+		int n1 = sc.Node("\"Ice and newspaper. It's not science. Well. It's a bit of science.\"");
+		sc.Ask(n0, "\"What's in the box?\"", n1, reveal, true);
+		sc.Way(n1, "\"Pack it properly.\"", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_PACK, "He packs it in ice and newspaper, tight. \"Twenty-five minutes. Don't drop it.\"", "\"Pack it yourself. I'm on my break.\"");
+		sc.Way(n1, "Two tins for his ice", RZ_TalkScene.FOOD, -1, 2, WAY_PACK, "The tins buy his good ice, the stuff he keeps for himself.");
+
+		string labels = "Hand them over";
+		if (truth == "short")
+		{
+			labels += "|Tell them two are missing";
+			m_Choice.Asset(OPT_TELL, RZ_EFaction.SURVIVORS);
+		}
+		else if (truth == "trial")
+		{
+			labels += "|Tell the nurse it's a trial";
+			m_Choice.Asset(OPT_TELL, RZ_CureFinale.INDEP);
+		}
+
+		m_Choice.Set(string.Format("The nurse at %1 holds out her hands for the box. \"All of it?\"", h.m_sName), labels, "decide what the nurse hears", OPT_HAND);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		m_bPacked = true;
+		if (m_fSpoilLeft >= 0)
+			m_fSpoilLeft = Math.Max(m_fSpoilLeft, NURSE_SECONDS - (SPOIL_SECONDS - m_fSpoilLeft));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return GetDropPos(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string subject = "house:" + m_iHouse.ToString();
+		string truth = m_Job.m_sTruth;
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		if (option == OPT_TELL && truth == "short")
+		{
+			m_Choice.BlameWith(gm, this, RZ_EFaction.INSTITUTE, 3, "told a house its doses were short");
+			m_Choice.PayWith(gm, this, RZ_EFaction.SURVIVORS, 5);
+			RZ_StoryKit.Record(this, "batch", subject, "short_told", who);
+			if (h)
+				RZ_StoryKit.LaterWith(gm, this, h.m_sName, "The house's nurse catches your sleeve. \"Two came back. In an envelope, no note. Somebody's sister felt bad.\"", h.m_vPos, true);
+
+			return;
+		}
+
+		if (option == OPT_TELL && truth == "trial")
+		{
+			m_bHasGiver = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.SURVIVORS, 5);
+			RZ_StoryKit.Record(this, "batch", subject, "refused", who);
+			NotifyParticipants(gm, m_sTitle, "The nurse reads the label, puts the box down and doesn't open it. \"Tell them we're not their forms.\" Halcyon pays nothing for a batch nobody took.");
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "batch", subject, truth, who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -360,7 +466,7 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 
 		m_fSpoilLeft = SPOIL_SECONDS;
 		string text = "The clock's running: fifteen minutes.";
-		if (HasBonus(gm, carrier))
+		if (HasBonus(gm, carrier) || m_bPacked)
 		{
 			m_fSpoilLeft = NURSE_SECONDS;
 			text = "You pack it in ice and newspaper the way they taught you. Twenty-five minutes.";
@@ -389,7 +495,8 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override void OnRewardPlayer(RZ_GameModeComponent gm, int playerId)
 	{
-		gm.AddFame(playerId, RZ_EFaction.SURVIVORS, HAVEN_FAME, false);
+		if (m_bHasGiver)
+			gm.AddFame(playerId, RZ_EFaction.SURVIVORS, HAVEN_FAME, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -408,8 +515,32 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 //------------------------------------------------------------------------------------------------
 //! #10 Escort the Scientist: a researcher takes readings at three sites. She follows the player
 //! who leads her (RZ_Escort) and needs 20 s within 15 m of each site. Research when she's done.
+//! A story job (key `scientist`, kept per town): readings, as they said; she's looking for her brother
+//! (a house within 5 km of the last site); or mapping the drones' times to the line. The lab's driver
+//! (the talk scene): [Known - Halcyon] or two tins and he takes the last site himself (two sites, no
+//! gun, no standing). Done, she asks: brother: wait for her (research +2) or leave her with him (half
+//! pay, no research, an Independent asset); the line: hand the readings in, burn the drone times
+//! (research +1, nobody), or copy them for the crew (10 Red Hand Favor, +5 Halcyon Infamy); readings:
+//! give the water readings to the house too (5 Haven Favor, research +1).
 class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 {
+	protected int m_iResearch = 2;
+	protected int m_iHouse = -1;
+	protected string m_sBrother;
+
+	protected static const int WAY_SHORT = 0;
+	protected static const int OPT_HAND = 0;
+	protected static const int OPT_SECOND = 1;
+	protected static const int OPT_THIRD = 2;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_EscortTheScientist()
+	{
+		m_Story = new RZ_MissionStory("scientist");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected ref RZ_Escort m_Escort = new RZ_Escort();
 	protected ref array<vector> m_aSites = {};
 	protected ref array<string> m_aSiteNames = {};
@@ -463,7 +594,129 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		m_sTitle = "Escort the Scientist";
 		m_sDeed = "walked a researcher through {town}";
 		m_sBrief = string.Format("One of our researchers needs readings from %1, %2 and %3. Collect her at the lab and keep her alive.", m_aSiteNames[0], m_aSiteNames[1], m_aSiteNames[2]);
-		return m_Escort.Begin(gm, m_vPos);
+		if (!m_Escort.Begin(gm, m_vPos))
+			return false;
+
+		Truth(gm);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		array<string> values = {"readings", "brother", "line"};
+		array<float> weights = {0.5, 0, 0.2};
+		vector last = m_aSites[m_aSites.Count() - 1];
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(last, 5000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		m_sBrother = RZ_NoteText.FirstName(m_Rng);
+		string truth = m_Job.Draw(this, RZ_WorldFacts.Town(m_iSettlement), values, weights);
+		m_Job.m_vReadAt = m_vPos;
+		m_Job.Read("line", "radioop", "Her instrument case has a scanner tuned to the drones' band. Those aren't soil readings.");
+		m_Job.Read("brother", "elder", string.Format("She asks every house you pass about a man called %1, with her nose. She's looking for someone.", m_sBrother));
+		m_Job.Read("readings", "labtech", "Soil and water: ordinary readings, carefully taken, and labelled in a hand that's done it a thousand times.");
+
+		string reveal = "\"Best we've got. She once took readings through a horde. They were good readings.\"";
+		if (truth == "brother")
+			reveal = string.Format("\"Her brother %1 went to a house out that way in the spring. She picks her sites.\"", m_sBrother);
+		else if (truth == "line")
+			reveal = "\"She times the drones. Every site's on a drone's turn. Don't tell her I said.\"";
+
+		RZ_TalkScene sc = m_Job.Scene("The lab's driver", "scientist.driver", LandPointNear(m_vPos, 6, 12));
+		int n0 = sc.Node("A driver leans on a van with no wheels. \"She'll walk you off your feet. Then she'll walk you off the map.\"");
+		int n1 = sc.Node("\"I know the last site. I could take it myself, for a consideration.\"");
+		sc.Ask(n0, "\"Who is she?\"", n1, reveal, true);
+		sc.Way(n1, "\"Take the last one yourself.\"", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHORT, "\"Fine. Two for you, one for me.\" He picks up a case and walks off whistling.", "\"For you? No.\"");
+		sc.Way(n1, "Two tins for the last site", RZ_TalkScene.FOOD, -1, 2, WAY_SHORT, "He pockets the tins. \"Two sites for you, then. I'll do the far one.\"");
+
+		string labels = "Hand the readings in";
+		if (truth == "brother")
+		{
+			labels = "Wait for her|Leave her with him";
+			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
+		}
+		else if (truth == "line")
+		{
+			labels += "|Burn the drone times|Copy them for the crew";
+			m_Choice.Asset(OPT_THIRD, RZ_EFaction.BANDITS);
+		}
+		else if (m_iHouse >= 0)
+		{
+			labels += "|Give the house the water readings";
+			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
+		}
+
+		m_Choice.Set("She snaps the case shut for the last time and looks at you. \"So. What happens to these?\"", labels, "decide what happens to the readings", OPT_HAND);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnStoryWay(RZ_GameModeComponent gm, int playerId, int way)
+	{
+		// Never the site she's at or past: the driver takes one still ahead
+		if (m_aSites.Count() > 2 && m_iSite < m_aSites.Count() - 1)
+		{
+			m_aSites.Remove(m_aSites.Count() - 1);
+			m_aSiteNames.Remove(m_aSiteNames.Count() - 1);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string town = RZ_WorldFacts.Town(m_iSettlement);
+		string truth = m_Job.m_sTruth;
+		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
+		if (truth == "brother" && option == OPT_SECOND)
+		{
+			m_iResearch = 0;
+			m_fRewardScale = 0.5;
+			if (h)
+			{
+				gm.GetSafehouses().AddPopulationAt(m_iHouse, 1);
+				RZ_StoryKit.LaterWith(gm, this, h.m_sName, string.Format("A woman with instrument cases is fixing the house's radio with %1. They argue like twins. They aren't.", m_sBrother), h.m_vPos, true);
+			}
+
+			RZ_StoryKit.Record(this, "fate", town, "stayed", who);
+			return;
+		}
+
+		if (truth == "line" && option == OPT_SECOND)
+		{
+			m_iResearch = 1;
+			m_bHasGiver = false;
+			RZ_StoryKit.Record(this, "fate", town, "burned", who);
+			NotifyParticipants(gm, m_sTitle, "The drone times go in a fire. She watches them burn and says nothing. Halcyon pays nothing for ash.");
+			return;
+		}
+
+		if (truth == "line" && option == OPT_THIRD)
+		{
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
+			m_Choice.BlameWith(gm, this, RZ_EFaction.INSTITUTE, 5, "sold the drones' times");
+			RZ_StoryKit.Record(this, "fate", town, "crew", who);
+			return;
+		}
+
+		if (option == OPT_SECOND && truth == "readings")
+		{
+			m_iResearch = 1;
+			m_Choice.PayWith(gm, this, RZ_EFaction.SURVIVORS, 5);
+			RZ_StoryKit.Record(this, "fate", town, "house", who);
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", town, "lab", who);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return m_vPos;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -524,7 +777,8 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(2, "A researcher came back from the field with three sets of readings.");
+		if (m_iResearch > 0)
+			gm.GetCure().AddResearch(m_iResearch, "A researcher came back from the field with her readings.");
 	}
 
 	//------------------------------------------------------------------------------------------------
