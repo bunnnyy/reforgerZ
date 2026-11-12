@@ -1469,10 +1469,13 @@ reads: Walk Him Out done, Bastion short of supplies, the Last Helicopter's LZ ke
 ledger solved, the farm found, the host's offer to the tester (who is made a stranger to the Haven
 for it, and put back after: the offer is for someone the Haven doesn't take in), research at 80
 percent and, for Authors, the final stand, stopped again after. Before each, too, every seat the
-mission phase emptied is filled and every leader a finished mission still holds is let go (a season
-fills a seat after **Leaders > Replace minutes**), and The Three Weeks gets a scavenger again. A
-questline that doesn't start logs `RZT quest <key> why: ...` (the Red Hand's and Halcyon's seats, the
-puzzle prefabs, and what its own start reads). The two majors with no built questline under them
+mission phase emptied is filled, Independent like the rest, and every leader a finished mission still
+holds is let go (a season fills a seat after **Leaders > Replace minutes**); The Three Weeks gets a
+scavenger again, and the two Long Table lines get the farm open again if a mission sent it moving. A
+questline that doesn't start logs `RZT quest <key> why: ...` (Bastion's, the Red Hand's and Halcyon's
+seats, the puzzle prefabs, and what its own start reads). While one waits for its stage mission, it
+logs once a minute `RZT quest <key> stage <n> waits: ...` (the stage not ready, the manager's reason,
+or its Setup saying no, and every claim held); one that fizzles logs the claims held then. The two majors with no built questline under them
 (Every Name, Proof) are left to the majors' phase. The Well Story runs before Cargo
 (Cargo's purge ending dismisses the one crew boss it needs). While a questline waits for its stage
 mission, every mission that isn't a questline stage is ended, so a contract on the board can't hold

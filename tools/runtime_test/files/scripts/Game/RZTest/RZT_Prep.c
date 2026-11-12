@@ -73,7 +73,11 @@ modded class RZ_LongTable
 			Publish();
 		}
 
-		return Exists();
+		// A farm that's moving (a mission found it out) opens again at once: its questlines need it open
+		if (m_eState == RZ_ETableState.QUIET)
+			Relocate();
+
+		return IsOpen();
 	}
 
 	//! The host has fed this player twice and offers them a place (A Place at the Table).
@@ -99,7 +103,8 @@ modded class RZ_Leaders
 {
 	//! Every empty seat filled now (a season replaces them after Leaders > Replace minutes; the
 	//! mission phase kills and dismisses seats faster than that), and every leader a finished
-	//! mission still holds let go. Returns how many seats changed.
+	//! mission still holds let go. A new seat is Independent, as the questline phase sets them all
+	//! (Await Relief needs an Independent commander). Returns how many seats changed.
 	int RZT_FillSeats()
 	{
 		int changed = 0;
@@ -109,6 +114,8 @@ modded class RZ_Leaders
 			if (!l.m_bAlive && !l.IsStronghold())
 			{
 				m_aList[i] = Replace(l);
+				m_aList[i].m_iScore = 40;
+				m_aList[i].m_eLoyalty = RZ_ELoyalty.INDEPENDENT;
 				changed++;
 				continue;
 			}
@@ -134,6 +141,7 @@ modded class RZ_Leaders
 		int held = 0;
 		int strong = 0;
 		int dead = 0;
+		int indep = 0;
 		foreach (RZ_Leader l : m_aList)
 		{
 			if (l.m_eFaction != f)
@@ -151,9 +159,11 @@ modded class RZ_Leaders
 
 			if (l.IsStronghold())
 				strong++;
+			else if (l.m_eLoyalty == RZ_ELoyalty.INDEPENDENT)
+				indep++;
 		}
 
-		return string.Format("present %1 (held %2, stronghold %3), away %4", present, held, strong, dead);
+		return string.Format("present %1 (held %2, stronghold %3, Independent %4), away %5", present, held, strong, indep, dead);
 	}
 }
 
@@ -572,6 +582,9 @@ class RZT_Prep
 			}
 			case "place":
 			{
+				if (gm.GetLongTable())
+					Print(string.Format("RZT forced: the Long Table open (%1)", gm.GetLongTable().RZT_Ensure()));
+
 				// The host has fed the tester twice and offers a place
 				bool offered = false;
 				if (gm.GetLongTable())
@@ -588,6 +601,9 @@ class RZT_Prep
 			}
 			case "table":
 			{
+				if (gm.GetLongTable())
+					Print(string.Format("RZT forced: the Long Table open (%1)", gm.GetLongTable().RZT_Ensure()));
+
 				// The List found the farm
 				q.SetWorldFlag("list.found_table", 1);
 				Print("RZT forced: list.found_table");
@@ -754,7 +770,10 @@ class RZT_Prep
 		string why = "";
 		RZ_Leaders leaders = gm.GetLeaders();
 		if (leaders)
-			why = string.Format("Red Hand seats %1; Halcyon seats %2", leaders.RZT_Seats(RZ_EFaction.BANDITS), leaders.RZT_Seats(RZ_EFaction.INSTITUTE));
+			why = string.Format("Bastion seats %1; Red Hand seats %2; Halcyon seats %3", leaders.RZT_Seats(RZ_EFaction.MILITARY), leaders.RZT_Seats(RZ_EFaction.BANDITS), leaders.RZT_Seats(RZ_EFaction.INSTITUTE));
+
+		if ((key == "place" || key == "table") && gm.GetLongTable())
+			why += string.Format("; Long Table exists %1, open %2", gm.GetLongTable().Exists(), gm.GetLongTable().IsOpen());
 
 		why += string.Format("; clue %1, object %2, civilian %3", RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE), RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.OBJECT), RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN));
 		if (key == "well" || key == "cargo")
