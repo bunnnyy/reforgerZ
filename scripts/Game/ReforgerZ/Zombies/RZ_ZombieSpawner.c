@@ -1143,6 +1143,7 @@ class RZ_ZombieSpawner
 		m_GM.GetHeat().AddHeat(hotPos, -heat * 0.5);
 		m_fHordeCooldownLeft = m_Settings.m_fHordeCooldown;
 		m_GM.NotifyHorde(hotPos);
+		RZ_WorldWriters.Horde(hotPos);
 	}
 
 	//------------------------------------------------------------------------------------------------

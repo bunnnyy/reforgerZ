@@ -1,0 +1,312 @@
+# The Haven's leaders, the hub (docs/DIALOGUE.md, "Hubs: work comes out of talk"): work, the news
+# and what they make of you come out of talk. Each topic carries a built reply (call:slot:N): 0 the
+# job (their own, else the stronghold's contracts), 1 the built news, 2 what they make of you.
+# Voice: warm, worried, practical, darkly funny sideways. The List is said sideways, never announced.
+
+conv haven.leader.work_food
+for stronghold:haven, seat:haven/council_head
+when need:food & !exiled
+topic "Ask why the bowls are half full."
+prio ask
+voice haven
+
+bind short = house:nearest_short
+
+node start
+  jump route:out -> other_route
+  jump epilogue -> after
+  say? stronghold :: "The chair's table, and the soup on it is mostly a rumour. Every house is eating thinner than it says."
+  say? trait:merciful :: "Sit down first. You look like the soup. Stores are low, love. Lower than we tell the children."
+  say? trait:pragmatist :: "Food in, food out. Lately it's mostly out. I can do the sums. I'd rather not."
+  say "Stores are down to the tins with no labels. We open one and find out what's for supper."
+  say? bound:short :: "{bind:short} went to half portions. I can hear it from here, and it isn't close."
+  say? night :: "And it's night, which is when people count what's left."
+  say "We'll manage. We always say that. Mostly we do."
+  > @who "Who's short, exactly?" -> who
+  > @why "Why not ask Bastion for rations?" -> bastion
+  > @worth "What's in it for me?" -> worth
+  > @nurse "Who's eating least? It shows first." -> nurse   if bg:nurse,doctor,elder
+  > @help "Is there something I can do?" -> offer
+  > @no "Not today." -> hub
+
+node who
+  say? bound:short :: "{bind:short} first. Then the rest, one by one, like lights going off."
+  say "Everyone. Some just say it louder."
+  say? supply:lost :: "The last truck didn't come. Nobody's saying why, which means somebody knows."
+  say "It's never the food that runs out first. It's the patience."
+  > @help2 "Then let me help." -> offer
+  > @back1 "Something else." -> hub
+
+node bastion
+  say? truce:bastion :: "We've a truce with Bastion. A truce isn't a larder. They're counting their own tins."
+  say? feud:bastion :: "Ask Bastion? They'd ask what's in it for them, then count us."
+  say "They'd feed us for a list of names. We don't hand out lists."
+  > @help3 "Then let me help." -> offer
+  > @back2 "Something else." -> hub
+
+node worth
+  say? trait:merciful :: "Supper. A bed. People who'll remember your face kindly. It's what we've got, and we give it all."
+  say "Favor, a meal, and a name people say nicely. Don't laugh. Out here that's money."
+  > @help4 "Fair. What's the job?" -> offer
+  > @dry4 "Supper it is, then." -> offer   dry
+  > @back3 "Something else." -> hub
+
+node nurse
+  say "The old ones. They pass their bowls along when nobody's looking, and then they're the ones looking thin."
+  say "You noticed. Most people only notice the children."
+  > @help5 "Let me help with the food." -> offer
+  > @back4 "Something else." -> hub
+
+node offer
+  say? tier:haven>=trusted :: "I'd hoped you'd say that. I've a list. Of course I've a list."
+  say "There's work. Not glamorous. It feeds people. See if it suits."
+  > @take "Show me." -> hub   do call:slot:0
+  > @later "Let me think about it." -> hub
+
+node other_route
+  say "You're with another lot now. I heard. People still need feeding, whoever you march with."
+  > @take2 "Is there still work?" -> hub   do call:slot:0
+  > @back5 "Something else." -> hub
+
+node after
+  say? cure_held:haven :: "We hold the cure, and the stores don't know it. People still eat every day."
+  say "The cure's out, or near enough, and the soup hasn't heard. People still eat every day."
+  > @take3 "Then I'll still work." -> hub   do call:slot:0
+  > @back6 "Something else." -> hub
+
+conv haven.leader.work
+for stronghold:haven, seat:haven/council_head
+when !need:food & !exiled
+topic "Ask what's keeping them up."
+prio ask
+voice haven
+
+bind over = news:overrun
+bind burned = news:burned
+
+node start
+  jump route:out -> other_route
+  jump epilogue -> after
+  say? need:security & bound:over :: "{bind:over} went to the dead. That's close enough to hear on a still night."
+  say? need:security :: "The fences. Every house thinks its fence is fine until it isn't."
+  say? need:people :: "Empty beds. We have more beds than people now, and that's never a good sign."
+  say? need:supplies :: "Bandages boiled and boiled again. Batteries. Thread. The small things keep a house alive."
+  say? bound:burned :: "{bind:burned} burned, and nobody put it out. Somebody will ask us to take them in."
+  say "It's quiet. Quiet is when things go missing."
+  say? rain :: "And the roof in the east room leaks. That's not the worst of it, only the loudest."
+  say? finale:open :: "And everyone's picking a side for the cure, as if the soup will wait."
+  say? trait:talker :: "I'd tell you the rest, but then you'd know as much as me, and I'd have nothing to trade."
+  say "Same as always. Too many people need too many things."
+  > @what "What happened there?" -> place   if bound:over
+  > @burnt "Who's taking the burned-out families?" -> families   if bound:burned
+  > @fences "Who's watching the fences?" -> fences
+  > @elder "You've seen worse than this. Say it." -> told   if bg:elder
+  > @press "Tell me what you're not saying." -> told | half | half   check persuade haven 2 easier:merciful harder:paranoid bg:elder,nurse
+  > @help "Can I help?" -> offer
+
+node place
+  say "The dead came in through the gardens, the way they do. The people left by the front, the way we taught them."
+  say "Some got to us. Some didn't. We read the names at supper."
+  > @help2 "Then let me help." -> offer
+  > @back1 "Something else." -> hub
+
+node families
+  say "We are. Of course we are. Where else would they go. We'll squeeze."
+  say "Squeezing is a skill. We've had a lot of practice."
+  > @help3 "Let me help with that." -> offer
+  > @back2 "Something else." -> hub
+
+node fences
+  say? need:security :: "Children and old men, in shifts. They're good at shouting. Shouting isn't a fence."
+  say "Whoever's awake. That's the rota. Being awake."
+  > @help4 "I could take a shift of a kind." -> offer
+  > @back3 "Something else." -> hub
+
+node told
+  say? major:every_name :: "The council's arguing about the List again. Who's on it, who comes off. Every house has an opinion and a pencil."
+  say "The council argues about who gets the next bed. It's not the arguing that keeps me up. It's that they're right, both of them."
+  do learn:haven.council_argues:6h
+  > @help5 "Then give me something useful to do." -> offer
+  > @back4 "Something else." -> hub
+
+node half
+  say "Nothing you'd sleep better for knowing. Ask me again when you've eaten here a few times."
+  > @help6 "Then give me something to do." -> offer
+  > @back5 "Something else." -> hub
+
+node offer
+  say? trait:merciful :: "Eat first. Then work. That's the order here, whatever the council says."
+  say "There's always something. Nobody comes to the Haven for the glamour."
+  > @take "Show me." -> hub   do call:slot:0
+  > @later "Let me think about it." -> hub
+
+node other_route
+  say "You're walking with another lot now. Fine. People here still need things doing, whoever you march with."
+  > @take2 "Is there still work?" -> hub   do call:slot:0
+  > @back6 "Something else." -> hub
+
+node after
+  say "The cure's done, and people still fall off roofs and run out of thread. Grief has a lot of chores."
+  > @take3 "Then I'll still work." -> hub   do call:slot:0
+  > @back7 "Something else." -> hub
+
+conv haven.leader.news
+for stronghold:haven, seat:haven/council_head
+when !exiled
+topic "Ask what the houses are saying."
+prio world
+voice haven
+
+bind took = news:taken
+bind who = news:taken_by
+bind from = news:taken_from
+bind dead = news:leader_dead
+bind horde = news:horde
+bind hungry = news:hungry
+bind gone = news:emptied
+bind saved = news:rescue
+
+node start
+  jump news:leader_dead -> dead
+  jump news:emptied -> emptied
+  jump news:taken -> taken
+  jump news:horde -> horde
+  jump news:rescue -> rescue
+  jump news:hungry -> hungry
+  say? epilogue :: "The houses are saying goodbye to each other. On the radio, in letters, in tins left on doorsteps."
+  say? cure>=75 :: "The houses are saying the lab's close. Close is a word that's been close for weeks."
+  say? outbreak:overrun :: "The houses are saying the roads are theirs now. The dead's, I mean. We go out in twos."
+  say "The houses are saying what houses say. Who coughed, who's courting, who took the last of the jam."
+  say? !night & hour<11 :: "Morning gossip's the kindest. People haven't slept on it yet."
+  > @mine "And what are they saying about me?" -> me
+  > @more "Anything else going round?" -> hub   do call:slot:1
+  > @back0 "Something else." -> hub
+
+node dead
+  say "{bind:dead} is dead. We heard it from three houses before the radio said it, and the radio had it wrong."
+  say? trait:merciful :: "Whoever they were to you, their name gets read tonight. We don't skip anyone."
+  say "Whatever they were, they kept people alive. That earns a name read out."
+  > @who2 "Who takes their place?" -> place
+  > @more1 "What else is going round?" -> hub   do call:slot:1
+  > @back1 "Something else." -> hub
+
+node place
+  say "Whoever stands up first and doesn't sit down. That's how it went last time. That's how it goes."
+  > @more2 "What else is going round?" -> hub   do call:slot:1
+  > @back2 "Something else." -> hub
+
+node emptied
+  say "The last of them left the house in {bind:gone}. Took the bear off the door and carried it."
+  say "Somebody will paint it again on our doors here. We've a lot of bears now."
+  > @where "Where did they go?" -> went
+  > @more3 "What else is going round?" -> hub   do call:slot:1
+  > @back3 "Something else." -> hub
+
+node went
+  say "Here. The next house over. Wherever has a bowl. We don't turn people from the door. That's the one rule we've kept."
+  > @more4 "What else is going round?" -> hub   do call:slot:1
+  > @back4 "Something else." -> hub
+
+node taken
+  say "They're saying {bind:who} took {bind:took} from {bind:from}. Fighting over a town nobody can live in."
+  say? truce:redhand :: "We've a truce with the Red Hand, so I'm told to say nothing. I'm saying nothing very loudly."
+  say "Whoever holds it, the families there still need feeding."
+  > @true "Is that true?" -> sure
+  > @more5 "What else is going round?" -> hub   do call:slot:1
+  > @back5 "Something else." -> hub
+
+node sure
+  say "As true as anything said over soup. Someone's cousin saw the flag change. Cousins are reliable about flags."
+  > @more6 "What else is going round?" -> hub   do call:slot:1
+  > @back6 "Something else." -> hub
+
+node horde
+  say "A crowd of them came through near {bind:horde}. Someone rang a bell, or ran a generator, and they came to see."
+  say "Tell people: quiet is a kindness now. Noise is a dinner bell."
+  > @more7 "What else is going round?" -> hub   do call:slot:1
+  > @back7 "Something else." -> hub
+
+node rescue
+  say "Someone brought people in alive at {bind:saved}. Alive. Every house heard it by supper."
+  say? helped :: "Some say it was you. I didn't correct them."
+  say "That's the good kind of gossip. We run short of it."
+  > @more8 "What else is going round?" -> hub   do call:slot:1
+  > @back8 "Something else." -> hub
+
+node hungry
+  say "{bind:hungry} is on half portions. They say it isn't, which is how you know."
+  say "The Haven doesn't blame. We send tins. When we have tins."
+  > @more9 "What else is going round?" -> hub   do call:slot:1
+  > @back9 "Something else." -> hub
+
+node me
+  jump kit:other -> me_colours
+  jump best:haven -> me_known
+  say? tier:haven>=trusted :: "That you're one of ours, near enough. That you eat with your hat off. Small things. They count."
+  say? fresh :: "That there's a new face. People are always kind to a new face for a day or two. Use it."
+  say "Not much yet. That's not a bad thing. The ones they talk about are mostly trouble or dead."
+  > @back10 "Something else." -> hub
+
+node me_known
+  say "That you {best}. They say it at supper, with the bread. It's the best place to be said."
+  > @back11 "Something else." -> hub
+
+node me_colours
+  say "That you came in wearing someone else's colours. People notice colours. They're polite about it. To your face."
+  > @back12 "Something else." -> hub
+
+conv haven.leader.me
+for stronghold:haven, seat:haven/council_head
+when !exiled
+topic "Ask if you're welcome here."
+prio reaction
+voice haven
+
+node start
+  jump kit:other -> colours
+  jump bite_shown -> bitten
+  jump infamy:haven>=15 -> infamous
+  jump tier:haven>=trusted -> trusted
+  jump tier:haven>=known -> known
+  say? fresh :: "A new face. You've the look of someone who's just been told the rules and is still deciding which ones count."
+  say "Welcome's a big word. You're fed and you're inside. That's most of it."
+  > @more "Where do I stand with you, honestly?" -> hub   do call:slot:2
+  > @fair "Fair enough." -> hub
+
+node colours
+  say? kit:full :: "Head to boot in someone else's kit, in my house. I'll assume you're cold and not lost."
+  say "You're wearing their colours. We don't shoot through doors with bears on them. Don't make us reconsider."
+  > @explain "It was what I could find." -> found
+  > @more1 "Where do I stand with you?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+node found
+  say "Everything is. Take it off before supper, love. The children ask questions."
+  > @back2 "Something else." -> hub
+
+node bitten
+  say "Show me the arm. No. Don't. I can see it from here."
+  say? declared :: "You told the house. That's why you're still inside. That's the whole of the rule."
+  say "Tell the house before it tells us. That's the one thing we ask."
+  > @more2 "Am I still welcome?" -> hub   do call:slot:2
+  > @back3 "Something else." -> hub
+
+node infamous
+  say? worst:haven :: "People here know you {worst}. They're polite about it. That's how you know it's serious."
+  say "People go quiet when you come in. That's not a welcome. That's a habit we learned."
+  > @more3 "Say it straight. Where do I stand?" -> hub   do call:slot:2
+  > @back4 "Something else." -> hub
+
+node trusted
+  say? best:haven :: "You {best}. You'll be welcome here when there's nothing left to welcome you with."
+  say? title:haven :: "They call you {title:haven} in the houses. They don't call many people anything."
+  say "You're one of the people I don't count the bowls against."
+  > @more4 "Where do I stand, in full?" -> hub   do call:slot:2
+  > @back5 "Something else." -> hub
+
+node known
+  say? helped :: "You helped us. People remember who helped. We've no other way to pay."
+  say? jobs:haven>=3 :: "You've done a few jobs for us. The houses have started saying your name without a question mark."
+  say "You're known here. Known is good. Known means someone would notice if you didn't come back."
+  > @more5 "And where do I stand?" -> hub   do call:slot:2
+  > @back6 "Something else." -> hub

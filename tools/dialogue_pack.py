@@ -38,7 +38,8 @@ TARGETS_SPECIAL = {"end", "hub", "back"}
 SPEAKER_RE = re.compile(r"^(leader|leader:(haven|bastion|redhand|halcyon)|stronghold:(haven|bastion|redhand|halcyon)|"
                         r"seat:(haven/council_head|bastion/outpost_lead|redhand/crew_boss|halcyon/field_lead)|"
                         r"wanderer|wanderer:(trader|doctor|scavenger|deserter|preacher|courier|kid|mechanic)|"
-                        r"occupant|named|named:(haven|bastion|redhand|halcyon)(/[a-z_]+)?|"
+                        r"occupant|resident|resident:(cook|lookout|storekeeper|clerk)|"
+                        r"named|named:(haven|bastion|redhand|halcyon)(/[a-z_]+)?|"
                         r"post|post:(bastion|redhand)|table|table:(host|mother|son|boy|road)|"
                         r"stranger|stranger:[a-z_]+|radio|radio:open|radio:secure|radio:(bastion|redhand|halcyon)|"
                         r"quest|quest:[a-z_]+|mission)$")
@@ -97,7 +98,21 @@ COND_KEYS = {
     "bound": (False, False),
     # This life is under an hour of play
     "fresh": (False, False),
+    # What's going on (RZ_DialogueNews): the news near the speaker, its faction's trucks, which of three
+    # ways this person talks, the weather, the Perimeter's line near, a major's act, a faction's holdings
+    "news": (True, False), "supply": (True, False), "persona": (True, False), "rain": (False, False),
+    "fog": (False, False), "edge": (False, False), "major": (True, True), "holds": (True, True),
+    # What you did with a faction: a deed to name ({best}, {worst}), jobs done, theirs put down
+    "best": (True, False), "worst": (True, False), "jobs": (True, True), "kills": (True, True),
 }
+NEWS_KINDS = {"taken", "taken_by", "taken_from", "won", "lost", "burned", "emptied", "rescue", "overrun", "shelled",
+              "hungry", "truck", "leader_dead", "leader_dead_at", "death", "bite", "horde"}
+NEWS_RE = re.compile(r"^(%s|(won_by|lost_by)\((haven|bastion|redhand|halcyon)\))$" % "|".join(sorted(NEWS_KINDS)))
+SUPPLY_WORDS = {"running", "road", "short", "lost"}
+TOWN_WORDS = {"held", "infection", "safe", "infested", "overrun", "looted", "burned", "barricaded", "powered"}
+BIND_RE = re.compile(r"^([a-z_]+)\s*=\s*(town:nearest|town:thick_within\([0-9]+\)|house:nearest|house:nearest_short|"
+                     r"town:quiet_within\([0-9]+\)|town:held_by\((haven|bastion|redhand|halcyon)\)|"
+                     r"supply:(short|truck)|news:[a-z_]+(\((haven|bastion|redhand|halcyon)\))?)$")
 QUIET_KEYS = {"stranger"}
 CURE_HELD = {"any", "haven", "bastion", "redhand", "halcyon", "everyone", "indep", "indep_side", "indep_sold",
              "indep_kept", "nobody", "slow", "none"}
@@ -111,7 +126,7 @@ ROUTE_ARGS = {"none", "any", "in", "out", "independent", "unsided", "won", "lost
 # Keys that read the world or the player's place in it: an ask needs one (docs/DIALOGUE.md, "Asks").
 WORLD_KEYS = {"house", "town", "need", "wbitten", "kidlost", "bg", "tier", "rep", "exiled", "bite_shown", "hunted",
               "outbreak", "cure", "flag", "stage", "infamy", "fame", "kin", "tribe", "q", "cure_held", "distress",
-              "declared", "symptoms"}
+              "declared", "symptoms", "news", "supply", "major", "holds", "epilogue", "finale", "day"}
 EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later",
            "sway", "decide", "commit", "promise", "keep", "wire", "cover", "set", "qset", "begin", "note", "approach", "test", "watch", "unsway"}
 SCENE_EFFECTS = {"sway", "decide", "set", "qset", "begin"}
@@ -130,7 +145,7 @@ KNOWABLE_KEYS = {"bg", "tier", "fame", "infamy", "rep", "hunted", "exiled", "kin
                  "cover", "group", "secure"}
 NUMBER_RE = re.compile(r"[0-9]|\{cure_percent\}|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
                        r"twenty|thirty|fifty|hundred|percent|half|minutes?)\b", re.I)
-GENERIC_SPEAKERS = {"occupant", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission"}
+GENERIC_SPEAKERS = {"occupant", "resident", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
 CALLS = re.compile(r"^(slot:[0-9]|hand_in:[0-9]+|toll|post_wave|standing|season|look|distress|net_word|net_lost|declare_bite|caught_bite|brief_public)$")
@@ -379,9 +394,10 @@ def parse_file(path):
                 conv.scene, conv.scope = bits[0], bits[1]
                 conv.who = who.strip()
             elif word == "bind":
-                m = re.match(r"^([a-z_]+)\s*=\s*(town:nearest|town:thick_within\([0-9]+\)|house:nearest|house:nearest_short)$", rest)
-                if not m:
-                    raise Problem("bind is 'bind <name> = town:nearest | town:thick_within(<m>) | house:nearest | house:nearest_short'")
+                m = BIND_RE.match(rest)
+                if not m or (m.group(2).startswith("news:") and not NEWS_RE.match(m.group(2)[5:])):
+                    raise Problem("bind is 'bind <name> = town:nearest | town:thick_within(<m>) | town:quiet_within(<m>) | "
+                                  "town:held_by(<faction>) | house:nearest | house:nearest_short | supply:short|truck | news:<kind>'")
                 conv.binds.append((m.group(1), m.group(2)))
             elif word == "use":
                 if not re.match(r"^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$", rest):
@@ -509,6 +525,18 @@ def lint_cond(cond, where, errs):
             errs.append("%s: q is q:<questline>.<flag>[op N]" % where)
         if key == "secure" and arg and arg not in ("bastion", "redhand", "halcyon"):
             errs.append("%s: secure is secure or secure:bastion|redhand|halcyon" % where)
+        if key == "news" and not NEWS_RE.match(arg or ""):
+            errs.append("%s: news is news:%s, won_by(<faction>) or lost_by(<faction>)" % (where, "|".join(sorted(NEWS_KINDS))))
+        if key == "supply" and arg not in SUPPLY_WORDS:
+            errs.append("%s: supply is supply:running|road|short|lost" % where)
+        if key == "persona" and arg not in ("1", "2", "3"):
+            errs.append("%s: persona is persona:1, 2 or 3" % where)
+        if key == "major" and arg not in MAJORS:
+            errs.append("%s: major names a major (%s)" % (where, ", ".join(sorted(MAJORS))))
+        if key in ("holds", "best", "worst", "jobs", "kills") and arg not in ("haven", "bastion", "redhand", "halcyon"):
+            errs.append("%s: %s needs a faction (haven, bastion, redhand, halcyon)" % (where, key))
+        if key == "town" and arg not in TOWN_WORDS:
+            errs.append("%s: town is town:%s" % (where, "|".join(sorted(TOWN_WORDS))))
         if key in ("sitting", "tabled") and (arg or "").count(".") != (1 if key == "sitting" else 2):
             errs.append("%s: %s is %s:<major>.<vote>%s" % (where, key, key, "" if key == "sitting" else ".<word>"))
     return keys
@@ -753,7 +781,7 @@ def lint(convs):
                             continue
                         errs.append("%s: unknown check option '%s'" % (wch, extra))
                     if check[0] == "threaten":
-                        bad = [s for s in c.speakers if s.startswith(("stronghold", "table", "occupant"))
+                        bad = [s for s in c.speakers if s.startswith(("stronghold", "table", "occupant", "resident"))
                                or s in ("leader", "wanderer", "wanderer:kid") or s.startswith("leader:")]
                         if bad:
                             errs.append("%s: no threats at %s (stronghold leaders, the Kid, the Long Table, safehouses)" % (wch, ", ".join(bad)))
@@ -900,7 +928,60 @@ def lint(convs):
                     errs.append("%s: nothing on a secure net is public (node %s)" % (where_c, n.id))
         if c.always and not has_confirm:
             errs.append("%s: 'always' is only for the finale's route topics (a topic with a confirm node)" % where_c)
+        lint_carries(c, where_c, errs)
     return errs, warns
+
+
+def carried_slots(c):
+    slots = set()
+    for n in c.nodes:
+        for ch in n.choices:
+            for m in re.finditer(r"call:slot:([0-9])", ch.do):
+                slots.add(m.group(1))
+    return slots
+
+
+def lint_carries(c, where_c, errs):
+    """A topic that runs a built reply (call:slot:N) hides it from the hub while it shows (docs/DIALOGUE.md,
+    "Hubs: work comes out of talk"), so every way through it must still reach that reply: from the start,
+    whatever its jumps do, through choices that need nothing (no if, check, cost or callout)."""
+    slots = carried_slots(c)
+    if not slots:
+        return
+    if c.kind != "topic":
+        errs.append("%s: only a topic runs a built reply (call:slot:N)" % where_c)
+        return
+    if "2" in slots and any(sp.startswith("wanderer") for sp in c.speakers) and "wbitten" not in c.when:
+        errs.append("%s: a wanderer's slot 2 is the antidote while they're bitten: its when reads wbitten (or !wbitten)" % where_c)
+    for slot in sorted(slots):
+        memo = {}
+
+        def reaches(nid, depth):
+            if nid in memo:
+                return memo[nid]
+            nd = c.node(nid)
+            if not nd or depth > 12:
+                return False
+            memo[nid] = False
+            ok = False
+            free = [ch for ch in nd.choices if not ch.cond and not ch.check and not ch.cost and not ch.callout]
+            for ch in free:
+                if re.search(r"call:slot:%s\b" % slot, ch.do):
+                    ok = True
+                    break
+                t = ch.targets[0] if ch.targets else ""
+                if t not in TARGETS_SPECIAL and reaches(t, depth + 1):
+                    ok = True
+                    break
+            for kind, cond, val in nd.items:
+                if kind == "jump" and not reaches(val, depth + 1):
+                    ok = False
+            memo[nid] = ok
+            return ok
+
+        if not reaches("start", 0):
+            errs.append("%s: carries built reply %s (call:slot:%s), but not every way through reaches it with a "
+                        "choice that needs nothing" % (where_c, slot, slot))
 
 
 # ------------------------------------------------------------------------------------------ lock

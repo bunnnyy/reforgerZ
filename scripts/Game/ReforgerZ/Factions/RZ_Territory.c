@@ -1380,7 +1380,7 @@ class RZ_Territory
 		AddStrength(taker, 3);
 
 		Headline(RZ_FactionVoice.Taken(taker, loser, h.m_sName));
-		RZ_WorldWriters.HoldingTaken(h.m_iSettlement, RZ_Factions.GetName(taker), RZ_Factions.GetNameInText(loser), h.m_sName);
+		RZ_WorldWriters.HoldingTaken(h.m_iSettlement, taker, loser, h.m_sName, h.m_vPos);
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life)
 		{

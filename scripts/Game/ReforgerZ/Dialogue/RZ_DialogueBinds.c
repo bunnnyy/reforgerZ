@@ -3,7 +3,8 @@
 //!
 //! - `bind <name> = <picker>`: a place picked once when the topic opens and kept for the session:
 //!   `town:nearest`, `town:thick_within(<m>)` (the nearest town thick with them, 60 or more), `house:nearest`,
-//!   `house:nearest_short` (the nearest safehouse that ran short). `{bind:<name>}` (or `{town:@<name>}`)
+//!   `house:nearest_short` (the nearest safehouse that ran short), and what's going on (RZ_DialogueNews:
+//!   `news:<kind>`, `supply:short|truck`, `town:held_by(<faction>)`, `town:quiet_within(<m>)`). `{bind:<name>}` (or `{town:@<name>}`)
 //!   says it; `@<name>` in a key binds the key to it, as `@here` binds it to the speaker.
 //! - `{claim:<key>}`: what you told this speaker for that claim, in your own words.
 //! - `watch:<key>@<name>:<infection>`: a world predicate. The truth of a lie about a bound town is
@@ -42,11 +43,15 @@ class RZ_DialogueBinds
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "town:N" or "house:N", "" when nothing fits.
+	//! "town:N", "house:N" or "text:<words>", "" when nothing fits.
 	protected static string Picked(RZ_DCtx ctx, string picker)
 	{
 		RZ_GameModeComponent gm = ctx.m_GM;
 		vector at = ctx.Pos();
+		// What's going on (RZ_DialogueNews): news:<kind>, supply:<what>, town:held_by(...), town:quiet_within(...)
+		if (picker.StartsWith("news:") || picker.StartsWith("supply:") || picker.StartsWith("town:held_by(") || picker.StartsWith("town:quiet_within("))
+			return RZ_DialogueNews.Pick(ctx, picker);
+
 		if (picker == "town:nearest")
 		{
 			if (ctx.m_iTown < 0)
@@ -120,6 +125,10 @@ class RZ_DialogueBinds
 	//! A bound value's name for players.
 	protected static string NameOf(RZ_GameModeComponent gm, string value)
 	{
+		// A picked line of words (a faction, a dead leader's name, a truck's destination)
+		if (value.StartsWith("text:"))
+			return value.Substring(5, value.Length() - 5);
+
 		int colon = value.IndexOf(":");
 		if (colon <= 0)
 			return "somewhere near";
