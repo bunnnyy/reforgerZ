@@ -12,6 +12,39 @@
 //! Server only.
 
 //------------------------------------------------------------------------------------------------
+//! The props a step's place may show while it's open (Missions > Errands > Props). All optional:
+//! empty = that step is words only, as before.
+[BaseContainerProps()]
+class RZ_ErrandProps
+{
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Effects (optional): a dead man's things in a heap, a kit bag with a jacket on it (His Effects, The Name on the Tape, Notebook 31, Into the Record). Empty = words only", "et")]
+	ResourceName m_sEffects;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crate (optional): a small supply crate or a box of odds and ends (The Truck Didn't Come, Clean Glasses, Pack for the Queue). Empty = words only", "et")]
+	ResourceName m_sCrate;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Papers (optional): a book or a few papers on a stool or a seat (Last Orders). Empty = words only", "et")]
+	ResourceName m_sPapers;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Parts (optional): a toolbox or a machine part on the ground (Filter Parts, Buy It Back's box). Empty = words only", "et")]
+	ResourceName m_sParts;
+
+	//------------------------------------------------------------------------------------------------
+	ResourceName For(RZ_EErrandProp kind)
+	{
+		switch (kind)
+		{
+			case RZ_EErrandProp.EFFECTS: return m_sEffects;
+			case RZ_EErrandProp.CRATE: return m_sCrate;
+			case RZ_EErrandProp.PAPERS: return m_sPapers;
+			case RZ_EErrandProp.PARTS: return m_sParts;
+		}
+
+		return "";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Settings on RZ_GameModeComponent > Missions > Errands.
 [BaseContainerProps()]
 class RZ_ErrandSettings
@@ -58,6 +91,27 @@ class RZ_ErrandSettings
 	[Attribute("1", desc: "Strangers: a passer-by met only at a spot where one makes sense (a road people use, an approach, a town edge at dusk, a fresh event), at most one per player every 15-25 minutes and 6 on the server")]
 	bool m_bStrangers;
 
+	[Attribute("15", UIWidgets.Slider, "Stranger gap: real minutes, at least, before one player can meet another stranger (a ceiling only: a stranger still needs a spot that makes sense)", "5 120 1")]
+	float m_fStrangerGapMin;
+
+	[Attribute("25", UIWidgets.Slider, "...and at most (the gap is drawn between the two)", "5 180 1")]
+	float m_fStrangerGapMax;
+
+	[Attribute("6", UIWidgets.Slider, "Strangers out on the server at once (never more than the body budget's 6)", "0 6 1")]
+	int m_iStrangersMax;
+
+	[Attribute("6", UIWidgets.Slider, "Footfall half-life: real hours for a road's player count to halve (how fast a road stops being one people use)", "1 48 1")]
+	float m_fFootfallHours;
+
+	[Attribute("30", UIWidgets.Slider, "Pinned locals on the server (saved, promised, sold: kept to the season's end; 4 a house)", "0 60 1")]
+	int m_iPinnedLocals;
+
+	[Attribute("20", UIWidgets.Slider, "Unpinned locals on the server (past this, the oldest nobody has met for 3 real days goes)", "0 60 1")]
+	int m_iUnpinnedLocals;
+
+	[Attribute("0", desc: "Majors read errand memory: a major's sitting may count +1 per head a season for a house whose clerk remembers your errands. Off: the majors ignore errands (the design's default)")]
+	bool m_bMajorsReadMemory;
+
 	[Attribute("0.2", UIWidgets.Slider, "Found hook chance: after a job ends at a site, this share of sites holds a stranger (someone hiding, someone who got there first, a bite) or an old mark, for 2 hours", "0 1 0.05")]
 	float m_fHookChance;
 
@@ -85,7 +139,19 @@ class RZ_ErrandSettings
 	[Attribute("0", desc: "Errands debug log: every deal and why the rest weren't dealt")]
 	bool m_bDebugLog;
 
+	[Attribute(desc: "Props a step's place shows while it's open (all optional; empty = words only)")]
+	ref RZ_ErrandProps m_Props;
+
 	protected static ref RZ_ErrandSettings s_Defaults;
+
+	//------------------------------------------------------------------------------------------------
+	RZ_ErrandProps Props()
+	{
+		if (!m_Props)
+			m_Props = RZ_ErrandProps.Cast(RZ_Util.NewWithDefaults("RZ_ErrandProps"));
+
+		return m_Props;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static RZ_ErrandSettings Get()
@@ -169,6 +235,7 @@ class RZ_Errands
 	protected static const float FALLOUT_PRIVATE = 1200;	// the participants' 20 minutes
 	protected static const float FALLOUT_LIFE = 10800;		// then anyone's, for 3 hours
 	protected static const float FALLOUT_RANGE = 3000;		// a giver within this of its subject
+	protected static const float FIRST_LIFE_WAIT = 600;		// a first life: no call-outs until 10 minutes after Find the Haven
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_ErrandSettings m_Settings;
@@ -195,11 +262,14 @@ class RZ_Errands
 	protected int m_iCallCursor;
 	protected int m_iRadioCursor;
 	protected ref map<string, float> m_mLastRadio = new map<string, float>();	// ident -> clock of the last radio ask
+	protected ref map<string, float> m_mHavenFound = new map<string, float>();	// ident -> clock a first life was first seen at the Haven
 	protected float m_fClock;
 	protected float m_fSlow;
 	protected float m_fTelemetry;
 	protected int m_iUnaskedDeals;
 	protected int m_iAskedDeals;
+	protected int m_iTwists;									// twists dealt, for the telemetry line
+	protected ref array<string> m_aLiesSeen = {};				// errands' lies in the store at the last telemetry line
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Errands(RZ_GameModeComponent gm, RZ_ErrandSettings settings)
@@ -215,6 +285,59 @@ class RZ_Errands
 	//------------------------------------------------------------------------------------------------
 	RZ_Strangers GetStrangers() { return m_Strangers; }
 	RZ_Locals GetLocals() { return m_Locals; }
+
+	// ================================================================ Hand to Hand, for the finale
+	//------------------------------------------------------------------------------------------------
+	//! Hand to Hand's promises (docs/ERRANDS.md, the cards), read-only for the finale: the living
+	//! locals of safehouse `house` promised by hand, by anyone or, with `ident`, by that identity.
+	int PromisedAt(int house, string ident = "")
+	{
+		if (!m_Locals || house < 0)
+			return 0;
+
+		array<RZ_Local> here = {};
+		m_Locals.AtHouse(house, here);
+		int n = 0;
+		foreach (RZ_Local l : here)
+		{
+			if (l.alive && Promised(l, ident))
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The living promised locals whose house is within `radius` of pos (by anyone, or by `ident`):
+	//! the ones who'd be there at a gate or a sit-in near it.
+	int PromisedNear(vector pos, float radius, string ident = "")
+	{
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!houses)
+			return 0;
+
+		int n = 0;
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			if (h && RZ_Util.DistXZ(h.m_vPos, pos) <= radius)
+				n += PromisedAt(i, ident);
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Promised(RZ_Local l, string ident)
+	{
+		foreach (int i, string who : l.idents)
+		{
+			if (l.memos[i] == "promised" && (ident.IsEmpty() || who == ident))
+				return true;
+		}
+
+		return false;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A player's shot within `radius` of pos in the last `seconds` (strangers' "a fight" rule).
@@ -370,6 +493,9 @@ class RZ_Errands
 			if (e.m_eState == RZ_EErrandState.HELD && !e.m_bNoisy && RZ_Util.DistXZ(e.m_vPlace, pos) <= 100)
 				e.m_bNoisy = true;
 		}
+
+		if (m_Strangers && IsOn())
+			m_Strangers.OnShot(playerId, pos);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -423,10 +549,15 @@ class RZ_Errands
 			m_fSlow = 0;
 			// The world memory's town reasons are written whether errands are on or not
 			RZ_WorldWriters.WatchTowns(m_GM);
+			// The reasons read from other systems' facts (faults, holdings, leaders)
+			RZ_ReasonPosts.Watch(m_GM, m_Faults);
 			// The lie store's events (visits, road news, the rumour rounds), errands on or not
 			RZ_WorldFacts lieFacts = m_GM.GetFacts();
 			if (lieFacts)
 				lieFacts.Memory().Lies().Tick(m_GM, ids, players);
+
+			// A story job's pay for someone who wasn't online when it ended
+			PayPending(ids);
 		}
 
 		if (!IsOn())
@@ -526,6 +657,7 @@ class RZ_Errands
 
 				e.m_bStepDone = true;
 				e.m_bTold = false;
+				RemoveProp(e);
 				if (!e.m_Def.Still(this, e))
 				{
 					Overtake(e);
@@ -718,12 +850,44 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The way's prop (Missions > Errands > Props) at its place while the step is open: a marks-pool
+	//! prop, up only while a player is near (RZ_Marks), gone when the step is done or the errand ends.
+	protected void PlaceProp(RZ_Errand e, RZ_ErrandWay w)
+	{
+		if (w.m_eProp == RZ_EErrandProp.NONE || w.m_ePlace == RZ_EErrandPlace.NONE || w.m_ePlace == RZ_EErrandPlace.HERE)
+			return;
+
+		ResourceName prefab = m_Settings.Props().For(w.m_eProp);
+		RZ_Marks marks = RZ_Marks.Get();
+		if (prefab.IsEmpty() || !marks)
+			return;
+
+		if (marks.Place(RZ_EMarkPool.PROPS, PropKey(e), RZ_Util.GroundPos(e.m_vPlace), prefab, "", 1, -1, false, false))
+			RZ_Log.Info(string.Format("Errands: %1 prop %2 at %3", e.m_Def.m_sKey, typename.EnumToString(RZ_EErrandProp, w.m_eProp), RZ_SettlementScanner.GridReference(e.m_vPlace)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveProp(RZ_Errand e)
+	{
+		RZ_Marks marks = RZ_Marks.Get();
+		if (marks)
+			marks.Remove(PropKey(e));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string PropKey(RZ_Errand e)
+	{
+		return "errand." + e.m_iId.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void End(RZ_Errand e, string why)
 	{
 		if (e.m_eState == RZ_EErrandState.DONE)
 			return;
 
 		e.m_eState = RZ_EErrandState.DONE;
+		RemoveProp(e);
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		if (facts)
 			facts.SoftReleaseAll(e.Owner());
@@ -1083,6 +1247,15 @@ class RZ_Errands
 	//! and "Not now"), each with what it needs as a tag.
 	protected void ShowOffer(RZ_Errand e, IEntity owner)
 	{
+		// A thread: someone else at this place says what you did for them, once
+		string entry = ThreadLine(e.m_iAsker, PlaceOf(e), e.m_sGiver, true);
+		if (!entry.IsEmpty())
+			Say(e, entry, false);
+
+		// The suspect variant: the giver has a question first
+		if (e.m_bSuspect)
+			Say(e, "\"Where were you Tuesday? Never mind. Don't answer that.\"", false);
+
 		Say(e, Pick(e.m_Def.m_aOffer), false);
 		if (!owner)
 			return;
@@ -1115,6 +1288,14 @@ class RZ_Errands
 
 		labels.Insert("Not now");
 		talk.m_aWays.Insert(-1);
+		foreach (string shown : labels)
+		{
+			if (shown.Contains("["))
+			{
+				RZ_Guidance.Report(e.m_iAsker, "tags");
+				break;
+			}
+		}
 		comp.SetLabels("", RZ_PuzzleLabels.Join(labels));
 		m_mTalks.Set(e.m_sGiver, talk);
 	}
@@ -1218,7 +1399,7 @@ class RZ_Errands
 			if (trustF < 0)
 				trustF = f;
 
-			tag += RZ_Checks.TrustTag(trustF, w.m_iTrust) + " ";
+			tag += RZ_Checks.TrustTag(trustF, RZ_StoryKit.AtHouse(m_GM, e.m_iAsker, e.m_iHouse, w.m_iTrust)) + " ";
 		}
 
 		if (w.m_bThreat)
@@ -1344,7 +1525,8 @@ class RZ_Errands
 			if (trustF < 0)
 				trustF = f;
 
-			RZ_ECheck result = RZ_Checks.Result(RZ_Checks.TrustScore(m_GM, playerId, trustF, w.m_sBackground), w.m_iTrust);
+			// A house's people read a bite hidden at their door: one step harder there
+			RZ_ECheck result = RZ_Checks.Result(RZ_Checks.TrustScore(m_GM, playerId, trustF, w.m_sBackground), RZ_StoryKit.AtHouse(m_GM, playerId, e.m_iHouse, w.m_iTrust));
 			RZ_Log.Info(string.Format("Story: errand.%1 talk %2 by %3", e.m_Def.m_sKey, RZ_Checks.ResultName(result), RZ_Util.PlayerName(playerId)));
 			if (result != RZ_ECheck.PASS)
 				return "\"Not from you. Maybe from someone the house knows.\"";
@@ -1403,6 +1585,7 @@ class RZ_Errands
 
 		e.m_vPlace = PlaceFor(e, w.m_ePlace);
 		e.SetText("place", PlaceText(e, w.m_ePlace, user.GetOrigin()));
+		PlaceProp(e, w);
 		Say(e, Pick(w.m_aTake), false);
 		string step = e.Fill(w.m_sStep);
 		if (w.m_fBefore >= 0)
@@ -1439,6 +1622,11 @@ class RZ_Errands
 		array<ref RZ_Errand> made = {};
 		array<float> scores = {};
 		string place = PlaceKey(p);
+		// Chore slots: 1 + 1 per 5 players online (3 at most) routines live at a holding or house at once,
+		// and one of them per player there
+		bool holdingPlace = p.m_eKind == RZ_ENamedPlace.HOLDING || p.m_eKind == RZ_ENamedPlace.HOUSE;
+		int choresHere = ChoresAt(place, -1);
+		bool myChoreHere = ChoresAt(place, playerId) > 0;
 		foreach (RZ_ErrandDef d : m_aDefs)
 		{
 			if (!Anchored(d, p))
@@ -1456,6 +1644,10 @@ class RZ_Errands
 				no = "cooling down";
 			else if (!d.m_bCard && PlaceCooling(d.m_sKey, place))
 				no = "done here lately";
+			else if (!d.m_bCard && holdingPlace && myChoreHere)
+				no = "one chore here at a time";
+			else if (!d.m_bCard && holdingPlace && choresHere >= ChoreSlots())
+				no = "every chore here is taken";
 			else if (d.m_bTimed && !RZ_GameTime.IsCalibrated())
 				no = "no clock";
 			else if (!d.ForWhom(this, playerId, p))
@@ -1555,6 +1747,7 @@ class RZ_Errands
 			dealt.m_bTwist = true;
 			ledger.sinceTwist = 0;
 			RZ_Log.Info(string.Format("Errands: %1 for %2 has its twist", dealt.m_Def.m_sKey, RZ_Util.PlayerName(playerId)));
+			m_iTwists++;
 		}
 
 		dealt.m_iId = m_iNextId;
@@ -1638,6 +1831,9 @@ class RZ_Errands
 	{
 		RZ_ErrandDef d = e.m_Def;
 		float s = Math.Max(0.05, d.m_fWeight) * 1.3;
+		if (e.m_bSuspect)
+			s *= 0.5;
+
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (d.m_iNeed >= 0 && life && RZ_Factions.IsValid(p.m_iFaction) && life.GetNeed(p.m_iFaction) == d.m_iNeed)
 			s *= 1.2;
@@ -1701,6 +1897,174 @@ class RZ_Errands
 		}
 
 		return "w" + p.m_iPlace.ToString();
+	}
+
+	// ================================================================ Pay at the next join
+	//------------------------------------------------------------------------------------------------
+	//! A story job's pay for someone who took part and wasn't online when it ended (RZ_StoryKit).
+	void AddPending(string ident, int faction, int fame, int favor, string title)
+	{
+		RZ_ErrandLedger ledger = Ledger(ident);
+		ledger.Ensure();
+		if (ledger.pending.Count() >= 8)
+			ledger.pending.Remove(0);
+
+		ledger.pending.Insert(string.Format("%1|%2|%3|%4", faction, fame, favor, title));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every 30 s: the online players' pending pay, through the usual Fame and Favor.
+	protected void PayPending(array<int> ids)
+	{
+		foreach (int pid : ids)
+		{
+			RZ_PlayerProfile profile = m_GM.GetProfile(pid);
+			if (!profile || !m_mLedgers.Contains(profile.m_sIdentity))
+				continue;
+
+			RZ_ErrandLedger ledger = Ledger(profile.m_sIdentity);
+			ledger.Ensure();
+			foreach (string owed : ledger.pending)
+			{
+				array<string> parts = {};
+				owed.Split("|", parts, false);
+				if (parts.Count() < 4)
+					continue;
+
+				int f = parts[0].ToInt();
+				int fame = parts[1].ToInt();
+				int favor = parts[2].ToInt();
+				if (!RZ_Factions.IsValid(f))
+					continue;
+
+				if (fame > 0)
+					m_GM.AddFame(pid, f, fame);
+
+				if (favor > 0)
+					m_GM.AddFavor(pid, f, favor);
+
+				m_GM.NotifyPlayerAs(pid, parts[3], string.Format("Finished while you were away. Your part counted: +%1 Fame, +%2 Favor with %3.", fame, favor, RZ_Factions.GetName(f)), RZ_ENoticeTag.MISSION);
+			}
+
+			ledger.pending.Clear();
+		}
+	}
+
+	// ================================================================ Threads
+	//------------------------------------------------------------------------------------------------
+	//! The place key of an errand's giver ("" for a wanderer).
+	protected string PlaceOf(RZ_Errand e)
+	{
+		if (e.m_iHolding >= 0)
+			return RZ_Faults.HoldingPlace(e.m_iHolding);
+
+		if (e.m_iHouse >= 0 && e.m_iWanderer < 0)
+			return RZ_Faults.HousePlace(e.m_iHouse);
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A done errand whose definition has a thread phrase: "place|giver|what you did", 12 a season at
+	//! most (the oldest goes).
+	protected void AddThread(RZ_Errand e, RZ_ErrandWay w, RZ_ErrandLedger ledger)
+	{
+		string place = PlaceOf(e);
+		if (e.m_Def.m_sThread.IsEmpty() || place.IsEmpty() || w.m_sWay == "leave")
+			return;
+
+		ledger.Ensure();
+		string entry = string.Format("%1|%2|%3", place, e.m_sGiverName, e.Fill(e.m_Def.m_sThread));
+		if (ledger.threads.Contains(entry))
+			return;
+
+		ledger.threads.Insert(entry);
+		while (ledger.threads.Count() > 12)
+		{
+			ledger.threads.Remove(0);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line someone at `place` says about what this player did there for someone else
+	//! (*"Mara says you brought tins for the pot."*): the newest thread there not from `notGiver`; ""
+	//! if none. With `once`, each thread is said back once. Read-only for other systems (a leader's
+	//! first line, dialogue) through ThreadLineFor.
+	string ThreadLine(int playerId, string place, string notGiver, bool once)
+	{
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		if (!profile || place.IsEmpty())
+			return "";
+
+		RZ_ErrandLedger ledger = Ledger(profile.m_sIdentity);
+		ledger.Ensure();
+		RZ_NamedPerson other = m_People.Get(notGiver);
+		string otherName = "";
+		if (other)
+			otherName = other.m_sName;
+
+		for (int i = ledger.threads.Count() - 1; i >= 0; i--)
+		{
+			string entry = ledger.threads[i];
+			array<string> parts = {};
+			entry.Split("|", parts, false);
+			if (parts.Count() < 3 || parts[0] != place || parts[1] == otherName)
+				continue;
+
+			if (once && ledger.threadsSaid.Contains(entry))
+				continue;
+
+			if (once)
+				ledger.threadsSaid.Insert(entry);
+
+			return string.Format("\"%1 says you %2.\"", parts[1], parts[2]);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For a leader or a talk line at a holding or house (holdingId or houseIdx, the other -1): the
+	//! newest thing this player did for the people there, as a line; "" if nothing.
+	string ThreadLineFor(int playerId, int holdingId, int houseIdx)
+	{
+		string place = "";
+		if (holdingId >= 0)
+			place = RZ_Faults.HoldingPlace(holdingId);
+		else if (houseIdx >= 0)
+			place = RZ_Faults.HousePlace(houseIdx);
+
+		return ThreadLine(playerId, place, "", false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Chore slots a holding or house has now: 1, plus 1 per 5 players online, 3 at most.
+	protected static int ChoreSlots()
+	{
+		return Math.MinInt(3, 1 + GetGame().GetPlayerManager().GetPlayerCount() / 5);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Live routines (offered or held) at this place, all of them or one player's (playerId > 0).
+	protected int ChoresAt(string place, int playerId)
+	{
+		int n = 0;
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || (playerId > 0 && e.m_iAsker != playerId))
+				continue;
+
+			string at = "";
+			if (e.m_iHolding >= 0)
+				at = RZ_Faults.HoldingPlace(e.m_iHolding);
+			else if (e.m_iHouse >= 0 && e.m_iWanderer < 0)
+				at = RZ_Faults.HousePlace(e.m_iHouse);
+
+			if (at == place)
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1877,6 +2241,12 @@ class RZ_Errands
 
 		RZ_ErrandLedger ledger = Ledger(e.m_sIdent);
 		ledger.helped++;
+		AddThread(e, w, ledger);
+
+		// A callback: what the giver says later, near them (words only)
+		RZ_Shared callShared = m_GM.GetShared();
+		if (!w.m_aLater.IsEmpty() && callShared && callShared.GetCallbacks())
+			callShared.GetCallbacks().Queue(e.m_iAsker, e.m_sGiverTitle, e.Fill(Pick(w.m_aLater)), e.m_vGiver);
 		if (m_Settings.m_bHelpedLine && m_GM.GetHall() && !(m_GM.GetCure() && m_GM.GetCure().IsCured()))
 			m_GM.GetHall().AddHelped(e.m_iAsker);
 
@@ -1967,8 +2337,12 @@ class RZ_Errands
 		int paid = Math.Min(RZ_Util.RoundToInt(favor), Math.Max(0, m_Settings.m_iFavorPerHour - ledger.hourFavor));
 		if (e.m_iCap >= 0)
 			paid = Math.Min(paid, e.m_iCap);	// a fallout: at most 30% of the failed job's base
+
 		if (paid > 0)
 		{
+			if (e.m_bFallout)
+				RZ_StoryStats.FalloutPaid(paid);
+
 			m_GM.AddFavor(playerId, f, paid);
 			ledger.hourFavor += paid;
 			stats.favor += paid;
@@ -2202,6 +2576,10 @@ class RZ_Errands
 		if (m_mLastRadio.Find(ident, last) && m_fClock - last < m_Settings.m_fRadioAskMinutes * 60)
 			return;
 
+		// A contract offered on the radio lately goes first: the ask waits behind it
+		if (m_GM.GetMissions() && m_GM.GetMissions().OfferedWithin(playerId, 300))
+			return;
+
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		if (!houses || houses.IsExiled(playerId) || !MayInterrupt(playerId, me))
 			return;
@@ -2268,6 +2646,23 @@ class RZ_Errands
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		if (profile.m_fLifeSeconds < 180 || profile.m_iInfectionStage >= RZ_EInfectionStage.FINAL)
 			return false;
+
+		// A first life finding the Haven: nobody waves them over until 10 minutes after they get there
+		if (profile.m_iObjType == RZ_EObjective.FIND_HAVEN)
+		{
+			if (!profile.m_bObjDone)
+				return false;
+
+			float found;
+			if (!m_mHavenFound.Find(profile.m_sIdentity, found))
+			{
+				m_mHavenFound.Set(profile.m_sIdentity, m_fClock);
+				return false;
+			}
+
+			if (m_fClock - found < FIRST_LIFE_WAIT)
+				return false;
+		}
 
 		vector at = me.GetOrigin();
 		if (ShotNear(at, 60, 60) || m_GM.GetSpawner().CountZombiesNear(at, 30, 1) > 0 || RZ_Util.IsInVehicle(me))
@@ -2516,7 +2911,44 @@ class RZ_Errands
 				s.done, s.favor, s.fame, s.amends) + ways + " | ";
 		}
 
-		RZ_Log.Info(text + m_Strangers.Telemetry());
+		RZ_Log.Info(text + m_Strangers.Telemetry() + " | " + LieTelemetry());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Errands' lies since the last line: told (new in the store), and gone (found out, or buried with
+	//! the life); and the twists dealt so far.
+	protected string LieTelemetry()
+	{
+		array<string> now = {};
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		if (facts)
+		{
+			array<ref RZ_Lie> lies = {};
+			facts.Memory().Lies().Save(lies);
+			foreach (RZ_Lie l : lies)
+			{
+				if (l.key.StartsWith("errand."))
+					now.Insert(l.ident + "|" + l.key + "|" + l.subject);
+			}
+		}
+
+		int told = 0;
+		foreach (string lie : now)
+		{
+			if (!m_aLiesSeen.Contains(lie))
+				told++;
+		}
+
+		int gone = 0;
+		foreach (string seen : m_aLiesSeen)
+		{
+			if (!now.Contains(seen))
+				gone++;
+		}
+
+		m_aLiesSeen.Clear();
+		m_aLiesSeen.InsertAll(now);
+		return string.Format("lies: told %1, found or buried %2, open %3 | twists dealt %4", told, gone, now.Count(), m_iTwists);
 	}
 
 	//------------------------------------------------------------------------------------------------

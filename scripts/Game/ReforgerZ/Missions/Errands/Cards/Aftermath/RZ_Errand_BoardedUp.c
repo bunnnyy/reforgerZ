@@ -22,6 +22,7 @@ class RZ_Errand_BoardedUp : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the barricaded house in {subject_place} and bring the family out (10 s there), then come back to {giver}.";
+		w.Later("\"The family you brought out of {subject_place} have the room by the stove. The little one draws barricades now.\"");
 		w.m_iFavor = 4;
 		w.Done("\"In you come. Shoes off. Somebody find them a blanket.\"");
 

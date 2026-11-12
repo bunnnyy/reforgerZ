@@ -23,6 +23,7 @@ class RZ_Errand_NameOnTheTape : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find {dead} {where_place} and take the tag and the jacket (15 s there), then bring them to {giver}.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
 		w.Done("\"Tag on the nail, jacket in the stores. The name goes on tonight's call.\"",
@@ -37,6 +38,7 @@ class RZ_Errand_NameOnTheTape : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find {dead} {where_place}, take the jacket (15 s there), and sell it to the fence: \"A name the army can't check twice.\" Then tell {giver} it was gone.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 10;
 		w.Done("\"Gone? Somebody got there first. {dead} goes on the board as kit lost.\"");
 	}

@@ -31,6 +31,8 @@ class RZ_StoryKit
 		if (m.m_Story && !m.m_Story.m_aFound.Contains(line))
 			m.m_Story.m_aFound.Insert(line);
 
+		RZ_Guidance.Report(playerId, "read");
+
 		RZ_Log.Info(string.Format("Story: %1 read by %2 (%3)", m.m_sTitle, RZ_Util.PlayerName(playerId), backgrounds));
 		return true;
 	}
@@ -59,6 +61,7 @@ class RZ_StoryKit
 
 		int cap = RZ_Util.RoundToInt(m.m_iFavorReward * 0.3);
 		errands.Fallout(card, at, m.m_aParticipants, cap, m.m_sTitle, who);
+		RZ_StoryStats.FalloutStarted();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,6 +138,98 @@ class RZ_StoryKit
 		int total = facts.Flag("bastion.sheltered") + people;
 		facts.SetFlag("bastion.sheltered", total);
 		m.NotifyParticipants(gm, m.m_sTitle, string.Format("Bastion's truck takes them to the post. On the nightly call: \"Civilians sheltered, %1.\" It's %2 more than last night.", total, people));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A thank-you on the board of the house nearest pos, signed by the people it's from (*"The
+	//! Novaks"*): a story job's echo, filtered and cut like any note.
+	static void BoardThanks(RZ_GameModeComponent gm, vector pos, string text, string signature)
+	{
+		RZ_Safehouses houses = gm.GetSafehouses();
+		if (houses && houses.GetBoard())
+			houses.GetBoard().PostSigned(pos, text, signature);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Leave: this player stops taking part (no pay, no blame); they're told so.
+	static void Leave(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
+	{
+		if (!m.m_Story)
+			return;
+
+		m.m_Story.m_Deciding.Leave(gm, playerId);
+		m.m_aParticipants.RemoveItem(playerId);
+		gm.NotifyPlayerAs(playerId, m.m_sTitle, "You leave it to them. Nobody pays you for it, and nobody blames you either.", m.NoticeTag());
+		RZ_Log.Info(string.Format("Story: %1 left by %2", m.m_sTitle, RZ_Util.PlayerName(playerId)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Amends need clean hands: this player pressed, tricked, switched or hid something in this job.
+	static void Dirty(RZ_GameModeComponent gm, RZ_Mission m, int playerId)
+	{
+		if (m && m.m_Story)
+			m.m_Story.m_Deciding.Dirty(gm, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A story job done: whoever took part (a step, or 5 minutes in the area) and isn't online now is
+	//! paid the base at their next join (RZ_Errands' pending pay), never more than an online
+	//! participant would be. Not for a switch, a leaver or a job that pays nobody.
+	static void PayOffline(RZ_GameModeComponent gm, RZ_Mission m)
+	{
+		RZ_Errands errands = gm.GetErrands();
+		RZ_Questlines q = gm.GetQuestlines();
+		if (!m.m_Story || !errands || !q || !m.m_bHasGiver || m.m_bSwitched || !RZ_Factions.IsValid(m.m_eGiver))
+			return;
+
+		array<string> idents = {};
+		m.m_Story.m_Deciding.TookPartIdents(300, idents);
+		int fame = RZ_Util.RoundToInt(m.m_iFameReward * m.m_fRewardScale);
+		int favor = RZ_Util.RoundToInt(m.m_iFavorReward * m.m_fRewardScale);
+		foreach (string ident : idents)
+		{
+			if (q.OnlineId(ident) > 0)
+				continue;
+
+			errands.AddPending(ident, m.m_eGiver, fame, favor, m.m_sTitle);
+			RZ_Log.Info(string.Format("Story: %1 pays %2 at their next join (%3 Fame, %4 Favor)", m.m_sTitle, ident, fame, favor));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Nurse dressed a bite and said nothing at a house's door: the life record "hid_bite", and
+	//! "hid_bite.<house>", which that house's people read (HouseHarder) for the rest of the life.
+	static void HidBite(RZ_GameModeComponent gm, int playerId, int house)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		if (!p)
+			return;
+
+		RZ_Deeds.AddLifeRecord(p, "hid_bite", true);
+		RZ_Log.Info(string.Format("Story: %1 hid a bite at house %2", RZ_Util.PlayerName(playerId), house));
+		if (house >= 0)
+			RZ_Deeds.AddLifeRecord(p, "hid_bite." + house.ToString(), true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How much harder this house's people make a check for this player: 1 if this life hid a bite at
+	//! their door, else 0. Never makes a check impossible (difficulty 3 at most).
+	static int HouseHarder(RZ_GameModeComponent gm, int playerId, int house)
+	{
+		if (!gm || house < 0 || playerId <= 0)
+			return 0;
+
+		if (RZ_Deeds.HasLifeRecord(gm.GetProfile(playerId), "hid_bite." + house.ToString()))
+			return 1;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A check's difficulty at a house's people: one step harder after a hidden bite there, at most 3.
+	static int AtHouse(RZ_GameModeComponent gm, int playerId, int house, int difficulty)
+	{
+		return Math.MinInt(3, difficulty + HouseHarder(gm, playerId, house));
 	}
 
 	//------------------------------------------------------------------------------------------------

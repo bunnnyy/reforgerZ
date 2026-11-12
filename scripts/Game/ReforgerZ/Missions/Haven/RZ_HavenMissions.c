@@ -301,7 +301,16 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		// who knew: he comes in, and turns within a season day; the house names her (+8 Haven Infamy)
 		if (m_bBitten && m_iWhere != WHERE_BASTION && m_iHidBite > 0)
 		{
-			RZ_Deeds.AddLifeRecord(gm.GetProfile(m_iHidBite), "hid_bite", true);
+			int doorHouse = -1;
+			if (gm.GetSafehouses() && gm.GetSafehouses().Count() > 0)
+			{
+				doorHouse = gm.GetSafehouses().FindNearest(m_vPos);
+				if (m_iWhere == WHERE_HUNGRY)
+					doorHouse = Hungriest(gm);
+			}
+
+			RZ_StoryKit.HidBite(gm, m_iHidBite, doorHouse);
+			RZ_StoryKit.Dirty(gm, this, m_iHidBite);
 			gm.GetFacts().Memory().Lies().Tell(gm, m_iHidBite, "trapped.bite", m_sSurname, RZ_EFaction.SURVIVORS, "", m_vPos, RZ_ELieTest.TICK, HID_INFAMY,
 				string.Format("Mr %1 turned in the night. The house found the dressing under his sleeve, and knows whose knots those are.", m_sSurname));
 		}
@@ -313,6 +322,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 
 		RZ_Safehouses houses = gm.GetSafehouses();
 		string went = "house";
+		vector thanksAt = m_vPos;
 		if (m_iWhere == WHERE_BASTION)
 		{
 			went = "bastion";
@@ -323,6 +333,8 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 			went = "hungry";
 			int hungriest = Hungriest(gm);
 			houses.AddPopulationAt(hungriest, rescued);
+			if (houses.Get(hungriest))
+				thanksAt = houses.Get(hungriest).m_vPos;
 			if (gm.GetErrands())
 				gm.GetErrands().Morale(RZ_EFaction.SURVIVORS, 1, "a family came to work");
 		}
@@ -330,6 +342,9 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		{
 			houses.AddRescued(m_vPos, rescued, m_aParticipants);
 		}
+
+		if (went != "bastion")
+			RZ_StoryKit.BoardThanks(gm, thanksAt, "Thank you for the barricade, and for taking it down. We're all here.", string.Format("The %1s", m_sSurname));
 
 		string epilogue = string.Format("The %1s' boy chalks the days on %2's gym wall.", m_sSurname, GetLocationName(gm));
 		RZ_StoryKit.Record(this, "family", m_sSurname, went, m_aParticipants, epilogue, "board");
@@ -391,6 +406,7 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The relay's up. The house's radio man comes on: \"Bastion's on this band too. Do we carry their traffic? They'd send a patrol past the house for it.\" Answer him at the relay.",
 			"The Haven's alone|Bastion's too, for a patrol", "decide whose net the relay carries", 0);
+		m_Choice.Asset(1, RZ_EFaction.MILITARY);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -895,6 +911,23 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 {
 	protected vector m_vSearchCenter;
 	protected bool m_bGuarded;
+	protected string m_sTruth;		// dead (as they said), selling (his notes sold the house's runs to a crew)
+	protected string m_sName;
+	protected string m_sCrew;
+	protected bool m_bStash = true;	// the stash goes to the house (the reward as built)
+	protected vector m_vHome;
+
+	protected static const int OPT_KEEP = 0;
+	protected static const int OPT_SECOND = 1;	// dead: the stash on the open channel; selling: tell the council
+	protected static const int OPT_THIRD = 2;	// selling: burn the page
+	protected static const int OPT_FOURTH = 3;	// selling: sell the page back to the crew
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_MissingScout()
+	{
+		m_Story = new RZ_MissionStory("scout");
+		m_Choice = new RZ_OneChoice();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -951,10 +984,101 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		if (!SpawnDrop(gm, RZ_EFaction.SURVIVORS, dropPos))
 			return false;
 
+		m_vHome = dropPos;
+		Truth(gm);
 		m_sTitle = "Missing Scout";
 		m_sDeed = "found the scout near {town}";
 		m_sBrief = string.Format("A Haven scout never came back from %1. Search the area, find his notes and bring them to the safehouse in %2.", s.m_sName, homeName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The truth (story key `scout`, kept per name): he died on the road with the stash marked, as the
+	//! house says; or his notes show he'd been selling the house's water runs to a crew (a Red Hand
+	//! holding within 5 km). The house's clerk reads them when they're handed in, and asks.
+	protected void Truth(RZ_GameModeComponent gm)
+	{
+		RZ_Rng rng = new RZ_Rng(RZ_WorldFacts.Get().GetSeed() + m_iSettlement * 131);
+		m_sName = RZ_FactionVoice.PersonName(rng, RZ_EFaction.SURVIVORS);
+		array<string> values = {"dead", "selling"};
+		array<float> weights = {0.6, 0};
+		RZ_Holding crew = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.BANDITS, m_vPos, 5000);
+		if (crew)
+		{
+			weights[1] = 0.4;
+			m_sCrew = crew.m_sName;
+		}
+
+		m_sTruth = m_Story.Truth(m_sName, values, weights, this);
+		if (m_sTruth == "selling" && !crew)
+			m_sTruth = "dead";
+
+		if (m_sTruth == "selling")
+		{
+			m_Choice.Set(string.Format("The clerk reads %1's notes twice, then a third time. Between the stash and the weather there's a list: the house's water runs, days and times, and a price against each. %2's mark at the bottom.", m_sName, m_sCrew),
+				"Tell the council|Burn that page|Sell the page back to the crew", "decide what the house hears", 0);
+			m_Choice.Asset(OPT_FOURTH - 1, RZ_EFaction.BANDITS);
+		}
+		else
+		{
+			m_Choice.Set(string.Format("The clerk reads %1's notes out: weather, tracks, and a stash he marked on his last day. \"The house could use that,\" she says. \"So could anybody.\"", m_sName),
+				"Keep the stash for the house|Read the stash out on the open channel", "decide where the stash goes", OPT_KEEP);
+			m_Choice.Asset(OPT_SECOND, RZ_CureFinale.INDEP);
+		}
+
+		RZ_Log.Info(string.Format("Story: scout %1 is %2", m_sName, m_sTruth));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return m_vHome;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		if (m_sTruth == "selling")
+		{
+			// Option 0 tells the council, 1 burns the page, 2 sells it back (the labels have no "keep")
+			if (option == 0)
+			{
+				m_Choice.BlameWith(gm, this, RZ_EFaction.BANDITS, 3, "showed the Haven a crew's price list");
+				RZ_StoryKit.Record(this, "fate", m_sName, "told", who, string.Format("The council's minutes, the week %1 didn't come back: \"Water runs to be changed. Ask no one why.\"", m_sName), "board");
+				NotifyParticipants(gm, m_sTitle, "The council changes the water runs that night. The crew will notice the price list stopped being true.");
+				return;
+			}
+
+			if (option == 1)
+			{
+				m_fRewardScale = 0.6;
+				RZ_StoryKit.Dirty(gm, this, decider);
+				RZ_StoryKit.Record(this, "fate", m_sName, "burned", who);
+				NotifyParticipants(gm, m_sTitle, string.Format("The page goes in the stove. The house remembers %1 kindly. The runs stay where the crew knows them.", m_sName));
+				return;
+			}
+
+			m_bHasGiver = false;
+			m_bStash = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
+			gm.GetFacts().Memory().Lies().Tell(gm, decider, "scout.page", m_sName, RZ_EFaction.SURVIVORS, "", m_vHome, RZ_ELieTest.VISIT, 5,
+				"\"The crew had our water runs off a page someone sold back to them. We know whose hands it went through.\"");
+			RZ_StoryKit.Record(this, "fate", m_sName, "sold", who);
+			NotifyParticipants(gm, m_sTitle, "The crew pays for its page back. The house gets the rest of the notes and thanks you for them.");
+			return;
+		}
+
+		if (option == OPT_SECOND)
+		{
+			m_bHasGiver = false;
+			m_bStash = false;
+			RZ_StoryKit.Record(this, "fate", m_sName, "aired", who, string.Format("Whoever got to %1's stash first left a tin on top of the cairn, for the next one.", m_sName), "board");
+			NotifyParticipants(gm, m_sTitle, "You read the grid out on the open channel. Whoever's nearest gets it. Nobody pays you for that.");
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", m_sName, "home", who);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -977,7 +1101,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override void OnRewardPlayer(RZ_GameModeComponent gm, int playerId)
 	{
-		if (m_aParticipants.IsEmpty() || m_aParticipants[0] != playerId)
+		if (m_aParticipants.IsEmpty() || m_aParticipants[0] != playerId || !m_bStash)
 			return;
 
 		// His notes mention a stash
@@ -1120,6 +1244,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The kids are out. The oldest one says their aunt is at Bastion's post: \"She's a cook there. She said to come if.\" Decide with them, here.",
 			"The nearest house|Their aunt at Bastion's post", "decide where the kids go", 0);
+		m_Choice.Asset(1, RZ_EFaction.MILITARY);
 	}
 
 	//------------------------------------------------------------------------------------------------

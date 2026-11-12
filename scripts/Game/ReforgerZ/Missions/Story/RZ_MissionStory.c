@@ -86,10 +86,53 @@ class RZ_MissionStory
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The truth behind this job at `subject` (the deck: kept 3 season days, same for everyone).
-	string Truth(string subject, notnull array<string> values, notnull array<float> weights)
+	//! The truth behind this job at `subject` (the deck: kept 3 season days, same for everyone). The
+	//! first value is "as they said". With the mission, the leader who voices it leans the deck:
+	//! Greedy and Paranoid givers hide more, Merciful and Idealist ones less, a Pragmatist says it
+	//! straight, Ruthless and Veteran ones leave things out "by procedure" (at most +-50% on the
+	//! hidden truths), and a Talker's secret leaks into the rumours.
+	string Truth(string subject, notnull array<string> values, notnull array<float> weights, RZ_Mission m = null)
 	{
-		return RZ_WorldFacts.Get().Memory().DrawTruth(m_sKey, subject, values, weights);
+		RZ_Leader giver = Voice(m);
+		if (giver)
+		{
+			float hide = 1;
+			if (giver.HasTrait(RZ_ELeaderTrait.GREEDY) || giver.HasTrait(RZ_ELeaderTrait.PARANOID))
+				hide *= 1.5;
+
+			if (giver.HasTrait(RZ_ELeaderTrait.MERCIFUL) || giver.HasTrait(RZ_ELeaderTrait.IDEALIST) || giver.HasTrait(RZ_ELeaderTrait.PRAGMATIST))
+				hide *= 0.5;
+
+			if (giver.HasTrait(RZ_ELeaderTrait.RUTHLESS) || giver.HasTrait(RZ_ELeaderTrait.VETERAN))
+				hide *= 1.25;
+
+			hide = Math.Clamp(hide, 0.5, 1.5);
+			for (int i = 1; i < weights.Count(); i++)
+			{
+				weights[i] = weights[i] * hide;
+			}
+		}
+
+		string truth = RZ_WorldFacts.Get().Memory().DrawTruth(m_sKey, subject, values, weights);
+		if (giver && giver.HasTrait(RZ_ELeaderTrait.TALKER) && !values.IsEmpty() && truth != values[0] && RZ_WorldFacts.Get())
+			RZ_WorldFacts.Get().AddRumour(string.Format("Somebody near %1's people has a loose mouth: the job they're putting about isn't what they say it is.", giver.m_sName), 12);
+
+		return truth;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The leader who voices this job: its own, else the one the manager will give it (the nearest of
+	//! the giver's, as RZ_Leaders.AssignVoice does). Null for none.
+	protected static RZ_Leader Voice(RZ_Mission m)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!m || !gm || !gm.GetLeaders() || !m.m_bHasGiver)
+			return null;
+
+		if (m.m_iLeaderId >= 0)
+			return gm.GetLeaders().Get(m.m_iLeaderId);
+
+		return gm.GetLeaders().FindNearest(m.m_Req.m_eGiver, m.m_vPos, 100000, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -101,6 +144,8 @@ class RZ_MissionStory
 		RZ_WorldFacts.Get().Memory().FoundTruth(m_sKey, subject, how);
 		if (!m_aFound.Contains(line))
 			m_aFound.Insert(line);
+
+		RZ_Guidance.Report(playerId, "truth");
 
 		IEntity finder = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!finder)
@@ -146,6 +191,8 @@ class RZ_Deciding
 	protected ref map<string, float> m_mTime = new map<string, float>();	// identity -> seconds within 150 m
 	protected ref array<string> m_aStepped = {};
 	protected ref array<string> m_aObjected = {};
+	protected ref array<string> m_aLeft = {};		// identities who chose Leave: out of the job, no pay, no blame
+	protected ref array<string> m_aDirty = {};		// identities whose hands aren't clean here (Press, Trick, a switch, hiding something)
 	protected ref array<int> m_aStoodWith = {};
 	protected int m_iHolder = -1;
 	protected int m_iHoldOption = -1;
@@ -183,6 +230,9 @@ class RZ_Deciding
 	bool TookPart(RZ_GameModeComponent gm, int playerId)
 	{
 		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (m_aLeft.Contains(ident))
+			return false;
+
 		float t;
 		m_mTime.Find(ident, t);
 		return t >= PART_SECONDS || m_aStepped.Contains(ident);
@@ -215,6 +265,68 @@ class RZ_Deciding
 		}
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Leave (one way, for you only): you stop taking part in this job, with no pay and no blame.
+	void Leave(RZ_GameModeComponent gm, int playerId)
+	{
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (!m_aLeft.Contains(ident))
+			m_aLeft.Insert(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasLeft(string ident)
+	{
+		return m_aLeft.Contains(ident);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Before the job pays: whoever chose Leave is out of it.
+	void DropLeft(RZ_GameModeComponent gm, notnull array<int> participants)
+	{
+		for (int i = participants.Count() - 1; i >= 0; i--)
+		{
+			RZ_PlayerProfile p = gm.GetProfile(participants[i]);
+			if (p && m_aLeft.Contains(p.m_sIdentity))
+				participants.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Amends need clean hands: Press, Trick, a switch or hiding something voids this job's Infamy
+	//! work-off for that player.
+	void Dirty(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		if (p && !m_aDirty.Contains(p.m_sIdentity))
+			m_aDirty.Insert(p.m_sIdentity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDirty(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		return p && m_aDirty.Contains(p.m_sIdentity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The identities who took part long enough to be paid if they weren't here at the end: a step
+	//! done, or `seconds` in the area. Leavers aren't among them.
+	void TookPartIdents(float seconds, notnull array<string> result)
+	{
+		foreach (string ident, float t : m_mTime)
+		{
+			if (t >= seconds && !m_aLeft.Contains(ident) && !result.Contains(ident))
+				result.Insert(ident);
+		}
+
+		foreach (string stepped : m_aStepped)
+		{
+			if (!m_aLeft.Contains(stepped) && !result.Contains(stepped))
+				result.Insert(stepped);
+		}
+	}
+
 	// ================================================================ The hold
 	//------------------------------------------------------------------------------------------------
 	//! A scene decision: a 5 s hold, announced to the room. False if one is already running.
@@ -233,6 +345,14 @@ class RZ_Deciding
 		m_vRoom = me.GetOrigin();
 		m_aStoodWith.Clear();
 		TellRoom(gm, m, string.Format("%1 is about to %2. You can object once, or stand with them.", RZ_Util.PlayerName(playerId), what));
+		array<int> roomIds = {};
+		array<IEntity> roomPlayers = {};
+		RZ_Util.GetAlivePlayers(roomIds, roomPlayers);
+		foreach (int r, IEntity rp : roomPlayers)
+		{
+			if (roomIds[r] != playerId && RZ_Util.DistXZ(rp.GetOrigin(), m_vRoom) <= ROOM)
+				RZ_Guidance.Report(roomIds[r], "hold");
+		}
 		return true;
 	}
 
@@ -407,6 +527,14 @@ class RZ_Beneficiaries
 
 		m.m_aParticipants.Clear();
 		m.m_aParticipants.InsertAll(paid);
+		if (IsSwitch())
+		{
+			foreach (int dirty : m_aWith)
+			{
+				story.m_Deciding.Dirty(gm, dirty);
+			}
+		}
+
 		if (p.m_bNobody)
 		{
 			m.m_bHasGiver = false;
@@ -420,6 +548,7 @@ class RZ_Beneficiaries
 			m.SetRivalPublic(m_iOriginal, p.m_iRivalInfamy);
 		}
 
+		RZ_StoryStats.Picked(story.m_sKey, IsSwitch(), p.m_bNobody);
 		string subject = RZ_WorldFacts.Town(m.m_iSettlement);
 		RZ_WorldFacts.Get().Memory().Record(story.m_sKey + ".went_to", subject, p.m_sName, RZ_WorldMemory.SOURCE_CHOICE, false, m_aWith);
 		RZ_Log.Info(string.Format("Story: %1 resolved by hand-in to %2 (base Fame %3, Favor %4; with %5, others %6; switch %7)", story.m_sKey, p.m_sName,

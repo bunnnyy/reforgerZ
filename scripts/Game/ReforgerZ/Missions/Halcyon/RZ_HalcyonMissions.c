@@ -219,6 +219,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The samples are in. The analyst reads the strip twice: one town is next. \"Halcyon logs it. Whether the Haven hears is up to whoever carried the bottles.\" Decide at the last point.",
 			"Halcyon only|Tell the Haven too", "decide who hears about the town at risk", 0);
+		m_Choice.Asset(1, RZ_EFaction.SURVIVORS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -371,12 +372,29 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	protected vector m_vFence;				// Sold: the fence's table, by the nearest Red Hand holding
 	protected ref array<int> m_aHeard = {};	// ★ Radio Op: told where his set is
 	protected ref RZ_Ways m_Ways = new RZ_Ways("Lost Colleague");
+	protected ref RZ_StepChain m_Chain = new RZ_StepChain();
+	protected ref RZ_Escort m_Escort = new RZ_Escort();
+	protected vector m_vHim;				// where he is (the job's spot follows the trail to it)
+	protected vector m_vLead;				// his field station or the lab: where he's walked in to
+	protected vector m_vTrader;				// the Haven trader who saw "a man with a lab badge"
+	protected vector m_vScav;				// a scavenger by the cold box, who sells the last sighting
+	protected int m_iPack = -1;
+	protected int m_iTrader = -1;
+	protected int m_iScav = -1;
+	protected bool m_bTrail;				// the trail is followed (or a shortcut taken): his spot is known
+	protected bool m_bTraderShown;
+	protected bool m_bScavShown;
+	protected bool m_bWalking;				// hiding: walked in, under escort
+	protected int m_iWalkOption = -1;		// 0 say nothing, 1 tell the field lead
+	protected IEntity m_Him;				// hiding: the figure in the back room until he's walked in
 	bool m_bCourier;	// The Missing Courier (Director/RZ_StoryArcs.c): set before StartMission so the offer reads right
 
 	protected static const int OBJ_HIM = 0;
 	protected static const int OBJ_BOOK = 1;
 	protected static const int OBJ_HOUSE = 2;
 	protected static const int OBJ_FENCE = 3;
+	protected static const int OBJ_SCAV = 4;
+	protected static const float LEAD_RANGE = 3000;
 	protected static const int BRIBE_FAVOR = 25;
 	protected static const int BUY_FOOD = 5;
 	protected static const int TRADE_FOOD = 4;
@@ -444,14 +462,15 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 				weights[2] = 0.375;
 		}
 
-		m_sTruth = m_Story.Truth(m_sName, values, weights);
+		m_sTruth = m_Story.Truth(m_sName, values, weights, this);
 		if ((m_sTruth == "walked_out" && !h) || (m_sTruth == "sold" && !fence))
 			m_sTruth = "hiding";
 
 		if (m_sTruth == "hiding")
 		{
 			m_iHim = AddClue(m_sName, string.Format("%1, in a back room with his notes in a bin bag and his ankle the wrong shape. \"I went out alone. Against orders. Don't tell them that part. Please.\"", m_sName));
-			if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, OBJ_HIM, "", "Say nothing|Tell the field lead|[Nurse or Doctor] Patch him up first", m_iHim, "Talk to " + m_sName))
+			m_Him = SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, OBJ_HIM, "", "Walk him in and say nothing|Walk him in and tell the field lead|[Nurse or Doctor] Patch him up first", m_iHim, "Talk to " + m_sName);
+			if (!m_Him)
 				return false;
 		}
 		else if (m_sTruth == "sold")
@@ -486,8 +505,80 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 			m_sBrief = string.Format("A Halcyon courier carrying samples between the lab and %1 stopped reporting. Find him, or what's left of him.", s.m_sName);
 		}
 
+		m_vHim = m_vPos;
+		Trail(gm, s);
 		RZ_Log.Info(string.Format("Story: colleague %1 is %2", m_sName, m_sTruth));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The search (docs/MISSIONS.md, Lost Colleague): a step chain from his field station (his cold
+	//! box, then his pack), and two shortcuts: a scavenger by the cold box sells the last sighting for
+	//! a tin, and a Haven trader in the nearest lived-in town saw "a man with a lab badge". Until the
+	//! trail is followed the job's spot is the cold box.
+	protected void Trail(RZ_GameModeComponent gm, RZ_Settlement s)
+	{
+		vector station;
+		RZ_Holding post = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.INSTITUTE, m_vHim, 4000);
+		if (post)
+			station = post.m_vPos;
+
+		if (gm.HasLab() && (!post || RZ_Util.DistXZ(gm.GetLabPosition(), m_vHim) < RZ_Util.DistXZ(station, m_vHim)))
+			station = gm.GetLabPosition();
+
+		if (station != vector.Zero && RZ_Util.DistXZ(station, m_vHim) <= LEAD_RANGE)
+			m_vLead = LandPointNear(station, 6, 14);
+
+		// The cold box: on his way out from the station, else beyond the town's edge
+		vector box;
+		if (station != vector.Zero && RZ_Util.DistXZ(station, m_vHim) > 900)
+			box = LandPointNear(station + (m_vHim - station) * 0.25, 0, 60);
+		else
+			box = LandPointNear(s.m_vCenter, s.m_fRadius + 350, s.m_fRadius + 600);
+
+		m_Chain.SetMission(m_iId);
+		RZ_ChainStep first = m_Chain.AddStep(gm, gm.FindNearestSettlement(box), box, 8, 0);
+		first.m_iClue = AddClue("His cold box", string.Format("A Halcyon cold box in the grass, latched, the ice packs gone soft. %1's number on the lid. Boot prints go on toward %2.", m_sName, s.m_sName));
+		first.m_sReadLabel = "Look at the cold box";
+
+		vector pack = LandPointNear(box + (m_vHim - box) * 0.6, 0, 50);
+		RZ_ChainStep second = m_Chain.AddStep(gm, gm.FindNearestSettlement(pack), pack, 8, 0);
+		m_iPack = AddClue("His pack", string.Format("His pack, dropped, one strap torn. A sample log with the last entry two days old, and a pencilled grid: %1.", RZ_SettlementScanner.GridReference(m_vHim)));
+		second.m_iClue = m_iPack;
+		second.m_sReadLabel = "Go through the pack";
+
+		m_vScav = LandPointNear(box, 30, 60);
+		m_iScav = AddClue("A scavenger", "\"Lab coat? Saw one. Limping, or walking like a man who wished he wasn't.\" He looks at your pack, not at you. \"Memory's better with a tin in it.\"");
+
+		string sighting = "\"A man with a lab badge. Bought matches and asked nothing. Went out past the last houses.\"";
+		if (m_sTruth == "walked_out")
+			sighting = string.Format("\"A man with a lab badge. Asked the way to %1, and whether they needed hands.\"", m_sHouse);
+		else if (m_sTruth == "sold")
+			sighting = "\"A man with a lab badge, with one of the crew's lads. Nobody walks with them by choice.\"";
+
+		int town = PickSettlementAway(gm, m_vHim, 300, 2500, 0, 60);
+		RZ_Settlement t = gm.GetSettlement(town);
+		if (t && RZ_WorldFacts.Get().IsLivedIn(town))
+		{
+			m_vTrader = LandPointNear(t.m_vCenter, 0, t.m_fRadius * 0.4);
+			m_iTrader = AddClue("A Haven trader", sighting + string.Format(" She points: grid %1.", RZ_SettlementScanner.GridReference(m_vHim)));
+		}
+
+		m_vPos = box;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The trail is followed, or a shortcut taken: the job's spot is where he is now.
+	protected void FoundTrail(RZ_GameModeComponent gm, int playerId, string how)
+	{
+		if (m_bTrail)
+			return;
+
+		m_bTrail = true;
+		if (m_vPos != m_vHouse)
+			m_vPos = m_vHim;
+
+		RZ_Log.Info(string.Format("Story: colleague %1 trail found by %2 (%3)", m_sName, RZ_Util.PlayerName(playerId), how));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -496,11 +587,33 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		// ★ Radio Op: his set is still on, off the net, a shortcut to him
 		foreach (int i, IEntity p : players)
 		{
-			if (m_aHeard.Contains(ids[i]) || m_bDone || RZ_Util.DistXZ(p.GetOrigin(), m_vPos) > 1500)
+			if (m_aHeard.Contains(ids[i]) || m_bDone || RZ_Util.DistXZ(p.GetOrigin(), m_vHim) > 1500)
 				continue;
 
 			m_aHeard.Insert(ids[i]);
-			RZ_StoryKit.Read(gm, this, ids[i], "radioham", string.Format("His set's still on, off the net, keying every few minutes. Somewhere near grid %1.", RZ_SettlementScanner.GridReference(m_vPos)));
+			if (RZ_StoryKit.Read(gm, this, ids[i], "radioham", string.Format("His set's still on, off the net, keying every few minutes. Somewhere near grid %1.", RZ_SettlementScanner.GridReference(m_vHim))))
+				FoundTrail(gm, ids[i], "his set");
+		}
+
+		if (!m_bTrail && !m_Chain.IsDone())
+			m_Chain.Update(gm, dt, ids, players, m_aParticipants);
+
+		if (!m_bScavShown && !m_bTrail && RZ_ContractHelp.AnyNear(players, m_vScav, 300))
+		{
+			m_bScavShown = true;
+			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vScav, OBJ_SCAV, "", "Give him a tin for it [1 food]|Leave him to it", m_iScav, "Talk to the scavenger");
+		}
+
+		if (!m_bTraderShown && m_iTrader >= 0 && RZ_ContractHelp.AnyNear(players, m_vTrader, 300))
+		{
+			m_bTraderShown = true;
+			SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, m_vTrader, m_iTrader, "Talk to the trader");
+		}
+
+		if (m_bWalking)
+		{
+			WalkIn(gm, dt, ids, players);
+			return;
 		}
 
 		if (m_sTruth == "walked_out" && !m_bHouseShown && RZ_ContractHelp.AnyNear(players, m_vHouse, 300))
@@ -510,18 +623,92 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vHouse, 6, 14), OBJ_HOUSE, "", "[Trusted · Halcyon] Persuade him back|[Feared] Press him back|Trade the house for his notes [4 food]|Take his tag: tell them he turned|Leave him be", him, "Talk to the new man");
 		}
 
-		if (m_sTruth != "turned" || m_bReached || CountPlayersNear(players, m_vPos, 20) == 0)
+		if (m_sTruth != "turned" || m_bReached || CountPlayersNear(players, m_vHim, 20) == 0)
 			return;
 
 		m_bReached = true;
 		NotifyParticipants(gm, m_sTitle, "You're too late. He's turned. Put him down; his notebook is still on him.");
-		if (!gm.GetSpawner().SpawnZombie(RZ_Util.RandomPointInRing(m_vPos, 8, 15), true, m_iSettlement, m_iId))
-			ShowBook(gm, m_vPos);
+		if (!gm.GetSpawner().SpawnZombie(RZ_Util.RandomPointInRing(m_vHim, 8, 15), true, m_iSettlement, m_iId))
+			ShowBook(gm, m_vHim);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hiding: walked in to his field station (or the lab) under escort. Dead on the way: the job
+	//! fails, and his notebook is where he fell (Notebook 31).
+	protected void WalkIn(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
+	{
+		m_Escort.Update(gm, dt, ids, players);
+		m_vPos = m_Escort.m_vPos;
+		RZ_ContractHelp.AddNear(ids, players, m_Escort.m_vPos, 100, m_aParticipants);
+		if (m_Escort.IsDead())
+		{
+			m_bWalking = false;
+			m_vHim = m_Escort.m_vPos;
+			NotifyParticipants(gm, m_sTitle, string.Format("%1 doesn't make it. His notes are in the bin bag where he fell.", m_sName));
+			m_eState = RZ_EMissionState.FAILED;
+			return;
+		}
+
+		if (!m_Escort.IsNear(m_vLead, 25))
+			return;
+
+		m_Escort.Arrive();
+		m_bWalking = false;
+		int walker = m_Escort.GetFollowed();
+		if (walker <= 0 && !m_aParticipants.IsEmpty())
+			walker = m_aParticipants[0];
+
+		if (m_iWalkOption == 0)
+			Finish(gm, walker, 2, 1, "lab", string.Format("\"Thank you.\" At the gate %1 tells them he got turned round on his rounds. Nobody asks you.", m_sName));
+		else
+			Finish(gm, walker, 2, 1, "told", string.Format("You tell the field lead the rest. She reads your face, then his. %1 won't hold a field post again.", m_sName));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hiding, Say nothing or Tell: walk him in, an escort to his field station or the lab within 3 km.
+	//! No room for an escort, or nowhere near: Halcyon sends a stretcher, as before.
+	protected void StartWalk(RZ_GameModeComponent gm, int playerId, int option)
+	{
+		bool walk = m_vLead != vector.Zero && RZ_Escort.HasRoom(gm);
+		if (walk)
+		{
+			m_Escort.m_sName = m_sName;
+			m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 1);
+			m_Escort.m_bHide = false;
+			walk = m_Escort.Begin(gm, m_vHim);
+		}
+
+		if (!walk)
+		{
+			if (option == 0)
+				Finish(gm, playerId, 2, 1, "lab", string.Format("\"Thank you.\" Halcyon sends a stretcher for %1. The report says he was found on his rounds.", m_sName));
+			else
+				Finish(gm, playerId, 2, 1, "told", string.Format("Halcyon sends a stretcher. The field lead reads your report twice. %1 won't hold a field post again.", m_sName));
+
+			return;
+		}
+
+		RZ_Util.DeleteUnit(m_Him);
+		m_Him = null;
+		m_Escort.SetDestination(m_vLead);
+		m_Escort.Follow(playerId);
+		m_Escort.Go();
+		m_bWalking = true;
+		m_iWalkOption = option;
+		AddParticipant(playerId);
+		if (m_fTimeLeft < 1200)
+			m_fTimeLeft = 1200;
+
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("He gets an arm round your shoulders. \"Slowly. It's my ankle you're walking on.\" Walk him in to his people, %1.", RZ_Util.DirectionText(m_vHim, m_vLead)));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnClueRead(RZ_GameModeComponent gm, int playerId, int idx, IEntity source)
 	{
+		m_Chain.OnClueRead(idx);
+		if (idx == m_iPack || idx == m_iTrader)
+			FoundTrail(gm, playerId, "trail");
+
 		if (idx == m_iNote)
 		{
 			m_Story.Reveal(gm, this, m_sName, playerId, "camp", string.Format("He walked out. The trail leads to the Haven house in %1.", m_sHouse));
@@ -582,11 +769,15 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 				return;
 			}
 
-			if (option == 0)
-				Finish(gm, playerId, 2, 1, "lab", string.Format("\"Thank you.\" Halcyon sends a stretcher for %1. The report says he was found on his rounds.", m_sName));
-			else
-				Finish(gm, playerId, 2, 1, "told", string.Format("Halcyon sends a stretcher. The field lead reads your report twice. %1 won't hold a field post again.", m_sName));
+			if (!m_bWalking)
+				StartWalk(gm, playerId, option);
 
+			return;
+		}
+
+		if (objIdx == OBJ_SCAV)
+		{
+			OnScavenger(gm, playerId, option);
 			return;
 		}
 
@@ -613,6 +804,26 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The scavenger by the cold box: a tin for the last sighting, a shortcut past the pack.
+	protected void OnScavenger(RZ_GameModeComponent gm, int playerId, int option)
+	{
+		if (option != 0)
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"Suit yourself. He's not getting any less lost.\"");
+			return;
+		}
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!me || !RZ_StoryStats.TakeFood(gm, me, 1))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "\"A tin. A real one, with food in it.\"");
+			return;
+		}
+
+		FoundTrail(gm, playerId, "scavenger");
+		gm.NotifyPlayer(playerId, m_sTitle, string.Format("He pockets it. \"Grid %1. Two nights back. He was talking to himself, so I didn't.\"", RZ_SettlementScanner.GridReference(m_vHim)));
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Turned: the notebook to a Haven medic instead. No research and nobody pays; the medic's town
 	//! breathes a little easier, and the Haven has its proof.
@@ -629,7 +840,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		RZ_Safehouses houses = gm.GetSafehouses();
 		int house = -1;
 		if (houses)
-			house = houses.FindNearest(m_vPos);
+			house = houses.FindNearest(m_vHim);
 
 		RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, house);
 		if (h && gm.GetSettlement(h.m_iSettlement))
@@ -674,7 +885,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 				return;
 			}
 
-			if (!me || RZ_HavenQuest.CountFood(gm, me) < BUY_FOOD || !RZ_HavenQuest.TakeFood(gm, me, BUY_FOOD))
+			if (!me || RZ_HavenQuest.CountFood(gm, me) < BUY_FOOD || !RZ_StoryStats.TakeFood(gm, me, BUY_FOOD))
 			{
 				gm.NotifyPlayer(playerId, m_sTitle, "\"Five tins. Not four. I can count.\"");
 				return;
@@ -717,6 +928,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 
 		if (option == 1)
 		{
+			RZ_StoryKit.Dirty(gm, this, playerId);
 			RZ_ECheck pressed = m_Ways.TryFear(gm, playerId, "colleague." + m_sName, RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE, 2, false, PRESS_INFAMY);
 			if (pressed == RZ_ECheck.REFUSED)
 			{
@@ -732,7 +944,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (option == 2 || option == 3)
 		{
-			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_HavenQuest.TakeFood(gm, me, TRADE_FOOD))
+			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_StoryStats.TakeFood(gm, me, TRADE_FOOD))
 			{
 				gm.NotifyPlayer(playerId, m_sTitle, "\"Four tins, and the notes are yours. We need the tins more.\"");
 				return;
@@ -797,7 +1009,15 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	{
 		// Time up while he hid: he dies overnight, and his notebook is still where he fell (Notebook 31)
 		if (!m_bDone && m_sTruth == "hiding")
-			RZ_StoryKit.Fallout(gm, this, "notebook31", m_vPos, m_sName);
+			RZ_StoryKit.Fallout(gm, this, "notebook31", m_vHim, m_sName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		super.Cleanup(gm);
+		m_Escort.Cleanup();
+		m_Chain.Cleanup();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1026,6 +1246,9 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("A raider throws his rifle out of the hedge and his hands up after it: \"Done. I'm done.\" The guard at the gate looks at you. Decide at the gate.",
 			"Bastion's stockade|Give him back to the crew|To Halcyon, for the trial", "decide what happens to the raider", 0);
+		m_Choice.Asset(0, RZ_EFaction.MILITARY);
+		m_Choice.Asset(1, RZ_EFaction.BANDITS);
+		m_Choice.Asset(2, RZ_EFaction.INSTITUTE);
 	}
 
 	//------------------------------------------------------------------------------------------------

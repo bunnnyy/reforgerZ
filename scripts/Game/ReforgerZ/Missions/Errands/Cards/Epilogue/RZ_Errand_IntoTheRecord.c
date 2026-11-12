@@ -19,6 +19,7 @@ class RZ_Errand_IntoTheRecord : RZ_EpiCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
 		w.m_sStep = "Find {dead} {lies} and take the notebook (15 s there), then bring it to {giver}.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("\"{dead}'s handwriting. Dated to the last day.\" The notebook goes in a box marked APPENDIX.");

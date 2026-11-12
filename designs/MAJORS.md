@@ -40,8 +40,6 @@ does today.
   and the VERIFY count), at the send-off, the fire and the last line.
 - **`tools/pacing_sim.py`:** the 60, 70 and 80% milestones and the order check from 2 to 20 regulars
   (Aftermath comes on or before 60% from about 7 regulars, which the second sitting's rule covers).
-- **Errands' margin cards** (2–4 per major, never on a set-piece evening at its place), dealt first
-  between beats ([ERRANDS.md](ERRANDS.md)); Crash Site reading `majors.pages_open`.
 - **The runtime test's other checks:** stalled research leads a climax by at most 5 points;
   Aftermath before 60% makes the second sitting wait for the muster; a set piece nobody qualifies for
   runs as data after two free evenings; the gate resolves an open climax at half effect.

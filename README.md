@@ -202,8 +202,8 @@ writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, sim
 jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
 dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
 board and radio asks and errands' phase 4 cards; and phase 8's growth: the worked examples'
-remaining ways, the 16 one-choice jobs and 68 work rows, errands to 63 cards with the margin and lock
-cards,
+remaining ways, the 16 one-choice jobs and 68 work rows, errands to 70 cards with the margin cards of all four majors, a Champion card per faction and
+the lock card,
 [MISSIONS.md](docs/MISSIONS.md)); borrowed kit's phases 2 and 3 (phase 8 in part: again looks, roll
 call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose it was, the
 nail list and Bastion's board, and the eight side jobs as errand cards; and its rest: cover details

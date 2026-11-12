@@ -23,6 +23,7 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Go to the wreck {where_place} and gather what the crew left (15 s there), then bring it to {giver}.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("\"I'll read his name tonight. The rest goes in the box, for when the gates open.\"",
@@ -37,6 +38,7 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Go to the wreck {where_place}, take what the crew left (15 s there), and sell it at the fence. Then tell {giver} it was gone.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 5;
 		w.Done("\"Gone? Somebody got there first. Listed as kit lost. That's how it goes.\"");
 	}

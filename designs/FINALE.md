@@ -32,7 +32,7 @@ lines the author approved. The plan is [PLAN.md](PLAN.md#the-build-order).
 | `RZ_QuestVote` for pacts | Majors | The controller's own tally (built) |
 | The decide-scene hold | Missions | The release scene's first pick, 3 minutes (built) |
 | Radio speakers (the Independent commits on the open channel) | Dialogue | The Doctor or the Courier on the road (built) |
-| Tagging more outcomes with route assets, and refusing a locked player an option whose asset is another route's | Missions ([MISSION_STYLE.md](MISSION_STYLE.md#route-assets-and-the-90-lock)) | The story records listed in docs/FINALE.md give assets (built) |
+| Tagging more outcomes with route assets, and refusing a locked player an option whose asset is another route's | Missions ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)) | The story records listed in docs/FINALE.md give assets (built) |
 
 **Hand to Hand** (errands, up to 6 promises a player): a promised local in the same house as one of the
 eight makes that person's yes one step easier; each promised local at the Independent's lab-gate

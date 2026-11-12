@@ -630,6 +630,15 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A use slot on a person or thing this (non-puzzle) mission tagged: the one-choice stand-in's
+	//! "Leave it to them" (Leave: no pay, no blame).
+	void HandleObjectUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value)
+	{
+		if (m_Choice && objIdx == RZ_OneChoice.OBJECT_INDEX && value == 0)
+			RZ_StoryKit.Leave(gm, this, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A player died (or turned) at pos.
 	void OnPlayerDied(RZ_GameModeComponent gm, int playerId, vector pos)
 	{

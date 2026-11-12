@@ -157,12 +157,16 @@ class RZ_Strangers
 	static const int TAG = -14;		// RZ_PuzzleObjectComponent mission id: a stranger
 
 	protected static const float CELL = 250;
-	protected static const float HALF_LIFE = 21600;		// the footfall halves every 6 real hours
 	protected static const float ROAD_FOOTFALL = 20;	// player-ticks in a cell for a road people use
 	protected static const float WAIT = 300;
 	protected static const float LEAVE = 150;
 	protected static const float CALL_RANGE = 40;
-	protected static const int MAX_LIVE = 6;
+	//! Strangers out at once: the setting, never over the body budget's strangers.
+	protected static int MaxLive()
+	{
+		return Math.MinInt(RZ_ErrandSettings.Get().m_iStrangersMax, RZ_BodyBudget.STRANGER_CAP);
+	}
+
 	protected static const float SPOT_COOL = 7200;		// a spot that gave anyone a stranger
 	protected static const float SPOT_COOL_MINE = 86400;	// a spot that gave you one
 	protected static const float FIRE_FRESH = 1800;		// a stove fire counts 30 minutes
@@ -228,7 +232,7 @@ class RZ_Strangers
 	//------------------------------------------------------------------------------------------------
 	protected void Walk(float dt, array<IEntity> players)
 	{
-		float keep = Math.Pow(0.5, dt / HALF_LIFE);
+		float keep = Math.Pow(0.5, dt / Math.Max(3600, RZ_ErrandSettings.Get().m_fFootfallHours * 3600));
 		array<int> keys = {};
 		array<float> values = {};
 		foreach (int key, float v : m_mFootfall)
@@ -476,7 +480,7 @@ class RZ_Strangers
 	protected void LookAhead(int playerId, IEntity me, array<int> ids, array<IEntity> players)
 	{
 		vector last;
-		if (!m_mLastPos.Find(playerId, last) || m_aVisits.Count() >= MAX_LIVE)
+		if (!m_mLastPos.Find(playerId, last) || m_aVisits.Count() >= MaxLive())
 			return;
 
 		string ident = m_GM.GetProfile(playerId).m_sIdentity;
@@ -951,7 +955,8 @@ class RZ_Strangers
 		m_iNextId++;
 		RZ_PuzzleObjectComponent.Tag(v.m_Body, TAG, v.m_iId, "", v.Fill(v.m_Kind.Labels(this, v)));
 		m_aVisits.Insert(v);
-		m_mNext.Set(ident, m_fClock + Math.RandomFloat(900, 1500));
+		RZ_ErrandSettings gapSettings = RZ_ErrandSettings.Get();
+		m_mNext.Set(ident, m_fClock + 60 * Math.RandomFloat(gapSettings.m_fStrangerGapMin, Math.Max(gapSettings.m_fStrangerGapMin, gapSettings.m_fStrangerGapMax)));
 		m_mSpotCool.Set(v.m_sSpot, m_fClock + SPOT_COOL);
 		m_mSpotCool.Set(ident + "|" + v.m_sSpot, m_fClock + SPOT_COOL_MINE);
 		string spotName = RZ_StrangerSpot.Names(v.m_iSpot);
@@ -1026,6 +1031,30 @@ class RZ_Strangers
 		m_GM.AddInfamy(killer, f, 15, "killed a stranger", 0, "killed someone on the road");
 		m_mNext.Set(m_GM.GetProfile(killer).m_sIdentity, m_fClock + KILLED_PAUSE);
 		RZ_Log.Info(string.Format("Errands: stranger %1 killed by %2", v.m_Kind.m_sKey, RZ_Util.PlayerName(killer)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player fired within 25 m of a living stranger with no infected within 40 m of them (not a
+	//! fight): shot at. +4 Infamy with their people, once a stranger, and they run (the visit ends).
+	void OnShot(int playerId, vector pos)
+	{
+		foreach (RZ_StrangerVisit v : m_aVisits)
+		{
+			if (v.m_bDone || !v.m_Body || RZ_Util.CountAlive(v.m_Body) <= 0)
+				continue;
+
+			vector at = v.m_Body.GetOrigin();
+			if (RZ_Util.DistXZ(at, pos) > 25 || (m_GM.GetSpawner() && m_GM.GetSpawner().CountZombiesNear(at, 40, 1) > 0))
+				continue;
+
+			int f = v.m_Kind.m_iFaction;
+			if (v.m_bTwist && v.m_Kind.m_sKey == "sister")
+				f = RZ_EFaction.BANDITS;
+
+			v.m_bDone = true;
+			m_GM.AddInfamy(playerId, f, 4, "shot at a stranger", 0, "shot at someone on the road");
+			RZ_Log.Info(string.Format("Errands: stranger %1 shot at by %2", v.m_Kind.m_sKey, RZ_Util.PlayerName(playerId)));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

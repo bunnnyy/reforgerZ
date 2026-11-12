@@ -76,6 +76,32 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 			case "before_dark": DefineBeforeDark(); break;
 			case "wanted_poster": DefineWantedPoster(); break;
 		}
+
+		m_sThread = ThreadFor(m_sKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What another of the place's people says you did, as a thread ("" none).
+	protected static string ThreadFor(string key)
+	{
+		switch (key)
+		{
+			case "pot": return "brought something for the pot";
+			case "lights": return "got the lights back on";
+			case "water": return "carried the water in";
+			case "filter_parts": return "fixed the filter";
+			case "gate_dusk": return "kept the gate at dusk";
+			case "burying": return "dug one of ours a grave";
+			case "round": return "sat with the sick";
+			case "newcomer": return "saw to the new one";
+			case "childrens_hour": return "watched the children";
+			case "the_wire": return "stood the wire with us";
+			case "fuel_post": return "brought the post its fuel";
+			case "freezers": return "kept the freezers cold";
+			case "short_change": return "found where the short change went";
+		}
+
+		return "";
 	}
 
 	// ---------------------------------------------------------------- A Haven safehouse
@@ -187,6 +213,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 25;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the pump house at {place} and take the filter housing (25 s there), then bring it to {giver}.";
+		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
 		w.m_iEffect = FX_FIX;
 		w.Done("\"That's the one. I'll tell everyone it was me.\"");
@@ -198,6 +225,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 12;
 		w.m_fRadius = 60;
 		w.m_sStep = "At the pump house in {place}, take the one part worth taking (12 s there), then bring it to {giver}.";
+		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
 		w.m_iEffect = FX_FIX;
 		w.Done("\"One part, not two. You know what you're doing. That's rare.\"");

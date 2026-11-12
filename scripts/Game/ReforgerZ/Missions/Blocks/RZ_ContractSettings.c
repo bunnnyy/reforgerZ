@@ -68,7 +68,7 @@ class RZ_ContractSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bounty target: an armed AI group or character on SURV, a loner who owes the Red Hand (Collect the Bounty when no player has a bounty; it's made hostile as SURV). Empty = Missions > Survivor group", "et")]
 	ResourceName m_sBountyTargetPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion squad: an AI group on MIL (the stockade guards in Bust Out). Empty = Factions > Bastion hunter squad, then Supply > Bastion crew", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion squad: an AI group on MIL (the stockade guards in Bust Out, Crash Site's recovery team). Empty = Factions > Bastion hunter squad, then Supply > Bastion crew", "et")]
 	ResourceName m_sBastionSquadPrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crashed drone: a small wreck prop (Medical Drone; look only). Empty = Puzzles > Puzzle object", "et")]

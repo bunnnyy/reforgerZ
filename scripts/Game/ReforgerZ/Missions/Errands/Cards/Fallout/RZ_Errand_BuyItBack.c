@@ -26,6 +26,7 @@ class RZ_Errand_BuyItBack : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_sStep = "Take five tins to the runner at the wreck {where_place}, then bring the box to {giver}.";
+		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 6;
 		w.Done("\"That's the box. I won't ask what it cost. Weather, then. Write it down.\"");
 
@@ -35,6 +36,7 @@ class RZ_Errand_BuyItBack : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_sStep = "Settle with the runner at the wreck {where_place} on the crew's account (25 Red Hand Favor), then bring the box to {giver}.";
+		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 6;
 		w.Done("\"I don't want to know whose account. The box is back. That's all I asked.\"");
 	}

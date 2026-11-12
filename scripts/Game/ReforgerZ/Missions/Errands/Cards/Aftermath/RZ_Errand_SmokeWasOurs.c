@@ -42,9 +42,16 @@ class RZ_Errand_SmokeWasOurs : RZ_ErrandCard
 	//------------------------------------------------------------------------------------------------
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
 	{
+		// The suspect variant: whoever called the shells may still be asked to count them, warily
 		RZ_Signal s = FreshSignal("shell", e.m_vGiver, 1500, 2, e.m_iAsker);
 		if (!s)
-			return false;
+		{
+			s = FreshSignal("shell", e.m_vGiver, 1500, 2, -1);
+			if (!s)
+				return false;
+
+			e.m_bSuspect = true;
+		}
 
 		e.m_vSubject = RZ_Util.GroundPos(Vector(s.x, 0, s.z));
 		e.m_sSubject = "shell:" + s.text;

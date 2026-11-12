@@ -256,7 +256,11 @@ Conversation lines ([DIALOGUE.md](DIALOGUE.md)) follow everything on this page, 
   a conversation. The truth is always findable before it matters, by someone anyone can ask (the
   Doctor wanderer knows the chemist's) or by a background line, and the [Evidence] answer names it:
   *"Picked clean on Day 3. I asked."* Believing a lie is never punished; the truth is a better
-  door. No tag ever gives a lie away.
+  door. No tag ever gives a lie away. Each faction lies its own way: Bastion by leaving things out
+  (*"The patrol saw nothing."*), the Red Hand with a joke (*"Late? Nobody's late. Some people are
+  slow learners."*), Halcyon with a true number that isn't the whole number (*"Two of three
+  volunteers recovered."*), the Haven with kindness (*"We didn't want to worry you."*), the Long
+  Table by being too helpful (*"Take the north road, love. Nobody walks it."*).
 - **Promises** are said in the player's words, with the time in them: *"I'll bring two tins. Two
   hours."* The thank-you and the disappointment are one line each, said plainly, and the
   disappointment blames nobody but the speaker's own hope: *"You said you'd bring tins. I told the

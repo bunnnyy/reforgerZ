@@ -21,6 +21,7 @@ class RZ_Errand_PackForTheQueue : RZ_EpiCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 40;
 		w.m_sStep = "Search the old house in {place} for both things (30 s there), then bring them to {giver}.";
+		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
 		w.Done("\"Both. You found both.\" A long look at the photo. \"Thank you.\"");
@@ -31,6 +32,7 @@ class RZ_Errand_PackForTheQueue : RZ_EpiCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Pick up one of the two in {place}, then go back to {giver}.";
+		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 2;
 		w.Done("\"Only the one? People took things. It's all right. It's more than I had.\"");
 	}

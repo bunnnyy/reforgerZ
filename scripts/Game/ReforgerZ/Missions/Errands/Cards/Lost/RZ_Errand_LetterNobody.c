@@ -21,6 +21,7 @@ class RZ_Errand_LetterNobody : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 40;
 		w.m_sStep = "Take the letter to the safehouse at {other_house} (at its gate), then find {giver} on the road again.";
+		w.Later("\"The letter you carried got an answer. Short. It said yes.\"");
 		w.m_iFavor = 4;
 		w.Done("\"Delivered? Good. One out of the bag. The bag doesn't notice.\"");
 

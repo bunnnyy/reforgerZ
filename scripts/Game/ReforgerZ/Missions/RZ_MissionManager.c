@@ -228,6 +228,7 @@ class RZ_MissionManager
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
+		RZ_StoryStats.Tick(dt, ids.Count());
 
 		for (int i = m_aActive.Count() - 1; i >= 0; i--)
 		{
@@ -301,6 +302,7 @@ class RZ_MissionManager
 			mission.m_eState = RZ_EMissionState.FAILED;
 			m_GM.GetSpawner().ReleaseMission(mission.m_iId);
 			facts.ReleaseAll(owner);
+			RZ_StoryGroups.Release(mission.m_iId);
 			mission.Cleanup(m_GM);
 			return false;
 		}
@@ -469,6 +471,15 @@ class RZ_MissionManager
 	}
 
 	// ================================================================ Contract offers
+	//------------------------------------------------------------------------------------------------
+	//! A contract was offered to this player by radio in the last `seconds` (an errand's radio ask
+	//! waits behind it).
+	bool OfferedWithin(int playerId, float seconds)
+	{
+		float last;
+		return m_mLastOffer.Find(playerId, last) && m_fClock - last < seconds;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Each player gets at most one new offer per OFFER_GAP seconds.
 	protected void OfferContracts(array<int> ids, array<IEntity> players)
@@ -795,13 +806,19 @@ class RZ_MissionManager
 				m_GM.GetQuestlines().OnMissionFinished(m, false);
 
 			m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
+			RZ_StoryGroups.Release(m.m_iId);
 			m.Cleanup(m_GM);
 			return;
 		}
 
+		// Leave: whoever stepped out isn't paid or blamed
+		if (m.m_Story)
+			m.m_Story.m_Deciding.DropLeft(m_GM, m.m_aParticipants);
+
 		if (success)
 		{
 			m.OnSuccess(m_GM);
+			RZ_StoryKit.PayOffline(m_GM, m);
 			foreach (int playerId : m.m_aParticipants)
 			{
 				if (!m.IsEligible(m_GM, playerId))
@@ -852,6 +869,8 @@ class RZ_MissionManager
 		else
 			RZ_WorldWriters.MissionEnded(m, false, m.m_aParticipants);
 
+		RZ_ReasonPosts.Ended(m_GM, m, success);
+
 		// Who benefits: the others who did the work, when it went another way
 		if (success && m.m_Story)
 			m.m_Story.m_Parties.PayOthers(m_GM, m);
@@ -864,6 +883,7 @@ class RZ_MissionManager
 
 		// Whatever it held (RZ_WorldFacts claims) is free again
 		m_GM.GetFacts().ReleaseAll(RZ_WorldFacts.MissionOwner(m.m_iId));
+		RZ_StoryGroups.Release(m.m_iId);
 		m.Cleanup(m_GM);
 	}
 
@@ -910,7 +930,9 @@ class RZ_MissionManager
 			// Amends work Infamy off through the one forgiveness budget (30 a life); once it's spent,
 			// the job pays ordinary Fame, rival shares and all
 			bool forgiven = false;
-			if (m.m_bAmends && fame > 0 && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(playerId, m.m_eGiver)))
+			// Amends need clean hands: Press, Trick, a switch or hiding something voids the work-off
+			bool clean = !m.m_Story || !m.m_Story.m_Deciding.IsDirty(m_GM, playerId);
+			if (m.m_bAmends && clean && fame > 0 && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(playerId, m.m_eGiver)))
 			{
 				int off = m_GM.Forgive(playerId, m.m_eGiver, fame, "amends contract");
 				if (off > 0)
@@ -936,6 +958,12 @@ class RZ_MissionManager
 				m_GM.AddFavor(playerId, m.m_eGiver, favor);
 				text += string.Format("\n+%1 Favor (%2 total).", favor, profile.GetFavor(m.m_eGiver));
 			}
+
+			int fameGiven = 0;
+			if (!forgiven)
+				fameGiven = fame;
+
+			RZ_StoryStats.Paid(m, fameGiven, favor);
 
 			if (m.m_bHasRival && m.m_iRivalInfamy > 0)
 			{

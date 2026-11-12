@@ -29,6 +29,17 @@ enum RZ_EErrandItem
 }
 
 //------------------------------------------------------------------------------------------------
+//! A prop at a step's place while it's open (Missions > Errands > Props; none set: words only).
+enum RZ_EErrandProp
+{
+	NONE,
+	EFFECTS,	// a dead man's things
+	CRATE,		// a small crate or box
+	PAPERS,		// a book or papers
+	PARTS		// a toolbox or a machine part
+}
+
+//------------------------------------------------------------------------------------------------
 //! Where a way's step happens (filled when it's offered; all within 1.5 km).
 enum RZ_EErrandPlace
 {
@@ -81,6 +92,7 @@ class RZ_ErrandWay
 	bool m_bQuiet;				// a shot near it spoils the "unnoticed" bonus
 	float m_fBefore = -1;		// must be done before this game hour (20.5 = half past eight), -1 none
 	string m_sStep;				// the system line: "Search the farm buildings at {place}."
+	RZ_EErrandProp m_eProp = RZ_EErrandProp.NONE;	// a prop at the place while the step is open
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")
 	int m_iFavor;
@@ -93,6 +105,7 @@ class RZ_ErrandWay
 	// Lines, in the giver's voice (two or three variants each)
 	ref array<string> m_aTake = {};
 	ref array<string> m_aDone = {};
+	ref array<string> m_aLater = {};	// a callback some hours of the asker's play later, near the giver (words only)
 
 	//------------------------------------------------------------------------------------------------
 	bool HasStep()
@@ -120,6 +133,13 @@ class RZ_ErrandWay
 	void Done(string a, string b = "", string c = "")
 	{
 		Add(m_aDone, a, b, c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the giver says later (the one callback queue): 2-6 hours of the asker's play on, near them.
+	void Later(string a, string b = "", string c = "")
+	{
+		Add(m_aLater, a, b, c);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,6 +178,7 @@ class RZ_ErrandDef
 	ref array<ref RZ_ErrandWay> m_aWays = {};
 	ref array<string> m_aOffer = {};	// the ask, in the giver's voice
 	ref array<string> m_aOver = {};		// the world changed: "Never mind. The truck came in after all."
+	string m_sThread;			// what you did, for a thread: "brought tins for the pot" (empty: none)
 
 	//------------------------------------------------------------------------------------------------
 	void Define()
@@ -267,6 +288,7 @@ class RZ_Errand
 	bool m_bUnasked;			// a call-out, not an ask
 	bool m_bFallout;			// a failed story job's fallout (RZ_Fallout): pays at most m_iCap
 	bool m_bTwist;				// its twist is true this time (the same replies show either way)
+	bool m_bSuspect;			// the arsonist rule's suspect variant: the asker's own act made the fact
 	int m_iCap = -1;			// Favor cap, -1 none
 	float m_fOfferedAt;			// the dealer's clock
 	float m_fTakenAt;
@@ -344,6 +366,9 @@ class RZ_ErrandLedger
 	int helped;								// errands done this season ("Most people helped")
 	ref array<int> shy = {};				// houses whose fit for you is x0.5 for the season (sold one of theirs)
 	int sinceTwist = 9;						// errands dealt since the last twist (one in three at most)
+	ref array<string> threads = {};			// "place|giver|what you did", newest last, 12 at most
+	ref array<string> threadsSaid = {};		// the threads already said back to you
+	ref array<string> pending = {};			// "faction|fame|favor|title": a story job's pay, at the next join
 
 	//------------------------------------------------------------------------------------------------
 	void Ensure()
@@ -375,6 +400,15 @@ class RZ_ErrandLedger
 
 		if (!families)
 			families = new array<string>();
+
+		if (!threads)
+			threads = new array<string>();
+
+		if (!pending)
+			pending = new array<string>();
+
+		if (!threadsSaid)
+			threadsSaid = new array<string>();
 
 		if (!shy)
 			shy = new array<int>();

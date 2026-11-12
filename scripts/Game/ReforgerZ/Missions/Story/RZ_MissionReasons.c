@@ -79,8 +79,67 @@ class RZ_MissionReasons
 		if (t == RZ_Mission_LabDefence)
 			result.Insert("cure.*");
 
+		// The reasons read from other systems' facts (RZ_ReasonPosts)
+		if (t == RZ_Mission_CheckpointDuty || t == RZ_Mission_ConvoyEscort || t == RZ_Mission_MissingPatrol)
+			result.Insert("post.pressure");
+
+		if (t == RZ_Mission_WaterSurvey)
+			result.Insert("house.water");
+
+		if (t == RZ_Mission_ReinIn)
+		{
+			result.Insert("leader.rogue");
+			result.Insert("crew.skimmed");
+		}
+
+		if (t == RZ_Mission_LostColleague || t == RZ_Mission_ColdChain)
+			result.Insert("lab.short");
+
+		if (t == RZ_Mission_PowerTheLab || t == RZ_Mission_ColdChain)
+			result.Insert("lab.power");
+
+		if (t == RZ_Mission_NotTonight || t == RZ_Mission_LeadThemAway)
+			result.Insert("tribe.hungry");
+
+		if (t == RZ_Mission_TheLedger)
+		{
+			result.Insert("house.feud");
+			result.Insert("racket.ran");
+		}
+
 		// The work rows (RZ_WorkRows.c)
 		RZ_WorkRows.Reasons(t, result);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Order per player (docs/DESIGN.md, "Story blocks"): how far up a list (the journal, a
+	//! quartermaster's offers) this job goes for this player standing at `at`. Higher first: near
+	//! (within 1.5 km +2, 4 km +1), started by a reason (+1), from a leader who remembers being helped by
+	//! them (+1). Only the order changes, never the odds of being offered.
+	static int OrderScore(RZ_GameModeComponent gm, RZ_Mission m, int playerId, vector at)
+	{
+		if (!m)
+			return 0;
+
+		int score = 0;
+		float dist = RZ_Util.DistXZ(at, m.m_vPos);
+		if (dist <= 1500)
+			score += 2;
+		else if (dist <= 4000)
+			score += 1;
+
+		if (m.m_vReasonAt != vector.Zero)
+			score += 1;
+
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		if (p && m.m_iLeaderId >= 0 && gm.GetLeaders())
+		{
+			RZ_Leader l = gm.GetLeaders().Get(m.m_iLeaderId);
+			if (l && l.Remembers(p.m_sIdentity, RZ_Leaders.MEM_HELPED))
+				score += 1;
+		}
+
+		return score;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -24,6 +24,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find {dead} {where_place} and take the coat and notebook {number} (15 s there), then bring them to {giver}.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFame = 2;
 		w.Done("\"Notebook {number}. It goes into the record tonight, and {dead} goes on the authors' list.\"");
 
@@ -36,6 +37,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find {dead} {where_place}, take notebook {number} (15 s there), and sell it at the fence. Then tell {giver} it was gone.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 15;
 		w.Done("\"Gone. Then the work is gone. We will start again. We are good at that.\"");
 
@@ -45,6 +47,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find {dead} {where_place} and pocket notebook {number} (15 s there). Then tell {giver} it was gone.";
+		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.Done("\"Gone. I see.\" A pause. \"If you ever do see it, the number is {number}.\"");
 	}
 

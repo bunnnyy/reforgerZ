@@ -1083,8 +1083,8 @@ move in a straight line. A caught special is carried as a case, not dragged in i
 
 Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_StoryKit.c`, `RZ_MissionReasons.c`, `RZ_Mirror.c`);
 settings **Missions > Story**. The mission style ([designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md)
-designs what's left). The six story jobs on it (Protection Racket, Lost Colleague, Crash Site,
-Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
+designs what's left). The story jobs on it (Protection Racket, Lost Colleague, Crash Site,
+Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout, Smuggler's Run) are in [MISSIONS.md](MISSIONS.md).
 
 - **The story kit.** A mission may carry `m_Story` (null by default: it runs exactly as before),
   with a story key that is saved in records and never renamed. The mission forwards its tick to it.
@@ -1097,6 +1097,12 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   object to once per job (by identity): Protection Racket's Side with the house, Distress Call's Side
   with the crew, Survivors Trapped's where they go. `RZ_StoryKit.MayDecide` checks it for an option
   that decides the job, and tells anyone else *"It's not your call. You weren't hired for this."*
+  **Leave**, for you only: "Leave it to them" on a one-choice job's stand-in (its use slot) takes you
+  out of the job: no pay, no blame, and you can't decide it. **Amends need clean hands**: a Press, a
+  Trick, a switch or a hidden bite in a story job voids its Infamy work-off for that player (they're
+  paid Fame instead, as when the budget's spent). **Offline participants**: a story job done pays its
+  base, at their next join, to anyone who took part (a step, or 5 minutes in the area) and isn't online
+  when it ends (the errands' ledger keeps it; not for a switch or a leaver).
 - **Who benefits** (`RZ_Beneficiaries`): 2–4 parties a result can go to. The side chosen pays those
   with the decider whom it doesn't hunt; a **switch** (the result to another side than the giver)
   pays at most the base, its Fame doesn't count toward season Fame (`RZ_RepFlag.SWITCH`), the giver
@@ -1105,16 +1111,39 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   "Nobody" pays nobody. The result is a world record (`<key>.went_to`, by the town). Every built
   choice mission (`RZ_Mission_Choice`: Crash Site, Research Data, Requisition) is built on it.
 - **Truths** are the truth deck ([World memory](#world-memory)): `m_Story.Truth(subject, ...)`
-  draws (the same for everyone at that subject while it's kept), `Reveal` tells the finder and the
+  draws (the same for everyone at that subject while it's kept); a truth whose gate fails (no house
+  near, no Red Hand holding, no prefab) is given no weight, and a truth about a fixed fact is never
+  drawn: it reads canon. The leader who voices the job leans the deck by at most ±50% on the hidden
+  truths: Greedy and Paranoid givers hide more, Merciful, Idealist and Pragmatist ones less, Ruthless
+  and Veteran ones leave things out "by procedure"; a Talker's hidden truth leaks into the rumours. `Reveal` tells the finder and the
   room (30 m) and adds the line to the journal. A background read (`RZ_StoryKit.Read`) goes to that
   player only and to the journal. The errand Sleeve Down and the six story jobs use them.
+- **Background reads.** Each background reads one kind of thing, the same in every story job, so
+  players learn it once; a read is never the only way to a truth, and a job never writes one for a
+  background it locks out:
+
+  | Background | Reads | Never reads |
+  |---|---|---|
+  | Nurse, Doctor | bodies and bites: who's bitten, how long ago, what killed them | papers |
+  | Mechanic | machines: engines, wrecks, black boxes, rigged locks | people |
+  | Hunter | the ground: tracks, how many, how old, which way | papers |
+  | Police | whether someone in a scene is lying (that they are, not what about) | numbers |
+  | Ex-Con, Raider | crews: marks, prices, who's really in charge | Bastion |
+  | Lab Tech | numbers: ledgers, manifests, readings | people |
+  | Radio Op | channels: live or a loop; at most one secure-net line a job | bodies |
+  | Elder | families: names, who's kin to whom, a house's own story | crews |
+  | Soldier | Bastion: rosters, unit codes, orders | crews |
+  | Drifter | road news: one extra hint from wanderers | — |
+- **Signed thank-yous** (`RZ_StoryKit.BoardThanks`): a story job can leave a note on a house's board
+  signed by the people it's from (the notice board's system notes, `PostSigned`): Survivors Trapped's
+  family, *"Thank you for the barricade, and for taking it down. We're all here."* The Novaks.
 - **Records** (`RZ_StoryKit.Record`): how a story job ended, as a world record `<key>.<what>` about its
   subject, with who did it and, for some, an epilogue line (`racket.<house>`, `colleague.fate`,
   `crash.box`, `distress.saved`, `struck.fate`, `trapped.family`).
 - **Lies in a job** go to the one lie store ([Lies and witnesses](#lies-and-witnesses)): covering a
   collection (found at the next collection there), saying a colleague turned or walking a deserter to
   the Haven (found by a visit), selling a distress call to the crew (found when Tied Down frees a
-  truck), a Nurse hiding a bite at a house's door (found within a season day), the commander's stove
+  truck), a Nurse hiding a bite at a house's door (found within a season day; the life record "hid a bite" names the house, and that house's people make her checks one step harder for the rest of the life: its errands' talk and Protection Racket's persuade, `RZ_StoryKit.HouseHarder`), the commander's stove
   (found by the rumour round).
 - **Season counts the story jobs keep** (season flags): Bastion's civilians sheltered
   (`bastion.sheltered`, read on the call to those who brought them), and Struck Off's men walked home
@@ -1132,8 +1161,13 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
   text. The Tier 0 audit's 27 jobs each have one, write `t0.<key>` at their town when they end (read
   into the next one's brief there, `Tier0Read`), and keep their choices to someone they were offered
   to ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)).
-- **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice slots
-  (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` (Survivors Trapped's mother).
+- **Story groups** (`Missions/Story/RZ_StoryGroups.c`): the AI groups a story job adds on top of its
+  base mission's own (Crash Site's recovery team): at most 4 on the server and 2 a job, spawned only
+  within 400 m of a player, counted in the one body budget as story bodies, deleted when the job ends.
+  No prefab, or no room: the job goes on in words.
+- **Choices on a plain mission's people**: a non-puzzle mission can tag a person with choice and use
+  slots (`RZ_PuzzleObjectComponent`) and get them through `HandleObjectChoice` and `HandleObjectUse`
+  (Survivors Trapped's mother, the one-choice stand-in's Leave).
 - **One real choice** (`Missions/Blocks/RZ_OneChoice.c`, `m_Choice`): when a one-choice job's work
   is done (its state turns to succeeded), it stays open and a stand-in person (the civilian puzzle
   prefab) appears beside it with the options as choice slots (object index 90). Picking one goes
@@ -1157,12 +1191,26 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 - **Reasons and the reason lane.** When the world has posted a reason ([World memory](#world-memory)),
   the mission manager may start one registered contract that answers it (`RZ_MissionReasons`: The
   Harvest Guard and Protection Racket answer a hungry house; Checkpoint Duty and Convoy Escort a
-  post's lost truck; Retake the Town a town gone bad; Struck Off a dead
-  leader; Trail of Clues and Medicine Run a bitten wanderer; Cold Chain and Power the Lab the cure's
-  milestones; Burn the Bodies a shelled town). At most one every **Reason lane gap** (30 min)
+  post's lost truck or a post with the infected on its doorstep; Retake the Town a town gone bad; Struck
+  Off a dead leader; Rein In a Rogue leader or a skimmed toll; Trail of Clues and Medicine Run a bitten
+  wanderer; Water Survey a house's low barrels; Lost Colleague and Cold Chain a Halcyon sensor gone
+  quiet; Cold Chain and Power the Lab the cure's milestones and a station's freezers low on fuel; The
+  Ledger two houses fallen out and a house the crew just collected from; Burn the Bodies a shelled town).
+  **The reasons read from other systems** (`Missions/Story/RZ_ReasonPosts.c`, every 30 s, errands on or
+  not, cleared when the fact stops): `house.water` and `house.dark` (a safehouse's water and fuel faults),
+  `post.pressure` (a Bastion holding with a town the infected hold within 1.5 km), `leader.rogue`,
+  `lab.short` and `lab.power` (a Halcyon station's sensor and fuel faults), `tribe.hungry` (a pack in its
+  second hunger band or higher: Not Tonight and Lead Them Away answer it); left by a finished job:
+  `racket.ran` (Protection Racket collected), `crew.skimmed` (Skim the Toll), `house.feud` (A Word to
+  {house} carried with a threat), `horde.passed` (Every Ridge Calls, the Siren Test, Red Dusk), `lab.power`
+  (a Power Surge). At most one every **Reason lane gap** (30 min)
   server-wide, inside the contract cap and every check (`CanRunNow`, someone online eligible,
   claims), and only if it lands within 3 km of the reason; each reason starts one contract at most.
   Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.
+- **Order per player** (`RZ_MissionReasons.OrderScore`): how far up a list a job goes for one
+  player: near them (+2 within 1.5 km, +1 within 4 km), started by a reason (+1), from a leader who
+  remembers they helped (+1). Only the order changes, never the odds. The journal and the
+  quartermaster's list don't sort by it yet (planned, with the UI).
 - **One weight clamp.** A contract's leader traits (±20%), its faction's needs (×0.85–1.2) and the
   majors' season weights multiply, and the product is clamped once to ×0.75–1.3.
 - **Mirror offers** (`RZ_Mirror`): one class with two givers, rolled once when the job is set up
@@ -1174,7 +1222,12 @@ Distress Call, Struck Off, Survivors Trapped) are in [MISSIONS.md](MISSIONS.md).
 - **The journal's detail**: selecting a row asks the server for that row's detail (at most 1,500
   characters): what you've found and who it went to ([UI.md](UI.md#the-notebook)).
 
-Log lines: `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
+**The hourly summary** (`Missions/Story/RZ_StoryStats.c`, one line a real hour): Fame and Favor per
+player-hour from the story jobs (and by job), how often a result was switched or given to nobody, food
+spent on trades, fallout errands started and the Favor they paid.
+
+Log lines: `Story | per player-hour: Fame N, Favor N | by job: ... | picks: ... | food on trades N |
+fallout: started N, paid N Favor`, `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
 resolved by hand-in to <party> (...)`, `Story: <title> record <key> (<subject>) = <value>`, `Story:
 <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is <truth>` (and `colleague`,
 `crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Story: <title> asks (<options>)`, `Story: <title> chose <n> (by <player>)`, `Story: tally <town> (<name>) = <n>, mark <faction+1> (<key>)`, `Mirror: <title>
@@ -2348,6 +2401,10 @@ tips (critical ones don't wait). The table is data (**Guidance > Tips**, default
 | clue | your first puzzle clue | |
 | channel | a Radio Operator near a faction's chatter or starting to crack a channel | |
 | car | your first fixable car | |
+| tags | the first options you're shown with a tag on them (an errand's ways, a one-choice job's question) | |
+| truth | the first hidden truth you find in a story job | |
+| read | your background's first read in a story job | |
+| hold | the first time someone near you is about to decide a job (the 5 s hold) | |
 | hungry | **hook only:** waits for the hunger mod (or a bridge) to call `Report(playerId, "hungry", place)` | |
 
 ### Gentle start and first-life goal

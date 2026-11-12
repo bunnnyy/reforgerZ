@@ -309,6 +309,14 @@ class RZ_NoticeBoard
 	//! Core/RZ_Callbacks.c). Filtered and cut like any note; nobody's name on it. False with no board.
 	bool PostUnsigned(vector pos, string raw)
 	{
+		return PostSigned(pos, raw, "Unsigned");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A system note signed with a person's name (a story job's thanks: "The Novaks"), on the board
+	//! of the safehouse nearest `pos`. Filtered and cut like any note. False with no board.
+	bool PostSigned(vector pos, string raw, string signature)
+	{
 		if (!IsEnabled() || m_Houses.Count() == 0)
 			return false;
 
@@ -333,7 +341,10 @@ class RZ_NoticeBoard
 			return false;
 
 		RZ_Note note = new RZ_Note();
-		note.author = "Unsigned";
+		note.author = Filter(signature);
+		if (note.author.IsEmpty())
+			note.author = "Unsigned";
+
 		note.ident = "";
 		note.text = text;
 		note.unix = RZ_Guidance.UnixNow();

@@ -251,7 +251,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (!leaders || !leaders.FindNearest(RZ_EFaction.BANDITS, h.m_vPos, 6000))
 			weights[1] = 0;
 
-		m_sTruth = m_Story.Truth(HouseKey(), values, weights);
+		m_sTruth = m_Story.Truth(HouseKey(), values, weights, this);
 
 		m_iTalk = AddClue("The storekeeper", "\"I know who sent you. We've nothing to spare. We've people to feed.\"");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", Labels(), m_iTalk, "Talk to the storekeeper");
@@ -476,6 +476,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (m_SpokeFor && m_SpokeFor.idents.Contains(gm.GetProfile(playerId).m_sIdentity))
 			difficulty = 1;
 
+		difficulty = RZ_StoryKit.AtHouse(gm, playerId, m_iHouse, difficulty);
 		RZ_ECheck result = m_Ways.TryTrust(gm, playerId, "keeper", RZ_EFaction.SURVIVORS, difficulty, "nurse,police");
 		if (result == RZ_ECheck.REFUSED)
 		{
@@ -502,6 +503,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		if (gm.GetQuestlines() && gm.GetQuestlines().WorldFlag("well.done") > 0)
 			difficulty = 1;		// the well story's been told
 
+		RZ_StoryKit.Dirty(gm, this, playerId);
 		RZ_ECheck result = m_Ways.TryFear(gm, playerId, "racket.keeper." + m_iHouse.ToString(), RZ_EFaction.SURVIVORS, RZ_EFaction.BANDITS, difficulty, false, PRESS_INFAMY, "excon,raider");
 		if (result == RZ_ECheck.PASS)
 		{
@@ -538,7 +540,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	protected void Cover(RZ_GameModeComponent gm, int playerId, IEntity source)
 	{
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		bool paid = me && RZ_HavenQuest.CountFood(gm, me) >= COVER_FOOD && RZ_HavenQuest.TakeFood(gm, me, COVER_FOOD);
+		bool paid = me && RZ_HavenQuest.CountFood(gm, me) >= COVER_FOOD && RZ_StoryStats.TakeFood(gm, me, COVER_FOOD);
 		if (!paid)
 			paid = m_Ways.TryBribe(gm, playerId, RZ_EFaction.BANDITS, COVER_FAVOR);
 
@@ -696,6 +698,8 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("The driver's on his knees by the cab with his hands on his head. \"I've a wife at the post. I drive. That's all I do.\" Decide at the truck.",
 			"Let him walk|Hand him to the crew|Leave him tied for Bastion", "decide what happens to the driver", 0);
+		m_Choice.Asset(0, RZ_CureFinale.INDEP);
+		m_Choice.Asset(1, RZ_EFaction.BANDITS);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1027,6 +1031,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		{
 			// The claim: "Who sent you?" (the commander's name is the cover detail)
 			m_bClaimed = true;
+			RZ_StoryKit.Dirty(gm, this, playerId);
 			if (m_Ways.PassAs(gm, playerId, "stockade guard", RZ_EFaction.MILITARY, 2, Paper(gm, playerId)) == RZ_ECheck.PASS)
 				text = "A guard asks who sent you. You tell him, and he looks away. Cut, quietly.";
 			else
@@ -1439,6 +1444,7 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 		m_Choice = new RZ_OneChoice();
 		m_Choice.Set("His aide comes out with his hands up and a key in one of them: \"The post's stores. All of it. Walk away and nobody writes anything down.\" Answer him at the post.",
 			"Take the stores, walk away|Do the job", "decide whether he lives", 1);
+		m_Choice.Asset(0, RZ_EFaction.MILITARY);
 		m_Choice.m_bManual = true;
 		m_Choice.m_bEnds = false;
 	}
