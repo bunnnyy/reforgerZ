@@ -33,25 +33,24 @@ GenericEntity {
    coords 0.1 0 0.55
    angles 0 4 0
   }
-  GenericEntity : "{6FD13E995D293853}Prefabs/Props/Furniture/SinkOld_01.et" {
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
    ID "BF0AEABA49EBEF48"
    components {
     Hierarchy "{7FFF0A538F8FF839}" {
     }
    }
-   coords 0.1 0.62 0.55
-   angles 0 4 0
+   coords -0.05 0.62 0.55
   }
-  GenericEntity : "{8AC23039E7EC0375}Prefabs/Props/Furniture/TowelRack_01.et" {
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "53968A607F7517E9"
    components {
     Hierarchy "{71885F7B65F64751}" {
     }
    }
-   coords 0.9 0 0.2
-   angles 0 -15 0
+   coords 0.35 0.62 0.55
+   angles 0 8 0
   }
-  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
    ID "057D75047E182BBB"
    components {
     Hierarchy "{527F65E6D9F520D9}" {

@@ -1,0 +1,97 @@
+GenericEntity {
+ ID "7A55407AB7A4D49B"
+ components {
+  RplComponent "{38F01D55220CBD78}" {
+  }
+  Hierarchy "{684655A070207731}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{70F4AEC6D6641173}Prefabs/Structures/Military/CamoNets/US/CamoNet_Small_US.et" {
+   ID "E4DCD700382B78F9"
+   coords 0 0 0
+   angles 0 4 0
+  }
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "3030763E2786C879"
+   components {
+    Hierarchy "{79C05EABB5B65F40}" {
+    }
+   }
+   coords 0 0 -0.3
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "C333D7DD779F839D"
+   components {
+    Hierarchy "{C6734E5EE4333809}" {
+    }
+   }
+   coords -0.5 0.78 -0.3
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "27D2456C11BC4536"
+   components {
+    Hierarchy "{F9492C0AB4F72B8D}" {
+    }
+   }
+   coords -0.2 0.78 -0.35
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "76DE37C0AB40D870"
+   components {
+    Hierarchy "{2B10D1DC3610142E}" {
+    }
+   }
+   coords 0.5 0.78 -0.25
+   angles 0 12 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "BF0C18A390AAF266"
+   components {
+    Hierarchy "{D2AFD2D037456B30}" {
+    }
+   }
+   coords 0.3 0 -0.35
+   angles 0 2 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "9B635E3658EE59A9"
+   components {
+    Hierarchy "{F36B051FE38BD8DD}" {
+    }
+   }
+   coords 1.6 0 -1.2
+  }
+  GenericEntity {
+   ID "2DDAA827770D5082"
+   components {
+    SCR_AISmartActionSentinelComponent "{761B95132E0DA90A}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -1.0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{6EA170452F5989CA}" {
+    }
+   }
+   coords -0.3 0 0.6
+  }
+  GenericEntity {
+   ID "41D7EC9BED5C7F4C"
+   components {
+    SCR_AISmartActionSentinelComponent "{F0CD6D3B2CD974D8}" {
+     Tags {
+      "RZ_Work"
+     }
+     m_vLookPosition 0 1.6 -1.0
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{0FE34FE4C7F0CA91}" {
+    }
+   }
+   coords 0.6 0 0.6
+  }
+ }
+}

@@ -1,0 +1,55 @@
+GenericEntity {
+ ID "BC400BBABCCFA195"
+ components {
+  RplComponent "{E482EF7A97BEB122}" {
+  }
+  Hierarchy "{71FC48F6A17CB7F0}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "880B8A74FE921EDB"
+   components {
+    Hierarchy "{ED890B7FCC7183B3}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "3D7F094BB2BA479C"
+   components {
+    Hierarchy "{0B27ACA9412FA067}" {
+    }
+   }
+   coords 0.45 0.78 0.05
+   angles 0 6 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "47EFF9D0D32CA2F5"
+   components {
+    Hierarchy "{5355404036F0C2A7}" {
+    }
+   }
+   coords -0.7 0.78 0.05
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "9AB5FD869DA710A9"
+   components {
+    Hierarchy "{393F9A34C400B556}" {
+    }
+   }
+   coords 1.65 0 -0.1
+   angles 0 4 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "31D0AFB63E341DC7"
+   components {
+    Hierarchy "{4529011C82C77C20}" {
+    }
+   }
+   coords 1.65 1.0 -0.1
+   angles 0 -6 0
+  }
+ }
+}

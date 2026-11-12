@@ -4,11 +4,12 @@
     py tools/camp_kit/build.py [--index <resource index>]
 
 Writes Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et and Prefabs/ReforgerZ/Traces/<Name>.et
-(keeping an existing .meta, so the GUID stays), and on RZ_GameMode.et the camp-life kits (each piece's
-ring, use, count, seats and, from pieces.AT, where it stands by a building), the
+(keeping an existing .meta, so the GUID stays; a piece no longer in pieces.py has its files deleted),
+and on RZ_GameMode.et the camp-life kits (each plan entry's piece, ring, use, seats, its place and turn
+in the plan, the piece's footprint and, from pieces.AT, where it stands by a building), the
 smart-action waypoint and the composition slots of World > Traces > Kit. Each composition is an
 empty root with an RplComponent and a Hierarchy, its props as children, and its seats as direct
-children with an SCR_AISmartActionSentinelComponent.
+children with an SCR_AISmartActionSentinelComponent. A plan whose pieces overlap is refused.
 
 props.txt holds each prop's entity class, its ResourceName and "hier" when the prefab already has a
 Hierarchy component ("Class {GUID}path [hier]"). A prop that isn't in it is looked up in the resource
@@ -16,12 +17,12 @@ index (the Workbench plugin "ReforgerZ: Write resource index" writes $profile:RZ
 and added as GenericEntity: check it with "ReforgerZ: Dump prefabs and classes" and correct
 props.txt (docs/PC_SETUP.md).
 """
-import hashlib, os, re, sys, random
+import glob, hashlib, math, os, re, sys, random
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, HERE)
-from pieces import AT, C, KITS, TRACES  # noqa: E402
+from pieces import AT, C, FP, KITS, TRACES  # noqa: E402
 
 PROPS = os.path.join(HERE, "props.txt")
 GM = os.path.join(REPO, "Prefabs/ReforgerZ/Core/RZ_GameMode.et")
@@ -31,6 +32,8 @@ ANIM = {"sit": "SIT", "lean_l": "LEAN_LEFT", "lean_r": "LEAN_RIGHT", "smoke": "S
 USE = {"Sit": "SIT", "Work": "WORK", "Watch": "WATCH", "Gather": "GATHER", "Lean": "LEAN", "Sleep": "SLEEP", "Cook": "COOK", "Wash": "WASH", "Chop": "CHOP", "None": "NONE"}
 ROLE = {"c": "CENTRE", "i": "INNER", "a": "APPROACH", "e": "EDGE"}
 CR, LF = chr(13), chr(10)
+SEAT_PAD = 0.45      # a seated or standing person round a seat's spot, inside the footprint (a lean's 0.6)
+PLAN_GAP = 0.3       # pieces in a plan stand at least this far apart
 
 
 RNG = random.Random()
@@ -118,6 +121,88 @@ def piece_text(parts, props, index):
     return LF.join(L) + LF
 
 
+def num(v):
+    v = round(v, 2)
+    if v == int(v):
+        return str(int(v))
+    return ("%.2f" % v).rstrip("0")
+
+
+def rot(x, z, yaw):
+    """Piece space to its parent's, turned by yaw (degrees, clockwise from +Z, as the game's yaw)."""
+    a = math.radians(yaw)
+    return x * math.cos(a) + z * math.sin(a), -x * math.sin(a) + z * math.cos(a)
+
+
+def footprint(parts):
+    """The piece's footprint in its own space (min x, min z, max x, max z): every prop's box turned
+    by its yaw, and a person round each seat."""
+    xs, zs = [], []
+    for p in parts:
+        if p[0] == "p":
+            w, d = FP.get(p[1], (0.5, 0.5))[:2]
+            for cx, cz in ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2)):
+                rx, rz = rot(cx, cz, p[4])
+                xs.append(p[2] + rx)
+                zs.append(p[3] + rz)
+        else:
+            pad = 0.6 if p[4].startswith("lean") else SEAT_PAD
+            xs += [p[2] - pad, p[2] + pad]
+            zs += [p[3] - pad, p[3] + pad]
+    return min(xs), min(zs), max(xs), max(zs)
+
+
+def plan_quad(name, x, z, yaw, grow=0.0):
+    """A plan entry's footprint corners in the plan."""
+    x0, z0, x1, z1 = footprint(C[name][4])
+    q = []
+    for cx, cz in ((x0 - grow, z0 - grow), (x1 + grow, z0 - grow), (x1 + grow, z1 + grow), (x0 - grow, z1 + grow)):
+        rx, rz = rot(cx, cz, yaw)
+        q.append((x + rx, z + rz))
+    return q
+
+
+def separated(a, b):
+    """One of rectangle a's sides separates it from rectangle b."""
+    for i in range(2):
+        (ax, az), (bx, bz) = a[i], a[i + 1]
+        nx, nz = az - bz, bx - ax
+        pa = [p[0] * nx + p[1] * nz for p in a]
+        pb = [p[0] * nx + p[1] * nz for p in b]
+        if max(pa) < min(pb) or max(pb) < min(pa):
+            return True
+    return False
+
+
+def check_plans():
+    """Every kit's plan: known pieces, and no two footprints closer than PLAN_GAP."""
+    bad = []
+    for fac, place, _, plan in KITS:
+        quads = []
+        for name, x, z, yaw in plan:
+            if name not in C:
+                bad.append("%s %s: no piece named %s" % (fac, place, name))
+                continue
+            q = plan_quad(name, x, z, yaw, PLAN_GAP / 2)
+            for label, oq in quads:
+                if not separated(q, oq) and not separated(oq, q):
+                    bad.append("%s %s: %s at (%s, %s) overlaps %s" % (fac, place, name, num(x), num(z), label))
+            quads.append(("%s at (%s, %s)" % (name, num(x), num(z)), q))
+    if bad:
+        sys.exit("Plans refused:" + LF + LF.join(bad))
+
+
+def remove_stale():
+    """Pieces no longer in pieces.py: their prefab and .meta go (only the kits pointed at them)."""
+    keep = {os.path.normpath(os.path.join(REPO, "Prefabs/ReforgerZ/Dressing/%s/RZ_Dress_%s.et" % (C[n][0], n))) for n in C}
+    for path in glob.glob(os.path.join(REPO, "Prefabs/ReforgerZ/Dressing/*/RZ_Dress_*.et")):
+        if os.path.normpath(path) not in keep:
+            os.remove(path)
+            if os.path.exists(path + ".meta"):
+                os.remove(path + ".meta")
+            print("removed", os.path.relpath(path, REPO))
+
+
 def read_gm():
     s = open(GM, encoding="utf-8", newline="").read()
     return s, (CR + LF if CR + LF in s else LF)
@@ -132,16 +217,20 @@ def write_kits():
     s, nl = read_gm()
     rel = {name: "Prefabs/ReforgerZ/Dressing/%s/RZ_Dress_%s.et" % (C[name][0], name) for name in C}
     L = ["    m_aKits {"]
-    for fac, place, pieces in KITS:
+    for fac, place, _, plan in KITS:
         L += ['     RZ_DressingKit "{%s}" {' % gid(), "      m_eFaction %s" % fac, "      m_ePlace %s" % place, "      m_aPieces {"]
-        for entry in pieces.split(", "):
-            name, count, ring = entry.split()
-            seats = max(1, sum(1 for p in C[name][4] if p[0] == "s"))
-            L += ['       RZ_DressingPiece "{%s}" {' % gid(), '        m_sPrefab "%s%s"' % (guid_of(rel[name]), rel[name]), "        m_eRole %s" % ROLE[ring],
-                  "        m_eUse %s" % USE[C[name][1]], "        m_iCount %s" % count, "        m_iSeats %d" % seats]
+        for name, x, z, yaw in plan:
+            folder, use, role, intent, parts = C[name]
+            seats = max(1, sum(1 for p in parts if p[0] == "s"))
+            x0, z0, x1, z1 = footprint(parts)
+            L += ['       RZ_DressingPiece "{%s}" {' % gid(), '        m_sPrefab "%s%s"' % (guid_of(rel[name]), rel[name]), "        m_eRole %s" % ROLE[role[0].lower()],
+                  "        m_eUse %s" % USE[use], "        m_iSeats %d" % seats]
             if name in AT and place != "ROAD_POST":
                 L.append("        m_eAt %s" % AT[name].upper())
-            L.append("       }")
+            L.append("        m_vPlan %s 0 %s" % (num(x), num(z)))
+            if yaw:
+                L.append("        m_fPlanYaw %s" % num(yaw))
+            L += ["        m_vFootMin %s 0 %s" % (num(x0), num(z0)), "        m_vFootMax %s 0 %s" % (num(x1), num(z1)), "       }"]
         L += ["      }", "     }"]
     L.append("    }")
     block = nl.join(L)
@@ -174,6 +263,7 @@ def write_trace_kit(slots):
 
 
 def main():
+    check_plans()
     index = []
     if "--index" in sys.argv:
         path = sys.argv[sys.argv.index("--index") + 1]
@@ -184,6 +274,7 @@ def main():
         seed(rel)
         write_text(rel, piece_text(parts, props, index))
         write_meta(rel)
+    remove_stale()
     write_kits()
     slots = {}
     for slot, (name, parts) in TRACES.items():

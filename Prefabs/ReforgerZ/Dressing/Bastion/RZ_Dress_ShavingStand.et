@@ -40,30 +40,39 @@ GenericEntity {
    }
    coords 0.1 0.45 0.5
   }
-  GenericEntity : "{8AC23039E7EC0375}Prefabs/Props/Furniture/TowelRack_01.et" {
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
    ID "02E8CCDF9E032972"
    components {
     Hierarchy "{38591A41F363A509}" {
     }
    }
-   coords 0.8 0 0.15
+   coords 1.0 0 0.2
+   angles 0 -8 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "D6F55E5B473E6B72"
+   components {
+    Hierarchy "{B73D15A540EB5DFC}" {
+    }
+   }
+   coords 1.0 1.0 0.2
    angles 0 -8 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "D6F55E5B473E6B72"
+   ID "1AD043DF6AF83F8B"
    coords -0.4 0 0.4
   }
   GenericEntity {
-   ID "B73D15A540EB5DFC"
+   ID "A22EDC76A6F9D1BC"
    components {
-    SCR_AISmartActionSentinelComponent "{1AD043DF6AF83F8B}" {
+    SCR_AISmartActionSentinelComponent "{4B56C37370421FD0}" {
      Tags {
       "RZ_Wash"
      }
      m_vLookPosition 0 1.6 -1.1
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{A22EDC76A6F9D1BC}" {
+    Hierarchy "{EFEFC1AA5E2EFEFF}" {
     }
    }
    coords 0.05 0 1.1

@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "28209EE1245B4BE5"
+ components {
+  RplComponent "{E7F2E424DCD333FC}" {
+  }
+  Hierarchy "{313BB7CC06196F66}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8FB2845D48F4E02A}Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et" {
+   ID "89659C375BF758B5"
+   components {
+    Hierarchy "{25AAA55E018B2F67}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "D0F6938831B79A1C"
+   components {
+    Hierarchy "{9F0174170EC441CE}" {
+    }
+   }
+   coords 0.3 0.78 0.05
+   angles 0 10 0
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "1DC25873F4B25A43"
+   components {
+    Hierarchy "{CCAEC70A1253B77F}" {
+    }
+   }
+   coords -0.4 0.78 0.1
+  }
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+   ID "B389880F3DCD0D13"
+   components {
+    Hierarchy "{B70485D29CCD1820}" {
+    }
+   }
+   coords 1.35 0 -0.1
+   angles 0 12 0
+  }
+ }
+}

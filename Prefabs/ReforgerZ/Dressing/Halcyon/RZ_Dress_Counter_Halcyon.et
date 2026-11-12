@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "524A3C409E8D7939"
+ components {
+  RplComponent "{077F42F5EEC82226}" {
+  }
+  Hierarchy "{9E0011065F167C0F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
+   ID "F8CF4E1D840ECA0D"
+   components {
+    Hierarchy "{7D49B39FF66431F3}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "3896C48CB6549BFB"
+   components {
+    Hierarchy "{EE3B0541D30CA033}" {
+    }
+   }
+   coords -0.45 0.78 0.05
+   angles 0 8 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "41AE6F26C893D2E0"
+   components {
+    Hierarchy "{0D123CCDE5766F3B}" {
+    }
+   }
+   coords 0.4 0.78 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "65B00210B9842793"
+   components {
+    Hierarchy "{6565EB530C6B31F2}" {
+    }
+   }
+   coords 1.65 0 -0.1
+   angles 0 3 0
+  }
+ }
+}

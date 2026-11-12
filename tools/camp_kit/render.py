@@ -1,9 +1,9 @@
-"""Draws pieces.py and bases.py as a page you can open in a browser: the faction base plans, a camp
-concept per faction and a top-down plan of every piece.  Usage: py tools/camp_kit/render.py [out.html]
+"""Draws pieces.py and bases.py as a page you can open in a browser: the faction base plans, every
+kit's plan and a top-down plan of every piece.  Usage: py tools/camp_kit/render.py [out.html]
 (default tools/camp_kit/camp_plans.html)."""
 import math, os, sys, html
 sys.path.insert(0, os.path.dirname(__file__))
-from pieces import FP, C, CAMPS
+from pieces import FP, C, KITS, AT
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), 'camp_plans.html')
 
@@ -76,24 +76,40 @@ def piece_svg(parts, size=230):
     return "".join(g)
 
 
-def camp_svg(camp, size=520, span=62.0):
+def camp_svg(place, plan, size=520):
+    post = place == "ROAD_POST"
+    span = 30.0 if post else 62.0
     scale = size / span
     o = size / 2
     g = ['<svg viewBox="0 0 %d %d" class="camp" role="img">' % (size, size)]
-    for r in (8, 14, 22, 28, 34):
-        g.append('<circle class="ring" cx="%d" cy="%d" r="%.1f"/>' % (o, o, r * scale))
-    g.append('<path class="road" d="M %.1f 0 C %.1f %.1f, %.1f %.1f, %.1f %.1f"/>' % (o - 10, o + 6, o * 0.5, o - 4, o * 0.75, o + 2, o - 24 * scale))
-    for name, cx, cz, yaw in camp[2]:
+    if post:
+        g.append('<path class="road" d="M %.1f 0 L %.1f %d"/>' % (o, o, size))
+    else:
+        for r in (10, 20, 30):
+            g.append('<circle class="ring" cx="%d" cy="%d" r="%.1f"/>' % (o, o, r * scale))
+        g.append('<path class="road" d="M %.1f 0 C %.1f %.1f, %.1f %.1f, %.1f %.1f"/>' % (o - 10, o + 6, o * 0.5, o - 4, o * 0.75, o + 2, o - 24 * scale))
+    for name, cx, cz, yaw in plan:
         parts = C[name][4]
+        counter = AT.get(name) == "counter"
         for p in parts:
             if p[0] != "p":
                 continue
             x, z = rot(p[2], p[3], yaw)
-            g.append(shape_svg(p[1], cx + x, cz + z, p[4] + yaw, scale, o, o))
-        g.append('<text class="lbl" x="%.1f" y="%.1f">%s</text>' % (o + cx * scale, o - cz * scale - 9, html.escape(name.replace("_", " "))))
-    g.append('<text class="scale" x="10" y="%d">rings: 8 / 14 / 22 / 28 / 34 m from the centre &#183; road comes in from the top</text>' % (size - 10))
+            g.append(shape_svg(p[1], cx + x, cz + z, p[4] + yaw, scale, o, o, " counter" if counter else ""))
+        label = name.replace("_", " ")
+        if counter:
+            label = "counter (at the quartermaster)"
+        g.append('<text class="lbl" x="%.1f" y="%.1f">%s</text>' % (o + cx * scale, o - cz * scale - 9, html.escape(label)))
+    if post:
+        g.append('<text class="scale" x="10" y="%d">the road runs up the middle &#183; the barrier at the centre</text>' % (size - 10))
+    else:
+        g.append('<text class="scale" x="10" y="%d">rings: 10 / 20 / 30 m from the middle &#183; the front (the road in) at the top</text>' % (size - 10))
     g.append("</svg>")
     return "".join(g)
+
+
+PLACE = {"STRONGHOLD": "stronghold", "OUTPOST": "outpost", "SAFEHOUSE": "safehouse", "ROAD_POST": "road post"}
+FACTION = {"MILITARY": "Bastion", "BANDITS": "Red Hand", "SURVIVORS": "Haven", "INSTITUTE": "Halcyon"}
 
 
 FOLDERS = [("Bastion", "Task Force Bastion"), ("RedHand", "The Red Hand"), ("Haven", "The Haven"), ("Halcyon", "Halcyon"), ("Common", "Shared pieces")]
@@ -111,9 +127,10 @@ for name, (folder, use, role, intent, parts) in C.items():
 
 total = len(C)
 body = []
-body.append('<section class="camps"><h2>How a camp hangs together</h2><p class="lede">Concept plans for a stronghold of each faction, drawn from the same pieces. Today the script places pieces on rings by role; these show the looser layout to aim for, with pieces turned to each other and to the road rather than to the centre.</p><div class="campgrid">')
-for camp in CAMPS:
-    body.append('<figure class="campfig"><figcaption><h3>%s</h3><p>%s</p></figcaption>%s</figure>' % (camp[0], html.escape(camp[1]), camp_svg(camp)))
+body.append('<section class="camps"><h2>How a camp hangs together</h2><p class="lede">The plan of every kit, the game data itself (pieces.py, KITS). The game lays a plan down whole: on open ground turned to face the nearest road, by a building in its yard with the plan&#8217;s front against the wall (the approach pieces go to the road entries, the door pieces to the front door, no tents), at a road post beside the road. A piece that doesn&#8217;t fit is nudged a little or left out, never moved somewhere else. The counter stands wherever the quartermaster does.</p><div class="campgrid">')
+for fac, place, intro, plan in KITS:
+    title = "%s %s" % (FACTION[fac], PLACE[place])
+    body.append('<figure class="campfig"><figcaption><h3>%s</h3><p>%s</p></figcaption>%s</figure>' % (title, html.escape(intro), camp_svg(place, plan)))
 body.append("</div></section>")
 for folder, title in FOLDERS:
     body.append('<section><h2>%s <span class="count">%d pieces</span></h2><div class="cards">%s</div></section>' % (title, len(cards.get(folder, [])), "".join(cards.get(folder, []))))
@@ -205,6 +222,7 @@ svg{display:block;width:100%;height:auto;background:var(--paper2);border-radius:
 .seat circle{fill:var(--seat);stroke:var(--paper2);stroke-width:1.2}.seat line{stroke:var(--seat);stroke-width:1.6}
 [class^="k-"],[class*=" k-"]{stroke:rgba(0,0,0,.35);stroke-width:.6}
 .up{stroke-width:1.2;stroke:var(--ink)}
+.counter{stroke-dasharray:2 1.5;stroke:var(--accent);stroke-width:1}
 .k-wood{fill:var(--wood)}.k-cloth{fill:var(--cloth)}.k-metal{fill:var(--metal)}.k-sand{fill:var(--sand)}.k-tent{fill:var(--tent);opacity:.85}.k-fire{fill:var(--fire)}.k-board{fill:var(--board)}
 .k-paper{fill:#fff}.k-soil{fill:var(--soil)}.k-net{fill:var(--net);opacity:.45}.k-rubber{fill:var(--rubber)}.k-glass{fill:var(--glass)}.k-light{fill:var(--light)}.k-plant{fill:var(--plant)}.k-plastic{fill:var(--plastic)}.k-misc{fill:var(--misc)}
 .bases{display:grid;gap:26px}.faction{display:grid;gap:12px}.fname{font-size:1.5rem}.idea{margin:0;max-width:80ch}
