@@ -3,6 +3,7 @@
 #
 #   SERVER_DIR=... tools/runtime_test/run.sh [seconds]     # default 5400 (all missions, all questlines, then the route)
 #   SERVER_DIR=... tools/runtime_test/run.sh sites [arland] [everon] [cain]   # the site audit only (default arland)
+#   SERVER_DIR=... tools/runtime_test/run.sh tasks [arland] [everon] [cain]   # the task place audit only (default arland)
 #   EXTRA_ADDONS_DIR=...                                   # a folder holding the Workshop dependencies in addon.gproj
 #
 # The site audit (docs/SITES.md, "The audit"): "sites" boots each map's own world (a sub-scene with
@@ -14,6 +15,14 @@
 # Each boot runs in its own network namespace where it can (Linux, root), so it can run beside a full
 # test; Everon takes 10 to 20 minutes. The full test runs the same audit alongside its route (camp
 # life's kits are in its world too) and prints the summary.
+#
+# The task place audit (docs/PLACES.md, "The audit"): "tasks" boots the same worlds with the mod's own
+# game mode settings (RZ_GameMode.et's, places.py prepare; the mod's prefabs come along), waits for the
+# land grid, asks the game's own pickers for task places across the map (the openings' place roll and
+# every step it leads to, every errand way from a few givers each, the spawn points), checks each
+# against its need and its things (World/RZ_PlaceNeeds.c), prints "Places:" per kind of task and the
+# summary, and closes. It fails if a kind scores under the threshold (RZ_PlaceAudit.s_iThreshold).
+# Draw it: python3 tools/runtime_test/places.py draw <console.log>.
 #
 # Needs the server installed (tools/compile_check.sh installs it). Boots a sub-scene of Arland
 # with RZ_GameModeComponent on GameMode_Plain, vanilla stand-ins for the minimum prefab slots
@@ -48,6 +57,7 @@
 set -u
 MODE=full
 if [ "${1:-}" = "sites" ]; then MODE=sites; shift; fi
+if [ "${1:-}" = "tasks" ]; then MODE=tasks; shift; fi
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 HERE="$ROOT/tools/runtime_test"
 WORK="${WORK_DIR:-$HOME/rz_check}"
@@ -68,16 +78,54 @@ fi
 [ -n "$PY" ] || { echo "No Python 3 found (set PYTHON=...)"; exit 2; }
 
 [ "$MODE" = sites ] && ADDON="$WORK/sites_addons/ReforgerZ"
+[ "$MODE" = tasks ] && ADDON="$WORK/tasks_addons/ReforgerZ"
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
 sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"	# Special Zombies' "Scripts/" hides ours on Linux (see compile_check.sh)
 . "$ROOT/tools/strip_missing_deps.sh"	# on Linux, other dependencies missing from EXTRA_ADDONS_DIR too
 rz_strip_missing_deps "$ADDON/addon.gproj" "$SERVER" "${EXTRA_ADDONS_DIR:-}" || exit 2
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
-cp -r "$HERE/sites/." "$ADDON/"
+if [ "$MODE" = tasks ]; then
+	cp -r "$ROOT/Prefabs" "$HERE/sites/Worlds" "$HERE/sites/Missions" "$ADDON/"
+	cp -r "$HERE/tasks/." "$ADDON/"
+else
+	cp -r "$HERE/sites/." "$ADDON/"
+fi
 winpath() { if command -v cygpath > /dev/null 2>&1; then cygpath -w "$1"; else printf '%s' "$1"; fi; }
 DIRS="$(winpath "$(dirname "$ADDON")")"
 [ -n "${EXTRA_ADDONS_DIR:-}" ] && DIRS="$DIRS,$(winpath "$EXTRA_ADDONS_DIR")"
+
+if [ "$MODE" = tasks ]; then
+	"$PY" "$HERE/places.py" prepare "$ADDON" Worlds/RZSites_Arland/RZSites_Arland.ent Worlds/RZSites_Everon/RZSites_Everon.ent Worlds/RZSites_Cain/RZSites_Cain.ent || exit 2
+	WRAP=""
+	if command -v unshare > /dev/null 2>&1 && unshare -n true > /dev/null 2>&1; then
+		WRAP="unshare -n"
+	fi
+	FAIL=0
+	for MAP in ${*:-arland}; do
+		case "$MAP" in
+			arland) NAME=RZSites_Arland;;
+			everon) NAME=RZSites_Everon;;
+			cain) NAME=RZSites_Cain;;
+			*) echo "Unknown map $MAP (arland, everon or cain)"; exit 2;;
+		esac
+		TPROFILE="$WORK/tasks_profile_$MAP"
+		rm -rf "$TPROFILE"
+		( cd "$SERVER" && $WRAP timeout "${TIMEOUT:-3600}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$TPROFILE" \
+			-server "{7A1C2E3F4B5D6E90}Missions/$NAME.conf" -logStats 0 -maxFPS 30 -noBackend > /dev/null 2>&1 )
+		LOG="$(ls -td "$TPROFILE"/logs/logs_* | head -1)/console.log"
+		echo "== $MAP log: $LOG"
+		EXC="$(grep -c 'Virtual Machine Exception' "$LOG")"
+		echo "Script exceptions: $EXC"
+		[ "$EXC" != "0" ] && { FAIL=1; grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -10; }
+		"$PY" "$HERE/places.py" summary "$LOG"
+		grep -q "RZK done" "$LOG" || { echo "The audit didn't finish (see the log)"; FAIL=1; }
+		UNDER="$(sed -n 's/.*RZK done: \([0-9]*\) kinds under.*/\1/p' "$LOG" | head -1)"
+		[ -n "$UNDER" ] && [ "$UNDER" != "0" ] && { echo "FAILED: $UNDER kinds of task under the threshold"; FAIL=1; }
+		"$PY" "$HERE/places.py" draw "$LOG" "$WORK/task_places_$MAP.html"
+	done
+	exit $FAIL
+fi
 
 if [ "$MODE" = sites ]; then
 	"$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZSites_Arland/RZSites_Arland.ent Worlds/RZSites_Everon/RZSites_Everon.ent Worlds/RZSites_Cain/RZSites_Cain.ent || exit 2
@@ -138,5 +186,7 @@ grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
+echo "Place checks failed (live, docs/PLACES.md): $(grep -c '\[ReforgerZ\] Place check: ' "$LOG")"
+grep '\[ReforgerZ\] Place check: ' "$LOG" | sed 's/.*\[ReforgerZ\] /  /' | head -20
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 exit 0
