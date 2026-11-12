@@ -73,7 +73,7 @@ class RZ_StrangerHere
 	bool m_bOwnCar;			// the player's own car (else a wreck)
 	vector m_vFire;
 	vector m_vLine;			// the warning point
-	int m_iPost = -1;		// the road post of a crossroads
+	int m_iPost = -1;		// the road post of a crossroads (-1: a junction of two used roads)
 	int m_iWanderer = -1;	// whose route
 	string m_sFresh;		// the fresh signal's kind ("death", "bite", "hook:<kind>")
 	string m_sFreshText;
@@ -91,6 +91,10 @@ class RZ_StrangerVisit
 	vector m_vPos;
 	string m_sSpot;				// its cooldown key
 	int m_iHouse = -1;			// their house (or the one they're going to)
+	float m_fDeadAt = -1;		// the dealer's clock when they died (the robbery window)
+	int m_iPockets;				// what the body carried then
+	bool m_bRobbed;
+	float m_fUnseenWait;		// seconds waited to go out of sight
 	int m_iValue = -1;			// the routine's own number
 	vector m_vSubject;			// the routine's own place
 	string m_sSubject;
@@ -191,6 +195,9 @@ class RZ_Strangers
 	protected ref array<ref RZ_FoundHook> m_aHooks = {};
 	protected ref array<ref RZ_StrangerLater> m_aLater = {};
 	protected ref map<int, int> m_mGate = new map<int, int>();				// safehouse -> someone at the gate (1, 2 bitten)
+	protected ref map<int, vector> m_mJunction = new map<int, vector>();	// footfall cell -> its junction (zero: none)
+	protected static const float ROB_WINDOW = 120;
+	protected static const int ROB_INFAMY = 8;
 	protected ref map<string, int> m_mDealt = new map<string, int>();		// telemetry: dealt by spot kind
 	protected ref map<string, int> m_mHelped = new map<string, int>();		// telemetry: helped by routine
 	protected int m_iNextId = 1;
@@ -621,6 +628,10 @@ class RZ_Strangers
 			here.m_iKinds |= RZ_StrangerSpot.CROSSROADS;
 			here.m_iPost = post;
 		}
+		else if (JunctionNear(at))
+		{
+			here.m_iKinds |= RZ_StrangerSpot.CROSSROADS;
+		}
 
 		if (FreshNear(at, playerId, here))
 			here.m_iKinds |= RZ_StrangerSpot.FRESH;
@@ -664,6 +675,25 @@ class RZ_Strangers
 				here.m_vFresh = h.at;
 				return true;
 			}
+		}
+
+		// A live trace's place (Traces' L1 kill-site candle, L2 scorched doorway) counts as fresh
+		vector sceneAt;
+		string sceneKey;
+		if (RZ_ErrandCard.OnScene("L1", at, 400, sceneAt, sceneKey))
+		{
+			here.m_sFresh = "death";
+			here.m_sFreshText = "someone who died here lately";
+			here.m_vFresh = sceneAt;
+			return true;
+		}
+
+		if (RZ_ErrandCard.OnScene("L2", at, 400, sceneAt, sceneKey))
+		{
+			here.m_sFresh = "fire";
+			here.m_sFreshText = "a fire here lately";
+			here.m_vFresh = sceneAt;
+			return true;
 		}
 
 		return false;
@@ -778,6 +808,67 @@ class RZ_Strangers
 		}
 
 		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A junction of two used roads 80-300 m off (three road ends within 25 m of each other, the footfall
+	//! there a road people use), from the road network, cached per 250 m cell. VERIFY: reading junctions
+	//! from the road network (a junction's roads end at it).
+	protected bool JunctionNear(vector at)
+	{
+		int cell = CellKey(at);
+		vector j;
+		if (!m_mJunction.Find(cell, j))
+		{
+			j = FindJunction(at);
+			m_mJunction.Set(cell, j);
+		}
+
+		if (j == vector.Zero)
+			return false;
+
+		float d = RZ_Util.DistXZ(at, j);
+		return d >= 80 && d <= 300 && Footfall(j) >= ROAD_FOOTFALL;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static vector FindJunction(vector at)
+	{
+		RoadNetworkManager roads = RZ_Perimeter.GetRoadNetwork();
+		if (!roads)
+			return vector.Zero;
+
+		array<BaseRoad> found = {};
+		roads.GetRoadsInAABB(Vector(at[0] - 300, -1000, at[2] - 300), Vector(at[0] + 300, 10000, at[2] + 300), found);
+		array<vector> ends = {};
+		foreach (BaseRoad road : found)
+		{
+			if (!road)
+				continue;
+
+			array<vector> pts = {};
+			road.GetPoints(pts);
+			if (pts.Count() < 2)
+				continue;
+
+			ends.Insert(pts[0]);
+			ends.Insert(pts[pts.Count() - 1]);
+		}
+
+		foreach (vector e : ends)
+		{
+			int near = 0;
+			foreach (vector o : ends)
+			{
+				if (RZ_Util.DistXZ(e, o) <= 25)
+					near++;
+			}
+
+			if (near >= 3)
+				return e;
+		}
+
+		return vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -944,8 +1035,9 @@ class RZ_Strangers
 		if (prefab.IsEmpty() || !shared || !shared.CanSpawnBody(RZ_BodyBudget.STRANGER, v.m_vPos))
 			return false;
 
-		// VERIFY: the stranger stands at the spot itself; the design's out-of-sight point 60-90 m from the
-		// player (a door or a hedge line) needs a line-of-sight test
+		// Out of sight: 60-90 m from the player where nobody can see the spot (a building, a hedge, a fold
+		// of ground), else the spot itself
+		v.m_vPos = OutOfSight(v);
 		v.m_Body = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(v.m_vPos), Math.RandomFloat(0, 360));
 		if (!v.m_Body)
 			return false;
@@ -965,6 +1057,48 @@ class RZ_Strangers
 		m_mDealt.Set(spotName, n + 1);
 		RZ_Log.Info(string.Format("Errands: stranger %1 for %2 at %3 (%4)", v.m_Kind.m_sKey, RZ_Util.PlayerName(v.m_iAsker), RZ_SettlementScanner.GridReference(v.m_vPos), spotName));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A point 60-90 m from the asker, toward the spot and to either side, that no player can see (the
+	//! infected bodies' sight test: terrain, buildings and trees). The spot when none is. VERIFY: the
+	//! out-of-sight spawn (a physics trace from the eyes is stopped by buildings and hedges).
+	protected vector OutOfSight(RZ_StrangerVisit v)
+	{
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(v.m_iAsker);
+		if (!me)
+			return v.m_vPos;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		vector from = me.GetOrigin();
+		vector dir = v.m_vPos - from;
+		dir[1] = 0;
+		float len = dir.Length();
+		if (len < 1)
+			dir = Vector(1, 0, 0);
+		else
+			dir = dir * (1 / len);
+
+		vector side = Vector(-dir[2], 0, dir[0]);
+		array<float> offsets = {0, 0.6, -0.6, 1.2, -1.2};
+		foreach (float o : offsets)
+		{
+			vector way = dir + side * o;
+			float wl = way.Length();
+			if (wl > 0.01)
+				way = way * (1 / wl);
+
+			vector at = RZ_Util.GroundPos(from + way * Math.RandomFloat(60, 90));
+			if (RZ_Util.IsWater(at))
+				continue;
+
+			if (!RZ_InfectedBodies.InSight(at, players, true))
+				return at;
+		}
+
+		return v.m_vPos;
 	}
 
 	// ================================================================ Visits
@@ -1006,8 +1140,23 @@ class RZ_Strangers
 				gone = true;
 			}
 
+			// Robbed: a dead stranger's pockets emptied by someone standing over them (2 minutes)
+			if (v.m_fDeadAt >= 0 && v.m_Body)
+			{
+				Robbery(v, ids, players);
+				if (m_fClock - v.m_fDeadAt < ROB_WINDOW)
+					continue;
+			}
+
 			if (!gone)
 				continue;
+
+			// Removed out of sight: a living one who's done waits until nobody can see them (a minute at most)
+			if (v.m_Body && v.m_fDeadAt < 0 && v.m_fUnseenWait < 60 && RZ_InfectedBodies.InSight(v.m_Body.GetOrigin(), players, true))
+			{
+				v.m_fUnseenWait += dt;
+				continue;
+			}
 
 			RZ_Util.DeleteUnit(v.m_Body);
 			m_aVisits.Remove(i);
@@ -1020,6 +1169,8 @@ class RZ_Strangers
 	protected void Killed(RZ_StrangerVisit v)
 	{
 		v.m_bDone = true;
+		v.m_fDeadAt = m_fClock;
+		v.m_iPockets = CountPockets(v.m_Body);
 		int killer = RZ_Util.GetKillerPlayerId(v.m_Body);
 		if (killer <= 0)
 			return;
@@ -1031,6 +1182,50 @@ class RZ_Strangers
 		m_GM.AddInfamy(killer, f, 15, "killed a stranger", 0, "killed someone on the road");
 		m_mNext.Set(m_GM.GetProfile(killer).m_sIdentity, m_fClock + KILLED_PAUSE);
 		RZ_Log.Info(string.Format("Errands: stranger %1 killed by %2", v.m_Kind.m_sKey, RZ_Util.PlayerName(killer)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a body carries. VERIFY: telling that a body's inventory was taken (the item count falls).
+	protected static int CountPockets(IEntity body)
+	{
+		if (!body)
+			return 0;
+
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(body.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return 0;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		return items.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pockets went down with a player within 3 m: they robbed the dead. +8 Haven Infamy, once, and
+	//! no stranger for them for a real day.
+	protected void Robbery(RZ_StrangerVisit v, array<int> ids, array<IEntity> players)
+	{
+		if (v.m_bRobbed)
+			return;
+
+		int now = CountPockets(v.m_Body);
+		if (now >= v.m_iPockets)
+			return;
+
+		foreach (int i, IEntity p : players)
+		{
+			if (RZ_Util.DistXZ(p.GetOrigin(), v.m_Body.GetOrigin()) > 3)
+				continue;
+
+			v.m_bRobbed = true;
+			m_GM.AddInfamy(ids[i], RZ_EFaction.SURVIVORS, ROB_INFAMY, "robbed a dead stranger");
+			m_mNext.Set(m_GM.GetProfile(ids[i]).m_sIdentity, m_fClock + KILLED_PAUSE);
+			m_GM.NotifyPlayer(ids[i], "The Haven", "Someone will have seen you go through the pockets. Someone always does.");
+			RZ_Log.Info(string.Format("Errands: stranger %1 robbed by %2", v.m_Kind.m_sKey, RZ_Util.PlayerName(ids[i])));
+			return;
+		}
+
+		v.m_iPockets = now;
 	}
 
 	//------------------------------------------------------------------------------------------------

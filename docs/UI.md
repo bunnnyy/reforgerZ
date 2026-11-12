@@ -47,7 +47,7 @@ make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-62 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+63 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
@@ -55,7 +55,7 @@ transparent background, so the game can tint them. Every icon with its intended 
 |---|---|---|
 | Faction emblems | 6 | the Haven, Bastion, the Red Hand, Halcyon, the infected, the Long Table |
 | Standing tiers | 8 | Stranger, Known, Trusted, Champion (dog tags with 0–3 marks), Watched (an eye), Hunted (a crosshair), Kill on Sight (a crossed-out target), and one mixed mark for Uneasy, Tolerated, Respected and Wildcard |
-| Mission types | 7 | contract, world event, puzzle, leader job, unarmed, Perimeter, story arc |
+| Mission types | 8 | contract, world event, puzzle, leader job, unarmed, errand, Perimeter, story arc |
 | Map markers | 10 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, and the range ring. Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
 | Items | 18 | key, sample, antidote, stabiliser, low-grade med, noisemaker, battery, tyre, spark plugs, fuel can, wind-up radio, molotov, bandage, tin-can tripwire, spike trap, purification tablets, planks, jewellery |
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
@@ -207,7 +207,7 @@ the notebook closes, it goes back. *Simplified:* it's given at spawn by script r
 to each of the 13 loadouts, so it works with any loadout.
 
 **The journal's errands and detail.** A held errand is a journal row of its own (kind ERRAND, the
-unarmed icon until `mission_errand` is drawn): the giver as "by", where, the direction (to the
+`mission_errand` icon: a small parcel tied with string): the giver as "by", where, the direction (to the
 step's place, then back to the giver), the real minutes before it lapses, and what you said you'd
 do. Never on the map. Selecting any row asks the server for that row's **detail**
 (`RZ_PlayerUIComponent.AskDetail`, payload kind 10, `D|id|told|found|went`, at most 1,500
@@ -634,4 +634,4 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
 | Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the map icon layer (the map config override and **UI > Map icon layout** are set) and the map key (its layout is written, **UI > Map legend layout** not set yet); the subtitles; mouse clicks and the pad; the notice board menu and its ready-made notes; the chat commands; the spawn screen, its place picker and its side of locked backgrounds (**UI > Spawn row layout** not set yet; [above](#the-spawn-screen)) |
 | Not done | Images for the icons the scripts never swap (the radio channel list, the HUD's radio, noise and paused icons): they draw as flat squares in their colour |
-| Planned | The `mission_errand` icon (errand rows use `mission_unarmed`); a sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm; the cure finale's own screens: the journal's finale page and the lock card as a screen (today they're a desk's "How do things stand?" and the readout under each route's journal entry, and the lock card as a notice or the [Point of no return] node: [FINALE.md](FINALE.md#simplified-and-not-built-yet)) |
+| Planned | A sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm; the cure finale's own screens: the journal's finale page and the lock card as a screen (today they're a desk's "How do things stand?" and the readout under each route's journal entry, and the lock card as a notice or the [Point of no return] node: [FINALE.md](FINALE.md#simplified-and-not-built-yet)) |

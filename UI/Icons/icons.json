@@ -114,6 +114,12 @@
   "plate": false
  },
  {
+  "name": "mission_errand",
+  "category": "Mission types",
+  "use": "An errand you hold: a small parcel tied with string, someone's small ask",
+  "plate": false
+ },
+ {
   "name": "mission_perimeter",
   "category": "Mission types",
   "use": "A Perimeter mission: the drone line at the edge of the Zone",

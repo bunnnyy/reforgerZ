@@ -1,6 +1,6 @@
 # ReforgerZ icons
 
-The icon set for the ReforgerZ UI: 62 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
+The icon set for the ReforgerZ UI: 63 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
 
 - **Sources:** `src/<name>.svg`, hand-written, 64×64 viewBox, one colour (`currentColor`), 4-unit strokes, transparent background.
 - **Mono exports:** `png/64/` and `png/128/`, white on transparent so the game can tint them (`ImageWidget.SetColor`).
@@ -43,6 +43,7 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/mission_puzzle.svg" width="32"> | `mission_puzzle` | A puzzle mission: look closer, read the clues |
 | <img src="src/mission_leader.svg" width="32"> | `mission_leader` | A leader's personal job: someone wants a word |
 | <img src="src/mission_unarmed.svg" width="32"> | `mission_unarmed` | An unarmed mission: no guns, noise and wits |
+| <img src="src/mission_errand.svg" width="32"> | `mission_errand` | An errand you hold: a small parcel tied with string, someone's small ask. The journal's errand row |
 | <img src="src/mission_perimeter.svg" width="32"> | `mission_perimeter` | A Perimeter mission: the drone line at the edge of the Zone |
 | <img src="src/mission_arc.svg" width="32"> | `mission_arc` | A story arc mission: one chapter of a longer story |
 

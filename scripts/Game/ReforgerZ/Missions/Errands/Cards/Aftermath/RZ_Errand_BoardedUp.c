@@ -48,6 +48,16 @@ class RZ_Errand_BoardedUp : RZ_ErrandCard
 		if (!towns || !facts)
 			return false;
 
+		// On Traces' held-out house (V2) when one stands within 1.5 km: the boarded door is that one
+		vector sceneAt;
+		string sceneKey;
+		if (OnScene("V2", e.m_vGiver, 1500, sceneAt, sceneKey))
+		{
+			Place(e, sceneAt, "");
+			e.m_sSubject = "scene:" + sceneKey + ".boarded";
+			return true;
+		}
+
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
 			if (s.m_fInfection < 30 || RZ_Util.DistXZ(s.m_vCenter, e.m_vGiver) > 1500)

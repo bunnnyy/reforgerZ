@@ -3,8 +3,8 @@
 The small, personal jobs one named person asks of one player, each true because something in the
 world is true right now, and over the moment it stops being true. Contracts are the factions' work
 on the radio ([MISSIONS.md](MISSIONS.md)); questlines are the long stories
-([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. What's still to build is
-designed in [designs/ERRANDS.md](../designs/ERRANDS.md). In the epilogue week a few of the epilogue
+([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. Their design is built in full (simplified as the last section
+says). In the epilogue week a few of the epilogue
 deck's asks stand at the week's places instead of on the dealer: *Bring a cup* at the queue, *Read
 the names at supper* at a house, taking a name home ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)).
 
@@ -36,7 +36,7 @@ Server only, except the journal row.
 - [Board and radio asks](#board-and-radio-asks)
 - [Telemetry and the admin view](#telemetry-and-the-admin-view)
 - [Saving and performance](#saving-and-performance)
-- [Simplified, and not built yet](#simplified-and-not-built-yet)
+- [Simplified](#simplified)
 
 ## The idea
 
@@ -309,7 +309,7 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **The Trader's Detour** | lost, a Trader | his destination's town at 60+ infection, or a mission there | Scout his road ahead (20 s): 4 Haven Favor; he remembers you helped |
 | **The Deserter's Way Round** | line, the Deserter | he likes you, a Bastion road post within 1.5 km | Meet him past the post (10 s): 4 Haven Favor; helped. Turn him in at the post: 2 Bastion Fame, a rumour, a world record |
 | **Nothing Goes Out** | line, a Bastion named person | the perimeter sealed, a sealed checkpoint within 1.65 km, Bastion morale under 50 | Leave his letter under a stone at the warning point, 150 m short (5 s), read or not: 3 Favor; the world record `errand.letter_at_line` with its epilogue line (carrier: a prop) |
-| **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it); once per dead man, 3 times a life (not once a season) | The effects are a **carried item**: gathered at the wreck (15 s), only you or a helper can hand them in. Bring his things back: 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them at the fence: the jacket 3 and the photo frame 10 Red Hand Favor, a record "sold"; seen by the giver's people (the witness rule), +5 Infamy with them. A kit piece off a man you killed is refused (*"You'd know. You were there."*, +3 Infamy with his faction) |
+| **His Effects** | dead, any faction's named person (Bastion: The Locker; others: The Wreck's Name) | that faction's truck lost within 1.5 km in a season day (never to whoever robbed it), else Traces' truck wreck (L5, a driver's papers) or fallen post (V7, a soldier's tags) within 1.5 km; once per dead man, 3 times a life (not once a season) | The effects are a **carried item**: gathered at the wreck (15 s), only you or a helper can hand them in. Bring his things back: 5 Favor, 1 Fame; Bastion's boxes "for when the gates open" as an epilogue line. [Known: Red Hand] sell them at the fence: the jacket 3 and the photo frame 10 Red Hand Favor, a record "sold"; seen by the giver's people (the witness rule), +5 Infamy with them. A kit piece off a man you killed is refused (*"You'd know. You were there."*, +3 Infamy with his faction) |
 | **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name), or the fallout of a Distress Call or Survivors Trapped whose people died | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A fallout's **named body** at the job's site: take the ID (10 s, a carried item) and carry it in yourself: 4 Favor from the faction it names (a Red Hand crewman's: thanks only, crews don't bury their dead). A world record with an epilogue line (carrier: the board) |
 | **Not for the Crew** | crews, a Red Hand named person | a bite within 1 km in the last played hour, a Halcyon station within 1.5 km, before the cure | Walk him to the station: 4 Halcyon Favor, a world record. Your own antidote: 6 Red Hand Favor. Tell the book-keeper: 2 Red Hand Fame |
 | **Wildcard Money** | crews, a Red Hand named person | Wildcard or Tolerated with the Red Hand; another Red Hand holding within 1.5 km | Carry the cut there: 6 Favor; skim a little: 8 Favor; give it to a hungry house within 1.5 km: +2 food there, 2 Haven Fame, +8 Red Hand Infamy |
@@ -348,8 +348,8 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Notebook 31, after Lost Colleague** (the dead; fallout) | a Halcyon named person | Lost Colleague's fallout: he died where he hid | Bring back the coat and the notebook (15 s where he fell): 5 Favor, 2 Fame, the record `errand.notebook31` with an epilogue line (the authors' list). [Known: Red Hand] sell the notebook to the fence: 6 Red Hand Favor and a lie (+5 Halcyon Infamy when found). Keep it (a life record: its number is something to say at Halcyon's gate) |
 | **The Other Half** (help across lines) | any holding's named person; Known with their rival (the Red Hand's: Bastion; everyone else's: the Red Hand) | a holding of that rival within 1.5 km | Carry the threat word for word (5 s at their gate): 4 Favor, +2 Infamy with the rival. Soften it (Trust 2 with the rival): 4 Favor |
 | **The Drawing** (the Long Table) | the clerk; Known with the Haven | the Long Table broken up and the boy not lost (`table.broken`, not `table.boy_lost`) | Put it in the drawer, keep it, or burn it on the stove. No pay; the flag `errand.drawing` (1, 2, 3) and a record |
-| **Is She Gone?** (the infected) | a Haven named person | a pack within 1.5 km standing its vigil for a leader the house knew by name | Watch from the lair's edge, unseen (15 s): 4 Favor. [Elder] sit at supper while they say her name (a minute): 3 Favor, a record with an epilogue line |
-| **Boarded Up** (players' traces) | a Haven named person | a town within 1.5 km that nobody holds, at 30+ infection, with a player's barricade standing | Bring the family out (10 s): +1 at the house, 4 Favor. Leave a tin there: 3 Favor. *"Whoever boarded this, tell them it held."* (never the builder's name) |
+| **Is She Gone?** (the infected) | a Haven named person | a pack within 1.5 km standing its vigil for a leader the house knew by name (the watching place at Traces' kill-site candle, L1, when one stands within 600 m of the lair) | Watch from the lair's edge, unseen (15 s): 4 Favor. [Elder] sit at supper while they say her name (a minute): 3 Favor, a record with an epilogue line |
+| **Boarded Up** (players' traces) | a Haven named person | a town within 1.5 km that nobody holds, at 30+ infection, with a player's barricade standing; or Traces' held-out house (V2) within 1.5 km, first | Bring the family out (10 s): +1 at the house, 4 Favor. Leave a tin there: 3 Favor. *"Whoever boarded this, tell them it held."* (never the builder's name) |
 | **Old Habits** (backgrounds: Ex-Con) | a Bastion named person | a Red Hand camp within 1.5 km | Walk the wire and say where you'd come in (a minute at the gate): 5 Favor, 1 Fame. Tell him the wrong place: 3 Favor and a lie (+3 Bastion Infamy when found) |
 | **Names on the Call** (Bastion) | the radio operator | civilians sheltered at Bastion's posts this season (`bastion.sheltered`), a house within 1.5 km | Pin the list on the house's board (5 s there): 4 Favor |
 | **The Chalk on the Door** (the house) | the clerk | a town within 1.5 km with a work tally ([MISSIONS.md](MISSIONS.md#one-choice-jobs-and-work)) | Go and read the wall (15 s): 3 Favor. Say it's still true: 2 Favor and a lie |
@@ -433,12 +433,12 @@ still meets nobody; a stopped car is the exception), from facts the server alrea
 | Spot | What makes it one | When |
 |---|---|---|
 | A road people use | the 250 m **footfall** cell has had players in it a lot lately (a count of player passes on the 30 s tick, halving every 6 real hours; not saved), or a wanderer's leg runs through it | by day; at night only within 300 m of a fire or a held place |
-| A crossroads | 80–300 m from a road post, outside its barrier | any hour while the post stands |
+| A crossroads | 80–300 m from a road post, outside its barrier; or from a junction of two used roads (three road ends within 25 m in the road network, a road people use there) | any hour while the post stands; a junction any hour |
 | A wanderer's route | within 300 m of the leg a living wanderer is walking (where they are to where they're going) | while they walk it |
 | An approach | 100–800 m from a safehouse or a holding, outside its wire | any hour |
 | A campfire | within 60 m of a stove fire lit in the last 30 minutes, or a Red Hand road post's brazier | after dark (a stove fire: while it's fresh) |
 | A stopped car | your own car, stopped 20 s with you out of it (the stranger walks up 60–90 m off), or a wreck within 150 m of a road people use | your car any hour; wrecks by day |
-| A fresh event | within 400 m of a death, bite, fire or shelling in the last 2 played hours, or a found hook | while fresh |
+| A fresh event | within 400 m of a death, bite, fire or shelling in the last 2 played hours, a found hook, or a live trace's place (Traces' kill-site candle, a scorched doorway) | while fresh |
 | A town edge at dusk | within 100 m of a settlement's edge | at dusk; fog counts as dusk |
 | Their own place | the place the routine's Why names (Seed Potatoes' farm in an empty village) | by day |
 | The line | within 300 m of the 150 m warning point of a sealed checkpoint | while the Zone is sealed |
@@ -457,7 +457,11 @@ town edge.
 until you're 150 m away; a way that asks you to go somewhere or stay a while waits 10 minutes wherever
 you are. Only the one they called to, or their group, can answer. They pay nothing, a line, one common
 find from their pocket (a House find), or the house's few Favor through the small-pay ledger; one you
-help may become a [local](#locals). **Shooting at one** (firing within 25 m of a stranger with no infected within 40 m of them) costs +4
+help may become a [local](#locals). **Where they stand**: 60–90 m from you, toward the spot or to either
+side, somewhere no player can see (a building, a hedge, a fold of ground: the infected bodies' sight
+test); with no such point, the spot itself. Done, they go only once nobody can see them (a minute at
+most). **Robbing one**: a dead stranger's body stays 2 minutes; its pockets emptied with a player
+within 3 m is +8 Haven Infamy for them, and no stranger finds them for a real day. **Shooting at one** (firing within 25 m of a stranger with no infected within 40 m of them) costs +4
 Infamy with their people, once, and they run. **Killing one** costs what killing a wanderer costs (+15 Infamy with
 their people: the Haven's, or the Red Hand's for a crew lad), and no stranger finds the killer for a
 real day.
@@ -465,13 +469,13 @@ real day.
 | Stranger | Spots | Why | Ways |
 |---|---|---|---|
 | **Up on the Roof** (was Rooftop Rescue) | a fresh event; a town edge | a town the infected took, or a fresh shelling or fire, within 800 m | Talk them down when no infected is within 25 m: +1 at the nearest house, 4 Haven Favor, a local. Or leave them |
-| **The Last Tin** | a road; an approach; a route | you carry 2+ food, a house within 1.5 km on half portions; never to the face on the notice | Give him a tin: a true tip (which way the nearest lot walks at dusk), and he's a local at his gate. Trade two tins for his watch (a common find). Or not today |
+| **The Last Tin** | a road; an approach; a route | you carry 2+ food, a house within 1.5 km on half portions; never to the face on the notice | Give him a tin: a true tip (which way the nearest lot walks at dusk), and he's a local at his gate. Trade two tins for his watch (a real wristwatch, **Props > Watch**; empty, a common find). Or not today |
 | **The Funeral for the Car** | a stopped car (a wreck) | by day, a wreck near a town nobody lives in | Push it into the ditch with him (10 s, 8 heat): 3 Haven Favor. [Mechanic] *"It's not dead. It needs a battery."*: he goes to tell the Mechanic. Siphon it first; he lets you |
 | **Which Way's Morton** | a road; a route | she's walking to a house 600 m–1.5 km on, with a road post or a lot's ground between | Point her round (+1 at the house). Walk her past it (500 m): +1, 3 Haven Favor, a local. Tell her the toll's cheap: a lie found when someone the Haven knows passes the post |
 | **Behind the Door** | a town edge at dusk | the town is the infected's | Walk them out toward the house now (600 m; a gate bangs on the far side of town and draws the infected there): +1, 3 Haven Favor, a local. Come back at dawn: if you're back within 40 m between 05:00 and 08:00, they come out (+1, 3 Favor). Or leave them food |
 | **Two in the Back** | a stopped car (a wreck) | by day, a house within 1.5 km | [Mechanic] fix it (a minute), give a battery, or push-start it downhill (30 s, 6 heat): they drive home, 3 Haven Favor, the father a local |
 | **The Digger** | a fresh event (a death) | a death within 400 m in the last 2 played hours | Help her dig (30 s, 4 heat; [Elder] says the words): 3 Haven Favor, a local. Tell her who it was (the death's description, never a player's name). Take the dead's things: she sees (+3 Haven Infamy), and you get one find |
-| **Still Walking** | an approach, at dusk | a man was walked out and let walk on (`walk.out`) in the last season day; never while the Edge of Town runs | Point him to the lab, walk him toward it (600 m), or sit with him until it's dark (2 min; [Nurse or Doctor] 1). Pays nothing |
+| **Still Walking** | an approach, at dusk | a man was walked out and let walk on (`walk.out`) in the last season day; never while the Edge of Town runs | Point him to the lab, walk him toward it (600 m), or sit with him until it's dark (2 min; [Nurse or Doctor] 1). Pays nothing. He gets the trial dose: his note on the nearest house's board, signed (*"I'm still walking, and I'm told that's the point."*) |
 | **Warm Hands** | a campfire, after dark | — | Let him sit 5 real minutes: one true thing from the road (a lot that fed last night, their habit, a town gone bad). Give him a tin: a local at his house. Or send him off |
 | **Seed Potatoes** | their own place, by day | an empty village within 1 km of the infected's ground or a town they hold, a house within 1.5 km | Dig his sack up (10 s, 6 heat): +2 food at the house, 4 Haven Favor. Say it was gone (the sack goes to the fence for you: 4 Red Hand Favor) and it's a lie. Or not your business |
 | **Checkpoint Manners** | a crossroads (a Bastion post) | a Haven family with the post between them and their house, a rifle part in a tea towel | [Known: Bastion] say they're with you (+1, 3 Haven Favor). Walk them round the post (+1, 3 Favor). Hand the bundle in (+1, 2 Bastion Favor). A rumour later: the Red Hand bought something "for the rabbits" |
@@ -490,11 +494,11 @@ holds the ground near there, maybe wrong now ([TRACES.md](TRACES.md#errands-old-
 read once by whoever passes within 30 m, at their own level; nobody asks anything. With Traces off,
 or no town near the site, it holds no old mark.
 
-*Simplified:* a stranger stands at the spot itself rather than at an out-of-sight point 60–90 m off
-(VERIFY); a crossroads is a road post's surroundings, not every junction; a campfire is a stove fire or
-a crew's brazier at a road post (players have no campfire of their own); robbing or shooting at a
-stranger has no rule of its own (only killing one); escorts are a walk to a point, the stranger going
-on as data; Still Walking's *"a board note at his house later"* and the dose are words only.
+*Simplified:* a campfire is a stove fire or a crew's brazier at a road post (players have no campfire
+of their own); escorts are a walk to a point, the stranger going on as data. Engine checks (VERIFY):
+the out-of-sight point (a physics trace from the eyes stopped by buildings and hedges), reading
+junctions from the road network (a junction's roads end at it), and a robbed body (its item count
+falls).
 
 ## Locals
 
@@ -595,7 +599,7 @@ found by events (a visit, a road, a rumour round, the next real reading).
 - **Cheap**: no map scans. A deal checks one giver's anchored definitions; steps are distance
   checks on the 5 s tick; faults, guards and call-outs run every 30 s.
 
-## Simplified, and not built yet
+## Simplified
 
 *Simplified:* a step's place is a point with no scene person (strangers are the only scene
 people); the lines have two or three variants each, not always three; a card dealt counts toward
@@ -603,5 +607,4 @@ the day's two even if declined; pay in kind is an effect, except a post's tagged
 and a carried item (errands hand out no doses, crates, kit or keys); a deferred pay waiting for its
 truck is runtime only (a restart forgets it); the goods' tag is a server-side list (VERIFY in
 [DESIGN.md](DESIGN.md#story-blocks)). The margin cards read the majors' waits (the run's stage), and the lock cards read
-the finale's lock (`RouteOfPlayer`). Not built yet: what
-[designs/ERRANDS.md](../designs/ERRANDS.md) lists (the journal row uses the unarmed icon).
+the finale's lock (`RouteOfPlayer`). The journal's errand row uses the `mission_errand` icon.

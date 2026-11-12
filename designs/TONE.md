@@ -31,7 +31,7 @@ in `Director/Epilogue/RZ_EpilogueText.c` (the epilogue session's).
 ## 4. Grey choices in missions
 
 The mechanics behind the grey test, all in `Missions/` (the mission-style session's), with
-[MISSION_STYLE.md](MISSION_STYLE.md):
+the story kit ([docs/DESIGN.md](../docs/DESIGN.md#story-blocks)):
 
 - **4.2 The payout spread:** the giver's way pays in full; the kindest option the least, with a world change
   and a deed; the option that hurts a third party more with one faction and a cost elsewhere; the clever way

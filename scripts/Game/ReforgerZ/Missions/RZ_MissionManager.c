@@ -734,7 +734,7 @@ class RZ_MissionManager
 
 	// ================================================================ The reason lane
 	//------------------------------------------------------------------------------------------------
-	//! Reasons (World/RZ_WorldMemory.c) start contracts (designs/MISSION_STYLE.md): when the world has
+	//! Reasons (World/RZ_WorldMemory.c) start contracts (docs/DESIGN.md, "Story blocks"): when the world has
 	//! posted a reason, one registered contract that answers it (RZ_MissionReasons) may start near its
 	//! subject, at most one every Reason lane gap server-wide, inside the contract cap and every check
 	//! (CanRunNow, someone online eligible, claims). Its brief opens with the reason's line. Random

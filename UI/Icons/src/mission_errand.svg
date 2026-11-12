@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<title>mission_errand</title>
+<path d="M12 26 L32 18 L52 26 V48 L32 56 L12 48 Z"/>
+<path d="M12 26 L32 34 L52 26"/>
+<path d="M32 34 V56"/>
+<path d="M22 22 L42 30 V38"/>
+<path d="M32 18 Q24 6 30 8 Q34 10 32 18 Q40 6 36 8"/>
+</svg>

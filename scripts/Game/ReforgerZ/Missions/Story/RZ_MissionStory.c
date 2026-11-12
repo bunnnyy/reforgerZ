@@ -1,4 +1,4 @@
-//! The mission style's framework (docs/DESIGN.md, "Story blocks"; wave 1 of designs/MISSION_STYLE.md):
+//! The mission style's framework (docs/DESIGN.md, "Story blocks"):
 //! a story kit any mission can carry (m_Story, null by default: a mission without one runs exactly as
 //! before), who took part and who may decide, who benefits (RZ_Mission_Choice is built on it), truths
 //! (the truth deck in RZ_WorldMemory), world records, and reasons: why a contract is offered now
@@ -441,7 +441,7 @@ class RZ_Party
 }
 
 //------------------------------------------------------------------------------------------------
-//! Who benefits (designs/MISSION_STYLE.md): 2-4 parties. The side you chose pays anyone with you whom
+//! Who benefits (docs/DESIGN.md, "Story blocks"): 2-4 parties. The side you chose pays anyone with you whom
 //! it doesn't hunt; a switch pays at most the base and its Fame doesn't count toward season Fame;
 //! the giver adds Infamy and its leader doesn't count it as help; everyone else who did the work is
 //! paid half the Favor by the giver, with no Fame and no Infamy. "Nobody" pays nobody.

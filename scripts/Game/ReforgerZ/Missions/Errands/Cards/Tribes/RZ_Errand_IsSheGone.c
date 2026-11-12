@@ -48,6 +48,12 @@ class RZ_Errand_IsSheGone : RZ_ErrandCard
 		dir[1] = 0;
 		float len = Math.Max(1, dir.Length());
 		Place(e, RZ_Mission.LandPointNear(t.m_vLair + dir * (130 / len), 0, 15), "");
+
+		// Near Traces' kill-site candle (L1) on the way, when one stands within 600 m of the lair
+		vector sceneAt;
+		string sceneKey;
+		if (OnScene("L1", t.m_vLair, 600, sceneAt, sceneKey))
+			Place(e, sceneAt, "");
 		e.SetText("lair", t.m_sPlace);
 		e.SetText("alpha", t.m_sAlphaName);
 		e.m_sSubject = "tribe:" + t.m_iId.ToString() + ".gone";

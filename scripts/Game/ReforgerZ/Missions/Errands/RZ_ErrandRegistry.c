@@ -202,6 +202,20 @@ class RZ_ErrandCard : RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A standing Traces scene of one of `kinds` ("V2", "L5,V7") within radius of pos (Traces' scenes:
+	//! a card anchored on one; Traces never deals an errand itself). Its spot and key; false if none.
+	static bool OnScene(string kinds, vector pos, float radius, out vector at, out string key)
+	{
+		at = vector.Zero;
+		key = "";
+		RZ_Traces traces = RZ_Traces.Get();
+		if (!traces || !traces.GetScenes())
+			return false;
+
+		return traces.GetScenes().SceneNear(kinds, pos, radius, at, key);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The card's own place and its words ({subject_place}).
 	static void Place(RZ_Errand e, vector at, string words)
 	{

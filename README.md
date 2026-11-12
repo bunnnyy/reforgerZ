@@ -187,8 +187,8 @@ their map's AI world and vanilla's world managers now; AI in play is still to te
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** what's left of the approved designs (talk, errands, the mission style, borrowed
-kit, reputation names and tone), built in the order of
+**Not built yet:** what's left of the approved designs (talk, borrowed kit, reputation names and
+tone), built in the order of
 [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7, simplified, its design
 done: the record and the fuller record, the hall's freeze, beats in full with notables and titles,
 carriers, the dose outlets, the queue and the lab gate as moving scenes, the grey choices, the
@@ -206,8 +206,11 @@ jobs with truths, lies and fallout, reputation's parley and settling up, lies an
 dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
 board and radio asks and errands' phase 4 cards; and phase 8's growth: the worked examples'
 remaining ways, the 16 one-choice jobs and 68 work rows, errands to 70 cards with the margin cards of all four majors, a Champion card per faction and
-the lock card,
-[MISSIONS.md](docs/MISSIONS.md)); borrowed kit's phases 2 and 3 (phase 8 in part: again looks, roll
+the lock card; then the mission style and errands in full: the other twenty story jobs on the story
+job's kit, talk scenes, services, mission goods, callbacks at the door, the majors' reasons, tricks in
+jobs, the packs' jobs, errand pay in kind, meals, the truck and carried items, His Effects in full,
+the dealer's context and the strangers' last rules,
+[MISSIONS.md](docs/MISSIONS.md), [ERRANDS.md](docs/ERRANDS.md)); borrowed kit's phases 2 and 3 (phase 8 in part: again looks, roll
 call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose it was, the
 nail list and Bastion's board, and the eight side jobs as errand cards; and its rest: cover details
 spoken as claim lines, the look's line on the HUD and the standing page, the look's last minuses, the
@@ -249,7 +252,7 @@ prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (dialogue, errands, the mission style, reputation names, tone) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (dialogue, reputation names, tone) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 

@@ -69,7 +69,7 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (62) from `UI/Icons/png/128/` into
+1. `py tools/icon_atlas.py` packs the white icons (63) from `UI/Icons/png/128/` into
    `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1024, eight 128-pixel cells to a row, in name
    order.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
@@ -83,8 +83,9 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
 steps 1 to 3 again. **To do now:** step 1 has been run for `marker_range` (the 62nd icon, the packs'
-range ring), so import the PNG again (step 2) and run step 3; until then the old atlas and imageset
-have no ring, and the cells after `marker_radio` would be off by one if only one of the two changed. With **Icon imageset** empty, the scripts leave every image as the layout has
+range ring) and `mission_errand` (the 63rd, the journal's errand row), so import the PNG again (step 2)
+and run step 3; until then the old atlas and imageset lack them, and the cells after them would be off
+if only one of the two changed. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -302,8 +303,7 @@ Frame JournalPage (root)
                                (first the selected row's detail: "What you've found", "Who it went to")
 ```
 
-An errand you hold is a row like any other (its icon `mission_unarmed` until `mission_errand` is
-drawn); no new widget.
+An errand you hold is a row like any other (its icon `mission_errand`); no new widget.
 
 Unlike the mockup, `DetailWhere` is one `Text` (the script fills both lines into it), not a big
 direction over a small area, and the brief's bar isn't tinted with the accent.

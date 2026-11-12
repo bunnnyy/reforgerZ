@@ -16,8 +16,9 @@ on their buildings, indoor scenes (behind a setting), camp life's own lamp, gene
 the clue registry, the finer triggers and one kit with the epilogue. Every prop and sound is an optional kit prefab; with the kit empty every
 trace still tells its story as text. Phase 0, the Workbench spike that settles decals, lights, loops
 and wrecks, is the author's ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)).
-Errands' dealer can anchor its designed cards on a standing scene (`RZ_Scenes.SceneNear`): that's
-errands' to wire ([designs/ERRANDS.md](../designs/ERRANDS.md)). Nothing here has been play-tested.
+Errands' cards anchor on standing scenes (`RZ_Scenes.SceneNear`; Traces never deals an errand itself):
+Boarded Up on V2, Is She Gone? near L1, His Effects on L5 or V7, and a stranger's fresh event at L1 or L2
+([ERRANDS.md](ERRANDS.md#the-cards)). Nothing here has been play-tested.
 
 Code: `World/Traces/` (`RZ_Traces.c` the owner, settings and kit, the epilogue's asks; `RZ_DoorMarks.c`
 the grammar; `RZ_DoorSlots.c` doors on the map; `RZ_FirstDays.c` Days 1–10 and the new canon;

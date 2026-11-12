@@ -51,11 +51,34 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 	{
 		RZ_Signal s = FreshSignal(TruckKind(e.m_iFaction), e.m_vGiver, 1500, RZ_SeasonClock.DayMinutes() / 60, e.m_iAsker);
 		if (!s)
-			return false;
+			return OnTrace(e);
 
 		e.m_vSubject = RZ_Util.GroundPos(Vector(s.x, 0, s.z));
 		e.m_sSubject = "wreck:" + RZ_SettlementScanner.GridReference(e.m_vSubject);
 		e.m_sValue = s.cause;
+		e.SetText("where_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
+		e.SetText("subject_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
+		if (e.m_iFaction == RZ_EFaction.MILITARY)
+			e.SetText("title", "The Locker");
+		else
+			e.SetText("title", "The Wreck's Name");
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No fresh loss: a Traces wreck (L5, a driver's papers) or a fallen post (V7, a soldier's tags)
+	//! within 1.5 km of the giver.
+	protected bool OnTrace(RZ_Errand e)
+	{
+		vector at;
+		string key;
+		if (!OnScene("L5,V7", e.m_vGiver, 1500, at, key))
+			return false;
+
+		e.m_vSubject = RZ_Util.GroundPos(at);
+		e.m_sSubject = "scene:" + key;
+		e.m_sValue = "";
 		e.SetText("where_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
 		e.SetText("subject_place", RZ_Util.DirectionText(e.m_vGiver, e.m_vSubject));
 		if (e.m_iFaction == RZ_EFaction.MILITARY)

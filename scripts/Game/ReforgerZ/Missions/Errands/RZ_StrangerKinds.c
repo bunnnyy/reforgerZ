@@ -285,7 +285,21 @@ class RZ_Stranger_Tin : RZ_StrangerKind
 			if (!TakeFood(s, v, playerId, user, 2))
 				return;
 
-			s.Gift(playerId, user);
+			// A real watch when Missions > Errands > Props > Watch is set, else a common find
+			ResourceName watch;
+			RZ_ErrandSettings es = RZ_ErrandSettings.Get();
+			if (es.m_Props)
+				watch = es.m_Props.m_sWatch;
+
+			IEntity item;
+			if (!watch.IsEmpty() && user)
+				item = RZ_Util.SpawnPrefab(watch, RZ_Util.GroundPos(user.GetOrigin()) + Vector(0, 0.3, 0));
+
+			if (item)
+				RZ_Util.InsertIntoInventory(user, item);
+			else
+				s.Gift(playerId, user);
+
 			s.Finish(v, playerId, "He unbuckles the watch slowly, like it's the last thing he owns. It might be. \"It runs fast. So does everything.\"", true);
 			return;
 		}
@@ -707,6 +721,7 @@ class RZ_Stranger_StillWalking : RZ_StrangerKind
 		if (option == 0)
 		{
 			s.Finish(v, playerId, "You point. He looks the way you point for a long time, then goes. The lab's gate lets a bitten, unarmed man through for the trial dose. He knows that now.", true);
+			Dosed(s, v);
 			return;
 		}
 
@@ -728,10 +743,28 @@ class RZ_Stranger_StillWalking : RZ_StrangerKind
 		if (option == 1)
 		{
 			s.Finish(v, playerId, "\"I can find it from here.\" He shakes your hand like a man at a station. He goes on.", true);
+			Dosed(s, v);
 			return;
 		}
 
 		s.Finish(v, playerId, "You sit. He talks about his garden, mostly. When it's dark he gets up, says \"Right,\" and walks toward the lab.", true);
+		Dosed(s, v);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! He got the trial dose at the lab's gate: a note on his house's board, in his hand.
+	protected void Dosed(RZ_Strangers s, RZ_StrangerVisit v)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int house = s.NearestHouse(v.m_vPos, 4000);
+		if (!gm || house < 0)
+			return;
+
+		string name = v.m_sSubject;
+		if (name.IsEmpty())
+			name = "the man with his sleeve rolled down";
+
+		RZ_StoryKit.BoardThanks(gm, gm.GetSafehouses().Get(house).m_vPos, "Got to the lab gate. They gave me the shot. I'm still walking, and I'm told that's the point.", name);
 	}
 }
 

@@ -1462,6 +1462,15 @@ route's chunk and `finale.came`; and the release's terms
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
 five routes are left out of the questlines' phase: they only start at the gate.
 
+**The story checks.** 150 s in, from the errands' tick (`RZT_Story.c`), the mission style's and
+errands' data paths run once: a truth kept for its subject, the check results, a record written and
+read, a callback queued and the door mark, a fallout dealt to its participant, the dealer's context
+cache, a lie found by its owner's tick, a talk scene's three options a node, mission goods' tag, the
+reasons the story jobs and the majors answer, and a free player never refused a route asset
+(`RZT story check: <name>: OK|FAILED (...)`, then `RZT story done: N checks OK, N FAILED`). An objection
+to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
+a play (§8).
+
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
 week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
 the tester bitten and dosed at the first outlet, and refused a second; two questlines begun and
@@ -1608,7 +1617,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **104** lines with the tag, all in the game scripts (one is the comment in
+There are **108** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1677,7 +1686,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
 | `Factions/RZ_CampLife.c:904` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
-| `Missions/Errands/RZ_Strangers.c:947` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
+| `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
+| `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
+| `Missions/Errands/RZ_Strangers.c:1188` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
+| `Missions/Errands/RZ_ErrandsDealer.c:260` | a local's labels set and cleared on its body as a knower comes and goes reach clients (the same labels for everyone near: per-player labels need an engine check) | A local shows to anyone near while a knower is there, as before |
+| `Missions/RZ_MissionGoods.c:6` | an item tagged as someone's goods keeps its entity through inventory moves, a body and a car's boot (the list holds entities, like the fence's bought list) | A tagged ration or carried item may count as ordinary food after a move; pay in kind can be left empty (**Props > Pay ration**) |
 | `Zombies/RZ_TribeProps.c:68`, `:348` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Zombies/RZ_TribeRest.c:987` | a dead leader's body withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stays where it fell through the vigil, and goes when it's inserted again at dawn | The body goes with the engine's usual cleanup; the vigil, its samples and its lines are unchanged |
 | `Zombies/RZ_TribeRest.c:1069` | with **Zombies > Tribes > Rival faction** set, Bacon's infected fight bodies moved onto a faction the faction manager makes hostile to theirs, mid-fight, during a staged Border Night | Nothing is seen fighting: the Border Night is heard, then found, as before. Leave **Rival faction** empty |
@@ -3249,6 +3262,23 @@ on the talk screen says why something wasn't dealt)
   options and the slots read Option 1 to Option 4.
 - [ ] A service (a Nurse at The Cache's scavenger, a Mechanic at the pilot's farmer): stay within 4 m
   for its seconds and the way passes; walk off and it ends.
+- [ ] Errand pay: at a Bastion post with **Props > Pay ration** set, one errand in three puts a ration in
+  your pack; handing it in as food at a house says *"These are ...'s."*; a house errand at a fed house
+  pays supper (some health back); with Bastion short of supplies, a post's pay waits for its truck
+  (`Errands: ...'s pay waits for the truck`), and comes when it arrives.
+- [ ] His Effects: the effects go in your pack at the wreck; a friend picking them up spoils it (+3
+  Infamy); selling them at the fence pays 3 and 10 Red Hand Favor; the card comes again for another
+  dead man, at most 3 a life.
+- [ ] Strangers: one appears 60–90 m off, out of sight (no pop-in), and goes once you can't see them;
+  a junction of two busy roads deals one; robbing a dead one's pockets (within 3 m) is +8 Haven Infamy.
+- [ ] A local you helped walks up as you pass their house (once a real day); their labels show only
+  while you (or someone who knows them) are within 100 m.
+- [ ] A lie found out: a Paranoid leader of that faction offers you no in-person job for 2 hours of
+  play; on your next life, that faction's next errand opens with "The last one who said that lied".
+- [ ] A major's act opening logs `Story: reason major.<key> posted`, and its margin card opens with the
+  act's line.
+- [ ] Tricks: a trick within 25 m of a leader's seat is refused; in a story job, a hidden participant
+  within 25 m of someone in the giver's kit breaks their look.
 - [ ] Each kit job once: its truth in the log, a read for the right background at its place, the tins
   way and the check way at its person, the end question's options by truth, and its record. A
   callback at the door (The Cache's family, the boy from Bust Out) turns up as a person beside you
