@@ -297,7 +297,8 @@ class RZ_TalkMenu : RZ_MenuBase
 			return;
 		}
 
-		Say(m_iSelected);
+		if (RZ_UIW.Now() - m_fRepliesAt >= CLICK_GUARD) // the same A press may have skipped the line (RZ_TalkSkip)
+			Say(m_iSelected);
 	}
 
 	//------------------------------------------------------------------------------------------------

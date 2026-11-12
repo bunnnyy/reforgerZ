@@ -870,7 +870,7 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
 | `RZ_TalkScroll` | none: the mouse wheel | right stick (vertical): what they say on the talk screen, when it's long | `MenuContext` |
-| `RZ_TalkSkip` | Space, or a click (left mouse button) | none: A (`MenuSelect`) skips their line on the talk screen | `MenuContext` |
+| `RZ_TalkSkip` | Space, or a click (left mouse button) | A (with `MenuSelect`, which also skips; the press that skips never says a reply) | `MenuContext` |
 | The talk screen's pages (vanilla `MenuTabLeft`/`MenuTabRight`) | Q/E, or a click on an arrow | LB/RB, the page back and on (round from either end) | `MenuContext` |
 | `RZ_MapLegend` | I | Y | `MapContext`: show or hide the map key on the full-screen map |
 | Kick free of a hold (vanilla `CharacterJump`, listened to only while held) | Space | the pad's jump button (A) | `IngameContext` |
