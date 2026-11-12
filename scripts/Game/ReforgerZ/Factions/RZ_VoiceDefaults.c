@@ -45,6 +45,7 @@ class RZ_VoiceDefaults
 		RadioTails(lines);
 		NewLifeRoutes(lines);
 		Week(lines);
+		Grey(lines);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -179,6 +180,37 @@ class RZ_VoiceDefaults
 		Line(lines, "halcyon.week.handed.2", HALCYON, "week", "", W, 16, "cure_held:nobody", "\"Handed over with full documentation. The documentation lit somebody's stove.\"");
 		Line(lines, "halcyon.week.handed.3", HALCYON, "week", "", J, 16, "cure_held:nobody", "\"The handover took four minutes. The paperwork took four days. Normal.\"");
 		Line(lines, "halcyon.week.handed.4", HALCYON, "week", "", W, 16, "cure_held:nobody", "\"Our compound, their hands. That's what compounds are for, the director says. To the wall, mostly.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Grey choices' shared beats (Missions/Story/RZ_Grey.c): the giver's people's reaction after a
+	//! one-choice job is settled (`reaction`, the third beat), the line to those who took part but
+	//! weren't with the decider (`else_call`), and nobody choosing (`nobody_chose`). Neutral on which
+	//! way it went: the job's own text says that.
+	protected static void Grey(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "haven.reaction.1", HAVEN, "reaction", "", P, 0, "", "Somebody will tell the house tonight. Somebody always does.");
+		Line(lines, "haven.reaction.2", HAVEN, "reaction", "", W, 0, "", "The council will have views. The council has views on soup.");
+		Line(lines, "bastion.reaction.1", BASTION, "reaction", "", P, 0, "", "\"Logged.\" The sergeant doesn't look up.");
+		Line(lines, "bastion.reaction.2", BASTION, "reaction", "", W, 0, "", "\"Noted. Command will be informed, if Command ever picks up.\"");
+		Line(lines, "redhand.reaction.1", REDHAND, "reaction", "", P, 0, "", "The book will hear about it. The book hears everything.");
+		Line(lines, "redhand.reaction.2", REDHAND, "reaction", "", J, 0, "", "\"Well. That's one way to do it. Not the cheap way.\"");
+		Line(lines, "halcyon.reaction.1", HALCYON, "reaction", "", P, 0, "", "\"Recorded.\" Someone will want to know why.");
+		Line(lines, "halcyon.reaction.2", HALCYON, "reaction", "", W, 0, "", "\"Interesting choice. We'll be writing that down.\"");
+
+		Line(lines, "haven.else_call.1", HAVEN, "else_call", "", P, 0, "", "Someone else made the call before you could. The house will hear their version.");
+		Line(lines, "bastion.else_call.1", BASTION, "else_call", "", P, 0, "", "Someone else gave the order. Your name isn't on it, either way.");
+		Line(lines, "redhand.else_call.1", REDHAND, "else_call", "", P, 0, "", "Someone else called it. The book has their name, not yours.");
+		Line(lines, "halcyon.else_call.1", HALCYON, "else_call", "", P, 0, "", "Someone else decided. The record shows their initials.");
+
+		Line(lines, "haven.nobody_chose.1", HAVEN, "nobody_chose", "", P, 0, "", "Nobody chose. It went the way it was always going to, and nobody thanked anyone.");
+		Line(lines, "bastion.nobody_chose.1", BASTION, "nobody_chose", "", P, 0, "", "Nobody gave the order, so the standing order stood.");
+		Line(lines, "redhand.nobody_chose.1", REDHAND, "nobody_chose", "", W, 0, "", "Nobody chose. The crew calls that a choice too, and bills it.");
+		Line(lines, "halcyon.nobody_chose.1", HALCYON, "nobody_chose", "", P, 0, "", "No decision was recorded. The default applies.");
 	}
 
 	//------------------------------------------------------------------------------------------------

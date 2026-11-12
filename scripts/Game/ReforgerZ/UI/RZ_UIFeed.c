@@ -640,7 +640,13 @@ class RZ_UIFeed
 		if (m_GM.HasLab() && m_GM.GetCure())
 		{
 			RZ_UILine lnS = new RZ_UILine("S");
-			lab = lnS.Add(m_GM.GetCure().Describe()).End();
+			// The lab door's sheet, a board of record (Missions/Story/RZ_Grey.c)
+			string labLine = m_GM.GetCure().Describe();
+			string sheet = RZ_RecordBoards.LabSheet();
+			if (!sheet.IsEmpty())
+				labLine = labLine + " " + sheet;
+
+			lab = lnS.Add(labLine).End();
 		}
 
 		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);

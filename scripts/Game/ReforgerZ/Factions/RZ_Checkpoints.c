@@ -608,6 +608,11 @@ class RZ_Checkpoints
 			else
 				m_GM.Say(playerId, title, post.m_eFaction, "\"You don't know us and we don't know you. That's a turn-round face.\"");
 
+			// The toll sign's tally, a board of record (Missions/Story/RZ_Grey.c)
+			string tally = RZ_RecordBoards.Tally();
+			if (!tally.IsEmpty())
+				m_GM.Say(playerId, title, post.m_eFaction, tally);
+
 			return;
 		}
 
@@ -625,6 +630,11 @@ class RZ_Checkpoints
 			if (!board.IsEmpty())
 				m_GM.Say(playerId, title, post.m_eFaction, board);
 		}
+
+		// The roster board, a board of record (Missions/Story/RZ_Grey.c)
+		string roster = RZ_RecordBoards.Roster();
+		if (!roster.IsEmpty())
+			m_GM.Say(playerId, title, post.m_eFaction, roster);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -682,6 +692,7 @@ class RZ_Checkpoints
 			return string.Format("\"%1 Favor. You've got %2. Walk round.\"", toll, had);
 
 		c.m_bCleared = true;
+		RZ_RecordBoards.NoteToll();
 		if (had == toll)
 			RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_SKINT);
 
@@ -1135,6 +1146,7 @@ class RZ_Checkpoints
 			if (hadFavor == toll)
 				RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_SKINT);
 
+			RZ_RecordBoards.NoteToll();
 			m_GM.NotifyPlayer(playerId, title, string.Format("You pay the toll: %1 Favor. A grin with too few teeth. \"Safe travels.\" %2 Favor left.", toll, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS)));
 			return;
 		}

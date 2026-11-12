@@ -90,7 +90,8 @@ and one way to end it: **research the cure.**
   Haven and Red Hand work and leaders' off-book jobs. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
   Some start because the world asked for them (a hungry house, a lost truck, a town gone bad), and
-  the choice missions pay fairly whichever side the result goes to.
+  the choice missions pay fairly whichever side the result goes to. Some givers leave one thing out of
+  the brief, a different thing each season; anyone at the scene can find it.
 - **Errands**: small, true jobs named people ask in person: the cook whose pot is thin, the
   sergeant whose relief is asleep in a car, the technician whose freezers are short of fuel, the
   Doctor on the road with a bitten stranger before dark. 34 routines at safehouses, posts, camps and
@@ -185,8 +186,8 @@ their map's AI world and vanilla's world managers now; AI in play is still to te
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** what's left of the approved designs (talk, errands, the mission style, borrowed
-kit, reputation names, tone, Traces and the infected), built in the order of
+**Not built yet:** what's left of the approved designs (errands, the mission style, Traces, the infected
+and the faction bases), built in the order of
 [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7, simplified, its design
 done: the record and the fuller record, the hall's freeze, beats in full with notables and titles,
 carriers, the dose outlets, the queue and the lab gate as moving scenes, the grey choices, the
@@ -213,7 +214,12 @@ majors' and the finale's hooks, the last week, kit marks kept across a restart,
 [REPUTATION.md](docs/REPUTATION.md#borrowed-kit)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank, and talk's
 rest: lies you're told, promises, claims in kit, barks, strangers, the open channel, the season
-record and titles, [DIALOGUE.md](docs/DIALOGUE.md)); the towns' crawlers, the loose ones, heat hordes from towns, the
+record and titles, [DIALOGUE.md](docs/DIALOGUE.md)), with the last of reputation's names and tone (Smoke,
+deed phrases for every job and ending, the standing page's word and verdict, one notice per approach, the
+quiet success, the epilogue week's jokes, grief for named people, the look lines outside a conversation,
+and the grey layer on missions: the reaction beat, nobody chose, the clever way closing the honest one,
+twelve givers who lie, callback deeds and boards of record, [WRITING.md](docs/WRITING.md),
+[DESIGN.md](docs/DESIGN.md#story-blocks)); their design files are done; the towns' crawlers, the loose ones, heat hordes from towns, the
 land grid, the tribes' daily life and hunts, their life cycle (succession, borders, splits, lair
 moves, new tribes, memory), the behaviour layer (with hearing, blood, shrieks, doors, reactions, the
 young's sprint and the close moves on the player's machine: the ankle grab's hold, the stagger, the
@@ -246,7 +252,7 @@ are optional kit prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, dialogue, errands, the mission style, reputation names, tone, traces, faction bases) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, errands, the mission style, traces, faction bases) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 

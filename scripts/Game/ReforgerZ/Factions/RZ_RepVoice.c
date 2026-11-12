@@ -736,6 +736,20 @@ class RZ_RepVoice
 			if (!aside.IsEmpty())
 				return aside;
 
+			// One time in three, a callback deed from this life, at most once a visit (a real day)
+			string callKey = seat + "|callback";
+			if (trees && RZ_Deeds.CallbackCount(p) > 0 && Math.RandomInt(0, 3) == 0)
+			{
+				int calledAt = trees.GetMemory().TopicAt(playerId, callKey);
+				if (calledAt <= 0 || RZ_SeasonClock.Now() - calledAt >= RZ_DialogueMemory.DAY)
+				{
+					trees.GetMemory().NoteTopic(playerId, callKey);
+					string called = RZ_Deeds.CallbackPhrase(p, Math.RandomInt(0, 3));
+					if (!called.IsEmpty())
+						return string.Format("\"You're the one who %1.\"", called);
+				}
+			}
+
 			// One time in three, the best thing they know you did
 			string best = p.m_aBestDeed[l.m_eFaction];
 			if (!best.IsEmpty() && Math.RandomInt(0, 3) == 0)

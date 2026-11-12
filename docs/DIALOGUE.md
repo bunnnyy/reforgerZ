@@ -214,7 +214,7 @@ system's caps.
 | `learn` | `learn:haven.list`, `learn:bastion.word:6h` | Something you now know (`knows:` keys): for the season, or a **passing fact** for that many real hours (32 at most) |
 | `rumour` | `rumour:"..."@6` | Gossip on the roads (the world's rumours) |
 | `call` | `call:slot:2`, `call:hand_in:2`, `call:toll`, `call:post_wave`, `call:standing` | Built behaviour, unchanged: the person's own reply N; the safehouse food hand-in for N items (paid as built); the Red Hand toll at this roadblock (Known or better, as built); this post lets you through once while it stands; what they make of you, in their voice |
-| `call` (more) | `call:season`, `call:look`, `call:declare_bite`, `call:caught_bite`, `call:distress`, `call:net_word`, `call:net_lost` | A leader's epilogue carriers, as built (the season at this seat; where to look); the safehouse's bite service, as built; a bite lie caught at a safehouse counts as caught hiding that bite; a distress caller sent to a house's gate; the word at the wire from Bastion's net; codes changed on an intruder ([The radio](#the-radio)). The lint holds each to its own speaker |
+| `call` (more) | `call:season`, `call:look`, `call:declare_bite`, `call:caught_bite`, `call:distress`, `call:net_word`, `call:net_lost`, `call:brief_public` | A leader's epilogue carriers, as built (the season at this seat; where to look); the safehouse's bite service, as built; a bite lie caught at a safehouse counts as caught hiding that bite; a distress caller sent to a house's gate; the word at the wire from Bastion's net; codes changed on an intruder ([The radio](#the-radio)); a giver's lie taken public ([DESIGN.md](DESIGN.md#story-blocks)). The lint holds each to its own speaker |
 | `decide` | `decide:all_in` | In a conversation with a `scene`: the pick waits 5 s for objections ([Several players](#several-players)), then writes the scene's record (who, which), once for the world |
 | `sway` | `sway:council.workers` | In a conversation with a `scene`: one contribution per player to a count its owner reads (`tally.<name>`) |
 | `offer` | `offer:leader_job` | A leader's personal job (the built Ask for work) |
@@ -723,7 +723,7 @@ always` (an ordinary lie, believable and never true).
 
 ## The conversations
 
-✅ 153 conversations, 334 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
+✅ 157 conversations, 346 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
 
 | Speaker | Conversations |
 |---|---|
@@ -731,7 +731,7 @@ always` (an ordinary lie, believable and never true).
 | Bastion leaders | The board on the wall (the roster: nobody is coming, they're all they have; [Soldier], [Police]; being signed on); whether Command ever answers |
 | Red Hand leaders | The book (the first line, Rudi, persuade to see your own page, which reads it out in the book's voice); why the hand is red |
 | Halcyon leaders | Why they're called the beaks ([Lab Technician], [Doctor], [Nurse]: the notebooks); how close the cure is (the other two); a field lead on the volunteers ("They're comfortable": a lie, with [Lab Technician], [Doctor], a persuade and an [Evidence] call-out to the room at the back) |
-| Every leader | The name, not the face (a new life greeted by the season's title, once); a lie found out, said at the next greeting, once |
+| Every leader | The name, not the face (a new life greeted by the season's title, once); a lie found out, said at the next greeting, once; what a brief left out, told or kept (a giver's lie you found, at any leader of that faction for a week: `leaders/briefs.rzd`, [DESIGN.md](DESIGN.md#story-blocks)) |
 | Haven leaders at a sitting | Every Name's first and second sittings: a persuade to sway the speaker's vote to an option on the table (one sway a sitting) |
 | The 8 wanderer roles | The Trader's prices; the Doctor's work ([Doctor], [Nurse]); where the Scavenger has been (persuade: is it true); why the Deserter left ([Soldier], [Police]); the Preacher's bells; the Courier's letters; what still runs ([Mechanic]); the Kid's name; the Scavenger's clean chemist's (a lie for a tin, [Hunter] or [Police] see through it, [Evidence] once the Doctor tells you, and a callback greet 6 hours on); the Doctor on the chemist's and on Halcyon's back room (the truths); what Bastion makes of you, as the Deserter reads it |
 | Occupants | A fed house (leave a tin: 2 Haven Favor); the candle in the window after a death (a greet, and a topic: staying for the name is remembered 6 hours on); the bear on the door; who gets the bed by the stove (a short house: a public scene per house that someone Known with the Haven decides, with a sway for the room); a short house's promise of two tins (kept by the hand-in, with greets for kept and broken) |

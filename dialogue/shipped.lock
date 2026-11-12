@@ -17,6 +17,11 @@ bark.occupant.short
 bark.occupant.supper
 bark.wanderer.kid
 bark.wanderer.scavenger.back
+bastion.leader.brief_lie
+bastion.leader.brief_lie/@back
+bastion.leader.brief_lie/@back1
+bastion.leader.brief_lie/@keep
+bastion.leader.brief_lie/@tell
 bastion.leader.command
 bastion.leader.command/@back4
 bastion.leader.command/@other4
@@ -153,6 +158,11 @@ halcyon.leader.beaks/@back2
 halcyon.leader.beaks/@notebook
 halcyon.leader.beaks/@other
 halcyon.leader.beaks/@scrub
+halcyon.leader.brief_lie
+halcyon.leader.brief_lie/@back
+halcyon.leader.brief_lie/@back1
+halcyon.leader.brief_lie/@keep
+halcyon.leader.brief_lie/@tell
 halcyon.leader.lied
 halcyon.leader.name
 halcyon.leader.numbers
@@ -167,6 +177,11 @@ haven.leader.bear/@back2
 haven.leader.bear/@eye
 haven.leader.bear/@mine
 haven.leader.bear/@other
+haven.leader.brief_lie
+haven.leader.brief_lie/@back
+haven.leader.brief_lie/@back1
+haven.leader.brief_lie/@keep
+haven.leader.brief_lie/@tell
 haven.leader.lied
 haven.leader.list
 haven.leader.list/@crossed
@@ -429,6 +444,11 @@ redhand.leader.book/@look
 redhand.leader.book/@mine
 redhand.leader.book/@other
 redhand.leader.book/@rudi
+redhand.leader.brief_lie
+redhand.leader.brief_lie/@back
+redhand.leader.brief_lie/@back1
+redhand.leader.brief_lie/@keep
+redhand.leader.brief_lie/@tell
 redhand.leader.haven_sitting
 redhand.leader.haven_sitting/@back
 redhand.leader.lied

@@ -1511,6 +1511,14 @@ class RZ_Safehouses
 			}
 		}
 
+		// The council's pinned notes, a board of record (Missions/Story/RZ_Grey.c), in the season
+		if (!weekLine)
+		{
+			string pinned = RZ_RecordBoards.Council();
+			if (!pinned.IsEmpty())
+				mood += "\n" + pinned;
+		}
+
 		// A short house jokes about the soup, the potatoes and the chores more, never about who eats,
 		// and not at all in the 30 minutes after a death there (the voice bank's grief)
 		if (h.m_bShort && !weekLine)

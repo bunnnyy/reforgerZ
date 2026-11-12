@@ -2064,7 +2064,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 153 conversations, 334 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 157 conversations, 346 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2088,7 +2088,7 @@ laid a pack's leader down`, `Reputation: <player> threw a smoke`, `Reputation: t
 voice <mood> faction N: radio [...] face [...]` (Voice > Force mood cycled).
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
-`Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
+`Story: lie <key> caught now by <speaker>`. Givers who lie: `Story: brief <key> leaves something out (version N)` (or `is honest this season`), `Story: brief <key>'s truth found by <player>`, `Story: brief <key>'s lie made public by <player>`. Grief: `Voice: grief for <name>, the <role> at <place>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
 `Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join (N Fame, N Favor)`,
@@ -2670,6 +2670,19 @@ when it happens)
   potato joke; none for 30 minutes after a death in that house.
 - [ ] The epilogue week (Trees on): visit a stronghold leader twice in one real day: the second visit
   sometimes opens with a joke for the ending (none with no cure, except the Red Hand's).
+- [ ] Givers who lie: take Learning the Drones (or any of the twelve, docs/MISSIONS.md) until the log
+  says `leaves something out`; stand 15 s at its spot: the truth comes, and anyone within 30 m hears
+  it; finish it: the outcome names it. With Trees on, a Red Hand leader then has "Tell the crew what
+  the job left out."; telling costs the Red Hand 1 morale once, and the topic goes.
+- [ ] A one-choice job (Checkpoint Duty): the decider's group gets the giver's reaction after the
+  outcome; another player who took part but stood apart gets "Someone else made the call..."; let
+  the 90 s run out once: "Nobody gave the order, so the standing order stood." Press someone in Fight
+  Pit before the choice: "Fight it out" refuses.
+- [ ] Callback deeds (Trees on): after a one-choice job, visit a leader on another day: one time in
+  three "You're the one who decided ...".
+- [ ] Boards of record: after Await Relief's call, a Bastion road post's speaker adds the roster board;
+  pay a Red Hand toll and the roadblock's speaker shows the tally; a safehouse's Ask how things are
+  shows the council's pinned notes once the house rule is set.
 - [ ] Quiet success: Cargo's driver, Threaten him, with 40+ Red Hand Infamy this life: he talks and the
   next stage's camp isn't on guard; with none, the built line ("you can guess who he's running to
   tell").

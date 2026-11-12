@@ -9,8 +9,7 @@ errands' core, the mission style's framework, the world memory's writers; the mi
 grid in use, the agent budget, which is also the one body budget; the tribes and the behaviour layer; their life cycle;
 the people's side: words, knowing, the packs' contracts and events, the cure's hooks, the last week; the great one, signs and
 sounds; the behaviour layer's rest and the close moves on the player's machine) are in code; they
-live in `docs/`. So are talk and reputation's names, and the last pieces of tone: its file keeps only
-what waits for an engine check or another session's code.
+live in `docs/`. So are talk, reputation's names and tone: their design files are done and gone.
 
 - **Designs are not docs.** Built behaviour is always described in `docs/` ([the Doc map](../CLAUDE.md#doc-map)).
   A design file only says what's designed, and never describes built behaviour.
@@ -25,7 +24,6 @@ what waits for an engine check or another session's code.
 | File | What it covers | Build step ([PLAN.md](PLAN.md#the-build-order)) |
 |---|---|---|
 | [PLAN.md](PLAN.md) | The one combined plan: the shape of a season, the epilogue week, one owner per thing, the shared engine, the build order, the author's decisions, the 50 conflicts, risks and where each design lands in `docs/` | All steps; step 0 runs now |
-| [TONE.md](TONE.md) | Only the grey-choice mechanics in missions (the payout spread, givers who lie, failure as a branch, weighted deeds, the shared server). Everything else is built ([docs/WRITING.md](../docs/WRITING.md)) | Built; the grey-choice mechanics are next |
 | [MISSION_STYLE.md](MISSION_STYLE.md) | What's left of the mission style (the rest is built: [docs/DESIGN.md](../docs/DESIGN.md#story-blocks), [docs/MISSIONS.md](../docs/MISSIONS.md)): the other 20 story jobs, talk scenes' nodes and speaker, trade's services and mission goods, a Paranoid giver's sulk, a callback at the door, the majors' reasons, the tribes' contracts on the kit, Tier 0's missing tags, the disguise tricks (a breaker, a trick that lasts), the runtime test's story checks | Phase 5 (the other story jobs) |
 | [ERRANDS.md](ERRANDS.md) | What's left of errands (the rest is built: [docs/ERRANDS.md](../docs/ERRANDS.md)): the dealer's context cache, factors and locals coming to you, pay in kind's rest, strangers' out-of-sight spawn, crossroads and robbery (each a VERIFY), the run-ups, locals near their knowers and at their spots, His Effects in full, the named body, the errand icon | Not scheduled: growth |
 | [INFECTED.md](INFECTED.md) | What's left of the tribes and crawlers (built: [docs/INFECTED.md](../docs/INFECTED.md)): the model's small rules, the call's and the hunt's rest, day parties, bodies, scouts' posts, the jobs' rest, the behaviour layer's untested levers, the epilogue reading the last week's beats, the rename table | Tribes phases 1 to 5, their rest, the questline hooks and the behaviour layer's small rules built; these not yet scheduled (the levers after a client check) |

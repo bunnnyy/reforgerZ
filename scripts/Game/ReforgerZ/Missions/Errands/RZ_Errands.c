@@ -2263,6 +2263,11 @@ class RZ_Errands
 			m_mCounters.Set("house." + e.m_iHouse.ToString(), Counter("house." + e.m_iHouse.ToString()) + 1);
 
 		EndFallout(e);
+		// A light callback deed (Core/RZ_Deeds.c): at most four of the twelve
+		RZ_PlayerProfile doer = m_GM.FindProfile(e.m_iAsker);
+		if (doer && !e.m_sGiverName.IsEmpty())
+			RZ_Deeds.Callback(doer, "errand." + e.m_Def.m_sKey, "did " + e.m_sGiverName + " a favour", RZ_Deeds.LIGHT);
+
 		Count(e.m_Def.m_sFamily).done++;
 		RZ_Log.Info(string.Format("Errands: %1 done by %2, way %3 (%4), with %5 helper(s)", e.m_Def.m_sKey, RZ_Util.PlayerName(e.m_iAsker), w.m_iIndex, w.m_sWay, e.m_aHelpers.Count()));
 		End(e, "done");

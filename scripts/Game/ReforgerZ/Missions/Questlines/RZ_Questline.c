@@ -658,6 +658,11 @@ class RZ_Questline
 			return;
 
 		int playerId = gm.GetQuestlines().OnlineId(ident);
+		// An ending is a heavy callback deed this life (a page, a betrayal, a person's fate)
+		RZ_PlayerProfile endedBy = gm.FindProfileByIdentity(ident);
+		if (endedBy && !deed.IsEmpty())
+			RZ_Deeds.Callback(endedBy, "ending." + deed, deed, RZ_Deeds.HEAVY);
+
 		if (playerId > 0)
 		{
 			gm.AddFame(playerId, faction, fame, false, 0, deed);

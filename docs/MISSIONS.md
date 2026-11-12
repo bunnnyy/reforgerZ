@@ -161,6 +161,26 @@ for two of them: +5 infection in an empty town 0.4–3 km off), past Bastion's n
 Red Hand's nearest camp within 3 km (that side's morale −2, +4 Infamy with it to those with the
 decider). A side with no holding near is an empty town instead. Every answer is grey.
 
+### Givers who lie
+
+✅ Twelve briefs may leave one thing out, the version picked once a season (one of them honest);
+how it's found and taken public is [DESIGN.md](DESIGN.md#story-blocks)'s. Backgrounds find it faster:
+
+| Job | What the brief may say (each a version) | Faster for |
+|---|---|---|
+| Learning the Drones | he volunteered; the drones only go for runners; he's done this before | Ex-Con, Raider |
+| A Quiet Arrangement | it was his idea; it's once a month | Elder, Ex-Con |
+| Requisition | the house signed for it; it's surplus | Soldier, Elder |
+| Names for Bastion | only names of people who've left; Bastion only wants to count them | Elder, Soldier |
+| Off-Book Requisition | they've plenty; the stronghold knows | Soldier, Lab Tech |
+| Rifles for Sale | the buyer hunts; the stronghold signed off | Soldier, Mechanic |
+| The Real Orders | the courier was ambushed; Command still answers | Soldier, Nurse, Doctor |
+| Unsanctioned Trial | his family agreed; the serum's been through animal trials | Doctor, Nurse, Lab Tech |
+| Private Collection | the director knows; it's for the cure | Lab Tech, Hunter |
+| Sell the Formula | the director approved it; it's the whole formula | Lab Tech, Doctor |
+| The Pit's Debtor | sixty tins, all his own; he agreed to the fight | Ex-Con, Raider |
+| Debt Collection | they borrowed it; they can afford it | Ex-Con, Raider, Elder |
+
 **Work rows** (68, `Missions/Story/RZ_WorkRows.c`): plain work keeps its play, and gets a row: the
 reasons it answers, whether it writes the **town tally**, and a fallout line said when it fails.
 
