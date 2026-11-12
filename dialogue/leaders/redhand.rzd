@@ -1,62 +1,79 @@
 # The Red Hand's leaders: the boss at the stronghold and the crew bosses.
 # Voice: mocking, casual, always counting. Rudi's end is never a joke; the official lie is said flatly.
+# Lines are spoken straight to the player (docs/WRITING.md, "Conversations"): who they are, where
+# you are and what's going on, in their own words.
 
-conv redhand.leader.book
+# The first time you meet one (a greet: the talk screen opens on it). One line, said only to a
+# stranger (!met); the season's name (names.rzd) and a caught lie come first when they apply.
+conv redhand.leader.hello
 for stronghold:redhand, seat:redhand/crew_boss
-topic "Ask about the book."
-prio world
-voice redhand
-
-node start
-  say "The book. Who owes, who's owed, and whose it was before they paid with it."
-  say "It has to balance. That's not the same as anyone being paid up. Nobody's ever out of the book. A man who owes nothing walks away."
-  > @first "What's the first line?" -> first
-  > @mine "What does it say about me?" -> mine
-  > @other "Something else." -> hub
-
-node first
-  say "Ten litres of diesel, on tick. Next to it, one word: paid."
-  say? stronghold :: "My handwriting. Still neat. I was trying back then."
-  say "Before my time. Ask the boss. Don't, actually."
-  > @rudi "Who was Rudi?" -> rudi
-  > @back1 "Something else." -> hub
-
-node rudi
-  say? stronghold :: "He let people pay later. You can't run a road like that."
-  say "Rudi was bitten."
-  > @back2 "Something else." -> hub
-
-node mine
-  say "Show you your own page? That's not how the book works."
-  > @look "Show me anyway." -> shown | teased | shut   check persuade redhand 2 harder:paranoid bg:excon,raider
-  > @leave1 "Keep it, then." -> hub
-
-node shown
-  say "Fine. You've got a page. It's not blank. Here's what it says."
-  do call:standing
-  > @back3 "Something else." -> hub
-
-node teased
-  say "Two lines. One of them's a number. Come back when you're worth a third."
-  > @back4 "Something else." -> hub
-
-node shut
-  say "The book's for reading out loud, at the right moment. This isn't it."
-  > @back5 "Something else." -> hub
-
-conv redhand.leader.toll
-for stronghold:redhand, seat:redhand/crew_boss
-topic "Ask why the hand is red."
+when !met
+greet
+once
 prio flavour
 voice redhand
 
 node start
-  say "Red hand means stop. Stop means pay. Pay means we're friends. See? Easy."
-  say "Bastion paints signs. We paint one sign. Everyone reads ours."
-  > @paint "Who painted the first one?" -> paint
-  > @other2 "Something else." -> hub
+  say? stronghold & !met :: I'm {npc}, {role}. That's the book on the desk. Every crew on every road pays into it. Guns stay quiet in camp, and anything you want has a price. Pull up a chair.
+  say? kit:other & !met :: I'm {npc}, {role}. You walked into a Red Hand camp in somebody else's colours. Brave. The lads have a bet on whose jacket it was.
+  say? !met :: I'm {npc}, {role}. This is a Red Hand camp. This stretch of road is ours, and so is the toll on it. Guns stay quiet in camp. Want something? Everything's got a price.
+
+conv redhand.leader.book
+for stronghold:redhand, seat:redhand/crew_boss
+topic "What's that book you keep?"
+prio world
+voice redhand
+
+node start
+  say The book. Who owes, who's owed, and whose it was before they paid with it. Every crew on every road pays its cut, and every cut goes in here.
+  say It has to balance. That's not the same as anyone being paid up. Nobody's ever out of the book. A man who owes nothing can walk away, and then where's your road?
+  > @first What's the first line in it? -> first
+  > @mine What does it say about me? -> mine
+  > @other Let me ask about something else. -> hub
+
+node first
+  say Day 2. Ten litres of diesel, on tick. Next to it, one word: paid. The pumps were dry that day. Rudi had a garage at the crossroads, and the key to the tank under the forecourt.
+  say? stronghold :: My handwriting. Still neat. I was trying, back then.
+  say Before my time. Ask the boss. Actually, don't.
+  > @rudi What happened to Rudi? -> rudi
+  > @back1 Let me ask about something else. -> hub
+
+node rudi
+  say? stronghold :: He let people pay later. You can't run a road like that.
+  say Rudi was bitten.
+  > @back2 I see. Something else. -> hub
+
+node mine
+  say Show you your own page? That's not how the book works. The book gets read to you, when the boss picks the moment, usually in front of people.
+  > @look Go on. Show me anyway. -> shown | teased | shut   check persuade redhand 2 harder:paranoid bg:excon,raider
+  > @leave1 Keep it, then. -> hub
+
+node shown
+  say Fine. You've got a page, and it's not blank. Here's what it says, word for word.
+  do call:standing
+  > @back3 Thanks. Let me ask something else. -> hub
+
+node teased
+  say Two lines. One of them's a number. Come back when you're worth a third, and I'll read you all three.
+  > @back4 I'll hold you to that. -> hub
+
+node shut
+  say The book's for reading out loud, at the right moment. This isn't it. You'll know the moment when it comes. Everybody does.
+  > @back5 Then something else. -> hub
+
+conv redhand.leader.toll
+for stronghold:redhand, seat:redhand/crew_boss
+topic "Why is the hand painted red?"
+prio flavour
+voice redhand
+
+node start
+  say Red hand means stop. Stop means pay. Pay means we're friends. See? Easy. Every roadblock with a hand on it takes a tin or a can of fuel, and you drive on.
+  say Bastion paints signs, all words and arrows. We paint one sign, and everybody in the Zone can read ours.
+  > @paint Who painted the first one? -> paint
+  > @other2 Let me ask about something else. -> hub
 
 node paint
-  say "The boss. On a garage shutter, Day seven. Over some marks that were already there."
-  say "Nobody asks about the marks. People who ask get a page."
-  > @back6 "Something else." -> hub
+  say The boss. On a garage shutter at the crossroads, Day 7, right over some marks that were already there. The crews call it Rudi's shutter.
+  say Nobody asks about the marks. People who ask about the marks get a page.
+  > @back6 Then I won't ask. -> hub

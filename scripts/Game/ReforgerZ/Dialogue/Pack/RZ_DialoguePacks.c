@@ -17,6 +17,6 @@ class RZ_DialoguePacks
 
 	static int Count()
 	{
-		return 223;
+		return 225;
 	}
 }
