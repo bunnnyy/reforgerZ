@@ -81,7 +81,8 @@ measured too. `render.py` draws every prop at its measured size and offset.
 The first measurement showed why pieces clipped: a `WoodLog_01_A` is a 6 m trunk (drawn as 2 m), the
 small camo net 13.6 m across (4 m), a long sandbag 3.5 m (2 m), the big US tent 6.3 × 9.9 m (5 × 7),
 `TinWall_01_3m`'s origin at one end. The kits' plans were re-spaced (17 pieces moved 0.5 to 2 m)
-so `build.py`'s overlap check passes with the real sizes.
+so `build.py`'s overlap check passes with the real sizes. The firewood piece's split logs are
+`WoodKindling_01` (0.46 × 0.66 m), not the trunk.
 
 ## Drop, don't squeeze
 

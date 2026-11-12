@@ -405,9 +405,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 18.5 0 -10.5
         m_fPlanYaw 60
-        m_vFootMin -4.97 0 -3.09
-        m_vFootMax 4.41 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.6 -0.43 0.34 6.01 31; 1.45 0.95 0.34 6.01 77; 0.27 -1.2 0.34 6.01 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -4.97 0 -1.6
+        m_vFootMax 2 0 3
+        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
        }
        RZ_DressingPiece "{A4AF4D636F874E01}" {
         m_sPrefab "{3C94F02F30F3573A}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_ShavingStand.et"
@@ -606,9 +606,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 13 0 -11
         m_fPlanYaw 60
-        m_vFootMin -4.97 0 -3.09
-        m_vFootMax 4.41 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.6 -0.43 0.34 6.01 31; 1.45 0.95 0.34 6.01 77; 0.27 -1.2 0.34 6.01 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -4.97 0 -1.6
+        m_vFootMax 2 0 3
+        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
        }
        RZ_DressingPiece "{E3D8724AF80E719B}" {
         m_sPrefab "{3C94F02F30F3573A}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_ShavingStand.et"
@@ -845,9 +845,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 17.5 0 -12
         m_fPlanYaw 80
-        m_vFootMin -4.97 0 -3.09
-        m_vFootMax 4.41 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.6 -0.43 0.34 6.01 31; 1.45 0.95 0.34 6.01 77; 0.27 -1.2 0.34 6.01 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -4.97 0 -1.6
+        m_vFootMax 2 0 3
+        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
        }
        RZ_DressingPiece "{68B65F43E901D7B9}" {
         m_sPrefab "{4B17C267BBBF2FD4}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_TrophyWall.et"
@@ -1036,9 +1036,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 14.5 0 -11.5
         m_fPlanYaw 80
-        m_vFootMin -4.97 0 -3.09
-        m_vFootMax 4.41 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.6 -0.43 0.34 6.01 31; 1.45 0.95 0.34 6.01 77; 0.27 -1.2 0.34 6.01 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -4.97 0 -1.6
+        m_vFootMax 2 0 3
+        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
        }
        RZ_DressingPiece "{8DE5830E39D795A1}" {
         m_sPrefab "{4E44857251B9F7C5}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_RedHandSheet.et"
@@ -1268,9 +1268,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 13.5 0 -9
         m_fPlanYaw 70
-        m_vFootMin -4.97 0 -3.09
-        m_vFootMax 4.41 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.6 -0.43 0.34 6.01 31; 1.45 0.95 0.34 6.01 77; 0.27 -1.2 0.34 6.01 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -4.97 0 -1.6
+        m_vFootMax 2 0 3
+        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
        }
        RZ_DressingPiece "{CF8C83854ABA3380}" {
         m_sPrefab "{22B8DA94254353A4}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_FirePit.et"
@@ -1461,9 +1461,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 12.5 0 -10.5
         m_fPlanYaw 70
-        m_vFootMin -4.97 0 -3.09
-        m_vFootMax 4.41 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.6 -0.43 0.34 6.01 31; 1.45 0.95 0.34 6.01 77; 0.27 -1.2 0.34 6.01 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -4.97 0 -1.6
+        m_vFootMax 2 0 3
+        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
        }
        RZ_DressingPiece "{B683D6F7930E606F}" {
         m_sPrefab "{972C9B0757FDC5B6}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Barricade_Fence.et"
@@ -1588,9 +1588,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
         m_iSeats 1
         m_vPlan 11.5 0 -9.5
         m_fPlanYaw 70
-        m_vFootMin -4.97 0 -3.09
-        m_vFootMax 4.41 0 3
-        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.6 -0.43 0.34 6.01 31; 1.45 0.95 0.34 6.01 77; 0.27 -1.2 0.34 6.01 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
+        m_vFootMin -4.97 0 -1.6
+        m_vFootMax 2 0 3
+        m_sFoot "-1.61 0.21 1.92 6.6 86; 0.7 0.31 0.47 0.49 0; 1.64 -0.46 0.46 0.66 31; 1.55 0.9 0.46 0.66 77; 0.24 -1.23 0.46 0.66 120; -0.42 1.84 0.87 2.16 150; s 0.7 1.1"
        }
       }
      }

@@ -15,7 +15,7 @@ dragged them out to use them (a table, a sofa round a fire).
 
 FP = {
     "Fireplace_01.et": (1.2, 1.2, "c", "fire"), "Campfire_burning.et": (0.5, 0.5, "c", "fire"),
-    "WoodLog_01_A.et": (0.3, 2.0, "r", "wood"), "WoodPile_01_A.et": (1.0, 2.6, "r", "wood"), "LogChopping_01.et": (0.5, 0.5, "c", "wood"),
+    "WoodLog_01_A.et": (0.3, 2.0, "r", "wood"), "WoodPile_01_A.et": (1.0, 2.6, "r", "wood"), "LogChopping_01.et": (0.5, 0.5, "c", "wood"), "WoodKindling_01.et": (0.6, 0.5, "r", "wood"),
     "SackUniversal_01.et": (0.5, 0.8, "r", "cloth"), "SackUniversal_01_Pile.et": (1.3, 1.2, "r", "cloth"),
     "PicnicTable_01.et": (1.8, 1.6, "r", "wood"), "LampKerosene_01_green.et": (0.2, 0.2, "c", "light"), "LanternMilitary_US_01.et": (0.2, 0.2, "c", "light"),
     "CamoNet_Small_US.et": (4.0, 4.0, "r", "net"), "CrateWooden_01_plain.et": (0.9, 0.6, "r", "wood"), "CrateWooden_02_1x1x1.et": (1.0, 1.0, "r", "wood"),
@@ -87,8 +87,8 @@ piece("Tent_Large_Civilian", "Common", "Sleep", "Inner", "A big family tent, a c
     P("TentBig_01_orange.et", 0, 0, 4), P("ChairOld_02.et", 1.0, 2.6, 200), P("BlanketFolded_01_green.et", 1.0, 2.6, 200, 0.45),
     P("SackUniversal_01_Pile.et", 2.4, -1.4, 30), P("Bucket_01.et", -1.9, -1.8)])
 piece("Firewood", "Common", "Chop", "Inner", "A chopping block in a scatter of split logs, the stack behind it.", [
-    P("WoodPile_01_A.et", -1.6, 0.2, 86), P("LogChopping_01.et", 0.7, 0.3), P("WoodLog_01_A.et", 1.6, -0.5, 31), P("WoodLog_01_A.et", 1.4, 0.9, 77),
-    P("WoodLog_01_A.et", 0.2, -1.2, 120), P("Wheelbarrow_01.et", -0.4, 1.8, 150),
+    P("WoodPile_01_A.et", -1.6, 0.2, 86), P("LogChopping_01.et", 0.7, 0.3), P("WoodKindling_01.et", 1.6, -0.5, 31), P("WoodKindling_01.et", 1.5, 0.9, 77),
+    P("WoodKindling_01.et", 0.2, -1.2, 120), P("Wheelbarrow_01.et", -0.4, 1.8, 150),
     S("RZ_Chop", 0.7, 1.1, "loiter", 0, -0.8)])
 piece("CookPot", "Common", "Cook", "Inner", "A pot over a fire on a pole tripod, a grill for meat, crates as a counter, bowls drying.", [
     P("Fireplace_01.et", 0, 0), P("WoodenFenceOld_01_pole.et", 0.5, 0, 0, 0, 0, -20), P("WoodenFenceOld_01_pole.et", -0.25, 0.43, 0, 0, 18, 10), P("WoodenFenceOld_01_pole.et", -0.25, -0.43, 0, 0, -18, 10),

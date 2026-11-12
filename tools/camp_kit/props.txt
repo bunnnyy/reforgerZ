@@ -97,6 +97,7 @@ GenericEntity {18D107DB09E20A36}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_b
 GenericEntity {AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et
 StaticModelEntity {7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et
 GenericEntity {6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et
+GenericEntity {BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et
 GenericEntity {32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et
 GenericEntity {13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et
 SCR_DestructibleEntity {A3B70E75E3769FB4}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_4m.et

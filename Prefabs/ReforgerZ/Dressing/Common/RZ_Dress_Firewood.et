@@ -25,7 +25,7 @@ GenericEntity {
    }
    coords 0.7 0 0.3
   }
-  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "3B177FF4756CA7E6"
    components {
     Hierarchy "{D473BB3AE01BD189}" {
@@ -34,16 +34,16 @@ GenericEntity {
    coords 1.6 0 -0.5
    angles 0 31 0
   }
-  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "1C62581E40F77F9B"
    components {
     Hierarchy "{C725FF41E1F338CD}" {
     }
    }
-   coords 1.4 0 0.9
+   coords 1.5 0 0.9
    angles 0 77 0
   }
-  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "AD0DB1837FB516FD"
    components {
     Hierarchy "{485BC98926A82344}" {
