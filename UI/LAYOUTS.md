@@ -2,7 +2,7 @@
 
 The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
 frame and its five pages, the notice board, the journal and radio rows, the talk screen, the
-reader, the car repair, shop and crafting screens, the spawn screen, the map icon and the map legend. They were written as text
+reader, the car repair, shop and crafting screens, the spawn screen, the death brief, the map icon and the map legend. They were written as text
 from the trees below and checked against every widget
 name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
@@ -260,6 +260,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_NotebookMenu` | `RZ_NotebookMenu` | `RZ_NotebookMenu.layout` |
 | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu` | `RZ_NoticeBoardMenu.layout` |
 | `RZ_ReaderMenu` | `RZ_ReaderMenu` | `RZ_ReaderMenu.layout` |
+| `RZ_DeathBriefMenu` | `RZ_DeathBriefMenu` | `RZ_DeathBrief.layout` |
 | `RZ_TalkMenu` | `RZ_TalkMenu` | `RZ_TalkMenu.layout` |
 | `RZ_CarMenu` | `RZ_CarMenu` | `RZ_CarMenu.layout` |
 | `RZ_ShopMenu` | `RZ_ShopMenu` | `RZ_ShopMenu.layout` |
@@ -593,6 +594,34 @@ Frame (root, full screen)
 ```
 
 Unlike the mockup, the paper has no grain or folds (they'd need a texture) and is a fixed 800 high.
+
+## Death brief: `RZ_DeathBrief.layout`
+
+The death brief (`RZ_DeathBriefMenu` preset, [UI.md](../docs/UI.md#the-death-brief)). Written as text;
+no mockup. Positions inside `BriefPanel` are from its top left.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 80%
+├─ Button  DismissArea     full screen, blank: a click anywhere off the card continues
+└─ Frame   BriefPanel      1,040 × 700, centred
+   ├─ Image  (BriefBg)      #121416 at 97%
+   ├─ Image  (BriefAccent)  full width × 4, top edge, bone
+   ├─ Text   BriefKicker    at (64, 44), 912 wide, condensed bold 22, dim ("DAY 14, NEAR MORTON")
+   ├─ Text   BriefName      at (64, 76), 912 × 58, condensed bold 48, bone (the name, upper case)
+   ├─ Text   BriefWho       at (64, 140), regular 26, dim ("Nurse, life 3")
+   ├─ Image  (BriefRule)    at (64, 192), 912 × 2, #2A2E31
+   ├─ Text   BriefLabels    at (64, 216), 320 × 280, regular 26, dim: one label a line, no wrap
+   ├─ Text   BriefValues    at (400, 216), 576 × 280, bold 26, bone: the values, line for line
+   ├─ Image  (BriefRule2)   at (64, 514), 912 × 2, #2A2E31
+   ├─ Text   BriefClosing   at (64, 536), 912 × 72, regular 26, bone, wraps: the closing line
+   ├─ HorizontalLayout Prompts  at (64, -30) from the bottom left: the footer prompt the script makes
+   ├─ Text   PromptsText    the same place, bold 22, dim: "A / SPACE  CONTINUE", hidden once the prompt is made
+   └─ Button CloseButton    240 × 48 at the bottom right (-64, -30), "CONTINUE" in amber on #2A2E31
+```
+
+The labels and values are two text widgets of the same size, so their lines stay level as long as
+neither wraps: values are cut at 60 characters on the server, about 500 units at 26.
 
 ## Car repair screen: `RZ_CarMenu.layout` and `RZ_CarJob.layout`
 

@@ -400,6 +400,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			OnReader(payload);
 		}
+		else if (kind == RZ_DeathBrief.PAYLOAD)
+		{
+			RZ_DeathBrief.OnPayload(payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TALK)
 		{
 			RZ_TalkMenu.OnPayload(this, payload);

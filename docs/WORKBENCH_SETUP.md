@@ -1292,12 +1292,18 @@ in `UI/layouts/ReforgerZ/`.
       radio, well, puzzle object, safehouse service and the like keeps its world prompts; with the
       slot set and the preset missing, the first use shows what the thing is as a card, and its
       prompts come back for that player.
-   6. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
+   6. **The death brief** (done as text; not checked in play). `Configs/System/chimeraMenus.conf`
+      has the `RZ_DeathBriefMenu` preset (layout `RZ_DeathBrief.layout`, class
+      `RZ_DeathBriefMenu`). Open `RZ_DeathBrief.layout` in the layout editor once, so Workbench
+      registers it, and check the labels and values columns line up and the closing line fits
+      above the footer. **UI > Death brief** is on by default; there's no layout slot. Without the
+      preset, a death shows the same lines as a notice card.
+   7. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
       transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
       on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
       `node tools/render_ui.js textures` and import again.
-   7. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
+   8. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
       with the pad); after spawning, find the notebook in the inventory and take it in hand. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
@@ -1405,7 +1411,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
-| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
+| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), **death brief** (on: a card of the life that ended over the spawn screen; off = nothing at a death), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
@@ -1769,8 +1775,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **131** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 24 are in `UI/`: 19 of [the UI's](#the-ui-20), the loadout
+There are **133** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 26 are in `UI/`: 21 of [the UI's](#the-ui-22), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1779,7 +1785,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-20)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-22)
 come last.
 
 ### High risk: the core loop (2)
@@ -1900,18 +1906,18 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:3332` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
 | `Guidance/RZ_OpeningPlaces.c:351` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
 
-### The UI (20)
+### The UI (22)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
 and every message goes back to the vanilla hint; empty **UI > Talk reply layout** for the old
 actions on people, **Car job layout** for a car's actions, **Shop item layout** for a
-quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions, **Object row layout** for the prompts on props and places, **Spawn row layout** for vanilla's deploy menu, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
+quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions, **Object row layout** for the prompts on props and places, **Spawn row layout** for vanilla's deploy menu, **UI > Reader** and **Subtitles** off for cards, **UI > Death brief** off for nothing at a death. How the UI is put together is in
 [UI.md](UI.md). Check the first five in one Workbench play with a pad plugged in.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:965` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:968` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:194` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
@@ -1919,8 +1925,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Notebook.c:1048` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:44` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_TalkMenu.c:366` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; the wheel still works |
-| `UI/RZ_UIData.c:988` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1127` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
+| `UI/RZ_UIData.c:991` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1130` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
 | `Dialogue/RZ_Dialogue.c:892` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:182` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
@@ -1929,8 +1935,10 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Menus.c:307` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:21` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
+| `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
+| `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
-| `UI/RZ_UIData.c:1068` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
+| `UI/RZ_UIData.c:1071` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 
 ## 7. Log lines to check
 
@@ -3000,6 +3008,15 @@ when it happens)
   loadout` if a client sends one). After one life as Nurse, its gear lists the Nurse's real gear.
   With a respawn timer, Deploy counts down and then works. With **UI > Spawn row layout** empty,
   vanilla's deploy menu is back.
+- [ ] **The death brief** ([UI.md](UI.md#the-death-brief)). Die three ways (to the infected, to a
+  faction's guard, by a fall): once the spawn screen is up, one card opens over it with your name,
+  "Nurse, life N", the day and town, and *How it ended* right for each (The infected; Killed by
+  Task Force Bastion; Nobody saw how), *Lived* about right, *Travelled* about right, and the
+  infected you shot counted. Get bitten and turn: *Turned*. With a pad only: A closes it and the
+  spawn screen is there, **without deploying**; B closes it **without the pause menu**; Space and a
+  click close it with the keyboard and mouse. The spawn screen's respawn timer runs under it.
+  Text reads from a couch. **UI > Death brief** off: nothing at a death. With the spawn screen off,
+  it opens over vanilla's deploy menu the same way.
 - [ ] The tabs, close button, journal and quest rows, the TRACK button and the radio filter take
   clicks; the lists scroll.
 - [ ] Open the map: the lab, the safehouses and the strongholds show with their icons and stay on

@@ -561,6 +561,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_ScreenGuard.Forget(playerId);
 
 		RZ_ObjectScreen.Forget(playerId);
+		RZ_DeathBrief.Forget(playerId);
 
 		if (m_Dialogue)
 			m_Dialogue.Forget(playerId);
@@ -959,6 +960,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		foreach (int i, IEntity ent : players)
 		{
 			RZ_Objectives.Tick(this, ids[i], GetProfile(ids[i]), ent, dt);
+			RZ_DeathBrief.Tick(ids[i], GetProfile(ids[i]), ent);
 		}
 
 		// After the objectives, which advance each life's clock
@@ -2620,6 +2622,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return;
 
 		vector pos = ent.GetOrigin();
+		RZ_DeathBrief.MarkTurned(playerId);
 		RZ_Util.KillCharacter(ent);
 		// Grief: nobody jokes near a player who turned, for a while (docs/WRITING.md, the season mood)
 		RZ_ToneGuard.Death(pos, -1);
@@ -2697,6 +2700,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_Guidance.OnSpecialKilled(pos);
 		}
 
+		RZ_DeathBrief.OnInfectedKilled(this, pos, count);
 		m_Wanderers.OnZombiesKilled(pos);
 		m_Leaders.OnZombiesKilled(pos);
 		// Kit still on the body is off the turned (RZ_DisguiseMarks)

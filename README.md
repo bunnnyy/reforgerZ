@@ -152,7 +152,8 @@ and one way to end it: **research the cure.**
   people who tell you things.
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
-  emblems, a spawn screen in place of vanilla's deploy menu, an infection timer with the golden window, styled notice cards in each faction's
+  emblems, a spawn screen in place of vanilla's deploy menu (with a short card of the life just
+  ended over it at each death), an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance (one card at spawn, the rest into the notebook),
   a small quest tracker top left with the tracked job's objectives, a you-are-here
   arrow on the map, a notebook (standing, journal, radio,
@@ -165,7 +166,7 @@ and one way to end it: **research the cure.**
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
-  repair, shop and crafting screens, the object menu, reader and subtitles are written and not yet played).
+  repair, shop and crafting screens, the object menu, reader, death brief and subtitles are written and not yet played).
 
 ## Status
 
@@ -269,7 +270,7 @@ scripts/Game/ReforgerZ/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
                  the car repair, shop and crafting screens (and the item picture), the object menu, the screen guard, the notice board, the spawn screen and loadout lock, the
-                 map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
+                 death brief, the map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
                  (RZ_CreatePrefabsPlugin.c); the PC's helpers for building prefabs as text:

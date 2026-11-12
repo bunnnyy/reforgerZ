@@ -1041,6 +1041,8 @@ class RZ_FactionPerks
 		m_iDeathVictim = victim;
 		m_iDeathKiller = killer;
 		RememberKiller(victim, killer);
+		// The life that ended, to the dying player's screen, before anything changes it (UI/RZ_DeathBrief.c)
+		RZ_DeathBrief.OnDied(m_GM, victim, killer, at, body);
 		// The cure finale: route items drop where their carrier fell, and kills between route players
 		RZ_CureFinale finale = RZ_CureFinale.Get();
 		if (finale)

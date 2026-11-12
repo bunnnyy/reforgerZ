@@ -53,6 +53,8 @@ class RZ_PlayerProfile
 	float m_fLifeSeconds;
 	int m_iLifeSamples;
 	int m_iLifeMissions;
+	int m_iLifeInfected;			// infected put down near this character (UI/RZ_DeathBrief.c)
+	float m_fLifeMetres;			// ground covered, on foot or in a car (UI/RZ_DeathBrief.c)
 	bool m_bBiteDeclared;		// told a safehouse about this bite (can't be caught hiding it; cleared with the bite)
 	bool m_bDeclareSlowed;		// a declared bite was slowed this life (once per life)
 	bool m_bBiteCaught;			// caught hiding a bite in a safehouse
@@ -137,6 +139,8 @@ class RZ_PlayerProfile
 		m_fLifeSeconds = 0;
 		m_iLifeSamples = 0;
 		m_iLifeMissions = 0;
+		m_iLifeInfected = 0;
+		m_fLifeMetres = 0;
 		m_bBiteDeclared = false;
 		m_bDeclareSlowed = false;
 		m_bBiteCaught = false;

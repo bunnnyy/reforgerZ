@@ -177,6 +177,9 @@ class RZ_UISettings
 	[Attribute("700", desc: "Reader: about this many characters to a page; pages break at the end of a paragraph")]
 	int m_iReaderPageChars;
 
+	[Attribute("1", desc: "The death brief: at a death, a short card of the life that ended (how it ended, how long, a few of its numbers) over the spawn screen, gone with A, Space, a click or B (RZ_DeathBriefMenu; needs its chimeraMenus entry, UI/LAYOUTS.md; without it, a notice card). Off = nothing at a death, as before")]
+	bool m_bDeathBrief;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Talk screen: the layout of one reply row (UI/LAYOUTS.md, TalkReply). Empty = no talk screen: a person's actions and notices, as before", "layout")]
 	ResourceName m_sTalkReplyLayout;
 
