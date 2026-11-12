@@ -304,6 +304,8 @@ In this order, because later ones depend on earlier ones:
 | Idea | Why |
 |---|---|
 | Supply drops, airdrops, the Supply Plane Crash event | The Zone is sealed: nothing comes in from outside |
+| Our own Treat their wounds action on other players (its timer, cooldown and first-aid kit rule) | The game's own heal on another character already does it; only a Nurse's or Doctor's slowing of a bite is kept, on vanilla's heal |
+| Search prompts in buildings and on bodies | The game's own pick-up and inventory do it: loot lies loose in buildings and bodies are opened like any body |
 | The earlier finale draft's any-side switching | Replaced by the lock: one route per identity for the season |
 | The most-Fame winner | Replaced by control of the clean room; season Fame is only the fallback |
 | Take the Lab stealing the batch under a finale | Replaced by the Red Hand route's holder change |

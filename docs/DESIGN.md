@@ -322,7 +322,6 @@ stop it, once per bite:
 |---|---|
 | "Clean the bite" with alcohol or antiseptic (prefab-name keywords) | 70% |
 | "Disinfect and bandage it" (disinfectant or antiseptic and a bandage, or a first-aid kit) | 90% |
-| Another player's **Treat their wounds** | 90% |
 | Declaring the bite at a safehouse | 90% |
 
 The "Clean the bite" spot (an interaction spot) follows the bitten player's feet and is never
@@ -360,7 +359,7 @@ and odds**; the world-level breakthroughs (spread, timers, the final stand) are 
 | **Trial dose** | Halcyon's quartermaster, "Volunteer for the trial dose": anyone bitten, free, once per life | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
 | **Stabiliser** | Halcyon's quartermaster (Known), from a small stock; rare in pharmacies and hospitals | Pauses the infection for 20 minutes, once per life |
 | **Declaring the bite** | Any safehouse | Once per life: time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement), ×1.5 (Town). A fresh bite is cleaned instead; one cleaned already uses nothing ([details](REPUTATION.md)) |
-| Doctor wanderer, Nurse or Doctor player | On the roads; "Treat their wounds" | ×1.25 / ×1.15 of the time left, once per life each |
+| Doctor wanderer, Nurse or Doctor player | On the roads (the wanderer); a Nurse or Doctor treating you with vanilla's medical items ([Treating each other](#treating-each-other)) | ×1.25 / ×1.15 of the time left, once per life each |
 
 **Supply by research:**
 
@@ -2324,7 +2323,7 @@ Code: `World/RZ_TownMemory.c`.
 Code: `Interactions/`.
 
 Loot lying in houses and on bodies, car boots to search, locked doors and keys, cars, crafting,
-water, barricades and traps, generators, fire, bells, radios and treating each other. Data until a
+water, barricades and traps, generators, fire, bells, radios and a medic slowing a bite. Data until a
 player is near, capped and decaying, nothing left behind.
 
 **How it works on any map.**
@@ -2614,12 +2613,17 @@ drinking does belongs to the hunger and thirst mod ([MOD_STACK.md](MOD_STACK.md)
 
 ### Treating each other
 
-**Treat their wounds**: a first-aid kit and 20 s next to another player for a full heal. Nurses
-(8 s) and Doctors (6 s) can do it with a bandage, and also slow a bite (×1.15 of the time left,
-once per life, kept with the profile, so a restart doesn't grant it again). Every 5 minutes per
-patient (a new life starts fresh). On a fresh bite (the golden window) a treatment is a
-proper clean instead: 90% that it never takes. Anyone can also use the bitten player's **Clean
-the bite** spot ([The golden window](#the-golden-window)).
+Treating another player is the game's own: hold a bandage, tourniquet, morphine or saline and use
+it on them with vanilla's heal action. ReforgerZ adds no prompt and no timer of its own. One thing
+is ours on top: a **Nurse or Doctor** who treats a bitten player that way (any vanilla health item
+used on them, once the infection has taken) also slows the bite: **×1.15 of the time left**, once
+per life, kept with the profile so a restart doesn't grant it again (**Interactions > Medic slows a
+bite**; 1 = off). Both are told. A fresh bite (the golden window) is cleaned with the bitten
+player's **Clean the bite** spot, or at a safehouse ([The golden window](#the-golden-window)).
+
+*Simplified:* the hook is vanilla's consumable item component, where a health item's effect lands
+on its target; that it runs on the server for a heal on someone else is a VERIFY
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#the-markers)).
 
 ### Bells, sirens and alarms
 

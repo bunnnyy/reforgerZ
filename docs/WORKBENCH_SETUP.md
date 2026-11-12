@@ -96,7 +96,7 @@ prefab column must show `RZ_GameMode`. If it doesn't, delete it and drag `RZ_Gam
 | Step | What | Idempotent because |
 |---|---|---|
 | Prefabs | Creates each prefab at its path from its base, adds the components and actions with their values, and an `RplComponent` and `ActionsManagerComponent` where needed. The manager's action context sits 0.5 m up with a 1.2 m radius: resize it by hand on big props (a tent, a wreck). `@Antidote`-style values become that prefab's ResourceName | a prefab whose file exists is skipped |
-| Loadouts | Creates the 13 loadout characters, each with `RZ_TreatOtherAction` | as above |
+| Loadouts | Creates the 13 loadout characters | as above |
 | Game mode | Creates `RZ_GameMode.et`, creates its settings objects and fills every slot it has a prefab for | only empty slots are filled; lists only when empty |
 | World | Places the game mode in the open world (check it: the known issue above); checks for a FactionManager and LoadoutManager | skipped if the world already has a game mode with `RZ_GameModeComponent` |
 | Factions | Adds the missing `SURV_H1`..`SURV_H15` and `SURV_OUTLAW` to the placed FactionManager as bare factions (`SURV`'s colour and name, not playable, but no base config, so no flag or identity) and the missing friendly keys; reports hostile pairs that are friendly | existing keys and friends are left alone |
@@ -345,7 +345,7 @@ If the player faction key isn't `SURV`, the variants are `<key>_H1`..`<key>_H15`
 
 **Loadouts.** `RZ_LoadoutManager.et` has one loadout per background on `SURV`, named exactly as
 below, each pointing at `Prefabs/ReforgerZ/Loadouts/RZ_Loadout_<Name>.et`. Those are characters
-affiliated with `SURV`, with `RZ_TreatOtherAction` (so other players can treat you), built on
+affiliated with `SURV` (other players treat you with vanilla's own heal action), built on
 vanilla civilians, except Soldier (`Character_US_Unarmed`) and Raider (an armed FIA civilian). They
 wear and carry what their base character does: the suggested gear below is still to add by hand.
 The server won't assign or spawn a locked one (**UI > Lock loadouts**; with it off, a locked pick
@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **312 prefab fields**: 46 on `RZ_GameModeComponent`, 257 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **292 entries**: 179 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **312 prefab fields**: 46 on `RZ_GameModeComponent`, 257 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **292 entries**: 179 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -847,7 +847,6 @@ still to do:
 <!-- manifest:additions -->
 | Prefab | Add | Why | Need |
 |---|---|---|---|
-| every player character prefab used by a loadout (the plugin's RZ_Loadout_*.et get it already) | `RZ_TreatOtherAction` | other players can treat you | required |
 | any vanilla radio prefab you want crackable | `RZ_TuneRadioAction`, `RZ_RadioCallAction` | secure radio channels, and calling on the open channel with Dialogue > Trees on (the wind-up radio gets both already) | optional |
 | quartermasters you placed by hand (not from the manifest) | `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused) | optional |

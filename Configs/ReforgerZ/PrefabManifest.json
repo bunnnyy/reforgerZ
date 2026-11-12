@@ -5926,13 +5926,6 @@
  ],
  "additions": [
   {
-   "target": "every player character prefab used by a loadout (the plugin's RZ_Loadout_*.et get it already)",
-   "add": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}],
-   "why": "other players can treat you",
-   "required": true,
-   "minimum": false
-  },
-  {
    "target": "any vanilla radio prefab you want crackable",
    "add": [
     {"cls": "RZ_TuneRadioAction", "values": [], "name": "Tune"},
@@ -5995,7 +5988,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "medical bag, bandages, morphine, saline; no weapon",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Mechanic",
@@ -6005,7 +5998,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "wrench, jerrycan; work clothes",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Hunter",
@@ -6015,7 +6008,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "hunting rifle, 5 rounds, hunting jacket",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Police Officer",
@@ -6025,7 +6018,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "pistol, one magazine, police jacket",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Ex-Con",
@@ -6035,7 +6028,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "knife; plain clothes",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Lab Technician",
@@ -6045,7 +6038,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "lab coat, gloves; no weapon",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Radio Operator",
@@ -6055,7 +6048,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "handheld radio, batteries",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Unemployed",
@@ -6065,7 +6058,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "clothes only",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Soldier",
@@ -6075,7 +6068,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "service rifle, two magazines, body armour, helmet",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Doctor",
@@ -6085,7 +6078,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "medical bag, morphine, bandages, gloves; no weapon",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Raider",
@@ -6095,7 +6088,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "pistol or sawn-off, knife, red armband or jacket",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Elder",
@@ -6105,7 +6098,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "walking clothes, a little food and water",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   },
   {
    "name": "Drifter",
@@ -6115,7 +6108,7 @@
    "baseFind": "",
    "baseHint": "a vanilla civilian character prefab (the player character)",
    "gear": "nothing",
-   "actions": [{"cls": "RZ_TreatOtherAction", "values": [], "name": "Treat"}]
+   "actions": []
   }
  ],
  "factions": {
@@ -7272,13 +7265,8 @@
     "m_sWellWords": "well,waterpump,water_pump,handpump,hand_pump,pump_water",
     "m_sStoveWords": "stove,oven,fireplace,campfire,furnace,hearth",
     "m_fBoilSeconds": "30",
-    "m_bTreatOthers": "1",
-    "m_fTreatSeconds": "20",
-    "m_fNurseMult": "0.4",
-    "m_fDoctorMult": "0.3",
     "m_sMedkitWords": "medkit,firstaid,first_aid,ifak",
     "m_sBandageWords": "bandage,dressing,gauze",
-    "m_fTreatCooldownMinutes": "5",
     "m_fTreatSlowsInfection": "1.15"
    }
   },

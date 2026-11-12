@@ -1,7 +1,7 @@
-//! World interactions (docs/DESIGN.md, "World interactions"): loose loot in houses, searching car
-//! boots and bodies, locks and keys, readable things, fixable cars, crafting, water, barricades
-//! and traps, generators, fire, bells and sirens, cracking secure radio channels and treating
-//! other players.
+//! World interactions (docs/DESIGN.md, "World interactions"): loose loot in houses, what bodies
+//! carry, searching car boots, locks and keys, readable things, fixable cars, crafting, water,
+//! barricades and traps, generators, fire, bells and sirens, cracking secure radio channels and a
+//! medic slowing a bite (treating each other is vanilla's).
 //!
 //! How it works on any map, without touching the map's prefabs:
 //! - Data first. Every few seconds the server looks around each player (a small sphere
@@ -15,8 +15,8 @@
 //!   kept as data otherwise; a car boot is rolled when it's searched, a body when it dies. What was searched,
 //!   opened or burned is remembered as data (positions and times) and saved; town loot comes
 //!   back through RZ_TownMemory.
-//! - Longer actions (searching, forcing a lock, hotwiring, crafting, cracking a channel,
-//!   treating someone) are timed on the server tick: stay put until they finish.
+//! - Longer actions (searching a car boot, forcing a lock, hotwiring, crafting, cracking a channel,
+//!   cleaning a bite) are timed on the server tick: stay put until they finish.
 //!
 //! The parts live in their own files: RZ_Loot.c, RZ_Search.c, RZ_DoorLocks.c (with
 //! RZ_DoorHooks.c and RZ_KeyItem.c), RZ_Cars.c, RZ_Crafting.c (and water),
@@ -28,7 +28,7 @@
 [BaseContainerProps()]
 class RZ_InteractionSettings
 {
-	[Attribute("1", desc: "World interactions on: loose loot, searching car boots and bodies, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/DESIGN.md, World interactions)")]
+	[Attribute("1", desc: "World interactions on: loose loot, what bodies carry, searching car boots, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, a medic slowing a bite (docs/DESIGN.md, World interactions)")]
 	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Interaction spot: a small invisible prop (a little collision box, no mesh) with RplComponent, ActionsManagerComponent and the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleUseAction values 0-3, 4 RZ_PuzzleChoiceAction options 0-3). Empty = Puzzles > Generic object (visible)", "et")]
@@ -93,29 +93,14 @@ class RZ_InteractionSettings
 	[Attribute("30", desc: "Seconds to boil water")]
 	float m_fBoilSeconds;
 
-	// ---------------------------------------------------------------- Treating other players
-	[Attribute("1", desc: "Treat another player (RZ_TreatOtherAction on the player character prefab)")]
-	bool m_bTreatOthers;
-
-	[Attribute("20", desc: "Seconds to treat someone (anyone with a first-aid kit)")]
-	float m_fTreatSeconds;
-
-	[Attribute("0.4", desc: "Nurse: treating time multiplier (works with just a bandage)")]
-	float m_fNurseMult;
-
-	[Attribute("0.3", desc: "Doctor: treating time multiplier (works with just a bandage)")]
-	float m_fDoctorMult;
-
-	[Attribute("medkit,firstaid,first_aid,ifak", desc: "First-aid kit keywords (anyone can treat with one)")]
+	// ---------------------------------------------------------------- Medical items (the bite) and treating each other
+	[Attribute("medkit,firstaid,first_aid,ifak", desc: "First-aid kit keywords (cleaning a fresh bite with Disinfect and bandage it)")]
 	string m_sMedkitWords;
 
-	[Attribute("bandage,dressing,gauze", desc: "Bandage keywords (Nurses and Doctors treat with one of these too)")]
+	[Attribute("bandage,dressing,gauze", desc: "Bandage keywords (cleaning a fresh bite with Disinfect and bandage it)")]
 	string m_sBandageWords;
 
-	[Attribute("5", desc: "Real minutes before the same player can be treated again")]
-	float m_fTreatCooldownMinutes;
-
-	[Attribute("1.15", desc: "A Nurse or Doctor treating a bitten player slows the infection this much (x the time left, once per life)")]
+	[Attribute("1.15", desc: "Medic slows a bite: a Nurse or Doctor treating a bitten player with vanilla's medical items (bandage, tourniquet, morphine, saline used on them) multiplies their time left by this, once per life. 1 = off")]
 	float m_fTreatSlowsInfection;
 }
 
@@ -151,7 +136,7 @@ class RZ_TimedTask
 	float m_fHealth = -1;
 	bool m_bStill;			// moving at all (2 m) stops it; noise and damage too (cracking a channel)
 	string m_sLabel;		// "the search"
-	IEntity m_Target;		// treating another player
+	IEntity m_Target;		// cleaning another player's bite
 }
 
 //------------------------------------------------------------------------------------------------
@@ -506,7 +491,6 @@ enum RZ_ETaskKind
 	STRIP,
 	BOIL,
 	CRACK,
-	TREAT,
 	BURN,
 	FIT,
 	CLEAN,
@@ -544,11 +528,10 @@ class RZ_Interactions
 	static const int TASK_STRIP = 6;
 	static const int TASK_BOIL = 7;
 	static const int TASK_CRACK = 8;
-	static const int TASK_TREAT = 9;
-	static const int TASK_BURN = 10;
-	static const int TASK_FIT = 11;
-	static const int TASK_CLEAN = 12;		// cleaning a fresh bite (RZ_Infection)
-	static const int TASK_BREW = 13;		// brewing a home remedy on a stove
+	static const int TASK_BURN = 9;
+	static const int TASK_FIT = 10;
+	static const int TASK_CLEAN = 11;		// cleaning a fresh bite (RZ_Infection)
+	static const int TASK_BREW = 12;		// brewing a home remedy on a stove
 
 	protected static const float DESPAWN_MARGIN = 25;
 	protected static const float RESCAN_MOVE = 10;
@@ -724,7 +707,6 @@ class RZ_Interactions
 
 		CancelTask(playerId, "");
 		m_Radio.OnPlayerSpawned(playerId);
-		m_Medical.OnPlayerSpawned(playerId);
 		m_mScanAt.Remove(playerId);
 	}
 
@@ -1670,11 +1652,11 @@ class RZ_Interactions
 		if (RZ_Util.DistXZ(user.GetOrigin(), t.m_vStart) > reach)
 			return "You moved away.";
 
-		// Treating someone or cleaning their bite: the patient has to stay too
-		if ((t.m_iKind == TASK_TREAT || t.m_iKind == TASK_CLEAN) && (!t.m_Target || !RZ_Util.IsCharacterAlive(t.m_Target) || RZ_Util.DistXZ(t.m_Target.GetOrigin(), user.GetOrigin()) > reach))
+		// Cleaning someone's bite: the patient has to stay too
+		if (t.m_iKind == TASK_CLEAN && (!t.m_Target || !RZ_Util.IsCharacterAlive(t.m_Target) || RZ_Util.DistXZ(t.m_Target.GetOrigin(), user.GetOrigin()) > reach))
 			return "They're not next to you any more.";
 
-		if (!t.m_bStill && t.m_iKind != TASK_TREAT)
+		if (!t.m_bStill)
 			return "";
 
 		float health = RZ_Util.GetCharacterHealth(user);
@@ -1704,7 +1686,6 @@ class RZ_Interactions
 			case RZ_ETaskKind.CRAFT: m_Crafting.CompleteRecipe(t.m_iPlayerId, s, t.m_iArg, user); return;
 			case RZ_ETaskKind.BOIL: m_Crafting.CompleteBoil(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.CRACK: m_Radio.CompleteCrack(t.m_iPlayerId, t.m_iArg, user, t.m_iSpot); return;
-			case RZ_ETaskKind.TREAT: m_Medical.CompleteTreat(t.m_iPlayerId, user, t.m_Target, t.m_iArg); return;
 			case RZ_ETaskKind.BREW: m_Crafting.CompleteBrew(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.CLEAN:
 			{

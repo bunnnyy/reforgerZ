@@ -246,7 +246,7 @@ scripts/Game/ReforgerZ/
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
   Interactions/  loose loot, searching, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, crafting (and its screen's server side), water,
-                 traps, generators, fire, secure radio, treating others
+                 traps, generators, fire, secure radio, a medic slowing a bite
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
                  (strangers and the open channel too), what a reply needs; the trees (hubs,

@@ -816,19 +816,6 @@ class RZ_Infection
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Another player's "Treat their wounds" on a fresh bite counts as a proper clean.
-	//! True if it was a fresh bite not yet cleaned (then the patient and helper have been told).
-	bool CleanByTreatment(int patient, int helper)
-	{
-		RZ_PlayerProfile p = m_GM.GetProfile(patient);
-		if (!p.IsWoundFresh() || p.m_bWoundCleaned)
-			return false;
-
-		CleanRoll(patient, p, m_Settings.m_fDisinfectChance, helper);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! A safehouse a fresh bite is declared at washes it out properly.
 	bool CleanAtSafehouse(int patient)
 	{
