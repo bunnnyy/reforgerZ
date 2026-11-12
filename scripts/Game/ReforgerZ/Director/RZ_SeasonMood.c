@@ -276,6 +276,34 @@ class RZ_ToneGuard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A holding's named person killed (polled every 5 s from the reputation watch): grief like a
+	//! leader's (1.5 km for 10 minutes, the faction's radio plain for 20), and a newcomer takes the
+	//! role under a new name (RZ_Territory.ReplacePerson).
+	static void NamedDeaths(RZ_GameModeComponent gm)
+	{
+		RZ_Errands errands = gm.GetErrands();
+		if (!errands || !errands.GetPeople())
+			return;
+
+		array<string> keys = {};
+		array<vector> at = {};
+		errands.GetPeople().TakeDeadAtHoldings(keys, at);
+		foreach (int i, string key : keys)
+		{
+			RZ_NamedPerson np = errands.GetPeople().Get(key);
+			if (!np)
+				continue;
+
+			Death(at[i], np.m_iFaction);
+			string dead = np.m_sName;
+			if (gm.GetTerritory())
+				dead = gm.GetTerritory().ReplacePerson(np.m_iPlace, np.m_iIndex);
+
+			RZ_Log.Info(string.Format("Voice: grief for %1, %2 at %3", dead, np.RoleText(), np.m_sPlace));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A joke or wry line may be said face to face here now.
 	static bool AllowsJoke(vector pos)
 	{

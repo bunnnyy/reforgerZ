@@ -1198,6 +1198,8 @@ class RZ_QM_BookRead : RZ_RedHandQuestMission
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "The Book: read the page";
 		m_sBrief = "Here's the page. Read it." + lines + " Go round them and collect. If one of them won't pay, lean on them, or pay it yourself and they owe you instead. Your choice. Just don't rat. Nobody rats.";
+		// The quiet threat (Reputation > Quiet success): Fear first, so they don't tell their own
+		m_Ways.m_iMenaceDifficulty = RZ_ReputationSettings.QuietDifficulty();
 		return true;
 	}
 
@@ -1383,9 +1385,18 @@ class RZ_QM_BookRead : RZ_RedHandQuestMission
 
 		if (option == 1)
 		{
-			RZ_QuestApproach.SideWith(gm, playerId, -1, faction, 0, LEAN_INFAMY);
 			if (run.Flag("squeezed", -1) < 0)
 				run.SetFlag("squeezed", objIdx);
+
+			// Quiet success: they pay and tell nobody, so their people don't hold it against you
+			if (TryMenace(gm, playerId, "book." + key, faction, false))
+			{
+				Settle(gm, run, playerId, objIdx, RZ_Quest_TheBook.D_SQUEEZED, RZ_EQuestApproach.FORCE, "leaned on " + l.m_sShort + " quietly");
+				gm.NotifyPlayer(playerId, m_sTitle, string.Format("You say it once, quietly. %1 finds what's owed and doesn't tell a soul who came for it. That's worth something to both of you.", l.m_sShort));
+				return;
+			}
+
+			RZ_QuestApproach.SideWith(gm, playerId, -1, faction, 0, LEAN_INFAMY);
 
 			Settle(gm, run, playerId, objIdx, RZ_Quest_TheBook.D_SQUEEZED, RZ_EQuestApproach.FORCE, "leaned on " + l.m_sShort);
 			gm.NotifyPlayer(playerId, m_sTitle, string.Format("You say it quietly, close up. %1 finds what's owed. They'll remember who came for it. (+%2 Infamy with %3)", l.m_sShort, LEAN_INFAMY, RZ_Factions.GetNameInText(faction)));

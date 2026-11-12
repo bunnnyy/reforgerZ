@@ -1632,7 +1632,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **104** lines with the tag, all in the game scripts (one is the comment in
+There are **106** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1653,7 +1653,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:207` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (65)
+### Medium risk: big features, with a fallback (66)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1676,8 +1676,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1046` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1251`, `:1129` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
-| `Factions/RZ_Disguise.c:1033`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
-| `Factions/RZ_DisguiseWatch.c:185` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
+| `Factions/RZ_Disguise.c:1067`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
+| `Factions/RZ_DisguiseWatch.c:193` | a character's world transform's forward axis (`mat[2]`) is where its body faces | If it's another axis, guards count as turned to you at the wrong angle: again looks and their noticing line come too often or never. Check by standing behind a Bastion sentry in their kit after a passed look |
+| `Factions/RZ_DisguiseWatch.c:206` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
 | `Factions/RZ_DisguiseMarks.c:341`, `:390` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
 | `Factions/RZ_Disguise.c:805` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
 | `Factions/RZ_DisguiseMarks.c:544` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
@@ -1714,7 +1715,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (23)
+### Low risk: contained or cosmetic (24)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1723,6 +1724,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
+| `Factions/RZ_RepNamesThrows.c:59` | the same `OnGrenadeThrown` event fires on the server for a thrown smoke grenade, naming the grenade | Nobody is ever called Smoke by the crews; every other crew name still works |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
 | `Core/RZ_Util.c:864` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:641` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
@@ -2104,7 +2106,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 153 conversations, 334 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 157 conversations, 346 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2123,12 +2125,12 @@ answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<c
 predicate), `Dialogue: lie <key> found out: its found effects ran`, `Dialogue: Talk test: N conversations ...`
 (an admin's `/talkdebug test`, and the runtime test's `RZT Talk test: ...`), `Dialogue: scene <key> reset by
 an admin`. Reputation's voice: `Reputation: gate bark at <place> for <player>`, `Reputation: <player>
-laid a pack's leader down`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
+laid a pack's leader down`, `Reputation: <player> threw a smoke`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
 `Parley: <player>'s fire paused <player>'s parley`; the runtime test's `RZT Reputation test: ...` and `RZT
 voice <mood> faction N: radio [...] face [...]` (Voice > Force mood cycled).
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
-`Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
+`Story: lie <key> caught now by <speaker>`. Givers who lie: `Story: brief <key> leaves something out (version N)` (or `is honest this season`), `Story: brief <key>'s truth found by <player>`, `Story: brief <key>'s lie made public by <player>`. Grief: `Voice: grief for <name>, the <role> at <place>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
 `Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join (N Fame, N Favor)`,
@@ -2710,6 +2712,43 @@ when it happens)
   checkpoint searches you ("Arms out"); leaving the barrier early costs 6 Infamy. A Red Hand
   roadblock asks 20 Favor.
 - [ ] `/rep <your name>` as an admin prints the four factions; as a non-admin it's refused.
+- [ ] Known with the Red Hand and no crew name yet, throw a vanilla smoke grenade: the log has
+  `Reputation: <you> threw a smoke` and the notice says the crews call you Smoke. Throw a bottle: no
+  line (the throw hook, VERIFY).
+- [ ] The Standing page: the header has the whole picture after your name; each faction's column
+  opens with the word as a sentence ("The crews call you Smoke.") and the nearest leader you've met
+  there with what they make of you. Take a parley's amends job: the journal's requirements read
+  "Amends: works off Infamy · finishes where the job says".
+- [ ] One per approach: walk up to a Bastion post's gate with a name change pending and a tip due: the
+  gate's bark first (with a rival-colours remark in the same line, in another faction's armband), the
+  change notice 30 s later, then the tip 30 s after that.
+- [ ] In Bastion kit while Bastion's AI would shoot you by standing (Watched with **Hostility** set so),
+  fail a look at a road post: one urgent line ("Nobody asks you to stand still.") and they open fire;
+  no search, kit still on. At a post that wouldn't shoot you, a failed look holds and searches as
+  before. After a passed look, stand behind a sentry when the again look is due: no "turns your way"
+  line until he faces you.
+- [ ] A holding's named person killed: the log has `Voice: grief for ...`, the leader there says no
+  joke for 10 minutes, and the next time the holding is shown the role has a new name.
+- [ ] A short safehouse (let an upkeep run short): Ask how things are sometimes ends with a soup or
+  potato joke; none for 30 minutes after a death in that house.
+- [ ] The epilogue week (Trees on): visit a stronghold leader twice in one real day: the second visit
+  sometimes opens with a joke for the ending (none with no cure, except the Red Hand's).
+- [ ] Givers who lie: take Learning the Drones (or any of the twelve, docs/MISSIONS.md) until the log
+  says `leaves something out`; stand 15 s at its spot: the truth comes, and anyone within 30 m hears
+  it; finish it: the outcome names it. With Trees on, a Red Hand leader then has "Tell the crew what
+  the job left out."; telling costs the Red Hand 1 morale once, and the topic goes.
+- [ ] A one-choice job (Checkpoint Duty): the decider's group gets the giver's reaction after the
+  outcome; another player who took part but stood apart gets "Someone else made the call..."; let
+  the 90 s run out once: "Nobody gave the order, so the standing order stood." Press someone in Fight
+  Pit before the choice: "Fight it out" refuses.
+- [ ] Callback deeds (Trees on): after a one-choice job, visit a leader on another day: one time in
+  three "You're the one who decided ...".
+- [ ] Boards of record: after Await Relief's call, a Bastion road post's speaker adds the roster board;
+  pay a Red Hand toll and the roadblock's speaker shows the tally; a safehouse's Ask how things are
+  shows the council's pinned notes once the house rule is set.
+- [ ] Quiet success: Cargo's driver, Threaten him, with 40+ Red Hand Infamy this life: he talks and the
+  next stage's camp isn't on guard; with none, the built line ("you can guess who he's running to
+  tell").
 - [ ] Notice lanes ([DESIGN.md](DESIGN.md#notice-lanes)): walk past two leaders who have work for
   you within 4 minutes: only the first catches your eye; the second does once the 4 minutes are up.
 - [ ] Contracts and the season budget: finish several contracts for one faction in one session; the

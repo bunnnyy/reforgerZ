@@ -1238,6 +1238,38 @@ Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout, Smu
   running. Never as a questline's stage (`AsksChoice`). Helpers: pay or blame those with the decider,
   morale through the shared budget, the hungriest house, and **where the horde drifts**
   (`RZ_HordeWhere`), one shared block. The jobs are in [MISSIONS.md](MISSIONS.md#one-choice-jobs-and-work).
+- **The shared grey layer** (`Missions/Story/RZ_Grey.c`, `RZ_GreyChoice`, after each one-choice job's
+  own outcome): the outcome's third beat, a **reaction** from the giver's people (the voice bank's
+  `reaction` lines, neutral on which way it went: the job's own text says that), to those with the
+  decider; **someone else made the call** (`else_call`) to those who took part but weren't with the
+  decider; **nobody chose** (`nobody_chose`) when the default was taken; and the **callback deed** for
+  those with the decider ([Deeds](#deeds)). `RZ_Outcome.Tell` puts the three beats and the system line
+  together for any job. **The clever way closes the honest one:** once anyone in the run has pressed,
+  tricked, switched or hidden something (the clean-hands list), the honest option of a job that also
+  offers a trick or a betrayal refuses (*"Somebody here already played it crooked. The straight way's
+  closed for this one."*): Fight Pit's fight it out, Kill the Officer's do the job, Convoy Escort's
+  crates in the store, Missing Scout's tell the council. The clever options' discovery is the one lie
+  store's (Convoy Escort's raiders, Distress Call's crew). *Simplified:* a clever choice found out
+  later is found out on the decider, the lie's teller, not on everyone who stood with them.
+- **Givers who lie** (`RZ_BriefLies`): twelve briefs whose giver may leave one thing out, the version
+  picked once a season (`CanonPick`, the honest one among them), the omission added to the brief in
+  the giver's voice (the jobs and their versions: [MISSIONS.md](MISSIONS.md#givers-who-lie)). The truth
+  is open to everyone who takes part: 15 s at the scene (the job's spot) finds it, a listed background
+  finds it within 150 m, and the room (30 m) hears it with them; a Talker giver leaks it into the
+  rumours. **The outcome names it**, either way, to everyone who took part (*"He hadn't volunteered.
+  His sister was in the book."*, or *"He really did volunteer."*). A caught lie has no reward of its
+  own. **Taking it public** (Trees on, any leader of the giver's faction, `call:brief_public`): that
+  faction's morale −1 (once per faction per real day, once per lie per season, inside the morale caps),
+  and an outpost leader who gave it −5 loyalty (inside the seat ledger's limits); kept a week (the
+  `knows:brieflie.<faction>` fact). *Simplified:* the truth changes no option of the job; with Trees off
+  a caught lie can't be taken public.
+- **Boards of record** (`RZ_RecordBoards`): late joiners read the season in the world, from the season
+  flags each time, the same for everyone: the Haven council's pinned notes at a safehouse's *Ask how
+  things are* (the house rule, the List read or buried, who was taken in from Bastion's line), Bastion's
+  roster board at a Bastion road post's speaker (the call, the struck-off men home and still out), the
+  toll sign's tally at a Red Hand roadblock's speaker (tolls paid this season, `tolls.paid`; scrubbed
+  once the book burns), and the lab door's sheet in the journal's lab line (the first page, the
+  subjects by number). *Simplified:* the lab's sheet is read in the journal, not on a prop.
 - **Route assets and the 90% lock** (`Missions/Story/RZ_RouteAssets.c`): an option can carry a route
   asset for one of the finale's routes; the decider gets one, into the finale's store
   ([FINALE.md](FINALE.md#before-the-gate-pitches-and-route-assets) owns what an asset is, its limits and
@@ -1291,7 +1323,9 @@ Log lines: `Story | per player-hour: Fame N, Favor N | by job: ... | picks: ... 
 fallout: started N, paid N Favor`, `Story: truth <key>.<subject> = <truth> (kept|new); found by <how>`, `Story: <key>
 resolved by hand-in to <party> (...)`, `Story: <title> record <key> (<subject>) = <value>`, `Story:
 <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is <truth>` (and `colleague`,
-`crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Story: <title> asks (<options>)`, `Story: <title> chose <n> (by <player>)`, `Story: tally <town> (<name>) = <n>, mark <faction+1> (<key>)`, `Mirror: <title>
+`crash`), `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Story: reason <key> (<subject>) started <id> '<title>'`, `Story: <title> asks (<options>)`, `Story: <title> chose <n> (by <player>)`, `Story: brief <key> leaves
+something out (version N)` (or `is honest this season`), `Story: brief <key>'s truth found by <player>`,
+`Story: brief <key>'s lie made public by <player>`, `Story: tally <town> (<name>) = <n>, mark <faction+1> (<key>)`, `Mirror: <title>
 hinted to <faction>`, `Mirror: <title> won by <faction>` (or `by both, half each`).
 
 ### Errands
@@ -1908,8 +1942,18 @@ worked against in a questline ending one harder (the life record `crossed.<f>`),
 Free-standing talk threats are never made at a safehouse or inside a stronghold's or the lab's wire
 (`ThreatRefusedAt`); a threat a mission writes into its own scene stays. The Ledger's and Debt
 Collection's threats now run this check (+3 Infamy whatever happens; refused, they don't give in).
-The quiet success on the questlines' built FORCE stages is planned
-([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
+**The quiet success** (**Reputation > Quiet success**, on, at Fear 2): a questline stage's built threat
+tries Fear first (`m_iMenaceDifficulty` set in the stage's Setup, `TryMenace`). Passed, the stage gets
+its better outcome, still recorded as FORCE; failed, the built outcome, as before:
+
+| Stage | Quiet success |
+|---|---|
+| Cargo: the driver (Threaten him) | He tells it all and goes back to his van: the camp isn't on guard |
+| The Well Story: collect (Lean on them) | Said once, quietly: nobody comes out of the houses, no fight, no Haven Infamy for the lean |
+| The Book: read the page (Lean on them) | They pay and tell nobody: no Infamy for the lean with their faction |
+| The Three Weeks: the driver (Threaten him) | He names the site and won't tell the houses: no Haven Infamy, and the wanderer doesn't remember it as a wrong |
+
+The threat's own +3 Infamy stands either way.
 
 **The look** (`RZ_Checks.LookScore`): the disguise check, fixed and shown before you commit
 ([REPUTATION.md](REPUTATION.md#borrowed-kit)). **A lie** (`RZ_Checks.Lie`): a tell catches it first
@@ -1951,8 +1995,22 @@ tally ("put 9 of ours down") once three times the kills outweigh it. Written tod
 kills, leaders), jobs and the ledger (every paid contract), the cells (every reputation change), the
 Infamy forgiven, "pressed" (threats), a leader's killing ("shot Vlasak"), running a checkpoint ("ran
 the checkpoint at Morton"), and each paid contract's phrase (`RZ_Mission.m_sDeed` with `{town}`,
-"brought medicine to Levie"; the commonest contracts have one, the rest say "did a job for us near
-{town}"). Reputation's voice says them back ([REPUTATION.md](REPUTATION.md#what-people-call-you)).
+"brought medicine to Levie"; the rest by class, `RZ_RepDeeds`, and every questline's and major's
+ending). Reputation's voice says them back ([REPUTATION.md](REPUTATION.md#what-people-call-you)).
+
+**Callback deeds** (life scope, `RZ_Deeds.Callback`): twelve weighted slots for choices that involved
+a person, a house or a leader. **Heavy** (3): a questline's or major's ending (its words), a one-choice
+job about a person's life or freedom (*"decided whether he lives near Morton"*). **Medium** (2): the
+other one-choice jobs (*"decided which house gets the food near Levie"*). **Light** (1): an errand
+done (*"did Mara Kovac a favour"*). The same key again keeps the heavier weight. Full: the lightest,
+oldest goes; light deeds hold at most four slots, and a new deed never pushes out a heavier one, so a
+day of small kindnesses can't wash the record clean. A leader brings one up plainly, one time in
+three after the openers that come first, at most once a visit (a real day per seat): *"You're the one
+who decided where the kids go near Levie."* (`RZ_RepVoice.Opening`, Trees on). Memory outlives deeds:
+leaders' memory runs across lives (earlier ones at half, and the name from an earlier life,
+[REPUTATION.md](REPUTATION.md#what-people-call-you)); the deeds end with the life. *Simplified:* a deed
+doesn't open a side quest by itself; errands' threads and callbacks and missions' fallout do
+([ERRANDS.md](ERRANDS.md)).
 
 ### World memory
 
@@ -2045,8 +2103,14 @@ that speaks unasked may speak now.
 | Bark | One a minute, one per speaker per 10 minutes |
 | Ambient | Approach and ambient lines: once per place per session |
 
+**Notices, one per approach:** the gate's own line first (a gate bark, with a rival-colours remark
+folded into the same line, `TryGate`), then a change notice, then a tip; anything lower waits until 30 s
+after the last approach line (`ApproachHolds`), and an ambient line held past 2 minutes is dropped. A
+held change notice waits on its own tick and is never dropped; a held tip is kept (one per player) and
+tried again each tick, dropped past 2 minutes.
+
 **The budget is a ceiling only:** it can stop a contact, never start one. A caller asks
-(`TryContact`, `TryBark`, `TryAmbient`) and stays quiet to try again later. Wired today: a leader
+(`TryContact`, `TryBark`, `TryAmbient`, `TryGate`) and stays quiet to try again later. Wired today: a leader
 catching your eye about work, and the Long Table's host stepping out on the road. Runtime only.
 (**Shared > Lanes**, contact gap 4 min, bark gap 60 s, speaker gap 10 min.)
 

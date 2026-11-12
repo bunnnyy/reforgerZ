@@ -44,6 +44,173 @@ class RZ_VoiceDefaults
 		Wanderers(lines);
 		RadioTails(lines);
 		NewLifeRoutes(lines);
+		Week(lines);
+		Grey(lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue week's jokes (kind "week", RZ_RepVoice.Opening after the day's plain opener):
+	//! a few a faction for each ending, read through cure_held. Jokes only: a roll that finds no joke
+	//! says nothing, and the opener's plain lines stay. No cure: only the Red Hand's last.
+	protected static void Week(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "haven.week.haven.1", HAVEN, "week", "", J, 16, "cure_held:haven", "\"We've got the cure and forty bowls. The council's voting on which to hand out first.\"");
+		Line(lines, "haven.week.haven.2", HAVEN, "week", "", W, 16, "cure_held:haven", "\"The council wants it minuted that the cure was a group effort. Mostly the soup.\"");
+		Line(lines, "haven.week.haven.3", HAVEN, "week", "", J, 16, "cure_held:haven", "\"Somebody wanted a cure party. We're having soup. It's a soup party.\"");
+		Line(lines, "haven.week.haven.4", HAVEN, "week", "", W, 16, "cure_held:haven", "\"First time the council's agreed on anything all season. We're keeping the minutes in a jar.\"");
+		Line(lines, "haven.week.haven.5", HAVEN, "week", "", J, 16, "cure_held:haven", "\"Everyone gets a dose. Everyone. The council counted twice, then counted the dog.\"");
+		Line(lines, "haven.week.bastion.1", HAVEN, "week", "", J, 16, "cure_held:bastion", "\"Bastion has the cure. They've given it a form. We've filled it in. Twice.\"");
+		Line(lines, "haven.week.bastion.2", HAVEN, "week", "", W, 16, "cure_held:bastion", "\"The soldiers hand it out in alphabetical order. Half the house has become an Abbott.\"");
+		Line(lines, "haven.week.bastion.3", HAVEN, "week", "", J, 16, "cure_held:bastion", "\"Bastion says the queue is orderly. It's a queue. We invented those.\"");
+		Line(lines, "haven.week.bastion.4", HAVEN, "week", "", W, 16, "cure_held:bastion", "\"They stamped my hand. I haven't washed it. Nobody's told me what it's for.\"");
+		Line(lines, "haven.week.redhand.1", HAVEN, "week", "", J, 16, "cure_held:redhand", "\"The Red Hand has the cure. The price board's in chalk, so it can go up quicker.\"");
+		Line(lines, "haven.week.redhand.2", HAVEN, "week", "", W, 16, "cure_held:redhand", "\"We paid in tins and they gave us a receipt. First receipt the Red Hand ever wrote.\"");
+		Line(lines, "haven.week.redhand.3", HAVEN, "week", "", J, 16, "cure_held:redhand", "\"They sell it by the dose. We've started counting the children twice, in case.\"");
+		Line(lines, "haven.week.redhand.4", HAVEN, "week", "", W, 16, "cure_held:redhand", "\"The boss says the first dose is free. The way you'd say the first step's free.\"");
+		Line(lines, "haven.week.halcyon.1", HAVEN, "week", "", J, 16, "cure_held:halcyon", "\"The lab wants us to queue by blood type. Most of us don't know ours. They've written 'unknown' very neatly.\"");
+		Line(lines, "haven.week.halcyon.2", HAVEN, "week", "", W, 16, "cure_held:halcyon", "\"Halcyon gave us a leaflet with the dose. Lovely leaflet. Shame about the words.\"");
+		Line(lines, "haven.week.halcyon.3", HAVEN, "week", "", J, 16, "cure_held:halcyon", "\"They thanked us for our participation. We didn't know we'd participated. Turns out we had.\"");
+		Line(lines, "haven.week.halcyon.4", HAVEN, "week", "", W, 16, "cure_held:halcyon", "\"A man in a white coat asked if I'd like to be in a study. I said I've been in one all season.\"");
+		Line(lines, "haven.week.everyone.1", HAVEN, "week", "", J, 16, "cure_held:everyone", "\"Somebody said the cure's for everyone. The council's never been so short of things to argue about.\"");
+		Line(lines, "haven.week.everyone.2", HAVEN, "week", "", W, 16, "cure_held:everyone", "\"No forms, no tins, no study. The council doesn't know what to do with its afternoon.\"");
+		Line(lines, "haven.week.everyone.3", HAVEN, "week", "", J, 16, "cure_held:everyone", "\"Nobody won it. Lovely. Nobody's ever won anything round here before.\"");
+		Line(lines, "haven.week.everyone.4", HAVEN, "week", "", W, 16, "cure_held:everyone", "\"It's everyone's. Six people have already told me it was their idea.\"");
+		Line(lines, "haven.week.slow.1", HAVEN, "week", "", J, 16, "cure_held:slow", "\"The lab got there on its own. Everybody's claiming they helped. Even the ones who hid in the cellar.\"");
+		Line(lines, "haven.week.slow.2", HAVEN, "week", "", W, 16, "cure_held:slow", "\"Turns out you can just wait for a cure. Who knew. Not the council.\"");
+		Line(lines, "haven.week.slow.3", HAVEN, "week", "", J, 16, "cure_held:slow", "\"Nobody fought for it, and it came anyway. Like the post used to.\"");
+		Line(lines, "haven.week.slow.4", HAVEN, "week", "", W, 16, "cure_held:slow", "\"We've all decided we were very patient. We weren't. It reads well, though.\"");
+		Line(lines, "haven.week.handed.1", HAVEN, "week", "", J, 16, "cure_held:nobody", "\"The lab handed it over. Very polite. Like giving back a borrowed ladder.\"");
+		Line(lines, "haven.week.handed.2", HAVEN, "week", "", W, 16, "cure_held:nobody", "\"It came to us in the end like everything else: second-hand.\"");
+		Line(lines, "haven.week.handed.3", HAVEN, "week", "", J, 16, "cure_held:nobody", "\"Everyone's claiming they asked for it first. The council's keeping a list. Of course it is.\"");
+		Line(lines, "haven.week.handed.4", HAVEN, "week", "", W, 16, "cure_held:nobody", "\"Handed over, no fuss. The council had a speech ready. It's keeping it for the next thing.\"");
+
+		Line(lines, "bastion.week.haven.1", BASTION, "week", "", J, 16, "cure_held:haven", "\"The Haven controls the cure. Command would have had something to say. Command still has nothing to say.\"");
+		Line(lines, "bastion.week.haven.2", BASTION, "week", "", W, 16, "cure_held:haven", "\"We're to queue with civilians. The sergeant has asked whether it counts as a posting.\"");
+		Line(lines, "bastion.week.haven.3", BASTION, "week", "", J, 16, "cure_held:haven", "\"The Haven issues it with soup. Logged as rations.\"");
+		Line(lines, "bastion.week.haven.4", BASTION, "week", "", W, 16, "cure_held:haven", "\"They want our names, not our numbers. Half the post had to think about it.\"");
+		Line(lines, "bastion.week.bastion.1", BASTION, "week", "", J, 16, "cure_held:bastion", "\"The cure is under military control. Form nine is the cure. Form ten is the complaint. Form ten is very popular.\"");
+		Line(lines, "bastion.week.bastion.2", BASTION, "week", "", W, 16, "cure_held:bastion", "\"Distribution is orderly. The sergeant cried once. It's been logged as weather.\"");
+		Line(lines, "bastion.week.bastion.3", BASTION, "week", "", J, 16, "cure_held:bastion", "\"We have the cure and the paperwork. Command would be proud, if it was answering.\"");
+		Line(lines, "bastion.week.bastion.4", BASTION, "week", "", W, 16, "cure_held:bastion", "\"Every dose is signed for. So are the pens. We've learned.\"");
+		Line(lines, "bastion.week.bastion.5", BASTION, "week", "", J, 16, "cure_held:bastion", "\"First successful operation of the season. It's on the board under 'other'.\"");
+		Line(lines, "bastion.week.redhand.1", BASTION, "week", "", J, 16, "cure_held:redhand", "\"The Red Hand controls the cure. We pay a toll for our own medicine. The irony's been logged.\"");
+		Line(lines, "bastion.week.redhand.2", BASTION, "week", "", W, 16, "cure_held:redhand", "\"They gave the post a discount. Ten per cent off for uniforms. Nobody knows what to feel.\"");
+		Line(lines, "bastion.week.redhand.3", BASTION, "week", "", J, 16, "cure_held:redhand", "\"The quartermaster's negotiating. First time he's been on that side of a counter.\"");
+		Line(lines, "bastion.week.redhand.4", BASTION, "week", "", W, 16, "cure_held:redhand", "\"We're told the book has a page for Bastion. It's a long page.\"");
+		Line(lines, "bastion.week.halcyon.1", BASTION, "week", "", J, 16, "cure_held:halcyon", "\"The lab asked for our blood types. We gave them our service numbers. It went badly.\"");
+		Line(lines, "bastion.week.halcyon.2", BASTION, "week", "", W, 16, "cure_held:halcyon", "\"The lab's doing it by the book. Their book. We've asked for a copy. Request pending.\"");
+		Line(lines, "bastion.week.halcyon.3", BASTION, "week", "", J, 16, "cure_held:halcyon", "\"We've been reclassified as a cohort. The sergeant's taking it personally.\"");
+		Line(lines, "bastion.week.halcyon.4", BASTION, "week", "", W, 16, "cure_held:halcyon", "\"Dose by appointment. Nobody here has had an appointment since the barracks dentist.\"");
+		Line(lines, "bastion.week.everyone.1", BASTION, "week", "", J, 16, "cure_held:everyone", "\"The cure goes to everyone. No chain of command. The post isn't sure who to salute.\"");
+		Line(lines, "bastion.week.everyone.2", BASTION, "week", "", W, 16, "cure_held:everyone", "\"Nobody's in charge of it. Filed under 'unprecedented'. Then under 'fine'.\"");
+		Line(lines, "bastion.week.everyone.3", BASTION, "week", "", J, 16, "cure_held:everyone", "\"Everybody gets it. Even the ones on our list. The list's been very quiet about it.\"");
+		Line(lines, "bastion.week.everyone.4", BASTION, "week", "", W, 16, "cure_held:everyone", "\"No faction controls it. Command would call that a failure. Command still hasn't called.\"");
+		Line(lines, "bastion.week.slow.1", BASTION, "week", "", J, 16, "cure_held:slow", "\"The lab got there on its own. We held the line for that. Log it as a win. Log it as anything.\"");
+		Line(lines, "bastion.week.slow.2", BASTION, "week", "", W, 16, "cure_held:slow", "\"No operation, no objective, and it's done. The sergeant's sat down for the first time in weeks.\"");
+		Line(lines, "bastion.week.slow.3", BASTION, "week", "", J, 16, "cure_held:slow", "\"It came without us. Like the relief. Except it came.\"");
+		Line(lines, "bastion.week.slow.4", BASTION, "week", "", W, 16, "cure_held:slow", "\"Everyone's claiming a share. The post has claimed the radio. Nobody else wanted it.\"");
+		Line(lines, "bastion.week.handed.1", BASTION, "week", "", J, 16, "cure_held:nobody", "\"The lab handed it over. Received and signed for. First delivery that's arrived all season.\"");
+		Line(lines, "bastion.week.handed.2", BASTION, "week", "", W, 16, "cure_held:nobody", "\"Handed over without a fight. The post's never seen that. It's unsettling.\"");
+		Line(lines, "bastion.week.handed.3", BASTION, "week", "", J, 16, "cure_held:nobody", "\"Logged as a transfer of materiel. The sergeant wanted 'miracle'. It isn't on the form.\"");
+		Line(lines, "bastion.week.handed.4", BASTION, "week", "", W, 16, "cure_held:nobody", "\"Handed over and nobody shot. We're checking it was the right building.\"");
+
+		Line(lines, "redhand.week.haven.1", REDHAND, "week", "", J, 16, "cure_held:haven", "\"The Haven has the cure and they're giving it away. Terrible for business. Sort of beautiful. Mostly terrible.\"");
+		Line(lines, "redhand.week.haven.2", REDHAND, "week", "", W, 16, "cure_held:haven", "\"Soup and a dose, no charge. We tried competing. Nobody wants our soup.\"");
+		Line(lines, "redhand.week.haven.3", REDHAND, "week", "", J, 16, "cure_held:haven", "\"The council voted to let us queue. Seven to six. We've been robbed by worse.\"");
+		Line(lines, "redhand.week.haven.4", REDHAND, "week", "", W, 16, "cure_held:haven", "\"They're giving it out free. The boss has gone for a walk. A long one.\"");
+		Line(lines, "redhand.week.haven.5", REDHAND, "week", "", J, 16, "cure_held:haven", "\"We offered to sell them a queue. They had one already. Free, apparently.\"");
+		Line(lines, "redhand.week.bastion.1", REDHAND, "week", "", J, 16, "cure_held:bastion", "\"Bastion has the cure. Forms, stamps, queues. We'd sell you a shortcut if there was one.\"");
+		Line(lines, "redhand.week.bastion.2", REDHAND, "week", "", W, 16, "cure_held:bastion", "\"There's a form for the cure, and there's a market for the form. Not saying whose.\"");
+		Line(lines, "redhand.week.bastion.3", REDHAND, "week", "", J, 16, "cure_held:bastion", "\"They searched me for the cure on my way to get the cure. Professional. You have to give them that.\"");
+		Line(lines, "redhand.week.bastion.4", REDHAND, "week", "", W, 16, "cure_held:bastion", "\"The cure's free. The pen costs ten Favor. That bit's us.\"");
+		Line(lines, "redhand.week.redhand.1", REDHAND, "week", "", J, 16, "cure_held:redhand", "\"We have the cure. The book balances. First time ever. Frame it.\"");
+		Line(lines, "redhand.week.redhand.2", REDHAND, "week", "", W, 16, "cure_held:redhand", "\"Prices are fair. Fair-ish. Fair for us.\"");
+		Line(lines, "redhand.week.redhand.3", REDHAND, "week", "", J, 16, "cure_held:redhand", "\"Under new management: the same management. Cure's in the back.\"");
+		Line(lines, "redhand.week.redhand.4", REDHAND, "week", "", W, 16, "cure_held:redhand", "\"The boss wants it known there were tears. There weren't. Write it down anyway.\"");
+		Line(lines, "redhand.week.redhand.5", REDHAND, "week", "", J, 16, "cure_held:redhand", "\"Every dose has a price and every price comes with a smile. The smile's extra.\"");
+		Line(lines, "redhand.week.halcyon.1", REDHAND, "week", "", J, 16, "cure_held:halcyon", "\"Halcyon has the cure. Lovely labels. You could sell the labels on their own.\"");
+		Line(lines, "redhand.week.halcyon.2", REDHAND, "week", "", W, 16, "cure_held:halcyon", "\"They want our blood before they give us theirs. Fair trade. We'd respect it if it was us.\"");
+		Line(lines, "redhand.week.halcyon.3", REDHAND, "week", "", J, 16, "cure_held:halcyon", "\"The lab hands it out in order of need. We've never needed anything this much. Or this politely.\"");
+		Line(lines, "redhand.week.halcyon.4", REDHAND, "week", "", W, 16, "cure_held:halcyon", "\"Tried to bribe a scientist. He wrote it down. As data.\"");
+		Line(lines, "redhand.week.everyone.1", REDHAND, "week", "", J, 16, "cure_held:everyone", "\"Free cure, for everyone, no toll. Somebody's ruined the economy. I want to shake their hand, then check my pockets.\"");
+		Line(lines, "redhand.week.everyone.2", REDHAND, "week", "", W, 16, "cure_held:everyone", "\"Nobody owns it. We've looked. We had a really good look.\"");
+		Line(lines, "redhand.week.everyone.3", REDHAND, "week", "", J, 16, "cure_held:everyone", "\"Free. Say it slower. Still hurts.\"");
+		Line(lines, "redhand.week.everyone.4", REDHAND, "week", "", W, 16, "cure_held:everyone", "\"Everyone gets one. The book's got nobody to write down. Feels naked.\"");
+		Line(lines, "redhand.week.slow.1", REDHAND, "week", "", J, 16, "cure_held:slow", "\"The lab finished it on its own. Nobody fought for it. Nobody to charge. Tragic.\"");
+		Line(lines, "redhand.week.slow.2", REDHAND, "week", "", W, 16, "cure_held:slow", "\"We waited and it came. Should've charged for the waiting.\"");
+		Line(lines, "redhand.week.slow.3", REDHAND, "week", "", J, 16, "cure_held:slow", "\"Everyone says they helped. We helped too. Put us down for a share. A large share.\"");
+		Line(lines, "redhand.week.slow.4", REDHAND, "week", "", W, 16, "cure_held:slow", "\"No winner. We've decided that means us. It's in the book.\"");
+		Line(lines, "redhand.week.handed.1", REDHAND, "week", "", J, 16, "cure_held:nobody", "\"The lab handed it over. For nothing. We'd have charged a finder's fee.\"");
+		Line(lines, "redhand.week.handed.2", REDHAND, "week", "", W, 16, "cure_held:nobody", "\"Handed over, no toll, no haggling. Amateurs.\"");
+		Line(lines, "redhand.week.handed.3", REDHAND, "week", "", J, 16, "cure_held:nobody", "\"Robbed. Of the chance to rob. There's a word for that and it isn't nice.\"");
+		Line(lines, "redhand.week.handed.4", REDHAND, "week", "", W, 16, "cure_held:nobody", "\"It changed hands without us. Never happened before. Felt cold.\"");
+		Line(lines, "redhand.week.none.1", REDHAND, "week", "", J, 16, "cure_held:none", "\"No cure. The book closes when the gates open. Debts die with the page. Drinks are on whoever's left.\"");
+		Line(lines, "redhand.week.none.2", REDHAND, "week", "", W, 16, "cure_held:none", "\"No cure, no point, and we're still charging the toll. Standards.\"");
+		Line(lines, "redhand.week.none.3", REDHAND, "week", "", J, 16, "cure_held:none", "\"Last week of business. Everything must go. Including us.\"");
+
+		Line(lines, "halcyon.week.haven.1", HALCYON, "week", "", J, 16, "cure_held:haven", "\"The Haven controls distribution. They've replaced our dosage tables with soup bowls. The bowls are, admittedly, consistent.\"");
+		Line(lines, "halcyon.week.haven.2", HALCYON, "week", "", W, 16, "cure_held:haven", "\"Our data is read aloud at supper now. Some of it as names. The director has asked to sit at the back.\"");
+		Line(lines, "halcyon.week.haven.3", HALCYON, "week", "", J, 16, "cure_held:haven", "\"The Haven calls it a cure. We call it a compound. They're winning the naming.\"");
+		Line(lines, "halcyon.week.haven.4", HALCYON, "week", "", W, 16, "cure_held:haven", "\"They thanked the lab in a prayer. We've recorded it. There isn't a column for it.\"");
+		Line(lines, "halcyon.week.bastion.1", HALCYON, "week", "", J, 16, "cure_held:bastion", "\"Bastion controls distribution. Every dose signed for. We've never been so well documented, or so unhappy about it.\"");
+		Line(lines, "halcyon.week.bastion.2", HALCYON, "week", "", W, 16, "cure_held:bastion", "\"Our compound has a serial number now. Several. The director is coping.\"");
+		Line(lines, "halcyon.week.bastion.3", HALCYON, "week", "", J, 16, "cure_held:bastion", "\"Distribution by rank. Our subjects have never been so well organised. Or so annoyed.\"");
+		Line(lines, "halcyon.week.bastion.4", HALCYON, "week", "", W, 16, "cure_held:bastion", "\"The army salutes the crates. We're not sure what that does to the dose.\"");
+		Line(lines, "halcyon.week.redhand.1", HALCYON, "week", "", J, 16, "cure_held:redhand", "\"The Red Hand controls distribution. Our compound has a price list. The price list has a sense of humour. Ours is under review.\"");
+		Line(lines, "halcyon.week.redhand.2", HALCYON, "week", "", W, 16, "cure_held:redhand", "\"They asked what a dose costs to make. We told them. They laughed for some time.\"");
+		Line(lines, "halcyon.week.redhand.3", HALCYON, "week", "", J, 16, "cure_held:redhand", "\"The director asked that nobody round anything up. They're rounding everything up.\"");
+		Line(lines, "halcyon.week.redhand.4", HALCYON, "week", "", W, 16, "cure_held:redhand", "\"The boss calls our compound 'the good stuff'. It has not been peer reviewed as such.\"");
+		Line(lines, "halcyon.week.halcyon.1", HALCYON, "week", "", J, 16, "cure_held:halcyon", "\"Distribution is ours. Every subject in order. The director smiled. It's been noted.\"");
+		Line(lines, "halcyon.week.halcyon.2", HALCYON, "week", "", W, 16, "cure_held:halcyon", "\"The cure is under study. So is everyone receiving it. Efficient.\"");
+		Line(lines, "halcyon.week.halcyon.3", HALCYON, "week", "", J, 16, "cure_held:halcyon", "\"We controlled the outcome. That's the paper's first sentence. The director wrote it twice.\"");
+		Line(lines, "halcyon.week.halcyon.4", HALCYON, "week", "", W, 16, "cure_held:halcyon", "\"Dosing proceeds by protocol. The protocol has a protocol. It's going very well.\"");
+		Line(lines, "halcyon.week.halcyon.5", HALCYON, "week", "", J, 16, "cure_held:halcyon", "\"Thank you for your participation. You've always been participating. Now you know.\"");
+		Line(lines, "halcyon.week.everyone.1", HALCYON, "week", "", J, 16, "cure_held:everyone", "\"Uncontrolled distribution. Every textbook warns against it. It's going rather well.\"");
+		Line(lines, "halcyon.week.everyone.2", HALCYON, "week", "", W, 16, "cure_held:everyone", "\"The cure goes to everyone. Our sample size is now the Zone. Lovely sample.\"");
+		Line(lines, "halcyon.week.everyone.3", HALCYON, "week", "", J, 16, "cure_held:everyone", "\"No faction controls it. The director's drafting a sentence about that. Draft nine.\"");
+		Line(lines, "halcyon.week.everyone.4", HALCYON, "week", "", W, 16, "cure_held:everyone", "\"Nobody owns the result. Peer review will be fascinating.\"");
+		Line(lines, "halcyon.week.slow.1", HALCYON, "week", "", J, 16, "cure_held:slow", "\"The lab finished on its own work. Nobody fought for it. The cleanest result we've had.\"");
+		Line(lines, "halcyon.week.slow.2", HALCYON, "week", "", W, 16, "cure_held:slow", "\"Everyone's claiming a share. We have the data. The data claims nobody.\"");
+		Line(lines, "halcyon.week.slow.3", HALCYON, "week", "", J, 16, "cure_held:slow", "\"No route, no winner, one result. The director calls it elegant. The director is alone in this.\"");
+		Line(lines, "halcyon.week.slow.4", HALCYON, "week", "", W, 16, "cure_held:slow", "\"It arrived on schedule. Our schedule. Nobody's ever believed our schedule.\"");
+		Line(lines, "halcyon.week.handed.1", HALCYON, "week", "", J, 16, "cure_held:nobody", "\"We handed it over. It's recorded as a transfer, not a loss. The director insisted on the wording.\"");
+		Line(lines, "halcyon.week.handed.2", HALCYON, "week", "", W, 16, "cure_held:nobody", "\"Handed over with full documentation. The documentation lit somebody's stove.\"");
+		Line(lines, "halcyon.week.handed.3", HALCYON, "week", "", J, 16, "cure_held:nobody", "\"The handover took four minutes. The paperwork took four days. Normal.\"");
+		Line(lines, "halcyon.week.handed.4", HALCYON, "week", "", W, 16, "cure_held:nobody", "\"Our compound, their hands. That's what compounds are for, the director says. To the wall, mostly.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Grey choices' shared beats (Missions/Story/RZ_Grey.c): the giver's people's reaction after a
+	//! one-choice job is settled (`reaction`, the third beat), the line to those who took part but
+	//! weren't with the decider (`else_call`), and nobody choosing (`nobody_chose`). Neutral on which
+	//! way it went: the job's own text says that.
+	protected static void Grey(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "haven.reaction.1", HAVEN, "reaction", "", P, 0, "", "Somebody will tell the house tonight. Somebody always does.");
+		Line(lines, "haven.reaction.2", HAVEN, "reaction", "", W, 0, "", "The council will have views. The council has views on soup.");
+		Line(lines, "bastion.reaction.1", BASTION, "reaction", "", P, 0, "", "\"Logged.\" The sergeant doesn't look up.");
+		Line(lines, "bastion.reaction.2", BASTION, "reaction", "", W, 0, "", "\"Noted. Command will be informed, if Command ever picks up.\"");
+		Line(lines, "redhand.reaction.1", REDHAND, "reaction", "", P, 0, "", "The book will hear about it. The book hears everything.");
+		Line(lines, "redhand.reaction.2", REDHAND, "reaction", "", J, 0, "", "\"Well. That's one way to do it. Not the cheap way.\"");
+		Line(lines, "halcyon.reaction.1", HALCYON, "reaction", "", P, 0, "", "\"Recorded.\" Someone will want to know why.");
+		Line(lines, "halcyon.reaction.2", HALCYON, "reaction", "", W, 0, "", "\"Interesting choice. We'll be writing that down.\"");
+
+		Line(lines, "haven.else_call.1", HAVEN, "else_call", "", P, 0, "", "Someone else made the call before you could. The house will hear their version.");
+		Line(lines, "bastion.else_call.1", BASTION, "else_call", "", P, 0, "", "Someone else gave the order. Your name isn't on it, either way.");
+		Line(lines, "redhand.else_call.1", REDHAND, "else_call", "", P, 0, "", "Someone else called it. The book has their name, not yours.");
+		Line(lines, "halcyon.else_call.1", HALCYON, "else_call", "", P, 0, "", "Someone else decided. The record shows their initials.");
+
+		Line(lines, "haven.nobody_chose.1", HAVEN, "nobody_chose", "", P, 0, "", "Nobody chose. It went the way it was always going to, and nobody thanked anyone.");
+		Line(lines, "bastion.nobody_chose.1", BASTION, "nobody_chose", "", P, 0, "", "Nobody gave the order, so the standing order stood.");
+		Line(lines, "redhand.nobody_chose.1", REDHAND, "nobody_chose", "", W, 0, "", "Nobody chose. The crew calls that a choice too, and bills it.");
+		Line(lines, "halcyon.nobody_chose.1", HALCYON, "nobody_chose", "", P, 0, "", "No decision was recorded. The default applies.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -228,6 +395,18 @@ class RZ_VoiceDefaults
 		Line(lines, "halcyon.look.pass.1", HALCYON, "look_pass", "", P, 0, "", "\"Badge later. Go on.\"");
 		Line(lines, "halcyon.look.caught.1", HALCYON, "look_caught", "", P, 0, "", "\"You're not on the rota. You're not on any rota.\"");
 		Line(lines, "halcyon.look.caught.2", HALCYON, "look_caught", "", W, 0, "", "\"That coat has someone else's initials in it.\"");
+
+		// Outside a conversation: the noticing line while a guard is turned to watch you (an again
+		// look's 10 s notice), and straight to the guns at a post that would shoot you anyway
+		Line(lines, "bastion.look.notice.1", BASTION, "look_notice", "", P, 0, "", "A sentry has turned your way. He's looking at your boots.");
+		Line(lines, "bastion.look.notice.2", BASTION, "look_notice", "", P, 0, "", "The sentry stops talking and watches you walk.");
+		Line(lines, "redhand.look.notice.1", REDHAND, "look_notice", "", P, 0, "", "One of the crew has turned round and is looking at your armband.");
+		Line(lines, "redhand.look.notice.2", REDHAND, "look_notice", "", W, 0, "", "Someone at the fire is counting the faces. Yours is new.");
+		Line(lines, "halcyon.look.notice.1", HALCYON, "look_notice", "", P, 0, "", "A guard at the door is reading the name on your coat.");
+		Line(lines, "halcyon.look.notice.2", HALCYON, "look_notice", "", P, 0, "", "Someone with a clipboard has stopped writing and is watching you.");
+		Line(lines, "bastion.look.guns.1", BASTION, "look_guns", "", P, 0, "", "\"Contact. That's not one of ours.\" Nobody asks you to stand still.");
+		Line(lines, "redhand.look.guns.1", REDHAND, "look_guns", "", P, 0, "", "\"That's not our armband.\" Nobody asks twice.");
+		Line(lines, "halcyon.look.guns.1", HALCYON, "look_guns", "", P, 0, "", "\"Unauthorised.\" The guards stop being polite.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -364,6 +543,15 @@ class RZ_VoiceDefaults
 		Line(lines, "halcyon.person.3", HALCYON, "person", "", P, 15, "", "\"Bring us a sample from one of the big ones and you'll be more useful than half the people here.\"");
 		Line(lines, "halcyon.person.4", HALCYON, "person", "", P, 15, "cure>=50", "\"We're close. We've been close for a while.\"");
 		Line(lines, "halcyon.person.5", HALCYON, "person", "", P, 15, "cure<50", "\"We're nowhere near. Don't repeat that.\"");
+
+		// A short safehouse's residents (RZ_Safehouses, Ask how things are): about the soup, the
+		// potatoes and the chores, twice the mood's share, never about who eats; grief silences them
+		Line(lines, "haven.house_short.1", HAVEN, "house_short", "", J, 0, "", "\"Potato soup today. Potato soup yesterday. Tomorrow's a surprise. It's potatoes.\"");
+		Line(lines, "haven.house_short.2", HAVEN, "house_short", "", W, 0, "", "\"The soup's mostly water, but it's good water. We boiled it ourselves.\"");
+		Line(lines, "haven.house_short.3", HAVEN, "house_short", "", J, 0, "", "\"New rota. Whoever peels, stirs. Whoever stirs, washes up. Whoever complains, peels.\"");
+		Line(lines, "haven.house_short.4", HAVEN, "house_short", "", W, 0, "", "\"There's a stone in the soup pot. Old story. We're still waiting for it to work.\"");
+		Line(lines, "haven.house_short.5", HAVEN, "house_short", "", W, 0, "", "\"Chores are the one thing we've plenty of. Help yourself.\"");
+		Line(lines, "haven.house_short.6", HAVEN, "house_short", "", J, 0, "", "\"The children have started naming the potatoes. Makes supper awkward.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------

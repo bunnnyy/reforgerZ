@@ -161,6 +161,26 @@ for two of them: +5 infection in an empty town 0.4–3 km off), past Bastion's n
 Red Hand's nearest camp within 3 km (that side's morale −2, +4 Infamy with it to those with the
 decider). A side with no holding near is an empty town instead. Every answer is grey.
 
+### Givers who lie
+
+✅ Twelve briefs may leave one thing out, the version picked once a season (one of them honest);
+how it's found and taken public is [DESIGN.md](DESIGN.md#story-blocks)'s. Backgrounds find it faster:
+
+| Job | What the brief may say (each a version) | Faster for |
+|---|---|---|
+| Learning the Drones | he volunteered; the drones only go for runners; he's done this before | Ex-Con, Raider |
+| A Quiet Arrangement | it was his idea; it's once a month | Elder, Ex-Con |
+| Requisition | the house signed for it; it's surplus | Soldier, Elder |
+| Names for Bastion | only names of people who've left; Bastion only wants to count them | Elder, Soldier |
+| Off-Book Requisition | they've plenty; the stronghold knows | Soldier, Lab Tech |
+| Rifles for Sale | the buyer hunts; the stronghold signed off | Soldier, Mechanic |
+| The Real Orders | the courier was ambushed; Command still answers | Soldier, Nurse, Doctor |
+| Unsanctioned Trial | his family agreed; the serum's been through animal trials | Doctor, Nurse, Lab Tech |
+| Private Collection | the director knows; it's for the cure | Lab Tech, Hunter |
+| Sell the Formula | the director approved it; it's the whole formula | Lab Tech, Doctor |
+| The Pit's Debtor | sixty tins, all his own; he agreed to the fight | Ex-Con, Raider |
+| Debt Collection | they borrowed it; they can afford it | Ex-Con, Raider, Elder |
+
 **Work rows** (68, `Missions/Story/RZ_WorkRows.c`): plain work keeps its play, and gets a row: the
 reasons it answers, whether it writes the **town tally**, and a fallout line said when it fails.
 
@@ -504,7 +524,7 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
 | 14 | Off-Book Requisition | Bastion, Rogue | Collect a "contribution" from a village | All: +6 Haven Infamy, −4 food. Half: 60% pay. Pay it yourself: 15 Bastion Favor | ✅ |
 | 15 | Burn the Ledger | Bastion, Rogue | Burn the supply ledger before the audit (15 min) | Burn it: paid. Keep it: the commander is turned in | ✅ |
 | 16 | Desertion Route | Bastion, Rogue | Walk two deserters to a safehouse, or march them to the stronghold instead | Paid; they join the safehouse. Marched in: the commander is turned in | ✅ *a safehouse only, not the Blind Spot* |
-| 18 | Honour Among Thieves | Red Hand, Independent | Recover what a crew member stole | Take it: paid, loud. Talk it back: 60%. Let him keep it: fails | ✅ |
+| 18 | Honour Among Thieves | Red Hand, Independent | Recover what a crew member stole | Take it: paid, loud. Talk it back: 60%. Let him keep it: fails for the crew, a medium callback deed, and he says so later on the road (the callback queue) | ✅ |
 | 20 | Debt Collection | Red Hand, Independent | Collect from a debtor (a real wanderer if free): talk, threaten or pay | Talk: 60%. Threaten: full, +3 Haven Infamy. Pay it: 15 Red Hand Favor | ✅ |
 | 21 | The Soft Touch | Red Hand, Rogue | Secret medicine to a Haven safehouse | Haven Fame +5; infection −5 | ✅ |
 | 23 | Sell Out a Rival Crew | Red Hand, Rogue | A map of another crew's camp, to Bastion | Bastion Fame +4; another crew boss dies (never one a mission or story is using; if a story takes them up before the raid, the camp is found empty) | ✅ |

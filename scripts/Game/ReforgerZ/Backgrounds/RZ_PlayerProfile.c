@@ -89,6 +89,12 @@ class RZ_PlayerProfile
 	ref array<string> m_aRecKeys = {};
 	ref array<float> m_aRecDays = {};
 	ref array<float> m_aRecPinned = {};
+	// Callback deeds, this life (Core/RZ_Deeds.c, tone's 12 weighted slots): key, phrase, weight
+	// (3 heavy, 2 medium, 1 light) and season day
+	ref array<string> m_aCallKeys = {};
+	ref array<string> m_aCallPhrases = {};
+	ref array<int> m_aCallWeights = {};
+	ref array<float> m_aCallDays = {};
 
 	// Reputation's voice, this life (Factions/RZ_RepVoice.c)
 	string m_sCrewName;							// what the Red Hand's crews call you ("" = new face)
@@ -182,6 +188,10 @@ class RZ_PlayerProfile
 		m_aRecKeys.Clear();
 		m_aRecDays.Clear();
 		m_aRecPinned.Clear();
+		m_aCallKeys.Clear();
+		m_aCallPhrases.Clear();
+		m_aCallWeights.Clear();
+		m_aCallDays.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -264,6 +274,29 @@ class RZ_PlayerProfile
 			m_aRecDays = new array<float>();
 		if (!m_aRecPinned)
 			m_aRecPinned = new array<float>();
+		if (!m_aCallKeys)
+			m_aCallKeys = new array<string>();
+		if (!m_aCallPhrases)
+			m_aCallPhrases = new array<string>();
+		if (!m_aCallWeights)
+			m_aCallWeights = new array<int>();
+		if (!m_aCallDays)
+			m_aCallDays = new array<float>();
+
+		while (m_aCallPhrases.Count() < m_aCallKeys.Count())
+		{
+			m_aCallPhrases.Insert("");
+		}
+
+		while (m_aCallWeights.Count() < m_aCallKeys.Count())
+		{
+			m_aCallWeights.Insert(1);
+		}
+
+		while (m_aCallDays.Count() < m_aCallKeys.Count())
+		{
+			m_aCallDays.Insert(0);
+		}
 
 		while (m_aFameGained.Count() < RZ_Factions.COUNT)
 		{

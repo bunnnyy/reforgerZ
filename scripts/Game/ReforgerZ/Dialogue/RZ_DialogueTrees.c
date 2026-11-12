@@ -1889,6 +1889,16 @@ class RZ_DialogueTrees
 			return;
 		}
 
+		// A giver's lie, taken to their own people (Missions/Story/RZ_Grey.c)
+		if (what == "brief_public")
+		{
+			string told = RZ_BriefLies.GoPublic(m_GM, pid, ctx.m_iFaction);
+			if (!told.IsEmpty())
+				s.m_aNew.Insert(told);
+
+			return;
+		}
+
 		switch (what)
 		{
 			case "distress": RZ_DialogueNets.Answer(s); return;

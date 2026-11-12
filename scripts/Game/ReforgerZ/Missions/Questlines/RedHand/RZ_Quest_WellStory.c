@@ -559,6 +559,8 @@ class RZ_QM_WellCollect : RZ_QuestMission
 		m_iTalk = AddClue(QText(gm, "keeper"), QFill(gm, "{keeper} doesn't get up from the step. \"I know who sent you, and I know what he wants. We haven't got it. Tell him that.\""));
 		m_sTitle = "The Well Story: collect";
 		m_sBrief = QFill(gm, "{village} hasn't paid this month. Go and remind {keeper} what my protection is worth. Politely, the first time.");
+		// The quiet threat (Reputation > Quiet success): Fear first, before the house comes out
+		m_Ways.m_iMenaceDifficulty = RZ_ReputationSettings.QuietDifficulty();
 		return true;
 	}
 
@@ -583,6 +585,15 @@ class RZ_QM_WellCollect : RZ_QuestMission
 
 		if (option != 1)
 			return;
+
+		// Quiet success: said once, quietly; nobody comes out of the houses, nobody's hurt
+		if (TryMenace(gm, playerId, "well.keeper", RZ_EFaction.SURVIVORS, false))
+		{
+			SetQFlag(gm, "leaned", 1);
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You say it once, quietly, so the doorways can't hear. {keeper} doesn't call anyone out. Still no. \"We haven't got it. Tell him that. Tell him I said it nicely.\""));
+			Resolve(gm, playerId, RZ_EQuestApproach.FORCE, RZ_Quest_WellStory.OUT_REFUSED, "leaned on the keeper quietly");
+			return;
+		}
 
 		m_iLeaner = playerId;
 		RZ_QuestApproach.SideWith(gm, playerId, -1, RZ_EFaction.SURVIVORS, 0, LEAN_INFAMY);

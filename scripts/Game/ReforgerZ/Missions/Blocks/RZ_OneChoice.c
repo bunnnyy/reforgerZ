@@ -113,6 +113,14 @@ class RZ_OneChoice
 		if (!RZ_StoryKit.MayDecide(gm, m, playerId))
 			return;
 
+		// The clever way closes the honest one (Missions/Story/RZ_Grey.c)
+		string closed = RZ_GreyChoice.Closed(gm, m, option);
+		if (!closed.IsEmpty())
+		{
+			gm.NotifyPlayer(playerId, m.m_sTitle, closed);
+			return;
+		}
+
 		// After the lock: an option whose asset belongs to another route refuses a locked player
 		string refusal = RZ_RouteAssets.Refuse(gm, playerId, AssetOf(option));
 		if (!refusal.IsEmpty())
@@ -154,6 +162,8 @@ class RZ_OneChoice
 			RZ_RouteAssets.Add(gm, decider, AssetOf(option), m.m_sTitle, RZ_FinaleAssets.ALLY);
 
 		m.OnChosen(gm, decider, option);
+		// The shared layer: nobody chose, the reaction, the callback deed, the others' line
+		RZ_GreyChoice.Settled(gm, m, this, decider, option);
 		if (m_bEnds)
 			m.m_eState = RZ_EMissionState.SUCCEEDED;
 

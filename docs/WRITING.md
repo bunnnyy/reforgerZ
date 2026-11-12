@@ -172,10 +172,19 @@ so it works at any season speed, and adds no simulation. The ladder, first match
   only: a restart starts from the ladder.
 - **Temper.** Each faction's morale moves its own lines one step: bleaker below 30 (back above 38),
   lighter above 75 (back below 67). Steps run Hope/Early, Grim, Bleak; the Epilogue isn't shifted.
-- **Grief** (`RZ_ToneGuard`): after a leader's or wanderer's death, a lost truck crew, a fallen Haven
-  Champion (Remembered) or a player who turned, no wry or joke line is said face to face within
-  1.5 km for 10 minutes; after a death in a safehouse, 30 minutes. The faction's own open channel
-  goes plain for 20 minutes too, the same for everyone (the radio's tails read it).
+- **Grief** (`RZ_ToneGuard`): after a leader's or wanderer's death, one of a holding's named people
+  killed, a lost truck crew, a fallen Haven Champion (Remembered) or a player who turned, no wry or
+  joke line is said face to face within 1.5 km for 10 minutes; after a death in a safehouse, 30
+  minutes. The faction's own open channel goes plain for 20 minutes too, the same for everyone (the
+  radio's tails read it). A holding's named person is a person: their body is watched while it's
+  shown (every 5 s), and when one is killed a newcomer takes the role under a new name
+  (`RZ_Territory.ReplacePerson`; log line `Voice: grief for <name>, the <role> at <place>`).
+  *Simplified:* what the dead one remembered of you (dialogue's regard on that person's key) carries
+  to the newcomer.
+- **A short house** (its last upkeep ran short): a resident's "Ask how things are" can end with a joke
+  about the soup, the potatoes or the chores (`house_short`, at twice the mood's share), never about
+  who eats, and none in the 30 minutes after a death there (the house's grief). Never in the epilogue
+  week's resident line.
 - Debug: **Voice > Force mood**; the log line `Voice: season mood <mood> (was <mood>)`.
 
 ## The voice bank
@@ -210,8 +219,10 @@ optional condition in the conversation syntax (`cure>=50`), a weight and the tex
   in the open (`majors.pages_open`). They're ordinary `person` lines with a condition, so the joke
   memory and the mood's share apply.
 - **More kinds:** `route` (face to face after the 90% lock, [below](#the-race-and-the-lock)),
-  `look_pass` and `look_caught` ([below](#faction-kit-and-disguises)), `change` (the change notice in
-  the faction's voice, by manner), and the openers' `owed` manner and set-word lines.
+  `look_pass`, `look_caught`, `look_notice` and `look_guns` ([below](#faction-kit-and-disguises)),
+  `change` (the change notice in the faction's voice, by manner), `house_short` (above), `week` (the
+  epilogue week's jokes, [below](#the-epilogue-week)), and the openers' `owed` manner and set-word
+  lines.
 - **Feud or truce** (`truce:<f>`, `feud:<f>` on people's lines): a feud sharpens the Red Hand's taunts
   and Bastion's lists; a truce allows one joke across the line: *"We shared a fire with Bastion last
   night. Both sides counted the matches."* An opener is filled for the listener too: `{word}`, `{best}`, `{worst}`,
@@ -342,6 +353,12 @@ their lines.
   punchline; a walk-out is a goodbye.
 - **A stronghold leader never jokes about their own page.** Once a page is in the open, rivals may
   gossip about it plainly, never as a joke.
+- **The week's jokes** (the bank's `week` lines, `Week` in the defaults): four or five a faction for
+  each ending (`cure_held:<who>`: each route, everyone, slow, nobody for handed over), and for no cure
+  (`cure_held:none`) only the Red Hand's last three. A leader says one only after the day's plain
+  opener has been said, at the Epilogue's share (1 in 3), through grief and joke memory, never to a
+  player they're hostile to or owe a hearing; a roll that finds no joke leaves the built greeting.
+  *"Distribution is orderly. The sergeant cried once. It's been logged as weather."*
 
 ## Faction kit and disguises
 
@@ -352,6 +369,16 @@ line, said only while the look is being made (*"Nice uniform. Whose was it?"*). 
 without any claim in their greetings (*"Where did you get that jacket? Don't answer. I'd have to
 write it down."*), saying only what they can see. A disguise never changes the word anyone uses for
 you once they know who you are.
+
+**Outside a conversation** (borrowed kit's own looks, [REPUTATION.md](REPUTATION.md#borrowed-kit)):
+- **A noticing line** (`look_notice`) leads an again look's 10-second notice (*"The sentry stops
+  talking and watches you walk."*), and plays only while one of theirs within 15 m can see you and is
+  turned toward you (within 60° of where they face, `RZ_DisguiseWatch.Facing`, VERIFY). Turned away
+  when it's due, the look waits (owed, as for nobody seeing).
+- **Straight to the guns:** a failed look at a post whose AI would shoot you by your standing alone
+  (only the kit held them) has no hold, no search and no kit taken: one urgent line (`look_guns`,
+  *"'That's not our armband.' Nobody asks twice."*) and their grudge, with the catch's Infamy as
+  usual. Elsewhere a catch is held, searched and told as before.
 
 ## Information comes first
 
@@ -378,6 +405,31 @@ lines keep their token.
 
 **Labels show costs and requirements, and hide rewards and consequences.** *"Pay their dues
 yourself (20 Red Hand Favor)"* is right; *"(+10 Haven Fame)"* is not.
+
+The mechanics behind tests 3, 6 and 7 (the reaction beat, nobody chose, someone else made the call,
+the clever way closing the honest one, givers who lie, callback deeds, boards of record) are
+[DESIGN.md](DESIGN.md#story-blocks)'s. **What each kind of job offers** (at least two grey options a
+row):
+
+| Kind | Grey options | Who pays | Watch for |
+|---|---|---|---|
+| Delivery | deliver; deliver where it's needed more; open it first; skim; sell to the rival | the receiver, or the place that went without | opening it tells you something worth knowing |
+| Collection | collect it all; half and cover the rest; from someone who can afford it; warn and refuse; give it back | the house (food), you (Favor), the giver (memory) | no option where everyone is happy |
+| Rescue and escort | where the giver wants; where *they* want; where they're safest; hand them over; leave the one who can't make it | the giver's numbers, a house's food, the person's freedom | always ask the person what they want |
+| Hold and defend | hold; hold for a higher price, raised mid-fight; get the people out instead; let the rival in | the place, the people inside, your standing | the grey comes before the fight or at a beat in it |
+| Hunt a person | kill; bring back alive; let go and claim the kill (proof needed); hear them out; hand them on | the target, the giver's trust, a later callback | every target gets a line; for Bastion, bringing a man home is its own way |
+| Retrieve and search | return; read first; copy; burn; sell; give it to the person it's about | whoever the information hurts | reading it adds a journal note |
+| Research | the lab's way; the person's way; the Red Hand's price; wait for consent and lose the sample | the volunteer, research, the Haven's trust | the numbers never stand in for the person |
+| Mercy | end it; let them walk; to the lab; your antidote; sit with them | you, the town, the person | no jokes, ever; the bitten person chooses if they can |
+| Perimeter | do it; send someone else; take the package and leave the person; get them away from the line | whoever walks toward the line | the line never opens; the grey is who gets sent |
+| Investigation and puzzles | tell the giver; the family; the rival; keep it quiet; tell everyone | whoever the truth hurts | the answer is a reason, not a villain |
+| Trade | deal; cheat (can be found out); take a cut; switch sides; turn the leader in | the other side, the leader, the stores | both sides have a good reason to trade |
+| World events | who gets the built loot; protect or rob; help the strangers or not | other players, the stranger | say so when the cost falls on another player |
+| Leader personal jobs | do it; do it and turn them in; do it badly on purpose; tell their people | the leader, the stronghold, whoever the rules bend for | the leader's reason is human, and they say it if asked |
+| Small side quests | the favour; the favour at someone else's cost; your way; say no kindly or unkindly | small and local: a tin, a lie, a rule bent | [ERRANDS.md](ERRANDS.md) |
+| Questline and major stages | all of the above, plus siding | as above | the choice echoes the faction's hard edge |
+| The finale | before 90%, any route; after, the grey moves inside the route | everyone | no route reads as the good ending |
+| The epilogue's closing work | finish it properly; rushed; leave it to close; someone else's way | mostly the people it's about | a rushed or bitter ending is still an ending, said plainly |
 
 ## Phrasing choices and outcomes
 

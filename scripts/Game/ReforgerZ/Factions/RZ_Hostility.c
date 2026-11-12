@@ -591,6 +591,16 @@ class RZ_Hostility
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Would `f`'s AI shoot this player by standing alone, with no kit to cover them?
+	bool ShootsByStanding(int playerId, int f)
+	{
+		if (m_Settings.m_eMode == RZ_EHostilityMode.OFF || !RZ_Factions.IsValid(f))
+			return false;
+
+		return (GetStandingMask(playerId) & RZ_Factions.Bit(f)) != 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected int GetStandingMask(int playerId)
 	{
 		int cached;

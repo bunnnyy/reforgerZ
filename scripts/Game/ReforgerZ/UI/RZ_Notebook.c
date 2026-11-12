@@ -471,6 +471,7 @@ class RZ_StandingPage : RZ_NotebookPage
 		RZ_MenuBase.Records(ui.GetStanding(), recs);
 		array<string> leaders = {"", "", "", ""};
 		array<string> kit = {"", "", "", ""};
+		array<string> words = {"", "", "", ""};
 		string relations = "";
 		// The reputation grid: which factions put you in each of the 16 cells (RepCell_<fame>_<infamy>)
 		array<string> cells = {};
@@ -486,6 +487,11 @@ class RZ_StandingPage : RZ_NotebookPage
 			{
 				string who = string.Format("%1 - %2 - LIFE %3", RZ_UIText.Str(f, 1), RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
 				who.ToUpper();
+				// The whole picture after it, as said (RZ_RepNamesPage.Header)
+				string picture = RZ_UIText.Str(f, 4);
+				if (!picture.IsEmpty())
+					who = who + "   " + picture;
+
 				RZ_UIW.SetText(m_wRoot, "Header", who);
 			}
 			else if (tag == "F")
@@ -504,6 +510,20 @@ class RZ_StandingPage : RZ_NotebookPage
 				int kf = RZ_UIText.Int(f, 1);
 				if (kf >= 0 && kf < 4)
 					kit[kf] = string.Format("IN THEIR KIT\n%1\n\n", RZ_UIText.Str(f, 2));
+			}
+			else if (tag == "W")
+			{
+				int wf = RZ_UIText.Int(f, 1);
+				if (wf >= 0 && wf < 4)
+				{
+					string wordText = RZ_UIText.Str(f, 2);
+					string verdict = RZ_UIText.Str(f, 3);
+					if (!verdict.IsEmpty())
+						wordText = wordText + "\n" + verdict;
+
+					if (!wordText.IsEmpty())
+						words[wf] = wordText + "\n\n";
+				}
 			}
 			else if (tag == "L")
 			{
@@ -532,7 +552,7 @@ class RZ_StandingPage : RZ_NotebookPage
 			if (text.IsEmpty())
 				text = "Nobody's given you a name yet.";
 
-			text = kit[i] + text;
+			text = words[i] + kit[i] + text;
 
 			RZ_UIW.SetText(m_wRoot, "Leaders" + i.ToString(), text);
 		}

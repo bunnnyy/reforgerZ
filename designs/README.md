@@ -9,9 +9,8 @@ errands' core, the mission style's framework, the world memory's writers; the mi
 grid in use, the agent budget, which is also the one body budget; the tribes and the behaviour layer; their life cycle;
 the people's side: words, knowing, the packs' contracts and events, the cure's hooks, the last week; the great one, signs and
 sounds; the behaviour layer's rest and the close moves on the player's machine; the small rules) and
-Traces in full are in code; they live in `docs/`, and their design files are gone. So are the last pieces
-of talk, reputation's names and tone: their three files keep only what waits for an engine check or another
-session's code.
+Traces in full are in code; they live in `docs/`, and their design files are gone. So are talk,
+reputation's names and tone: their design files are done and gone.
 
 - **Designs are not docs.** Built behaviour is always described in `docs/` ([the Doc map](../CLAUDE.md#doc-map)).
   A design file only says what's designed, and never describes built behaviour.
@@ -26,9 +25,6 @@ session's code.
 | File | What it covers | Build step ([PLAN.md](PLAN.md#the-build-order)) |
 |---|---|---|
 | [PLAN.md](PLAN.md) | The one combined plan: the shape of a season, the epilogue week, one owner per thing, the shared engine, the build order, the author's decisions, the 50 conflicts, risks and where each design lands in `docs/` | All steps; step 0 runs now |
-| [TONE.md](TONE.md) | Only what needs another session's code: grief for a holding's named people, a short house's soup jokes, look lines outside a conversation, the epilogue week's jokes, and the grey-choice mechanics in missions (the payout spread, givers who lie, failure as a branch, weighted deeds, the shared server). Everything else is built ([docs/WRITING.md](../docs/WRITING.md)) | Built; the rest waits on the missions, disguise and epilogue sessions |
-| [REPUTATION_NAMES.md](REPUTATION_NAMES.md) | Only what needs an engine check or another session's code: the quiet success on questlines' FORCE stages, Smoke (a throw hook), missions' deed phrases, the standing page's header and leaders' lines, the notices' priority, a parley job's journal line. Everything else is built ([docs/REPUTATION.md](../docs/REPUTATION.md)) | Built; the rest waits on the missions and UI sessions, and Smoke on the engine |
-| [DIALOGUE.md](DIALOGUE.md) | Only the text source read from the addon (with `$profile` overrides), which waits for an engine check (`FileIO` on addon files). Everything else of dialogue is built ([docs/DIALOGUE.md](../docs/DIALOGUE.md)) | Built; the text source waits for the PC |
 | [MISSION_STYLE.md](MISSION_STYLE.md) | What's left of the mission style (the rest is built: [docs/DESIGN.md](../docs/DESIGN.md#story-blocks), [docs/MISSIONS.md](../docs/MISSIONS.md)): the other 20 story jobs, talk scenes' nodes and speaker, trade's services and mission goods, a Paranoid giver's sulk, a callback at the door, the majors' reasons, the tribes' contracts on the kit, Tier 0's missing tags, the disguise tricks (a breaker, a trick that lasts), the runtime test's story checks | Phase 5 (the other story jobs) |
 | [ERRANDS.md](ERRANDS.md) | What's left of errands (the rest is built: [docs/ERRANDS.md](../docs/ERRANDS.md)): the dealer's context cache, factors and locals coming to you, pay in kind's rest, strangers' out-of-sight spawn, crossroads and robbery (each a VERIFY), the run-ups, locals near their knowers and at their spots, His Effects in full, the named body, the errand icon | Not scheduled: growth |
 | [camp_plans.html](camp_plans.html) | Drawings, not a design: every camp-life piece from above, a camp concept per faction and the faction bases' schematic plans, drawn by `tools/camp_kit/render.py`. The faction bases are built ([docs/DESIGN.md](../docs/DESIGN.md#camp-life)); the Workshop mods researched for their look are in [docs/MOD_STACK.md](../docs/MOD_STACK.md) | Drawings only |

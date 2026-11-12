@@ -15,6 +15,131 @@ class RZ_Deeds
 {
 	static const int LIFE_RECORDS = 32;
 	static const float PIN_DAYS = 3;
+	// Callback deeds (tone's twelve weighted slots, docs/DESIGN.md "Deeds")
+	static const int CALL_SLOTS = 12;
+	static const int CALL_LIGHT_MAX = 4;
+	static const int HEAVY = 3;		// a person's life, a page, a betrayal
+	static const int MEDIUM = 2;	// a house's food, a lie told, a choice made for others
+	static const int LIGHT = 1;		// a small side quest
+
+	// ================================================================ Callback deeds
+	//------------------------------------------------------------------------------------------------
+	//! A choice that involved a person, a house or a leader, for this life: `phrase` lowercase, past
+	//! tense ("walked the debtor to the line"). The same key again keeps the heavier weight and the
+	//! new phrase. When the twelve are full the lightest, oldest goes; light deeds hold at most four
+	//! slots and never push out a heavy one, so a day of small kindnesses can't wash the record clean.
+	static void Callback(RZ_PlayerProfile p, string key, string phrase, int weight)
+	{
+		if (!p || key.IsEmpty() || phrase.IsEmpty())
+			return;
+
+		p.EnsureArrays();
+		weight = Math.ClampInt(weight, LIGHT, HEAVY);
+		float day = RZ_SeasonClock.Day();
+		int at = p.m_aCallKeys.Find(key);
+		if (at >= 0)
+		{
+			p.m_aCallPhrases[at] = phrase;
+			p.m_aCallWeights[at] = Math.Max(p.m_aCallWeights[at], weight);
+			p.m_aCallDays[at] = day;
+			return;
+		}
+
+		int lights = 0;
+		foreach (int w : p.m_aCallWeights)
+		{
+			if (w == LIGHT)
+				lights++;
+		}
+
+		int drop = -1;
+		if (weight == LIGHT && lights >= CALL_LIGHT_MAX)
+		{
+			drop = Oldest(p, LIGHT, LIGHT);
+		}
+		else if (p.m_aCallKeys.Count() >= CALL_SLOTS)
+		{
+			int most = weight;
+			if (weight == LIGHT)
+				most = MEDIUM;
+
+			drop = Oldest(p, LIGHT, HEAVY);
+			if (drop >= 0 && p.m_aCallWeights[drop] > most)
+				drop = -1;
+
+			if (drop < 0)
+				return;
+		}
+
+		if (drop >= 0)
+			RemoveCallback(p, drop);
+
+		p.m_aCallKeys.Insert(key);
+		p.m_aCallPhrases.Insert(phrase);
+		p.m_aCallWeights.Insert(weight);
+		p.m_aCallDays.Insert(day);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lightest (within lo..hi), then oldest callback's index, -1 if none.
+	protected static int Oldest(RZ_PlayerProfile p, int lo, int hi)
+	{
+		int best = -1;
+		for (int i = 0; i < p.m_aCallKeys.Count(); i++)
+		{
+			int w = p.m_aCallWeights[i];
+			if (w < lo || w > hi)
+				continue;
+
+			if (best < 0 || w < p.m_aCallWeights[best] || (w == p.m_aCallWeights[best] && p.m_aCallDays[i] < p.m_aCallDays[best]))
+				best = i;
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RemoveCallback(RZ_PlayerProfile p, int i)
+	{
+		p.m_aCallKeys.RemoveOrdered(i);
+		p.m_aCallPhrases.RemoveOrdered(i);
+		p.m_aCallWeights.RemoveOrdered(i);
+		p.m_aCallDays.RemoveOrdered(i);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One callback deed to bring up ("" none): the heaviest, the newest of those, `skip` of them
+	//! passed over in turn so a regular hears more than one.
+	static string CallbackPhrase(RZ_PlayerProfile p, int skip)
+	{
+		if (!p)
+			return "";
+
+		p.EnsureArrays();
+		array<int> order = {};
+		for (int w = HEAVY; w >= LIGHT; w--)
+		{
+			for (int i = p.m_aCallKeys.Count() - 1; i >= 0; i--)
+			{
+				if (p.m_aCallWeights[i] == w)
+					order.Insert(i);
+			}
+		}
+
+		if (order.IsEmpty())
+			return "";
+
+		return p.m_aCallPhrases[order[RZ_Util.PickIndex(skip, Math.Min(3, order.Count()))]];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int CallbackCount(RZ_PlayerProfile p)
+	{
+		if (!p || !p.m_aCallKeys)
+			return 0;
+
+		return p.m_aCallKeys.Count();
+	}
 
 	// ================================================================ Life scope
 	//------------------------------------------------------------------------------------------------

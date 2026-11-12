@@ -1,0 +1,87 @@
+# Givers who lie (docs/DESIGN.md, "Story blocks"; Missions/Story/RZ_Grey.c): when you found what a
+# brief left out, any leader of the giver's faction can hear it. Taking it public costs that faction
+# 1 morale (capped) and an outpost giver 5 loyalty. It pays nothing: the truth is the payoff.
+
+conv haven.leader.brief_lie
+for leader:haven
+when knows:brieflie.haven
+topic "Tell them what the brief left out."
+prio reaction
+voice haven
+
+node start
+  say "Go on. If one of ours told you half of it, the house should hear the other half."
+  > @tell "Tell them what you found." -> told
+  > @keep "Keep it to yourself." -> kept
+
+node told
+  say "Right. I'll read it out at supper. Nobody will enjoy it."
+  do call:brief_public
+  > @back "Something else." -> hub
+
+node kept
+  say "Your call. Some things go quieter if you let them."
+  > @back1 "Something else." -> hub
+
+conv bastion.leader.brief_lie
+for leader:bastion
+when knows:brieflie.bastion
+topic "Report what the brief left out."
+prio reaction
+voice bastion
+
+node start
+  say "A brief that wasn't straight. Put it in a report. Short."
+  > @tell "Report it." -> told
+  > @keep "Leave it out of the record." -> kept
+
+node told
+  say "Received. It goes up the chain, such as the chain is."
+  do call:brief_public
+  > @back "Something else." -> hub
+
+node kept
+  say "Not reported, then. I didn't hear it either."
+  > @back1 "Something else." -> hub
+
+conv redhand.leader.brief_lie
+for leader:redhand
+when knows:brieflie.redhand
+topic "Tell the crew what the job left out."
+prio reaction
+voice redhand
+
+node start
+  say "Somebody sold you a job short? Careful. The crew likes a story, and it'll want a name."
+  > @tell "Tell the crew." -> told
+  > @keep "Let it lie." -> kept
+
+node told
+  say "That'll go round the fires by dark. Somebody's evening just got worse."
+  do call:brief_public
+  > @back "Something else." -> hub
+
+node kept
+  say "Good. A secret's worth more kept. Remember who owes you for it."
+  > @back1 "Something else." -> hub
+
+conv halcyon.leader.brief_lie
+for leader:halcyon
+when knows:brieflie.halcyon
+topic "Report what the brief left out."
+prio reaction
+voice halcyon
+
+node start
+  say "A discrepancy in a brief. The lab takes discrepancies seriously, on paper."
+  > @tell "Put it on the record." -> told
+  > @keep "Leave it off the record." -> kept
+
+node told
+  say "Recorded. The director will be told. The director won't thank either of us."
+  do call:brief_public
+  > @back "Something else." -> hub
+
+node kept
+  say "Off the record, then. There's a lot off the record."
+  > @back1 "Something else." -> hub

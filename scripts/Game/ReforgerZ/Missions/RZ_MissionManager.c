@@ -229,6 +229,7 @@ class RZ_MissionManager
 	{
 		m_fClock += dt;
 		RZ_StoryStats.Tick(dt, ids.Count());
+		RZ_BriefLies.Tick(m_GM, dt, m_aActive);
 
 		for (int i = m_aActive.Count() - 1; i >= 0; i--)
 		{
@@ -316,6 +317,8 @@ class RZ_MissionManager
 		m_aActive.Insert(mission);
 		m_fSpotsAt = -1; // its props count from now
 		OnStarted(mission);
+		// A giver who lies leaves one thing out of the brief (Missions/Story/RZ_Grey.c)
+		RZ_BriefLies.OnStarted(m_GM, mission);
 		return true;
 	}
 
@@ -870,6 +873,8 @@ class RZ_MissionManager
 			RZ_WorldWriters.MissionEnded(m, false, m.m_aParticipants);
 
 		RZ_ReasonPosts.Ended(m_GM, m, success);
+		// A lying brief's outcome names it, either way
+		RZ_BriefLies.OnFinished(m_GM, m, success);
 
 		// Who benefits: the others who did the work, when it went another way
 		if (success && m.m_Story)
