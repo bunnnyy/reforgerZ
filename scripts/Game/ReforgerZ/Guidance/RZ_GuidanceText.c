@@ -1,93 +1,10 @@
-//! What the world says to new players: spawn scenario notes, the open radio channels,
-//! Bastion's loudspeakers, Red Hand taunts, Halcyon's flyers and wanderer gossip.
+//! What the world says to new players: the clues in an opening's scene (RZ_OpeningScenes), the
+//! open radio channels, Bastion's loudspeakers, Red Hand taunts, Halcyon's flyers and wanderer gossip.
 //! Written to the voices in docs/WRITING.md: Bastion clipped and tired, the Haven warm and
 //! worried, the Red Hand mocking, Halcyon precise and a little guilty.
 class RZ_GuidanceText
 {
-	// ================================================================ Spawn scenarios
-	//------------------------------------------------------------------------------------------------
-	static string ScenarioTitle(int scenario)
-	{
-		switch (scenario)
-		{
-			case RZ_EGuideScenario.CAR: return "A back road";
-			case RZ_EGuideScenario.BASEMENT: return "A basement";
-			case RZ_EGuideScenario.CHURCH: return "Church notice";
-			case RZ_EGuideScenario.FARMHOUSE: return "A farmhouse kitchen";
-			case RZ_EGuideScenario.ATTIC: return "An attic";
-			case RZ_EGuideScenario.BARRICADE: return "Behind the barricade";
-		}
-
-		return "Where you woke";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The spawn card's line: where you wake, in one short line, no distances (docs/UI.md,
-	//! "Notices"). The full scene goes into the notebook (Scene).
-	static string SpawnLine(int scenario, string town)
-	{
-		switch (scenario)
-		{
-			case RZ_EGuideScenario.CAR: return string.Format("A back road outside %1. A car in the ditch, a note on the dash.", town);
-			case RZ_EGuideScenario.BASEMENT: return string.Format("A cold basement in %1. Scratches on the back of the door.", town);
-			case RZ_EGuideScenario.CHURCH: return string.Format("%1. A flyer pinned up close by.", town);
-			case RZ_EGuideScenario.FARMHOUSE: return string.Format("A farmhouse kitchen in %1. A wind-up radio, still talking.", town);
-			case RZ_EGuideScenario.ATTIC: return string.Format("An attic in %1. You're not alone up here.", town);
-			case RZ_EGuideScenario.BARRICADE: return string.Format("Behind a Bastion barricade in %1. A soldier who isn't getting up.", town);
-		}
-
-		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Where you wake. `brief` = a veteran: one line.
-	static string Scene(int scenario, string town, string extra, bool brief)
-	{
-		switch (scenario)
-		{
-			case RZ_EGuideScenario.CAR:
-				if (brief)
-					return string.Format("A car in the ditch outside %1. A note behind the wiper.", town);
-
-				return string.Format("You come to on the verge of a back road outside %1, next to a car with its nose in the ditch. The doors are open. Someone left a note on the dashboard.", town);
-			case RZ_EGuideScenario.BASEMENT:
-				if (brief)
-					return string.Format("A basement in %1. Scratches on the back of the door.", town);
-
-				return string.Format("You wake on the floor of a cold basement in %1. Light comes in under the door. Something has been scratched into the back of it.", town);
-			case RZ_EGuideScenario.CHURCH:
-				if (!extra.IsEmpty())
-				{
-					if (brief)
-						return string.Format("%1. A flyer on the church door, %2.", town, extra);
-
-					return string.Format("You come to in %1 to the sound of a church door banging in the wind, %2. Something white is nailed to it, flapping.", town, extra);
-				}
-
-				if (brief)
-					return string.Format("%1. A flyer pinned to a post.", town);
-
-				return string.Format("You come to in %1. Someone has pinned a flyer to the post beside you, over an old notice for a church fete.", town);
-			case RZ_EGuideScenario.FARMHOUSE:
-				if (brief)
-					return string.Format("A farmhouse kitchen in %1. A wind-up radio on the table, still talking.", town);
-
-				return string.Format("A farmhouse kitchen on the edge of %1. Plates still on the table, a chair on its back. Next to the plates, a wind-up radio is talking to itself:\n%2", town, extra);
-			case RZ_EGuideScenario.ATTIC:
-				if (brief)
-					return string.Format("An attic in %1. A dead man by the skylight.", town);
-
-				return string.Format("You wake in an attic in %1, under a skylight thick with dust. You're not alone up here. He's been dead a while.", town);
-			case RZ_EGuideScenario.BARRICADE:
-				if (brief)
-					return string.Format("Behind a Bastion barricade in %1. A dead soldier.", town);
-
-				return string.Format("You come to behind a barricade of sandbags and an overturned car at the edge of %1. A soldier sits against it, very still, a folded paper in his breast pocket.", town);
-		}
-
-		return "";
-	}
-
+	// ================================================================ An opening's clues
 	//------------------------------------------------------------------------------------------------
 	//! Crashed car: the dashboard note points at the nearest Haven safehouse.
 	static string CarNote(RZ_Rng rng, string safehouseTown, string direction)

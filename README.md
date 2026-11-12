@@ -260,7 +260,7 @@ scripts/Game/ReforgerZ/
   Puzzles/       clues, puzzle objects and actions, noisemakers, landmarks; Missions/
   Cure/          research, lab, samples, antidotes, infection stages, treatments and meds; the
                  cure finale's controller (tracks, locks, pacts, the batch, the stand's clean room)
-  Guidance/      experience levels, tips, spawn scenarios, open radio channels
+  Guidance/      experience levels, tips, openings, open radio channels
   Interactions/  loose loot, wrecks' boots, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, petrol pumps as vanilla fuel, crafting and
                  the stove (and their screen's server side), the object menu's server side and grouped

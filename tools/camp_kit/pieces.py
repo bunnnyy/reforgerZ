@@ -372,8 +372,18 @@ TRACES = {
 
 # Openings (Guidance > Opening scenes on RZ_GameMode.et, docs/DESIGN.md "Openings"): key -> (composition
 # name, parts). Built into Prefabs/ReforgerZ/Guidance/Openings/<name>.et. They stand outside the door you
-# come out of, +Z away from the wall. A background's id: its own things, on one side of the door.
+# come out of, +Z away from the wall. A reason's three (hiding, group, fever: why today) stand in front of
+# the door to one side; a background's id, its own things, on the other side.
 OPENINGS = {
+    'hiding.1': ('RZ_Opening_Hiding_Cellar', [P('Bucket_02.et', 0, 0), P('BlanketFolded_01_green.et', 0.8, 0.2, 20), P('BeerBottle_01_empty_brown.et', -0.5, 0.3, 0, 0, 90), P('LitterInterior_USSR_01_tincan_V1.et', -0.3, -0.4), P('LitterInterior_USSR_01_tincan_V2.et', 0.2, -0.6), P('CandleHolderDecorative_01.et', 1.2, -0.3)]),
+    'hiding.2': ('RZ_Opening_Hiding_Pantry', [P('CrateWooden_01_plain.et', 0, 0, 5), P('LitterInterior_USSR_01_tincan_V2.et', -0.2, 0, 0, 0.62), P('LitterInterior_USSR_01_tincan_V1.et', 0.15, 0.1, 0, 0.62), P('LampKerosene_01_green.et', 0.3, -0.1, 0, 0.62), P('Junk_01_single_mattress.et', 1.6, 0.4, 85)]),
+    'hiding.3': ('RZ_Opening_Hiding_Bolthole', [P('Junk_01_single_planks.et', 0, 0, 15), P('Junk_01_single_planks.et', 0.3, 0.5, 40), P('ChairOld_01.et', -1.1, 0.3, 70, 0.25, 0, 90), P('Bucket_01.et', 1.3, -0.2)]),
+    'group.1': ('RZ_Opening_Group_Bedrolls', [P('BlanketBeach_01_brown.et', 0, 0, 5), P('BlanketBeach_01_brown.et', 1.1, 0.1, -5), P('BlanketBeach_01_red.et', -1.1, 0, 10), P('BlanketFolded_01_green.et', 2.1, 0.6), P('SackUniversal_01.et', 0.5, 1.4, 70)]),
+    'group.2': ('RZ_Opening_Group_Table', [P('TableOld_01.et', 0, 0, 8), P('Notebook_01_Stack.et', -0.2, 0.05, 30, 0.78), P('LampKerosene_01_green.et', 0.4, -0.1, 0, 0.78), P('ChairOld_01.et', -0.8, 0.1, 90), P('ChairOld_02.et', 0.8, 0.2, -90), P('Chair_01_white.et', 0.1, 0.8, 180), P('Stool_01.et', 0, -0.8)]),
+    'group.3': ('RZ_Opening_Group_Packs', [P('Suitcase_01.et', 0, 0, 10), P('Suitcase_01.et', 0.5, 0.4, 80, 0, 90), P('SackUniversal_01_Pile.et', -1.0, 0.2, 20), P('Wheelbarrow_01.et', 1.5, -0.2, 30), P('BlanketFolded_01_green.et', 0.1, -0.6)]),
+    'fever.1': ('RZ_Opening_Fever_Barricade', [P('Junk_01_single_planks.et', 0, 0, 0), P('Junk_01_single_planks.et', 0.2, 0.3, 20), P('Junk_01_single_planks.et', -0.4, 0.5, 70), P('ChairOld_02.et', 1.2, 0.4, 200), P('Pallet_01.et', -1.3, 0.2, 90, 0.6, 0, 80), P('Bucket_01.et', 0.9, -0.6)]),
+    'fever.2': ('RZ_Opening_Fever_Sickbed', [P('Junk_01_single_mattress.et', 0, 0, 90), P('Bucket_02.et', 1.3, 0.3), P('LitterInterior_USSR_01_mug.et', 1.1, -0.3), P('LitterInterior_USSR_01_bowl.et', 1.4, -0.5), P('BlanketFolded_01_green.et', -0.2, 0.1, 30, 0.12)]),
+    'fever.3': ('RZ_Opening_Fever_Vigil', [P('ChairOld_01.et', 0, 0, 180), P('BlanketFolded_01_green.et', 0, 0, 0, 0.45), P('CandleHolderDecorative_01.et', 0.6, 0.2), P('LitterInterior_USSR_01_mug.et', 0.5, -0.2), P('LitterInterior_USSR_01_tincan_V1.et', -0.6, 0.3)]),
     'nurse': ('RZ_Opening_Props_Nurse', [P('BlanketFolded_01_green.et', 0, 0, 10), P('Bucket_01.et', 0.7, 0.3), P('ToolsSurgical_01_autoclavedrum.et', -0.6, 0.2), P('LitterInterior_USSR_01_mug.et', 0.3, -0.4)]),
     'doctor': ('RZ_Opening_Props_Doctor', [P('ChairOld_01.et', 0, 0, 160), P('FileOffice_01_Stack.et', 0, 0, 20, 0.45), P('ToolsSurgical_01_autoclavedrum.et', 0.8, 0.3), P('LampKerosene_01_green.et', -0.6, 0.2)]),
     'mechanic': ('RZ_Opening_Props_Mechanic', [P('Tire_UAZ469.et', 0, 0, 0, 0, 90), P('Junk_01_pile_small.et', 1.4, 0.4, 30), P('BarrelMetal_01_blue.et', -1.0, 0.3), P('CrateWooden_01_plain.et', 0.4, -0.9, 15)]),

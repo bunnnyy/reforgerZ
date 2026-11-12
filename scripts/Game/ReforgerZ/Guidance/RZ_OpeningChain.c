@@ -6,6 +6,8 @@
 //! 2. your background's own system (RZ_OpeningSteps.c), else water from the nearest well, or
 //!    something medical for the contact's hand;
 //! 3. walk to where your background belongs (it ends there; nobody to go back to).
+//! Levels 2-3, and an opening with nobody outside, end at the nearest place with work instead (the
+//! lead), with no Fame.
 //! The steps pay nothing through the errand ledger: the chain pays its own Fame at the end
 //! (RZ_Openings), and two step 2s their own small effect (RZ_OpeningTasks.Resolved). Server only.
 
@@ -60,9 +62,12 @@ class RZ_OpeningChain
 {
 	static const string KEY_SEARCH = "opening.search";
 	static const string KEY_WALK = "opening.walk";
+	static const string KEY_LEAD = "opening.lead";
 
 	ref RZ_OpeningStepDef m_Search;
 	ref RZ_OpeningStepDef m_SearchShort;		// a learning player's step 1 (level 1)
+	ref RZ_OpeningStepDef m_Lead;				// levels 2-3: the nearest place with work, from whoever's outside
+	ref RZ_OpeningStepDef m_LeadNote;			// the same with nobody outside: the scene's read says it
 	ref array<ref RZ_OpeningStepDef> m_aWalk = {};	// by the ending faction (RZ_EFaction)
 	protected ref map<int, ref RZ_OpeningStepDef> m_mTasks = new map<int, ref RZ_OpeningStepDef>();
 
@@ -191,6 +196,13 @@ class RZ_OpeningChain
 		w.Done("\"Shaking hands. Not smiling, but shaking hands. That'll do for this week.\"",
 			"\"They'll share the well. They won't share a word, but they'll share the well.\"");
 
+		m_Lead = Lead(KEY_LEAD,
+			"\"Go and see them at {place}. There's work there, and they feed the ones who do it.\"",
+			"\"They need hands at {place}, last I heard. Go and be some. I'll manage.\"");
+		m_LeadNote = Lead(KEY_LEAD + ".note",
+			"Lower down, in your own handwriting: \"Work at {place}. Ask for it.\"",
+			"Under it, in your own handwriting, a reminder you don't remember writing: \"{place}. They had work.\"");
+
 		for (int f = 0; f < RZ_Factions.COUNT; f++)
 		{
 			RZ_OpeningStepDef walk = new RZ_OpeningStepDef(KEY_WALK + "." + f.ToString(), RZ_OpeningText.WalkTitle(f), 3);
@@ -224,6 +236,22 @@ class RZ_OpeningChain
 			"\"I need eyes on {place}. Two days I've watched it. Nothing moves. That's what worries me.\"");
 		w.Done("\"You came back. Most don't, from that side of the road.\"",
 			"\"Anything? It doesn't matter. You went, and you came back. That's more than most manage.\"");
+		return d;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest place with work: done within 40 m of it, nobody to go back to; an hour to get there.
+	protected RZ_OpeningStepDef Lead(string key, string a, string b)
+	{
+		RZ_OpeningStepDef d = new RZ_OpeningStepDef(key, "Where the Work Is", 3);
+		d.m_fLapseMinutes = 60;
+		RZ_ErrandWay w = d.Way("do");
+		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
+		w.m_fSeconds = 3;
+		w.m_fRadius = 40;
+		w.m_bEndsThere = true;
+		w.m_sStep = "Go to {place} and ask for work.";
+		w.Take(a, b);
 		return d;
 	}
 

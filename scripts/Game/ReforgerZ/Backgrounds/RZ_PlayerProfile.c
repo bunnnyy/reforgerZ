@@ -18,7 +18,7 @@ class RZ_PlayerProfile
 	int m_iGuideLives;					// lives that lasted long enough to count (10 min by default)
 	int m_iGuideLastUnix;				// real-world time last seen playing (refresher after a long break)
 	int m_iGuideRefreshLeft;			// counted lives left with refreshed (stronger) guidance
-	int m_iGuideLastScenario = -1;		// the last spawn scenario, so the next one differs
+	int m_iOpeningLastScene = -1;		// the last opening's scene (reason x 10 + its composition), so the next one differs
 	ref array<string> m_aGuideSeen = {};	// once-only tips already given
 	ref array<float> m_aStarts = {};	// openings (Guidance/RZ_Openings.c): the last two starts, x and z, newest first
 

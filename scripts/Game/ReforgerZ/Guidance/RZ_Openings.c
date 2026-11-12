@@ -1,18 +1,21 @@
 //! Openings: how every life starts (docs/DESIGN.md, "Openings").
 //!
 //! Each life starts at a random place that fits its background (RZ_OpeningRoll, rolled when the
-//! character spawns), coming out of its hiding place: a few props by the door you open (the scene,
-//! and your background's own things), the calendar with the days crossed off, and someone who knew
-//! you before the outbreak, standing a few metres off. They speak first, on the talk screen, and
-//! the chain's first step is tracked straight away: the only job in the game that starts without
-//! you talking to anyone or using anything. The chain (RZ_OpeningChain) is three errand steps:
-//! close by and quiet (a building of your background's kind when one is near), your background's
+//! character spawns), coming out of a door for a reason (RZ_EOpeningReason: the hiding place, your
+//! group gone, the fever broken). By the door, the reason's scene, your background's own things,
+//! something to read and a clue (RZ_OpeningScenes). A few metres off, whoever's outside
+//! (RZ_EOpeningWho: someone from before, a stranger, or a wanderer who met an earlier life of
+//! yours) speaks first, on the talk screen, and the chain's first step is tracked straight away: the
+//! only job in the game that starts without you talking to anyone or using anything. The chain
+//! (RZ_OpeningChain) is errand steps by your guidance level: close by and quiet, your background's
 //! own system (RZ_OpeningSteps.c), and the walk to where your background belongs, which pays a
-//! little Fame with that faction. Players past learning (guidance level 2+) get the first step only.
+//! little Fame with that faction (levels 0-1); your background's step, then the nearest place with
+//! work (level 2); the nearest place with work only, and someone outside one time in three
+//! (level 3). With nobody outside, the scene's read points you at the work.
 //!
-//! It replaces the spawn scenarios' clues and "a wanderer finds you" for that life; the gentle
-//! start, the wind-up radio, the tips and the guidance levels stay. Not in the epilogue week (the
-//! place is still rolled). One log line when it starts, per step, and when it ends. Server only.
+//! It replaces "a wanderer finds you" for a life with someone outside; the gentle start, the
+//! wind-up radio, the tips and the guidance levels stay. Not in the epilogue week (the place is
+//! still rolled). One log line when it starts, per step, and when it ends. Server only.
 
 //------------------------------------------------------------------------------------------------
 //! The stages a chain is made of, in its plan (RZ_Opening.m_aPlan).
@@ -21,7 +24,18 @@ enum RZ_EOpeningStage
 	NONE,
 	SEARCH,		// step 1: a building close by, quietly
 	TASK,		// step 2: your background's own system (the Drifter: up to three asks)
-	WALK		// step 3: to where your background belongs
+	WALK,		// step 3: to where your background belongs
+	LEAD		// the last step for levels 2-3 and a contact-less opening: to the nearest place with work
+}
+
+//------------------------------------------------------------------------------------------------
+//! Who's outside the door (the conversations' opening.who).
+enum RZ_EOpeningWho
+{
+	NOBODY,
+	BEFORE,		// someone from before the outbreak, by your background
+	STRANGER,	// a stranger: who heard the door, who saw them go, who wrote on the door
+	EARLIER		// a wanderer who met you in an earlier life: "You look like someone I knew."
 }
 
 //------------------------------------------------------------------------------------------------
@@ -36,10 +50,15 @@ class RZ_Opening
 	bool m_bFull;				// its plan ends with the walk (levels 0-1): it replaces "Find the Haven"
 	ref RZ_OpeningPlace m_Place;
 	string m_sTown;
-	IEntity m_Contact;			// weak: someone from before
+	int m_iReason;				// why today (RZ_EOpeningReason)
+	int m_iScene;				// the reason's composition (1-3)
+	int m_iWho;					// who's outside (RZ_EOpeningWho)
+	int m_iWanderer = -1;		// EARLIER: the wanderer they are, held while they stand here
+	IEntity m_Contact;			// weak: whoever's outside
 	bool m_bHadContact;
 	bool m_bContactDead;
 	string m_sName;				// "Vera Holm"
+	string m_sShort;			// "Vera" ("Old Marta" for a wanderer)
 	string m_sWho;				// "a patient's mother"
 	string m_sSpeaker;			// the title their lines come under; whoever finds you, once they're dead
 	int m_iEnd = -1;			// the faction the chain ends with
@@ -75,6 +94,10 @@ class RZ_Openings
 	static const string FLAG_STEP = "opening.step";	// dialogue's character flag: the step under way (1-3), 4 when it's over
 	static const string FLAG_END = "opening.end";		// the ending faction + 1 (1 the Haven ... 4 Halcyon)
 	static const string FLAG_TASK = "opening.task";		// step 2's task (RZ_EOpeningTask)
+	static const string FLAG_WHY = "opening.why";		// why today (RZ_EOpeningReason: 1 hiding, 2 group gone, 3 fever)
+	static const string FLAG_WHO = "opening.who";		// who's outside (RZ_EOpeningWho: 1 from before, 2 stranger, 3 an earlier life's)
+	static const string FLAG_EARLIER = "opening.earlier";	// an earlier life's: what they remember (1 helped, 2 wronged, 3 only met)
+	static const string FLAG_FIRST = "opening.first";	// 1 while the first step runs (their greeting)
 
 	protected static const float POLL = 1;
 	protected static const float SPEAK_DELAY = 4;		// seconds after the spawn before they speak
@@ -86,6 +109,10 @@ class RZ_Openings
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
 	protected static const float SEARCH_MIN = 50;		// step 1's house: this far from the contact...
 	protected static const float SEARCH_MAX = 250;		// ...and no further
+	protected static const float STRANGER_CHANCE = 0.25;	// a stranger instead of someone from before
+	protected static const float EARLIER_CHANCE = 0.35;	// an earlier life's wanderer, when one remembers you
+	protected static const float VETERAN_CONTACT = 0.34;	// a veteran meets someone one time in three
+	protected static const int HOLD_BASE = 800000;		// RZ_Wanderers.Hold's id for an opening (+ its id)
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Guidance m_Guide;
@@ -93,6 +120,7 @@ class RZ_Openings
 	protected ref RZ_OpeningRoll m_Roll;
 	protected ref RZ_OpeningChain m_Chain;
 	protected ref RZ_OpeningTasks m_Tasks;
+	protected ref RZ_OpeningScenes m_Scenes;
 	protected ref array<ref RZ_Opening> m_aOpenings = {};
 	protected ref map<int, ref RZ_OpeningPlace> m_mPending = new map<int, ref RZ_OpeningPlace>();
 	protected ref map<int, bool> m_mMoved = new map<int, bool>();
@@ -111,6 +139,7 @@ class RZ_Openings
 		m_Roll = new RZ_OpeningRoll(gm);
 		m_Chain = new RZ_OpeningChain();
 		m_Tasks = new RZ_OpeningTasks(gm);
+		m_Scenes = new RZ_OpeningScenes(gm, guide, settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -254,20 +283,30 @@ class RZ_Openings
 			o.m_sTown = town.m_sName;
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
+		o.m_iReason = RollReason(o.m_iLevel, rng);
 		Plan(o, rng);
-		o.m_sName = RZ_OpeningText.Name(rng);
-		o.m_sWho = RZ_OpeningText.Who(bg.m_sId);
-		o.m_sSpeaker = o.m_sName + ", " + o.m_sWho;
 		o.m_iEnd = EndFactionFor(playerId, bg.m_sId);
 		FindEnd(o, ent.GetOrigin());
 
-		// Nobody to speak first (no body prefab, or the story budget is full): no opening this life,
-		// and the spawn scenario, the wanderer and "Find the Haven" stand in as they did before
-		SpawnContact(o, ent.GetOrigin());
+		// Who's outside: a veteran meets someone one time in three. Nobody can stand (no body prefab,
+		// the story budget full): the scene's read points at the nearest work instead
+		bool wanted = o.m_iLevel < RZ_Guidance.LEVEL_VETERAN || rng.Chance(VETERAN_CONTACT);
+		if (wanted)
+		{
+			PickWho(o, profile, rng);
+			SpawnContact(o, ent.GetOrigin());
+		}
+
 		if (!o.m_bHadContact)
 		{
-			RZ_Log.Info(string.Format("Openings: no contact could stand for %1 at %2, the spawn scenario instead", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(ent.GetOrigin())));
-			return;
+			ReleaseWanderer(o, ent.GetOrigin());
+			o.m_iWho = RZ_EOpeningWho.NOBODY;
+			o.m_sName = RZ_OpeningText.ReadTitle(o.m_iReason);
+			o.m_sShort = o.m_sName;
+			o.m_sSpeaker = o.m_sName;
+			NoContact(o);
+			if (wanted)
+				RZ_Log.Info(string.Format("Openings: no contact could stand for %1 at %2, the scene's read instead", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(ent.GetOrigin())));
 		}
 
 		int day = 1;
@@ -275,36 +314,81 @@ class RZ_Openings
 			day = m_GM.GetBroadcast().GetDay();
 
 		if (place.m_bScene)
-			PlaceScene(o, day);
+			m_Scenes.Place(o, day, profile, rng);
 
-		m_Guide.MarkOpening(playerId);
-		m_Guide.SetSpawnLine(playerId, RZ_OpeningText.SpawnLine(place.m_sKind, place.m_bScene, o.m_sTown, day));
+		// Someone there: no wanderer comes looking
+		if (o.m_bHadContact)
+			m_Guide.MarkOpening(playerId);
+
+		m_Guide.SetSpawnLine(playerId, RZ_OpeningText.SpawnLine(o.m_iReason, place.m_sKind, place.m_bScene, o.m_sTown, day));
+		SetFlag(o, FLAG_WHY, o.m_iReason);
+		SetFlag(o, FLAG_WHO, o.m_iWho);
+		SetFlag(o, FLAG_FIRST, 0);
+		SetFlag(o, FLAG_STEP, 0);
 		o.m_fNextAt = m_fClock + SPEAK_DELAY;
 		m_aOpenings.Insert(o);
-
-		string chain = PlanText(o);
 
 		string kind = place.m_sKind;
 		if (kind.IsEmpty())
 			kind = "spawn point";
 
-		RZ_Log.Info(string.Format("Openings: started for %1: %2, %3 in %4 (%5), level %6, someone from before (%7), chain %8 to %9",
-			RZ_Util.PlayerName(playerId), bg.m_sId, kind, o.m_sTown, RZ_SettlementScanner.GridReference(ent.GetOrigin()), o.m_iLevel, o.m_sWho, chain, o.m_sEndPlace));
+		string who = typename.EnumToString(RZ_EOpeningWho, o.m_iWho) + ": " + o.m_sWho;
+		who.ToLower();
+		string chain = PlanText(o);
+		if (o.m_bFull)
+			chain += " to " + o.m_sEndPlace;
+
+		RZ_Log.Info(string.Format("Openings: started for %1: %2, %3 in %4 (%5), level %6, %7, %8, chain %9",
+			RZ_Util.PlayerName(playerId), bg.m_sId, kind, o.m_sTown, RZ_SettlementScanner.GridReference(ent.GetOrigin()), o.m_iLevel, RZ_OpeningScenes.ReasonKey(o.m_iReason), who, chain));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The chain's plan: levels 0-1 all three steps, others the first only; nothing with errands
-	//! off. Step 2's tasks to try: the background's own, or the Drifter's asks.
+	//! Why today: your group gone (Guidance > Group gone weight, 18) or the fever broken (Fever
+	//! weight, 12), else the hiding place; a brand-new player's two weights are halved, so they lean
+	//! to the hiding place.
+	protected int RollReason(int level, RZ_Rng rng)
+	{
+		int group = Math.Max(0, m_Settings.m_iGroupGoneWeight);
+		int fever = Math.Max(0, m_Settings.m_iFeverWeight);
+		if (level <= RZ_Guidance.LEVEL_NEW)
+		{
+			group = group / 2;
+			fever = fever / 2;
+		}
+
+		int roll = rng.Int(0, 100);
+		if (roll < group)
+			return RZ_EOpeningReason.GROUP;
+
+		if (roll < group + fever)
+			return RZ_EOpeningReason.FEVER;
+
+		return RZ_EOpeningReason.HIDING;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The chain's plan by guidance level, with errands on: 0-1 all three steps (level 1's step 1
+	//! shorter); 2 your background's step, then the nearest place with work; 3 that place only. Step
+	//! 2's tasks to try: the background's own, or the Drifter's asks.
 	protected void Plan(RZ_Opening o, RZ_Rng rng)
 	{
 		RZ_Errands errands = m_GM.GetErrands();
 		if (errands && errands.IsOn())
 		{
-			o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
 			if (o.m_iLevel <= 1)
 			{
+				o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
 				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
 				o.m_aPlan.Insert(RZ_EOpeningStage.WALK);
+			}
+			else if (o.m_iLevel == 2)
+			{
+				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
+				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
+			}
+			else
+			{
+				o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
 			}
 		}
 
@@ -313,6 +397,96 @@ class RZ_Openings
 			RZ_OpeningTasks.DrifterPool(rng, o.m_aTasks);
 		else
 			RZ_OpeningTasks.Preferred(o.m_sBackground, o.m_aTasks);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Nobody outside: only the nearest place with work, from the scene's read (errands on).
+	protected void NoContact(RZ_Opening o)
+	{
+		o.m_aPlan.Clear();
+		RZ_Errands errands = m_GM.GetErrands();
+		if (errands && errands.IsOn())
+			o.m_aPlan.Insert(RZ_EOpeningStage.LEAD);
+
+		o.m_bFull = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who's outside: a wanderer who met an earlier life of yours, when one does (35%: they're held
+	//! off the road while they stand here); else a stranger one time in four; else someone from
+	//! before, by your background.
+	protected void PickWho(RZ_Opening o, RZ_PlayerProfile profile, RZ_Rng rng)
+	{
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		int earlier = EarlierWanderer(profile);
+		if (earlier >= 0 && rng.Chance(EARLIER_CHANCE))
+		{
+			RZ_Wanderer w = wanderers.FindById(earlier);
+			o.m_iWho = RZ_EOpeningWho.EARLIER;
+			o.m_iWanderer = earlier;
+			o.m_sName = w.GetShortName();
+			o.m_sShort = o.m_sName;
+			o.m_sWho = RZ_OpeningText.EarlierWho(w.GetRoleName());
+			o.m_sSpeaker = o.m_sName + ", " + o.m_sWho;
+			int memory = w.OldMemory(profile.m_sIdentity);
+			int remembers = 3;
+			if ((memory & RZ_Wanderers.MEM_WRONGED) != 0)
+				remembers = 2;
+			else if ((memory & (RZ_Wanderers.MEM_HELPED | RZ_Wanderers.MEM_SAVED)) != 0)
+				remembers = 1;
+
+			SetFlag(o, FLAG_EARLIER, remembers);
+			wanderers.Hold(earlier, HOLD_BASE + o.m_iId);
+			return;
+		}
+
+		SetFlag(o, FLAG_EARLIER, 0);
+		o.m_sName = RZ_OpeningText.Name(rng);
+		o.m_sShort = o.m_sName;
+		int space = o.m_sName.IndexOf(" ");
+		if (space > 0)
+			o.m_sShort = o.m_sName.Substring(0, space);
+
+		if (rng.Chance(STRANGER_CHANCE))
+		{
+			o.m_iWho = RZ_EOpeningWho.STRANGER;
+			o.m_sWho = RZ_OpeningText.StrangerWho(o.m_iReason);
+		}
+		else
+		{
+			o.m_iWho = RZ_EOpeningWho.BEFORE;
+			o.m_sWho = RZ_OpeningText.Who(o.m_sBackground);
+		}
+
+		o.m_sSpeaker = o.m_sName + ", " + o.m_sWho;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A living wanderer, free and off-screen, who remembers an earlier life of this identity and
+	//! hasn't met this one (life-stamped memory, docs/REPUTATION.md); -1 if none.
+	protected int EarlierWanderer(RZ_PlayerProfile profile)
+	{
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (!wanderers || profile.m_iLives <= 1)
+			return -1;
+
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		array<int> ids = {};
+		wanderers.GetLiving(RZ_Wanderers.AllRoles(), ids);
+		foreach (int id : ids)
+		{
+			RZ_Wanderer w = wanderers.FindById(id);
+			if (!w || w.m_bHasBody || w.IsBitten())
+				continue;
+
+			if (facts && facts.IsClaimed(RZ_WorldFacts.Wanderer(id)))
+				continue;
+
+			if (w.OldMemory(profile.m_sIdentity) != 0 && w.GetMemory(profile.m_sIdentity) == 0)
+				return id;
+		}
+
+		return -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -336,44 +510,7 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! By the door: your background's own things on one side (Guidance > Opening scenes, its id;
-	//! none: nothing), the calendar to read on the other, and the door left open. The clue clean-up
-	//! removes them in time.
-	protected void PlaceScene(RZ_Opening o, int day)
-	{
-		RZ_OpeningPlace place = o.m_Place;
-		RZ_GuidanceWorld world = m_Guide.GetWorld();
-		vector side = Vector(place.m_vOut[2], 0, -place.m_vOut[0]);
-		ResourceName props = SceneFor(o.m_sBackground);
-		if (!props.IsEmpty())
-		{
-			vector propsAt = RZ_Util.GroundPos(place.m_vPos + side * 1.8 - place.m_vOut * 0.5);
-			world.TrackProp(RZ_Util.SpawnPrefab(props, propsAt, place.m_fYaw));
-		}
-
-		vector noteAt = RZ_Util.GroundPos(place.m_vPos - side * 1.2);
-		world.PlaceReadable(noteAt, "Read the calendar", "The calendar", RZ_OpeningText.Calendar(day));
-		RZ_OpeningRoll.OpenDoor(place.m_Door);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A composition from Guidance > Opening scenes by its key (a background's id); "" if none.
-	protected ResourceName SceneFor(string key)
-	{
-		if (!m_Settings.m_aOpeningScenes)
-			return "";
-
-		foreach (RZ_OpeningSceneSlot slot : m_Settings.m_aOpeningScenes)
-		{
-			if (slot && slot.m_sKey == key)
-				return slot.m_sPrefab;
-		}
-
-		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Someone from before, a few metres out of the door, facing you (Guidance > Contact; empty: the
+	//! Whoever's outside, a few metres out of the door, facing you (Guidance > Contact; empty: the
 	//! puzzle civilian). Counted as a story body, so the budget never refuses them.
 	protected void SpawnContact(RZ_Opening o, vector player)
 	{
@@ -400,13 +537,8 @@ class RZ_Openings
 		shared.AddBody(RZ_BodyBudget.STORY, body);
 		o.m_Contact = body;
 		o.m_bHadContact = true;
-		string first = o.m_sName;
-		int space = first.IndexOf(" ");
-		if (space > 0)
-			first = first.Substring(0, space);
-
 		RZ_PuzzleObjectComponent.Tag(body, TAG, o.m_iId, "", "What was it you needed?");
-		RZ_ClueComponent.Tag(body, TAG, o.m_iId, "Talk to " + first);
+		RZ_ClueComponent.Tag(body, TAG, o.m_iId, "Talk to " + o.m_sShort);
 	}
 
 	// ================================================================ Where the chain ends
@@ -657,6 +789,7 @@ class RZ_Openings
 	{
 		o.m_bSpoke = true;
 		SetFlag(o, FLAG_END, o.m_iEnd + 1);
+		SetFlag(o, FLAG_FIRST, 1);
 		o.m_iStage = 0;
 		StartStage(o, me);
 	}
@@ -699,8 +832,8 @@ class RZ_Openings
 		if (m_GM.GetBroadcast())
 			day = m_GM.GetBroadcast().GetDay();
 
-		if (o.m_iStep <= 1 && !tree)
-			lines.Insert(RZ_OpeningText.GreetPlain());
+		if (o.m_iStage <= 0 && !tree)
+			lines.Insert(RZ_OpeningText.GreetPlain(o.m_iReason, o.m_iWho));
 
 		if (o.m_iStep == 2 && o.m_iAsks > 0)
 		{
@@ -751,6 +884,7 @@ class RZ_Openings
 	//! The plan's next stage, a moment from now; the end of the plan ends the opening.
 	protected void Next(RZ_Opening o)
 	{
+		SetFlag(o, FLAG_FIRST, 0);
 		o.m_iStage++;
 		if (o.m_iStage >= o.m_aPlan.Count())
 		{
@@ -808,12 +942,32 @@ class RZ_Openings
 			{
 				o.m_iTask = RZ_EOpeningTask.NONE;
 				RZ_Log.Info(string.Format("Openings: no step 2 can run for %1 here (%2)", RZ_Util.PlayerName(o.m_iPlayer), o.m_sBackground));
-				o.m_iStage++;
+				// A familiar player's one step is step 1 instead
+				if (!o.m_aPlan.Contains(RZ_EOpeningStage.SEARCH))
+					o.m_aPlan[o.m_iStage] = RZ_EOpeningStage.SEARCH;
+				else
+					o.m_iStage++;
+
 				StartStage(o, me);
 				return;
 			}
 
 			SetFlag(o, FLAG_TASK, o.m_iTask);
+		}
+		else if (stage == RZ_EOpeningStage.LEAD)
+		{
+			step = 3;
+			if (!FindLead(o, giverAt, place, placeText, faction))
+			{
+				Finish(o, "no work near");
+				return;
+			}
+
+			o.m_iEnd = faction;
+			o.m_sEndPlace = placeText;
+			d = m_Chain.m_Lead;
+			if (!o.m_Contact)
+				d = m_Chain.m_LeadNote;
 		}
 		else
 		{
@@ -835,7 +989,15 @@ class RZ_Openings
 		o.m_fStepAt = m_fClock;
 		SetFlag(o, FLAG_STEP, step);
 		Announce(o, me);
-		RZ_Errand e = errands.Hand(d, o.m_iPlayer, "opening:" + o.m_iId.ToString(), o.m_sName, o.m_sSpeaker, faction, giverAt, place, placeText, me);
+		string giverName = o.m_sName;
+		string giverTitle = o.m_sSpeaker;
+		if (!o.m_Contact && stage == RZ_EOpeningStage.LEAD)
+		{
+			giverName = RZ_OpeningText.ReadTitle(o.m_iReason);
+			giverTitle = giverName;
+		}
+
+		RZ_Errand e = errands.Hand(d, o.m_iPlayer, "opening:" + o.m_iId.ToString(), giverName, giverTitle, faction, giverAt, place, placeText, me);
 		if (!e)
 		{
 			Finish(o, "the step couldn't be handed");
@@ -953,6 +1115,13 @@ class RZ_Openings
 			return;
 		}
 
+		if (stage == RZ_EOpeningStage.LEAD)
+		{
+			m_GM.NotifyPlayerAs(o.m_iPlayer, RZ_OpeningText.LeadTitle(), RZ_OpeningText.LeadArrived(o.m_iEnd), RZ_ENoticeTag.MISSION);
+			Finish(o, "found work at " + o.m_sEndPlace);
+			return;
+		}
+
 		if (stage == RZ_EOpeningStage.TASK)
 		{
 			m_Tasks.Resolved(o, e, said);
@@ -990,12 +1159,68 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The nearest place with work (levels 2-3, and an opening with nobody outside): a Haven
+	//! safehouse, or an outpost or stronghold of a faction that doesn't hunt you. False if none.
+	protected bool FindLead(RZ_Opening o, vector from, out vector place, out string text, out int faction)
+	{
+		float best = float.MAX;
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (houses)
+		{
+			RZ_Safehouse h = houses.Get(houses.FindNearest(from));
+			if (h)
+			{
+				best = RZ_Util.DistXZ(from, h.m_vPos);
+				place = h.m_vPos;
+				text = RZ_OpeningText.EndPlace(RZ_EFaction.SURVIVORS, h.m_sName, false);
+				faction = RZ_EFaction.SURVIVORS;
+			}
+		}
+
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (territory)
+		{
+			for (int f = 0; f < RZ_Factions.COUNT; f++)
+			{
+				if (RZ_Reputation.IsHunted(m_GM.GetTier(o.m_iPlayer, f)))
+					continue;
+
+				array<RZ_Holding> list = {};
+				territory.GetOutposts(f, list);
+				RZ_Holding seat = territory.GetStronghold(f);
+				if (seat)
+					list.Insert(seat);
+
+				foreach (RZ_Holding hold : list)
+				{
+					float d = RZ_Util.DistXZ(from, hold.m_vPos);
+					if (d < best)
+					{
+						best = d;
+						place = hold.m_vPos;
+						text = RZ_OpeningText.EndPlace(f, hold.m_sName, false);
+						faction = f;
+					}
+				}
+			}
+		}
+
+		return best < float.MAX;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The contact was killed: the step under way ends, whoever finds you says so, and the walk
 	//! goes to the nearest safehouse (when the plan has it). Nothing else depends on them.
 	protected void ContactDied(RZ_Opening o)
 	{
 		o.m_bContactDead = true;
+		SetFlag(o, FLAG_FIRST, 0);
 		DropStep(o, "the contact died");
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (o.m_iWanderer >= 0 && wanderers)
+			wanderers.TakeOffRoad(o.m_iWanderer);
+
+		o.m_iWanderer = -1;
 		RZ_Log.Info(string.Format("Openings: %1 died (step %2 for %3)", o.m_sName, o.m_iStep, RZ_Util.PlayerName(o.m_iPlayer)));
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		RZ_Safehouse h;
@@ -1012,6 +1237,9 @@ class RZ_Openings
 		o.m_sSpeaker = "Someone in a doorway";
 		m_GM.NotifyPlayer(o.m_iPlayer, o.m_sSpeaker, RZ_OpeningText.ContactDied(h.m_sName));
 		int walk = o.m_aPlan.Find(RZ_EOpeningStage.WALK);
+		if (walk < 0)
+			walk = o.m_aPlan.Find(RZ_EOpeningStage.LEAD);
+
 		if (walk < 0)
 		{
 			Finish(o, "the contact died");
@@ -1077,9 +1305,21 @@ class RZ_Openings
 		if (nearest <= CONTACT_GONE && !old)
 			return false;
 
+		ReleaseWanderer(o, o.m_Contact.GetOrigin());
 		RZ_Util.DeleteUnit(o.m_Contact);
 		o.m_Contact = null;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An earlier life's wanderer goes back on the road from where they stood.
+	protected void ReleaseWanderer(RZ_Opening o, vector at)
+	{
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (o.m_iWanderer >= 0 && wanderers)
+			wanderers.Release(o.m_iWanderer, at);
+
+		o.m_iWanderer = -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1120,7 +1360,7 @@ class RZ_Openings
 		if (o.m_iStep <= 0)
 		{
 			if (!tree)
-				lines.Insert(RZ_OpeningText.GreetPlain());
+				lines.Insert(RZ_OpeningText.GreetPlain(o.m_iReason, o.m_iWho));
 
 			return;
 		}

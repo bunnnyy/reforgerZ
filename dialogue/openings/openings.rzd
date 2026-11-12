@@ -1,13 +1,43 @@
-# Openings (docs/DIALOGUE.md, "Who talks"; docs/DESIGN.md, "Openings"): someone who knew you before
-# the outbreak, waiting outside the door you hid behind. Nobody is new: everyone has been trapped since
-# the seal, and they never say "you're new". The step's ask and the story's beats are the built lines
-# (RZ_OpeningText); these add their greeting by your background, once, and a few things to ask on the
-# way. The character flag opening.step is the step under way (1-3; 4 once it's over), opening.end the
-# faction it ends with (1 the Haven, 2 Bastion, 3 the Red Hand, 4 Halcyon). Voice: plain, a neighbour's.
+# Openings (docs/DIALOGUE.md, "Who talks"; docs/DESIGN.md, "Openings"): whoever's outside the door you
+# come out of. Nobody is new: everyone has been trapped since the seal, and they never say "you're new".
+# The step's ask and the story's beats are the built lines (RZ_OpeningText); these add their greeting,
+# once, while the first step runs, and a few things to ask on the way. Character flags: opening.first
+# 1 while the first step runs; opening.why why today (1 the hiding place, 2 your group gone, 3 the fever
+# broke); opening.who who's outside (1 someone from before, by your background; 2 a stranger; 3 a
+# wanderer who met an earlier life of yours); opening.earlier what that wanderer remembers (1 a
+# kindness, 2 a wrong, 3 only the face); opening.step the step under way (1-3; 4 once it's over);
+# opening.end the faction it ends with (1 the Haven, 2 Bastion, 3 the Red Hand, 4 Halcyon).
+# Voice: plain, a neighbour's.
+
+conv opening.greet.stranger
+for opening
+when cflag:opening.first=1 & cflag:opening.who=2
+greet
+prio quest
+once
+voice plain
+
+node start
+  say? cflag:opening.why=2 :: "Your lot went out three mornings ago, four of them, with a map. I watched from my window. I've been watching it since."
+  say? cflag:opening.why=3 :: "That was my chalk on your door. I heard you through it for three nights. Then I didn't, and I waited anyway."
+  say "I heard the bolt go. Don't mind me. I don't know you, but nobody should come out of a door on their own."
+
+conv opening.greet.earlier
+for opening
+when cflag:opening.first=1 & cflag:opening.who=3
+greet
+prio quest
+once
+voice plain
+
+node start
+  say? cflag:opening.earlier=2 :: "You look like someone I knew. Someone I'd cross the road from. Different face, though. Different chance."
+  say? cflag:opening.earlier=1 :: "You look like someone I knew. They did me a kindness on the road, once. Funny. You stand the way they did."
+  say "You look like someone I knew. Same walk. I don't suppose you'd remember a face from the road."
 
 conv opening.greet.nurse
 for opening
-when cflag:opening.step=1 & bg:nurse
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:nurse
 greet
 prio quest
 once
@@ -18,7 +48,7 @@ node start
 
 conv opening.greet.doctor
 for opening
-when cflag:opening.step=1 & bg:doctor
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:doctor
 greet
 prio quest
 once
@@ -29,7 +59,7 @@ node start
 
 conv opening.greet.mechanic
 for opening
-when cflag:opening.step=1 & bg:mechanic
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:mechanic
 greet
 prio quest
 once
@@ -40,7 +70,7 @@ node start
 
 conv opening.greet.hunter
 for opening
-when cflag:opening.step=1 & bg:hunter
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:hunter
 greet
 prio quest
 once
@@ -51,7 +81,7 @@ node start
 
 conv opening.greet.police
 for opening
-when cflag:opening.step=1 & bg:police
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:police
 greet
 prio quest
 once
@@ -62,7 +92,7 @@ node start
 
 conv opening.greet.excon
 for opening
-when cflag:opening.step=1 & bg:excon
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:excon
 greet
 prio quest
 once
@@ -73,7 +103,7 @@ node start
 
 conv opening.greet.labtech
 for opening
-when cflag:opening.step=1 & bg:labtech
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:labtech
 greet
 prio quest
 once
@@ -84,7 +114,7 @@ node start
 
 conv opening.greet.radioham
 for opening
-when cflag:opening.step=1 & bg:radioham
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:radioham
 greet
 prio quest
 once
@@ -95,7 +125,7 @@ node start
 
 conv opening.greet.unemployed
 for opening
-when cflag:opening.step=1 & bg:unemployed
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:unemployed
 greet
 prio quest
 once
@@ -106,7 +136,7 @@ node start
 
 conv opening.greet.soldier
 for opening
-when cflag:opening.step=1 & bg:soldier
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:soldier
 greet
 prio quest
 once
@@ -117,7 +147,7 @@ node start
 
 conv opening.greet.raider
 for opening
-when cflag:opening.step=1 & bg:raider
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:raider
 greet
 prio quest
 once
@@ -128,7 +158,7 @@ node start
 
 conv opening.greet.elder
 for opening
-when cflag:opening.step=1 & bg:elder
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:elder
 greet
 prio quest
 once
@@ -139,7 +169,7 @@ node start
 
 conv opening.greet.drifter
 for opening
-when cflag:opening.step=1 & bg:drifter
+when cflag:opening.first=1 & cflag:opening.who=1 & bg:drifter
 greet
 prio quest
 once

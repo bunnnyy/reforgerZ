@@ -608,6 +608,7 @@ else.
 | ✅ Hold the Gate | `opening.gate` | do | 60 s within 15 m of the gate |
 | ✅ The Debt | `opening.debt` | press | 10 s at a house's door (the crate prop) |
 | ✅ Two Families | `opening.settle` | talk | once the conversation has settled it |
+| ✅ Where the Work Is | `opening.lead`, `opening.lead.note` | do | within 40 m of the nearest place with work, done there; 60 minutes before it lapses (levels 2-3, or nobody outside: the scene's read gives it) |
 | ✅ To the Haven, To Bastion, To the Red Hand, To Halcyon | `opening.walk.<faction>` | do | within 40 m of the place, done there (`m_bEndsThere`: nobody to go back to); 90 minutes before it lapses (`m_fLapseMinutes`) |
 
 How a handed errand differs (`m_bHanded`): the dealer never deals it; its giver is the contact, not a

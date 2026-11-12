@@ -627,6 +627,7 @@ opening.channel/@here
 opening.channel/@where
 opening.greet.doctor
 opening.greet.drifter
+opening.greet.earlier
 opening.greet.elder
 opening.greet.excon
 opening.greet.hunter
@@ -637,6 +638,7 @@ opening.greet.police
 opening.greet.radioham
 opening.greet.raider
 opening.greet.soldier
+opening.greet.stranger
 opening.greet.unemployed
 opening.settle
 opening.settle/@enough

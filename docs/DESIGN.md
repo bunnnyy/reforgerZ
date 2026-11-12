@@ -2825,10 +2825,8 @@ Every line is in a speaker's voice ([WRITING.md](WRITING.md#the-voices)).
 
 A new life gets **one card**: the background's name and where you wake, in a line or two (the
 opening's line, `RZ_OpeningText.SpawnLine`: "A farmhouse cellar in Morton. Day 11. The last bottle
-is empty, so you open the door."; without an opening, the spawn scenario's, `RZ_GuidanceText.SpawnLine`:
-"A cold basement in Morton. Scratches on the back of the door."; without either, "You come to east
-of Levie."). Everything else at spawn goes
-quietly into the notebook: the perk, flaw and goal, the scene in full with its clue, the outbreak,
+is empty, so you open the door."; without one, "You come to east of Levie."). Everything else at
+spawn goes quietly into the notebook: the perk, flaw and goal, the outbreak,
 the broadcast, the season with the news and the hall of fame in one entry, the radio's jobs, pay
 owed while you were away in one entry. For the first 30 s nothing else is a card unless it's urgent,
 and for the first five minutes cards come at most one every 45 s; the rules and settings are in
@@ -2836,14 +2834,14 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 ### Openings: how every life starts
 
-Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningChain.c`, `RZ_OpeningSteps.c`,
-`RZ_OpeningText.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
+Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_OpeningChain.c`,
+`RZ_OpeningSteps.c`, `RZ_OpeningText.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
 
-Every life starts somewhere random that suits who you were, coming out of the place you hid in
-since the seal, and within a few seconds someone who knew you before is talking to you and there is
-one obvious thing to do: the first of three steps that teach the Zone and tell its story, then hand
-you to the faction your background belongs with. Nobody is new: everyone has been trapped since the
-roads shut. What's still to come is in [designs/OPENINGS.md](../designs/OPENINGS.md).
+Every life starts somewhere random that suits who you were, coming out of a door for a reason, and
+within a few seconds someone outside is talking to you and there is one obvious thing to do: the
+first of the steps that teach the Zone and tell its story, then hand you to the faction your
+background belongs with. Nobody is new: everyone has been trapped since the roads shut. What's still
+to come is in [designs/OPENINGS.md](../designs/OPENINGS.md).
 
 **Where you start.** Rolled on the server for each life; nobody picks it, and there are no chosen
 starts. The spawn screen asks for one of the spawn points at random; the spawn point handler
@@ -2877,21 +2875,60 @@ it's handed over, and the world streams in there.
 - **Near where it ends:** towns within 3 km of where the chain will end are tried first, so the walk
   stays short; up to 8 towns are tried.
 - **Fallback:** no fitting building, any house in one of those towns (the scene still comes);
-  nothing at all, the spawn point the screen asked for, with the contact but no scene.
+  nothing at all, the spawn point the screen asked for, with whoever's outside but no scene.
 
-**The scene: out of the hiding place.** The door you came out of stands open behind you; by it, on
-one side, your background's own things (**Guidance > Opening scenes**, its id: the nurse's blanket,
-bucket and sterilising drum, the mechanic's tyre and drum, the hunter's skull board and log, the
-radio operator's set on a crate under an aerial...), and on the other a calendar to read, every day
-up to the season's day crossed off, Day 2 ringed: ROADS SHUT. The spawn card says the place's kind,
-the town and the day. The props go with the guidance clues (20 minutes once nobody is near). The 13
-compositions are text in `tools/camp_kit/pieces.py` (`OPENINGS`), built with the camp pieces
-([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has nothing there.
+**Why today.** Rolled with the place: why you come out of the door now.
 
-**The contact: someone from before.** A few metres out of the door, facing you (**Guidance >
-Contact**, empty: **Puzzles > Civilian**; counted as a story body, so the budget doesn't refuse
-them; with no body at all there's no opening that life). They never say "you're new": they say
-"Christ, you're alive." They talk only to you; anyone else is told they're waiting for someone.
+| Reason | Weight | The spawn card | What you read by the door |
+|---|---|---|---|
+| The hiding place | the rest (70) | "A farmhouse cellar in Morton. Day 11. The last bottle is empty, so you open the door." | The calendar: every day up to the season's day crossed off, Day 2 ringed: ROADS SHUT |
+| Your group is gone | **Guidance > Group gone weight** (18) | "... Four bedrolls, one of them yours. They said back by dark, three days ago." | Their note under a stone, "Gone to see about *the next town*. Back by dark.", that town circled on a map |
+| The fever broke | **Guidance > Fever weight** (12) | "... The fever broke in the night. The bite on your arm is only a scar." | Chalk on the door: IF YOU'RE READING THIS, YOU'RE YOU. COME FIND US. |
+
+A brand-new player's two weights are halved, so they lean to the hiding place. The fever is the
+story's: it changes nothing about your infection.
+
+**The scene.** The door you came out of stands open behind you. In front of it to one side, one of
+the reason's three compositions (never the one you had last life: the hiding place's cellar, pantry
+or bolthole; the group's bedrolls for four, map table or packs; the fever's barricade, sickbed or
+vigil chair); on the other side your background's own things (the nurse's blanket, bucket and
+sterilising drum, the mechanic's tyre and drum, the hunter's skull board and log, the radio
+operator's set on a crate under an aerial...); by the door the reason's read; and a few metres out
+one **clue**, the old spawn scenarios' clues brought into the scene, two to a reason, each only
+while it's still true:
+
+| Reason | Clue | True while | It says |
+|---|---|---|---|
+| The hiding place | The scratched door (**Guidance > Door prefab**) | the line is sealed | the roads out end in concrete; we tried the north road; nobody gets out |
+| | The radio still talking (**Table radio prefab**, else the wind-up radio) | always | the broadcast, then the Haven's open channel and its town |
+| Your group is gone | Their car in the ditch (**Car wreck prefab**), the note on its dashboard | there's a safehouse | "Gone to the safehouse in *town*.", an arrow |
+| | Halcyon's flyer, the one they went after (**Flyer prefab**) | there's a lab, not after the cure | samples wanted at the lab |
+| The fever broke | A dead soldier by a barricade (**Soldier body**, **Barricade prefab**) | Bastion has a stronghold leader | hold the line, await relief; the others fell back to *its seat* |
+| | A dead raider with a red hand on his jacket (**Raider body prefab**) | the Red Hand has a boss | the toll roads, and who to ask for |
+
+A veteran (level 3) gets the scene with a one-line read ("A note under a stone: "Back by dark." That
+was three days ago.") and no clue. Everything goes with the guidance clues (20 minutes once nobody
+is near). The 22 compositions are **Guidance > Opening scenes** (keys `hiding.1`–`3`, `group.1`–`3`,
+`fever.1`–`3` and the backgrounds' ids), text in `tools/camp_kit/pieces.py` (`OPENINGS`), built with
+the camp pieces ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has nothing there.
+
+**Who's outside.** A few metres out of the door, facing you (**Guidance > Contact**, empty:
+**Puzzles > Civilian**; counted as a story body, so the budget doesn't refuse them). They never say
+"you're new". They talk only to you; anyone else is told they're waiting for someone.
+
+| Who | How often | Who they are, by why today |
+|---|---|---|
+| Someone from before | about three in four | who they were to you, by your background (below); the hiding place: "Christ. You're alive. I'd stopped knocking on that door."; your group gone: the one who came back; the fever: who wrote on the door |
+| A stranger | about one in four | a stranger who heard the door; someone who saw them go; the stranger who wrote on the door |
+| An earlier life's | 35%, when a wanderer remembers an earlier life of yours and hasn't met this one ([life-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marta, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
+
+An earlier life's wanderer is held off the road while they stand here (`RZ_Wanderers.Hold`) and goes
+back on it from where they stood once they leave; killed, they're gone from the roads. With nobody
+outside (no body at all, the story budget full, or a veteran's two times in three), the scene's read
+carries the one step there is: under the calendar, in your own handwriting, "Work at *place*. Ask
+for it." (below), and a brand-new player's wanderer still comes looking.
+
+Someone from before, by your background:
 
 | Background | Who they were | Background | Who they were |
 |---|---|---|---|
@@ -2911,9 +2948,21 @@ answer, the step is already yours and tracked. Their one built reply is "What wa
 they ask once more. This is the **only job in the game that starts without you talking to anyone or
 using anything**; its errands say so (`RZ_ErrandDef.IsOpening()`, `RZ_Errand.IsOpening()`).
 
-**The chain: three steps** on the errand engine, handed straight to you
+**The chain** is steps on the errand engine, handed straight to you
 ([ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)), so the tracker follows each one as it
-starts (the HUD and the Quests tab), with the giver's lines on the talk screen. About 15 minutes.
+starts (the HUD and the Quests tab), with the giver's lines on the talk screen. By experience
+([levels](#experience-levels)):
+
+| Level | The chain |
+|---|---|
+| 0, brand new | All three steps (about 15 minutes); the reasons lean to the hiding place |
+| 1, learning | All three; step 1's search is 10 s, not 20 |
+| 2, familiar | The scene and whoever's outside; your background's step 2 (step 1 when yours can't run here), then **Where the Work Is** |
+| 3, veteran | The scene as a one-line read, and Where the Work Is, tracked; someone outside one time in three |
+
+**Where the Work Is** (`opening.lead`) walks you to the nearest place with work: a Haven safehouse, or
+an outpost or stronghold of a faction that doesn't hunt you; done within 40 m of it, an hour to get
+there, one line on arrival ("Someone with a list looks up."), and no Fame. All three steps:
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
@@ -2964,20 +3013,22 @@ no hall-of-fame helped line, no deeds (the swap's Favor and the debt's Infamy, a
 steps' own).
 
 **When it ends early.** The contact killed during steps 1–2: whoever finds you says so, the step
-ends, and the chain goes straight to the walk to the nearest safehouse. The Clock lapsing loses the
+ends, and the chain goes straight to the walk to the nearest safehouse (or, without the walk, to
+Where the Work Is). The Clock lapsing loses the
 bitten friend (they say so) and the chain goes on; any other step that lapses, death or leaving ends
 it. Nobody waves you over for errands while it runs. One opening per life, runtime only
 (a restart ends it). None in the epilogue week (the place is still rolled). The contact leaves once
 nobody is within 150 m after the walk starts, or 45 minutes on with nobody within 50 m.
 
-**Log lines:** `Openings: started for ...` (background, place, town, grid, level, who, chain, where
-it ends), `... spoke first to ... at step N (the talk screen | subtitles)`, `... step N (key) for
+**Log lines:** `Openings: started for ...` (background, place, town, grid, level, why today, who,
+the chain and where it ends), `... spoke first to ... at step N (the talk screen | subtitles)`, `... step N (key) for
 ...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
-the fallbacks' `no ... place fits`, `no place`, `no contact could stand`, `no step 2 can run`, and
-`...'s bitten friend was lost`.
+the fallbacks' `no ... place fits`, `no place`, `no contact could stand`, `no step 2 can run`,
+`...'s bitten friend was lost`, and `ended for ...: found work at ...`.
 
-*Simplified:* the hiding place is the only reason; one kind of contact (someone from before, by
-background); the guidance levels only shorten it to one step. Step 2: the Mechanic's is the pump
+*Simplified:* the earlier-life contact is a wanderer only (never a safehouse occupant), and says
+what they remember, not your old name; "the nearest job" for levels 2–3 is the nearest place that
+gives work, walked to, not a job already picked for you (jobs start from people). Step 2: the Mechanic's is the pump
 only (no car to start); the Nurse's water is fetched, not boiled; the Lab Technician's big one is the
 errands' prop and a sample, not a special's body; the Ex-Con's toll is passed by talking near it
 without a fight, not by a disguise check; the Elder's two families speak through the one contact;
@@ -2990,14 +3041,14 @@ never disappears.
 
 | Level | Counted lives | What they get |
 |---|---|---|
-| 0, brand new | 0 | Everything: every tip in full, the gentle start, a wanderer who comes looking, scenarios leaning toward the Haven, the radio every 12 min |
-| 1, learning | 1–2 | Every tip in full, full scenario scenes, wanderer gossip every time |
-| 2, familiar | 3–7 | Most tips; one-line scenario scenes; gossip now and then |
-| 3, veteran | 8+ | The floor: a scenario clue, the open channels (every 42 min), and critical tips as one short line |
+| 0, brand new | 0 | Everything: every tip in full, the gentle start, an opening with all three steps leaning to the hiding place (a wanderer comes looking when nobody's outside), the radio every 12 min |
+| 1, learning | 1–2 | Every tip in full, an opening with all three steps (a shorter first), wanderer gossip every time |
+| 2, familiar | 3–7 | Most tips; an opening with one step and the nearest work; gossip now and then |
+| 3, veteran | 8+ | The floor: an opening's one-line read and the nearest work, the open channels (every 42 min), and critical tips as one short line |
 
 A player who comes back after 30+ real days gets two levels more guidance for two lives.
-With an [opening](#openings-how-every-life-starts), levels 0 and 1 get its whole chain and levels 2
-and 3 its first step only; the scenario and the wanderer who comes looking are for a life without one.
+The [opening](#openings-how-every-life-starts) sets its chain by level; the wanderer who comes
+looking is for a brand-new life with nobody outside.
 
 ### Contextual tips
 
@@ -3021,7 +3072,7 @@ a stack at spawn. The table is data (**Guidance > Tips**, defaults in
 | hunted | Hunted or Kill on Sight | ✅ |
 | perimeter | near the edge or a checkpoint, while the line is sealed | |
 | loud | heat 45+ where you stand | |
-| bleeding | you're bleeding (checked every 10 s; VERIFY `Guidance/RZ_Guidance.c:477`) | |
+| bleeding | you're bleeding (checked every 10 s; VERIFY `Guidance/RZ_Guidance.c:480`) | |
 | quartermaster | within 25 m of a quartermaster of a faction that doesn't hunt you | |
 | night | the first night | |
 | safehouse | your first safehouse | |
@@ -3041,24 +3092,6 @@ For the first 15 minutes of a brand-new player's life, zombie spawns near them r
 density. Their first counted life gets the goal **Find the Haven**, unless its opening runs the whole
 chain (its last step is the walk to where they belong).
 
-### Spawn scenarios
-
-A life without an opening (**Guidance > Openings** off, no contact could stand, or the epilogue
-week) starts a few metres from a small clue (brand-new players lean toward the Haven):
-
-| Scenario | The clue | Points to |
-|---|---|---|
-| A back road | a car in the ditch; the dashboard note: "Gone to the safehouse in *town*." | the nearest safehouse |
-| A basement (not after the cure) | scratched into the door: the roads out end in concrete, nobody gets out | the Perimeter |
-| Church notice (not after the cure) | Halcyon's flyer, "Infected samples wanted. Reward." | the lab |
-| A farmhouse kitchen | a wind-up radio playing the broadcast (after the cure, the new order), then the Haven's open channel | the Haven |
-| An attic | a dead raider with a red hand on his jacket and a list of toll roads | the Red Hand's boss |
-| Behind the barricade | a dead soldier's orders: "Hold the line. Await relief." | Bastion's stronghold |
-
-Clues are removed after 20 minutes once nobody is near, and after 40 minutes anyway.
-*Simplified:* you don't really wake in a basement; the scene says so, and the clue lies next to
-wherever the spawn point put you.
-
 ### The wind-up radio and faction voices
 
 - Every new life gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
@@ -3075,7 +3108,7 @@ wherever the spawn point put you.
 
 ### A wanderer finds you
 
-Two to seven minutes into a brand-new player's life without an opening, the nearest Courier or
+Two to seven minutes into a brand-new player's life with nobody outside its door, the nearest Courier or
 Scavenger comes looking for them, waves, and waits 5 minutes. Their talk includes faction gossip.
 
 ## Cure research and the season's end

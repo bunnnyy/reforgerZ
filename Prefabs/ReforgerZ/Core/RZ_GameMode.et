@@ -1769,54 +1769,90 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sBarricadePrefab "{D9F5EA3173D1A207}Prefabs/ReforgerZ/Guidance/RZ_Barricade.et"
     m_aOpeningScenes {
      RZ_OpeningSceneSlot "{0512EC2287D8A8E1}" {
+      m_sKey "hiding.1"
+      m_sPrefab "{3AEA22C463D6F196}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Hiding_Cellar.et"
+     }
+     RZ_OpeningSceneSlot "{7BF9D3ACB5C8F6D6}" {
+      m_sKey "hiding.2"
+      m_sPrefab "{ED8B97A0F4B4EC32}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Hiding_Pantry.et"
+     }
+     RZ_OpeningSceneSlot "{124124B398275B56}" {
+      m_sKey "hiding.3"
+      m_sPrefab "{CD25A5CBAABCC043}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Hiding_Bolthole.et"
+     }
+     RZ_OpeningSceneSlot "{6A31F4805724208F}" {
+      m_sKey "group.1"
+      m_sPrefab "{1EBFCE36669F6387}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Group_Bedrolls.et"
+     }
+     RZ_OpeningSceneSlot "{A4932D3C9E156BB9}" {
+      m_sKey "group.2"
+      m_sPrefab "{3BD930D710662BB2}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Group_Table.et"
+     }
+     RZ_OpeningSceneSlot "{E8E394DC7A2ACA90}" {
+      m_sKey "group.3"
+      m_sPrefab "{657A6DA27220FDFF}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Group_Packs.et"
+     }
+     RZ_OpeningSceneSlot "{A5089945B51A6BDF}" {
+      m_sKey "fever.1"
+      m_sPrefab "{15B8ACDEF3608C69}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Fever_Barricade.et"
+     }
+     RZ_OpeningSceneSlot "{DF7988EC3655BDA5}" {
+      m_sKey "fever.2"
+      m_sPrefab "{7F0D9599B0CF9FA2}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Fever_Sickbed.et"
+     }
+     RZ_OpeningSceneSlot "{A6F316F424118308}" {
+      m_sKey "fever.3"
+      m_sPrefab "{E7EC5B9D7FB367B7}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Fever_Vigil.et"
+     }
+     RZ_OpeningSceneSlot "{9EE08DD8266E3CC0}" {
       m_sKey "nurse"
       m_sPrefab "{97A7ECFD7E397769}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Nurse.et"
      }
-     RZ_OpeningSceneSlot "{7BF9D3ACB5C8F6D6}" {
+     RZ_OpeningSceneSlot "{0DDA43AC79425117}" {
       m_sKey "doctor"
       m_sPrefab "{6F2C6651FC1E38EB}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Doctor.et"
      }
-     RZ_OpeningSceneSlot "{124124B398275B56}" {
+     RZ_OpeningSceneSlot "{ACAB9E8C609F8960}" {
       m_sKey "mechanic"
       m_sPrefab "{8FF0A8E0AAD97D0D}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Mechanic.et"
      }
-     RZ_OpeningSceneSlot "{6A31F4805724208F}" {
+     RZ_OpeningSceneSlot "{D79FB20DA494D4AB}" {
       m_sKey "hunter"
       m_sPrefab "{AE2E8EC2414AEFC1}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Hunter.et"
      }
-     RZ_OpeningSceneSlot "{A4932D3C9E156BB9}" {
+     RZ_OpeningSceneSlot "{8FC215AC142115DF}" {
       m_sKey "police"
       m_sPrefab "{F197B63B155F2194}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Police.et"
      }
-     RZ_OpeningSceneSlot "{E8E394DC7A2ACA90}" {
+     RZ_OpeningSceneSlot "{97FB063988403318}" {
       m_sKey "excon"
       m_sPrefab "{9B4C4D4F39DF434F}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_ExCon.et"
      }
-     RZ_OpeningSceneSlot "{A5089945B51A6BDF}" {
+     RZ_OpeningSceneSlot "{29D21AB75D7F5D3B}" {
       m_sKey "labtech"
       m_sPrefab "{271DBDCEFFE83B1B}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_LabTech.et"
      }
-     RZ_OpeningSceneSlot "{DF7988EC3655BDA5}" {
+     RZ_OpeningSceneSlot "{C09334B7D0BB47C1}" {
       m_sKey "radioham"
       m_sPrefab "{5A96C7F6ED7FFE3E}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Radio.et"
      }
-     RZ_OpeningSceneSlot "{A6F316F424118308}" {
+     RZ_OpeningSceneSlot "{C860A2ED09362FA3}" {
       m_sKey "unemployed"
       m_sPrefab "{C9738AD6B63C6260}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Unemployed.et"
      }
-     RZ_OpeningSceneSlot "{9EE08DD8266E3CC0}" {
+     RZ_OpeningSceneSlot "{275CEC2F901C3647}" {
       m_sKey "soldier"
       m_sPrefab "{ED19E384AFA80D9E}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Soldier.et"
      }
-     RZ_OpeningSceneSlot "{0DDA43AC79425117}" {
+     RZ_OpeningSceneSlot "{7A1A2DC1F3CDE04B}" {
       m_sKey "raider"
       m_sPrefab "{2C7F78E9BD0D6D76}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Raider.et"
      }
-     RZ_OpeningSceneSlot "{ACAB9E8C609F8960}" {
+     RZ_OpeningSceneSlot "{87D056524978D8A9}" {
       m_sKey "elder"
       m_sPrefab "{87483B4AECB6AFC4}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Elder.et"
      }
-     RZ_OpeningSceneSlot "{D79FB20DA494D4AB}" {
+     RZ_OpeningSceneSlot "{C408FC5B525E871C}" {
       m_sKey "drifter"
       m_sPrefab "{8141D2FE813F4A6F}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Drifter.et"
      }

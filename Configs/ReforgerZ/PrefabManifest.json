@@ -289,7 +289,7 @@
    "slotLabel": "Puzzles > Note",
    "required": true,
    "minimum": true,
-   "use": "every puzzle mission, scenario clues",
+   "use": "every puzzle mission, openings' clues",
    "notes": ""
   },
   {
@@ -4559,7 +4559,7 @@
    "slotLabel": "Guidance > Car wreck prefab",
    "required": false,
    "minimum": false,
-   "use": "the back-road scenario",
+   "use": "an opening's clue when your group is gone: their car in the ditch",
    "notes": ""
   },
   {
@@ -4577,7 +4577,7 @@
    "slotLabel": "Guidance > Door prefab",
    "required": false,
    "minimum": false,
-   "use": "the basement scenario",
+   "use": "an opening's clue in the hiding place: the scratched door",
    "notes": ""
   },
   {
@@ -4595,7 +4595,7 @@
    "slotLabel": "Guidance > Flyer prefab",
    "required": false,
    "minimum": false,
-   "use": "the church scenario, safehouse flyers",
+   "use": "an opening's clue when your group is gone (the flyer they went after), safehouse flyers",
    "notes": ""
   },
   {
@@ -4613,7 +4613,7 @@
    "slotLabel": "Guidance > Table radio prefab",
    "required": false,
    "minimum": false,
-   "use": "the farmhouse scenario; beside the operators in No Reply and Await Relief, and The Census's nightly call",
+   "use": "an opening's clue in the hiding place: the radio still talking; beside the operators in No Reply and Await Relief, and The Census's nightly call",
    "notes": ""
   },
   {
@@ -4631,7 +4631,7 @@
    "slotLabel": "Guidance > Raider body prefab",
    "required": false,
    "minimum": false,
-   "use": "the attic scenario",
+   "use": "an opening's clue when the fever broke: the dead raider",
    "notes": ""
   },
   {
@@ -4649,7 +4649,7 @@
    "slotLabel": "Guidance > Soldier body prefab",
    "required": false,
    "minimum": false,
-   "use": "the barricade scenario",
+   "use": "an opening's clue when the fever broke: the dead soldier",
    "notes": ""
   },
   {
@@ -4685,7 +4685,7 @@
    "slotLabel": "Guidance > Opening scenes (each key's prefab)",
    "required": false,
    "minimum": false,
-   "use": "the openings' props by the door you come out of: each background's own things (docs/DESIGN.md, Openings); a key with none = nothing there",
+   "use": "the openings' props by the door you come out of: three scenes per reason and each background's own things (docs/DESIGN.md, Openings); a key with none = nothing there",
    "notes": ""
   },
   {
@@ -4703,7 +4703,7 @@
    "slotLabel": "Guidance > Contact",
    "required": false,
    "minimum": false,
-   "use": "the openings' someone from before; empty = Puzzles > Civilian (no body at all: no opening that life, the spawn scenario instead)",
+   "use": "whoever's outside an opening's door (someone from before, a stranger, an earlier life's wanderer); empty = Puzzles > Civilian (no body at all: nobody outside, and the scene's read points at the nearest work)",
    "notes": ""
   },
   {
@@ -6661,7 +6661,7 @@
    "category": "Guidance",
    "object": "Guidance",
    "field": "m_GuidanceSettings",
-   "covers": "**Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs; **Openings** (on), **Hiding place scene** and **Contact** (empty: the calendar only, and Puzzles > Civilian), **Opening Fame** (10)"
+   "covers": "**Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10)"
   },
   {
    "category": "Interactions",
@@ -7468,12 +7468,13 @@
     "m_fTipGapSeconds": "90",
     "m_fLoudHeat": "45",
     "m_fRadioMinutes": "12",
-    "m_bScenarios": "1",
     "m_fClueMinutes": "20",
     "m_bSafehouseFlyers": "1",
     "m_fShoutMinutes": "30",
     "m_bWandererFinds": "1",
     "m_bOpenings": "1",
+    "m_iGroupGoneWeight": "18",
+    "m_iFeverWeight": "12",
     "m_iOpeningFame": "10",
     "m_fTipQuietSeconds": "90"
    }

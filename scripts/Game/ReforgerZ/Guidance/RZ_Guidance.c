@@ -55,31 +55,28 @@ class RZ_GuidanceSettings
 	[Attribute("12", desc: "Minutes between open-channel radio messages for a brand-new player (x1.5, x2.5, x3.5 with experience). 0 = off")]
 	float m_fRadioMinutes;
 
-	[Attribute("1", desc: "Spawn scenarios: every new life starts near a small clue (a note, a flyer, a body, a radio)")]
-	bool m_bScenarios;
-
-	[Attribute("20", desc: "Minutes a scenario clue stays; it's removed after this once nobody is within 30 m, and after twice this anyway")]
+	[Attribute("20", desc: "Minutes an opening's scene and clue stay; they're removed after this once nobody is within 30 m, and after twice this anyway")]
 	float m_fClueMinutes;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crashed car (optional scenery for the back-road scenario; a note lies next to it unless it has RZ_ClueComponent)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Crashed car (optional, an opening's group-gone clue: their car; a note lies next to it unless it has RZ_ClueComponent)", "et")]
 	ResourceName m_sCarWreckPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Scratched door or wall panel (optional, basement scenario; readable with RZ_ClueComponent + RZ_ReadClueAction, else the note is used)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Scratched door or wall panel (optional, an opening's hiding-place clue; readable with RZ_ClueComponent + RZ_ReadClueAction, else the note is used)", "et")]
 	ResourceName m_sDoorPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon flyer (optional, church scenario and safehouse walls; falls back to Puzzles > Note)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon flyer (optional, an opening's group-gone clue and safehouse walls; falls back to Puzzles > Note)", "et")]
 	ResourceName m_sFlyerPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Table radio (optional, farmhouse scenario; falls back to the wind-up radio item)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Table radio (optional, an opening's hiding-place clue; falls back to the wind-up radio item)", "et")]
 	ResourceName m_sTableRadioPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dead raider with a red hand on his jacket (optional, attic scenario; falls back to Puzzles > Body)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dead raider with a red hand on his jacket (optional, an opening's fever clue; falls back to Puzzles > Body)", "et")]
 	ResourceName m_sRaiderBodyPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dead Bastion soldier (optional, barricade scenario; falls back to Puzzles > Body)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dead Bastion soldier (optional, an opening's fever clue; falls back to Puzzles > Body)", "et")]
 	ResourceName m_sSoldierBodyPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion barricade (optional scenery for the barricade scenario)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion barricade (optional scenery by the dead soldier, an opening's fever clue)", "et")]
 	ResourceName m_sBarricadePrefab;
 
 	[Attribute("1", desc: "Halcyon flyers on the walls of Haven safehouses (they mention the Haven clinic and Bastion's curfew)")]
@@ -91,10 +88,16 @@ class RZ_GuidanceSettings
 	[Attribute("1", desc: "A Courier or Scavenger wanderer comes looking for brand-new players in their first 15 minutes")]
 	bool m_bWandererFinds;
 
-	[Attribute("1", desc: "Openings: every life starts at a random place that fits its background (never a chosen one), coming out of its hiding place, with someone from before who speaks first and a three-step chain on the errands (docs/DESIGN.md, Openings). It replaces that life's spawn scenario and the wanderer who finds you. Off: the spawn point the spawn screen picks at random, and the spawn scenarios")]
+	[Attribute("1", desc: "Openings: every life starts at a random place that fits its background (never a chosen one), coming out of where it hid, with someone who speaks first and a chain on the errands (docs/DESIGN.md, Openings). It replaces the wanderer who finds you. Off: the spawn point the spawn screen picks at random, and nothing by it")]
 	bool m_bOpenings;
 
-	[Attribute(desc: "Openings: the compositions by the door you come out of, by key: a background's id (its own things, by the door). Built by tools/camp_kit/build.py from pieces.py's OPENINGS. A key with none: nothing there")]
+	[Attribute("18", UIWidgets.Slider, "Openings: weight of 'your group is gone' among the reasons you come out today (the hiding place takes what's left of 100; halved for a brand-new player)", "0 50 1")]
+	int m_iGroupGoneWeight;
+
+	[Attribute("12", UIWidgets.Slider, "Openings: weight of 'the fever broke' among the reasons you come out today (halved for a brand-new player)", "0 50 1")]
+	int m_iFeverWeight;
+
+	[Attribute(desc: "Openings: the compositions by the door you come out of, by key: a reason's three (hiding.1-3, group.1-3, fever.1-3) and a background's id (its own things). Built by tools/camp_kit/build.py from pieces.py's OPENINGS. A key with none: nothing there")]
 	ref array<ref RZ_OpeningSceneSlot> m_aOpeningScenes;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the contact's body, someone from before (a person with the puzzle components). Empty: Puzzles > Civilian", "et")]
@@ -115,7 +118,7 @@ class RZ_GuidanceSettings
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sKey")]
 class RZ_OpeningSceneSlot
 {
-	[Attribute("", desc: "A background's id (nurse, mechanic... drifter): its own things by the door")]
+	[Attribute("", desc: "hiding.1-3, group.1-3, fever.1-3 (a reason's scene) or a background's id (nurse, mechanic... drifter: its own things)")]
 	string m_sKey;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The composition (props only)", "et")]
@@ -133,8 +136,8 @@ class RZ_GuidePlayer
 	int m_iRadioStep;
 	float m_fNudgeAt;
 	bool m_bNudged;
-	string m_sSpawnLine;	// the spawn card's "where" line (RZ_GuidanceText.SpawnLine), taken once
-	bool m_bOpening;		// this life has an opening (RZ_Openings): no spawn scenario, no wanderer comes looking
+	string m_sSpawnLine;	// the spawn card's "where" line (RZ_OpeningText.SpawnLine), taken once
+	bool m_bOpening;		// this life has an opening with someone in it (RZ_Openings): no wanderer comes looking
 }
 
 //------------------------------------------------------------------------------------------------
@@ -272,7 +275,7 @@ class RZ_Guidance
 
 	//------------------------------------------------------------------------------------------------
 	//! From OnPlayerSpawned, after the player was told who they are this life: the wind-up
-	//! radio and the spawn scenario.
+	//! radio and the timers.
 	void OnPlayerSpawned(int playerId, IEntity ent)
 	{
 		if (!m_Settings.m_bEnabled || !ent)
@@ -283,8 +286,8 @@ class RZ_Guidance
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The spawn card's "where" line from this life's scenario ("A cold basement in Morton.
-	//! Scratches on the back of the door."), once; "" if there was no scenario.
+	//! The spawn card's "where" line from this life's opening ("A farmhouse cellar in Morton. Day
+	//! 11. The last bottle is empty, so you open the door."), once; "" if there was none.
 	string TakeSpawnLine(int playerId)
 	{
 		RZ_GuidePlayer st;
