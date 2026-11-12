@@ -3068,6 +3068,11 @@ someone there says one line, and you get **Guidance > Opening Fame** (10) with t
 no hall-of-fame helped line, no deeds (the swap's Favor and the debt's Infamy, above, are those
 steps' own).
 
+**The infected keep off a waiting contact.** While the contact waits for you (before step 1 to the
+end of step 2), no infected spawn within 150 m of them, and any that wander within 60 m go: out of
+your sight they're removed, in sight (or a tribe's or hunting one) they're sent back home. Your own
+shot still kills them.
+
 **When it ends early.** The contact killed during steps 1–2: whoever finds you says so, the step
 ends, and the chain goes straight to the walk to the nearest safehouse (or, without the walk, to
 Where the Work Is). The Clock lapsing loses the
