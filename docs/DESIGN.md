@@ -834,7 +834,7 @@ nearest players** (Live places); elsewhere they stand.
 
 | Job | How (vanilla AI) |
 |---|---|
-| Sentry | the nest's watch point (a smart action), else an observation post toward the approach; by a building, the **lookout** at a front corner (the one nearer the gate first, a second watcher the other; a safehouse's at its door) |
+| Sentry | the nest's watch point (a smart action), else a spot toward the approach (vanilla's observation post waypoint where an observation-post smart action stands within 6 m, otherwise the loiter waypoint: a smart-action waypoint is never given to a group without its seat); by a building, the **lookout** at a front corner (the one nearer the gate first, a second watcher the other; a safehouse's at its door) |
 | Patrol | a loop of four points 40–80 m out (patrol waypoints in a cycle) |
 | Sit | a free seat at the fire or a table (a sit smart action) |
 | Work, lean | a free loiter or lean point at the line, the garden, the cold box, the barrel, the barrier |

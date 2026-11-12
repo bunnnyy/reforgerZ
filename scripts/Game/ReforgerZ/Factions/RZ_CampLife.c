@@ -175,7 +175,7 @@ class RZ_CampLifeSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loiter waypoint (vanilla AIWaypoint_Loiter_CO.et), used where a piece has no free smart action. Empty = Zombies > Move waypoint", "et")]
 	ResourceName m_sLoiterWaypoint;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Observation post waypoint (vanilla AIWaypoint_ObservationPost.et) for a sentry without a nest. Empty = the loiter waypoint", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Observation post waypoint (vanilla AIWaypoint_ObservationPost.et) for a sentry without a nest: used only where an observation-post smart action stands within 6 m of the sentry's spot. Otherwise, or empty, the loiter waypoint", "et")]
 	ResourceName m_sObservationWaypoint;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Smart-action waypoint (Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et, an SCR_SmartActionWaypoint): people use a piece's sit, lean and watch points. Empty = loiter at the piece", "et")]
@@ -3551,12 +3551,18 @@ class RZ_CampLife
 			return;
 		}
 
-		IEntity wp = RZ_Util.AddGroupWaypoint(group, StandClear(p, at), prefab, 3);
-		if (wp)
+		// Vanilla's observation post waypoint needs an observation-post smart action near the
+		// spot (AddGroupWaypoint refuses it otherwise); without one the sentry loiters there
+		vector spot = StandClear(p, at);
+		IEntity wp = RZ_Util.AddGroupWaypoint(group, spot, prefab, 3);
+		if (!wp)
 		{
-			w.m_aWaypoints.Insert(wp);
-			w.m_iHow = HOW_SPOT;
+			Loiter(p, w, group, at);
+			return;
 		}
+
+		w.m_aWaypoints.Insert(wp);
+		w.m_iHow = HOW_SPOT;
 	}
 
 	//------------------------------------------------------------------------------------------------

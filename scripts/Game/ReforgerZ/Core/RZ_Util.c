@@ -459,11 +459,44 @@ class RZ_Util
 			return null;
 		}
 
+		// A smart-action waypoint (vanilla's observation post is one) needs the entity that carries
+		// its smart action, or vanilla's waypoint tree stops with "Waypoint is not set properly":
+		// give it one within reach of the spot, else don't hand it to the group at all.
+		SCR_SmartActionWaypoint saw = SCR_SmartActionWaypoint.Cast(wp);
+		if (saw && !SeatSmartWaypoint(saw, at, Math.Max(radius, 6)))
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+			return null;
+		}
+
 		if (radius > 0)
 			wp.SetCompletionRadius(radius);
 
 		group.AddWaypoint(wp);
 		return wp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the smart-action waypoint has (or now has) an entity carrying a smart action with
+	//! its tag: the one it was set to, its static name, or the nearest one within `reach` of `at`.
+	protected static bool SeatSmartWaypoint(SCR_SmartActionWaypoint wp, vector at, float reach)
+	{
+		string tag = wp.m_sSmartActionTag;
+		if (tag.IsEmpty())
+			return false;
+
+		if (wp.m_SmartActionEntity)
+			return true;
+
+		if (!wp.m_sStaticEntityName.IsEmpty() && GetGame().GetWorld().FindEntityByName(wp.m_sStaticEntityName))
+			return true;
+
+		IEntity seat = RZ_SmartActionQuery.Nearest(at, reach, tag);
+		if (!seat)
+			return false;
+
+		wp.SetSmartActionEntity(seat, tag);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -532,7 +565,7 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool HasSmartActionTag(IEntity e, string tag)
+	static bool HasSmartActionTag(IEntity e, string tag)
 	{
 		array<Managed> comps = {};
 		e.FindComponents(AISmartActionComponent, comps);
@@ -1335,5 +1368,39 @@ class RZ_Util
 			CollectChildNames(child, depth + 1, result);
 			child = child.GetSibling();
 		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The nearest entity within a radius that carries a smart action with a tag (RZ_Util.AddGroupWaypoint).
+class RZ_SmartActionQuery
+{
+	protected string m_sTag;
+	protected vector m_vAt;
+	protected IEntity m_Best;
+	protected float m_fBest;
+
+	//------------------------------------------------------------------------------------------------
+	static IEntity Nearest(vector at, float radius, string tag)
+	{
+		RZ_SmartActionQuery q = new RZ_SmartActionQuery();
+		q.m_sTag = tag;
+		q.m_vAt = at;
+		q.m_fBest = radius * radius + 1;
+		GetGame().GetWorld().QueryEntitiesBySphere(at, radius, q.OnEntity, null, EQueryEntitiesFlags.ALL);
+		return q.m_Best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool OnEntity(IEntity e)
+	{
+		float d = vector.DistanceSq(e.GetOrigin(), m_vAt);
+		if (d < m_fBest && RZ_Util.HasSmartActionTag(e, m_sTag))
+		{
+			m_Best = e;
+			m_fBest = d;
+		}
+
+		return true;
 	}
 }
