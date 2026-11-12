@@ -82,9 +82,10 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 **Manual entries (WBS §4)**
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
-- 2026-11-12 3112937: rebuild `RZ_Explosion.et` as look and sound only, no damage, on `Warhead_Base.et` like `RZ_WarningShot.et`; and `RZ_Nest.et` without the hive's infected spawner child or its blast warhead (WBS §4, "Stand-in bases": the exact components and the two checks in play).
+- 2026-11-12 5b6814d: rebuild `RZ_Explosion.et` as look and sound only, no damage, on `Warhead_Base.et` like `RZ_WarningShot.et`; and `RZ_Nest.et` without the hive's infected spawner child or its blast warhead (WBS §4, "Stand-in bases": the exact components and the two checks in play).
 
 **Engine checks**
+- 2026-11-12 681b52a: after the next push, re-run the runtime test on Windows (`tools/runtime_test/run.sh`, WBS §6) and report its summary here. The cloud fixed the epilogue's closing list and the harness (the stand's overtime, the line leaving the tester alone, Arland's busy towns, the packs, the majors-only lines); on Linux: 117 of 131 missions, 15 of 15 questlines, finale and epilogue all OK. Misses WBS lists as expected on Arland need no report.
 - 2026-11-12 2990171: check all 97 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers.
 - 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back on the spawn screen cleanly (new VERIFY).
 - 2026-11-12 78dad90: re-check Everon's checkpoint log lines in Workbench play on `Missions/RZ_Everon.conf`: `Perimeter: N road checkpoints (from roads).` should say 6 (the cloud's boot of Eden did), after the `Perimeter checkpoints:` lines and one `Perimeter checkpoint at grid ...` line each; look at two barriers in play (on the road, facing the sea, guards toward the water) and report the lines here if it's still 0 (WBS §7).
@@ -92,7 +93,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
-- 2026-11-12 (PC): **Windows runtime test** (scripts as of 0ce47f3, before the seed fixes; Special Zombies loaded): 0 script exceptions. Missions: 106 of 131 started, 46 marked won. Did not start (25): BurnTheNest, Memorial, ClearSettlement, CheckpointDuty, WeaponsCache, BlowTheBridge, FireMission, ResearchData, InstallSensors, SpecimenFromTheNest, NotTonight, BringThemHome, EscortAtDawn, ContactReport, ClearTheTrail, Cull, BurnTheLair, BreakTheHabit, BaitTheCrew, PlantATag, TrackThemHome, CaptureTheIndex, StockThePit, Event RedDusk, Event BastionShelling. Questlines: 11 of 17 ended (every_name, well, cargo, weeks, proof: CanStart false; place fizzled at stage 3). Majors 7/7 OK. Finale 26 OK, 1 FAILED ("the stand is won after overtime": no overtime ran). Epilogue 19 OK, 2 FAILED ("a say at the station": no say; "the Last Broadcast is decided before processing": open). The fake player died to the Perimeter once. Full output on the PC: `~/rz_runtime_out.txt`.
+(none)
 
 ## Claims
 
