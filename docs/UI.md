@@ -1320,7 +1320,7 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 |---|---|---|---|
 | `RZ_OpenNotebook` | N | View + RB (also the pause menu's **Notebook** button, or the notebook item) | `IngameContext` |
 | `RZ_RadioFilter` | F | X | `MenuContext` |
-| `RZ_TrackJob` | T | Y | `MenuContext`: Track or untrack the selected job on the notebook's Quests tab, as A (`MenuSelect`) and the TRACK button do there |
+| `RZ_TrackJob` | T, Space | Y | `MenuContext`: Track or untrack the selected job on the notebook's Quests tab, as A (`MenuSelect`), the TRACK button and a double click on the job's row (two clicks within 0.4 s) do there |
 | `RZ_BoardClear` | Delete | X | `MenuContext`: the notice board's Clear, server admins only |
 | `RZ_Reply1` … `RZ_Reply5` | 1 … 5 | LT + D-pad up, right, down, left for 1–4; RT + D-pad up for 5 (the D-pad and A also pick the focused reply) | `MenuContext` |
 | `RZ_CarStart` | T | Y | `MenuContext` |

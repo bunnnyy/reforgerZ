@@ -3052,9 +3052,9 @@ when it happens)
   REQUIREMENTS only on an offered job. Every text 18 px or more.
 - [ ] **Track on the Quests tab**: with a pad, **A** on a row tracks it and the HUD follows within
   2 s; A on the tracked row stops tracking (the button says UNTRACK) and the tracker goes and stays
-  gone until you take a new job. Y, T, Enter and the TRACK button do the same; A on the TRACK button
-  toggles once, not twice. The footer reads "D-pad: choose · A: track / untrack · LB/RB: tabs ·
-  B: close" (as pad buttons with a pad, keys with the keyboard), and changes with the tab (Radio
+  gone until you take a new job. Y, T, Space, Enter, the TRACK button and a double click on the row do the
+  same; A on the TRACK button toggles once, not twice, and a single click only selects. The footer reads
+  "D-pad: choose · A: track / untrack (or double-click, Space) · LB/RB: tabs · B: close" (as pad buttons with a pad, keys with the keyboard), and changes with the tab (Radio
   shows its filter, Standing "open"). Relog: the same job is still tracked.
 - [ ] The three objective marks (`track_current`, `track_next`, `track_done`) show after the atlas
   is imported again (UI/LAYOUTS.md, "Importing the icons"); before that they're blank, never another icon.
