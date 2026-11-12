@@ -1414,7 +1414,7 @@ class RZ_CureFinale
 		if (m_S.coatPassed)
 		{
 			m_S.holder = INDEP;
-			m_GM.NotifyAllAs("The lab", "The duty officer at the seal: \"The seal's been changed. It says 'nobody'. Witnessed: me.\"", RZ_ENoticeTag.HIGH);
+			m_GM.NotifyAllAs("The lab", "At the seal, the duty officer reads the label twice and signs under it. It's been changed: it says 'nobody' now. Witnessed, and logged.", RZ_ENoticeTag.HIGH);
 		}
 
 		m_bSealing = true;
@@ -1866,7 +1866,7 @@ class RZ_CureFinale
 		if (!m_bInOvertime)
 		{
 			m_bInOvertime = true;
-			m_GM.NotifyAllAs("The clean room", "Overtime. The room isn't settled yet.", RZ_ENoticeTag.URGENT);
+			m_GM.NotifyAllAs("The clean room", "Overtime. The clean room is still contested. A few minutes more, and a tie goes to whoever holds it.", RZ_ENoticeTag.URGENT);
 		}
 
 		m_fOvertime += dt;
@@ -1988,7 +1988,7 @@ class RZ_CureFinale
 
 		// The contest ends: the stand's hostility comes off (StandMask), parley reopens with everyone
 		if (c >= 0)
-			m_GM.NotifyAll("The cure", "It's over. Talk.");
+			m_GM.NotifyAll("The cure", "It's over. The fight for the clean room is done, the guns at the lab come down, and anyone can talk to anyone again.");
 	}
 
 	// ================================================================ Groups at the stand
@@ -2579,7 +2579,7 @@ class RZ_CureFinale
 		m_S.pactWith[b] = -1;
 		ClearVotes(a, b);
 		RZ_Log.Info(string.Format("Finale: pact %1 + %2 ended.", RouteName(a), RouteName(b)));
-		TellRoute(b, string.Format("%1 has ended the pact. No hard feelings, officially.", RouteName(a)));
+		TellRoute(b, string.Format("%1 has ended the pact. At the stand you're two sides again. No hard feelings, officially.", RouteName(a)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2672,7 +2672,7 @@ class RZ_CureFinale
 			return;
 
 		m_S.lastMile[r] = 1;
-		m_GM.NotifyAll("Word on the roads", "One of them is close.");
+		m_GM.NotifyAll("Word on the roads", "One of the routes is close to finishing the cure, and its people are moving what they need on the roads.");
 		RZ_Log.Info(string.Format("Finale: Last Mile on %1 (track 8).", RouteName(r)));
 	}
 

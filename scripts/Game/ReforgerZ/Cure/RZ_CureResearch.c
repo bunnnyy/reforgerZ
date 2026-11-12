@@ -848,7 +848,7 @@ class RZ_CureResearch
 
 		// Hunted by Halcyon: the lab takes the samples, but you get nothing for them
 		if (RZ_Reputation.IsHunted(halcyon))
-			m_GM.NotifyPlayer(playerId, "Halcyon", "The guards take your samples and point you to the door. No thanks, no Fame.");
+			m_GM.NotifyPlayer(playerId, "Halcyon", "The guards take your samples at the door and point you back down the road. Nobody writes your name on the result: no Fame for these.");
 		else
 			m_GM.AddFame(playerId, RZ_EFaction.INSTITUTE, 3 * count);
 
@@ -1023,13 +1023,13 @@ class RZ_CureResearch
 			switch (m)
 			{
 				case 1:
-					m_GM.NotifyAll("Breakthrough: Field antiviral", "Halcyon has slowed the infection. It spreads slower and bites take longer to kill. The lab makes antidotes faster, and stabilisers are easier to come by.");
+					m_GM.NotifyAll("Breakthrough: Field antiviral", "Halcyon read it out on the open channel at the change of shift: a field antiviral that works. The infection spreads slower and bites take longer to kill. The lab makes antidotes faster, and stabilisers are easier to come by.");
 					break;
 				case 2:
-					m_GM.NotifyAll("Breakthrough: Bite treatment", "The lab has the antidote right: a dose every quarter of an hour now, more in stock, and stabilisers at a fair price. Pharmacies may still hold the odd dose.");
+					m_GM.NotifyAll("Breakthrough: Bite treatment", "Halcyon has the antidote right, and says so on every channel: a dose comes off the bench every quarter of an hour now, more are kept in stock, and stabilisers sell at a fair price. Pharmacies may still hold the odd dose.");
 					break;
 				case 3:
-					m_GM.NotifyAll("Breakthrough: Immunity serum", "Infection spread is slowing a lot. Antidotes every ten minutes, stabilisers on every shelf at the lab. One final push is all that's left.");
+					m_GM.NotifyAll("Breakthrough: Immunity serum", "Halcyon has an immunity serum, and the infection is spreading much slower. The lab makes an antidote every ten minutes, and stabilisers are on every shelf there. One last push is all that's left before the cure.");
 					break;
 			}
 		}
@@ -1096,11 +1096,11 @@ class RZ_CureResearch
 
 		if (finale && HasFinale() && finale.IsOpen())
 		{
-			m_GM.NotifyAllAs("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes. Whoever holds the clean room when it's done controls the cure.", RZ_ENoticeTag.URGENT);
+			m_GM.NotifyAllAs("THE FINAL STAND", "Halcyon has started the synthesis. The generator and the centrifuges are running flat out, and every infected for miles is coming to the noise. Hold the lab for 15 minutes. Whoever holds the clean room when it's done controls the cure.", RZ_ENoticeTag.URGENT);
 			return;
 		}
 
-		m_GM.NotifyAllAs("THE FINAL STAND", "The cure is being synthesized. Every infected for miles can sense it. Hold the lab for 15 minutes! A handful of steady people can do it; more of you draw more of them.", RZ_ENoticeTag.URGENT);
+		m_GM.NotifyAllAs("THE FINAL STAND", "Halcyon has started the synthesis. The generator and the centrifuges are running flat out, and every infected for miles is coming to the noise. Hold the lab for 15 minutes. A handful of steady people can do it; more of you draw more of them.", RZ_ENoticeTag.URGENT);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1231,7 +1231,7 @@ class RZ_CureResearch
 
 		RZ_Util.DeleteUnit(m_Annex);
 		m_Annex = null;
-		m_GM.NotifyAll("Halcyon", "The field annex has packed up and gone back to the lab.");
+		m_GM.NotifyAll("Halcyon", "The field annex has packed its cold boxes into the van and gone back to the lab.");
 	}
 
 	//------------------------------------------------------------------------------------------------
