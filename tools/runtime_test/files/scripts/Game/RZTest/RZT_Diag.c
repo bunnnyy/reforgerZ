@@ -202,12 +202,43 @@ modded class RZ_GameModeComponent
 	protected int m_iRZTQuestStage = -2;
 	protected int m_iRZTQuestMission = -1;
 	protected int m_iRZTQuestMissionSec;
+	protected int m_iRZTQuestWaitSec;
 	protected int m_iRZTQuestEnded;
 	protected int m_iRZTQuestStages;
 	protected bool m_bRZTDeathTest;
 	protected int m_iRZTDeadFor;
 	protected int m_iRZTDeaths;
 	protected int m_iRZTDoneAt;
+
+	//! Why a questline's stage mission doesn't start: the stage isn't ready, the manager's check
+	//! (requirements, claims), or else its Setup (one line: "RZT quest <key> stage <n> waits: ...").
+	protected void RZT_WhyStageWaits(string qkey, RZ_QuestRun run)
+	{
+		RZ_QuestStage st = run.m_Line.GetStage(run.m_iStage);
+		if (!st || !st.m_bMission)
+			return;
+
+		string why;
+		if (!run.m_Line.IsReady(this, run, st.m_iId))
+			why = "the stage isn't ready (IsReady)";
+		else
+		{
+			RZ_Mission probe = run.m_Line.MakeMission(this, run, st.m_iId);
+			if (!probe)
+				why = "no mission made";
+			else
+			{
+				probe.m_iQuestRun = run.m_iId;
+				probe.m_sClaimParent = run.Owner();
+				probe.Configure(this);
+				why = GetMissions().WhyNot(probe, 1, false);
+				if (why.IsEmpty())
+					why = "its Setup said no";
+			}
+		}
+
+		Print(string.Format("RZT quest %1 stage %2 waits: %3; claims held:%4", qkey, run.m_iStage, why, GetFacts().RZT_Claims()));
+	}
 
 	//! A stand-in for an optional prefab slot the test world leaves empty (test only). True if the
 	//! slot was empty and now holds `prefab`.
@@ -353,6 +384,7 @@ modded class RZ_GameModeComponent
 					said = run.m_sEndText;
 
 				Print(string.Format("RZT quest %1 fizzled or was dropped at stage %2: '%3'", qkey, m_iRZTQuestStage, said));
+				Print(string.Format("RZT quest %1 claims held then:%2", qkey, GetFacts().RZT_Claims()));
 			}
 			m_iRZTQuestSec = 999;
 			return;
@@ -375,8 +407,13 @@ modded class RZ_GameModeComponent
 			run.m_iStageUnix = run.m_iStageUnix - 43200;
 			run.m_fNextTry = 0;
 			m_iRZTQuestMission = -1;
+			// Every minute it waits for a stage mission: why the stage's mission doesn't start
+			m_iRZTQuestWaitSec++;
+			if (m_iRZTQuestWaitSec % 60 == 0)
+				RZT_WhyStageWaits(qkey, run);
 			return;
 		}
+		m_iRZTQuestWaitSec = 0;
 		RZ_Mission m = GetMissions().FindById(run.m_iMissionId);
 		if (!m)
 			return;
@@ -531,5 +568,23 @@ modded class RZ_GameModeComponent
 			m_bRZTEpilogueDone = RZT_Epilogue.Tick(this);
 		if (m_iRZTSec % 60 == 0)
 			Print(string.Format("RZT t=%1 active missions=%2 alive=%3", m_iRZTSec, GetMissions().RZT_Active(), RZ_Util.IsCharacterAlive(RZT_Fake.s_Ent)));
+	}
+}
+
+modded class RZ_WorldFacts
+{
+	//! Every claim held now, " subject (by owner)" each (the questlines' diagnostics).
+	string RZT_Claims()
+	{
+		string all = "";
+		foreach (string subject, string owner : m_mClaims)
+		{
+			all += string.Format(" %1 (by %2)", subject, owner);
+		}
+
+		if (all.IsEmpty())
+			return " none";
+
+		return all;
 	}
 }
