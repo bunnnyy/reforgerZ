@@ -190,6 +190,7 @@ class RZ_ConvoyWatch
 	string m_sFrom;
 	string m_sTo;
 	protected bool m_bFound;
+	protected ref array<int> m_aShooters = {};
 
 	//------------------------------------------------------------------------------------------------
 	//! Trucks run for the faction, none is on the road or asked for, and it has an outpost to go to.
@@ -256,11 +257,27 @@ class RZ_ConvoyWatch
 	//------------------------------------------------------------------------------------------------
 	void Update(RZ_GameModeComponent gm)
 	{
-		if (m_bFound || !gm.GetSupply())
+		if (!gm.GetSupply())
 			return;
 
-		if (IsOurs(gm.GetSupply().GetActiveTruck(m_iFaction)))
+		RZ_SupplyTruck t = gm.GetSupply().GetActiveTruck(m_iFaction);
+		if (!m_bFound && IsOurs(t))
 			m_bFound = true;
+
+		// The contract pays for this truck, so the supply system doesn't pay its own rewards on top;
+		// who shot near it is kept for the contract's pay
+		if (m_bFound && m_iResult < 0 && IsOurs(t))
+		{
+			t.m_bWatched = true;
+			m_aShooters.Copy(t.m_aShooters);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This player, or someone in their group, shot near the truck while its crew lived.
+	bool ShotBy(int playerId)
+	{
+		return RZ_SupplyLines.AmongShooters(m_aShooters, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

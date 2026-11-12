@@ -3420,6 +3420,8 @@ on the talk screen says why something wasn't dealt)
   zone, and pays once nobody is sitting in it; Car Theft counts only its own car.
 - [ ] Convoys: Convoy Escort and Hijack the Convoy ask for Bastion's next truck within two minutes;
   the breakdown stops and restarts the crew; robbing it completes the hijack, its arrival the escort.
+  Only the contract pays: no "riding shotgun" or drive-in Fame from the truck, and an escort whose
+  teammate shot near the truck isn't paid.
 - [ ] Blood Drive takes a quarter of your health (check it shows), refuses under 70% and a second
   time in the same life.
 - [ ] Patient Zero: each town's body appears only when you're near; a Lab Tech reads a grid in it.

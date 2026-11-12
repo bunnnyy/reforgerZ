@@ -591,14 +591,15 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Paid: players who were with the truck for at least 40% of the checks (two at least).
+	//! Paid: players who were with the truck for at least 40% of the checks (two at least), and
+	//! neither they nor anyone in their group shot near it while its crew lived.
 	protected void PayEscorts()
 	{
 		m_aParticipants.Clear();
 		int needed = Math.Max(2, RZ_Util.RoundToInt(m_iChecks * 0.4));
 		foreach (int playerId, int seen : m_mNear)
 		{
-			if (seen >= needed)
+			if (seen >= needed && !m_Watch.ShotBy(playerId))
 				m_aParticipants.Insert(playerId);
 		}
 	}
