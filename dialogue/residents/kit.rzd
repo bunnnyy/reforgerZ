@@ -1,6 +1,7 @@
 # Kit, without any claim (docs/DIALOGUE.md, "Claims in someone else's kit"): people react to what
 # you wear. Your own colours suit you; theirs on a stranger get a question, never an accusation.
 # There's no disguise with the Haven (its mark is the bear on its doors, not on its people).
+# Greet lines are conditional (the talk screen shows only a line that says something).
 
 conv named.bastion.kit_own
 for named:bastion
@@ -10,7 +11,7 @@ voice bastion
 daily
 
 node start
-  say "Kit suits you. Mind the collar. The sergeant notices collars."
+  say? kit:own :: "Kit suits you. Mind the collar. The sergeant notices collars, and the sergeant notices who's in Bastion green at {here} that wasn't on this morning's roster."
 
 conv named.bastion.kit_theirs
 for named:bastion
@@ -20,7 +21,7 @@ voice bastion
 daily
 
 node start
-  say "Where did you get that jacket? Don't answer. I'd have to write it down."
+  say? kit:in_kit :: "Where did you get that jacket? Don't answer. If you answer I have to write it down, and if I write it down somebody has to come out and ask you properly."
 
 conv named.redhand.kit_own
 for named:redhand
@@ -30,7 +31,7 @@ voice redhand
 daily
 
 node start
-  say "Wearing the red. Good. Now everyone knows who to blame."
+  say? kit:own :: "Wearing the red. Good. Now everyone on the road knows who to blame, and who to pay. Mostly who to pay. Blame's free, and we don't do free."
 
 conv named.redhand.kit_theirs
 for named:redhand
@@ -40,7 +41,7 @@ voice redhand
 daily
 
 node start
-  say "Nice armband. Whose was it before? Doesn't matter. Everything was somebody's before."
+  say? kit:in_kit :: "Nice armband. Whose was it before? Doesn't matter. Everything out here was somebody's before. The book usually says whose, and what they paid for it."
 
 conv named.halcyon.kit_theirs
 for named:halcyon
@@ -50,4 +51,4 @@ voice halcyon
 daily
 
 node start
-  say "That coat has somebody's initials in the collar. They aren't yours."
+  say? kit:in_kit :: "That coat has someone's initials in the collar and a notebook number on the cuff. Neither of them is yours. I am noting it, for the record. Everything here goes in a record."

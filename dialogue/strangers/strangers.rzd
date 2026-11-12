@@ -2,290 +2,304 @@
 # Their ask stays theirs: its ways are the hub's verbs, paid by the errand rules. These topics are who
 # they are and why they're here, in their own words: {their:town}, {their:house}... are the routine's
 # own texts. Nobody leans on a stranger through talk. Small means small: a pinch, not a tragedy.
+# Lines are spoken by the stranger; someone else in the scene speaks under their own label (say (...)).
 
 conv stranger.any.where
 for stranger
-topic "Ask where they're headed."
+topic "Where are you headed?"
 prio flavour
 once
 voice plain
 
 node start
-  say "Wherever's still standing. I'll know it when I see it, I expect."
-  say "You've a look about you. Like you know where the houses are. Do you?"
-  > @houses "A house nearby feeds people." -> houses
+  say "Wherever's still standing. I'll know it when I see it, I expect. There used to be a bus along this road. I keep looking up when I hear an engine."
+  say "You've a look about you, like you know where the houses are. The ones with the bear painted on the door. Do you?"
+  > @houses "A Haven house near here feeds people." -> houses
   > @careful "Stay off the roads at dusk." -> careful
-  > @no "I don't know either." -> hub
+  > @no "I don't know where anything is either." -> hub
 
 node houses
-  say "Feed me. Imagine that. I'll go and look, and if you're lying, I'll never know, will I."
-  > @back1 "Something else." -> hub
+  say "Feed me. Imagine that. I'll go and look, and if you're lying, I'll never know, will I. I'll just be somewhere else, hungry, thinking well of you."
+  > @back1 "Let me ask you something else." -> hub
 
 node careful
-  say "Dusk's when they come out, isn't it. Everybody says it like it's news."
-  > @back2 "Something else." -> hub
+  say "Dusk's when they come out, isn't it. Everybody says it like it's news. It's the only news anyone's sure of any more."
+  > @back2 "Let me ask you something else." -> hub
 
 conv stranger.tin.girl
 for stranger:tin
-topic "Ask about the girl."
+topic "Tell me about your girl."
 prio world
 once
 voice plain
 
 node start
-  say "Eleven. Clever. Eats like a sparrow, which is lucky, the way things are at {their:house}."
-  say "Her mother's on the list for the next walk out. Don't ask me what that means. I don't ask."
+  say "Eleven. Clever. Eats like a sparrow, which is lucky, the way things are at {their:house}. Half portions, and she gives half of hers to the little ones when she thinks I'm not looking."
+  say "Her mother's on the list for the next walk out. Don't ask me what that means. I don't ask. Nobody at the house asks."
   > @lie "She'll be all right." -> fine
   > @nurse "Is she eating at all? Coughing?" -> nurse   if bg:nurse,doctor
-  > @back "Something else." -> hub
+  > @back "Let me ask you something else." -> hub
 
 node fine
-  say "Everyone says that. I've started saying it too. It helps, a bit."
-  > @back1 "Something else." -> hub
+  say "Everyone says that. I've started saying it too, to her, at night. It helps, a bit. Mostly it helps me."
+  > @back1 "Let me ask you something else." -> hub
 
 node nurse
-  say "A bit of a cough. Mornings. You think it's nothing? You'd say if it wasn't."
+  say "A bit of a cough. Mornings, mostly. You think it's nothing? You'd say if it wasn't. You've got that face, the one the nurse at the house has."
   > @nothing "Probably nothing. Keep her warm." -> fine
-  > @back2 "Something else." -> hub
+  > @back2 "Let me ask you something else." -> hub
 
 conv stranger.funeral.wife
 for stranger:funeral
-topic "Ask about his wife."
+topic "Tell me about your wife."
 prio world
 once
 voice plain
 
 node start
-  say "Thursdays to {their:town}, for the market. Thirty years. The car knew the way better than she did."
-  say "She'd hate this. Standing about on a verge, talking to a stranger. She'd have told you her life story by now."
-  > @tell "Tell me, then." -> tell
-  > @sorry "I'm sorry." -> sorry
+  say "Thursdays to {their:town}, for the market. Thirty years. The car knew the way better than she did. She'd let go of the wheel at the bend by the church to show me."
+  say "She'd hate this. Standing about on a verge, talking to a stranger. She'd have told you her life story by now, and yours."
+  > @tell "Tell me about her, then." -> tell
+  > @sorry "I'm sorry for your loss." -> sorry
 
 node tell
-  say "She grew marrows the size of dogs. She cheated at cards and denied it to the end. That's most of her."
-  > @back1 "Something else." -> hub
+  say "She grew marrows the size of dogs and gave them away to people who didn't want them. She cheated at cards and denied it to the end. That's most of her. The rest is mine."
+  > @back1 "Let me ask you something else." -> hub
 
 node sorry
-  say "So am I. Help me with the car, and we'll call it even."
-  > @back2 "Something else." -> hub
+  say "So am I. Help me put the car in the ditch, out of the road, and we'll call it even. She'd hate it blocking the way. She hated being in anyone's way."
+  > @back2 "Let me ask you something else." -> hub
 
 conv stranger.which_way.pram
 for stranger:which_way
-topic "Ask about the pram."
+topic "Why the pram full of pans?"
 prio flavour
 once
 voice plain
 
 node start
-  say "It carries more than a bag does. Don't look at me like that. Everyone looks at me like that."
-  > @fair "It's a good idea." -> fair
-  > @back "Something else." -> hub
+  say "It carries more than a bag does, and it's got wheels. Don't look at me like that. Everyone looks at me like that, and then they ask about the baby. There isn't one. It was my neighbour's pram."
+  > @fair "It's a good idea, actually." -> fair
+  > @back "Let me ask you something else." -> hub
 
 node fair
-  say "Thank you. Somebody gets it. The pans are for {their:town}. They've none left, apparently. Apparently nobody thought of pans."
-  > @back1 "Something else." -> hub
+  say "Thank you. Somebody gets it. The pans are for {their:town}. The house there has none left, apparently. Forty people and two saucepans. Nobody ever thinks of pans."
+  > @back1 "Let me ask you something else." -> hub
 
 conv stranger.door.tuesday
 for stranger:door
-topic "Ask how long they've been in there."
+topic "How long have you been in there?"
 prio world
 once
 voice plain
 
 node start
   say "Since Tuesday. I counted the tins, so it's Tuesday. Unless I counted wrong, and then it's worse."
+  say "They come out in the street when it's dark. I hear them on the stairs some nights. I don't open the door to anyone after the light goes. Not even you, if you come back."
   > @out "It's safe enough to come out. By day." -> out
   > @which "Which Tuesday?" -> which
 
 node out
-  say "By day. Everyone says by day. All right. Give me a minute to remember how a door works."
-  > @back1 "Something else." -> hub
+  say "By day. Everyone says by day. All right. Give me a minute to remember how a door works, and where I put my shoes."
+  > @back1 "Let me ask you something else." -> hub
 
 node which
-  say "Don't. Don't do that. I'll start counting again."
-  > @back2 "Something else." -> hub
+  say "Don't. Don't do that. I'll start counting again, and I've only just stopped."
+  > @back2 "Sorry. Let me ask you something else." -> hub
 
 conv stranger.two_in_back.kids
 for stranger:two_in_back
-topic "Ask the kids where they're going."
+topic "Where are you two off to, then?"
 prio flavour
 once
 voice plain
 
 node start
-  say The father answers for them: "On an adventure. Isn't that right?" The kids nod. The older one doesn't.
+  say "Go on, tell them. On an adventure. Isn't that right? An adventure to Gran's, in a car that won't start. The very best kind."
+  say (the little one) "We're going on an adventure. Dad said."
   > @play "Best adventure there is." -> play
-  > @plain Ask the older one, quietly. -> plain
+  > @plain "What about you? Where are you going?" -> plain
 
 node play
-  say The little one beams. The older one looks at you like you've joined the conspiracy, which you have.
-  > @back1 "Something else." -> hub
+  say "Hear that? Best adventure there is. Thank you. The little one's beaming. The big one's looking at you like you've joined the conspiracy. Which you have."
+  > @back1 "Let me ask you something else." -> hub
 
 node plain
-  say "We're going to Gran's. Gran's dead. Dad doesn't know I know."
-  > @back2 "Something else." -> hub
+  say (the older one) "We're going to Gran's. Gran's dead. Dad doesn't know I know."
+  say "What was that? Never mind. Get your head down, both of you. We'll be moving soon."
+  > @back2 "Let me ask you something else." -> hub
 
 conv stranger.digger.name
 for stranger:digger
-topic "Ask who it's for."
+topic "Who are you burying?"
 prio world
 once
 voice plain
 
 node start
-  say "{their:who}. I didn't know them. Somebody should, for a minute, before the ground does."
+  say "It's for {their:who}. I didn't know them. Somebody should, for a minute, before the ground does. Nobody should lie by a road."
   > @help "Hand me the shovel." -> help
-  > @why "Why bother?" -> why
+  > @why "Why bother, for a stranger?" -> why
 
 node help
-  say "Thank you. The shovel's worse than the digging. Coal shovels aren't made for this. Nothing is."
-  > @back1 "Something else." -> hub
+  say "Thank you. The shovel's worse than the digging. It's a coal shovel from my own shed. Coal shovels aren't made for this. Nothing is."
+  > @back1 "Let me ask you something else." -> hub
 
 node why
-  say "Because next time it's me by the road. I'd like someone to bother."
-  > @back2 "Something else." -> hub
+  say "Because next time it's me by the road. I'd like someone to bother. That's all it is. It isn't kindness. It's a sort of deposit."
+  > @back2 "Let me ask you something else." -> hub
 
 conv stranger.still_walking.sleeve
 for stranger:still_walking
-topic "Ask about his arm."
+topic "What happened to your arm?"
 prio world
 once
 voice plain
 
 node start
-  say "It's nothing. A dog. Before all this. An old scar."
-  say "That's what I told the house, anyway. They walked me out all the same. Polite about it."
-  > @doctor "Show me. I'll know." -> doctor   if bg:doctor,nurse
+  say "It's nothing. A dog bit me, years ago, before all this. An old scar."
+  say "That's what I told the house, anyway. They walked me out all the same. Polite about it. A coat, a tin, and a finger pointing at the road."
+  > @doctor "Show me. I'll know if it's old." -> doctor   if bg:doctor,nurse
   > @leave "I won't ask again." -> hub
 
 node doctor
-  say He holds it out. It's a bite, and it's new, and he knows you know. "So. Is the shot true or isn't it?"
+  say "Fine. Look, then. It's new. I know it's new, and you know, and now we both know. So tell me straight: is the shot at the lab true, or isn't it?"
   > @honest "I don't know. Ask at the lab." -> hub
   > @kind "Sit down a minute. Then we'll walk." -> hub
 
 conv stranger.warm_hands.fire
 for stranger:warm_hands
-topic "Ask where he's from."
+topic "Where are you from?"
 prio flavour
 once
 voice plain
 
 node start
-  say "{their:house}, until last week. Upkeep. I couldn't pay it, so I'm paying it out here instead."
-  say "Don't feel sorry for me. The fire's good. The company's better than I'm used to."
+  say "A Haven house, until last week. Upkeep. They count mouths now, and I couldn't work enough to pay for mine, so I'm paying it out here instead."
+  say "Don't feel sorry for me. The fire's good. The company's better than I'm used to, and nobody here is counting what I eat."
   > @stay "Stay as long as the fire lasts." -> stay
-  > @back "Something else." -> hub
+  > @back "Let me ask you something else." -> hub
 
 node stay
-  say "Generous. It's only your fire, though, isn't it. Ha. Sorry. I've forgotten how people talk."
-  > @back1 "Something else." -> hub
+  say "Generous. It's only your fire, though, isn't it. Ha. Sorry. I've forgotten how people talk, after a week of talking to hedges."
+  > @back1 "Let me ask you something else." -> hub
 
 conv stranger.seed_potatoes.farm
 for stranger:seed_potatoes
-topic "Ask about the farm."
+topic "Tell me about the farm."
 prio flavour
 once
 voice plain
 
 node start
-  say "Four generations. Then a fortnight, and they own it. The ones in the field, I mean."
-  say "Potatoes don't care who eats them. That's what I keep telling myself."
-  > @back "Something else." -> hub
+  say "Four generations of my family on this land. Then a fortnight, and the sick own it. They stand in the rows out there like they're waiting to be told what to plant."
+  say "Potatoes don't care who eats them. That's what I keep telling myself. It doesn't help as much as you'd think."
+  > @why "Why go back for a sack of potatoes?" -> seed
+  > @back "Let me ask you something else." -> hub
+
+node seed
+  say "Because they're seed potatoes, not eating ones. Put a sack in the ground in spring and you've a field by autumn. Somebody should plant them. A house that's still there in spring."
+  > @back1 "Let me ask you something else." -> hub
 
 conv stranger.sister.barns
 for stranger:sister
-topic "Ask about his sister."
+topic "Tell me about your sister."
 prio world
 once
 voice plain
 
 node start
-  say "Older than me. Bossier than me. Put out of {their:house} for upkeep, and she paid it twice before they asked a third time."
-  say "She'll be in a barn. {their:barn}, if I had to bet. She liked barns when we were kids."
-  > @help "I'll keep an eye out." -> help
-  > @back "Something else." -> hub
+  say "Older than me. Bossier than me. Put out of {their:house} for upkeep, and she'd paid it twice before they asked a third time."
+  say "She'll be in a barn. {their:barn}, if I had to bet. She liked barns when we were kids. She'd hide in the hay and I'd pretend I couldn't find her."
+  > @help "I'll keep an eye out for her." -> help
+  > @back "Let me ask you something else." -> hub
 
 node help
   say "That's all I ask. That, and if she says I'm useless, don't argue. She's not wrong."
-  > @back1 "Something else." -> hub
+  > @back1 "Let me ask you something else." -> hub
 
 conv stranger.waves_at_line.him
 for stranger:waves_at_line
-topic "Ask who's on the other side."
+topic "Who are you waving at?"
 prio world
 once
 voice plain
 
 node start
-  say "My husband. He went for bread on Day 1 and the road shut behind him. He's there most evenings."
-  say "We wave. That's the arrangement. The drones don't mind waving."
+  say "My husband. He went for bread on Day 1, over the hill to the town outside, and the road shut behind him. He's there most evenings, past the trees."
+  say "We wave. That's the arrangement. The drones don't mind waving. The loudspeaker says step back, and I do, one step, and then I wave again."
   > @gently "Come back from the line. Please." -> gently
-  > @wave Wave with her a while. -> wave
+  > @wave "I'll wave with you a while." -> wave
 
 node gently
-  say "In a minute. He hasn't waved yet. He always waves."
-  > @back1 "Something else." -> hub
+  say "In a minute. He hasn't waved yet. He always waves. If I go before he waves, he'll think something's happened to me."
+  > @back1 "Let me ask you something else." -> hub
 
 node wave
-  say You wave at the trees. Something moves behind them, or nothing does. She thanks you anyway.
-  > @back2 "Something else." -> hub
+  say "There. By the third tree. Did you see that? Something moved. That's him. He'll think I've made a friend. He'll be pleased. He always said I should talk to people more."
+  > @back2 "Let me ask you something else." -> hub
 
 conv stranger.face_on_notice.book
 for stranger:face_on_notice
-topic "Ask what he owes."
+topic "What do you owe them?"
 prio world
 once
 voice plain
 
 node start
-  say "Rent. Then interest on the rent. Then a fee for being late with the interest. It's in the book at {their:hut}. Page after page."
-  say "The book's the only thing in the Zone that still works the way it used to."
-  > @back "Something else." -> hub
+  say "Rent. Then interest on the rent. Then a fee for being late with the interest. It's all in the landlord's book, in the crew hut at {their:hut}. Page after page of me."
+  say "The landlord wears the red hand now. The book's the only thing in the Zone that still works the way it used to."
+  > @why "Why come to me with it?" -> why
+  > @back "Let me ask you something else." -> hub
+
+node why
+  say "Because you're on a notice. A face the crews want gone. Somebody with nothing left to lose doesn't worry about a crew hut. I've plenty to lose, and all of it's on those pages."
+  > @back1 "Let me ask you something else." -> hub
 
 conv stranger.hook_hiding.noise
 for stranger:hook_hiding
-topic "Ask what they saw."
+topic "What did you see out there?"
 prio world
 once
 voice plain
 
 node start
-  say "Nothing. I heard all of it and saw nothing. I put my hands over my ears like a child."
+  say "Nothing. I heard all of it and saw nothing. The shooting, the shouting, then the other noise. I put my hands over my ears like a child and stayed under here."
   > @fine "That kept you alive." -> fine
-  > @back "Something else." -> hub
+  > @back "Let me ask you something else." -> hub
 
 node fine
-  say "Did it? Maybe. I'd like to think something did on purpose."
-  > @back1 "Something else." -> hub
+  say "Did it? Maybe. I'd like to think something did on purpose. It feels like luck, and I'm tired of being kept alive by luck."
+  > @back1 "Let me ask you something else." -> hub
 
 conv stranger.hook_first.bag
 for stranger:hook_first
-topic "Ask what they found."
+topic "What did you find?"
 prio flavour
 once
 voice plain
 
 node start
-  say "Enough. Not as much as I'd like. More than you'd like, by your face."
-  say "Don't take it personally. Being first is the only luck left going."
-  > @back "Something else." -> hub
+  say "Enough. Not as much as I'd like. More than you'd like, by your face. Tins, a torch, a box of plasters. Somebody's whole cupboard."
+  say "Don't take it personally. Being first is the only luck left going. Tomorrow it'll be you, and I'll be the one standing here with that face."
+  > @back "Let me ask you something else." -> hub
 
 conv stranger.hook_bitten.fence
 for stranger:hook_bitten
-topic "Ask about the scratch."
+topic "How did you get that scratch?"
 prio world
 once
 voice plain
 
 node start
-  say "A fence. Barbed wire. Off a farm. You know what a fence looks like. Don't look at it like that."
+  say "A fence. Barbed wire. Off a farm, coming across the fields. You know what a fence looks like. Don't look at it like that."
   > @look "Let me look at it." -> look   if bg:doctor,nurse
-  > @believe "A fence, then." -> hub
+  > @believe "A fence. All right, then." -> hub
 
 node look
-  say You look. It isn't a fence. You both know, and neither of you says it.
-  > @house "There's a house near. Go there." -> hub
-  > @sit Sit with them a minute. -> hub
+  say "Go on, then. Look. You've gone quiet. That's the answer, isn't it. Don't say it. Just tell me which way the house is, and whether they'll open the door."
+  > @house "There's a house near. Go there now." -> hub
+  > @sit "I'll sit with you a minute first." -> hub
 
 # A stranger calls out as you come close (docs/DIALOGUE.md, "Who opens a conversation"): once, at
 # 10 m, inside the unasked-contact budget. What they want is still their ask, as built.
@@ -298,4 +312,4 @@ once
 voice plain
 
 node start
-  say "Hey. You. Sorry. Have you got a minute? I wouldn't ask."
+  say? !met :: "Hey. You. Sorry. Have you got a minute? I wouldn't ask, only there's nobody else on this road, and you look like you know your way about."

@@ -3,137 +3,143 @@
 
 conv wanderer.trader.prices
 for wanderer:trader
-topic "Ask what sells these days."
+topic "What's selling these days?"
 prio flavour
 voice plain
 
 node start
-  say "Batteries, always. Salt, since the shop in {here} went. Boots in your size, never."
-  say "Jewellery sells to the Red Hand. Don't ask me what they do with it. They weigh it."
-  > @cheap "Anything cheap?" -> cheap
-  > @other "Something else." -> hub
+  say "Batteries, always. Salt, since the shop in {here} went. Boots in your size, never. People pay for warmth and light before they pay for food, which surprised me."
+  say "Jewellery sells to the Red Hand. Don't ask me what they do with it. They weigh it on a kitchen scale and write it in a book."
+  > @cheap "Anything going cheap?" -> cheap
+  > @other "Let me ask you something else." -> hub
 
 node cheap
-  say "Advice. Here's some: never buy a tin that's been opened and closed again."
-  > @back1 "Something else." -> hub
+  say "Advice. Here's some, free: never buy a tin that's been opened and closed again. And never sell your boots. Everything else you can buy back. Not boots."
+  > @back1 "Let me ask you something else." -> hub
 
 conv wanderer.doctor.work
 for wanderer:doctor
-topic "Ask how the work's going."
+topic "How's the work going, Doctor?"
 prio flavour
 voice plain
 
 node start
-  say "Same as the old job. People come in hurt, I fix what I can, and I write down what I can't."
-  say "The difference is nobody pays the electricity bill. Including me."
-  > @shop "Compare what you carry." -> shop   if bg:doctor,nurse
+  say "Same as the old job. People come in hurt, I fix what I can, and I write down what I can't. I did twelve-hour shifts at the hospital. Now it's one long shift with walking in it."
+  say "The difference is nobody pays the electricity bill. Including me. I've stitched a man up by a car's headlights twice this week."
+  > @shop "Let's compare what we're carrying." -> shop   if bg:doctor,nurse
   > @worst "What's the worst of it?" -> worst
-  > @other2 "Something else." -> hub
+  > @other2 "Let me ask you something else." -> hub
 
 node shop
-  say "Show me yours. Hm. Gauze, good. That antiseptic is half water, whoever sold it to you."
-  say "Clean a bite first, then argue. The first minutes are the ones that count."
+  say "Show me yours. Gauze, good. That antiseptic is half water, whoever sold it to you. The Red Hand cut everything, even the stuff you put on wounds."
+  say "Clean a bite first, then argue about it. The first minutes are the ones that count. After that you're cleaning it for your own peace of mind."
   do learn:doctor.golden_window
-  > @back2 "Something else." -> hub
+  > @back2 "Let me ask you something else." -> hub
 
 node worst
-  say "The bites people don't mention until the fever's up. By then I'm a witness, not a doctor."
-  say "Tell someone early. Anyone. It's the only advice that's ever worked."
-  > @back3 "Something else." -> hub
+  say "The bites people don't mention until the fever's up. By then I'm a witness, not a doctor. I sit with them, and I write down the time."
+  say "Tell someone early. Anyone. A Haven house, the lab, me. It's the only advice I've given in eleven days that's ever worked."
+  > @back3 "Let me ask you something else." -> hub
 
 conv wanderer.scavenger.where
 for wanderer:scavenger
-topic "Ask where they've been."
+topic "Where have you been lately?"
 prio flavour
 voice plain
 
 node start
-  say "Everywhere twice and nowhere I'd go a third time. {here} has a chemist with the shutters down."
+  say "Everywhere twice and nowhere I'd go a third time. The empty villages, the farms, the petrol stations on the ring road. {here} has a chemist's with the shutters down."
   say "Down isn't locked. Down is just down."
-  > @true "Is that true?" -> honest | shrug   check persuade none 2 bg:police,elder
-  > @other3 "Something else." -> hub
+  > @true "Is that true, about the chemist's?" -> honest | shrug   check persuade none 2 bg:police,elder
+  > @other3 "Let me ask you something else." -> hub
 
 node honest
-  say "Mostly. The shutters are down because something leans on them from inside. I didn't stop to ask what."
+  say "Mostly. The shutters are down because something leans on them from inside. I heard it shift when I knocked. I didn't stop to ask what."
   do learn:scav.chemist
-  > @back4 "Something else." -> hub
+  > @back4 "Good to know. One more thing." -> hub
 
 node shrug
-  say "True enough to sell. That's the only kind of true I can afford."
-  > @back5 "Something else." -> hub
+  say "True enough to sell. That's the only kind of true I can afford out here. You want the other kind, you'll have to pay for it like everybody else."
+  > @back5 "Let me ask you something else." -> hub
 
 conv wanderer.deserter.why
 for wanderer:deserter
-topic "Ask why they left Bastion."
+topic "Why did you leave Bastion?"
 prio world
 voice plain
 
 node start
-  say "I didn't leave. On paper I'm dead. KIA, body not recovered. My name's still on their board."
-  say "They'll read it at the roll tonight and the whole post will answer for me. That's the worst part."
-  > @why2 "Why did you go?" -> why | silent   check persuade none 2 bg:soldier,police
-  > @back "Could you go back?" -> back
-  > @other4 "Something else." -> hub
+  say "I didn't leave. On paper I'm dead. Killed in action, body not recovered. My name's still up on their board, with a date that isn't true."
+  say "They'll read it at the roll tonight, and the whole post will answer here for me, all together. That's the worst part. They mean it."
+  > @why2 "What made you go?" -> why | silent   check persuade none 2 bg:soldier,police
+  > @back "Could you ever go back?" -> back
+  > @other4 "Let me ask you something else." -> hub
 
 node why
-  say "Orders came that nobody read out. Then they burnt them in the stove. I'd read them first."
-  say "I won't say what they said. I left because I'd have done it."
+  say "Orders came that nobody read out loud. The sergeant read them alone, then burnt them in the stove. I'd read them first, over the radio man's shoulder."
+  say "I won't say what they said. I left because I'd have done it. I'd have done it and signed for it, and I'd have slept fine. That's what scared me."
   do learn:bastion.orders_rumour
-  > @back6 "Something else." -> hub
+  > @back6 "Let me ask you something else." -> hub
 
 node silent
-  say "Because I wanted to live more than I wanted to be counted. Leave it there."
-  > @back7 "Something else." -> hub
+  say "Because I wanted to live more than I wanted to be counted. Leave it there. Please. I've said it to nobody else, and I'd like to keep it that way."
+  > @back7 "Let me ask you something else." -> hub
 
 node back
-  say "If I walked in, they'd rub out the KIA, not the man. Then they'd hang me for it, properly signed for."
-  > @back8 "Something else." -> hub
+  say "If I walked in, they'd rub out the killed in action. Not the man. Then they'd deal with me for walking, properly signed for, and the board would get it right this time."
+  > @back8 "Let me ask you something else." -> hub
 
 conv wanderer.preacher.bells
 for wanderer:preacher
-topic "Ask about the bells."
+topic "Tell me about the bells."
 prio flavour
 voice plain
 
 node start
-  say "I ring them so the living know someone's still keeping time. The dead hear them too. I'm sure of it."
-  say "I've asked the Lord which matters more. He's been quiet on it."
-  > @danger "They draw the dead to town." -> danger
-  > @other5 "Something else." -> hub
+  say "I took them down from the church at the crossroads on Day 4, after the priest opened the doors to everyone and somebody had to keep time while he did."
+  say "I ring them so the living know someone's still keeping the hours. The sick hear them too. I've asked the Lord which matters more. He's been quiet on it."
+  > @danger "They draw the sick into town." -> danger
+  > @other5 "Let me ask you something else." -> hub
 
 node danger
-  say "They do. That's why I ring and walk on. You can ask me to stop for a while. I'll listen."
-  > @back9 "Something else." -> hub
+  say "They do. That's why I ring and walk on, and never twice in one place. You can ask me to stop for a while. I'll listen. I've been wrong before."
+  > @back9 "Let me ask you something else." -> hub
 
 conv wanderer.courier.post
 for wanderer:courier
-topic "Ask what's in the bag."
+topic "What's in the bag?"
 prio flavour
 voice plain
 
 node start
-  say "Letters. People still write them. Half the addresses are houses that aren't there any more."
-  say "I deliver those to the nearest house that is. Somebody reads them out. It helps, somehow."
+  say "Letters. People still write them, on whatever they've got: the backs of calendars, wallpaper, a cereal box once. Half the addresses are houses that aren't there any more."
+  say "I deliver those to the nearest house that is. Somebody reads them out at supper. It helps, somehow. People like to hear that somebody wrote."
   > @read "Do you ever read them?" -> read
-  > @other6 "Something else." -> hub
+  > @last "Who wrote the last one you carried?" -> last
+  > @other6 "Let me ask you something else." -> hub
 
 node read
-  say "Never. The day I start reading them is the day I start choosing which ones to lose."
-  > @back10 "Something else." -> hub
+  say "Never. The day I start reading them is the day I start choosing which ones to lose. I carry them all the same, good news and bad, sealed."
+  > @back10 "Let me ask you something else." -> hub
+
+node last
+  say "A man at a Bastion post, to his wife on the other side of the line. I can't deliver it. I told him so. He said carry it anyway, so somebody's carrying it."
+  say "It's at the bottom of the bag. It's the only one I'll never put down. When the line opens, that's the first door I knock on."
+  > @back12 "Let me ask you something else." -> hub
 
 conv wanderer.mechanic.cars
 for wanderer:mechanic
-topic "Ask what still runs."
+topic "What still runs, these days?"
 prio flavour
 voice plain
 
 node start
-  say "Anything with a carburettor and an owner who's dead. Fuel's the problem, not the cars."
-  say "The Red Hand has most of the diesel. Ask them nicely and then check your pockets."
-  > @fix "Can you teach me a trick?" -> fix   if bg:mechanic
-  > @other7 "Something else." -> hub
+  say "Anything with a carburettor and an owner who's not coming back for it. Fuel's the problem, not the cars. Every garage forecourt in the Zone ran dry on Day 2."
+  say "The Red Hand has most of the diesel now. Ask them nicely, pay what they ask, and then check your pockets."
+  > @fix "Teach me a trick I don't know." -> fix   if bg:mechanic
+  > @other7 "Let me ask you something else." -> hub
 
 node fix
-  say "You know the tricks. Here's one you don't: the Bastion trucks use a different fuel cap. Take a spare."
+  say "You know the tricks. Here's one you don't: the Bastion trucks use a different fuel cap from the civvy ones. Take a spare off a wreck and keep it in your bag."
   do learn:mechanic.bastion_caps
-  > @back11 "Something else." -> hub
+  > @back11 "Let me ask you something else." -> hub

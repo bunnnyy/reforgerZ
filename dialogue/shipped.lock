@@ -445,6 +445,7 @@ haven.sitting.second/@listen
 haven.sitting.second/@pot
 haven.sitting.second/@tins
 haven.sitting.second/@workers
+named.bastion.intro
 named.bastion.kit_dead
 named.bastion.kit_issued
 named.bastion.kit_own
@@ -495,6 +496,7 @@ named.halcyon.cover/@back1
 named.halcyon.cover/@back2
 named.halcyon.cover/@book
 named.halcyon.cover/@leave
+named.halcyon.intro
 named.halcyon.kit_issued
 named.halcyon.kit_theirs
 named.halcyon.word
@@ -510,6 +512,7 @@ named.halcyon.work/@later
 named.halcyon.work/@no
 named.halcyon.work/@take
 named.halcyon.work/@what
+named.haven.intro
 named.haven.word
 named.haven.word/@back0
 named.haven.word/@back1
@@ -531,6 +534,7 @@ named.haven.work/@no
 named.haven.work/@nurse
 named.haven.work/@take
 named.haven.work/@what
+named.redhand.intro
 named.redhand.kit_issued
 named.redhand.kit_own
 named.redhand.kit_theirs
@@ -617,6 +621,7 @@ occupant.house.word/@house2
 occupant.house.word/@house3
 occupant.house.word/@house4
 occupant.house.word/@house5
+occupant.intro
 occupant.nurse.symptoms
 occupant.nurse.symptoms/@back
 occupant.nurse.symptoms/@back1
@@ -945,6 +950,7 @@ resident.cook.supper/@later
 resident.cook.supper/@no
 resident.cook.supper/@stores
 resident.cook.supper/@take
+resident.intro
 resident.lookout.roof
 resident.lookout.roof/@back1
 resident.lookout.roof/@back2
@@ -996,6 +1002,8 @@ stranger.door.tuesday/@out
 stranger.door.tuesday/@which
 stranger.face_on_notice.book
 stranger.face_on_notice.book/@back
+stranger.face_on_notice.book/@back1
+stranger.face_on_notice.book/@why
 stranger.funeral.wife
 stranger.funeral.wife/@back1
 stranger.funeral.wife/@back2
@@ -1014,6 +1022,8 @@ stranger.hook_hiding.noise/@back1
 stranger.hook_hiding.noise/@fine
 stranger.seed_potatoes.farm
 stranger.seed_potatoes.farm/@back
+stranger.seed_potatoes.farm/@back1
+stranger.seed_potatoes.farm/@why
 stranger.sister.barns
 stranger.sister.barns/@back
 stranger.sister.barns/@back1
@@ -1083,6 +1093,8 @@ wanderer.bitten.arm/@sit
 wanderer.bitten.arm/@weather
 wanderer.courier.post
 wanderer.courier.post/@back10
+wanderer.courier.post/@back12
+wanderer.courier.post/@last
 wanderer.courier.post/@other6
 wanderer.courier.post/@read
 wanderer.courier.trouble
@@ -1134,6 +1146,7 @@ wanderer.doctor.work/@back3
 wanderer.doctor.work/@other2
 wanderer.doctor.work/@shop
 wanderer.doctor.work/@worst
+wanderer.intro
 wanderer.kid.home
 wanderer.kid.home/@back3
 wanderer.kid.home/@back4
