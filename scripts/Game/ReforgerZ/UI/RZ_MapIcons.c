@@ -13,7 +13,7 @@
 //! layout, the layer does nothing and the vanilla text markers stay (and there's no legend).
 class RZ_MapIconsUI : SCR_MapUIBaseComponent
 {
-	protected static const float HALF = 14;	// half the icon's size, to centre it on the spot
+	protected static const float HALF = 24;	// half the icon's size (48), to centre it on the spot
 	protected static const string LEGEND_ACTION = "RZ_MapLegend";
 
 	protected static bool s_bLegendHidden;	// the player hid the legend (this session)
@@ -137,7 +137,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Every frame while the map is open: the icons follow pan and zoom; a range ring is sized to its
-	//! radius on the map (28 to 320 units across).
+	//! radius on the map (48 to 320 units across).
 	protected void Place()
 	{
 		foreach (int i, Widget w : m_aIcons)

@@ -690,15 +690,15 @@ Button RecipeRow (root, 4 below it)
 
 One marker on the real map, created into the map's root by `RZ_MapIconsUI` on the map
 configuration when **UI > Map icon layout** names this file. Neither is set up yet
-([UI.md](../docs/UI.md#built-and-planned)). The script centres the 28 × 28 icon on the spot and
+([UI.md](../docs/UI.md#built-and-planned)). The script centres the 48 × 48 icon on the spot and
 tints it. For a range ring (`marker_range`) it sets the root's and **Icon**'s size every frame to the
-pack's ground on the map (28 to 320 across), so **Icon** must sit in the root's frame slot, top-left,
+pack's ground on the map (48 to 320 across), so **Icon** must sit in the root's frame slot, top-left,
 not stretched by anchors.
 
 ```
-Frame (root, 28 × 28, top-left anchor, ignores the cursor)
-├─ Image  Icon       28 × 28, a marker_* icon (white; the script sets the image and tints it)
-└─ Text   Label      under the icon, offset (-60, 30), 148 wide, centred, 18, bone, a dark shadow offset by 1
+Frame (root, 48 × 48, top-left anchor, ignores the cursor)
+├─ Image  Icon       48 × 48, a marker_* icon (white; the script sets the image and tints it)
+└─ Text   Label      under the icon, offset (-116, 50), 280 wide, centred, condensed bold 26, bone, a dark shadow offset by 1
 ```
 
 ## Map legend: `RZ_MapLegend.layout`
@@ -711,23 +711,23 @@ event, the checkpoint and the range ring hazard yellow, the stations bone), and 
 with the zoom (`SetOpacity`; hidden at 0). Positions are from the root's top left.
 
 ```
-Frame MapLegend (root, 540 × 316, anchor bottom-left, offset (96, -190): above vanilla's key hints and scale bar)
+Frame MapLegend (root, 640 × 400, anchor bottom-left, offset (96, -190): above vanilla's key hints and scale bar)
 ├─ Image  (LegendBg)       #121416 at 90%
 ├─ Image  (LegendAccent)   full width × 5, top edge, bone
 ├─ Panel  (LegendLine)     border #2A2E31
-├─ Text   (LegendTitle)    at (20, 16), condensed bold 26, "MAP KEY"
-├─ Text   (LegendSub)      right-aligned, ending at (520, 22), mono bold 18, dim, "COLOUR: WHOSE IT IS"
-├─ Text   (label "WHO HOLDS WHAT") at (20, 60)        ├─ Text (label "THE WORLD") at (280, 60)
-├─ Image  Key_marker_stronghold   28 × 28 at (20, 92)  ├─ Image Key_marker_event       at (280, 92)
-├─ Image  Key_marker_outpost      at (20, 128)         ├─ Image Key_marker_checkpoint  at (280, 128)
-├─ Image  Key_marker_safehouse    at (20, 164)         ├─ Image Key_marker_power       at (280, 164)
-├─ Image  Key_marker_lab          at (20, 200)         ├─ Image Key_marker_radio       at (280, 200)
-│                                                     └─ Image Key_marker_range       at (280, 236)
-├─ Text   (KeyName_<icon>) beside each icon, 10 to its right, condensed bold 18, bone: Stronghold,
+├─ Text   (LegendTitle)    at (20, 16), condensed bold 28, "MAP KEY"
+├─ Text   (LegendSub)      right-aligned, ending at (620, 24), mono bold 20, dim, "COLOUR: WHOSE IT IS"
+├─ Text   (label "WHO HOLDS WHAT") at (20, 64), mono bold 20   ├─ Text (label "THE WORLD") at (330, 64)
+├─ Image  Key_marker_stronghold   40 × 40 at (20, 102)  ├─ Image Key_marker_event       at (330, 102)
+├─ Image  Key_marker_outpost      at (20, 152)          ├─ Image Key_marker_checkpoint  at (330, 152)
+├─ Image  Key_marker_safehouse    at (20, 202)          ├─ Image Key_marker_power       at (330, 202)
+├─ Image  Key_marker_lab          at (20, 252)          ├─ Image Key_marker_radio       at (330, 252)
+│                                                      └─ Image Key_marker_range       at (330, 302)
+├─ Text   (KeyName_<icon>) beside each icon, 12 to its right, condensed bold 22, bone: Stronghold,
 │         Outpost, Haven safehouse, Halcyon's lab; World event, Sealed checkpoint, Power station,
 │         Radio station, A pack's ground
 ├─ HorizontalLayout LegendPrompt   bottom left at (20, -14): the script makes the RZ_MapLegend prompt ("Hide the key")
-└─ Text   LegendPromptText         the same place, mono bold 18, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
+└─ Text   LegendPromptText         the same place, mono bold 20, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
 ```
 
 Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,

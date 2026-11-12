@@ -531,9 +531,11 @@ the default background; the refusal itself is still to be checked in play.
 `RZ_MapIconsUI` is a component on the map configuration: while the map is open it asks the server
 for this player's list (on open, then every 20 s) and draws one icon per place, in its colour
 (the faction's, hazard yellow for events, the sealed checkpoints and the packs, bone for the
-stations), with a label, following pan and zoom. The packs your character knows of are **range
+stations), with a label, following pan and zoom. Icons are 48 across and their labels condensed
+bold 26 with a dark shadow, so they read on a TV.
+The packs your character knows of are **range
 rings** (`marker_range`): a line's last field is a radius in metres, and the ring is sized to it on the
-map every frame (28 to 320 units across), so it grows and shrinks with the zoom: Heard of, half a
+map every frame (48 to 320 units across), so it grows and shrinks with the zoom: Heard of, half a
 kilometre round the rough area; Read and Mapped, the pack's ground (Mapped adds where it lies up to the
 label). The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
 contracts are never on it. With **UI > Map icon layout** set, the vanilla text markers for
@@ -545,8 +547,8 @@ the scale bar, about the first 330 px across and the bottom 120 px) (`RZ_MapLege
 legend layout**; it needs the icon layer).
 It names what the icons mean in two columns, *Who holds what* (stronghold, outpost, Haven
 safehouse, Halcyon's lab) and *The world* (world event, sealed checkpoint, power station, radio
-station, a pack's ground), each with its icon in the colour the map draws it, and says the colour
-is whose it is. It's there in full while the map is zoomed out and fades as you zoom in: full while
+station, a pack's ground), each with its icon in the colour the map draws it (40 across, names 22),
+and says the colour is whose it is. It's there in full while the map is zoomed out and fades as you zoom in: full while
 a kilometre of map is at most **Legend full zoom** (150) units across on screen, gone at **Legend
 gone zoom** (450), fading in between, so it never covers the streets you're reading. One input
 shows or hides it, `RZ_MapLegend` (**I**, pad **Y**); its own prompt says so, and the choice lasts
