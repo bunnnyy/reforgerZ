@@ -161,7 +161,9 @@ and the author's calls.
   [DESIGN.md](DESIGN.md#the-power-grid)).
 - **The object menu and vanilla fuel in play:** add the `RZ_ObjectMenu` preset, set **UI > Object row
   layout** and build `RZ_FuelPumpStation.et`; then a stove, a keypad, the Haven quartermaster, a
-  house radio and a generator (their status strips and locked rows, on a TV too) and a petrol pump with a pad ([UI.md](UI.md#the-object-menu), [DESIGN.md](DESIGN.md#fuel)).
+  house radio and a generator (their status strips and locked rows, on a TV too) and a petrol pump with a pad ([UI.md](UI.md#the-object-menu), [DESIGN.md](DESIGN.md#fuel)). At a house
+  radio, check that the repo's copy of vanilla's radio prefab takes: one prompt list with Turn on
+  and Listen to the radio, no second prompt beside it ([DESIGN.md](DESIGN.md#radios-open-and-secure)).
 - **Openings:** a Nurse, a Soldier and a Mechanic from spawn to the chain's end with a pad: the place
   fits, the contact speaks first, the tracker follows each step, each background's step 2 runs (the
   gate's noise draws the infected, the pump fills a can, the keys open a real lock), and the chain

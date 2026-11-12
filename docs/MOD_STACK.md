@@ -133,5 +133,11 @@ replaces ReforgerZ's, or is replaced by it, depending on load order: the noteboo
 screens then don't open. A mod that only overrides the pause menu's layout is fine, as long as
 it keeps vanilla's Field Manual or Settings button (the Notebook button goes after it).
 
+**One vanilla prefab ReforgerZ replaces.** Vanilla's small house radio,
+`Prefabs/Props/Civilian/RadioSmall_01_Base.et`, by GUID: a full copy with ReforgerZ's prompts added
+beside its Turn on/off ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#notes-by-system)). Another mod that
+replaces the same prefab wins or loses by load order; if it wins, the radio gets an invisible
+interaction spot of ours again, a second prompt beside vanilla's, and nothing breaks.
+
 > **Naming:** "ReforgedZ" already exists and is very close to "ReforgerZ". Consider a different
 > Workshop name before release ([LORE.md](LORE.md), "Name").

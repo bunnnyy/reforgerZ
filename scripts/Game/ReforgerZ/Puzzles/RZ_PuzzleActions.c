@@ -23,9 +23,14 @@ class RZ_ReadClueAction : RZ_GroupedAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hidden when the read label is RZ_ClueComponent.NO_READ (a burn spot has only its choice).
+	//! Hidden when the read label is RZ_ClueComponent.NO_READ (a burn spot has only its choice), and
+	//! on an object hidden until tagged that isn't (a vanilla house radio no spot uses now).
 	override bool Visible(IEntity user)
 	{
+		RZ_PuzzleObjectComponent obj = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
+		if (obj && obj.IsDormant())
+			return false;
+
 		RZ_ClueComponent comp = RZ_ClueComponent.Cast(GetOwner().FindComponent(RZ_ClueComponent));
 		return !comp || comp.GetReadLabel() != RZ_ClueComponent.NO_READ;
 	}

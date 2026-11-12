@@ -4790,7 +4790,7 @@
    "slotLabel": "Interactions > General > Spot prefab",
    "required": false,
    "minimum": false,
-   "use": "every world interaction prompt (wells, pumps, stoves, bells, radios, generators, workbenches), the Clean the bite spot, and the Unlock/Lock/Force spot when Door spot is empty (falls back to the puzzle object, which is visible)",
+   "use": "every world interaction prompt (wells, pumps, stoves, bells, radios other than vanilla's small house radio, which carries its own set, generators, workbenches), the Clean the bite spot, and the Unlock/Lock/Force spot when Door spot is empty (falls back to the puzzle object, which is visible)",
    "notes": "Add the small collision box by hand; keep it off the character collision layer."
   },
   {
@@ -6168,6 +6168,21 @@
     {"cls": "RZ_RadioCallAction", "values": [], "name": "Call"}
    ],
    "why": "secure radio channels, and calling on the open channel with Dialogue > Trees on (the wind-up radio gets both already)",
+   "required": false,
+   "minimum": false
+  },
+  {
+   "target": "vanilla's small house radio, Prefabs/Props/Civilian/RadioSmall_01_Base.et (done in the repo: a copy with vanilla's GUID and these added, the actions in its own SCR_TurnOnAction context; its four colours inherit it)",
+   "add": [
+    {"cls": "RZ_PuzzleObjectComponent", "values": ["m_bHiddenUntilTagged=1"], "name": ""},
+    {"cls": "RZ_ClueComponent", "values": [], "name": ""},
+    {"cls": "RZ_ReadClueAction", "values": [], "name": "Listen to the radio"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=0"], "name": "Choose"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=1"], "name": "Choose"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=2"], "name": "Choose"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=3"], "name": "Choose"}
+   ],
+   "why": "the house radio is its own interaction spot: Listen to the radio (the object menu) sits in one prompt list with vanilla's Turn on/off (docs/DESIGN.md, World interactions). Other radios, a mod's, keep an interaction spot",
    "required": false,
    "minimum": false
   },

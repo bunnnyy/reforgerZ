@@ -12,7 +12,9 @@
 //!   puzzle object's components) is put on each thing, with replicated labels ("Ring the
 //!   bell"). The puzzle actions route here (TAG). Spots are removed when everyone leaves. A
 //!   locked door's spot sits on the door leaf (RZ_DoorGeometry.HandlePoint). A wreck's "spot" is
-//!   its boot instead: an invisible storage opened with vanilla's inventory (RZ_WreckBoots.c).
+//!   its boot instead: an invisible storage opened with vanilla's inventory (RZ_WreckBoots.c). A
+//!   thing whose prefab carries the set itself is its own spot (CanHost: vanilla's small house
+//!   radio, overridden in the repo), so our prompts join its vanilla ones in one list.
 //! - What happens is decided on the server. Loot lies in houses only near players and is
 //!   kept as data otherwise; a wreck's boot is rolled when it's first put out, a body when it dies. What was emptied,
 //!   opened or burned is remembered as data (positions and times) and saved; town loot comes
@@ -127,6 +129,8 @@ class RZ_Spot
 	float m_fLift = 0.6;	// its prop stands this high (m) above m_vPos (a map object's: about counter height; a door's: 0, it's on the leaf)
 	IEntity m_Body;
 	RZ_PuzzleObjectComponent m_Comp;
+	IEntity m_Host;			// the map object carries the prompts itself (CanHost): it's the body, never spawned or deleted
+	bool m_bHosted;			// it had a host (gone: the thing was destroyed, so no spot)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -1033,6 +1037,14 @@ class RZ_Interactions
 			s.m_fLift = lift;
 		}
 
+		// A map object with our set on it (vanilla's house radio, overridden in the repo) is its own
+		// spot: our prompts join its vanilla ones (Turn on) in one list
+		if (CanHost(c.m_Entity, c.m_iKind))
+		{
+			s.m_Host = c.m_Entity;
+			s.m_bHosted = true;
+		}
+
 		if (c.m_iKind == KIND_RADIO || c.m_iKind == KIND_STOVE || c.m_iKind == KIND_WORKBENCH)
 		{
 			RZ_SpotCandidate b = NearestBuilding(c.m_vPos);
@@ -1366,7 +1378,9 @@ class RZ_Interactions
 			bool expired = s.m_fExpires >= 0 && m_fClock >= s.m_fExpires;
 			float nearest = RZ_Util.NearestDistance(s.m_vPos, players);
 			bool far = nearest > m_Settings.m_fScanRadius + DESPAWN_MARGIN;
-			if (expired || far)
+			// A hosted spot whose thing is gone (destroyed): no spot
+			bool lost = s.m_bHosted && !s.m_Host;
+			if (expired || far || lost)
 			{
 				DespawnSpot(s);
 				m_aSpots.Remove(i);
@@ -1392,6 +1406,15 @@ class RZ_Interactions
 		if (s.m_iKind == KIND_FUELPUMP && m_Pumps.IsOn())
 		{
 			s.m_Body = m_Pumps.PutOut(s);
+			return;
+		}
+
+		// The thing carries our set itself: tag it, nothing is spawned
+		if (s.m_bHosted)
+		{
+			if (s.m_Host)
+				AttachLabels(s, s.m_Host);
+
 			return;
 		}
 
@@ -1433,6 +1456,20 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A map object that carries the generic set itself (the puzzle object and clue components and
+	//! their actions, hidden until tagged): it is its spot, so our prompts sit in its own prompt list
+	//! beside its vanilla ones. Today vanilla's small house radio, which the repo overrides
+	//! (docs/WORKBENCH_SETUP.md, "Add to prefabs you already have"); a wreck has its boot instead.
+	static bool CanHost(IEntity e, int kind)
+	{
+		if (!e || kind == KIND_WRECK || kind == KIND_DOOR)
+			return false;
+
+		// VERIFY: the repo's same-GUID copy of vanilla's RadioSmall_01_Base.et (our set added) replaces vanilla's on every map's radios
+		return e.FindComponent(RZ_PuzzleObjectComponent) != null && e.FindComponent(RZ_ClueComponent) != null && e.FindComponent(RplComponent) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! This spot's prompts go into the object menu: by kind, except a stove while the cooking screen
 	//! is used (its read opens that screen and its slots hide behind it, as a workbench's do).
 	protected bool SpotUsesMenu(RZ_Spot s)
@@ -1452,6 +1489,20 @@ class RZ_Interactions
 
 		if (s.m_iKind == KIND_FUELPUMP && m_Pumps.IsOn())
 			m_Pumps.PutAway(s);
+
+		// The map's own thing stays: untagged, our prompts on it hide again (hidden until tagged)
+		if (s.m_bHosted)
+		{
+			if (s.m_Body)
+			{
+				RZ_PuzzleObjectComponent.Tag(s.m_Body, -1, -1, "", "");
+				RZ_ClueComponent.Tag(s.m_Body, -1, -1, "");
+			}
+
+			s.m_Body = null;
+			s.m_Comp = null;
+			return;
+		}
 
 		if (s.m_Body)
 			RZ_Util.DeleteUnit(s.m_Body);

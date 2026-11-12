@@ -2416,7 +2416,10 @@ player is near, capped and decaying, nothing left behind.
   open side, the side with the most free room beyond it, so a stove's prompt is on the stove, not
   on the wall behind it. A wreck's spot is its boot instead, a storage you open with vanilla's
   inventory ([Car wrecks](#car-wrecks-one-boot-to-open)), and with **Cars > Fuel pump station**
-  set a petrol pump's is a vanilla fuel point ([Fuel](#fuel)).
+  set a petrol pump's is a vanilla fuel point ([Fuel](#fuel)). Vanilla's small house radio is its
+  own spot: the repo's copy of its prefab carries our prompts in its own prompt list, beside
+  vanilla's **Turn on/off**, hidden until a player is near and it's labelled
+  ([Radios](#radios-open-and-secure)); a radio from a mod still gets a spot.
 - **Default first, then menus** ([UI.md](UI.md#default-first-then-menus)). A stove, a generator, a
   house radio, a well and a petrol pump without the station have one prompt, their look ("Look at
   the stove"), which opens the [object menu](UI.md#the-object-menu): what you see and the options
@@ -2829,6 +2832,14 @@ horde somewhere else. Players within 1.2 km hear it.
 
 - **Open channels** are faction chatter and the guidance broadcasts. A **house radio** tunes
   every faction's open channel with power, two of them on weak batteries.
+- **On the radio itself.** Vanilla's small house radio keeps its own **Turn on/off** (and its
+  music); **Listen to the radio** sits in the same prompt list and opens the object menu with its
+  options: Tune through the open channels, Work on a scrambled channel, Call on the open channel
+  and View radio. *Simplified:* they work whether it's switched on or not, and the switch isn't in
+  the menu. The server can't tell: on the dedicated server vanilla's radio stays "off" even after
+  `EnableRadio(true)` (tried in the runtime test), since its on/off only plays sound on the players'
+  machines, so requiring it on would lock every house radio, and a menu pick runs only on the
+  server. Vanilla's own prompt is one step away in the same list.
 - **Secure channels** (Bastion's command net, the Red Hand boss, Halcyon's lab): only a Radio
   Operator can crack one, on a radio on the ground or a house radio: stand still 60 s with
   nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short
