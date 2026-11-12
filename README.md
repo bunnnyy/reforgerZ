@@ -99,7 +99,7 @@ and one way to end it: **research the cure.**
   Doctor on the road with a bitten stranger before dark. 34 routines at safehouses, posts, camps and
   stations, the wanderers' asks, 18 strangers met only where one makes sense (a road people use, a
   campfire, a stopped car, a town edge at dusk), locals who remember what you did, board and radio
-  asks, and 61 hand-written cards, each true only while its reason is; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
+  asks, and 70 hand-written cards, each true only while its reason is; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself only
   after the cure's epilogue week (the line stands down, the gates open with the wipe; a timed wipe is
@@ -156,85 +156,15 @@ and one way to end it: **research the cure.**
 
 ## Status
 
-The game scripts **compile without errors or warnings** against Arma Reforger 1.9 (checked on
-the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#compile-check-without-workbench)).
-On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
-Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
-That's about 221,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 97 `VERIFY` markers left in the game
-scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
-replication and what the AI does. The game mode also **runs on the server** in a test world with a
-fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
-script exceptions; its newest phase, the epilogue week at Test scale 0.02, compiles but hasn't
-run there yet. A **zombie lab** (`tools/zombie_lab/`) measures Bacon Zombies' own AI on the same
-server, on Everon: what it sees and hears, speeds, groups and waypoints, and server frame time with
-up to 140 agents.
-
-The **first Workbench build** is in the repo: 178 prefabs from the **prefab manifest** (most made
-by the plugin **ReforgerZ: Create prefabs**, a few written as text), on vanilla, Bacon Zombies and Special Zombies bases; many are
-stand-ins for now, and a few entries have no base yet, so they aren't made. Camp life's 49
-compositions and its smart-action waypoint were built as text. With the player controller and the
-faction and loadout managers, that's 231 prefabs. The main world is **Everon** (a
-sub-scene of Eden, `Missions/RZ_Everon.conf`), and Arland stays as the small test world; each holds
-the game mode, the four factions with their hidden variants and the 13 background loadouts, and a
-scenario plays it. Everon boots on the dedicated server with no script exceptions, 96 settlements
-and 14 holdings. The UI layouts and the icon atlas are there too. In Workbench's World Editor
-**Play**, the mode starts with no script exceptions: towns, the Perimeter, safehouses, wanderers,
-leaders, territory, supply trucks, questlines and a first mission, with the HUD and notice cards on
-screen. Those first plays had no AI world in the world, so no AI or infected spawned; the next ones
-crashed when the first infected spawned, because the world had no perception manager. The worlds have
-their map's AI world and vanilla's world managers now; AI in play is still to test
-([the roadmap](docs/ROADMAP.md#play-test-priorities)). Nobody has played it from the game client
-yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
-[WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
-
-**Every approved design is built** (simplified as each doc says), in the order of
-[designs/PLAN.md](designs/PLAN.md). Built: the epilogue week (phase 7, simplified, its design
-done: the record and the fuller record, the hall's freeze, beats in full with notables and titles,
-carriers, the dose outlets, the queue and the lab gate as moving scenes, the grey choices, the
-closure set and its rest, the evening calendar with the supper scene and the codas' standing
-versions, the epilogue deck's 20 cards, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
-simplified, its design done: the controller, the lock and its dialogue commit node, pitches and route
-assets, the five routes with their ways and branches, live tissue and its rules, pacts, the moves, the
-night man's notes and Last Mile, the stand as a fight for the clean room, Take the Lab and the Coat
-Run, terms, [FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified, its design done:
-next season's story rules, the stand's inputs, the hall's lines, the notebook's season tab, the
-engine's channels and the acts' remaining approaches, [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
-things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
-writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
-jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
-dialogue's scenes for several players, borrowed kit, strangers at their spots, locals, twists,
-board and radio asks and errands' phase 4 cards; and phase 8's growth: the worked examples'
-remaining ways, the 16 one-choice jobs and 68 work rows, errands to 70 cards with the margin cards of all four majors, a Champion card per faction and
-the lock card; then the mission style and errands in full: the other twenty story jobs on the story
-job's kit, talk scenes, services, mission goods, callbacks at the door, the majors' reasons, tricks in
-jobs, the packs' jobs, errand pay in kind, meals, the truck and carried items, His Effects in full,
-the dealer's context and the strangers' last rules,
-[MISSIONS.md](docs/MISSIONS.md), [ERRANDS.md](docs/ERRANDS.md)); borrowed kit's phases 2 and 3 (phase 8 in part: again looks, roll
-call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose it was, the
-nail list and Bastion's board, and the eight side jobs as errand cards; and its rest: cover details
-spoken as claim lines, the look's line on the HUD and the standing page, the look's last minuses, the
-majors' and the finale's hooks, the last week, kit marks kept across a restart,
-[REPUTATION.md](docs/REPUTATION.md#borrowed-kit)); talk
-(phase 2: conversation trees, reputation's voice, the season mood and the voice bank, and talk's
-rest: lies you're told, promises, claims in kit, barks, strangers, the open channel, the season
-record and titles, [DIALOGUE.md](docs/DIALOGUE.md)), with the last of reputation's names and tone (Smoke,
-deed phrases for every job and ending, the standing page's word and verdict, one notice per approach, the
-quiet success, the epilogue week's jokes, grief for named people, the look lines outside a conversation,
-and the grey layer on missions: the reaction beat, nobody chose, the clever way closing the honest one,
-twelve givers who lie, callback deeds and boards of record, [WRITING.md](docs/WRITING.md),
-[DESIGN.md](docs/DESIGN.md#story-blocks)); their design files are done; the towns' crawlers, the loose ones, heat hordes from towns, the
-land grid, the tribes' daily life and hunts, their life cycle (succession, borders, splits, lair
-moves, new tribes, memory), the behaviour layer (with hearing, blood, shrieks, doors, reactions, the
-young's sprint and the close moves on the player's machine: the ankle grab's hold, the stagger, the
-knockdown) and the crawlers' daily life, and the people's side
-(each faction's words and marks, knowing, skills, your dead run, the moat, 13 contracts and the
-reworked events, the cure's hooks and the last week), and the great one with its Gathering and Night of
-Many Calls, the packs' signs and call sounds, the bright moon and the map's range rings, and the
-design's small rules (the whole infected design, [INFECTED.md](docs/INFECTED.md)); and all of Traces:
-door marks, doors you can see, player traces, the scenes and the pieces that age, sound and light and
-the epilogue's handover ([TRACES.md](docs/TRACES.md); its compositions and sounds are optional kit
-prefabs the author builds in Workbench).
+The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
+without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
+server's runtime test and in Workbench play on Everon and Arland; every approved design is built,
+simplified as each doc says. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
+behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
+mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
+What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start with
+[PC_SETUP.md](docs/PC_SETUP.md), then [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 ## Docs
 
@@ -257,7 +187,6 @@ prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | The build plan and the camp drawings; every approved design is built and lives in `docs/` |
 
 ## Code
 
@@ -347,7 +276,7 @@ tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
 tools/camp_kit/  pieces.py: the camp-life pieces, their kits and the Traces compositions; build.py
                  writes their prefabs and the game mode's slots; render.py draws them and the faction
-                 bases' plans (bases.py) into designs/camp_plans.html
+                 bases' plans (bases.py) into tools/camp_kit/camp_plans.html
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
                  the layout guide (LAYOUTS.md), the layouts (layouts/ReforgerZ/), the icon
                  atlas and the car picture (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)

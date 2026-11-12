@@ -1,11 +1,11 @@
 """Draws pieces.py and bases.py as a page you can open in a browser: the faction base plans, a camp
 concept per faction and a top-down plan of every piece.  Usage: py tools/camp_kit/render.py [out.html]
-(default designs/camp_plans.html)."""
+(default tools/camp_kit/camp_plans.html)."""
 import math, os, sys, html
 sys.path.insert(0, os.path.dirname(__file__))
 from pieces import FP, C, CAMPS
 
-OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), '..', '..', 'designs', 'camp_plans.html')
+OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), 'camp_plans.html')
 
 
 def short(name):

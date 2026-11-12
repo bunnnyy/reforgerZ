@@ -73,6 +73,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 17a4c83: on the lab prefab, two empty child entities named `RZ_CleanRoom` (where the stand is fought) and `RZ_LoadingBay` (Take the Lab's hold), and check in play that the finale finds them (WBS §6, `Cure/RZ_CureFinale.c:1483`).
 
 **From the cloud's faction bases (2026-11-12)**
+- 2026-11-12 (cloud, docs pass): `designs/camp_plans.html` moved to `tools/camp_kit/camp_plans.html`, now `render.py`'s default output (`py tools/camp_kit/render.py`); `designs/` is empty. Nothing to do but pull.
 - 2026-11-12 61d3d8e: re-run `py tools/camp_kit/build.py`: it now writes each kit piece's **At** (where it stands by a building, from `pieces.py`'s `AT`) and the new barricade counts (Bastion 3, Red Hand 2, Haven 2) onto `RZ_GameMode.et`; check the new setting **Territory > Camp life > Buildings** (on) came through (WBS §5).
 - 2026-11-12 61d3d8e: play-test each faction's base on Everon (WBS §8, *Faction bases on Everon*): its stronghold and one outpost, a Haven safehouse and Halcyon's field station. Report each `Camp life: ... moves into ...` log line (or `no building fits`), any building that looks wrong for the faction, pieces inside or on top of the building, and whether the gate and barricades sit at the real road entries.
 

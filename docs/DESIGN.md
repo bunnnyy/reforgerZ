@@ -1923,8 +1923,7 @@ Code: `Core/RZ_Shared.c` (`gm.GetShared()`, **Shared** settings), and the files 
 only.
 
 The pieces every later system stands on (errands, the mission style, dialogue's trees, the majors,
-the finale, the epilogue week: [designs/PLAN.md](../designs/PLAN.md#the-shared-engine)), built once
-so no system keeps its own copy. Each is built and has its limits and save; most of their writers
+the finale, the epilogue week), built once so no system keeps its own copy. Each is built and has its limits and save; most of their writers
 and readers come with the phases that use them, and each part says which are wired today.
 
 **The one body budget** is the infected's agent budget: a body that isn't an infected asks

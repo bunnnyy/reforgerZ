@@ -33,8 +33,9 @@ behaviour, design, content or setup is complete until the docs match it.**
    Link to the doc that owns the topic instead.
 
 ### Designs (`designs/`)
-Approved designs that aren't built yet live in `designs/` (index and build steps: `designs/README.md`,
-order of work: `designs/PLAN.md`). They are not docs:
+Approved designs that aren't built yet live in `designs/`, with an index in `designs/README.md` that also
+gives the order of work. Every approved design is built today, so the folder is empty for now; these rules
+are for the next one. Designs are not docs:
 - A design file says "designed, not built" and never describes built behaviour.
 - When a design (or part of one) is built, its content moves into the `docs/` file that owns the topic
   (Doc map below) or a new doc, and the design file is trimmed or deleted, **in the same commit as the code**.

@@ -1,4 +1,4 @@
-"""The faction bases as the plans page draws them (render.py, designs/camp_plans.html): what each
+"""The faction bases as the plans page draws them (render.py, tools/camp_kit/camp_plans.html): what each
 holding is for, who lives there, which buildings it takes over and why, how it's defended. Each
 site plan is schematic (metres, x right, z up = toward the main road in).
 
