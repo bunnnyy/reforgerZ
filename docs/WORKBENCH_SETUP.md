@@ -15,8 +15,8 @@ A first pass is done, in Workbench 1.9 on Arland and Everon: the repo holds the 
 (the quartermasters' and the notebook's actions among them), camp life's 49 compositions, its
 smart-action waypoint and six kits, the faction and loadout managers, the worlds (Everon, the main
 one, and Arland) and their scenarios, and most of the UI. Many prefabs are built on stand-ins
-([what that means](#stand-in-bases)), and the spawn screen and the map key aren't set up yet
-([the UI](#setting-up-the-ui)); the map's icons and the car picture are. This doc says how it was done, what's left, and
+([what that means](#stand-in-bases)). The UI is set up ([the UI](#setting-up-the-ui)): the spawn
+screen, the map key and the map's icons are seen in Workbench play with the keyboard; pad not yet. This doc says how it was done, what's left, and
 how to do it again on another map.
 
 Work through the sections in order:
@@ -1156,9 +1156,9 @@ wells, pumps or radios with actions).
 ### Setting up the UI
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
-[UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
-and 6 are done in the repo (step 4's menus written as text: check them in Workbench, 4a); 5 and
-6's map key aren't. The layouts are in `UI/layouts/ReforgerZ/`.
+[UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 6
+are done in the repo (step 4's menus written as text: check them in Workbench, 4a). The layouts are
+in `UI/layouts/ReforgerZ/`.
 
 1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
    `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
@@ -1172,11 +1172,11 @@ and 6 are done in the repo (step 4's menus written as text: check them in Workbe
 4. **The menus** (done as text; not checked in play yet). The notebook's frame
    (`RZ_NotebookMenu.layout`), its five page layouts, the notice board's layout and the two row
    layouts are built, with Buttons for the mouse; **UI > Mission row layout**, **Radio row
-   layout** and the five **page** layouts are set on `RZ_GameMode.et`. Two overrides of vanilla
-   configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf` the presets,
-   `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)). **UI > Board
-   menus** is still off (the board is a notice and notes are written with `/note`): turn it on
-   once the notice board's menu works.
+   layout** and the five **page** layouts (the season page too) are set on `RZ_GameMode.et`. Two
+   overrides of vanilla configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf`
+   the presets, `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)).
+   **UI > Board menus** is on by default, so reading a safehouse board opens its menu; turn it off
+   only if the menu fails in play (the board is then a notice and notes are written with `/note`).
 
    **4a. Check the notebook in Workbench** (the author's steps; nothing here needs the editor
    unless a check fails):
@@ -1205,22 +1205,23 @@ and 6 are done in the repo (step 4's menus written as text: check them in Workbe
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
       it's there.
-5. **The spawn screen** (to do: written as text). Our own screen replaces vanilla's deploy menu
-   ([UI.md](UI.md#the-spawn-screen)). `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout` are written,
-   and `Configs/System/chimeraMenus.conf` has the `RZ_SpawnMenu` preset. Open both layouts in the
-   layout editor once (so Workbench registers their GUIDs), then set **UI > Spawn row layout** to
-   `RZ_SpawnRow.layout`: from then on the screen opens instead of vanilla's deploy menu. Nothing
+5. **The spawn screen** (done; seen in Workbench play on Everon with the keyboard, pad not yet).
+   Our own screen replaces vanilla's deploy menu ([UI.md](UI.md#the-spawn-screen)).
+   `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout` are written, `Configs/System/chimeraMenus.conf`
+   has the `RZ_SpawnMenu` preset, and **UI > Spawn row layout** is set to `RZ_SpawnRow.layout`, so
+   the screen opens instead of vanilla's deploy menu. Nothing
    else changes: keep `RZ_GameMode.et`'s `SCR_MenuSpawnLogic` with **Forced faction** `SURV` (its
    deploy-menu handler is what opens the screen; there's no faction or group step), and locked
    loadouts are refused by the server (`UI/RZ_LoadoutLock.c`, **UI > Lock loadouts**). Empty, or
    with the preset missing, vanilla's deploy menu opens as before.
-6. **The map** (done; not seen in play yet). `Configs/Map/MapFullscreen.conf` overrides vanilla's
-   full-screen map config (same GUID, `{1B8AC767E06A0ACD}`) with `RZ_MapIconsUI` added to its
-   `m_aUIComponents`, and **UI > Map icon layout** is set to `RZ_MapIcon.layout`, which turns the
-   vanilla text markers for world events and the lab off. **The map key** (to do): open
-   `RZ_MapLegend.layout` (written as text) in the layout editor once, then set **UI > Map legend
-   layout** to it. It needs no config of its own: `RZ_MapIconsUI` makes it in the map's bottom-left,
-   and the `RZ_MapLegend` input (**I**, pad **Y**) is in `chimeraInputCommon.conf`'s `MapContext`.
+6. **The map** (done; the icons and the map key seen in Workbench play on Everon with the keyboard,
+   pad not yet). `Configs/Map/MapFullscreen.conf` overrides vanilla's full-screen map config (same
+   GUID, `{1B8AC767E06A0ACD}`) with `RZ_MapIconsUI` added to its `m_aUIComponents`, and **UI > Map
+   icon layout** is set to `RZ_MapIcon.layout`, which turns the vanilla text markers for world
+   events and the lab off. **The map key**: **UI > Map legend layout** is set to
+   `RZ_MapLegend.layout`. It needs no config of its own: `RZ_MapIconsUI` makes it in the map's
+   bottom-left, and the `RZ_MapLegend` input (**I**, pad **Y**) is in `chimeraInputCommon.conf`'s
+   `MapContext`.
 
 Also to do: default images for the icons the scripts never swap (the legend icons and the like).
 Set each such `Image` from the imageset in the layout editor.

@@ -125,10 +125,9 @@ The build-review fixes are done. Everything below is approved. The order of the 
   editor where text grew to 18 ([UI.md](UI.md#controllers), "What needs Workbench").
 
 ### World interactions (from play-testing)
-- **The spawn screen:** set **UI > Spawn row layout** and play it (deploy with a pad, a locked
-  background, the place picker, the respawn timer); and textures for the icons the scripts never swap
-  ([UI.md](UI.md)). The map's icon layer is set (the map config override and its layout): see it in
-  play, with the map key once its layout is set.
+- **The spawn screen and the map with a pad:** both are seen in Workbench play with the keyboard;
+  pad not yet. Deploy with a pad, a locked background, the place picker, the respawn timer, and the
+  map key's Y; and textures for the icons the scripts never swap ([UI.md](UI.md)).
 
 ### The season's designs
 - The approved designs for the rest of the game are all built (the infected, errands, the mission
@@ -286,7 +285,7 @@ In this order, because later ones depend on earlier ones:
     a few at a time, does the timer agree with the stage messages, do the notebook (N, the pause
     menu, the item), the talk screen and the reader open, fill, take clicks and the pad, and close
     in danger, do the map icons sit on their
-    spots while panning and zooming (once the map layer is set up), does the map key fade as you
+    spots while panning and zooming, does the map key fade as you
     zoom in, and does the spawn screen deploy with a pad and refuse
     locked backgrounds ([UI.md](UI.md))?
 18. **Reputation names and the forgiveness budget:** do new players still understand "needs
