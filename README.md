@@ -272,6 +272,8 @@ Prefabs/         ReforgerZ/: the prefabs made from the manifest; the player cont
 Configs/ReforgerZ/PrefabManifest.json
                  every prefab, slot, settings object, faction and loadout to set up
 Configs/System/  the vanilla menu and input configs, with the ReforgerZ screens and keys added
+Configs/Map/MapFullscreen.conf
+                 the vanilla full-screen map config, with the ReforgerZ icon layer and map key added
 tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
 tools/camp_kit/  pieces.py: the camp-life pieces, their kits and the Traces compositions; build.py
