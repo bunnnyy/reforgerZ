@@ -200,6 +200,15 @@ class RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A step of an opening's chain (Guidance/RZ_OpeningChain.c): the one job in the game that starts
+	//! without the player talking to anyone or using anything. Every other errand starts from a person
+	//! or a thing.
+	bool IsOpening()
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Still true (every 30 s while offered or held, and at every step). False: overtaken.
 	bool Still(RZ_Errands dealer, RZ_Errand e)
 	{
@@ -305,6 +314,13 @@ class RZ_Errand
 	bool m_bCarried;			// it was given (so a null m_Carried means lost)
 	ref map<int, float> m_mWith = new map<int, float>();	// group members near the asker: seconds
 	ref map<string, string> m_mText = new map<string, string>();
+
+	//------------------------------------------------------------------------------------------------
+	//! An opening's chain step (RZ_ErrandDef.IsOpening): handed to the player at spawn, not asked for.
+	bool IsOpening()
+	{
+		return m_Def && m_Def.IsOpening();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A text slot the lines use as {key} (the lint knows these keys from here).

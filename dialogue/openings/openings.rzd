@@ -1,0 +1,203 @@
+# Openings (docs/DIALOGUE.md, "Who talks"; docs/DESIGN.md, "Openings"): someone who knew you before
+# the outbreak, waiting outside the door you hid behind. Nobody is new: everyone has been trapped since
+# the seal, and they never say "you're new". The step's ask and the story's beats are the built lines
+# (RZ_OpeningText); these add their greeting by your background, once, and a few things to ask on the
+# way. The character flag opening.step is the step under way (1-3; 4 once it's over), opening.end the
+# faction it ends with (1 the Haven, 2 Bastion, 3 the Red Hand, 4 Halcyon). Voice: plain, a neighbour's.
+
+conv opening.greet.nurse
+for opening
+when cflag:opening.step=1 & bg:nurse
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "Christ. It's you. You did my boy's stitches in May. He still shows people the scar, when there's people to show."
+
+conv opening.greet.doctor
+for opening
+when cflag:opening.step=1 & bg:doctor
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "Doctor. I'd know that cough through a wall. Ward three's gone, you know. All of it. We're what's left of the rota."
+
+conv opening.greet.mechanic
+for opening
+when cflag:opening.step=1 & bg:mechanic
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "It's you. You fixed my van twice and charged me once. I always meant to pay the other one."
+
+conv opening.greet.hunter
+for opening
+when cflag:opening.step=1 & bg:hunter
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "Thought that was you. Nobody else walks that quiet. My top field's yours now, if anyone still wants fields."
+
+conv opening.greet.police
+for opening
+when cflag:opening.step=1 & bg:police
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "Officer. You bought one apple every morning and never ate it. I used to wonder about that. I still do."
+
+conv opening.greet.excon
+for opening
+when cflag:opening.step=1 & bg:excon
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "Look at you. Out of one box and straight into another. Some of us have a gift for it."
+
+conv opening.greet.labtech
+for opening
+when cflag:opening.step=1 & bg:labtech
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "You're alive. They read your name out at the lab gate, with the missing. They still want hands like yours."
+
+conv opening.greet.radioham
+for opening
+when cflag:opening.step=1 & bg:radioham
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "I know that voice. Half past one, the night band. You always signed off with the weather."
+
+conv opening.greet.unemployed
+for opening
+when cflag:opening.step=1 & bg:unemployed
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "You're alive. Good. Don't worry about the money. Money's a joke now, and not a good one."
+
+conv opening.greet.soldier
+for opening
+when cflag:opening.step=1 & bg:soldier
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "Sarge? It's me. The line went and I never made it back to it. Looks like you didn't either."
+
+conv opening.greet.raider
+for opening
+when cflag:opening.step=1 & bg:raider
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "You. You took my watch in March. Keep it. I want something else from you, and it isn't what you think."
+
+conv opening.greet.elder
+for opening
+when cflag:opening.step=1 & bg:elder
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "It's you. The children kept asking if you'd gone. I kept saying no. I'm glad I wasn't lying to them."
+
+conv opening.greet.drifter
+for opening
+when cflag:opening.step=1 & bg:drifter
+greet
+prio quest
+once
+voice plain
+
+node start
+  say "I know you. Everyone knows you a bit, don't they. Never mind from where. You're alive, that's the thing."
+
+conv opening.who_else
+for opening
+when cflag:opening.step>=1 & cflag:opening.step<=3
+topic "Ask who else made it."
+prio world
+once
+voice plain
+
+node start
+  say "Fewer than you'd hope. More than you'd think. Most are behind doors, same as you were."
+  say "The ones who went for the roads in the first week, I don't count them any more. It's easier."
+  > @road "What happened on the roads?" -> road
+  > @back "Something else." -> hub
+
+node road
+  say "Concrete where the bridges were. Drones over the fields. A loudspeaker that knows your name before you've said it."
+  > @back1 "Something else." -> hub
+
+conv opening.who_holds
+for opening
+when cflag:opening.step>=2 & cflag:opening.step<=3
+topic "Ask who's in charge now."
+prio world
+once
+voice plain
+
+node start
+  say "Depends where you stand. The soldiers count you. The red-hand lot charge you. The lab people want your blood, politely."
+  say "And the safehouses feed you if you work. That's the whole government now. Pick one before one picks you."
+  > @lab "The lab people?" -> lab
+  > @back "Something else." -> hub
+
+node lab
+  say "Halcyon. White coats in a school, in masks. They say there's a cure in the specials, if enough of them get cut open."
+  > @back1 "Something else." -> hub
+
+conv opening.where_now
+for opening
+when cflag:opening.step=3
+topic "Ask where they'll go now."
+prio flavour
+once
+voice plain
+
+node start
+  say? cflag:opening.end=3 :: "Not where you're going. They'd have the coat off my back before I'd said hello. I'll find a door."
+  say "Behind you, at a distance. I'm slower than I look, and I look slow. Don't wait for me."
+  > @come "Come with me." -> come
+  > @fine "Mind how you go." -> hub
+
+node come
+  say "I will. Just not at your pace. Go on. If I'm not there by dark, I found somewhere better."
+  > @back1 "Something else." -> hub

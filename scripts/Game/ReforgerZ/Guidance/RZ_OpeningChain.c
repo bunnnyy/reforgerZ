@@ -26,6 +26,13 @@ class RZ_OpeningStepDef : RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The one job that starts without the player talking to anyone (RZ_ErrandDef.IsOpening).
+	override bool IsOpening()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Resolve(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, int playerId, notnull array<string> said)
 	{
 		RZ_Openings openings = RZ_Openings.Get();
@@ -56,7 +63,7 @@ class RZ_OpeningChain
 		w.m_fSeconds = 20;
 		w.m_fRadius = 10;
 		w.m_bQuiet = true;
-		w.m_sStep = "Search {place}, quietly. Then go back to {giver}.";
+		w.m_sStep = "Search {place}, quietly.";
 		w.Take("\"There's a house over the way I haven't dared. Go and look. Walk, don't run: they hear running.\"",
 			"\"I need eyes on that house over there. Two days I've watched it. Nothing moves. That's what worries me.\"");
 		w.Done("\"You came back. Most don't, from that side of the road.\"",
@@ -67,7 +74,7 @@ class RZ_OpeningChain
 		ww.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		ww.m_fSeconds = 15;
 		ww.m_fRadius = 8;
-		ww.m_sStep = "Fill what you can carry at {place}. Then bring it back to {giver}.";
+		ww.m_sStep = "Fill what you can carry at {place}.";
 		ww.Take("\"We're down to the last cup. There's a well. You know the one. Fill whatever you can carry.\"",
 			"\"I haven't had a proper drink since Tuesday. The well's not far. I'd go myself, but you're quicker.\"");
 		ww.Done("\"Clean enough. Boil it if you can. I can't, so I won't.\"",

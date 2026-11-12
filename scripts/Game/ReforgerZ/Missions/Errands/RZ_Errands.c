@@ -2519,7 +2519,7 @@ class RZ_Errands
 		RZ_Shared callShared = m_GM.GetShared();
 		if (!w.m_aLater.IsEmpty() && callShared && callShared.GetCallbacks())
 			callShared.GetCallbacks().Queue(e.m_iAsker, e.m_sGiverTitle, e.Fill(Pick(w.m_aLater)), e.m_vGiver);
-		if (m_Settings.m_bHelpedLine && m_GM.GetHall() && !(m_GM.GetCure() && m_GM.GetCure().IsCured()))
+		if (m_Settings.m_bHelpedLine && !e.m_Def.m_bHanded && m_GM.GetHall() && !(m_GM.GetCure() && m_GM.GetCure().IsCured()))
 			m_GM.GetHall().AddHelped(e.m_iAsker);
 
 		if (!e.m_Def.m_bCard && !e.m_Def.m_bHanded)
@@ -2537,7 +2537,7 @@ class RZ_Errands
 		EndFallout(e);
 		// A light callback deed (Core/RZ_Deeds.c): at most four of the twelve
 		RZ_PlayerProfile doer = m_GM.FindProfile(e.m_iAsker);
-		if (doer && !e.m_sGiverName.IsEmpty())
+		if (doer && !e.m_sGiverName.IsEmpty() && !e.m_Def.m_bHanded)
 			RZ_Deeds.Callback(doer, "errand." + e.m_Def.m_sKey, "did " + e.m_sGiverName + " a favour", RZ_Deeds.LIGHT);
 
 		Count(e.m_Def.m_sFamily).done++;

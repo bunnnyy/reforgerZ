@@ -138,6 +138,30 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The story told on the way (the design's beats), one piece as each step starts, in the
+	//! contact's voice: step 1 the seal; step 2 the broadcast, and nobody coming; step 3 the
+	//! Perimeter, and the cure. With Dialogue > Trees on, the topics in
+	//! dialogue/openings/openings.rzd tell more of it.
+	static void Beat(int step, int day, notnull array<string> lines)
+	{
+		if (step <= 1)
+		{
+			lines.Insert(string.Format("\"Day %1. They shut the roads on the second, and nobody's opened one since. I counted. Somebody had to.\"", day));
+			return;
+		}
+
+		if (step == 2)
+		{
+			lines.Insert("\"Listen. The radio's still on the same tape: aid is on its way. Every hour, the same voice. I used to wait for it.\"");
+			lines.Insert("\"Nobody's coming. Say it out loud once. It helps, I promise.\"");
+			return;
+		}
+
+		lines.Insert("\"My brother tried the river road. The loudspeaker said his name. Then it didn't.\"");
+		lines.Insert("\"The lab people say there's a way out. A cure. Proof, they call it. It won't come to us in here, so we go to it.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Anyone else who talks to the contact.
 	static string NotYou()
 	{

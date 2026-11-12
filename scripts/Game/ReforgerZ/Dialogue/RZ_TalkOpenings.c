@@ -1,9 +1,9 @@
 //! An opening's contact as a speaker (docs/DIALOGUE.md, "Who talks"; Guidance/RZ_Openings.c):
 //! someone who knew you before the outbreak, waiting outside your hiding place. They speak first:
-//! the opening opens the talk screen on them. With Dialogue > Trees on, the conversations
-//! `for opening` (dialogue/openings/openings.rzd) are their greeting, by your background, and the
-//! story told on the way, by the step the chain is at (the character flag `opening.step`); without
-//! Trees, one line of theirs and what they need now. Their one reply is "What was it you
+//! the opening opens the talk screen on them as each step starts, with that step's piece of the
+//! story (RZ_Openings.TalkLines). With Dialogue > Trees on, the conversations `for opening`
+//! (dialogue/openings/openings.rzd) add their greeting by your background and topics by the step
+//! the chain is at (the character flag `opening.step`). Their one built reply is "What was it you
 //! needed?" (choice slot 0). They talk only to the player they waited for. Server only.
 class RZ_TalkOpening : RZ_TalkGeneric
 {
@@ -44,15 +44,16 @@ class RZ_TalkOpening : RZ_TalkGeneric
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! With a tree, the conversation's greet says it; without one, their line and the step now.
+	//! Their lines (RZ_Openings.TalkLines): when they speak first, the step's piece of the story,
+	//! then the step's ask follows; when you come back, the step again. With a tree, the
+	//! conversation's greet by your background says the greeting before them.
 	override void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
 	{
-		if (s.m_Tree)
+		RZ_Openings openings = RZ_Openings.Get();
+		if (!openings)
 			return;
 
-		RZ_Openings openings = RZ_Openings.Get();
-		if (openings)
-			openings.HandleTalk(playerId, m_iOpening, m_Owner);
+		openings.TalkLines(playerId, m_iOpening, s.m_Tree != null, s.m_aNew);
 	}
 
 	//------------------------------------------------------------------------------------------------

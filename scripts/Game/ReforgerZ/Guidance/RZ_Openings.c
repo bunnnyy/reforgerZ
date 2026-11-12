@@ -42,6 +42,7 @@ class RZ_Opening
 	bool m_bResolved;			// the current step is done
 	bool m_bSpoke;
 	bool m_bAskedAgain;
+	bool m_bAnnounce;			// the talk screen is open because they spoke first (a step starting)
 	bool m_bEnded;
 	float m_fBorn;
 	float m_fStepAt;
@@ -168,7 +169,9 @@ class RZ_Openings
 		RZ_Background bg = m_GM.LifeBackground(playerId);
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		int level = m_Guide.GetLevel(profile);
-		RZ_OpeningPlace place = m_Roll.Roll(bg.m_sId, level, profile);
+		array<vector> ends = {};
+		EndPoints(EndFactionFor(playerId, bg.m_sId), ends);
+		RZ_OpeningPlace place = m_Roll.Roll(bg.m_sId, level, profile, ends);
 		if (place)
 		{
 			RZ_OpeningRoll.Move(character, place);
@@ -235,14 +238,25 @@ class RZ_Openings
 		o.m_sName = RZ_OpeningText.Name(rng);
 		o.m_sWho = RZ_OpeningText.Who(bg.m_sId);
 		o.m_sSpeaker = o.m_sName + ", " + o.m_sWho;
-		o.m_iEnd = EndFaction(bg.m_sId);
+		o.m_iEnd = EndFactionFor(playerId, bg.m_sId);
 		FindEnd(o, ent.GetOrigin());
 
-		int day = m_GM.GetBroadcast().GetDay();
+		// Nobody to speak first (no body prefab, or the story budget is full): no opening this life,
+		// and the spawn scenario, the wanderer and "Find the Haven" stand in as they did before
+		SpawnContact(o, ent.GetOrigin());
+		if (!o.m_bHadContact)
+		{
+			RZ_Log.Info(string.Format("Openings: no contact could stand for %1 at %2, the spawn scenario instead", RZ_Util.PlayerName(playerId), RZ_SettlementScanner.GridReference(ent.GetOrigin())));
+			return;
+		}
+
+		int day = 1;
+		if (m_GM.GetBroadcast())
+			day = m_GM.GetBroadcast().GetDay();
+
 		if (place.m_bScene)
 			PlaceScene(place, day);
 
-		SpawnContact(o, ent.GetOrigin());
 		m_Guide.MarkOpening(playerId);
 		m_Guide.SetSpawnLine(playerId, RZ_OpeningText.SpawnLine(place.m_sKind, place.m_bScene, o.m_sTown, day));
 		o.m_fNextAt = m_fClock + SPEAK_DELAY;
@@ -336,15 +350,62 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where this player's chain ends: the background's faction, or the Haven while that faction
+	//! hunts them.
+	int EndFactionFor(int playerId, string bg)
+	{
+		RZ_EFaction f = EndFaction(bg);
+		if (f != RZ_EFaction.SURVIVORS && RZ_Reputation.IsHunted(m_GM.GetTier(playerId, f)))
+			return RZ_EFaction.SURVIVORS;
+
+		return f;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The places a chain ending with this faction can walk to (the place roll tries towns near them
+	//! first): its outposts and stronghold, Halcyon's lab too; the Haven's safehouses, and those
+	//! whenever the faction holds nothing.
+	void EndPoints(int faction, notnull array<vector> result)
+	{
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (faction != RZ_EFaction.SURVIVORS && territory)
+		{
+			array<RZ_Holding> list = {};
+			territory.GetOutposts(faction, list);
+			RZ_Holding seat = territory.GetStronghold(faction);
+			if (seat)
+				list.Insert(seat);
+
+			foreach (RZ_Holding h : list)
+			{
+				result.Insert(h.m_vPos);
+			}
+		}
+
+		if (faction == RZ_EFaction.INSTITUTE && m_GM.HasLab())
+			result.Insert(m_GM.GetLabPosition());
+
+		if (!result.IsEmpty())
+			return;
+
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (!houses)
+			return;
+
+		for (int i = 0; i < houses.Count(); i++)
+		{
+			RZ_Safehouse h = houses.Get(i);
+			if (h)
+				result.Insert(h.m_vPos);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The nearest place of the ending faction (a Haven safehouse, a Bastion or Red Hand holding,
 	//! Halcyon's field station or the lab); the nearest safehouse when there's none, or when that
 	//! faction hunts you; none at all, and the chain ends before the walk.
 	protected void FindEnd(RZ_Opening o, vector from)
 	{
-		RZ_EFaction endFaction = o.m_iEnd;
-		if (o.m_iEnd != RZ_EFaction.SURVIVORS && RZ_Reputation.IsHunted(m_GM.GetTier(o.m_iPlayer, endFaction)))
-			o.m_iEnd = RZ_EFaction.SURVIVORS;
-
 		if (o.m_iEnd != RZ_EFaction.SURVIVORS && FindHolding(o, from))
 			return;
 
@@ -493,28 +554,56 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The contact speaks first: the talk screen opens on them (or, without it, their line as a
-	//! subtitle), and the first step is tracked at once, whatever you answer.
+	//! The contact speaks first, and the first step is tracked at once, whatever you answer.
 	protected void Speak(RZ_Opening o, IEntity me)
 	{
 		o.m_bSpoke = true;
-		SetFlag(o, FLAG_STEP, 1);
 		SetFlag(o, FLAG_END, o.m_iEnd + 1);
-		bool talking = false;
-		string how = "no contact";
-		if (o.m_Contact && RZ_Util.IsCharacterAlive(o.m_Contact) && RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) <= SPEAK_RANGE)
+		StartStep(o, 1, me);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A step starts with the contact close by: they speak first, on the talk screen (or, without
+	//! it, their lines as subtitles), with that step's piece of the story; the step's ask follows
+	//! into the same screen (RZ_Errands.Hand). Nothing when they're gone or out of earshot.
+	protected void Announce(RZ_Opening o, IEntity me)
+	{
+		if (!o.m_Contact || !RZ_Util.IsCharacterAlive(o.m_Contact) || RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) > SPEAK_RANGE)
+			return;
+
+		o.m_bAnnounce = true;
+		bool talking = OpenTalk(o, me);
+		o.m_bAnnounce = false;
+		string how = "the talk screen";
+		if (!talking)
 		{
-			talking = OpenTalk(o, me);
-			how = "the talk screen";
-			if (!talking)
+			array<string> lines = {};
+			StepLines(o, false, lines);
+			foreach (string line : lines)
 			{
-				m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.GreetPlain(), o.m_Contact);
-				how = "a subtitle";
+				m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, line, o.m_Contact);
 			}
+
+			how = "subtitles";
 		}
 
-		RZ_Log.Info(string.Format("Openings: %1 spoke to %2 (%3)", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), how));
-		StartStep(o, 1, me);
+		RZ_Log.Info(string.Format("Openings: %1 spoke first to %2 at step %3 (%4)", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), o.m_iStep, how));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What they say when a step starts: step 1 their greeting (with Dialogue > Trees on, the
+	//! conversation's greet by your background says it instead) and the seal; step 2 the broadcast
+	//! and nobody coming; step 3 the Perimeter and the cure.
+	void StepLines(RZ_Opening o, bool tree, notnull array<string> lines)
+	{
+		int day = 1;
+		if (m_GM.GetBroadcast())
+			day = m_GM.GetBroadcast().GetDay();
+
+		if (o.m_iStep <= 1 && !tree)
+			lines.Insert(RZ_OpeningText.GreetPlain());
+
+		RZ_OpeningText.Beat(Math.Max(1, o.m_iStep), day, lines);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -622,6 +711,7 @@ class RZ_Openings
 		o.m_bResolved = false;
 		o.m_fStepAt = m_fClock;
 		SetFlag(o, FLAG_STEP, n);
+		Announce(o, me);
 		RZ_Errand e = errands.Hand(d, o.m_iPlayer, "opening:" + o.m_iId.ToString(), o.m_sName, o.m_sSpeaker, faction, giverAt, place, placeText, me);
 		if (!e)
 		{
@@ -638,8 +728,8 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Step 1's house: a building 50-250 m from the contact that isn't locked, at its door; without
-	//! one, a point among the houses over the road.
+	//! Step 1's house: a building 50-250 m from the contact that isn't locked, by it; without one, a
+	//! point among the houses over the way.
 	protected void SearchPlace(vector from, out vector place, out string text)
 	{
 		array<IEntity> buildings = {};
@@ -655,17 +745,17 @@ class RZ_Openings
 		if (fit.IsEmpty())
 		{
 			place = RZ_Mission.LandPointNear(from, 80, 200);
-			text = "the houses " + RZ_Util.DirectionText(from, place);
+			text = "the houses over the way";
 			return;
 		}
 
 		IEntity house = fit.GetRandomElement();
 		place = RZ_Mission.LandPointNear(house.GetOrigin(), 2, 6);
-		text = "the house " + RZ_Util.DirectionText(from, place);
+		text = "the house over the way";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Step 2's water: the nearest well or water tower within 400 m. False if none.
+	//! Step 2's water: the nearest well or water tower within 400 m ("the well"). False if none.
 	protected bool WellPlace(vector from, out vector place, out string text)
 	{
 		array<string> kinds = {"well", "watertower"};
@@ -674,7 +764,7 @@ class RZ_Openings
 			return false;
 
 		place = RZ_Mission.LandPointNear(l.m_vPos, 1, 3);
-		text = l.m_sName + " " + RZ_Util.DirectionText(from, place);
+		text = l.m_sName;
 		return true;
 	}
 
@@ -830,24 +920,58 @@ class RZ_Openings
 
 	// ================================================================ Talking to them
 	//------------------------------------------------------------------------------------------------
-	//! "Talk to ..." without the talk screen (RZ_PuzzleActionHelper.RouteRead), and the talk screen's
-	//! greeting with Dialogue > Trees off: their line, and what they need now.
-	void HandleTalk(int playerId, int id, IEntity owner)
+	//! What they say when you talk to them (the talk screen's greeting, RZ_TalkOpening, and "Talk to
+	//! ..." without it): the step's lines when they spoke first; else, before they've spoken, their
+	//! greeting; while a step runs, the step again, short; once it's over, a send-off. Anyone else
+	//! is told they're waiting for someone. `tree`: Dialogue > Trees' greet says the greeting.
+	void TalkLines(int playerId, int id, bool tree, notnull array<string> lines)
 	{
 		RZ_Opening o = ById(id);
 		if (!o || o.m_iPlayer != playerId)
 		{
-			string title = "Someone";
-			if (o)
-				title = o.m_sSpeaker;
-
-			m_GM.Say(playerId, title, -1, RZ_OpeningText.NotYou(), owner);
+			lines.Insert(RZ_OpeningText.NotYou());
 			return;
 		}
 
-		m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.GreetPlain(), owner);
-		if (o.m_iStep > 0 && !o.m_bEnded)
-			m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(o.m_iStep, o.m_bWater), owner);
+		if (o.m_bAnnounce)
+		{
+			StepLines(o, tree, lines);
+			return;
+		}
+
+		if (o.m_bEnded)
+		{
+			lines.Insert(RZ_OpeningText.AskAgain(3, false));
+			return;
+		}
+
+		if (o.m_iStep <= 0)
+		{
+			if (!tree)
+				lines.Insert(RZ_OpeningText.GreetPlain());
+
+			return;
+		}
+
+		lines.Insert(RZ_OpeningText.AskAgain(o.m_iStep, o.m_bWater));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Talk to ..." without the talk screen (RZ_PuzzleActionHelper.RouteRead): their lines as
+	//! subtitles.
+	void HandleTalk(int playerId, int id, IEntity owner)
+	{
+		array<string> lines = {};
+		TalkLines(playerId, id, false, lines);
+		string title = "Someone";
+		RZ_Opening o = ById(id);
+		if (o)
+			title = o.m_sSpeaker;
+
+		foreach (string line : lines)
+		{
+			m_GM.Say(playerId, title, -1, line, owner);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -862,6 +986,9 @@ class RZ_Openings
 		}
 
 		int step = Math.Max(1, o.m_iStep);
+		if (o.m_bEnded)
+			step = 3;
+
 		m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(step, o.m_bWater), owner);
 	}
 }

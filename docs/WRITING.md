@@ -83,6 +83,11 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
 - **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
   The children eat first."* When a hungry house takes from a fed one, it's *"borrowed"*, in quotes.
   The Haven's dark side is always said sideways, never announced.
+- **Someone from before** (an opening's contact, [DESIGN.md](DESIGN.md#openings-how-every-life-starts))
+  knew you through your background and talks like a neighbour on a doorstep: relieved, a little
+  embarrassed, one shared detail from before (the stitches, the van, the apple every morning). They
+  never say you're new and never explain the Zone: the story comes one piece a step, in their own
+  life (*"My brother tried the river road. The loudspeaker said his name. Then it didn't."*).
 - **Players on the radio station** pick a preset, and it reads like a person: their name, one real
   place, one request. *"This is Mara. There's a horde moving around Morton. Stay clear of it."*
 - **Leaders** speak in their faction's voice, coloured by their traits. One short line before a

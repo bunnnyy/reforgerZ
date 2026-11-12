@@ -8,4 +8,4 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 | # | Design | What it is |
 |---|---|---|
-| 1 | [OPENINGS.md](OPENINGS.md) | How every life starts: a random place that fits your background, a reason to come out today, someone who knew you before, and a three-step chain that teaches the Zone and tells its story |
+| 1 | [OPENINGS.md](OPENINGS.md) | Openings' phases 2 to 4 (phase 1 is built: [DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts)): each background's own step 2, the other two reasons and contacts, the earlier-life contact, the experience levels, the scenes as compositions, and lines for every background and reason |

@@ -8,6 +8,8 @@
 //!   400 m from any holding, safehouse, road post or the lab, 600 m from a sealed checkpoint, not
 //!   at the line, no player within 300 m, no running mission within 500 m, 1 km from a pack's lair,
 //!   2 km from this player's last two starts; infection under 60 for a brand-new player.
+//! - Towns within 3 km of where the chain will end (RZ_Openings.EndPoints: the ending faction's
+//!   holdings, Halcyon's lab, or the Haven's safehouses) are tried first, so the walk stays short.
 //! - The fallback chain: no fitting building in any town tried, any house in one (the scene still
 //!   comes); nothing at all, the spawn point the spawn screen asked for (the contact only).
 //!
@@ -44,6 +46,7 @@ class RZ_OpeningRoll
 	protected static const int TOWNS_TRIED = 8;
 	protected static const float NEW_INFECTION = 60;	// a brand-new player's town is under this
 	protected static const float ANY_INFECTION = 80;
+	protected static const float NEAR_END = 3000;		// towns this close to where the chain ends go first
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref array<IEntity> m_aPlayers = {};
@@ -55,8 +58,9 @@ class RZ_OpeningRoll
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A place for this background, by the rules above; null if no town has one.
-	RZ_OpeningPlace Roll(string backgroundId, int level, RZ_PlayerProfile profile)
+	//! A place for this background, by the rules above; null if no town has one. `ends`: where the
+	//! chain would end (empty: anywhere).
+	RZ_OpeningPlace Roll(string backgroundId, int level, RZ_PlayerProfile profile, notnull array<vector> ends)
 	{
 		array<int> ids = {};
 		m_aPlayers.Clear();
@@ -78,6 +82,7 @@ class RZ_OpeningRoll
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		rng.ShuffleInts(towns);
+		NearEndsFirst(towns, ends);
 		RZ_OpeningPlace fallback;
 		int tried = 0;
 		foreach (int town : towns)
@@ -96,6 +101,39 @@ class RZ_OpeningRoll
 		}
 
 		return fallback;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The towns within NEAR_END of any of `ends` move to the front, each part in its shuffled order.
+	protected void NearEndsFirst(notnull array<int> towns, notnull array<vector> ends)
+	{
+		if (ends.IsEmpty())
+			return;
+
+		array<int> nearTowns = {};
+		array<int> farTowns = {};
+		foreach (int town : towns)
+		{
+			RZ_Settlement s = m_GM.GetSettlement(town);
+			bool close = false;
+			if (s)
+			{
+				foreach (vector endAt : ends)
+				{
+					if (RZ_Util.DistXZ(s.m_vCenter, endAt) <= NEAR_END)
+						close = true;
+				}
+			}
+
+			if (close)
+				nearTowns.Insert(town);
+			else
+				farTowns.Insert(town);
+		}
+
+		towns.Clear();
+		towns.InsertAll(nearTowns);
+		towns.InsertAll(farTowns);
 	}
 
 	//------------------------------------------------------------------------------------------------

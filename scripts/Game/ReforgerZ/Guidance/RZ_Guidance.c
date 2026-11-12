@@ -94,7 +94,7 @@ class RZ_GuidanceSettings
 	[Attribute("1", desc: "Openings: every life starts at a random place that fits its background (never a chosen one), coming out of its hiding place, with someone from before who speaks first and a three-step chain on the errands (docs/DESIGN.md, Openings). It replaces that life's spawn scenario and the wanderer who finds you. Off: the spawn point the spawn screen picks at random, and the spawn scenarios")]
 	bool m_bOpenings;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the hiding place's props by the door you come out of (Prefabs/ReforgerZ/Openings/RZ_Opening_HidingPlace.et, built by tools/camp_kit/build.py). Empty: the calendar note only", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the hiding place's props by the door you come out of (a small composition: an empty water bottle, a bedroll, a bucket). Empty: the calendar note only", "et")]
 	ResourceName m_sHidingScenePrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the contact's body, someone from before (a person with the puzzle components). Empty: Puzzles > Civilian", "et")]

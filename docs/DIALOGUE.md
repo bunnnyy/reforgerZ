@@ -220,11 +220,12 @@ behind it.
 | Strangers ([below](#strangers)) | `stranger:<routine>` (`stranger:tin`, `stranger:digger`...), `stranger` | `stranger:<visit>` | their ask's ways, as built ([ERRANDS.md](ERRANDS.md#strangers)) |
 | The open channel ([below](#the-radio)) | `radio:open`, `radio` | `radio:open` | none |
 | A cracked secure net ([below](#the-radio)) | `radio:bastion`, `radio:redhand`, `radio:halcyon`, `radio:secure` | `radio:open` | none |
+| An opening's contact, someone from before ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (their step again). They speak first as each step starts; the step's piece of the story and its ask are the built greeting |
 
 | A contract's or questline stage's people | `quest:<questline>` (`quest:every_name`), `quest`; `mission` for a contract's | `mission:<id>:<index>` | their built choices, as built: a conversation picks one with `call:slot:N`, so the stage resolves (and starts anything physical) as built |
 
 Factions are written `haven`, `bastion`, `redhand`, `halcyon`, and `none` for factionless checks.
-Strangers and the open channel are factionless; a mission's people speak for its giver.
+Strangers, an opening's contact and the open channel are factionless; a mission's people speak for its giver.
 
 **The post speaker.** With Trees on, one of the crew stands at the barrier of a Bastion checkpoint
 or a Red Hand roadblock once a player is within 100 m: the faction's territory occupant prefab
@@ -704,7 +705,7 @@ memory. Nothing reads whether a cleaned bite took.
 ## The text format (.rzd)
 
 Conversations are text files in `dialogue/<area>/<name>.rzd` (areas today: `leaders`, `finale`,
-`wanderers`, `residents`, `posts`, `table`, `strangers`, `radio`, `barks`). A file holds one or more conversations. A line whose
+`wanderers`, `residents`, `posts`, `table`, `strangers`, `radio`, `barks`, `openings`). A file holds one or more conversations. A line whose
 first character is `#` is a comment. Plain ASCII only (straight quotes).
 
 ```
@@ -814,7 +815,7 @@ always` (an ordinary lie, believable and never true).
 
 ## The conversations
 
-✅ 197 conversations, 562 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
+✅ 213 conversations, 581 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
 
 | Speaker | Conversations |
 |---|---|
@@ -835,6 +836,7 @@ always` (an ordinary lie, believable and never true).
 | Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy); "Which unit?" and "Say you're crew." in their kit (a look, or the truth); "Word?" at Bastion's (three words, one right); the greet at 35 m that reads the kit's marks; a name who'll stand for you at Bastion's and what the crew calls you at the Red Hand's (a cover detail, then a look), your own crew name at the Red Hand's, and a notebook number to Halcyon's people (`posts/cover.rzd`, `posts/opens.rzd`) |
 | The Long Table | The host on the road (speaking first at 12 m; where you're headed, and is anyone expecting you; "Put out, were you?" to an exile); the mother at the farm (is the boy hers; [Bitten]: declare it, as built) |
 | Strangers | Calling out at 10 m; where any stranger's headed; and for 15 routines, who they are: the girl at the tin man's house, the wife who drove to market, the pram of pans, the one shut in since Tuesday, the kids in the back seat, who the grave is for, the sleeve rolled down ([Doctor], [Nurse]), the farm, the sister in a barn, the husband across the line, the debt in the book, the one who hid, the one who got there first, the scratch off a fence |
+| An opening's contact (`openings/openings.rzd`) | Their greeting by your background, once (13: the patient's mother, the nurse from your ward, the van you fixed twice, the farmer's top field, the apple every morning, the cellmate, your name read at the lab gate, the night band's weather, the money, the private who never made it back to the line, the watch you took, the children who asked, a face from everywhere); who else made it (the roads); who's in charge now (the four in a sentence each, and the lab); on the walk, where they'll go now (not to the Red Hand) |
 | The radio | Call in what you've seen (a rumour, on air); listen for anyone calling (by the night and the mood); ask the crews about the toll; answer a distress call; on the secure nets, Bastion's command net (the word), the boss's channel (the toll), the lab's channel (the count) |
 | Make it right | The [Make it right] reply at any leader who won't deal with you (not a conversation: the engine's own) |
 | The last week | Every faction's leaders: "Ask about the cure." and "Ask what they'll do now."; an occupant's greet for the week and a topic for Bastion's route; barks at houses and holdings |

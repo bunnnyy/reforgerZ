@@ -26,7 +26,7 @@
    "slotLabel": "World > Spawn point prefab",
    "required": true,
    "minimum": true,
-   "use": "spawn points in towns, safehouse spawns",
+   "use": "spawn points in towns (the spawn screen asks for one at random; an opening moves the character on)",
    "notes": ""
   },
   {
@@ -4668,6 +4668,42 @@
    "notes": ""
   },
   {
+   "id": "OpeningHidingPlace",
+   "kind": "manual",
+   "system": "New-player guidance",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a small composition you make by hand (`RZ_Opening_HidingPlace.et` in `Prefabs/ReforgerZ/Guidance/`): an empty water bottle on its side, a rolled bedroll and a bucket, about 2 m across, nothing with physics",
+   "components": [],
+   "actions": [],
+   "slots": ["m_GuidanceSettings.m_sHidingScenePrefab"],
+   "listSlot": false,
+   "slotLabel": "Guidance > Hiding place scene",
+   "required": false,
+   "minimum": false,
+   "use": "the openings' scene by the door you come out of (docs/DESIGN.md, Openings); empty = the calendar note only",
+   "notes": ""
+  },
+  {
+   "id": "OpeningContact",
+   "kind": "manual",
+   "system": "New-player guidance",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a person with the puzzle components, as Puzzles > Civilian is (a plainer civilian for variety)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_GuidanceSettings.m_sContactPrefab"],
+   "listSlot": false,
+   "slotLabel": "Guidance > Contact",
+   "required": false,
+   "minimum": false,
+   "use": "the openings' someone from before; empty = Puzzles > Civilian (no body at all: no opening that life, the spawn scenario instead)",
+   "notes": ""
+  },
+  {
    "id": "PowerControl",
    "kind": "create",
    "system": "Power grid and radio station",
@@ -6556,7 +6592,7 @@
    "category": "Guidance",
    "object": "Guidance",
    "field": "m_GuidanceSettings",
-   "covers": "**Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs"
+   "covers": "**Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs; **Openings** (on), **Hiding place scene** and **Contact** (empty: the calendar only, and Puzzles > Civilian), **Opening Fame** (10)"
   },
   {
    "category": "Interactions",
@@ -7366,6 +7402,8 @@
     "m_bSafehouseFlyers": "1",
     "m_fShoutMinutes": "30",
     "m_bWandererFinds": "1",
+    "m_bOpenings": "1",
+    "m_iOpeningFame": "10",
     "m_fTipQuietSeconds": "90"
    }
   },

@@ -192,7 +192,7 @@ and choice missions, and puzzles:
 | Prefab | Suggested base | Add | Slot | Gets you |
 |---|---|---|---|---|
 | `RZ_GameMode.et` | vanilla GameMode_Plain (or any SCR_BaseGameMode prefab) | `RZ_GameModeComponent` | (placed in the world) | the mode |
-| `RZ_SpawnPoint.et` | a vanilla spawn point (SCR_SpawnPoint), e.g. SpawnPoint_Base.et or SpawnPoint_US.et; confirm the name in Workbench | — | World > Spawn point prefab | spawn points in towns, safehouse spawns |
+| `RZ_SpawnPoint.et` | a vanilla spawn point (SCR_SpawnPoint), e.g. SpawnPoint_Base.et or SpawnPoint_US.et; confirm the name in Workbench | — | World > Spawn point prefab | spawn points in towns (the spawn screen asks for one at random; an opening moves the character on) |
 | `RZ_Sample.et` | a small item (a vial or sample tube) | `RZ_SampleItemComponent` (Value 1) | Cure > Sample | samples from specials |
 | `RZ_Antidote.et` | vanilla morphine or saline item (keeps its consumable component) | `RZ_AntidoteItemComponent`; `RZ_InjectAntidoteAction` | Cure > Antidote | antidotes; optionally set the consumable effect to RZ_ConsumableAntidote by hand |
 | `RZ_Lab.et` | a field hospital tent or lab container prop | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours |
@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **318 prefab fields**: 46 on `RZ_GameModeComponent`, 263 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **298 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 82 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **320 prefab fields**: 46 on `RZ_GameModeComponent`, 265 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **300 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 84 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -403,7 +403,7 @@ and the UI files) need none, and eight have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_SpawnPoint.et` | a vanilla spawn point (SCR_SpawnPoint), e.g. SpawnPoint_Base.et or SpawnPoint_US.et; confirm the name in Workbench | — | World > Spawn point prefab | **minimum** | spawn points in towns, safehouse spawns |
+| `RZ_SpawnPoint.et` | a vanilla spawn point (SCR_SpawnPoint), e.g. SpawnPoint_Base.et or SpawnPoint_US.et; confirm the name in Workbench | — | World > Spawn point prefab | **minimum** | spawn points in towns (the spawn screen asks for one at random; an opening moves the character on) |
 | `RZ_Sample.et` | a small item (a vial or sample tube) | `RZ_SampleItemComponent` (Value 1) | Cure > Sample | **minimum** | samples from specials |
 | `RZ_Antidote.et` | vanilla morphine or saline item (keeps its consumable component) | `RZ_AntidoteItemComponent`; `RZ_InjectAntidoteAction` | Cure > Antidote | **minimum** | antidotes; optionally set the consumable effect to RZ_ConsumableAntidote by hand |
 | `RZ_Lab.et` | a field hospital tent or lab container prop | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | **minimum** | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours. Manual: two empty child entities named RZ_CleanRoom (where the final stand is fought, 10 m round it) and RZ_LoadingBay (Take the Lab's hold); without them the finale picks land points near the lab |
@@ -729,6 +729,8 @@ and the UI files) need none, and eight have no base:
 | `RZ_DeadRaider.et` | a body prop with a red hand on the jacket | the clue set | Guidance > Raider body prefab | optional | the attic scenario |
 | `RZ_DeadSoldier.et` | a Bastion soldier body prop | the clue set | Guidance > Soldier body prefab | optional | the barricade scenario |
 | `RZ_Barricade.et` | sandbags and a car on its side | — | Guidance > Barricade prefab | optional | barricade scenery |
+| (existing prefab) | a small composition you make by hand (`RZ_Opening_HidingPlace.et` in `Prefabs/ReforgerZ/Guidance/`): an empty water bottle on its side, a rolled bedroll and a bucket, about 2 m across, nothing with physics | — | Guidance > Hiding place scene | optional | the openings' scene by the door you come out of (docs/DESIGN.md, Openings); empty = the calendar note only |
+| (existing prefab) | a person with the puzzle components, as Puzzles > Civilian is (a plainer civilian for variety) | — | Guidance > Contact | optional | the openings' someone from before; empty = Puzzles > Civilian (no body at all: no opening that life, the spawn scenario instead) |
 
 #### Power grid and radio station
 
@@ -991,7 +993,7 @@ more at once, so keep them at 10 or more.
 message, the unseen shooter). Checkpoints need the barricade. Keep the drone free of collision and
 physics.
 
-**Haven safehouses and wanderers.** Safehouses need only the spawn point and the Haven
+**Haven safehouses and wanderers.** Safehouses need only the Haven
 quartermaster. Wanderers need nothing: without bodies they use Puzzles > Civilian. A body can be
 talked to only if it has the generic set (the manifest gives it to them).
 
@@ -1386,7 +1388,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
-| Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
+| Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs; **Openings** (on), **Hiding place scene** and **Contact** (empty: the calendar only, and Puzzles > Civilian), **Opening Fame** (10) |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
@@ -1766,7 +1768,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **127** lines with the tag, all in the game scripts (one is the comment in
+There are **130** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 23 are in `UI/`: 18 of [the UI's](#the-ui-19), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
@@ -1788,13 +1790,13 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1078` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (73)
+### Medium risk: big features, with a fallback (75)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Interactions/RZ_Medical.c:15` | vanilla's consumable item component runs `ApplyItemEffect` on the server when a medic finishes vanilla's heal on another character (a bandage, tourniquet, morphine or saline used on them) | A Nurse or Doctor no longer slows a bite when treating someone: no line comes. Find the server-side point of vanilla's heal on another character (`SCR_HealingUserAction`, the health item's `ApplyEffect`) and move the hook there |
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Factions/RZ_Checkpoints.c:549` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
+| `Factions/RZ_Checkpoints.c:562` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:825` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the spawn screen's places, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:970` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:1016` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
@@ -1856,15 +1858,17 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
+| `Guidance/RZ_OpeningPlaces.c:341` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point and the scenarios, as before) and move the character after the hand-over instead |
+| `Guidance/RZ_OpeningPlaces.c:381` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 
-### Low risk: contained or cosmetic (33)
+### Low risk: contained or cosmetic (34)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Interactions/RZ_Interactions.c:183` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
-| `Guidance/RZ_Guidance.c:439` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
+| `Guidance/RZ_Guidance.c:465` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
@@ -1893,6 +1897,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
 | `Factions/RZ_CampLife.c:3589` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 | `Factions/RZ_CampLife.c:3332` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
+| `Guidance/RZ_OpeningPlaces.c:351` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
 
 ### The UI (19)
 
@@ -1922,8 +1927,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
 | `UI/RZ_Menus.c:307` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
-| `UI/RZ_SpawnMenu.c:19` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
-| `UI/RZ_MapIcons.c:315` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_SpawnMenu.c:21` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
+| `UI/RZ_MapIcons.c:454` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
 
 ## 7. Log lines to check
 
@@ -2232,6 +2237,16 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 `World memory: town ...`; on a restart, `World memory: N reasons, N signals, N town logs, N world
 records.` and `Shared: N callbacks waiting, N season records.`
 
+Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
+for <player>: <background>, <kind> in <town> (<grid>), level N, someone from before (<who>), full|one-step
+chain to <place>`, `Openings: <name> spoke first to <player> at step N (the talk screen|subtitles)`,
+`Errands: opening.<step> handed to <player> (<name>)`, `Openings: <name> step N (<key>) for <player>,
+<direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
+<player>)` and `Openings: ended for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no
+<background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
+the spawn point instead` and `Openings: no contact could stand for <player> at <grid>, the spawn
+scenario instead`.
+
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
 start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
@@ -2272,7 +2287,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 197 conversations, 562 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 213 conversations, 581 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2750,6 +2765,21 @@ when it happens)
   hall) and *Radio*. For the next five minutes, cards come at most one every 45 s; a card that
   waited 45 s is gone (into the notebook). Get bitten in the first seconds: the bite card shows at
   once. Owed errand pay at a join is one *While you were away* entry, no card.
+- [ ] **Openings** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), with a pad. The spawn
+  screen has no place picker: under Start, only the kind of place the picked background starts at
+  ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
+  of an open door of a clinic or a house in a town nobody holds, facing out, the world already
+  loaded; the card says where you hid, the town and the day. A calendar lies by the door. About 4 s
+  in, someone ("..., a patient's mother") a few metres off opens the talk screen on you: "Christ.
+  You're alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the
+  roads, then the ask. The tracker already shows *Across the Road*, and the Quests tab has it under
+  ERRANDS, tracked. Search the house for 20 s and come back: the next step opens the talk screen again
+  (the broadcast, nobody coming) with *Water* or *The Cut*; then *To Halcyon* with the Perimeter and
+  the cure, the tracker pointing at Halcyon's nearest holding or the lab. Arrive: one line there and
+  +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
+  next start is a different town (2 km from the last two). Try a Soldier (ends at Bastion) and a
+  Mechanic (the Haven). Shoot the contact during step 1: a line from "Someone in a doorway" and the
+  walk to the nearest safehouse. Nobody waves you over for an errand while it runs.
 - [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
   by a quartermaster (a Favor line), stay out at dusk; never two at once.
 - [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker); the mockup `UI/Previews/tracker.png`,
@@ -2957,7 +2987,7 @@ when it happens)
 - [ ] The spawn screen opens at the first spawn (after the welcome screen, if any) and after each
   death, never vanilla's deploy menu or role selection, and asks for no faction or group. With a
   pad only: up/down go through the 13 backgrounds with the panel following (name, perk, flaw, gear,
-  standing, Legacy), left/right change where you start, A deploys and you spawn there as that
+  standing, Legacy, the kind of place it starts at), A deploys and you spawn as that
   background; B opens the pause menu, and closing it brings the screen back. Text reads from a couch.
 - [ ] On the spawn screen a locked background shows LOCKED and how to unlock it, and A on it says
   so and sends nothing; the server refuses it anyway (the log says `asked to spawn with locked
