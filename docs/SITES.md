@@ -434,7 +434,9 @@ Each `Camp life jobs:` line ends with the posts filled by kind (*"posts gate 1 o
 lookout 1 of 2, door 0 of 1"*), how many are on the wire facing the threat, the routes being walked
 (*"walked: the wire 1, the approach 1"*) and the alert. The headless audit runs the same routine as
 data for the people each site has in play ([The audit](#the-audit)); the waypoints themselves need a
-player near, so a play-test or the full runtime test shows them walked.
+player near and real guards: the full runtime test's places have only their named people (its world
+spawns no guard bodies), who never keep watch or walk out, so its jobs lines show the posts empty and
+the stories up, and a play-test is where the posts are seen manned and the routes walked.
 
 ## The story of each site
 
@@ -600,12 +602,16 @@ walkable."* and *"Sites audit stories: Bastion: The post that held picked at 3, 
 have a spot and a prefab). **Audit threshold** (70) is the pass mark: the site audit (`run.sh sites`)
 fails while any stronghold scores under it.
 
-**Where it stands** (2026-11-12, the runtime test's site audit): Everon's 16 sites score a mean of 81
-(80–86 over four rolls of the holdings; the fixed plans scored 35), with 0 overlaps, no tier 1 piece
-dropped, nothing over water and the strongholds' wire 87–96% closed (the lab 92–96%); Arland's 9 a
-mean of 85–86 (24–40 before). What's left is mostly ground: pieces dropped on banks, on roads through
-a yard and against neighbouring buildings, and a stronghold on a hillside whose watch can't see its
-gate (the Red Hand at 106-118 on one roll, 53).
+**Where it stands** (2026-11-12, the runtime test's site audit, three runs with the people and the
+story): every stronghold and every site with a gate has a post that sees it (before, a stronghold on a
+hillside or the lab could have none: the Red Hand at 106-118 on one roll, the lab at 13-58 on another);
+every route point walkable (531–572 on Everon, 324–354 on Arland). Everon's 16 sites score a mean of
+81–90 (78 on the same day's run before), Arland's 9 a mean of 88–91; 0 overlaps and nothing over water.
+Every one of the sixteen stories stands whole (all its elements on their spots with a prefab) at one
+site or more of its faction in each map's runs but the toll road and the clean room on some Everon
+rolls (a car with no room on the verge, the gate's tape crowded out). What's left is ground: on one
+roll of three the Haven's stronghold on Everon sat in a building hemmed in by roads and neighbours and
+lost most of its pieces (8), and Arland's Red Hand stronghold on one roll had a yard of walls (63).
 
 ### The runtime test
 
@@ -628,7 +634,7 @@ run both: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#runtime-test-without-workbench
 | `py tools/camp_kit/render.py --placed <console.log>` | draws `tools/camp_kit/sites_placed.html` from a site audit's log ("Sites draw" lines): each site top-down on the ground it read (water, buildings, walls and trees, bushes, roads, steep ground, the paths kept clear), its building, road entries, gate and door, the wire line (what closes each stretch: the ground, the barrier, a gate, or a gap) and the ring it was traced on, every piece's real footprint by tier and every drop (dashed, hover for why), what went indoors, the posts and their lines to the gate, the patrol's loop, any overlap, and the threat on each side; and writes `tools/camp_kit/sites_list.txt` |
 | **ReforgerZ: Fly to the next site** (Workbench plugin, World Editor) | reads `tools/camp_kit/sites_list.txt`: each run moves the camera above the next site looking down on it, then to its gate at eye height looking in, then on to the next; for a screenshot of every base to hold against `sites_placed.html` |
 
-The committed `sites_placed.html` and `sites_list.txt` are Everon's audit of 2026-11-12 with the solver and the layers (16 sites, mean 81; the
+The committed `sites_placed.html` and `sites_list.txt` are Everon's audit of 2026-11-12 with the people's routes and the story's spots (16 sites, mean 82; the
 holdings move with each season's roll, so a new run may differ).
 
 The audit's drawing lines also name the big solid things the grid read at each site (class, prefab,

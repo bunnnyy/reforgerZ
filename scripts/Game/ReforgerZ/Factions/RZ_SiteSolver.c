@@ -40,7 +40,7 @@ class RZ_SiteSolver
 	protected static const float ROUGH_SLOPE = 0.36;	// a tier 1 piece's second pass, and a piece that may stand on a bank: 20 degrees...
 	protected static const float ROUGH_SPREAD = 0.6;	// ...and a prop's ground up to this
 
-	RZ_CampPlace m_Place;
+	ref RZ_CampPlace m_Place;			// held: the job may hand its place over to a newer one (Survey) while this one is solved
 	ref RZ_SiteResult m_Result;
 	ref RZ_SiteWire m_Wire;				// null: no ring (a road post, or Layers off)
 	int m_iMs;
