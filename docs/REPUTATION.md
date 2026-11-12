@@ -447,7 +447,7 @@ visit the medic; calling one out isn't built.
   10 minutes with a rough location (one notice, however many factions want you). One bounty is paid per death, only to the player who killed
   you (50 Favor and a little Fame), and only for a player kill: dying to the infected, a fall or
   your own hand pays nobody. With several factions after you, the one with the most Infamy pays;
-  a faction never pays someone it hunts too. If none pays, a posting on the Red Hand's
+  a faction never pays someone it hunts too, nor a killer in the victim's own group. If none pays, a posting on the Red Hand's
   [bounty board](#the-red-hand) can. *The killer is the last attacker the body's damage manager
   recorded; if that wasn't a player, no bounty is paid.*
 - **A tagged pack's leader** ✅: killing one in its prime or older (Halcyon's tag in it) costs the
@@ -495,7 +495,7 @@ count ×1.2, never the total), then what's left of the budget:
 | **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more | at most 15 of the 30, once every 30 minutes, never below 15 (the Watched line). Kill on Sight: refused |
 | **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy | once an hour, by identity |
 | **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a life per faction from errands, never below 15 |
-| **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame, the stronghold leader's temper counting as on amends | at most 10 a real day per faction; closed with a faction whose route is fighting yours after the 90% lock. Spent Fame is gone: it can drop your band and your tier |
+| **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame, the stronghold leader's temper counting as on amends | at most 10 a real day per faction; closed with a faction whose route is fighting yours after the 90% lock. Spent Fame is gone: it can drop your band and your tier (the Fame comes off first, so the tier notice reads both) |
 | **Parley amends** | The owed, at a gate ([below](#the-parley-and-the-knock)): one amends contract reserved for 60 minutes though they're Hunted | the contract's Fame, as Infamy off | one offer per parley |
 | **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *"What would it take?"* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this life) is cleared, once a season per leader |
 

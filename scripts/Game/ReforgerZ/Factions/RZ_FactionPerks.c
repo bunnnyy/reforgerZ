@@ -998,6 +998,9 @@ class RZ_FactionPerks
 	//------------------------------------------------------------------------------------------------
 	protected bool PayKillOnSight(int victim, int killer)
 	{
+		// A teammate's head pays nothing: no cashing each other in
+		if (RZ_Util.SameGroup(killer, victim))
+			return false;
 
 		int payer = -1;
 		int worst = -1;

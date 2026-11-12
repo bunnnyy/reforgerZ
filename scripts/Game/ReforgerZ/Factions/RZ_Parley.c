@@ -501,12 +501,18 @@ class RZ_Parley
 		if (finale && finale.ParleyClosed(playerId, f))
 			return "\"Not while your lot and ours are at it. After the cure, maybe.\"";
 
-		// The stronghold leader's temper counts, as on every amends
+		// The Fame goes first, through AddFame (the tier notice), so Forgive's notice reads the
+		// standing after both. The stronghold leader's temper counts, as on every amends
+		int fameCost = RZ_ReputationSettings.Get().m_iSettleFame;
+		m_GM.AddFame(playerId, f, -fameCost, false);
 		int off = m_GM.Forgive(playerId, f, Math.Min(RZ_ReputationSettings.Get().m_iSettleInfamy, profile.GetInfamy(f)), "settled up", true);
 		if (off <= 0)
+		{
+			// Nothing came off: the Fame goes back (small, so it's no season Fame or record)
+			m_GM.AddFame(playerId, f, fameCost, false, RZ_RepFlag.SMALL);
 			return m_GM.ForgiveSpentText(f);
+		}
 
-		profile.AddFame(f, -RZ_ReputationSettings.Get().m_iSettleFame);
 		profile.m_aSettled[f] = profile.m_aSettled[f] + off;
 		RZ_Log.Info(string.Format("Reputation: %1 settled up with %2: -%3 Fame, -%4 Infamy", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), RZ_ReputationSettings.Get().m_iSettleFame, off));
 		return string.Format("\"Square-ish.\" -%1 Fame, -%2 Infamy with %3. Spent Fame is gone.", RZ_ReputationSettings.Get().m_iSettleFame, off, RZ_Factions.GetNameInText(f));
