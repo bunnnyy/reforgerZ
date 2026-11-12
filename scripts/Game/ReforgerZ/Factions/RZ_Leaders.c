@@ -1255,7 +1255,7 @@ class RZ_Leaders
 		l.Remember(Ident(playerId), MEM_MET);
 		RZ_Rng rng = new RZ_Rng(m_iSeed + l.m_iId * 31 + playerId * 7);
 
-		string text = string.Format("%1\n%2 %3", RZ_LeaderVoice.WhoWeAre(l.m_eFaction), l.m_sName, l.m_sBackstory);
+		string text = string.Format("%1\nI'm %2. %3", RZ_LeaderVoice.WhoWeAre(l.m_eFaction), l.m_sName, l.m_sBackstory);
 
 		// One other faction (two for a Talker), in this leader's voice, with where they sit
 		array<int> others = {};
@@ -1275,7 +1275,7 @@ class RZ_Leaders
 			text += "\n" + RZ_LeaderVoice.HintAbout(l.m_eFaction, others[i]);
 			RZ_Leader near = FindNearest(others[i], l.m_vPos, 100000);
 			if (near)
-				text += string.Format(" (%1: %2, %3)", RZ_Factions.GetShortName(others[i]), near.m_sPlace, RZ_Util.DirectionText(l.m_vPos, near.m_vPos));
+				text += string.Format(" The nearest %1 place is %2, %3 from here.", RZ_Factions.GetShortName(others[i]), near.m_sPlace, RZ_Util.DirectionText(l.m_vPos, near.m_vPos));
 		}
 
 		return text;
@@ -1958,7 +1958,7 @@ class RZ_Leaders
 			if (job.HasBonus(m_GM, playerId))
 				bonus = "\nYour background gives you an edge on this one.";
 
-			m_GM.NotifyPlayer(playerId, "Off the books: " + job.m_sTitle, string.Format("%1\n(%2)%3", VoiceBrief(job, playerId), where, bonus));
+			m_GM.NotifyPlayer(playerId, "Off the books: " + job.m_sTitle, string.Format("%1\nWhere: %2.%3", VoiceBrief(job, playerId), where, bonus));
 			return;
 		}
 
@@ -2485,7 +2485,7 @@ class RZ_Leaders
 					continue;
 
 				m_mGreeted.Set(key, m_fClock);
-				m_GM.NotifyPlayer(playerId, l.GetHeader(), string.Format("%1 catches your eye and tilts their head at the door. They want a word, somewhere quieter. (Ask them for work.)", l.m_sShort));
+				m_GM.NotifyPlayer(playerId, l.GetHeader(), string.Format("It's %1. A word, somewhere quieter, when you've a minute. Not out here. Ask me for work and I'll explain.", l.m_sShort));
 			}
 		}
 	}

@@ -282,11 +282,11 @@ class RZ_Parley
 				speaker = l.m_sTitle + " " + l.m_sName + ", over the radio";
 		}
 
-		string text = string.Format("\"Halt. Hands. You %1.", profile.m_aBestDeed[f]);
+		string text = string.Format("Halt. Hands where we can see them. I know who you are. You %1.", profile.m_aBestDeed[f]);
 		if (!profile.m_aWorstDeed[f].IsEmpty())
 			text += string.Format(" You also %1. Both go in the log.", profile.m_aWorstDeed[f]);
 
-		text += " Talk.\"";
+		text += " Now talk.";
 		string offer = ReserveAmends(playerId, f);
 		if (offer.IsEmpty())
 			text += " Nothing for you today. Come back later.";
@@ -335,7 +335,7 @@ class RZ_Parley
 				continue;
 
 			RZ_Log.Info(string.Format("Parley: %1 reserved for %2", m.m_sTitle, RZ_Util.PlayerName(playerId)));
-			return string.Format("\"There's work. %1. It's yours for the hour, and it pays in what we'll forget.\" (Amends: works off Infamy, finishes where the job says.)\n%2", m.m_sTitle, m.m_sBrief);
+			return string.Format("There's work: %1. It's yours for the hour, and it pays in what we'll forget.\n(Amends: works off Infamy, finishes where the job says.)\n%2", m.m_sTitle, m.m_sBrief);
 		}
 
 		return "";
@@ -447,13 +447,13 @@ class RZ_Parley
 
 		if (!closed.IsEmpty())
 		{
-			m_GM.Say(playerId, title, f, "The door stays shut. Footsteps inside, and then none.");
+			m_GM.Say(playerId, title, f, "Not now. I'm not opening this door, and I'm not talking through it either. Go.");
 			return true;
 		}
 
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		profile.m_aParleyUnix[f] = RZ_SeasonClock.Now();
-		string text = string.Format("You knock under the bear on the door. The council head answers through it, and it stays shut. \"You %1. I remember. You also know why this door's shut.\"", profile.m_aBestDeed[f]);
+		string text = string.Format("I'm not opening the door, so listen through it. You %1. I remember that. You also know why this door's shut.", profile.m_aBestDeed[f]);
 		string offer = ReserveAmends(playerId, f);
 		if (offer.IsEmpty())
 		{
@@ -515,6 +515,6 @@ class RZ_Parley
 
 		profile.m_aSettled[f] = profile.m_aSettled[f] + off;
 		RZ_Log.Info(string.Format("Reputation: %1 settled up with %2: -%3 Fame, -%4 Infamy", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), RZ_ReputationSettings.Get().m_iSettleFame, off));
-		return string.Format("\"Square-ish.\" -%1 Fame, -%2 Infamy with %3. Spent Fame is gone.", RZ_ReputationSettings.Get().m_iSettleFame, off, RZ_Factions.GetNameInText(f));
+		return string.Format("Square-ish, then. -%1 Fame, -%2 Infamy with %3. Spent Fame is gone.", RZ_ReputationSettings.Get().m_iSettleFame, off, RZ_Factions.GetNameInText(f));
 	}
 }
