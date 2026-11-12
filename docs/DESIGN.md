@@ -508,13 +508,34 @@ m/s); on a map without one, only night and the Storm event apply.
 
 ### The power grid
 
-One power station per map: a placed `RZ_PowerStationMarkerEntity`, else a real power or
-industrial building near a town, else the edge of the biggest town. Its control object
-exists while a player is within 300 m. Restoring it takes three steps:
+**The station.** One power station per map, at real infrastructure (`World/RZ_PowerSite.c`): a
+placed `RZ_PowerStationMarkerEntity`; else the best power site within 500 m of the twelve biggest
+towns, by prefab name (a power plant, then a transformer station or substation, then a 110 kV or
+40 kV transformer yard, then a lone transformer); else a factory hall or boiler house, a sawmill
+or concrete plant, a warehouse or workshop within 200 m of a town (buildings only: a barrel under
+`Props/Industrial` is no factory); else a real building on the edge of the biggest town. Its name
+says what it is: "the power station outside Morton", "the substation in Levie", "the factory's
+switch room outside Tyrone", "the switch room on the edge of Morton". A station saved while still
+dark is picked again at the next start (an older pick may have been a field); one saved later
+keeps its place. Only a map whose biggest town has no building at all gets a bare point.
 
-1. **Force the control room door** (loud).
-2. **Reset the breakers and start the generator:** a horde is sent at it, and someone has to
-   stay within 60 m for 90 s while it spins up (nobody there for 30 s and it dies).
+**The control.** Never a block in a field. The map's own electrical cabinet at the station (a
+110 kV control box, an electric cabinet, a large cabinet set, a breaker or utility box, outside and
+not behind a lock) within 45 m carries it, as an invisible interaction spot on the face toward
+the town (**Use cabinets**, needs **Interactions > Spot prefab**). Else the control prefab (a
+vanilla cabinet set) stands against the station's wall, a step to the side of an outside door
+and facing out; with no door, against the wall nearest the town; at a lone transformer, beside
+it. It exists while a player is within 300 m.
+
+**Restoring it** takes three steps, all in [the power panel](UI.md#the-power-panel) (one prompt,
+**Open the panel**):
+
+1. **Force the door** (loud: heat 10).
+2. **Set the breakers and start the generator.** The card inside the door names three breakers to
+   close in order and one burnt one to leave; the board has six. A wrong one trips them all (heat
+   2; the burnt one bangs, heat 8). With the board READY, **Start the generator**: a horde is sent
+   at it, and someone has to stay within 60 m for 90 s while it spins up (nobody there for 30 s
+   and it dies, and the breakers trip).
 3. **Throw the main switch.**
 
 Then every town within 2.5 km is **Powered** and everyone hears it. Power gives a lights hook
@@ -522,13 +543,16 @@ Then every town within 2.5 km is **Powered** and everyone hears it. Power gives 
 6 minutes instead of 10), faster radio station broadcasts, and electronics ×1.5 as likely in
 loot there. But the generator hums: 10 heat a minute at the station. It **slowly fails**
 over about four hours with players online (a warning at 20%). **Refuel and grease** restores
-60% with a fuel item or 25% without. When it fails, it's back to step 2. No Fame for any of
-it: the power is the reward.
+60% with a fuel item or 25% without, once per player every 10 minutes. When it fails, it's back
+to step 2 with the breakers tripped. No Fame for any of it: the power is the reward.
 
 **Power surges** (the Power Surge event): one dark town outside the region gets power for 10
 minutes, with the same lights hook and electronics bonus, and no generator to keep running.
 
-*Simplified:* the three steps are actions on one object, not real breakers.
+*Simplified:* the breakers are a puzzle on the screen, not switches in the world; the card is
+dealt at each server start; the generator, the door and the board are told, not modelled. With
+**UI > Power breaker layout** empty the control keeps its old world prompts and the breakers are
+done in one go with the generator ([fallbacks](UI.md#the-power-panel)).
 
 ### The radio station
 

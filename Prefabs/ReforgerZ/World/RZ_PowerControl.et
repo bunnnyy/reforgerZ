@@ -22,44 +22,8 @@ GenericEntity : "{EDBDB550EDC0D174}Prefabs/Structures/BuildingParts/Eletrical/Ca
       "default"
      }
      UIInfo UIInfo "{6AD67DC2A86F2B17}" {
-      Name "Read"
+      Name "Open the panel"
      }
-    }
-    RZ_PuzzleUseAction "{6AD67DC2A86F1A39}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A86F0D30}" {
-      Name "Use"
-     }
-     m_iValue 0
-    }
-    RZ_PuzzleUseAction "{6AD67DC2A86FE515}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A86FD477}" {
-      Name "Use"
-     }
-     m_iValue 1
-    }
-    RZ_PuzzleUseAction "{6AD67DC2A86FCF63}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A86FBE6A}" {
-      Name "Use"
-     }
-     m_iValue 2
-    }
-    RZ_PuzzleUseAction "{6AD67DC2A86FA8D4}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A86F9BC7}" {
-      Name "Use"
-     }
-     m_iValue 3
     }
     RZ_PuzzleChoiceAction "{6AD67DC2A86E72DB}" {
      ParentContextList {
@@ -78,24 +42,6 @@ GenericEntity : "{EDBDB550EDC0D174}Prefabs/Structures/BuildingParts/Eletrical/Ca
       Name "Choose"
      }
      m_iOption 1
-    }
-    RZ_PuzzleChoiceAction "{6AD67DC2A86E2666}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A86E2966}" {
-      Name "Choose"
-     }
-     m_iOption 2
-    }
-    RZ_PuzzleChoiceAction "{6AD67DC2A86E001F}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A86EF336}" {
-      Name "Choose"
-     }
-     m_iOption 3
     }
    }
   }

@@ -4464,7 +4464,7 @@
    "slotLabel": "Territory > Camp life > Observation waypoint",
    "required": false,
    "minimum": false,
-   "use": "a sentry with no nest (empty = the loiter waypoint)",
+   "use": "a sentry with no nest, only where an observation-post smart action stands within 6 m of the spot (vanilla's waypoint needs one; elsewhere, or empty, the loiter waypoint)",
    "notes": ""
   },
   {
@@ -4711,28 +4711,22 @@
    "path": "Prefabs/ReforgerZ/World/RZ_PowerControl.et",
    "basePrefab": "{EDBDB550EDC0D174}Prefabs/Structures/BuildingParts/Eletrical/CabinetElectricalLargeSet_01/CabinetElectricalLargeSet_01_V1.et",
    "baseFind": "",
-   "baseHint": "a generator or breaker cabinet",
+   "baseHint": "a vanilla electrical cabinet that stands on the ground",
    "components": [
     {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
     {"cls": "RZ_ClueComponent", "values": [], "name": ""}
    ],
    "actions": [
-    {"cls": "RZ_ReadClueAction", "values": [], "name": "Read"},
-    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=0"], "name": "Use"},
-    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=1"], "name": "Use"},
-    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=2"], "name": "Use"},
-    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=3"], "name": "Use"},
+    {"cls": "RZ_ReadClueAction", "values": [], "name": "Open the panel"},
     {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=0"], "name": "Choose"},
-    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=1"], "name": "Choose"},
-    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=2"], "name": "Choose"},
-    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=3"], "name": "Choose"}
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=1"], "name": "Choose"}
    ],
    "slots": ["m_PowerSettings.m_sControlPrefab"],
    "listSlot": false,
    "slotLabel": "World > Power grid > Control prefab",
    "required": false,
    "minimum": false,
-   "use": "the power station (falls back to the fuse box, then the puzzle object)",
+   "use": "the power station's control, stood against the station's wall by a door when the map has no electrical cabinet of its own there (falls back to the fuse box, then the puzzle object). One prompt, Open the panel, with the power panel; the read and two choices without it. No use actions: they'd show as Use",
    "notes": ""
   },
   {
@@ -5864,6 +5858,24 @@
    "notes": ""
   },
   {
+   "id": "UIPowerBreakerLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the PowerBreaker layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sPowerBreakerLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Power breaker layout",
+   "required": false,
+   "minimum": false,
+   "use": "the power panel's breakers: the power station's control gets one prompt, Open the panel, and the restore happens in the panel screen (empty = the control's old world prompts). Needs the RZ_PowerMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "notes": ""
+  },
+  {
    "id": "ErrandPropEffects",
    "kind": "manual",
    "system": "Missions",
@@ -6398,7 +6410,7 @@
    "category": "World",
    "object": "Power grid",
    "field": "m_PowerSettings",
-   "covers": "Control prefab, region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore"
+   "covers": "Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore"
   },
   {
    "category": "World",
@@ -6687,7 +6699,7 @@
    "category": "UI",
    "object": "UI",
    "field": "m_UISettings",
-   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md))"
+   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
   {
    "category": "Dialogue",
@@ -6749,6 +6761,8 @@
    "cls": "RZ_PowerSettings",
    "defaults": {
     "m_bEnabled": "1",
+    "m_bUseCabinets": "1",
+    "m_fControlYaw": "0",
     "m_fRegionRadius": "2500",
     "m_fSpinUpSeconds": "90",
     "m_fNoisePerMinute": "10",
