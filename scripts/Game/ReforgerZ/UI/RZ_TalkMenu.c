@@ -1,15 +1,19 @@
 //! The talk screen (docs/UI.md, "The talk screen"), New Vegas style, in two steps. The person stays
 //! in view; their name and sub-line sit at the top right in their faction colour.
 //!
-//! 1. Their line on its own, in a subtitle band in the lower middle, with a thin bar that fills over
-//!    the reading time (READ_PER_CHAR a character, READ_MIN to READ_MAX). A, Space or a click skips
-//!    straight to the replies; nothing needs pressing. The right stick or the wheel scrolls a long
-//!    line (the stick holds the bar while it's pushed).
+//! 1. Their line on its own, in a subtitle band in the lower middle, a box at a time (about three
+//!    rows a box: short lines share one, a long one is cut at a sentence). It types out at
+//!    TYPE_SPEED characters a second; A, Enter, Space or a click finishes it at once. Then a small
+//!    down arrow bounces at the band's bottom right, "2 / 4" beside it when there are more boxes,
+//!    and the same press goes on: the next box, or after the last, the replies. Nothing moves on by
+//!    itself.
 //! 2. Then your replies on their own: the band becomes an outlined box in the faction colour, the
 //!    selected reply with a fill and an outline, check tags in the faction colour, a reply you can't
 //!    take faint with what it needs, one with nothing new behind it grey. Arrows at the left show
 //!    there are more pages, "1/2" sits bottom right; LB/RB, Q/E or a click on an arrow turn the
-//!    page. The last reply is always the way out.
+//!    page, and so does moving past the end: down on the last reply goes to the next page's first,
+//!    up on the first to the page before's last (the D-pad, the stick, the arrow keys, the wheel).
+//!    The last reply is always the way out.
 //! A reply you say fades and their answer takes the band: back to step 1.
 //!
 //! Keys: up/down or 1-5, Enter; mouse: hover lights a reply, a click says it; Esc leaves. Pad: D-pad
@@ -19,7 +23,7 @@
 //! it (the server's screen guard).
 
 //------------------------------------------------------------------------------------------------
-//! Mouse on a reply row: the cursor coming onto it selects it, a click says it.
+//! Mouse on a reply row: the cursor coming onto it selects it, a click says it, the wheel moves.
 class RZ_TalkRowEvents : ScriptedWidgetEventHandler
 {
 	protected RZ_TalkMenu m_Menu;
@@ -50,10 +54,42 @@ class RZ_TalkRowEvents : ScriptedWidgetEventHandler
 
 		return false;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! VERIFY: OnMouseWheel reaches the row's Button, `wheel` positive when rolled up (away).
+	override bool OnMouseWheel(Widget w, int x, int y, int wheel)
+	{
+		if (m_Menu)
+			m_Menu.Wheel(wheel);
+
+		return true;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! Mouse on the page arrows: a click turns the page.
+//! The wheel anywhere else on the reply box: up and down, as on a row.
+class RZ_TalkWheelEvents : ScriptedWidgetEventHandler
+{
+	protected RZ_TalkMenu m_Menu;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_TalkWheelEvents(RZ_TalkMenu menu)
+	{
+		m_Menu = menu;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnMouseWheel(Widget w, int x, int y, int wheel)
+	{
+		if (m_Menu)
+			m_Menu.Wheel(wheel);
+
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Mouse on the page arrows: a click turns the page, the wheel moves.
 class RZ_TalkPageEvents : ScriptedWidgetEventHandler
 {
 	protected RZ_TalkMenu m_Menu;
@@ -77,21 +113,37 @@ class RZ_TalkPageEvents : ScriptedWidgetEventHandler
 
 		return true;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnMouseWheel(Widget w, int x, int y, int wheel)
+	{
+		if (m_Menu)
+			m_Menu.Wheel(wheel);
+
+		return true;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
 class RZ_TalkMenu : RZ_MenuBase
 {
 	protected static const int ROWS = 5;	// replies on the screen at once (RZ_Dialogue.ROWS)
-	protected static const float SCROLL_SPEED = 1.5;	// what they say: share of the text a second at full stick
-	protected static const float READ_PER_CHAR = 0.05;	// their line's reading time: seconds a character
-	protected static const float READ_MIN = 2.5;
-	protected static const float READ_MAX = 9;
-	protected static const float CLICK_GUARD = 0.3;	// a click this soon after the replies show is the skip's own
+	protected static const float SCROLL_SPEED = 1.5;	// a box that overflows: share of the text a second at full stick
+	protected static const float TYPE_SPEED = 50;		// their line types out: characters a second
+	protected static const int ROW_CHARS = 80;			// characters in a row of the band, about (regular 30 across 1,226)
+	protected static const int BOX_ROWS = 3;			// rows in one box of what they say
+	protected static const float PRESS_GUARD = 0.15;	// A fires MenuSelect and RZ_TalkSkip together: one step a press
+	protected static const float CLICK_GUARD = 0.3;	// a press this soon after the replies show is the line's own
+	protected static const float BOUNCE_PX = 5;		// the end-of-line arrow's bounce
+	protected static const float BOUNCE_HZ = 1.2;
+	protected static const float PAGE_WAIT = 1;		// a page asked for by moving: no more moves till it comes, or this long
 	protected static const float FADE_TIME = 0.35;	// a reply you said fades over this
 	protected static const float FADE_TO = 0.3;
 	protected static const float ANSWER_WAIT = 2;	// no answer by then (the server didn't take it): the replies come back
 	protected static const float FILL_ALPHA = 0.16;	// the selected reply's fill, in the faction colour
+	protected static const int WANT_NONE = 0;		// the row to select when a page asked for by moving comes
+	protected static const int WANT_FIRST = 1;
+	protected static const int WANT_LAST = 2;
 
 	protected static RZ_TalkMenu s_Open;
 	protected static string s_sNode;
@@ -105,8 +157,11 @@ class RZ_TalkMenu : RZ_MenuBase
 	protected ref Color m_Accent;
 	protected ref RZ_TalkRowEvents m_RowEvents;
 	protected ref RZ_TalkPageEvents m_PageEvents;
+	protected ref RZ_TalkWheelEvents m_WheelEvents;
 	protected int m_iPage;					// this list's page, from 0 (the server's)
 	protected int m_iPages = 1;
+	protected int m_iWantRow;				// WANT_*: a page asked for by moving selects its first or last row
+	protected float m_fPageAskedAt;
 	protected ref array<int> m_aIds = {};
 	protected ref array<bool> m_aEnabled = {};
 	protected ref array<bool> m_aHeard = {};
@@ -116,8 +171,18 @@ class RZ_TalkMenu : RZ_MenuBase
 
 	// The two steps
 	protected bool m_bLine;					// step 1: their line on its own; else step 2, the replies
-	protected float m_fRead;				// this line's reading time
-	protected float m_fReadLeft;
+	protected ref array<string> m_aBoxes = {};	// what they say, a box at a time
+	protected int m_iBox;
+	protected string m_sBox;				// the box being typed
+	protected bool m_bTyping;
+	protected float m_fTyped;				// characters typed so far
+	protected int m_iTyped;
+	protected float m_fPressedAt;			// the last press that stepped the line (PRESS_GUARD)
+	protected float m_fBounce;
+	protected int m_iBounceY = -1;
+	protected float m_fMoreX;				// the arrow's place in the layout
+	protected float m_fMoreY;
+	protected int m_iKeys = -1;				// 1 on keys and mouse, 0 on a pad (the static footer's words)
 	protected string m_sLastSaid;
 	protected bool m_bSaid;					// a reply was said: the next node is their answer
 	protected float m_fSaidAge = -1;		// seconds since it was said (the fade); -1 when nothing waits
@@ -188,10 +253,80 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Their line's reading time: READ_PER_CHAR a character, READ_MIN to READ_MAX seconds.
-	static float ReadTime(string said)
+	//! What they said (breaks as ^) as boxes for the band: about BOX_ROWS rows of ROW_CHARS a box.
+	//! Short lines share a box (each on its own row) while they fit; a long one is cut at the last
+	//! sentence end that fits past the middle, else at the last space.
+	static void Boxes(string said, notnull array<string> boxes)
 	{
-		return Math.Clamp(said.Length() * READ_PER_CHAR, READ_MIN, READ_MAX);
+		boxes.Clear();
+		array<string> parts = {};
+		said.Split("^", parts, true);
+		string box = "";
+		int rows = 0;
+		int most = ROW_CHARS * BOX_ROWS;
+		foreach (string part : parts)
+		{
+			string rest = part.Trim();
+			while (rest.Length() > most)
+			{
+				int cut = CutAt(rest, most);
+				if (!box.IsEmpty())
+				{
+					boxes.Insert(box);
+					box = "";
+					rows = 0;
+				}
+
+				boxes.Insert(rest.Substring(0, cut).Trim());
+				rest = rest.Substring(cut, rest.Length() - cut).Trim();
+			}
+
+			if (rest.IsEmpty())
+				continue;
+
+			int need = (rest.Length() + ROW_CHARS - 1) / ROW_CHARS;
+			if (!box.IsEmpty() && rows + need > BOX_ROWS)
+			{
+				boxes.Insert(box);
+				box = "";
+				rows = 0;
+			}
+
+			if (box.IsEmpty())
+				box = rest;
+			else
+				box += "\n" + rest;
+
+			rows += need;
+		}
+
+		if (!box.IsEmpty())
+			boxes.Insert(box);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where to cut a long line within `most` characters: just after the last sentence end past the
+	//! middle, else at the last space, else at `most`.
+	protected static int CutAt(string text, int most)
+	{
+		string head = text.Substring(0, most);
+		int best = -1;
+		array<string> ends = {". ", "! ", "? ", ".\" ", "!\" ", "?\" "};
+		foreach (string mark : ends)
+		{
+			int at = head.LastIndexOf(mark);
+			if (at >= 0 && at + mark.Length() - 1 > best)
+				best = at + mark.Length() - 1;
+		}
+
+		if (best >= most / 2)
+			return best;
+
+		int space = head.LastIndexOf(" ");
+		if (space > 0)
+			return space;
+
+		return most;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -210,9 +345,20 @@ class RZ_TalkMenu : RZ_MenuBase
 		s_Open = this;
 		m_RowEvents = new RZ_TalkRowEvents(this);
 		m_PageEvents = new RZ_TalkPageEvents(this);
+		m_WheelEvents = new RZ_TalkWheelEvents(this);
 		RZ_UIW.OnClick(m_wRoot, "PagePrev", m_PageEvents);
 		RZ_UIW.OnClick(m_wRoot, "PageNext", m_PageEvents);
+		RZ_UIW.OnClick(m_wRoot, "ReplyPanel", m_WheelEvents);	// VERIFY: the reply box's Frame hears the wheel between the rows
 		RZ_UIW.Rotate(m_wRoot, "PageNextIcon", 180);	// the same arrow as PagePrevIcon, pointing down
+		RZ_UIW.Rotate(m_wRoot, "LineMore", 180);		// the end-of-line arrow, pointing down too
+		Widget more = RZ_UIW.Find(m_wRoot, "LineMore");
+		if (more)
+		{
+			vector at = FrameSlot.GetPos(more);
+			m_fMoreX = at[0];
+			m_fMoreY = at[1];
+		}
+
 		InputManager input = GetGame().GetInputManager();
 		input.AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
@@ -230,6 +376,18 @@ class RZ_TalkMenu : RZ_MenuBase
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Page") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Leave") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
+
+		// Step 1's footer: Skip while it types, Continue once it's all there (the WLib prompts show
+		// the key or the pad button by the device in use); without them, the static text says it
+		bool linePrompts = RZ_UIW.AddPrompt(m_wRoot, "LinePromptsType", "MenuSelect", "Skip");
+		linePrompts = RZ_UIW.AddPrompt(m_wRoot, "LinePromptsType", "MenuBack", "Leave") && linePrompts;
+		linePrompts = RZ_UIW.AddPrompt(m_wRoot, "LinePromptsRead", "MenuSelect", "Continue") && linePrompts;
+		linePrompts = RZ_UIW.AddPrompt(m_wRoot, "LinePromptsRead", "MenuBack", "Leave") && linePrompts;
+		if (!linePrompts)
+		{
+			RZ_UIW.Remove(RZ_UIW.Find(m_wRoot, "LinePromptsType"));
+			RZ_UIW.Remove(RZ_UIW.Find(m_wRoot, "LinePromptsRead"));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -274,38 +432,112 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A page asked for by moving hasn't come yet: moves wait for it (PAGE_WAIT at most).
+	protected bool PageComing()
+	{
+		return m_iWantRow != WANT_NONE && RZ_UIW.Now() - m_fPageAskedAt < PAGE_WAIT;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Up: the reply above; on the first, the page before (its last reply selected).
 	protected void OnUp(float value = 0, EActionTrigger reason = 0)
 	{
-		if (Choosing())
-			Select(Math.Max(0, m_iSelected - 1));
+		if (!Choosing() || PageComing())
+			return;
+
+		if (m_iSelected > 0)
+			Select(m_iSelected - 1);
+		else if (m_iPage > 0)
+			AskPage(-1);
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Down: the reply below; on the last, the next page (its first reply selected).
 	protected void OnDown(float value = 0, EActionTrigger reason = 0)
 	{
-		if (Choosing())
-			Select(Math.Min(Math.Max(0, m_aIds.Count() - 1), m_iSelected + 1));
+		if (!Choosing() || PageComing())
+			return;
+
+		int last = m_aIds.Count() - 1;
+		if (m_iSelected < last)
+			Select(m_iSelected + 1);
+		else if (m_iPage < m_iPages - 1)
+			AskPage(1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A or Enter: skips their line in step 1, says the selected reply in step 2.
+	//! The wheel on the reply box (RZ_TalkRowEvents, RZ_TalkWheelEvents, RZ_TalkPageEvents): up and
+	//! down, onto the next page and back too.
+	void Wheel(int wheel)
+	{
+		if (wheel > 0)
+			OnUp();
+		else if (wheel < 0)
+			OnDown();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Moving past the end of a page: the server sends the next (dir 1) or the one before (-1), and
+	//! its first or last reply is selected when it comes. Moving doesn't go round from either end.
+	protected void AskPage(int dir)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui || m_iPages <= 1)
+			return;
+
+		m_fPageAskedAt = RZ_UIW.Now();
+		if (dir < 0)
+		{
+			m_iWantRow = WANT_LAST;
+			ui.SendTalkPick(m_iSerial, RZ_Dialogue.PAGE_BACK);
+		}
+		else
+		{
+			m_iWantRow = WANT_FIRST;
+			ui.SendTalkPick(m_iSerial, RZ_Dialogue.MORE);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A or Enter: steps their line in step 1, says the selected reply in step 2.
 	protected void OnSelect(float value = 0, EActionTrigger reason = 0)
 	{
 		if (m_bLine)
 		{
-			ShowReplies();
+			StepLine();
 			return;
 		}
 
-		if (RZ_UIW.Now() - m_fRepliesAt >= CLICK_GUARD) // the same A press may have skipped the line (RZ_TalkSkip)
+		if (RZ_UIW.Now() - m_fRepliesAt >= CLICK_GUARD) // the same A press may have ended the line (RZ_TalkSkip)
 			Say(m_iSelected);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Space or a click (RZ_TalkSkip): skips their line; nothing in step 2.
+	//! Space, a click or A (RZ_TalkSkip): steps their line; nothing in step 2.
 	protected void OnSkip(float value = 0, EActionTrigger reason = 0)
 	{
 		if (m_bLine)
+			StepLine();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One press on their line: while it types, the rest of the box at once; then the next box;
+	//! after the last, the replies. Only a press moves it on.
+	protected void StepLine()
+	{
+		if (!m_bLine || m_bDone)
+			return;
+
+		float now = RZ_UIW.Now();
+		if (now - m_fPressedAt < PRESS_GUARD)
+			return;
+
+		m_fPressedAt = now;
+		if (m_bTyping)
+			EndTyping();
+		else if (m_iBox < m_aBoxes.Count() - 1)
+			ShowBox(m_iBox + 1);
+		else
 			ShowReplies();
 	}
 
@@ -333,6 +565,7 @@ class RZ_TalkMenu : RZ_MenuBase
 		if (!ui)
 			return;
 
+		m_iWantRow = WANT_NONE;
 		if (dir < 0)
 			ui.SendTalkPick(m_iSerial, RZ_Dialogue.PAGE_BACK);
 		else
@@ -340,8 +573,9 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every frame: step 1's reading time and its bar, the right stick on a long line, and the fade
-	//! of a reply you said.
+	//! Every frame: step 1's typing, its arrow's bounce and the right stick on a box that overflows,
+	//! and the fade of a reply you said. Light work: the text is set only when a character is added
+	//! and the arrow moved only when its pixel changes.
 	override void OnMenuUpdate(float tDelta)
 	{
 		super.OnMenuUpdate(tDelta);
@@ -354,10 +588,13 @@ class RZ_TalkMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void UpdateLine(float tDelta)
 	{
+		// The device changed: the static footer's words follow (the WLib prompts switch by themselves)
+		if (KeysInUse() != m_iKeys)
+			LinePrompts();
+
 		float stick = GetGame().GetInputManager().GetActionValue("RZ_TalkScroll");
 		if (Math.AbsFloat(stick) >= 0.2)
 		{
-			// Reading a long line: the stick scrolls it and holds the bar
 			ScrollLayoutWidget said = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "SaidScroll"));
 			if (said)
 			{
@@ -365,18 +602,60 @@ class RZ_TalkMenu : RZ_MenuBase
 				said.GetSliderPos(x, y);
 				said.SetSliderPos(x, Math.Clamp(y - stick * tDelta * SCROLL_SPEED, 0, 1)); // VERIFY: the stick reads + when pushed up, so up scrolls toward the top
 			}
-
-			return;
 		}
 
-		m_fReadLeft -= tDelta;
-		if (m_fReadLeft <= 0)
+		if (m_bTyping)
 		{
-			ShowReplies();
+			m_fTyped += tDelta * TYPE_SPEED;
+			int len = m_sBox.Length();
+			int n = Math.Min(len, RZ_Util.RoundToInt(Math.Floor(m_fTyped)));
+			if (n <= m_iTyped)
+				return;
+
+			// Never stop inside a character of more than one byte
+			while (n < len && !IsAscii(m_sBox.Substring(n, 1)))
+			{
+				n++;
+			}
+
+			m_iTyped = n;
+			if (n >= len)
+			{
+				EndTyping();
+				return;
+			}
+
+			RZ_UIW.SetText(m_wRoot, "TalkSaid", m_sBox.Substring(0, n));
 			return;
 		}
 
-		RZ_UIW.Progress(m_wRoot, "LineBar", 1 - m_fReadLeft / m_fRead);
+		// The arrow at the end of the box bounces, gently
+		m_fBounce += tDelta;
+		int bounce = RZ_Util.RoundToInt(BOUNCE_PX * Math.AbsFloat(Math.Sin(m_fBounce * Math.PI * BOUNCE_HZ)));
+		if (bounce != m_iBounceY)
+		{
+			m_iBounceY = bounce;
+			RZ_UIW.SetPos(RZ_UIW.Find(m_wRoot, "LineMore"), m_fMoreX, m_fMoreY + bounce);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! VERIFY: string.ToAscii gives 0-127 for a plain character and something else for a byte of a
+	//! longer UTF-8 one (the typing then runs on to the end of that character).
+	protected static bool IsAscii(string one)
+	{
+		int code = one.ToAscii();
+		return code >= 0 && code < 128;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 1 on keys and mouse, 0 on a pad.
+	protected static int KeysInUse()
+	{
+		if (GetGame().GetInputManager().IsUsingMouseAndKeyboard())
+			return 1;
+
+		return 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -431,7 +710,7 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A click on a reply row (RZ_TalkRowEvents) says it in step 2, but not the click that skipped
+	//! A click on a reply row (RZ_TalkRowEvents) says it in step 2, but not the click that ended
 	//! the line.
 	void SayRow(int index)
 	{
@@ -501,7 +780,7 @@ class RZ_TalkMenu : RZ_MenuBase
 	//------------------------------------------------------------------------------------------------
 	//! T|serial|faction|name|sub|said|page|pages, then R|id|label|tag|need|enabled|heard. Their answer
 	//! to a reply you said, or a new line, starts at step 1; a page turn or the [Admin] list stays on
-	//! the replies.
+	//! the replies (a page asked for by moving selects its first or last reply).
 	override protected void Redraw()
 	{
 		if (m_iParsed == s_iVersion)
@@ -521,13 +800,13 @@ class RZ_TalkMenu : RZ_MenuBase
 		RZ_UIW.Tint(m_wRoot, "TalkName", m_Accent);
 		RZ_UIW.SetText(m_wRoot, "TalkSub", RZ_UIText.Str(m_aHead, 4));
 		RZ_UIW.Tint(m_wRoot, "LineAccent", m_Accent);
-		RZ_UIW.Tint(m_wRoot, "LineBar", m_Accent);
+		RZ_UIW.Tint(m_wRoot, "LineMore", m_Accent);
+		RZ_UIW.Tint(m_wRoot, "LineCount", m_Accent);
 		RZ_UIW.Tint(m_wRoot, "ReplyPanelLine", m_Accent);
 		RZ_UIW.Tint(m_wRoot, "PagePrevIcon", m_Accent);
 		RZ_UIW.Tint(m_wRoot, "PageNextIcon", m_Accent);
 		RZ_UIW.Tint(m_wRoot, "PageText", m_Accent);
 		string said = RZ_UIText.Str(m_aHead, 5);
-		RZ_UIW.SetText(m_wRoot, "TalkSaid", Unbreak(said));
 		ShowPage();
 		BuildRows();
 		bool answer = m_bSaid || said != m_sLastSaid;
@@ -535,26 +814,103 @@ class RZ_TalkMenu : RZ_MenuBase
 		m_fSaidAge = -1;
 		m_sLastSaid = said;
 		if (answer && !said.IsEmpty())
+		{
+			m_iWantRow = WANT_NONE;
 			ShowLine(said);
-		else if (m_bLine)
+			return;
+		}
+
+		if (m_iWantRow == WANT_FIRST)
+			m_iSelected = 0;
+		else if (m_iWantRow == WANT_LAST)
+			m_iSelected = Math.Max(0, m_aIds.Count() - 1);
+
+		m_iWantRow = WANT_NONE;
+		if (m_bLine)
 			Style();
 		else
 			ShowReplies();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Step 1: their line on its own, its bar empty, from the top.
+	//! Step 1: their line on its own, from its first box.
 	protected void ShowLine(string said)
 	{
 		m_bLine = true;
-		m_fRead = ReadTime(said);
-		m_fReadLeft = m_fRead;
+		Boxes(said, m_aBoxes);
+		if (m_aBoxes.IsEmpty())
+			m_aBoxes.Insert("");
+
 		RZ_UIW.Show(m_wRoot, "ReplyPanel", false);
 		RZ_UIW.Show(m_wRoot, "LinePanel", true);
-		RZ_UIW.Progress(m_wRoot, "LineBar", 0);
+		ShowBox(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One box of what they say, typed from the start; "2 / 4" when there's more than one.
+	protected void ShowBox(int index)
+	{
+		m_iBox = index;
+		m_sBox = m_aBoxes[index];
+		m_bTyping = true;
+		m_fTyped = 0;
+		m_iTyped = 0;
+		RZ_UIW.SetText(m_wRoot, "TalkSaid", "");
+		RZ_UIW.Show(m_wRoot, "LineMore", false);
 		ScrollLayoutWidget box = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "SaidScroll"));
 		if (box)
 			box.SetSliderPos(0, 0);
+
+		int boxes = m_aBoxes.Count();
+		RZ_UIW.Show(m_wRoot, "LineCount", boxes > 1);
+		if (boxes > 1)
+			RZ_UIW.SetText(m_wRoot, "LineCount", string.Format("%1 / %2", index + 1, boxes));
+
+		if (m_sBox.IsEmpty())
+			EndTyping();
+		else
+			LinePrompts();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The box all there: the arrow at its end starts to bounce and a press goes on.
+	protected void EndTyping()
+	{
+		m_bTyping = false;
+		m_iTyped = m_sBox.Length();
+		RZ_UIW.SetText(m_wRoot, "TalkSaid", m_sBox);
+		m_fBounce = 0;
+		m_iBounceY = -1;
+		RZ_UIW.Show(m_wRoot, "LineMore", true);
+		LinePrompts();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step 1's footer by the state: Skip while it types, Continue after, Leave (the key or the pad
+	//! button by the device in use). Without the WLib prompts, the static text says the same.
+	protected void LinePrompts()
+	{
+		m_iKeys = KeysInUse();
+		Widget typing = RZ_UIW.Find(m_wRoot, "LinePromptsType");
+		Widget reading = RZ_UIW.Find(m_wRoot, "LinePromptsRead");
+		if (typing && reading)
+		{
+			typing.SetVisible(m_bTyping);
+			reading.SetVisible(!m_bTyping);
+			RZ_UIW.Show(m_wRoot, "LinePromptsText", false);
+			return;
+		}
+
+		string verb = "continue";
+		if (m_bTyping)
+			verb = "skip";
+
+		string text = "A: " + verb + " · B: leave";
+		if (m_iKeys == 1)
+			text = "Enter, Space or click: " + verb + " · Esc: leave";
+
+		RZ_UIW.SetText(m_wRoot, "LinePromptsText", text);
+		RZ_UIW.Show(m_wRoot, "LinePromptsText", true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -562,6 +918,7 @@ class RZ_TalkMenu : RZ_MenuBase
 	protected void ShowReplies()
 	{
 		m_bLine = false;
+		m_bTyping = false;
 		m_fRepliesAt = RZ_UIW.Now();
 		RZ_UIW.Show(m_wRoot, "LinePanel", false);
 		RZ_UIW.Show(m_wRoot, "ReplyPanel", true);
