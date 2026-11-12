@@ -94,13 +94,13 @@ class RZ_SeasonRuleSet
 
 	//------------------------------------------------------------------------------------------------
 	//! A half copy of a rule set (the cure finale's half rule sets, docs/FINALE.md "Next season"):
-	//! numbers half-way to neutral, switches off.
-	static RZ_SeasonRuleSet Half(RZ_SeasonRuleSet r)
+	//! numbers half-way to neutral, switches off. description: its own line for players ("" none).
+	static RZ_SeasonRuleSet Half(RZ_SeasonRuleSet r, string description)
 	{
 		if (!r)
 			return null;
 
-		RZ_SeasonRuleSet h = Make(r.m_sName + " (half)", r.m_sDescription);
+		RZ_SeasonRuleSet h = Make(r.m_sName + " (half)", description);
 		h.m_fStartInfectionMult = 1 + (r.m_fStartInfectionMult - 1) * 0.5;
 		h.m_iSafeTowns = r.m_iSafeTowns / 2;
 		h.m_fSpreadMult = 1 + (r.m_fSpreadMult - 1) * 0.5;
@@ -116,6 +116,31 @@ class RZ_SeasonRuleSet
 		h.m_iRedHandStrength = r.m_iRedHandStrength / 2;
 		h.m_iHalcyonStrength = r.m_iHalcyonStrength / 2;
 		return h;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A faction's rules at half, with why they carry over: "Some of Bastion's season carries over, at
+	//! half: a little more military kit about." why: a sentence before it ("" none).
+	static RZ_SeasonRuleSet HalfFor(int faction, string why)
+	{
+		string whose = "";
+		string what = "";
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: whose = "the Haven's"; what = "one more safe town"; break;
+			case RZ_EFaction.MILITARY: whose = "Bastion's"; what = "a little more military kit about"; break;
+			case RZ_EFaction.BANDITS: whose = "the Red Hand's"; what = "the Red Hand a little stronger on the roads"; break;
+			case RZ_EFaction.INSTITUTE: whose = "Halcyon's"; what = "infection a little lower, and a few more specials"; break;
+		}
+
+		if (whose.IsEmpty())
+			return null;
+
+		string line = string.Format("Some of %1 season carries over, at half: %2.", whose, what);
+		if (!why.IsEmpty())
+			line = why + " " + line;
+
+		return Half(ForWinner(faction), line);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -157,7 +182,8 @@ class RZ_SeasonRuleSet
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What last season's winner leaves behind (docs/LORE.md, "Endings"). Modest by design.
+	//! What last season's winner leaves behind (docs/LORE.md, "Endings"). Modest by design. The lines
+	//! say what the faction left, never how it handed the cure out (that's the terms').
 	static RZ_SeasonRuleSet ForWinner(int faction)
 	{
 		RZ_SeasonRuleSet r;
@@ -165,7 +191,7 @@ class RZ_SeasonRuleSet
 		{
 			case RZ_EFaction.SURVIVORS:
 			{
-				r = Make("The Haven's season", "Last season the Haven had the cure. It spread hand to hand, and some towns never quite lost it: more safe towns, one more safehouse.");
+				r = Make("The Haven's season", "Last season the Haven had the cure, and some towns never quite lost what it built: more safe towns, one more safehouse.");
 				r.m_iSafeTowns = 2;
 				r.m_iSafehouseBonus = 1;
 				r.m_iHavenStrength = 5;
@@ -173,7 +199,7 @@ class RZ_SeasonRuleSet
 			}
 			case RZ_EFaction.MILITARY:
 			{
-				r = Make("Bastion's season", "Last season Bastion had the cure, and kept it for those who complied. Stronger checkpoints, a curfew after dark, more military kit about.");
+				r = Make("Bastion's season", "Last season Bastion had the cure, and it hasn't let go of the roads since: stronger checkpoints, a curfew after dark, more military kit about.");
 				r.m_iRoadPostBonus = 1;
 				r.m_fBastionPostShare = 0.7;
 				r.m_bCurfew = true;
@@ -183,7 +209,7 @@ class RZ_SeasonRuleSet
 			}
 			case RZ_EFaction.BANDITS:
 			{
-				r = Make("The Red Hand's season", "Last season the Red Hand sold the cure. The roads are theirs: more roadblocks, and the black market open to anyone they know.");
+				r = Make("The Red Hand's season", "Last season the Red Hand had the cure. The roads are theirs: more roadblocks, and the black market open to anyone they know.");
 				r.m_iRoadPostBonus = 1;
 				r.m_fBastionPostShare = 0.3;
 				r.m_bOpenBlackMarket = true;
@@ -192,7 +218,7 @@ class RZ_SeasonRuleSet
 			}
 			case RZ_EFaction.INSTITUTE:
 			{
-				r = Make("Halcyon's season", "Last season Halcyon published the cure. Infection is lower everywhere, but the infected that are left have learned: more specials.");
+				r = Make("Halcyon's season", "Last season Halcyon had the cure. Infection is lower everywhere, but the infected that are left have learned: more specials.");
 				r.m_fStartInfectionMult = 0.8;
 				r.m_fSpreadMult = 0.9;
 				r.m_fSpecialMult = 1.15;
@@ -690,16 +716,26 @@ class RZ_Seasons
 			switch (m_iRulesTerms)
 			{
 				case 1:
-					mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.SURVIVORS)));
-					mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.INSTITUTE)));
+				{
+					string open = "Last season nobody's batch went out one each, free at the queue. A little of the Haven's season and Halcyon's carries over: one more safe town, infection a little lower, and a few more specials.";
+					mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.SURVIVORS), open));
+					mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.INSTITUTE), ""));
 					break;
+				}
 				case 2:
+				{
 					if (m_iRulesWinner >= 0)
-						mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(m_iRulesWinner)));
+					{
+						string side = string.Format("Last season nobody's batch went to %1, with a condition chalked on the crate.", RZ_Factions.GetNameInText(m_iRulesWinner));
+						mods.Add(RZ_SeasonRuleSet.HalfFor(m_iRulesWinner, side));
+					}
+
 					break;
+				}
 				case 3:
 				{
-					RZ_SeasonRuleSet market = RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.BANDITS));
+					string sold = "Last season nobody's batch was sold from a crate at the queue. The black market is open to anyone the Red Hand knows.";
+					RZ_SeasonRuleSet market = RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(RZ_EFaction.BANDITS), sold);
 					market.m_iRoadPostBonus = 0;
 					market.m_iRedHandStrength = 0;
 					market.m_bOpenBlackMarket = true;
@@ -714,7 +750,7 @@ class RZ_Seasons
 		}
 
 		if (m_iRulesHalf >= 0 && m_iRulesHalf != m_iRulesWinner)
-			mods.Add(RZ_SeasonRuleSet.Half(RZ_SeasonRuleSet.ForWinner(m_iRulesHalf)));
+			mods.Add(RZ_SeasonRuleSet.HalfFor(m_iRulesHalf, ""));
 	}
 
 	//------------------------------------------------------------------------------------------------
