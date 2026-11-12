@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{C8A50F873C1A0A34}Prefabs/ReforgerZ/People/RedHand/RZ_Leader_RedHand_Boss.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

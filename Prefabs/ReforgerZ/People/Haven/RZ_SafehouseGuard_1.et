@@ -2,6 +2,6 @@ SCR_AIGroup : "{89F63D74B915A25E}Prefabs/ReforgerZ/Haven/RZ_SafehouseGuard.et" {
  ID "0000000000000001"
  coords 0 0 0
  m_aUnitPrefabSlots {
-  "{F7D8023C72A66D9E}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Farmhand.et"
+  "{FCF8DAEE2BC83F1C}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Watch.et"
  }
 }

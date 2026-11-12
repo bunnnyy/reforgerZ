@@ -9,6 +9,9 @@ SCR_ChimeraCharacter : "{A3AF19F66C7846C1}Prefabs/ReforgerZ/Territory/RZ_Occupan
     LoadoutSlotInfo Jacket {
      Prefab "{C1FF82A0F6813A48}Prefabs/Characters/Uniforms/Jacket_EMS.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{B8F5E8DB8D633E31}Prefabs/Characters/Uniforms/Pants_EMS.et"
     }

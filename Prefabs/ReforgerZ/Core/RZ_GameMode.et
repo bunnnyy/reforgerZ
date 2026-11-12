@@ -180,13 +180,25 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      "{4A0259246C8386D0}Prefabs/ReforgerZ/People/Haven/RZ_CouncilHead_Brown.et" "{D4B620B153EF951F}Prefabs/ReforgerZ/People/Haven/RZ_CouncilHead_Denim.et" "{DF963B7451A73DE3}Prefabs/ReforgerZ/People/Haven/RZ_CouncilHead_Beret.et"
     }
     m_aBastionOutpostLooks {
-     "{8551CE838A052D98}Prefabs/ReforgerZ/People/Bastion/RZ_Outpost_Bastion_Long.et" "{1B72D06CB656A03C}Prefabs/ReforgerZ/People/Bastion/RZ_Outpost_Bastion_Woodland.et"
+     "{8A036173D6365786}Prefabs/ReforgerZ/People/Bastion/RZ_Outpost_Bastion_Patrol.et" "{D45C9AB884F6CE4B}Prefabs/ReforgerZ/People/Bastion/RZ_Outpost_Bastion_Helmet.et"
     }
     m_aRedHandOutpostLooks {
      "{2A7D57883A85BE9B}Prefabs/ReforgerZ/People/RedHand/RZ_Outpost_RedHand_Balaclava.et" "{99A9AE5F2C6F9358}Prefabs/ReforgerZ/People/RedHand/RZ_Outpost_RedHand_Tracksuit.et"
     }
     m_aHalcyonOutpostLooks {
      "{DB59F1C05F7D6657}Prefabs/ReforgerZ/People/Halcyon/RZ_Outpost_Halcyon_Paramedic.et" "{C2BCDCB0D2A10607}Prefabs/ReforgerZ/People/Halcyon/RZ_Outpost_Halcyon_Coat.et"
+    }
+    m_aHavenLeaderLooks {
+     "{CC444022A0E42D02}Prefabs/ReforgerZ/People/Haven/RZ_Leader_Haven_Denim.et" "{754863D2B04289AD}Prefabs/ReforgerZ/People/Haven/RZ_Leader_Haven_Knit.et"
+    }
+    m_aBastionLeaderLooks {
+     "{FDA05C9CCA23605D}Prefabs/ReforgerZ/People/Bastion/RZ_Leader_Bastion_Patrol.et" "{6561DAB8AD940EEB}Prefabs/ReforgerZ/People/Bastion/RZ_Leader_Bastion_Rolled.et"
+    }
+    m_aRedHandLeaderLooks {
+     "{C8A50F873C1A0A34}Prefabs/ReforgerZ/People/RedHand/RZ_Leader_RedHand_Boss.et" "{D0F5B2757D2B9228}Prefabs/ReforgerZ/People/RedHand/RZ_Leader_RedHand_Beret.et"
+    }
+    m_aHalcyonLeaderLooks {
+     "{0A8618B4545C25FF}Prefabs/ReforgerZ/People/Halcyon/RZ_Leader_Halcyon_Coat.et" "{00333C4058F900AA}Prefabs/ReforgerZ/People/Halcyon/RZ_Leader_Halcyon_Black.et"
     }
    }
    m_TerritorySettings RZ_TerritorySettings "{6AD67DC2B6157AD1}" {
@@ -214,13 +226,13 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      "{0B48101F242417E5}Prefabs/ReforgerZ/People/Haven/RZ_Occupant_Haven_Farmer.et" "{97790C6BB5E668B5}Prefabs/ReforgerZ/People/Haven/RZ_Occupant_Haven_Dungarees.et" "{AA60A021FFFACCD3}Prefabs/ReforgerZ/People/Haven/RZ_Occupant_Haven_Mechanic.et" "{782BFD88004492A0}Prefabs/ReforgerZ/People/Haven/RZ_Occupant_Haven_Fisher.et" "{15A0664485622680}Prefabs/ReforgerZ/People/Haven/RZ_Occupant_Haven_Builder.et" "{3A120927EA063D28}Prefabs/ReforgerZ/People/Haven/RZ_Occupant_Haven_Carer.et"
     }
     m_aBastionOccupantLooks {
-     "{F233B3385FCB62F9}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Rolled.et" "{87C37DF9BAB78915}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Night.et" "{98B28AD8458EF366}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Raincoat.et" "{F1CE44538B4F72F8}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Long.et" "{E9E43861BDF142D3}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_OffDuty.et"
+     "{F233B3385FCB62F9}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Rolled.et" "{44825DBE2200CA90}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Boonie.et" "{98B28AD8458EF366}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Raincoat.et" "{076BC0A021C2C7AE}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Jacket.et" "{E9E43861BDF142D3}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_OffDuty.et"
     }
     m_aRedHandOccupantLooks {
      "{89F00CDB7FDB488D}Prefabs/ReforgerZ/People/RedHand/RZ_Occupant_RedHand_Balaclava.et" "{FFF42566C4CA96AA}Prefabs/ReforgerZ/People/RedHand/RZ_Occupant_RedHand_Tracksuit.et" "{3568070AEB2B8AD9}Prefabs/ReforgerZ/People/RedHand/RZ_Occupant_RedHand_Sweatshirt.et" "{DB4155A922A18097}Prefabs/ReforgerZ/People/RedHand/RZ_Occupant_RedHand_ThreeHole.et" "{F1CC47B4B72C98FF}Prefabs/ReforgerZ/People/RedHand/RZ_Occupant_RedHand_RedTop.et"
     }
     m_aHalcyonOccupantLooks {
-     "{237F44E7FF8B8D41}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Beak.et" "{6AF7D120DD30D55A}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_BlackSuit.et" "{D46AF85C0A91C8A6}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Technician.et" "{3BA9C570A47400FB}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Paramedic.et" "{A95184ABD7EEAF2D}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Researcher.et" "{050CFAEBADAA6DB0}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_HiVis.et"
+     "{237F44E7FF8B8D41}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Beak.et" "{44BD3930646315CC}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Clerk.et" "{D46AF85C0A91C8A6}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Technician.et" "{3BA9C570A47400FB}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Paramedic.et" "{A95184ABD7EEAF2D}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Researcher.et" "{050CFAEBADAA6DB0}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_HiVis.et"
     }
    }
    m_SupplySettings RZ_SupplySettings "{6AD67DC2B70C1892}" {
@@ -2083,7 +2095,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     "{1DAEF67E262F830B}Prefabs/ReforgerZ/People/Haven/RZ_QM_Haven_Storekeeper.et" "{C8AC4A6A84738DB3}Prefabs/ReforgerZ/People/Haven/RZ_QM_Haven_Dungarees.et" "{1D881F6FA43F1665}Prefabs/ReforgerZ/People/Haven/RZ_QM_Haven_Raincoat.et"
    }
    m_aQuartermasterBastionLooks {
-    "{0A44AF39246D795C}Prefabs/ReforgerZ/People/Bastion/RZ_QM_Bastion_Long.et" "{9C5B590370B0DB27}Prefabs/ReforgerZ/People/Bastion/RZ_QM_Bastion_Woodland.et" "{50ECF106E3394BDD}Prefabs/ReforgerZ/People/Bastion/RZ_QM_Bastion_Gloves.et"
+    "{762166E11A110E81}Prefabs/ReforgerZ/People/Bastion/RZ_QM_Bastion_Patrol.et" "{E1A928D409B0C985}Prefabs/ReforgerZ/People/Bastion/RZ_QM_Bastion_Rolled.et" "{50ECF106E3394BDD}Prefabs/ReforgerZ/People/Bastion/RZ_QM_Bastion_Gloves.et"
    }
    m_aQuartermasterRedHandLooks {
     "{EF596016A4827B89}Prefabs/ReforgerZ/People/RedHand/RZ_QM_RedHand_Cap.et" "{D60F1049DF19C695}Prefabs/ReforgerZ/People/RedHand/RZ_QM_RedHand_Balaclava.et" "{D30A3617C637D871}Prefabs/ReforgerZ/People/RedHand/RZ_QM_RedHand_Beret.et"

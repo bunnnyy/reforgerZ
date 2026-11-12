@@ -84,7 +84,7 @@ Workshop's; the server downloads their own dependencies (Functional Knives, IH_B
 | Mod | Workshop ID | MB | For | Note |
 |---|---|---|---|---|
 | SBBG - Wrecks | `6529635700E0B228` | 3.0 | all | Vanilla wrecks made placeable (UAZ-469 and UAZ-452, Ural and M923 cargo, an M997 ambulance, a BRDM, helicopter parts): blocked roads, the column, ambush sites |
-| Lamas vanilla plus gear pack | `64FD478E9982027A` | 4.2 | Bastion | Worn, era-correct US kit: dark BDUs and M65 trousers, a night-camo jacket, a raincoat, patrol and woodland caps, a UN-blue PASGT helmet |
+| Lamas vanilla plus gear pack | `64FD478E9982027A` | 4.2 | Bastion | Era-correct US kit beside vanilla's olive M65: an M1 helmet without its strap, a US raincoat; the dark patrol cap a search can turn up |
 | BanditGear | `66B523AD189F3233` | 101.9 | Red Hand | Dirty scavenged clothing, balaclavas, gloves, Molotovs, spray-painted cars |
 | BasicHazmatSuit | `68AB4B626C8AB069` | 49.3 | Halcyon | Hooded hazmat suit with a gas mask in three colours. APL-ND |
 | MedicalAccessories | `66052DD2B655BF72` | 12.0 | Halcyon, Haven | Medical face mask and nitrile gloves |

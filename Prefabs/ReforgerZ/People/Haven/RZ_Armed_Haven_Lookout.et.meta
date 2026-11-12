@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{48BF2A6CB5976E88}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Lookout.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

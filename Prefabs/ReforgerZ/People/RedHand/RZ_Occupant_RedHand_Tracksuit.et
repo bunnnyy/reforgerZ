@@ -9,11 +9,17 @@ SCR_ChimeraCharacter : "{EB21A65C09239EBE}Prefabs/ReforgerZ/Territory/RZ_Occupan
     LoadoutSlotInfo Jacket {
      Prefab "{7CC37DEB059F14CE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Black.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{AC7F9BCA3DA1002D}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Black.et"
     }
     SCR_FeetLoadoutSlotInfo Boots {
      Prefab "{CABF701DF5212647}Prefabs/Characters/Footwear/Sneakers/Sneakers_Dirty.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab ""
     }
    }
   }

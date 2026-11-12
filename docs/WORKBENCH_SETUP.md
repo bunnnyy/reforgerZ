@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **324 prefab fields**: 46 on `RZ_GameModeComponent`, 267 in its settings objects, and 11 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **328 prefab fields**: 46 on `RZ_GameModeComponent`, 271 in its settings objects, and 11 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -842,8 +842,8 @@ still to do:
 
 | Prefabs | Built on | What's off, and what to do |
 |---|---|---|
-| The 23 AI groups | Vanilla FIA and US soldier groups (FIA fire team, sentry team, medical section, sharpshooter team; US sentry and light fire teams). Their faction (`m_faction`) was set by hand, as their names say | Members wear soldiers' kit and carry rifles: the escort civilians are armed FIA riflemen, the convicts carry rifles. Sizes are only roughly right. Give each group its own members |
-| Single characters: quartermasters, leaders, occupants, wanderers | Vanilla civilian, US and FIA characters. Their faction affiliation was set afterwards, as their names say | They keep their vanilla kits: set them by hand. Halcyon's people are FIA medics; the kid is an adult |
+| The 23 AI groups | Vanilla FIA and US soldier groups (FIA fire team, sentry team, medical section, sharpshooter team; US sentry and light fire teams). Their faction (`m_faction`) was set by hand, as their names say | 18 of them have the faction's looks as members ([People's looks](#peoples-looks-the-variant-prefabs)): their weapons are the vanilla soldiers' the looks are built on. The rest keep vanilla members: the escort civilians, the bounty target, the rival survivors and the sniper wear FIA kit, the convicts carry rifles in FIA kit (no prison clothes yet). Sizes are only roughly right |
+| Single characters: quartermasters, leaders, occupants, wanderers | Vanilla civilian, US and FIA characters. Their faction affiliation was set afterwards, as their names say | The faction people's slots are dressed by their looks; the base prefabs keep their vanilla kits for a slot whose list is empty (Halcyon's are FIA medics). Wanderers keep vanilla civilian kit; the kid is an adult |
 | `RZ_Antidote.et`; `RZ_Stabiliser.et` and `RZ_CutDose.et` | Saline; morphine, with their consumable effects set to `RZ_ConsumableAntidote` and `RZ_ConsumableMed` | They look like saline and morphine |
 | `RZ_Molotov.et`, `RZ_Bottle.et`, `RZ_TinRattle.et` | Smoke grenades with the beer bottle mesh (the tin can mesh for the tin), the smoke cleared, their own names | They throw as grenades do; a real throwable item is the fix |
 | `RZ_Explosion.et` | The vanilla mortar effect module (`EffectModule_MortarShell`) | A real HE round: it damages what's near it. **Make it look and sound only, no damage.** The scripts decide every harm themselves, as data (Fire Mission's strike, the infection Bastion Shelling takes off, Gas Station Fire's kills), and the same prefab goes off where players stand by design: the convoy's tripwire at the crates, the bridge charges they set, the burning helicopter they watch, Bastion's guns on the farm. Rebuild it the way `Perimeter/RZ_WarningShot.et` is built: base `Prefabs/Weapons/Warheads/Warhead_Base.et`; a `TimerTriggerComponent` (TIMER 0.05) whose PROJECTILE_EFFECTS hold one `SpawnParticleEffect` with `Particles/Weapon/Blast_Mortar_Dirt.ptc` and the explosion's sound event; a `SoundComponent` with `Sounds/Weapons/Ammo/MortarShells/Weapons_Ammo_MortarShell_8xmm_HE.acp` (use the event name that file's explosion plays); `SignalsManagerComponent` and `RplComponent`; no explosion damage effect and no `HitEffectComponent` damage. Check in play: a character 3 m from one, and a car 5 m from one, are untouched |
@@ -1152,24 +1152,36 @@ without AI today: they keep standing where they spawn until they're based on an 
 
 ### People's looks: the variant prefabs
 
-How looks are picked is in [DESIGN.md](DESIGN.md#peoples-looks). The variants are generated, not
-hand-made: edit the tables in `tools/people_looks.py` and run `py tools/people_looks.py` (it
-rewrites every look and its `.meta` under `Prefabs/ReforgerZ/People/<faction>/`; `--arrays` prints
-the game mode's lists). It stops if any clothing ResourceName is missing from the resource index
-(`$profile:RZ_ResourceIndex.txt`, [PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)). A new
-prefab's GUID comes from its path, so re-running keeps them.
+How looks are picked, and how each faction and role dresses, is in [DESIGN.md](DESIGN.md#peoples-looks).
+The variants are generated, not hand-made: edit the tables in `tools/people_looks.py` and run
+`py tools/people_looks.py`. It rewrites every look and its `.meta` under
+`Prefabs/ReforgerZ/People/<faction>/`, deletes a look dropped from the tables, and rewrites the
+members of the 18 faction group prefabs below; `--arrays` prints the game mode's lists. It stops if
+any clothing ResourceName is missing from the resource index (`$profile:RZ_ResourceIndex.txt`,
+[PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or if a look leaves a garment you can see
+(Hat, Jacket, Pants, Boots, ArmoredVest, HandWear) to its parent. A new prefab's GUID comes from its
+path, so re-running keeps them. 109 looks: 76 characters and 33 group mixes.
 
 | Kind | Inherits | Per faction | Fills |
 |---|---|---|---|
 | `RZ_Occupant_<Faction>_<look>` | the faction's occupant | Haven 6, Bastion 5, Red Hand 5, Halcyon 6 | **Territory > <faction> occupant looks**; the Haven's also join **Haven > Occupant prefabs** |
-| `RZ_Armed_<Faction>_<look>` | the vanilla soldier the faction's guard group spawns (FIA AC, FIA Partisan, US Rifleman, US Rifleman variant 1) | 5 each | members of the group looks below (no slot of their own) |
+| `RZ_Armed_<Faction>_<look>` | a vanilla soldier, for his weapon: FIA AC (the Haven), US Rifleman and US Team Leader (Bastion), FIA Partisan (the Red Hand), US Rifleman variant 1 (Halcyon) | Haven 8, Bastion 6, Red Hand 5, Halcyon 5 | members of the group looks and the dressed groups below (no slot of their own) |
+| `RZ_Staff_Halcyon_Researcher` | the vanilla FIA medic | 1 | the member of the escorted scientist |
 | `RZ_QM_<Faction>_<look>` | the faction's quartermaster | 3 each | **Factions > <faction> quartermaster looks** |
 | `RZ_CouncilHead_<look>`, `RZ_Outpost_<Faction>_<look>` | the council head, the faction's outpost leader | 3; 2 each | **Leaders > Council head looks**, **<faction> outpost looks** |
+| `RZ_Leader_<Faction>_<look>` | the faction's stronghold leader | 2 each | **Leaders > <faction> leader looks** |
 | `RZ_Guard_<Faction>_<n>` | the faction's guard group | 3 each | **Territory > <faction> guard looks** (and so camp life's extras) |
 | `RZ_SafehouseGuard_<n>` | the safehouse guard | 3 | **Haven > Guard looks** |
 | `RZ_BastionPostCrew_<n>`, `RZ_RedHandPostCrew_<n>` | the road-post crew | 3 each | **Checkpoints > <faction> crew looks** |
 | `RZ_TruckCrew_<Faction>_<n>` | the faction's truck crew | 2 each | **Supply > <faction> crew looks** |
 | `RZ_BastionHunters_<n>`, `RZ_RedHandHunters_<n>` | the hunter squad | 2 each | **Factions > <faction> hunter squad looks** |
+
+**The dressed groups.** The tool also writes looks as the members of these group prefabs, so they
+are dressed wherever they spawn as themselves: `Territory/RZ_Guard_<Faction>`, `Haven/RZ_SafehouseGuard`,
+`Factions/RZ_BastionPostCrew`, `RZ_RedHandPostCrew`, `RZ_BastionHunters`, `RZ_RedHandHunters`,
+`Supply/RZ_TruckCrew_<Faction>`, and the missions' `RZ_BastionSquad`, `RZ_EscortSoldier`,
+`RZ_RedHandGroup`, `RZ_EscortScientist` and `RZ_SurvivorGroup` (its two civilians stay vanilla). Only
+`m_aUnitPrefabSlots` changes; the faction and the rest of each prefab are kept.
 
 A look overrides clothing slots only: **Hat**, **Jacket**, **Pants**, **Boots**, **Back**, **Vest**,
 **ArmoredVest**, **HandWear**, and Zelik's Character slots **Face** (balaclavas, the hazmat and
@@ -1178,11 +1190,12 @@ BanditGear, BasicHazmatSuit, MedicalAccessories and Domins, so it loads with the
 ([MOD_STACK.md](MOD_STACK.md#the-camps-look)). A suit or overalls that cover the legs empty
 **Pants**. Where the parent packs starting items into a garment the look replaces, the look points
 those item lists (`ItemsInitConfigurationItem` `TargetStorage`) at the new garment, or at the pack or
-vest when the garment is gone. Halcyon's truck crews are now its armed looks rather than medics.
+vest when the garment is gone. Armed looks keep the parent's **Vest** (its magazines are in it).
 
 **Test it.** Open one look of each kind in Workbench and check it shows the clothes in its name and
-no warning in the log (a wrong slot name, a garment that won't attach); then the play-test
-checklist, *People's looks*.
+no warning in the log (a wrong slot name, a garment that won't attach); open `RZ_Guard_Halcyon.et`
+and `RZ_BastionSquad.et` and check their members are the looks; then the play-test checklist,
+*People's looks*.
 
 ### Traces: the Workbench spike (phase 0)
 
@@ -3625,9 +3638,15 @@ editor's time of day)
 
 **People's looks** ([DESIGN.md](DESIGN.md#peoples-looks))
 - [ ] At a holding of each faction no two guards or named people wear the same clothes, and each
-  faction still reads as itself (the Haven in work clothes, Bastion in US kit, the Red Hand in
-  balaclavas and tracksuits, Halcyon in masks and hazmat). Masks, balaclavas and the gas mask sit on
+  faction still reads as itself (the Haven in work clothes, Bastion in olive, the Red Hand in
+  scavenged clothes with red, Halcyon in masks and hazmat). Masks, balaclavas and the gas mask sit on
   the face, not floating; no hazmat suit shows trousers through it.
+- [ ] The guards at one place look like a unit: Halcyon's lab all in black hooded hazmat (the mask
+  differs), Bastion's gate all in olive M65 with flak vests, the Haven's watch all in green
+  oilskins, every Red Hand guard with something red. Nobody of any faction in a US Army woodland
+  helmet, flak vest or trousers, or in the FIA's beret and dirty turtleneck: check the lab's guards
+  and extras, a supply truck's crew, the stronghold leaders (Halcyon's director in a suit and mask)
+  and a mission's groups (Bust Out's Bastion squad, a Red Hand group, the escorted scientist).
 - [ ] Leave (past 300 m) and come back: each named person wears the same look as before.
 - [ ] A guard in each faction's looks fights through more than one magazine (his starting items
   moved with his clothes); a Haven guard in overalls and a Halcyon guard in hazmat still have theirs.

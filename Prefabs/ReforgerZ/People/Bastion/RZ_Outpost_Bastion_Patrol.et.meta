@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{8A036173D6365786}Prefabs/ReforgerZ/People/Bastion/RZ_Outpost_Bastion_Patrol.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

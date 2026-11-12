@@ -3,11 +3,23 @@ SCR_ChimeraCharacter : "{70CB458FA07F01CC}Prefabs/ReforgerZ/Leaders/RZ_CouncilHe
  components {
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
     LoadoutSlotInfo Jacket {
      Prefab "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab ""
     }
    }
   }

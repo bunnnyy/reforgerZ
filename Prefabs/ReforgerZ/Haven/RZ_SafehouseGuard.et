@@ -3,6 +3,6 @@ SCR_AIGroup : "{6E725D44CA973C24}Prefabs/Groups/INDFOR/Group_FIA_SentryTeam.et" 
  coords 0 0 0
  m_faction "SURV"
  m_aUnitPrefabSlots {
-  "{B4977616CD19191A}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Scout.et"
+  "{FCF8DAEE2BC83F1C}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Watch.et"
  }
 }

@@ -9,8 +9,17 @@ SCR_ChimeraCharacter : "{49D699E428FAE3A3}Prefabs/ReforgerZ/Factions/RZ_QM_Haven
     LoadoutSlotInfo Jacket {
      Prefab "{CD87BF4D0F940AB3}Prefabs/Characters/Uniforms/Shirt/Shirt.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{65B7093231FBF67E}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_LightBrown.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab ""
     }
    }
   }

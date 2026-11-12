@@ -1,0 +1,41 @@
+SCR_ChimeraCharacter : "{58F27F42964ACC7A}Prefabs/ReforgerZ/Leaders/RZ_Leader_Halcyon.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Face {
+     Prefab "{C07A52D13353AB2F}Prefabs/Clothing/ZEL_FaceClothing_Base.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{E652D625A46A00FC}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Grey_V1.et"
+    }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{401072A652DD9849}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_grey_V1.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{A38C67B3E56B7D26}Prefabs/Characters/Footwear/paramedic_boots.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{D90A181625AD1F9A}Prefabs/Characters/Handwear/Gloves_White/Medical_Gloves_White_Base.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Jacket/Jacket_Suit_01_Grey_V1.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     TargetStorage "Pants/Pants_Suit_01_grey_V1.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

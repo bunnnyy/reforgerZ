@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{00333C4058F900AA}Prefabs/ReforgerZ/People/Halcyon/RZ_Leader_Halcyon_Black.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

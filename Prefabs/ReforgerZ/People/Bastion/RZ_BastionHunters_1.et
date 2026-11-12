@@ -2,6 +2,6 @@ SCR_AIGroup : "{291AFE2B1958D55B}Prefabs/ReforgerZ/Factions/RZ_BastionHunters.et
  ID "0000000000000001"
  coords 0 0 0
  m_aUnitPrefabSlots {
-  "{6AE2C77AADACEDFF}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Scrim.et" "{3429B967D0A385CB}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_M1.et" "{8DC7BBBFA435ACA7}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Cap.et" "{0B5358AAD0F02E93}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Night.et"
+  "{868452B27B88421E}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Lead.et" "{F65038399151D9BC}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Boonie.et" "{20BAAB10425B9523}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Patrol.et" "{2BB4043E2C03EAB3}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Helmet.et"
  }
 }

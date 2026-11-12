@@ -12,8 +12,14 @@ SCR_ChimeraCharacter : "{A3AF19F66C7846C1}Prefabs/ReforgerZ/Territory/RZ_Occupan
     LoadoutSlotInfo Jacket {
      Prefab "{27CD85E26D10930F}Prefabs/Characters/Uniforms/Suit_Hazmat/Suit_Hazmat_v2_HiVis.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab ""
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
     }
     LoadoutSlotInfo HandWear {
      Prefab "{4B4ED1DF956F00D9}Prefabs/Characters/Handwear/Gloves_yellow/Medical_Gloves_yellow_Base.et"

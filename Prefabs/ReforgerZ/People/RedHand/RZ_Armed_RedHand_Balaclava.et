@@ -4,7 +4,7 @@ SCR_ChimeraCharacter : "{254F12535581E4C2}Prefabs/Characters/Factions/INDFOR/FIA
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Hat {
-     Prefab ""
+     Prefab "{D8D9EE7F3966589E}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et"
     }
     LoadoutSlotInfo Face {
      Prefab "{C500301CF7AE1ACB}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Black.et"
@@ -12,8 +12,17 @@ SCR_ChimeraCharacter : "{254F12535581E4C2}Prefabs/Characters/Factions/INDFOR/FIA
     LoadoutSlotInfo Jacket {
      Prefab "{DB053443800A3FCB}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_01.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{21DC09217E13C1C7}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Black.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{7277FBDCDC013DDF}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_Dirty.et"
     }
    }
   }

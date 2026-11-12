@@ -1,0 +1,38 @@
+SCR_ChimeraCharacter : "{107CC0E8F3111405}Prefabs/ReforgerZ/Leaders/RZ_Leader_RedHand.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{5D7350496AEA24C8}Prefabs/Characters/HeadGear/Hat_RadiovkaBeret_01/Hat_RadiovkaBeret_01_black_Dirty.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{3DA87A330B897C58}Prefabs/Characters/Uniforms/Sweatshirt/Sweatshirt_Red.et"
+    }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{21DC09217E13C1C7}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Black.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{CDDA2A133111E1A6}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_Black.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5F28BB79AC280275}" {
+     TargetStorage "Jacket/Sweatshirt_Red.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Pants/Pants_Cargo_Black.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

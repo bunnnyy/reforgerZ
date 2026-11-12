@@ -7,10 +7,22 @@ SCR_ChimeraCharacter : "{9503CB9B3463BA1E}Prefabs/Characters/Factions/INDFOR/FIA
      Prefab "{A22C976003AA5BA3}Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et"
     }
     LoadoutSlotInfo Jacket {
-     Prefab "{EB0D74A43F74B522}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_strippedShirt.et"
+     Prefab "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et"
+    }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{0B1F0174869E0351}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
     }
     LoadoutSlotInfo Back {
      Prefab "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{8266820FFDE17477}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_01.et"
     }
    }
   }
@@ -20,7 +32,13 @@ SCR_ChimeraCharacter : "{9503CB9B3463BA1E}Prefabs/Characters/Factions/INDFOR/FIA
      TargetStorage "Back/Backpack_Veshmeshok.et"
     }
     ItemsInitConfigurationItem "{608AC3CC37F93DCA}" {
-     TargetStorage "Jacket/Jacket_Denim_01_strippedShirt.et"
+     TargetStorage "Jacket/Jacket_Raincoat_01_green.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     TargetStorage "Pants/Pants_Fisherman_01_green.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Pants/Pants_Fisherman_01_green.et"
     }
    }
   }

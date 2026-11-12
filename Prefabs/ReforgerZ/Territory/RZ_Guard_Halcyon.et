@@ -3,6 +3,6 @@ SCR_AIGroup : "{3BF36BDEEB33AEC9}Prefabs/Groups/BLUFOR/Group_US_SentryTeam.et" {
  coords 0 0 0
  m_faction "INST"
  m_aUnitPrefabSlots {
-  "{EA158B6EB6A24B4B}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Rifleman_Variant_1.et" "{EA158B6EB6A24B4B}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Rifleman_Variant_1.et"
+  "{069B87651206685C}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_BlackSuit.et" "{AD14B5FEB08CEBCE}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_Hood.et"
  }
 }
