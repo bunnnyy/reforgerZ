@@ -441,7 +441,8 @@ visit the medic; calling one out isn't built.
 
 - **Hunter squads** ✅: every 10 minutes, Bastion or the Red Hand sends an AI group 400 m from
   a player they Hunt, toward where they were. It's hostile to that player within 800 m. At most
-  two squads are after one player at a time. When that player dies, their squads stand down
+  two squads are after one player at a time, and four on the server. A squad only appears where
+  no player within 700 m has a clear line over the terrain to it (six tries; else none this round). When that player dies, their squads stand down
   (walk off, or vanish if nobody is near): a new life starts with nobody on its trail.
 - **Bounties** ✅: Kill on Sight with any faction puts a public bounty on you, announced every
   10 minutes with a rough location (one notice, however many factions want you). One bounty is paid per death, only to the player who killed

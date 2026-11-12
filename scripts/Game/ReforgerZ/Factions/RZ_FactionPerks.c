@@ -80,6 +80,8 @@ class RZ_FactionPerks
 	protected static const float NEIGHBOUR_INTERVAL = 600;
 	protected static const float REQUISITION_COOLDOWN = 3600;
 	protected static const float HUNTER_DISTANCE = 400;
+	protected static const int MAX_SQUADS_SERVER = 4;			// hunter squads out on the whole server at once
+	protected static const float HUNTER_SIGHT = 700;			// no squad appears where a player this close could see it
 	protected static const float HUNTER_LIFETIME = 900;
 	protected static const float HUNTER_HOSTILE_RADIUS = 800;	// the squad is hostile to its target within this distance
 	protected static const int BOUNTY_FAVOR = 50;
@@ -641,11 +643,26 @@ class RZ_FactionPerks
 	{
 		// Squads only go when nobody is near them, so a target who keeps fighting could gather
 		// more and more of them: at most two after one player at a time
-		if (CountHuntersAfter(playerId) >= MAX_SQUADS_PER_TARGET)
+		// Their own limits (docs/INFECTED.md, "The one body budget"): four on the server at once
+		if (CountHuntersAfter(playerId) >= MAX_SQUADS_PER_TARGET || CountHuntersAfter(-1) >= MAX_SQUADS_SERVER)
 			return;
 
+		// Out of every player's sight over the terrain: none in six tries, none this round
 		vector at = target.GetOrigin();
-		vector from = RZ_Mission.LandPointNear(at, HUNTER_DISTANCE * 0.9, HUNTER_DISTANCE * 1.1);
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		vector from;
+		bool hidden = false;
+		for (int i = 0; i < 6 && !hidden; i++)
+		{
+			from = RZ_Mission.LandPointNear(at, HUNTER_DISTANCE * 0.9, HUNTER_DISTANCE * 1.1);
+			hidden = !SeenFrom(from, players);
+		}
+
+		if (!hidden)
+			return;
+
 		IEntity squad = RZ_Util.SpawnPrefab(prefab, from);
 		if (!squad)
 			return;
@@ -669,16 +686,30 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Squads out after this player; -1: on the whole server.
 	protected int CountHuntersAfter(int playerId)
 	{
 		int n = 0;
 		foreach (int i, int target : m_aHunterTarget)
 		{
-			if (target == playerId && m_aHunters[i])
+			if ((playerId < 0 || target == playerId) && m_aHunters[i])
 				n++;
 		}
 
 		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A player within HUNTER_SIGHT has a clear line over the terrain to pos.
+	protected static bool SeenFrom(vector pos, array<IEntity> players)
+	{
+		foreach (IEntity p : players)
+		{
+			if (p && RZ_Util.DistXZ(p.GetOrigin(), pos) < HUNTER_SIGHT && !RZ_InfectedBodies.TerrainBlocks(p.GetOrigin(), pos))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

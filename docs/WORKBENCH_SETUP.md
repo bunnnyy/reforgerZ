@@ -1948,7 +1948,7 @@ Warnings worth acting on:
 | `No checkpoint barricade prefab set: road checkpoints are off (the roads give N spots).` | Set Perimeter > Barricade prefab; N is how many checkpoints it would build |
 | `Perimeter checkpoints: N roads come within 350 m of the edge; M crossings of the checkpoint line ...` | Roads that cross the line. N = 0 means the edge runs at sea all round (an island): the shore lines below fill in |
 | `Perimeter checkpoints: N roads, M road ends with the sea within 40 m past them: K usable, ...` | Roads that end at the shore, and why the rest were left out: an end at a junction, a barrier in the sea or outside the line, or another road within 75 m of the barrier (it would close that road). Everon: about 7 usable |
-| `Perimeter checkpoint at grid G: a road ends at the shore (road W m wide), N guards.` (or "a road crosses the line", "a placed marker") | One line per checkpoint built. 0 guards: no Perimeter > Guard prefab, or water behind a shore barrier |
+| `Perimeter checkpoint at grid G: a road ends at the shore (road W m wide), N guards.` (or "a road crosses the line", "a placed marker") | One line per checkpoint built. N is its guard spots: the bodies stand only while a player is within 600 m. 0 guards: no Perimeter > Guard prefab, or water behind a shore barrier |
 | `Perimeter: the checkpoint barricade prefab didn't spawn at grid G, ...` | The barricade prefab is set but doesn't spawn: check its path |
 | `Perimeter: no road checkpoints on this map (the lines above say why). ...` | The `Perimeter checkpoints:` lines say what was found. Place `RZ_CheckpointMarkerEntity`s on roads, or accept a line without checkpoints (Arland) |
 | `Perimeter shore: N points along the edge with land within 600 m, M of them on a sea edge.` | Printed once, the first time a Perimeter mission is considered. N near 0 means the edge sits too far out to sea for missions at the line: lower **Sea margin** or set the **Override** rectangle |
@@ -2852,7 +2852,9 @@ when it happens)
 - [ ] A supply truck leaves, is driven by its crew, and arrives. Its whole crew gets in before it
   pulls out of the stronghold's yard, and nobody is left standing there.
 - [ ] A leader answers Talk, Work, News and Standing.
-- [ ] Hunted by Bastion, stay put through three hunter rounds: never more than two squads after you.
+- [ ] Hunted by Bastion, stay put through three hunter rounds: never more than two squads after you,
+  and never more than four on the server with three Hunted players; none appears where you can see
+  it over the ground.
 - [ ] Kill a truck crew from 300 m, then drive the truck in: no Fame. (Known gap: a friend who
   didn't shoot can still drive it in for Fame; watch for that pattern.)
 - [ ] Retaliation in a crossfire: a Red Hand group attacking a Bastion outpost while you shoot
@@ -3509,6 +3511,12 @@ on the talk screen says why something wasn't dealt)
   one yourself: you are (the log says who).
 - [ ] Drive and boat into the Perimeter's warning zone: the drone follows over the vehicle (not
   stuck where you entered), the kill zone still shoots, and leaving removes the drone.
+- [ ] A checkpoint's guards stand behind the barrier as you come within 600 m, and are gone (out of
+  sight) once you're 700 m away; the active AI count drops with them.
+- [ ] A safehouse grows a tier while you're at it: nobody vanishes; the new guards and medic are there
+  the next time you come back from beyond 300 m.
+- [ ] The Book's send-off at Rudi's crossroads: the lorry is a look-only wreck (no driving it) and the
+  bonfire has no interactions.
 - [ ] The Missing Courier's radio offer is titled "The Missing Courier", not "Lost Colleague".
 - [ ] Ring bells, sirens and read clues repeatedly: one bell or siren per 15 minutes, no extra
   spawns or rewards from rereading.

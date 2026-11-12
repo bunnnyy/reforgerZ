@@ -44,7 +44,7 @@ class RZ_MajorSettings
 	[Attribute("2", desc: "At most this many majors' stage missions offered at once, server-wide (a squeezed act takes a slot from one that isn't)")]
 	int m_iSlots;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: the Red Hand lorry at Rudi's crossroads for the Book's send-off and its last line (spawned near players only). Empty: words only", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: the Red Hand lorry at Rudi's crossroads for the Book's send-off and its last line (spawned near players only). A wreck or static prop, never a drivable vehicle: the dressing guard deletes one. Empty: words only", "et")]
 	ResourceName m_sLorryPrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: the bonfire at Rudi's crossroads when the book is sent off loud (spawned near players only). Empty: words only", "et")]

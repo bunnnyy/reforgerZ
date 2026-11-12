@@ -119,7 +119,10 @@ class RZ_TribeProps
 				continue;
 
 			if (prop.m_Entity)
+			{
+				RZ_CampLife.RemoveDressing(prop.m_Entity);
 				SCR_EntityHelper.DeleteEntityAndChildren(prop.m_Entity);
+			}
 
 			m_aProps.Remove(i);
 		}
@@ -136,10 +139,13 @@ class RZ_TribeProps
 			if (tribes[k] >= 0 && CountFor(tribes[k]) >= PER_TRIBE)
 				continue;
 
+			// Look-only, as every mark (World/RZ_Marks.c): nothing a player could use survives, and the
+			// interaction scan leaves it alone
 			IEntity e = RZ_Util.SpawnPrefab(prefabs[k], RZ_Util.GroundPos(spots[k]), Yaw(spots[k]));
-			if (!e)
+			if (!e || !RZ_DressingGuard.Strip(e, prefabs[k]))
 				continue;
 
+			RZ_CampLife.AddDressing(e);
 			RZ_TribeProp prop2 = new RZ_TribeProp();
 			prop2.m_sKey = key;
 			prop2.m_Entity = e;

@@ -420,7 +420,8 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
   shot by a sniper you never see.
 - **Sealed road checkpoints.** Up to 6 by default, 8 at most, at least 800 m apart, the widest
   roads first. The road ends in concrete blocks and a closed barrier, with 0–4 guards behind it
-  who can't be hurt. Nobody passes in either direction. Within 150 m the loudspeaker warns you;
+  who can't be hurt (bodies only while a player is within 600 m, as road posts; they go once
+  nobody is within 700 m or can see them). Nobody passes in either direction. Within 150 m the loudspeaker warns you;
   closer than 60 m the guards shoot. Placed `RZ_CheckpointMarkerEntity`s win; otherwise the road
   network gives them, once at start:
   - **Roads that cross the line** (60 m inside the edge): the guards stand outside the playable area.
@@ -992,7 +993,9 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   least 1.2 km apart, away from the lab and the quarantine line. Saved. Placing any
   `RZ_SafehouseMarkerEntity` turns the picking off.
 - **Few bodies.** While a player is within 300 m, a safehouse shows 3–6 occupants (never
-  more than its population), its guards, its medic and its own quartermaster.
+  more than its population), its guards, its medic and its own quartermaster. A new tier's
+  people (more guards, the medic) come once nobody is within 300 m, so nobody sees the house
+  empty and fill again.
 - **Population tiers** (cap 30; past it, new arrivals go to the next safehouse):
 
   | Population | Becomes | Effects |

@@ -380,8 +380,10 @@ caps apply.
 | `epilogue` | 18 (3 scenes of 6), and room | The epilogue's people: the queue, the route's table, the lab gate, the barrier, Loose Ends' people ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)) |
 | `speaker` | Only within 100 m of a player, and room | Checkpoint post speakers (`Factions/RZ_Checkpoints.c`) |
 
-Faction AI, leaders, camp life, supply trucks and the Long Table keep their own limits; they share only
-the engine's active-AI limit ([above](#the-agent-budget)). The status line shows the ledger as
+Faction AI, leaders, camp life, supply trucks, hunter squads (two after one player, four on the
+server: [REPUTATION.md](REPUTATION.md#consequences-for-everyone)), checkpoint guards (only while a
+player is within 600 m: [DESIGN.md](DESIGN.md#the-perimeter)) and the Long Table keep their own
+limits; they share only the engine's active-AI limit ([above](#the-agent-budget)). The status line shows the ledger as
 `other bodies N agents`.
 
 ### Runtime groups
@@ -1599,7 +1601,8 @@ always told.
 
 - **Props** appear only while a player is within 200 m and go once nobody is within 250 m (checked
   every 5 s): 6 a pack and 30 on the server at most, never saved. They're looks only; reading them is
-  the lines' job.
+  the lines' job. As every mark, each goes through the dressing guard as it spawns (anything a player
+  could use is deleted, [DESIGN.md](DESIGN.md#camp-life)) and the interaction scan leaves it alone.
 - **The bright moon** (**Bright moon**, from phase 0.85): on a clear night (no rain, fog or storm) with
   the engine's moon at least that full, every pack hunts with its range ×1.25 (on top of hunger; a
   frenzy's own) and stays out until 05:30, its hunt too. Players near a pack are told at nightfall:

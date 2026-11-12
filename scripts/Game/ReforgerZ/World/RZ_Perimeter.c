@@ -154,6 +154,10 @@ class RZ_Perimeter
 	protected ref array<vector> m_aCheckpoints = {};
 	protected ref array<vector> m_aCheckpointInward = {};	// back up each checkpoint's road
 	protected ref array<IEntity> m_aCheckpointProps = {};
+	// Checkpoint guards: where each stands, and its body while a player is within GUARD_SPAWN
+	protected ref array<vector> m_aGuardSpots = {};
+	protected ref array<float> m_aGuardYaw = {};
+	protected ref array<IEntity> m_aGuards = {};
 	protected ref array<ref RZ_BlindSpot> m_aBlindSpots = {};
 	protected int m_iNextBlindSpot = 1;
 	protected ref array<IEntity> m_aEffects = {};
@@ -168,6 +172,8 @@ class RZ_Perimeter
 	protected static const float EFFECT_LIFETIME = 20;
 	protected static const float CORNER_MARGIN = 500;	// missions keep away from the corners
 	protected static const float GUARD_DEPTH = 20;		// guards stand this far outside the edge
+	protected static const float GUARD_SPAWN = 600;		// a checkpoint's guards stand while a player is this close (as road posts)
+	protected static const float GUARD_KEEP = 700;		// ...and go once nobody is, out of everyone's sight
 	protected static const float MIN_SIZE = 1000;
 	protected static const int MAX_CHECKPOINTS = 8;
 	protected static const float SHORE_REACH = 40;		// a road "ends at the shore" if the sea starts this close past its end
@@ -681,6 +687,33 @@ class RZ_Perimeter
 				UpdateStoodDown(ids[i], p);
 			else
 				UpdatePlayer(ids[i], p, dt);
+		}
+
+		UpdateGuards(players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checkpoint guards are bodies only near players: they stand while someone is within 600 m and
+	//! go once nobody is within 700 m or could see them (docs/DESIGN.md, "The Perimeter").
+	protected void UpdateGuards(array<IEntity> players)
+	{
+		foreach (int g, vector spot : m_aGuardSpots)
+		{
+			float nearest = RZ_Util.NearestDistance(spot, players);
+			IEntity guard = m_aGuards[g];
+			if (!guard && nearest <= GUARD_SPAWN)
+			{
+				guard = RZ_Util.SpawnPrefab(m_Settings.m_sGuardPrefab, spot, m_aGuardYaw[g]);
+				if (guard)
+					MakeUntouchable(guard);
+
+				m_aGuards[g] = guard;
+			}
+			else if (guard && nearest > GUARD_KEEP && !RZ_InfectedBodies.InSight(spot, players, false))
+			{
+				RZ_Util.DeleteUnit(guard);
+				m_aGuards[g] = null;
+			}
 		}
 	}
 
@@ -1317,6 +1350,7 @@ class RZ_Perimeter
 		if (!spot.m_bShore)
 			behind = spot.m_vPos - inward * EdgeDistance(spot.m_vPos) + outward * GUARD_DEPTH;
 
+		// The guards' spots now; their bodies only while a player is near (UpdateGuards)
 		vector across = Vector(inward[2], 0, -inward[0]);
 		int guards = Math.Clamp(m_Settings.m_iGuardsPerCheckpoint, 0, 4);
 		int stood = 0;
@@ -1327,12 +1361,12 @@ class RZ_Perimeter
 			if (spot.m_bShore && RZ_Util.IsWater(guardPos))
 				continue;
 
-			IEntity guard = RZ_Util.SpawnPrefab(m_Settings.m_sGuardPrefab, guardPos, yaw + 180);
-			if (!guard)
+			if (m_Settings.m_sGuardPrefab.IsEmpty())
 				continue;
 
-			MakeUntouchable(guard);
-			m_aCheckpointProps.Insert(guard);
+			m_aGuardSpots.Insert(guardPos);
+			m_aGuardYaw.Insert(yaw + 180);
+			m_aGuards.Insert(null);
 			stood++;
 		}
 

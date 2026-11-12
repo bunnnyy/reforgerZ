@@ -323,12 +323,17 @@ class RZ_MajorRest
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A look-only prop near players: through the dressing guard (a vehicle, storage or anything a
+	//! player could use is deleted) and left alone by the interaction scan.
 	protected static IEntity Prop(IEntity current, bool want, ResourceName prefab, vector at)
 	{
 		if (!want)
 		{
 			if (current)
+			{
+				RZ_CampLife.RemoveDressing(current);
 				SCR_EntityHelper.DeleteEntityAndChildren(current);
+			}
 
 			return null;
 		}
@@ -336,7 +341,12 @@ class RZ_MajorRest
 		if (current || prefab.IsEmpty())
 			return current;
 
-		return RZ_Util.SpawnPrefab(prefab, at, Math.RandomFloat(0, 360));
+		IEntity e = RZ_Util.SpawnPrefab(prefab, at, Math.RandomFloat(0, 360));
+		if (!e || !RZ_DressingGuard.Strip(e, prefab))
+			return null;
+
+		RZ_CampLife.AddDressing(e);
+		return e;
 	}
 
 	// ================================================================ Ask about...
