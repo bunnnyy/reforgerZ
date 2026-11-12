@@ -11,6 +11,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 76b52d0: play the minimum subset on `Missions/RZ_Arland.conf`. Check the log lines in WBS §7, report every script exception and missing log line here, and run the play-test checklist in WBS §8.
 
 **UI (WBS §4, "Setting up the UI")**
+- 2026-11-12 2e9f6f9: the talk screen's pages: open `RZ_TalkMenu.layout` in Workbench (new `TalkPage` with `PagePrev`, `PageText`, `PageNext`, written as text) and fix what it reports; then talk to a council head with Trees on and check "1/2" and MORE > on a TV, LB/RB with a pad, Q/E and a click on the arrows turn the page without saying a reply, and the right stick scrolls a long line the right way (new `RZ_TalkScroll` in `chimeraInputCommon.conf`, VERIFY `UI/RZ_TalkMenu.c:288`; WBS §8, "Pages").
+- 2026-11-12 103bd52: the hubs, New Vegas style (DIALOGUE.md, "Hubs: work comes out of talk"): with Trees on, play a leader of each faction, a quartermaster's "Talk to whoever's in charge", a safehouse's named cook, a holding's named person and a wanderer: no "Ask for work / Heard anything? / What do you make of me?" menu, the job, the news and the verdict reached through their own topics, and the built replies back with errands off (WBS §8, the Trees lines and "What's going on").
 - 2026-11-12 (cloud, docs pass): `UI/layouts/Menus/DeployMenu/RespawnMenu.layout` (the override of vanilla's deploy menu) is deleted: it embedded the removed `RZ_BackgroundPanel.layout`, and our spawn screen replaces that menu. Nothing to do but pull; with **UI > Spawn row layout** empty, vanilla's own deploy menu opens.
 - 2026-11-12 (cloud, docs pass): new in play: the journal's *The finale* row while the cure's routes are open, the jobs in each player's order, and a sound on each notice card (vanilla's hint sound): check them in Workbench play (UI.md).
 - 2026-11-12 (cloud, docs pass): `chimeraInputCommon.conf` has pad bindings for the notebook (View + RB, in play) and the talk screen's replies (LT + D-pad up/right/down/left = 1-4, RT + D-pad up/right/down = 5-7): open the conf in Workbench, then check both with a pad, and that View alone still opens the map and RB alone does what it did (UI.md, Controllers).
@@ -109,7 +111,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-- Cloud, 2026-11-12: `Configs/System/chimeraInputCommon.conf`, one new action (RZ_TalkScroll, the right stick on the talk screen).
+(none)
 
 ## Status
 
