@@ -96,6 +96,14 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_CleanGlasses());
 		list.Insert(new RZ_Errand_CountForTheSitting());
 		list.Insert(new RZ_Errand_HandToHand());
+		// The other majors' margin cards, and a Champion card per faction
+		list.Insert(new RZ_Errand_WeatherWriteItDown());
+		list.Insert(new RZ_Errand_CleanRifles());
+		list.Insert(new RZ_Errand_CleanPaper());
+		list.Insert(new RZ_Errand_ChairsForTheReading());
+		list.Insert(new RZ_Errand_KidsInspection());
+		list.Insert(new RZ_Errand_StoryAtTheFire());
+		list.Insert(new RZ_Errand_VisitorsLog());
 		list.Insert(new RZ_Errand_WithSide());
 		// The epilogue deck: dealt only in the week after the cure (Cards/Epilogue/, m_bAfterCure)
 		list.Insert(new RZ_Errand_CarryTheDose());

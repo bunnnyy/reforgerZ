@@ -32,6 +32,7 @@ Server only, except the journal row.
 - [Fallout](#fallout)
 - [Strangers](#strangers)
 - [Locals](#locals)
+- [Threads and callbacks](#threads-and-callbacks)
 - [Twists](#twists)
 - [Board and radio asks](#board-and-radio-asks)
 - [Telemetry and the admin view](#telemetry-and-the-admin-view)
@@ -54,7 +55,7 @@ Two layers:
   hours, per place server-wide 20 minutes. 34 at the four holding kinds, the wanderers' asks, and
   18 stranger routines.
 - **Cards** are hand-written, **once per player per season** (keyed to the identity, not the
-  character), at most **2 a real day**. 63, every one true only while its reason is (a world fact, a
+  character), at most **2 a real day**. 70, every one true only while its reason is (a world fact, a
   place, your standing or background, the season's stage, a major's wait or the finale's lock).
 
 Errands are never stages and never on the map. Every one has a way without a gun. They spawn no
@@ -113,7 +114,8 @@ the contract cap. Steps run on the 5 s tick; checks, faults and call-outs every 
 **Asked** errands skip the gaps, but not safety: no shot within 60 m in the last minute, no infected
 within 30 m, not in a vehicle, not Hunted by the giver's faction, fewer than 2 held.
 
-**Unasked** (a call-out) also needs: alive 3 minutes in this life, not in a bite's Final stage, no
+**Unasked** (a call-out) also needs: alive 3 minutes in this life (a first life finding the Haven:
+10 minutes after it gets there), not in a bite's Final stage, no
 open offer, 8 minutes since the last unasked offer, not within 300 m of a running mission's spot,
 600 m of the set piece holding the evening ([the calendar](DESIGN.md#the-set-piece-calendar)), 1 km
 of the lab during the final stand, or 2 km of the Long Table's farm; and room in the budget. Three
@@ -128,6 +130,13 @@ weight × need × fit × novelty × story: ×1.2 if it answers the giver faction
 giver has the role, ×1.2 if they remember you well (regard 2+), ×0.8 if uneasy, ×0.3 if its family
 was one of your last three, ×1.5 for a card. The pick is weighted among the top three. At most 12
 errands live on the server.
+
+**Chore slots.** A holding or a house has 1 routine live at once, plus 1 per 5 players online (3 at
+most), and one of them per player there; cards don't count.
+
+**The suspect variant** (the arsonist rule's other side): The Smoke Was Ours may still be dealt to
+whoever called the shells, scored half, the giver opening with *"Where were you Tuesday? Never mind.
+Don't answer that."* Every other card keeps the rule: never to whoever made its fact.
 
 ## Keeping them true
 
@@ -328,6 +337,13 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Clean Glasses** (margin: The Book Has to Balance) | a Red Hand named person | the major waits for its settling day or its last page; not 16:00–21:00 | Six unbroken glasses from an empty village (30 s): 5 Favor |
 | **Count for the Sitting** (margin: Every Name) | the clerk | the major waits for a sitting; before 17:00; another house within 1.5 km | Carry the count before half past six (5 s there): 3 Favor; or carry it and say the house is hungrier than it says: 3 Favor, a record. It changes no vote |
 | **Hand to Hand** (margin: the Independent) | a Haven named person | the finale's routes are open, you've locked to none, a local at this house knows you | Promise: no pay, the local pinned, the record `errand.hands` with an epilogue line; six a player a season. Or don't. A promise moves no track. The finale can count them (`RZ_Errands.PromisedAt(house)`, `PromisedNear(pos, radius)`, by anyone or by one identity); it doesn't read them yet ([designs/FINALE.md](../designs/FINALE.md)) |
+| **Weather, Write It Down** (margin: Await Relief) | the radio operator at a Bastion post | the major waits for Effective Strength; not 18:00–22:00 (the call's hours) | Take the reading on the ridge 200–400 m out (15 s): 4 Favor. Or tell him to write "weather" and skip it: no pay |
+| **Clean Rifles** (margin: Await Relief) | a Bastion named person | the major waits for the muster; not 18:00–22:00 | Fetch the cleaning kits from the next town's police station (20 s): 4 Favor. [Soldier] show the new lads how it's done (a minute): 3 Favor, 1 Fame |
+| **Clean Paper** (margin: Proof) | a Halcyon named person | the major waits for the reading; not around a change of shift (04:30–06:30, 16:30–18:30) | Fetch a ream from the next town's school (20 s): 4 Favor. [Lab Tech] rule the margins (30 s): 3 Favor, 1 Fame |
+| **Chairs for the Reading** (margin: Proof) | Halcyon's technician or lab assistant | as Clean Paper | Carry the chairs from an empty village's hall (30 s): 4 Favor. Or tell her they can stand: no pay |
+| **The Kid's Inspection** (champions: Bastion) | a Bastion named person; Champion with Bastion | always | Look over his post at the gate (20 s): a rumour, no pay. Or say you're nobody's sergeant |
+| **A Story at the Fire** (champions: the Red Hand) | a Red Hand named person; Champion with the Red Hand | always | Tell it straight, or tell it bigger (a minute at the fire): a rumour either way, no pay. Or say there's nothing to tell |
+| **The Visitors' Log** (champions: Halcyon) | a Halcyon named person; Champion with Halcyon | always | Sign the log (10 s): a world record with an epilogue line, no pay. Or be put down as anonymous |
 | **They Say You're With …** (lock card) | a Haven named person | you've locked to a route that isn't the Haven's, a local at this house knows you | Titled by your route (Bastion, the Red Hand, Halcyon; the Independent's: *They Say You're Doing It Yourself*). Talk it through; walk them to the next town, out of the stand's way; or carry one true word to your side. No pay; the local remembers |
 
 ### The epilogue deck
@@ -412,7 +428,8 @@ town edge.
 until you're 150 m away; a way that asks you to go somewhere or stay a while waits 10 minutes wherever
 you are. Only the one they called to, or their group, can answer. They pay nothing, a line, one common
 find from their pocket (a House find), or the house's few Favor through the small-pay ledger; one you
-help may become a [local](#locals). **Killing one** costs what killing a wanderer costs (+15 Infamy with
+help may become a [local](#locals). **Shooting at one** (firing within 25 m of a stranger with no infected within 40 m of them) costs +4
+Infamy with their people, once, and they run. **Killing one** costs what killing a wanderer costs (+15 Infamy with
 their people: the Haven's, or the Red Hand's for a crew lad), and no stranger finds the killer for a
 real day.
 
@@ -467,8 +484,24 @@ did for them (helped, saved, lied to, crossed, sold, promised).
   them, online. Killing a local's body costs +15 Haven Infamy, as a wanderer would.
 - Saved with the errands.
 
-*Simplified:* a local is shown while any player is near the house (not only one who knows them); their
-lines are one per memo, not three; locals don't yet speak through threads or the epilogue's scenes.
+Each memo has three lines, turning with the hour. **Missions > Errands > Pinned locals** (30) and
+**Unpinned locals** (20) set the caps.
+
+*Simplified:* a local is shown while any player is near the house (not only one who knows them: action
+labels are the same for everyone).
+
+## Threads and callbacks
+
+- **Threads** (in the ledger, 12 a season, the oldest goes): a done routine that has a thread phrase
+  (the Pot, Lights, Water, Filter Parts, the Gate at Dusk, the Burying, the Round, the Newcomer, the
+  Children's Hour, the Wire, the post's fuel, the freezers, Short Change) leaves "who, where, what you
+  did". The next time someone else at that place offers you an errand, they say it first, once:
+  *"Mara Kovac says you brought something for the pot."* Other systems can read the newest one for a
+  holding or house (`RZ_Errands.ThreadLineFor(player, holding, house)`), for a leader's first line.
+- **Callbacks**: a few ways leave a line for later in the one callback queue
+  ([DESIGN.md](DESIGN.md#callbacks)), 2–6 hours of the asker's play on, near the giver: Behind the Red
+  Door's truth, Boarded Up's family brought out, Not Past the Chapel's old man brought in, The Letter
+  Nobody Can Take, The Last Apples.
 
 ## Twists
 
@@ -492,18 +525,20 @@ found by events (a visit, a road, a rumour round, the next real reading).
   1.5 km) where a routine is true for them, inside every rule of an unasked offer and the interruption
   budget, one personal line on the Haven's channel: *"If you're near Levie, Mara the cook could use a
   hand. Only if you're passing."* Never broadcast, so it can't bait an ambush. At most one a player
-  every 60 real minutes (**Radio ask minutes**).
+  every 60 real minutes (**Radio ask minutes**), and never within 5 minutes of a contract offered to
+  them on the radio (the contract goes first).
 
 ## Telemetry and the admin view
 
-- **Log lines**: every deal (`Errands: dealt <key> to <player> by <giver> (asked|called out)`), take,
+- **Log lines**: `Errands: stranger <kind> shot at by <player>`, every deal (`Errands: dealt <key> to <player> by <giver> (asked|called out)`), take,
   done, overtake and fault; every stranger (`Errands: stranger <kind> for <player> at <grid> (<spot>)`,
   `Errands: stranger <kind> done by <player>`, `Errands: stranger <kind> killed by <player>`), found hook
   (`Errands: found hook <kind> at <grid> after <title>`), radio ask (`Errands: radio ask to <player> for
   <name> at <house>`), twist (`Errands: <key> for <player> has its twist`) and local (`Locals: <name> (<role>)
   made at <house> by <player> (pinned|unpinned)`); every fallout (`Errands: fallout <card> at <grid> from <title> (...)`); and every 30 minutes (**Telemetry**) a status line per family: dealt,
   declined, lapsed, overtaken, done, Favor, Fame and amends paid, and the ways taken, then strangers
-  dealt by spot kind and helped by routine.
+  dealt by spot kind and helped by routine, then errands' lies told, found or buried and still open
+  since the last line, and the twists dealt.
 - **The admin view needs no typing**: on the talk screen a server admin sees one more reply on any
   named person, wanderer or occupant, **[Admin] Errands near here**: the live count, the nearest
   player's last deal and why each of the others wasn't dealt (*"lights: not true. pot: cooling
@@ -514,7 +549,7 @@ found by events (a visit, a road, a rumour round, the next real reading).
 
 - **Saved** (state.json, wiped with the season): each identity's ledger (cards done, cooldowns, the
   hour's Favor, cards today, errand Fame today, amends this life, the last three families, errands
-  done, the houses whose errands are half as likely for you, the twist count), the safehouses' named
+  done, the houses whose errands are half as likely for you, the twist count, the threads), the safehouses' named
   people, the locals, each house's count of errands done there and the Haven's reading day of each lot
   (Fresh Chalk). Held errands,
   offers, faults, soft holds, strangers, found hooks and the footfall grid are runtime only: a restart
@@ -528,8 +563,6 @@ found by events (a visit, a road, a rumour round, the next real reading).
 people); the lines have two or three variants each, not always three; a card dealt counts toward
 the day's two even if declined; pay in kind is an effect (errands hand out no items; a stranger's gift
 is one common find). The margin cards read the majors' waits (the run's stage), and the lock cards read
-the finale's lock (`RouteOfPlayer`). Not built yet, and designed in
-[designs/ERRANDS.md](../designs/ERRANDS.md): the epilogue deck's last six ([above](#the-epilogue-deck)), the other
-majors' margin cards, promises
-and callbacks from errands, threads, His Effects in full (the effects as an item, a body near a post),
-chore slots per holding, and the `mission_errand` icon (the journal uses the unarmed icon).
+the finale's lock (`RouteOfPlayer`). Not built yet: the epilogue deck's last cards
+([designs/EPILOGUE.md](../designs/EPILOGUE.md#the-epilogue-deck-last-errands)) and what
+[designs/ERRANDS.md](../designs/ERRANDS.md) lists (the journal row uses the unarmed icon).

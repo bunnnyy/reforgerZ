@@ -35,6 +35,13 @@ class RZ_Locals
 	static const int MAX_UNPINNED = 20;
 	protected static const int STALE = 259200;	// 3 real days unmet
 
+	//------------------------------------------------------------------------------------------------
+	//! Pinned locals on the server (Missions > Errands > Pinned locals; MAX_PINNED by default).
+	protected static int MaxPinned()
+	{
+		return RZ_ErrandSettings.Get().m_iPinnedLocals;
+	}
+
 	protected RZ_GameModeComponent m_GM;
 	protected ref array<ref RZ_Local> m_aLocals = {};
 	protected ref map<int, IEntity> m_mBodies = new map<int, IEntity>();	// local id -> the occupant wearing them
@@ -73,7 +80,7 @@ class RZ_Locals
 		if (!houses || !houses.Get(house))
 			return null;
 
-		if (pinned && (CountPinned(-1) >= MAX_PINNED || CountPinned(house) >= PINNED_PER_HOUSE))
+		if (pinned && (CountPinned(-1) >= MaxPinned() || CountPinned(house) >= PINNED_PER_HOUSE))
 			pinned = false;
 
 		if (!pinned)
@@ -132,7 +139,7 @@ class RZ_Locals
 				unpinned++;
 		}
 
-		if (unpinned < MAX_UNPINNED)
+		if (unpinned < RZ_ErrandSettings.Get().m_iUnpinnedLocals)
 			return;
 
 		int now = RZ_SeasonClock.Now();
@@ -183,7 +190,7 @@ class RZ_Locals
 		}
 
 		if (memo == "saved" || memo == "sold" || memo == "promised")
-			l.pinned = l.pinned || (CountPinned(-1) < MAX_PINNED && CountPinned(l.house) < PINNED_PER_HOUSE);
+			l.pinned = l.pinned || (CountPinned(-1) < MaxPinned() && CountPinned(l.house) < PINNED_PER_HOUSE);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -263,24 +270,48 @@ class RZ_Locals
 			return;
 		}
 
-		m_GM.Say(playerId, title, RZ_EFaction.SURVIVORS, LineFor(l, l.memos[i]));
+		m_GM.Say(playerId, title, RZ_EFaction.SURVIVORS, LineFor(l, l.memos[i], l.metUnix / 3600));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static string LineFor(RZ_Local l, string memo)
+	protected static void Three(notnull array<string> lines, string a, string b, string c)
 	{
+		lines.Insert(a);
+		lines.Insert(b);
+		lines.Insert(c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Three lines a memo, turning with the real hour (`turn`); helped and saved use their own line first.
+	protected static string LineFor(RZ_Local l, string memo, int turn)
+	{
+		array<string> lines = {};
 		switch (memo)
 		{
-			case "lied": return "\"You told me a thing that wasn't so. I remember. Everyone here remembers.\"";
-			case "crossed": return "\"I've nothing to say to you. The step's still loose. Mind it.\"";
-			case "sold": return "\"I know what you did. Don't make me say it in front of them.\"";
-			case "promised": return "\"You said you'd bring it when it's made. I'm still here. I'll be here.\"";
+			case "lied":
+				Three(lines, "\"You told me a thing that wasn't so. I remember. Everyone here remembers.\"", "\"Oh, it's you. Say something true and I'll write it down. I'll need the paper.\"", "\"I believed you. I'm not proud of it. I'm not proud of you either.\"");
+				break;
+			case "crossed":
+				Three(lines, "\"I've nothing to say to you. The step's still loose. Mind it.\"", "\"Not you. Not tonight. Try the others.\"", "\"You know what you did. So do I. That's two of us too many.\"");
+				break;
+			case "sold":
+				Three(lines, "\"I know what you did. Don't make me say it in front of them.\"", "\"There's a chair empty at supper. You know whose.\"", "\"Go on, then. Walk past. You're good at it.\"");
+				break;
+			case "promised":
+				Three(lines, "\"You said you'd bring it when it's made. I'm still here. I'll be here.\"", "\"Is it made yet? No. I know. I ask everyone. I ask you differently.\"", "\"Still waiting. Hands in my lap, like you said.\"");
+				break;
+			default:
+				if (!l.line.IsEmpty())
+					lines.Insert(l.line);
+				else
+					lines.Insert("\"It's you. Sit a minute, if you've a minute.\"");
+
+				lines.Insert("\"Look who it is. The kettle's on. It's always on. Nothing in it.\"");
+				lines.Insert("\"You came back. People don't, much. Sit.\"");
+				break;
 		}
 
-		if (l.line.IsEmpty())
-			return "\"It's you. Sit a minute, if you've a minute.\"";
-
-		return l.line;
+		return lines[Math.AbsInt(turn) % lines.Count()];
 	}
 
 	//------------------------------------------------------------------------------------------------

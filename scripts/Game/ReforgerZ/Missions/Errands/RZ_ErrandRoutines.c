@@ -76,6 +76,32 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 			case "before_dark": DefineBeforeDark(); break;
 			case "wanted_poster": DefineWantedPoster(); break;
 		}
+
+		m_sThread = ThreadFor(m_sKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What another of the place's people says you did, as a thread ("" none).
+	protected static string ThreadFor(string key)
+	{
+		switch (key)
+		{
+			case "pot": return "brought something for the pot";
+			case "lights": return "got the lights back on";
+			case "water": return "carried the water in";
+			case "filter_parts": return "fixed the filter";
+			case "gate_dusk": return "kept the gate at dusk";
+			case "burying": return "dug one of ours a grave";
+			case "round": return "sat with the sick";
+			case "newcomer": return "saw to the new one";
+			case "childrens_hour": return "watched the children";
+			case "the_wire": return "stood the wire with us";
+			case "fuel_post": return "brought the post its fuel";
+			case "freezers": return "kept the freezers cold";
+			case "short_change": return "found where the short change went";
+		}
+
+		return "";
 	}
 
 	// ---------------------------------------------------------------- A Haven safehouse

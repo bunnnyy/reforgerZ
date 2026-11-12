@@ -100,6 +100,10 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 212e575 (cloud): Everon boots with 0 road checkpoints; cloud to investigate
 - 2026-11-12 cc30ef4 (cloud, missions, for the finale's owner): Hand to Hand's promises are queryable: `gm.GetErrands().PromisedAt(house, ident)` (living promised locals at a safehouse; "" = by anyone) and `PromisedNear(pos, radius, ident)`. Wire them where designs/FINALE.md says (one of the eight's yes one step easier with a promised local in their house; a minute off the Independent's lab-gate sit-in per promised local present). One-choice jobs now tag their route assets (allies, docs/MISSIONS.md "Route assets"); the finale reads them through `RZ_FinaleAssets.Find` as before.
 
+- 2026-11-12 HASH3 (cloud, errands, for the majors' owner): **Missions > Errands > Majors read errand memory** (`RZ_ErrandSettings.Get().m_bMajorsReadMemory`, off) is there; when it's on, a sitting may count +1 per head a season for a house whose people remember the player's errands: `gm.GetErrands().ThreadLineFor(playerId, -1, house)` is non-empty for them. The majors don't read it yet.
+- 2026-11-12 HASH3 (cloud, errands, for the dialogue owner): a leader's or named person's first line can say a thread back: `gm.GetErrands().ThreadLineFor(playerId, holdingId, houseIdx)` (*"Mara Kovac says you brought something for the pot."*, "" if none).
+- 2026-11-12 HASH3 (cloud, errands, for the UI owner): the `mission_errand` icon for the journal's errand row (SVG and 64/128 PNG); the row uses the unarmed icon today.
+
 ## Claims
 
 (none)

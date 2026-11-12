@@ -1321,7 +1321,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
 | Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
 | Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
-| Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the "Most people helped" line (on), telemetry (30 min), debug log (off); **Props**: effects, crate, papers, parts (all optional; a step's place shows one while it's open) |
+| Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the "Most people helped" line (on), telemetry (30 min), debug log (off), the stranger gap (15–25 min), strangers on the server (6), the footfall half-life (6 h), pinned and unpinned locals (30, 20), majors read errand memory (off); **Props**: effects, crate, papers, parts (all optional; a step's place shows one while it's open) |
 | Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3) |
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
@@ -2050,7 +2050,7 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines and 63 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
@@ -2106,7 +2106,8 @@ lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
 `Story: crash at <grid> is <truth>`, `Story: <title> group '<what>' at <grid> (N on the server)`,
 `Errands: fallout <card> at <grid> from <title> (cap N Favor, N participant(s) first)`, `Errands: <key>
-prop <kind> at <grid>`. One-choice jobs and work: `Story: <title> asks (<options>)`,
+prop <kind> at <grid>`, `Errands: stranger <kind> shot at by <player>`; the errands' status line ends with
+`lies: told N, found or buried N, open N | twists dealt N`. One-choice jobs and work: `Story: <title> asks (<options>)`,
 `Story: <title> chose N (by <player>|nobody)`,
 `Story: tally N (<town>) = N, mark N (<key>)`. Strangers: `Errands: stranger <kind> for <player> at
 <grid> (<spot>)`, `Errands: stranger <kind> done by <player>`, `Errands: stranger <kind> killed by <player>`,
@@ -3189,6 +3190,20 @@ on the talk screen says why something wasn't dealt)
 - [ ] "Hid a bite": as a Nurse, dress the hidden bite in Survivors Trapped or Distress Call; that
   house's errands then tag their talk one step harder for you (e.g. "[Trusted - Haven]" where it was
   "[Known - Haven]"), and Protection Racket's persuade at that house is one harder.
+- [ ] The new cards: with Await Relief waiting for Effective Strength (or the muster), a Bastion post's
+  people offer Weather, Write It Down (or Clean Rifles), never 18:00–22:00; with Proof waiting for the
+  reading, a Halcyon station offers Clean Paper and Chairs for the Reading, never around a change of
+  shift. A Champion with Bastion, the Red Hand or Halcyon is offered The Kid's Inspection, A Story at the
+  Fire or The Visitors' Log; none of them pays.
+- [ ] Chore slots: with one player online, a second routine at the same house isn't dealt while one is
+  offered or held there ("every chore here is taken" in the admin view); a player never holds two
+  routines at one place.
+- [ ] Threads: do The Pot, then ask the lookout at the same house: the offer opens *"<the cook> says you
+  brought something for the pot."*, once. A callback: bring Boarded Up's family out; some hours of play
+  later near the house, the line arrives.
+- [ ] Strangers: fire a shot beside a stranger with no infected near: `Errands: stranger <kind> shot at
+  by <player>`, +4 Infamy, and they're gone. A new character on a first life gets no call-outs until 10
+  minutes after reaching a safehouse. A radio ask never comes within 5 minutes of a contract offer.
 - [ ] Errand props: with **Missions > Errands > Props** set, His Effects' wreck shows the effects,
   The Truck Didn't Come's wreck a crate, Last Orders' seat the papers and Filter Parts' pump house the
   part while the step is open (`Errands: <key> prop <kind> at <grid>`); each goes when the step is done

@@ -471,6 +471,15 @@ class RZ_MissionManager
 
 	// ================================================================ Contract offers
 	//------------------------------------------------------------------------------------------------
+	//! A contract was offered to this player by radio in the last `seconds` (an errand's radio ask
+	//! waits behind it).
+	bool OfferedWithin(int playerId, float seconds)
+	{
+		float last;
+		return m_mLastOffer.Find(playerId, last) && m_fClock - last < seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Each player gets at most one new offer per OFFER_GAP seconds.
 	protected void OfferContracts(array<int> ids, array<IEntity> players)
 	{
