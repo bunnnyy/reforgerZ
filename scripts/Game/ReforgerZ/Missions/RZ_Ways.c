@@ -13,6 +13,7 @@
 //! Server only.
 class RZ_Ways
 {
+	static const float SEAT_CLEAR = 25;		// a trick never works within this of a leader's seat
 	string m_sTitle;						// the job's title, for the lines a refusal sends
 	int m_iMenaceDifficulty;				// > 0: built FORCE options have a quiet success at this Fear difficulty
 	ref RZ_QuestStealth m_Quiet = new RZ_QuestStealth();
@@ -156,6 +157,14 @@ class RZ_Ways
 		if (facts && facts.Flag(dayKey) > 0)
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "You've tried that on them once today. Twice and someone remembers.");
+			return RZ_ECheck.REFUSED;
+		}
+
+		// A trick's objective sits at least 25 m from a leader's seat: under their nose, nobody passes
+		IEntity at = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (at && gm.GetLeaders() && gm.GetLeaders().FindNearest(faction, at.GetOrigin(), SEAT_CLEAR))
+		{
+			gm.NotifyPlayer(playerId, m_sTitle, "Not here. Not this close to the one in charge: they'd know their own people.");
 			return RZ_ECheck.REFUSED;
 		}
 

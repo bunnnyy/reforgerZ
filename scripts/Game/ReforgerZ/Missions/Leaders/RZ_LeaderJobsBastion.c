@@ -456,7 +456,7 @@ class RZ_Job_OffBookRequisition : RZ_LeaderPuzzle
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.4);
 		m_iTalk = AddClue("The village elder", "\"Bastion. Of course. We gave last week, to the other one. Do they not talk to each other?\" She already knows they don't.");
-		string labels = string.Format("Take the full contribution|Take half and say it was all|Pay it yourself (%1 Bastion Favor)", PAY_FAVOR);
+		string labels = string.Format("Take the full contribution|Take half and say it was all|[%1 Bastion Favor] Pay it yourself", PAY_FAVOR);
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to the elder");
 
 		m_sTitle = "Off-Book Requisition";

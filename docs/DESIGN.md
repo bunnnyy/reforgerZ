@@ -1264,7 +1264,12 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   second hunger band or higher: Not Tonight and Lead Them Away answer it); left by a finished job:
   `racket.ran` (Protection Racket collected), `crew.skimmed` (Skim the Toll), `house.feud` (A Word to
   {house} carried with a threat), `horde.passed` (Every Ridge Calls, the Siren Test, Red Dusk), `lab.power`
-  (a Power Surge). At most one every **Reason lane gap** (30 min)
+  (a Power Surge); posted by the majors as an act opens: `major.orders` (Missing Patrol, Checkpoint Duty,
+  Rescue the Pilot answer it), `major.every_name` (Refugee Column, Medicine Run), `major.book` (The
+  Informant, Smuggler's Run, Dead Drop), `major.proof` (Research Data, Escort the Scientist, Cold Chain),
+  at the faction's stronghold for a season day (`RZ_ReasonPosts.MajorAct`); its margin cards answer it
+  too (×1.3, the act's line as their opening, [ERRANDS.md](ERRANDS.md#the-dealer)). At most one every
+  **Reason lane gap** (30 min)
   server-wide, inside the contract cap and every check (`CanRunNow`, someone online eligible,
   claims), and only if it lands within 3 km of the reason; each reason starts one contract at most.
   Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.
@@ -1299,6 +1304,15 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   faction's **Paranoid** leaders won't give you their in-person jobs for 2 hours of your play
   (`sulk.<identity>.<life>.<faction>` in the season flags); on a dead life, that faction's next errand
   opens with *"The last one who said that lied"* ([ERRANDS.md](ERRANDS.md#the-dealer)).
+- **Tricks in jobs** ([borrowed kit](REPUTATION.md#borrowed-kit) owns the look): a trick never works
+  within 25 m of a leader's seat of the kit's faction (*"Not here. Not this close to the one in
+  charge."*, `RZ_Ways.SEAT_CLEAR`); a major's scene choice that passes a trick sets the run flag
+  `<key>.disguised` to the player for its later stages (a trick that lasts); and **a breaker**: in a
+  story job, a participant on the sneak (hidden) within 25 m of another player passing as the giver's
+  or the rival's people catches them (the look's Caught, once per player per job).
+- **Tier 0's tags**: the audited jobs' choices that cost or check something show it in a tag like any
+  other (Off-Book Requisition's and Rein In's Favor, The Pit's Debtor's debt, Honour Among Thieves'
+  *[Talk - 3 in 5]*, Rival Survivors' *[Trade]*).
 - **Talk scenes** (`RZ_TalkScene`): a scene person (the civilian puzzle prefab, object index 91)
   stands at the job's place, spawned once someone is within 80 m; no prefab, no person, and the job
   goes on its own ways. It has 2 or 3 **nodes**: a line and up to four options on its choice slots,

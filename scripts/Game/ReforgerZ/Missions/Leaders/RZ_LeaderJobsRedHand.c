@@ -68,7 +68,7 @@ class RZ_Job_HonourAmongThieves : RZ_LeaderPuzzle
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.3, s.m_fRadius * 0.9);
 		m_sThief = RZ_RedHandEdges.DebtorName(m_Rng);
 		m_iTalk = AddClue(m_sThief, string.Format("\"Did %1 send you? I figured. Look, the boss owed me three months. I took three months' worth.\" He's wearing very good boots.", l.m_sShort));
-		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Take it back|Talk it back|Let him keep it", m_iTalk, "Talk to " + m_sThief);
+		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Take it back|[Talk - 3 in 5] Talk it back|Let him keep it", m_iTalk, "Talk to " + m_sThief);
 
 		m_sTitle = "Honour Among Thieves";
 		m_sBrief = string.Format("%1 was one of mine. Took the boss's watch and my good boots, and walked. He's in %2. I don't need him dead. I need the boots.", m_sThief, s.m_sName);

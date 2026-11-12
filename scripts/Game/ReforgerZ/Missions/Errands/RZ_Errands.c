@@ -1925,6 +1925,7 @@ class RZ_Errands
 			m_iAskedDeals++;
 
 		m_More.OpenWithLie(dealt);
+		m_More.OpenWithReason(dealt);
 		why = string.Format("dealt %1. ", dealt.m_Def.m_sKey) + why;
 		RZ_Log.Info(string.Format("Errands: dealt %1 to %2 by %3 (%4)", dealt.m_Def.m_sKey, RZ_Util.PlayerName(playerId), p.m_sName, AskedWord(unasked)));
 		return dealt;

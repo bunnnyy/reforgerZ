@@ -1604,10 +1604,10 @@ The whole design is built. What's left needs a client, a play-test or the author
 - **Phase 0's proposed retunes** wait for the author (`python3 tools/tribe_sim.py --proposed`): seeds on
   every unkept slot (at most 4), the ones who ran at 6 infection points a young, and weakened packs
   posting no scouts.
-- **The packs' jobs' rest** is the missions' (Clear the Trail on a truck road, Bait the Crew's Zombie
-  Bait Infamy, Track Them Home's 80 m, couriers and columns asking for an escort, the capture case's
-  pack following it: [designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md)); Burn the Lair's splinter
-  is the packs' own ([Lair moves](#lair-moves-and-displacement)).
+- **The packs' jobs** (Clear the Trail on a truck road, Bait the Crew's Zombie Bait Infamy, Track Them
+  Home's 80 m, couriers and columns asking for an escort, the capture case's pack following it) are the
+  missions': [MISSIONS.md](MISSIONS.md#the-packs-contracts). Burn the Lair's splinter is the packs' own
+  ([Lair moves](#lair-moves-and-displacement)).
 
 ## The simulator
 

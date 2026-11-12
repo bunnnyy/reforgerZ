@@ -19,6 +19,42 @@
 //! | lab.power       | also left by a Power Surge                                               |
 class RZ_ReasonPosts
 {
+	//------------------------------------------------------------------------------------------------
+	//! A major's act opens (Director/RZ_Questlines.c, EnterStage on an act's first stage): the reason
+	//! `major.<key>` at its faction's stronghold, for a season day, for the contracts that answer it
+	//! and the margin cards (RZ_ErrandsDealer) to read. Its line is the why-now of what starts for it.
+	static void MajorAct(RZ_GameModeComponent gm, RZ_QuestRun run, int stage)
+	{
+		if (!gm || !run || !run.m_Line || !run.m_Line.IsMajor() || !RZ_WorldFacts.Get())
+			return;
+
+		RZ_MajorAct act = run.m_Line.ActOf(stage);
+		if (!act || act.m_aStages.IsEmpty() || act.m_aStages[0] != stage)
+			return;
+
+		int faction = run.m_Line.m_iFaction;
+		vector at = vector.Zero;
+		RZ_Leader top = RZ_MajorHelp.Top(gm, faction);
+		if (top)
+			at = top.m_vPos;
+
+		if (at == vector.Zero)
+			return;
+
+		string text = "Something's started at the stronghold. Everyone's being careful about it.";
+		if (run.m_sKey == "orders")
+			text = "Bastion's orders are on everyone's lips at the post.";
+		else if (run.m_sKey == "proof")
+			text = "The lab's asking for proof again, and loudly.";
+		else if (run.m_sKey == "every_name")
+			text = "The Haven's writing every name down again.";
+		else if (run.m_sKey == "book")
+			text = "The Red Hand's book is open on somebody's table.";
+
+		RZ_WorldFacts.Get().Memory().PostReason("major." + run.m_sKey, "act:" + act.m_iId.ToString(), text, at, faction, 1);
+		RZ_Log.Info(string.Format("Story: reason major.%1 posted (act %2)", run.m_sKey, act.m_sName));
+	}
+
 	protected static const float PRESSURE_RANGE = 1500;
 
 	protected static ref map<string, bool> s_mPosted;		// "key|subject" -> posted by this watcher

@@ -1272,6 +1272,9 @@ class RZ_Questlines
 		run.m_Line.OnStageBegin(m_GM, run, stage);
 		if (major)
 			RZ_Majors.Leave();
+
+		// A major's act opens: its reason, for contracts and the margin cards (Missions/Story/RZ_ReasonPosts.c)
+		RZ_ReasonPosts.MajorAct(m_GM, run, stage);
 	}
 
 	//------------------------------------------------------------------------------------------------

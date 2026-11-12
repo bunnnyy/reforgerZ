@@ -480,7 +480,7 @@ class RZ_Mission_ReinIn : RZ_PuzzleMission
 
 		int favor = RZ_Util.RoundToInt(COUNTER_FAVOR * gm.GetLeaders().FavorMult(m_iTarget));
 		m_iTalk = AddClue(l.m_sName, CounterText(l, favor));
-		string labels = string.Format("Read them the stronghold's terms|Take their counter-offer (%1 %2 Favor)", favor, RZ_Factions.GetShortName(l.m_eFaction));
+		string labels = string.Format("Read them the stronghold's terms|[%1 %2 Favor] Take their counter-offer", favor, RZ_Factions.GetShortName(l.m_eFaction));
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to " + l.m_sShort);
 
 		m_sTitle = "Rein In " + m_sPlace;

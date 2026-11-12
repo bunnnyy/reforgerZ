@@ -9,6 +9,29 @@
 //! report (RZ_Tribes.OnMemberKilled, RZ_TagAction, RZ_Tribes.OnFire, RZ_TribeBorders.Resolve).
 class RZ_TribeContract : RZ_Mission
 {
+	//------------------------------------------------------------------------------------------------
+	//! A pack that hunts a road at its hour (a road habit at 50 or more) within `range` of the way from
+	//! a to b: its line for a courier's or a column's ask ("" none), the pack's name as `who` hears it.
+	static string RoadHuntLine(RZ_GameModeComponent gm, vector a, vector b, float range, int who)
+	{
+		RZ_Tribes tribes = Tribes(gm);
+		if (!tribes || !tribes.GetPeople().IsOn())
+			return "";
+
+		foreach (RZ_Tribe t : tribes.GetTribeList())
+		{
+			foreach (RZ_TribeHabit h : t.m_aHabits)
+			{
+				if (h.m_eKind != RZ_EHabit.ROAD || h.m_fStrength < 50 || RZ_Util.DistToSegmentXZ(h.m_vPos, a, b) > range)
+					continue;
+
+				return string.Format("\"%1 hunt that road about %2. Walk with us past it, would you?\"", RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, who)), RZ_GameTime.Clock(h.m_fHour));
+			}
+		}
+
+		return "";
+	}
+
 	protected int m_iTribe = -1;
 	protected float m_fOfferFrom = -1;		// game hour the offer opens (-1: any time)
 	protected float m_fOfferHours = 1;		// and for how long
@@ -416,8 +439,24 @@ class RZ_Mission_NotTonight : RZ_TribeContract
 //! out with the walkers), put them down, and bring what's in their pockets (the mission item) to any
 //! house. Never for someone in your group, someone who died within 300 m of you or under a season
 //! day ago; one delivery per player a season day. After the cure it's closing work.
+//! A story job (key `bringhome`, kept per name): who they were, as the board says; or someone else (the
+//! card in the pockets names another: the board had it wrong). The pockets tell it to the room. At the
+//! house the clerk asks: the card or keepsake to the family (the Haven), or sell the keepsake to the
+//! fence (6 Red Hand Favor, the Haven pays nothing, +3 Haven Infamy). ★ Elder reads the family, ★ Nurse
+//! how long ago they turned. Record `bringhome.fate`.
 class RZ_Mission_BringThemHome : RZ_TribeContract
 {
+	protected static const int OPT_FAMILY = 0;
+	protected static const int OPT_FENCE = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_BringThemHome()
+	{
+		m_Story = new RZ_MissionStory("bringhome");
+		m_Choice = new RZ_OneChoice();
+		m_Job = new RZ_StoryJob();
+	}
+
 	protected RZ_NamedYoung m_Young;	// weak: the pack's record holds it until it's put down
 	protected ref RZ_NamedYoung m_Kept;	// once put down, the mission keeps it
 	protected bool m_bDown;
@@ -474,6 +513,11 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 				m_sTitle = "Bring Them Home";
 				m_sDeed = "brought someone home";
 				m_sBrief = string.Format("%1 runs with %2 now. Find them with the young ones (by day they may be out walking with a few others), lay them down, and bring back what's in their pockets to any of our houses. We'll read the name.", RZ_Tribes.Capitalize(who), tribes.GetPeople().NameAt(t, RZ_EFaction.SURVIVORS));
+				array<string> values = {"named", "other"};
+				array<float> weights = {0.7, 0.3};
+				m_Job.Draw(this, "named:" + who, values, weights);
+				m_Choice.Set("The house's clerk turns the card over in her hands. \"Family first, or does somebody want paying?\"", "The card to the family|Sell the keepsake to the fence", "decide where the keepsake goes", OPT_FAMILY);
+				m_Choice.Asset(OPT_FENCE, RZ_EFaction.BANDITS);
 				return true;
 			}
 		}
@@ -518,7 +562,26 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 		m_vPos = at;
 		AddParticipant(by);
 		gm.NotifyPlayer(by, m_sTitle, "Take what's in the pockets. Any of the houses will do.");
+		Pockets(gm, by, at);
 		return m_Young;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who they were: the card in the pockets, to the room (a truth found), and the background reads.
+	protected void Pockets(RZ_GameModeComponent gm, int by, vector at)
+	{
+		RZ_TribePeople people = People(gm);
+		string who = "them";
+		if (people && m_Kept)
+			who = people.PublicNameOf(m_Kept);
+
+		string line = string.Format("An ID card in the pockets, soft with rain: %1. It's who they said.", who);
+		if (m_Job.m_sTruth == "other")
+			line = string.Format("The card in the pockets has another name on it, not %1. The board had it wrong, or somebody swapped coats.", who);
+
+		m_Story.Reveal(gm, this, m_Job.m_sSubject, by, "pockets", line);
+		RZ_StoryKit.Read(gm, this, by, "elder", "A photo folded behind the card: a family on a doorstep. You'd know that doorstep if you saw it.");
+		RZ_StoryKit.Read(gm, this, by, "nurse,doctor", "The turning's a week old at most. Whoever this was, they lasted a while out there first.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -559,10 +622,37 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iBy);
+		if (me)
+			return me.GetOrigin();
+
+		return m_vPos;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		if (option == OPT_FENCE)
+		{
+			m_bHasGiver = false;
+			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 6);
+			m_Choice.BlameWith(gm, this, RZ_EFaction.SURVIVORS, 3, "sold a dead man's keepsake");
+			RZ_StoryKit.Record(this, "fate", m_Job.m_sSubject, "fenced", who);
+			return;
+		}
+
+		RZ_StoryKit.Record(this, "fate", m_Job.m_sSubject, "family", who);
+		RZ_StoryKit.LaterWith(gm, this, "At the house", "A woman at the house's door holds the card against her chest and doesn't say anything. Then she says thank you, twice.", m_vPos, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		RZ_TribePeople people = People(gm);
-		if (!people || !m_Kept)
+		if (!people || !m_Kept || !m_bHasGiver)
 			return;
 
 		string name = people.PublicNameOf(m_Kept);
@@ -859,10 +949,19 @@ class RZ_Mission_ContactReport : RZ_TribeContract
 //! Clear the Trail (Bastion, Trusted; presence 0.2+; offered at the set-out): kill 6 of a pack in
 //! one night on a trail within 3 km of a Bastion holding. The trail is dropped for 3 counted
 //! nights, the habit there falls 50, and the pack is disturbed (+30).
+//! Also on a truck road: a trail where it crosses a road (RZ_Tribe.m_aRoadCross), wherever it runs.
+//! A military pack's (Bastion's own dead, a lost post): when it's done, a corporal asks (one choice):
+//! their tags to the nail (Bastion morale +1, a Bastion asset), or leave them walking (nobody pays, an
+//! Independent asset).
 class RZ_Mission_ClearTheTrail : RZ_TribeContract
 {
 	protected int m_iTrail = -1;
 	protected int m_iKills;
+	protected bool m_bLostPost;
+	protected bool m_bRoad;
+
+	protected static const int OPT_NAIL = 0;
+	protected static const int OPT_WALK = 1;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -902,11 +1001,26 @@ class RZ_Mission_ClearTheTrail : RZ_TribeContract
 					continue;
 
 				vector mid = trail[trail.Count() / 2];
-				if (!territory.FindHolding(RZ_EFaction.MILITARY, mid, 3000) || !TakeTribe(gm, t))
+				vector cross = RoadCross(t, trail);
+				bool road = cross != vector.Zero;
+				if ((!territory.FindHolding(RZ_EFaction.MILITARY, mid, 3000) && !road) || !TakeTribe(gm, t))
 					continue;
 
 				m_iTrail = i;
 				m_vPos = mid;
+				m_bRoad = road;
+				if (road)
+					m_vPos = cross;
+
+				m_bLostPost = tribes.GetPeople().NearMilitary(m_vPos, 3000) == t;
+				if (m_bLostPost)
+				{
+					m_Choice = new RZ_OneChoice();
+					m_Choice.Set("A corporal walks the trail with a torch, turning faces over. \"Ours, some of them. Tags to the nail? Or leave them walking?\"", "Their tags to the nail|Leave them walking", "decide what's done with Bastion's dead", OPT_NAIL);
+					m_Choice.Asset(OPT_NAIL, RZ_EFaction.MILITARY);
+					m_Choice.Asset(OPT_WALK, RZ_CureFinale.INDEP);
+				}
+
 				m_sTitle = "Clear the Trail";
 				m_sDeed = "cleared a trail for Bastion";
 				m_sBrief = string.Format("%1 come down a path near one of our posts most nights. Tonight, put six of them down on it. Make it not worth their while.", RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, RZ_EFaction.MILITARY)));
@@ -952,15 +1066,64 @@ class RZ_Mission_ClearTheTrail : RZ_TribeContract
 	{
 		return "Clear the Trail: six down on the path. They'll find another way for a while.";
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where tonight's trails cross a road, on this trail (vector.Zero if it crosses none).
+	protected static vector RoadCross(RZ_Tribe t, array<vector> trail)
+	{
+		foreach (vector c : t.m_aRoadCross)
+		{
+			foreach (vector point : trail)
+			{
+				if (RZ_Util.DistXZ(point, c) <= 300)
+					return c;
+			}
+		}
+
+		return vector.Zero;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A lost post's dead: the corporal's question.
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		string subject = "tribe:" + m_iTribe.ToString();
+		if (option == OPT_WALK)
+		{
+			m_bHasGiver = false;
+			RZ_WorldFacts.Get().Memory().Record("trail.lost_post", subject, "walking", RZ_WorldMemory.SOURCE_STORY, false, who);
+			NotifyParticipants(gm, m_sTitle, "You leave them on the path with their tags on. The corporal writes 'not recovered' and doesn't look at you.");
+			return;
+		}
+
+		RZ_OneChoice.Morale(gm, RZ_EFaction.MILITARY, 1, "a lost post's tags brought in");
+		RZ_WorldFacts.Get().Memory().Record("trail.lost_post", subject, "nail", RZ_WorldMemory.SOURCE_STORY, false, who, "A new row of tags on the post's nail, each with a strip of tape: 'off the trail'.", "board");
+	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! Cull (Bastion, Trusted, Champion for a leader in its prime or older; presence 0.2+): kill the
 //! leader, or 3 of its guard, of a pack within 3 km of a Bastion holding. Bastion's smoke is allowed.
 //! Disturbance 100: the pack is pushed off, away from Bastion, and the Haven hears where it went.
+//! When it's done, where the displaced pack goes is the one shared "where the horde drifts" choice
+//! (an empty town by default, past Bastion's post, or past a Red Hand camp).
 class RZ_Mission_Cull : RZ_TribeContract
 {
 	protected int m_iGuards;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_Cull()
+	{
+		m_Choice = new RZ_OneChoice();
+		RZ_HordeWhere.Set(m_Choice, RZ_HordeWhere.EMPTY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		RZ_HordeWhere.Apply(gm, this, option);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1377,8 +1540,34 @@ class RZ_Mission_BaitTheCrew : RZ_TribeContract
 			return;
 
 		bool ours = (winner.m_iId == m_iTribe && loser.m_iId == m_iOther) || (winner.m_iId == m_iOther && loser.m_iId == m_iTribe);
-		if (ours)
-			m_eState = RZ_EMissionState.SUCCEEDED;
+		if (!ours)
+			return;
+
+		// Zombie Bait's rule: either side landing on a faction's people (a holding or a house within
+		// 600 m of the border) is +4 Infamy with them for those who baited it
+		LandedOn(gm, winner.m_vLair);
+		m_eState = RZ_EMissionState.SUCCEEDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LandedOn(RZ_GameModeComponent gm, vector lair)
+	{
+		vector at = m_vPos;
+		RZ_Territory territory = gm.GetTerritory();
+		for (int f = 0; f < 4; f++)
+		{
+			bool hit = territory && territory.IsActive() && territory.FindHolding(f, at, 600);
+			if (f == RZ_EFaction.SURVIVORS && gm.GetSafehouses() && gm.GetSafehouses().FindNearest(at, 600) >= 0)
+				hit = true;
+
+			if (!hit || f == RZ_EFaction.BANDITS)
+				continue;
+
+			foreach (int playerId : m_aParticipants)
+			{
+				gm.AddInfamy(playerId, f, 4, "baited a border fight onto their people");
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1475,6 +1664,8 @@ class RZ_Mission_TrackThemHome : RZ_TribeContract
 {
 	protected float m_fLostFor;
 	protected bool m_bFollowing;
+	protected float m_fTooClose;		// seconds someone following was within 80 m
+	protected bool m_bWarnedClose;
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -1573,6 +1764,23 @@ class RZ_Mission_TrackThemHome : RZ_TribeContract
 				m_bFollowing = true;
 				AddParticipant(ids[i]);
 			}
+
+			// Not closer than 80 m: 10 s inside it and they turn
+			if (m_bFollowing && d < 80)
+			{
+				m_fTooClose += dt;
+				if (!m_bWarnedClose)
+				{
+					m_bWarnedClose = true;
+					gm.NotifyPlayer(ids[i], m_sTitle, "Too close. Drop back past eighty metres, or they'll hear you.");
+				}
+
+				if (m_fTooClose >= 10)
+				{
+					m_eState = RZ_EMissionState.FAILED;
+					return;
+				}
+			}
 		}
 
 		// Home: nothing of it is out, and someone who followed is within 300 m of the lair
@@ -1628,6 +1836,7 @@ class RZ_Mission_TrackThemHome : RZ_TribeContract
 //! on it when the finale is built.
 class RZ_Mission_CaptureTheIndex : RZ_TribeContract
 {
+	protected float m_fDrawn;
 	protected ref RZ_LiveCapture m_Capture = new RZ_LiveCapture();
 	protected IEntity m_Drop;
 	protected bool m_bTaken;
@@ -1720,6 +1929,14 @@ class RZ_Mission_CaptureTheIndex : RZ_TribeContract
 				People(gm).MakeFurious(t);
 				t.m_iLentAlpha = -1;
 			}
+		}
+
+		// While the case is carried, its pack follows it toward the lab (every minute)
+		m_fDrawn += dt;
+		if (t && m_Capture.m_eState == RZ_ECaptureState.CRATED && m_fDrawn >= 60)
+		{
+			m_fDrawn = 0;
+			Tribes(gm).DrawTo(t, m_Capture.CasePos(), RZ_GameTime.IsNight());
 		}
 
 		if (m_Capture.IsLost())

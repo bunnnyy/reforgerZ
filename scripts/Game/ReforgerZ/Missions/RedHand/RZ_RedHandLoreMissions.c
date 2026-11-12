@@ -647,7 +647,7 @@ class RZ_Mission_PitsDebtor : RZ_PuzzleMission
 	protected void ShowPit(RZ_GameModeComponent gm)
 	{
 		m_bShown = true;
-		string labels = string.Format("Pay what he owes (%1 Red Hand Favor)|Rig the pens|Get him out of here", DEBT_FAVOR);
+		string labels = string.Format("[%1 Red Hand Favor] Pay what he owes|Rig the pens|Get him out of here", DEBT_FAVOR);
 		m_Debtor = SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPit, 0, "", labels, m_iTalk, "Talk to " + m_sDebtor);
 		if (!m_Debtor)
 		{

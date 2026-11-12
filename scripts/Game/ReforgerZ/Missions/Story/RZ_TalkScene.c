@@ -689,6 +689,8 @@ class RZ_StoryJob
 		if (m_Scene)
 			m_Scene.Tick(gm, m, dt, players);
 
+		Breakers(gm, m, dt, ids, players);
+
 		if (m_aReads.IsEmpty() || m_vReadAt == vector.Zero)
 			return;
 
@@ -705,6 +707,49 @@ class RZ_StoryJob
 			}
 		}
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A breaker: a participant on the sneak (hidden, built stealth) within 25 m of another player
+	//! passing as the job's giver or its rival is a catch: the look is broken (Caught), once per player
+	//! per job. Every 2 s.
+	protected void Breakers(RZ_GameModeComponent gm, RZ_Mission m, float dt, array<int> ids, array<IEntity> players)
+	{
+		m_fBreakers += dt;
+		if (m_fBreakers < 2 || !gm.GetHostility())
+			return;
+
+		m_fBreakers = 0;
+		RZ_Disguise d = gm.GetHostility().GetDisguise();
+		foreach (int i, IEntity watcher : players)
+		{
+			if (!m.m_aParticipants.Contains(ids[i]) || !RZ_Stealth.IsHidden(ids[i]) || RZ_Util.DistXZ(watcher.GetOrigin(), m.m_vPos) > 150)
+				continue;
+
+			foreach (int j, IEntity other : players)
+			{
+				if (i == j || m_aBroken.Contains(ids[j]) || RZ_Util.DistXZ(watcher.GetOrigin(), other.GetOrigin()) > BREAK_RANGE)
+					continue;
+
+				int f = -1;
+				if (d.IsPassing(ids[j], m.m_eGiver))
+					f = m.m_eGiver;
+				else if (m.m_bHasRival && d.IsPassing(ids[j], m.m_eRival))
+					f = m.m_eRival;
+
+				if (f < 0)
+					continue;
+
+				m_aBroken.Insert(ids[j]);
+				d.Caught(ids[j], f, other, string.Format("\"Funny way to wear their colours.\" %1 was watching from cover.", RZ_Util.PlayerName(ids[i])));
+				gm.NotifyPlayer(ids[i], m.m_sTitle, "From cover you watch them walk, and it's wrong: the boots, the hands. Not one of theirs. You say so.");
+				RZ_Log.Info(string.Format("Story: %1 breaker: %2 caught %3", m.m_sTitle, RZ_Util.PlayerName(ids[i]), RZ_Util.PlayerName(ids[j])));
+			}
+		}
+	}
+
+	static const float BREAK_RANGE = 25;
+	protected float m_fBreakers;
+	protected ref array<int> m_aBroken = {};
 
 	//------------------------------------------------------------------------------------------------
 	void Cleanup()

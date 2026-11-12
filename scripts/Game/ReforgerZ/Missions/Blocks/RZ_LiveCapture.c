@@ -112,6 +112,13 @@ class RZ_LiveCapture
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the case is (or was last seen): its pack follows it (Capture the Index).
+	vector CasePos()
+	{
+		return m_vItemLastPos;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsLost()
 	{
 		return m_eState == RZ_ECaptureState.LOST;

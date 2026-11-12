@@ -144,6 +144,19 @@ class RZ_MissionReasons
 		if (t == RZ_Mission_EscortTheScientist)
 			result.Insert("house.water");
 
+		// The majors' acts (RZ_ReasonPosts.MajorAct)
+		if (t == RZ_Mission_MissingPatrol || t == RZ_Mission_CheckpointDuty || t == RZ_Mission_RescueThePilot)
+			result.Insert("major.orders");
+
+		if (t == RZ_Mission_RefugeeColumn || t == RZ_Mission_MedicineRun)
+			result.Insert("major.every_name");
+
+		if (t == RZ_Mission_TheInformant || t == RZ_Mission_SmugglersRun || t == RZ_Mission_BanditDeadDrop)
+			result.Insert("major.book");
+
+		if (t == RZ_Mission_ResearchData || t == RZ_Mission_EscortTheScientist || t == RZ_Mission_ColdChain)
+			result.Insert("major.proof");
+
 		// The work rows (RZ_WorkRows.c)
 		RZ_WorkRows.Reasons(t, result);
 	}

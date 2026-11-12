@@ -1324,7 +1324,7 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 		m_vPos = m_vCamp;
 		string leader = RZ_NoteText.FirstName(m_Rng);
 		int look = AddClue(leader, string.Format("%1 does the talking for them: five or six people, nobody's colours, rifles held low. They watch your hands the whole time. \"We've heard of most people. Depends what we've heard.\"", leader));
-		if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vCamp, 3, 8), 0, "", "Trade (food for some of their kit)|Ask what they've seen", look, "Talk to " + leader))
+		if (!SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vCamp, 3, 8), 0, "", "[Trade] Food for some of their kit|Ask what they've seen", look, "Talk to " + leader))
 			return false;
 
 		m_Group = new RZ_EventGroup(Prefab(gm), m_vCamp);

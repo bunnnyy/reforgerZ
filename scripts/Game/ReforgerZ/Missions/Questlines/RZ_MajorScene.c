@@ -493,6 +493,10 @@ class RZ_QM_MajorScene : RZ_QM_HalcyonScene
 			return false;
 		}
 
+		// A trick that lasts: its later stages know who passed (`<key>.disguised`, the player's id)
+		if (c.m_iTrick > 0)
+			run.SetFlag(run.m_sKey + ".disguised", playerId);
+
 		if (c.m_iTradeCount > 0)
 			RZ_Errands.TakeItems(me, c.m_eTradeItem, c.m_iTradeCount);
 

@@ -173,7 +173,50 @@ class RZ_ErrandsDealer
 				mult *= 1.2;
 		}
 
+		// A margin card answers its major's act: x1.3 while the act's reason is posted
+		if (MajorReason(e) != null)
+			mult *= 1.3;
+
 		return mult;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The major a margin card belongs to ("" none).
+	static string MajorOf(string cardKey)
+	{
+		if (cardKey == "weather_write_it_down" || cardKey == "clean_rifles")
+			return "orders";
+
+		if (cardKey == "clean_paper" || cardKey == "chairs_for_the_reading")
+			return "proof";
+
+		if (cardKey == "count_sitting")
+			return "every_name";
+
+		if (cardKey == "clean_glasses")
+			return "book";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The posted `major.<key>` reason a margin card answers, null if none.
+	static RZ_Reason MajorReason(RZ_Errand e)
+	{
+		string major = MajorOf(e.m_Def.m_sKey);
+		if (major.IsEmpty() || !RZ_WorldFacts.Get())
+			return null;
+
+		return RZ_WorldFacts.Get().Memory().FindReason("major." + major);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Dealt: a margin card answering its major's act opens with the act's line.
+	void OpenWithReason(RZ_Errand e)
+	{
+		RZ_Reason r = MajorReason(e);
+		if (r)
+			m_Dealer.GetGM().NotifyPlayerAs(e.m_iAsker, e.m_sGiverTitle, r.text, RZ_ENoticeTag.MISSION);
 	}
 
 	// ================================================================ "The last one who said that lied"

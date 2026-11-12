@@ -229,6 +229,14 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		if (!m_Escort.Begin(gm, m_vPos))
 			return false;
 
+		// A pack that hunts their road at its hour: they ask for the walk past it (and it pays a little more)
+		string hunt = RZ_TribeContract.RoadHuntLine(gm, m_vPos, h.m_vPos, 300, RZ_EFaction.SURVIVORS);
+		if (!hunt.IsEmpty())
+		{
+			m_sBrief += " " + hunt;
+			m_fRewardScale = 1.15;
+		}
+
 		int nearest = gm.GetSafehouses().FindNearest(m_vPos, 3500);
 		if (nearest >= 0 && nearest != m_iHouse)
 			m_iNearer = nearest;

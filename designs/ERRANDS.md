@@ -16,14 +16,6 @@ described in [docs/ERRANDS.md](../docs/ERRANDS.md); the lie store and the witnes
 - **The run-ups left as words:** Still Walking's board note at his house when he got the dose; The Last
   Tin's watch as a real watch.
 
-<<<<<<< HEAD
-=======
-## Locals
-
-- Shown only while a player who knows them is within 100 m. VERIFY: per-player action labels (today a
-  label is the same for everyone).
-- A local's spot used as a place (the gate at dusk, the stove at supper).
-
 ## Cards on traces
 
 - **Anchored on Traces' scenes** (from the Traces design, whose own part is built:
@@ -31,15 +23,6 @@ described in [docs/ERRANDS.md](../docs/ERRANDS.md); the lie store and the witnes
   (a driver's papers, a soldier's tags); a stranger's fresh event at a live trace's place. Traces never
   deals an errand: the dealer finds the scene with `RZ_Scenes.SceneNear(kinds, pos, radius, at, key)`.
 
-## The catalogue
-
-- **His Effects in full:** the effects as a carried item; the jacket and the photo frame at the fence (3
-  and 10 Red Hand Favor) under the witness rule; a kit piece off a man you killed refused (*"You'd know.
-  You were there."*, +3 Infamy with his faction); once per dead man, 3 times a life.
-- **The Name on the Tag's named body** at a job's site: carry the ID to the house or post it names, 4
-  Favor from that faction. Red Hand crews don't bury their dead, so it's thanks only.
-
->>>>>>> claude/sleepy-volta-nwm433
 ## The rest
 
 - The `mission_errand` icon for the journal row (the journal uses the unarmed icon today).

@@ -123,6 +123,14 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 		if (quiet)
 			m_sBrief += string.Format(" \"The short way is straight through %1. Quiet in there pays better. Loud, and you'd better hope the letters are worth it.\"", quiet.m_sName);
 
+		// A pack that hunts the road at its hour: the courier asks you to see the letters past it
+		string hunt = RZ_TribeContract.RoadHuntLine(gm, m_vStart, dest, 300, RZ_EFaction.SURVIVORS);
+		if (!hunt.IsEmpty())
+		{
+			m_sBrief += " " + hunt;
+			m_fRewardScale = Math.Max(m_fRewardScale, 1.15);
+		}
+
 		// Who the letter is really for (a truth, kept per destination for 3 season days)
 		array<string> truths = {"as_said", "the_writer", "crew"};
 		array<float> weights = {0.5, 0.3, 0};
