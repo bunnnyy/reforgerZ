@@ -4,6 +4,12 @@
 //! stations, the sealed checkpoints, world events; never contracts, which give a rough area only)
 //! and sends it to this player alone when the map opens, then every 20 s while it's open.
 //!
+//! Each place is a marker (design A): a solid disc in its owner's colour with the faction's emblem on it
+//! in bone, a thin near-black ring round it with a small gap, and at the bottom right a small badge for
+//! what the place is (stronghold, outpost, safehouse, the lab). Places without a faction (the stations,
+//! world events, checkpoints) get the same disc and ring in their own colour with their glyph, no badge.
+//! A pack's range ring stays a ring sized to its ground.
+//!
 //! You are here: the local player's own marker, an arrow on a dark disc turned to where they face,
 //! drawn above the other icons and moved every frame while the map is open. It's client-side only,
 //! from the controlled entity; nothing is sent. It shows with or without vanilla's markers.
@@ -17,9 +23,12 @@
 //! layout, the layer does nothing and the vanilla text markers stay (and there's no legend).
 class RZ_MapIconsUI : SCR_MapUIBaseComponent
 {
-	protected static const float HALF = 24;	// half the icon's size (48), to centre it on the spot
+	protected static const float HALF = 17;	// half the marker's size (34), to centre it on the spot
+	protected static const float RING_MIN = 24;	// a range ring is 48 to 320 across
+	protected static const float RING_MAX = 160;
+	protected static const float LABEL_W = 280;	// the label's width, centred under the marker
 	protected static const float LABEL_MERGE = 40;	// markers this close (m) share one label
-	protected static const float SELF_HALF = 30;	// half the you-are-here marker's size (60)
+	protected static const float SELF_HALF = 22;	// half the you-are-here marker's size (44)
 	protected static const string LEGEND_ACTION = "RZ_MapLegend";
 
 	protected static bool s_bLegendHidden;	// the player hid the legend (this session)
@@ -131,15 +140,21 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 				return;
 
 			int faction = RZ_UIText.Int(f, 2);
-			Color c = RZ_UIColor.Bone();
 			string icon = RZ_UIText.Str(f, 1);
-			if (faction >= 0)
-				c = RZ_UIColor.Faction(faction);
-			else if (icon == "marker_event" || icon == "marker_checkpoint" || icon == "marker_range")
-				c = RZ_UIColor.Hazard();
+			if (RZ_UIText.Int(f, 6) > 0)
+			{
+				// A range ring: the ring alone, in the faction's colour (the tracked job's giver) or hazard
+				Color ringColor = RZ_UIColor.Hazard();
+				if (faction >= 0)
+					ringColor = RZ_UIColor.Faction(faction);
 
-			RZ_UIW.Icon(w, "Icon", icon);
-			RZ_UIW.Tint(w, "Icon", c);
+				Solo(w, icon, ringColor, RING_MIN * 2);
+			}
+			else
+			{
+				Paint(w, icon, faction);
+			}
+
 			RZ_UIW.SetText(w, "Label", RZ_UIText.Str(f, 5));
 			m_aIcons.Insert(w);
 			m_aX.Insert(RZ_UIText.Int(f, 3));
@@ -150,6 +165,124 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 
 		MergeLabels();
 		MakeSelf();	// made again after the icons, so it's drawn above them
+	}
+
+	// ================================================================ The marker
+	//------------------------------------------------------------------------------------------------
+	//! Paints one marker in `root` (a map icon, or one of the key's): Ring near-black, Disc in the
+	//! owner's colour, Icon the faction's emblem (or the place's glyph) on it, and the badge, if the
+	//! root has one, shown only for a faction's place.
+	protected static void Paint(Widget root, string icon, int faction)
+	{
+		RZ_UIW.Icon(root, "Ring", "marker_ring");
+		RZ_UIW.Tint(root, "Ring", RingColor());
+		RZ_UIW.Icon(root, "Disc", "marker_disc");
+		RZ_UIW.Tint(root, "Disc", DiscColor(icon, faction));
+		RZ_UIW.Icon(root, "Icon", Glyph(icon, faction));
+		RZ_UIW.Tint(root, "Icon", GlyphColor(icon, faction));
+
+		string badge = "";
+		if (faction >= 0)
+			badge = Badge(icon);
+
+		PaintBadge(root, badge);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The badge in `root` (BadgeBack and Badge): a dark chip with the bone glyph; hidden when "".
+	protected static void PaintBadge(Widget root, string badge)
+	{
+		bool shown = !badge.IsEmpty();
+		RZ_UIW.Show(root, "BadgeBack", shown);
+		RZ_UIW.Show(root, "Badge", shown);
+		if (!shown)
+			return;
+
+		RZ_UIW.Icon(root, "BadgeBack", "marker_disc");
+		RZ_UIW.Tint(root, "BadgeBack", RingColor());
+		RZ_UIW.Icon(root, "Badge", badge);
+		RZ_UIW.Tint(root, "Badge", RZ_UIColor.Bone());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One image alone, `size` across from the root's top left (a range ring, you-are-here): the
+	//! disc, ring and badge hidden.
+	protected static void Solo(Widget root, string icon, Color c, float size)
+	{
+		RZ_UIW.Show(root, "Ring", false);
+		RZ_UIW.Show(root, "Disc", false);
+		RZ_UIW.Show(root, "BadgeBack", false);
+		RZ_UIW.Show(root, "Badge", false);
+		Widget img = RZ_UIW.Find(root, "Icon");
+		RZ_UIW.SetPos(img, 0, 0);
+		RZ_UIW.SetSize(img, size, size);
+		RZ_UIW.SetSize(root, size, size);
+		RZ_UIW.Icon(root, "Icon", icon);
+		RZ_UIW.Tint(root, "Icon", c);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ring round every marker and the badges' chip: near-black (#121416).
+	protected static Color RingColor()
+	{
+		return RZ_UIW.Rgb(18, 20, 22);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whose it is: the faction's colour; hazard yellow for events and checkpoints; steel grey for the
+	//! stations (dark enough for the bone glyph to read on it).
+	protected static Color DiscColor(string icon, int faction)
+	{
+		if (faction >= 0)
+			return RZ_UIColor.Faction(faction);
+
+		if (icon == "marker_event" || icon == "marker_checkpoint")
+			return RZ_UIColor.Hazard();
+
+		return RZ_UIW.Rgb(78, 84, 89);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bone on the disc, except near-black on hazard yellow, where bone wouldn't read.
+	protected static Color GlyphColor(string icon, int faction)
+	{
+		if (faction < 0 && (icon == "marker_event" || icon == "marker_checkpoint"))
+			return RingColor();
+
+		return RZ_UIColor.Bone();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the disc: a faction's emblem; for a place without one, its glyph (no plate).
+	protected static string Glyph(string icon, int faction)
+	{
+		if (faction >= 0)
+			return RZ_UIText.FactionIcon(faction);
+
+		switch (icon)
+		{
+			case "marker_power": return "glyph_power";
+			case "marker_radio": return "glyph_radio";
+			case "marker_event": return "glyph_event";
+			case "marker_checkpoint": return "glyph_checkpoint";
+		}
+
+		return icon;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a faction's place is, "" for none.
+	protected static string Badge(string icon)
+	{
+		switch (icon)
+		{
+			case "marker_stronghold": return "badge_stronghold";
+			case "marker_outpost": return "badge_outpost";
+			case "marker_safehouse": return "badge_safehouse";
+			case "marker_lab": return "badge_lab";
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -193,8 +326,8 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every frame while the map is open: the icons follow pan and zoom; a range ring is sized to its
-	//! radius on the map (48 to 320 units across).
+	//! Every frame while the map is open: the markers follow pan and zoom; a range ring is sized to its
+	//! radius on the map (48 to 320 units across), its label kept centred under it.
 	protected void Place()
 	{
 		foreach (int i, Widget w : m_aIcons)
@@ -204,12 +337,16 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 				continue;
 
 			float half = HALF;
-			float ex, ey;
-			if (m_aRadius[i] > 0 && RZ_UIW.MapToScreen(m_MapEntity, m_aX[i] + m_aRadius[i], m_aZ[i], ex, ey))
+			if (m_aRadius[i] > 0)
 			{
-				half = Math.Clamp(Math.AbsFloat(ex - sx), HALF, 160);
+				half = RING_MIN;
+				float ex, ey;
+				if (RZ_UIW.MapToScreen(m_MapEntity, m_aX[i] + m_aRadius[i], m_aZ[i], ex, ey))
+					half = Math.Clamp(Math.AbsFloat(ex - sx), RING_MIN, RING_MAX);
+
 				RZ_UIW.SetSize(w, half * 2, half * 2);
 				RZ_UIW.SetSize(RZ_UIW.Find(w, "Icon"), half * 2, half * 2);
+				RZ_UIW.SetPos(RZ_UIW.Find(w, "Label"), half - LABEL_W / 2, half * 2 + 4);
 			}
 
 			RZ_UIW.SetPos(w, sx - half, sy - half);
@@ -218,7 +355,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 
 	// ================================================================ You are here
 	//------------------------------------------------------------------------------------------------
-	//! Two map icons from UI > Map icon layout, 60 across: marker_self_back tinted dark, and the
+	//! Two map icons from UI > Map icon layout, 44 across: marker_self_back tinted dark, and the
 	//! marker_self arrow in hazard yellow on it. Nothing without the layout.
 	protected void MakeSelf()
 	{
@@ -239,11 +376,8 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		if (!w)
 			return null;
 
-		RZ_UIW.Icon(w, "Icon", icon);
-		RZ_UIW.Tint(w, "Icon", c);
+		Solo(w, icon, c, SELF_HALF * 2);
 		RZ_UIW.SetText(w, "Label", "");
-		RZ_UIW.SetSize(w, SELF_HALF * 2, SELF_HALF * 2);
-		RZ_UIW.SetSize(RZ_UIW.Find(w, "Icon"), SELF_HALF * 2, SELF_HALF * 2);
 		return w;
 	}
 
@@ -299,31 +433,28 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		if (!m_wLegend)
 			return;
 
-		// Its icons, in the colours the map draws them in (a stronghold and an outpost in two
-		// factions' colours, as examples: the colour says whose it is)
-		LegendIcon("marker_stronghold", RZ_UIColor.Faction(RZ_EFaction.MILITARY));
-		LegendIcon("marker_outpost", RZ_UIColor.Faction(RZ_EFaction.BANDITS));
-		LegendIcon("marker_safehouse", RZ_UIColor.Faction(RZ_EFaction.SURVIVORS));
-		LegendIcon("marker_lab", RZ_UIColor.Faction(RZ_EFaction.INSTITUTE));
-		LegendIcon("marker_event", RZ_UIColor.Hazard());
-		LegendIcon("marker_checkpoint", RZ_UIColor.Hazard());
-		LegendIcon("marker_power", RZ_UIColor.Bone());
-		LegendIcon("marker_radio", RZ_UIColor.Bone());
-		LegendIcon("marker_range", RZ_UIColor.Hazard());
+		// Drawn as the map draws them: the four factions' discs, the four place badges, then the world
+		Paint(RZ_UIW.Find(m_wLegend, "Key_haven"), "", RZ_EFaction.SURVIVORS);
+		Paint(RZ_UIW.Find(m_wLegend, "Key_bastion"), "", RZ_EFaction.MILITARY);
+		Paint(RZ_UIW.Find(m_wLegend, "Key_redhand"), "", RZ_EFaction.BANDITS);
+		Paint(RZ_UIW.Find(m_wLegend, "Key_halcyon"), "", RZ_EFaction.INSTITUTE);
+		PaintBadge(RZ_UIW.Find(m_wLegend, "Badge_stronghold"), "badge_stronghold");
+		PaintBadge(RZ_UIW.Find(m_wLegend, "Badge_outpost"), "badge_outpost");
+		PaintBadge(RZ_UIW.Find(m_wLegend, "Badge_safehouse"), "badge_safehouse");
+		PaintBadge(RZ_UIW.Find(m_wLegend, "Badge_lab"), "badge_lab");
+		Paint(RZ_UIW.Find(m_wLegend, "Key_event"), "marker_event", -1);
+		Paint(RZ_UIW.Find(m_wLegend, "Key_checkpoint"), "marker_checkpoint", -1);
+		Paint(RZ_UIW.Find(m_wLegend, "Key_power"), "marker_power", -1);
+		Paint(RZ_UIW.Find(m_wLegend, "Key_radio"), "marker_radio", -1);
+		Widget rangeKey = RZ_UIW.Find(m_wLegend, "Key_range");
+		RZ_UIW.Icon(rangeKey, "Icon", "marker_range");
+		RZ_UIW.Tint(rangeKey, "Icon", RZ_UIColor.Hazard());
 		bool prompt = RZ_UIW.AddPrompt(m_wLegend, "LegendPrompt", LEGEND_ACTION, "Hide the key");
 		RZ_UIW.Show(m_wLegend, "LegendPromptText", !prompt);
 		// VERIFY: RZ_MapLegend (MapContext) fires while the full-screen map is open, and pad Y there
 		// does nothing else (vanilla binds Y in the map only with D-pad left, held, to dismiss a hint)
 		GetGame().GetInputManager().AddActionListener(LEGEND_ACTION, EActionTrigger.DOWN, OnToggleLegend);
 		FadeLegend(settings);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! One of the legend's icons (Key_<icon> in the layout): its image from the imageset, and its colour.
-	protected void LegendIcon(string icon, Color c)
-	{
-		RZ_UIW.Icon(m_wLegend, "Key_" + icon, icon);
-		RZ_UIW.Tint(m_wLegend, "Key_" + icon, c);
 	}
 
 	//------------------------------------------------------------------------------------------------

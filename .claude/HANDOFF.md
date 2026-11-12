@@ -124,13 +124,43 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (PC), **handed over from the PC, all approved by the author in play-tests. Please build these.** Work in progress is pushed as branches `pc-wip/*`. Merge `claude/sleepy-volta-nwm433` into each first. None is compiled or tested unless it says so. Briefs, as the author asked:
+  1. **Openings phase 1** (`designs/OPENINGS.md`; branch `pc-wip/openings-phase1`: the place roll at spawn, the contact and the chain on handed errands, the start picker removed; mid-task, at the talk adapter).
+     - **Spawn:** a random place that fits the background, with the spawn screen's picker removed and no chosen starts ever. The "out of the hiding place" scene.
+     - **The contact:** someone from before speaks first, never "you're new"; everyone has been trapped since the seal. Lines in `dialogue/openings/`.
+     - **The chain:** one three-step chain on the errand engine with the story beats, ending by background: Nurse, Doctor and Lab Tech at Halcyon; Ex-Con and Raider at the Red Hand; Soldier and Police at Bastion; everyone else at the Haven. About 15 minutes.
+     - **Rules:** the tracker follows each step. This is the ONLY quest that may start without interacting with someone.
+     - **Docs:** move what's built out of the design into the docs.
+  2. **Jobs only by interaction** (no branch yet).
+     - **Offers:** every job starts from a person (talk) or a thing (a board, a note, a radio set you use, a clue), except the Openings chain. No offers out of nowhere and no jobs on the radio; a job you've only heard of is a Radio-tab entry or rumour pointing to its giver.
+     - **World events:** news in the Radio tab, not quests.
+     - **Tabs:** the order becomes **Standing, Quests, Radio, Journal, The season**.
+     - **Journal:** the history of finished, failed and abandoned jobs (icon, name, giver, result, when, outcome line). Today's Journal content goes under a **What you know** group.
+     - **Check:** run the runtime test after.
+  3. **The talk screen** (branch `pc-wip/talk-typewriter-nametags`, mid-task).
+     - **Paging:** down on the last reply goes to the next page, up on the first goes back.
+     - **Advancing:** their line never auto-advances. It types out (A finishes it), then a bouncing ▼ and a "2 / 4" count show, and A goes on. The footer prompt reads "A Continue" / "A Skip".
+     - **One Talk prompt per person:** everything else becomes hub replies. Trade opens the shop; the trial dose shows only when it applies, else greyed; errands and the rest likewise. Remove **"Check standing and work"** entirely (it's in the notebook). The old actions stay only as the fallback without the talk layout. Vanilla actions are kept.
+     - **Nametags:** within about 8 m, a small tag above people who can talk: name, position (role), who they're with (faction in its colour). Line of sight only, never infected or players, a few at most, client-side.
+  4. **Radio and stove menus** (branch `pc-wip/radio-stove-menus`, mid-task, writing the stove section).
+     - **View radio:** an action next to vanilla's radio actions opens a radio screen with everything: the channels you can hear, their latest lines and the full log, with a filter. Don't edit `RZ_Notebook.c` for it.
+     - **Stove:** a stove, oven or fireplace opens a cooking screen like the crafting one: boil water, the home remedy, Metabolism's cookables. Inputs against your pack, time, Cook/Boil, server-checked, with the actions as the fallback.
+  5. **Loot** (branch `pc-wip/loot-density`, mid-task: every destructible building now reaches loot).
+     - **Amount:** the author finds "way too little loot". Fix the root causes: the protected radius around faction places, the put-out rate and radius, empty rolls, and the anchors (furniture found as static entities?). Prefer filling vanilla furniture storages ("Default first").
+     - **Duplicates:** the author saw gloves ×2 and a backpack ×2 in one room's Vicinity. Look for double put-out of a building, duplicate picks in one roll, or seeds repeating across neighbours.
+     - **Logs:** one per building (key, type, anchors, items) and a periodic summary.
+  6. **The map's objective** (no branch).
+     - **Only the tracked job's current objective** shows, for its player only.
+     - **A known spot:** an **amber diamond** (the tracker's colour, about #E8B23A, with a #121416 outline and a dark centre dot), labelled.
+     - **A search only:** **style 1**, a soft amber fill (about 12–15%) with a thin solid amber edge. Remove the old dashed and striped mission circle.
+     - **Map key:** add a row "Your objective / Search area".
+  The PC will re-import the icon atlas in Workbench after any icon change, and play-test each piece as it lands. Say on the board when one is pushed.
+
 - 2026-11-12 (PC): merged from the author's play-test: the talk screen New Vegas style (compact box, 5 replies, [Admin] sub-list, grey when heard, keys 1-5), map icons 48 px, the Standing page as G2 (rows of icons, 9 new icons, no Fame/Infamy grid), 96 people looks with RZ_Looks.c and PickLook at every faction spawn, camp life laid out by plans (kits are plans now: m_vPlan, m_fPlanYaw, footprints; counters; SetGroupSmartAction finds the sentinel), the notebook item opened by the HUD's held-gadget check, Metabolism water (RZ_Water_Dirty). Claims cleared. Not yet seen in play.
 
 ## Claims
 
-- PC, 2026-11-12: Openings phase 1 (designs/OPENINGS.md): the spawn screen's start picker and place roll (UI/RZ_SpawnMenu.c, the spawn points), the hiding-place scene, the someone-from-before contact (dialogue/openings/), the first three-step chain on the errand engine, the spawn scenarios and "a wanderer finds you" for players who get an opening. Please leave those alone until it lands.
-- PC, 2026-11-12: the map markers restyled (RZ_MapIcons.c, RZ_MapIcon and RZ_MapLegend layouts, new icons).
-- PC, 2026-11-12, from the author: jobs only through a person or a thing (no offers out of nowhere, no jobs on the radio), world events in the Radio tab not Quests, tab order Standing, Quests, Radio, Journal, The season, and the Journal as the history of finished jobs. Touches the mission offers, the Quests and Journal pages and RZ_Notebook.c; please leave them until it lands.
+- Cloud, 2026-11-12: all six of "For the cloud" (openings phase 1, jobs only by interaction, the talk screen, the radio and stove menus, loot, the map's objective). Each is said here when pushed.
 
 ## Status
 
