@@ -266,7 +266,7 @@ class RZ_WreckBoots
 			b.m_aItems.Insert(extra);
 		}
 
-		SCR_InventoryStorageManagerComponent mgr = SCR_InventoryStorageManagerComponent.Cast(b.m_Box.FindComponent(SCR_InventoryStorageManagerComponent));
+		InventoryStorageManagerComponent mgr = InventoryStorageManagerComponent.Cast(b.m_Box.FindComponent(InventoryStorageManagerComponent));
 		foreach (RZ_BootItem it : b.m_aItems)
 		{
 			if (it.m_Ent && (!mgr || !mgr.TryDeleteItem(it.m_Ent)))
@@ -489,7 +489,7 @@ class RZ_WreckBoots
 				continue;
 			}
 
-			if (RZ_Util.InsertIntoInventory(b.m_Box, it.m_Ent))
+			if (RZ_Util.InsertIntoStorage(b.m_Box, it.m_Ent))
 				continue;
 
 			if (!m_bFitWarned)

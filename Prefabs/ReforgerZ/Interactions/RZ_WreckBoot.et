@@ -25,7 +25,7 @@ GenericEntity {
    MaxItemSize 100 100 100
    m_fMaxWeight 200
   }
-  SCR_InventoryStorageManagerComponent "{D76BC36D5AB4CFB7}" {
+  SCR_VehicleInventoryStorageManagerComponent "{D76BC36D5AB4CFB7}" {
   }
   ActionsManagerComponent "{AD27427DE87A6411}" {
    ActionContexts {
