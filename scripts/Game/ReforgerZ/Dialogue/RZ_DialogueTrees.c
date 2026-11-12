@@ -635,8 +635,24 @@ class RZ_DialogueTrees
 				return true;
 			}
 
+			// Never during a parley: you came to talk
+			RZ_Checkpoints parleys = m_GM.GetCheckpoints();
+			if (parleys && parleys.GetParley() && parleys.GetParley().IsRunning(pid))
+			{
+				s.m_aNew.Insert("(Not now. You came here to talk.)");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
 			result = RZ_Checks.Threaten(m_GM, pid, ctx.m_sKey, c.m_iCheckFaction, -1, Difficulty(ctx, c), ctx.m_bStronghold, RZ_Checks.THREAT_INFAMY, c.m_sFavoured);
 			m_Memory.AddRegard(pid, ctx.m_sKey, "threatened");
+
+			// A threatened leader or wanderer remembers being crossed (this life)
+			string threatened = m_GM.GetProfile(pid).m_sIdentity;
+			if (ctx.m_Leader)
+				ctx.m_Leader.Remember(threatened, RZ_Leaders.MEM_CROSSED);
+			else if (ctx.m_Wanderer)
+				ctx.m_Wanderer.Remember(threatened, RZ_Wanderers.MEM_WRONGED);
 			verdict = FearVerdict(result);
 		}
 		else if (c.m_sCheck == "lie" && !IsTrue(ctx, c))

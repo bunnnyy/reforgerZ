@@ -5970,7 +5970,7 @@
    "category": "Factions",
    "object": "Reputation",
    "field": "m_ReputationSettings",
-   "covers": "**Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations))"
+   "covers": "**Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations))"
   },
   {
    "category": "Voice",
@@ -7054,7 +7054,17 @@
     "m_bLifeMemory": "1",
     "m_bGroupRules": "1",
     "m_bParley": "1",
-    "m_bSettling": "1"
+    "m_bSettling": "1",
+    "m_fParleyHours": "2",
+    "m_fParleySquadRadius": "1000",
+    "m_fParleyAloneRadius": "150",
+    "m_fParleyHoldRadius": "200",
+    "m_fParleyWalkSeconds": "90",
+    "m_iSettleFame": "10",
+    "m_iSettleInfamy": "5",
+    "m_iSettleDayCap": "10",
+    "m_bGateBarks": "1",
+    "m_bOthersHear": "1"
    }
   },
   {

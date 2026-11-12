@@ -318,6 +318,36 @@ modded class RZ_GameModeComponent
 		}
 	}
 
+	void RZT_VoiceCycle()
+	{
+		int since = m_iRZTSec - 120;
+		if (since < 0 || since > 1800)
+			return;
+
+		int step = since / 300 + 1;
+		if (since % 300 == 0)
+		{
+			if (step <= 5)
+				RZ_VoiceSettings.Get().m_iForceMood = step;
+			else
+				RZ_VoiceSettings.Get().m_iForceMood = 0;
+		}
+
+		if (since % 300 != 290 || step > 5 || !GetFacts())
+			return;
+
+		vector at = vector.Zero;
+		if (RZT_Fake.s_Ent)
+			at = RZT_Fake.s_Ent.GetOrigin();
+
+		for (int f = 0; f < 4; f++)
+		{
+			string radio = RZ_VoiceBank.PickShared(this, "radio_tail", f);
+			string face = RZ_VoiceBank.PickFor(this, "opener", f, "warm", null, RZT_Fake.ID, at);
+			Print(string.Format("RZT voice %1 faction %2: radio [%3] face [%4]", RZ_SeasonMood.Name(GetFacts().SeasonMood()), f, radio, face));
+		}
+	}
+
 	void RZT_Tick()
 	{
 		m_iRZTSec++;
@@ -343,6 +373,13 @@ modded class RZ_GameModeComponent
 		// Every conversation's nodes, once, for the fake player; a lie, a promise and a callback
 		if (m_iRZTSec == 8 && RZ_DialogueTrees.Get())
 			Print("RZT " + RZ_DialogueTrees.Get().RunSelfTest(RZT_Fake.ID));
+		// Reputation's cells, the credit rule and the budget, on the fake player (put back after)
+		if (m_iRZTSec == 9)
+			Print("RZT " + RZ_RepGates.SelfTest(this, RZT_Fake.ID));
+
+		// The voice: Voice > Force mood cycles the five moods (a mood check every 5 minutes), and each
+		// one's picks are printed before the next, so the in-game picker can be read against voice_sim
+		RZT_VoiceCycle();
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())

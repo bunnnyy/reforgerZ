@@ -26,12 +26,10 @@ lines the author approved. The plan is [PLAN.md](PLAN.md#the-build-order).
 |---|---|---|
 | Promises (Hand to Hand, lock cards) | Errands | Not built |
 | The look's −1 at the lock, the word overlays | Disguise | Looks unchanged |
-| `CanSideWith` as reputation's own | Reputation | The finale's own (built) |
 | `Forgive()` for Hand it in at a checkpoint | Reputation | Not built |
 | `SetPresenceFloor` | Majors | No floor |
 | `RZ_QuestVote` for pacts | Majors | The controller's own tally (built) |
 | The decide-scene hold | Missions | The release scene's first pick, 3 minutes (built) |
-| Radio speakers (the Independent commits on the open channel) | Dialogue | The Doctor or the Courier on the road (built) |
 | Tagging more outcomes with route assets, and refusing a locked player an option whose asset is another route's | Missions ([MISSION_STYLE.md](MISSION_STYLE.md#route-assets-and-the-90-lock)) | The story records listed in docs/FINALE.md give assets (built) |
 
 **Hand to Hand** (errands, up to 6 promises a player): a promised local in the same house as one of the

@@ -27,6 +27,7 @@ class RZ_DialogueWorld
 				return pack && pack.m_bHasAlpha;
 			}
 			case "declared": return profile.m_bBiteDeclared;
+			case "fresh": return profile.m_fLifeSeconds < 3600;
 			case "symptoms": return profile.m_iInfectionStage >= RZ_EInfectionStage.WEAKNESS;
 			case "group": return GroupNear(ctx);
 			case "secure": return Secure(pid, t.m_sArg);

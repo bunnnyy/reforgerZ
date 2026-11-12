@@ -41,6 +41,82 @@ class RZ_VoiceDefaults
 		Owed(lines);
 		Changes(lines);
 		Relations(lines);
+		Wanderers(lines);
+		RadioTails(lines);
+		NewLifeRoutes(lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The open channels' tails (kind "radio_tail", RZ_VoiceBank.PickShared): one short line after a
+	//! piece of chatter, picked once for everyone who hears it. Never a player, never a number the
+	//! world doesn't have. Plain lines outnumber the jokes; a channel in grief says only plain ones.
+	protected static void RadioTails(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+		RZ_ERegister J = RZ_ERegister.JOKE;
+
+		Line(lines, "haven.tail.1", HAVEN, "radio_tail", "", P, 0, "", "Haven out.");
+		Line(lines, "haven.tail.2", HAVEN, "radio_tail", "", P, 0, "", "Doors are open. Bring yourself.");
+		Line(lines, "haven.tail.3", HAVEN, "radio_tail", "", W, 0, "", "Soup's thin. It's honest, though.");
+		Line(lines, "haven.tail.4", HAVEN, "radio_tail", "", W, 0, "", "Somebody bring the big pot back. You know who you are.");
+		Line(lines, "bastion.tail.1", BASTION, "radio_tail", "", P, 0, "", "Bastion out.");
+		Line(lines, "bastion.tail.2", BASTION, "radio_tail", "", P, 0, "", "Acknowledge.");
+		Line(lines, "bastion.tail.3", BASTION, "radio_tail", "", W, 0, "", "Radio discipline, all stations. That includes you, post two.");
+		Line(lines, "bastion.tail.4", BASTION, "radio_tail", "", W, 0, "", "Still nothing from Command. Logged.");
+		Line(lines, "redhand.tail.1", REDHAND, "radio_tail", "", P, 0, "", "That's all.");
+		Line(lines, "redhand.tail.2", REDHAND, "radio_tail", "", J, 0, "", "Tolls are up. Morale is up. One of those is a lie.");
+		Line(lines, "redhand.tail.3", REDHAND, "radio_tail", "", J, 0, "", "If you're Bastion and you're listening: hello. Pay the toll.");
+		Line(lines, "redhand.tail.4", REDHAND, "radio_tail", "", W, 0, "", "Book's open. Book's always open.");
+		Line(lines, "halcyon.tail.1", HALCYON, "radio_tail", "", P, 0, "", "Halcyon out.");
+		Line(lines, "halcyon.tail.2", HALCYON, "radio_tail", "", P, 0, "", "Thank you for your cooperation.");
+		Line(lines, "halcyon.tail.3", HALCYON, "radio_tail", "", W, 0, "", "The director asks that nobody round anything up.");
+
+		// Feud and truce on the channels (the same for everyone who hears it)
+		Line(lines, "bastion.tail.truce", BASTION, "radio_tail", "", W, 0, "truce:redhand", "Joint patrol with the Red Hand tonight. Both sides counting the ammunition.");
+		Line(lines, "redhand.tail.truce", REDHAND, "radio_tail", "", J, 0, "truce:bastion", "We're friends with Bastion this week. Hide the good tins.");
+		Line(lines, "redhand.tail.feud", REDHAND, "radio_tail", "", P, 0, "feud:bastion", "Bastion's trucks are fair game. Pass it on.");
+		Line(lines, "haven.tail.feud", HAVEN, "radio_tail", "", P, 0, "feud:redhand", "Red Hand crews aren't welcome at the doors while this lasts.");
+		Line(lines, "halcyon.tail.feud", HALCYON, "radio_tail", "", P, 0, "feud:redhand", "Field teams avoid the toll roads until further notice.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A locked identity on a new life, at a leader of its route: they've heard (kind "route", the
+	//! first visit each real day; RZ_RepVoice.RouteLine).
+	protected static void NewLifeRoutes(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		Line(lines, "haven.route.newlife", HAVEN, "route", "", P, 0, "route:in & fresh", "\"New face. Somebody said you're with us. Then you're with us.\"");
+		Line(lines, "bastion.route.newlife", BASTION, "route", "", P, 0, "route:in & fresh", "\"Different face, same name on the roster. Somebody said you're with us.\"");
+		Line(lines, "redhand.route.newlife", REDHAND, "route", "", P, 0, "route:in & fresh", "\"Somebody said you're with us. The book says so too. New face suits you.\"");
+		Line(lines, "halcyon.route.newlife", HALCYON, "route", "", P, 0, "route:in & fresh", "\"A new subject on an old record. Somebody said you're with us.\"");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The wanderers' greeting (kind "wanderer", RZ_RepVoice.WandererGreeting, Trees on): by the
+	//! manner of your Haven standing (the Deserter: Bastion's, reversed), after what they remember of
+	//! you this life. Plain voice: the road's people belong to nobody.
+	protected static void Wanderers(array<ref RZ_VoiceLine> lines)
+	{
+		RZ_ERegister P = RZ_ERegister.PLAIN;
+		RZ_ERegister W = RZ_ERegister.WRY;
+
+		Line(lines, "wanderer.greet.unknown.1", HAVEN, "wanderer", "unknown", P, 0, "", "\"Don't know you. That's not a complaint. Out here it's almost a compliment.\"");
+		Line(lines, "wanderer.greet.unknown.2", HAVEN, "wanderer", "unknown", W, 0, "", "\"New face. Keep it that way, it suits you.\"");
+		Line(lines, "wanderer.greet.warm.1", HAVEN, "wanderer", "warm", P, 0, "", "\"The houses speak well of you. I listen to the houses.\"");
+		Line(lines, "wanderer.greet.warm.2", HAVEN, "wanderer", "warm", P, 0, "", "\"Oh, it's you. Good. Sit a minute, if you've got one.\"");
+		Line(lines, "wanderer.greet.devoted.1", HAVEN, "wanderer", "devoted", P, 0, "", "\"Every house from here to the river says your name at supper. Did you know that?\"");
+		Line(lines, "wanderer.greet.wary.1", HAVEN, "wanderer", "wary", P, 0, "", "\"I've heard things. I'll make up my own mind, in my own time.\"");
+		Line(lines, "wanderer.greet.wary.2", HAVEN, "wanderer", "wary", W, 0, "", "\"The houses count their spoons after you've been. I'm told.\"");
+		Line(lines, "wanderer.greet.fond.1", HAVEN, "wanderer", "fond", W, 0, "", "\"Half the stories about you are good. I like those ones.\"");
+		Line(lines, "wanderer.greet.needed.1", HAVEN, "wanderer", "needed", P, 0, "", "\"People say you're trouble. People also say you came when they called. Both, then.\"");
+		Line(lines, "wanderer.greet.hostile.1", HAVEN, "wanderer", "hostile", P, 0, "", "\"Stay over there. I'll talk, but from over here.\"");
+		Line(lines, "wanderer.greet.helped.1", HAVEN, "wanderer", "helped", P, 0, "", "\"You helped me once. I don't forget that. I forget most things.\"");
+		Line(lines, "wanderer.greet.saved.1", HAVEN, "wanderer", "saved", P, 0, "", "\"You. You're the reason I'm still walking. Sit. Please.\"");
+		Line(lines, "wanderer.greet.wronged.1", HAVEN, "wanderer", "wronged", P, 0, "", "\"I remember you. I'm talking because I'd rather not run again.\"");
+		Line(lines, "deserter.greet.bastion_hostile.1", BASTION, "wanderer_deserter", "hostile", W, 0, "", "\"Bastion wants you? Then we've got something in common. Pull up a rock.\"");
+		Line(lines, "deserter.greet.bastion_warm.1", BASTION, "wanderer_deserter", "warm", P, 0, "", "\"You're one of their favourites. Don't take it personally that I keep my distance.\"");
+		Line(lines, "deserter.greet.bastion_unknown.1", BASTION, "wanderer_deserter", "unknown", P, 0, "", "\"Bastion doesn't know you. Keep it that way. It's the best thing you've got.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------

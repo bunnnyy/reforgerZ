@@ -1780,7 +1780,7 @@ class RZ_LongTable
 		if (m_eState == RZ_ETableState.EXPOSED || Remembers(killer, MEM_SET_ON) || Remembers(killer, MEM_KNOWS))
 			return;
 
-		m_GM.AddInfamy(killer, RZ_EFaction.SURVIVORS, SHOT_INFAMY);
+		m_GM.AddInfamy(killer, RZ_EFaction.SURVIVORS, SHOT_INFAMY, "shot a farm's people", 0, "shot a farmer who'd done nobody any harm");
 		m_GM.NotifyPlayer(killer, "The Haven", string.Format("Word gets round that someone shot %1, of the farm past %2, who'd done nobody any harm that anyone knew of. (+%3 Haven Infamy)",
 			name, GetTownName(), SHOT_INFAMY));
 	}

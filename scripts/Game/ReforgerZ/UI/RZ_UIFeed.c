@@ -498,7 +498,8 @@ class RZ_UIFeed
 	//! H|player name|background|life
 	//! F|faction|fame|infamy|favor|tier|need|need line|rep (RZ_ERep)|notoriety|word|note|left to forgive (-1 no budget)|owed (0/1)
 	//! The fields after the need line are new (docs/REPUTATION.md, "Reputations"): older layouts
-	//! read the first eight and ignore the rest. word and owed come with reputation's later phases.
+	//! read the first eight and ignore the rest. The word is what the faction calls you; owed is 1 while
+	//! they owe you a hearing (the parley), and the note then says so.
 	//! L|faction|name|title|what they think of you
 	//! R|kind (0 truce, 1 feud)|faction a|faction b|minutes left
 	protected string BuildStanding(int playerId)
@@ -534,9 +535,18 @@ class RZ_UIFeed
 			if (RZ_ReputationSettings.Get().m_iForgiveBudget > 0)
 				left = p.ForgiveLeft(ef);
 
+			// The owed (the parley): the note says so; the word is what they call you to your face
+			int owed = 0;
+			string note = RZ_RepNames.Note(fame, infamy);
+			if (RZ_RepVoice.IsOwed(m_GM, playerId, f))
+			{
+				owed = 1;
+				note = "Hunted - they owe you a hearing";
+			}
+
 			RZ_UILine lnF = new RZ_UILine("F");
 			lnF.AddInt(f).AddInt(fame).AddInt(infamy).AddInt(p.GetFavor(ef)).AddInt(tier).AddInt(need).Add(needLine);
-			lnF.AddInt(rep).AddInt(RZ_RepNames.Notoriety(fame, infamy)).Add("").Add(RZ_RepNames.Note(fame, infamy)).AddInt(left).AddInt(0);
+			lnF.AddInt(rep).AddInt(RZ_RepNames.Notoriety(fame, infamy)).Add(RZ_RepVoice.Word(m_GM, playerId, f)).Add(note).AddInt(left).AddInt(owed);
 			s += lnF.End();
 		}
 

@@ -593,7 +593,14 @@ class RZ_Checkpoints
 			else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED))
 				m_GM.Say(playerId, title, post.m_eFaction, "\"You're one of ours. Why are you talking to me? Drive.\"");
 			else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
-				m_GM.Say(playerId, title, post.m_eFaction, string.Format("\"Red hand means stop. Stop means pay. %1 Favor, or walk round.\"", TollFor(playerId)));
+			{
+				// After the book burns or its debts die, the sign's in a new hand and the jokes stop
+				RZ_WorldFacts book = m_GM.GetFacts();
+				if (book && (book.Flag("book.burnt") > 0 || book.Flag("book.debts_dead") > 0))
+					m_GM.Say(playerId, title, post.m_eFaction, string.Format("A new sign, in someone else's hand: TOLL %1. No joke under it this time.", TollFor(playerId)));
+				else
+					m_GM.Say(playerId, title, post.m_eFaction, string.Format("\"Red hand means stop. Stop means pay. %1 Favor, or walk round.\"", TollFor(playerId)));
+			}
 			else
 				m_GM.Say(playerId, title, post.m_eFaction, "\"You don't know us and we don't know you. That's a turn-round face.\"");
 

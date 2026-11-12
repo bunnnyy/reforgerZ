@@ -95,7 +95,7 @@ acceleration at the commit.
 - **The Long Table's family as bodies** in the queue (three inside its 6), the mother's grace over a
   bowl she doesn't share, the boy talked out of the queue becoming the Kid or a child at a house.
 - **Residents and named people** in full: at least 8 plain lines per seat per ending for the week
-  ([TONE.md](TONE.md#312-repeats)); the cook, the sentry and the toll man's first-person lines; seeded
+  ([TONE.md](TONE.md#312-the-epilogue-weeks-jokes); the plain ones are built from parts, [WRITING.md](../docs/WRITING.md#the-voice-bank)); the cook, the sentry and the toll man's first-person lines; seeded
   names that never use LORE's people.
 - **Wanderers** preferring beats they've passed and closing work near them; the Preacher reading a
   town's recorded dead where he rests and ringing his bells at dusk; the Courier's last letters; a
@@ -131,7 +131,7 @@ acceleration at the commit.
 | Take Back a Town | Its givers (a resident's *"I'd like to see the kitchen once more"*, Retake the Town for towns with crawlers, Bastion's stencil job, the crews' loot rights); a resident taken home for an hour; the candle only while fewer than 8 towns carry marks; the house board's *CANDLES* count; up to 3 names in the hall line |
 | The Long Table | The basket as part of C1's proof; C1's and C2's last stages at the farm and the queue; at the queue, telling the corporal or the chair |
 | The Walk Out | The order by the route's terms (the roster, the houses' order, the authors), the Red Hand's place near the front walking you with the next shift, escorts of the queue up the road with One Last Toll on a Red Hand road, the safe ground on the road in processing, Bastion's CO and the boss staying behind, the fallback with no checkpoint (the land edge nearest the Haven's stronghold house) and off on an island map |
-| Settle Accounts | Borrowed kit handed back to its buyer's quartermaster, a leader at −2 made right, promises kept or owned up to, borrowed food carried back; Come In ([REPUTATION_NAMES.md](REPUTATION_NAMES.md#14-the-last-week-settling-accounts)) |
+| Settle Accounts | Borrowed kit handed back to its buyer's quartermaster, a leader at −2 made right, promises kept or owned up to, borrowed food carried back; Come In ([docs/REPUTATION.md](../docs/REPUTATION.md#working-off-infamy)) |
 | The Last Broadcast | The factions lobbying face to face; the lad selling airtime; bringing a name, a page or a reel recording as the say's price; the radio ham writing it down if the finale found him; the decide hold on the tally |
 | Personal Goals | The backgrounds not built yet (Soldier, Doctor, Raider, Elder, Drifter) and the built ones' full goals (the Nurse sitting with a bitten resident, the Hunter's cabin and the Ex-Con's stash in their goal's town, the Police Officer's truth taken to the person it's about) |
 | The Last Entry | The Haven's clerk reading a few at supper in processing |

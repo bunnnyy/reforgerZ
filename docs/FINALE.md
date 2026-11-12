@@ -544,9 +544,9 @@ betrayals. Nobody is killed off-screen, and consent is a check in every draw and
 ## Simplified, and not built yet
 
 *Simplified:* the commit node needs **Dialogue > Trees** (off by default): with Trees off the desks
-take the names; the Independent commits at the Doctor or the Courier on the road, not on the open
-channel (radio speakers aren't built); `CanSideWith` is the finale's own (unless Hunted, owed, or the
-price door); assets come from the story records listed above and the jobs that tag them by hand (the other
+take the names; the Independent commits at the Doctor or the Courier on the road, or on the open
+channel from any radio that can call ([DIALOGUE.md](DIALOGUE.md#the-finales-commit)); `CanSideWith` is the
+one rule (unless Hunted, owed, or the price door); assets come from the story records listed above and the jobs that tag them by hand (the other
 missions' leans aren't tagged yet), and an Ally doesn't open doors or carry items; the drain is immediate, not 20 s; a
 subject killed on-screen is blamed on the nearest player, not read from the kill; the deal needs no
 gate meeting; the clean room is a land point (a named child entity on the lab prefab is a VERIFY);

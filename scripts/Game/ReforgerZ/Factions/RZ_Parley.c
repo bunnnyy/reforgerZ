@@ -33,25 +33,19 @@ class RZ_ParleyRun
 	float m_fLastDist = -1;
 	bool m_bWarnedOthers;
 	int m_iStarted;			// server time it opened (a run left behind goes after 5 minutes)
+	float m_fPausedFor;		// someone else's fire nearby: the clock stops for this long
 }
 
 //------------------------------------------------------------------------------------------------
 class RZ_Parley
 {
 	static const float SHOUT_RADIUS = 150;
-	static const float HOLD_RADIUS = 200;
 	static const float BARRIER = 35;
-	static const float WALK_SECONDS = 90;
 	static const float SEARCH_SECONDS = 10;
 	static const float HOLD_STEP = 7;			// the stand-down, refreshed each tick
-	static const float SQUAD_RADIUS = 1000;
-	static const float ALONE_RADIUS = 150;
-	static const int LIMIT_SECONDS = 7200;		// once per 2 real hours per faction, by identity
 	static const int RESERVE_SECONDS = 3600;
+	static const float PAUSE_ON_FIRE = 20;		// someone else's fire near the gate stops the clock this long
 	static const int OWED_FAME = 15;
-	static const int SETTLE_FAME = 10;			// settling up: 10 Fame...
-	static const int SETTLE_INFAMY = 5;			// ...for 5 Infamy
-	static const int SETTLE_DAY_CAP = 10;		// at most this much Infamy settled a real day per faction
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<int, ref RZ_ParleyRun> m_mRuns = new map<int, ref RZ_ParleyRun>();
@@ -86,14 +80,14 @@ class RZ_Parley
 	protected string Closed(int playerId, int f, vector gate, IEntity me)
 	{
 		RZ_Hostility hostility = m_GM.GetHostility();
-		if (hostility && hostility.IsFightFor(playerId, f, me.GetOrigin(), SQUAD_RADIUS))
+		if (hostility && hostility.IsFightFor(playerId, f, me.GetOrigin(), RZ_ReputationSettings.Get().m_fParleySquadRadius))
 			return "a squad or a fight";
 
-		if (OtherPlayerNear(playerId, gate, ALONE_RADIUS))
+		if (OtherPlayerNear(playerId, gate, RZ_ReputationSettings.Get().m_fParleyAloneRadius))
 			return "not alone";
 
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
-		if (RZ_SeasonClock.Now() - profile.m_aParleyUnix[f] < LIMIT_SECONDS)
+		if (RZ_SeasonClock.Now() - profile.m_aParleyUnix[f] < RZ_Util.RoundToInt(RZ_ReputationSettings.Get().m_fParleyHours * 3600))
 			return "too soon";
 
 		// The cure finale: closed with a faction whose route is fighting yours
@@ -162,14 +156,22 @@ class RZ_Parley
 			return;
 		}
 
-		if (hostility && hostility.IsFightFor(playerId, f, me.GetOrigin(), SQUAD_RADIUS))
+		if (hostility && hostility.IsFightFor(playerId, f, me.GetOrigin(), RZ_ReputationSettings.Get().m_fParleySquadRadius))
 		{
 			Break(run, "\"They've got friends coming. So have we.\"", false);
 			return;
 		}
 
+		// Someone else's fire nearby pauses it: the clock stops, nobody walks
+		if (run.m_fPausedFor > 0)
+		{
+			run.m_fPausedFor -= dt;
+			run.m_fLastDist = dist;
+			return;
+		}
+
 		// Another player arriving pauses it: no hold, the clock stops, a word for the newcomer
-		if (OtherPlayerNear(playerId, run.m_vGate, ALONE_RADIUS))
+		if (OtherPlayerNear(playerId, run.m_vGate, RZ_ReputationSettings.Get().m_fParleyAloneRadius))
 		{
 			if (!run.m_bWarnedOthers)
 			{
@@ -188,7 +190,7 @@ class RZ_Parley
 
 		if (run.m_iPhase == 0)
 		{
-			if (dist > HOLD_RADIUS || run.m_fPhaseTime > WALK_SECONDS)
+			if (dist > RZ_ReputationSettings.Get().m_fParleyHoldRadius || run.m_fPhaseTime > RZ_ReputationSettings.Get().m_fParleyWalkSeconds)
 			{
 				End(run, "");
 				return;
@@ -226,7 +228,7 @@ class RZ_Parley
 		}
 
 		// Walking away: held while leaving, to 200 m or 90 s; coming back in breaks it
-		if (dist > HOLD_RADIUS || run.m_fPhaseTime > WALK_SECONDS)
+		if (dist > RZ_ReputationSettings.Get().m_fParleyHoldRadius || run.m_fPhaseTime > RZ_ReputationSettings.Get().m_fParleyWalkSeconds)
 		{
 			End(run, "");
 			return;
@@ -258,7 +260,7 @@ class RZ_Parley
 		RZ_Util.GetAlivePlayers(ids, players);
 		foreach (int i, IEntity p : players)
 		{
-			if (ids[i] != run.m_iPlayer && RZ_Util.DistXZ(p.GetOrigin(), run.m_vGate) <= ALONE_RADIUS)
+			if (ids[i] != run.m_iPlayer && RZ_Util.DistXZ(p.GetOrigin(), run.m_vGate) <= RZ_ReputationSettings.Get().m_fParleyAloneRadius)
 				m_GM.Say(ids[i], run.m_sTitle, run.m_iFaction, line);
 		}
 	}
@@ -345,7 +347,37 @@ class RZ_Parley
 	{
 		RZ_ParleyRun run;
 		if (m_mRuns.Find(playerId, run))
+		{
 			Break(run, "A shot. Talking's over.", true);
+			return;
+		}
+
+		// Somebody else's fire near a parley pauses it, and the shooter takes the grudge
+		IEntity shooter = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!shooter)
+			return;
+
+		foreach (int pid, RZ_ParleyRun other : m_mRuns)
+		{
+			if (RZ_Util.DistXZ(shooter.GetOrigin(), other.m_vGate) > RZ_ReputationSettings.Get().m_fParleyAloneRadius)
+				continue;
+
+			other.m_fPausedFor = PAUSE_ON_FIRE;
+			m_GM.Say(pid, other.m_sTitle, other.m_iFaction, "\"Not you. Stay where you are, hands where we can see them.\"");
+			RZ_Hostility grudges = m_GM.GetHostility();
+			if (grudges)
+				grudges.AddGrudge(playerId, other.m_iFaction, other.m_vGate);
+
+			RZ_Log.Info(string.Format("Parley: %1's fire paused %2's parley", RZ_Util.PlayerName(playerId), RZ_Util.PlayerName(pid)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This player is mid-parley with `f` (the hunter squads skip them while it runs).
+	bool IsParleying(int playerId, int f)
+	{
+		RZ_ParleyRun run;
+		return m_mRuns.Find(playerId, run) && run.m_iFaction == f;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -458,19 +490,25 @@ class RZ_Parley
 			profile.m_aSettled[f] = 0;
 		}
 
-		if (profile.m_aSettled[f] >= SETTLE_DAY_CAP)
+		if (profile.m_aSettled[f] >= RZ_ReputationSettings.Get().m_iSettleDayCap)
 			return "\"That's enough settling for one day. Come back tomorrow.\"";
 
-		if (profile.GetFame(f) < SETTLE_FAME)
-			return string.Format("\"Settling costs %1 Fame with us. You haven't got it.\"", SETTLE_FAME);
+		if (profile.GetFame(f) < RZ_ReputationSettings.Get().m_iSettleFame)
+			return string.Format("\"Settling costs %1 Fame with us. You haven't got it.\"", RZ_ReputationSettings.Get().m_iSettleFame);
 
-		int off = m_GM.Forgive(playerId, f, Math.Min(SETTLE_INFAMY, profile.GetInfamy(f)), "settled up");
+		// The cure finale: no settling with a faction whose route is fighting yours
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && finale.ParleyClosed(playerId, f))
+			return "\"Not while your lot and ours are at it. After the cure, maybe.\"";
+
+		// The stronghold leader's temper counts, as on every amends
+		int off = m_GM.Forgive(playerId, f, Math.Min(RZ_ReputationSettings.Get().m_iSettleInfamy, profile.GetInfamy(f)), "settled up", true);
 		if (off <= 0)
 			return m_GM.ForgiveSpentText(f);
 
-		profile.AddFame(f, -SETTLE_FAME);
+		profile.AddFame(f, -RZ_ReputationSettings.Get().m_iSettleFame);
 		profile.m_aSettled[f] = profile.m_aSettled[f] + off;
-		RZ_Log.Info(string.Format("Reputation: %1 settled up with %2: -%3 Fame, -%4 Infamy", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), SETTLE_FAME, off));
-		return string.Format("\"Square-ish.\" -%1 Fame, -%2 Infamy with %3. Spent Fame is gone.", SETTLE_FAME, off, RZ_Factions.GetNameInText(f));
+		RZ_Log.Info(string.Format("Reputation: %1 settled up with %2: -%3 Fame, -%4 Infamy", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(f), RZ_ReputationSettings.Get().m_iSettleFame, off));
+		return string.Format("\"Square-ish.\" -%1 Fame, -%2 Infamy with %3. Spent Fame is gone.", RZ_ReputationSettings.Get().m_iSettleFame, off, RZ_Factions.GetNameInText(f));
 	}
 }

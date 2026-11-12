@@ -1202,7 +1202,13 @@ class RZ_FactionLife
 		if (options.IsEmpty())
 			return "";
 
-		return options.GetRandomElement();
+		// A tail from the voice bank's open-channel pool (one pick for everyone who hears it)
+		string line = options.GetRandomElement();
+		string tail = RZ_VoiceBank.PickShared(m_GM, "radio_tail", f);
+		if (!tail.IsEmpty())
+			line += " " + tail;
+
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------

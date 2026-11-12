@@ -9,7 +9,9 @@
 # (an FIA group as "zombies", a crate as the reward crate...), and a test-only harness that:
 #   - adds a fake player (id 901, a spawned civilian) to the players every system sees;
 #   - runs every conversation's nodes once for that player, and a lie, a promise and a callback
-#     ("RZT Talk test: ...");
+#     ("RZT Talk test: ..."), and walks it through reputation's cells, the credit rule and the
+#     forgiveness budget ("RZT Reputation test: ..."); from minute 2 it cycles Voice > Force mood
+#     through the five moods, 5 minutes each, and prints each one's picks ("RZT voice <mood> ...");
 #   - starts every registered mission type one at a time, moves the player there, then ends it
 #     (alternately won and failed) so Setup, Update, rewards and cleanup all run;
 #   - forces what missions need (a spread of town infection before each, a few goes at a Setup

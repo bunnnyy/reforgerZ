@@ -93,6 +93,8 @@ COND_KEYS = {
     "scene_lied": (True, False), "talk": (True, True),
     # This topic's bindings were picked (bound), or that one (bound:<name>)
     "bound": (False, False),
+    # This life is under an hour of play
+    "fresh": (False, False),
 }
 QUIET_KEYS = {"stranger"}
 CURE_HELD = {"any", "haven", "bastion", "redhand", "halcyon", "everyone", "indep", "nobody", "slow"}

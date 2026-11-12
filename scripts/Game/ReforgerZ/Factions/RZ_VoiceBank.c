@@ -28,7 +28,7 @@ class RZ_VoiceLine
 	[Attribute("-1", desc: "Faction: -1 any, 0 the Haven, 1 Bastion, 2 the Red Hand, 3 Halcyon")]
 	int m_iFaction;
 
-	[Attribute("opener", desc: "Kind: opener, greeting, person, aside_meal, aside_night, aside_shift, infected, route (after the 90% lock), look_pass, look_caught")]
+	[Attribute("opener", desc: "Kind: opener, greeting, person, aside_meal, aside_night, aside_shift, infected, route (after the 90% lock), look_pass, look_caught, change, wanderer, wanderer_deserter, radio_tail (the open channels, one pick for everyone)")]
 	string m_sKind;
 
 	[Attribute("", desc: "Manner (openers): unknown, warm, devoted, wary, fond, needed, hostile, owed; empty = any")]
@@ -261,6 +261,99 @@ class RZ_VoiceBank
 		string text = picked.m_sText;
 		text.Replace("{place}", place);
 		return facts.Fill(text);
+	}
+
+	// ================================================================ Shared channels
+	protected static const int CHANNEL_JOKES = 16;		// the last jokes each channel aired...
+	protected static const int CHANNEL_WINDOW = 21600;	// ...none airs twice inside 6 real hours
+	protected static const int CHANNEL_CAP = 4;			// the open channels: about 1 line in 4 at most
+	protected static ref array<string> s_aAiredIds = {};	// "faction|id"
+	protected static ref array<int> s_aAiredUnix = {};
+
+	//------------------------------------------------------------------------------------------------
+	//! A line of `kind` on `faction`'s open channel, picked once for everyone who hears it (no
+	//! listener, no personal memory). Its joke share is the lower of the channel's cap (1 in 4) and
+	//! the faction's mood after temper; the Red Hand's never drops below 1 in 5, except in grief; a
+	//! faction that just lost someone is plain for 20 minutes (RZ_ToneGuard); a joke the channel aired
+	//! in the last 6 real hours isn't aired again (its last 16). "" if no line fits.
+	static string PickShared(RZ_GameModeComponent gm, string kind, int faction)
+	{
+		RZ_WorldFacts facts = gm.GetFacts();
+		if (!facts)
+			return "";
+
+		RZ_EMood mood = facts.MoodFor(faction);
+		int moodBit = RZ_SeasonMood.Bit(mood);
+		RZ_DCtx ctx = new RZ_DCtx();
+		ctx.m_GM = gm;
+		ctx.m_iFaction = faction;
+		array<RZ_VoiceLine> plain = {};
+		array<RZ_VoiceLine> jokes = {};
+		foreach (RZ_VoiceLine line : Lines())
+		{
+			if (line.m_sKind != kind || (line.m_iFaction >= 0 && line.m_iFaction != faction))
+				continue;
+
+			if (line.m_iMoods != 0 && (line.m_iMoods & moodBit) == 0)
+				continue;
+
+			if (line.m_When && !line.m_When.IsEmpty() && !RZ_DialogueCond.Holds(ctx, line.m_When))
+				continue;
+
+			if (!IsJoke(line.m_eRegister))
+				plain.Insert(line);
+			else if (!AiredLately(faction, line.m_sId))
+				jokes.Insert(line);
+		}
+
+		int oneIn = Math.Max(CHANNEL_CAP, RZ_SeasonMood.JokeOneIn(mood));
+		if (faction == RZ_EFaction.BANDITS)
+			oneIn = Math.Min(oneIn, 5);
+
+		bool joke = !jokes.IsEmpty() && RZ_ToneGuard.RadioAllowsJoke(faction) && Math.RandomFloat01() < 1.0 / oneIn;
+		RZ_VoiceLine picked;
+		if (joke)
+			picked = Weighted(jokes);
+		else if (!plain.IsEmpty())
+			picked = Weighted(plain);
+
+		if (!picked)
+			return "";
+
+		if (IsJoke(picked.m_eRegister))
+			NoteAired(faction, picked.m_sId);
+
+		if (RZ_VoiceSettings.Get().m_bLog)
+			RZ_Log.Info(string.Format("voice: radio %1 %2 %3 mood=%4 listener=all", RZ_DialogueDB.FactionWord(faction),
+				typename.EnumToString(RZ_ERegister, picked.m_eRegister), picked.m_sId, RZ_SeasonMood.Name(mood)));
+
+		return facts.Fill(picked.m_sText);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool AiredLately(int faction, string id)
+	{
+		int now = RZ_SeasonClock.Now();
+		string key = faction.ToString() + "|" + id;
+		foreach (int i, string k : s_aAiredIds)
+		{
+			if (k == key && now - s_aAiredUnix[i] < CHANNEL_WINDOW)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void NoteAired(int faction, string id)
+	{
+		s_aAiredIds.Insert(faction.ToString() + "|" + id);
+		s_aAiredUnix.Insert(RZ_SeasonClock.Now());
+		while (s_aAiredIds.Count() > CHANNEL_JOKES * 4)
+		{
+			s_aAiredIds.Remove(0);
+			s_aAiredUnix.Remove(0);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

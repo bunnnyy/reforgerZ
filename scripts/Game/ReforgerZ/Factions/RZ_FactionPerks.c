@@ -597,6 +597,11 @@ class RZ_FactionPerks
 				if (!RZ_Reputation.IsHunted(m_GM.GetTier(ids[j], f)))
 					continue;
 
+				// Mid-parley with that faction: its squads skip this round
+				RZ_Checkpoints posts = m_GM.GetCheckpoints();
+				if (posts && posts.GetParley() && posts.GetParley().IsParleying(ids[j], f))
+					continue;
+
 				ResourceName prefab = m_GM.GetHunterPrefab(f);
 				if (prefab.IsEmpty())
 					continue;
@@ -1144,7 +1149,7 @@ class RZ_FactionPerks
 		m_aPosted.Insert(b);
 
 		m_GM.NotifyPlayer(playerId, title, string.Format("Your name goes up next to %1's, in red paint. %2 Favor to whoever puts them down.", targetName, b.m_iPayout));
-		m_GM.NotifyAll("Bounty", string.Format("The Red Hand board: %1 Favor on %2.", b.m_iPayout, targetName));
+		m_GM.NotifyAll("Bounty", string.Format("The Red Hand board: %1 Favor on %2.", b.m_iPayout, RZ_RepGates.BountyWords(m_GM, targetId, targetName)));
 		if (targetId > 0)
 			m_GM.NotifyPlayer(targetId, "A bad feeling", "Your name is on the Red Hand board. Someone you put down wants you to know it.");
 	}

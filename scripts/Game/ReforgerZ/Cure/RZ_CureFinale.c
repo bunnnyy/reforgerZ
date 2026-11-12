@@ -814,7 +814,7 @@ class RZ_CureFinale
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! CanSideWith (reputation's own is planned): yes unless Hunted; the Hunted by parley (owed) or
+	//! CanSideWith (the one rule; docs/FINALE.md, the lock): yes unless Hunted; the Hunted by parley (owed) or
 	//! by the route's price door. The Independent: always.
 	bool CanSideWith(int playerId, int r)
 	{
