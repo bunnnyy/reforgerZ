@@ -2022,7 +2022,9 @@ back.`, `Finale: item N (...) of <route> spoiled on purpose.`, `Finale: <route>'
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
-the epilogue week's (`Epilogue: the cure is out; the record is taken on the next ticks.`, `Hall of
+the epilogue week's (`Epilogue: the cure is out; the record is taken on the next ticks.`, `Epilogue:
+the record waits for the release's terms.` and `Epilogue: no terms after the wait; the controller's
+default terms.`, `Hall of
 fame: the records froze at the cure.`, `Epilogue: the record: route N, how N, terms N, faction N, N
 players, N towns with crawlers, N packs calling.`, `Epilogue: beat <key> at <place> (weight W)`,
 `Epilogue: N dose outlets (row N, terms N, condition N).`, `Epilogue: story built (N beats, N

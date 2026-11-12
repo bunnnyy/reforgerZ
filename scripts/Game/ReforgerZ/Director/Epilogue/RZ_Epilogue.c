@@ -37,6 +37,8 @@ class RZ_Epilogue
 	protected ref RZ_EpiRecord m_Record;
 
 	protected int m_iBuildStep = -1;		// ticks of the build after the cure (-1: none)
+	protected int m_iTermsWaitUnix;			// when the build began waiting for the release's terms
+	static const int TERMS_WAIT = 240;		// seconds the build waits for them
 	protected float m_fCheck;
 	protected int m_iLastStep = -1;
 	protected bool m_bPlaced;				// the marks went up this run (they aren't saved)
@@ -265,6 +267,13 @@ class RZ_Epilogue
 		m_iBuildStep++;
 		if (m_iBuildStep == 1)
 		{
+			// The record waits for the release's terms (a live scene of up to 180 s)
+			if (WaitForTerms())
+			{
+				m_iBuildStep = 0;
+				return;
+			}
+
 			Snapshot();
 			FreezeHall();
 			return;
@@ -282,6 +291,35 @@ class RZ_Epilogue
 		m_S.built = true;
 		m_Closing.List();
 		Commit();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a controller's terms aren't in yet (its release scene runs). After TERMS_WAIT
+	//! seconds the controller's default terms are set and the build goes on.
+	protected bool WaitForTerms()
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale || !RZ_CureFinale.IsOn() || finale.Controller() < 0 || finale.Terms() > 0)
+		{
+			m_iTermsWaitUnix = 0;
+			return false;
+		}
+
+		if (m_iTermsWaitUnix <= 0)
+		{
+			m_iTermsWaitUnix = Now();
+			RZ_Log.Info("Epilogue: the record waits for the release's terms.");
+		}
+
+		if (Now() - m_iTermsWaitUnix < TERMS_WAIT)
+			return true;
+
+		RZ_Log.Info("Epilogue: no terms after the wait; the controller's default terms.");
+		m_iTermsWaitUnix = 0;
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().ReleaseDefault(RZ_CureFinale.RouteKey(finale.Controller()));
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

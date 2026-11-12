@@ -126,6 +126,7 @@ class RZ_FinaleSave
 	int sealUnix;
 	int calls;
 	bool batchReady;
+	bool remaking;						// a lost stand: only a remake step or the backlog makes the batch
 	bool isSealed;
 	ref array<string> lockIdent = {};
 	ref array<int> lockRoute = {};
@@ -1292,6 +1293,10 @@ class RZ_CureFinale
 		int now = RZ_SeasonClock.Now();
 		if (!m_S.batchReady)
 		{
+			// After a lost stand the hold doesn't run again: OnRemake or OnBacklogBatch
+			if (m_S.remaking)
+				return;
+
 			bool realOver = now - m_S.finishUnix >= m_Settings.m_fBatchRealHours * HOUR * WaitScale();
 			bool playOver = m_S.batchPlay >= m_Settings.m_fBatchPlayHours * HOUR * WaitScale();
 			if (!realOver || !playOver)
@@ -1349,6 +1354,7 @@ class RZ_CureFinale
 			return;
 
 		m_S.batchReady = true;
+		m_S.remaking = false;
 		m_S.readyUnix = RZ_SeasonClock.Now();
 		m_S.sealUnix = 0;
 		RZ_Log.Info(string.Format("Finale: the batch is ready (%1). Holder %2.", how, RouteName(m_S.holder)));
@@ -1864,6 +1870,7 @@ class RZ_CureFinale
 		ClearGroups();
 		m_S.isSealed = false;
 		m_S.batchReady = false;
+		m_S.remaking = true;
 		m_S.sealUnix = 0;
 		m_S.readyUnix = 0;
 		m_S.standsLost.Insert(RZ_SeasonClock.Day());

@@ -1488,9 +1488,18 @@ class RZ_Questlines
 			JumpTo(run, route.AtCure(m_GM, run, mine));
 		}
 
+		if (!released)
+			ReleaseDefault(controllerKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The controller's default terms, now (no release scene, or the epilogue's wait ran out).
+	//! RZ_CureFinale.OnTerms ignores it once terms are in.
+	void ReleaseDefault(string controllerKey)
+	{
 		RZ_CureFinale finale = RZ_CureFinale.Get();
 		int c = RZ_CureFinale.RouteOfKey(controllerKey);
-		if (released || !finale || c < 0)
+		if (!finale || c < 0)
 			return;
 
 		RZ_FinaleRoute line = RZ_FinaleRoute.Cast(FindLine(controllerKey));

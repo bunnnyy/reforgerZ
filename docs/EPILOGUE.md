@@ -50,9 +50,11 @@ the beats show.
 
 In this order, from the cure's tick ([RZ_GameModeComponent.OnCureCompleted](DESIGN.md#cure-research-and-the-seasons-end)):
 
-1. The finale reports its controller, how it was won, the terms and the deciders
-   ([FINALE.md](FINALE.md#endings-and-next-season)).
-2. **The snapshot** (the next tick): the route, how, terms and condition, the Fame leader, the
+1. The finale reports its controller and how it was won. The terms and the deciders come at the
+   release ([FINALE.md](FINALE.md#endings-and-next-season)), a live scene of up to 180 s.
+2. **The snapshot** (the next tick, or once the terms are in: while a controller's release runs,
+   the build waits up to 4 minutes, then sets the controller's default terms): the route, how,
+   terms and condition, the Fame leader, the
    deciders and the stand's names (frozen), the majors' story lines, each safehouse's people and
    tier, each holding's owner, every town with 6 or more crawlers, every pack still calling, every
    profile's name and up to three lines, and the wanted (Kill on Sight at the cure). **The hall of
