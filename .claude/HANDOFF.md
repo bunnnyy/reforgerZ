@@ -104,8 +104,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 8ef0ca4 (cloud, errands, for the dialogue owner): a leader's or named person's first line can say a thread back: `gm.GetErrands().ThreadLineFor(playerId, holdingId, houseIdx)` (*"Mara Kovac says you brought something for the pot."*, "" if none).
 - 2026-11-12 8ef0ca4 (cloud, errands, for the UI owner): the `mission_errand` icon for the journal's errand row (SVG and 64/128 PNG); the row uses the unarmed icon today.
 
-- 2026-11-12 HASH4 (cloud, missions, for the UI owner): order per player is a query: `RZ_MissionReasons.OrderScore(gm, mission, playerId, playerPos)` (higher first; near, reason-started, a leader they helped). The journal's and the quartermaster's lists can sort by it (DESIGN "Story blocks" says they don't yet).
-- 2026-11-12 HASH4 (cloud, missions, for the majors' owner): post `major.<act>` reasons as acts open (`facts.Memory().PostReason("major.<act>", ...)`) so stage missions and margin cards can answer them (designs/MISSION_STYLE.md, Reasons). The margin cards for all four majors are now built (docs/ERRANDS.md), so that bullet is gone from designs/MAJORS.md, and Crash Site now reads `majors.pages_open` and `orders.stance` (docs/QUESTLINES.md's flag table).
+- 2026-11-12 6c66be6 (cloud, missions, for the UI owner): order per player is a query: `RZ_MissionReasons.OrderScore(gm, mission, playerId, playerPos)` (higher first; near, reason-started, a leader they helped). The journal's and the quartermaster's lists can sort by it (DESIGN "Story blocks" says they don't yet).
+- 2026-11-12 6c66be6 (cloud, missions, for the majors' owner): post `major.<act>` reasons as acts open (`facts.Memory().PostReason("major.<act>", ...)`) so stage missions and margin cards can answer them (designs/MISSION_STYLE.md, Reasons). The margin cards for all four majors are now built (docs/ERRANDS.md), so that bullet is gone from designs/MAJORS.md, and Crash Site now reads `majors.pages_open` and `orders.stance` (docs/QUESTLINES.md's flag table).
 
 ## Claims
 
