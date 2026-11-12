@@ -475,7 +475,9 @@ contracts are never on it. With **UI > Map icon layout** set, the vanilla text m
 events and the lab are off; without it, the layer does nothing and those markers stay.
 
 **The map key** sits on the map, not in the notebook: a compact legend in the bottom-left corner,
-inside the safe area (`RZ_MapLegend.layout`, **UI > Map legend layout**; it needs the icon layer).
+inside the safe area and 190 px up, above vanilla's own bottom-left widgets (the map's key hints and
+the scale bar, about the first 330 px across and the bottom 120 px) (`RZ_MapLegend.layout`, **UI > Map
+legend layout**; it needs the icon layer).
 It names what the icons mean in two columns, *Who holds what* (stronghold, outpost, Haven
 safehouse, Halcyon's lab) and *The world* (world event, sealed checkpoint, power station, radio
 station, a pack's ground), each with its icon in the colour the map draws it, and says the colour

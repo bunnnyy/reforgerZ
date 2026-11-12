@@ -198,9 +198,6 @@
     ctx.strokeStyle = 'rgba(30,30,24,.22)'; ctx.lineWidth = 1; ctx.font = '500 12px JetBrains Mono'; ctx.fillStyle = 'rgba(30,30,24,.55)';
     for (let x = 0, k = 0; x <= W; x += 160, k++) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); ctx.fillText(String(k).padStart(2, '0'), x + 4, 14); }
     for (let y = 0, k = 0; y <= H; y += 160, k++) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); ctx.fillText(String(k).padStart(2, '0'), 4, y + 14); }
-    // the Perimeter: hatched band where land meets the map edge
-    ctx.strokeStyle = 'rgba(242,194,48,.55)'; ctx.setLineDash([14, 10]); ctx.lineWidth = 3;
-    ctx.strokeRect(70, 60, W - 140, H - 120); ctx.setLineDash([]);
     finish(ctx, r, 0.03);
   }
 

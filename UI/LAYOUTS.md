@@ -644,7 +644,7 @@ event, the checkpoint and the range ring hazard yellow, the stations bone), and 
 with the zoom (`SetOpacity`; hidden at 0). Positions are from the root's top left.
 
 ```
-Frame MapLegend (root, 540 × 316, anchor bottom-left, offset (96, -54): inside the safe area)
+Frame MapLegend (root, 540 × 316, anchor bottom-left, offset (96, -190): above vanilla's key hints and scale bar)
 ├─ Image  (LegendBg)       #121416 at 90%
 ├─ Image  (LegendAccent)   full width × 5, top edge, bone
 ├─ Panel  (LegendLine)     border #2A2E31
