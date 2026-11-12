@@ -521,7 +521,8 @@ class RZ_UIFeed
 	//! read the first eight and ignore the rest. The word is what the faction calls you; owed is 1 while
 	//! they owe you a hearing (the parley), and the note then says so.
 	//! L|faction|name|title|what they think of you
-	//! K|faction|borrowed kit with them (shown above the leaders they know)
+	//! K|faction|borrowed kit with them (the Standing page's In their kit)|they know your face (0/1)|
+	//!   catches this life|blown (0/1): the numbers tint the row's kit tell
 	//! W|faction|the word as a sentence|the nearest met leader's verdict (the leaders column's first two lines)
 	//! R|kind (0 truce, 1 feud)|faction a|faction b|minutes left
 	protected string BuildStanding(int playerId)
@@ -575,15 +576,27 @@ class RZ_UIFeed
 			lnF.AddInt(f).AddInt(fame).AddInt(infamy).AddInt(p.GetFavor(ef)).AddInt(tier).AddInt(need).Add(needLine);
 			lnF.AddInt(rep).AddInt(RZ_RepNames.Notoriety(fame, infamy)).Add(RZ_RepVoice.Word(m_GM, playerId, f)).Add(note).AddInt(left).AddInt(owed);
 			s += lnF.End();
-			// Borrowed kit with them (RZ_DisguiseClaims): K|faction|your face, catches, blown, tells, enemies
+			// Borrowed kit with them (RZ_DisguiseClaims): K|faction|your face, catches, blown, tells, enemies|face|catches|blown
 			string kit = "";
-			if (m_GM.GetHostility() && m_GM.GetHostility().GetDisguise())
-				kit = m_GM.GetHostility().GetDisguise().GetClaims().StandingLine(playerId, f);
+			RZ_Disguise disguise;
+			if (m_GM.GetHostility())
+				disguise = m_GM.GetHostility().GetDisguise();
+
+			if (disguise)
+				kit = disguise.GetClaims().StandingLine(playerId, f);
 
 			if (!kit.IsEmpty())
 			{
+				int face = 0;
+				if (disguise.KnowsFace(playerId, f))
+					face = 1;
+
+				int blown = 0;
+				if (disguise.IsBlown(playerId, f))
+					blown = 1;
+
 				RZ_UILine lnK = new RZ_UILine("K");
-				s += lnK.AddInt(f).Add(kit).End();
+				s += lnK.AddInt(f).Add(kit).AddInt(face).AddInt(p.m_aCatches[f]).AddInt(blown).End();
 			}
 
 			// The word and the nearest met leader's verdict open the leaders column (RZ_RepNamesPage)

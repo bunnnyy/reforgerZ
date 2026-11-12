@@ -93,9 +93,9 @@ their own (**Reputation > Names**, on; off shows the tier words only).
   mixed name also gets a guidance tip: "People can like you and fear you at once." (**Reputation >
   Change hold seconds**, **Change gap minutes**.) A log line on every change:
   `Reputation: <player> <faction> <name> (<tier>)`.
-- **The card** on the notebook's Standing page shows the name, what it counts as, and how much is
-  left to forgive; its 16-cell grid is filled in by code, with each faction's initial in the cell you
-  stand in ([UI.md](UI.md#the-notebook)). Without the layouts, **Ask what they think of you** at a
+- **The card** on the notebook's Standing page shows the name large, without Fame or Infamy; its
+  open row adds what the name counts as, how much is left to forgive and the next name up with what
+  earns it ([UI.md](UI.md#screens)). Without the layouts, **Ask what they think of you** at a
   quartermaster gives the same, one line a faction: "The Haven: Useful Trouble (counts as Known;
   Fame 46, Infamy 22, 30 of 30 left to forgive; Favor 30)".
 - **The admin read-out:** `/rep <name>` in chat (server admins; empty for yourself), or the
@@ -217,10 +217,11 @@ the gate hear it too, once per 10 minutes per place for everyone (*"Someone at t
 
 **On the standing page** (`Factions/RZ_RepNamesPage.c`) the header carries the whole picture after
 your name, background and life (*"MARA - NURSE - LIFE 2   "Word is you're the Haven's Champion and
-Bastion's Bad News. I'll believe the better half.""*). Each faction's leaders column opens with two
-lines: the word as a sentence (*"The crews call you Lucky."*, *"Bastion has you down as civilian,
-cleared."*; "The crews don't call you anything yet." before a crew name) and the nearest leader of
-theirs you've met, with what they make of you. For the owed the tier's note reads *"Hunted - they owe
+Bastion's Bad News. I'll believe the better half.""*). A faction's open row has the word as a
+sentence (*"The crews call you Lucky."*, *"Bastion has you down as civilian,
+cleared."*; "The crews don't call you anything yet." before a crew name) under *How they see you*,
+and the nearest leader of theirs you've met, with what they make of you, under *Leaders you've
+met*. For the owed the tier's note reads *"Hunted - they owe
 you a hearing"* (the feed's `F` record carries the word and the owed flag; `H` the picture; `W` the two
 lines). With **Reputation > Names** off, neither the picture nor the two lines are sent. A contract the
 parley reserved for you reads **"Amends: works off Infamy · finishes where the job says"** in the
@@ -1030,9 +1031,11 @@ more than 35 m from its people, without a claim, until they come closer.
 ✅ (`RZ_Hud_Look`, [UI.md](UI.md#screens)). While a look is coming (the 150 m notice, an again
 look's 10 s warning), the HUD shows the Watched eye and **"PASS AS BASTION: 2 OF 2"** (or "SEEN
 THROUGH"), owner-only, sent only when it changes; it goes once the look is done, the kit comes off or
-you're 200 m on. The notices still carry the tags. The notebook's Standing page has, above the
-leaders of Bastion, the Red Hand and Halcyon, **IN THEIR KIT**: whether they know your face, catches
-this life (of 3), blown minutes left, their tells, and what their enemies do to their colours.
+you're 200 m on. The notices still carry the tags. On the notebook's Standing page, Bastion's, the
+Red Hand's and Halcyon's rows carry a kit tell (dim, yellow once they know your face or caught you,
+red while you're blown), and the open row's **In their kit** says whether they know your face,
+catches this life (of 3), blown minutes left, their tells, and what their enemies do to their
+colours.
 
 #### Other people's stories, the stand and the majors
 
