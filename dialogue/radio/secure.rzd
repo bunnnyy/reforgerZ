@@ -39,7 +39,7 @@ voice redhand
 
 node start
   say "Right. Lorry at the crossroads, fifteen. Bridge, ten. Who's short? Nobody's short. Lovely."
-  > @toll "Crew here. What's the toll today?" -> toll | lost   check lie redhand 2
+  > @toll "Crew here. What's the toll today?" -> toll | lost   check lie redhand 2   truth crew
   > @listen "Just listen." -> listen
   > @off "Switch off." -> hub
 

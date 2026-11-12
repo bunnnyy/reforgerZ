@@ -105,6 +105,7 @@ class RZ_DialoguePack_radio
 		db.Node("start");
 		db.Say("", "\"Right. Lorry at the crossroads, fifteen. Bridge, ten. Who's short? Nobody's short. Lovely.\"");
 		db.Choice("toll", "\"Crew here. What's the toll today?\"", "toll", "lost", "", "lie redhand 2", "", "", "", "", "");
+		db.ChoiceExtra("crew", "");
 		db.Choice("listen", "\"Just listen.\"", "listen", "", "", "", "", "", "", "", "");
 		db.Choice("off", "\"Switch off.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("toll");

@@ -340,6 +340,9 @@ modded class RZ_GameModeComponent
 			Print("RZT spawned fake player at " + m_aRZTRouteName[0]);
 			HandlePlayerSpawned(RZT_Fake.ID, e);
 		}
+		// Every conversation's nodes, once, for the fake player; a lie, a promise and a callback
+		if (m_iRZTSec == 8 && RZ_DialogueTrees.Get())
+			Print("RZT " + RZ_DialogueTrees.Get().RunSelfTest(RZT_Fake.ID));
 		if (m_iRZTSec > 5 && m_iRZTSec % 3 == 0 && !m_bRZTMissionsDone)
 		{
 			if (!GetMissions().RZT_Step())

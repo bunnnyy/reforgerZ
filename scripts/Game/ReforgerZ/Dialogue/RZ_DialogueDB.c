@@ -82,6 +82,8 @@ class RZ_DChoice
 	ref RZ_DCond m_If;
 	ref RZ_DCond m_Truth;		// a [Lie] that's true while this holds: no lie, no check
 	string m_sCallout;			// [Evidence]: shown only to a player who heard this lie and knows the truth
+	bool m_bTellAlways;			// `tell always`: a lie that's always caught (a joke lie)
+	ref array<ref RZ_DEffect> m_aFound = {};	// `found`: run when this lie is found out later
 	ref array<ref RZ_DEffect> m_aDo = {};
 	ref array<ref RZ_DEffect> m_aShort = {};
 	ref array<ref RZ_DEffect> m_aElse = {};
@@ -127,7 +129,9 @@ class RZ_DConv
 	int m_iFlags;
 	string m_sVoice;
 	string m_sScene;		// a scene its decisions settle for the world ("" none)
-	string m_sSceneScope;	// "season" (one for the server) or "speaker" (one per speaker)
+	string m_sSceneScope;	// "season" (one for the server), "speaker" (one per speaker), "house" (one per safehouse), "run" (one per mission run)
+	ref array<string> m_aBindNames = {};	// `bind <name> = <picker>`, picked once when the topic opens
+	ref array<string> m_aBindPickers = {};
 	ref RZ_DCond m_SceneWho;	// who may decide (`scene <id> <scope> who <conditions>`); null: whoever may take the choice
 	float m_fOpens;			// a greet that opens the talk screen by itself within this many metres (0 never)
 	ref array<ref RZ_DNode> m_aNodes = {};
@@ -202,6 +206,15 @@ class RZ_DialogueDB
 		}
 
 		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void All(notnull array<RZ_DConv> result)
+	{
+		foreach (RZ_DConv c : m_aConvs)
+		{
+			result.Insert(c);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -323,6 +336,55 @@ class RZ_DialogueDB
 	{
 		if (m_Node)
 			m_Node.m_bConfirm = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `tell always` and `found <effects>` on the last choice.
+	void ChoiceMore(bool tellAlways, string found)
+	{
+		if (!m_Node || m_Node.m_aChoices.IsEmpty())
+		{
+			m_iBad++;
+			return;
+		}
+
+		RZ_DChoice c = m_Node.m_aChoices[m_Node.m_aChoices.Count() - 1];
+		c.m_bTellAlways = tellAlways;
+		c.m_aFound = Effects(found);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `bind <name> = <picker>` on the conversation.
+	void Bind(string name, string picker)
+	{
+		if (!m_Conv)
+		{
+			m_iBad++;
+			return;
+		}
+
+		m_Conv.m_aBindNames.Insert(name);
+		m_Conv.m_aBindPickers.Insert(picker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The choice `@id` of conversation `convId`, or null.
+	RZ_DChoice FindChoice(string convId, string id)
+	{
+		RZ_DConv c = Find(convId);
+		if (!c)
+			return null;
+
+		foreach (RZ_DNode n : c.m_aNodes)
+		{
+			foreach (RZ_DChoice ch : n.m_aChoices)
+			{
+				if (ch.m_sId == id)
+					return ch;
+			}
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------

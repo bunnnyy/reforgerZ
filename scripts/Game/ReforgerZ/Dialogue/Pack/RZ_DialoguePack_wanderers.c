@@ -174,5 +174,22 @@ class RZ_DialoguePack_wanderers
 		db.Node("cheap");
 		db.Say("", "\"Advice. Here's some: never buy a tin that's been opened and closed again.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.trader.quiet_town", "wanderer:trader", "", "Ask which way is quiet.", 4, 0, "plain");
+		db.Bind("target", "town:thick_within(2500)");
+		db.Node("start");
+		db.Jump("!bound", "nowhere");
+		db.Say("", "\"{bind:target}. Quiet as a church. I came through it this morning. Well. Near it.\"");
+		db.Mark("lie", "trader.quiet@target");
+		db.Do("watch:trader.quiet@target:60");
+		db.Choice("thanks", "\"Thanks. I'll go that way.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("catch", "\"{bind:target}? It's thick with them.\"", "caught", "", "", "", "", "", "", "", "");
+		db.ChoiceExtra("", "trader.quiet@target");
+		db.Choice("no", "\"I'll find my own way.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught");
+		db.Say("", "\"Is it? Must have changed. Everything does. ...I sell things. Quiet is a thing. Here, have the truth for free: go round.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("nowhere");
+		db.Say("", "\"Every way's the same today. Pick one and keep your head down.\"");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 }

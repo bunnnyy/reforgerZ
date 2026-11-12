@@ -385,6 +385,17 @@ class RZ_DialogueScenes
 		if (c.m_sSceneScope == "season")
 			return c.m_sScene;
 
+		if (c.m_sSceneScope == "house" && ctx.m_iHouse >= 0)
+			return c.m_sScene + "@house:" + ctx.m_iHouse.ToString();
+
+		if (c.m_sSceneScope == "run")
+		{
+			if (ctx.m_sRun.IsEmpty())
+				return c.m_sScene;
+
+			return c.m_sScene + "@" + ctx.m_sRun;
+		}
+
 		return c.m_sScene + "@" + ctx.m_sKey;
 	}
 

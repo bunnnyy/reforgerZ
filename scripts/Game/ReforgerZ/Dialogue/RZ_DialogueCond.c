@@ -27,6 +27,8 @@ class RZ_DCtx
 	string m_sScene;				// the open topic's scene record key ("" none)
 	RZ_StrangerVisit m_Stranger;	// weak: a stranger (errands), for {their:...} and stranger:<kind>
 	bool m_bRadio;					// the open channel: no body, nothing personal on air
+	string m_sRun;					// a mission's people: "<mission id>" (the `run` scene scope)
+	ref map<string, string> m_mBind = new map<string, string>();	// bindings picked when a topic opens: name -> "town:N" | "house:N"
 
 	//------------------------------------------------------------------------------------------------
 	vector Pos()

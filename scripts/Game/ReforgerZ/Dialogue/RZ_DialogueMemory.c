@@ -627,6 +627,24 @@ class RZ_DialogueMemory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The rest of the newest key in a per-character list that starts with `prefix` ("" none).
+	string FindAfter(int playerId, int which, string prefix)
+	{
+		RZ_DMemPlayer p = For(playerId);
+		if (!p)
+			return "";
+
+		array<string> list = ListOf(p, which);
+		for (int i = list.Count() - 1; i >= 0; i--)
+		{
+			if (list[i].StartsWith(prefix))
+				return list[i].Substring(prefix.Length(), list[i].Length() - prefix.Length());
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Adds a key to a per-character list (SEEN, PASSED, CLAIMS, NOTES).
 	void Add(int playerId, int which, string key)
 	{

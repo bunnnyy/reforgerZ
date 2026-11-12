@@ -597,6 +597,7 @@ is off.
 | Reputation | `owed:bastion`, `setword:bastion` | Hunted and still owed a hearing (the parley); a word a major or questline set |
 | Factions | `truce:redhand`, `feud:bastion` | the speaker's faction and that one have a truce or a feud now |
 | Where | `radio` | on the open channel |
+| This conversation | `bound`, `bound:target`, `scene_lied:<scene>`, `talk:<key>` | the topic's bindings were picked (that one); a lie was believed in that scene; a scene's own flag (`set:`) |
 | The season's story | `cure_held:bastion` (`haven`, `redhand`, `halcyon`, `everyone`, `nobody`, `slow`, `any`), `ending:every_name`, `ending:every_name=every_name`, `was:book`, `lean:every_name.first.pot`, `q:every_name.act=1` | after the cure, who holds it (the epilogue's record); a major ended (that way: its ending's name, lower case, without "the"); you were one of those who decided it; the speaker's own voter leans to that option; a running questline's own flag |
 | The infected, you, the room | `tribe`, `alpha`, `declared`, `symptoms`, `group` | a pack's range takes in the speaker's place; that pack has its leader; you told a safehouse about your bite; visible symptoms; another of your group within 150 m |
 | The radio | `secure`, `secure:bastion`, `power`, `distress` | you're listening to a cracked net (that one); the radio has power; a distress call is on air for you |
@@ -623,17 +624,28 @@ once | daily                    per character, per speaker
 always                          shows even when the speaker refuses (the finale's route topics)
 voice haven|bastion|redhand|halcyon|table|plain
 
-scene <id> speaker|season [who <conditions>]   deciding together (Several players): one record per speaker, or one for the season; who may decide
-node <id> [public|confirm]      the first node is "start"; public: others within 8 m overhear it;
-                                confirm: [Point of no return], the finale's lock card after its lines
+scene <id> speaker|season|house|run [who <conditions>]   deciding together (Several players): one record per speaker,
+                                for the season, per safehouse, or per mission run; who may decide
+bind <name> = <picker>          a place picked once when the topic opens: town:nearest, town:thick_within(<m>),
+                                house:nearest, house:nearest_short
+use <conv id>                   that conversation's nodes (but its start) are this one's too, copied at pack time
+node <id> [public|shared|confirm]   the first node is "start"; public (or shared, a scene's node the room
+                                sees): others within 8 m overhear it; confirm: [Point of no return]
   jump <conditions> -> <node>   checked in order on entry
-  say <text> [~lie:<key> | ~truth:<key>]   one to three lines; 200 characters each; a lie told or the truth
+  say [(<role>)] <text> [~lie:<key> | ~truth:<key>]   one to three lines; 200 characters each; a lie told or
+                                the truth; (her father) is someone else in the scene, shown "Her father: ..."
   say? <conditions> :: <text>   the first true variant replaces the next plain say
   do <effects>                  on entry
   > @<id> <label> -> <pass>[ | <short>][ | <refused>] [check <kind> <faction> <difficulty> [easier:<trait>] [harder:<trait>] [bg:<ids>]]
       [cost favor:<faction> N | cost item:food*N] [if <conditions>] [do <effects>] [short <effects>] [else <effects>]
-      [truth <conditions>] [callout <lie key>] [dry]
+      [truth <conditions>] [tell always] [found <effects>] [callout <lie key>] [decides] [dry]
 ```
+
+A lie's `tell always` makes it always caught (a joke lie: *"Rudi sent me."*); its `found` effects run if
+it's found out later, only on what's still running (`nset`, `cset`, `mark`, `unsway`: a tally's sway
+taken back). `decides` is `decide:<pass target>`. In a key, `@<name>` binds it to a binding as `@here`
+binds it to the speaker, and `watch:<key>@<name>:<infection>` is a **world predicate**: the truth of a lie
+about the bound town is learned the moment you walk into it while its infection is at least that.
 
 A `dry` choice is a node's wry way of saying what another choice in the same node says: the lint
 holds it to the same targets, check, cost and effects ([WRITING.md](WRITING.md#conversations)).
@@ -653,15 +665,17 @@ faction), `{resident}` (a house's seeded surname, never one from the lore), `{de
 first who decided it, under the names policy), `{lean:<major>.<vote>}` (the speaker's own lean at a
 sitting), `{kit_owner}` and `{dead_name}` (whose the kit was), `{cover}` (your best cover detail),
 `{pack}` and `{pack_leader}` (the pack near the speaker and its leader, in the speaker's faction's
-word), `{distress}` (where a distress caller is).
+word), `{distress}` (where a distress caller is), `{bind:<name>}` and `{town:@<name>}` (a binding's
+place), `{claim:<key>}` (what you told this speaker for that claim, in your own words).
 
 **The pipeline.** `tools/dialogue_pack.py` lints every file and writes them as generated Enforce
 Script, `scripts/Game/ReforgerZ/Dialogue/Pack/RZ_DialoguePack_<area>.c` (functions of at most 150
 calls) and `RZ_DialoguePacks.c`. The server compiles them once at start into typed records indexed
-by speaker kind. The packs are committed; never edit them by hand. *Simplified:* the design's
-"plan A" (the server reading `.rzd` files from the addon) and server-only `$profile` overrides
-aren't built: the packs are the one text source, so a text fix needs a mod update. A lie's mark and
-a choice's `truth` and `callout` go into the packs as `Mark` and `ChoiceExtra` calls.
+by speaker kind. The packs are committed; never edit them by hand. They're the one text source, so a
+text fix needs a mod update (reading `.rzd` files from the addon waits for an engine check,
+[designs/DIALOGUE.md](../designs/DIALOGUE.md)). A lie's mark and a choice's `truth` and `callout` go into
+the packs as `Mark` and `ChoiceExtra` calls, `tell always` and `found` as `ChoiceMore`, bindings as
+`Bind`.
 
 **Shipped ids.** `dialogue/shipped.lock` lists every conversation and choice id that has shipped.
 The lint refuses removing one; a gone id is kept as `retired <id>`.
@@ -671,10 +685,12 @@ The lint refuses removing one; a gone id is kept as `retired <id>`.
 | Tool | Does |
 |---|---|
 | `python3 tools/dialogue_pack.py` | Lint and write the packs. `--check` fails if the packs or the lock are out of date (the compile check runs it first); `--lock` adds new ids to the lock; `--list` lists the conversations |
-| `python3 tools/dialogue_sim.py <conv> --bg nurse --tier haven=trusted` | Walks one conversation as one character sees it: the lines (variants picked), every choice with its tag, whether it shows, and where a check would send them. Also `--infamy`, `--fame`, `--favor`, `--flag`, `--knows`, `--fact night` (any other true term: `--fact heard_lie:scav.chemist`, `--fact kit:in_kit`), `--mem helped`, `--regard`, `--food`, `--house short`, `--trait`; `--all` shows every start node. A look's score needs the game, so it shows only where a pass and a catch lead |
+| `python3 tools/dialogue_sim.py <conv> --bg nurse --tier haven=trusted` | Walks one conversation as one character sees it: the lines (variants picked), every choice with its tag, whether it shows, and where a check would send them. Also `--infamy`, `--fame`, `--favor`, `--flag`, `--knows`, `--fact night` (any other true term: `--fact heard_lie:scav.chemist`, `--fact kit:in_kit`), `--mem helped`, `--regard`, `--food`, `--house short`, `--trait`; `--all` shows every start node. A look's score needs the game, so it shows only where a pass and a catch lead. **Several characters:** `--chars "Mara:--tier haven=known" --chars "Tom:--bg nurse"` shows each one's start node, and `--race` how the scene settles (who holds, who may object or stand with, what lands once, each sway) |
 | `python3 tools/voice_lint.py` | Also reads every `.rzd` line (says as talk-screen lines, labels as choices) against [WRITING.md](WRITING.md#checking-text) |
 | **[Admin] Errands near here** (server admins, a reply on any named person, wanderer or occupant: no typing) | The errands' live count, the nearest player's last deal and why each other errand wasn't dealt, and their errands ([ERRANDS.md](ERRANDS.md#telemetry-and-the-admin-view)) |
 | `/talkdebug` (admins, in chat; or the **[Admin] Read this person's conversations** reply) | Whether Trees are on, the conversation and memory counts, your memory, and for the person you're talking to, every conversation for them and the first `when` term that fails |
+| `/talkdebug test` (or **[Admin] Test every conversation, to the log**) | Every conversation's conditions, lines and labels run once for you through the real evaluator and tokens, and a lie, a promise and a callback on test keys; the counts back to you and the log (`Dialogue: Talk test: ...`). The runtime test runs it for its fake player (`RZT Talk test: ...`) |
+| `/talkdebug reset <scene>` (or **[Admin] Undecide this person's scenes**) | A scene's record cleared, so whoever answers next decides it again |
 
 **The lint** (`dialogue_pack.py`): unique ids; known keywords, speakers, condition keys,
 effects, checks, calls and tokens; targets that exist; nodes no path reaches; at most 6 choices;
@@ -688,11 +704,18 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 choices, effects or `public`, or on the radio; a `callout` for a lie no line tells; `truth` off a
 [Lie]; a look for the Haven, or a reward behind a look (Favor, `offer`, `learn`, `errand`, `reveal`,
 `begin`); a threat at a stranger or on air; personal tokens on air; `{their:...}` outside a stranger;
-a `dry` choice with no plain twin.
+a `dry` choice with no plain twin; a lie's `truth` that reads what the player can't know (another
+system's flags, a house, a town); `tell always` or `found` off a [Lie], and a `found` effect on
+something that may be over; a scene-only effect (`set`, `qset`, `begin`, `decide`, `sway`) outside a
+scene; `set` without `@here` or a binding in a conversation for many speakers, or outside the
+conversation's own namespace; Halcyon trees of four nodes or more that never say a number; a binding,
+`watch` or token naming a binding the conversation doesn't have; `opens` on anything but a greet, over
+40 m, or on the radio; `public` on a secure net. It **warns** for a [Lie] with neither `truth` nor `tell
+always` (an ordinary lie, believable and never true).
 
 ## The conversations
 
-✅ 147 conversations, 316 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
+✅ 149 conversations, 322 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
 
 | Speaker | Conversations |
 |---|---|
@@ -712,7 +735,8 @@ a `dry` choice with no plain twin.
 | Make it right | The [Make it right] reply at any leader who won't deal with you (not a conversation: the engine's own) |
 | The last week | Every faction's leaders: "Ask about the cure." and "Ask what they'll do now."; an occupant's greet for the week and a topic for Bastion's route; barks at houses and holdings |
 | The bitten and the clock | Tell a safehouse about your bite (or lie about it); Halcyon's trial dose; the Doctor on a fever; a Nurse on a cough at a short house; shift change, supper and grace, the night watch (barks) |
-| Kept back | The Red Hand crew boss on a crossed-out line (deflect, then persuade [Ex-Con] or threaten); an occupant on the pack up the hill |
+| Kept back | The Red Hand crew boss on a crossed-out line (deflect, then persuade [Ex-Con] or threaten); an occupant on the pack up the hill; Bastion's and the Red Hand's leaders on the Haven's sitting while Every Name's runs |
+| Lies the world tests | The Trader's quiet town (bound to the nearest thick one: walk in and see; then [Evidence]); "Rudi sent me." at the Red Hand's post (always caught); a bite called a fence scratch, remembered at the house when it's found out; the Long Table's "expected back by dark" |
 | Barks | A short house (and its tins, promised or brought), a house after a death, a house at dusk, a Red Hand crew name and the toll man, Bastion's shift change and a set word, Halcyon's samples, the lost Kid, the Scavenger once the callback is due, the sentry once the road is walked |
 | Asks | A short house (two tins into the stores: the built hand-in); the Kid, lost (show the way: the built escort); a bitten wanderer (your antidote: the built one) |
 | The finale | "Ask about the cure.": ask me again (every leader, 75%); the pitches (the four stronghold leaders and the Doctor or Courier, 80%); the commit topics with their [Point of no return] nodes (stronghold and Loyal seat leaders of each faction; the Doctor or Courier, or the open channel, for the Independent) |
@@ -747,7 +771,7 @@ a `dry` choice with no plain twin.
 - *Simplified:* a stage's or a contract's people keep their built choices as verbs; a conversation at
   them picks one with `call:slot:N`.
 - *Simplified:* a claim the world tests isn't saved: a restart forgets a test still waiting.
-- **Planned** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): the rest of the format (`bind`, `use`, the
-  `run` and `house` scopes, `say (<role>)`, `tell always`, `found`), world predicates, the lint's last
-  checks, the simulator's race, the runtime test of every conversation and `/talkreset`; and the text
-  source read from the addon with `$profile` overrides, which waits for an engine check.
+- *Simplified:* a binding lasts the session (it's picked again when the topic opens next), and a world
+  predicate waits 3 real hours and isn't saved.
+- **Waits for an engine check** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): the text source read
+  from the addon, with server-only `$profile` overrides.

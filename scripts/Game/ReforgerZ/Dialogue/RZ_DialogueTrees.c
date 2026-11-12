@@ -99,6 +99,7 @@ class RZ_DialogueTrees
 		m_Barks.Tick(dt);
 		RZ_DialogueMakeRight.Tick(m_GM, dt);
 		RZ_DialogueStory.Tick(m_GM, dt);
+		RZ_DialogueBinds.Tick(m_GM);
 		m_Opens.Tick(m_GM, dt);
 	}
 
@@ -467,7 +468,8 @@ class RZ_DialogueTrees
 		if (c.m_sCallout.IsEmpty())
 			return true;
 
-		return m_Memory.HeardLie(ctx.m_iPlayer, c.m_sCallout) && m_Memory.Knows(ctx.m_iPlayer, c.m_sCallout);
+		string key = Scoped(ctx, c.m_sCallout);
+		return m_Memory.HeardLie(ctx.m_iPlayer, key) && m_Memory.Knows(ctx.m_iPlayer, key);
 	}
 
 	// ================================================================ Picks
@@ -524,6 +526,7 @@ class RZ_DialogueTrees
 		t.m_Ctx.m_sScene = RZ_DialogueScenes.SceneKey(c, t.m_Ctx);
 		t.m_sPrev = "";
 		t.m_iFavorPaid = 0;
+		RZ_DialogueBinds.Pick(t.m_Ctx, c);
 		NoteTopic(t, c);
 		array<string> none = {};
 		EnterNode(s, "start", none, 0);
@@ -746,7 +749,7 @@ class RZ_DialogueTrees
 		if (scenes)
 			bonus = scenes.VouchBonus(pid);
 
-		RZ_ECheck result = RZ_Checks.Lie(m_GM, pid, c.m_iCheckFaction, LieDifficulty(ctx, c, true), HasTell(ctx), bonus);
+		RZ_ECheck result = RZ_Checks.Lie(m_GM, pid, c.m_iCheckFaction, LieDifficulty(ctx, c, true), HasTell(ctx) || c.m_bTellAlways, bonus);
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		string key = "talk." + t.m_Conv.m_sId + "/@" + c.m_sId;
 		if (result == RZ_ECheck.PASS)
@@ -1142,11 +1145,16 @@ class RZ_DialogueTrees
 	//! A key bound to this speaker: "@here" becomes "@<speaker key>" (a promise or a lie at one house).
 	static string Scoped(RZ_DCtx ctx, string key)
 	{
-		if (!key.Contains("@here"))
+		if (!key.Contains("@"))
 			return key;
 
 		string s = key;
 		s.Replace("@here", "@" + ctx.m_sKey);
+		foreach (string name, string value : ctx.m_mBind)
+		{
+			s.Replace("@" + name, "@" + value);
+		}
+
 		return s;
 	}
 
@@ -1334,7 +1342,7 @@ class RZ_DialogueTrees
 				r.m_sNeed = "they caught you lying today";
 			}
 
-			if (HasTell(ctx))
+			if (HasTell(ctx) || c.m_bTellAlways)
 				tag = "[Lie - they'd see through it]";
 			else
 				tag = string.Format("[Lie - %1 of %2]", Math.Max(0, lieScore), LieDifficulty(ctx, c, false));
@@ -1554,7 +1562,16 @@ class RZ_DialogueTrees
 					break;
 				}
 				case "claim":
+				{
 					m_Memory.Add(pid, RZ_DialogueMemory.CLAIMS, ctx.m_sKey + "|" + e.m_sArg);
+					// What was said, for {claim:key}
+					if (!t.m_sLabel.IsEmpty())
+						m_Memory.Add(pid, RZ_DialogueMemory.NOTES, ctx.m_sKey + "|said." + e.m_sArg + "|" + t.m_sLabel);
+
+					break;
+				}
+				case "watch":
+					RZ_DialogueBinds.Watch(s, e.m_sArg);
 					break;
 				case "learn":
 				{
@@ -1866,6 +1883,226 @@ class RZ_DialogueTrees
 			return m_GM.GetWanderers().AttitudeOf(ctx.m_Wanderer, ctx.m_iPlayer);
 
 		return 0;
+	}
+
+	// ================================================================ Found out later
+	//------------------------------------------------------------------------------------------------
+	//! A lie told through a conversation was found out (RZ_Lies): its choice's `found` effects run,
+	//! on things still running only: the speaker's note, a character flag, a season mark, a tally's sway
+	//! taken back.
+	void OnLieFound(RZ_Lie lie, int playerId)
+	{
+		if (!lie || !lie.key.StartsWith("talk.") || playerId <= 0)
+			return;
+
+		string rest = lie.key.Substring(5, lie.key.Length() - 5);
+		int at = rest.IndexOf("/@");
+		if (at <= 0)
+			return;
+
+		RZ_DChoice c = m_DB.FindChoice(rest.Substring(0, at), rest.Substring(at + 2, rest.Length() - at - 2));
+		if (!c || c.m_aFound.IsEmpty())
+			return;
+
+		foreach (RZ_DEffect e : c.m_aFound)
+		{
+			switch (e.m_sName)
+			{
+				case "nset":
+					m_Memory.Add(playerId, RZ_DialogueMemory.NOTES, lie.speaker + "|" + e.m_sArg);
+					break;
+				case "cset":
+					m_Memory.SetCharFlag(playerId, e.m_sArg, 1);
+					break;
+				case "mark":
+				{
+					RZ_WorldFacts facts = m_GM.GetFacts();
+					if (facts && facts.Flag(e.m_sArg) == 0)
+						facts.SetFlag(e.m_sArg, 1);
+
+					break;
+				}
+				case "unsway":
+				{
+					// A tally's contribution taken back (a major's sitting counts its own sways)
+					RZ_WorldFacts tally = m_GM.GetFacts();
+					string mine = "tally." + e.m_sArg + "." + m_GM.GetProfile(playerId).m_sIdentity;
+					if (tally && tally.Flag(mine) > 0)
+					{
+						tally.SetFlag(mine, 0);
+						tally.SetFlag("tally." + e.m_sArg, Math.Max(0, tally.Flag("tally." + e.m_sArg) - 1));
+					}
+
+					break;
+				}
+			}
+		}
+
+		RZ_Log.Info(string.Format("Dialogue: lie %1 found out: its found effects ran", lie.key));
+	}
+
+	// ================================================================ Admin tools
+	//------------------------------------------------------------------------------------------------
+	//! "/talkdebug" (admins), and its [Admin] replies: "" reads the person you're talking to; "test"
+	//! runs every conversation once for you (the runtime test); "reset <scene>" undecides a scene
+	//! ("reset" alone: the scenes of the person you're talking to).
+	void Command(int playerId, RZ_TalkSession s, string text)
+	{
+		string cmd = text.Trim();
+		if (cmd.IsEmpty())
+		{
+			Debug(playerId, s);
+			return;
+		}
+
+		if (!RZ_NoticeBoard.IsAdmin(playerId))
+		{
+			m_GM.NotifyPlayer(playerId, "Dialogue", "Only a server admin can do that.");
+			return;
+		}
+
+		if (cmd == "test")
+		{
+			m_GM.NotifyPlayer(playerId, "Dialogue", SelfTest(playerId, s));
+			return;
+		}
+
+		if (cmd.StartsWith("reset"))
+		{
+			string scene = cmd.Substring(5, cmd.Length() - 5).Trim();
+			m_GM.NotifyPlayer(playerId, "Dialogue", ResetScenes(scene, s));
+			return;
+		}
+
+		m_GM.NotifyPlayer(playerId, "Dialogue", "/talkdebug, /talkdebug test, /talkdebug reset <scene>");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every conversation's nodes read for this player (their conditions, lines and labels, through the
+	//! real evaluator and tokens), and a lie, a promise and a callback run once on test keys. Any script
+	//! error shows in the log; the counts go back to the admin.
+	protected string SelfTest(int playerId, RZ_TalkSession s)
+	{
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		RZ_DCtx ctx;
+		if (s && s.m_Tree)
+			ctx = s.m_Tree.m_Ctx;
+
+		if (!ctx)
+		{
+			ctx = new RZ_DCtx();
+			ctx.m_GM = m_GM;
+			ctx.m_iPlayer = playerId;
+			ctx.m_User = me;
+			ctx.m_sKey = "talktest";
+			ctx.m_aKinds.Insert("talktest");
+			if (me)
+				ctx.m_iTown = m_GM.FindNearestSettlement(me.GetOrigin());
+		}
+
+		array<RZ_DConv> all = {};
+		m_DB.All(all);
+		int holds = 0;
+		int nodes = 0;
+		int lines = 0;
+		int labels = 0;
+		foreach (RZ_DConv c : all)
+		{
+			if (RZ_DialogueCond.Holds(ctx, c.m_When))
+				holds++;
+
+			RZ_DialogueBinds.Pick(ctx, c);
+			foreach (RZ_DNode n : c.m_aNodes)
+			{
+				nodes++;
+				array<string> said = {};
+				LinesFor(ctx, n, said);
+				lines += said.Count();
+				foreach (RZ_DChoice ch : n.m_aChoices)
+				{
+					RZ_DialogueCond.Holds(ctx, ch.m_If);
+					RZ_DialogueText.Fill(ctx, ch.m_sLabel);
+					labels++;
+				}
+			}
+		}
+
+		ctx.m_mBind.Clear();
+
+		// A lie, a promise and a callback, once each, on keys nobody else uses
+		m_Memory.NoteHeardLie(playerId, "talktest.lie");
+		m_Memory.Learn(playerId, "talktest.lie", 0.01);
+		bool lieOk = m_Memory.HeardLie(playerId, "talktest.lie") && m_Memory.Knows(playerId, "talktest.lie");
+		string promised = m_Memory.Promise(playerId, "talktest.promise", "talktest", "to test the promises", 0.05);
+		bool promiseOk = promised.IsEmpty() && m_Memory.Keep(playerId, "talktest.promise");
+		m_Memory.Later(playerId, "talktest.later", 0);
+		bool laterOk = m_Memory.Due(playerId, "talktest.later");
+		string result = string.Format("Talk test: %1 conversations (%2 hold for you here), %3 nodes, %4 lines, %5 labels. Lie %6, promise %7, callback %8.",
+			all.Count(), holds, nodes, lines, labels, OkWord(lieOk), OkWord(promiseOk || !promised.IsEmpty()), OkWord(laterOk));
+		RZ_Log.Info("Dialogue: " + result);
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The runtime test's call (tools/runtime_test): the same self test, for any player.
+	string RunSelfTest(int playerId)
+	{
+		return SelfTest(playerId, null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string OkWord(bool ok)
+	{
+		if (ok)
+			return "ok";
+
+		return "FAILED";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A scene's record cleared: decided again by whoever answers next. `scene` empty: every scene of
+	//! the person this admin is talking to.
+	protected string ResetScenes(string scene, RZ_TalkSession s)
+	{
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		if (!facts)
+			return "No world facts.";
+
+		array<RZ_DConv> all = {};
+		m_DB.All(all);
+		int cleared = 0;
+		foreach (RZ_DConv c : all)
+		{
+			if (c.m_sScene.IsEmpty())
+				continue;
+
+			string key = "";
+			if (!scene.IsEmpty() && (c.m_sScene == scene || scene.StartsWith(c.m_sScene + "@")))
+				key = scene;
+			else if (scene.IsEmpty() && s && s.m_Tree)
+				key = RZ_DialogueScenes.SceneKey(c, s.m_Tree.m_Ctx);
+
+			if (key.IsEmpty() || facts.Flag("scene." + key) == 0)
+				continue;
+
+			facts.SetFlag("scene." + key, 0);
+			foreach (RZ_DNode n : c.m_aNodes)
+			{
+				foreach (RZ_DChoice ch : n.m_aChoices)
+				{
+					foreach (RZ_DEffect e : ch.m_aDo)
+					{
+						if (e.m_sName == "decide")
+							facts.SetFlag("scene." + key + "." + e.m_sArg, 0);
+					}
+				}
+			}
+
+			cleared++;
+			RZ_Log.Info(string.Format("Dialogue: scene %1 reset by an admin", key));
+		}
+
+		return string.Format("%1 scenes undecided.", cleared);
 	}
 
 	// ================================================================ Debug

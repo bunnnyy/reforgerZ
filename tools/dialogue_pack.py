@@ -91,6 +91,8 @@ COND_KEYS = {
     "cover": (False, False), "claimed": (False, False), "made_right": (False, False),
     # A lie believed in a scene (scene_lied:<scene>); a scene's own world flag (set:<key>=N -> talk:<key>)
     "scene_lied": (True, False), "talk": (True, True),
+    # This topic's bindings were picked (bound), or that one (bound:<name>)
+    "bound": (False, False),
 }
 QUIET_KEYS = {"stranger"}
 CURE_HELD = {"any", "haven", "bastion", "redhand", "halcyon", "everyone", "indep", "nobody", "slow"}
@@ -105,7 +107,7 @@ WORLD_KEYS = {"house", "town", "need", "wbitten", "kidlost", "bg", "tier", "rep"
               "outbreak", "cure", "flag", "stage", "infamy", "fame", "kin", "tribe", "q", "cure_held", "distress",
               "declared", "symptoms"}
 EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later",
-           "sway", "decide", "commit", "promise", "keep", "wire", "set", "qset", "begin", "note", "approach", "test"}
+           "sway", "decide", "commit", "promise", "keep", "wire", "set", "qset", "begin", "note", "approach", "test", "watch", "unsway"}
 SCENE_EFFECTS = {"sway", "decide", "set", "qset", "begin"}
 # Effects that belong to another system: a stage's outcome or its physical half is the stage's own
 # built choice (call:slot:N at its person); an errand is dealt by errands; Infamy and grudges come only
@@ -114,6 +116,15 @@ WORLD_EFFECTS = {"resolve", "start", "event", "reward", "pass", "catch", "errand
                  "return"}
 # What a claim in someone else's kit may never lead to (docs/DIALOGUE.md, "Claims in someone else's kit")
 CLAIM_BARRED = {"favor", "offer", "learn", "errand", "reveal", "begin"}
+# What a lie found out later may still change (things still running), and what a lie's truth may read
+FOUND_EFFECTS = {"nset", "cset", "mark", "unsway"}
+KNOWABLE_KEYS = {"bg", "tier", "fame", "infamy", "rep", "hunted", "exiled", "kin", "knows", "seen", "claim",
+                 "heard_lie", "item", "armed", "bite_shown", "stage", "declared", "symptoms", "kit", "passing",
+                 "caught", "crew", "face", "title", "seasoned", "route", "cflag", "promise", "kept", "broke", "due",
+                 "cover", "group", "secure"}
+NUMBER_RE = re.compile(r"[0-9]|\{cure_percent\}|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
+                       r"twenty|thirty|fifty|hundred|percent|half|minutes?)\b", re.I)
+GENERIC_SPEAKERS = {"occupant", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
 CALLS = re.compile(r"^(slot:[0-9]|hand_in:[0-9]+|toll|post_wave|standing|season|look|distress|net_word|net_lost|declare_bite|caught_bite)$")
@@ -126,7 +137,7 @@ DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "r
                    "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss",
                    "kit_owner", "dead_name", "cover", "pack", "pack_leader", "distress"}
 # Tokens with an argument a conversation may use: a stranger's own words, the season's title with a faction
-DIALOGUE_KINDS = {"their", "title", "wire", "decider", "lean", "tier", "rep", "word"}
+DIALOGUE_KINDS = {"their", "title", "wire", "decider", "lean", "tier", "rep", "word", "claim", "bind"}
 # Tokens that would put a player on air (a radio conversation never uses them)
 PERSONAL_TOKENS = {"player", "name", "crew", "word", "rep", "best", "worst", "kills", "jobs", "picture", "title", "tier",
                    "cover", "kit_owner", "dead_name"}
@@ -171,6 +182,8 @@ class Choice:
         self.truth = ""
         self.callout = ""
         self.dry = False
+        self.tell = False
+        self.found = ""
 
 
 class Node:
@@ -203,6 +216,8 @@ class Conv:
         self.scope = ""
         self.who = ""
         self.opens = 0
+        self.binds = []     # (name, picker)
+        self.uses = []      # conversation ids whose nodes are copied in at pack time
 
     def node(self, nid):
         for n in self.nodes:
@@ -221,7 +236,7 @@ def area_of(path):
 
 
 TOKEN_SPLIT = re.compile(r'"[^"]*"|\S+')
-CHOICE_KEYS = {"check", "cost", "if", "do", "short", "else", "label", "truth", "callout"}
+CHOICE_KEYS = {"check", "cost", "if", "do", "short", "else", "label", "truth", "callout", "found", "tell"}
 
 
 def parse_choice(text, lineno):
@@ -245,6 +260,9 @@ def parse_choice(text, lineno):
         if t == "dry":
             c.dry = True
             key = None
+        elif t == "decides":
+            vals.setdefault("decides", [])
+            key = None
         elif t in CHOICE_KEYS:
             key = t
             vals.setdefault(key, [])
@@ -261,6 +279,14 @@ def parse_choice(text, lineno):
     c.els = " ".join(vals.get("else", []))
     c.truth = " ".join(vals.get("truth", []))
     c.callout = " ".join(vals.get("callout", []))
+    c.found = " ".join(vals.get("found", []))
+    tell = " ".join(vals.get("tell", []))
+    if "tell" in vals and tell != "always":
+        raise Problem("'tell' is 'tell always' (a lie that's always caught)")
+    c.tell = tell == "always"
+    if "decides" in vals:
+        # `decides`: this pick settles the scene, as its pass target's value
+        c.do = (c.do + "; " if c.do else "") + "decide:" + c.targets[0]
     if "label" in vals:
         raise Problem("'label' (the action-menu label) isn't used: the talk screen shows the whole label")
     return c
@@ -313,10 +339,11 @@ def parse_file(path):
                 bits = rest.split()
                 if not bits:
                     raise Problem("a node needs an id")
-                if len(bits) > 2 or (len(bits) == 2 and bits[1] not in ("public", "confirm")):
-                    raise Problem("a node is 'node <id> [public|confirm]'")
+                if len(bits) > 2 or (len(bits) == 2 and bits[1] not in ("public", "confirm", "shared")):
+                    raise Problem("a node is 'node <id> [public|shared|confirm]'")
                 node = Node(bits[0], n)
-                node.public = len(bits) == 2 and bits[1] == "public"
+                # shared: a scene's node the whole room sees (overheard, like public)
+                node.public = len(bits) == 2 and bits[1] in ("public", "shared")
                 node.confirm = len(bits) == 2 and bits[1] == "confirm"
                 conv.nodes.append(node)
             elif word in ("say", "say?", "jump", "do") or line.startswith(">"):
@@ -325,12 +352,12 @@ def parse_file(path):
                 if line.startswith(">"):
                     node.choices.append(parse_choice(line, n))
                 elif word == "say":
-                    node.items.append(("say", "", strip_mark(node, rest)))
+                    node.items.append(("say", "", strip_mark(node, role_line(rest))))
                 elif word == "say?":
                     cond, sep, text = rest.partition("::")
                     if not sep:
                         raise Problem("say? is 'say? <conditions> :: <text>'")
-                    node.items.append(("say", cond.strip(), strip_mark(node, text.strip())))
+                    node.items.append(("say", cond.strip(), strip_mark(node, role_line(text.strip()))))
                 elif word == "jump":
                     cond, sep, target = rest.partition("->")
                     if not sep:
@@ -345,6 +372,15 @@ def parse_file(path):
                     raise Problem("a scene is 'scene <id> speaker|season [who <conditions>]'")
                 conv.scene, conv.scope = bits[0], bits[1]
                 conv.who = who.strip()
+            elif word == "bind":
+                m = re.match(r"^([a-z_]+)\s*=\s*(town:nearest|town:thick_within\([0-9]+\)|house:nearest|house:nearest_short)$", rest)
+                if not m:
+                    raise Problem("bind is 'bind <name> = town:nearest | town:thick_within(<m>) | house:nearest | house:nearest_short'")
+                conv.binds.append((m.group(1), m.group(2)))
+            elif word == "use":
+                if not re.match(r"^[a-z][a-z0-9_]*(\.[a-z0-9_]+)+$", rest):
+                    raise Problem("use is 'use <conversation id>'")
+                conv.uses.append(rest)
             elif word == "opens":
                 bits = rest.split()
                 if len(bits) != 2 or bits[0] != "approach" or not bits[1].isdigit():
@@ -355,6 +391,18 @@ def parse_file(path):
         except Problem as e:
             raise Problem("%s:%d: %s" % (rel(path), n, e))
     return convs
+
+
+ROLE_RE = re.compile(r"^\(([a-z][a-z ]*)\)\s+(.*)$")
+
+
+def role_line(text):
+    """say (<role>) <text>: someone else in the scene says it, shown as 'Role: text'."""
+    m = ROLE_RE.match(text)
+    if not m:
+        return text
+    role = m.group(1)
+    return role[0].upper() + role[1:] + ": " + m.group(2)
 
 
 def strip_mark(node, text):
@@ -384,6 +432,17 @@ def load_all():
                 except Problem as e:
                     errors.append(str(e))
     convs.sort(key=lambda c: (area_of(c.path), c.id))
+    by_id = {c.id: c for c in convs}
+    for c in convs:
+        for u in c.uses:
+            other = by_id.get(u)
+            if not other:
+                errors.append("%s:%d (%s): use %s: no such conversation" % (rel(c.path), c.line, c.id, u))
+                continue
+            have = {n.id for n in c.nodes}
+            for n in other.nodes:
+                if n.id != "start" and n.id not in have:
+                    c.nodes.append(n)
     return convs, errors
 
 
@@ -509,6 +568,12 @@ def lint_effects(fx, where, conv, errs, favor_total):
             errs.append("%s: commit is commit:haven|bastion|redhand|halcyon|indep" % where)
         elif name == "take" and not re.match(r"^food\*[0-9]+$", arg):
             errs.append("%s: take is take:food*N" % where)
+        elif name == "watch" and not re.match(r"^[a-z0-9_.]+@[a-z_]+:[0-9]+$", arg):
+            errs.append("%s: watch is watch:<key>@<bound name>:<infection>" % where)
+        elif name == "watch" and arg.split("@")[1].split(":")[0] not in [b[0] for b in conv.binds]:
+            errs.append("%s: watch names a binding this conversation doesn't have ('bind <name> = ...')" % where)
+        elif name == "unsway" and "found" not in where:
+            errs.append("%s: unsway is only a lie's found effect" % where)
         elif name == "test" and not re.match(r"^[a-z0-9_]+:[0-9]+(\.[0-9]+)?:[0-9]+$", arg):
             errs.append("%s: test is test:<claim>:<hour>:<metres>" % where)
         elif name == "learn" and not re.match(r"^[a-z0-9_.@]+(:[0-9.]+h)?$", arg):
@@ -540,6 +605,10 @@ def lint_text(text, where, conv, errs, warns):
             errs.append("%s: {wire:1}, {wire:2} or {wire:3}" % where)
         if name in ("tier", "rep", "word") and arg is not None and arg not in ("haven", "bastion", "redhand", "halcyon"):
             errs.append("%s: {%s:<faction>}" % (where, name))
+        if name in ("bind",) and arg not in [b[0] for b in conv.binds]:
+            errs.append("%s: {bind:%s}: no 'bind %s = ...' in this conversation" % (where, arg, arg))
+        if name == "town" and arg and arg.startswith("@") and arg[1:] not in [b[0] for b in conv.binds]:
+            errs.append("%s: {town:%s}: no such binding" % (where, arg))
         if name == "decider" and arg not in MAJORS:
             errs.append("%s: {decider:<major>} (%s)" % (where, ", ".join(sorted(MAJORS))))
         if name == "lean" and (arg or "").count(".") != 1:
@@ -691,9 +760,22 @@ def lint(convs):
                     if not re.match(r"^(favor:(haven|bastion|redhand|halcyon) [0-9]+|item:food\*[0-9]+)$", ch.cost):
                         errs.append("%s: cost is 'favor:<faction> N' or 'item:food*N'" % wch)
                 if ch.truth:
-                    lint_cond(ch.truth, wch + " truth", errs)
+                    tkeys = lint_cond(ch.truth, wch + " truth", errs)
                     if not check or check[0] != "lie":
                         errs.append("%s: 'truth' belongs on a [Lie] (check lie ...)" % wch)
+                    unknowable = tkeys - KNOWABLE_KEYS
+                    if unknowable:
+                        errs.append("%s: a lie's truth reads only what the player can know (%s)" % (wch, ", ".join(sorted(unknowable))))
+                if (ch.tell or ch.found) and (not check or check[0] != "lie"):
+                    errs.append("%s: 'tell always' and 'found' belong on a [Lie]" % wch)
+                if ch.found:
+                    for part in [p.strip() for p in ch.found.split(";") if p.strip()]:
+                        fname = part.partition(":")[0]
+                        if fname not in FOUND_EFFECTS:
+                            errs.append("%s: a found effect only touches what's still running (%s)" % (wch, ", ".join(sorted(FOUND_EFFECTS))))
+                    lint_effects(ch.found, wch + " found", c, errs, [0])
+                if check and check[0] == "lie" and not ch.truth and not ch.tell:
+                    warns.append("%s: a [Lie] without 'truth <conditions>' or 'tell always'" % wch)
                 if ch.callout and ch.callout not in told_lies:
                     errs.append("%s: callout %s: no line tells that lie (~lie:%s)" % (wch, ch.callout, ch.callout))
                 if check and check[0] == "look":
@@ -719,6 +801,28 @@ def lint(convs):
                 for t in ch.targets:
                     if t not in TARGETS_SPECIAL and not c.node(t):
                         errs.append("%s: no node '%s'" % (wch, t))
+        # A season flag set in a conversation that serves many speakers is bound to one (@here, a binding)
+        many = any(sp in GENERIC_SPEAKERS or sp.startswith(("named:", "post:", "wanderer:", "stranger", "leader:", "quest", "mission")) for sp in c.speakers)
+        own = c.id.split(".")[0]
+        for n in c.nodes:
+            fx_all = [v for k, _, v in n.items if k == "do"] + [ch.do for ch in n.choices]
+            for fx in fx_all:
+                for part in [p.strip() for p in fx.split(";") if p.strip()]:
+                    fname, _, farg = part.partition(":")
+                    if fname != "set":
+                        continue
+                    key = farg.split("=")[0]
+                    if many and "@" not in key and c.scope != "season":
+                        errs.append("%s: set:%s in a conversation for many speakers needs @here or a binding" % (where_c, key))
+                    if not key.startswith(own + "."):
+                        errs.append("%s: set:%s is outside this conversation's own namespace (%s.)" % (where_c, key, own))
+        # Halcyon's long trees carry numbers: the lab talks in them
+        if c.voice == "halcyon" and len(c.nodes) >= 4:
+            if not any(NUMBER_RE.search(v) for n in c.nodes for k, _, v in n.items if k == "say"):
+                errs.append("%s: a Halcyon tree of four nodes or more says a number somewhere" % where_c)
+        for u in c.uses:
+            if u == c.id:
+                errs.append("%s: a conversation can't use itself" % where_c)
         if favor_total[0] > FAVOR_PER_CONV:
             errs.append("%s: %d Favor in one conversation (at most %d)" % (where_c, favor_total[0], FAVOR_PER_CONV))
         # Reachable nodes
@@ -840,6 +944,8 @@ def pack_area(area, convs):
                                                              esc(c.label), PRIOS[c.prio], flags, esc(c.voice)))
         if c.opens:
             calls.append("db.Opens(%d);" % c.opens)
+        for name, picker in c.binds:
+            calls.append("db.Bind(%s, %s);" % (esc(name), esc(picker)))
         if c.scene and c.who:
             calls.append("db.Scene(%s, %s, %s);" % (esc(c.scene), esc(c.scope), esc(c.who)))
         elif c.scene:
@@ -866,6 +972,8 @@ def pack_area(area, convs):
                     esc(ch.cond), esc(ch.do), esc(ch.short), esc(ch.els)))
                 if ch.truth or ch.callout:
                     calls.append("db.ChoiceExtra(%s, %s);" % (esc(ch.truth), esc(ch.callout)))
+                if ch.tell or ch.found:
+                    calls.append("db.ChoiceMore(%s, %s);" % ("true" if ch.tell else "false", esc(ch.found)))
     cls = "RZ_DialoguePack_" + area
     out = ["// GENERATED by tools/dialogue_pack.py from dialogue/%s/*.rzd. Do not edit: edit the .rzd and run the tool." % area,
            "class %s" % cls, "{", "\tstatic void Add(RZ_DialogueDB db)", "\t{"]

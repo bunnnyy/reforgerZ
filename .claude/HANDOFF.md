@@ -83,6 +83,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 2990171: check all 95 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers.
 - 2026-11-11 76b52d0: Workbench's own script compile, the Windows compile check, then `tools/runtime_test/run.sh`. The last Linux run had 0 exceptions, 125/143 missions started and 10/15 questlines ended. On Linux, Special Zombies' `Scripts/` hides ours, so Windows is the real test (MOD_STACK).
 - 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back in the deploy menu cleanly (new VERIFY).
+- 2026-11-12 (dialogue): can the dedicated server open a file inside the addon with `FileIO` (for example `dialogue/radio/open.rzd`, read-only)? Report "yes" or "no, <the error>": it decides whether conversations are read from `.rzd` files at start (designs/DIALOGUE.md).
 - 2026-11-12 b0b0090: measure a player's real run and sprint speed in m/s (the code assumes about 4 and 5.5: VERIFY) and Bacon's run and sprint speed; the young's sprint is tuned to about 10% faster than a sprinting player (WBS §6).
 
 ## For the cloud

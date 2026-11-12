@@ -91,6 +91,9 @@ class RZ_DialogueSettings
 	[Attribute("600", desc: "Trees: seconds between two barks from one person to one player")]
 	float m_fBarkPerSpeaker;
 
+	[Attribute("0.15", desc: "Lies: the chance a believed lie with nothing in the world to test it is found out at each of its two rumour rounds (missions, errands and talk alike)")]
+	float m_fRumourChance;
+
 	protected static ref RZ_DialogueSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------

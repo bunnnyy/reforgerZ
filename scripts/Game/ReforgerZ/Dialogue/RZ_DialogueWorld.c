@@ -35,6 +35,13 @@ class RZ_DialogueWorld
 			case "distress": return RZ_DialogueNets.DistressHouse(ctx) >= 0;
 			case "claimed": return Claimed(ctx);
 			case "made_right": return RZ_DialogueMakeRight.WasMadeRight(ctx);
+			case "bound":
+			{
+				if (t.m_sArg.IsEmpty())
+					return !ctx.m_mBind.IsEmpty();
+
+				return ctx.m_mBind.Contains(t.m_sArg);
+			}
 			case "scene_lied":
 			{
 				RZ_WorldFacts facts = gm.GetFacts();
@@ -451,6 +458,9 @@ class RZ_DialogueWorld
 
 			s.Replace("{cover}", cover);
 		}
+
+		if (s.Contains("{claim:") || s.Contains("{bind:") || s.Contains("{town:@"))
+			s = RZ_DialogueBinds.Fill(ctx, s);
 
 		if (s.Contains("{distress}"))
 			s.Replace("{distress}", RZ_DialogueNets.DistressPlace(ctx));

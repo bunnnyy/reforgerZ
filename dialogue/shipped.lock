@@ -244,6 +244,7 @@ occupant.bitten.declare/@back3
 occupant.bitten.declare/@fine
 occupant.bitten.declare/@tell
 occupant.bitten.declare/@tell2
+occupant.bitten.found
 occupant.hills
 occupant.hills/@back
 occupant.hills/@back1
@@ -335,11 +336,15 @@ post.redhand.toll
 post.redhand.toll/@back1
 post.redhand.toll/@back2
 post.redhand.toll/@back3
+post.redhand.toll/@back4
 post.redhand.toll/@move
 post.redhand.toll/@pay
 post.redhand.toll/@pay2
+post.redhand.toll/@pay3
 post.redhand.toll/@round
+post.redhand.toll/@round2
 post.redhand.toll/@rudi
+post.redhand.toll/@sent
 post.redhand.toll/@walk
 radio.bastion.net
 radio.bastion.net/@back1
@@ -575,3 +580,9 @@ wanderer.trader.prices
 wanderer.trader.prices/@back1
 wanderer.trader.prices/@cheap
 wanderer.trader.prices/@other
+wanderer.trader.quiet_town
+wanderer.trader.quiet_town/@back1
+wanderer.trader.quiet_town/@back2
+wanderer.trader.quiet_town/@catch
+wanderer.trader.quiet_town/@no
+wanderer.trader.quiet_town/@thanks

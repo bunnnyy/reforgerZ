@@ -167,7 +167,16 @@ class RZ_DialoguePack_posts
 		db.Choice("pay", "\"Pay the toll.\"", "paid", "", "", "", "", "tier:redhand>=known", "call:toll", "", "");
 		db.Choice("move", "\"Move the car out of my way.\"", "moved", "laughed", "laughed", "threaten redhand 2", "", "", "", "", "");
 		db.Choice("rudi", "\"Is this Rudi's road?\"", "rudi", "", "", "", "", "", "", "", "");
+		db.Choice("sent", "\"Rudi sent me.\"", "waved", "rudi_lie", "", "lie redhand 2", "", "", "", "", "");
+		db.ChoiceMore(true, "");
 		db.Choice("walk", "\"I'll walk round.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("waved");
+		db.Say("", "\"Did he. Off you pop.\"");
+		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("rudi_lie");
+		db.Say("", "\"Rudi was bitten. Day 7. Everybody knows that. Nice try.\"");
+		db.Choice("pay3", "\"Pay the toll.\"", "paid", "", "", "", "", "tier:redhand>=known", "call:toll", "", "");
+		db.Choice("round2", "\"Walk round.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("paid");
 		db.Say("", "\"Pleasure doing business. Mind the potholes. Some of them are people.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");

@@ -5988,7 +5988,7 @@
    "category": "Dialogue",
    "object": "Dialogue",
    "field": "m_DialogueSettings",
-   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker) ([UI.md](UI.md#how-the-scripts-fit))"
+   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit))"
   },
   {
    "category": "Shared",
@@ -7119,7 +7119,8 @@
     "m_iPromiseDays": "3",
     "m_fBarkRadius": "6",
     "m_fBarkPerPlayer": "60",
-    "m_fBarkPerSpeaker": "600"
+    "m_fBarkPerSpeaker": "600",
+    "m_fRumourChance": "0.15"
    }
   },
   {

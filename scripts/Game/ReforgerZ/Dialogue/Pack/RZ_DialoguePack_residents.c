@@ -87,6 +87,7 @@ class RZ_DialoguePack_residents
 		db.Say("", "\"Show me. Go on. Nobody here is going to shout.\"");
 		db.Choice("tell", "\"Here. It's a bite.\"", "told", "", "", "", "", "", "call:declare_bite", "", "");
 		db.Choice("fine", "\"It's nothing. A scratch off a fence.\"", "fine", "caught", "", "lie haven 2", "", "", "", "", "");
+		db.ChoiceMore(false, "nset:hid_bite");
 		db.Choice("back", "\"Not now.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("told");
 		db.Say("", "\"Thank you for saying it out loud. Most don't. Sit by the door, where it's cooler.\"");
@@ -99,6 +100,9 @@ class RZ_DialoguePack_residents
 		db.Do("call:caught_bite");
 		db.Choice("tell2", "\"All right. Write it down.\"", "told", "", "", "", "", "", "call:declare_bite", "", "");
 		db.Choice("back3", "\"Leave it.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("occupant.bitten.found", "occupant", "nmem:hid_bite", "", 3, 5, "haven");
+		db.Node("start");
+		db.Say("", "\"You told us it was a fence. It wasn't. Next time, say it at the door. We'd have helped.\"");
 		db.Conv("occupant.house.bear", "occupant", "!house:died", "Ask about the bear on the door.", 4, 0, "haven");
 		db.Node("start");
 		db.Say("", "\"So nobody shoots through the door. It doesn't always work. It works more than it doesn't.\"");
@@ -155,14 +159,14 @@ class RZ_DialoguePack_residents
 		db.Say("", "\"You stayed for the name, the other night. People noticed. Nobody will say so, so I'm saying it.\"");
 		db.Conv("occupant.house.stove_bed", "occupant", "house:short & !house:died", "Ask who gets the bed by the stove.", 2, 0, "haven");
 		db.Scene("stove_bed", "speaker", "tier:haven>=known");
-		db.Node("start");
-		db.Public();
-		db.Jump("decided", "settled");
-		db.Say("", "\"There's one bed by the stove and three who want it. The old man, the girl with the cough, the new one who stood the gate.\"");
 	}
 
 	protected static void Add1(RZ_DialogueDB db)
 	{
+		db.Node("start");
+		db.Public();
+		db.Jump("decided", "settled");
+		db.Say("", "\"There's one bed by the stove and three who want it. The old man, the girl with the cough, the new one who stood the gate.\"");
 		db.Say("", "\"The council says whoever the house trusts can choose. That might be you. Everyone's listening, so choose kindly.\"");
 		db.Choice("old", "\"The old man. He's cold all the time.\"", "chosen", "", "", "", "", "", "decide:old", "", "");
 		db.Choice("girl", "\"The girl with the cough.\"", "chosen", "", "", "", "", "", "decide:girl", "", "");
@@ -184,7 +188,8 @@ class RZ_DialoguePack_residents
 		db.Say("", "\"You're the one who brought the tins. The children asked if you're coming back. I said I'd ask.\"");
 		db.Conv("occupant.nurse.symptoms", "occupant", "house:short & bg:nurse,doctor", "[Nurse] Ask who's coughing.", 2, 0, "haven");
 		db.Node("start");
-		db.Say("", "\"The little one at the back. Since the school trip, her father says. He says it to everyone.\"");
+		db.Say("", "\"The little one at the back. Coughing since the school trip.\"");
+		db.Say("", "Her father: \"It's her chest. It's always been her chest. I keep telling them.\"");
 		db.Say("", "\"People look at her like she's bitten. She isn't. Is she?\"");
 		db.Choice("chest", "\"That isn't a bite. It's her chest.\"", "chest", "", "", "", "", "bg:nurse,doctor", "", "", "");
 		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
