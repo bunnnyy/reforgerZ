@@ -1,16 +1,17 @@
-# Sites: the ground, the rules and the layers
+# Sites: the ground, the rules, the layers, the people and the story
 
 How camp life ([DESIGN.md](DESIGN.md#camp-life)) reads the ground a camp stands on, how big its pieces
 really are, what lies round each site, how each site is laid out from its pieces' rules and built in
-layers by its faction's doctrine, and how every site is measured. Built: the site grid, real
+layers by its faction's doctrine, where its people stand and walk, what story it tells, and how every
+site is measured. Built: the site grid, real
 footprints, the surroundings and the threat sectors, the rules and the solver, building in layers
-(the wire and its gates, the boards, the watch, valuables indoors), and the audit with its drawing.
-What comes next (the people at their posts and on their rounds, each site's story) is designed in
-[designs/SITES.md](../designs/SITES.md) and not built.
+(the wire and its gates, the boards, the watch, valuables indoors), the people at their posts and on
+their rounds, each site's story, and the audit with its drawing.
 
 Code: `Factions/RZ_SiteGrid.c` (the grid and footprints), `Factions/RZ_SiteSurroundings.c`,
 `Factions/RZ_SiteRules.c` (zones, rules, layers, doctrine), `Factions/RZ_SiteSolver.c`,
-`Factions/RZ_SiteWire.c` (the wire line), `Factions/RZ_SiteAudit.c`, and the survey in
+`Factions/RZ_SiteWire.c` (the wire line), `Factions/RZ_SitePeople.c` (posts and routes),
+`Factions/RZ_SiteStory.c` (the story), `Factions/RZ_SiteAudit.c`, and the survey and the routines in
 `Factions/RZ_CampLife.c`. Settings: **Territory > Camp life** (below). Tools: `tools/camp_kit/`
 (the pieces with their rules and the doctrine in `pieces.py`, footprints, `build.py`,
 `render.py --placed`), the runtime test's site audit (`tools/runtime_test/run.sh sites`) and two
@@ -24,6 +25,8 @@ Workbench plugins.
 - [The rules](#the-rules)
 - [The solver](#the-solver)
 - [Building in layers](#building-in-layers)
+- [The people](#the-people)
+- [The story of each site](#the-story-of-each-site)
 - [The audit](#the-audit)
 - [Seeing it](#seeing-it)
 - [Settings](#settings)
@@ -144,7 +147,7 @@ wire (a road post, or **Layers** off) has no zones: every piece may stand anywhe
 | **Kitchen** | inside the wire within 14 m of the kitchen's door: the building's outside door furthest from the entrance, else the middle of its yard side; by the entrance when no way leads round to it | the cook pot, the woodpile, the water, the wash and shaving stands |
 | **Sleep** | inside the wire, 12 m or more from the gate (spots tried first in the two corners furthest from it) | tents (open ground only: in a building they sleep indoors), the washing and drying lines, the children's corner |
 | **Sick** | inside the wire, 8 m or more from the gate (the far corners first) | the ward tent |
-| **Dump**, **Dead** | outside the wire within 20 m of it, on a side that isn't threatened | nothing yet: the burn pit and the graves come with each site's story ([designs/SITES.md](../designs/SITES.md#5-the-story-of-each-site)) |
+| **Dump**, **Dead** | outside the wire within 20 m of it, on a side that isn't threatened | no plan piece: the story's ash (the dump), graves and candle jars (the dead) ([The elements](#the-elements)) |
 
 ### Rule types
 
@@ -305,6 +308,12 @@ building).
 4. **The building's lookouts** (where its sentries stand, [DESIGN.md](DESIGN.md#camp-life)): of five
    spots along each of its sides, 2 and 4 m out, the two (a safehouse's one) that see the gate and
    stand nearest it; the best one only if none sees it.
+5. **The gate's post**: a spot just inside the main gate, beside the way in, that sees it
+   ([Posts](#posts)). Every site with a gate gets one whatever its nest and lookouts can see (a nest
+   on a bank above a hillside gate may not), so every gate is watched.
+6. **A lookout's post toward each threatened side** that still nothing faces (no watch piece, the
+   building's lookouts, the gate's post; a lookout piece may have found no room), at most three: a
+   spot a body can stand on 3–4.5 m inside the wire that way, facing out.
 
 ### Work and life
 
@@ -338,6 +347,209 @@ the tables, the ward, the cold store and the samples are indoors (as data), the 
 by the entrance. What a player sees: a fenced, lit, boarded building with one way in through a
 shower, and nothing left lying about.
 
+## The people
+
+`Factions/RZ_SitePeople.c` and camp life's routines (`Factions/RZ_CampLife.c`). The bodies stay the
+ones the built systems spawn ([DESIGN.md](DESIGN.md#camp-life): guards, named people, occupants,
+crews, extras up to **In play**); what the site adds is **where they stand and walk**. Once a site is
+laid out, the solver works out its **posts** and **routes** from its layers (the last of its tasks,
+in the same budget) and keeps them with the layout as data; the jobs are today's (`JOB_WATCH`,
+`JOB_PATROL`, `JOB_STROLL`, `JOB_COURIER` and the rest), done the same way (smart-action seats,
+loiter, patrol and move waypoints, the cycle waypoint, the waypoint slots on **Camp life**), and only
+at the **Live places** (3) nearest players. A site laid out without the solver keeps the older spots
+(the nest, the building's corner, a loop 40–80 m out).
+
+### Posts
+
+A post is a spot and a facing a watch uses.
+
+| Post | From | Who |
+|---|---|---|
+| **Gate** | the watch layer's **gate post**: just inside the main gate, 3–7 m in and 2.5–6 m to the side of the way in, on ground a body can stand on (off the road and the way kept clear if it can), with a clear line to the gate; else any square a body can stand on within 8 m of the gate that sees it (inside the wire first); else the gate itself. Every site with a gate has one, so every gate is watched | guards |
+| **Nest** | the plan's watch piece nearest the gate (Bastion's and the Red Hand's nests, the Haven's lookout's chair, Halcyon's guard post): its own watch point | guards |
+| **Lookout** | each lookout piece toward a threatened side, any other watch piece, the lookouts' posts toward the sides nothing else faces, and the building's lookouts ([Watch](#watch)); each with the threat of the side it faces and whether that side is covered | guards |
+| **Door** | the entrance's step, facing out (a site with a building) | guards |
+
+The counter, the leader's seat and the medic stay as they are (no job); the kitchen, the work zone's
+seats and the fire are the pieces' own (cook, chop, work, sit).
+
+### Shifts
+
+Today's phases (`RZ_Territory.PHASE_MORNING`, `PHASE_DAY`, `PHASE_EVENING`, `PHASE_MEAL`, `PHASE_NIGHT`)
+and each faction's day stay ([DESIGN.md](DESIGN.md#camp-life)); the watches come first and fill the
+posts by importance:
+
+| Rule | How |
+|---|---|
+| Order | the gate's first post (the nest over it when it sees the gate, else the barrier), then for Halcyon (its guard pair) and the Haven (its lookout) the door, then the gate's second post, the lookouts by threat, the door. A second watch on one post when there are more watches than posts |
+| How many | Bastion by day the gate (two at a stronghold) and, by a building, a lookout; the Red Hand at a stronghold's building one; the Haven one; Halcyon two (the lab three) |
+| Night | Bastion the gate and a lookout on the most covered threatened side (the curfew, `IsCurfew`, adds the second gate watch, as before); the lab's lit posts keep their watch (both at the gate) and a guard walks the wire; the others one on the gate |
+| The handover | at 05:30 and 17:30 the watch going off comes last in the order: it walks off its posts to the fire (a seat, not work) and the relief (the crew in shift order, those woken from the sleep zone or the door among them) takes the posts and the walks |
+
+### Patrols
+
+Routes are worked out on the site's grid and its road segments: points on ground a body can stand on
+(the nearest walkable square within 2 m, else cut), never wet, never with a 4 m drop within 6 m
+(the audit's check), on the road where one is within 12 m (the approach).
+
+| Route | Path | Who | When |
+|---|---|---|---|
+| **The wire** | round the inside of the wire line 2 m in, from the corner nearest the gate; a point every 5 m on a threatened side (the heaviest side gets the longest stretch) and every 10 m elsewhere; the corners stand a while (loiter waypoints in the cycle) | Bastion's first walk; Halcyon's guard at night at the lab | by day and at night |
+| **The approach** | out of the gate along the road in, 80–150 m, a point every 20 m turning at most 45° a step toward the road, and back | Bastion's second walk (by turns), the Red Hand's stroll | by day |
+| **The threat side** | out of the gate toward the threat front, 60–100 m, and back | Bastion's second walk (by turns; every shift when recently hit) | by day; never at night |
+| **The friendly side** | the same toward the nearest friendly base (else away from the front), 60–90 m | Halcyon's courier, every 20 minutes | by day |
+| **The road post run** | to the faction's nearest road post within 1.5 km (over 60 m away): out of the gate, a point every 150 m on the line between, 8 m short of the post, and back | Bastion and the Red Hand: one of the crew off the posts (an extra first), once a season day | by day, calm; one at a time on the server, and only while the extras' cap (6) has room for one more |
+
+A walk out stops where its next point (and a turn of 25° or 50° either way) fails the check; with
+fewer than 3 points it isn't kept, and its job falls back to the wire's walk.
+
+### Everyday movement
+
+| Movement | How |
+|---|---|
+| Meals | as before: the table at `PHASE_MEAL` (the Haven's dusk meal, Bastion's mess) |
+| Water | the Haven's day has one at the water: the piece with *Water* in its name (the barrel), its work point, else beside it |
+| The latrine, the stores | one shuffle in three (calm, not at night) one of the crew off a seat or work walks to the latrine and back, or at a building to the stores door and back, then goes back to what they were doing |
+| Smoke and talk | a seat beside someone already sitting is taken first, so two off duty sit together at the fire or the bench |
+| Idle | walking the camp goes between the pieces people use (the fire, the bench, the table, a work point), never a wire run, a board, a watch post or anything within 8 m of the gate |
+| Sleep | as before: in at the door or to the tents, despawned as data |
+
+### When the site is threatened
+
+Worked out every 10 s at a live place (setting **Alert states**, on), from what the game already knows:
+
+| State | When | Posts | Movement |
+|---|---|---|---|
+| **Calm** | none of the below | as above | as above |
+| **Wary** | heat in its 250 m square of 40 or more (half a horde's), a hostile base within 300 m, or its faction under pressure (`IsUnderPressure`) | every post manned, and a second at the gate where it has only one | no walks outside the wire (walks become the wire's, strolls and the courier a seat), no cooking at dusk, no road post run |
+| **Alert** | contact: one of its people died in the last 3 minutes, or heat of 80 or more (a horde can come) | everyone with a weapon on the wire facing the threat (up to 10 loiter spots 2 m inside it on the front's side) | the named people indoors (in at the door); nobody at the fire |
+| **Recently hit** | its story says it was attacked or burned in the last two days ([below](#its-state)) | the gate doubled | the threat-side walk every shift by day; fewer at the fire (two in three at work) |
+
+Combat stays the AI's own; the alert only moves people to posts first. A change of state hands the
+jobs out again and logs `Camp life: <place> is <state> (was <state>).`
+
+### What the jobs log says
+
+Each `Camp life jobs:` line ends with the posts filled by kind (*"posts gate 1 of 1, nest 1 of 1,
+lookout 1 of 2, door 0 of 1"*), how many are on the wire facing the threat, the routes being walked
+(*"walked: the wire 1, the approach 1"*) and the alert. The headless audit runs the same routine as
+data for the people each site has in play ([The audit](#the-audit)); the waypoints themselves need a
+player near and real guards: the full runtime test's places have only their named people (its world
+spawns no guard bodies), who never keep watch or walk out, so its jobs lines show the posts empty and
+the stories up, and a play-test is where the posts are seen manned and the routes walked.
+
+## The story of each site
+
+`Factions/RZ_SiteStory.c`, setting **Story** (on). Each site gets a **story**: a few facts worked out
+from real state, one of four stories per faction, and its elements shown through Traces' own
+machinery ([TRACES.md](TRACES.md#sites-stories)). Worked out when the site's pieces are laid out for a
+visit, and again at each season day's change while it stands (the same seed, the new state); nothing
+new is saved.
+
+### Its state
+
+| Fact | From | Values |
+|---|---|---|
+| How it was settled | the town's history (Traces): the faction's *founded* and *taken* events (a taking's count is the old owner), a *lost* before them | **held from the start**, **taken from** a faction, **settled** an empty town, **retaken** |
+| How it's going | the faction's pressure, need, strength and morale | **under pressure**, **short** (a need), **thriving** (strength 50 or more and morale 55 or more), else **holding on** |
+| What happened lately | the town's history in the last 3 broadcast days (deaths: the faction's *dead* and any *death*; the infected: *pyre*, *infested*; people: a *taken* by another faction or a *lost* of its own), and a Traces scorch (L2) within 60 m | **mourning** (any deaths), **hit** (by the infected or by people), **burned**, **quiet** |
+| What's out there | the threat front's cause, kept with its people's plan | **a hostile neighbour**, **the infected**, **the road**, **the sea** |
+| The town | its infection | **clean** (under 30), **fighting it**, **losing it** (over 60) |
+
+Also read: the building's kind (the church, a farm), the lab, a road through it, a hostile Red Hand
+base within 3 km, and a nest under study within 1.5 km (Halcyon's Specimen from the Nest running).
+
+### The library
+
+The state scores each of the faction's four and the best wins (the seed breaks ties); each story
+shows its own elements, then what the state adds whatever the story (the old owner's mark while
+taken, scorch when burned, graves when anyone died, the pyre on the infected's side, casings toward
+a hostile neighbour, the sign, a car on the verge when it took or settled a town on a through-road),
+six at most.
+
+| Faction | Story | When | Its own elements |
+|---|---|---|---|
+| Bastion | **The post that held** | held from the start and thriving (the default) | the sign |
+| | **Dug in against the crews** | a hostile Red Hand base within 3 km (more when it's the front) | sandbags and a HALT sign on its side toward them, the sign |
+| | **Short of everything** | short, or under pressure | the board crossed out |
+| | **After the night it came close** | hit by the infected (hit or mourning: less) | the pyre, planks against the wire |
+| Red Hand | **Took it off Bastion** | taken from Bastion (from anyone: less) | the mark at the gate (Bastion's beside it while it's recent), Bastion's sandbags and HALT sign |
+| | **The toll road** | a road through, or the road is the front | a car on the verge, the sign |
+| | **Fat and loud** | thriving | bags stacked by the door, the sign |
+| | **Something got in** | hit or mourning | planks against the wire, a chair under a sheet |
+| Haven | **The church that opened its doors** | the church | the church door (the board, a chair, a blanket), the sign |
+| | **The farm that feeds three towns** | a farm and thriving | buckets by the kitchen, the sign |
+| | **Burying our own** | mourning | graves (one a death, up to 7), the candle jars |
+| | **The night watch** | the infected the front and the town losing it | planks and furniture against the wire, the sign |
+| Halcyon | **The clean room** | the lab (thriving: more) | tape between posts at the gate |
+| | **The station that lost its courier** | hit by people and short | the courier's bicycle and a sample case by the gate |
+| | **Burning the samples** | the town losing it | ash by the back, the board crossed out |
+| | **Under study** | a nest under study near | the mark at the gate |
+
+### The elements
+
+Each element is a Traces scene kind, **C1–C18**, whose prefab is World > Traces > Kit's (no new
+prefab; an element whose kit slot is empty is text only, in the log). The solver keeps a spot for every
+element the faction's stories can show, last of all and by the same rules as any piece (the ground,
+nothing standing, off the roads and the ways kept clear), as data (the `STORY` layer); camp life
+spawns only what the story shows, with the place's pieces, near players only. A spot that finds no
+room on its own ground tries again: the dead and the dump on the quiet sides 60° either way, what
+stands outside toward the threat or a hostile base 36° either way, the gate's 8–12 m in and wider
+to the sides then in the court, what stands by the entrance or the kitchen in the court, the court's
+in the yard; one that still finds none leaves its element as text.
+
+| Kind | Element | Prefab (Kit) | Its spot |
+|---|---|---|---|
+| C1 | the pyre | Pyre | 4–11 m outside the wire toward the threat front |
+| C2 | casings by the nest | Held out | by the nest (or the gate's post) |
+| C3 | the sign | the faction's door board, else Season mark, taken (the stencilled board) | the verge outside the gate, 8–20 m out |
+| C4 | a car on the verge | Column car A | the verge 14–30 m out, 7–11 m off the way out |
+| C5 | graves | Grave, in a row 1.6 m apart | the dead zone (outside the wire on a quiet side): a row of 7, else 4, else 2 |
+| C6 | the board crossed out | Season mark, board | the court |
+| C7 | scorch | Scorch | by the building's entrance, 1.6–2.4 m off the wall |
+| C8 | the mark at the gate | the faction's door board (else the stencilled board), the old owner's beside it for 3 days after a taking | inside the gate |
+| C9 | sandbags and a HALT sign | Road post relic | 4–11 m outside the wire toward the hostile base |
+| C10 | planks against the wire | Held out | inside the wire on the threat side |
+| C11 | a chair under a sheet | The chair at the edge | the court |
+| C12 | candle jars | Candle jars | the dead zone |
+| C13 | the church door | Church door | by the entrance |
+| C14 | the courier's bicycle | The dropped run | inside the gate |
+| C15 | ash by the back | Scorch | the dump |
+| C16 | tape at the gate | Season mark, tape | inside the gate |
+| C17 | bags stacked by the door | Suitcases | the court |
+| C18 | buckets by the kitchen | The water queue | the kitchen |
+
+### Over the season
+
+- An element from something that happened (the pyre, casings, graves, scorch, planks, the chair, the
+  jars, the bicycle) is aged by Traces' own `Stage` as a scene made on that day and lasting 3 days;
+  the rest as a scene that lasts the season (by days: fresh, weathered from day 3, old from day 10).
+  In its last third it shows its faded twin when Kit > Pieces that age has one for its kind (C1–C18,
+  no piece, Faded set).
+- Each season day's change the story is worked out again and its elements replaced: a site that was
+  attacked shows it for three days, then fades back. A taken site shows the old owner's board at the
+  gate for 3 days.
+
+### Lines
+
+Player text follows [WRITING.md](WRITING.md): plain, short, the faction's voice; never "you're new".
+
+- **When you come in**: on foot within 40 m of the gate or the yard, one of its people (the sentry,
+  the toll man, the lookout, the guard) says one line by its state, as a subtitle, once a season day a
+  player and state:
+
+  | Faction | Calm | Hit | Mourning | Short |
+  |---|---|---|---|---|
+  | Bastion | *Sign in at the board. Keep your hands where we can see them.* | *Two on the wire tonight. Don't argue.* | *New tags on the nails this week. Sign in, keep it short.* | *Stores are thin. Don't ask, and nobody has to tell you no.* |
+  | Red Hand | *Toll's on the sign. Read it.* | *Something came through the back. We're not talking about it.* | (as hit) | *Prices went up this morning. Take it up with the road.* |
+  | Haven | *There's soup. There's always soup.* | *It came close last night. Sit down, you look worse than we do.* | *We buried our own this week. Sit with us a while.* | *Half portions this week. There's still a bowl for you.* |
+  | Halcyon | *Through the shower first. All of you.* | *Nobody goes out past the lights.* | (as hit) | *We're short of everything that matters. Don't touch the cold store.* |
+
+- **A mention**: a holding hit or mourning gets one quiet headline (the news kept for leaders and
+  first spawns, never broadcast), checked for every holding each season day and when its story is
+  worked out: *"The Haven buried its own by the church in Levie. The candle jars were lit at dusk."*
+  The place is named from its building (*the school*, *the church*, *the garage*).
+
 ## The audit
 
 Every site laid out is measured once a run, as data, and logged; the runtime test lays out every
@@ -347,10 +559,12 @@ site on the map this way with nothing spawned (`RZ_CampLife.AuditAll`).
 |---|---|---|
 | Overlaps | every placed rectangle against the other pieces' (exact areas, clipped), the buildings' boxes (not a counter, which may stand indoors, nor a board on the wall) and the grid's solid cells; over 0.1 m² is an overlap | any |
 | Floating or buried | the ground under each prop varying over 0.3 m (not a board on the wall) | |
-| Posts | the watch pieces (nests, lookouts, guard posts) and the building's lookouts: does one see the gate (a 2 m line on the grid, no solid or building) within 80 m; each side with threat 3 or more (and the front) watched by a post facing within 67.5° (a lookout placed toward a side isn't asked to see the gate) | a stronghold with no gate watch |
+| Posts | the watch pieces (nests, lookouts, guard posts), the building's lookouts, the gate's post and the lookouts' posts: does one see the gate (a 2 m line on the grid, no solid or building) within 80 m; each side with threat 3 or more (and the front) watched by a post facing within 67.5° (a lookout placed toward a side isn't asked to see the gate) | a stronghold with no gate watch |
 | Paths | a walkable way (1 m wide, round water, buildings, solid, bushes, scenery and pieces) from the entrance (the solver's step; from the nearest square a body can stand on within 2 m) to the gate (the wire's main gate) and to the spot in front of the cook pot | |
 | Dropped | each dropped piece by its tier ([Importance tiers](#importance-tiers)) | a tier 1 piece dropped |
-| Patrol | the patrol's four points (the first shift): dry, and no 4 m drop within 6 m | |
+| Routes | every point of its people's routes ([Patrols](#patrols)): dry, no 4 m drop within 6 m, and on the grid not in water, a building or something standing (laid out without the solver: the old loop's four points) | |
+| People | its posts and routes, and a dry run of the routine for the people it has in play (its **In play**, two of them named at a stronghold, one elsewhere): the posts manned and the routes walked by day, at night, wary, under attack and recently hit (`Sites people: ...`) | |
+| Story | its state, the story it picks, which of its elements have their spot and a prefab, and the same for each of the faction's four (`Sites story: ...`) | |
 | Perimeter | the share of the wire line closed (the ground, the barrier, the gates) and its widest gap by bearing and width | under 80% at a stronghold, 60% at an outpost, a field station or a safehouse |
 | Outside the wire | a plan piece of tier 2–4 (not the gate's or the wire's own, not a dump's or the dead's) standing outside the line | any |
 | Over water | the building the place moved into (its middle), the yard where the people come out, or any piece (its spot) over the sea, a river or a pond | any |
@@ -358,7 +572,7 @@ site on the map this way with nothing spawned (`RZ_CampLife.AuditAll`).
 The **score** (0–100) starts at 100: −15 an overlap (at most −45), −2 a floating prop (−20),
 −25 for a stronghold with no gate watch (−10 elsewhere; road posts aren't asked), −5 a gate post (a
 nest, a guard post, a building's lookout) that can't see the gate (−10), −5 a threatened side unwatched (−15), −10 a blocked path, a dropped
-piece −20, −6, −3, −1.5 or −0.5 by its tier 1 to 5, −4 a bad patrol point (−16), half a point for
+piece −20, −6, −3, −1.5 or −0.5 by its tier 1 to 5, −4 a bad route point (−16), half a point for
 each percent the perimeter is under its bar (−15), −3 a piece outside the wire (−12).
 
 Each site's line, in play too (`[ReforgerZ] Sites: ...`):
@@ -366,21 +580,38 @@ Each site's line, in play too (`[ReforgerZ] Sites: ...`):
 *"Sites: Halcyon stronghold at 27-17: score 86; 38 of 40 pieces; perimeter 91% (gap 3 m at 216), 2
 gates; 9 indoors, 4 doors blocked, 5 windows boarded; front NW (road in, a lair); dropped: Antenna
 (steep ground); 0 overlaps; 2 floating or buried; posts: gate watched, 5 posts (2 can't see the
-gate), 2 of 2 threatened sides watched; paths: door to gate clear; patrol 4 of 4 points walkable;
+gate), 2 of 2 threatened sides watched; paths: door to gate clear; routes 31 of 31 points walkable
+(wire 14 points, 96 m, approach 8 points, 140 m, threat 5 points, 80 m, friendly 4 points, 61 m);
 read 85 ms in 2 steps (most 60 ms, the longest part 5 ms), laid out in 95 ms."*
+
+followed by the people's and the story's:
+*"Sites people: Halcyon stronghold at 27-17: posts gate 1, nest 1, lookout 3, door 1 (4 see the gate);
+routes ...; 8 spots on the wire facing the threat; dry run, 6 people (2 named): by day: posts gate 1 of 1,
+nest 1 of 1, lookout 0 of 3, door 1 of 1; ... | at night: ... | wary: ... | under attack: ... | recently
+hit: ..."* and *"Sites story: Halcyon stronghold at 27-17: The clean room (held from the start, thriving,
+quiet, the infected out there, the town clean); 9 of 11 spots kept; its elements on their spots: The
+clean room 3 of 3; the four: ..."*
 
 and the summary (the runtime test asks for it once every site is done):
 *"Sites audit: 16 sites, mean 83, worst 61 (...), 0 overlaps; 2 with a hard failure; 2 under 70: ..."*
 and *"Sites audit perimeters: The Haven stronghold at 34-44 92%, ...; 0 tier 1 pieces dropped, 0
-pieces outside the wire, 0 sites with something over water."* **Audit threshold** (70) is the pass mark: the site audit (`run.sh sites`)
+pieces outside the wire, 0 sites with something over water."*, *"Sites audit people: 4 of 4 strongholds
+and 16 of 16 sites with a gate have a post that sees it (blind: none); 50 routes, 410 of 412 points
+walkable."* and *"Sites audit stories: Bastion: The post that held picked at 3, whole at 4 of 4, ..."*
+(each story: at how many of the faction's sites its state picks it, and at how many all its elements
+have a spot and a prefab). **Audit threshold** (70) is the pass mark: the site audit (`run.sh sites`)
 fails while any stronghold scores under it.
 
-**Where it stands** (2026-11-12, the runtime test's site audit): Everon's 16 sites score a mean of 81
-(80–86 over four rolls of the holdings; the fixed plans scored 35), with 0 overlaps, no tier 1 piece
-dropped, nothing over water and the strongholds' wire 87–96% closed (the lab 92–96%); Arland's 9 a
-mean of 85–86 (24–40 before). What's left is mostly ground: pieces dropped on banks, on roads through
-a yard and against neighbouring buildings, and a stronghold on a hillside whose watch can't see its
-gate (the Red Hand at 106-118 on one roll, 53).
+**Where it stands** (2026-11-12, the runtime test's site audit, three runs with the people and the
+story): every stronghold and every site with a gate has a post that sees it (before, a stronghold on a
+hillside or the lab could have none: the Red Hand at 106-118 on one roll, the lab at 13-58 on another);
+every route point walkable (531–572 on Everon, 324–354 on Arland). Everon's 16 sites score a mean of
+81–90 (78 on the same day's run before), Arland's 9 a mean of 88–91; 0 overlaps and nothing over water.
+Every one of the sixteen stories stands whole (all its elements on their spots with a prefab) at one
+site or more of its faction in each map's runs but the toll road and the clean room on some Everon
+rolls (a car with no room on the verge, the gate's tape crowded out). What's left is ground: on one
+roll of three the Haven's stronghold on Everon sat in a building hemmed in by roads and neighbours and
+lost most of its pieces (8), and Arland's Red Hand stronghold on one roll had a yard of walls (63).
 
 ### The runtime test
 
@@ -403,7 +634,7 @@ run both: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#runtime-test-without-workbench
 | `py tools/camp_kit/render.py --placed <console.log>` | draws `tools/camp_kit/sites_placed.html` from a site audit's log ("Sites draw" lines): each site top-down on the ground it read (water, buildings, walls and trees, bushes, roads, steep ground, the paths kept clear), its building, road entries, gate and door, the wire line (what closes each stretch: the ground, the barrier, a gate, or a gap) and the ring it was traced on, every piece's real footprint by tier and every drop (dashed, hover for why), what went indoors, the posts and their lines to the gate, the patrol's loop, any overlap, and the threat on each side; and writes `tools/camp_kit/sites_list.txt` |
 | **ReforgerZ: Fly to the next site** (Workbench plugin, World Editor) | reads `tools/camp_kit/sites_list.txt`: each run moves the camera above the next site looking down on it, then to its gate at eye height looking in, then on to the next; for a screenshot of every base to hold against `sites_placed.html` |
 
-The committed `sites_placed.html` and `sites_list.txt` are Everon's audit of 2026-11-12 with the solver and the layers (16 sites, mean 81; the
+The committed `sites_placed.html` and `sites_list.txt` are Everon's audit of 2026-11-12 with the people's routes and the story's spots (16 sites, mean 82; the
 holdings move with each season's roll, so a new run may differ).
 
 The audit's drawing lines also name the big solid things the grid read at each site (class, prefab,
@@ -424,6 +655,9 @@ On **Territory > Camp life** (`RZ_CampLifeSettings`):
 | **Layers** | on | build in layers by each faction's doctrine (the wire and its gates, the boards, the lookouts, the lights); off = work and life only, no wire |
 | **Board windows** | on | harden: board ground-floor windows (the doctrine says which); off = only side doors are blocked |
 | **Layer pieces** | 60 | the layers' pieces at a site at most, on top of its piece count |
+| **Story** | on | each site's story: its elements (Traces' prefabs) and the line when you come in ([The story of each site](#the-story-of-each-site)); off = none |
+| **Alert states** | on | posts and movement change with a threat ([When the site is threatened](#when-the-site-is-threatened)); off = always calm |
+| **Road post run** | on | Bastion and the Red Hand walk to their nearest road post and back once a day ([Patrols](#patrols)) |
 
 Each kit's doctrine is on the kit itself (**Close**, **Harden**, **Ring**, **Yard**, **Layers**,
 written by `build.py`); **Pieces max** (200) caps camp life's pieces on the server, the layers'
@@ -437,7 +671,8 @@ with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured i
 | Solving it | 40–300 ms in all (a stronghold's 140–300 ms), in parts: the start (the counters, the plan's frame, tracing the wire, where the entrance can walk), each piece, each side of the wire; the longest part 14–110 ms (the lab's start, or a tier 1 piece's three passes), the rest a few ms. At **Site read ms** 2 a site is read and solved in about 1–4 minutes of the background, once a run (pre-read: all of Everon's 16 in about half an hour after the land grid) |
 | Memory | a 72 m grid is 288 × 288 cells, two to an int (about 170 KB), with its heights and water marks every metre (about 170 KB), freed once laid out; the kept layout a few hundred bytes a piece (a stronghold with its layers about 60 pieces) |
 | Spawning | 4 pieces a tick for all places together, as before; a stronghold's 20 pieces and its layers' 30 to 50 are up in about a minute and a half |
-| People | unchanged ([DESIGN.md](DESIGN.md#camp-life)) |
+| People | unchanged in number: Live places (3), extras (6, the road post run counting as one); posts and routes worked out once with the layout (the routes' walkable squares a few ms, the grid's BFS only for the nearest square within 2 m), a few KB kept; the alert a heat lookup and a few comparisons every 10 s at a live place |
+| The story | its state read from data (the town's history, a scene lookup) when a site is laid out for a visit and once a season day; up to 11 spots kept a site (a few hundred bytes); its elements spawn with the place's pieces, after them (the first left out at **Pieces max**) |
 
 ## Simplified
 
@@ -453,11 +688,11 @@ with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured i
 - Windows are found by prefab name (the VERIFY); a board is a pallet at the window's own height,
   the same for every faction (Bastion's firing gaps aren't drawn); a door board stands at the door's
   origin. Only the building the place moved into is hardened.
-- Valuables indoors are data only: nothing is placed inside, and nobody guards the door for them
-  yet (the people, [designs/SITES.md](../designs/SITES.md#4-the-people)).
+- Valuables indoors are data only: nothing is placed inside; the door post ([Posts](#posts)) is
+  their guard when a watch reaches it.
 - **By a building kind** is used by one piece (the water barrel near a well); the **Dump** and
-  **Dead** zones are worked out but hold nothing yet (the story); the kill zone is kept by placing
-  work and life inside the wire, not by clearing anything outside it.
+  **Dead** zones hold only the story's elements; the kill zone is kept by placing work and life
+  inside the wire, not by clearing anything outside it (no stumps or flattened strip).
 - **Over** is "within 2 m of it" (the nets are overhead in their own pieces); the latrine's
   "downwind" is "behind the building from the threat" (there's no wind); **soil** is "off the verges
   and the building's walls" (the grid reads no surface).
@@ -474,5 +709,20 @@ with them. The cell (0.5 m) is fixed: the grid's bands and checks are measured i
 - The waterside is ruled out by prefab names and by water under a building's box: a quay that's
   terrain-high concrete under an ordinary building's name isn't caught by name (its cells read as
   dry ground, so pieces may stand there).
+- **The people.** A guard prefab that is an AI group takes one post or walk for the whole group. A
+  post is a spot on the ground (a nest's own watch point where one stands): nobody climbs a roof or a
+  tower. The water run is work at the barrel (no bucket carried); the latrine and stores walks are
+  move waypoints there and back. The road post run's points are on the straight line between (the AI
+  finds its own way), and the run is planned once a run (a road post that comes or goes later isn't
+  seen until the site is laid out again). Wary reads heat and bases, not people: a hostile patrol
+  walking past isn't seen until it fights; a tribe's hunt counts only through its heat. The handover
+  is the order the posts are filled in, not a walk from the sleep zone.
+- **The story.** Its elements are Traces' kit compositions on spots sized by hand (not measured), one
+  spot a kind (the sign and a car one each; graves a row of up to 7). What has no kit prefab (a bed
+  frame in the wire, dog tags, a cage, a bell, a queue chalked at the counter, the roster's gap, the
+  table laid with a gap) is said in the log and in its lines, not shown. The state is read when a
+  site is laid out for a visit and at each season day's change, not as things happen. The epilogue
+  doesn't freeze it. A taking records its old owner from now on (a town history saved before reads
+  as taken from someone unknown).
 - Neither test spawns the mod's own compositions (the server can't load them from the throwaway
   addon), so the drawing and the fly-to screenshots are how to check what stands.

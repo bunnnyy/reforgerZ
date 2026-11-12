@@ -180,7 +180,7 @@ changed since; and these spots:
 | `traces.v6` | The waiting room's clinic (V6): a pharmacy or clinic in a town nobody holds, never the first patient's town; `none` when there's none |
 
 **Live writes** (`RZ_TraceWriters`, from Day 11). Each event goes into the town's history (8 events a
-town, saved) and may write one door. After the cure nothing new is written.
+town, saved; a holding's *taken* carries its old owner, which a site's story reads) and may write one door. After the cure nothing new is written.
 
 | Event | Who tells Traces | Door write |
 |---|---|---|
@@ -341,6 +341,20 @@ makes at most one of a kind a town a season day.
 | L6 | **Bastion fading**: sandbags and a HALT sign on its side | A Bastion road post pulled; and no new Bastion marks under 0.25 presence | Where the post stood | 2 days |
 | L7 | **Red hands spreading** | [Above](#where-marks-come-from) | Shops and garages first | As door marks |
 | L8 | **Halcyon's beaks** | Halcyon's sample jobs ([above](#where-marks-come-from)), and a ringed beak by a nest under study: while Specimen from the Nest runs, once a job, on the door nearest the nest | As door marks | As door marks |
+
+### Sites' stories
+
+A camp's story ([SITES.md](SITES.md#the-story-of-each-site)) is shown with scene kinds **C1–C18**:
+the pyre, casings, the sign, a car on the verge, graves, the board crossed out, scorch, the mark at
+the gate, sandbags and a HALT sign, planks against the wire, a chair under a sheet, candle jars, the
+church door, the courier's bicycle, ash, tape, bags stacked by the door, buckets (which is which, and
+the Kit prefab each uses: [The elements](SITES.md#the-elements)). They're not scene records: the site
+works them out from its state and stands them on spots its solver kept, inside its lived-in ground (the
+one place other scenes keep away from), and they spawn with the camp's pieces under camp life's cap,
+not through the Traces pool. They age as scenes do ([below](#how-scenes-age)): one from an event as a
+scene made that day lasting 3 days, the rest by the season's days; a **Pieces that age** entry for a
+C kind with no piece and a Faded set gives its faded twin in its last third. Their words are the
+site's (the line when you come in, a quiet headline), not an approach line or a paper.
 
 ### How a reader meets a scene
 

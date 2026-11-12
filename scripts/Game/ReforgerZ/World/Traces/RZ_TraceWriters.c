@@ -568,7 +568,8 @@ class RZ_TraceWatch
 		if (loser >= 0)
 			kind = "taken";
 
-		m_Traces.History().Add(town, kind, h.m_eFaction, 0, h.m_vPos);
+		// A taking's count is the old owner plus one (a site's story reads who it was taken from)
+		m_Traces.History().Add(town, kind, h.m_eFaction, loser + 1, h.m_vPos);
 		if (loser == RZ_EFaction.MILITARY && !h.m_bStronghold)
 			m_Traces.GetScenes().FallenPost(h.m_vPos, town);
 

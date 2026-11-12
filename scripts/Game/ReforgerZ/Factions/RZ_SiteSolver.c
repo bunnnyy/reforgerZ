@@ -21,6 +21,9 @@ class RZ_SiteSolver
 	protected static const int T_LIGHTS = 6;
 	protected static const int T_STORES = 7;
 	protected static const int T_CORNERS = 8;	// the building's lookouts: the corners that see the gate
+	protected static const int T_GATEPOST = 9;	// the gate's post: a spot just inside it that sees it
+	protected static const int T_STORY = 10;	// the story's spots (docs/SITES.md, "The story of each site")
+	protected static const int T_PEOPLE = 11;	// the posts and the routes (docs/SITES.md, "The people")
 
 	protected static const float THREAT_WATCH = 3;		// a side this threatened wants a watch (as the audit)
 	protected static const float PLAN_WEIGHT = 0.6;		// score lost per metre from the plan's spot
@@ -37,7 +40,7 @@ class RZ_SiteSolver
 	protected static const float ROUGH_SLOPE = 0.36;	// a tier 1 piece's second pass, and a piece that may stand on a bank: 20 degrees...
 	protected static const float ROUGH_SPREAD = 0.6;	// ...and a prop's ground up to this
 
-	RZ_CampPlace m_Place;
+	ref RZ_CampPlace m_Place;			// held: the job may hand its place over to a newer one (Survey) while this one is solved
 	ref RZ_SiteResult m_Result;
 	ref RZ_SiteWire m_Wire;				// null: no ring (a road post, or Layers off)
 	int m_iMs;
@@ -79,6 +82,7 @@ class RZ_SiteSolver
 	protected bool m_bRough;			// a tier 1 piece's second pass: the ground's flatness eased
 	protected bool m_bAnyZone;			// and its last: anywhere inside the wire
 	protected ref RZ_SiteRules m_Plain = new RZ_SiteRules();	// no rules: a layer piece turned as it's given
+	protected bool m_bStoryOut;			// a story element's spot: outside the wire
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_SiteSolver(RZ_CampLife camp, RZ_CampPlace p, RZ_CampGround ground, RZ_SiteGrid grid, RZ_SiteSurroundings around, RZ_DressingKit kit, bool audit)
@@ -147,6 +151,9 @@ class RZ_SiteSolver
 			case T_LIGHTS: Lights(); break;
 			case T_STORES: StoresBoard(); break;
 			case T_CORNERS: BuildingLookouts(); break;
+			case T_GATEPOST: GatePost(); SidePosts(); break;
+			case T_STORY: StorySpots(); break;
+			case T_PEOPLE: People(); break;
 		}
 	}
 
@@ -276,6 +283,7 @@ class RZ_SiteSolver
 		AddTask(T_LOOKOUTS, null, 0);
 		AddTask(T_LIGHTS, null, 0);
 		AddTask(T_CORNERS, null, 0);
+		AddTask(T_GATEPOST, null, 0);
 		for (int tier = 1; tier <= 5; tier++)
 		{
 			foreach (RZ_DressingPiece l : plan)
@@ -289,6 +297,8 @@ class RZ_SiteSolver
 		}
 
 		AddTask(T_STORES, null, 0);
+		AddTask(T_STORY, null, 0);
+		AddTask(T_PEOPLE, null, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1802,6 +1812,10 @@ class RZ_SiteSolver
 		if (!m_Wire)
 			return true;
 
+		// A story element outside the wire: past the line, not far
+		if (m_bStoryOut)
+			return !m_Wire.Inside(pos, -1.5) && m_Wire.DistToLine(pos) <= 45;
+
 		float m = WIRE_IN;
 		if (margin >= 0)
 			m = margin;
@@ -2318,5 +2332,534 @@ class RZ_SiteSolver
 		}
 
 		return found;
+	}
+
+	// ================================================================ The gate's post
+	//------------------------------------------------------------------------------------------------
+	//! The gate's post (docs/SITES.md, "Watch"): a spot just inside the main gate, beside the way in,
+	//! on ground a body can stand on, with a clear line to the gate; the first of 3-7 m in and 2.5-6 m
+	//! to either side (off the road and the way kept clear if it can), else the nearest square a body
+	//! can stand on by the gate. Every site with a gate has one, so its gate is always watched: a
+	//! sentry stands there whatever the nest can see.
+	protected void GatePost()
+	{
+		if (!m_bGate || m_Place.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return;
+
+		array<float> ins = {3, 5, 7};
+		array<float> sides = {2.5, -2.5, 4, -4, 6, -6};
+		vector best;
+		bool found = false;
+		for (int pass = 0; pass < 2 && !found; pass++)
+		{
+			int avoid = RZ_SiteGrid.NO_WALK;
+			if (pass == 0)
+				avoid = avoid | RZ_SiteGrid.ROAD | RZ_SiteGrid.CLEAR | RZ_SiteGrid.STEEP | RZ_SiteGrid.STEP;
+
+			foreach (float d : ins)
+			{
+				if (found)
+					break;
+
+				foreach (float side : sides)
+				{
+					vector spot = RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(m_vGate, m_fGateOut + 180, d), m_fGateOut + 90, side));
+					if (m_Wire && !m_Wire.Inside(spot, 0.5))
+						continue;
+
+					int flags = m_Grid.FlagsAt(spot);
+					if ((flags & RZ_SiteGrid.OUTSIDE) == 0 && (flags & avoid) != 0)
+						continue;
+
+					if (!m_Grid.LineClear(spot, m_vGate))
+						continue;
+
+					best = spot;
+					found = true;
+					break;
+				}
+			}
+		}
+
+		// Else any square a body can stand on round the gate (inside the wire first) that sees it,
+		// else the gate itself
+		for (int pass2 = 0; pass2 < 2 && !found; pass2++)
+		{
+			for (int r = 1; r <= 8 && !found; r++)
+			{
+				for (int k = 0; k < 16; k++)
+				{
+					vector near = RZ_Util.GroundPos(RZ_Compass.PointAt(m_vGate, k * 22.5, r));
+					if (pass2 == 0 && m_Wire && !m_Wire.Inside(near, 0.3))
+						continue;
+
+					int nearFlags = m_Grid.FlagsAt(near);
+					if ((nearFlags & RZ_SiteGrid.OUTSIDE) == 0 && (nearFlags & RZ_SiteGrid.NO_WALK) != 0)
+						continue;
+
+					if (!m_Grid.LineClear(near, m_vGate))
+						continue;
+
+					best = near;
+					found = true;
+					break;
+				}
+			}
+		}
+
+		if (!found)
+			best = m_vGate;
+
+		m_Result.m_vGatePost = RZ_Util.GroundPos(best);
+		m_Result.m_bGatePost = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A lookout's post toward each threatened side (threat 3 or more, or the front) that nothing
+	//! faces yet (no watch piece, the building's lookouts, the gate's post), at most three: a spot a
+	//! body can stand on 3-4.5 m inside the wire that way (off the road and the ways kept clear),
+	//! facing out. A post, not a piece: a sentry stands there when the watches reach it.
+	protected void SidePosts()
+	{
+		if (!m_Around || m_Place.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return;
+
+		array<float> facing = {};
+		foreach (RZ_SitePlaced w : m_Result.m_aPlaced)
+		{
+			if (w.m_Entry.m_eUse == RZ_EDressUse.WATCH && !w.m_bIndoors)
+				facing.Insert(w.m_fYaw);
+		}
+
+		if (m_Place.m_Site && !m_Place.m_Site.m_aLookouts.IsEmpty())
+			facing.Insert(m_Place.m_fApproach);
+
+		if (m_Result.m_bGatePost)
+			facing.Insert(RZ_Compass.Bearing(m_Result.m_vGatePost, m_vGate));
+
+		array<float> alongs = {0, 3, -3, 6, -6, 9, -9};
+		array<float> backs = {3, 4.5};
+		for (int s = 0; s < RZ_SiteSurroundings.SECTORS; s++)
+		{
+			if (m_Result.m_aSidePosts.Count() >= MAX_LOOKOUTS)
+				return;
+
+			if (m_Around.m_aThreat[s] < THREAT_WATCH && s != m_Around.m_iFront)
+				continue;
+
+			float bearing = s * 45;
+			bool seen = false;
+			foreach (float f : facing)
+			{
+				if (Math.AbsFloat(RZ_Compass.Normalize(f - bearing + 180) - 180) <= 67.5)
+					seen = true;
+			}
+
+			if (seen)
+				continue;
+
+			vector edge = RZ_Compass.PointAt(m_vMid, bearing, 12);
+			if (m_Wire)
+			{
+				int face;
+				edge = m_Wire.LinePointToward(bearing, face);
+			}
+
+			bool found = false;
+			foreach (float back : backs)
+			{
+				if (found)
+					break;
+
+				foreach (float along : alongs)
+				{
+					vector spot = RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(edge, bearing + 90, along), bearing + 180, back));
+					if (m_Wire && !m_Wire.Inside(spot, 1))
+						continue;
+
+					int flags = m_Grid.FlagsAt(spot);
+					if ((flags & RZ_SiteGrid.OUTSIDE) == 0 && (flags & (RZ_SiteGrid.NO_WALK | RZ_SiteGrid.ROAD | RZ_SiteGrid.CLEAR | RZ_SiteGrid.STEEP)) != 0)
+						continue;
+
+					m_Result.m_aSidePosts.Insert(spot);
+					m_Result.m_aSideFacing.Insert(bearing);
+					facing.Insert(bearing);
+					found = true;
+					break;
+				}
+			}
+		}
+	}
+
+	// ================================================================ The people and the story
+	//------------------------------------------------------------------------------------------------
+	//! The posts and routes its people use (RZ_SitePeople), from the site as laid out.
+	protected void People()
+	{
+		m_Result.m_People = RZ_SitePeople.Build(m_Place, m_Grid, m_Wire, m_Around, m_Result, m_vDoor, m_vGate, m_fGateOut, m_vMid, m_Fit.m_aRoad, m_Place.m_iSeed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot kept for each element the faction's stories can show (RZ_SiteStory.FactionElements):
+	//! last of all, so they take only what work and life left; each by the same rules (the ground,
+	//! nothing standing, off the roads and the ways kept clear), on its own spot (outside the wire
+	//! toward the threat or a hostile base, on the verge outside the gate, the dead zone, the dump,
+	//! the court, by the entrance, inside the gate, by the nest, against the wire, the kitchen). Data
+	//! only: camp life spawns what the site's story shows (RZ_CampLife.SpawnStory).
+	protected void StorySpots()
+	{
+		if (!m_Settings.m_bStory || m_Place.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return;
+
+		array<int> kinds = {};
+		RZ_SiteStory.FactionElements(m_Place.m_eFaction, kinds);
+		foreach (int kind : kinds)
+		{
+			int rows = 1;
+			if (kind == RZ_SiteStory.E_GRAVES)
+				rows = RZ_SiteStory.MAX_GRAVES;
+
+			// Graves: a row of seven, else four, else two
+			while (rows >= 1)
+			{
+				if (StorySpot(kind, rows))
+					break;
+
+				if (rows <= 2)
+					break;
+
+				rows = Math.Max(2, rows - 3);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool StorySpot(int kind, int rows)
+	{
+		RZ_DressingPiece e = RZ_DressingPiece.Cast(RZ_Util.NewWithDefaults("RZ_DressingPiece"));
+		if (!e)
+			return false;
+
+		vector half = RZ_SiteStory.HalfSize(kind);
+		if (kind == RZ_SiteStory.E_GRAVES)
+			half[0] = rows * 0.8;
+
+		e.m_vFootMin = Vector(-half[0], 0, -half[2]);
+		e.m_vFootMax = Vector(half[0], 0, half[2]);
+		e.m_iTier = 5;
+		e.m_sPrefab = "Story_" + RZ_SiteStory.SceneKind(kind);	// its name in the audit (never spawned as a piece)
+		m_Result.m_aKeepAlive.Insert(e);
+
+		// Its own spots, then where it may also stand: the dead and the dump round the other quiet
+		// sides, the entrance's and the kitchen's in the court, then the yard
+		int where = RZ_SiteStory.Where(kind);
+		array<int> tries = {where};
+		if (where == RZ_SiteStory.AT_DEAD || where == RZ_SiteStory.AT_DUMP || where == RZ_SiteStory.AT_KILL || where == RZ_SiteStory.AT_HOSTILE)
+		{
+			tries.Insert(where + 100);
+			tries.Insert(where + 200);
+		}
+		else if (where == RZ_SiteStory.AT_GATE)
+		{
+			tries.Insert(where + 100);
+			tries.Insert(RZ_SiteStory.AT_COURT);
+		}
+		else if (where == RZ_SiteStory.AT_ENTRANCE || where == RZ_SiteStory.AT_KITCHEN)
+		{
+			tries.Insert(RZ_SiteStory.AT_COURT);
+			tries.Insert(-1);
+		}
+		else if (where == RZ_SiteStory.AT_COURT || where == RZ_SiteStory.AT_NEST || where == RZ_SiteStory.AT_THREAT_IN)
+		{
+			tries.Insert(-1);
+		}
+
+		bool placed = false;
+		foreach (int at : tries)
+		{
+			array<vector> spots = {};
+			array<float> yaws = {};
+			bool outside = StoryCandidates(at, spots, yaws, e);
+			if (spots.IsEmpty())
+				continue;
+
+			m_bStoryOut = outside && m_Wire != null;
+			placed = PlaceBest(e, m_Plain, spots, yaws, false, spots[0], RZ_SiteGrid.BLOCKS_LIFE, RZ_ESiteLayer.STORY, 0.5, false);
+			m_bStoryOut = false;
+			if (placed)
+				break;
+		}
+
+		if (!placed)
+			return false;
+
+		RZ_SitePlaced kept = m_Result.m_aPlaced[m_Result.m_aPlaced.Count() - 1];
+		kept.m_iStory = kind;
+		kept.m_iStoryRows = rows;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spots an element tries (RZ_SiteStory.AT_*), each turned as it stands; sets the piece's
+	//! zone. True if they're outside the wire.
+	protected bool StoryCandidates(int where, notnull array<vector> spots, notnull array<float> yaws, RZ_DressingPiece e)
+	{
+		e.m_eZone = RZ_ESiteZone.YARD;
+		// The dead and the dump on another quiet side (+100: 60 degrees one way, +200 the other)
+		float turnQuiet = 0;
+		if (where >= 200)
+		{
+			turnQuiet = -60;
+			where -= 200;
+		}
+		else if (where >= 100)
+		{
+			turnQuiet = 60;
+			where -= 100;
+		}
+
+		// Anywhere in the yard: rings round the middle of the wire (or the plan)
+		if (where < 0)
+		{
+			vector middle = m_vMid;
+			if (m_Wire)
+				middle = m_Wire.Point((m_Wire.m_fX0 + m_Wire.m_fX1) * 0.5, (m_Wire.m_fZ0 + m_Wire.m_fZ1) * 0.5);
+
+			array<float> yRings = {6, 9, 12, 15, 18};
+			foreach (float yr : yRings)
+			{
+				for (int y = 0; y < 8; y++)
+				{
+					spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(middle, y * 45 + yr * 7, yr)));
+					yaws.Insert(y * 45);
+				}
+			}
+
+			return false;
+		}
+
+		switch (where)
+		{
+			case RZ_SiteStory.AT_KILL:
+			case RZ_SiteStory.AT_HOSTILE:
+			{
+				float b = m_fFront;
+				if (where == RZ_SiteStory.AT_HOSTILE && m_Around && m_Around.m_fHostile >= 0)
+					b = m_Around.m_fHostile;
+
+				b = RZ_Compass.Normalize(b + turnQuiet * 0.6);
+
+				vector edge = RZ_Compass.PointAt(m_vMid, b, 16);
+				if (m_Wire)
+				{
+					int face;
+					edge = m_Wire.LinePointToward(b, face);
+				}
+
+				array<float> outs = {4, 6, 8, 11};
+				array<float> alongs = {0, 3, -3, 6, -6};
+				foreach (float o : outs)
+				{
+					foreach (float a : alongs)
+					{
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(edge, b + 90, a), b, o)));
+						yaws.Insert(b);
+					}
+				}
+
+				return true;
+			}
+			case RZ_SiteStory.AT_APPROACH:
+			case RZ_SiteStory.AT_FAR_VERGE:
+			{
+				array<float> nearDs = {8, 12, 16, 20};
+				array<float> nearOffs = {6, -6, 8, -8};
+				array<float> farDs = {14, 18, 22, 26, 30};
+				array<float> farOffs = {7, -7, 9, -9, 11, -11};
+				array<float> ds = nearDs;
+				array<float> offs = nearOffs;
+				if (where == RZ_SiteStory.AT_FAR_VERGE)
+				{
+					ds = farDs;
+					offs = farOffs;
+				}
+
+				foreach (float d : ds)
+				{
+					foreach (float off : offs)
+					{
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(m_vGate, m_fGateOut, d), m_fGateOut + 90, off)));
+						float yaw = m_fGateOut;
+						if (where == RZ_SiteStory.AT_FAR_VERGE)
+							yaw = RZ_Compass.Normalize(m_fGateOut + 12);
+
+						yaws.Insert(yaw);
+					}
+				}
+
+				return true;
+			}
+			case RZ_SiteStory.AT_DEAD:
+			case RZ_SiteStory.AT_DUMP:
+			{
+				e.m_eZone = RZ_ESiteZone.DEAD;
+				float q = RZ_Compass.Normalize(QuietBearing() + turnQuiet);
+				if (where == RZ_SiteStory.AT_DUMP)
+				{
+					e.m_eZone = RZ_ESiteZone.DUMP;
+					q = RZ_Compass.Normalize(q + 40);
+				}
+
+				vector qEdge = RZ_Compass.PointAt(m_vMid, q, 16);
+				if (m_Wire)
+				{
+					int qFace;
+					qEdge = m_Wire.LinePointToward(q, qFace);
+				}
+
+				array<float> qOuts = {5, 8, 12, 16};
+				array<float> qAlongs = {0, 5, -5, 10, -10};
+				foreach (float qo : qOuts)
+				{
+					foreach (float qa : qAlongs)
+					{
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(qEdge, q + 90, qa), q, qo)));
+						yaws.Insert(RZ_Compass.Normalize(q + 90));
+					}
+				}
+
+				return false;
+			}
+			case RZ_SiteStory.AT_COURT:
+			case RZ_SiteStory.AT_ENTRANCE:
+			{
+				e.m_eZone = RZ_ESiteZone.COURT;
+				float outB = RZ_Compass.Bearing(m_vMid, m_vDoor);
+				if (m_Place.m_Site)
+					outB = WallOut(m_Place.m_Site, m_vDoor);
+
+				if (where == RZ_SiteStory.AT_ENTRANCE)
+				{
+					array<float> walls = {2.5, -2.5, 3.5, -3.5, 5, -5};
+					array<float> wallOut = {1.6, 2.4};
+					foreach (float wo : wallOut)
+					{
+						foreach (float w : walls)
+						{
+							spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(m_vDoor, outB + 90, w), outB, wo)));
+							yaws.Insert(outB);
+						}
+					}
+				}
+
+				array<float> rings = {3, 5, 7};
+				foreach (float r : rings)
+				{
+					for (int k = 0; k < 8; k++)
+					{
+						float turn = outB + k * 45;
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(m_vDoor, turn, r)));
+						yaws.Insert(RZ_Compass.Normalize(turn));
+					}
+				}
+
+				return false;
+			}
+			case RZ_SiteStory.AT_GATE:
+			{
+				e.m_eZone = RZ_ESiteZone.GATE;
+				array<float> nearIns = {2.5, 4, 6};
+				array<float> nearSides = {3, -3, 4.5, -4.5, 6, -6};
+				array<float> farIns = {8, 10, 12};
+				array<float> farSides = {2, -2, 5, -5, 8, -8, 11, -11};
+				array<float> gIns = nearIns;
+				array<float> gSides = nearSides;
+				// Again: further in and out to the sides
+				if (turnQuiet != 0)
+				{
+					gIns = farIns;
+					gSides = farSides;
+				}
+
+				foreach (float gi : gIns)
+				{
+					foreach (float gs : gSides)
+					{
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(m_vGate, m_fGateOut + 180, gi), m_fGateOut + 90, gs)));
+						yaws.Insert(m_fGateOut);
+					}
+				}
+
+				return false;
+			}
+			case RZ_SiteStory.AT_NEST:
+			{
+				vector nest = m_vGate;
+				if (m_Result.m_bGatePost)
+					nest = m_Result.m_vGatePost;
+
+				float near = float.MAX;
+				foreach (RZ_SitePlaced w : m_Result.m_aPlaced)
+				{
+					float dn = RZ_Util.DistXZ(w.m_vPos, m_vGate);
+					if (w.m_Entry.m_eUse == RZ_EDressUse.WATCH && !w.m_bIndoors && dn < near)
+					{
+						near = dn;
+						nest = w.m_vPos;
+					}
+				}
+
+				array<float> nRings = {2.5, 3.5, 5};
+				foreach (float nr : nRings)
+				{
+					for (int n = 0; n < 8; n++)
+					{
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(nest, n * 45, nr)));
+						yaws.Insert(n * 45);
+					}
+				}
+
+				return false;
+			}
+			case RZ_SiteStory.AT_THREAT_IN:
+			{
+				vector tEdge = RZ_Compass.PointAt(m_vMid, m_fFront, 12);
+				if (m_Wire)
+				{
+					int tFace;
+					tEdge = m_Wire.LinePointToward(m_fFront, tFace);
+				}
+
+				array<float> tIns = {2.5, 4, 6};
+				array<float> tAlongs = {0, 3, -3, 6, -6, 9, -9, 12, -12};
+				foreach (float ti : tIns)
+				{
+					foreach (float ta : tAlongs)
+					{
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(tEdge, m_fFront + 90, ta), m_fFront + 180, ti)));
+						yaws.Insert(m_fFront);
+					}
+				}
+
+				return false;
+			}
+			case RZ_SiteStory.AT_KITCHEN:
+			{
+				e.m_eZone = RZ_ESiteZone.KITCHEN;
+				array<float> kRings = {2, 3.5, 5, 7, 9};
+				foreach (float kr : kRings)
+				{
+					for (int kk = 0; kk < 8; kk++)
+					{
+						spots.Insert(RZ_Util.GroundPos(RZ_Compass.PointAt(m_vKitchen, kk * 45, kr)));
+						yaws.Insert(kk * 45);
+					}
+				}
+
+				return false;
+			}
+		}
+
+		return false;
 	}
 }

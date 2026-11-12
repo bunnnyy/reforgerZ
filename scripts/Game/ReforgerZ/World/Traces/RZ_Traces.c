@@ -180,7 +180,7 @@ class RZ_TraceKit
 [BaseContainerProps()]
 class RZ_TracePiece
 {
-	[Attribute("", desc: "Scene: the kind it belongs to, as the docs name it (F1-F8, N1, N2, V1-V8, L1, L2, L5, L6)")]
+	[Attribute("", desc: "Scene: the kind it belongs to, as the docs name it (F1-F8, N1, N2, V1-V8, L1, L2, L5, L6; C1-C18, a site's story elements: docs/SITES.md)")]
 	string m_sScene;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Piece: one more piece, 2-6 m from the scene's centre (a suitcase, a chair, a bucket). Empty with Faded set: Faded replaces the scene's own piece once it's old", "et")]

@@ -7,7 +7,7 @@ tools/camp_kit/sites_placed.html: each site top-down, its ground read on the gri
 walls and trees, bushes, roads, steep ground, the paths kept clear), its building, road entries,
 gate and door, the wire line (what closes each stretch: the ground, the barrier, a gate, or a gap),
 every piece placed (its real footprint) and every piece dropped (dashed, with why), what went
-indoors, the posts and what they see, the patrol's loop, any overlap, and the threat round it,
+indoors, the posts and what they see, the wire's walk and the walks out (the approach, the threat side, the friendly side, the road post run), any overlap, and the threat round it,
 with its score. It also writes
 tools/camp_kit/sites_list.txt for the Workbench plugin "ReforgerZ: Fly to the next site".
 """
@@ -51,7 +51,7 @@ def parse(log):
         m = re.search(r"Sites draw (\d+) (\w+) ?(.*)$", line.rstrip())
         if m:
             sid, kind, rest = m.group(1), m.group(2), m.group(3)
-            s = sites.setdefault(sid, {"rows": {}, "pieces": [], "drops": [], "posts": [], "entries": [], "overlaps": [], "route": [], "wire": [], "indoors": []})
+            s = sites.setdefault(sid, {"rows": {}, "pieces": [], "drops": [], "posts": [], "entries": [], "overlaps": [], "route": [], "walks": [], "wire": [], "indoors": []})
             bits = rest.split(" ")
             if kind == "site":
                 s.update(faction=FACTIONS.get(bits[0], bits[0]), kind=KINDS.get(bits[1], bits[1]), grid=bits[2], cx=float(bits[3]), cz=float(bits[4]), half=float(bits[5]),
@@ -85,6 +85,9 @@ def parse(log):
             elif kind == "route":
                 v = bits
                 s["route"] = [(float(v[i]), float(v[i + 1]), v[i + 2] == "1") for i in range(0, len(v) - 2, 3)]
+            elif kind == "walk":
+                v = bits[1:]
+                s["walks"].append((bits[0], [(float(v[i]), float(v[i + 1]), v[i + 2] == "1") for i in range(0, len(v) - 2, 3)]))
             elif kind == "overlap":
                 s["overlaps"].append((float(bits[0]), float(bits[1]), " ".join(bits[2:])))
             elif kind == "wire":
@@ -173,6 +176,11 @@ def site_svg(s, size=560):
         g.append('<polygon class="route" points="%s"/>' % pts([(x, z) for x, z, _ in route]))
         for x, z, ok in route:
             g.append('<circle class="rpt%s" cx="%.1f" cy="%.1f" r="4"/>' % ("" if ok else " bad", X(x), Y(z)))
+    for kind, walk in s.get("walks", []):
+        if len(walk) > 1:
+            g.append('<polyline class="walk" points="%s"><title>%s walk</title></polyline>' % (pts([(x, z) for x, z, _ in walk]), html.escape(kind)))
+        for x, z, ok in walk:
+            g.append('<circle class="rpt%s" cx="%.1f" cy="%.1f" r="3"/>' % ("" if ok else " bad", X(x), Y(z)))
     for x, z, kind in s["entries"]:
         g.append('<circle class="entry %s" cx="%.1f" cy="%.1f" r="6"><title>road entry (%s)</title></circle>' % (kind, X(x), Y(z), kind))
     if "gate" in s:
@@ -239,7 +247,7 @@ svg{display:block;width:100%;height:auto;border-radius:4px}
 .seat{fill:rgba(184,84,28,.35);stroke:#b8541c;stroke-width:.6}
 .drop{fill:none;stroke:#c0302a;stroke-width:1.2;stroke-dasharray:3 2}
 .lbl{font-size:8px;text-anchor:middle;fill:#22261f;paint-order:stroke;stroke:#f8f9f4;stroke-width:2.5px}
-.route{fill:none;stroke:#3a5f9a;stroke-width:1.2;stroke-dasharray:5 4}.rpt{fill:#3a5f9a}.rpt.bad{fill:#c0302a}
+.route{fill:none;stroke:#3a5f9a;stroke-width:1.2;stroke-dasharray:5 4}.walk{fill:none;stroke:#6a4a9a;stroke-width:1.2;stroke-dasharray:2 3}.rpt{fill:#3a5f9a}.rpt.bad{fill:#c0302a}
 .entry{fill:none;stroke:#22261f;stroke-width:1.5}.entry.main{stroke:#c0302a;stroke-width:2.5}
 .gate{fill:#c0302a}.door{fill:#22261f}
 .post circle{fill:#fff;stroke:#3a5f9a;stroke-width:2}.post line{stroke:#3a5f9a;stroke-width:2}

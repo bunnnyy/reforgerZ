@@ -18,6 +18,14 @@ class RZ_SiteScore
 	int m_iTierOne;			// tier 1 pieces dropped
 	int m_iOutside;			// pieces of tier 2-4 outside the wire
 	bool m_bWet;			// the building, the yard or a piece over water
+	bool m_bGateWatch;		// a post sees the gate (a site with a gate)
+	bool m_bNeedsGate;
+	int m_iFaction = -1;
+	int m_iStory = -1;		// the story its state picks (RZ_SiteStory)
+	ref array<int> m_aStoryWhole = {};	// each of the faction's four: 1 if every element has its spot and prefab
+	int m_iRoutePoints;		// its people's routes: points kept...
+	int m_iRouteBad;		// ...and those failing the check
+	int m_iRoutes;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -32,6 +40,7 @@ class RZ_SiteMarks
 	ref array<bool> m_aClear = {};
 	ref array<vector> m_aRoute = {};
 	ref array<bool> m_aRouteOk = {};
+	ref array<string> m_aWalks = {};		// each walk out and back: "kind x z ok ..."
 	ref array<vector> m_aOverlapAt = {};
 	ref array<string> m_aOverlaps = {};
 }
@@ -161,6 +170,22 @@ class RZ_SiteAudit
 			}
 		}
 
+		// The lookouts' posts toward threatened sides (they watch a side, not the gate)
+		foreach (int sp, vector side : result.m_aSidePosts)
+		{
+			posts.Insert(side);
+			facing.Insert(result.m_aSideFacing[sp]);
+			postKind.Insert("side");
+		}
+
+		// The gate's post (the watch layer's spot just inside the gate)
+		if (result.m_bGatePost)
+		{
+			posts.Insert(result.m_vGatePost);
+			facing.Insert(RZ_Compass.Bearing(result.m_vGatePost, gate));
+			postKind.Insert("gate");
+		}
+
 		bool gateWatch = false;
 		int blindPosts = 0;
 		array<bool> clear = {};
@@ -231,20 +256,69 @@ class RZ_SiteAudit
 			}
 		}
 
-		// The patrol's loop: walkable, not in water, not over a drop
+		// The people's routes (the wire's walk, the walks out): each point walkable, not in water, not
+		// over a drop; without them (Solver off) the old patrol's loop
 		array<vector> route = {};
-		if (p.m_eKind != RZ_ECampPlace.ROAD_POST)
-			RZ_CampLife.PatrolPoints(p, 0, route);
-
 		array<bool> routeOk = {};
+		array<string> walks = {};
 		int badRoute = 0;
-		foreach (vector point : route)
+		int routePoints = 0;
+		string routeText = "";
+		if (result.m_People && p.m_eKind != RZ_ECampPlace.ROAD_POST)
 		{
-			bool ok = RouteOk(point);
-			routeOk.Insert(ok);
-			if (!ok)
-				badRoute++;
+			foreach (RZ_SiteRoute walk : result.m_People.m_aRoutes)
+			{
+				string walkText = RZ_SiteRoute.ShortName(walk.m_iKind);
+				int walkBad = 0;
+				foreach (vector wp : walk.m_aPoints)
+				{
+					bool walkOk = RouteOk(wp) && (!grid || (grid.FlagsAt(wp) & (RZ_SiteGrid.WATER | RZ_SiteGrid.INSIDE | RZ_SiteGrid.SOLID)) == 0);
+					routePoints++;
+					if (!walkOk)
+					{
+						badRoute++;
+						walkBad++;
+					}
+
+					if (walk.m_iKind == RZ_SiteRoute.WIRE)
+					{
+						route.Insert(wp);
+						routeOk.Insert(walkOk);
+					}
+					else
+					{
+						walkText += string.Format(" %1 %2 %3", Num(wp[0]), Num(wp[2]), YesNo(walkOk));
+					}
+				}
+
+				if (walk.m_iKind != RZ_SiteRoute.WIRE)
+					walks.Insert(walkText);
+
+				if (!routeText.IsEmpty())
+					routeText += ", ";
+
+				routeText += string.Format("%1 %2 points, %3 m", RZ_SiteRoute.ShortName(walk.m_iKind), walk.m_aPoints.Count(), RZ_Util.RoundToInt(walk.m_fOut));
+				if (walkBad > 0)
+					routeText += string.Format(" (%1 bad)", walkBad);
+			}
 		}
+		else if (p.m_eKind != RZ_ECampPlace.ROAD_POST)
+		{
+			RZ_CampLife.PatrolPoints(p, 0, route);
+			foreach (vector point : route)
+			{
+				bool ok = RouteOk(point);
+				routeOk.Insert(ok);
+				routePoints++;
+				if (!ok)
+					badRoute++;
+			}
+
+			routeText = "the old loop";
+		}
+
+		if (routeText.IsEmpty())
+			routeText = "none";
 
 		// Over water: the building, the yard or any piece standing over the sea, a river or a pond
 		string wet = "";
@@ -357,6 +431,14 @@ class RZ_SiteAudit
 		kept.m_iPerimeter = perimeter;
 		kept.m_iTierOne = tierOneDropped;
 		kept.m_iOutside = outside;
+		kept.m_bGateWatch = gateWatch;
+		kept.m_bNeedsGate = needsGate;
+		kept.m_iFaction = p.m_eFaction;
+		kept.m_iRoutePoints = routePoints;
+		kept.m_iRouteBad = badRoute;
+		if (result.m_People)
+			kept.m_iRoutes = result.m_People.m_aRoutes.Count();
+
 		m_aScores.Insert(kept);
 
 		int planned = result.m_aPlaced.Count() + result.m_aDropped.Count();
@@ -392,9 +474,11 @@ class RZ_SiteAudit
 
 		RZ_Log.Info(string.Format("Sites: %1: score %2; %3 of %4 pieces; %5; %6; %7dropped: %8; %9", what, scored, result.m_aPlaced.Count(), planned, perimeterText, layersText, front, dropped, overlapText)
 			+ string.Format("; %1 floating or buried; posts: %2", floating, PostText(gateText, posts.Count(), blindPosts, watchedSides, threatSides))
-			+ string.Format("; paths: %1; patrol %2 of %3 points walkable; read %4 ms in %5 steps (most %6 ms, the longest part %7 ms)", paths, route.Count() - badRoute, route.Count(), grid.m_iReadMs, grid.m_iSteps, grid.m_iMaxStepMs, grid.m_iMaxUnitMs)
+			+ string.Format("; paths: %1; routes %2 of %3 points walkable (%4); read %5 ms in %6 steps (most %7 ms, the longest part %8 ms)", paths, routePoints - badRoute, routePoints, routeText, grid.m_iReadMs, grid.m_iSteps, grid.m_iMaxStepMs, grid.m_iMaxUnitMs)
 			+ string.Format(", laid out in %1 ms in %2 steps (most %3 ms, the longest part %4 ms).", result.m_iSolveMs, solveSteps, solveMost, solvePart));
 
+		People(camp, p, what, result);
+		Story(p, what, result, kept);
 		if (!draw)
 			return;
 
@@ -407,6 +491,7 @@ class RZ_SiteAudit
 		marks.m_aClear = clear;
 		marks.m_aRoute = route;
 		marks.m_aRouteOk = routeOk;
+		marks.m_aWalks = walks;
 		marks.m_aOverlapAt = overlapAt;
 		marks.m_aOverlaps = overlaps;
 		Draw(id, p, grid, around, result, scored, marks);
@@ -488,7 +573,7 @@ class RZ_SiteAudit
 
 	//------------------------------------------------------------------------------------------------
 	//! A patrol point a body can stand at: dry, and no drop of 4 m within 6 m of it.
-	protected static bool RouteOk(vector point)
+	static bool RouteOk(vector point)
 	{
 		if (RZ_Util.IsWater(point))
 			return false;
@@ -772,6 +857,88 @@ class RZ_SiteAudit
 
 	// ================================================================ The summary and the drawing
 	//------------------------------------------------------------------------------------------------
+	//! Its people (docs/SITES.md, "The people"): the posts and the routes, and the routine's dry run
+	//! for the people it has in play (headless: who would man which post and walk which route).
+	protected void People(RZ_CampLife camp, RZ_CampPlace p, string what, RZ_SiteResult result)
+	{
+		if (!result.m_People || p.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return;
+
+		p.m_People = result.m_People;
+		RZ_Log.Info(string.Format("Sites people: %1: %2; dry run, %3.", what, result.m_People.Describe(), camp.PeopleDryRun(p)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its story (docs/SITES.md, "The story of each site"): the state now, the story it picks and
+	//! which of its elements have their spot and a prefab; then each of the faction's four as if
+	//! picked (the probe), so every story is placed somewhere in the run.
+	protected void Story(RZ_CampPlace p, string what, RZ_SiteResult result, RZ_SiteScore kept)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int first = RZ_SiteStory.First(p.m_eFaction);
+		if (!gm || first < 0 || p.m_eKind == RZ_ECampPlace.ROAD_POST || !gm.GetCampLife() || !gm.GetCampLife().GetSettings().m_bStory)
+			return;
+
+		RZ_SiteFacts facts = RZ_SiteStory.Read(gm, p);
+		int story = RZ_SiteStory.Pick(p.m_eFaction, facts, p.m_iSeed);
+		kept.m_iStory = story;
+		string own = "";
+		string four = "";
+		for (int s = first; s < first + 4; s++)
+		{
+			array<int> kinds = {};
+			array<int> counts = {};
+			RZ_SiteStory.Elements(s, facts, kinds, counts);
+			int stand = 0;
+			string missing = "";
+			foreach (int kind : kinds)
+			{
+				bool spot = RZ_CampLife.StorySpotOf(result.m_aPlaced, kind) != null;
+				bool prefab = !RZ_SiteStory.Prefab(kind, p.m_eFaction, facts, 0).IsEmpty();
+				if (spot && prefab)
+				{
+					stand++;
+					continue;
+				}
+
+				string why = "no spot";
+				if (spot)
+					why = "no prefab";
+
+				missing = AddItem(missing, RZ_SiteStory.ElementName(kind) + ": " + why);
+			}
+
+			int whole = 0;
+			if (stand == kinds.Count())
+				whole = 1;
+
+			kept.m_aStoryWhole.Insert(whole);
+			string line = string.Format("%1 %2 of %3", RZ_SiteStory.Name(s), stand, kinds.Count());
+			if (!missing.IsEmpty())
+				line += " (" + missing + ")";
+
+			if (s == story)
+				own = line;
+
+			if (!four.IsEmpty())
+				four += "; ";
+
+			four += line;
+		}
+
+		int spots = 0;
+		foreach (RZ_SitePlaced placed : result.m_aPlaced)
+		{
+			if (placed.m_iLayer == RZ_ESiteLayer.STORY)
+				spots++;
+		}
+
+		array<int> all = {};
+		RZ_SiteStory.FactionElements(p.m_eFaction, all);
+		RZ_Log.Info(string.Format("Sites story: %1: %2 (%3); %4 of %5 spots kept; its elements on their spots: %6; the four: %7.", what, RZ_SiteStory.Name(story), facts.Describe(), spots, all.Count(), own, four));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "Sites audit: 31 sites, mean 82, worst 64 (Red Hand outpost at 041-077), 0 overlaps." and the
 	//! sites under the pass mark. How many strongholds are under it.
 	int Summary(int threshold)
@@ -835,6 +1002,89 @@ class RZ_SiteAudit
 		}
 
 		RZ_Log.Info(string.Format("Sites audit perimeters: %1; %2 tier 1 pieces dropped, %3 pieces outside the wire, %4 sites with something over water.", walls, tierOne, outside, wetSites));
+
+		// The people: every stronghold's gate watched, the routes walkable
+		int strongholds = 0;
+		int watched = 0;
+		int gates = 0;
+		int gatesWatched = 0;
+		int points = 0;
+		int bad = 0;
+		int routes = 0;
+		string blind = "";
+		foreach (RZ_SiteScore g : m_aScores)
+		{
+			points += g.m_iRoutePoints;
+			bad += g.m_iRouteBad;
+			routes += g.m_iRoutes;
+			if (!g.m_bNeedsGate)
+				continue;
+
+			gates++;
+			if (g.m_bGateWatch)
+				gatesWatched++;
+			else
+				blind = AddItem(blind, g.m_sWhat);
+
+			if (!g.m_bStronghold)
+				continue;
+
+			strongholds++;
+			if (g.m_bGateWatch)
+				watched++;
+		}
+
+		if (blind.IsEmpty())
+			blind = "none";
+
+		RZ_Log.Info(string.Format("Sites audit people: %1 of %2 strongholds and %3 of %4 sites with a gate have a post that sees it (blind: %5); %6 routes, %7 of %8 points walkable.", watched, strongholds, gatesWatched, gates, blind, routes, points - bad, points));
+
+		// The stories: which each faction's sites pick, and where each of the four stands whole
+		array<int> factions = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE};
+		string stories = "";
+		foreach (int f : factions)
+		{
+			int first = RZ_SiteStory.First(f);
+			int sites = 0;
+			foreach (RZ_SiteScore c : m_aScores)
+			{
+				if (c.m_iFaction == f && c.m_iStory >= 0)
+					sites++;
+			}
+
+			if (sites == 0)
+				continue;
+
+			string text = "";
+			for (int st = first; st < first + 4; st++)
+			{
+				int picked = 0;
+				int whole = 0;
+				foreach (RZ_SiteScore d : m_aScores)
+				{
+					if (d.m_iFaction != f || d.m_iStory < 0)
+						continue;
+
+					if (d.m_iStory == st)
+						picked++;
+
+					if (st - first < d.m_aStoryWhole.Count() && d.m_aStoryWhole[st - first] == 1)
+						whole++;
+				}
+
+				text = AddItem(text, string.Format("%1 picked at %2, whole at %3 of %4", RZ_SiteStory.Name(st), picked, whole, sites));
+			}
+
+			if (!stories.IsEmpty())
+				stories += "; ";
+
+			stories += RZ_Factions.GetName(f) + ": " + text;
+		}
+
+		if (stories.IsEmpty())
+			stories = "none";
+
+		RZ_Log.Info("Sites audit stories: " + stories + ".");
 		return strongholdsUnder;
 	}
 
@@ -919,6 +1169,11 @@ class RZ_SiteAudit
 		if (!loop.IsEmpty())
 			Print(head + "route" + loop);
 
+		foreach (string walkLine : marks.m_aWalks)
+		{
+			Print(head + "walk " + walkLine);
+		}
+
 		foreach (int o, vector at : marks.m_aOverlapAt)
 		{
 			Print(head + string.Format("overlap %1 %2 ", Num(at[0]), Num(at[2])) + marks.m_aOverlaps[o]);
@@ -938,7 +1193,11 @@ class RZ_SiteAudit
 	protected static string PieceText(string kind, RZ_SitePlaced placed, RZ_EFaction f)
 	{
 		RZ_SiteFoot foot = placed.m_Entry.Foot();
-		string text = string.Format("%1 %2 %3 %4 %5 %6 %7", kind, TierOf(placed.m_Entry, f), Num(placed.m_vPos[0]), Num(placed.m_vPos[2]), RZ_Util.RoundToInt(placed.m_fYaw), PieceName(placed.m_Entry), foot.m_iProps);
+		string name = PieceName(placed.m_Entry);
+		if (placed.m_iStory >= 0)
+			name = "Story_" + RZ_SiteStory.SceneKind(placed.m_iStory);
+
+		string text = string.Format("%1 %2 %3 %4 %5 %6 %7", kind, TierOf(placed.m_Entry, f), Num(placed.m_vPos[0]), Num(placed.m_vPos[2]), RZ_Util.RoundToInt(placed.m_fYaw), name, foot.m_iProps);
 		for (int r = 0; r < foot.Count(); r++)
 		{
 			text += " " + foot.RectText(r);

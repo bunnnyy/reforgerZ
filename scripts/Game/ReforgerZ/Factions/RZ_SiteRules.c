@@ -32,7 +32,8 @@ enum RZ_ESiteLayer
 	DOOR,		// a side door blocked (harden)
 	LOOKOUT,	// a watch toward a threatened side (watch)
 	LIGHT,		// a light on the gate and the corners (watch)
-	STORES		// the stores board by the entrance, once valuables went indoors (work and life)
+	STORES,		// the stores board by the entrance, once valuables went indoors (work and life)
+	STORY		// a spot kept for a story element (docs/SITES.md, "The story of each site"): data until shown
 }
 
 //------------------------------------------------------------------------------------------------
