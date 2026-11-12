@@ -52,13 +52,13 @@ GenericEntity {
    coords -0.6 0 1.8
    angles 0 140 0
   }
-  GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "68C96FAC8D445792"
    components {
     Hierarchy "{FFC54FEE65D7502B}" {
     }
    }
-   coords 3.1 0 -1.2
+   coords 2.6 0 -1.3
    angles 0 102 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {

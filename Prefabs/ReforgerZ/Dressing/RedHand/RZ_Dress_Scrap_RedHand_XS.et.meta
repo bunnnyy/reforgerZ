@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{187E2DD759F54ABB}Prefabs/ReforgerZ/Dressing/RedHand/RZ_Dress_Scrap_RedHand_XS.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

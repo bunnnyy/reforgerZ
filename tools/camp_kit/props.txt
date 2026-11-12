@@ -1,6 +1,10 @@
 # Entity class, ResourceName and 'hier' when the prefab already has a Hierarchy component (build.py adds new props).
 GenericEntity {5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et
 GenericEntity {CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et
+StaticModelEntity {18822FB3F0D2ED00}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Long.et
+StaticModelEntity {EF39F5715EF2323E}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Short.et
+StaticModelEntity {B969F8CD82FE7C1F}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Stake.et
+GenericEntity {DDF59362051B28BC}Prefabs/Props/Military/Fortification/BarbedTape_KnifeRest.et
 GenericEntity {7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et
 GenericEntity {7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et
 GenericEntity {DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et
@@ -25,6 +29,7 @@ GenericEntity {801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.
 GenericEntity {3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et
 GenericEntity {B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et
 GenericEntity {E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et
+StaticModelEntity {AE28D47CF26E91EA}Prefabs/Props/Military/Fortification/CzechHedgehog_01_rusty.et
 GenericEntity {F7E3B5AB8E8D8B48}Prefabs/Props/Furniture/DeckChair_01/DeckChair_01_ochre.et
 GenericEntity {BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et
 GenericEntity {FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et
@@ -33,6 +38,7 @@ GameEntity {D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et
 GenericEntity {1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et
 SCR_DestructibleEntity {9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et
 GenericEntity {D63716E01EF9AC74}Prefabs/Props/Forest/ForestBench_01/ForestBench_01.et
+GameEntity {0E94F28FD722B1D8}Prefabs/Props/Military/Generators/GeneratorFloodlight_US_01.et
 GenericEntity {4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et
 GenericEntity {1BE2B6FF4806EB3E}Prefabs/Props/Civilian/Guitar_01/Guitar_01.et
 GenericEntity {30A496094B91F0C3}Prefabs/Props/Civilian/Hutch_01.et
@@ -50,6 +56,9 @@ GenericEntity {6105032F794BA64B}Prefabs/Props/Civilian/LogChopping_01.et
 GenericEntity {6BE5C753730DBFED}Prefabs/Props/Wrecks/M923A1_wreck/M923A1_wreck_static.et
 SCR_DestructibleEntity {D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et
 GenericEntity {2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et
+SCR_DestructibleEntity {CE65F7572D53D23B}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_3m.et
+SCR_DestructibleEntity {BECA0D0A34726F45}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_6m_V1.et
+SCR_DestructibleEntity {A8B28F7E550B0F41}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_pole.et
 GenericEntity {C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et
 GenericEntity {A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et hier
 GenericEntity {D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et
@@ -57,16 +66,19 @@ GenericEntity {1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.
 GenericEntity {2AEAA31471171A50}Prefabs/Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et
 SCR_DestructibleEntity {C8A5C92E74ABB5EA}Prefabs/Props/Civilian/PicnicTable/PicnicTable_01.et
 GenericEntity {2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et
+GenericEntity {64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et
 GenericEntity {1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et
 GenericEntity {002B8C09F0E7E371}Prefabs/Props/Wrecks/S1203_wreck/S1203_wreck_static.et
 GenericEntity {F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et
 GenericEntity {0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et
 GenericEntity {CC5453CCC311603B}Prefabs/Props/Military/Sandbags/Sandbag_01_end_burlap.et
 GenericEntity {21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et
+GenericEntity {BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et
 GenericEntity {C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et
 GenericEntity {1E84244AFD39A88E}Prefabs/Props/Commercial/ShelfUniversal_01_narrow.et
 GenericEntity {DC6B28A772BCC731}Prefabs/Structures/Recreation/Beach/ShowerBeach_01.et
 GenericEntity {F188F489FD7864C0}Prefabs/Props/Furniture/ShowerCurtains_01_straight.et
+GenericEntity {C1977A326F2AA011}Prefabs/Structures/Signs/Military/SignCheckpoint_01_stop.et
 GenericEntity {1BC300CA46DEDA79}Prefabs/Structures/Signs/Warnings/SignNoEntryBothDir_01_pole.et
 GenericEntity {6FD13E995D293853}Prefabs/Props/Furniture/SinkOld_01.et
 GenericEntity {C9FF63225FD6B69D}Prefabs/Props/Furniture/SkewerGrill_01/SkewerGrill_01.et
@@ -87,7 +99,9 @@ GenericEntity {2BF6748C6440D818}Prefabs/Props/Recreation/Camp/TentSmall_02/TentS
 GenericEntity {908E3B090C2438E9}Prefabs/Props/Recreation/Camp/TentSmall_03/TentSmall_03_white.et
 StaticModelEntity {095874B519DCF161}Prefabs/Structures/Military/Camps/TentUS_01/TentUS_01_Assembled.et hier
 SCR_DestructibleEntity {DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et
+SCR_DestructibleEntity {D34F3DD5D61E2F71}Prefabs/Structures/Walls/Metal/TinWall_01_rusty/TinWall_01_3m_rusty.et
 SCR_DestructibleEntity {F55802C087BC218D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_6m_A.et
+SCR_DestructibleEntity {0C1D044EBE92ADBF}Prefabs/Structures/Walls/Metal/TinWall_01_rusty/TinWall_01_6m_A_rusty.et
 GenericEntity {CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et
 GenericEntity {6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et
 GenericEntity {48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et
@@ -99,6 +113,10 @@ StaticModelEntity {7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_
 GenericEntity {6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et
 GenericEntity {BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et
 GenericEntity {32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et
+GenericEntity {869914063728EFF8}Prefabs/Props/Forest/WoodPile/WoodLog_01_D.et
 GenericEntity {13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et
+GenericEntity {6A130E5B3DD3EAA9}Prefabs/Props/Forest/WoodPile/WoodPile_02_end_A.et
 SCR_DestructibleEntity {A3B70E75E3769FB4}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_4m.et
 SCR_DestructibleEntity {7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et
+SCR_DestructibleEntity {4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et
+SCR_DestructibleEntity {AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et

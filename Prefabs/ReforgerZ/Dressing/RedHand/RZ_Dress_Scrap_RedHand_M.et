@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "0469E77E0AFBB2D5"
+ components {
+  RplComponent "{1254AE317DDF61ED}" {
+  }
+  Hierarchy "{F49A482FC254E7EB}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{0C1D044EBE92ADBF}Prefabs/Structures/Walls/Metal/TinWall_01_rusty/TinWall_01_6m_A_rusty.et" {
+   ID "F849C0D8D9B9CA40"
+   components {
+    Hierarchy "{3B9BE21EF54DD10F}" {
+    }
+   }
+   coords -3.0 0 0
+  }
+ }
+}

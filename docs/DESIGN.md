@@ -749,11 +749,13 @@ convicts and the sniper are nobody's people and keep vanilla kit too.
 
 ### Camp life
 
-Code: `Factions/RZ_CampLife.c` (the ground and the audit: `RZ_SiteGrid.c`, `RZ_SiteSurroundings.c`, `RZ_SiteAudit.c`, [SITES.md](SITES.md)); settings: **Territory > Camp life**. Holdings, Haven safehouses,
+Code: `Factions/RZ_CampLife.c` (the ground, the rules, the layers and the audit: `RZ_SiteGrid.c`, `RZ_SiteSurroundings.c`, `RZ_SiteRules.c`, `RZ_SiteSolver.c`, `RZ_SiteWire.c`, `RZ_SiteAudit.c`, [SITES.md](SITES.md)); settings: **Territory > Camp life**. Holdings, Haven safehouses,
 Halcyon's field stations and road posts look lived in, and their people do things. It's
 scenery and behaviour only: nobody new decides who is there, and nothing is saved. Each faction
-moves into the building in its town that suits what it does and lays its camp out in the yard
-and at the road entries; with no building that fits, it lays it out on open ground facing the road.
+moves into the building in its town that suits what it does, closes it off, hardens it and sets a
+watch by its doctrine, and lays its camp out inside by each piece's rules
+([SITES.md](SITES.md#building-in-layers)); with no building that fits, it lays it out on open
+ground facing the road.
 
 **What stands there.** Each faction has a **kit** for each kind of place: a **plan**, the camp
 drawn whole, of compositions built from vanilla outdoor props
@@ -765,9 +767,10 @@ drawn whole, of compositions built from vanilla outdoor props
 | Bastion post | a sandbag nest and sandbag runs at the approach, tents, the roster board, a flagless pole, a fire pit, a table, a cook pot and a woodpile, a shaving stand, ammo-crate seats |
 | Red Hand camp | the toll barrier, a scrappy nest, a scrap barricade and the red hand painted on corrugated iron at the approach, an oil-drum fire, a card table, a stolen sofa, a cook pot and a woodpile, tents and a scrap shelter, bags and bottles |
 | Haven safehouse and outpost | a table outside, a cook pot and a woodpile, a water barrel and a wash stand, a washing line, a garden bed, the bear stencil on a door board; an outpost adds a candle memorial with names, a tent, a children's corner, a fence and a vegetable stall |
-| Halcyon field station | a field table, the ward tent (the plain FIA tent: the medical one carries a heal station), a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab grounds too, when Halcyon's stronghold sits at the lab: a sorting table under a net, two generators, the radio table) |
-| Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board, the Red Hand's trophy wall and kennel, the Haven's fire pit and chairs round a crate, Halcyon's sorting table and radio table) |
+| Halcyon field station | a field table, the ward tent (the plain FIA tent: the medical one carries a heal station), a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab, Halcyon's stronghold: a guard post, two generators behind sandbags, a bench by the back door and floodlights outside; in a building its tables, the ward tent, the cold store, the sorting table and the radio table indoors, as data) |
+| Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board and checkpoint, the Red Hand's trophy wall and kennel, the Haven's fire pit, chairs round a crate, its gate and a lookout's chair, Halcyon's sorting table and radio table) |
 | Road posts | 4 pieces on the verges either side of the barrier: a fire barrel, a nest or a card table, a tarp, a barricade |
+| Every site's layers ([SITES.md](SITES.md#each-factions-doctrine)) | the faction's barrier round it with its gates on the roads in (Bastion's concertina wire, the Red Hand's rusted tin and tyres, the Haven's plank fences, Halcyon's chain-link), boards over the windows and the doors that aren't the entrance, a lookout toward each threatened side, Halcyon's floodlights, the stores board by the door when the valuables went indoors |
 | Every place with a quartermaster | his **counter**: a table between him and his customers (Bastion's stores window, the Red Hand fence's table, the Haven's stores table, Halcyon's issue table) |
 
 Every piece stands outdoors, so every prop in one is an outdoor prop: no cabinets, shelves,
@@ -791,14 +794,19 @@ distance, then roads. Road posts don't (they stand beside their barrier).
 - **Which building.** Within 60 m of a stronghold's spot (its quartermaster), 90 m of an outpost's
   (its town's middle), 30 m of a safehouse's. At least 100 m² for a stronghold, 45 m² for an
   outpost or a field station, 30 m² for a safehouse; never a side over 70 m (a hangar, a factory
-  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a pier, jetty,
-  dock, bridge, pontoon or wharf, or a building that is scenery. The best six by kind, size (the largest for a
+  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a bridge, a
+  building that is scenery, or anything of the waterside: a pier, jetty, dock, quay, harbour,
+  breakwater, slipway, pontoon, wharf, marina, mooring, boathouse, fisherman's shed or lighthouse by
+  its prefab's name, anything from the naval structures' folder, or a building whose box stands over
+  water (its middle or two of its corners over the sea, a river or a pond). Its yard is the first side
+  of it that's dry; a place whose spot is over water with no building camps on the nearest dry ground
+  within 80 m, and its people come out there. The best six by kind, size (the largest for a
   stronghold, a middling one elsewhere) and distance are then scored by the roads: Bastion and
   Halcyon's lab want a road within 25 m of the building, the Red Hand roads meeting (each further
   road within 45 m counts). Any building on the shortlist will do when none of the faction's kind
   is there; with none of the size in reach, any building of 25 m² up to half as far again (a camp by
   a house beats a camp in a field); with none at all, open ground (below). It's read once a run and kept; the log says which
-  (`Camp life: ... moves into ...`).
+  (`Camp life: ... moves into ...`, with the building's prefab).
 - **Its shape.** The **front** is the wall with the outside door nearest the way in (the
   building's door children), else the side facing it. The **road entries** are where roads cross
   a ring round the building (50 m for a stronghold, 40 m for an outpost, 28 m for a safehouse), at
@@ -814,14 +822,17 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   building, its entry ring and the pieces standing), not from the town's middle; a camp whose
   building isn't read yet counts 120 m round its middle (60 m for a safehouse). Road posts count
   as lived in while they stand.
-- **The plan, laid down whole.** A kit is drawn as one camp (`tools/camp_kit/pieces.py`): each
-  piece's spot and turn, metres from the camp's middle, its front toward the road in. The game lays
-  the plan down as it's drawn, never piece by piece at random, so the camp keeps its shape: the
-  working area at the heart, the sleeping area at the back, the cooking to one side, the
-  perimeter at the front. Left for right by the seed, so neighbouring camps differ. In plan order
-  (the most important first) until the place's piece count.
-- **By a building.** Tents aren't put up (they sleep indoors). The rest go by each kit entry's
-  **At** (written by `tools/camp_kit/build.py` from `pieces.py`), or Auto:
+- **The plan, a preference.** A kit is drawn as one camp (`tools/camp_kit/pieces.py`): each
+  piece's spot and turn, metres from the camp's middle, its front toward the road in, so the camp
+  keeps its shape: the working area at the heart, the sleeping area at the back, the cooking to one
+  side, the perimeter at the front. Left for right by the seed, so neighbouring camps differ. With
+  **Solver** on (the default) each piece's spot is its preference: the site is built in layers by
+  its faction's doctrine and each piece goes where its rules allow, its plan spot first, bending the
+  plan where the ground doesn't allow it ([SITES.md](SITES.md#the-solver)); valuables go indoors at
+  a building, as data. With it off the plan is laid down whole as drawn, in plan order (the most
+  important first), until the place's piece count.
+- **By a building.** Tents aren't put up (they sleep indoors). The plan's spots go by each kit
+  entry's **At** (written by `tools/camp_kit/build.py` from `pieces.py`), or Auto:
 
   | At | Where | Auto for | Set for |
   |---|---|---|---|
@@ -835,7 +846,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   The yard is tried as drawn and shifted out (2.5 and 5 m) and sideways (4 m); the way most of it
   fits wins, its first pieces counting most. If under 60% fits behind the building, its sides
   (then its front) are tried too. With no road entries, the gate and closed pieces stand 9 m out
-  in front.
+  in front. With the wire up, the gate's and the closed entries' pieces stand at the wire's gates
+  instead ([SITES.md](SITES.md#close-it-off)).
 - **The front faces land.** The camp's front (its approach) is the way to the nearest road, else
   the next town, but never toward water or a drop: if sea level or ground 8 m lower lies within
   80 m that way (or 25° either side), the front turns to the nearest way that has neither (a coast
@@ -846,7 +858,7 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   front landward, then pulled back 4 or 8 m, pushed on 4 or 8 m, shifted 4 m sideways or turned
   12°, whichever fits most. **At a road post** the plan's front runs along the road and
   its pieces stand on the verges either side of the barrier (shifted 3 m along it if that fits better).
-- **Every piece fits, its whole footprint, or it's dropped.** Each kit entry carries its piece's
+- **Every piece fits, its whole footprint, or it's left out.** Each kit entry carries its piece's
   real footprint (its props' measured boxes and a person round each seat: `m_sFoot`, from
   `pieces.py` and `footprints.json`). With **Site grid** on (the default) the place's ground is
   first read on a 0.5 m grid and every cell under every part of the footprint must be free: dry, not
@@ -855,11 +867,14 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   away from the line, 2 m from a quartermaster, the medic or the barrier, 3.5 m from a leader's seat
   and 1.5 m from the front door's step; last, flat traces across each of its props' boxes at knee
   and chest height must meet nothing. How the grid is read, and the site's surroundings read with it,
-  are in [SITES.md](SITES.md). A piece that doesn't fit right where the plan puts it is **dropped**,
-  never nudged or moved somewhere else (the plan as a whole is still shifted and turned to where
-  most of it fits). The log says how much of each plan fit, where, and how many were left out facing
-  water (`Camp life: ... of ... planned pieces fit, laid out ...`), and the site's audit line says
-  what was dropped and why (`Sites: ...`). With **Site grid** off the older point checks apply (the
+  are in [SITES.md](SITES.md). With **Solver** on, a piece that doesn't fit where the plan puts it
+  is tried at other spots its zone and rules allow, and **dropped** if none fits, never squeezed;
+  the log says how much stands and how much of the wire is closed (`Camp life: ... solved, ...`).
+  With it off, a piece that doesn't fit right where the plan puts it is dropped, never nudged (the
+  plan as a whole is still shifted and turned to where most of it fits), and the log says how much
+  of each plan fit, where, and how many were left out facing water (`Camp life: ... of ... planned
+  pieces fit, laid out ...`). The site's audit line says what was dropped and why (`Sites: ...`).
+  With **Site grid** off the older point checks apply (the
   ground under its corners, edges and middle, every point 4 m from a road's centre line, 0.8 m out of
   every building's box and from the other pieces, 1 m from other scenery, flat traces along its
   sides and diagonals). A place within 60 m of one already dressed (the Haven's safehouse at its own
@@ -884,13 +899,16 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   shape, an antenna isn't a mission's landmark. The quartermaster and
   a safehouse's own services stay what they are and are never scenery.
 - **Only near players.** Pieces spawn and go with the place's bodies (a player within the
-  owner's visible radius: 300 m for holdings). The first time a run dresses a place its ground is
-  read on the grid, a little each second ([SITES.md](SITES.md#the-site-grid)), and the layout worked
-  out once it's read; the layout is kept, so every later visit lays it out at once. The pieces
-  spawn **4 per server tick** for all places together (a 20-piece stronghold is up in about 25 s
-  at the 5 s tick); when a place's last piece is up, its people are given their jobs again. At
-  most **90** of camp life's own pieces stand or wait to spawn on the server (Traces' props,
-  boards and sound looks are scenery too but don't count toward it).
+  owner's visible radius: 300 m for holdings). Every site's ground is read on the grid and solved in
+  the background from the start (**Pre-read**, strongholds and the lab first), a little each second
+  ([SITES.md](SITES.md#the-site-grid)), and a place a player comes near first goes before the rest;
+  the layout is kept, so a visit lays it out at once. The pieces spawn **4 per server tick**
+  for all places together (a stronghold's 20 pieces and its layers' 30 to 50 are up in about a
+  minute and a half at the 5 s tick); when a place's last piece is up, its people are given their jobs again.
+  A site's layers (the wire's runs, the boards, the lookouts, the lights) count up to **Layer
+  pieces** (60) on top of its piece count, and at most **200** of camp life's own pieces stand or
+  wait to spawn on the server (Traces' props, boards and sound looks are scenery too but don't
+  count toward it).
 
 **What people do.** The bodies are the ones the built systems spawn (guards, named people,
 safehouse occupants, road-post crews); camp life gives them **jobs**. Only at the **3 places
@@ -898,7 +916,7 @@ nearest players** (Live places); elsewhere they stand.
 
 | Job | How (vanilla AI) |
 |---|---|
-| Sentry | the nest's watch point (a smart action), else a spot toward the approach (vanilla's observation post waypoint where an observation-post smart action stands within 6 m, otherwise the loiter waypoint: a smart-action waypoint is never given to a group without its seat); by a building, the **lookout** at a front corner (the one nearer the gate first, a second watcher the other; a safehouse's at its door) |
+| Sentry | the nest's watch point (a smart action), else a spot toward the approach (vanilla's observation post waypoint where an observation-post smart action stands within 6 m, otherwise the loiter waypoint: a smart-action waypoint is never given to a group without its seat); by a building, the **lookout** beside it where it sees the wire's gate ([SITES.md](SITES.md#watch); a second watcher at the next such spot; a safehouse's one), else at a front corner (the one nearer the gate first) or a safehouse's door |
 | Patrol | a loop of four points 40–80 m out (patrol waypoints in a cycle) |
 | Sit | a free seat at the fire or a table (a sit smart action) |
 | Work, lean | a free loiter or lean point at the line, the garden, the cold box, the barrel, the barrier |
@@ -954,16 +972,16 @@ the group prefab it stands.
 *Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
 despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
 By a building: the lookout stands on the ground at a corner, not on the roof or in the bell
-tower; a closed entry is a barricade beside the road, not across it (the road stays open for the
-supply trucks and players' cars); the building's rooms aren't dressed inside (its stores are the
-quartermaster at his counter, its mess the meal at the yard's table, its barracks the sleepers); a
-piece that doesn't fit leaves a gap in the plan rather than moving; the yard is laid against one
-side of the building's box, so a building of odd shape (an L, a courtyard) gets a plainer yard;
+tower; nothing is ever put on a road: every road into the wire is a gate kept open, with a
+barricade beside it, not across it (for the supply trucks and players' cars); the building's rooms
+aren't dressed inside (its stores are the quartermaster at his counter and the valuables kept
+indoors as data, its mess the meal at the yard's table, its barracks the sleepers); the yard and
+the wire are laid against the building's box, so a building of odd shape (an L, a courtyard) gets
+a plainer yard;
 the quartermaster is turned, not walked to a serving window, and a window's glass may read as a
 wall; the grass isn't cut under a camp (no vanilla prefab clears clutter at run time: the resource
 index has none), so the only ground cover is Bastion's duckboards; there are no
-graves, stockade or dogs; and no searchlight (no vanilla light prop is checked as safe yet, and
-nothing sweeps one). The people in play stay within the guard, occupant and extras caps, so a
+graves or dogs; and the only lights are Halcyon's floodlights, which don't sweep. The people in play stay within the guard, occupant and extras caps, so a
 stronghold seldom reaches its count. Kinds are read from prefab names, so a map whose buildings
 are named otherwise gets the largest building that fits.
 

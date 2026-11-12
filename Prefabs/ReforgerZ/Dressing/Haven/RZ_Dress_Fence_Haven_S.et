@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "72BA4A42E2ACDFC2"
+ components {
+  RplComponent "{9C9D597024AD14BD}" {
+  }
+  Hierarchy "{E51F6E02A5F63B42}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{A3B70E75E3769FB4}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_4m.et" {
+   ID "0BB58C22DC33BED6"
+   components {
+    Hierarchy "{558D02D15AD84EFD}" {
+    }
+   }
+   coords -2.0 0 0
+  }
+ }
+}

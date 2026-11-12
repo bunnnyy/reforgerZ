@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{EE342B1320F70A12}Prefabs/ReforgerZ/Dressing/Halcyon/RZ_Dress_Fence_Halcyon_L.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

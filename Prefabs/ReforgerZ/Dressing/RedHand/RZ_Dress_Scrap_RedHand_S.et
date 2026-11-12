@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "BA925774123B3840"
+ components {
+  RplComponent "{1A0709C20A7DE8AA}" {
+  }
+  Hierarchy "{E51B34CD93855BDD}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et" {
+   ID "EF682DC74E720A42"
+   components {
+    Hierarchy "{B2CC945A60856680}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}
