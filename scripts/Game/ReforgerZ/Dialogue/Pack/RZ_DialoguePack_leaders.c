@@ -99,6 +99,7 @@ class RZ_DialoguePack_leaders
 		db.Jump("news:shelled", "shelled");
 		db.Jump("news:taken", "taken");
 		db.Jump("news:horde", "horde");
+		db.Say("stand", "\"Report: the lab is under attack and everybody wants it. We hold our posts. Holding is what we do.\"");
 		db.Say("epilogue", "\"Report: the line stood down. Processing at the road checkpoints. Nobody believes processing. Nobody's wrong.\"");
 		db.Say("edge", "\"Report: drones over the line, as usual. Loudspeakers, as usual. Nobody crossed. Nobody crosses.\"");
 		db.Say("cure>=75", "\"Report: the lab's past seventy-five. Command was informed. Command was silent.\"");
@@ -165,11 +166,11 @@ class RZ_DialoguePack_leaders
 		db.Say("", "\"Procedure says a lot. Procedure was written by people who were coming back for us.\"");
 		db.Say("", "\"Nobody is coming. So the names stay. We're all we have.\"");
 		db.Do("learn:bastion.roster");
-		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add1(RZ_DialogueDB db)
 	{
+		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("sign");
 		db.Say("tier:bastion>=trusted", "\"You're on it already, under civilians attached. Someone wrote it in last week. Nobody asked you.\"");
 		db.Say("", "\"Civilians get signed on. Families, mechanics. You'd stand a watch and eat what we eat. That's the whole contract.\"");
@@ -319,11 +320,11 @@ class RZ_DialoguePack_leaders
 		db.Say("cure_held:haven", "\"The Haven distributes by hand. Unmeasured. Effective, by every measure we have.\"");
 		db.Say("cure_held:redhand", "\"Sold. The dose is ours. The price is theirs. We have recorded both.\"");
 		db.Say("cure_held:everyone", "\"Distributed without control or record. The outcome is good. We are revising our assumptions.\"");
-		db.Say("", "\"The work is done. The record is not. It never is.\"");
 	}
 
 	protected static void Add2(RZ_DialogueDB db)
 	{
+		db.Say("", "\"The work is done. The record is not. It never is.\"");
 		db.Choice("here", "\"What happened here, this season?\"", "season", "", "", "", "", "", "", "", "");
 		db.Choice("look", "\"Where should I look?\"", "look", "", "", "", "", "", "", "", "");
 		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
@@ -473,11 +474,11 @@ class RZ_DialoguePack_leaders
 		db.Node("known");
 		db.Say("jobs:halcyon>=3", "\"Three tasks, completed to specification. Statistically, you're a pattern.\"");
 		db.Say("", "\"Known to the lab. The guards will use your name. They'll still check your hands.\"");
-		db.Choice("more4", "\"And where do I stand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
 	}
 
 	protected static void Add3(RZ_DialogueDB db)
 	{
+		db.Choice("more4", "\"And where do I stand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("halcyon.leader.name", "leader:halcyon", "seasoned:halcyon & !met", "", 3, 5, "halcyon");
 		db.Node("start");
@@ -552,6 +553,7 @@ class RZ_DialoguePack_leaders
 		db.Say("need:supplies", "\"Reagents, filters, generator fuel. If the power drops for forty minutes, two weeks of cultures die.\"");
 		db.Say("need:people", "\"Hands. Clean ones. The volunteers are not staff, whatever the rota says.\"");
 		db.Say("", "\"Time. We need time, and the only way to buy it is people bringing us things.\"");
+		db.Say("stand", "\"The lab is holding its final stand. Every door has someone at it. One percent at a time, under fire.\"");
 		db.Say("cure>=90", "\"We are past ninety. Everyone wants to be in the room when it finishes. Nobody wants to be in the room if it doesn't.\"");
 		db.Say("finale:open", "\"And four factions want the cure to belong to them. We'd like it to work first.\"");
 		db.Say("", "\"We're at {cure_percent} percent. The last ten are the slowest. They always are.\"");
@@ -626,12 +628,12 @@ class RZ_DialoguePack_leaders
 		db.Say("", "\"Bring them sealed and dated and I'll stop apologising to the director.\"");
 		db.Choice("help5", "\"Then let me bring them in properly.\"", "offer", "", "", "", "", "", "", "", "");
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Node("offer");
-		db.Say("", "\"There's tasking. It's described exactly. Please read the description exactly.\"");
 	}
 
 	protected static void Add4(RZ_DialogueDB db)
 	{
+		db.Node("offer");
+		db.Say("", "\"There's tasking. It's described exactly. Please read the description exactly.\"");
 		db.Choice("take", "\"Show me.\"", "hub", "", "", "", "", "", "call:slot:0", "", "");
 		db.Choice("later", "\"Let me think about it.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("other_route");
@@ -780,12 +782,12 @@ class RZ_DialoguePack_leaders
 		db.Say("", "\"The last of them left the house in {bind:gone}. Took the bear off the door and carried it.\"");
 		db.Say("", "\"Somebody will paint it again on our doors here. We've a lot of bears now.\"");
 		db.Choice("where", "\"Where did they go?\"", "went", "", "", "", "", "", "", "", "");
-		db.Choice("more3", "\"What else is going round?\"", "hub", "", "", "", "", "", "call:slot:1", "", "");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add5(RZ_DialogueDB db)
 	{
+		db.Choice("more3", "\"What else is going round?\"", "hub", "", "", "", "", "", "call:slot:1", "", "");
+		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("went");
 		db.Say("", "\"Here. The next house over. Wherever has a bowl. We don't turn people from the door. That's the one rule we've kept.\"");
 		db.Choice("more4", "\"What else is going round?\"", "hub", "", "", "", "", "", "call:slot:1", "", "");
@@ -934,12 +936,12 @@ class RZ_DialoguePack_leaders
 		db.Say("truce:bastion", "\"We've a truce with Bastion. A truce isn't a larder. They're counting their own tins.\"");
 		db.Say("feud:bastion", "\"Ask Bastion? They'd ask what's in it for them, then count us.\"");
 		db.Say("", "\"They'd feed us for a list of names. We don't hand out lists.\"");
-		db.Choice("help3", "\"Then let me help.\"", "offer", "", "", "", "", "", "", "", "");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add6(RZ_DialogueDB db)
 	{
+		db.Choice("help3", "\"Then let me help.\"", "offer", "", "", "", "", "", "", "", "");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("worth");
 		db.Say("trait:merciful", "\"Supper. A bed. People who'll remember your face kindly. It's what we've got, and we give it all.\"");
 		db.Say("", "\"Favor, a meal, and a name people say nicely. Don't laugh. Out here that's money.\"");
@@ -1088,12 +1090,12 @@ class RZ_DialoguePack_leaders
 		db.Jump("bite_shown", "bitten");
 		db.Jump("kills:redhand>=2", "killer");
 		db.Jump("crew", "named");
-		db.Jump("tier:redhand>=known", "known");
-		db.Say("fresh", "\"Fresh. Like a loaf. We don't toll loaves. Give us time.\"");
 	}
 
 	protected static void Add7(RZ_DialogueDB db)
 	{
+		db.Jump("tier:redhand>=known", "known");
+		db.Say("fresh", "\"Fresh. Like a loaf. We don't toll loaves. Give us time.\"");
 		db.Say("", "\"Nothing. You haven't done anything worth a name. Give it a week.\"");
 		db.Choice("more", "\"What's on my page, then?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("fair", "\"Fair.\"", "hub", "", "", "", "", "", "", "", "");
@@ -1242,12 +1244,12 @@ class RZ_DialoguePack_leaders
 		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("after");
 		db.Say("", "\"The cure's out. The road's still a road. Somebody still has to stand on it with a hand out.\"");
-		db.Choice("take3", "\"Then I'll still work.\"", "hub", "", "", "", "", "", "call:slot:0", "", "");
-		db.Choice("back6", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add8(RZ_DialogueDB db)
 	{
+		db.Choice("take3", "\"Then I'll still work.\"", "hub", "", "", "", "", "", "call:slot:0", "", "");
+		db.Choice("back6", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("redhand.leader.work_owed", "stronghold:redhand,seat:redhand/crew_boss", "need:revenge", "Ask who owes the book.", 1, 0, "redhand");
 		db.Bind("took", "news:lost_by(redhand)");
 		db.Node("start");

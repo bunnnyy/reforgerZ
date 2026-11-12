@@ -78,6 +78,7 @@ node start
   say? need:supplies :: "Reagents, filters, generator fuel. If the power drops for forty minutes, two weeks of cultures die."
   say? need:people :: "Hands. Clean ones. The volunteers are not staff, whatever the rota says."
   say "Time. We need time, and the only way to buy it is people bringing us things."
+  say? stand :: "The lab is holding its final stand. Every door has someone at it. One percent at a time, under fire."
   say? cure>=90 :: "We are past ninety. Everyone wants to be in the room when it finishes. Nobody wants to be in the room if it doesn't."
   say? finale:open :: "And four factions want the cure to belong to them. We'd like it to work first."
   say "We're at {cure_percent} percent. The last ten are the slowest. They always are."

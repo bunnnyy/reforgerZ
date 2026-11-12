@@ -16,7 +16,8 @@
 //!   holds; the nearest quiet town that isn't the speaker's.
 //! - `persona:1..3`: which of three ways this one person talks (fixed by their memory key), so two
 //!   quartermasters or two lookouts don't sound alike. `rain`, `fog`, `edge` (the speaker is within
-//!   1500 m of the Perimeter's line), `major:<key>[op act]`, `holds:<faction>[op N]`.
+//!   1500 m of the Perimeter's line), `stand` (the lab's final stand), `major:<key>[op act]`,
+//!   `holds:<faction>[op N]`.
 //! - What you did with a faction, so a line can say it (`{best}`, `{worst}`, `{jobs}`, `{kills}`):
 //!   `best:<faction>` and `worst:<faction>` (a deed to name), `jobs:<faction>>=N`, `kills:<faction>>=N`.
 class RZ_DialogueNews
@@ -38,6 +39,11 @@ class RZ_DialogueNews
 			case "rain": return RZ_Weather.Rain() >= 0.3;
 			case "fog": return RZ_Weather.Fog() >= 0.4;
 			case "edge": return NearEdge(ctx);
+			case "stand":
+			{
+				RZ_WorldFacts facts = ctx.m_GM.GetFacts();
+				return facts && facts.IsFinalStand();
+			}
 			case "major": return Major(ctx, t);
 			case "holds": return Holds(ctx, t);
 			case "best":

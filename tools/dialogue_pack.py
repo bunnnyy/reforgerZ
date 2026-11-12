@@ -101,7 +101,7 @@ COND_KEYS = {
     # What's going on (RZ_DialogueNews): the news near the speaker, its faction's trucks, which of three
     # ways this person talks, the weather, the Perimeter's line near, a major's act, a faction's holdings
     "news": (True, False), "supply": (True, False), "persona": (True, False), "rain": (False, False),
-    "fog": (False, False), "edge": (False, False), "major": (True, True), "holds": (True, True),
+    "fog": (False, False), "edge": (False, False), "stand": (False, False), "major": (True, True), "holds": (True, True),
     # What you did with a faction: a deed to name ({best}, {worst}), jobs done, theirs put down
     "best": (True, False), "worst": (True, False), "jobs": (True, True), "kills": (True, True),
 }

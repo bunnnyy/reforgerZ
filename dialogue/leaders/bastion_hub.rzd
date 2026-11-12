@@ -160,6 +160,7 @@ node start
   jump news:shelled -> shelled
   jump news:taken -> taken
   jump news:horde -> horde
+  say? stand :: "Report: the lab is under attack and everybody wants it. We hold our posts. Holding is what we do."
   say? epilogue :: "Report: the line stood down. Processing at the road checkpoints. Nobody believes processing. Nobody's wrong."
   say? edge :: "Report: drones over the line, as usual. Loudspeakers, as usual. Nobody crossed. Nobody crosses."
   say? cure>=75 :: "Report: the lab's past seventy-five. Command was informed. Command was silent."
