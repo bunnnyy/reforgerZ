@@ -1472,12 +1472,13 @@ settlements are lived in, so the one or two empty towns that most contracts need
 every band. A mission that still doesn't start logs `RZT mission <type> why: ...`: who holds what it
 claims, what else runs, how many towns are held, busy and free, the packs and its weight. The test
 world sets **Zombies > Tribes > Slots** to 2, so Arland (under the wild-land floor) has a pack for the
-packs' contracts. An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
+packs' contracts; their first go is at the clock as it is, the others in the contract's offer window
+(dusk for Not Tonight, dawn for Escort at Dawn; `RZT forced: the clock into ...`). An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
 left set: a crate for the nest (Burn the Nest, Specimen from the Nest), the helicopter wreck (Crash
 Site), the dead drop, the fuel depot (Arson), the relay, the fallback landmark
 (The Smuggler's Ledger) and the scale crate (The Weighing Vault); a civilian for the trader, the
 bounty target (Collect the Bounty, The Sniper) and the Bastion outpost commander (Kill the Officer);
-an FIA fire team for the rival group. Convoy Escort and Hijack the Convoy get a Bastion truck and
+an FIA fire team for the rival group; the canteen for Plant a Tag's tag. Convoy Escort and Hijack the Convoy get a Bastion truck and
 crew, Mobile Lab a Halcyon truck and quiet towns near the lab, the Locked Bunker a keypad prop.
 
 **Questlines.** Before the first: no town overrun, the season a couple of days old, every
@@ -1561,7 +1562,17 @@ SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
 A mission or questline that still doesn't start needs a world state the test doesn't create (an
 outpost of the right faction, a spot on the map, the weather). Expected on Arland: **Gas Station
 Fire** starts only when the island's petrol station is in a town nobody holds, which depends on the
-season's territory roll (about one run in three). The test world has no AI navigation (`No AIWorld`
+season's territory roll (about one run in three). The same roll decides how many towns are lived in
+(11 to 13 of Arland's 14), so the jobs that need towns well clear of where people live (**Fire
+Mission**, **Install Sensors**, **Bastion Shelling**, **Bust Out**, **Lead Them Away**) start in some
+runs and not others. Arland's one pack is a fresh one, so the packs' contracts that need a pack's
+history or a second pack are expected misses: **Bring Them Home** (a named young who was someone's),
+**Break the Habit** (a habit come due), **Cull** (12 or more round a heavy, near a Bastion holding),
+**Capture the Index** and **Plant a Tag** (a pack at stage 1 with its heavy; Capture also an alpha
+prefab, which the test world doesn't set), **Burn the Lair** (a player who has mapped the lair),
+**Stock the Pit** (two young and a Red Hand camp), **Bait the Crew** (two packs that border), **Escort
+at Dawn** (the pack between two safehouses 0.8 to 3.5 km apart), and **Not Tonight** and **Track Them
+Home** unless the pack is coming back to a house or has a party walking at that moment. The test world has no AI navigation (`No AIWorld`
 in the log), so a spawned group has no members, and a mission built on one may end by itself early
 (`ended by itself` in the log). None of this is part of the mod: the test files are copied into a throwaway addon folder.
 

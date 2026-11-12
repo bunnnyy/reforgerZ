@@ -217,7 +217,8 @@ class RZT_Prep
 	static const string KEYPAD = "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et";
 	// Stand-ins for the optional prefab slots the test world leaves empty
 	static const string PROP = "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et";
-	static const string PERSON = "{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et";
+	static const string ITEM = "{630FB4AD4A735264}Prefabs/Items/Equipment/Canteens/Canteen_US_01.et";
+	static const string PERSON ="{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et";
 	static const string GROUP = "{5BEA04939D148B1D}Prefabs/Groups/INDFOR/Group_FIA_FireTeam.et";
 
 	// How many times the mission phase tries a Setup that picks a random spot (dry ground, a free town)
@@ -344,6 +345,14 @@ class RZT_Prep
 		{
 			if (gm.RZT_StandIn(slot, prefab))
 				Print(string.Format("RZT forced: a stand-in %1 prefab, for %2", slot, name));
+			return;
+		}
+
+		// Plant a Tag: the tracking tag (an item; the canteen, as the test world's mission item)
+		if (name == "RZ_Mission_PlantATag" && gm.GetTribes() && gm.GetTribes().GetSettings().m_sTagPrefab.IsEmpty())
+		{
+			gm.GetTribes().GetSettings().m_sTagPrefab = ITEM;
+			Print("RZT forced: a stand-in tag prefab, for " + name);
 			return;
 		}
 
@@ -796,4 +805,31 @@ class RZT_Prep
 		if (h < HOUR - 0.15 || h > HOUR + 0.2)
 			tm.SetTimeOfTheDay(HOUR); // VERIFY: the server's clock follows (base game: SCR_FPS_Autotest)
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pack's contract is only offered in its window of the day (dusk for Not Tonight, dawn for
+	//! Escort at Dawn...): the clock goes a quarter of an hour into it before the mission phase's
+	//! go (test only). False if the mission has no window.
+	static bool IntoOffer(RZ_Mission m)
+	{
+		RZ_TribeContract tc = RZ_TribeContract.Cast(m);
+		if (!tc || tc.RZT_OfferFrom() < 0)
+			return false;
+
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world || !world.GetTimeAndWeatherManager())
+			return false;
+
+		float h = tc.RZT_OfferFrom() + 0.25;
+		if (h >= 24)
+			h -= 24;
+
+		world.GetTimeAndWeatherManager().SetTimeOfTheDay(h);
+		return true;
+	}
+}
+
+modded class RZ_TribeContract
+{
+	float RZT_OfferFrom() { return m_fOfferFrom; }
 }

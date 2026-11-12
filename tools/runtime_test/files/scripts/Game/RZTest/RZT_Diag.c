@@ -40,6 +40,10 @@ modded class RZ_MissionManager
 				if (!m_RZTCur)
 					break;
 				m_RZTCur.Configure(m_GM);
+				// A pack's contract: the first go at the clock as it is, the others in its offer window
+				if (tries > 1 && RZT_Prep.IntoOffer(m_RZTCur) && tries == 2)
+					Print(string.Format("RZT forced: the clock into %1's offer window", t.ToString()));
+
 				ok = StartMission(m_RZTCur);
 			}
 			if (!m_RZTCur)
