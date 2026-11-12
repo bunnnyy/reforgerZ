@@ -158,7 +158,7 @@
  {
   "name": "marker_event",
   "category": "Map markers",
-  "use": "A world event on the map (diamond plate)",
+  "use": "A world event (diamond plate). The map shows no events: of the jobs, only the tracked one's objective",
   "plate": true
  },
  {
@@ -230,7 +230,7 @@
  {
   "name": "glyph_event",
   "category": "Map markers",
-  "use": "A world event's exclamation mark, no plate: drawn dark on its hazard-yellow map disc",
+  "use": "A world event's exclamation mark, no plate, to draw dark on hazard yellow",
   "plate": false
  },
  {
@@ -512,7 +512,7 @@
  {
   "name": "track_current",
   "category": "Objectives",
-  "use": "A job's current objective: a filled diamond. The quest tracker and the Quests tab",
+  "use": "A job's current objective: a filled diamond. The quest tracker, the Quests tab and the map's objective diamond",
   "plate": false
  },
  {

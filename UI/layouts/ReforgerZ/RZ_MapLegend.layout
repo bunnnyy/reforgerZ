@@ -883,104 +883,6 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }
   }
-  FrameWidgetClass "{0DBAA2E77C0769EE}" {
-   Name "Key_event"
-   Slot FrameWidgetSlot "{E601F6AEF241103F}" {
-    Anchor 0 0 0 0
-    PositionX 20
-    OffsetLeft 20
-    PositionY 272
-    OffsetTop 272
-    SizeX 34
-    OffsetRight -54
-    SizeY 34
-    OffsetBottom -306
-    Alignment 0 0
-   }
-   Clipping False
-   "Ignore Cursor" 1
-   {
-    ImageWidgetClass "{2BF572ADF64C2CF4}" {
-     Name "Ring"
-     Slot FrameWidgetSlot "{439526E1EE1BD815}" {
-      Anchor 0 0 0 0
-      PositionX 0
-      OffsetLeft 0
-      PositionY 0
-      OffsetTop 0
-      SizeX 34
-      OffsetRight -34
-      SizeY 34
-      OffsetBottom -34
-      Alignment 0 0
-     }
-     Color 0.071 0.078 0.086 1
-     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-     Image "marker_ring"
-     Size 34 34
-    }
-    ImageWidgetClass "{C3F1C48B321B8F5D}" {
-     Name "Disc"
-     Slot FrameWidgetSlot "{8980948892EE4649}" {
-      Anchor 0 0 0 0
-      PositionX 3
-      OffsetLeft 3
-      PositionY 3
-      OffsetTop 3
-      SizeX 28
-      OffsetRight -31
-      SizeY 28
-      OffsetBottom -31
-      Alignment 0 0
-     }
-     Color 0.91 0.886 0.816 1
-     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-     Image "marker_disc"
-     Size 28 28
-    }
-    ImageWidgetClass "{F0747E6F19BA8489}" {
-     Name "Icon"
-     Slot FrameWidgetSlot "{1CD521BAC95D33D8}" {
-      Anchor 0 0 0 0
-      PositionX 8
-      OffsetLeft 8
-      PositionY 8
-      OffsetTop 8
-      SizeX 18
-      OffsetRight -26
-      SizeY 18
-      OffsetBottom -26
-      Alignment 0 0
-     }
-     Color 0.91 0.886 0.816 1
-     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-     Image "glyph_event"
-     Size 18 18
-    }
-   }
-  }
-  TextWidgetClass "{C9E2C1E6A1FCFBF7}" {
-   Name "KeyName_event"
-   Slot FrameWidgetSlot "{CB8C698559BFE967}" {
-    Anchor 0 0 0 0
-    PositionX 64
-    OffsetLeft 64
-    PositionY 275
-    OffsetTop 275
-    SizeX 246
-    OffsetRight -310
-    SizeY 28
-    OffsetBottom -303
-    Alignment 0 0
-   }
-   Color 0.91 0.886 0.816 1
-   Text "World event"
-   "Font Size" 22
-   "Min Font Size" 22
-   FontProperties FontProperties "{073F49A7E5A6FCD6}" {
-    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-   }
-  }
   FrameWidgetClass "{AB885236B2ADA4E6}" {
    Name "Key_checkpoint"
    Slot FrameWidgetSlot "{77FA19C6A4B882EB}" {
@@ -1281,12 +1183,12 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Anchor 0 0 0 0
     PositionX 20
     OffsetLeft 20
-    PositionY 360
-    OffsetTop 360
+    PositionY 272
+    OffsetTop 272
     SizeX 34
     OffsetRight -54
     SizeY 34
-    OffsetBottom -394
+    OffsetBottom -306
     Alignment 0 0
    }
    Clipping False
@@ -1319,6 +1221,104 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Anchor 0 0 0 0
     PositionX 64
     OffsetLeft 64
+    PositionY 275
+    OffsetTop 275
+    SizeX 246
+    OffsetRight -310
+    SizeY 28
+    OffsetBottom -303
+    Alignment 0 0
+   }
+   Color 0.91 0.886 0.816 1
+   Text "A pack's ground"
+   "Font Size" 22
+   "Min Font Size" 22
+   FontProperties FontProperties "{D1BD3E84ECEC889E}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  FrameWidgetClass "{624102CD9D3EE877}" {
+   Name "Key_objective"
+   Slot FrameWidgetSlot "{8B25926920D304E3}" {
+    Anchor 0 0 0 0
+    PositionX 20
+    OffsetLeft 20
+    PositionY 360
+    OffsetTop 360
+    SizeX 34
+    OffsetRight -54
+    SizeY 34
+    OffsetBottom -394
+    Alignment 0 0
+   }
+   Clipping False
+   "Ignore Cursor" 1
+   {
+    ImageWidgetClass "{F2F623019265C85C}" {
+     Name "Ring"
+     Slot FrameWidgetSlot "{8981BEEB69D57680}" {
+      Anchor 0 0 0 0
+      PositionX -5
+      OffsetLeft -5
+      PositionY -5
+      OffsetTop -5
+      SizeX 44
+      OffsetRight -39
+      SizeY 44
+      OffsetBottom -39
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "track_current"
+     Size 44 44
+    }
+    ImageWidgetClass "{D0EF1A27A300DA22}" {
+     Name "Disc"
+     Slot FrameWidgetSlot "{66C0B9E99AAC142A}" {
+      Anchor 0 0 0 0
+      PositionX -1
+      OffsetLeft -1
+      PositionY -1
+      OffsetTop -1
+      SizeX 36
+      OffsetRight -35
+      SizeY 36
+      OffsetBottom -35
+      Alignment 0 0
+     }
+     Color 0.91 0.698 0.227 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "track_current"
+     Size 36 36
+    }
+    ImageWidgetClass "{78A9AB5DD7727FB7}" {
+     Name "Icon"
+     Slot FrameWidgetSlot "{220E67E5561AF9DE}" {
+      Anchor 0 0 0 0
+      PositionX 13
+      OffsetLeft 13
+      PositionY 13
+      OffsetTop 13
+      SizeX 8
+      OffsetRight -21
+      SizeY 8
+      OffsetBottom -21
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "marker_disc"
+     Size 8 8
+    }
+   }
+  }
+  TextWidgetClass "{DDDE8D1B1C786B46}" {
+   Name "KeyName_objective"
+   Slot FrameWidgetSlot "{F81998C9F07D72FE}" {
+    Anchor 0 0 0 0
+    PositionX 64
+    OffsetLeft 64
     PositionY 363
     OffsetTop 363
     SizeX 246
@@ -1328,10 +1328,89 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
-   Text "A pack's ground"
+   Text "Your objective"
    "Font Size" 22
    "Min Font Size" 22
-   FontProperties FontProperties "{D1BD3E84ECEC889E}" {
+   FontProperties FontProperties "{EC02BC92D03CF968}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  FrameWidgetClass "{4157CB2F33880C73}" {
+   Name "Key_area"
+   Slot FrameWidgetSlot "{FA7835AD03D9C731}" {
+    Anchor 0 0 0 0
+    PositionX 330
+    OffsetLeft 330
+    PositionY 360
+    OffsetTop 360
+    SizeX 34
+    OffsetRight -364
+    SizeY 34
+    OffsetBottom -394
+    Alignment 0 0
+   }
+   Clipping False
+   "Ignore Cursor" 1
+   {
+    ImageWidgetClass "{65BEFC071AD20772}" {
+     Name "Fill"
+     Slot FrameWidgetSlot "{CC980E070F433A9A}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 34
+      OffsetRight -34
+      SizeY 34
+      OffsetBottom -34
+      Alignment 0 0
+     }
+     Color 0.91 0.698 0.227 0.14
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "marker_disc"
+     Size 34 34
+    }
+    ImageWidgetClass "{0AD9B9391C990747}" {
+     Name "Edge"
+     Slot FrameWidgetSlot "{BD2272B031CD2A14}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 34
+      OffsetRight -34
+      SizeY 34
+      OffsetBottom -34
+      Alignment 0 0
+     }
+     Color 0.91 0.698 0.227 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "marker_ring"
+     Size 34 34
+    }
+   }
+  }
+  TextWidgetClass "{8BCFE92AB8ABF96B}" {
+   Name "KeyName_area"
+   Slot FrameWidgetSlot "{89A5F64D546926B5}" {
+    Anchor 0 0 0 0
+    PositionX 374
+    OffsetLeft 374
+    PositionY 363
+    OffsetTop 363
+    SizeX 246
+    OffsetRight -620
+    SizeY 28
+    OffsetBottom -391
+    Alignment 0 0
+   }
+   Color 0.91 0.886 0.816 1
+   Text "Search area"
+   "Font Size" 22
+   "Min Font Size" 22
+   FontProperties FontProperties "{6C894075285BC7C9}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
   }

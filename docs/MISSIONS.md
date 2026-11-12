@@ -61,7 +61,7 @@ How the code does it:
   start. Offers, the quartermaster's and safehouse radio's lists, leaders, wanderers, the Haven
   neighbours perk and the notebook all use the same rule (**Contracts > Rough radius**, 0 = always
   exact); the notebook and the quest tracker say it in words, never metres ("East of Morton, a few
-  km north-west": [UI.md](UI.md#the-quest-tracker)), and the map rings the tracked job's circle. Contracts that give their own positions keep them: puzzles (their clues and grids),
+  km north-west": [UI.md](UI.md#the-quest-tracker)), and the map shows the tracked job's circle as a search area until the spot is known, then a diamond on it ([UI.md](UI.md#the-map)). Contracts that give their own positions keep them: puzzles (their clues and grids),
   points to visit (Install Sensors, Recon, Burn the Bodies, Water Survey, leaders'
   visits), the Memorial, the car keys job and Medical Drone (its brief already
   gives a ping, give or take 250 m). World events stay exact. *Simplified:* the extra lines some

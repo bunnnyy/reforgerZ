@@ -7786,9 +7786,9 @@
     "m_bLockLoadouts": "1",
     "m_bBoardMenus": "1",
     "m_bSubtitles": "1",
-    "m_fSubtitleMin": "2.5",
-    "m_fSubtitleMax": "8",
-    "m_fSubtitleCps": "18",
+    "m_fSubtitleMin": "4",
+    "m_fSubtitleMax": "12",
+    "m_fSubtitleCps": "11",
     "m_bReader": "1",
     "m_iReaderPageChars": "700"
    }

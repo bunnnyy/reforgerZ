@@ -940,8 +940,9 @@ class RZ_Interactions
 		vector origin = e.GetOrigin();
 		float dist = RZ_Util.DistXZ(origin, m_vScanCenter);
 		// The sphere reaches out to the loot's spawn radius: past the spot radius only buildings
-		// count, and only for their loot
-		if (kind == CAND_BUILDING)
+		// count, and only for their loot. Any destructible building has loot, whatever spot its
+		// name gives it (a fuel station's building is a fuel spot, a workshop a workbench)
+		if (kind == CAND_BUILDING || building)
 			m_Loot.OnBuildingSeen(e, name);
 
 		if (dist > m_Settings.m_fScanRadius)

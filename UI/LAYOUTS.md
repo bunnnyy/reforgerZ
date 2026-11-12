@@ -868,7 +868,7 @@ Frame (root, 34 × 34, top-left anchor, ignores the cursor)
 ├─ Image  Icon       18 × 18 at (8, 8), the faction's emblem or the place's glyph, bone (near-black on hazard)
 ├─ Image  BadgeBack  17 × 17 at (20, 20), marker_disc, #121416; hidden without a badge
 ├─ Image  Badge      17 × 17 at (20, 20), badge_*, bone; hidden without a badge
-└─ Text   Label      under the marker, offset (-123, 38), 280 × 112 (up to four lines), centred, condensed bold 22, bone, a dark shadow offset by 1
+└─ Text   Label      under the marker, offset (-123, 38), 280 × 112 (up to four lines), centred, condensed bold 22, black (the script sets it too), a soft bone shadow offset by 1: the place's kind ("Stronghold")
 ```
 
 A **range ring** (a line with a radius) hides the ring, disc and badge and uses **Icon** alone
@@ -876,13 +876,22 @@ A **range ring** (a line with a radius) hides the ring, disc and badge and uses 
 the pack's ground on the map (48 to 320 across), with **Label** centred 4 under it. So every image must
 sit in the root's frame slot, top-left, not stretched by anchors.
 
+**The tracked job's objective** is one more of these. On a known spot the script paints a diamond
+in the same three images: **Ring** moved to (-5, -5) and sized 44 with `track_current` tinted
+#121416 (the outline), **Disc** at (-1, -1), 36, `track_current` in amber (#E8B23A), and **Icon** at
+(13, 13), 8, `marker_disc` near-black (the centre dot); the badge hidden. For a search area every
+image is hidden and the frame holds only **Label**, sized and placed like a range ring's (at least
+48 across); the area itself is drawn on a canvas the script makes in the map's root, not in this
+layout ([UI.md](../docs/UI.md#the-map)).
+
 **You are here** is two more of these, made after the others so they're drawn above them, 44 × 44,
 **Icon** alone in the same way: `marker_self_back` tinted dark under `marker_self` in hazard yellow,
 whose **Icon** the script turns to the player's heading every frame. Their labels are empty.
 
 Markers within 40 m of an earlier one share its label, one line each (`RZ_MapIconsUI.MergeLabels`); their
 own labels are empty, so a stronghold, its quartermaster and a job at the same house never draw their
-labels on top of each other. Range rings keep their own.
+labels on top of each other. A place within 40 m of the objective's diamond joins the diamond's
+label, under the objective. Range rings and the search area keep their own.
 
 ## Map legend: `RZ_MapLegend.layout`
 
@@ -908,9 +917,13 @@ Frame MapLegend (root, 640 × 460, anchor bottom-left, offset (96, -190): above 
 │         BadgeBack (marker_disc, #121416) and Badge (badge_*, bone), both 26
 ├─ Text   (BadgeName_<kind>)    at x 64, 238, 388, 538, y 189, condensed bold 22: Stronghold, Outpost, Safehouse, Lab
 ├─ Text   (LabelWorld)     at (20, 236), "THE WORLD"
-├─ Frame  Key_event at (20, 272), Key_checkpoint at (330, 272), Key_power at (20, 316), Key_radio at (330, 316): discs as above
-├─ Frame  Key_range at (20, 360): Icon alone, 34, marker_range in hazard yellow
-├─ Text   (KeyName_<place>) 44 right of each, condensed bold 22: World event, Sealed checkpoint, Power station, Radio station, A pack's ground
+├─ Frame  Key_range at (20, 272): Icon alone, 34, marker_range in hazard yellow
+├─ Frame  Key_checkpoint at (330, 272), Key_power at (20, 316), Key_radio at (330, 316): discs as above
+├─ Frame  Key_objective at (20, 360): Ring 44 at (-5, -5) and Disc 36 at (-1, -1), both track_current
+│         (#121416, then amber #E8B23A), Icon 8 at (13, 13), marker_disc #121416: the objective's diamond
+├─ Frame  Key_area at (330, 360): Fill (marker_disc, amber at 14%) and Edge (marker_ring, amber), both 34
+├─ Text   (KeyName_<key>) 44 right of each, condensed bold 22: A pack's ground, Sealed checkpoint,
+│         Power station, Radio station, Your objective, Search area
 ├─ HorizontalLayout LegendPrompt   bottom left at (20, -14): the script makes the RZ_MapLegend prompt ("Hide the key")
 └─ Text   LegendPromptText         the same place, mono bold 20, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
 ```

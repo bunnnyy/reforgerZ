@@ -7,9 +7,11 @@
 //! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab
 //!   name of the building. Tables are configurable per type; anything left empty is filled from
 //!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
-//!   garages...), and a list still thin after that gets the built-in vanilla items for its type
-//!   (RZ_LootDefaults), so no building type is bare when the pool is short or empty. Scaled by the town's loot level (RZ_TownMemory.GetLootLevel); electronics get
-//!   the power grid's multiplier (RZ_PowerGrid.LootMult).
+//!   garages...) plus the built-in vanilla items for its type (RZ_LootDefaults), so a table is wide
+//!   and no type is bare when the pool is short or empty; a list set by hand gets them only while
+//!   it's thin. No prefab twice in one roll unless it stacks (PickFresh). Scaled by the town's loot
+//!   level (RZ_TownMemory.GetLootLevel); electronics get the power grid's multiplier
+//!   (RZ_PowerGrid.LootMult).
 //! - A wreck's boot is a container (RZ_WreckBoots.c), rolled when it's first put out near a player.
 //!   A body is rolled when it dies and its things go into its inventory (or beside it).
 //! - Locks: some pharmacies, garages, police stations, shops and houses are locked (seeded
@@ -54,8 +56,14 @@ class RZ_SearchSettings
 	[Attribute(desc: "Loot tables per building type (optional; empty lists use the pool)")]
 	ref array<ref RZ_LootTable> m_aTables;
 
-	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a wreck's boot holds anything; on a body, the chance it carries anything")]
+	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): on an infected body, the chance it carries anything; a one-off find's chance per slot (loose loot in houses: Interactions > Loot > Slot chance; wrecks' boots: Boot chance)")]
 	float m_fFindChance;
+
+	[Attribute("0.8", desc: "At full town loot (scaled by what the town has left): the chance a wreck's boot holds anything")]
+	float m_fBootChance;
+
+	[Attribute("0.4", desc: "At full town loot: the chance a wreck's boot that holds anything holds a second thing")]
+	float m_fBootTwoChance;
 
 	[Attribute("0.1", desc: "Chance a find is rare (doubled behind a lock)")]
 	float m_fRareChance;
@@ -178,6 +186,7 @@ class RZ_Search
 	protected ref array<ref RZ_Readable> m_aNotes = {};
 	protected ref array<ref RZ_Stash> m_aStashes = {};
 	protected ref array<string> m_aElectronicsWords = {};
+	protected ref array<string> m_aStackWords;
 	protected int m_iNextNote = 1;
 	protected bool m_bKeyPrefabWarned;
 	protected float m_fBodyMinuteAt = -100;
@@ -306,27 +315,31 @@ class RZ_Search
 			}
 		}
 
+		// A list set by hand is kept as it is (topped up only if thin); one filled from the pool by
+		// keywords always gets the built-in vanilla items for the type too, so a type's table is
+		// wide (a small table repeats itself from house to house)
+		bool handCommon = !t.m_aCommon.IsEmpty();
+		bool handRare = !t.m_aRare.IsEmpty();
 		array<string> common = {};
 		array<string> rare = {};
 		TypeWords(type, common, rare);
-		if (t.m_aCommon.IsEmpty())
+		if (!handCommon)
 			FromPool(common, t.m_aCommon);
 
-		if (t.m_aRare.IsEmpty())
+		if (!handRare)
 			FromPool(rare, t.m_aRare);
 
 		if (t.m_aElectronics.IsEmpty())
 			FromPool(m_aElectronicsWords, t.m_aElectronics);
 
-		// Still thin (a short or empty pool): the built-in vanilla items for this type
 		array<ResourceName> builtCommon = {};
 		array<ResourceName> builtRare = {};
 		array<ResourceName> builtElectronics = {};
 		RZ_LootDefaults.For(type, builtCommon, builtRare, builtElectronics);
-		if (t.m_aCommon.Count() < RZ_LootDefaults.THIN_COMMON)
+		if (!handCommon || t.m_aCommon.Count() < RZ_LootDefaults.THIN_COMMON)
 			AppendNew(builtCommon, t.m_aCommon);
 
-		if (t.m_aRare.Count() < RZ_LootDefaults.THIN_RARE)
+		if (!handRare || t.m_aRare.Count() < RZ_LootDefaults.THIN_RARE)
 			AppendNew(builtRare, t.m_aRare);
 
 		if (t.m_aElectronics.IsEmpty())
@@ -473,7 +486,7 @@ class RZ_Search
 		if (RZ_LandmarkFinder.Matches("pharmacy", name) || name.Contains("drugstore") || name.Contains("apothec"))
 			return "pharmacy";
 
-		if (name.Contains("garage") || name.Contains("workshop") || name.Contains("carservice") || name.Contains("car_service") || name.Contains("autoservice") || name.Contains("repair") || name.Contains("mechanic"))
+		if (name.Contains("garage") || name.Contains("workshop") || name.Contains("firestation") || name.Contains("carservice") || name.Contains("car_service") || name.Contains("autoservice") || name.Contains("repair") || name.Contains("mechanic"))
 			return "garage";
 
 		if (name.Contains("police") || name.Contains("gendarm") || name.Contains("sheriff"))
@@ -482,7 +495,7 @@ class RZ_Search
 		if (name.Contains("farm") || name.Contains("barn") || name.Contains("stable") || name.Contains("shed") || name.Contains("silo") || name.Contains("cowshed"))
 			return "farm";
 
-		if (name.Contains("shop") || name.Contains("store") || name.Contains("market") || name.Contains("grocery") || name.Contains("kiosk"))
+		if (name.Contains("shop") || name.Contains("store") || name.Contains("market") || name.Contains("grocery") || name.Contains("kiosk") || name.Contains("fuelstation") || name.Contains("pubvillage"))
 			return "shop";
 
 		return "house";
@@ -945,16 +958,47 @@ class RZ_Search
 			if (i >= sure && Math.RandomFloat01() >= Math.Clamp(odds, 0, 0.95))
 				continue;
 
-			ResourceName pick = PickFrom(t, rare, electronics);
+			ResourceName pick = PickFresh(t, rare, electronics, picks);
 			if (!pick.IsEmpty())
 				picks.Insert(pick);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What a wreck's boot holds (RZ_WreckBoots), as prefabs: something Find chance x the town's
-	//! loot level of the time, sometimes two. `stash` (a stash someone wrote about): +0.25, two
-	//! half the time, and twice the rare chance.
+	//! A pick that isn't in `picks` yet, unless it stacks (ammo, food, dressings: two of those in one
+	//! place is normal). A few tries, then "" (the slot stays empty rather than doubling up).
+	protected ResourceName PickFresh(RZ_LootTable t, float rare, float electronics, array<ResourceName> picks)
+	{
+		for (int attempt = 0; attempt < 6; attempt++)
+		{
+			ResourceName pick = PickFrom(t, rare, electronics);
+			if (pick.IsEmpty() || picks.Find(pick) < 0 || Stacks(pick))
+				return pick;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Things that come in twos: ammunition, food, dressings, tablets.
+	protected bool Stacks(ResourceName prefab)
+	{
+		if (!m_aStackWords)
+		{
+			m_aStackWords = new array<string>();
+			RZ_ItemHelper.Words("magazine,ammo,/food/,dressing,gauze,bandage,tablet", m_aStackWords);
+		}
+
+		string name = prefab;
+		name.ToLower();
+		return RZ_ItemHelper.NameHas(name, m_aStackWords);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a wreck's boot holds (RZ_WreckBoots), as prefabs: something Boot chance x the town's
+	//! loot level of the time, then a second thing Boot two chance x the level. `stash` (a stash
+	//! someone wrote about): +0.25, two half the time or more, and twice the rare chance. No prefab
+	//! twice unless it stacks.
 	void PickBootLoot(vector pos, bool stash, notnull array<ResourceName> picks)
 	{
 		RZ_LootTable t = TableFor("car");
@@ -962,7 +1006,7 @@ class RZ_Search
 			return;
 
 		float level = RZ_TownMemory.GetLootLevel(pos);
-		float chance = m_Settings.m_fFindChance * level;
+		float chance = m_Settings.m_fBootChance * level;
 		if (stash)
 			chance += 0.25;
 
@@ -970,9 +1014,9 @@ class RZ_Search
 			return;
 
 		int count = 1;
-		float twoChance = 0.2 * level;
+		float twoChance = m_Settings.m_fBootTwoChance * level;
 		if (stash)
-			twoChance = 0.5;
+			twoChance = Math.Max(0.5, twoChance);
 
 		if (Math.RandomFloat01() < twoChance)
 			count = 2;
@@ -982,7 +1026,7 @@ class RZ_Search
 		Odds("car", pos, stash, false, rare, electronics);
 		for (int i = 0; i < count; i++)
 		{
-			ResourceName pick = PickFrom(t, rare, electronics);
+			ResourceName pick = PickFresh(t, rare, electronics, picks);
 			if (!pick.IsEmpty())
 				picks.Insert(pick);
 		}

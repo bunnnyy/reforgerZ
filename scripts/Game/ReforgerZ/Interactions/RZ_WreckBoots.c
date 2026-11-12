@@ -10,7 +10,7 @@
 //!   record. When everyone has gone, what's left is kept as data and the storage is deleted with
 //!   it. Nothing physical is saved.
 //! - Rolled the first time it's put out: the car boot table (RZ_Search.PickBootLoot: something
-//!   Find chance x the town's loot level of the time, sometimes two), two good finds more for a
+//!   Boot chance x the town's loot level of the time, often two), two good finds more for a
 //!   stash someone wrote about, one treatment roll, sometimes a car part (battery, tyre or spark
 //!   plugs), and sometimes something to read (left beside the boot, a key taped inside goes in it).
 //! - Taken: on the 5 s tick a thing that's no longer in the boot was taken. A loot find takes the

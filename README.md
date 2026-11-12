@@ -159,7 +159,7 @@ and one way to end it: **research the cure.**
   crafting screen at workbenches and one small object menu for props and places (the game's own
   inventory, looting, healing, doors and fuel first, a menu for anything with options, a single
   prompt only for what's done in a hurry),
-  spoken lines as subtitles that say who is talking and from where (radio voices in their own box), notes on a paper reader, and on the map only what you know, with its key in the corner. Gamepad
+  spoken lines as subtitles that say who is talking and from where (radio voices in their own box), notes on a paper reader, and on the map only what you know (of the jobs, only the tracked one's objective), with its key in the corner. Gamepad
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
