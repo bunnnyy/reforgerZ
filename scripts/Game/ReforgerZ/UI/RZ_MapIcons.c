@@ -14,6 +14,7 @@
 class RZ_MapIconsUI : SCR_MapUIBaseComponent
 {
 	protected static const float HALF = 24;	// half the icon's size (48), to centre it on the spot
+	protected static const float LABEL_MERGE = 40;	// markers this close (m) share one label
 	protected static const string LEGEND_ACTION = "RZ_MapLegend";
 
 	protected static bool s_bLegendHidden;	// the player hid the legend (this session)
@@ -24,6 +25,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 	protected ref array<float> m_aX = {};
 	protected ref array<float> m_aZ = {};
 	protected ref array<float> m_aRadius = {};	// a range ring's radius in metres (0: a fixed-size icon)
+	protected ref array<string> m_aLabels = {};
 	protected int m_iSeen = -1;
 	protected float m_fAsk;
 	protected bool m_bOpen;
@@ -94,6 +96,7 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 		m_aX.Clear();
 		m_aZ.Clear();
 		m_aRadius.Clear();
+		m_aLabels.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -132,6 +135,49 @@ class RZ_MapIconsUI : SCR_MapUIBaseComponent
 			m_aX.Insert(RZ_UIText.Int(f, 3));
 			m_aZ.Insert(RZ_UIText.Int(f, 4));
 			m_aRadius.Insert(RZ_UIText.Int(f, 6));
+			m_aLabels.Insert(RZ_UIText.Str(f, 5));
+		}
+
+		MergeLabels();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Markers within LABEL_MERGE m of an earlier one (a stronghold, its quartermaster and a job at the
+	//! same house) share one label, one line each, on the first marker: drawn apart they lay their
+	//! labels on top of each other and none could be read.
+	protected void MergeLabels()
+	{
+		array<string> merged = {};
+		foreach (string t : m_aLabels)
+		{
+			merged.Insert(t);
+		}
+
+		for (int i = 1; i < m_aIcons.Count(); i++)
+		{
+			for (int j = 0; j < i; j++)
+			{
+				float dx = m_aX[i] - m_aX[j];
+				float dz = m_aZ[i] - m_aZ[j];
+				if (dx * dx + dz * dz > LABEL_MERGE * LABEL_MERGE || m_aRadius[i] > 0 || m_aRadius[j] > 0)
+					continue;
+
+				if (!m_aLabels[i].IsEmpty() && !merged[j].Contains(m_aLabels[i]))
+				{
+					if (merged[j].IsEmpty())
+						merged[j] = m_aLabels[i];
+					else
+						merged[j] = merged[j] + "\n" + m_aLabels[i];
+				}
+
+				merged[i] = "";
+				break;
+			}
+		}
+
+		foreach (int k, Widget w : m_aIcons)
+		{
+			RZ_UIW.SetText(w, "Label", merged[k]);
 		}
 	}
 

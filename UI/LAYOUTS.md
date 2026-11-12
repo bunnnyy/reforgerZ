@@ -719,8 +719,12 @@ not stretched by anchors.
 ```
 Frame (root, 48 × 48, top-left anchor, ignores the cursor)
 ├─ Image  Icon       48 × 48, a marker_* icon (white; the script sets the image and tints it)
-└─ Text   Label      under the icon, offset (-116, 50), 280 wide, centred, condensed bold 26, bone, a dark shadow offset by 1
+└─ Text   Label      under the icon, offset (-116, 50), 280 × 130 (up to four lines), centred, condensed bold 26, bone, a dark shadow offset by 1
 ```
+
+Markers within 40 m of an earlier one share its label, one line each (`RZ_MapIconsUI.MergeLabels`); their
+own labels are empty, so a stronghold, its quartermaster and a job at the same house never draw their
+labels on top of each other. Range rings keep their own.
 
 ## Map legend: `RZ_MapLegend.layout`
 

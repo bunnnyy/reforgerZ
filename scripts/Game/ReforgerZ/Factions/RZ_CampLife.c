@@ -494,6 +494,8 @@ class RZ_CampLife
 	static const int FACE_RIGHT = 3;
 
 	protected static const float SITE_MAX_SIDE = 70;		// a building longer than this isn't a camp (a hangar, a factory)
+	protected static const float SITE_MIN_SIDE = 5;		// narrower than this isn't a building people live in
+	protected static const float SITE_MAX_RATIO = 4;		// longer than this many times its width: a pier, a wall, a shed row
 	protected static const int SITE_SHORTLIST = 6;			// the best few by kind, size and distance; then the roads decide
 	protected static const float ENTRY_MERGE = 14;			// road crossings this close are one entry
 	protected static const int MAX_ENTRIES = 5;
@@ -2180,6 +2182,10 @@ class RZ_CampLife
 			if (w > SITE_MAX_SIDE || d > SITE_MAX_SIDE || area < minArea)
 				continue;
 
+			// Not a pier or a jetty: a long thin box isn't a house (the Haven once camped on a 5 x 50 m pier)
+			if (Math.Min(w, d) < SITE_MIN_SIDE || Math.Max(w, d) > Math.Min(w, d) * SITE_MAX_RATIO)
+				continue;
+
 			vector mid = RZ_DoorGeometry.ToWorld(b, (mins + maxs) * 0.5);
 			float dist = RZ_Util.DistXZ(mid, p.m_vPos);
 			if (dist > reach)
@@ -2187,7 +2193,7 @@ class RZ_CampLife
 
 			string name = RZ_Util.GetPrefabName(b);
 			name.ToLower();
-			if (name.Contains("ruin") || name.Contains("wreck"))
+			if (name.Contains("ruin") || name.Contains("wreck") || name.Contains("pier") || name.Contains("jetty") || name.Contains("dock") || name.Contains("bridge") || name.Contains("pontoon") || name.Contains("wharf"))
 				continue;
 
 			int tier = SiteTier(p.m_eFaction, p.m_eKind, name, RZ_DoorSlots.KindOf(b));

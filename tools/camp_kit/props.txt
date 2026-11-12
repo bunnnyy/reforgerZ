@@ -79,7 +79,7 @@ GenericEntity {2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.
 GenericEntity {8FB2845D48F4E02A}Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et
 GenericEntity {D8EF213A192382E0}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et
 GenericEntity {CC98E67AC15E257D}Prefabs/Props/Recreation/Camp/TentBig_01/TentBig_01_orange.et
-StaticModelEntity {9110077F59864EF1}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01_medical.et
+SCR_DestructibleBuildingEntity {9110077F59864EF1}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01_medical.et hier
 StaticModelEntity {01AE5FD77A9A4C21}Prefabs/Structures/Military/Camps/TentSmallUS_01/TentSmallUS_01.et
 GenericEntity {2BF6748C6440D818}Prefabs/Props/Recreation/Camp/TentSmall_02/TentSmall_02_red.et
 GenericEntity {908E3B090C2438E9}Prefabs/Props/Recreation/Camp/TentSmall_03/TentSmall_03_white.et

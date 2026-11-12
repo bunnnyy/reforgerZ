@@ -8,58 +8,54 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  StaticModelEntity : "{9110077F59864EF1}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01_medical.et" {
+  SCR_DestructibleBuildingEntity : "{9110077F59864EF1}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01_medical.et" {
    ID "FBF04A83092F50DF"
-   components {
-    Hierarchy "{7ECE187C33EAC60A}" {
-    }
-   }
    coords 0 0 0
   }
   GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
-   ID "687C5EE9FE62CB68"
+   ID "7ECE187C33EAC60A"
    components {
-    Hierarchy "{7CB2859DF41944E9}" {
+    Hierarchy "{687C5EE9FE62CB68}" {
     }
    }
    coords 0 0 3.4
   }
   GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
-   ID "7F16FC59ABBE14D1"
+   ID "7CB2859DF41944E9"
    components {
-    Hierarchy "{3894AD10D8339388}" {
+    Hierarchy "{7F16FC59ABBE14D1}" {
     }
    }
    coords 0.5 0.78 3.4
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
-   ID "6B4DC837D8707FFB"
+   ID "3894AD10D8339388"
    components {
-    Hierarchy "{569BE85275A6C233}" {
+    Hierarchy "{6B4DC837D8707FFB}" {
     }
    }
    coords -0.6 0.78 3.45
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
-   ID "609D740AC74F9389"
+   ID "569BE85275A6C233"
    components {
-    Hierarchy "{343578080CDF39AB}" {
+    Hierarchy "{609D740AC74F9389}" {
     }
    }
    coords 2.0 0 2.9
    angles 0 6 0
   }
   GenericEntity {
-   ID "A93E46439BBCA0C2"
+   ID "343578080CDF39AB"
    components {
-    SCR_AISmartActionSentinelComponent "{8AC6374B63EF7E6B}" {
+    SCR_AISmartActionSentinelComponent "{A93E46439BBCA0C2}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{C91EFAFC743C3C2C}" {
+    Hierarchy "{8AC6374B63EF7E6B}" {
     }
    }
    coords 0 0 4.2

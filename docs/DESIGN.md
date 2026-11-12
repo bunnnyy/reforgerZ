@@ -734,7 +734,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
 - **Which building.** Within 60 m of a stronghold's spot (its quartermaster), 90 m of an outpost's
   (its town's middle), 30 m of a safehouse's. At least 100 m² for a stronghold, 45 m² for an
   outpost or a field station, 30 m² for a safehouse; never a side over 70 m (a hangar, a factory
-  hall), a ruin, or a building that is scenery. The best six by kind, size (the largest for a
+  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a pier, jetty,
+  dock, bridge, pontoon or wharf, or a building that is scenery. The best six by kind, size (the largest for a
   stronghold, a middling one elsewhere) and distance are then scored by the roads: Bastion and
   Halcyon's lab want a road within 25 m of the building, the Red Hand roads meeting (each further
   road within 45 m counts). Any building on the shortlist will do when none of the faction's kind

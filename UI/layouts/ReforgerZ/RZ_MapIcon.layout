@@ -42,8 +42,8 @@ FrameWidgetClass "{98721C3D930BE900}" {
     OffsetTop 50
     SizeX 280
     OffsetRight -164
-    SizeY 34
-    OffsetBottom -84
+    SizeY 130
+    OffsetBottom -180
     Alignment 0 0
    }
    Color 0.91 0.886 0.816 1
