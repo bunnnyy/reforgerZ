@@ -359,7 +359,7 @@ class RZ_ErrandsDealer
 				if (shared && m_Visitor)
 					shared.AddBody(RZ_BodyBudget.ERRAND, m_Visitor);
 
-				gm.NotifyPlayerAs(ids[i], string.Format("%1, %2", l.name, l.role), string.Format("%1 comes over from the house. \"%2\" They could use a hand there, if you've the time.", l.name, l.line), RZ_ENoticeTag.AUTO);
+				gm.NotifyPlayerAs(ids[i], string.Format("%1, %2", l.name, l.role), string.Format("It's me, %1, from the house. %2 We could use a hand there, if you've the time.", l.name, l.line), RZ_ENoticeTag.AUTO);
 				RZ_Log.Info(string.Format("Errands: local %1 walked up to %2", l.name, RZ_Util.PlayerName(ids[i])));
 				return;
 			}

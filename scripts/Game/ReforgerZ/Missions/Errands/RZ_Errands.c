@@ -346,7 +346,7 @@ class RZ_Errands
 				if (RZ_Factions.IsValid(e.m_iFaction))
 					m_GM.AddInfamy(playerId, e.m_iFaction, 3, "sold a dead man's things you'd made dead");
 
-				m_GM.NotifyPlayer(playerId, "The fence", "He turns the jacket over and hands it back. \"You'd know. You were there.\"");
+				m_GM.NotifyPlayer(playerId, "The fence", "No. Not this jacket, not from you. You'd know whose it was. You were there when it happened.");
 				End(e, "refused at the fence");
 				return true;
 			}
@@ -356,7 +356,7 @@ class RZ_Errands
 			if (RZ_Factions.IsValid(e.m_iFaction) && e.m_iFaction != RZ_EFaction.BANDITS && RZ_Witness.Seen(m_GM, playerId, user.GetOrigin(), e.m_iFaction))
 				m_GM.AddInfamy(playerId, e.m_iFaction, 5, "sold a dead man's things");
 
-			m_GM.NotifyPlayer(playerId, "The fence", "The jacket goes on a hook and the photo frame under the counter, face down. \"People like a frame. Nobody wants the photo.\"");
+			m_GM.NotifyPlayer(playerId, "The fence", "Jacket on the hook, frame under the counter, face down. People like a frame. Nobody wants the photo. Here's your Favor.");
 			array<int> seller = {playerId};
 			RZ_WorldFacts.Get().Memory().Record("errand.his_effects", e.m_sSubject, "sold", RZ_WorldMemory.SOURCE_ERRAND, true, seller);
 			ConsumeCarried(e);
@@ -1130,7 +1130,7 @@ class RZ_Errands
 		{
 			RZ_NamedPerson busy = m_People.Get(found.m_sGiver);
 			if (busy)
-				m_GM.Say(playerId, busy.m_sTitle, busy.m_iFaction, "Give us a minute.");
+				m_GM.Say(playerId, busy.m_sTitle, busy.m_iFaction, "Give us a minute. I'm in the middle of something with someone else.");
 
 			return true;
 		}
@@ -1169,7 +1169,7 @@ class RZ_Errands
 			if (posts && posts.GetParley().Knock(playerId, user, p.m_vPos, p.m_sPlace))
 				return;
 
-			m_GM.Say(playerId, p.m_sTitle, RZ_EFaction.SURVIVORS, "They look straight through you. Someone steps between you and the children.");
+			m_GM.Say(playerId, p.m_sTitle, RZ_EFaction.SURVIVORS, "No. You were put out of this house, and you know why. Not near the children. The road's that way.");
 			return;
 		}
 
@@ -1427,9 +1427,9 @@ class RZ_Errands
 	{
 		switch (p.m_iFaction)
 		{
-			case RZ_EFaction.SURVIVORS: return "Not today. Ask the others tomorrow, someone always wants something.";
-			case RZ_EFaction.MILITARY: return "Nothing on the board for you. Check back after the shift change.";
-			case RZ_EFaction.BANDITS: return "Nothing little going. Come back when something's broken.";
+			case RZ_EFaction.SURVIVORS: return "Not today. The house is managing, just about. Ask the others tomorrow: someone always wants something.";
+			case RZ_EFaction.MILITARY: return "Nothing on the duty board for you. Check back after the shift change.";
+			case RZ_EFaction.BANDITS: return "Nothing little going. Come back when something's broken, or someone is.";
 			case RZ_EFaction.INSTITUTE: return "No requests at present. The shift is quiet, which we're told is good.";
 		}
 
@@ -1706,7 +1706,7 @@ class RZ_Errands
 		if (wayIdx < 0)
 		{
 			// Not now is always free: the offer stands a while, nothing is remembered
-			Say(e, "Fair enough.", false);
+			Say(e, "Fair enough. I'll find someone else, or I'll do it myself.", false);
 			Count(e.m_Def.m_sFamily).declines++;
 			ReleaseTalk(talk.m_sGiver);
 			return;
@@ -1765,7 +1765,7 @@ class RZ_Errands
 		}
 
 		if (w.m_iItems > 0 && !w.m_bGiveThere && CountItems(user, w.m_eItem) < w.m_iItems)
-			return "\"You've nothing I can use for that. " + RZ_Util.Capitalize(ItemNeed(w.m_eItem, w.m_iItems)) + ", it needs.\"";
+			return "You've nothing on you I can use for that. " + RZ_Util.Capitalize(ItemNeed(w.m_eItem, w.m_iItems)) + ", it needs.";
 
 		if (w.m_iFavorCost > 0 && !m_GM.SpendFavor(playerId, f, w.m_iFavorCost))
 			return string.Format("That's %1 Favor. You haven't got it with us.", w.m_iFavorCost);
@@ -2727,7 +2727,7 @@ class RZ_Errands
 		if (paid > 0 && !helper && m_PayKinds.Defer(e, playerId, f, paid))
 		{
 			ledger.hourFavor += paid;
-			text += string.Format("\"When the truck comes, you'll have it.\" (%1 %2 Favor, waiting) ", paid, RZ_Factions.GetName(f));
+			text += string.Format("Owed when the next truck comes: %1 %2 Favor. ", paid, RZ_Factions.GetName(f));
 			paid = 0;
 		}
 
@@ -2892,7 +2892,7 @@ class RZ_Errands
 			// Jobs only by interaction: they wave you over and the errand waits as their open offer;
 			// they say what it is only when you ask ("Anything need doing?", Ask)
 			m_mLastUnasked.Set(m_GM.GetProfile(playerId).m_sIdentity, m_fClock);
-			m_GM.Say(playerId, caller.m_sTitle, caller.m_iFaction, e.Fill("{giver} waves you over."));
+			m_GM.Say(playerId, caller.m_sTitle, caller.m_iFaction, e.Fill("You there. Have you got a minute? Something wants doing, when you're free."));
 		}
 	}
 

@@ -1183,7 +1183,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 			return false;
 
 		job.Hire(playerId);
-		gm.NotifyPlayerAs(playerId, w.GetTitle(), string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(gm), job.GetWhereTextFor(gm, user.GetOrigin(), playerId)), RZ_ENoticeTag.MISSION);
+		gm.NotifyPlayerAs(playerId, w.GetTitle(), string.Format("Job: %1. Three people on the road, each wants what the next one has.\n%2\nThe first of them: %3.", job.m_sTitle, job.GetBrief(gm), job.GetWhereTextFor(gm, user.GetOrigin(), playerId)), RZ_ENoticeTag.MISSION);
 		return true;
 	}
 }
