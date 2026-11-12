@@ -47,7 +47,7 @@ make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-63 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+72 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
@@ -59,6 +59,7 @@ transparent background, so the game can tint them. Every icon with its intended 
 | Map markers | 10 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, and the range ring. Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
 | Items | 18 | key, sample, antidote, stabiliser, low-grade med, noisemaker, battery, tyre, spark plugs, fuel can, wind-up radio, molotov, bandage, tin-can tripwire, spike trap, purification tablets, planks, jewellery |
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
+| Standing and needs | 9 | the Standing page's Favor (a coin), leader met, their kit, the next name and how they see you; four of a faction's needs (food, people, security, revenge; supplies and samples use `status_shortage` and `item_sample`) |
 
 **Files.** Sources in `UI/Icons/src/`. White PNGs at 64 and 128 px in `UI/Icons/png/64/` and
 `png/128/`. Coloured map and emblem variants (25, with a dark backing behind the plated markers'
@@ -67,8 +68,9 @@ cut-out glyphs, and one per faction for strongholds, outposts and quartermasters
 Chromium, nothing else). The game reads the white icons from one atlas,
 `UI/Textures/ReforgerZ/RZ_Icons.edds`, through the `RZ_Icons` imageset: after re-rendering, pack
 them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). The atlas
-PNG holds all 62; the imported `.edds` and the imageset are still the 61 before the range ring until
-it's imported again (steps 2 and 3 there).
+PNG and the imageset hold all 72; the imported `.edds` is still the 63 before the Standing page's
+nine until the PNG is imported again (step 2 there). The nine were rendered with headless Chrome the
+way `render_ui.js` does (no Playwright on the author's PC), so the contact sheet doesn't show them yet.
 
 ## Screens
 
@@ -79,7 +81,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 |---|---|---|---|---|
 | HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on). Under the noise meter during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Nothing to press, so it's the same on a pad | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line and the look line not seen yet |
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
-| Notebook: Standing | `standing.png` | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). Per faction: the reputation's name (the tier icon beside it) and its note (what it counts as; for the Wildcard tier "COUNTS AS KNOWN - SEARCHED - TOLL 20"), Fame, Infamy (with the tier bands marked, and "36 - 12 TO FORGIVE" while there's Infamy), Favor, the leaders you've met and what they think of you (opening the column, the word they call you as a sentence and the nearest met leader's verdict; above the leaders, for Bastion, the Red Hand and Halcyon with disguises on, **IN THEIR KIT**: whether they know your face, catches this life, blown time left, their tells and what their enemies do to their colours; the payload's `K` records), what the faction needs, a warning when it hunts you. Truces and feuds, and the reputation grid: the 16 names, with each faction's initial (H, B, R, C) in the cell you stand in ([REPUTATION.md](REPUTATION.md#reputations)) | `RZ_StandingPage` | Page built, not checked in play |
+| Notebook: Standing | `standing.png` (the old four-column page; the page is now design G2) | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). One row per faction, stacked down the page with the faction's colour as a left bar, mostly icons: the emblem and name; **what they call you**, large (the reputation's name, or the tier word with Reputation > Names off; the tier icon beside it, both in the tier's colour); Favor (a coin and the number); the leaders you've met (a bust and how many, or NONE); what they need (its icon and word, or NONE); and a kit tell (a jacket, only for Bastion, the Red Hand and Halcyon with borrowed kit on: dim while they don't know you, yellow once they know your face or caught you, red while you're blown). No Fame or Infamy numbers, bars or grid. **One row is open**, filling the free space, with four blocks: *How they see you* (their word as a sentence, what the name counts as, what's left to forgive while there's Infamy, a line when they hunt you, and **Next**: the next name up with what earns it, "TRUSTED: 12 more Fame" or "KNOWN: work off 8 Infamy", none at the top), *Leaders you've met* (names and titles, then the nearest one's verdict), *What they need* (the need and its line) and *In their kit* (whether they know your face, catches, blown time, their tells, what their enemies do to their colours: the payload's `K` records). The other rows stay one line, so all four names are always on screen. Under the rows, **between the factions**: the truces and feuds on one line | `RZ_StandingPage` | Page built, not checked in play |
 | Notebook: Journal | `journal.png` | Active contracts, events, puzzles, leader jobs, arcs and questlines with type icon, giver, rough direction and distance and time left. The selected one in full: brief, where, requirements, rewards, and the puzzle clues you've read (or a questline's notes). With Dialogue > Trees on, a **Promises** row (each open promise with its play left) and a **What you know** row (the lies you've seen through), as ordinary rows ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) | `RZ_JournalPage` | Page built, not checked in play; the mockup has no lab line yet |
 | Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
 | Notebook: Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallPage` | Page built, not checked in play; no mockup |
@@ -179,8 +181,12 @@ map key isn't a tab: it's on the map ([The map](#the-map)).
 
 - It opens on the tab you last used this session (the first time: Journal).
 - LB/RB or Q/E switch tabs; clicking a tab works too. Up/down (D-pad, stick, arrows) move in the
-  journal's list and scroll the other tabs' lists; A or Enter selects the journal row with the
-  focus; X or F (or a click on the chip) cycles the Radio filter; B or Esc closes.
+  journal's list, open the next faction's row on the Standing page, and scroll the other tabs'
+  lists; A or Enter selects the journal row with the focus, or pins the Standing page's open row
+  (and lets it go again); X or F (or a click on the chip) cycles the Radio filter; B or Esc closes.
+- On the Standing page the mouse opens the row it's over, unless a row is pinned; a click pins
+  that row, and a click on the pinned row lets it go. The open row is kept for the session. Hover
+  only does what up/down does, so nothing needs it.
 - A tab with something new since you last looked carries a count: Journal the mission notices,
   Radio everything it lists. Opening the notebook also clears the "+N in your notebook" line.
 - Opened from the item, the item is put away again when the notebook closes.
@@ -613,14 +619,14 @@ share it, each only in its own screen.
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
 | The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop and the crafting screen each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen opens by itself), close with B (the spawn screen's B opens the pause menu), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
 | Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5 or D-pad and A") |
-| Hover, typing, chat | No screen needs hover or a tooltip (the talk screen lights the reply under the cursor, as the D-pad does). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
-| Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The reputation grid's headers now read "FAME" and "INFAMY UNDER 15" and so on, and its cells are condensed bold so the longest names fit. |
+| Hover, typing, chat | No screen needs hover or a tooltip (the talk screen lights the reply under the cursor and the Standing page opens the row under it, as the D-pad does; a click does the same). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
+| Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the old Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The Standing page (G2) has nothing under 18; its names are 40 and its detail text 22. |
 
 **What needs Workbench** (it can't be checked as text):
 - Open each page in the layout editor at 1920×1080 and look for text that now runs past its slot:
-  the Standing page's labels over their bars (FAME, INFAMY, LEADERS YOU'VE MET, WHAT THEY NEED: 6
-  units over 16-unit slots), the reputation grid's header row (4 over), the HUD's infection stage
-  above its clock (2 over). Where it touches, move the
+  the HUD's infection stage above its clock (2 over); on the Standing page, the longest names
+  ("SOFT-HEARTED DEVIL" at 40 in 480 units, "TASK FORCE BASTION" at 28 in 320) and two Next lines
+  in their 56 units. Where it touches, move the
   widget below down a few units or shorten the label.
 - Play every screen with a pad on PC (and on a console build when there is one): the focus, the
   prompts' glyphs, the notice board's ready-made notes (A on Pin it up, and that left and right
@@ -707,8 +713,9 @@ the layouts in `UI/layouts/ReforgerZ/`.
 map's icons don't cluster or scale with zoom; outposts a player has seen are remembered for the
 session only.
 Journal rewards are the mission's base Fame and Favor ("about"), before leader traits and
-background multipliers. The radio channel list is a static part of its layout; the standing page's
-reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
+background multipliers. The radio channel list is a static part of its layout. The Standing page's
+Next line works from the Fame and Infamy bands only: it doesn't know about the credit rule or
+Infamy that may fade.
 
 ## Built and planned
 

@@ -68,8 +68,8 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (63) from `UI/Icons/png/128/` into
-   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1024, eight 128-pixel cells to a row, in name
+1. `py tools/icon_atlas.py` packs the white icons (72) from `UI/Icons/png/128/` into
+   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1152, eight 128-pixel cells to a row, in name
    order.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
    becomes `RZ_Icons.edds`.
@@ -81,10 +81,10 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 4. **UI > Icon imageset** on `RZ_GameMode.et` points at the imageset (already set).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
-steps 1 to 3 again. **To do now:** step 1 has been run for `marker_range` (the 62nd icon, the packs'
-range ring) and `mission_errand` (the 63rd, the journal's errand row), so import the PNG again (step 2)
-and run step 3; until then the old atlas and imageset lack them, and the cells after them would be off
-if only one of the two changed. With **Icon imageset** empty, the scripts leave every image as the layout has
+steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for the Standing page's nine icons
+(`standing_*` and `need_*`, 72 in all), so import the PNG again (step 2). Until then the imported
+`.edds` is the 63-icon atlas while the imageset lists 72 in a taller atlas, so icons show the wrong
+cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -206,9 +206,10 @@ root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `Ra
 `HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
 **Mouse.** The tabs, `CloseButton`, the journal row's root (`MissionRow`), the radio filter chip
-(`FilterButton`) and the notice board's `PostButton` are `Button`s. Long text sits in a
-`ScrollLayout` so the wheel scrolls it, and on a pad up and down do: `ListScroll` (the journal),
-`LogScroll` (the radio), `NotesScroll`, `LeadersScroll0` to `LeadersScroll3` and `PastScroll`.
+(`FilterButton`), the Standing page's rows (`Row0` to `Row3`, which also open under the mouse) and
+the notice board's `PostButton` are `Button`s. Long text sits in a `ScrollLayout` so the wheel
+scrolls it, and on a pad up and down do: `ListScroll` (the journal), `LogScroll` (the radio),
+`NotesScroll` and `PastScroll`. On the Standing page up and down open the next row instead.
 Menus show the cursor while open; if one doesn't, check its entry in `chimeraMenus.conf`.
 
 **Menu presets.** `Configs/System/chimeraMenus.conf` is an override of the vanilla file (same
@@ -235,43 +236,59 @@ vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
 ### Standing page: `RZ_StandingPage.layout`
 
-Positions below are the old menu's (before the 0.973 scale into the safe area).
+Design G2: one row per faction, mostly icons, one row open at a time (behaviour in
+[UI.md](../docs/UI.md#the-notebook)). Positions are at 1920×1080, in the 90% safe area. Every icon
+has its image set in the layout (the `RZ_Icons` imageset and a name, so none draws as a flat
+square); the script swaps the ones that change. The layout is written by a script, so it has no
+mockup of its own.
 
 ```
 Frame StandingPage (root)
 ├─ (in the frame: Header, the player, background and life, then the whole picture as said)
-├─ Frame  (Factions)           at (72, 168), 1778 × 610
-│  └─ Frame ×4, one per faction, 431 × 610, 18 apart; names end in the faction number:
-│     0 the Haven, 1 Task Force Bastion, 2 the Red Hand, 3 Halcyon
-│     ├─ Image   (panel background)
-│     ├─ Image   AccentN         full width × 5, top               faction colour
-│     ├─ Image   EmblemN         54 × 54 at (22, 18)               faction_* icon
-│     ├─ Text    FactionNameN    at (92, 30), condensed bold 24
-│     ├─ Frame   (tier box, 387 × 66 at (22, 88), background white 3.5%, border)
-│     │  ├─ Image  TierIconN     42 × 42                           tier_* icon
-│     │  ├─ Text   TierNameN     condensed bold 26: the reputation's name (Mixed Bag, Wildcard...)
-│     │  └─ Text   TierNoteN     mono 18, dim: what it counts as, at most 42 characters
-│     ├─ Text    FameValueN      right, mono bold 14     │ ProgressBar FameBarN   387 × 10
-│     ├─ Text    InfamyValueN    right, mono bold 14 ("36 - 12 TO FORGIVE") │ ProgressBar InfamyBarN 387 × 10, fill #D2553F
-│     │   (three 2-unit dark ticks over both bars at 15%, 40% and 75%: the tier bands)
-│     ├─ Text    FavorValueN     mono bold 24, faction colour
-│     ├─ Text    (label "LEADERS YOU'VE MET") │ Text LeadersN  wraps, 18, in a ScrollLayout; its first two
-│     │   lines are the word as a sentence and the nearest met leader's verdict
-│     ├─ Frame   NeedBlockN
-│     │  ├─ Text   (label "WHAT THEY NEED")
-│     │  ├─ Text   NeedTitleN     mono bold 18, faction colour
-│     │  └─ Text   NeedN          italic 18, wraps
-│     └─ Overlay WarnN           bottom strip, 36 high, red tint 16%
-│        └─ Text  (WarnTextN)    mono 18, "HUNTER SQUADS ARE OUT FOR YOU"
-├─ Frame  (between the factions, at (72, 798), 880 × 196, label "BETWEEN THE FACTIONS")
-│  └─ Text   Relations          wraps, 18
-├─ Frame  TierGrid (the reputation grid, at (970, 798), 874 × 196): a 5 × 5 grid, labels on the
-│  top row ("FAME" in the corner, then "INFAMY UNDER 15" ... "INFAMY 75+") and the left column
-│  (the Fame bands); all 18; the 16 cells are Text RepCell_<fame band>_<infamy band> (0-3 each,
-│  so RepCell_3_0 is Champion, top left), each over an Image TierGridCell<row><col>. Code writes each
-│  cell's name, upper case, and the initials of the factions that put you there, bright where you
-│  stand and dim elsewhere: no static names. The cells are condensed bold, so the longest names
-│  ("SOFT-HEARTED DEVIL") fit 169 units at 18
+├─ Frame  ColumnHeads          at (96, 164), 1728 × 34: one static icon (28) and a label (mono bold
+│                              18, dim) over each column: FACTION, WHAT THEY CALL YOU (standing_word),
+│                              FAVOR (standing_favor), LEADERS (standing_leader), NEEDS
+│                              (status_shortage), KIT (standing_kit)
+├─ Frame  Rows                 at (96, 206), 1728 × 720
+│  └─ Button RowN ×4 (style blank; N is the faction: 0 the Haven, 1 Task Force Bastion, 2 the Red
+│     │  Hand, 3 Halcyon). The script places them: the open row 444 high, the others 84, 8 apart
+│     └─ Frame RowFrameN (fills the button)
+│        ├─ Image  RowBgN        panel, full size
+│        ├─ Image  RowOpenN      bone 6%, full size, shown on the open row
+│        ├─ Panel  RowLineN      border; bone on a pinned row, #2A2E31 otherwise (tinted)
+│        ├─ Image  AccentN       8 wide, full height, left edge         faction colour
+│        ├─ Image  EmblemN       52 × 52 at (28, 16)                    faction_* icon, faction colour
+│        ├─ Text   FactionNameN  at (96, 25), 320 × 34, condensed bold 28 ("TASK FORCE BASTION")
+│        ├─ Image  TierIconN     48 × 48 at (440, 18)                   tier_* icon, tier colour
+│        ├─ Text   TierNameN     at (500, 16), 480 × 52, condensed bold 40, tier colour: what they call you
+│        ├─ Image  FavorIconN    36 at (1000, 24)                       standing_favor, faction colour
+│        ├─ Text   FavorValueN   at (1046, 24), 140 × 36, mono bold 30
+│        ├─ Image  LeaderIconN   36 at (1196, 24)                       standing_leader
+│        ├─ Text   LeaderCountN  at (1242, 26), 120 × 34, mono bold 26: the count or NONE
+│        ├─ Image  NeedIconN     40 at (1380, 22)                       need_*, status_shortage or item_sample; hidden without a need
+│        ├─ Text   NeedTitleN    at (1430, 28), 170 × 30, mono bold 22: FOOD, PEOPLE... or NONE
+│        ├─ Image  KitIconN      40 at (1620, 22)                       standing_kit: dim, yellow, red; hidden without a kit line
+│        └─ Frame  DetailN       inset 28 left and right, 96 from the top, 16 from the bottom; shown on the open row
+│           ├─ Image  DetailRuleN   2 high across the top, #2A2E31
+│           ├─ Frame  SeeBlockN     at x 0, 400 wide, from 18 down
+│           │  ├─ Image SeeIconN    30, standing_word │ Text SeeLabelN "HOW THEY SEE YOU", mono bold 20, dim
+│           │  ├─ ScrollLayout SeeScrollN (44 from the top to 96 from the bottom)
+│           │  │  └─ Text SeeTextN  22, wraps: the word, the note, left to forgive, the hunters
+│           │  └─ Frame NextBlockN  the bottom 88, hidden at the top
+│           │     ├─ Image NextIconN 26, standing_next │ Text NextLabelN "NEXT", mono bold 18, dim
+│           │     └─ Text  NextTextN  at (0, 32), 400 × 56, condensed bold 22, wraps (one or two lines)
+│           ├─ Frame  LeadersBlockN at x 424, 400 wide
+│           │  ├─ Image LeadersIconBigN 30, standing_leader │ Text "LEADERS YOU'VE MET"
+│           │  └─ ScrollLayout LeadersScrollN └─ Text LeadersTextN  22, wraps: names and titles, then a verdict
+│           ├─ Frame  NeedBlockN    at x 848, 400 wide
+│           │  ├─ Image NeedIconBigN 30, the need's icon │ Text "WHAT THEY NEED"
+│           │  ├─ Text  NeedNameN   at (0, 44), mono bold 24, faction colour
+│           │  └─ ScrollLayout NeedScrollN (from 80) └─ Text NeedTextN  italic 22, wraps
+│           └─ Frame  KitBlockN     at x 1272, 400 wide
+│              ├─ Image KitIconBigN 30, standing_kit │ Text "IN THEIR KIT"
+│              └─ ScrollLayout KitScrollN └─ Text KitTextN  22, wraps
+├─ Text   RelationsLabel       at (96, 938), mono bold 18, dim, "BETWEEN THE FACTIONS"
+├─ Text   Relations            at (356, 936), 1468 × 44, 18, wraps: the truces and feuds on one line
 └─ Text   Waiting              centred, italic 22, "Asking around..." (shown until the data arrives)
 ```
 

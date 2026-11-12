@@ -1657,8 +1657,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **113** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 19 are in `UI/`: 14 of [the UI's](#the-ui-15), the loadout
+There are **114** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 20 are in `UI/`: 15 of [the UI's](#the-ui-16), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1667,7 +1667,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-15)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-16)
 come last.
 
 ### High risk: the core loop (2)
@@ -1775,7 +1775,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:2533` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots and pieces are pushed back off walls | A leaning or standing person with a head in a wall, or a piece's seat against a fence: report where; the push does nothing and spots stand where they were drawn |
 | `Factions/RZ_CampLife.c:2604` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
-### The UI (15)
+### The UI (16)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -1791,6 +1791,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
+| `UI/RZ_Notebook.c:940` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse opens | Only hover is lost: up/down and a click still open and pin rows |
 | `UI/RZ_UIData.c:964` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:700` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
@@ -2734,7 +2735,7 @@ when it happens)
   standing (yours with nobody within 50 m).
 - [ ] On a TV or at 1920×1080 from a couch: every page of the notebook, the notice board, the
   notice cards and the HUD are readable; nothing runs into what's below it (the Standing page's
-  labels, the reputation grid's header row).
+  longest names, its two Next lines).
 - [ ] The spawn screen opens at the first spawn (after the welcome screen, if any) and after each
   death, never vanilla's deploy menu or role selection, and asks for no faction or group. With a
   pad only: up/down go through the 13 backgrounds with the panel following (name, perk, flaw, gear,
@@ -2761,8 +2762,8 @@ when it happens)
   shoot a Haven guard (Fame about 20, Infamy about 18): 30 s later a card says "They call you Mixed
   Bag - counts as Stranger now", once, with the guidance tip; swing back across the line inside
   30 s and nothing is said. The log has `Reputation: ... Mixed Bag (Uneasy)`. The notebook's
-  Standing page shows MIXED BAG, "COUNTS AS STRANGER", the Infamy with "TO FORGIVE", and an H in
-  the Mixed Bag cell of the grid; with a pad the page opens and scrolls as before.
+  Standing page's Haven row says MIXED BAG; opened, it shows "COUNTS AS STRANGER", what's left to
+  forgive, and Next ("KNOWN: work off 4 Infamy" or the like).
 - [ ] The forgiveness budget (set **Reputation > Forgiveness budget** to 10): at Watched, an amends
   contract takes Infamy off; the next pays Fame instead with "has forgiven you all it will this
   life"; paying at the quartermaster is refused with the same line; Ask what they think of you says
@@ -2776,9 +2777,13 @@ when it happens)
 - [ ] Known with the Red Hand and no crew name yet, throw a vanilla smoke grenade: the log has
   `Reputation: <you> threw a smoke` and the notice says the crews call you Smoke. Throw a bottle: no
   line (the throw hook, VERIFY).
-- [ ] The Standing page: the header has the whole picture after your name; each faction's column
-  opens with the word as a sentence ("The crews call you Smoke.") and the nearest leader you've met
-  there with what they make of you. Take a parley's amends job: the journal's requirements read
+- [ ] The Standing page (G2): four rows, each with what they call you large, Favor, leaders met, the
+  need's icon and (Bastion, the Red Hand, Halcyon with borrowed kit on) the kit tell; no Fame or
+  Infamy numbers. With a pad, up/down open the next row and A pins it; with the mouse, the row under
+  the cursor opens, a click pins it and a second click lets it go; Q/E and B/Esc work as on the
+  other tabs. An open row's *How they see you* has the word as a sentence ("The crews call you
+  Smoke.") and *Leaders you've met* the nearest one with what they make of you. Every icon shows
+  its picture, none a flat square (after the atlas is imported again). Take a parley's amends job: the journal's requirements read
   "Amends: works off Infamy · finishes where the job says".
 - [ ] One per approach: walk up to a Bastion post's gate with a name change pending and a tip due: the
   gate's bark first (with a rival-colours remark in the same line, in another faction's armband), the
