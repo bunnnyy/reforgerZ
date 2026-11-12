@@ -481,9 +481,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 					line = "Search area, " + RZ_QuestText.Metres(edge);
 				}
 			}
-			else if (dist > m_fTrackArrive && dist < TRACK_NEAR)
+			else if (dist < TRACK_NEAR)
 			{
-				arrow = true;
+				// Down to 0 m; the arrow goes in the last 2 m, where it would only spin
+				arrow = dist >= 2;
 				line = RZ_QuestText.Metres(dist);
 				if (!m_sTrackPlace.IsEmpty())
 					line = m_sTrackPlace + ", " + line;

@@ -196,8 +196,8 @@ reading the board is a notice and notes are written with `/note` only.
 
 **Rough areas in words.** Every job's place in the notebook, and on the tracker past a kilometre, is a rough area
 (`RZ_QuestText.RoughArea`): the nearest settlement or the side of it ("Morton", "East of Levie") and
-a band, close by (under 150 m), under a km, a few km (under 4 km) or far off, with a compass word
-("East of Levie, a few km north-west"). A contract points at its rough circle until the player
+a band, a few km (under 4 km) or far off, with a compass word ("East of Levie, a few km north-west");
+under a kilometre the metres and the way instead ("Camurac, 340 m north-west"), never "close by". A contract points at its rough circle until the player
 knows the spot ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)). Within a kilometre the tracker
 gives an arrow and metres instead ([The quest tracker](#the-quest-tracker)). **Mouse:** click a tab to switch, the close button to
 close, a journal row to select it, the filter chip to cycle the radio filter; the wheel scrolls the
@@ -295,9 +295,9 @@ under the secure-radio panel while that shows), for the one job you follow. The 
 - **The area line.** Far off, the rough area in words ("Morton, a few km north-west",
   `RZ_QuestText.RoughArea`). **Within a kilometre** of a spot you know: an amber arrow
   (`TrackerArrow`, the `marker_self` icon, 20 across) turned toward it from where your character
-  faces, and the metres ("Camurac, 120 m": to 10 m from 100 m up, to 5 m below,
-  `RZ_QuestText.Metres`). Inside the objective's **arrival radius** the arrow goes and the words
-  come back ("Camurac, close by"). A **search area** (you know only the rough circle): within a
+  faces, and the metres ("Camurac, 120 m": to 10 m from 100 m up, to 5 m below, to 1 m under 10,
+  `RZ_QuestText.Metres`), counting down to 0 m; the arrow goes in the last 2 m, where it would only
+  spin. A **search area** (you know only the rough circle): within a
   kilometre of its edge, the arrow to its centre and the metres to its edge ("Search area, 240 m"),
   then *In the search area* once you're inside it, no arrow; the centre is off the real spot, so
   the arrow never gives the spot away. Dead, or a job with no place: the words alone, no arrow.

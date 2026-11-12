@@ -106,22 +106,25 @@ class RZ_QuestText
 		if (from == vector.Zero)
 			return place;
 
+		// Under a km: the metres and the way (no "close by": it counts down to 0 m)
 		float dist = RZ_Util.DistXZ(from, to);
-		if (dist < 150)
+		string way = RZ_Compass.DirectionWord(RZ_Compass.Bearing(from, to));
+		if (dist < 1000)
 		{
-			if (place.IsEmpty())
-				return "Close by";
+			string near = Metres(dist);
+			if (dist >= 10)
+				near = near + " " + way;
 
-			return place + ", close by";
+			if (place.IsEmpty())
+				return near;
+
+			return place + ", " + near;
 		}
 
 		string band = "far off";
-		if (dist < 1000)
-			band = "under a km";
-		else if (dist < 4000)
+		if (dist < 4000)
 			band = "a few km";
 
-		string way = RZ_Compass.DirectionWord(RZ_Compass.Bearing(from, to));
 		if (place.IsEmpty())
 			return Cap(band + " " + way);
 
@@ -133,12 +136,14 @@ class RZ_QuestText
 	static string Metres(float metres)
 	{
 		int step = 10;
-		if (metres < 100)
+		if (metres < 10)
+			step = 1;
+		else if (metres < 100)
 			step = 5;
 
 		int m = RZ_Util.RoundToInt(metres / step) * step;
-		if (m < 5)
-			m = 5;
+		if (m < 0)
+			m = 0;
 
 		return string.Format("%1 m", m);
 	}

@@ -3031,8 +3031,8 @@ when it happens)
   Workbench and check the row and its `TrackerArrow` load): walk toward a tracked errand's place. Past
   1 km the area line is words only; under 1 km an amber arrow comes in front of it with "Camurac,
   640 m". Turn on the spot: the arrow turns with you and points at the place (ahead is up), smoothly,
-  not in steps. The metres count down by 10 (by 5 under 100 m), readable on a TV. Within the place's
-  radius (25 m) the arrow goes and the line reads "Camurac, close by"; done there, "Go back to ..."
+  not in steps. The metres count down by 10 (by 5 under 100 m, by 1 under 10) to 0 m, readable on a TV,
+  never "close by"; the arrow goes only in the last 2 m; done there, "Go back to ..."
   points the arrow at the giver until 15 m. A contract with only a rough area: "Search area, 240 m"
   to the circle's edge, then "In the search area" with no arrow inside it; learn the spot and it
   becomes the spot's metres. Die: the arrow goes, the words stay. If the arrow points the wrong way
