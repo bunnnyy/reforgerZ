@@ -20,7 +20,7 @@ class RZ_Errand_CopiesFarHouse : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take the method to the medic at {house} (at the gate, 10 s), then report to {giver}.";
+		w.m_sStep = "Take the method to the medic at {house} (at the gate, 10 s, nothing in your hands), then report to {giver}.";
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
 		w.Done("\"Received at {house}. Then it's published.\"");
@@ -33,7 +33,7 @@ class RZ_Errand_CopiesFarHouse : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_GameModeComponent gm = dealer.GetGM();
 		RZ_Epilogue epi = Week();
@@ -74,5 +74,12 @@ class RZ_Errand_CopiesFarHouse : RZ_EpiCard
 	{
 		if (w.m_iIndex == 1)
 			dealer.GetGM().AddInfamy(playerId, RZ_EFaction.INSTITUTE, 5, "sold the method to the fence", 0, "sold the lab's method to the Red Hand");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unarmed: a gun in your hands at the step spoils it.
+	override bool Still(RZ_Errands dealer, RZ_Errand e)
+	{
+		return !ArmedAtStep(e);
 	}
 }

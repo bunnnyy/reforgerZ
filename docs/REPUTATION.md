@@ -244,8 +244,8 @@ to Bastion": the title with the faction you stood highest with), `RouteAtLock`, 
 Infamy seen with them is under 15). Log line: `Reputation: season record: <player> locked to <route>`.
 
 *Simplified:* the deeds kept are the ones standing when the best and worst cells were reached, not
-the biggest across every life; square doesn't read the Red Hand's book yet. The epilogue's use of it
-is the epilogue's ([designs/EPILOGUE.md](../designs/EPILOGUE.md)).
+the biggest across every life; square doesn't read the Red Hand's book yet. The epilogue reads it for
+titles ([EPILOGUE.md](EPILOGUE.md#at-the-cure)).
 
 
 ### Small pay and switched sides

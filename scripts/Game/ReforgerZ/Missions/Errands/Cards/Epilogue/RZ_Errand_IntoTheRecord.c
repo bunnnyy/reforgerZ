@@ -26,7 +26,7 @@ class RZ_Errand_IntoTheRecord : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_EpiName n = LyingNear(RZ_EFaction.INSTITUTE, e.m_vGiver, 4000);
 		if (!n)

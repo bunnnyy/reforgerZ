@@ -185,18 +185,19 @@ their map's AI world and vanilla's world managers now; AI in play is still to te
 yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do it for you), then
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
-**Not built yet:** the approved designs for the rest of the season: the rest of the four majors,
-of the cure's finale and of the epilogue week, the epilogue deck's last six cards and more,
-built in the order of [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7,
-simplified: the record and the hall's freeze, beats and carriers, the dose outlets, the queue and
-the lab gate, the grey choices, the closure set, the evening calendar, 13 cards of the epilogue
-deck, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
-simplified: the controller, the lock and its dialogue commit node, pitches and route assets, the five
-routes with their ways and branches, live tissue, pacts and the moves between routes, the stand as a
-fight for the clean room with its HUD line, Take the Lab and the Coat Run, terms,
-[FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified, with next
-season's story rules, the stand's inputs, the hall's lines and the notebook's season tab,
-[QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
+**Not built yet:** what's left of the approved designs (talk, errands, the mission style, borrowed
+kit, reputation names, tone, Traces and the infected), built in the order of
+[designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7, simplified, its design
+done: the record and the fuller record, the hall's freeze, beats in full with notables and titles,
+carriers, the dose outlets, the queue and the lab gate as moving scenes, the grey choices, the
+closure set and its rest, the evening calendar with the supper scene and the codas' standing
+versions, the epilogue deck's 20 cards, [EPILOGUE.md](docs/EPILOGUE.md)); the cure's finale (phase 6,
+simplified, its design done: the controller, the lock and its dialogue commit node, pitches and route
+assets, the five routes with their ways and branches, live tissue and its rules, pacts, the moves, the
+night man's notes and Last Mile, the stand as a fight for the clean room, Take the Lab and the Coat
+Run, terms, [FINALE.md](docs/FINALE.md)); the four majors (phase 5, simplified, its design done:
+next season's story rules, the stand's inputs, the hall's lines, the notebook's season tab, the
+engine's channels and the acts' remaining approaches, [QUESTLINES.md](docs/QUESTLINES.md#the-majors)); the shared engine (phase 1); small
 things everywhere (phase 3: errands' core, the mission style's framework and the world memory's
 writers, [ERRANDS.md](docs/ERRANDS.md)); the mission style in full (phase 4, simplified: the six story
 jobs with truths, lies and fallout, reputation's parley and settling up, lies and witnesses,
@@ -245,7 +246,7 @@ are optional kit prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (the rest of the four majors, the cure's finale and the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, tone) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, dialogue, errands, the mission style, reputation names, tone, traces) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 

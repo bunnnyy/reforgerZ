@@ -31,7 +31,7 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_Epilogue epi = Week();
 		if (!epi || epi.Phase() >= 3 || epi.GetOutlets().GetList().IsEmpty())
@@ -50,6 +50,10 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 	//------------------------------------------------------------------------------------------------
 	override void Resolve(RZ_Errands dealer, RZ_Errand e, RZ_ErrandWay w, int playerId, notnull array<string> said)
 	{
+		RZ_Epilogue epiDone = Week();
+		if (epiDone)
+			epiDone.GetRest().HoldoutDone(e.m_iId);
+
 		if (w.m_iIndex != 1)
 			return;
 
@@ -67,5 +71,16 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 		epi.Data().dosed.Insert(lifeKey);
 		gm.GetInfection().UseAntidote(playerId);
 		said.Insert("You use it there and then. Somewhere out past the last village, somebody is still waiting.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The holdout stands at the door while the box is on its way (the epilogue's spots).
+	override bool Still(RZ_Errands dealer, RZ_Errand e)
+	{
+		RZ_Epilogue epi = Week();
+		if (epi && e.m_eState == RZ_EErrandState.HELD && e.m_iWay == 0 && e.m_vPlace != vector.Zero)
+			epi.GetRest().Holdout(e.m_iId, e.GetText("holdout"), e.m_vPlace);
+
+		return true;
 	}
 }

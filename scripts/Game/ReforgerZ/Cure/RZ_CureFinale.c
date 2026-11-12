@@ -75,7 +75,7 @@ class RZ_FinaleSettings
 	[Attribute("120", desc: "Take the Lab's hold at the loading bay under a finale (seconds)")]
 	float m_fBaySeconds;
 
-	[Attribute("0", UIWidgets.ComboBox, "Contest: Auto (plays as Force: the server's player-damage setting isn't read yet), Force (only side inside counts up) or Tally (most counted players inside counts up; groups never target players)", "", ParamEnumArray.FromEnum(RZ_EFinaleContest))]
+	[Attribute("0", UIWidgets.ComboBox, "Contest: Auto (Force while the server lets players hurt each other, Tally when it doesn't), Force (only side inside counts up) or Tally (most counted players inside counts up; groups never target players)", "", ParamEnumArray.FromEnum(RZ_EFinaleContest))]
 	RZ_EFinaleContest m_eContest;
 
 	[Attribute("1", desc: "The Coat Run (the Independent's once-a-season re-label during another route's batch hold)")]
@@ -167,6 +167,7 @@ class RZ_FinaleSave
 	ref RZ_FinaleItemsSave items;
 	ref RZ_FinalePeopleSave people;
 	ref RZ_FinaleAssetsSave assets;
+	ref RZ_FinaleRestSave rest;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -216,6 +217,7 @@ class RZ_CureFinale
 	protected ref RZ_FinaleItems m_Items;
 	protected ref RZ_FinalePeople m_People;
 	protected ref RZ_FinaleAssets m_Assets;
+	protected ref RZ_FinaleRest m_Rest;
 
 	protected float m_fCheck;
 	protected float m_fMile;
@@ -243,6 +245,7 @@ class RZ_CureFinale
 		m_Items = new RZ_FinaleItems(gm, this);
 		m_People = new RZ_FinalePeople(gm, this);
 		m_Assets = new RZ_FinaleAssets(gm);
+		m_Rest = new RZ_FinaleRest(gm, this);
 		Pad();
 	}
 
@@ -268,6 +271,7 @@ class RZ_CureFinale
 	RZ_FinaleItems GetItems() { return m_Items; }
 	RZ_FinalePeople GetPeople() { return m_People; }
 	RZ_FinaleAssets GetAssets() { return m_Assets; }
+	RZ_FinaleRest GetRest() { return m_Rest; }
 
 	//------------------------------------------------------------------------------------------------
 	protected void Pad()
@@ -529,9 +533,11 @@ class RZ_CureFinale
 		m_Items.Restore(data.items);
 		m_People.Restore(data.people);
 		m_Assets.Restore(data.assets);
+		m_Rest.Restore(data.rest);
 		m_S.items = null;
 		m_S.people = null;
 		m_S.assets = null;
+		m_S.rest = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -540,6 +546,7 @@ class RZ_CureFinale
 		m_S.items = m_Items.Save();
 		m_S.people = m_People.Save();
 		m_S.assets = m_Assets.Save();
+		m_S.rest = m_Rest.Save();
 		return m_S;
 	}
 
@@ -996,6 +1003,9 @@ class RZ_CureFinale
 		if (!m_S.routesOpen && cure && cure.IsAtFinaleGate())
 			OnGate();
 
+		// The rest (seeds before the gate; the readout, marks, drains and the checkpoint after it)
+		m_Rest.Tick(dt, ids, players);
+
 		if (!m_S.routesOpen || IsCured())
 			return;
 
@@ -1125,12 +1135,14 @@ class RZ_CureFinale
 	//! A tissue hunt handed in: the deliverer's own route if they're locked to one that still needs
 	//! it, else the route the hunt was offered for. leader: a leader taken alive (+2 at once); else
 	//! the lab works on it for 12 real hours first (a lone one, guards, specials).
-	void OnTissue(int offeredFor, int playerId, bool leader)
+	void OnTissue(int offeredFor, int playerId, bool leader, bool great = false)
 	{
 		int r = offeredFor;
 		int mine = RouteOfPlayer(playerId);
 		if (mine >= 0 && mine < ROUTES && m_S.tissue[mine] == 0)
 			r = mine;
+		else if (mine == NONE && playerId > 0)
+			r = m_Rest.UnsidedChoice(playerId, offeredFor);
 
 		if (r < 0 || r >= ROUTES || m_S.tissue[r] != 0)
 			return;
@@ -1138,7 +1150,10 @@ class RZ_CureFinale
 		if (leader)
 		{
 			m_S.tissue[r] = 2;
-			AddStep(r, 2, "live tissue, a leader");
+			if (great)
+				AddStep(r, 3, "live tissue, the great one's leader");
+			else
+				AddStep(r, 2, "live tissue, a leader");
 		}
 		else
 		{
@@ -1426,8 +1441,11 @@ class RZ_CureFinale
 	{
 		if (m_S.roomX == 0 && m_S.roomZ == 0 && m_GM.HasLab())
 		{
-			// VERIFY: the lab prefab has no clean room child entity to read; this land point stands in
-			vector p = RZ_Mission.LandPointNear(m_GM.GetLabPosition(), 15, 25);
+			// The clean room: a child entity named RZ_CleanRoom on the lab prefab, else a land point
+			vector p = ChildPos(m_GM.GetLabEntity(), "RZ_CleanRoom");
+			if (p == vector.Zero)
+				p = RZ_Mission.LandPointNear(m_GM.GetLabPosition(), 15, 25);
+
 			m_S.roomX = p[0];
 			m_S.roomZ = p[2];
 		}
@@ -1445,10 +1463,11 @@ class RZ_CureFinale
 			vector away = lab - RoomPos();
 			away[1] = 0;
 			float len = away.Length();
-			vector p;
-			if (len > 1)
+			// The loading bay: a child entity named RZ_LoadingBay on the lab prefab, else away from the room
+			vector p = ChildPos(m_GM.GetLabEntity(), "RZ_LoadingBay");
+			if (p == vector.Zero && len > 1)
 				p = lab + away * (25 / len);
-			else
+			else if (p == vector.Zero)
 				p = RZ_Mission.LandPointNear(lab, 25, 40);
 
 			p = RZ_Util.GroundPos(p);
@@ -1457,6 +1476,51 @@ class RZ_CureFinale
 		}
 
 		return RZ_Util.GroundPos(Vector(m_S.bayX, 0, m_S.bayZ));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A named child entity's position under `parent` (two levels deep), vector.Zero if none.
+	// VERIFY: the lab prefab's named children (RZ_CleanRoom, RZ_LoadingBay) come back by GetName()
+	// through GetChildren/GetSibling on the server
+	protected static vector ChildPos(IEntity parent, string name)
+	{
+		if (!parent)
+			return vector.Zero;
+
+		IEntity child = parent.GetChildren();
+		while (child)
+		{
+			if (child.GetName() == name)
+				return child.GetOrigin();
+
+			IEntity grand = child.GetChildren();
+			while (grand)
+			{
+				if (grand.GetName() == name)
+					return grand.GetOrigin();
+
+				grand = grand.GetSibling();
+			}
+
+			child = child.GetSibling();
+		}
+
+		return vector.Zero;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Down: dead, or unconscious (an unconscious player doesn't count in the clean room).
+	// VERIFY: CharacterControllerComponent.IsUnconscious() is true on the server for a downed player
+	protected static bool IsDown(IEntity p)
+	{
+		if (!RZ_Util.IsCharacterAlive(p))
+			return true;
+
+		ChimeraCharacter c = ChimeraCharacter.Cast(p);
+		if (!c || !c.GetCharacterController())
+			return false;
+
+		return c.GetCharacterController().IsUnconscious();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1494,7 +1558,19 @@ class RZ_CureFinale
 	//------------------------------------------------------------------------------------------------
 	protected bool IsTally()
 	{
+		if (m_Settings.m_eContest == RZ_EFinaleContest.AUTO_MODE)
+			return !PlayerDamageOn();
+
 		return m_Settings.m_eContest == RZ_EFinaleContest.TALLY_MODE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Contest Auto reads the server's player damage from play: once a player has killed another
+	//! this season (`finale.pvp_seen`, OnPlayerKilled), players can hurt each other and it plays as
+	//! Force; until then, as Tally (which also works with damage on).
+	protected bool PlayerDamageOn()
+	{
+		return RZ_WorldFacts.Get().Flag("finale.pvp_seen") != 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1528,8 +1604,7 @@ class RZ_CureFinale
 			if (d <= LAB_RADIUS)
 				AddStandTime(ident, dt, false);
 
-			// VERIFY: unconscious players don't count (fallback: alive)
-			if (r == NONE || !CountsAtStand(ident) || !RZ_Util.IsCharacterAlive(p))
+			if (r == NONE || !CountsAtStand(ident) || IsDown(p))
 				continue;
 
 			if (RZ_Util.DistXZ(p.GetOrigin(), room) > m_Settings.m_fRoomRadius)
@@ -1622,6 +1697,9 @@ class RZ_CureFinale
 	{
 		int before = m_S.holder;
 		m_S.holder = side;
+		if (before != side && m_GM.GetQuestlines())
+			m_GM.GetQuestlines().OnStandHolder(before, side);
+
 		for (int r = 0; r < ROUTES; r++)
 		{
 			m_S.counts[r] = 0;
@@ -2597,6 +2675,10 @@ class RZ_CureFinale
 	//! at this stand, +10 with your route's faction. An unlocked victim at the stand: +10 Halcyon.
 	void OnPlayerKilled(int victim, int killer, vector at)
 	{
+		// Contest Auto: players can hurt each other on this server
+		if (killer > 0 && killer != victim)
+			RZ_WorldFacts.Get().SetFlag("finale.pvp_seen", 1);
+
 		if (!IsOpen())
 			return;
 

@@ -26,6 +26,10 @@ class RZ_StoryRules
 	ref array<string> m_aLegacy = {};
 	ref array<string> m_aWeightTypes = {};
 	ref array<float> m_aWeights = {};
+	bool m_bCountedRoad;				// Counted: Bastion's first post on a road into a safehouse town
+	bool m_bExileLeak;					// Paid at the Door: the first day's exile leak (30%)
+	ref array<string> m_aCrews = {};	// the book balanced: "identity|crew name" to greet
+	ref array<string> m_aGreeted = {};
 
 	//------------------------------------------------------------------------------------------------
 	//! The rules in force (never null).
@@ -51,6 +55,14 @@ class RZ_StoryRules
 				continue;
 
 			result.Insert(r.major + ":" + r.atCure.ToString());
+			// The book balanced: its deciders' crew names, for a words-only greeting next season
+			if (r.major == "book" && r.atCure == 10 && r.crews)
+			{
+				foreach (string crew : r.crews)
+				{
+					result.Insert("crew:" + crew);
+				}
+			}
 		}
 	}
 
@@ -67,6 +79,12 @@ class RZ_StoryRules
 		foreach (string key : keys)
 		{
 			s_Rules.m_aKeys.Insert(key);
+			if (key.StartsWith("crew:"))
+			{
+				s_Rules.m_aCrews.Insert(key.Substring(5, key.Length() - 5));
+				continue;
+			}
+
 			s_Rules.AddRule(key, strength, lines);
 		}
 
@@ -188,6 +206,18 @@ class RZ_StoryRules
 				lines.Insert("Last season the Haven fed the ones who worked first. Some of the others went looking for a kinder table.");
 				break;
 			}
+			case "every_name:13":
+			{
+				m_bCountedRoad = true;
+				lines.Insert("Last season the Haven was counted. Bastion keeps a post on a road into one of the houses' towns.");
+				break;
+			}
+			case "every_name:14":
+			{
+				m_bExileLeak = true;
+				lines.Insert("Last season the Haven paid at the door. Some houses still put people out when the tins run short.");
+				break;
+			}
 			// Proof
 			case "proof:10":
 			{
@@ -281,6 +311,8 @@ class RZ_StoryRules
 			if (gm.GetQuestlines())
 				gm.GetQuestlines().AddRumour(rumour, 48);
 		}
+
+		ExileLeak(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -298,5 +330,70 @@ class RZ_StoryRules
 
 		authors.Insert(author);
 		texts.Insert("Last season this house read every name. If it comes to it, we will again.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The book balanced: a returning player is greeted once by last season's crew name (words only).
+	static void Greet(RZ_GameModeComponent gm, int playerId)
+	{
+		RZ_StoryRules r = Get();
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		if (r.m_aCrews.IsEmpty() || !p || p.m_sIdentity.IsEmpty() || r.m_aGreeted.Contains(p.m_sIdentity))
+			return;
+
+		string head = p.m_sIdentity + "|";
+		foreach (string crew : r.m_aCrews)
+		{
+			if (!crew.StartsWith(head))
+				continue;
+
+			r.m_aGreeted.Insert(p.m_sIdentity);
+			string name = crew.Substring(head.Length(), crew.Length() - head.Length());
+			gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.BANDITS), string.Format("\"%1. Last season the book balanced. The crews remember who held the pen.\"", name));
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Counted: Bastion's first road post this season goes on a road into a safehouse town (a player
+	//! within 1.5 km of a safehouse). True for that one try; once a post is up, false.
+	static bool CountedRoad(RZ_GameModeComponent gm, vector at)
+	{
+		RZ_StoryRules r = Get();
+		if (!r.m_bCountedRoad || !gm.GetSafehouses() || RZ_WorldFacts.Get().Flag("rules.counted_post") != 0)
+			return false;
+
+		if (gm.GetSafehouses().FindNearest(at, 1500) < 0)
+			return false;
+
+		RZ_WorldFacts.Get().SetFlag("rules.counted_post", 1);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Paid at the Door: on the season's first day, 30% that a house puts one person out at the door
+	//! (one fewer there, and its board says so). Once.
+	static void ExileLeak(RZ_GameModeComponent gm)
+	{
+		RZ_StoryRules r = Get();
+		RZ_Safehouses houses = gm.GetSafehouses();
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		if (!r.m_bExileLeak || !houses || houses.Count() == 0 || facts.Flag("rules.exile_leak") != 0)
+			return;
+
+		facts.SetFlag("rules.exile_leak", 1);
+		if (Math.RandomFloat01() >= 0.3)
+			return;
+
+		int pick = Math.AbsInt(facts.Day() * 13 + houses.Count()) % houses.Count();
+		RZ_Safehouse h = houses.Get(pick);
+		if (!h || h.m_iPopulation <= 1)
+			return;
+
+		houses.AddPopulation(h.m_vPos, -1);
+		if (gm.GetQuestlines())
+			gm.GetQuestlines().AddRumour(string.Format("%1 put somebody out at the door this morning. Short of tins, they said.", h.m_sName), 24);
+
+		RZ_Log.Info(string.Format("Story rules: the exile leak at %1.", h.m_sName));
 	}
 }

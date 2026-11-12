@@ -464,6 +464,7 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	void OnTruckArrived(int f, string place)
 	{
+		RZ_EpiRecord.Note("truck.ok", f);
 		AddMorale(f, 4);
 	}
 
@@ -472,6 +473,7 @@ class RZ_FactionLife
 	//! holding may start a feud; a burning convoy is remembered.
 	void OnTruckLost(int f, string place, string driver, string why, vector at)
 	{
+		RZ_EpiRecord.Note("truck.lost", f);
 		if (!m_bActive)
 			return;
 
@@ -507,6 +509,7 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	void OnLeaderDied(int f, string name, string place, int killer)
 	{
+		RZ_EpiRecord.Note("leader.lost", f, name);
 		if (!m_bActive)
 			return;
 
@@ -520,6 +523,8 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	void OnOutpostLost(int f, string place, int by)
 	{
+		RZ_EpiRecord.Note("post.lost", f, place);
+		RZ_EpiRecord.Note("post.won", by, place);
 		if (!m_bActive)
 			return;
 
@@ -1101,6 +1106,10 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	protected void SendChatter(int f, string line, array<int> ids, array<IEntity> players)
 	{
+		// A one-night mute of a faction's open channel (RZ_MajorRest.Mute)
+		if (RZ_MajorRest.Muted(f))
+			return;
+
 		foreach (int i, IEntity p : players)
 		{
 			int playerId = ids[i];
@@ -1243,6 +1252,9 @@ class RZ_FactionLife
 		RZ_Territory territory = m_GM.GetTerritory();
 		if (m_GM.GetErrands())
 			m_GM.GetErrands().GetFaults().SecureLines(f, options);
+
+		// The majors' secure lines for Radio Operators (RZ_MajorRest.SecureLine)
+		RZ_MajorRest.SecureLines(f, options);
 
 		if (supply)
 		{

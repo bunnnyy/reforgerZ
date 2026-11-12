@@ -57,7 +57,7 @@ PLAY_PACE = (0.25, 2.5)         # and its limits
 IDLE_DAYS = 0.5                 # the empty lab bonus fills the backlog up to this many days of work
 GATE_GRACE_DAYS = 7             # the finale fallback starts after this many real days at the gate
 
-MILESTONES = (25, 50, 75, 90, 100)
+MILESTONES = (25, 50, 60, 70, 75, 80, 90, 100)   # the majors' climaxes at 50, 60, 70 and 75
 GATE = 90
 STAGES = ("Early Outbreak", "Collapse", "Overrun", "Aftermath")
 
@@ -294,8 +294,8 @@ def main():
           % (s["stage_hours"][0], s["stage_hours"][1], s["stage_hours"][2], s["finale_days"],
              s["fallback_per_day"], GATE_GRACE_DAYS))
 
-    head = ("Players", "Online h/day", "Pace", "25%", "50%", "75%", "90%", "100% finale", "never done",
-            "no finale", "Collapse", "Overrun", "Aftermath", "Delivered/day", "Lab full", "Turned away", "Lost")
+    head = ("Players", "Online h/day", "Pace") + tuple("%d%%" % m for m in MILESTONES[:-1]) + ("100% finale", "never done",
+            "no finale", "Aftermath<60%", "Collapse", "Overrun", "Aftermath", "Delivered/day", "Lab full", "Turned away", "Lost")
     rows = []
     for n in args.players:
         rng = random.Random(args.seed + n)
@@ -315,6 +315,10 @@ def main():
             cols.append(median_day([r[0].get(m) for r in with_finale]))
         cols.append(median_day([r[0].get(100) for r in never]))
         cols.append(median_day([r[0].get(100) for r in without]))
+        # The majors' order check: Aftermath reached before the 60% milestone (the muster) in a share of
+        # the runs with a finale; the second sitting's rule (never before the muster) covers it
+        early = [r for r in with_finale if r[1].get(3) is not None and r[0].get(60) is not None and r[1][3] < r[0][60]]
+        cols.append("%d%%" % round(100 * len(early) / max(1, len(with_finale))))
         for st in (1, 2, 3):
             cols.append(median_day([r[1].get(st) for r in without]))
         cols.append("%.1f" % statistics.mean(r[2]["per_day"] for r in without))

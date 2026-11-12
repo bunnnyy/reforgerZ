@@ -146,6 +146,9 @@ class RZT_Majors
 		if (s_iStep == 4)
 			return Story(gm, majors);
 
+		if (s_iStep == 5)
+			return Rest(gm);
+
 		q.RZT_EndAll();
 		RZ_Questlines.s_bRZTMajors = true;
 		gm.GetCure().RZT_SetProgress(s_fCureBefore);
@@ -357,6 +360,28 @@ class RZT_Majors
 		RZ_MajorHelp.SetWorld(gm, "orders.stance", stance);
 		Check(road && none, "the stand's groups by stance", "");
 		s_iStep = 5;
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The engine's rest (Director/RZ_MajorRest.c) and the story rules' last pieces.
+	protected static bool Rest(RZ_GameModeComponent gm)
+	{
+		Check(!RZ_MajorRest.Muted(RZ_EFaction.BANDITS), "no faction muted by default", "");
+		RZ_MajorRest.Mute(RZ_EFaction.BANDITS);
+		bool muted = RZ_MajorRest.Muted(RZ_EFaction.BANDITS);
+		RZ_WorldFacts.Get().SetFlag("mute." + RZ_EFaction.BANDITS.ToString(), 0);
+		Check(muted && !RZ_MajorRest.Muted(RZ_EFaction.BANDITS), "a one-night mute", "");
+		RZ_MajorRest.SecureLine(RZ_EFaction.MILITARY, "RZT secure line", 1);
+		array<string> options = {};
+		RZ_MajorRest.SecureLines(RZ_EFaction.MILITARY, options);
+		Check(options.Contains("RZT secure line"), "a secure line for Radio Operators", string.Format("%1 lines", options.Count()));
+		Check(!RZ_StoryRules.CountedRoad(gm, vector.Zero), "Counted's road post off without its rule", "");
+		array<string> keys = {"crew:rzt|Bailiff"};
+		RZ_StoryRules.Build(keys);
+		Check(RZ_StoryRules.Get().m_aCrews.Contains("rzt|Bailiff"), "the book's crew-name greeting kept", "");
+		RZ_StoryRules.Build(null);
+		s_iStep = 6;
 		return false;
 	}
 

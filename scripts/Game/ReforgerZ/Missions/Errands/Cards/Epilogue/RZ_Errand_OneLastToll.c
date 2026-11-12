@@ -33,7 +33,7 @@ class RZ_Errand_OneLastToll : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_GameModeComponent gm = dealer.GetGM();
 		RZ_Epilogue epi = Week();

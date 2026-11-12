@@ -38,7 +38,7 @@ class RZ_Errand_SignHere : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_Epilogue epi = Week();
 		if (!epi || Route() != RZ_CureFinale.BASTION || epi.Terms() == 3)

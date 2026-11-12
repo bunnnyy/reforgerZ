@@ -362,10 +362,34 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 		if (halt != vector.Zero)
 		{
 			int sedlak = scene.Person(halt, "Lieutenant Sedlak at the halt", "Talk to Sedlak", "\"We stop here. Any closer and the voice turns us back. I read the roll from here.\"");
-			scene.Choice(sedlak, "Stand at the halt for the roll").Decides(OUT_ROLL).Says("Sedlak reads the roster out loud. The living answer. For the dead, everyone at the halt answers together. For a struck-off man, nobody does.", "stood at the barrier for the last roll");
+			// Sedlak's box: the tags brought home to the nail in the week (Bring Them Home)
+			string box = "Sedlak reads the roster out loud. The living answer. For the dead, everyone at the halt answers together. For a struck-off man, nobody does.";
+			int tags = SedlakBox();
+			if (tags > 0)
+				box += string.Format(" %1 sets of tags in the box, brought home this week. Those names get a Here too.", tags);
+
+			scene.Choice(sedlak, "Stand at the halt for the roll").Decides(OUT_ROLL).Says(box, "stood at the barrier for the last roll");
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion's names brought home to the nail in the epilogue week (Sedlak's box at the roll).
+	protected int SedlakBox()
+	{
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (!epi || !epi.IsBuilt())
+			return 0;
+
+		int n = 0;
+		foreach (RZ_EpiName name : epi.Data().names)
+		{
+			if (name.state == 2 && name.faction == RZ_EFaction.MILITARY)
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -377,6 +401,10 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 			case 3: return "\"Bastion, Command. Hold the line.\"";
 			case 4: return "\"Effective strength {count}. Bastion out.\"";
 		}
+
+		// The finale's clause: under Bastion's route, the captain and the four R numbers
+		if (gm.GetFinale() && gm.GetFinale().Controller() == RZ_CureFinale.BASTION)
+			return "\"Command, Bastion. Stores held for collection, R1 to R4, released. The captain signed. Requesting relief. Over.\"";
 
 		return "\"Command, Bastion. Holding at the barrier. Requesting relief. Over.\"";
 	}

@@ -2,8 +2,8 @@
 
 **Status: designed, not built.** Approved by the author on 2026-11-11. The rest of errands is built and
 described in [docs/ERRANDS.md](../docs/ERRANDS.md); the lie store and the witness rule are in
-[docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses). The epilogue deck's last cards are designed in
-[EPILOGUE.md](EPILOGUE.md#the-epilogue-deck-last-errands). This file keeps only the parts not in code yet.
+[docs/DESIGN.md](../docs/DESIGN.md#lies-and-witnesses), and the epilogue deck (20 cards) in
+[docs/ERRANDS.md](../docs/ERRANDS.md#the-epilogue-deck). This file keeps only the parts not in code yet.
 
 ## The dealer
 

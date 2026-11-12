@@ -1484,8 +1484,7 @@ text never names it: it's *"the deep voice"*, the call every ridge answers.
   reopens for 2 counted nights (border fights twice as likely), told as a world event. Its fall is an
   epilogue beat.
 - **Losing its clan** (a break-up, a merge) makes it an ordinary leader again.
-- **Caught alive** it would count +3 on a finale route's track: planned ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules));
-  today a leader counts +2 ([FINALE.md](FINALE.md#live-tissue)).
+- **Caught alive** it counts +3 on a finale route's track, not a leader's +2 ([FINALE.md](FINALE.md#the-rest-of-the-finale)).
 
 ## Signs and sounds
 
@@ -1514,10 +1513,10 @@ always told.
 
 What's left is in [designs/INFECTED.md](../designs/INFECTED.md): the model's small rules (prey-scored
 trails, the border moving the ranges, the clans' relay), the call's and the hunt's rest (stragglers,
-two callers, a cunning pack on your back trail), scouts' posts over the night's trails, the jobs' rest, the epilogue's beats from the other tribe beats
-(brought home, culled, burned out) and the factions' jobs on the ridges; and the behaviour layer's
-notice-rate calibration and untested levers. The finale's live
-tissue's rest is [designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)'s.
+two callers, a cunning pack on your back trail), scouts' posts over the night's trails, the jobs' rest,
+the epilogue's beats from the other tribe beats (brought home, culled, burned out), and the behaviour
+layer's notice-rate calibration and untested levers. The finale's live tissue is
+[FINALE.md](FINALE.md#live-tissue)'s.
 
 ## The simulator
 

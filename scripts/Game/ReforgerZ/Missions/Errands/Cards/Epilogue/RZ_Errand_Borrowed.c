@@ -30,7 +30,7 @@ class RZ_Errand_Borrowed : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_GameModeComponent gm = dealer.GetGM();
 		if (!Week() || e.m_iHouse < 0)

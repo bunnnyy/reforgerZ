@@ -2405,7 +2405,7 @@ class RZ_Wanderers
 		// The epilogue week: road news about the season, by role
 		if (RZ_Epilogue.Get())
 		{
-			string week = RZ_Epilogue.Get().WandererLine(w.m_eRole, player.GetOrigin());
+			string week = RZ_Epilogue.Get().WandererLine(w.m_eRole, player.GetOrigin(), w, playerId);
 			if (!week.IsEmpty())
 				text += "\n" + week;
 		}

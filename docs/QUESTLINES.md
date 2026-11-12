@@ -43,8 +43,8 @@ waits and because some stages only open at dusk, at night or at a cure percentag
 on a cure milestone. Each stronghold leader has a page they'd rather burn, and every page put in the
 open (`majors.pages_open`) makes the next leader's "read it" one step easier, once. How the lane,
 the acts, the votes and the dynamic fallbacks work: [DESIGN.md](DESIGN.md#the-majors). Their stage
-missions: [MISSIONS.md](MISSIONS.md#the-majors-acts). What's still designed only:
-[designs/MAJORS.md](../designs/MAJORS.md).
+missions: [MISSIONS.md](MISSIONS.md#the-majors-acts). Each act's remaining approaches are more
+people and choices on its scene (`Director/RZ_MajorRest.c`), listed under each major.
 
 | Major | Faction | Key | Grows out of | Climax | The page |
 |---|---|---|---|---|---|
@@ -55,7 +55,11 @@ missions: [MISSIONS.md](MISSIONS.md#the-majors-acts). What's still designed only
 
 The climaxes come in that order. After the cure each major has a coda (its last act) in the
 epilogue: the Haven's Gate, Bastion's last call and last roll, the Paper, then the Red Hand's last
-line, in that order, at the north road (`day2.checkpoint`) and Rudi's crossroads.
+line, in that order, at the north road (`day2.checkpoint`) and Rudi's crossroads. Each coda leaves a
+**standing version** until the wipe and airs again as words on the next free evening
+([EPILOGUE.md](EPILOGUE.md#the-evening-calendar)). **With no cure**, the codas end as radio on the
+last day: the Haven's Gate at the chair's house at the first wipe warning, Bastion's last call in
+the last 24 real hours, the Red Hand's ending on its current branch (Proof Unsigned as built).
 
 **Rules every major keeps.** One per faction, outside Max active. Every act has a default, which
 pays nobody and reads the stronghold leader's traits or the rule in force. Stronghold leaders are
@@ -90,10 +94,18 @@ The back page (who outside owes it) goes missing in front of every crew. Code:
 | **Bastion's file** (5) | Red Hand morale −7, strength −2; Bastion morale +5; a Bastion–Red Hand feud; Bust Out ×1.2 | *"...Bastion handed over a ledger with half the Zone in it."* | ✅ |
 | **The book doesn't balance** (6) | Red Hand morale −5; The Rat ×1.2 | *"...the Red Hand's book still didn't balance. Somebody had the page."* | ✅ |
 
+**More approaches**: at the send-off, *Sit in for a crew boss* (Known) and *Sound the horns for Rudi*;
+at settling day, *Slip off with the real page* (unseen, `book.slipped`); at the last page, *Carry the
+bill to the lab* (`book.bill_carried`: the deciders +10 Halcyon Fame at the ending) and *Lift the book
+at supper* (unseen, `book.lifted`: +25 Red Hand Infamy at the ending). The **Red Hand lorry** stands at
+the crossroads for the send-off and the last line, the **bonfire** when it's sent off loud (optional
+props, near players only). The book balancing keeps its deciders' crew names for next season's
+greeting.
+
 *Simplified:* the forgery, the sale of the page to the rival, the chair's bid for the ash and the
 crew name at the pit aren't built; the sale by the page and the bill are one choice each (no courier
-run, no doses moved); the crews at the crossroads are words, and the lorry and bonfire props aren't
-used. R1's own endings still pay as built, inside the caps.
+run, no doses moved); the crews at the crossroads are words; the noise of the horns doesn't draw the
+infected. R1's own endings still pay as built, inside the caps.
 
 ### Await Relief
 
@@ -118,9 +130,17 @@ CO says in front of every post what Bastion is. Command never answers. Code:
 | **Bastion, Command** (3) | Bastion morale +8, strength +5; Haven morale −8; Requisition and Checkpoint Duty ×1.2; the deciders +25 Bastion Fame | ✅ |
 | **Expended** (4) | Bastion morale −10, strength −5; Red Hand morale +5; a Bastion–Red Hand feud; Struck Off and Requisition ×1.2 | ✅ |
 
-*Simplified:* the copies aren't collected before "keep the call", the padding isn't reported or
-covered post by post, the disguise trick and the curfew walk aren't offered; the presence floor, the curfew and the one-night mute aren't set; the rank and crew names
-aren't kept.
+**More approaches**: at Effective Strength the duty officer's desk (*Report a padded post*, *Cover for
+the commander*, *Take a dead man's name off the nail* as a trick that counts a post, *Buy the fence's
+rifle count* for 20 Red Hand Favor); at the muster *Buy the clerk's copy* (30 Favor, `orders.copies`)
+and *Walk the chair's clerk to the radio*; at the last roll *Answer Here for a struck-off man* (the
+count +1 at the ending). The last call reads the captain's R numbers when the cure is Bastion's,
+airs at the next 20:30 as radio once the coda has run, and the walk at the 05:30 after it; Sedlak's
+box at the roll counts the tags brought home in the week. A per-life roster flag and a rank text are
+kept ([DESIGN.md](DESIGN.md#the-majors)).
+
+*Simplified:* the padding isn't covered post by post (one desk for the three posts), the curfew walk
+isn't offered, and the presence floor and the curfew aren't set.
 
 ### Every Name
 
@@ -147,9 +167,16 @@ subclass of H1's class, under a new key).
 | **Counted** | 3, Bastion's cards (`haven.counted`) | Haven morale −5; Bastion morale +5, strength +3; Requisition ×0.8 | ✅ |
 | **Paid at the Door** | 4, the arrangement (`haven.paying`) | Haven morale −5; Red Hand morale +5, strength +3; A Quiet Arrangement ×1.2 | ✅ |
 
+**More approaches**: at the family's door *Call it a chest cold* (Nurse or Doctor: all four in); at the
+first sitting *Hear who they'd call a mouth* (Elder) and *Hear what each offer is for* (Radio
+Operator); in the hungry week *Carry four food over* (the house fed), *Move two mouths at night*
+(unseen) and *Hand the stranger to the crew* (`door.exile_sold`); before the second sitting *Gather
+the others' pages first*. The chair's backstory is canon: *"Forced the doors of the school gym on Day
+2, for a busload the line had turned back."* ([LORE.md](LORE.md#the-long-table)).
+
 *Simplified:* the raid on the first sitting, the winter store, the bus driver and the boy, the
-other factions' pages at supper, the cards' curfew and the rule's readers in upkeep, trucks and
-Requisition aren't built; the family are words.
+cards' curfew and the rule's readers in upkeep, trucks and Requisition aren't built; the family are
+words.
 
 ### Proof
 
@@ -174,6 +201,12 @@ log says what the lab did with them. Code: `Missions/Questlines/Halcyon/RZ_Major
 | **Day 1** (1) | The Zone didn't know: Halcyon morale +5, strength +2. It knew: "Origin: under investigation", Haven morale −3, a rumour | ✅ |
 | **Two Tins a Copy** (checked first, as the stand begins) | The sellers +5 Red Hand Fame; Halcyon morale −5, Red Hand +5; "Halcyon made this" as a rumour for 48 hours; the boss's man reads page one on the Red Hand's channel; epilogue line *"There's a copy of the lab's first page in every Red Hand camp."* | ✅ |
 | **Unsigned** | No cure by the wipe: the paper stays in the lab's safe | ✅ |
+
+**More approaches**: at Day One *Have it read on the crews' channel* (30 Red Hand Favor,
+`proof.rh_read`); at the reading *Hand the director the microphone* (`proof.read_air`: under The Whole
+of It the director's two minutes go out as a reading on Halcyon's channel); at the Paper *Read the
+author list at supper* (Haven: Known) and *Read the paper's first page to the radio ham* (*"Got
+it."*).
 
 *Simplified:* HC1's new choice (keeping the director's pages) isn't built, so the pages-on-the-table
 choice and the sale need `proof.pages` 2 from another source; the Red Hand's last page doesn't read
@@ -209,9 +242,10 @@ season that ended without a cure leaves none.
 | | Day 1 | Specials ×1.05; one rumour for two days |
 | | Two Tins a Copy | Red Hand strength +2; the black market starts with one stolen dose |
 
-*Not built:* the Book's balancing greets a returning player by last season's crew name (there are no
-crew names); Counted's one Bastion checkpoint on a safehouse town's road (road posts aren't placed
-by town) and Paid at the Door's first-day exile leak (no leak exists) leave nothing.
+And three that act through the world: the book balancing **greets a returning player** once by last
+season's crew name (words only); **Counted** puts Bastion's first road post of the season on a road
+into a safehouse town (a player within 1.5 km of a house); **Paid at the Door** has a 30% chance on the
+season's first day that a house puts one person out at the door (one fewer there, a rumour).
 
 ### The stand's inputs
 
@@ -227,7 +261,7 @@ the finale's **Groups at the lab** cap, the finisher's faction first:
 
 Take the Lab has one decider: the finale offers it to the Red Hand route unless the last page closed
 it (`book.last` 1–4). Questlines hear the stand through `OnFinalStandStart` and `OnFinalStandEnd`
-([DESIGN.md](DESIGN.md#the-majors)); *not built:* an event when the clean room changes holder.
+([DESIGN.md](DESIGN.md#the-majors)), and when the clean room changes holder through `OnStandHolder`.
 
 ### The season's lines and the season tab
 

@@ -740,6 +740,16 @@ class RZ_WorldMemory
 		return m_aTruths.Count();
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! Every drawn truth, oldest first (the epilogue's "What you didn't tell me").
+	void AllTruths(notnull array<RZ_Truth> result)
+	{
+		foreach (RZ_Truth t : m_aTruths)
+		{
+			result.Insert(t);
+		}
+	}
+
 	// ================================================================ Tick and save
 	//------------------------------------------------------------------------------------------------
 	//! Reasons past their season day go.

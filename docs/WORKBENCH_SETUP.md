@@ -373,7 +373,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **263 prefab fields**: 40 on `RZ_GameModeComponent`, 216 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **268 entries**: 160 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 75 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **279 prefab fields**: 40 on `RZ_GameModeComponent`, 232 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **284 entries**: 176 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 75 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -404,7 +404,7 @@ and the UI files) need none, and seven have no base:
 | `RZ_SpawnPoint.et` | a vanilla spawn point (SCR_SpawnPoint), e.g. SpawnPoint_Base.et or SpawnPoint_US.et; confirm the name in Workbench | — | World > Spawn point prefab | **minimum** | spawn points in towns, safehouse spawns |
 | `RZ_Sample.et` | a small item (a vial or sample tube) | `RZ_SampleItemComponent` (Value 1) | Cure > Sample | **minimum** | samples from specials |
 | `RZ_Antidote.et` | vanilla morphine or saline item (keeps its consumable component) | `RZ_AntidoteItemComponent`; `RZ_InjectAntidoteAction` | Cure > Antidote | **minimum** | antidotes; optionally set the consumable effect to RZ_ConsumableAntidote by hand |
-| `RZ_Lab.et` | a field hospital tent or lab container prop | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | **minimum** | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours |
+| `RZ_Lab.et` | a field hospital tent or lab container prop | `RZ_LabComponent`; `RZ_DepositSamplesAction`, `RZ_LabStatusAction` | Cure > Lab prefab | **minimum** | the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours. Manual: two empty child entities named RZ_CleanRoom (where the final stand is fought, 10 m round it) and RZ_LoadingBay (Take the Lab's hold); without them the finale picks land points near the lab |
 | `RZ_RewardCrate.et` | a vanilla supply box, filled with loot by hand | — | Missions > Reward crate | **minimum** | mission rewards. Fill its inventory with loot in the prefab editor |
 
 #### Treatments
@@ -450,6 +450,20 @@ and the UI files) need none, and seven have no base:
 | `RZ_EpilogueBoard.et` | a free-standing board or sign on posts (a notice board, a road sign); confirm the name in Workbench | — | Director > Epilogue > Board prefab | optional | look only: the epilogue's marks (the stand board, the Names board, the price board, notices, posters, graves) on the verge; without it they're text only, an approach line |
 | `RZ_EpilogueCandle.et` | a candle or a jar lantern on the ground; confirm the name in Workbench | — | Director > Epilogue > Candle prefab | optional | look only: a town taken back after the cure, the candles on a safehouse step (else the board, else text) |
 | `RZ_EpilogueTable.et` | a folding or trestle table (or a crate) with the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, an RplComponent) and its read and four choice actions | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction` (Option 0-3) | Director > Epilogue > Table prefab | optional | the tables, boards and crates players use at the epilogue's places (the dose, the Names board, the nail, the book); without it Puzzles > Object stands in |
+| `RZ_EpilogueSheet.et` | a bedsheet or tarp hung between two posts; confirm the name in Workbench | — | Director > Epilogue > Sheet on posts | optional | look only: a rescue town's mark (WE GOT THEM OUT) (else the board, else text) |
+| `RZ_EpilogueStencil.et` | a painted or stencilled board on a post; confirm the name in Workbench | — | Director > Epilogue > Stencil board | optional | look only: Bastion's marks: a shelled town, the roster board (else the board, else text) |
+| `RZ_EpiloguePriceBoard.et` | a chalk board on legs; confirm the name in Workbench | — | Director > Epilogue > Price board | optional | look only: the price board at Rudi's crossroads (else the board, else text) |
+| `RZ_EpilogueNotice.et` | a paper notice nailed to a post; confirm the name in Workbench | — | Director > Epilogue > Notice on a post | optional | look only: a lost post's notice, the house rule's notice, the transformer's notice, a faction's season (else the board, else text) |
+| `RZ_EpilogueGrave.et` | a wooden cross or grave marker; confirm the name in Workbench | — | Director > Epilogue > Grave marker | optional | look only: graves and the leaders' graves (else the board, else text) |
+| `RZ_EpiloguePoster.et` | a poster or paper on a board; confirm the name in Workbench | — | Director > Epilogue > Wanted poster | optional | look only: the wanted posters at holdings (else the board, else text) |
+| `RZ_EpilogueTrestle.et` | a trestle or folding table (look only); confirm the name in Workbench | — | Director > Epilogue > Trestle table | optional | look only: the queue's table mark (else the board, else text) |
+| `RZ_EpilogueCrate.et` | a wooden crate; confirm the name in Workbench | — | Director > Epilogue > Crate | optional | look only: the open crate, a side story with a crate (else the board, else text) |
+| `RZ_EpilogueBunting.et` | a string of flags or cloth; confirm the name in Workbench | — | Director > Epilogue > Bunting | optional | look only: a safehouse that grew this season (else the board, else text) |
+| `RZ_EpilogueRibbon.et` | a ribbon or cloth strip on a post; confirm the name in Workbench | — | Director > Epilogue > Ribbon | optional | look only: a name brought home after the cure (else the board, else text) |
+| `RZ_EpilogueWreck.et` | a burnt-out truck wreck (static); confirm the name in Workbench | — | Director > Epilogue > Truck wreck | optional | look only: the roads' last four lost trucks (else the board, else text) |
+| `RZ_EpilogueTape.et` | barrier tape between two posts; confirm the name in Workbench | — | Director > Epilogue > Tape between posts | optional | look only: a Quarantine Line town's mark (else the board, else text) |
+| `RZ_EpilogueHandcart.et` | a handcart or wheelbarrow; confirm the name in Workbench | — | Director > Epilogue > Handcart | optional | look only: the farm's basket, the queue's bags (else the board, else text) |
+| `RZ_EpilogueNamesBoard.et` | a large notice board on two legs; confirm the name in Workbench | — | Director > Epilogue > Names board | optional | look only: the Names board at the bend on the north road (else the board, else text) |
 
 #### Traces
 
@@ -784,6 +798,13 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | the CarJob layout (UI/LAYOUTS.md) | — | UI > Car job layout | optional | the car repair screen's job rows (empty = no repair screen: the car's actions and notices) |
 | (existing prefab) | UI/Textures/ReforgerZ/RZ_CarSide.png, imported as a texture (UI/LAYOUTS.md) | — | UI > Car picture | optional | the side view of the car on the repair screen (empty = the job markers on a plain panel). Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here |
 | (existing prefab) | the ShopItem layout (UI/LAYOUTS.md) | — | UI > Shop item layout | optional | the quartermaster's shop screen's item rows (empty = no shop screen: the Buy, Requisition and service actions) |
+
+#### Questlines
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| `RZ_RedHandLorry.et` | a static civilian lorry or flatbed with no vehicle component (a wreck-style static prop); confirm the name in Workbench | — | Questlines > Majors > Red Hand lorry | optional | look only: the lorry across the road at Rudi's crossroads for the Book's send-off and its last line, near players only (else words only) |
+| `RZ_Bonfire.et` | a large campfire or bonfire prop, lit; confirm the name in Workbench | — | Questlines > Majors > Bonfire prop | optional | look only: the fire at Rudi's crossroads when the book is sent off loud, near players only (else words only) |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -1655,7 +1676,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **99** lines with the tag, all in the game scripts (one is the comment in
+There are **101** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1681,7 +1702,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Factions/RZ_Checkpoints.c:531` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
+| `Factions/RZ_Checkpoints.c:535` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the spawn screen's places, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:894` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:980` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
@@ -1726,19 +1747,21 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:772` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:947` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Zombies/RZ_TribeProps.c:68`, `:348` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
-| `Cure/RZ_CureFinale.c:1429` | the cure finale's clean room: the lab prefab has no named child entity to read, so a land point 15–25 m from the lab stands in; check it's somewhere players can stand and fight | Move the lab, or a lab prefab with the room as a child entity (planned) |
-| `Cure/RZ_CureFinale.c:1531` | an unconscious player still counts in the clean room (only alive is read) | A downed player holds the room until killed: fine for a first play-test; reading the unconscious state is planned |
-| `Cure/RZ_CureFinale.c:1936` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
+| `Cure/RZ_CureFinale.c:1483` | the cure finale's clean room and loading bay: child entities named `RZ_CleanRoom` and `RZ_LoadingBay` on the lab prefab come back by `GetName()` through `GetChildren`/`GetSibling` on the server | Without them a land point 15–25 m from the lab (the bay 25 m on the far side) stands in: check it's somewhere players can stand and fight |
+| `Cure/RZ_CureFinale.c:1513` | `CharacterControllerComponent.IsUnconscious()` is true on the server for a downed player, so a downed player doesn't count in the clean room | If it's always false, a downed player holds the room until killed: fine for a first play-test |
+| `Cure/RZ_CureFinale.c:2014` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
 | `UI/RZ_DoorMarkClient.c:77`, `:106` | Traces' door marks as decals: a small sphere query on a client at a door's mark point finds the same static building the server resolved the door from, and `World.CreateDecal` with lifetime 0 projects a static decal from the door atlas (the cell by `atlasNum`, the age by the colour's alpha) onto its wall, removed again with `RemoveDecal` ([the spike](#traces-the-workbench-spike-phase-0), VERIFY 1–3) | Set **World > Traces > Door drawing** to *Boards* and fill the kit's boards, or *Text*: the words come either way |
 | `World/Traces/RZ_TraceSounds.c:46` | Traces' loops (the radio's hiss, the generator's hum): `RZ_AmbientLoopComponent` starts its looped event with `SoundComponent.SoundEvent` on each client that streams the prop in, and `Terminate` stops it when the server deletes the prop past 120 m (the spike's VERIFY 6) | Empty **World > Traces > Kit > Radio hiss** and **Generator hum**: the radio's line still comes as a subtitle |
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
-| `Director/Epilogue/RZ_EpilogueClosing.c:951` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
+| `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (20)
+### Low risk: contained or cosmetic (22)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
+| `Director/Epilogue/RZ_EpilogueRest.c:575` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
+| `Director/Epilogue/RZ_EpilogueRest.c:673` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
@@ -2007,7 +2030,9 @@ went on air at 85 percent.`, `Finale: asset <kind> for <route> to <ident> (<reco
 `Finale: <route> took <person> into custody from <route>.`, `Finale: <person> talked out of <route>'s
 hands.`, `Finale: <route> drained <route>'s source (<source>).`, `Finale: N item(s) of <route> ransomed
 back.`, `Finale: item N (...) of <route> spoiled on purpose.`, `Finale: <route>'s plan sold to <route>.`,
-`Finale: <route> paused (no active lock for 3 real days).`, `Finale: <person> died on-screen.`),
+`Finale: <route> paused (no active lock for 3 real days).`, `Finale: <person> died on-screen.`,
+`Finale: <route> guarded its door.`, `Finale: hand it over: <route>'s item from <name> to <name>.`,
+`Finale: the losing routes' marks came down (N left).`, `Questlines: the clean room changed holder (N to N).`),
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
@@ -2020,7 +2045,7 @@ and `... dropped (<why>)`, `Epilogue: last call <item>`, `Epilogue: closed <item
 `Epilogue: a dose at <outlet> (N left).`, `Epilogue: brought home <name> to <place>.`, `Epilogue:
 <town> taken back.`, `Epilogue: grey choice N decided (...).`, `Epilogue: walked out (N in all)`,
 `Epilogue: a last entry by <name>: ...`, `Epilogue: admin <name>: ...`, `Epilogue: the Unsigned last
-day (N beats).`, `Epilogue: the supper reading.`, `Epilogue: the 20:30 watch (N strokes).`, `Epilogue:
+day (N beats).`, `Epilogue: the supper reading.`, `Epilogue: phase B holds about N evenings.`, `Story rules: the exile leak at <house>.`, `Epilogue: the 20:30 watch (N strokes).`, `Epilogue:
 second airing of <key>`, `Epilogue: last_season.json keeps N beats and the broadcast (...).`,
 `Epilogue: <name> went home to <place> by an errand.`, `Cure: the final stand is held back in the
 season's last hours (Season > No stand in the last hours).`, `Seasons: a late cure pushes the wipe back to the minimum epilogue.`, `Territory:
@@ -2759,6 +2784,20 @@ when it happens)
   boss's man (with `proof.pages` 2), leave the line, and start the stand: the Red Hand's channel reads
   page one and the journal says Two Tins a Copy. With Bastion's stance 3 its group stands on the lab's
   road (150–250 m out), not at the gate.
+- [ ] The finale's rest ([FINALE.md](FINALE.md#the-rest-of-the-finale)): between 25 and 50% an unmarked seed
+  line comes on a faction's channel now and then; after the gate the readout comes on Halcyon's channel
+  at 06:00, 14:00 and 22:00; locked, a disguise look with another route's faction shows *[Another
+  route's -1]*; you're told of your route's marks on the verge; the night man at a desk buys a note
+  about another route once, hands over what you carry to a rival within 10 m, buys a rival's item for 30;
+  standing beside a rival's item on the ground for 20 s spoils it; *Guard the door* once, then a rival's
+  sneak there fails about half the time; the Haven's terms one by one at her table; under Bastion,
+  Command, a carrier is searched at the lab road's checkpoint for 90 s.
+- [ ] The epilogue's rest ([EPILOGUE.md](EPILOGUE.md)): a new face's first spawn in the week gets Petr's
+  note and The Key Where It Was; at most two of the deck offered within 3 km; the codas' standing
+  versions at the chair's house, the roster board, the lab gate and the crossroads; the supper scene
+  18:00–20:00; the queue grows and shuffles at the change of shift; leaders' *The cure*, *This place*,
+  *Me* (with your title), *The dead*, *What you didn't tell me* and *Settle accounts*; the ridges' jobs
+  below a pack still calling; the season tab's record lines.
 - [ ] The cure finale ([FINALE.md](FINALE.md); Questlines on, **Wait scale** 0.1, research brought to
   90 with samples): at 75% a leader's "Ask about the cure." says to ask again; at 80% the stronghold
   leaders and the Doctor give the pitch; at 85% the four pitches and an unsigned one come on air once.

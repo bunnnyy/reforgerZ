@@ -284,6 +284,10 @@ class RZ_Checkpoints
 		if (season.m_bCurfew && env && env.IsNight())
 			bastionFirst = 1;
 
+		// Last season's Counted: Bastion's first post goes on a road into a safehouse town
+		if (RZ_StoryRules.CountedRoad(m_GM, at))
+			bastionFirst = 1;
+
 		array<int> order = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS};
 		if (Math.RandomFloat01() >= bastionFirst)
 		{

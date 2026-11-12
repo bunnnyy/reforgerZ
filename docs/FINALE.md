@@ -8,8 +8,8 @@ hands, the lab doesn't.
 Code: `Cure/RZ_CureFinale.c` (the controller, saved), `Missions/Questlines/Finale/` (the five routes,
 the desks, the tissue hunts, the items, the route assets), `World/RZ_FinalePeople.c` (the people),
 `dialogue/finale/routes.rzd` (the pitches and the commit topics). Settings:
-**Director > Finale** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#5-settings-objects)). What's left to
-build is in [designs/FINALE.md](../designs/FINALE.md).
+**Director > Finale** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#5-settings-objects)). The pieces the
+first pass left out are `Cure/RZ_FinaleRest.c` ([below](#the-rest-of-the-finale)).
 
 ## Contents
 
@@ -28,6 +28,7 @@ build is in [designs/FINALE.md](../designs/FINALE.md).
 - [Fallbacks](#fallbacks)
 - [Endings and next season](#endings-and-next-season)
 - [Items and people](#items-and-people)
+- [The rest of the finale](#the-rest-of-the-finale)
 - [Simplified, and not built yet](#simplified-and-not-built-yet)
 
 ## In one page
@@ -541,23 +542,105 @@ seat, one at a Halcyon seat, one or two dead); and the ham (`ham.house`, an empt
 2 km of the farm). Each records alive, holder, the route their yes went to (one at a time), draws and
 betrayals. Nobody is killed off-screen, and consent is a check in every draw and dose.
 
+## The rest of the finale
+
+`Cure/RZ_FinaleRest.c`, owned by the controller and saved with it (`rest`).
+
+**Before the gate.** From 25 to 50% research, about every 90 played minutes, one **seed** goes out
+unmarked on a faction's open channel, never saying what it means: the bowl at the back door for a
+cat the house hasn't got, the medic's *"We had one who didn't take"*, *"One did not present."*,
+Bastion's nightly *"Diesel 20 L: stores."*, smoke past the still's town, *"Reference stock still
+wanted."*, the vet's invoice. Before the gate the subjects aren't in the world, so nothing can force
+them. After the gate the **lab's readout** goes out on Halcyon's open channel at each change of shift
+(06:00, 14:00, 22:00) with a rumour on the Haven's of which route is close, a third of the time
+wrong.
+
+**The lock's rest.**
+- **Hand to Hand** (errands' promises, [ERRANDS.md](ERRANDS.md)): a local you promised, in the same
+  house as one of the eight, makes that person's yes one step easier (their keeper's rank one lower,
+  the crew boss 20 Favor, the council head's persuade 1); each promise the Independent's locked
+  players made takes a minute off the lab-gate sit-in (10 minutes, 4 at least). Promises never ease a
+  stronghold leader.
+- **The look's −1**: after the lock, every disguise look with a faction whose route you didn't choose
+  (all four for the Independent) is one lower, tagged *[Sworn to another side -1]*, until the cure
+  ([REPUTATION.md](REPUTATION.md#borrowed-kit) owns the look).
+- **Route marks**: two verge places near the seat of every route with an active lock (an equal share,
+  `finale.marks_public` 0, so they never show how many are locked); a route's locked players passing
+  within 40 m are told once a real day (*"A strip of sheet tied to a fence post..."*). At the week's
+  first dusk the losing routes' come down; the winner's stay.
+- **The majors' pages**: each page in the open (`majors.pages_open`) makes the next persuade on a route
+  scene one step easier, once.
+
+**Notes and the night man.** Taking part in another route's scene gives you a note about it. Every
+route's desk has the night man: *Sell what you know of a route* (15 Favor with the desk's faction,
+once a route; half the time a lookout sees it: +10 Infamy with that route's faction, and the two
+routes are fighting; a note older than two real days is found out: nothing, +5 Infamy), *Hand over
+what you carry* (to a rival route's locked player within 10 m, logged in the item's chain; +15 Infamy
+with your own route's faction), *Buy what a rival carries* (Last Mile's Buy It: 30 Favor with the
+carrier's route faction, from a carrier within 30 m), *Sign a found item in for its route* (Sign It
+In: 5 Fame; at the Independent's desk any route's item, Nobody's). The gate sheet takes **the deal at
+the gate**: during a batch hold, one locked player from the holder's route and one from its partner's
+put their names down within 200 m of the lab (`finale.gate_deal`); the automatic deal at 7 or more
+stays as the fallback.
+
+**The moves' rest.**
+- **Drain at a container**: a rival route's locked player beside a route item lying on the ground (within
+  6 m, not on it: the pickup is 3 m) for 20 s spoils it, once a container; seen by another route's
+  player within 40 m: +5 Infamy with its faction, +15 if the watcher is that route's own.
+- **Guard the door**: once a season a route's locked player moves its door (*Guard the door*, on the
+  door's scene): after that a rival's talk there needs a pact, and a sneak or a trick fails half the time.
+- **Keep It Overnight**: an item carried in the cold at dawn gets an hour of its cold clock back, once.
+- **Kills**: a subject killed on-screen is blamed on the killer read from the kill, else the nearest
+  player within 150 m.
+
+**Each route's remaining ways** (extra people and choices on its scenes):
+
+| Route | Ways |
+|---|---|
+| The Haven | Her four terms one by one at her table (never up that hill; nobody first for guns; her name read at supper, Haven morale −5; her boy), the last of them her yes, unarmed (*"Twenty metres off. The gun."*); *Move her tonight* (the Haven's route, once a real day); the hungry house next door sells tonight's spot (2 food, 1 under the Far House; the buyer's route and the Haven fight); the annex's draw with the vet's centrifuge (25 Red Hand Favor), the quiet draw, *Ask her for one more*; *Drive her up in the cab*; *Turn her over on the last mile* (+20 Haven Infamy, her betrayal) |
+| Bastion | The four ledgers one by one (three agree: through the door); *Name nobody at all* (persuade 2, the other way); under All Stations the box by need (Known, persuade 1); Act IV's carries: the stage truck, the LZ (`pilot.stays`), on foot quietly, or the box handed in at a checkpoint (up to 10 Bastion Infamy off through `Forgive()`); once the terms are written under Bastion, the 20:30 call reads the release (*"... Minus nineteen. Receipt held. Over."*) |
+| The Red Hand | Who Came Back in full: a Haven cook's line and the lab's (10 Favor each; both: Act I done); a made-up answer (+10 Red Hand Infamy); *Tell the boss who's asking* (Known); the Mechanic's coil at the still (persuade 2, a Mechanic one easier: the night on the still done); Halcyon copying the cook's notes (`cook.lab_copy`) |
+| Halcyon | Under Expended a Rogue commander sells item 114 (30 Favor), under Under Seal 114 at Known; the canisters' riddle (read the bracelet's date, open the canister with the time; a canister at random loses a vial); the Haven trading silence about the Day 3 page (`ref.haven_silence`); Act IV's ways down (by night, a decoy, the Haven's road, the family at dusk `ref.haven_holds`, the paper's transport case under The Whole of It) |
+| Independent | The carry on air (the Doctor reads *"Released to: nobody"* on every open channel) or quietly; the duty officer's vouch (persuade 2) |
+
+**Live tissue's rest.** A pack gives tissue only within reach of the lab (5 km by road; the straight
+line × 1.3 stands in) and never twice in 6 season days; a great one's leader is +3, not +2; the
+unsided deliverer's tissue goes to the route that still needs it they stand best with. **Fury's road**
+is the tribes' (a Furious pack's trails run the capture road toward the lab and come with the stand's
+last wave: [INFECTED.md](INFECTED.md)).
+
+**The stand's rest.** The clean room is a child entity named `RZ_CleanRoom` on the lab prefab and the
+loading bay `RZ_LoadingBay` (VERIFY: named children come back by `GetName()`), else land points;
+unconscious players don't count in the room (VERIFY: `IsUnconscious()` on the server); **Contest Auto**
+reads player damage from play: once a player has killed another this season (`finale.pvp_seen`) it plays
+as Force, until then as Tally. Under Bastion, Command (and for the Red Hand's carriers when Bastion has
+the book, `book.last` 5) **Bastion's checkpoint** stands on the lab's main road 200 m out: a rival
+route's carrier within 30 m is searched (passing as Bastion: waved through; else a 90 s wait while
+the cold clock runs; leaving early: +10 Bastion Infamy). Questlines hear **the room changing holder**
+(`RZ_Questline.OnStandHolder`). The journal's finale page is the desk's *How do things stand?*; the
+lock card is a screen when **Dialogue > Trees** is on (the commit node), a notice when it's off.
+
+**The majors' remaining inputs** are read where each check is made: the page ease (above); the Haven's
+hungry house under the Far House; Bastion's box by need under All Stations; 114 under Expended and Under
+Seal; the LZ under `pilot.stays`; the transport case under The Whole of It; Bastion's checkpoint for the
+cook under `book.last` 5; her name stays the Haven's under `list.buried` (the epilogue's channel line
+leaves it out). Bastion's last call reads the captain's R numbers when the cure is Bastion's
+([QUESTLINES.md](QUESTLINES.md#await-relief)).
+
+**For the epilogue** ([EPILOGUE.md](EPILOGUE.md)): the routes' closing lines on the codas, the losing
+routes' marks down at the first dusk, the outlets on `finale.terms`.
+
 ## Simplified, and not built yet
 
 *Simplified:* the commit node needs **Dialogue > Trees** (off by default): with Trees off the desks
 take the names; the Independent commits at the Doctor or the Courier on the road, not on the open
-channel (radio speakers aren't built); `CanSideWith` is the finale's own (unless Hunted, owed, or the
-price door); assets come from the story records listed above and the jobs that tag them by hand (the other
-missions' leans aren't tagged yet), and an Ally doesn't open doors or carry items; the drain is immediate, not 20 s; a
-subject killed on-screen is blamed on the nearest player, not read from the kill; the deal needs no
-gate meeting; the clean room is a land point (a named child entity on the lab prefab is a VERIFY);
-unconscious players count while alive (VERIFY); Contest Auto plays as Force (reading the player-damage
-setting is a VERIFY); the journal's finale page is the desk's "How do things stand?" and the readout
-under each route; Halcyon's price door takes no blood draw; the Red Hand's line takes what Favor you
-have; Bastion's fuel clock is the refuel way only; her four terms are said, not taken one by one.
+channel; `CanSideWith` is the finale's own (unless Hunted, owed, or the price door); assets come from the
+story records listed above and the jobs that tag them by hand, and an Ally doesn't open doors or carry
+items; the drain at a source is immediate (the container's is 20 s); the route's other ways are choices
+on its scenes, with no escort carries, no announced carry every 10 minutes, no Bottles, no volunteer by
+kind and no field lead replaced; the lone tissue hunt doesn't keep the 6-day rule and the specials
+count after 12 hours like the guards; Halcyon's price door takes no blood draw; the Red Hand's line
+takes what Favor you have; Bastion's fuel clock is the refuel way only; the decide scene has no
+5-second objection hold (the release scene's first pick, 3 minutes).
 
-**Planned** ([designs/FINALE.md](../designs/FINALE.md)): what still waits on other systems (Hand to
-Hand and lock cards on errands' promises, the look's −1 and the word overlays on disguise, the
-presence floor and `RZ_QuestVote` pacts on the majors, `Forgive()` on reputation), guard the door,
-hand it over, Last Mile's contracts and notes for sale, the carries (the stage truck, road posts,
-helicopter, escorts), The Bottles, live tissue's remaining rules, the stand's remaining pieces, the
-majors' remaining inputs and the finale's epilogue carriers.
+**Risks to watch in play-tests** are the roadmap's ([ROADMAP.md](ROADMAP.md#play-test-priorities)).

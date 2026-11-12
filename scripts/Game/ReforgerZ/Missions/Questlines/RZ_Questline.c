@@ -378,6 +378,13 @@ class RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The clean room changed holder during the stand (RZ_Questlines.OnStandHolder): from and to are
+	//! finale routes (RZ_CureFinale.HAVEN ... INDEP, NONE for nobody).
+	void OnStandHolder(RZ_GameModeComponent gm, RZ_QuestRun run, int from, int to)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The journal's brief for the current stage. Default: the stage's text, filled in.
 	string JournalText(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{

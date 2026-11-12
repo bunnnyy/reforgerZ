@@ -44,12 +44,32 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 3e8f53a: prop `RZ_ErrandProp_Parts.et`, slot **Missions > Errands > Props > Parts** (WBS §4).
 - 2026-11-12 3e8f53a: play-test Crash Site's recovery team (a real squad from **Missions > Contracts > Bastion squad**) and Lost Colleague's search and walk-in (WBS §8, the story jobs).
 
+**From the cloud's finale, majors and epilogue rest (2026-11-12)**
+- 2026-11-12 a122e00: `World/RZ_EpilogueSheet.et`, slot **Director > Epilogue > Sheet on posts** (WBS §4, Epilogue; all optional, look only).
+- 2026-11-12 a122e00: `World/RZ_EpilogueStencil.et`, slot **Director > Epilogue > Stencil board** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpiloguePriceBoard.et`, slot **Director > Epilogue > Price board** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueNotice.et`, slot **Director > Epilogue > Notice on a post** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueGrave.et`, slot **Director > Epilogue > Grave marker** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpiloguePoster.et`, slot **Director > Epilogue > Wanted poster** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueTrestle.et`, slot **Director > Epilogue > Trestle table** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueCrate.et`, slot **Director > Epilogue > Crate** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueBunting.et`, slot **Director > Epilogue > Bunting** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueRibbon.et`, slot **Director > Epilogue > Ribbon** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueWreck.et`, slot **Director > Epilogue > Truck wreck** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueTape.et`, slot **Director > Epilogue > Tape between posts** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueHandcart.et`, slot **Director > Epilogue > Handcart** (WBS §4).
+- 2026-11-12 a122e00: `World/RZ_EpilogueNamesBoard.et`, slot **Director > Epilogue > Names board** (WBS §4).
+- 2026-11-12 a122e00: the new Epilogue settings **Marks per cluster** (8), **Scenes that last** (2), **Evening scenes** (1) appear on the game mode (WBS §5): check the defaults came through.
+- 2026-11-12 17a4c83: `Questlines/RZ_RedHandLorry.et`, slot **Questlines > Majors > Red Hand lorry** (WBS §4, Questlines; optional, look only).
+- 2026-11-12 17a4c83: `Questlines/RZ_Bonfire.et`, slot **Questlines > Majors > Bonfire prop** (WBS §4, Questlines; optional, look only).
+- 2026-11-12 17a4c83: on the lab prefab, two empty child entities named `RZ_CleanRoom` (where the stand is fought) and `RZ_LoadingBay` (Take the Lab's hold), and check in play that the finale finds them (WBS §6, `Cure/RZ_CureFinale.c:1483`).
+
 **Manual entries (WBS §4)**
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
 - 2026-11-11 76b52d0: stand-in bases still left: `RZ_Explosion.et` (a real HE round) and `RZ_Nest.et` (spawns its own) — both need a design call from the cloud (is shelling meant to hurt? should the nest spawn?).
 
 **Engine checks**
-- 2026-11-12 2990171: check all 99 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers.
+- 2026-11-12 17a4c83: check all 101 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers; and now the lab's named children, `IsUnconscious()` in the clean room, the Walk Out's land-edge fallback and the scenes' car clearance.
 - 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back on the spawn screen cleanly (new VERIFY).
 - 2026-11-12 b0b0090: measure a player's real run and sprint speed in m/s (the code assumes about 4 and 5.5: VERIFY) and Bacon's run and sprint speed; the young's sprint is tuned to about 10% faster than a sprinting player (WBS §6).
 
@@ -80,5 +100,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 ## Status
 
 - Cloud, 2026-11-12 6924ec7: the spawn screen (in place of vanilla's deploy menu) and the map key on the map are built as code and text; both need their slots set and a play (under "For the PC").
+- Cloud, 2026-11-12 17a4c83: the finale's, the majors' and the epilogue's designs are built (simplified as each doc says) and their design files removed; the epilogue deck has 20 cards.
+- Cloud, 2026-11-12: merged the finale/majors/epilogue leftovers onto the missions/errands ones. The look's −1 after the lock counts once (`RZ_DisguiseClaims.OtherRoute`; the branch's second copy in `RZ_FinaleRest` removed), and the finale's Hand to Hand reads `RZ_Errands.PromisedAt`.
 - Cloud, 2026-11-12 0fbc1e2: all the build branches are merged and pushed (finale, missions and errands, dialogue and reputation, disguise, tribes and attacks, Traces phases 1 to 7, majors and epilogue); their prefab work is under "For the PC". Docs match the PC's builds of 2026-11-12.
 - PC, 2026-11-12: Everon world built; QM and notebook actions added (text, from the manifest); plugin made SeasonMark, TribeTag, CallBox, IdCard and filled 15 slots. Next: the remaining missing prefabs, camp life, Workbench Play test.

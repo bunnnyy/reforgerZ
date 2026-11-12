@@ -35,7 +35,7 @@ class RZ_Errand_ComeIn : RZ_EpiCard
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_Epilogue epi = Week();
 		if (!epi || epi.Phase() >= 3 || e.m_iHolding < 0)

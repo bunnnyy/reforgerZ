@@ -81,6 +81,11 @@ class RZ_EpiCalendar
 		if (S().choices[0] == 2)
 			line += " And the ones we put out. Them too.";
 
+		// In processing the clerk reads a few of the Last Entries after the names
+		string entries = m_Epi.GetRest().SupperEntries();
+		if (!entries.IsEmpty())
+			line += " From the Names board. " + entries;
+
 		m_GM.GetFactionLife().OpenChannelLine(RZ_EFaction.SURVIVORS, line);
 		RZ_Log.Info("Epilogue: the supper reading.");
 	}
@@ -118,7 +123,9 @@ class RZ_EpiCalendar
 				continue;
 			}
 
-			if (now - S().codaUnix[i] < gap || S().airedDay == RZ_WorldFacts.Get().Day())
+			// One an evening, unless phase B holds fewer evenings than there are codas
+			bool sameDay = S().airedDay == RZ_WorldFacts.Get().Day() && !m_Epi.GetRest().TightEvenings();
+			if (now - S().codaUnix[i] < gap || sameDay)
 				continue;
 
 			RZ_StoryRecord r = Story(key);

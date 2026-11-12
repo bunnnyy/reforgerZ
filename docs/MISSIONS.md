@@ -22,10 +22,10 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 | [Leader missions](#leader-missions) | 27, plus Rein In | — |
 | [Story arc missions](#story-arc-missions) | 3 | — |
 | **Total** | **164** | **—** |
-| [Errands](ERRANDS.md) (not missions: asked in person) | 34 routines, 2 wanderers' asks, 18 strangers, 70 cards (the margin cards of all four majors, a Champion card per faction and the lock card among them) | the epilogue deck's last cards ([designs/EPILOGUE.md](../designs/EPILOGUE.md#the-epilogue-deck-last-errands)) and what's left in [designs/ERRANDS.md](../designs/ERRANDS.md) |
-| [Questlines](#questlines) | 15 questlines and the 4 majors, about 90 stage missions plus the majors' 15 scenes (not counted above) | the majors' parts still designed ([designs/MAJORS.md](../designs/MAJORS.md)) |
-| [The cure finale](#the-cure-finale) | 5 routes (20 scenes and 5 releases), 5 desks, 2 tissue hunts, Take the Lab's finale mode (not counted above) | the subjects' branches, the moves and the rest of each route's ways ([designs/FINALE.md](../designs/FINALE.md)) |
-| [The epilogue week](#the-epilogue-week) | the closure set's 11 items, 8 closing stages, the dose outlets, the four grey choices (not counted above) | the epilogue deck, the evening's own set pieces, the factions' jobs on the ridges ([designs/EPILOGUE.md](../designs/EPILOGUE.md)) |
+| [Errands](ERRANDS.md) (not missions: asked in person) | 34 routines, 2 wanderers' asks, 18 strangers, 70 cards (the margin cards of all four majors, a Champion card per faction and the lock card among them), plus the epilogue deck's 20 | what's left in [designs/ERRANDS.md](../designs/ERRANDS.md) |
+| [Questlines](#questlines) | 15 questlines and the 4 majors, about 90 stage missions plus the majors' 15 scenes (not counted above) | — (the majors' remaining approaches are scene choices: [QUESTLINES.md](QUESTLINES.md#the-majors)) |
+| [The cure finale](#the-cure-finale) | 5 routes (20 scenes and 5 releases), 5 desks, 2 tissue hunts, Take the Lab's finale mode (not counted above) | — (simplified: [FINALE.md](FINALE.md#simplified-and-not-built-yet)) |
+| [The epilogue week](#the-epilogue-week) | the closure set's 11 items, 8 closing stages, the dose outlets, the four grey choices, the epilogue deck's 20 cards ([ERRANDS.md](ERRANDS.md#the-epilogue-deck)) (not counted above) | — (simplified: [EPILOGUE.md](EPILOGUE.md#simplified-and-not-built-yet)) |
 
 ## Who gets offered what
 

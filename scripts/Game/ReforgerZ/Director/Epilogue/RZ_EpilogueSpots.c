@@ -326,6 +326,7 @@ class RZ_EpiSpots
 
 		// Keepsakes lying out, the open questlines' people, the station, the basket
 		closing.Spots(result);
+		m_Epi.GetRest().Spots(result);
 	}
 
 	//------------------------------------------------------------------------------------------------

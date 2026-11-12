@@ -480,4 +480,77 @@ class RZ_FinaleItems
 				m_GM.NotifyPlayer(pid, RZ_CureFinale.RouteTitle(it.route), text);
 		}
 	}
+
+	// ================================================================ The rest (RZ_FinaleRest)
+	//------------------------------------------------------------------------------------------------
+	//! How many items of `route` this identity carries.
+	int CarriesRoute(string ident, int route)
+	{
+		int n = 0;
+		foreach (RZ_FinaleItemSave it : m_S.items)
+		{
+			if (it.carrier == ident && it.route == route)
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hand it over and Buy It: every item of `route` this identity carries goes to `to`, logged in
+	//! its chain. Returns how many.
+	int Pass(string from, string to, int route)
+	{
+		int n = 0;
+		foreach (RZ_FinaleItemSave it : m_S.items)
+		{
+			if (it.carrier != from || it.route != route)
+				continue;
+
+			it.carrier = to;
+			it.chain = it.chain + " > (handed over)";
+			n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every item lying on the ground (for the drain at a container).
+	void Lying(notnull array<RZ_FinaleItemSave> result)
+	{
+		foreach (RZ_FinaleItemSave it : m_S.items)
+		{
+			if (it.carrier.IsEmpty())
+				result.Insert(it);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drained at the container: it spoils on the next tick, as out of the cold.
+	void Drain(int id)
+	{
+		foreach (RZ_FinaleItemSave it : m_S.items)
+		{
+			if (it.id == id)
+				it.cold = 0;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keep It Overnight: at dawn, an item carried in the cold gets an hour of its cold clock back,
+	//! once an item (`done` holds the ids already given it).
+	void Overnight(notnull array<string> done)
+	{
+		foreach (RZ_FinaleItemSave it : m_S.items)
+		{
+			string key = it.id.ToString();
+			if (it.carrier.IsEmpty() || it.cold < 0 || done.Contains(key) || !InCold(Vector(it.x, 0, it.z)))
+				continue;
+
+			done.Insert(key);
+			it.cold = it.cold + 3600;
+			Tell(it, string.Format("%1 kept overnight in the cold. It will last an hour longer.", it.name));
+		}
+	}
 }

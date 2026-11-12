@@ -62,6 +62,58 @@ class RZ_EpilogueSettings
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: the table, crate or board players use at an epilogue place (needs the generic puzzle object's components and actions). Empty: Puzzles > Object", "et")]
 	ResourceName m_sTablePrefab;
+
+	[Attribute("8", UIWidgets.Slider, "Marks per cluster: at most this many epilogue marks stand as props around one group of players (150 m)", "1 20 1")]
+	int m_iMarksPerCluster;
+
+	[Attribute("2", UIWidgets.Slider, "Scenes with bodies that last (the queue, the lab gate): at most this many at once; the rest are boards", "0 4 1")]
+	int m_iScenesLasting;
+
+	[Attribute("1", UIWidgets.Slider, "Evening scenes with bodies (the supper reading): at most this many at once", "0 2 1")]
+	int m_iScenesEvening;
+
+	// The marks' own props (each optional; an empty slot uses the board above, else text)
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a sheet between two posts (a rescue town's mark)", "et")]
+	ResourceName m_sSheetPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a stencilled board (Bastion's marks: a shelled town, a roster column)", "et")]
+	ResourceName m_sStencilPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a price board (Rudi's crossroads)", "et")]
+	ResourceName m_sPriceBoardPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a notice on a post (a lost post's last notice, the house rule's notice, the transformer's notice)", "et")]
+	ResourceName m_sNoticePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a grave marker (graves, a leader's grave)", "et")]
+	ResourceName m_sGravePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a wanted poster (the wanted at holdings)", "et")]
+	ResourceName m_sPosterPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a trestle table (the queue's table, the case on the table)", "et")]
+	ResourceName m_sTrestlePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a crate (the open crate, a post's stores)", "et")]
+	ResourceName m_sCratePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: bunting (a house that grew)", "et")]
+	ResourceName m_sBuntingPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a ribbon on a post (a name brought home)", "et")]
+	ResourceName m_sRibbonPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a truck wreck on the verge (the roads' last lost trucks)", "et")]
+	ResourceName m_sWreckPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: tape between two posts (a Quarantine Line town)", "et")]
+	ResourceName m_sTapePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: a handcart (the farm's basket, the queue's bags)", "et")]
+	ResourceName m_sHandcartPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: the Names board at the bend on the north road", "et")]
+	ResourceName m_sNamesBoardPrefab;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -86,6 +138,8 @@ class RZ_EpiBeat
 	string extra;		// a fixed detail (a grave's "MECHANIC. DAY 23")
 	ref array<string> idents = {};	// players it names (frozen names below)
 	ref array<string> names = {};
+	string more;		// the places in full: a detail added to the text (RZ_EpiRecord.Places)
+	bool changed;	// the place ended up different (the change factor)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -234,6 +288,10 @@ class RZ_EpilogueSave
 	ref array<int> codaUnix = {};
 	ref array<string> aired = {};			// second airings done
 	int airedDay = -1;
+
+	// The rest of the week (RZ_EpilogueRest.c); null in a save from before it
+	ref RZ_EpiRestSave rest;
+	ref RZ_EpiRecordSave record;
 }
 
 //------------------------------------------------------------------------------------------------

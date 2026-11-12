@@ -43,6 +43,12 @@ class RZ_MajorSettings
 
 	[Attribute("2", desc: "At most this many majors' stage missions offered at once, server-wide (a squeezed act takes a slot from one that isn't)")]
 	int m_iSlots;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: the Red Hand lorry at Rudi's crossroads for the Book's send-off and its last line (spawned near players only). Empty: words only", "et")]
+	ResourceName m_sLorryPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional: the bonfire at Rudi's crossroads when the book is sent off loud (spawned near players only). Empty: words only", "et")]
+	ResourceName m_sBonfirePrefab;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -451,6 +457,7 @@ class RZ_StoryRecord
 	bool fallback;				// reached by defaults only (no next-season rule)
 	int atCure = -1;			// the ending as it stood at the cure (the story rules read it), -1 none
 	ref array<string> deciders = {};	// identities
+	ref array<string> crews = {};	// the book: "identity|crew name" of its deciders (next season's greeting)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -908,6 +915,7 @@ class RZ_Majors
 		TrackDay(dt);
 		TellQueued();
 		HardStops();
+		RZ_MajorRest.Get().Tick(dt, ids);
 		array<ref RZ_QuestRun> runs = m_Q.GetRuns();
 		for (int i = runs.Count() - 1; i >= 0; i--)
 		{
@@ -1540,7 +1548,24 @@ class RZ_Majors
 			}
 		}
 
+		// The book's deciders' crew names (RZ_StoryRules.Greet next season)
+		if (!rec.crews)
+			rec.crews = {};
+
+		rec.crews.Clear();
+		foreach (string ident : rec.deciders)
+		{
+			int pid = s_Instance.m_GM.FindPlayerByIdentity(ident);
+			if (major != "book" || pid <= 0)
+				continue;
+
+			string crew = RZ_RepVoice.CrewName(s_Instance.m_GM.GetProfile(pid));
+			if (!crew.IsEmpty())
+				rec.crews.Insert(ident + "|" + crew);
+		}
+
 		RZ_Log.Info(string.Format("Majors: season story for %1: ending %2 (%3).", major, ending, line));
+		RZ_MajorRest.AtEnding(s_Instance.m_GM, major, ending, rec.deciders);
 	}
 
 	//------------------------------------------------------------------------------------------------

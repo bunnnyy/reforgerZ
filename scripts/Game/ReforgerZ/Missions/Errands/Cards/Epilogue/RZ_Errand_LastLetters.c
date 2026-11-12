@@ -19,14 +19,14 @@ class RZ_Errand_LastLetters : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 40;
-		w.m_sStep = "Walk the letters up to the queue on the north road and hand them out (20 s there), then find {giver} again.";
+		w.m_sStep = "Walk the letters up to the queue on the north road and hand them out (20 s there, nothing in your hands), then find {giver} again.";
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
 		w.Done("\"All of them? Then the post's done. First time all season.\"");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool Why(RZ_Errands dealer, RZ_Errand e)
+	override bool WhyCard(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_Epilogue epi = Week();
 		vector q = Queue();
@@ -37,5 +37,12 @@ class RZ_Errand_LastLetters : RZ_EpiCard
 		e.m_sSubject = "epi.letters:" + RZ_SeasonClock.Day().ToString();
 		e.SetText("subject_place", "the queue on the north road");
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Unarmed: a gun in your hands at the step spoils it.
+	override bool Still(RZ_Errands dealer, RZ_Errand e)
+	{
+		return !ArmedAtStep(e);
 	}
 }

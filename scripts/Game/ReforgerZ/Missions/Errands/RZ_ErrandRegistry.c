@@ -119,6 +119,13 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_OneLastToll());
 		list.Insert(new RZ_Errand_IntoTheRecord());
 		list.Insert(new RZ_Errand_ComeIn());
+		list.Insert(new RZ_Errand_KeyWhereItWas());
+		list.Insert(new RZ_Errand_TheTags());
+		list.Insert(new RZ_Errand_WrecksName());
+		list.Insert(new RZ_Errand_TellThemWeek());
+		list.Insert(new RZ_Errand_TheBoy());
+		list.Insert(new RZ_Errand_Processing());
+		list.Insert(new RZ_Errand_CureCosts());
 	}
 }
 
