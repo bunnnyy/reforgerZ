@@ -69,7 +69,8 @@ turn", Bastion has "a detail", the Red Hand "a little something", Halcyon "a sma
 
 A giver is a **named person**: a name, a role and a place. **Leaders never give errands**, and no
 errand reads or writes a leader's memory, regard, loyalty, attitude or vote, so no errand can close
-a stronghold leader (or a finale route) to anyone.
+a stronghold leader (or a finale route) to anyone. (A leader may say a thread back, and with **Majors
+read errand memory** on a sitting's head may count it: [Threads](#threads-and-callbacks).)
 
 | Where | Who | Shown |
 |---|---|---|
@@ -538,8 +539,12 @@ labels; today a label is the same for everyone).
   (the Pot, Lights, Water, Filter Parts, the Gate at Dusk, the Burying, the Round, the Newcomer, the
   Children's Hour, the Wire, the post's fuel, the freezers, Short Change) leaves "who, where, what you
   did". The next time someone else at that place offers you an errand, they say it first, once:
-  *"Mara Kovac says you brought something for the pot."* Other systems can read the newest one for a
-  holding or house (`RZ_Errands.ThreadLineFor(player, holding, house)`), for a leader's first line.
+  *"Mara Kovac says you brought something for the pot."* Other systems read the newest one for a
+  holding or house (`RZ_Errands.ThreadLineFor(player, holding, house, once)`): a **leader's greeting**
+  says it as its first line, once (the house's council head, or the leader of the holding within
+  300 m); and with **Missions > Errands > Majors read errand memory** on (off by default), a sway at
+  the Haven's sittings on a head whose house holds one brings one more voter round, once per head a
+  season ([DESIGN.md](DESIGN.md#the-majors), Votes).
 - **Callbacks**: a few ways leave a line for later in the one callback queue
   ([DESIGN.md](DESIGN.md#callbacks)), 2–6 hours of the asker's play on, near the giver: Behind the Red
   Door's truth, Boarded Up's family brought out, Not Past the Chapel's old man brought in, The Letter

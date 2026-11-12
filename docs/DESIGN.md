@@ -1615,7 +1615,10 @@ climax before it) and has a **default** (`ActDefault`): what happens when nobody
 (two from the start, offers only when carried), one sway per player per vote (by identity), and
 the tally with a tie-break (the chair's lean). A conversation's `sway:<major key>.<vote>.<word>`
 ([DIALOGUE.md](DIALOGUE.md#several-players)) swings one voter to that option per contribution at the
-tally. Errands and their memory never move a vote. Used by the Haven's two sittings.
+tally. Errands move a vote only with **Missions > Errands > Majors read errand memory** on (off by
+default): a sway on a head whose house remembers this player's errands (a thread there,
+[ERRANDS.md](ERRANDS.md#threads-and-callbacks)) brings one more voter round to the same option, once
+per head a season. Used by the Haven's two sittings.
 
 #### Dynamic fallbacks (decision 10)
 
