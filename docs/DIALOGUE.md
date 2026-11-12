@@ -73,7 +73,17 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
   **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me?
 - **A pick** runs that slot's handler, capturing again. If it said nothing new (the answer was a
-  card), what they said stays.
+  card), what they said stays. Then come their answer and the replies after it, New Vegas style.
+- **Five at most on the screen.** The server sends a page of the list: up to four replies and the
+  way out, or, when there are more, three, **Something else.** (the next page, round to the first)
+  and the way out. A new list (another node, back to the hub) starts on its first page.
+- **[Admin].** A server admin's replies (the admins' chat commands without typing, [Tools](#tools))
+  sit under one reply, **[Admin]**, at the end of the list; it opens them as their own list, with
+  **Back.** as its way out (B and Esc too). Only at the hub, never in a node.
+- **Grey: nothing new.** A reply with nothing new behind it is grey and still works: a built reply
+  you've picked in this conversation (forgotten when it ends); with Trees on, a topic or a choice
+  whose nodes you've seen through ([below](#trees-hubs-topics-and-nodes)). The screen's own rows
+  and the admins' are never grey.
 - **Shown before you choose, never rolled.** A reply you can't take stays in the list, dim, with
   what it needs: a price in Favor in its label ("Buy supplies", needs 20 Haven Favor, you have 12),
   "Give them your antidote" (you have none), "Share some food" (you have nothing to eat). There are
@@ -112,17 +122,25 @@ With Trees on, Talk opens a **hub**:
   leader's **What do you make of me?** is said in their faction's voice.
 - **Topics:** every conversation for that kind of speaker whose `when` holds, in priority order
   (quest, ask, world, reaction, flavour; flavour rotates on the speaker and the day). They fill the
-  list after the verbs; when they don't fit, **Something else.** shows the next page. A topic
-  you've heard is tagged "heard". `once` topics go for this life at that speaker, `daily` ones for
-  a real day.
+  list after the verbs, a page at a time on the screen ([above](#the-talk-screen)). A topic you've
+  opened that still has more in it is tagged "heard"; one with nothing new is grey. `once` topics
+  go for this life at that speaker, `daily` ones for a real day.
 - **I'll be going.**, always.
 
 A topic opens its first **node**: the speaker says one to three lines, and you pick a **choice**
-(at most 6, plus I'll be going.). A choice goes to another node, back to the hub (`hub`), back a
-node (`back`), or ends the conversation (`end`). Nodes can jump on conditions. Picking a choice
-reads its condition and the conversation's `when` again in the live world; if either no longer
-holds, they "didn't catch that". A choice with a price is refused within 1.5 s of a new node, so a
-list that hasn't refreshed can't take your Favor.
+(at most 6, plus I'll be going., paged as above). A choice goes to another node, back to the hub
+(`hub`), back a node (`back`), or ends the conversation (`end`). Nodes can jump on conditions.
+Picking a choice reads its condition and the conversation's `when` again in the live world; if
+either no longer holds, they "didn't catch that". A choice with a price is refused within 1.5 s of
+a new node, so a list that hasn't refreshed can't take your Favor.
+
+**Grey, from the seen nodes** (`RZ_DialogueTrees.Heard`, the memory's seen nodes, per character): a
+choice is grey when the node it leads to on a pass (after that node's jumps, as entering it takes
+them) is seen and every choice showing there is heard in turn, up to 6 nodes deep; a topic is grey
+when its first node is heard that way. A choice to `hub`, `back` or `end` leads nowhere new: it is
+never grey itself and doesn't keep its node from being heard. A check you haven't passed leads to a
+node you haven't seen, so it stays bright. Seen nodes are shared by every speaker of that kind (one
+wanderer's conversation heard is heard at the next).
 
 **Leaders never give errands** in a tree; a leader's line names who to see.
 
@@ -700,7 +718,7 @@ The lint refuses removing one; a gone id is kept as `retired <id>`.
 | `python3 tools/dialogue_pack.py` | Lint and write the packs. `--check` fails if the packs or the lock are out of date (the compile check runs it first); `--lock` adds new ids to the lock; `--list` lists the conversations |
 | `python3 tools/dialogue_sim.py <conv> --bg nurse --tier haven=trusted` | Walks one conversation as one character sees it: the lines (variants picked), every choice with its tag, whether it shows, and where a check would send them. Also `--infamy`, `--fame`, `--favor`, `--flag`, `--knows`, `--fact night` (any other true term: `--fact heard_lie:scav.chemist`, `--fact kit:in_kit`), `--mem helped`, `--regard`, `--food`, `--house short`, `--trait`; `--all` shows every start node. A look's score needs the game, so it shows only where a pass and a catch lead. **Several characters:** `--chars "Mara:--tier haven=known" --chars "Tom:--bg nurse"` shows each one's start node, and `--race` how the scene settles (who holds, who may object or stand with, what lands once, each sway) |
 | `python3 tools/voice_lint.py` | Also reads every `.rzd` line (says as talk-screen lines, labels as choices) against [WRITING.md](WRITING.md#checking-text) |
-| **[Admin] Errands near here** (server admins, a reply on any named person, wanderer or occupant: no typing) | The errands' live count, the nearest player's last deal and why each other errand wasn't dealt, and their errands ([ERRANDS.md](ERRANDS.md#telemetry-and-the-admin-view)) |
+| **[Admin] Errands near here** (server admins, under **[Admin]** on any named person, wanderer or occupant: no typing) | The errands' live count, the nearest player's last deal and why each other errand wasn't dealt, and their errands ([ERRANDS.md](ERRANDS.md#telemetry-and-the-admin-view)) |
 | `/talkdebug` (admins, in chat; or the **[Admin] Read this person's conversations** reply) | Whether Trees are on, the conversation and memory counts, your memory, and for the person you're talking to, every conversation for them and the first `when` term that fails |
 | `/talkdebug test` (or **[Admin] Test every conversation, to the log**) | Every conversation's conditions, lines and labels run once for you through the real evaluator and tokens, and a lie, a promise and a callback on test keys; the counts back to you and the log (`Dialogue: Talk test: ...`). The runtime test runs it for its fake player (`RZT Talk test: ...`) |
 | `/talkdebug reset <scene>` (or **[Admin] Undecide this person's scenes**) | A scene's record cleared, so whoever answers next decides it again |
@@ -780,7 +798,10 @@ always` (an ordinary lie, believable and never true).
 
 - *Simplified:* trees run only on the talk screen: with the talk screen off, there are no trees.
 - *Simplified:* greets are lines only (a greet that opens by itself puts its question as its line, and
-  the topics under it are the choices); "dimmed, not hidden" topics show a "heard" tag.
+  the topics under it are the choices); "dimmed, not hidden" topics show grey, or a "heard" tag while
+  there's more in them.
+- *Simplified:* a built reply is grey only for the rest of the conversation you picked it in (the
+  engine keeps no memory of built replies), whether or not its answer would change.
 - *Simplified:* a stage's or a contract's people keep their built choices as verbs; a conversation at
   them picks one with `call:slot:N`.
 - *Simplified:* a claim the world tests isn't saved: a restart forgets a test still waiting.

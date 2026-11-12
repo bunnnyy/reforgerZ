@@ -1,16 +1,55 @@
-//! The talk screen (docs/UI.md, "Talking to people"), as approved in UI/Mockups/talk.html: the
-//! world stays in view, dimmed; a panel across the bottom with a top border in the person's faction
-//! colour; their name and "The Haven - council head - knows your name"; what they say in large
-//! bright type; your replies as a numbered list, the selected one lighter with an accent bar, a
-//! dim tag on the right, what a reply needs when it can't be picked; the last is always a way out.
+//! The talk screen (docs/UI.md, "The talk screen"), New Vegas style: the person stays in view and
+//! a compact panel sits in the lower middle of the screen, below their head and chest, with a top
+//! border in their faction colour; their name and "The Haven - council head - knows your name";
+//! what they say; your replies as a numbered list of at most 5, the selected one lighter with an
+//! accent bar, a dim tag on the right, what a reply needs when it can't be picked, grey when there's
+//! nothing new behind it (it still works); the last is always the way out. One line of prompts
+//! closes the panel.
 //!
-//! Keys: up/down or 1-7, Enter; mouse: click; Esc leaves. Pad: D-pad or left stick, A says it,
-//! B leaves; LB/RB (Q/E) scroll what they say when it's long. You can't move while it's open; the
-//! world keeps running and danger closes it (the server's screen guard).
+//! Keys: up/down or 1-5, Enter; mouse: hover lights a reply, a click says it; Esc leaves. Pad: D-pad
+//! or left stick, A says it, B leaves; LB/RB (Q/E) scroll what they say when it's long. The server
+//! pages longer lists (Something else.) and keeps a server admin's replies under [Admin]. You can't
+//! move while it's open; the world keeps running and danger closes it (the server's screen guard).
+
+//------------------------------------------------------------------------------------------------
+//! Mouse on a reply row: the cursor coming onto it selects it, a click says it.
+class RZ_TalkRowEvents : ScriptedWidgetEventHandler
+{
+	protected RZ_TalkMenu m_Menu;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_TalkRowEvents(RZ_TalkMenu menu)
+	{
+		m_Menu = menu;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (!m_Menu || !w)
+			return false;
+
+		m_Menu.SayRow(RZ_UIW.GetTag(w));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! VERIFY: OnMouseEnter fires on the row's Button (its children are images and text) when the
+	//! cursor comes onto it, in a ChimeraMenuBase.
+	override bool OnMouseEnter(Widget w, int x, int y)
+	{
+		if (m_Menu && w)
+			m_Menu.HoverRow(RZ_UIW.GetTag(w));
+
+		return false;
+	}
+}
 
 //------------------------------------------------------------------------------------------------
 class RZ_TalkMenu : RZ_MenuBase
 {
+	protected static const int ROWS = 5;	// replies on the screen at once (RZ_Dialogue.ROWS)
+
 	protected static RZ_TalkMenu s_Open;
 	protected static string s_sNode;
 	protected static int s_iVersion;
@@ -20,8 +59,11 @@ class RZ_TalkMenu : RZ_MenuBase
 	protected int m_iSerial;
 	protected int m_iParsed = -1;
 	protected bool m_bDone;					// left, or closed by the server: nothing more to send
+	protected ref Color m_Accent;
+	protected ref RZ_TalkRowEvents m_RowEvents;
 	protected ref array<int> m_aIds = {};
 	protected ref array<bool> m_aEnabled = {};
+	protected ref array<bool> m_aHeard = {};
 	protected ref array<ref array<string>> m_aReplies = {};
 	protected ref array<string> m_aHead = {};
 	protected ref array<Widget> m_aRows = {};
@@ -93,6 +135,7 @@ class RZ_TalkMenu : RZ_MenuBase
 	override protected void OnOpened()
 	{
 		s_Open = this;
+		m_RowEvents = new RZ_TalkRowEvents(this);
 		InputManager input = GetGame().GetInputManager();
 		input.AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
@@ -104,11 +147,9 @@ class RZ_TalkMenu : RZ_MenuBase
 		input.AddActionListener("RZ_Reply3", EActionTrigger.DOWN, OnReply3);
 		input.AddActionListener("RZ_Reply4", EActionTrigger.DOWN, OnReply4);
 		input.AddActionListener("RZ_Reply5", EActionTrigger.DOWN, OnReply5);
-		input.AddActionListener("RZ_Reply6", EActionTrigger.DOWN, OnReply6);
-		input.AddActionListener("RZ_Reply7", EActionTrigger.DOWN, OnReply7);
 		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Say it");
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Leave") && prompts;
-		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "More") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Scroll") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
 	}
 
@@ -126,8 +167,6 @@ class RZ_TalkMenu : RZ_MenuBase
 		input.RemoveActionListener("RZ_Reply3", EActionTrigger.DOWN, OnReply3);
 		input.RemoveActionListener("RZ_Reply4", EActionTrigger.DOWN, OnReply4);
 		input.RemoveActionListener("RZ_Reply5", EActionTrigger.DOWN, OnReply5);
-		input.RemoveActionListener("RZ_Reply6", EActionTrigger.DOWN, OnReply6);
-		input.RemoveActionListener("RZ_Reply7", EActionTrigger.DOWN, OnReply7);
 		if (s_Open == this)
 			s_Open = null;
 
@@ -141,21 +180,22 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A new node from the server. A new selection only restyles the rows (Select).
 	override protected int DataVersion()
 	{
-		return s_iVersion * 100 + m_iSelected;
+		return s_iVersion;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnUp(float value = 0, EActionTrigger reason = 0)
 	{
-		m_iSelected = Math.Max(0, m_iSelected - 1);
+		Select(Math.Max(0, m_iSelected - 1));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnDown(float value = 0, EActionTrigger reason = 0)
 	{
-		m_iSelected = Math.Min(Math.Max(0, m_aIds.Count() - 1), m_iSelected + 1);
+		Select(Math.Min(Math.Max(0, m_aIds.Count() - 1), m_iSelected + 1));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -182,22 +222,37 @@ class RZ_TalkMenu : RZ_MenuBase
 	protected void OnReply3(float value = 0, EActionTrigger reason = 0) { Say(2); }
 	protected void OnReply4(float value = 0, EActionTrigger reason = 0) { Say(3); }
 	protected void OnReply5(float value = 0, EActionTrigger reason = 0) { Say(4); }
-	protected void OnReply6(float value = 0, EActionTrigger reason = 0) { Say(5); }
-	protected void OnReply7(float value = 0, EActionTrigger reason = 0) { Say(6); }
 
 	//------------------------------------------------------------------------------------------------
-	//! Esc or B: leave (the last reply).
+	//! Esc or B: the way out (the last reply: I'll be going., or Back. in the [Admin] list).
 	override protected void Back()
 	{
 		Say(m_aIds.Count() - 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A click on a reply row says it.
-	override protected void OnClickOther(Widget w, string name)
+	//! A click on a reply row (RZ_TalkRowEvents) says it.
+	void SayRow(int index)
 	{
-		if (name == "ReplyRow")
-			Say(RZ_UIW.GetTag(w));
+		Say(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cursor on a reply row lights it, as the D-pad would.
+	void HoverRow(int index)
+	{
+		if (index >= 0 && index < m_aIds.Count() && index != m_iSelected)
+			Select(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void Select(int index)
+	{
+		if (index == m_iSelected)
+			return;
+
+		m_iSelected = index;
+		Style();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -207,7 +262,7 @@ class RZ_TalkMenu : RZ_MenuBase
 		if (index < 0 || index >= m_aIds.Count() || !m_aEnabled[index])
 		{
 			if (index >= 0 && index < m_aIds.Count())
-				m_iSelected = index;
+				Select(index);
 
 			return;
 		}
@@ -224,26 +279,29 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! T|serial|faction|name|sub|said, then R|id|label|tag|need|enabled.
+	//! T|serial|faction|name|sub|said, then R|id|label|tag|need|enabled|heard.
 	override protected void Redraw()
 	{
-		if (m_iParsed != s_iVersion)
+		if (m_iParsed == s_iVersion)
 		{
-			m_iParsed = s_iVersion;
-			Parse();
+			Style();
+			return;
 		}
 
+		m_iParsed = s_iVersion;
+		Parse();
 		int faction = RZ_UIText.Int(m_aHead, 2);
-		Color accent = RZ_UIColor.Bone();
+		m_Accent = RZ_UIColor.Bone();
 		if (faction >= 0 && !RZ_UIText.Str(m_aHead, 2).IsEmpty())
-			accent = RZ_UIColor.Faction(faction);
+			m_Accent = RZ_UIColor.Faction(faction);
 
-		RZ_UIW.Tint(m_wRoot, "TalkAccent", accent);
+		RZ_UIW.Tint(m_wRoot, "TalkAccent", m_Accent);
 		RZ_UIW.SetText(m_wRoot, "TalkName", RZ_UIText.Str(m_aHead, 3));
-		RZ_UIW.Tint(m_wRoot, "TalkName", accent);
+		RZ_UIW.Tint(m_wRoot, "TalkName", m_Accent);
 		RZ_UIW.SetText(m_wRoot, "TalkSub", RZ_UIText.Str(m_aHead, 4));
 		RZ_UIW.SetText(m_wRoot, "TalkSaid", Unbreak(RZ_UIText.Str(m_aHead, 5)));
-		DrawReplies(accent);
+		BuildRows();
+		Style();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -254,7 +312,9 @@ class RZ_TalkMenu : RZ_MenuBase
 		m_aHead.Clear();
 		m_aIds.Clear();
 		m_aEnabled.Clear();
+		m_aHeard.Clear();
 		m_aReplies.Clear();
+		array<ref array<string>> replies = {};
 		foreach (array<string> f : recs)
 		{
 			string tag = RZ_UIText.Str(f, 0);
@@ -263,24 +323,40 @@ class RZ_TalkMenu : RZ_MenuBase
 				m_aHead.Copy(f);
 				m_iSerial = RZ_UIText.Int(f, 1);
 			}
-			else if (tag == "R" && m_aIds.Count() < 7)
+			else if (tag == "R")
 			{
-				m_aReplies.Insert(f);
-				m_aIds.Insert(RZ_UIText.Int(f, 1));
-				m_aEnabled.Insert(RZ_UIText.Int(f, 5) == 1);
+				replies.Insert(f);
 			}
 		}
 
-		// A new node starts on its first reply that can be picked; what they say starts at the top
-		m_iSelected = 0;
+		// The server sends at most 5; more would be cut to the first 4 and the way out
+		while (replies.Count() > ROWS)
+		{
+			replies.RemoveOrdered(ROWS - 1);
+		}
+
+		foreach (array<string> rec : replies)
+		{
+			m_aReplies.Insert(rec);
+			m_aIds.Insert(RZ_UIText.Int(rec, 1));
+			m_aEnabled.Insert(RZ_UIText.Int(rec, 5) == 1);
+			m_aHeard.Insert(RZ_UIText.Int(rec, 6) == 1);
+		}
+
+		// A new node starts on its first reply that can be picked and has something new, else the
+		// first that can be picked; what they say starts at the top
+		m_iSelected = -1;
 		foreach (int i, bool on : m_aEnabled)
 		{
-			if (on)
+			if (on && !m_aHeard[i])
 			{
 				m_iSelected = i;
 				break;
 			}
 		}
+
+		if (m_iSelected < 0)
+			m_iSelected = Math.Max(0, m_aEnabled.Find(true));
 
 		ScrollLayoutWidget said = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "SaidScroll"));
 		if (said)
@@ -288,7 +364,8 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void DrawReplies(Color accent)
+	//! The rows, made once per node; what changes with the selection is in Style.
+	protected void BuildRows()
 	{
 		Widget list = RZ_UIW.Find(m_wRoot, "Replies");
 		RZ_UIW.ClearChildren(list);
@@ -300,7 +377,6 @@ class RZ_TalkMenu : RZ_MenuBase
 			if (!row)
 				return;
 
-			bool on = i == m_iSelected;
 			bool enabled = m_aEnabled[i];
 			string need = RZ_UIText.Str(f, 4);
 			int num = i + 1;
@@ -310,20 +386,45 @@ class RZ_TalkMenu : RZ_MenuBase
 			RZ_UIW.Show(row, "ReplyTag", enabled && !RZ_UIText.Str(f, 3).IsEmpty());
 			RZ_UIW.SetText(row, "ReplyNeed", "(" + need + ")");
 			RZ_UIW.Show(row, "ReplyNeed", !enabled && !need.IsEmpty());
+			RZ_UIW.Tint(row, "ReplyBar", m_Accent);
+			RZ_UIW.SetTag(row, i);
+			RZ_UIW.OnClick(row, "", m_RowEvents);
+			m_aRows.Insert(row);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The selected row (the D-pad's, the keys' or the cursor's) lighter with the accent bar; a reply
+	//! with nothing new behind it grey, one that can't be picked faint.
+	protected void Style()
+	{
+		foreach (int i, Widget row : m_aRows)
+		{
+			bool on = i == m_iSelected;
 			RZ_UIW.Show(row, "ReplyBg", on);
 			RZ_UIW.Show(row, "ReplyBar", on);
-			RZ_UIW.Tint(row, "ReplyBar", accent);
-			RZ_UIW.Tint(row, "ReplyNum", accent);
 			Color fg = RZ_UIColor.Bone();
-			if (!enabled)
+			Color num = m_Accent;
+			if (!m_aEnabled[i])
+			{
 				fg = RZ_UIW.Rgb(110, 106, 96);
+				num = fg;
+			}
+			else if (m_aHeard[i])
+			{
+				fg = RZ_UIW.Rgb(128, 124, 114);
+				if (on)
+					fg = RZ_UIW.Rgb(170, 165, 152);
+
+				num = fg;
+			}
 			else if (on)
+			{
 				fg = RZ_UIW.Rgb(244, 240, 230);
+			}
 
 			RZ_UIW.Tint(row, "ReplyText", fg);
-			RZ_UIW.SetTag(row, i);
-			RZ_UIW.OnClick(row, "", m_Click);
-			m_aRows.Insert(row);
+			RZ_UIW.Tint(row, "ReplyNum", num);
 		}
 
 		// Pad focus on the selected reply, so the D-pad and A act on what's lit

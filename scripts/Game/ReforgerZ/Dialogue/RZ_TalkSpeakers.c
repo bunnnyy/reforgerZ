@@ -90,6 +90,15 @@ class RZ_TalkSpeaker
 		r.m_sLabel = label;
 		return r;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A server admin's reply: the talk screen lists it under [Admin], not with the others.
+	protected static RZ_TalkReply AdminReply(int id, string label)
+	{
+		RZ_TalkReply r = Reply(id, label);
+		r.m_bAdmin = true;
+		return r;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -333,7 +342,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		// Server admins: the errands' view for this place, without typing (docs/ERRANDS.md, Telemetry)
 		if (gm.GetErrands() && comp.GetMissionId() < 0 && RZ_NoticeBoard.IsAdmin(playerId))
-			replies.Insert(Reply(ADMIN_ERRANDS, "[Admin] Errands near here"));
+			replies.Insert(AdminReply(ADMIN_ERRANDS, "[Admin] Errands near here"));
 
 		// Server admins: what /talkdebug, /tribes and /rep do, for a pad (no typing)
 		if (!RZ_NoticeBoard.IsAdmin(playerId))
@@ -341,19 +350,19 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (gm.GetDialogue())
 		{
-			replies.Insert(Reply(ADMIN_TREES, "[Admin] Read this person's conversations"));
-			replies.Insert(Reply(ADMIN_TALKTEST, "[Admin] Test every conversation, to the log"));
-			replies.Insert(Reply(ADMIN_TALKRESET, "[Admin] Undecide this person's scenes"));
+			replies.Insert(AdminReply(ADMIN_TREES, "[Admin] Read this person's conversations"));
+			replies.Insert(AdminReply(ADMIN_TALKTEST, "[Admin] Test every conversation, to the log"));
+			replies.Insert(AdminReply(ADMIN_TALKRESET, "[Admin] Undecide this person's scenes"));
 		}
 
 		if (gm.GetTribes())
-			replies.Insert(Reply(ADMIN_TRIBES, "[Admin] The infected, to the server log"));
+			replies.Insert(AdminReply(ADMIN_TRIBES, "[Admin] The infected, to the server log"));
 
 		if (gm.GetRepWatch())
-			replies.Insert(Reply(ADMIN_REP, "[Admin] Standing of the nearest player"));
+			replies.Insert(AdminReply(ADMIN_REP, "[Admin] Standing of the nearest player"));
 
 		if (gm.GetTraces() && gm.GetTraces().IsOn())
-			replies.Insert(Reply(ADMIN_TRACES, "[Admin] Door marks near here, to the log"));
+			replies.Insert(AdminReply(ADMIN_TRACES, "[Admin] Door marks near here, to the log"));
 	}
 
 	//------------------------------------------------------------------------------------------------

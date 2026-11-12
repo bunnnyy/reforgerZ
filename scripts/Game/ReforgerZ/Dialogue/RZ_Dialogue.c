@@ -13,6 +13,10 @@
 //!   RZ_PuzzleObjectComponent), with what each needs shown before you choose, plus Leave;
 //! - a pick runs that slot's handler, capturing again.
 //!
+//! The screen shows at most 5 replies: a page of them, Something else. for the next page, and the
+//! way out. A server admin's replies sit under one [Admin] reply that opens them as their own list.
+//! A reply with nothing new behind it is sent as heard (grey, still picked as any other).
+//!
 //! So every rule that's built (a Trader's price, a leader's refusal, an exile's shut door) works
 //! exactly as built. The engine adds no rewards and no memory. The client gets one node at a time,
 //! owner-only (RZ_UIFeed.PAYLOAD_TALK); its picks come back as RZ_PlayerUIComponent.RpcAsk_TalkPick
@@ -121,6 +125,8 @@ class RZ_TalkReply
 	string m_sNeed;		// what it needs, shown when it can't be picked
 	bool m_bEnabled = true;
 	bool m_bOwn;		// a tree's topic or choice: tagged by the trees, not by RZ_TalkNeeds
+	bool m_bAdmin;		// a server admin's reply: listed under [Admin], not with the others
+	bool m_bHeard;		// nothing new behind it: shown grey, still picked as any other
 }
 
 //------------------------------------------------------------------------------------------------
@@ -141,6 +147,10 @@ class RZ_TalkSession
 	bool m_bCapturing;
 	float m_fLastPick = -100;
 	ref RZ_DTalk m_Tree;				// Dialogue > Trees: the topics and the node (null when off)
+	bool m_bAdmin;						// the [Admin] list is open in place of the replies
+	int m_iPage;						// the page of replies shown (Something else. turns it)
+	string m_sList;						// the list the page belongs to (the hub, a node, the admin list)
+	ref array<string> m_aPicked = {};	// built replies picked in this conversation (shown grey after)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -158,6 +168,10 @@ class RZ_TalkResume
 class RZ_Dialogue
 {
 	static const int LEAVE = 99;
+	static const int MORE = 98;			// Something else.: the next page of replies
+	static const int ADMIN_BACK = 97;	// Back.: from the [Admin] list to the replies
+	static const int ADMIN = 96;		// [Admin]: a server admin's replies, as their own list
+	static const int ROWS = 5;			// replies on the screen at once, the way out included
 	protected static const float TALK_GAP = 2;
 	protected static const float PICK_GAP = 0.3;
 	protected static const int MAX_SAID = 1400;
@@ -557,6 +571,23 @@ class RZ_Dialogue
 
 		s.m_fLastPick = now;
 		guard.Touch(playerId);
+
+		// The screen's own rows: the next page, the [Admin] list and back from it (nothing is said)
+		if (replyId == MORE || replyId == ADMIN || replyId == ADMIN_BACK)
+		{
+			if (replyId == MORE)
+				s.m_iPage++;
+			else
+				s.m_bAdmin = replyId == ADMIN;
+
+			SendNode(s, user);
+			return;
+		}
+
+		// A built reply, once picked, shows grey for the rest of the conversation
+		if (!reply.m_bAdmin && !RZ_DialogueTrees.IsOurs(replyId) && s.m_aPicked.Find(reply.m_sLabel) < 0)
+			s.m_aPicked.Insert(reply.m_sLabel);
+
 		s.m_aNew.Clear();
 		s.m_bCapturing = true;
 		if (s.m_Tree && RZ_DialogueTrees.IsOurs(replyId))
@@ -632,8 +663,9 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! T|serial|faction|name|sub|said, then R|id|label|tag|need|enabled per reply (the last is
-	//! Leave). Line breaks in what they said travel as ^.
+	//! T|serial|faction|name|sub|said, then R|id|label|tag|need|enabled|heard per reply (the last is
+	//! the way out). Line breaks in what they said travel as ^. At most ROWS replies go: a page of
+	//! them, Something else. when there are more, and I'll be going. (Back. in the [Admin] list).
 	protected void SendNode(RZ_TalkSession s, IEntity user)
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(s.m_iPlayer);
@@ -643,33 +675,96 @@ class RZ_Dialogue
 			return;
 		}
 
-		s.m_aReplies.Clear();
+		array<ref RZ_TalkReply> all = {};
 		if (s.m_Tree && s.m_Tree.m_bInNode)
 		{
-			m_Trees.NodeReplies(s, s.m_aReplies);
+			m_Trees.NodeReplies(s, all);
 		}
 		else
 		{
-			s.m_Adapter.Replies(m_GM, s, s.m_iPlayer, user, s.m_aReplies);
+			s.m_Adapter.Replies(m_GM, s, s.m_iPlayer, user, all);
 			if (s.m_Tree)
-				m_Trees.HubReplies(s, s.m_aReplies);
+				m_Trees.HubReplies(s, all);
 		}
 
-		while (s.m_aReplies.Count() > 6)
-		{
-			s.m_aReplies.Remove(s.m_aReplies.Count() - 1);
-		}
-
-		foreach (RZ_TalkReply r : s.m_aReplies)
+		// A server admin's replies go under one reply, [Admin], which opens them as their own list
+		array<ref RZ_TalkReply> rows = {};
+		array<ref RZ_TalkReply> admin = {};
+		foreach (RZ_TalkReply r : all)
 		{
 			if (!r.m_bOwn)
 				RZ_TalkNeeds.Apply(m_GM, s.m_iPlayer, user, r);
+
+			if (r.m_bAdmin)
+				admin.Insert(r);
+			else
+				rows.Insert(r);
 		}
 
-		RZ_TalkReply leave = new RZ_TalkReply();
-		leave.m_iId = LEAVE;
-		leave.m_sLabel = "I'll be going.";
-		s.m_aReplies.Insert(leave);
+		if (admin.IsEmpty())
+			s.m_bAdmin = false;
+
+		RZ_TalkReply way = OwnRow(LEAVE, "I'll be going.");
+		string listKey = "hub";
+		if (s.m_bAdmin)
+		{
+			rows.Clear();
+			foreach (RZ_TalkReply a : admin)
+			{
+				rows.Insert(a);
+			}
+
+			way = OwnRow(ADMIN_BACK, "Back.");
+			listKey = "admin";
+		}
+		else
+		{
+			if (s.m_Tree && s.m_Tree.m_bInNode && s.m_Tree.m_Conv && s.m_Tree.m_Node)
+				listKey = s.m_Tree.m_Conv.m_sId + "/" + s.m_Tree.m_Node.m_sId;
+
+			if (!admin.IsEmpty())
+				rows.Insert(OwnRow(ADMIN, "[Admin]"));
+		}
+
+		// A new list starts on its first page
+		if (listKey != s.m_sList)
+		{
+			s.m_sList = listKey;
+			s.m_iPage = 0;
+		}
+
+		s.m_aReplies.Clear();
+		int room = ROWS - 1;
+		if (rows.Count() <= room)
+		{
+			foreach (RZ_TalkReply each : rows)
+			{
+				s.m_aReplies.Insert(each);
+			}
+		}
+		else
+		{
+			int per = room - 1;
+			int pages = (rows.Count() + per - 1) / per;
+			if (s.m_iPage >= pages || s.m_iPage < 0)
+				s.m_iPage = 0;
+
+			int from = s.m_iPage * per;
+			for (int k = from; k < from + per && k < rows.Count(); k++)
+			{
+				s.m_aReplies.Insert(rows[k]);
+			}
+
+			s.m_aReplies.Insert(OwnRow(MORE, "Something else."));
+		}
+
+		s.m_aReplies.Insert(way);
+		foreach (RZ_TalkReply shown : s.m_aReplies)
+		{
+			shown.m_bHeard = Heard(s, shown);
+			if (shown.m_bHeard && shown.m_sTag == "heard")
+				shown.m_sTag = "";		// the grey says it
+		}
 
 		string said = "";
 		foreach (int i, string line : s.m_aSaid)
@@ -693,11 +788,41 @@ class RZ_Dialogue
 			if (rep.m_bEnabled)
 				on = 1;
 
+			int heard = 0;
+			if (rep.m_bHeard)
+				heard = 1;
+
 			payload += "\nR" + sep + rep.m_iId.ToString() + sep + RZ_UIText.Clean(rep.m_sLabel, 120) + sep + RZ_UIText.Clean(rep.m_sTag, 40)
-				+ sep + RZ_UIText.Clean(rep.m_sNeed, 80) + sep + on.ToString();
+				+ sep + RZ_UIText.Clean(rep.m_sNeed, 80) + sep + on.ToString() + sep + heard.ToString();
 		}
 
 		ui.SendPayload(RZ_UIFeed.PAYLOAD_TALK, payload); // VERIFY: an owner-only string RPC of up to about 2,000 characters arrives whole
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of the screen's own rows (the way out, Something else., [Admin], Back.).
+	protected static RZ_TalkReply OwnRow(int id, string label)
+	{
+		RZ_TalkReply r = new RZ_TalkReply();
+		r.m_iId = id;
+		r.m_sLabel = label;
+		r.m_bOwn = true;
+		return r;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Nothing new behind a reply: a tree's topic or choice whose nodes you've seen through (the
+	//! trees' memory), a built reply already picked in this conversation. The screen's own rows and
+	//! the admins' never are.
+	protected bool Heard(RZ_TalkSession s, RZ_TalkReply r)
+	{
+		if (r.m_bAdmin || r.m_iId == LEAVE || r.m_iId == MORE || r.m_iId == ADMIN || r.m_iId == ADMIN_BACK)
+			return false;
+
+		if (RZ_DialogueTrees.IsOurs(r.m_iId))
+			return s.m_Tree && m_Trees.Heard(s, r.m_iId);
+
+		return s.m_aPicked.Find(r.m_sLabel) >= 0;
 	}
 }
 
