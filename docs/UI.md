@@ -683,7 +683,7 @@ Which lines are subtitles:
 | `RZ_Wanderers` | refusing, running when shot at, warning others about an exile, the one who comes looking for a new player |
 | `RZ_LongTable` | the host stepping out on the road |
 | `RZ_Leaders` | a refusal at attitude −2 |
-| The screen guard | "Not now!" when danger closes a talk |
+| The screen guard | "Not now. Something's coming." when danger closes a talk |
 | Dialogue barks | a person you pass who has a line for you ([DIALOGUE.md](DIALOGUE.md)), with their body for the arrow |
 | Traces | the town loudspeaker (a loudspeaker), the radio in an empty house (the radio-line box) |
 
@@ -1207,7 +1207,7 @@ What each line says, and where it comes from (all this life's, server-side):
 | Travelled | "800 m", "3.4 km" | `m_fLifeMetres`: the ground covered each server tick, on foot or in a car (a jump over 300 m in one tick, a respawn or a teleport, doesn't count) |
 | Standing | "+35 Fame with the Haven" | the faction this life gained the most Fame with (`m_aFameGained`) |
 
-The closing lines: a life under 10 minutes, *"Not long. It rarely is, out here."*; otherwise one per
+The closing lines: a life under 10 minutes, *"Not long. It rarely is, out here, for anyone who comes out of hiding."*; otherwise one per
 way it ended (turned, the infected, a player, a faction, other survivors, your own doing, nobody saw).
 
 | | Keyboard and mouse | Gamepad |
@@ -1450,7 +1450,7 @@ mode's `SecondTick`, and closes it when: you took damage or fired; an infected i
 **Dialogue > Danger near** (6 m) of you or of the person you talk to, or one within **Danger
 closing** (30 m) came 2 m closer since the last check; you died, or the person is gone; and, for
 talk only, you're more than **Range** (6 m) from them or **Idle seconds** (120) passed with no
-reply (the repair, shop, crafting and cooking screens, the object menu and the power panel the same, from the car, the quartermaster, the bench, the stove, the thing or the control, with no pick; the radio screen from a radio not on you, and never idle). In danger the person says "Not now!" as a subtitle. At most **Open at most** (32) screens
+reply (the repair, shop, crafting and cooking screens, the object menu and the power panel the same, from the car, the quartermaster, the bench, the stove, the thing or the control, with no pick; the radio screen from a radio not on you, and never idle). In danger the person says "Not now. Something's coming. Get your gun up." as a subtitle. At most **Open at most** (32) screens
 are open on the server; each check is a few distance tests. The client says when the player
 closes one (`RpcAsk_ScreenClosed`).
 

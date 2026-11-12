@@ -61,7 +61,7 @@ when you use Talk (or another reply that hands you on, or **Call on the open cha
 it on you by being looked at or walked up to; they call out instead ([Who opens a
 conversation](#who-opens-a-conversation)). You stay in the conversation until you leave, walk
 off (6 m), wait 120 s with no reply, or danger comes (the [screen guard](UI.md#how-the-scripts-fit):
-then they say "Not now!" and it closes). You can't move while talking; the world keeps running.
+then they say "Not now. Something's coming. Get your gun up." and it closes). You can't move while talking; the world keeps running.
 
 **Who:** stronghold and seat leaders (at a quartermaster, through **Ask for whoever's in charge**),
 the four quartermasters and a safehouse's medic, safehouse occupants, named people at holdings, the

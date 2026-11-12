@@ -3092,7 +3092,7 @@ when it happens)
   with what it needs if you're short; pick a reply with the D-pad and A, with 1–5, with LT/RT +
   D-pad, and with a click: it fades and their answer takes the band. B leaves from the line and from
   the replies. Their choice actions don't show in the action menu while the screen is on. Walk off
-  6 m, or let an infected come close: it closes ("Not now!"). Do the same with a safehouse occupant.
+  6 m, or let an infected come close: it closes ("Not now. Something's coming. Get your gun up."). Do the same with a safehouse occupant.
   A line with an accented letter (a name like "Zoë") types without a broken character. All of it on
   a TV with a pad: the line, the tags and the footer readable from the sofa.
 - [ ] **One Talk prompt per person.** At each quartermaster the action menu shows **Talk to the
