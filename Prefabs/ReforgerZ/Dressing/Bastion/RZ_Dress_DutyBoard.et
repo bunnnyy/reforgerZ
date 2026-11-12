@@ -1,59 +1,73 @@
 GenericEntity {
- ID "3AA42CC69A56378E"
+ ID "567EEE9B270F2584"
  components {
-  RplComponent "{14408881D6E40B96}" {
+  RplComponent "{6F3663E4CD6644C9}" {
   }
-  Hierarchy "{5F1B71D76BA44737}" {
+  Hierarchy "{87AB714976809565}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
-   ID "D449F02A82F61C78"
+   ID "65C89454605A24C1"
    components {
-    Hierarchy "{337A70D8F79F9BDB}" {
+    Hierarchy "{6338D1F74B86694A}" {
     }
    }
    coords 0 0 0
+   angles 0 -5 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "4A5A4AF2BBCD2B02"
+   ID "7396399F5A8CD2D6"
+   coords -0.3 1.3 -0.04
+   angles 0 175 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "3207344B373D6A69"
    components {
-    Hierarchy "{AD81A69A51277353}" {
+    Hierarchy "{9C48569A24FF2063}" {
     }
    }
-   coords -0.3 1.3 -0.04
-   angles 0 180 0
+   coords -1.0 0 -0.4
+   angles 0 60 0
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "826017193E75659D"
+   components {
+    Hierarchy "{2CFA0DA79AD43FB6}" {
+    }
+   }
+   coords -1.0 0.62 -0.4
   }
   GenericEntity {
-   ID "C8BFEDE03C148CB0"
+   ID "405848C51246AD82"
    components {
-    SCR_AISmartActionSentinelComponent "{CBCE6F6EAE890E5D}" {
+    SCR_AISmartActionSentinelComponent "{36B07D46D2246653}" {
      Tags {
       "RZ_Gather"
      }
      m_vLookPosition 0.5 1.6 1.6
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{1F13661FE320ECD0}" {
+    Hierarchy "{56DB4F8D2AEE3AA9}" {
     }
    }
    coords -0.5 0 -1.6
   }
   GenericEntity {
-   ID "19290DB3FAEEF8CA"
+   ID "B5566DEDE1A93974"
    components {
-    SCR_AISmartActionSentinelComponent "{ACBCD46032CA1C1F}" {
+    SCR_AISmartActionSentinelComponent "{6E31F862ACB0CA55}" {
      Tags {
       "RZ_Gather"
      }
-     m_vLookPosition -0.5 1.6 1.6
+     m_vLookPosition -0.6 1.6 1.5
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{5A709B4B9E5F6CF1}" {
+    Hierarchy "{131788B328C4568D}" {
     }
    }
-   coords 0.5 0 -1.6
+   coords 0.6 0 -1.5
   }
  }
 }

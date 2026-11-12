@@ -1,58 +1,84 @@
 GenericEntity {
- ID "3A5DBDC6BE1EC208"
+ ID "453ECFDC5E6AB388"
  components {
-  RplComponent "{3FD82258838700B0}" {
+  RplComponent "{04BFC3F73A9056B0}" {
   }
-  Hierarchy "{B516FFCA0B669138}" {
+  Hierarchy "{9F396180A32DFDD3}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
-   ID "3FD9E1F66EB50F2A"
+   ID "97E5C0E42E821C93"
    components {
-    Hierarchy "{9930D163894BCF7E}" {
+    Hierarchy "{1AAADA92517C9702}" {
     }
    }
    coords 0 0 0
   }
   ParticleEffectEntity : "{899360C930DA3EE3}Prefabs/Particles/Campfire_burning.et" {
-   ID "C9F3498D180CCB6B"
+   ID "B0A563E2854BBAEC"
    components {
-    Hierarchy "{72F92C6588ED1FB9}" {
+    Hierarchy "{53161F4F644E27A5}" {
     }
    }
    coords 0 0.9 0
   }
-  GenericEntity {
-   ID "2882E8CED490288F"
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "BFA847F7A44EC27E"
    components {
-    SCR_AISmartActionSentinelComponent "{B7EA7AEF8774FA29}" {
-     Tags {
-      "RZ_Lean"
-     }
-     m_vLookPosition -0.9 1.6 -0.2
-     m_eLoiterAnimation LEAN_LEFT
-    }
-    Hierarchy "{14310C7DA2C9352E}" {
+    Hierarchy "{176940138EC06DF8}" {
     }
    }
-   coords 0.9 0 0.2
+   coords 1.3 0.55 0.4
+   angles 0 70 80
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "D5BF0136510891AC"
+   components {
+    Hierarchy "{B707B8C8126594A0}" {
+    }
+   }
+   coords -1.1 0 -0.6
+   angles 0 -25 0
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "77C3997F97BA456D"
+   coords -1.0 0.62 -0.6
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "B7063CED637FD313"
+   coords 0.6 0 -0.9
   }
   GenericEntity {
-   ID "F377DB61927A3D07"
+   ID "2A015653E177735A"
    components {
-    SCR_AISmartActionSentinelComponent "{3BA15ADB76AAEBC6}" {
+    SCR_AISmartActionSentinelComponent "{24641265853EF36C}" {
      Tags {
       "RZ_Lean"
      }
-     m_vLookPosition 0.9 1.6 0.2
-     m_eLoiterAnimation LEAN_RIGHT
+     m_vLookPosition -0.9 1.6 -0.3
+     m_eLoiterAnimation LEAN_LEFT
     }
-    Hierarchy "{3CB1EB8B6C6AF0C6}" {
+    Hierarchy "{D9F7B0038CFB2D12}" {
     }
    }
-   coords -0.9 0 -0.2
+   coords 0.9 0 0.3
+  }
+  GenericEntity {
+   ID "91C705EC0F2CC618"
+   components {
+    SCR_AISmartActionSentinelComponent "{AECAF4B6B938C060}" {
+     Tags {
+      "RZ_Lean"
+     }
+     m_vLookPosition 0.8 1.6 -0.5
+     m_eLoiterAnimation LEAN_RIGHT
+    }
+    Hierarchy "{426FF802F8C91C92}" {
+    }
+   }
+   coords -0.8 0 0.5
   }
  }
 }

@@ -1,43 +1,63 @@
 GenericEntity {
- ID "F55C87C8C24EB8D5"
+ ID "61FD472E40481C06"
  components {
-  RplComponent "{CA87E6971D16811A}" {
+  RplComponent "{12244895B4EBEFFD}" {
   }
-  Hierarchy "{8988FB9C4BC76315}" {
+  Hierarchy "{2BF2EAA2A4854BD3}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
-   ID "86EBDFB259C1F3D6"
+   ID "5BFEF98D62ED78A3"
    components {
-    Hierarchy "{89B3ECFFD02D727F}" {
+    Hierarchy "{D7993D7DC865C988}" {
     }
    }
    coords 0 0 0
   }
-  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "35EDC751FC4674F1"
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "545A403DFBB573E1"
    components {
-    Hierarchy "{44E1F155FD801840}" {
+    Hierarchy "{1E57DDDA4EE8BE81}" {
     }
    }
-   coords 0.6 0 0.3
+   coords 0.7 0 0.2
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "B26D760D4CD124AF"
+   components {
+    Hierarchy "{59024132B53DE574}" {
+    }
+   }
+   coords -0.6 0 0.6
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "21AA77E7D8C11871"
+   components {
+    Hierarchy "{BDADB0511524C555}" {
+    }
+   }
+   coords 0.4 0 0.8
+  }
+  GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
+   ID "93D45DDF8DB2E54A"
+   coords 0 0.9 0
   }
   GenericEntity {
-   ID "363C32ABB1B4F610"
+   ID "2D3AF6F560741FCC"
    components {
-    SCR_AISmartActionSentinelComponent "{55317714A4329A84}" {
+    SCR_AISmartActionSentinelComponent "{9EA3652BAFCF2309}" {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition 0 1.6 -0.9
+     m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{C13571A383C6003D}" {
+    Hierarchy "{5D01FF8196CEF0E5}" {
     }
    }
-   coords 0 0 0.9
+   coords 0 0 1.0
   }
  }
 }

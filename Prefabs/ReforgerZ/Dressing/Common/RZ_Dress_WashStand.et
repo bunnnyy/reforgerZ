@@ -1,67 +1,78 @@
 GenericEntity {
- ID "E4EA6970AF9BD3A4"
+ ID "9D0B2F734723E944"
  components {
-  RplComponent "{4365880B2C8B75EA}" {
+  RplComponent "{D12D5A47CC560C93}" {
   }
-  Hierarchy "{3EB83FE27F57B3D5}" {
+  Hierarchy "{1ABF41DB7308DDB7}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "B53C445F31368B8E"
+   ID "62DCFB90C9A87F2D"
    components {
-    Hierarchy "{88F5E4794BCB505B}" {
+    Hierarchy "{BBC18B504367557E}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
-   ID "BB81F48686F0FBAC"
+   ID "161909A8B3EAE87E"
    components {
-    Hierarchy "{EE7915880415CEBB}" {
+    Hierarchy "{5F34F02E511C4D9F}" {
     }
    }
-   coords 0 1.5 0.1
+   coords 0 1.5 0.08
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "F8A26D9274401F81"
+   ID "F5CA1AC61D746BA1"
    components {
-    Hierarchy "{E041FE1C4C2CC8D3}" {
+    Hierarchy "{20902BF7303278C9}" {
     }
    }
-   coords 0 0 0.5
+   coords 0.1 0 0.55
+   angles 0 4 0
   }
   GenericEntity : "{6FD13E995D293853}Prefabs/Props/Furniture/SinkOld_01.et" {
-   ID "E91D2A23389D2BA8"
+   ID "98D9634E4B9087C0"
    components {
-    Hierarchy "{67B41AAA0A0F2E2F}" {
+    Hierarchy "{8A154A6A1F39A532}" {
     }
    }
-   coords 0 0.62 0.5
+   coords 0.1 0.62 0.55
+   angles 0 4 0
   }
   GenericEntity : "{8AC23039E7EC0375}Prefabs/Props/Furniture/TowelRack_01.et" {
-   ID "113E6DB54D9BB868"
+   ID "0564F6AAF8BF81AE"
    components {
-    Hierarchy "{70A93705A7758D5C}" {
+    Hierarchy "{00AD15E1E11E81FE}" {
     }
    }
-   coords 0.8 0 0.2
+   coords 0.9 0 0.2
+   angles 0 -15 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "68FE8073BD61F7FA"
+   components {
+    Hierarchy "{9FB3A46EEC6B05C6}" {
+    }
+   }
+   coords -0.6 0 0.7
   }
   GenericEntity {
-   ID "9EEFBC9D0DF30BDB"
+   ID "68017E75D865C7A5"
    components {
-    SCR_AISmartActionSentinelComponent "{B54A1F61676F7E0C}" {
+    SCR_AISmartActionSentinelComponent "{4633AFAF8484072A}" {
      Tags {
       "RZ_Wash"
      }
      m_vLookPosition 0 1.6 -1.2
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{9C2C35E7BCBD18C7}" {
+    Hierarchy "{5A43B2C271FBFB33}" {
     }
    }
-   coords 0 0 1.2
+   coords 0.05 0 1.2
   }
  }
 }

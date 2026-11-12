@@ -1,32 +1,59 @@
 GenericEntity {
- ID "B4918FE812C727A5"
+ ID "9EABFE4A1D45B046"
  components {
-  RplComponent "{A4F47D1D6047C580}" {
+  RplComponent "{C220FA1BA91F4E99}" {
   }
-  Hierarchy "{E1DDAA814158BBFA}" {
+  Hierarchy "{283304548EDF5A78}" {
   }
  }
  coords 0 0 0
  {
-  GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
-   ID "7E231EFABA10D300"
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "FEECC7843D69C9E9"
    components {
-    Hierarchy "{6E0BDCD8BDA1B317}" {
+    Hierarchy "{4D41C5A126898834}" {
     }
    }
    coords 0 0 0
+   angles 0 5 0
+  }
+  GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
+   ID "198DBB2D731F6A58"
+   components {
+    Hierarchy "{338EAC0C70605760}" {
+    }
+   }
+   coords 0 0.15 0
+   angles 0 5 0
+  }
+  GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+   ID "A82EF36DEAA11BF7"
+   components {
+    Hierarchy "{91A1AC4E512404FD}" {
+    }
+   }
+   coords -1.1 0 0.4
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "E1B469E974099C87"
+   components {
+    Hierarchy "{A48BE0D1B3C47667}" {
+    }
+   }
+   coords 1.0 0 -0.6
+   angles 0 70 0
   }
   GenericEntity {
-   ID "557955200BA7AF7E"
+   ID "6829991E7809AC9D"
    components {
-    SCR_AISmartActionSentinelComponent "{A30CC34223AEAECD}" {
+    SCR_AISmartActionSentinelComponent "{7575F0DAC85D7439}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{D43B54788E6DE0AF}" {
+    Hierarchy "{2B30FD98B57998D4}" {
     }
    }
    coords 0 0 1.0

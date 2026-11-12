@@ -246,7 +246,7 @@ are optional kit prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, dialogue, errands, the mission style, reputation names, tone, traces) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, dialogue, errands, the mission style, reputation names, tone, traces, faction bases) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 
@@ -330,6 +330,9 @@ Configs/ReforgerZ/PrefabManifest.json
 Configs/System/  the vanilla menu and input configs, with the ReforgerZ screens and keys added
 tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
+tools/camp_kit/  pieces.py: the camp-life pieces, their kits and the Traces compositions; build.py
+                 writes their prefabs and the game mode's slots; render.py draws them and the faction
+                 bases (bases.py) into designs/camp_plans.html and designs/BASES.md
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
                  the layout guide (LAYOUTS.md), the layouts (layouts/ReforgerZ/), the icon
                  atlas and the car picture (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)

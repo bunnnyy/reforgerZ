@@ -1,35 +1,31 @@
 GenericEntity {
- ID "412B4F9AD406D5BD"
+ ID "F66D4EABF50CFD24"
  components {
-  RplComponent "{2C4035B307246138}" {
+  RplComponent "{3679E488C7522DBB}" {
   }
-  Hierarchy "{3CC25EBCB51C7957}" {
+  Hierarchy "{0C1A3A1DC449DC5A}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "601BF548914DD3C1"
+   ID "ED492EB48D1FE231"
    components {
-    Hierarchy "{2C1513295EE6A94C}" {
+    Hierarchy "{020A17AD1A655B5A}" {
     }
    }
    coords -1.5 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "FF1B285E6F469006"
+   ID "07C1AD101CB9BE80"
    components {
-    Hierarchy "{9BBAC3C9F241E225}" {
+    Hierarchy "{464F4CD41071F11B}" {
     }
    }
    coords 1.5 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "B0CBC42A93D85F21"
-   components {
-    Hierarchy "{D47DBA3CDE4A34D3}" {
-    }
-   }
+   ID "E5EF8988C664BE5D"
    coords -1.5 1.2 0.06
   }
  }

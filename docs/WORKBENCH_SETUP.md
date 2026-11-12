@@ -1041,92 +1041,34 @@ spawns, but nobody can pick it up and the building never counts as emptied.
 How camp life works is in [DESIGN.md](DESIGN.md#camp-life). It needs nothing to run: with no
 kits every place stays bare, and with no waypoint slots its people walk to their spots with the
 **Zombies > Move waypoint** and stand there. The plugin fills the four vanilla waypoint slots and
-the group prefab (section 4, *Camp life*). The smart-action waypoint, the 49 compositions and the
-six kits are in the repo, built as text and loading in Workbench (their stand-ins are in
-[Stand-in bases](#stand-in-bases)); the steps below say how, to redo or add to them.
+the group prefab (section 4, *Camp life*). Everything else is built from one file.
 
-**1. The smart-action waypoint.** Vanilla ships the class `SCR_SmartActionWaypoint` but no prefab.
-Create a new entity of that class in the World Editor, leave its tag and entity name empty (the
-script sets both), and save it as `Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et`. Set it as **Camp
-life > Smart action waypoint**.
+**The source: `tools/camp_kit/pieces.py`.** It holds the 49 camp-life pieces (each piece's props
+with their position, turn, height and tilt, and its seats), the six kits (faction, place, pieces in
+order with count and ring) and the Traces compositions (section 4, *Traces*). To change a piece,
+edit it there and run:
 
-**2. The compositions.** Build each in `Prefabs/ReforgerZ/Dressing/<Faction>/` (`Common/` for the
-shared ones) from vanilla props: an empty root entity with an `RplComponent` (so clients see it
-when it spawns at run time), the props as children, and a **seat** for each person who can use it.
-A seat is a **direct child of the root** (vanilla looks for smart actions on the entity and its
-children, one level down) with `SCR_AISmartActionSentinelComponent`: its **Tags** hold the use's tag,
-its action offset is where the person stands or sits, **Look position** points where they face,
-and **Loiter animation** is the pose. If a vanilla chair or bench you use already carries a
-sentinel, add the tag to its list instead. Keep footprints small (under about 4 × 4 m, a large
-tent 6 × 4 m) and nothing with physics. A **Ring** in the tables is the piece's **Role**; on the
-inner ring a Sleep or Wash piece goes to the sleeping area at the back and a Cook or Chop piece to
-the cooking area at one side, by itself ([DESIGN.md](DESIGN.md#camp-life)). A piece facing out
-(the perimeter) has its front on the root's +Z.
+| Command | Does |
+|---|---|
+| `py tools/camp_kit/build.py` | Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**, **Smart action waypoint**) and the composition slots of **World > Traces > Kit** |
+| `py tools/camp_kit/render.py` | Draws [designs/camp_plans.html](../designs/camp_plans.html): a top-down plan of every piece, a camp concept per faction and the faction bases ([designs/BASES.md](../designs/BASES.md), written from `tools/camp_kit/bases.py`) |
 
-**Plain mesh copy** means a new prefab that has only the model (a `MeshObject` and its collision)
-of a vanilla thing that would be a real item or have an action: no inventory, no pick-up, no
-user action. Use it for the boots, the axe, the ammo boxes, the door leaf, the sample tubes and
-anything the guard's log names. **A new decal** is a flat texture on a plane (a decal or a
-painted-sheet material): the red hand, the bear stencil, the plague doctor, chalk marks.
+A new prop needs its ResourceName: pass `--index` with the resource index the Workbench plugin
+**ReforgerZ: Write resource index** writes ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)).
+`build.py` adds it to `tools/camp_kit/props.txt` as a `GenericEntity`; check its entity class and
+whether its prefab already has a `Hierarchy` component (**ReforgerZ: Dump prefabs and classes**) and
+correct the line (`Class {GUID}path`, plus ` hier` if it has one: a child can't take a second
+`Hierarchy`, and Workbench logs "component Hierarchy cannot be combined" when it does).
 
-*The 21 original pieces:*
-
-| Composition (folder) | Props to use | Seats (tag, pose) | Use, role in the kit |
-|---|---|---|---|
-| `RZ_Dress_FirePit` (Common) | `Prefabs/Props/Civilian/Fireplace_01.et` with a campfire particle, a log or two, `SackUniversal_01_Pile.et` | 4 × `RZ_Sit`, Sit, facing the fire | Sit, Centre |
-| `RZ_Dress_Table` (Common) | `PicnicTable_01`, or `TableMilitary_US_01.et` and two benches; a `LampKerosene_01_green.et` | 4 × `RZ_Sit`, Sit | Sit, Centre (Bastion, Haven: the meal's table) |
-| `RZ_Dress_Tarp` (Common) | a camo net or canvas over two poles, `CrateWooden_01_plain.et` | 2 × `RZ_Work`, Smoking / Loitering | Work, Inner |
-| `RZ_Dress_FireBarrel` (Common) | `BarrelMetal_01_rust.et` with a small campfire particle on top | 2 × `RZ_Lean`, Lean left / Lean right | Lean, Centre (Red Hand) or beside a road post |
-| `RZ_Dress_Tent_Small_Civilian` (Common) | a small civilian tent from `Prefabs/Structures/Recreation/` (`Tent*`), a bedroll inside | none | Sleep, Inner (Haven, Red Hand) |
-| `RZ_Dress_Tent_Large_Civilian` (Common) | a larger civilian tent, two bedrolls | none | Sleep, Inner (strongholds) |
-| `RZ_Dress_Tent_Small_Bastion` (Bastion) | `TentSmallUS_01.et`, a bedroll | none | Sleep, Inner |
-| `RZ_Dress_Tent_Large_Bastion` (Bastion) | `TentUS_01_Assembled.et`, two cots | none | Sleep, Inner |
-| `RZ_Dress_SentryNest_Bastion` (Bastion) | `Sandbag_Barricade_USSR_04.et` (or sandbags from `Prefabs/Props/Military/Sandbags/`) in a half ring | 1 × `RZ_Watch`, standing or crouched, look position outward, look range 120°, binoculars optional | Watch, Approach |
-| `RZ_Dress_RosterBoard` (Bastion) | a notice board or a plank on two posts with `Notice_A4_Vertical_V1.et` sheets | 4 × `RZ_Gather`, Loitering, facing the board | Gather, Centre |
-| `RZ_Dress_SentryNest_RedHand` (Red Hand) | tyres, a few sandbags, a pallet: scrappier than Bastion's | 1 × `RZ_Watch` as above | Watch, Approach |
-| `RZ_Dress_CardTable` (Red Hand) | a small table, `CrateWooden_01_plain.et` as seats, empty bottles | 3 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_TollBarrier` (Red Hand) | the same barrier as **Checkpoints > Red Hand roadblock** (a wreck or logs), a chair | 2 × `RZ_Lean`, Lean left / Smoking | Lean, Approach |
-| `RZ_Dress_WashingLine` (Haven) | `Clothesline*` from `.../Garden/`, a basket | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_Garden` (Haven) | a vegetable bed, `Hutch_01.et`, sacks, a hoe leaning on it | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_WaterBarrel` (Haven) | a wooden or plastic rain barrel (never a well) | 1 × `RZ_Work`, Loitering | Work, Inner |
-| `RZ_Dress_Tent_Halcyon` (Halcyon) | a white or medical canvas shelter (no field hospital station), `TableMedical_01.et` inside | 1 × `RZ_Work`, Loitering | Work, Inner (the canvas shelter) |
-| `RZ_Dress_FieldTable` (Halcyon) | `TableMilitary_US_01.et`, closed sample cases and a notebook as props, a stool | 2 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_ColdBox` (Halcyon) | a cooler or a closed medical box prop | 1 × `RZ_Work`, Loitering | Work, Inner |
-| `RZ_Dress_Antenna` (Halcyon) | `Antenna_FIA_02.et` or `Antenna_R161_01.et` on a stand, a cable | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_Generator` (Halcyon) | `GeneratorPortable_US_01_Off.et`, a cable run | 1 × `RZ_Work`, Loitering | Work, Edge |
-
-*The 28 lived-in pieces* (paths under `Prefabs/`; tags `RZ_Cook`, `RZ_Wash` and `RZ_Chop` are new: set the piece's **Use** to Cook, Wash or Chop):
-
-| Composition (folder) | Props to use | Seats (tag, pose) | Use, ring |
-|---|---|---|---|
-| `RZ_Dress_Firewood` (Common) | `Props/Forest/WoodPile/WoodPile_01_A.et`, `Props/Civilian/LogChopping_01.et` as the chopping block, two `Props/Forest/WoodPile/WoodLog_01_A.et`, an axe in the block (plain mesh copy: a real axe is an item) | 1 × `RZ_Chop`, Loitering, facing the block | Chop, Inner (the cooking area) |
-| `RZ_Dress_CookPot` (Common) | `Props/Civilian/Fireplace_01.et` with a small campfire particle, a tripod of three `Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et` leaned together, `Props/Civilian/Bucket_01.et` hung as the pot, `Props/Furniture/SkewerGrill_01/SkewerGrill_01.et`, `LitterInterior_USSR_01_bowl.et` and `_mug.et` (`Props/Garbage/Generic/LitterInterior_01/Single/`) | 1 × `RZ_Cook`, Loitering, facing the pot | Cook, Inner (the cooking area) |
-| `RZ_Dress_WashStand` (Common) | a pole with `Props/Furniture/MirrorBathroom_01.et`, `Props/Furniture/SinkOld_01.et` on a `Props/Crates/CrateWooden_01_plain.et` (or `Props/Civilian/Bucket_02.et` on `Props/Furniture/Stool_01.et`), `Props/Furniture/TowelRack_01.et` | 1 × `RZ_Wash`, Loitering, facing the mirror | Wash, Inner (behind the tents) |
-| `RZ_Dress_Latrine` (Common) | two `Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et` as an L-shaped screen, `Props/Civilian/Bucket_01.et`, a plank seat (`Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et`). Not `Latrine_01.et`: its door is a real door | none | None, Edge |
-| `RZ_Dress_DryingLine` (Common) | two `Structures/Civilian/ClotheslinePole_01.et`, shirts and a pair of boots hung on it (plain mesh copies: clothes are items), `Props/Furniture/BasketLaundry_01.et` | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_CrateChairs` (Common) | `Props/Crates/CrateWooden_01_plain.et` as the table, `Props/Furniture/ChairOld_01.et`, `ChairOld_02.et`, `Stool_01.et`, `Props/Military/Camps/LanternMilitary_US_01.et` on the crate and two more hung from poles (vanilla has no string lights) | 3 × `RZ_Sit`, Sit, facing the crate | Sit, Centre |
-| `RZ_Dress_Clutter` (Common) | `Props/Civilian/SackUniversal_01.et`, `Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et`, `Props/Civilian/Guitar_01/Guitar_01.et` leaned on a sack, `LitterInterior_USSR_01_tincan_V1.et` and `_V2.et`, `Props/Civilian/BeerBottle_01_empty_brown.et`, a deck of cards (plain mesh copy, or leave it out), `Props/Civilian/Wheelbarrow_01.et` against a crate (vanilla has no bicycle) | none | None, Inner |
-| `RZ_Dress_RadioTable` (Common) | `Props/Furniture/TableOld_01/TableOld_01.et`, `Props/Civilian/RadioSmall_01_black.et` (if it shows a prompt in play, a plain mesh copy), `Props/Furniture/ChairOld_01.et`, `Props/Civilian/LampKerosene_01/LampKerosene_01_green.et`. Never a radio station | 1 × `RZ_Sit`, Sit, facing the radio | Sit, Centre |
-| `RZ_Dress_ScrapShelter` (Common) | two `Props/Industrial/Pallets/Pallet_01.et` stood up as walls, a `TinWall_01_3m.et` sheet laid across as the roof, `Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et`, `BlanketBeach_01_brown.et` inside | none | Sleep, Inner (the sleeping area) |
-| `RZ_Dress_Barricade_Fence` (Common) | `Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_4m.et`, two `Props/Industrial/Pallets/Pallet_01.et` stood up at its end, `Pallet_01_Pile.et` | none | None, Approach (a perimeter segment) |
-| `RZ_Dress_Kennel` (Common) | `Structures/Civilian/DogHouse_01.et`, a bowl (`LitterInterior_USSR_01_bowl.et`), a short chain (plain mesh), no dog | none | None, Edge |
-| `RZ_Dress_Barricade_Sandbag` (Bastion) | `Props/Military/Sandbags/Sandbag_01_long_burlap.et` and `Sandbag_01_end_burlap.et` in a straight run of about 4 m | none | None, Approach (a perimeter segment) |
-| `RZ_Dress_FlagPole` (Bastion) | `Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et`, no flag (the Zone flies none), `Sandbag_01_single_burlap.et` round its foot | none | None, Centre |
-| `RZ_Dress_ShavingStand` (Bastion) | a pole with `Props/Furniture/MirrorBathroom_01.et`, `Props/Civilian/Bucket_02.et` on `Props/Furniture/Stool_01.et`, `Props/Furniture/TowelRack_01.et` | 1 × `RZ_Wash`, Loitering, facing the mirror | Wash, Inner (behind the tents) |
-| `RZ_Dress_CrateSeats` (Bastion) | four ammo-crate-shaped seats round `Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et`: plain mesh copies of an ammo box's model, **never** a vanilla ammo box | 4 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_DutyBoard` (Bastion) | `Props/Services/ChalkBoard_01/ChalkBoard_01.et` (or `Structures/Civilian/BoardMap_01/BoardMap_01.et`) with `Notice_A4_Vertical_V1.et` sheets: the duty rota | 2 × `RZ_Gather`, Loitering, facing the board | Gather, Centre |
-| `RZ_Dress_Barricade_Scrap` (Red Hand) | `TinWall_01_3m.et` sheets, `Props/Garbage/Tires/TirePile_01_small.et`, `Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et`, a `Pallet_01.et` | none | None, Approach (a perimeter segment) |
-| `RZ_Dress_RedHandSheet` (Red Hand) | one `TinWall_01_3m.et` sheet stood on two `TirePile_01_small.et`, the red hand painted on it (a new decal) | none | None, Approach |
-| `RZ_Dress_TrophyWall` (Red Hand) | `Structures/Walls/Metal/TinWall_01/TinWall_01_6m_A.et` hung with `Props/Forest/DeerSkull_01/DeerSkull_01_board.et`, helmets, a Bastion armband and number plates (plain mesh copies: never real items) | none | None, Edge |
-| `RZ_Dress_Sofa` (Red Hand) | `Props/Furniture/Sofa_02/Sofa_02_green.et`, `Props/Furniture/Armchair_01.et`, `Props/Civilian/BeerBottle_01_group.et` on a `BarrelMetal_01_rust.et` side table | 3 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_BearDoor` (Haven) | a door leaf leaned on a `WoodenFenceOld_01_pole.et` (plain mesh copy: a real door has its open action), the bear stencil painted on it (a new decal) | none | None, Approach |
-| `RZ_Dress_Memorial` (Haven) | `Props/Furniture/TableOld_01/TableOld_01_white.et`, three `Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et`, `Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et`, `Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et`, `Props/Commercial/Posters/Notice_A4_Vertical_V1.et` sheets with names, `Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et` | 1 × `RZ_Work`, Loitering, facing the table | Work, Centre |
-| `RZ_Dress_ChildrensCorner` (Haven) | `Props/Services/ChalkBoard_01/ChalkBoard_01.et` propped low, `Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et`, chalk drawings on the ground (a new decal), a ball (plain mesh copy: vanilla has no loose ball), two `Stool_01.et` | none | None, Inner |
-| `RZ_Dress_VegStall` (Haven) | `Props/Commercial/MarketStand_01.et`, two `CrateWooden_01_plain.et`, `Props/Civilian/SackUniversal_01_Pile.et`, `Bucket_01.et`; vegetables as plain mesh copies (food is an item) or leave the sacks | 1 × `RZ_Work`, Loitering, behind the stall | Work, Edge |
-| `RZ_Dress_SampleRack` (Halcyon) | `Props/Commercial/ShelfUniversal_01_narrow.et` behind a pane of glass (a plain glass plane), `Props/Services/Healthcare/CabinetMedical_01.et`, `Props/Medical/ToolsSurgical_01_autoclavedrum.et`, sample tubes (plain mesh copies: never the sample items) | 1 × `RZ_Work`, Loitering, facing the rack | Work, Inner |
-| `RZ_Dress_DeconShower` (Halcyon) | `Structures/Recreation/Beach/ShowerBeach_01.et` on a `Pallet_01.et` floor, `Props/Furniture/ShowerCurtains_01_straight.et`, `Bucket_02.et` | 1 × `RZ_Wash`, Loitering, under the shower | Wash, Inner (behind the tents) |
-| `RZ_Dress_PlagueBoard` (Halcyon) | a plywood sheet on two `WoodenFenceOld_01_pole.et`, the plague-doctor stencil on it (a new decal) | none | None, Approach |
-| `RZ_Dress_NotebookBench` (Halcyon) | `Props/Forest/ForestBench_01/ForestBench_01.et`, `Props/Civilian/Notebook_01_Stack.et` and `Props/Civilian/FileOffice_01_Stack.et` on it, `LampKerosene_01_green.et` | 2 × `RZ_Sit`, Sit | Sit, Centre |
+**What a piece is.** An empty root entity with an `RplComponent` (so clients see it when it spawns
+at run time) and a `Hierarchy`, the props as children, and a **seat** for each person who can use it:
+a **direct child of the root** (vanilla looks for smart actions on the entity and its children, one
+level down) with `SCR_AISmartActionSentinelComponent`, its **Tags** holding the use's tag
+(`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`, `RZ_Cook`, `RZ_Wash`, `RZ_Chop`), **Look
+position** where they face and **Loiter animation** the pose; a watch seat looks over 120°. A
+piece's front is its +Z. Keep footprints small (under about 4 × 4 m, a large tent 6 × 4 m) and
+nothing with physics. Decals (the red hand, the bear stencil, the plague doctor, chalk) and plain
+mesh copies of items aren't made yet: those spots use a plank board or are left out.
 
 **Never use** anything from `Prefabs/Props/Military/AmmoBoxes`, `.../SupplyBox`, `.../Arsenal` or
 `Prefabs/Props/EmptyStorages/` (`USSR_AmmoBox_empty.et`), vanilla subcompositions with "Ammo",
@@ -1141,26 +1083,7 @@ action, and logs `Dressing: removed ...`. A generator or crate whose **root** ha
 whole. Check `GeneratorPortable_US_01_Off.et` and the crate: if the log names them, use a plain
 mesh copy.
 
-**3. The kits** (**Camp life > Kits**). One kit per faction for **Any** place, and one each for
-Bastion's and the Red Hand's **Road post**s (road posts take only a kit made for them). A kind's
-own kit wins over Any, so a stronghold kit is optional. List the pieces most important first: a
-place takes them in order until its piece count (stronghold 20, outpost 13, safehouse 8, field
-station 9, road post 4). Set each piece's **Use**, **Role** and **Seats** as in the tables (Seats
-= the number of sentinels with its tag; 1 for a piece with none). The ring is in brackets.
-
-| Kit | Pieces in order (count, ring) |
-|---|---|
-| Bastion, Any | SentryNest_Bastion (1, approach), RosterBoard (1, centre), FirePit (1, centre), Tent_Small_Bastion (2, inner), CookPot (1, inner), Barricade_Sandbag (2, approach), Table (1, centre), Firewood (1, inner), ShavingStand (1, inner), FlagPole (1, centre), CrateSeats (1, centre) · *an outpost stops here (13)* · Tent_Large_Bastion (1, inner), DutyBoard (1, centre), Tarp (1, inner), DryingLine (1, edge), Latrine (1, edge), Clutter (1, inner), Tent_Small_Bastion (1 more, inner) |
-| Red Hand, Any | TollBarrier (1, approach), FireBarrel (1, centre), CardTable (1, centre), Tent_Small_Civilian (2, inner), SentryNest_RedHand (1, approach), CookPot (1, inner), Sofa (1, centre), RedHandSheet (1, approach), Barricade_Scrap (1, approach), Firewood (1, inner), Clutter (1, inner), ScrapShelter (1, inner) · *13* · TrophyWall (1, edge), Kennel (1, edge), FirePit (1, centre), Tarp (1, inner), Tent_Large_Civilian (1, inner), Latrine (1, edge), DryingLine (1, edge) |
-| Haven, Any | Table (1, centre), CookPot (1, inner), WaterBarrel (1, inner), WashStand (1, inner), WashingLine (1, edge), Garden (1, edge), BearDoor (1, approach), Firewood (1, inner) · *a safehouse stops here (8)* · Memorial (1, centre), Tent_Small_Civilian (1, inner), ChildrensCorner (1, inner), Barricade_Fence (1, approach), VegStall (1, edge) · *13* · FirePit (1, centre), CrateChairs (1, centre), Tent_Large_Civilian (1, inner), Kennel (1, edge), Latrine (1, edge), Clutter (1, inner), Tarp (1, inner) |
-| Halcyon, Any | FieldTable (2, centre), ColdBox (1, inner), Tent_Halcyon (1, inner), DeconShower (1, inner), Generator (1, edge), SampleRack (1, inner), PlagueBoard (1, approach), Antenna (1, edge) · *a field station stops here (9)* · NotebookBench (1, centre), Barricade_Fence (2, approach), Tarp (1, inner), Tent_Large_Civilian (1, inner), RadioTable (1, centre), Latrine (1, edge), DryingLine (1, edge), Clutter (1, inner), CrateChairs (1, centre), Tent_Halcyon (1 more, inner) |
-| Bastion, Road post | FireBarrel (1), SentryNest_Bastion (1), Tarp (1), Barricade_Sandbag (1) |
-| Red Hand, Road post | FireBarrel (1), CardTable (1), Tarp (1), Barricade_Scrap (1) |
-
-Each Any kit holds 20 pieces, a stronghold's count. A place loses a piece that finds no good spot,
-so a cramped outpost can show fewer.
-
-**4. Test it.** Place each composition once in a test world and check the log is silent (no
+**Test it.** Show the pieces in Workbench with the plugin **ReforgerZ: Show the next composition group** ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or place each once in a test world, and check the log is silent (no
 `Dressing: removed` lines); then walk up to an outpost of each faction in Workbench play (the
 play-test checklist, *Camp life*).
 

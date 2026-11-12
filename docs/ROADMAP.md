@@ -100,16 +100,17 @@ The build-review fixes are done. Everything below is approved. The order of the 
 - **The manual steps** the plugin still lists ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); the
   loadouts' gear, shop stock, the consumable effects and the reward crate were filled in by text
   edits and need a play-test.
-- **Camp life in play:** the 49 compositions, the smart-action waypoint and the six kits are built
-  (on vanilla props, simplified:
-  [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)); see them at an
-  outpost of each faction in Workbench play.
+- **Camp life in play:** the 49 compositions (richer, less regular, generated from
+  `tools/camp_kit/pieces.py`), the smart-action waypoint and the six kits are built on vanilla props
+  ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)); see them at an
+  outpost of each faction in Workbench play. Next for camp life: the faction bases, each faction moving
+  into the building that suits it ([designs/BASES.md](../designs/BASES.md)).
 - **Traces' spike and kit in Workbench** (its phase 0, one evening, then two or three for the kit): a
   decal at a door from a client, then the door atlas or the boards; the grave, pyre and candle jars;
-  a lit lantern, a loop, a wreck through the guard and the navmesh; then the 27 scene compositions and
-  the 5 sound prefabs, all optional
+  a lit lantern, a loop, a wreck through the guard and the navmesh. The 36 kit compositions are built
+  (`tools/camp_kit/pieces.py`); the 5 sound prefabs need recorded sounds, all optional
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#traces-the-workbench-spike-phase-0)). Until then door marks
-  and scenes are words only.
+  are words only; the scenes stand as their compositions.
 - **Play it with a game client** on a local server, then a 2-hour session on Everon
   ([PC_SETUP.md](PC_SETUP.md#6-play-testing)).
 

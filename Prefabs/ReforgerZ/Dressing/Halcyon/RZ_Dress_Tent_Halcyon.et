@@ -1,43 +1,68 @@
 GenericEntity {
- ID "257718BAADA811CA"
+ ID "FC4373CBABD8D91F"
  components {
-  RplComponent "{BE54B6768AFA606C}" {
+  RplComponent "{7CFAACC9FC1AEBCA}" {
   }
-  Hierarchy "{B76FBAD4839ECBC4}" {
+  Hierarchy "{758D8CF037E1F5D4}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{908E3B090C2438E9}Prefabs/Props/Recreation/Camp/TentSmall_03/TentSmall_03_white.et" {
-   ID "99D8AD8AAEBA5F85"
+   ID "F6FA4C8479236638"
    components {
-    Hierarchy "{4BC01E31AEEA014B}" {
+    Hierarchy "{09A03BB05DB02882}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{7E4A4D680FAD3461}Prefabs/Props/Medical/TableMedical_01/TableMedical_01.et" {
-   ID "278C81E9260D2C56"
+   ID "A93F5364AE9EE76B"
    components {
-    Hierarchy "{38B76308368E0AE9}" {
+    Hierarchy "{581BC076D804B732}" {
     }
    }
-   coords 0 0 -2.0
+   coords 0 0 -2.1
+   angles 0 90 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "1A1785484F159AF5"
+   components {
+    Hierarchy "{B712202C10E72A62}" {
+    }
+   }
+   coords 1.5 0 -1.4
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "B64A18FFB31C719C"
+   components {
+    Hierarchy "{7ABE4776673451F2}" {
+    }
+   }
+   coords 1.5 1.0 -1.4
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "B2032D725A38D92A"
+   components {
+    Hierarchy "{EFA72CFF3F3074DC}" {
+    }
+   }
+   coords -0.8 0.9 -2.0
   }
   GenericEntity {
-   ID "6596A984F85C04A1"
+   ID "FB427FFB9242C18D"
    components {
-    SCR_AISmartActionSentinelComponent "{B37C9999E907D2B3}" {
+    SCR_AISmartActionSentinelComponent "{FB9812433142E70C}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -0.8
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{18642C0096FED967}" {
+    Hierarchy "{C5E2BAEA665F012D}" {
     }
    }
-   coords 0 0 -1.2
+   coords 0 0 -1.3
   }
  }
 }

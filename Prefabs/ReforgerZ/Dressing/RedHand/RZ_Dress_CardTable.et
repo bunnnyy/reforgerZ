@@ -1,107 +1,113 @@
 GenericEntity {
- ID "D9B62A2420CFDA41"
+ ID "D54D9B00282C0CC4"
  components {
-  RplComponent "{BB8E5966E151AA59}" {
+  RplComponent "{B9936495F61EE1E3}" {
   }
-  Hierarchy "{F79AD9FB30420CA7}" {
+  Hierarchy "{7293292617F2B6B5}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.et" {
-   ID "F64CB73EDA5FDF7C"
+   ID "9D04D76FC8A5411B"
    components {
-    Hierarchy "{2CCC33F1C63F62AB}" {
+    Hierarchy "{A450BD94953EC36F}" {
     }
    }
    coords 0 0 0
+   angles 0 12 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "12EF05DF5A110D4E"
+   ID "A537B9B2DD3364B9"
    components {
-    Hierarchy "{AE9378FC52B49E23}" {
+    Hierarchy "{320FDCF26131F79E}" {
     }
    }
-   coords 0 0 1.0
+   coords 0.1 0 1.0
+   angles 0 5 0
+  }
+  GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
+   ID "16F1A2D04339B3E7"
+   components {
+    Hierarchy "{87D2B1D31EC24DA6}" {
+    }
+   }
+   coords 1.1 0 -0.2
+   angles 0 260 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "8EFA3534F165C26C"
+   ID "5BD3863226384184"
    components {
-    Hierarchy "{4389AE0DD31559BE}" {
+    Hierarchy "{F54919BFB47EA818}" {
     }
    }
-   coords 1.1 0 -0.3
-   angles 0 90 0
+   coords -1.1 0 -0.4
+   angles 0 80 0
   }
-  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "17411E856A68FC48"
-   components {
-    Hierarchy "{7C0CFD4F0EAACE59}" {
-    }
-   }
-   coords -1.1 0 -0.3
-   angles 0 90 0
+  GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+   ID "1A68C0C32CC65285"
+   coords 0.25 0.78 0.1
   }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "A18A77418BDB5351"
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "1716141CB06852FF"
    components {
-    Hierarchy "{D47A9EEB5CBCECFB}" {
+    Hierarchy "{49D4422AF8DBDB05}" {
     }
    }
-   coords 0.2 0.78 0.1
+   coords -0.35 0.78 -0.1
   }
-  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "361A2B44A5EA7D4F"
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "2069D9E322CBB509"
    components {
-    Hierarchy "{8C26669BCB9676CD}" {
+    Hierarchy "{7709E2B355F59688}" {
     }
    }
-   coords -0.25 0.78 -0.15
+   coords -1.6 0 1.2
   }
   GenericEntity {
-   ID "3F7033E45B3273F4"
+   ID "E1211FC35B6EF7D6"
    components {
-    SCR_AISmartActionSentinelComponent "{CDA2126271E07414}" {
+    SCR_AISmartActionSentinelComponent "{3FBA43B6C760B3CE}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{287DB8CDE29AA719}" {
+    Hierarchy "{0089D8B19BF3F9AE}" {
     }
    }
-   coords 0 0 1.0
+   coords 0.1 0 1.0
   }
   GenericEntity {
-   ID "9140F5F28FBEEE50"
+   ID "BC56B40CBF1B4EDB"
    components {
-    SCR_AISmartActionSentinelComponent "{6D02AD58E020B055}" {
+    SCR_AISmartActionSentinelComponent "{0D3B05898763EA06}" {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition -1.1 1.6 0.3
+     m_vLookPosition -1.1 1.6 0.2
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{CD68ADBEDA70FD29}" {
+    Hierarchy "{EFE048AFF743697C}" {
     }
    }
-   coords 1.1 0 -0.3
+   coords 1.1 0 -0.2
   }
   GenericEntity {
-   ID "88F76B0AB6E37F70"
+   ID "D578435C1E04A96B"
    components {
-    SCR_AISmartActionSentinelComponent "{00470F98F1476974}" {
+    SCR_AISmartActionSentinelComponent "{837DBE20AC0CEFA8}" {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 1.1 1.6 0.3
+     m_vLookPosition 1.1 1.6 0.4
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{E1124A3FF7DF55ED}" {
+    Hierarchy "{94ADD1BED8900125}" {
     }
    }
-   coords -1.1 0 -0.3
+   coords -1.1 0 -0.4
   }
  }
 }

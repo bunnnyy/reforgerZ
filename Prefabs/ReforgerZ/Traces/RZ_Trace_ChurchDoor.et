@@ -1,34 +1,34 @@
 GenericEntity {
- ID "DFA4475C863A51E1"
+ ID "6A045DCA0BE0D0DD"
  components {
-  RplComponent "{E103AEC85E941414}" {
+  RplComponent "{84A8864FB02E2A88}" {
   }
-  Hierarchy "{DD025A662A735729}" {
+  Hierarchy "{66928F3D78AED921}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
-   ID "A90C600BF3586797"
+   ID "204C541F659DBA16"
    components {
-    Hierarchy "{320B1CC0AA0D8AD1}" {
+    Hierarchy "{3D72AD0C36A0F316}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
-   ID "C8C0645B072C00B3"
+   ID "9A637C7DE245E1E0"
    components {
-    Hierarchy "{4D61D4702E51B0F0}" {
+    Hierarchy "{B68F1FB2BFB1B015}" {
     }
    }
    coords 1.0 0 0.4
    angles 0 200 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "57024E90598EE73F"
+   ID "72C721277D4E2ABE"
    components {
-    Hierarchy "{6DE9C4A79CE5322E}" {
+    Hierarchy "{7A3EDA79C6CCA01A}" {
     }
    }
    coords 1.0 0.45 0.4

@@ -1,75 +1,59 @@
 GenericEntity {
- ID "0DBF66868BFFAF13"
+ ID "EDD0AB37E416CE6D"
  components {
-  RplComponent "{3D804AE99DA5E146}" {
+  RplComponent "{7C87DBC8095AC9B3}" {
   }
-  Hierarchy "{E8A1499E8EBD3EE7}" {
+  Hierarchy "{F5FDD1E4BD4313CA}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "F45CD017A28A0A0A"
+   ID "3C937BB42FB245C2"
    components {
-    Hierarchy "{BBC596D78C623472}" {
+    Hierarchy "{D51156B0B9FBA8A7}" {
     }
    }
    coords -0.6 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "A3D4E9B4B8A64DBE"
+   ID "DF3B533FFFA1C2B2"
    components {
-    Hierarchy "{CEFDCFCD7E7C2A94}" {
+    Hierarchy "{FDC31D6D11818C6F}" {
     }
    }
    coords 0.6 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "6BF72151B7C763FE"
+   ID "2396D3484F652FE2"
    components {
-    Hierarchy "{4CA511657E5950D0}" {
+    Hierarchy "{EAAED21CB7517D8A}" {
     }
    }
    coords 0 1.3 0.06
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "D5158F0C2A96BF5F"
-   components {
-    Hierarchy "{B955EDB20B4D3682}" {
-    }
-   }
+   ID "900801887A35ECE9"
    coords -0.3 1.35 0.1
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "83A544C02CD7A364"
-   components {
-    Hierarchy "{22ED6E2AFAB50301}" {
-    }
-   }
+   ID "E003C7A5D2449590"
    coords 0 1.38 0.11
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "5A329B7626CD4180"
-   components {
-    Hierarchy "{E1073C257C61420A}" {
-    }
-   }
+   ID "2015E884A27DCE18"
    coords 0.3 1.34 0.12
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "7012F8308A137349"
+   ID "E4EBF674590C3797"
    components {
-    Hierarchy "{F92C27BB74B0B052}" {
+    Hierarchy "{3352941E543C0C45}" {
     }
    }
    coords 0 0 0.8
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "BCC8949FEB4358F1"
-   components {
-    Hierarchy "{FA9253779EF15377}" {
-    }
-   }
+   ID "9A20DA9DFF2E451B"
    coords 0 0.62 0.8
   }
  }

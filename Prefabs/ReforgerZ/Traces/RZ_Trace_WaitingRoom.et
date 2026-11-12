@@ -1,71 +1,71 @@
 GenericEntity {
- ID "F1090A804DBF3196"
+ ID "0C2BFEFE52D3DCC7"
  components {
-  RplComponent "{F8C101E791A0DF82}" {
+  RplComponent "{4D89E76758EE8F42}" {
   }
-  Hierarchy "{55766DCE3A778018}" {
+  Hierarchy "{F763E12A78CA2A73}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "34F0BBFEC3DF3F47"
+   ID "FD2003CEAFD9F7A2"
    components {
-    Hierarchy "{FE48DFC61E11EFAD}" {
+    Hierarchy "{DEE0DA7E60274786}" {
     }
    }
    coords -1.5 0 0
    angles 0 180 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "4B2280843B1526D8"
+   ID "68CA55F794B958CE"
    components {
-    Hierarchy "{C768C68868FE2B69}" {
+    Hierarchy "{59B6D28A13719ABD}" {
     }
    }
    coords -0.9 0 0
    angles 0 180 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "727AB62F1DDF2611"
+   ID "E0582B6E9BFB06C0"
    components {
-    Hierarchy "{46A1E33BE78BB2DA}" {
+    Hierarchy "{510C6152B746AE2A}" {
     }
    }
    coords -0.3 0 0
    angles 0 180 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "2145E44A5E40C8AA"
+   ID "0F64F09C15557248"
    components {
-    Hierarchy "{E82CF11C10C0A962}" {
+    Hierarchy "{4A3D577D027CAE62}" {
     }
    }
    coords 0.3 0 0
    angles 0 180 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "2D48EE7FFA10D109"
+   ID "7967B8350DF5AE8E"
    components {
-    Hierarchy "{28654A5DC007F1AB}" {
+    Hierarchy "{FC2FBFC1FFA89579}" {
     }
    }
    coords 0.9 0 0
    angles 0 180 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "F13B0248383A3D39"
+   ID "19ADF20BF9085226"
    components {
-    Hierarchy "{FB093D3779AE0C51}" {
+    Hierarchy "{85ED76DB7B7012BC}" {
     }
    }
    coords 1.5 0 0
    angles 0 180 0
   }
   GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
-   ID "3FDFD6B70FBED683"
+   ID "1677DEB146D1D823"
    components {
-    Hierarchy "{68F7195363474184}" {
+    Hierarchy "{F9E97DF627F7F794}" {
     }
    }
    coords 2.4 0 0.5

@@ -1,114 +1,125 @@
 GenericEntity {
- ID "545F34BEF04E9694"
+ ID "CE0D68C095B464D6"
  components {
-  RplComponent "{41266EA396D88CAA}" {
+  RplComponent "{99E8253A19808A0B}" {
   }
-  Hierarchy "{E6E4B981D7499CBA}" {
+  Hierarchy "{BF41A47DFC1E543D}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
-   ID "C944279BB2C639C5"
+   ID "0EFEFE047BAE2F5E"
    components {
-    Hierarchy "{E9B1290DEB98B9A1}" {
+    Hierarchy "{ECAB21C6AD9FFDE3}" {
     }
    }
    coords 0 0 0
+   angles 0 8 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "DE44740308ED1F07"
+   ID "28DE0D1F336F9307"
    components {
-    Hierarchy "{8F1400848C7E5C4A}" {
+    Hierarchy "{77FA7A85E2501DDD}" {
     }
    }
-   coords 0 0 1.1
+   coords 0.1 0 1.1
+   angles 0 4 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "5B0FDE65DA17418B"
+   ID "F4F8CF6357A3DE00"
    components {
-    Hierarchy "{74968FD1182A93DC}" {
+    Hierarchy "{0F5C541A967A2094}" {
     }
    }
-   coords 0 0 -1.1
+   coords -0.05 0 -1.15
+   angles 0 -6 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "1FC68BB8FC9E4678"
+   ID "B7F39E6B86DA6512"
    components {
-    Hierarchy "{0ACB78572EC934B4}" {
+    Hierarchy "{C348D21291057BBE}" {
     }
    }
-   coords 1.1 0 0
-   angles 0 90 0
+   coords 1.2 0 0.1
+   angles 0 92 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "C476A6ACD632A078"
+   ID "C562CAC8F3ACEB2A"
    components {
-    Hierarchy "{F1C369F8043E670C}" {
+    Hierarchy "{0EA870F780DABE44}" {
     }
    }
-   coords -1.1 0 0
-   angles 0 90 0
+   coords -1.4 0 -0.2
+   angles 0 70 0
+  }
+  GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
+   ID "C5E1CD4AE0189847"
+   coords 0.2 1.0 0.2
+  }
+  GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
+   ID "6A28DC377FAA19ED"
+   coords -0.25 1.0 -0.1
   }
   GenericEntity {
-   ID "DA3828766DA7BF1F"
+   ID "21D2854EF457226C"
    components {
-    SCR_AISmartActionSentinelComponent "{57C9A06BCCB436C1}" {
+    SCR_AISmartActionSentinelComponent "{748332DD1D11624C}" {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition -0.0 1.6 -1.1
+     m_vLookPosition -0.1 1.6 -1.1
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{47CCA261436734C8}" {
+    Hierarchy "{C1AC6229D79714A3}" {
     }
    }
-   coords 0.0 0 1.1
+   coords 0.1 0 1.1
   }
   GenericEntity {
-   ID "469277E184FB19FD"
+   ID "699DD52A73AC0309"
    components {
-    SCR_AISmartActionSentinelComponent "{89D2F18F66F474A1}" {
+    SCR_AISmartActionSentinelComponent "{62B3AC85B6F536DC}" {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition -1.1 1.6 -0.0
+     m_vLookPosition 0.05 1.6 1.15
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{7C54E8E272822D77}" {
+    Hierarchy "{116AD08845FF785B}" {
     }
    }
-   coords 1.1 0 0.0
+   coords -0.05 0 -1.15
   }
   GenericEntity {
-   ID "73F0AB77D8426B62"
+   ID "25A53E17AFB844BC"
    components {
-    SCR_AISmartActionSentinelComponent "{ED12C4D64A239B1B}" {
+    SCR_AISmartActionSentinelComponent "{1DE70CE3F6C1F14C}" {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition -0.0 1.6 1.1
+     m_vLookPosition -1.2 1.6 -0.1
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{FE12932F6CB937C8}" {
+    Hierarchy "{47D7CC5BE3081D88}" {
     }
    }
-   coords 0.0 0 -1.1
+   coords 1.2 0 0.1
   }
   GenericEntity {
-   ID "7E1D006AB5CBD99E"
+   ID "270DF91FFDC9F1C8"
    components {
-    SCR_AISmartActionSentinelComponent "{14691103AB306043}" {
+    SCR_AISmartActionSentinelComponent "{08F6604771F6EF68}" {
      Tags {
       "RZ_Sit"
      }
-     m_vLookPosition 1.1 1.6 0.0
+     m_vLookPosition 1.4 1.6 0.2
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{C5D97E1EECABB535}" {
+    Hierarchy "{330E2633D4A1E7AD}" {
     }
    }
-   coords -1.1 0 -0.0
+   coords -1.4 0 -0.2
   }
  }
 }
