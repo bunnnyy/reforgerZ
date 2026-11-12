@@ -131,6 +131,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - PC, 2026-11-12: Openings phase 1 (designs/OPENINGS.md): the spawn screen's start picker and place roll (UI/RZ_SpawnMenu.c, the spawn points), the hiding-place scene, the someone-from-before contact (dialogue/openings/), the first three-step chain on the errand engine, the spawn scenarios and "a wanderer finds you" for players who get an opening. Please leave those alone until it lands.
 - PC, 2026-11-12: the map markers restyled (RZ_MapIcons.c, RZ_MapIcon and RZ_MapLegend layouts, new icons).
 - PC, 2026-11-12, from the author: jobs only through a person or a thing (no offers out of nowhere, no jobs on the radio), world events in the Radio tab not Quests, tab order Standing, Quests, Radio, Journal, The season, and the Journal as the history of finished jobs. Touches the mission offers, the Quests and Journal pages and RZ_Notebook.c; please leave them until it lands.
+- PC, 2026-11-12: the talk screen (typewriter, the end-of-line arrow and count, no auto-skip, paging by moving), a radio menu (View radio) and a stove menu (cooking and boiling), and loose loot density. Please leave RZ_TalkMenu, the stove spot, the radio actions and RZ_Loot until they land.
 
 ## Status
 
