@@ -4,29 +4,29 @@
 conv wanderer.bitten.arm
 for wanderer
 when wbitten
-topic "Ask about the arm."
+topic "Let me see that arm."
 prio ask
 voice plain
 
 node start
-  say "Don't. I know what it is. I've seen enough of them to know."
-  say "There's a house near enough, if I walk fast. Or there's nothing. I'm still deciding which."
-  > @give "Take my antidote." -> given   do call:slot:2
-  > @house "Get to a house. Declare it." -> house
+  say "Don't. I know what it is. I've seen enough of them on the road to know the shape of it, and how long it gives you."
+  say "There's a house with a bear on the door near enough, if I walk fast. They'd sit with me there. Or there's nothing. I'm still deciding which."
+  > @give "Here. Take my antidote." -> given   do call:slot:2
+  > @house "Get to a house and tell them. Now." -> house
   > @sit "I'll sit with you a minute." -> sit
 
 node given
-  say "You'd give me that. To me. I don't know what to say."
-  > @back1 "Something else." -> hub
+  say "You'd give me that. To me. You don't even know my name. I don't know what to say. I'll take it before you change your mind, and I'll owe you for as long as I've got."
+  > @back1 "You owe me nothing. One more thing." -> hub
 
 node house
-  say "They'll help if they can. That's the rule. I'll go now, while my legs still work."
-  > @back2 "Something else." -> hub
+  say "They'll help if they can. That's the rule at every house with the bear on the door: say it out loud, and they help. I'll go now, while my legs still work."
+  > @back2 "Go on, then. One more thing first." -> hub
 
 node sit
-  say "Thank you. Nobody's sat with me since the roads closed. Tell me something ordinary."
-  > @weather "The weather's turning." -> weather
+  say "Thank you. Nobody's sat with me since the roads closed. Don't talk about the arm. Tell me something ordinary. Anything at all."
+  > @weather "The weather's turning. Rain tonight." -> weather
 
 node weather
-  say "It is. Good. That's what I wanted."
-  > @back3 "Something else." -> hub
+  say "Is it. Good. I always liked rain on a roof. That's what I wanted. Something that'll still be happening tomorrow, whatever happens to me."
+  > @back3 "It will be. Let me ask you something." -> hub

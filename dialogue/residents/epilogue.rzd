@@ -1,6 +1,6 @@
 # The epilogue week at a safehouse (docs/EPILOGUE.md): the world's outcome, who was there and this
-# player's route are kept apart. The first true variant replaces the plain line. {resident} is the
-# house's own seeded name, never one from the lore.
+# player's route are kept apart. The first true variant is the greeting. {resident} is the house's
+# own seeded name, never one from the lore.
 
 conv epilogue.occupant.greet
 for occupant
@@ -10,20 +10,21 @@ prio reaction
 voice haven
 
 node start
-  say? was:every_name :: "You were at the table when the names were read. I saw you. Sit, there's soup. Real soup."
-  say? cure_held:bastion :: "The cure came in a crate with a number on it. We're on a list for it. Everyone's on a list now."
-  say? cure_held:everyone :: "Somebody walked it out to every house. Mrs {resident} asked who to thank, and nobody would say."
-  say? ending:every_name=every_name :: "They read every name at supper. Even the crossed ones. Mrs {resident} cried, then went to bed early."
-  say "The loudspeakers say processing at the checkpoints. Nobody's gone up yet. Nobody quite believes it."
+  say? was:every_name :: "You were at the table when the names were read. I saw you. Sit down, there's soup. Real soup, with things in it. We're all leaving soon, and I wanted you to have a bowl first."
+  say? cure_held:bastion :: "The cure came up the road in a crate with a number on it. We're on Bastion's list for it now. Everyone's on a list now. Mrs {resident} says at least it's a list with an end."
+  say? cure_held:everyone :: "Somebody walked the cure out to every house. Ours came in a cold box at dawn. Mrs {resident} asked who to thank, and nobody would say. So we thank everybody, at supper."
+  say? ending:every_name=every_name :: "They read every name at supper, even the crossed-out ones. Mrs {resident} cried, then went to bed early. We're leaving in a few days. The bear stays on the door."
+  say? epilogue :: "The loudspeakers at the road checkpoints say processing now, not remain indoors. Nobody from {here} has gone up yet. Nobody quite believes it. We're packing slowly."
 
 conv epilogue.occupant.route
 for occupant
 when epilogue & route:bastion
-topic "Tell them you stood with Bastion."
+topic "I stood with Bastion, at the end."
 prio reaction
 once
 voice haven
 
 node start
-  say "I know. Everyone knows. Don't expect soup. ...There's soup. Don't expect it, that's all."
-  > @back "Something else." -> hub
+  say "I know. Everyone in {here} knows. Bastion's crates came up the road with a number stencilled on every one, and now we're all on their list, in their order, when they say."
+  say "Don't expect soup. There's soup. Don't expect it, that's all. Some here will thank you and some won't look at you, and both of them are right about something."
+  > @back "Fair enough. Can I ask something else?" -> hub
