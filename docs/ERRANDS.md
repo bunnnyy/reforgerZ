@@ -601,9 +601,9 @@ else.
 |---|---|---|---|
 | ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | 20 s (10 s) within 10 m of a building 50–250 m from the contact (quiet), then back to them |
 | ✅ Water | `opening.water` | do | 15 s at the nearest well or water tower, then back |
-| ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact |
-| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact; 15 s at the well |
-| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the contact; 10 minutes before it lapses |
+| ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact, once you've chosen to on the talk screen (`opening.tend_cut`) |
+| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact once you've chosen to on the talk screen (`opening.tend_fever`); 15 s at the well |
+| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the contact once you've chosen to on the talk screen (`opening.tend_clock`, `opening.tend_clock_med`); 10 minutes before it lapses |
 | ✅ The Pump | `opening.pump` | do | 5 s at a petrol station's pump with fuel in a can |
 | ✅ Downwind | `opening.downwind` | sneak | 30 s within 25 m, only while hidden (`m_bUnseen`), quiet |
 | ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the contact gave you |

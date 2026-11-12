@@ -2974,7 +2974,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
 | 1. Across the Road | Search a building 50–250 m from them for 20 s (10 s for a learning player, level 1), within 10 m of it, and come back. One of your background's kinds when one is there (below), else any house | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Your background's own | Its own system (below); else water (15 s at the nearest well or water tower within 400 m, and back), else The Cut (dress their hand with anything medical you carry) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 2. Your background's own | Its own system (below); else water (15 s at the nearest well or water tower within 400 m, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
 No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
@@ -2990,10 +2990,10 @@ Cut. Step 1's building is of your background's kind when one is 50–250 m off.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
-| Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | one medical item handed over at the contact |
+| Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | you choose to see to him on the talk screen (**See to the boy.**, `opening.tend_fever`), then one medical item handed over at the contact |
 | | | else **Water for the Fever** | a well within 400 m | 15 s at the well, and back (it'll be boiled) |
-| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | the antidote handed over at the contact |
-| | | else **The Clock** with a dressing | something medical | one medical item handed over |
+| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | **Give him the antidote.** on the talk screen (`opening.tend_clock`), then the antidote handed over at the contact |
+| | | else **The Clock** with a dressing | something medical | **Keep him going.** on the talk screen (`opening.tend_clock_med`), then one medical item handed over |
 | Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can, and back |
 | Hunter | a farm | **Downwind**: watch a pack's ground, unseen | always: 150 m short of the nearest pack's lair within 1.6 km, else the tree line 150–250 m out | 30 s within 25 m, hidden (built stealth), quiet; back |
 | Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building, and back |

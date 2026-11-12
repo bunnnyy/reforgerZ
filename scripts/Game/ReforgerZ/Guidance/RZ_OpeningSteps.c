@@ -34,6 +34,7 @@ class RZ_OpeningTasks
 {
 	static const string FLAG_SETTLED = "opening.settled";	// SETTLE: 1 settled, 2 half settled (the conversation's check)
 	static const string FLAG_ANSWERED = "opening.answered";	// CHANNEL: 1 answered on the open channel
+	static const string FLAG_TENDED = "opening.tended";		// CUT, FEVER, CLOCK, CLOCK_MED: 1 once you chose to see to them on the talk screen
 
 	protected static const float NEAR = 1500;			// a pump, a toll or a wanderer this close to the contact
 	protected static const float PUMP_NEAR = 800;
@@ -450,6 +451,10 @@ class RZ_OpeningTasks
 
 			case RZ_EOpeningTask.SETTLE: SetFlag(o, FLAG_SETTLED, 0); break;
 			case RZ_EOpeningTask.CHANNEL: SetFlag(o, FLAG_ANSWERED, 0); break;
+			case RZ_EOpeningTask.CUT: SetFlag(o, FLAG_TENDED, 0); break;
+			case RZ_EOpeningTask.FEVER: SetFlag(o, FLAG_TENDED, 0); break;
+			case RZ_EOpeningTask.CLOCK: SetFlag(o, FLAG_TENDED, 0); break;
+			case RZ_EOpeningTask.CLOCK_MED: SetFlag(o, FLAG_TENDED, 0); break;
 		}
 	}
 
@@ -536,6 +541,21 @@ class RZ_OpeningTasks
 			}
 
 			case RZ_EOpeningTask.SETTLE: return Flag(o, FLAG_SETTLED) > 0;
+
+			// Handed over in person: never just for standing next to them with a bandage in the pack
+			case RZ_EOpeningTask.CUT:
+			case RZ_EOpeningTask.FEVER:
+			case RZ_EOpeningTask.CLOCK:
+			case RZ_EOpeningTask.CLOCK_MED:
+			{
+				if (Tended(o))
+					return true;
+
+				if (there)
+					Tell(o, e, e.Fill("Talk to {giver} and see to it yourself."));
+
+				return false;
+			}
 		}
 
 		return true;
@@ -596,6 +616,18 @@ class RZ_OpeningTasks
 			return 0;
 
 		return trees.GetMemory().CharFlag(o.m_iPlayer, key);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Did they choose to see to them on the talk screen? With conversations off (no trees), the old
+	//! way: being there with the item is enough.
+	protected static bool Tended(RZ_Opening o)
+	{
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		if (!trees || !trees.IsOn() || !trees.GetMemory())
+			return true;
+
+		return Flag(o, FLAG_TENDED) > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------

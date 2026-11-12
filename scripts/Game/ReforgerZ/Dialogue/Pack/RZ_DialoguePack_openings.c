@@ -117,12 +117,52 @@ class RZ_DialoguePack_openings
 		db.Node("half");
 		db.Say("", "\"They heard you. They didn't like it. They'll take turns with the coal and not look at each other.\"");
 		db.Choice("enough", "\"That'll have to do for now.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.tend_clock", "opening", "cflag:opening.step=2 & cflag:opening.task=13 & cflag:opening.tended=0", "Give him the antidote.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"He's sat against the wall. He keeps saying he's fine. He isn't.\"");
+		db.Choice("give", "\"Roll his sleeve up. Now.\"", "given", "", "", "", "", "", "", "", "");
+		db.Choice("later", "\"Keep him talking. I'm getting it out.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("given");
+		db.Say("", "\"He didn't even flinch. Just closed his eyes. Is that good?\"");
+		db.Do("cset:opening.tended=1");
+		db.Choice("wait", "\"Give it a moment.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.tend_clock_med", "opening", "cflag:opening.step=2 & cflag:opening.task=14 & cflag:opening.tended=0", "Keep him going.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"There's nothing that fixes it. I know. Just tell me there's something that slows it.\"");
+		db.Choice("bind", "\"Clean it and bind it. That buys time.\"", "bound", "", "", "", "", "", "", "", "");
+		db.Choice("later", "\"Keep him still. I'll be back.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("bound");
+		db.Say("", "\"Tight as that? All right. All right. I'll watch him.\"");
+		db.Do("cset:opening.tended=1");
+		db.Choice("ok", "\"Watch his colour.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.tend_cut", "opening", "cflag:opening.step=2 & cflag:opening.task=2 & cflag:opening.tended=0", "Look at the hand.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"It's nothing. It's hot and it throbs and it's nothing.\"");
+		db.Choice("look", "\"Hold still. Let me dress it.\"", "dressed", "", "", "", "", "", "", "", "");
+		db.Choice("later", "\"Keep it up. I'll come back to it.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("dressed");
+		db.Say("", "\"Mind the edge. There. You always did hold on harder than you needed to.\"");
+		db.Do("cset:opening.tended=1");
+		db.Choice("ok", "\"Nearly done.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.tend_fever", "opening", "cflag:opening.step=2 & cflag:opening.task=3 & cflag:opening.tended=0", "See to the boy.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"He's through there, on the kitchen floor. He won't take water from me any more.\"");
+		db.Choice("treat", "\"Show me. I'll see what I've got.\"", "treated", "", "", "", "", "", "", "", "");
+		db.Choice("later", "\"In a minute. Keep him cool.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("treated");
+		db.Say("", "\"You knelt down like it was a waiting room and not my kitchen. Go on. I'll hold his hand.\"");
+		db.Do("cset:opening.tended=1");
+		db.Choice("on", "\"Stay with him. I'll be quick.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("opening.where_now", "opening", "cflag:opening.step=3", "Ask where they'll go now.", 4, 1, "plain");
 		db.Node("start");
 		db.Say("cflag:opening.end=3", "\"Not where you're going. They'd have the coat off my back before I'd said hello. I'll find a door.\"");
 		db.Say("", "\"Behind you, at a distance. I'm slower than I look, and I look slow. Don't wait for me.\"");
 		db.Choice("come", "\"Come with me.\"", "come", "", "", "", "", "", "", "", "");
 		db.Choice("fine", "\"Mind how you go.\"", "hub", "", "", "", "", "", "", "", "");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Node("come");
 		db.Say("", "\"I will. Just not at your pace. Go on. If I'm not there by dark, I found somewhere better.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
@@ -159,10 +199,6 @@ class RZ_DialoguePack_openings
 		db.Say("", "\"There's three days of dark between back by dark and now. Count them if you want. I've stopped counting.\"");
 		db.Choice("look", "\"Should we go and look?\"", "look", "", "", "", "", "", "", "", "");
 		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-	}
-
-	protected static void Add1(RZ_DialogueDB db)
-	{
 		db.Node("look");
 		db.Say("", "\"Not today, and not the two of us. If they're anywhere, someone at a safehouse will have their names. Ask there.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
