@@ -2570,7 +2570,7 @@ when it happens)
   not a card; a Perimeter loudspeaker too. With **Subtitles** off, they're cards again.
 - [ ] Talk to a Trader wanderer: the talk screen opens with their name, what they say and the
   replies; "Buy supplies" shows its price and is dim with what it needs if you're short; pick a
-  reply with the D-pad and A, with 1–7, and with a click; B leaves. Their choice actions don't show
+  reply with the D-pad and A, with 1–7, with LT/RT + D-pad, and with a click; B leaves. Their choice actions don't show
   in the action menu while the screen is on. Walk off 6 m, or let an infected come close: it
   closes ("Not now!"). Do the same with a leader's "Talk to whoever's in charge" (Ask for work
   gives the job as a card, the leader's line in the screen) and a safehouse occupant.

@@ -226,9 +226,9 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
-config (same GUID) that adds `RZ_OpenNotebook` (**N**) in `IngameContext`, and `RZ_RadioFilter`
-(**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**), `RZ_TurnPreview` (the pad's right stick) and
-`RZ_Reply1` to `RZ_Reply7` (**1** to **7**) in `MenuContext`, and `RZ_MapLegend` (**I**, pad **Y**) in
+config (same GUID) that adds `RZ_OpenNotebook` (**N**, pad **View + RB**) in `IngameContext`, and
+`RZ_RadioFilter` (**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**), `RZ_TurnPreview` (the pad's right
+stick) and `RZ_Reply1` to `RZ_Reply7` (**1** to **7**, pad **LT/RT + D-pad**) in `MenuContext`, and `RZ_MapLegend` (**I**, pad **Y**) in
 `MapContext`. The list with
 the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).

@@ -171,7 +171,7 @@ map key isn't a tab: it's on the map ([The map](#the-map)).
 
 | Open it | Keyboard and mouse | Gamepad / console |
 |---|---|---|
-| A key | **N** (`RZ_OpenNotebook`) | — |
+| A key | **N** (`RZ_OpenNotebook`) | **View + RB** |
 | The pause menu | Esc, then **Notebook** | Start, then **Notebook**, A |
 | The notebook item | In the inventory, take it into your hand | The same, or from a quick slot |
 
@@ -246,7 +246,7 @@ to the right of the replies.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
-| Choose | up/down, or **1–7** (`RZ_Reply1`–`7`) to say one at once | D-pad or left stick |
+| Choose | up/down, or **1–7** (`RZ_Reply1`–`7`) to say one at once | D-pad or left stick, or LT/RT + D-pad to say one at once ([Controllers](#controllers)) |
 | Say it | Enter, or click | A |
 | Leave | Esc | B |
 | Read more of a long line | Q/E, or the wheel | LB/RB |
@@ -505,10 +505,10 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 
 | Action | Keyboard | Gamepad | Context |
 |---|---|---|---|
-| `RZ_OpenNotebook` | N | none: the pause menu's **Notebook** button, or the notebook item | `IngameContext` |
+| `RZ_OpenNotebook` | N | View + RB (also the pause menu's **Notebook** button, or the notebook item) | `IngameContext` |
 | `RZ_RadioFilter` | F | X | `MenuContext` |
 | `RZ_BoardClear` | Delete | X | `MenuContext`: the notice board's Clear, server admins only |
-| `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | none: the D-pad and A pick a reply | `MenuContext` |
+| `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | LT + D-pad up, right, down, left for 1–4; RT + D-pad up, right, down for 5–7 (the D-pad and A also pick the focused reply) | `MenuContext` |
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
 | `RZ_MapLegend` | I | Y | `MapContext`: show or hide the map key on the full-screen map |
@@ -522,8 +522,13 @@ pad and a console. The prompt is the base game's hint with its timer ("Something
 ours. The stagger and the knockdown have no prompt, only a line.
 
 N is free in play (vanilla uses it only in the group menu and the map's pencil tool, other
-contexts). The pad has no free button in play, so Start (the pause menu) and the notebook item are
-its way into the notebook. X is free in the board menu, so the radio filter and the board's Clear
+contexts). The pad has no free single button in play, so the notebook is a combo, View + RB (Start's
+pause menu and the notebook item reach it too). The combos are chosen to miss vanilla's: vanilla
+pairs View (the map on its own) with the D-pad (weapon groups), X (the group menu), Y (the editor), A
+(hints), B (tasks) and Menu (the scoreboard), never with RB; and the triggers in a menu only move
+between pages (`MenuNavLeft`, `MenuNavRight`), which the talk screen doesn't use, so LT and RT with
+the D-pad say a reply at once there (the D-pad also moves the focus, harmlessly: the reply is picked
+by its number). Not yet checked with a pad. X is free in the board menu, so the radio filter and the board's Clear
 share it, each only in its own screen.
 
 **The check** (done in the files; not yet played with a pad, the VERIFY list's UI part):
