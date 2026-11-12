@@ -451,9 +451,27 @@ ImageSetClass {
    Size 128 128
    Flags 0
   }
+  ImageSetDefClass track_current {
+   Name "track_current"
+   Pos 256 1152
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass track_done {
+   Name "track_done"
+   Pos 384 1152
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass track_next {
+   Name "track_next"
+   Pos 512 1152
+   Size 128 128
+   Flags 0
+  }
   ImageSetDefClass voice_note {
    Name "voice_note"
-   Pos 256 1152
+   Pos 640 1152
    Size 128 128
    Flags 0
   }

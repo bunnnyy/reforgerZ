@@ -1251,7 +1251,7 @@ in `UI/layouts/ReforgerZ/`.
    layout** and the five **page** layouts are set on `RZ_GameMode.et`: Standing, Journal, Radio,
    **Quests** (`RZ_QuestsPage.layout`, the old hall page's slot and GUID, `{FCD5A2E4F7512EFF}`) and
    the Season page (with the hall of fame now). `chimeraInputCommon.conf` has `RZ_TrackJob` (T, pad
-   Y) in `MenuContext` for the Quests tab's Track. Two
+   Y) in `MenuContext` for the Quests tab's Track (A, `MenuSelect`, tracks there too). Two
    overrides of vanilla configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf`
    the presets, `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)).
    **UI > Board menus** is on by default, so reading a safehouse board opens its menu; turn it off
@@ -1900,11 +1900,11 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `UI/RZ_UIData.c:964` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:201` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_Notebook.c:194` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:977` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
+| `UI/RZ_Notebook.c:1048` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:44` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_TalkMenu.c:366` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; the wheel still works |
 | `UI/RZ_UIData.c:987` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
@@ -2746,18 +2746,32 @@ when it happens)
   once. Owed errand pay at a join is one *While you were away* entry, no card.
 - [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
   by a quartermaster (a Favor line), stay out at dusk; never two at once.
-- [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker)): with no job taken there's no box top
-  left. Take a contract (reach it): the box appears small in the top-left corner with its type icon
-  (a real icon, no flat square), the name and CONTRACT, the current objective with a rough area
-  ("Morton, a few km north-west", never metres) and, if known, "Then: ...". Take a second job: the
-  first stays tracked and the second is one dim line under it; with six jobs, four lines and
-  "+2 more in your notebook". A major you haven't taken part in never shows. Crack a secure channel:
-  the box moves down under the radio panel. The map shows the tracked job as a ring, not a pin.
-- [ ] **Quests tab**: every job, taken ones first, each with its objective and rough area and TRACKED,
-  the time left or Offered. Select one: a short brief, who gave it, roughly where, the reward as far
-  as you know, the objectives (current bright, next dim, "Done: ..."). Press Y (pad), T or the TRACK
-  button: the HUD follows it; again on the same job (the button says UNTRACK): the box goes and
-  stays gone until you take a new job. Relog: the same job is still tracked.
+- [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker); the mockup `UI/Previews/tracker.png`,
+  left): with no job taken there's nothing top left. Take a contract (reach it): the tracker appears
+  small in the top-left corner, no box, the text readable on the world (on a TV too): its type icon
+  (a real icon, no flat square, in the giver's colour) and the name; the current objective after a
+  filled yellow diamond; if known, the next one dimmer after an open diamond; the rough area on its
+  own line in yellow ("Morton, a few km north-west", never metres). No kind tag, no "Then:".
+- [ ] **Only the tracked job on the HUD**: take a second and a third job. The first stays tracked
+  and the tracker still shows that one job alone: no dim lines under it and no "+N more". The others
+  are in the Quests tab only. A major you haven't taken part in never shows. Crack a secure channel:
+  the tracker moves down under the radio panel. The map shows the tracked job as a ring, not a pin.
+- [ ] **Quests tab** (the mockup's right half): the jobs under three headings, THE SEASON'S STORY,
+  QUESTLINES AND JOBS and ERRANDS (a heading only where its group has a job), taken ones first in
+  each; each row its icon, name and rough area (a major's act first), TRACKED in yellow on the
+  tracked one, the time left or Offered under it. The D-pad (or a click) chooses a row, outlined in
+  yellow; its detail: one line with the faction, "from" the giver and the area; the brief in italics;
+  OBJECTIVES (a done one faint with a tick and struck through, the current one bright after a
+  yellow diamond, the next dim after an open one, "(Optional) ..."); REWARD, AS FAR AS YOU KNOW;
+  REQUIREMENTS only on an offered job. Every text 18 px or more.
+- [ ] **Track on the Quests tab**: with a pad, **A** on a row tracks it and the HUD follows within
+  2 s; A on the tracked row stops tracking (the button says UNTRACK) and the tracker goes and stays
+  gone until you take a new job. Y, T, Enter and the TRACK button do the same; A on the TRACK button
+  toggles once, not twice. The footer reads "D-pad: choose · A: track / untrack · LB/RB: tabs ·
+  B: close" (as pad buttons with a pad, keys with the keyboard), and changes with the tab (Radio
+  shows its filter, Standing "open"). Relog: the same job is still tracked.
+- [ ] The three objective marks (`track_current`, `track_next`, `track_done`) show after the atlas
+  is imported again (UI/LAYOUTS.md, "Importing the icons"); before that they're blank, never another icon.
 - [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
   other's log (owner-only notices).
 - [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre, not a card,

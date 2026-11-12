@@ -87,7 +87,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_DETAIL = 10;	// one journal row's detail, asked when it's selected (BuildDetail)
 	static const int PAYLOAD_SEASON = 11;	// the notebook's season tab, asked when it opens (BuildSeason)
 	static const int PAYLOAD_CRAFT = 12;	// the crafting screen: B, W, R, N records; F falls back; X|reason closes (Interactions/RZ_Crafting.c)
-	static const int PAYLOAD_TRACKER = 13;	// the HUD's quest tracker: T, O, A records; "" hides it (UI/RZ_Quests.c)
+	static const int PAYLOAD_TRACKER = 13;	// the HUD's quest tracker: T and O records, the tracked job only; "" hides it (UI/RZ_Quests.c)
 	static const int PAYLOAD_OBJECT = 14;	// the object menu: O and R records; F falls back; X|reason closes (Interactions/RZ_ObjectScreen.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)

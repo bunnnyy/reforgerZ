@@ -1,0 +1,91 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>ReforgerZ quest tracker and Quests tab</title>
+<!-- The house mockup for the quest tracker (left, the HUD in play) and the notebook's Quests tab
+     (right), approved by the author 2026-11-12 with one change: the HUD shows only the tracked job.
+     docs/UI.md, "The quest tracker" and "Notebook: Quests". -->
+<style>
+  body{margin:0;background:#0b0c0d;font-family:"Roboto Condensed","Arial Narrow",Arial,sans-serif;color:#e8e1cf}
+  .row{display:flex;gap:24px;padding:24px}
+  .frame{position:relative;width:924px;height:520px;overflow:hidden;border:1px solid #333}
+  .world{background:linear-gradient(180deg,#7b8a86 0%,#64706a 50%,#4a4f40 51%,#3a3d31 100%)}
+  .cap{position:absolute;bottom:10px;right:14px;font-size:15px;color:#cfc8b6;background:#0008;padding:4px 8px}
+  /* tracker */
+  .trk{position:absolute;left:18px;top:16px;width:300px;font-size:18px;text-shadow:0 1px 2px #000}
+  .t-head{display:flex;align-items:center;gap:8px;font-weight:700;font-size:19px;color:#efe8d6}
+  .ico{width:18px;height:18px;border-radius:3px;display:inline-block;flex:none}
+  .t-obj{margin:4px 0 0 26px;color:#efe8d6}
+  .t-obj:before{content:"◆ ";color:#d9a23a;font-size:13px}
+  .t-next{margin:2px 0 0 26px;color:#a9a291}
+  .t-next:before{content:"◇ ";font-size:13px}
+  .t-area{margin:2px 0 0 26px;color:#d9a23a;font-size:16px}
+  /* notebook */
+  .nb{background:#16181a}
+  .tabs{display:flex;gap:6px;padding:14px 18px 0}
+  .tab{padding:8px 16px;font-size:19px;color:#a9a291;border-bottom:3px solid transparent}
+  .tab.on{color:#efe8d6;border-color:#d9a23a;font-weight:700}
+  .cols{display:flex;gap:14px;padding:12px 18px}
+  .list{width:330px}
+  .item{display:flex;align-items:center;gap:8px;padding:9px 10px;font-size:19px;color:#e8e1cf;border:2px solid transparent}
+  .item.sel{border-color:#d9a23a;background:#d9a23a1f}
+  .item small{display:block;color:#a9a291;font-size:15px}
+  .pin{margin-left:auto;color:#d9a23a;font-size:15px;font-weight:700}
+  .group{color:#7d786c;font-size:15px;margin:10px 0 2px 4px;letter-spacing:.06em}
+  .detail{flex:1;background:#121416;border:1px solid #2a2d30;padding:14px 18px;font-size:18px}
+  .d-title{font-size:24px;font-weight:700;color:#efe8d6}
+  .d-meta{color:#a9a291;font-size:16px;margin:2px 0 10px}
+  .d-brief{color:#e8e1cf;line-height:1.4;font-style:italic}
+  .d-h{color:#d9a23a;font-size:15px;letter-spacing:.06em;margin:12px 0 4px}
+  .o{margin:3px 0}
+  .o.done{color:#7d786c;text-decoration:line-through}
+  .o.done:before{content:"✓ ";text-decoration:none;color:#7d786c}
+  .o.cur{color:#efe8d6;font-weight:700}
+  .o.cur:before{content:"◆ ";color:#d9a23a}
+  .o.next{color:#a9a291}
+  .o.next:before{content:"◇ "}
+  .o.opt{color:#a9a291}
+  .o.opt:before{content:"◇ "}
+  .foot{position:absolute;left:18px;bottom:10px;font-size:15px;color:#a9a291}
+  .note{padding:0 24px 24px;font-size:16px;color:#cfc8b6;line-height:1.5;max-width:1872px}
+</style></head><body>
+<div class="row">
+  <div class="frame world">
+    <div class="trk">
+      <div class="t-head"><span class="ico" style="background:#c9b26a"></span>The Far House</div>
+      <div class="t-obj">Find who's still living at the far house</div>
+      <div class="t-next">Bring word back to Elder Mara</div>
+      <div class="t-area">Near Morton, north-west, a few km</div>
+    </div>
+    <div class="cap">In the world: top left, small</div>
+  </div>
+  <div class="frame nb">
+    <div class="tabs"><div class="tab">Standing</div><div class="tab">Journal</div><div class="tab">Radio</div><div class="tab on">Quests</div><div class="tab">The season</div></div>
+    <div class="cols">
+      <div class="list">
+        <div class="group">THE SEASON'S STORY</div>
+        <div class="item"><span class="ico" style="background:#6d8f5a"></span><div>Every Name<small>Act II · near Brod</small></div></div>
+        <div class="group">QUESTLINES AND JOBS</div>
+        <div class="item sel"><span class="ico" style="background:#c9b26a"></span><div>The Far House<small>near Morton</small></div><span class="pin">TRACKED</span></div>
+        <div class="item"><span class="ico" style="background:#a8433a"></span><div>The Toll at the Bridge<small>east of Levie</small></div></div>
+        <div class="group">ERRANDS</div>
+        <div class="item"><span class="ico" style="background:#8a6a4a"></span><div>Fix the pump at Levie<small>in Levie</small></div></div>
+      </div>
+      <div class="detail">
+        <div class="d-title">The Far House</div>
+        <div class="d-meta">The Haven · from Elder Mara · near Morton, north-west, a few km</div>
+        <div class="d-brief">"The far house is always last on every list. Somebody still lights a lamp there. Go and see who, and whether they'll come in before the cold does."</div>
+        <div class="d-h">OBJECTIVES</div>
+        <div class="o done">Ask at Morton about the lamp</div>
+        <div class="o cur">Find who's still living at the far house</div>
+        <div class="o next">Bring word back to Elder Mara</div>
+        <div class="o opt">(Optional) Leave them two tins</div>
+        <div class="d-h">REWARD, AS FAR AS YOU KNOW</div>
+        <div>Haven Favor, and a bed at the house</div>
+      </div>
+    </div>
+    <div class="foot">D-pad: choose · A: track / untrack · LB/RB: tabs · B: close</div>
+  </div>
+</div>
+<div class="note"><b>Left:</b> the tracker in normal play. The followed job is open, with its current objective (◆), the next one you know about (◇) and a rough area, never metres. Only the job you follow: your other accepted jobs are in the Quests tab, never on the HUD. It's hidden when you follow nothing. <b>Right:</b> the notebook's Quests tab. Your jobs are grouped, and the one you follow is marked TRACKED. Picking a job shows its brief in the giver's voice, who gave it, the area, the objectives (done ones struck through, current, next known, optional) and the reward as far as you know. Steps you haven't learned yet never show.</div>
+<script>window.RZ_READY = true;</script>
+</body></html>

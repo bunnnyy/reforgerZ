@@ -151,7 +151,7 @@ and one way to end it: **research the cure.**
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, a spawn screen in place of vanilla's deploy menu, an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance (one card at spawn, the rest into the notebook),
-  a small quest tracker top left with each job's objectives, a you-are-here
+  a small quest tracker top left with the tracked job's objectives, a you-are-here
   arrow on the map, a notebook (standing, journal, radio,
   quests, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars, a shop screen at the quartermasters, a

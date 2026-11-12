@@ -1,6 +1,6 @@
 # ReforgerZ icons
 
-The icon set for the ReforgerZ UI: 75 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
+The icon set for the ReforgerZ UI: 78 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
 
 - **Sources:** `src/<name>.svg`, hand-written, 64×64 viewBox, one colour (`currentColor`), 4-unit strokes, transparent background.
 - **Mono exports:** `png/64/` and `png/128/`, white on transparent so the game can tint them (`ImageWidget.SetColor`).
@@ -128,3 +128,13 @@ How a spoken line reaches you, before the speaker's name in a subtitle ([docs/UI
 | Icon | Name | Use |
 |---|---|---|
 | <img src="src/voice_note.svg" width="32"> | `voice_note` | A note, sign or board read out: a sheet with a turned corner and a hand's lines |
+
+## Objectives (3)
+
+The marks before a job's objectives on the quest tracker and in the Quests tab, New Vegas style.
+
+| Icon | Name | Use |
+|---|---|---|
+| <img src="src/track_current.svg" width="32"> | `track_current` | The current objective: a filled diamond (hazard yellow) |
+| <img src="src/track_next.svg" width="32"> | `track_next` | The next objective you know of, or an optional one: an open diamond (dim) |
+| <img src="src/track_done.svg" width="32"> | `track_done` | An objective done: a tick, beside the struck-through line (the Quests tab) |

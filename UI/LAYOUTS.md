@@ -68,7 +68,7 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (75) from `UI/Icons/png/128/` into
+1. `py tools/icon_atlas.py` packs the white icons (78) from `UI/Icons/png/128/` into
    `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1280, eight 128-pixel cells to a row, in name
    order.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
@@ -82,8 +82,10 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
 steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for you-are-here (`marker_self` and
-`marker_self_back`) and the subtitles' note (`voice_note`), 75 in all, so import the PNG again (step 2). Until then the imported `.edds` is
-the 72-icon atlas while the imageset lists 75 in a taller atlas, so icons show the wrong cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
+`marker_self_back`), the subtitles' note (`voice_note`) and the three objective marks (`track_current`,
+`track_next`, `track_done`), 78 in all, so import the PNG again (step 2). Until then the imported
+`.edds` is the 72-icon atlas while the imageset lists 78 in a taller atlas, so icons show the wrong
+cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -143,24 +145,21 @@ Frame  (root, full screen)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
 │  └─ Text    SeenText          mono bold 18, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
-├─ VerticalLayout TrackerPanel  the quest tracker: 400 wide, anchor top-left, offset (24, 24), fits its content, 92% opacity, hidden
-│  │                            (the script moves it to (24, 126) while RadioPanel shows; UI.md, "The quest tracker")
-│  └─ Overlay (TrackerBox)
-│     ├─ Image  (TrackerBg)       #0C0E0F at 72%
-│     ├─ Image  TrackerAccent     3 wide, full height, left edge; tinted the giver's colour (hazard yellow without one)
-│     └─ SizeLayout (TrackerWidth) 374 wide, padding 14 8 12 10
-│        └─ VerticalLayout (TrackerBody)
-│           ├─ HorizontalLayout (TrackerHead)
-│           │  ├─ Image  TrackerIcon    22 × 22, Texture the RZ_Icons imageset, Image mission_contract (static; the script sets the job's type icon)
-│           │  ├─ Text   TrackerTitle   condensed bold 20, bone, fills: the job's name
-│           │  └─ Text   TrackerKind    condensed 18, dim, right: "THE SEASON'S STORY", "CONTRACT", "ERRAND"
-│           ├─ Text  TrackerNow       condensed 18, bone, wraps, 30 in: the current objective, then the rough area in brackets
-│           ├─ Text  TrackerNext      condensed 18, dim, wraps, 30 in, hidden: "Then: " and the known next objective
-│           ├─ VerticalLayout TrackerOthers  75% opacity, hidden: the other jobs taken
-│           │  └─ HorizontalLayout TrackerOther1 … TrackerOther5 (hidden; the script uses four)
-│           │     ├─ Image  TrackerOtherIconN  18 × 18, Texture and Image set (mission_contract), dim; the script sets the type icon
-│           │     └─ Text   TrackerOtherTextN  condensed 18, dim: the name, "(4 min left)" when it's running out
-│           └─ Text  TrackerMore      18, dim, 30 in, hidden: "+2 more in your notebook"
+├─ VerticalLayout TrackerPanel  the quest tracker (the tracked job only): 360 wide, anchor top-left, offset (24, 24), fits its content, hidden
+│  │                            (the script moves it to (24, 126) while RadioPanel shows; UI.md, "The quest tracker").
+│  │                            No box: text straight on the world with a 2-px black shadow (each font's ShadowSize 2, ShadowOffset 1 1)
+│  └─ SizeLayout (TrackerWidth) 360 wide
+│     └─ VerticalLayout (TrackerBody)
+│        ├─ HorizontalLayout (TrackerHead)
+│        │  ├─ Image  TrackerIcon    22 × 22, Texture the RZ_Icons imageset, Image mission_contract (static; the script sets the type icon, tinted the giver's colour)
+│        │  └─ Text   TrackerTitle   condensed bold 20, bone, fills: the job's name
+│        ├─ HorizontalLayout TrackerNowRow   30 in
+│        │  ├─ Image  TrackerNowMark  14 × 14, Texture the RZ_Icons imageset, Image track_current (a filled diamond), hazard yellow
+│        │  └─ Text   TrackerNow      condensed 18, bone, wraps: the current objective
+│        ├─ HorizontalLayout TrackerNextRow  30 in, hidden without a known next objective
+│        │  ├─ Image  TrackerNextMark 14 × 14, Texture the RZ_Icons imageset, Image track_next (an open diamond), dim
+│        │  └─ Text   TrackerNext     condensed 18, dim, wraps: the known next objective
+│        └─ Text  TrackerArea       condensed 18, hazard yellow, wraps, 30 in, hidden without a place: the rough area ("Morton, a few km north-west")
 ├─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
 │  ├─ VerticalLayout NoticeStack  the notice cards
 │  └─ Text   NoticeQueued       under the stack, right-aligned, mono 18, faint ("+3 in your notebook")
@@ -229,10 +228,15 @@ Frame (root, full screen)
 │     ├─ Text   TabNText    mono bold 18, centred: dark on the open tab, dim on the others
 │     └─ Text   TabBadgeN   mono bold 18, hazard yellow, right: the count of new things (hidden at 0)
 ├─ Button  CloseButton     44 × 44, top right at (-140, 54), with a Text "X"
-├─ HorizontalLayout Prompts  bottom left at (96, -54): the footer prompts the script makes (vanilla input buttons)
-├─ Text    PromptsText     the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+├─ HorizontalLayout Prompts  bottom left at (96, -54): the footer prompts the script makes for the open tab (vanilla input buttons)
+├─ Text    PromptsText     the same place, mono bold 18, dim: the tab's footer as text ("LB/RB: tabs · B: close"; on Quests
+│                          "D-pad: choose · A: track / untrack · LB/RB: tabs · B: close"), shown only when prompts can't be made
 └─ Text    FooterNote      bottom right at (-96, -54), mono 18, faint
 ```
+
+The footer is made again on every tab switch from the page's `Prompts` and `PromptLine`
+(`RZ_NotebookMenu.DrawPrompts`): Standing: choose, A open; Journal: choose; Radio: X filter;
+Quests: choose, A track / untrack; every tab: LB/RB tabs, B close.
 
 The pages are the old menus' layouts with the frame parts (overlay, heading, header, rule, tabs,
 close button, footer) taken out, and their content moved into the 90% safe area: every horizontal
@@ -240,7 +244,7 @@ position and width scaled by 0.973 from the left margin, which moves from 72 to 
 root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `RadioPage`,
 `QuestsPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
-**Mouse.** The tabs, `CloseButton`, the journal and quest row's root (`MissionRow`), the Quests tab's `TrackButton`, the radio filter chip
+**Mouse.** The tabs, `CloseButton`, the journal and quest row's button (`MissionRow`), the Quests tab's `TrackButton`, the radio filter chip
 (`FilterButton`), the Standing page's rows (`Row0` to `Row3`, highlighted under the mouse) and
 the notice board's `PostButton` are `Button`s. Long text sits in a `ScrollLayout` so the wheel
 scrolls it, and on a pad up and down do: `ListScroll` (the journal), `LogScroll` (the radio),
@@ -366,19 +370,25 @@ same row on the Quests page.
 Unlike the mockup, `DetailWhere` is one `Text` (the script fills both lines into it), not a big
 direction over a small area, and the brief's bar isn't tinted with the accent.
 
-`RZ_MissionRow.layout` (**UI > Mission row layout**), as wide as the list and 62 high. The root
-is a `Button` named `MissionRow` (clicking it selects the row), with no visual of its own:
+`RZ_MissionRow.layout` (**UI > Mission row layout**), as wide as the list. The root is a box with
+the group heading over the row itself, a `Button` named `MissionRow` (clicking it selects the row;
+the script tags and listens on it, and still takes a root `MissionRow` from an older layout), 62
+high, with no visual of its own:
 
 ```
-Button MissionRow (root)
-└─ (SizeLayout, 62 high, holding a Frame)
-   ├─ Image  RowSelected   full size, bone 7%, hidden unless selected
-   ├─ Image  RowAccent     4 × 62, left edge
-   ├─ Image  RowIcon       30 × 30 at (26, 16)
-   ├─ Text   RowTitle      at (70, 10), bold 17
-   ├─ Text   RowSub        at (70, 34), 18, dim
-   ├─ Text   RowDir        right, at (-22, 10), mono bold 14
-   └─ Text   RowTime       right, at (-22, 34), mono 18, faint
+VerticalLayout MissionRowBox (root)
+├─ Text   RowGroup         mono bold 18, dim, padding 12 14 12 4, hidden: the Quests tab's group heading
+│                          ("THE SEASON'S STORY", "QUESTLINES AND JOBS", "ERRANDS"), shown above a group's first row
+└─ Button MissionRow
+   └─ (SizeLayout, 62 high, holding a Frame)
+      ├─ Image  RowSelected   full size, bone 7%, hidden unless selected
+      ├─ Panel  RowSelLine    full size, hazard 2-px outline (outline_2px), hidden unless selected
+      ├─ Image  RowAccent     4 × 62, left edge
+      ├─ Image  RowIcon       30 × 30 at (26, 16), Texture the RZ_Icons imageset, Image mission_contract (static; the script sets the type icon)
+      ├─ Text   RowTitle      at (70, 10), bold 18
+      ├─ Text   RowSub        at (70, 34), 18, dim
+      ├─ Text   RowDir        right, at (-22, 10), mono bold 18
+      └─ Text   RowTime       right, at (-22, 34), mono 18, faint
 ```
 
 ### Radio page: `RZ_RadioPage.layout` and `RZ_RadioRow.layout`
@@ -444,32 +454,43 @@ multi-line edit box isn't one.
 ### Quests page: `RZ_QuestsPage.layout`
 
 The Journal page's tree (fresh GUIDs, the root named `QuestsPage`; the file took the old hall page's
-place and GUID, `{FCD5A2E4F7512EFF}`), with the objectives and a Track button added. Written as text,
-not opened in Workbench yet. **UI > Quests page**.
+place and GUID, `{FCD5A2E4F7512EFF}`), with the objectives and a Track button added, laid out as
+the house mockup (`UI/Mockups/tracker.html`, right). Written as text, not opened in Workbench yet.
+**UI > Quests page**.
 
 ```
 Frame QuestsPage (root)
 ├─ (in the frame: Header, "2 TAKEN, 3 OFFERED")
 ├─ Frame  (list panel, as the Journal's)
 │  ├─ VerticalLayout (list column)
-│  │  ├─ ScrollLayout → VerticalLayout List   the rows (RZ_MissionRow.layout): RowSub the current objective,
-│  │  │                                       RowDir the rough area, RowTime TRACKED (hazard), the time left or Offered
+│  │  ├─ ScrollLayout → VerticalLayout List   the rows (RZ_MissionRow.layout) in three groups, RowGroup over each
+│  │  │                                       group's first: RowSub the rough area (a major's act first), RowDir
+│  │  │                                       TRACKED (hazard), RowTime the time left or Offered
 │  │  └─ Text  LabStatus      hidden here (the lab's line is the Journal's)
 │  └─ Text  Empty             centred, italic 18 ("No jobs yet. Listen to the radio, or ask at a safehouse.")
 └─ Frame  DetailPanel (as the Journal's)
-   ├─ Image  DetailAccent, Image DetailIcon, Text DetailTitle (720 wide, room for the button), Text DetailBy (its kind, then who gave it)
+   ├─ Image  DetailAccent; Image DetailIcon (56 × 56, Texture the RZ_Icons imageset, Image mission_contract; the
+   │  script sets the giver's emblem or the type icon); Text DetailTitle (720 wide, room for the button);
+   │  Text DetailBy, the meta line: the faction, who gave it and the area ("The Haven · from Elder Mara · Morton, a few km north-west")
    ├─ Button TrackButton      180 × 44, top right at (-212, 30), blank style
    │  └─ Overlay (TrackBox): Image TrackBg #1A1D20, Panel TrackLine hazard outline,
    │     Text TrackButtonText condensed bold 20, centred: "TRACK", or "UNTRACK" on the tracked job
    └─ VerticalLayout (detail body)
-      ├─ (BriefBox) Text DetailBrief    the short brief (RZ_QuestText.Short)
+      ├─ (BriefBox) Text DetailBrief    italic 18: the short brief in the giver's voice (RZ_QuestText.Short)
       ├─ VerticalLayout ObjectivesBlock  hidden without objectives
-      │  ├─ Text  (ObjectivesLabel "OBJECTIVES")
-      │  └─ Text  Obj1 … Obj6     condensed 20, wraps; tinted by state: current bone, next dim,
-      │                           "Done: ..." faint, "(Optional)" dim, "Failed: ..." red
-      ├─ (ROUGHLY WHERE and REWARD, AS FAR AS YOU KNOW side by side: DetailWhere, DetailRewards)
-      ├─ (REQUIREMENTS: DetailReq)
-      └─ VerticalLayout CluesBlock (as the Journal's)
+      │  ├─ Text  ObjectivesLabel "OBJECTIVES"   mono bold 18, hazard
+      │  └─ HorizontalLayout Obj1 … Obj6  8 apart, hidden unless used
+      │     ├─ Image   ObjNMark      16 × 16, Texture the RZ_Icons imageset, Image track_next: the script sets track_current
+      │     │                        (hazard), track_next (dim: the known next, optional) or track_done (faint)
+      │     ├─ Text    ObjNText      condensed 20, wraps, fills: a line not done (current bone, next and "(Optional) ..." dim,
+      │     │                        "Failed: ..." red)
+      │     └─ Overlay ObjNDone      hidden unless done: Text ObjNDoneText (condensed 20, faint, one line, cut at 80
+      │                              characters) under Image ObjNStrike (2 high, full width, centred: the strike-through)
+      ├─ VerticalLayout RewardsBlock
+      │  ├─ Text  RewardsLabel "REWARD, AS FAR AS YOU KNOW"   mono bold 18, hazard
+      │  └─ Text  DetailRewards  condensed 20, wraps
+      ├─ VerticalLayout ReqBlock   hidden unless the job is offered and asks something: ReqLabel (hazard), DetailReq
+      └─ VerticalLayout CluesBlock (as the Journal's; its label hazard)
 ```
 
 ### The season page: `RZ_SeasonPage.layout`

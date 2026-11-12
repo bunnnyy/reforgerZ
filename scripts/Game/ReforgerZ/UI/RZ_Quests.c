@@ -286,7 +286,6 @@ class RZ_TrackState
 class RZ_QuestTracker
 {
 	static const float TRACK_SECONDS = 2;
-	static const int OTHERS_SENT = 20;		// the client shows a few and "+N more"
 	static const float AREA_RING = 300;	// the map's ring round a tracked job's place (m)
 
 	protected RZ_GameModeComponent m_GM;
@@ -613,7 +612,7 @@ class RZ_QuestTracker
 			p.m_iTrackedId = 0;
 		}
 
-		string payload = Build(playerId, ent, jobs, tracked, st);
+		string payload = Build(playerId, ent, tracked);
 		if (!force && payload == st.m_sSent)
 			return;
 
@@ -624,9 +623,9 @@ class RZ_QuestTracker
 	//------------------------------------------------------------------------------------------------
 	//! T|id|kind|giver|title|kind label|rough area
 	//! O|state|line (the tracked job's current objective and the known next one)
-	//! A|id|kind|giver|title|minutes left (every other job taken: running out first, then newest)
+	//! Only the tracked job: the other jobs taken are the Quests tab's, never the HUD's.
 	//! "" when nothing is tracked: the box hides.
-	protected string Build(int playerId, IEntity ent, array<ref RZ_QuestJob> jobs, RZ_QuestJob tracked, RZ_TrackState st)
+	protected string Build(int playerId, IEntity ent, RZ_QuestJob tracked)
 	{
 		if (!tracked)
 			return "";
@@ -655,37 +654,6 @@ class RZ_QuestTracker
 		{
 			RZ_UILine lnNext = new RZ_UILine("O");
 			s += lnNext.AddInt(RZ_EObjState.NEXT).Add(next).End();
-		}
-
-		// The others taken: running out of time first (under 10 minutes), then newest first
-		array<RZ_QuestJob> others = {};
-		for (int k = st.m_aTakenOrder.Count() - 1; k >= 0; k--)
-		{
-			RZ_QuestJob o = FindJob(jobs, st.m_aTakenOrder[k]);
-			if (o && o.m_iId != tracked.m_iId)
-				others.Insert(o);
-		}
-
-		array<RZ_QuestJob> ordered = {};
-		foreach (RZ_QuestJob urgent : others)
-		{
-			if (urgent.m_iMinutes >= 0 && urgent.m_iMinutes < 10)
-				ordered.Insert(urgent);
-		}
-
-		foreach (RZ_QuestJob rest : others)
-		{
-			if (!ordered.Contains(rest))
-				ordered.Insert(rest);
-		}
-
-		foreach (int n, RZ_QuestJob a : ordered)
-		{
-			if (n >= OTHERS_SENT)
-				break;
-
-			RZ_UILine lnA = new RZ_UILine("A");
-			s += lnA.AddInt(a.m_iId).AddInt(a.m_iKind).AddInt(a.m_iGiver).Add(a.m_sTitle).AddInt(a.m_iMinutes).End();
 		}
 
 		return s;
