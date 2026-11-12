@@ -660,23 +660,28 @@ their camps warn off the people they watch: [REPUTATION.md](REPUTATION.md#checkp
 Code: `Factions/RZ_CampLife.c`; settings: **Territory > Camp life**. Holdings, Haven safehouses,
 Halcyon's field stations and road posts look lived in, and their people do things. It's
 scenery and behaviour only: nobody new decides who is there, and nothing is saved. Each faction
-moves into the building in its town that suits what it does and dresses its yard and road
-entries; with no building that fits, it camps on rings round its centre.
+moves into the building in its town that suits what it does and lays its camp out in the yard
+and at the road entries; with no building that fits, it lays it out on open ground facing the road.
 
-**What stands there.** Each faction has a **kit** of compositions (the author builds them from
-vanilla props: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)):
+**What stands there.** Each faction has a **kit** for each kind of place: a **plan**, the camp
+drawn whole, of compositions built from vanilla outdoor props
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits); the plans are drawn in
+`tools/camp_kit/camp_plans.html`):
 
 | Place | Built up with |
 |---|---|
 | Bastion post | a sandbag nest and sandbag runs at the approach, tents, the roster board, a flagless pole, a fire pit, a table, a cook pot and a woodpile, a shaving stand, ammo-crate seats |
 | Red Hand camp | the toll barrier, a scrappy nest, a scrap barricade and the red hand painted on corrugated iron at the approach, an oil-drum fire, a card table, a stolen sofa, a cook pot and a woodpile, tents and a scrap shelter, bags and bottles |
 | Haven safehouse and outpost | a table outside, a cook pot and a woodpile, a water barrel and a wash stand, a washing line, a garden bed, the bear stencil on a door board; an outpost adds a candle memorial with names, a tent, a children's corner, a fence and a vegetable stall |
-| Halcyon field station | field tables, a cold box, a canvas shelter, a decon shower, sample racks behind glass, a generator, an antenna, the plague-doctor stencil board (the lab grounds too, when Halcyon's stronghold sits at the lab) |
-| Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board, the Red Hand's trophy wall and kennel, the Haven's fire pit and chairs round a crate, Halcyon's bench of notebooks and radio table) |
-| Road posts | 4 pieces beside the barrier: a fire barrel, a nest or a card table, a tarp, a barricade |
+| Halcyon field station | a field table, the medical tent, a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab grounds too, when Halcyon's stronghold sits at the lab: a sorting table under a net, two generators, the radio table) |
+| Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board, the Red Hand's trophy wall and kennel, the Haven's fire pit and chairs round a crate, Halcyon's sorting table and radio table) |
+| Road posts | 4 pieces on the verges either side of the barrier: a fire barrel, a nest or a card table, a tarp, a barricade |
+| Every place with a quartermaster | his **counter**: a table between him and his customers (Bastion's stores window, the Red Hand fence's table, the Haven's stores table, Halcyon's issue table) |
 
-The full list of compositions, and each faction's kit, is in
-[WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits).
+Every piece stands outdoors, so every prop in one is an outdoor prop: no cabinets, shelves,
+sinks or hospital furniture, only the tables and chairs people dragged out to use. The kits
+(eleven: each faction's stronghold and outpost, the Haven's safehouse, Bastion's and the Red
+Hand's road posts) are in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits).
 
 **The building it moves into** (setting **Buildings**, on). A holding, a safehouse or a field
 station reads the buildings round its spot with the town code's own building data (the building
@@ -698,16 +703,15 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   stronghold, a middling one elsewhere) and distance are then scored by the roads: Bastion and
   Halcyon's lab want a road within 25 m of the building, the Red Hand roads meeting (each further
   road within 45 m counts). Any building on the shortlist will do when none of the faction's kind
-  is there; with none at all, rings (below). It's read once a run and kept; the log says which
+  is there; with none at all, open ground (below). It's read once a run and kept; the log says which
   (`Camp life: ... moves into ...`).
 - **Its shape.** The **front** is the wall with the outside door nearest the way in (the
   building's door children), else the side facing it. The **road entries** are where roads cross
   a ring round the building (50 m for a stronghold, 40 m for an outpost, 28 m for a safehouse), at
   most five; the **gate** is the one toward the nearest other town (the main road in), the others
-  are **closed**. The **yard** is behind the building (the Red Hand's is its forecourt), the
-  cooking side left or right by the seed.
+  are **closed**. The **yard** is behind the building (the Red Hand's is its forecourt).
 - **Its people** come out in the yard: the territory spawns a holding's guards, named people and
-  an outpost's quartermaster there (a stronghold's quartermaster stays where it's placed). Named
+  an outpost's quartermaster there (a stronghold's quartermaster stays where it's placed, and turns to serve at its counter). Named
   people stay within 20 m of the yard, more beside a long building. An outpost's **leader** sits in
   the yard too: registered there when the outpost appears or changes hands (a placed marker's seat
   stays where it's placed), and kept clear of pieces like any seat.
@@ -716,45 +720,55 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   building, its entry ring and the pieces standing), not from the town's middle; a camp whose
   building isn't read yet counts 120 m round its middle (60 m for a safehouse). Road posts count
   as lived in while they stand.
-- **Where each piece stands** is its kit entry's **At** (written by `tools/camp_kit/build.py`
-  from `pieces.py`), or Auto from its ring and use. Tents aren't put up: in a building they sleep
-  indoors.
+- **The plan, laid down whole.** A kit is drawn as one camp (`tools/camp_kit/pieces.py`): each
+  piece's spot and turn, metres from the camp's middle, its front toward the road in. The game lays
+  the plan down as it's drawn, never piece by piece at random, so the camp keeps its shape: the
+  working area at the heart, the sleeping area at the back, the cooking to one side, the
+  perimeter at the front. Left for right by the seed, so neighbouring camps differ. In plan order
+  (the most important first) until the place's piece count.
+- **By a building.** Tents aren't put up (they sleep indoors). The rest go by each kit entry's
+  **At** (written by `tools/camp_kit/build.py` from `pieces.py`), or Auto:
 
   | At | Where | Auto for | Set for |
   |---|---|---|---|
-  | **Yard** | 3–10 m out behind the building (the Red Hand: in front), along its width | Centre: the fire, the tables, the boards, the flag pole, the radio table | |
-  | **Front** | 3–9 m out in front | | the Red Hand's trophy wall, the Haven's vegetable stall |
-  | **Back** | 10–18 m behind | Inner: the wash stand, the water barrel, the cold box, the clutter | |
-  | **Side** | 3–9 m off the cooking side | the cook pot, the woodpile | |
-  | **Walls** | 10–20 m behind or 4–14 m off either side | Edge: the line, the garden, the generator, the antenna, the latrine, the kennel | |
-  | **Door** | 2.5–5 m out by the front door | | the bear board, the memorial, the decon shower |
-  | **Gate** | beside the road at the gate, 6.5–9.5 m off its line | watch and lean pieces on the approach: the nest, the toll barrier | the red hand sheet, the plague board |
-  | **Closed** | beside the road at the other entries, one entry after another | the other approach pieces: the barricades | |
+  | **Yard** | the plan's yard part as drawn, its front against the building's back wall (the Red Hand's back against its front: the forecourt), 2.5 m off it | everything but the approach pieces | |
+  | **Front** | along the front wall, 2.5 m out, its back to the wall and facing out, one each side of the middle | | the Red Hand's trophy wall, the Haven's vegetable stall |
+  | **Door** | beside the front door, 1.2 m out, facing out: right, left, then further along | | the bear board, the memorial, the decon shower |
+  | **Gate** | on the verge at the gate, its near edge 4.5 m off the road's line, facing out along the road; the next on the other verge | watch and lean pieces on the approach: the nest, the toll barrier | the red hand sheet, the plague board |
+  | **Closed** | on the verge at the other entries, one entry after another | the other approach pieces: the barricades | |
+  | **Counter** | in front of the place's quartermaster (below) | | the counters |
 
-- **Rings, with no building.** The layout is seeded from the place's position, so the same pieces
-  stand in the same places on every visit. An outpost is laid out as a small compound, its pieces
-  on rings round the centre by role:
-
-  | Ring | Distance | What goes there |
-  |---|---|---|
-  | **Centre**, the working area | 8–14 m, all round | fire, tables, boards, seats, the flag pole, the memorial |
-  | **Inner** | 14–22 m, all round but the approach | the **sleeping area** at the back (tents and shelters, the wash stand just behind them) and the **cooking area** to one side, left or right by the seed (the cook pot, the woodpile) |
-  | **Approach**, the perimeter | 24–34 m, a 90° arc toward the nearest road (else the next town) | the nest, the barrier, barricade segments, the faction's sign, facing out |
-  | **Edge** | 28–46 m, the other sides | the line, the garden, the generator, the latrine, the kennel |
-
-  Strongholds spread 30% wider, safehouses 20% tighter; road posts put everything 5–11 m beside
-  the road.
-- **Any spot**, by a building or on a ring, is used only on flat
-  ground (under about 12°, from four ground heights), out of the water and away from the line,
-  at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
-  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece, its
-  own place's or any other system's scenery (the rules are one placer,
-  `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). Then the spot is **pushed back
-  off any wall**, a building's, a garden wall or a fence: flat traces eight ways at waist and head
-  height, and the piece moves away until it stands 1.4 m clear (2.3 m for a lean piece: the toll
-  barrier's lean point is 1.9 m out), so its seats and lean points keep 0.4 m off the wall. A
-  pushed spot is checked again. A piece with no good spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
-  safehouse at its own stronghold) isn't dressed twice.
+  The yard is tried as drawn and shifted out (2.5 and 5 m) and sideways (4 m); the way most of it
+  fits wins, its first pieces counting most. If under 60% fits behind the building, its sides
+  (then its front) are tried too. With no road entries, the gate and closed pieces stand 9 m out
+  in front.
+- **On open ground** (no building fits, or buildings are off): the plan's middle at the place, its
+  front to the nearest road (else the next town), then pulled back 4 or 8 m, shifted 4 m sideways
+  or turned 12°, whichever fits most. **At a road post** the plan's front runs along the road and
+  its pieces stand on the verges either side of the barrier (shifted 3 m along it if that fits better).
+- **Every piece fits, its whole footprint.** Each kit entry carries its piece's footprint (its
+  props' boxes and a person round each seat, from `pieces.py`). A piece stands only where all of it
+  is on dry, flat ground (the ground under its corners, edges and middle rises at most about 12°
+  across it), away from the line, every point 4 m from a road's centre line, outside every
+  building's box by 0.8 m (so nothing large ever stands in a building or through its wall),
+  0.8 m from the other pieces, 2 m from a quartermaster, the medic or the barrier, 3.5 m from a
+  leader's seat, 1.5 m from the front door's step and 1 m from any other system's scenery (Traces'
+  scenes and boards). Then **nothing may stand in it**: flat traces along its four sides and
+  across both diagonals at knee and chest height must meet no wall, fence, tree, car or prop.
+  One that doesn't fit is **nudged** up to 1.6 m (3 m by the road or the front wall) and checked
+  again, else **left out**: it is never moved somewhere else. The log says how much of each plan
+  fit and where (`Camp life: ... of ... planned pieces fit, laid out ...`). A place within 60 m of
+  one already dressed (the Haven's safehouse at its own stronghold) isn't dressed twice.
+- **The quartermaster's counter.** Every quartermaster at the place (an outpost's or a safehouse's,
+  and the faction's own when its stronghold is here) turns to serve: of sixteen ways, the most open
+  one (traced up to 5 m), toward his customers when it's about as open, never a way with a wall
+  within 2 m, so he doesn't face a wall or stand into a corner. His customers come from out of
+  the building when he stands by it (his back to the wall, serving into the yard), from the front
+  door when he's inside it, else from the yard's middle. Then his faction's counter stands just in
+  front of him across that way, if it fits: outdoors by the rules above, indoors (a kiosk, a shop,
+  a hall) only with a floor under every corner and nothing in its way. The spot in front of it is
+  kept clear for customers. With no counter (no room, or the place's count is reached) he still
+  turns to serve.
 - **Nothing to abuse.** `RZ_DressingGuard` checks every piece and its children as it spawns and
   deletes any part with an arsenal, any inventory storage, a pick-up item, a support station
   (resupply, heal, fuel, repair), supplies, fuel, a vehicle or vehicle spawner, a spawn point,
@@ -789,8 +803,11 @@ nearest players** (Live places); elsewhere they stand.
 | Off shift | to the tents (by a building, in at the front door); with nobody within 150 m of the place and nobody who could see them they **sleep**: despawned as data, back in the morning (with nobody that near or in sight of the yard), out of the same tent or door |
 
 A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`,
-`RZ_Cook`, `RZ_Wash`, `RZ_Chop`) and seats are counted, so two people never take the same chair.
-A chore with no piece of its own (no cook pot in the kit) falls back to a seat, a work or a lean
+`RZ_Cook`, `RZ_Wash`, `RZ_Chop`), and each person takes a seat of their own: the waypoint is given
+that sentinel itself, and only once it's found on the spawned piece (a waypoint pointing at
+nothing stops vanilla's waypoint tree with "Waypoint is not set properly"). A job's waypoints come
+off the group before its piece goes, and anyone whose piece is gone loses the job (the next
+shuffle gives another). A chore with no piece of its own (no cook pot in the kit) falls back to a seat, a work or a lean
 point. Without a free seat, the smart-action waypoint or the piece, they loiter beside it. Every
 spot someone loiters or keeps watch at is kept out of the place's building and **0.4 m off every
 wall** (traced as the pieces are), so a vanilla lean there doesn't put a head in the wall. A lone character (an occupant, a
@@ -825,7 +842,11 @@ despawn, not an animation. Props spawned at run time may not cut the navmesh (th
 By a building: the lookout stands on the ground at a corner, not on the roof or in the bell
 tower; a closed entry is a barricade beside the road, not across it (the road stays open for the
 supply trucks and players' cars); the building's rooms aren't dressed inside (its stores are the
-quartermaster, its mess the meal at the yard's table, its barracks the sleepers); there are no
+quartermaster at his counter, its mess the meal at the yard's table, its barracks the sleepers); a
+piece that doesn't fit leaves a gap in the plan rather than moving; the yard is laid against one
+side of the building's box, so a building of odd shape (an L, a courtyard) gets a plainer yard;
+the quartermaster is turned, not walked to a serving window, and a window's glass may read as a
+wall; there are no
 graves, stockade or dogs; and no searchlight (no vanilla light prop is checked as safe yet, and
 nothing sweeps one). The people in play stay within the guard, occupant and extras caps, so a
 stronghold seldom reaches its count. Kinds are read from prefab names, so a map whose buildings

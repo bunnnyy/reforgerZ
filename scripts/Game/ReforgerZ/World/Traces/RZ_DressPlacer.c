@@ -1,6 +1,6 @@
-//! One placer for scenery (docs/TRACES.md, "Where scenes stand"; docs/DESIGN.md, Camp life): the
-//! ground rules camp life lays its pieces by, shared with Traces' scenes, so a scene can be several
-//! pieces round its centre. A spot is dry, off the line, flat (under about 12 degrees over 3 m), out
+//! One placer for scenery (docs/TRACES.md, "Where scenes stand"; docs/DESIGN.md, Camp life): Traces'
+//! scenes' ground rules, so a scene can be several pieces round its centre; camp life shares its
+//! ground read and fits whole footprints by its own rules. A spot is dry, off the line, flat (under about 12 degrees over 3 m), out
 //! of every building's footprint (2 m), 6 m off a road's centre line, apart from the pieces already
 //! placed and clear of the spots that must stay free (a quartermaster, the medic, a barrier).
 //! Read once a place: the buildings within 70 m and the road segments within 160 m (camp life reads

@@ -277,7 +277,7 @@ Configs/Map/MapFullscreen.conf
                  the vanilla full-screen map config, with the ReforgerZ icon layer and map key added
 tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
-tools/camp_kit/  pieces.py: the camp-life pieces, their kits and the Traces compositions; build.py
+tools/camp_kit/  pieces.py: the camp-life pieces, their kits' plans and the Traces compositions; build.py
                  writes their prefabs and the game mode's slots; render.py draws them and the faction
                  bases' plans (bases.py) into tools/camp_kit/camp_plans.html
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),

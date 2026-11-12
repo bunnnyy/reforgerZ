@@ -1,15 +1,17 @@
 //! Lived-in outposts and camps (docs/DESIGN.md, "Camp life").
 //!
 //! While a place's bodies exist (territory holdings, Haven safehouses, road posts: a player is
-//! near), its faction's scenery stands around it: compositions from Camp life > Kits. The place
-//! moves into the building in its town that suits its faction (Bastion a school, town hall or
-//! police station; the Red Hand a garage or petrol station; the Haven a church or a big house;
-//! Halcyon the lab or a house), picked by kind and size from the buildings' prefab names and
-//! boxes, and its pieces are laid out by that building: the working area in its yard, the cooking
-//! to one side, the rest along its walls, the gate on the road in from the next town and
-//! barricades at the other road entries. With no building that fits, a small compound on rings
-//! round its centre. Always from a seed (the place's position), on flat open ground, off roads
-//! and out of buildings. Pieces spawn a few per tick.
+//! near), its faction's scenery stands around it: compositions from Camp life > Kits. Each kit
+//! is a plan, the camp drawn whole (tools/camp_kit/pieces.py), and the plan is laid down whole:
+//! turned to face the road on open ground; by the building in its town that suits its faction
+//! (Bastion a school, town hall or police station; the Red Hand a garage or petrol station; the
+//! Haven a church or a big house; Halcyon the lab or a house), in its yard with the plan's front
+//! against the wall, the approach pieces at the road entries (the gate on the road in from the
+//! next town, barricades at the others) and the door pieces by the front door; at a road post
+//! beside the road. Every piece's whole footprint must fit (flat, dry, off the roads, out of
+//! every building, clear of walls and of the other pieces); one that doesn't is nudged a little
+//! or left out, never moved elsewhere. A quartermaster's counter stands in front of him, and he
+//! turns to serve over it. Always from a seed (the place's position). Pieces spawn a few per tick.
 //! Nothing is saved: the same seed gives the same layout on every
 //! visit, and the pieces go with the bodies. RZ_DressingGuard strips anything a player could
 //! use for gain, and the interaction scan ignores the pieces (IsDressing).
@@ -33,10 +35,10 @@ enum RZ_ECampPlace
 //------------------------------------------------------------------------------------------------
 enum RZ_EDressRole
 {
-	CENTRE,		// 8-14 m out, the working area: the fire, the table, the roster board
-	INNER,		// 14-22 m: tents at the back (the sleeping area), the cook pot to one side (the cooking area)
-	APPROACH,	// 24-34 m toward the nearest road (or the next town), the perimeter: the nest, the barrier, barricades
-	EDGE		// 28-46 m on the other sides: the washing line, the garden, the generator, the latrine
+	CENTRE,		// the working area: the fire, the table, the roster board
+	INNER,		// the sleeping and the cooking areas: tents, the cook pot, the wash stand
+	APPROACH,	// the perimeter, toward the road in: the nest, the barrier, barricades (by a building: the road entries)
+	EDGE		// the far side: the washing line, the garden, the generator, the latrine
 }
 
 //------------------------------------------------------------------------------------------------
@@ -55,38 +57,33 @@ enum RZ_EDressUse
 }
 
 //------------------------------------------------------------------------------------------------
-//! Where a piece stands when its place has moved into a building (RZ_CampSite). Auto: from its
-//! role and use (Centre the yard, Inner the back or the cooking side, Approach the gate or the
-//! closed entries, Edge the walls).
+//! Where a piece stands when its place has moved into a building (RZ_CampSite). Auto: an approach
+//! piece at the road entries (a watch or lean piece the gate, the rest the closed ones), anything
+//! else in the yard where the plan draws it. Counter is the same everywhere.
 enum RZ_EDressAt
 {
 	AUTO,
-	YARD,		// the working area: behind the building (the Red Hand: its forecourt)
-	FRONT,		// along the front, toward the road: a market stall, a trophy wall
-	BACK,		// further behind the yard: the wash stand, the cold box, the clutter
-	SIDE,		// the cooking side, left or right by the seed: the cook pot, the woodpile
-	WALLS,		// along the back and side walls: the line, the garden, the generator, the latrine
-	DOOR,		// by the front door: the bear board, the memorial, the decon shower
-	GATE,		// at the road entry left open (the road in from the next town): the nest, the toll barrier, the sign
-	CLOSED		// at the other road entries, beside the road: barricades
+	YARD,		// in the yard, where the plan draws it: behind the building (the Red Hand: its forecourt)
+	FRONT,		// along the front wall, facing out: a market stall, a trophy wall
+	DOOR,		// beside the front door, facing out: the bear board, the memorial, the decon shower
+	GATE,		// beside the road at the entry left open (the road in from the next town): the nest, the toll barrier, the sign
+	CLOSED,		// beside the road at the other road entries: barricades
+	COUNTER		// in front of a quartermaster, where he stands (indoors too): his counter. Not by the plan
 }
 
 //------------------------------------------------------------------------------------------------
-//! One kind of piece in a kit.
+//! One piece in a kit's plan. Written by tools/camp_kit/build.py from pieces.py.
 [BaseContainerProps()]
 class RZ_DressingPiece
 {
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A composition from Prefabs/ReforgerZ/Dressing/ (docs/WORKBENCH_SETUP.md, Camp life): scenery only. Anything a player could use is deleted when it spawns", "et")]
 	ResourceName m_sPrefab;
 
-	[Attribute("0", UIWidgets.ComboBox, "Where it stands: Centre (8-14 m, the working area), Inner (14-22 m: tents at the back, cook and chop pieces to one side), Approach (24-34 m toward the road, the perimeter), Edge (28-46 m elsewhere). Road posts put everything beside the road", "", ParamEnumArray.FromEnum(RZ_EDressRole))]
+	[Attribute("0", UIWidgets.ComboBox, "Its part of the camp: Centre (the working area), Inner (sleeping, cooking), Approach (the perimeter; by a building, the road entries), Edge (the far side)", "", ParamEnumArray.FromEnum(RZ_EDressRole))]
 	RZ_EDressRole m_eRole;
 
 	[Attribute("0", UIWidgets.ComboBox, "What people do at it (its sentinels carry the matching tag: RZ_Sit, RZ_Work, RZ_Watch, RZ_Gather, RZ_Lean, RZ_Cook, RZ_Wash, RZ_Chop). Sleep: a tent. None: scenery only", "", ParamEnumArray.FromEnum(RZ_EDressUse))]
 	RZ_EDressUse m_eUse;
-
-	[Attribute("1", UIWidgets.Slider, "How many of it (a place stops at its piece count, in list order)", "1 4 1")]
-	int m_iCount;
 
 	[Attribute("2", UIWidgets.Slider, "People who use one at once: the number of sentinels with its tag", "1 6 1")]
 	int m_iSeats;
@@ -94,12 +91,24 @@ class RZ_DressingPiece
 	[Attribute("", desc: "Smart-action tag on its sentinels if not the use's own (RZ_Sit, RZ_Work, RZ_Watch, RZ_Gather, RZ_Lean, RZ_Cook, RZ_Wash, RZ_Chop)")]
 	string m_sTag;
 
-	[Attribute("0", UIWidgets.ComboBox, "Where it stands when the place has moved into a building: Auto (from its role and use), Yard, Front, Back, Side (the cooking side), Walls, Door, Gate (the road entry left open), Closed (the other road entries). Written by tools/camp_kit/build.py", "", ParamEnumArray.FromEnum(RZ_EDressAt))]
+	[Attribute("0", UIWidgets.ComboBox, "Where it stands when the place has moved into a building: Auto (approach pieces at the road entries, the rest in the yard as planned), Yard, Front (along the front wall), Door (by the front door), Gate (the road entry left open), Closed (the other road entries), Counter (in front of a quartermaster, anywhere)", "", ParamEnumArray.FromEnum(RZ_EDressAt))]
 	RZ_EDressAt m_eAt;
+
+	[Attribute("0 0 0", desc: "Where it stands in the kit's plan: x and z metres from the camp's middle, +Z toward its front (the road in)")]
+	vector m_vPlan;
+
+	[Attribute("0", desc: "Its turn in the plan: degrees clockwise from facing the front")]
+	float m_fPlanYaw;
+
+	[Attribute("-1 0 -1", desc: "Its footprint in its own space, the low corner (x, z): its props and a person round each seat. The whole footprint must fit where it stands")]
+	vector m_vFootMin;
+
+	[Attribute("1 0 1", desc: "Its footprint's high corner (x, z)")]
+	vector m_vFootMax;
 }
 
 //------------------------------------------------------------------------------------------------
-//! A faction's scenery for one kind of place (or Any).
+//! A faction's scenery for one kind of place (or Any): its plan.
 [BaseContainerProps()]
 class RZ_DressingKit
 {
@@ -109,7 +118,7 @@ class RZ_DressingKit
 	[Attribute("0", UIWidgets.ComboBox, "Places it dresses: Any, or only one kind. A kind's own kit wins over the faction's Any kit", "", ParamEnumArray.FromEnum(RZ_ECampPlace))]
 	RZ_ECampPlace m_ePlace;
 
-	[Attribute(desc: "Pieces, most important first: a place takes them in this order until it reaches its piece count")]
+	[Attribute(desc: "The plan, most important first: a place takes its pieces in this order until it reaches its piece count")]
 	ref array<ref RZ_DressingPiece> m_aPieces;
 }
 
@@ -207,6 +216,7 @@ class RZ_CampWorker
 	int m_iJob;
 	int m_iAfterErrand;		// the job to go back to after the courier's walk
 	int m_iPiece = -1;
+	int m_iSeat = -1;			// which of the piece's sentinels with its tag (0 = the first)
 	float m_fHoldUntil;
 	ref array<IEntity> m_aWaypoints = {};
 }
@@ -225,7 +235,6 @@ class RZ_CampPlace
 	vector m_vRoad;				// the nearest road point (Red Hand strolls), if m_bHasRoad
 	bool m_bHasRoad;
 	int m_iSeed;
-	float m_fCookSide;			// +90 or -90 from the approach: the cooking area's side
 	ResourceName m_sExtraPrefab;
 	ref array<ref RZ_CampPiece> m_aPieces = {};
 	ref array<ref RZ_CampWorker> m_aWorkers = {};
@@ -245,6 +254,35 @@ class RZ_CampPlace
 	bool m_bHasTown;
 	float m_fTownBearing;		// toward the nearest other town (the main road's way in)
 	int m_iClosedNext;			// the next closed entry a barricade goes to
+	int m_iGateNext;			// pieces at the gate so far (they take turns at each side of the road)
+	int m_iDoorNext;			// pieces by the front door so far
+	int m_iFrontNext;			// pieces along the front wall so far
+}
+
+//------------------------------------------------------------------------------------------------
+//! What a place's pieces are fitted against, read once as it's dressed: the buildings' boxes, the
+//! roads, the spots kept clear, other scenery and the pieces laid out so far.
+class RZ_CampFit
+{
+	ref array<vector> m_aBoxes = {};	// every building's box grown by the margin: four corners each
+	ref array<vector> m_aInside = {};	// the same boxes as they are (is a quartermaster indoors)
+	ref array<vector> m_aRoad = {};		// road segments near the place: two points each
+	ref array<vector> m_aKeep = {};		// spots kept clear: quartermasters, the medic, the barrier, seats, the door, customers
+	ref array<float> m_aKeepR = {};
+	ref array<vector> m_aOthers = {};	// other systems' scenery standing near
+	ref array<vector> m_aTaken = {};	// pieces laid out (grown by half the gap): four corners each
+	vector m_vSkip;					// a quartermaster's own spot: his counter may stand by it
+	bool m_bSkip;
+}
+
+//------------------------------------------------------------------------------------------------
+//! Where a plan is laid down: the frame the camp (by a building, its yard) is drawn in.
+class RZ_CampLayout
+{
+	vector m_vOrigin;			// the plan's middle, on the ground
+	float m_fBearing;			// the way the plan's front (+Z) faces
+	bool m_bMirror;				// drawn left for right (by the seed)
+	string m_sWhere;			// for the log
 }
 
 //------------------------------------------------------------------------------------------------
@@ -276,7 +314,6 @@ class RZ_CampSite
 	float m_fDoor;				// the front door along the front wall, -1 to 1 (0 = the middle)
 	bool m_bDoor;				// a real outside door was found there
 	int m_iYardFace;			// RZ_CampLife.FACE_BACK, or FACE_FRONT for the Red Hand's forecourt
-	int m_iCookFace;			// FACE_LEFT or FACE_RIGHT, by the seed
 	vector m_vHome;				// the yard's middle
 	ref array<vector> m_aEntries = {};	// where roads cross the ring round the building
 	ref array<float> m_aEntryRoad = {};	// the road's bearing there
@@ -430,11 +467,26 @@ class RZ_CampLife
 	protected static const float EXTRA_CLEAR = 60;
 	protected static const float HOLD_SECONDS = 45;			// someone talked to stands still
 	protected static const float PERSON_RADIUS = 20;		// named people stay this close to the centre
-	protected static const float KEEP_CLEAR = 4;			// metres from a quartermaster, the medic, the barrier
-	protected static const float LEADER_CLEAR = 6;			// from a leader's seat (the body stands 2-5 m from it)
-	protected static const float PIECE_GAP = 5.5;
 	protected static const float SHARE_RADIUS = 60;			// a place this close to a dressed one isn't dressed again
-	protected static const int TRIES = 10;
+
+	// Fitting a piece: its whole footprint (docs/DESIGN.md, "Camp life", "Every piece fits")
+	protected static const float FIT_REACH = 110;			// buildings, roads and scenery this far from the place are fitted against
+	protected static const float BUILDING_EDGE = 0.8;		// a footprint keeps this far out of every building's box
+	protected static const float NO_BOX = 3;				// a building too small to tell: this far round its origin
+	protected static const float ROAD_EDGE = 4;				// every point of a footprint this far from a road's centre line
+	protected static const float PIECE_GAP = 0.8;			// between two pieces' footprints
+	protected static const float KEEP_EDGE = 2;				// a footprint from a quartermaster, the medic, the barrier
+	protected static const float LEADER_EDGE = 3.5;			// from a leader's seat (the body stands 2-5 m from it)
+	protected static const float DOOR_EDGE = 1.5;			// from the front door's step
+	protected static const float OTHER_EDGE = 1;			// from another system's scenery
+	protected static const float FLAT_SLOPE = 0.21;			// the ground across a footprint rises at most this per metre of its diagonal...
+	protected static const float FLAT_SLACK = 0.2;			// ...plus this (about 12 degrees)
+	protected static const float YARD_GAP = 2.5;			// the yard's nearest piece from the building's wall
+	protected static const float ENTRY_SIDE = 4.5;			// a gate or closed-entry piece's near edge from the road's centre line
+	protected static const float NUDGE = 1.6;				// the furthest a yard piece is nudged (pieces by the road and the front: 3 m)
+	protected static const float COUNTER_AHEAD = 0.95;		// the counter's middle in front of the quartermaster
+	protected static const float CUSTOMER_AHEAD = 2.4;		// where his customers stand, kept clear
+	protected static const float WALL_NEAR = 8;				// a quartermaster this close to the building serves with his back to it
 
 	static const int FACE_FRONT = 0;
 	static const int FACE_BACK = 1;
@@ -449,8 +501,6 @@ class RZ_CampLife
 	protected static const int MAX_SITES = 64;			// sites kept per run
 	protected static const float RINGS_REACH = 62;		// a place on rings: its edge pieces stand up to this far out
 	protected static const float WALL_CLEAR = 0.4;			// a spot people stand or lean at keeps this far off a wall (else a lean's head is in it)
-	protected static const float PIECE_WALL_CLEAR = 1.4;	// a piece from a wall: its seats stand within about 1 m of it
-	protected static const float LEAN_WALL_CLEAR = 2.3;		// a lean piece: the toll barrier's lean point is 1.9 m out
 
 	protected static ref array<IEntity> s_aPieces;			// every standing piece (IsDressing)
 
@@ -629,10 +679,6 @@ class RZ_CampLife
 		p.m_vHome = pos;
 		p.m_vCentre = pos;
 		p.m_iSeed = Seed(pos, faction, kind);
-		p.m_fCookSide = 90;
-		RZ_Rng sideRng = new RZ_Rng(p.m_iSeed + 11);
-		if (sideRng.Chance(0.5))
-			p.m_fCookSide = -90;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -694,6 +740,8 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! From the owner's DespawnBodies, before it deletes them: jobs, wrappers, extras and pieces go.
+	//! Every job's waypoints come off the groups first, so no group is left with a smart-action
+	//! waypoint whose piece is gone (vanilla's "Waypoint is not set properly").
 	void Leave(string key)
 	{
 		for (int i = m_aPlaces.Count() - 1; i >= 0; i--)
@@ -837,11 +885,23 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Lays the kit's plan down whole (docs/DESIGN.md, "Camp life"): first a counter in front of each
+	//! quartermaster, then the plan in its order, each piece where its part of the camp puts it, kept
+	//! only if its whole footprint fits there (nudged a little at most), until the place's count.
 	protected void Dress(RZ_CampPlace p, RZ_CampGround ground)
 	{
+		RZ_CampFit fit = ReadFit(p, ground);
+		array<IEntity> qms = {};
+		Quartermasters(p, qms);
+
 		RZ_DressingKit kit = FindKit(p.m_eFaction, p.m_eKind);
 		if (!kit || !kit.m_aPieces || kit.m_aPieces.IsEmpty())
 		{
+			foreach (IEntity lone : qms)
+			{
+				TurnToServe(p, lone);
+			}
+
 			string told = string.Format("%1:%2", p.m_eFaction, p.m_eKind);
 			if (!m_mToldNoKit.Contains(told))
 			{
@@ -853,84 +913,909 @@ class RZ_CampLife
 		}
 
 		int cap = PieceCap(p);
-		RZ_Rng rng = new RZ_Rng(p.m_iSeed);
-		int placed = 0;
-		bool full = false;
-		foreach (RZ_DressingPiece piece : kit.m_aPieces)
+
+		// The counters: each in front of a quartermaster, who turns to serve over it
+		int served = 0;
+		foreach (RZ_DressingPiece c : kit.m_aPieces)
 		{
-			if (full)
+			if (!c || c.m_sPrefab.IsEmpty() || c.m_eAt != RZ_EDressAt.COUNTER)
+				continue;
+
+			if (served >= qms.Count())
 				break;
 
-			if (!piece || piece.m_sPrefab.IsEmpty())
+			if (p.m_aPieces.Count() < cap && CountPieces() < m_Settings.m_iPiecesMax)
+				Counter(p, fit, c, qms[served]);
+			else
+				TurnToServe(p, qms[served]);
+
+			served++;
+		}
+
+		for (int k = served; k < qms.Count(); k++)
+		{
+			TurnToServe(p, qms[k]);
+		}
+
+		// The plan: in a building they sleep indoors (no tents)
+		array<RZ_DressingPiece> plan = {};
+		foreach (RZ_DressingPiece e : kit.m_aPieces)
+		{
+			if (!e || e.m_sPrefab.IsEmpty() || e.m_eAt == RZ_EDressAt.COUNTER)
 				continue;
 
-			// In a building they sleep indoors: no tents
-			if (p.m_Site && piece.m_eUse == RZ_EDressUse.SLEEP)
+			if (p.m_Site && e.m_eUse == RZ_EDressUse.SLEEP)
 				continue;
 
-			RZ_EDressAt at = PieceAt(piece);
-			float wallClear = PIECE_WALL_CLEAR;
-			if (piece.m_eUse == RZ_EDressUse.LEAN)
-				wallClear = LEAN_WALL_CLEAR;
+			plan.Insert(e);
+		}
 
-			int count = Math.Max(1, piece.m_iCount);
-			for (int n = 0; n < count; n++)
-			{
-				if (placed >= cap || CountPieces() >= m_Settings.m_iPiecesMax)
-				{
-					full = true;
-					break;
-				}
+		RZ_CampLayout lay = new RZ_CampLayout();
+		if (p.m_Site)
+			ChooseYard(p, fit, plan, cap, lay);
+		else
+			ChooseOpen(p, ground, fit, plan, cap, lay);
 
-				// Always the same draws per piece, so a refused spot doesn't move the next piece
-				array<vector> spots = {};
-				for (int t = 0; t < TRIES; t++)
-				{
-					if (p.m_Site)
-						spots.Insert(SiteCandidate(p, at, rng));
-					else
-						spots.Insert(Candidate(p, piece.m_eRole, piece.m_eUse, rng));
-				}
+		int tried = 0;
+		int placed = 0;
+		foreach (RZ_DressingPiece entry : plan)
+		{
+			if (p.m_aPieces.Count() >= cap || CountPieces() >= m_Settings.m_iPiecesMax)
+				break;
 
-				vector spot;
-				bool found = false;
-				foreach (vector c : spots)
-				{
-					if (!GoodSpot(p, ground, c))
-						continue;
+			tried++;
+			vector pos;
+			float yaw;
+			float nudge;
+			if (!Slot(p, lay, entry, pos, yaw, nudge))
+				continue;
 
-					// Pushed back off any wall or fence too close for its seats (and checked again if moved)
-					vector pushed = OffWalls(c, wallClear);
-					if (RZ_Util.DistXZ(pushed, c) > 0.01 && !GoodSpot(p, ground, pushed))
-						continue;
-
-					spot = pushed;
-					found = true;
-					break;
-				}
-
-				if (at == RZ_EDressAt.CLOSED)
-					p.m_iClosedNext++;
-
-				if (!found)
-					continue;
-
-				// Laid out now, spawned a few per tick (SpawnPending)
-				RZ_CampPiece cp = new RZ_CampPiece();
-				cp.m_sPending = piece.m_sPrefab;
-				cp.m_fYaw = PieceYaw(p, piece.m_eRole, spot);
-				cp.m_vPos = spot;
-				cp.m_eRole = piece.m_eRole;
-				cp.m_eUse = piece.m_eUse;
-				cp.m_iSeats = Math.Max(1, piece.m_iSeats);
-				cp.m_sTag = piece.m_sTag;
-				if (cp.m_sTag.IsEmpty())
-					cp.m_sTag = UseTag(piece.m_eUse);
-
-				p.m_aPieces.Insert(cp);
+			if (PlaceFitted(p, fit, entry, pos, yaw, nudge))
 				placed++;
+		}
+
+		string what = string.Format("%1 %2", RZ_Factions.GetName(p.m_eFaction), typename.EnumToString(RZ_ECampPlace, p.m_eKind));
+		RZ_Log.Info(string.Format("Camp life: %1 at %2: %3 of %4 planned pieces fit, laid out %5; %6 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), placed, tried, lay.m_sWhere, served));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The quartermasters at the place: its keepers that are one, and the faction's own if it stands here.
+	protected void Quartermasters(RZ_CampPlace p, notnull array<IEntity> result)
+	{
+		foreach (RZ_CampWorker w : p.m_aWorkers)
+		{
+			if (w.m_iRole == ROLE_KEEPER && w.m_Unit && w.m_Unit.FindComponent(RZ_QuartermasterComponent))
+				result.Insert(w.m_Unit);
+		}
+
+		RZ_QuartermasterComponent own = RZ_QuartermasterComponent.Find(p.m_eFaction);
+		if (!own || !own.GetOwner())
+			return;
+
+		IEntity body = own.GetOwner();
+		if (!result.Contains(body) && NearPlace(p, body.GetOrigin()))
+			result.Insert(body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Turns a quartermaster to serve: the way his customers come from, never into a wall
+	//! (RZ_QuartermasterHelper.ServeYaw). Returns that way.
+	protected float TurnToServe(RZ_CampPlace p, IEntity qm)
+	{
+		vector at = qm.GetOrigin();
+		float yaw = RZ_QuartermasterHelper.ServeYaw(at, ServeToward(p, at));
+		RZ_QuartermasterHelper.Face(qm, yaw);
+		return yaw;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a quartermaster's customers come from: by the building, out of it (his back to its
+	//! wall, serving into the yard; inside it, toward the front door); else from the yard's middle,
+	//! or, standing on it, from the road in.
+	protected vector ServeToward(RZ_CampPlace p, vector at)
+	{
+		if (p.m_Site)
+		{
+			float off = BoxDistance(p.m_Site, at);
+			if (off <= 0)
+				return DoorSpot(p);
+
+			if (off < WALL_NEAR)
+			{
+				vector away = at - p.m_Site.m_vCentre;
+				away[1] = 0;
+				return at + away;
 			}
 		}
+
+		if (RZ_Util.DistXZ(at, p.m_vHome) > 3)
+			return p.m_vHome;
+
+		return RZ_Compass.PointAt(at, p.m_fApproach, 10);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far a point is outside the site's building box (0 inside it).
+	protected static float BoxDistance(RZ_CampSite site, vector at)
+	{
+		vector d = at - site.m_vOrigin;
+		float lx = vector.Dot(d, site.m_vRight);
+		float lz = vector.Dot(d, site.m_vFwd);
+		float ox = Math.Max(0, Math.Max(site.m_vMins[0] - lx, lx - site.m_vMaxs[0]));
+		float oz = Math.Max(0, Math.Max(site.m_vMins[2] - lz, lz - site.m_vMaxs[2]));
+		return Math.Sqrt(ox * ox + oz * oz);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A quartermaster's counter: he turns to serve, and the counter stands just in front of him
+	//! across that way, if it fits there; indoors (he stands in a building, a kiosk, a shop) only if
+	//! there's a floor under it and nothing in its way. His customers' spot is kept clear.
+	protected void Counter(RZ_CampPlace p, RZ_CampFit fit, RZ_DressingPiece entry, IEntity qm)
+	{
+		vector at = qm.GetOrigin();
+		float yaw = TurnToServe(p, qm);
+		vector pos = FramePoint(at, yaw, 0, COUNTER_AHEAD);
+		if (IsIndoors(fit, at))
+		{
+			pos[1] = at[1];
+			if (!FitsIndoors(pos, yaw, entry.m_vFootMin, entry.m_vFootMax))
+				return;
+		}
+		else
+		{
+			pos = RZ_Util.GroundPos(pos);
+			fit.m_vSkip = at;
+			fit.m_bSkip = true;
+			bool fits = Fits(fit, pos, yaw, entry.m_vFootMin, entry.m_vFootMax, true);
+			fit.m_bSkip = false;
+			if (!fits)
+				return;
+		}
+
+		AddPiece(p, fit, entry, pos, yaw);
+		fit.m_aKeep.Insert(FramePoint(at, yaw, 0, CUSTOMER_AHEAD));
+		fit.m_aKeepR.Insert(1.2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Standing in a building: above the ground, or in a building's box.
+	protected static bool IsIndoors(RZ_CampFit fit, vector at)
+	{
+		if (at[1] - GetGame().GetWorld().GetSurfaceY(at[0], at[2]) > 0.4)
+			return true;
+
+		for (int i = 0; i + 3 < fit.m_aInside.Count(); i += 4)
+		{
+			if (InQuad(at, fit.m_aInside, i))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A laid-out piece, spawned later (SpawnPending); its footprint is taken.
+	protected void AddPiece(RZ_CampPlace p, RZ_CampFit fit, RZ_DressingPiece entry, vector pos, float yaw)
+	{
+		RZ_CampPiece cp = new RZ_CampPiece();
+		cp.m_sPending = entry.m_sPrefab;
+		cp.m_fYaw = yaw;
+		cp.m_vPos = pos;
+		cp.m_eRole = entry.m_eRole;
+		cp.m_eUse = entry.m_eUse;
+		cp.m_iSeats = Math.Max(1, entry.m_iSeats);
+		cp.m_sTag = entry.m_sTag;
+		if (cp.m_sTag.IsEmpty())
+			cp.m_sTag = UseTag(entry.m_eUse);
+
+		p.m_aPieces.Insert(cp);
+		Quad(pos, yaw, entry.m_vFootMin, entry.m_vFootMax, PIECE_GAP * 0.5, fit.m_aTaken);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The piece at its slot, or nudged from it a little (in the slot's own frame), if its whole
+	//! footprint fits; else it's left out.
+	protected bool PlaceFitted(RZ_CampPlace p, RZ_CampFit fit, RZ_DressingPiece entry, vector pos, float yaw, float nudge)
+	{
+		array<float> steps = {0.0, 0.0, 0.8, 0.0, -0.8, 0.0, 0.0, 0.8, 0.0, -0.8, 1.6, 0.0, -1.6, 0.0, 0.0, 1.6, 0.0, -1.6, 0.0, 3.0, 0.0, -3.0};
+		for (int i = 0; i + 1 < steps.Count(); i += 2)
+		{
+			float dx = steps[i];
+			float dz = steps[i + 1];
+			if (Math.AbsFloat(dx) > nudge || Math.AbsFloat(dz) > nudge)
+				continue;
+
+			vector at = RZ_Util.GroundPos(FramePoint(pos, yaw, dx, dz));
+			if (!Fits(fit, at, yaw, entry.m_vFootMin, entry.m_vFootMax, true))
+				continue;
+
+			AddPiece(p, fit, entry, at, yaw);
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a plan entry goes, by a building or not: its slot, its turn, and how far it may be nudged.
+	protected bool Slot(RZ_CampPlace p, RZ_CampLayout lay, RZ_DressingPiece e, out vector pos, out float yaw, out float nudge)
+	{
+		nudge = NUDGE;
+		RZ_EDressAt at = AtOf(e);
+		if (!p.m_Site || at == RZ_EDressAt.YARD)
+		{
+			PlanPose(e, lay.m_vOrigin, lay.m_fBearing, lay.m_bMirror, pos, yaw);
+			return true;
+		}
+
+		RZ_CampSite site = p.m_Site;
+		vector wall = FacePoint(site, FACE_FRONT, 0, 0);
+		float outB = RZ_Compass.Bearing(wall, FacePoint(site, FACE_FRONT, 0, 10));
+		float halfFront = RZ_Util.DistXZ(FacePoint(site, FACE_FRONT, -1, 0), FacePoint(site, FACE_FRONT, 1, 0)) * 0.5;
+		float x;
+		float z;
+		nudge = 3;
+
+		// Along the front wall, its back to it and facing out: one each side of the middle in turn
+		if (at == RZ_EDressAt.FRONT)
+		{
+			int f = p.m_iFrontNext;
+			p.m_iFrontNext++;
+			x = halfFront * 0.55;
+			if (f % 2 == 1)
+				x = -x;
+
+			z = 2.5 - e.m_vFootMin[2];
+			pos = RZ_Util.GroundPos(FramePoint(wall, outB, x, z));
+			yaw = outB;
+			return true;
+		}
+
+		// Beside the front door, facing out: right, left, then further along
+		if (at == RZ_EDressAt.DOOR)
+		{
+			int d = p.m_iDoorNext;
+			p.m_iDoorNext++;
+			vector door = FacePoint(site, FACE_FRONT, site.m_fDoor, 0);
+			float reach = 1.6 + (d / 2) * 3;
+			x = reach - e.m_vFootMin[0];
+			if (d % 2 == 1)
+				x = -(reach + e.m_vFootMax[0]);
+
+			z = 1.2 - e.m_vFootMin[2];
+			pos = RZ_Util.GroundPos(FramePoint(door, outB, x, z));
+			yaw = outB;
+			nudge = NUDGE;
+			return true;
+		}
+
+		// The gate or a closed entry: beside the road where it crosses the ring, facing out along it
+		int entry = site.m_iMain;
+		int turn = p.m_iGateNext;
+		if (at == RZ_EDressAt.CLOSED)
+		{
+			int closed = site.m_aEntries.Count() - 1;
+			entry = -1;
+			turn = p.m_iClosedNext;
+			if (closed > 0)
+			{
+				int pick = RZ_Util.PickIndex(p.m_iClosedNext, closed);
+				entry = pick;
+				if (pick >= site.m_iMain)
+					entry = pick + 1;
+			}
+
+			p.m_iClosedNext++;
+		}
+		else
+		{
+			p.m_iGateNext++;
+		}
+
+		float side = 1;
+		RZ_Rng sideRng = new RZ_Rng(p.m_iSeed + 29);
+		if (sideRng.Chance(0.5))
+			side = -1;
+
+		if (turn % 2 == 1)
+			side = -side;
+
+		// No road in: out in front of the building instead
+		if (entry < 0)
+		{
+			x = side * (halfFront * 0.6 + 2);
+			z = 9 - e.m_vFootMin[2] + (turn / 2) * 4;
+			pos = RZ_Util.GroundPos(FramePoint(wall, outB, x, z));
+			yaw = outB;
+			return true;
+		}
+
+		vector gate = site.m_aEntries[entry];
+		float roadOut = site.m_aEntryRoad[entry];
+		float toward = RZ_Compass.Bearing(site.m_vCentre, gate);
+		if (Math.AbsFloat(RZ_Compass.Normalize(roadOut - toward + 180) - 180) > 90)
+			roadOut = RZ_Compass.Normalize(roadOut + 180);
+
+		x = side * ENTRY_SIDE - e.m_vFootMin[0];
+		if (side < 0)
+			x = side * ENTRY_SIDE - e.m_vFootMax[0];
+
+		z = -(turn / 2) * 4;
+		pos = RZ_Util.GroundPos(FramePoint(gate, roadOut, x, z));
+		yaw = roadOut;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a piece stands by a building: its own setting, else an approach piece at the road
+	//! entries (a watch or lean piece the gate) and anything else in the yard.
+	protected static RZ_EDressAt AtOf(RZ_DressingPiece e)
+	{
+		if (e.m_eAt != RZ_EDressAt.AUTO)
+			return e.m_eAt;
+
+		if (e.m_eRole == RZ_EDressRole.APPROACH)
+		{
+			if (e.m_eUse == RZ_EDressUse.WATCH || e.m_eUse == RZ_EDressUse.LEAN)
+				return RZ_EDressAt.GATE;
+
+			return RZ_EDressAt.CLOSED;
+		}
+
+		return RZ_EDressAt.YARD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A plan entry laid down in a frame: its spot on the ground and its turn.
+	protected static void PlanPose(RZ_DressingPiece e, vector origin, float bearing, bool mirror, out vector pos, out float yaw)
+	{
+		float x = e.m_vPlan[0];
+		float turn = e.m_fPlanYaw;
+		if (mirror)
+		{
+			x = -x;
+			turn = -turn;
+		}
+
+		pos = RZ_Util.GroundPos(FramePoint(origin, bearing, x, e.m_vPlan[2]));
+		yaw = RZ_Compass.Normalize(bearing + turn);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On open ground (or at a road post): the plan's middle at the place, its front to the road
+	//! (a road post's along the road), then a few shifts and turns of the whole plan; the one where
+	//! most of it fits wins (its first pieces count most).
+	protected void ChooseOpen(RZ_CampPlace p, RZ_CampGround ground, RZ_CampFit fit, array<RZ_DressingPiece> plan, int cap, RZ_CampLayout lay)
+	{
+		RZ_Rng rng = new RZ_Rng(p.m_iSeed + 17);
+		lay.m_bMirror = rng.Chance(0.5);
+		float bearing = p.m_fApproach;
+		lay.m_sWhere = "on open ground, its front to the road";
+		// (sideways, forward, turn): pulled back from the road, sideways, turned a little
+		array<float> openMoves = {0.0, 0.0, 0.0, -4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, -4.0, 0.0, 0.0, -8.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 12.0, 0.0, 0.0, -12.0};
+		array<float> postMoves = {0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, -3.0, 0.0};
+		array<float> moves = openMoves;
+		if (p.m_eKind == RZ_ECampPlace.ROAD_POST)
+		{
+			bearing = RoadAxis(p, ground);
+			lay.m_sWhere = "beside the road";
+			moves = postMoves;
+		}
+
+		lay.m_vOrigin = p.m_vPos;
+		lay.m_fBearing = bearing;
+		float best = -1;
+		for (int i = 0; i + 2 < moves.Count(); i += 3)
+		{
+			float b = RZ_Compass.Normalize(bearing + moves[i + 2]);
+			vector origin = RZ_Util.GroundPos(FramePoint(p.m_vPos, bearing, moves[i], moves[i + 1]));
+			float score = PlanScore(fit, plan, cap, origin, b, lay.m_bMirror);
+			if (score > best)
+			{
+				best = score;
+				lay.m_vOrigin = origin;
+				lay.m_fBearing = b;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! By a building: the yard's part of the plan laid against the faction's side of the building
+	//! (behind it; the Red Hand in front), the plan's front to the wall YARD_GAP off it (the Red
+	//! Hand's back), shifted out and sideways a little where more of it fits. If most of it doesn't
+	//! fit there, the other sides are tried too.
+	protected void ChooseYard(RZ_CampPlace p, RZ_CampFit fit, array<RZ_DressingPiece> plan, int cap, RZ_CampLayout lay)
+	{
+		RZ_CampSite site = p.m_Site;
+		RZ_Rng rng = new RZ_Rng(p.m_iSeed + 17);
+		lay.m_bMirror = rng.Chance(0.5);
+
+		array<RZ_DressingPiece> yard = {};
+		foreach (RZ_DressingPiece e : plan)
+		{
+			if (AtOf(e) == RZ_EDressAt.YARD)
+				yard.Insert(e);
+		}
+
+		float zlo;
+		float zhi;
+		PlanExtent(yard, lay.m_bMirror, zlo, zhi);
+		float whole = PlanScore(null, yard, cap, vector.Zero, 0, false);
+
+		array<int> faces = {site.m_iYardFace};
+		array<int> others = {FACE_BACK, FACE_LEFT, FACE_RIGHT, FACE_FRONT};
+		foreach (int o : others)
+		{
+			if (!faces.Contains(o))
+				faces.Insert(o);
+		}
+
+		array<float> moves = {0.0, 0.0, 0.0, -4.0, 0.0, 4.0, 2.5, 0.0, 5.0, 0.0, 2.5, -4.0, 2.5, 4.0};
+		float best = -1;
+		foreach (int fi, int face : faces)
+		{
+			if (fi > 0 && best >= whole * 0.6)
+				break;
+
+			bool forecourt = face == FACE_FRONT && site.m_iYardFace == FACE_FRONT;
+			vector wall = FacePoint(site, face, 0, 0);
+			float outB = RZ_Compass.Bearing(wall, FacePoint(site, face, 0, 10));
+			float planB = RZ_Compass.Normalize(outB + 180);
+			float edge = zhi + YARD_GAP;
+			if (forecourt)
+			{
+				planB = outB;
+				edge = YARD_GAP - zlo;
+			}
+
+			for (int i = 0; i + 1 < moves.Count(); i += 2)
+			{
+				vector origin = FramePoint(wall, outB, 0, edge + moves[i]);
+				origin = RZ_Util.GroundPos(FramePoint(origin, planB, moves[i + 1], 0));
+				float score = PlanScore(fit, yard, cap, origin, planB, lay.m_bMirror);
+				if (score > best)
+				{
+					best = score;
+					lay.m_vOrigin = origin;
+					lay.m_fBearing = planB;
+					lay.m_sWhere = YardWhere(face, forecourt, site);
+				}
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string YardWhere(int face, bool forecourt, RZ_CampSite site)
+	{
+		if (forecourt)
+			return "in front of " + site.m_sWhat;
+
+		if (face == FACE_BACK)
+			return "in the yard behind " + site.m_sWhat;
+
+		if (face == FACE_FRONT)
+			return "between " + site.m_sWhat + " and the road";
+
+		return "beside " + site.m_sWhat;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far a plan reaches back and forward (its pieces' footprints, in the plan).
+	protected static void PlanExtent(array<RZ_DressingPiece> plan, bool mirror, out float zlo, out float zhi)
+	{
+		zlo = 0;
+		zhi = 0;
+		foreach (RZ_DressingPiece e : plan)
+		{
+			float turn = e.m_fPlanYaw;
+			if (mirror)
+				turn = -turn;
+
+			array<vector> quad = {};
+			Quad(Vector(0, 0, e.m_vPlan[2]), turn, e.m_vFootMin, e.m_vFootMax, 0, quad);
+			foreach (vector c : quad)
+			{
+				zlo = Math.Min(zlo, c[2]);
+				zhi = Math.Max(zhi, c[2]);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How much of a plan fits laid down this way, its first pieces counting most (no traces: a
+	//! quick look). With no fit given, what the whole plan would score.
+	protected float PlanScore(RZ_CampFit fit, array<RZ_DressingPiece> plan, int cap, vector origin, float bearing, bool mirror)
+	{
+		float score = 0;
+		foreach (int i, RZ_DressingPiece e : plan)
+		{
+			if (i >= cap)
+				break;
+
+			float weight = 1;
+			if (i < 4)
+				weight = 3;
+			else if (i < 10)
+				weight = 2;
+
+			if (!fit)
+			{
+				score += weight;
+				continue;
+			}
+
+			vector pos;
+			float yaw;
+			PlanPose(e, origin, bearing, mirror, pos, yaw);
+			if (Fits(fit, pos, yaw, e.m_vFootMin, e.m_vFootMax, false))
+				score += weight;
+		}
+
+		return score;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road post's road: the nearest segment's way, turned to the post's own yaw. The post's yaw
+	//! if no road is that near.
+	protected static float RoadAxis(RZ_CampPlace p, RZ_CampGround ground)
+	{
+		float best = float.MAX;
+		float axis = p.m_fYaw;
+		for (int i = 0; i + 1 < ground.m_aRoad.Count(); i += 2)
+		{
+			float d = RZ_DressPlacer.DistToSegment(p.m_vPos, ground.m_aRoad[i], ground.m_aRoad[i + 1]);
+			if (d < best)
+			{
+				best = d;
+				axis = RZ_Compass.Bearing(ground.m_aRoad[i], ground.m_aRoad[i + 1]);
+			}
+		}
+
+		if (best > 15)
+			return p.m_fYaw;
+
+		if (Math.AbsFloat(RZ_Compass.Normalize(axis - p.m_fYaw + 180) - 180) > 90)
+			axis = RZ_Compass.Normalize(axis + 180);
+
+		return axis;
+	}
+
+	// ================================================================ Fitting a piece
+	//------------------------------------------------------------------------------------------------
+	//! The buildings' boxes, the roads, the spots kept clear and other scenery near the place.
+	protected RZ_CampFit ReadFit(RZ_CampPlace p, RZ_CampGround ground)
+	{
+		RZ_CampFit fit = new RZ_CampFit();
+		vector c = p.m_vCentre;
+		foreach (IEntity b : ground.m_aBuildings)
+		{
+			if (b && !IsDressing(b) && RZ_Util.DistXZ(b.GetOrigin(), c) <= FIT_REACH)
+				AddBox(fit, b);
+		}
+
+		for (int i = 0; i + 1 < ground.m_aRoad.Count(); i += 2)
+		{
+			if (RZ_DressPlacer.DistToSegment(c, ground.m_aRoad[i], ground.m_aRoad[i + 1]) <= FIT_REACH)
+			{
+				fit.m_aRoad.Insert(ground.m_aRoad[i]);
+				fit.m_aRoad.Insert(ground.m_aRoad[i + 1]);
+			}
+		}
+
+		foreach (vector keep : p.m_aKeepClear)
+		{
+			fit.m_aKeep.Insert(keep);
+			fit.m_aKeepR.Insert(KEEP_EDGE);
+		}
+
+		foreach (vector seat : p.m_aLeaderSeats)
+		{
+			fit.m_aKeep.Insert(seat);
+			fit.m_aKeepR.Insert(LEADER_EDGE);
+		}
+
+		if (p.m_Site)
+		{
+			fit.m_aKeep.Insert(DoorSpot(p));
+			fit.m_aKeepR.Insert(DOOR_EDGE);
+		}
+
+		foreach (IEntity e : s_aPieces)
+		{
+			if (e && RZ_Util.DistXZ(e.GetOrigin(), c) <= FIT_REACH)
+				fit.m_aOthers.Insert(e.GetOrigin());
+		}
+
+		return fit;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A building's box, as it is and grown by BUILDING_EDGE; one too small to tell, a square round its origin.
+	protected static void AddBox(RZ_CampFit fit, IEntity b)
+	{
+		vector mins;
+		vector maxs;
+		if (!RZ_DoorGeometry.LocalBox(b, mins, maxs))
+		{
+			mins = Vector(-NO_BOX, 0, -NO_BOX);
+			maxs = Vector(NO_BOX, 0, NO_BOX);
+		}
+
+		for (int g = 0; g < 2; g++)
+		{
+			float grow = g * BUILDING_EDGE;
+			array<vector> into = fit.m_aInside;
+			if (g == 1)
+				into = fit.m_aBoxes;
+
+			into.Insert(RZ_DoorGeometry.ToWorld(b, Vector(mins[0] - grow, 0, mins[2] - grow)));
+			into.Insert(RZ_DoorGeometry.ToWorld(b, Vector(maxs[0] + grow, 0, mins[2] - grow)));
+			into.Insert(RZ_DoorGeometry.ToWorld(b, Vector(maxs[0] + grow, 0, maxs[2] + grow)));
+			into.Insert(RZ_DoorGeometry.ToWorld(b, Vector(mins[0] - grow, 0, maxs[2] + grow)));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a piece's whole footprint fits here: dry, off the line and flat across it, every
+	//! point of it off the roads, out of every building and clear of the spots kept free and of
+	//! other scenery, not on another piece; traced, nothing standing in it (a wall, a fence, a
+	//! tree, a car).
+	protected bool Fits(RZ_CampFit fit, vector pos, float yaw, vector fmin, vector fmax, bool traced)
+	{
+		array<vector> quad = {};
+		Quad(pos, yaw, fmin, fmax, 0, quad);
+		vector mid = FramePoint(pos, yaw, (fmin[0] + fmax[0]) * 0.5, (fmin[2] + fmax[2]) * 0.5);
+		array<vector> pts = {mid};
+		pts.InsertAll(quad);
+		for (int k = 0; k < 4; k++)
+		{
+			pts.Insert((quad[k] + quad[(k + 1) % 4]) * 0.5);
+		}
+
+		// Dry, off the line, flat across the whole footprint
+		BaseWorld world = GetGame().GetWorld();
+		float lo = float.MAX;
+		float hi = -float.MAX;
+		foreach (vector pt : pts)
+		{
+			float h = world.GetSurfaceY(pt[0], pt[2]);
+			if (h < 0.5)
+				return false;
+
+			lo = Math.Min(lo, h);
+			hi = Math.Max(hi, h);
+		}
+
+		float diag = RZ_Util.DistXZ(quad[0], quad[2]);
+		if (hi - lo > FLAT_SLOPE * diag + FLAT_SLACK)
+			return false;
+
+		if (RZ_Perimeter.IsNearLineAt(RZ_Util.GroundPos(mid)))
+			return false;
+
+		// Every point off the roads
+		float reach = diag * 0.5 + ROAD_EDGE;
+		for (int i = 0; i + 1 < fit.m_aRoad.Count(); i += 2)
+		{
+			vector a = fit.m_aRoad[i];
+			vector b = fit.m_aRoad[i + 1];
+			if (RZ_DressPlacer.DistToSegment(mid, a, b) > reach)
+				continue;
+
+			foreach (vector rp : pts)
+			{
+				if (RZ_DressPlacer.DistToSegment(rp, a, b) < ROAD_EDGE)
+					return false;
+			}
+		}
+
+		// Out of every building, its whole footprint
+		for (int j = 0; j + 3 < fit.m_aBoxes.Count(); j += 4)
+		{
+			if (QuadsOverlap(quad, 0, fit.m_aBoxes, j))
+				return false;
+		}
+
+		// Clear of the spots kept free (a quartermaster's counter may stand by him) and of other scenery
+		foreach (int n, vector keep : fit.m_aKeep)
+		{
+			if (fit.m_bSkip && RZ_Util.DistXZ(keep, fit.m_vSkip) < 1.5)
+				continue;
+
+			if (QuadDistance(keep, quad, 0) < fit.m_aKeepR[n])
+				return false;
+		}
+
+		foreach (vector other : fit.m_aOthers)
+		{
+			if (QuadDistance(other, quad, 0) < OTHER_EDGE)
+				return false;
+		}
+
+		// Not on another piece
+		array<vector> grown = {};
+		Quad(pos, yaw, fmin, fmax, PIECE_GAP * 0.5, grown);
+		for (int t = 0; t + 3 < fit.m_aTaken.Count(); t += 4)
+		{
+			if (QuadsOverlap(grown, 0, fit.m_aTaken, t))
+				return false;
+		}
+
+		if (!traced)
+			return true;
+
+		return !Blocked(quad);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Something stands in the footprint: a wall, a fence, a tree, a car, another system's prop.
+	//! Flat traces along its four sides and across both diagonals, at knee and chest height.
+	protected static bool Blocked(array<vector> quad)
+	{
+		array<vector> ground = {};
+		foreach (vector c : quad)
+		{
+			ground.Insert(RZ_Util.GroundPos(c));
+		}
+
+		for (int h = 0; h < 2; h++)
+		{
+			vector up = Vector(0, 0.5 + h * 0.7, 0);
+			for (int i = 0; i < 4; i++)
+			{
+				if (TraceHits(ground[i] + up, ground[(i + 1) % 4] + up, false))
+					return true;
+			}
+
+			if (TraceHits(ground[0] + up, ground[2] + up, false) || TraceHits(ground[1] + up, ground[3] + up, false))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Indoors (a quartermaster's counter): a floor under every corner and nothing in the way at the
+	//! counter's height or above it (walls, furniture), traced along its sides and across it.
+	protected static bool FitsIndoors(vector pos, float yaw, vector fmin, vector fmax)
+	{
+		array<vector> quad = {};
+		Quad(pos, yaw, fmin, fmax, 0, quad);
+		foreach (vector c : quad)
+		{
+			if (!TraceHits(c + Vector(0, 0.8, 0), c + Vector(0, -0.4, 0), true))
+				return false;
+		}
+
+		for (int h = 0; h < 2; h++)
+		{
+			vector up = Vector(0, 0.5 + h * 0.6, 0);
+			for (int i = 0; i < 4; i++)
+			{
+				if (TraceHits(quad[i] + up, quad[(i + 1) % 4] + up, true))
+					return false;
+			}
+
+			if (TraceHits(quad[0] + up, quad[2] + up, true) || TraceHits(quad[1] + up, quad[3] + up, true))
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A physics trace hits something (entities; with `world` the terrain too). Characters don't count.
+	protected static bool TraceHits(vector from, vector to, bool world)
+	{
+		TraceParam param = new TraceParam();
+		param.Start = from;
+		param.End = to;
+		param.LayerMask = EPhysicsLayerPresets.Projectile;
+		param.Flags = TraceFlags.ENTS;
+		if (world)
+			param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+
+		float frac = ChimeraCharacter.TraceMoveWithoutCharacters(GetGame().GetWorld(), param); // VERIFY: a flat trace (entities only) between a footprint's corners at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes
+		return frac < 0.999;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A point `x` right and `z` ahead of `origin` facing `bearing` (degrees clockwise from north);
+	//! its height is origin's.
+	protected static vector FramePoint(vector origin, float bearing, float x, float z)
+	{
+		float rad = bearing * Math.DEG2RAD;
+		float s = Math.Sin(rad);
+		float c = Math.Cos(rad);
+		vector pt = origin;
+		pt[0] = origin[0] + x * c + z * s;
+		pt[2] = origin[2] - x * s + z * c;
+		return pt;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A footprint's four corners (grown by `grow`), added to `quad`.
+	protected static void Quad(vector pos, float yaw, vector fmin, vector fmax, float grow, notnull array<vector> quad)
+	{
+		quad.Insert(FramePoint(pos, yaw, fmin[0] - grow, fmin[2] - grow));
+		quad.Insert(FramePoint(pos, yaw, fmax[0] + grow, fmin[2] - grow));
+		quad.Insert(FramePoint(pos, yaw, fmax[0] + grow, fmax[2] + grow));
+		quad.Insert(FramePoint(pos, yaw, fmin[0] - grow, fmax[2] + grow));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Two rectangles (four corners each, from `ai` and `bi`) overlap on the ground.
+	protected static bool QuadsOverlap(notnull array<vector> a, int ai, notnull array<vector> b, int bi)
+	{
+		return !Separated(a, ai, b, bi) && !Separated(b, bi, a, ai);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of rectangle a's sides separates it from rectangle b.
+	protected static bool Separated(notnull array<vector> a, int ai, notnull array<vector> b, int bi)
+	{
+		for (int e = 0; e < 2; e++)
+		{
+			vector p0 = a[ai + e];
+			vector p1 = a[ai + e + 1];
+			float nx = p0[2] - p1[2];
+			float nz = p1[0] - p0[0];
+			float aLo = float.MAX;
+			float aHi = -float.MAX;
+			float bLo = float.MAX;
+			float bHi = -float.MAX;
+			for (int k = 0; k < 4; k++)
+			{
+				vector qa = a[ai + k];
+				vector qb = b[bi + k];
+				float da = qa[0] * nx + qa[2] * nz;
+				float db = qb[0] * nx + qb[2] * nz;
+				aLo = Math.Min(aLo, da);
+				aHi = Math.Max(aHi, da);
+				bLo = Math.Min(bLo, db);
+				bHi = Math.Max(bHi, db);
+			}
+
+			if (aHi < bLo || bHi < aLo)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far a point is from a rectangle (0 inside it).
+	protected static float QuadDistance(vector pt, notnull array<vector> q, int qi)
+	{
+		if (InQuad(pt, q, qi))
+			return 0;
+
+		float best = float.MAX;
+		for (int k = 0; k < 4; k++)
+		{
+			best = Math.Min(best, RZ_DressPlacer.DistToSegment(pt, q[qi + k], q[qi + (k + 1) % 4]));
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool InQuad(vector pt, notnull array<vector> q, int qi)
+	{
+		int pos = 0;
+		int neg = 0;
+		for (int k = 0; k < 4; k++)
+		{
+			vector a = q[qi + k];
+			vector b = q[qi + (k + 1) % 4];
+			float cross = (b[0] - a[0]) * (pt[2] - a[2]) - (b[2] - a[2]) * (pt[0] - a[0]);
+			if (cross > 0)
+				pos++;
+			else if (cross < 0)
+				neg++;
+		}
+
+		return pos == 0 || neg == 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -990,119 +1875,6 @@ class RZ_CampLife
 		}
 
 		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A spot on the piece's ring. Always three draws, whatever the role.
-	//! The layout is a small compound: the working area in the middle (Centre), the perimeter
-	//! toward the approach (Approach), and on the inner ring a sleeping area at the back (tents,
-	//! the wash stand just behind them) and a cooking area to one side (the cook pot, the
-	//! firewood); everything else on the edge.
-	protected vector Candidate(RZ_CampPlace p, RZ_EDressRole role, RZ_EDressUse use, RZ_Rng rng)
-	{
-		float a = rng.Float01();
-		float b = rng.Float01();
-		bool side = rng.Chance(0.5);
-
-		if (p.m_eKind == RZ_ECampPlace.ROAD_POST)
-		{
-			float sideBearing = p.m_fYaw + 90;
-			if (side)
-				sideBearing = p.m_fYaw - 90;
-
-			return RZ_Compass.PointAt(p.m_vPos, sideBearing - 35 + a * 70, 5 + b * 6);
-		}
-
-		float scale = 1;
-		if (p.m_eKind == RZ_ECampPlace.STRONGHOLD)
-			scale = 1.3;
-		else if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
-			scale = 0.8;
-
-		// Centre, the working area: anywhere round, close in
-		float bearing = a * 360;
-		float radius = 8 + b * 6;
-		if (role == RZ_EDressRole.INNER)
-		{
-			bearing = p.m_fApproach + 40 + a * 280;
-			radius = 14 + b * 8;
-		}
-		else if (role == RZ_EDressRole.APPROACH)
-		{
-			// The perimeter: spread across the approach side
-			bearing = p.m_fApproach - 45 + a * 90;
-			radius = 24 + b * 10;
-		}
-		else if (role == RZ_EDressRole.EDGE)
-		{
-			bearing = p.m_fApproach + 60 + a * 240;
-			radius = 28 + b * 18;
-		}
-
-		// The areas (not on the perimeter): sleeping at the back, cooking to one side
-		if (role != RZ_EDressRole.APPROACH)
-		{
-			if (use == RZ_EDressUse.SLEEP)
-			{
-				bearing = p.m_fApproach + 125 + a * 110;
-			}
-			else if (use == RZ_EDressUse.WASH)
-			{
-				bearing = p.m_fApproach + 110 + a * 140;
-				radius = radius + 4;
-			}
-			else if (use == RZ_EDressUse.COOK || use == RZ_EDressUse.CHOP)
-			{
-				bearing = p.m_fApproach + p.m_fCookSide - 35 + a * 70;
-			}
-		}
-
-		return RZ_Compass.PointAt(p.m_vPos, bearing, radius * scale);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Pieces face the centre (in a building, its yard); the perimeter faces out; at a road post
-	//! they face the road.
-	protected float PieceYaw(RZ_CampPlace p, RZ_EDressRole role, vector spot)
-	{
-		if (p.m_eKind != RZ_ECampPlace.ROAD_POST && role == RZ_EDressRole.APPROACH)
-			return RZ_Compass.Bearing(p.m_vCentre, spot);
-
-		if (p.m_eKind == RZ_ECampPlace.ROAD_POST)
-			return RZ_Compass.Bearing(spot, p.m_vPos);
-
-		return RZ_Compass.Bearing(spot, p.m_vHome);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool GoodSpot(RZ_CampPlace p, RZ_CampGround ground, vector spot)
-	{
-		foreach (vector seat : p.m_aLeaderSeats)
-		{
-			if (RZ_Util.DistXZ(seat, spot) < LEADER_CLEAR)
-				return false;
-		}
-
-		// The shared placer's rules (World/Traces/RZ_DressPlacer.c): dry, off the line, flat, clear
-		// of the quartermasters, the medic and the barrier, apart from the other pieces, off the
-		// roads and out of the buildings' footprints (locked ones and their doorway blockers too)
-		array<vector> taken = {};
-		foreach (RZ_CampPiece other : p.m_aPieces)
-		{
-			taken.Insert(other.m_vPos);
-		}
-
-		if (!RZ_DressPlacer.Good(spot, ground, p.m_aKeepClear, KEEP_CLEAR, taken, PIECE_GAP))
-			return false;
-
-		// Other systems' props standing there (Traces' scenes, boards and sound looks) are taken too
-		foreach (IEntity e : s_aPieces)
-		{
-			if (e && RZ_Util.DistXZ(e.GetOrigin(), spot) < PIECE_GAP)
-				return false;
-		}
-
-		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1569,11 +2341,6 @@ class RZ_CampLife
 		if (p.m_eFaction == RZ_EFaction.BANDITS)
 			site.m_iYardFace = FACE_FRONT;
 
-		site.m_iCookFace = FACE_LEFT;
-		RZ_Rng rng = new RZ_Rng(p.m_iSeed + 13);
-		if (rng.Chance(0.5))
-			site.m_iCookFace = FACE_RIGHT;
-
 		site.m_vHome = FacePoint(site, site.m_iYardFace, 0, 6);
 	}
 
@@ -1792,97 +2559,6 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where a piece stands in a building's place: its own setting, else from its role and use.
-	protected static RZ_EDressAt PieceAt(RZ_DressingPiece piece)
-	{
-		if (piece.m_eAt != RZ_EDressAt.AUTO)
-			return piece.m_eAt;
-
-		if (piece.m_eRole == RZ_EDressRole.CENTRE)
-			return RZ_EDressAt.YARD;
-
-		if (piece.m_eRole == RZ_EDressRole.EDGE)
-			return RZ_EDressAt.WALLS;
-
-		if (piece.m_eRole == RZ_EDressRole.APPROACH)
-		{
-			if (piece.m_eUse == RZ_EDressUse.WATCH || piece.m_eUse == RZ_EDressUse.LEAN)
-				return RZ_EDressAt.GATE;
-
-			return RZ_EDressAt.CLOSED;
-		}
-
-		if (piece.m_eUse == RZ_EDressUse.COOK || piece.m_eUse == RZ_EDressUse.CHOP)
-			return RZ_EDressAt.SIDE;
-
-		return RZ_EDressAt.BACK;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A spot by the building. Always four draws, whatever the spot.
-	protected vector SiteCandidate(RZ_CampPlace p, RZ_EDressAt at, RZ_Rng rng)
-	{
-		float a = rng.Float01();
-		float b = rng.Float01();
-		float c = rng.Float01();
-		bool side = rng.Chance(0.5);
-		RZ_CampSite site = p.m_Site;
-		float spread = a * 2 - 1;
-
-		if (at == RZ_EDressAt.YARD)
-			return FacePoint(site, site.m_iYardFace, spread * 0.9, 3 + b * 7);
-
-		if (at == RZ_EDressAt.FRONT)
-			return FacePoint(site, FACE_FRONT, spread * 0.9, 3 + b * 6);
-
-		if (at == RZ_EDressAt.BACK)
-			return FacePoint(site, FACE_BACK, spread * 1.1, 10 + b * 8);
-
-		if (at == RZ_EDressAt.SIDE)
-			return FacePoint(site, site.m_iCookFace, spread * 0.8, 3 + b * 6);
-
-		if (at == RZ_EDressAt.DOOR)
-			return FacePoint(site, FACE_FRONT, site.m_fDoor + spread * 0.25, 2.5 + b * 2.5);
-
-		if (at == RZ_EDressAt.WALLS)
-		{
-			if (c < 0.4)
-				return FacePoint(site, FACE_BACK, spread, 10 + b * 10);
-
-			if (c < 0.7)
-				return FacePoint(site, FACE_LEFT, spread, 4 + b * 10);
-
-			return FacePoint(site, FACE_RIGHT, spread, 4 + b * 10);
-		}
-
-		// The gate, or a closed entry: beside the road where it crosses the ring
-		int entry = site.m_iMain;
-		if (at == RZ_EDressAt.CLOSED)
-		{
-			int closed = site.m_aEntries.Count() - 1;
-			entry = -1;
-			if (closed > 0)
-			{
-				int pick = RZ_Util.PickIndex(p.m_iClosedNext, closed);
-				entry = pick;
-				if (pick >= site.m_iMain)
-					entry = pick + 1;
-			}
-		}
-
-		if (entry < 0)
-			return FacePoint(site, FACE_FRONT, spread, 10 + b * 10);
-
-		float sideSign = 1;
-		if (side)
-			sideSign = -1;
-
-		vector e = site.m_aEntries[entry];
-		vector beside = RZ_Compass.PointAt(e, site.m_aEntryRoad[entry] + 90 * sideSign, RZ_DressPlacer.ROAD_CLEAR + 0.5 + b * 3);
-		return RZ_Util.GroundPos(RZ_Compass.PointAt(beside, RZ_Compass.Bearing(site.m_vCentre, e), spread * 5));
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The lookout's spot: a front corner of the building (the one nearer the gate first), facing
 	//! the way in. From the ground: nobody is sent onto a roof.
 	protected vector LookoutSpot(RZ_CampPlace p, int which)
@@ -2037,12 +2713,17 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Workers whose body is gone or dead lose their job. Owned bodies stay listed until Leave.
+	//! Workers whose body is gone or dead lose their job, and so does anyone whose piece is gone
+	//! (no waypoint is left pointing at a deleted smart action; the next shuffle gives them another).
+	//! Owned bodies stay listed until Leave.
 	protected void Prune(RZ_CampPlace p)
 	{
 		for (int i = p.m_aWorkers.Count() - 1; i >= 0; i--)
 		{
 			RZ_CampWorker w = p.m_aWorkers[i];
+			if (w.m_iPiece >= 0 && (w.m_iPiece >= p.m_aPieces.Count() || !p.m_aPieces[w.m_iPiece].m_Entity))
+				ClearJob(p, w);
+
 			if (w.m_Unit && RZ_Util.CountAlive(w.m_Unit) > 0)
 				continue;
 
@@ -2365,6 +3046,7 @@ class RZ_CampLife
 		}
 
 		w.m_iPiece = -1;
+		w.m_iSeat = -1;
 		w.m_iJob = JOB_NONE;
 	}
 
@@ -2415,14 +3097,51 @@ class RZ_CampLife
 		piece.m_iUsed++;
 		w.m_iPiece = idx;
 
-		IEntity wp = RZ_Util.SetGroupSmartAction(group, piece.m_Entity, piece.m_sTag, m_Settings.m_sSmartActionWaypoint);
+		// A seat of its own: the sentinel itself, so the waypoint points at a real smart action
+		IEntity seat = FreeSeat(p, w, idx);
+		IEntity wp;
+		if (seat)
+			wp = RZ_Util.SetGroupSmartAction(group, seat, piece.m_sTag, m_Settings.m_sSmartActionWaypoint);
+
 		if (wp)
 		{
 			w.m_aWaypoints.Insert(wp);
 			return;
 		}
 
+		w.m_iSeat = -1;
 		Loiter(p, w, group, RZ_Util.RandomPointInRing(piece.m_vPos, 1.5, 3));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first of the piece's sentinels with its tag that nobody else at the place holds, or null.
+	protected IEntity FreeSeat(RZ_CampPlace p, RZ_CampWorker w, int idx)
+	{
+		RZ_CampPiece piece = p.m_aPieces[idx];
+		if (!piece.m_Entity)
+			return null;
+
+		array<int> held = {};
+		foreach (RZ_CampWorker o : p.m_aWorkers)
+		{
+			if (o != w && o.m_iPiece == idx && o.m_iSeat >= 0)
+				held.Insert(o.m_iSeat);
+		}
+
+		for (int s = 0; s < 8; s++)
+		{
+			if (held.Contains(s))
+				continue;
+
+			IEntity seat = RZ_Util.FindSmartAction(piece.m_Entity, piece.m_sTag, s);
+			if (!seat)
+				return null;
+
+			w.m_iSeat = s;
+			return seat;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------

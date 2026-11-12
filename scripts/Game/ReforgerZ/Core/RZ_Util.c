@@ -451,16 +451,23 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Send an AI group to use a smart action (a sit, lean, loiter or observation sentinel) on
-	//! `target` or one of its direct children whose tags include `tag`. Returns the waypoint, or
-	//! null (no group, no target, or the prefab isn't an SCR_SmartActionWaypoint).
+	//! Send an AI group to use a smart action (a sit, lean, loiter or observation sentinel) whose
+	//! tags include `tag`: the first one on `target` or under it (pass the sentinel itself to pick
+	//! a seat). The waypoint is given the entity that carries the smart action, never a parent of
+	//! it, and only when one is there: vanilla's waypoint tree stops with a script error ("Waypoint
+	//! is not set properly") when its entity has no smart action with the tag. Returns the
+	//! waypoint, or null (no group, no such smart action, or the prefab isn't an SCR_SmartActionWaypoint).
 	static IEntity SetGroupSmartAction(IEntity e, IEntity target, string tag, ResourceName waypointPrefab)
 	{
 		SCR_AIGroup group = SCR_AIGroup.Cast(e);
 		if (!group || !target || tag.IsEmpty() || waypointPrefab.IsEmpty())
 			return null;
 
-		IEntity spawned = SpawnPrefab(waypointPrefab, target.GetOrigin());
+		IEntity seat = FindSmartAction(target, tag, 0);
+		if (!seat)
+			return null;
+
+		IEntity spawned = SpawnPrefab(waypointPrefab, seat.GetOrigin());
 		SCR_SmartActionWaypoint wp = SCR_SmartActionWaypoint.Cast(spawned);
 		if (!wp)
 		{
@@ -470,9 +477,62 @@ class RZ_Util
 			return null;
 		}
 
-		wp.SetSmartActionEntity(target, tag); // VERIFY: a smart-action waypoint set from script sends a ReforgerZ faction group to the tagged sentinel (vanilla's SA_* behaviours run for our groups in a mod world)
+		wp.SetSmartActionEntity(seat, tag); // VERIFY: a smart-action waypoint set from script sends a ReforgerZ faction group to the tagged sentinel (vanilla's SA_* behaviours run for our groups in a mod world)
 		group.AddWaypoint(wp);
 		return wp;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The `nth` entity (0 = the first) on or under `root` (three levels down) that carries a
+	//! smart action whose tags include `tag`, or null.
+	static IEntity FindSmartAction(IEntity root, string tag, int nth)
+	{
+		if (!root || tag.IsEmpty() || nth < 0)
+			return null;
+
+		array<IEntity> found = {};
+		CollectSmartActions(root, tag, 0, nth + 1, found);
+		if (found.Count() > nth)
+			return found[nth];
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CollectSmartActions(IEntity e, string tag, int depth, int want, notnull array<IEntity> found)
+	{
+		if (!e || depth > 3 || found.Count() >= want)
+			return;
+
+		if (HasSmartActionTag(e, tag))
+			found.Insert(e);
+
+		IEntity child = e.GetChildren();
+		while (child && found.Count() < want)
+		{
+			CollectSmartActions(child, tag, depth + 1, want, found);
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasSmartActionTag(IEntity e, string tag)
+	{
+		array<Managed> comps = {};
+		e.FindComponents(AISmartActionComponent, comps);
+		foreach (Managed m : comps)
+		{
+			AISmartActionComponent sa = AISmartActionComponent.Cast(m);
+			if (!sa)
+				continue;
+
+			array<string> tags = {};
+			sa.GetTags(tags);
+			if (tags.Contains(tag))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
