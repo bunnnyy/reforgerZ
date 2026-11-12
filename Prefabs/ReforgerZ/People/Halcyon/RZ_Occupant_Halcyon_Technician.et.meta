@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{D46AF85C0A91C8A6}Prefabs/ReforgerZ/People/Halcyon/RZ_Occupant_Halcyon_Technician.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

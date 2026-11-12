@@ -1,0 +1,32 @@
+SCR_ChimeraCharacter : "{FA6C654C92ECF556}Prefabs/ReforgerZ/Factions/RZ_QM_Bastion.et" {
+ ID "520EC961A090BBD5"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{129457E7C45EB342}Prefabs/Characters/HeadGear/Hat_M70_01/Hat_woodland_cap.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{C7861F11D5334C0E}Prefabs/Characters/Uniforms/Jacket_US_BDU.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{F2ACE9E8181679BB}Prefabs/Characters/Uniforms/Pants_US_M65_dark.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CAAFB9235E903}" {
+     TargetStorage "Jacket/Jacket_US_BDU.et"
+    }
+    ItemsInitConfigurationItem "{5D7CAAFB9235E902}" {
+     TargetStorage "Pants/Pants_US_M65_dark.et"
+    }
+    ItemsInitConfigurationItem "{7A13C0A0F1A85210}" {
+     TargetStorage "Pants/Pants_US_M65_dark.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

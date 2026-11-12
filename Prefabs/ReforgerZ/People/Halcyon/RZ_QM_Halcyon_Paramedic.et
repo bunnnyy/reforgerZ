@@ -1,0 +1,32 @@
+SCR_ChimeraCharacter : "{C70CEA8F1DC07FC7}Prefabs/ReforgerZ/Factions/RZ_QM_Halcyon.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{C1FF82A0F6813A48}Prefabs/Characters/Uniforms/Jacket_EMS.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{B8F5E8DB8D633E31}Prefabs/Characters/Uniforms/Pants_EMS.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{D8326FEE52670D2A}Prefabs/Characters/Handwear/Gloves_Blue/Medical_Gloves_Blue_Base.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Jacket/Jacket_EMS.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     TargetStorage "Pants/Pants_EMS.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

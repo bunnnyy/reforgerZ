@@ -1,0 +1,7 @@
+SCR_AIGroup : "{63E63A1918EA4EA7}Prefabs/ReforgerZ/Territory/RZ_Guard_Halcyon.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{24198CAA53652337}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_Medic.et" "{C3BD34CB43209E31}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_GasMask.et"
+ }
+}

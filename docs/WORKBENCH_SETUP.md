@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **287 prefab fields**: 40 on `RZ_GameModeComponent`, 238 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **291 entries**: 179 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 80 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **312 prefab fields**: 46 on `RZ_GameModeComponent`, 257 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **292 entries**: 179 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -813,6 +813,12 @@ and the UI files) need none, and six have no base:
 |---|---|---|---|---|---|
 | `RZ_RedHandLorry.et` | a static civilian lorry or flatbed with no vehicle component (a wreck-style static prop); confirm the name in Workbench | — | Questlines > Majors > Red Hand lorry | optional | look only: the lorry across the road at Rudi's crossroads for the Book's send-off and its last line, near players only (else words only) |
 | `RZ_Bonfire.et` | a large campfire or bonfire prop, lit; confirm the name in Workbench | — | Questlines > Majors > Bonfire prop | optional | look only: the fire at Rudi's crossroads when the book is sent off loud, near players only (else words only) |
+
+#### People's looks
+
+| Prefab | Suggested base | Add | Slot | Need | Used for |
+|---|---|---|---|---|---|
+| (existing prefab) | variants of a faction person slot's prefab in other clothes (Prefabs/ReforgerZ/People/<faction>/, written by tools/people_looks.py): character looks inherit the slot's character, group looks inherit its group and list character looks as members | — | Each faction person slot's Looks list (Territory, Haven, Checkpoints, Supply, Leaders, Factions) | optional | each body of the slot wears one of them, the same one for the same person (docs/DESIGN.md, People's looks); empty = the slot's own prefab. Manual: generated as text, not by Create prefabs. Edit tools/people_looks.py and run it, then check the looks in Workbench |
 <!-- /manifest:prefabs -->
 
 ### Stand-in bases
@@ -1103,6 +1109,40 @@ play-test checklist, *Camp life*).
 **Who takes jobs.** Guards that are AI groups take them as they are. A lone character joins an
 empty group from **Camp life > Group prefab**. The occupant and civilian prefabs are characters
 without AI today: they keep standing where they spawn until they're based on an AI character.
+
+### People's looks: the variant prefabs
+
+How looks are picked is in [DESIGN.md](DESIGN.md#peoples-looks). The variants are generated, not
+hand-made: edit the tables in `tools/people_looks.py` and run `py tools/people_looks.py` (it
+rewrites every look and its `.meta` under `Prefabs/ReforgerZ/People/<faction>/`; `--arrays` prints
+the game mode's lists). It stops if any clothing ResourceName is missing from the resource index
+(`$profile:RZ_ResourceIndex.txt`, [PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)). A new
+prefab's GUID comes from its path, so re-running keeps them.
+
+| Kind | Inherits | Per faction | Fills |
+|---|---|---|---|
+| `RZ_Occupant_<Faction>_<look>` | the faction's occupant | Haven 6, Bastion 5, Red Hand 5, Halcyon 6 | **Territory > <faction> occupant looks**; the Haven's also join **Haven > Occupant prefabs** |
+| `RZ_Armed_<Faction>_<look>` | the vanilla soldier the faction's guard group spawns (FIA AC, FIA Partisan, US Rifleman, US Rifleman variant 1) | 5 each | members of the group looks below (no slot of their own) |
+| `RZ_QM_<Faction>_<look>` | the faction's quartermaster | 3 each | **Factions > <faction> quartermaster looks** |
+| `RZ_CouncilHead_<look>`, `RZ_Outpost_<Faction>_<look>` | the council head, the faction's outpost leader | 3; 2 each | **Leaders > Council head looks**, **<faction> outpost looks** |
+| `RZ_Guard_<Faction>_<n>` | the faction's guard group | 3 each | **Territory > <faction> guard looks** (and so camp life's extras) |
+| `RZ_SafehouseGuard_<n>` | the safehouse guard | 3 | **Haven > Guard looks** |
+| `RZ_BastionPostCrew_<n>`, `RZ_RedHandPostCrew_<n>` | the road-post crew | 3 each | **Checkpoints > <faction> crew looks** |
+| `RZ_TruckCrew_<Faction>_<n>` | the faction's truck crew | 2 each | **Supply > <faction> crew looks** |
+| `RZ_BastionHunters_<n>`, `RZ_RedHandHunters_<n>` | the hunter squad | 2 each | **Factions > <faction> hunter squad looks** |
+
+A look overrides clothing slots only: **Hat**, **Jacket**, **Pants**, **Boots**, **Back**, **Vest**,
+**ArmoredVest**, **HandWear**, and Zelik's Character slots **Face** (balaclavas, the hazmat and
+medical masks) and **Head** (Domins' gas mask). Zelik's Character is a Workshop dependency of
+BanditGear, BasicHazmatSuit, MedicalAccessories and Domins, so it loads with them
+([MOD_STACK.md](MOD_STACK.md#the-camps-look)). A suit or overalls that cover the legs empty
+**Pants**. Where the parent packs starting items into a garment the look replaces, the look points
+those item lists (`ItemsInitConfigurationItem` `TargetStorage`) at the new garment, or at the pack or
+vest when the garment is gone. Halcyon's truck crews are now its armed looks rather than medics.
+
+**Test it.** Open one look of each kind in Workbench and check it shows the clothes in its name and
+no warning in the log (a wrong slot name, a garment that won't attach); then the play-test
+checklist, *People's looks*.
 
 ### Traces: the Workbench spike (phase 0)
 
@@ -3106,6 +3146,17 @@ editor's time of day)
   the cook pot until the meal.
 - [ ] Named people stay within 20 m of the centre; talk to one: they stop, and go back to work a
   minute later. Quartermasters and leaders never move.
+
+**People's looks** ([DESIGN.md](DESIGN.md#peoples-looks))
+- [ ] At a holding of each faction no two guards or named people wear the same clothes, and each
+  faction still reads as itself (the Haven in work clothes, Bastion in US kit, the Red Hand in
+  balaclavas and tracksuits, Halcyon in masks and hazmat). Masks, balaclavas and the gas mask sit on
+  the face, not floating; no hazmat suit shows trousers through it.
+- [ ] Leave (past 300 m) and come back: each named person wears the same look as before.
+- [ ] A guard in each faction's looks fights through more than one magazine (his starting items
+  moved with his clothes); a Haven guard in overalls and a Halcyon guard in hazmat still have theirs.
+- [ ] A road post's crew, a supply truck's crew and a hunter squad show mixed looks; a safehouse's
+  occupants and guard differ from the next safehouse's.
 
 **Faction bases on Everon** ([DESIGN.md](DESIGN.md#camp-life); after `build.py` has rewritten the kits)
 - [ ] Walk up to each faction's stronghold and one outpost: the log's `Camp life: ... moves into ...`

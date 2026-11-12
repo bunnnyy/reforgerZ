@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{F1CE44538B4F72F8}Prefabs/ReforgerZ/People/Bastion/RZ_Occupant_Bastion_Long.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

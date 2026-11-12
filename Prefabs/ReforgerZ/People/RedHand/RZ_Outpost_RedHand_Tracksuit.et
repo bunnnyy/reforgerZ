@@ -1,0 +1,32 @@
+SCR_ChimeraCharacter : "{DA78E230581B4F4A}Prefabs/ReforgerZ/Leaders/RZ_Outpost_RedHand.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{DD43DAD304AC5085}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_03_backwards.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{3A948BD491BC06DE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Navy.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{821386465B3C63AB}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Navy.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{608AC3CC37F93DCA}" {
+     TargetStorage "Jacket/Jacket_Tracksuit_Navy.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     TargetStorage "Pants/Pants_Tracksuit_Navy.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Pants/Pants_Tracksuit_Navy.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

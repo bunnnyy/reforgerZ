@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{99A9AE5F2C6F9358}Prefabs/ReforgerZ/People/RedHand/RZ_Outpost_RedHand_Tracksuit.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

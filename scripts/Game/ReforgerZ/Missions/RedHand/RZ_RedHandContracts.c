@@ -1092,7 +1092,8 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		{
 			m_bShown = true;
 			SpawnObject(gm, RZ_EPuzzleProp.OBJECT, m_vGate, 0, "", "Cut the lock");
-			m_Guards = RZ_Util.SpawnPrefab(SquadPrefab(gm), LandPointNear(m_vGate, 10, 25));
+			vector squadAt = LandPointNear(m_vGate, 10, 25);
+			m_Guards = RZ_Util.SpawnPrefab(gm.PickLook(SquadPrefab(gm), RZ_Looks.SeedAt(squadAt)), squadAt);
 			TrackProp(m_Guards);
 			if (m_Guards && gm.GetHostility())
 			{

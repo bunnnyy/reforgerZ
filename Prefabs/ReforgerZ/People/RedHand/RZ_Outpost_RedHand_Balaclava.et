@@ -1,0 +1,26 @@
+SCR_ChimeraCharacter : "{DA78E230581B4F4A}Prefabs/ReforgerZ/Leaders/RZ_Outpost_RedHand.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Face {
+     Prefab "{09843B703114507C}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Olive.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{5FA71197901F8EEF}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_02.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{608AC3CC37F93DCA}" {
+     TargetStorage "Jacket/Jacket_Bandit_02.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

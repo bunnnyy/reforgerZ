@@ -1,0 +1,26 @@
+SCR_ChimeraCharacter : "{26A9756790131354}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Rifleman.et" {
+ ID "52092032B0E62200"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{1D0B60CC90DA7330}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_M1_No Strap.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{C890D96D16AD5EEF}Prefabs/Characters/Uniforms/Jacket_US_BDU_darklong.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{F2ACE9E8181679BB}Prefabs/Characters/Uniforms/Pants_US_M65_dark.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CAAFB9235E902}" {
+     TargetStorage "Pants/Pants_US_M65_dark.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

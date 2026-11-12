@@ -2045,7 +2045,8 @@ class RZ_CureFinale
 				toDist = 250;
 			}
 
-			IEntity grp = RZ_Util.SpawnPrefab(prefab, RZ_Mission.LandPointNear(lab, fromDist, toDist));
+			vector stand = RZ_Mission.LandPointNear(lab, fromDist, toDist);
+			IEntity grp = RZ_Util.SpawnPrefab(m_GM.PickLook(prefab, RZ_Looks.SeedAt(stand)), stand);
 			if (!grp)
 				continue;
 

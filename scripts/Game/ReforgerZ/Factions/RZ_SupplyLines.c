@@ -47,6 +47,18 @@ class RZ_SupplySettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon crew: an AI group on INST", "et")]
 	ResourceName m_sHalcyonCrew;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven crew looks (optional): variant crew groups in other clothes, picked by the truck. Empty = the crew prefab", "et")]
+	ref array<ResourceName> m_aHavenCrewLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion crew looks (optional)", "et")]
+	ref array<ResourceName> m_aBastionCrewLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand crew looks (optional)", "et")]
+	ref array<ResourceName> m_aRedHandCrewLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon crew looks (optional)", "et")]
+	ref array<ResourceName> m_aHalcyonCrewLooks;
+
 	[Attribute("60", desc: "Shortest real minutes between one faction's trucks (divided by season speed)")]
 	float m_fDepartMinMinutes;
 
@@ -900,7 +912,7 @@ class RZ_SupplyLines
 		if (!vehicle)
 			return null;
 
-		IEntity crew = RZ_Util.SpawnPrefab(CrewPrefab(f), RZ_Mission.LandPointNear(at, 3, 6), yaw);
+		IEntity crew = RZ_Util.SpawnPrefab(m_GM.PickLook(CrewPrefab(f), RZ_Looks.SeedAt(at)), RZ_Mission.LandPointNear(at, 3, 6), yaw);
 		if (!crew)
 		{
 			RZ_Util.DeleteUnit(vehicle);

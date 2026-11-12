@@ -1,0 +1,29 @@
+SCR_ChimeraCharacter : "{8F825525789BA7B8}Prefabs/ReforgerZ/Factions/RZ_QM_RedHand.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Face {
+     Prefab "{C500301CF7AE1ACB}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Black.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{7CC37DEB059F14CE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Black.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{AC7F9BCA3DA1002D}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Black.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Jacket/Jacket_Tracksuit_Black.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

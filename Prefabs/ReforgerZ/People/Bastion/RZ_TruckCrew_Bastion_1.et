@@ -1,0 +1,7 @@
+SCR_AIGroup : "{995C76BB993F5840}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Bastion.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{3429B967D0A385CB}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_M1.et" "{91B389A10DC8FF62}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Raincoat.et"
+ }
+}

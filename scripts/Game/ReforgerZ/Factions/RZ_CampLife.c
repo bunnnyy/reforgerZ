@@ -2766,7 +2766,8 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	protected IEntity SpawnOwned(RZ_CampPlace p, bool extra)
 	{
-		IEntity body = RZ_Util.SpawnPrefab(p.m_sExtraPrefab, BedSpot(p), Math.RandomFloat(0, 360));
+		// One of the slot's looks, by the place and the row (docs/DESIGN.md, People's looks)
+		IEntity body = RZ_Util.SpawnPrefab(m_GM.PickLook(p.m_sExtraPrefab, p.m_iSeed + p.m_aWorkers.Count()), BedSpot(p), Math.RandomFloat(0, 360));
 		if (!body)
 			return null;
 

@@ -655,6 +655,41 @@ airfields. A town "taken" changes hands as data while nobody is there: no battle
 Bastion and the Red Hand also put temporary **road posts** on the roads near their holdings, and
 their camps warn off the people they watch: [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps).
 
+### People's looks
+
+Code: `Factions/RZ_Looks.c`; prefabs: `Prefabs/ReforgerZ/People/<faction>/`, written by
+`tools/people_looks.py`. A faction's people don't all wear the same clothes. Every slot a faction
+person spawns from has an optional **Looks** list next to it: variant prefabs of that person in
+other clothes. Each body picks one from a stable seed, so the same person always wears the same
+look and the next one along wears another. An empty list keeps the slot's own prefab.
+
+| Who | Seed (the same seed, the same look) |
+|---|---|
+| A holding's guards, named occupants and outpost quartermaster | the holding and their place in the row |
+| A safehouse's occupants and guards; its quartermaster | the house and the row; the house's spot |
+| Camp life's extras (guards and workers who sleep and wake) | the place and how many are already out |
+| A road post's crew and speaker | the post |
+| A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad) | the spot it spawns at |
+| A council head or outpost leader | the seat and the generation: a successor wears another look |
+
+Stronghold leaders are one person each and keep their one prefab. Faces aren't set by the looks:
+the vanilla identity picks one from the faction's identity at each spawn, so a face can change
+between visits.
+
+Each faction keeps one identity in its looks ([LORE.md](LORE.md), the Workshop mods in
+[MOD_STACK.md](MOD_STACK.md#the-camps-look)):
+
+| Faction | Looks |
+|---|---|
+| The Haven | farm and work clothes: overalls and dungarees, a mechanic's suit, raincoats and fisherman's trousers, hard hats, knitted and trucker caps; a carer in a medical mask and gloves |
+| Task Force Bastion | worn US kit: BDUs sleeves up or down, dark BDUs and M65 trousers, the night-camo jacket, the raincoat, patrol, woodland and boonie caps, the M1 and PASGT helmets with scrim or goggles |
+| The Red Hand | dirty scavenged clothes: bandit jackets, tracksuits, sweatshirts, cargo trousers and jeans, balaclavas, baseball caps, wool and leather gloves, a black PASGT |
+| Halcyon | hazmat suits with masks (the beaks, [LORE.md](LORE.md)), lab staff in grey and black, paramedic kit, medical masks and nitrile gloves; its guards in dark kit with gas masks or hazmat |
+
+A look changes clothes only: the person's weapon, actions and components are the slot's own. When
+a look swaps a garment its parent packs starting items into (a guard's magazines in his trousers),
+the items go into the new garment, or into the pack or vest when the new one covers the legs.
+
 ### Camp life
 
 Code: `Factions/RZ_CampLife.c`; settings: **Territory > Camp life**. Holdings, Haven safehouses,

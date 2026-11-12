@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{7AF0F2D8EDA684F3}Prefabs/ReforgerZ/People/Bastion/RZ_BastionPostCrew_1.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

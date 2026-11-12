@@ -1,0 +1,26 @@
+SCR_ChimeraCharacter : "{8F825525789BA7B8}Prefabs/ReforgerZ/Factions/RZ_QM_RedHand.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{503CADDC8B459C03}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_02.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{DB053443800A3FCB}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_01.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{CDDA2A133111E1A6}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_Black.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Jacket/Jacket_Bandit_01.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

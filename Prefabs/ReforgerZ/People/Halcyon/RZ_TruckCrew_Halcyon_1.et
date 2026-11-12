@@ -1,0 +1,7 @@
+SCR_AIGroup : "{A43CF9781613D2D1}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Halcyon.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{24198CAA53652337}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_Medic.et" "{FF701E0632D4D062}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_Masked.et"
+ }
+}

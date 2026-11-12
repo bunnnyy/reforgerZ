@@ -93,7 +93,8 @@ class RZ_RedHandEdges
 		if (prefab.IsEmpty())
 			return null;
 
-		IEntity crew = RZ_Util.SpawnPrefab(prefab, RZ_Mission.LandPointNear(pos, minR, maxR), Math.RandomFloat(0, 360));
+		vector at = RZ_Mission.LandPointNear(pos, minR, maxR);
+		IEntity crew = RZ_Util.SpawnPrefab(gm.PickLook(prefab, RZ_Looks.SeedAt(at)), at, Math.RandomFloat(0, 360));
 		if (crew && gm.GetHostility())
 			gm.GetHostility().WatchUnit(crew, RZ_EFaction.BANDITS);
 

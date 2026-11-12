@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{FFF42566C4CA96AA}Prefabs/ReforgerZ/People/RedHand/RZ_Occupant_RedHand_Tracksuit.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
