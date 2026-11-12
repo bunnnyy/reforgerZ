@@ -572,7 +572,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 
 				NudgeMorale(gm, RZ_EFaction.SURVIVORS, 5);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 4, 0);
-				SpreadRumour(gm, "\"Every house lit a candle last night. Don't ask me who for. We don't say.\"", 12);
+				SpreadRumour(gm, "Every house lit a candle last night. Don't ask me who for. We don't say.", 12);
 				q.SetWorldFlag("table.walked_out", 1);
 				return;
 			}
@@ -608,13 +608,13 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 					t.StartMove(true, run.Fill("The {family} farm past {town} is empty. Nobody saw them go, and for once the table was cleared."));
 
 				ChangeStanding(gm, run, RZ_EFaction.BANDITS, 4, 0);
-				SpreadRumour(gm, "\"The Red Hand moved a family on last night, cart and all. Long table on its side in the back. Nobody's saying where to.\"", 8);
+				SpreadRumour(gm, "The Red Hand moved a family on last night, cart and all. Long table on its side in the back. Nobody's saying where to.", 8);
 				q.SetWorldFlag("table.paid", 1);
 				return;
 			}
 			case E_BY_HAND:
 			{
-				SpreadRumour(gm, run.Fill("\"Somebody went up to the farm past {town} on their own. The lamp hasn't come on since.\""), 8);
+				SpreadRumour(gm, run.Fill("Somebody went up to the farm past {town} on their own. The lamp hasn't come on since."), 8);
 				q.SetWorldFlag("table.by_hand", 1);
 				if (!boyOut)
 					q.SetWorldFlag("table.boy_lost", 1);
@@ -643,7 +643,7 @@ class RZ_Quest_HouseWentQuiet : RZ_Questline
 			return "";
 
 		if (run.m_iStage <= S_PROOF)
-			return "\"There's a farm past {town} that still sets a place at supper. In times like these. Makes you wonder what they've got to spare.\"";
+			return "There's a farm past {town} that still sets a place at supper. In times like these. Makes you wonder what they've got to spare.";
 
 		return "";
 	}
@@ -1941,7 +1941,7 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 
 		if (!IsEligible(gm, playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"I'll go with the lab's people. Not with you.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "I'll go with the lab's people. Not with you.");
 			return;
 		}
 

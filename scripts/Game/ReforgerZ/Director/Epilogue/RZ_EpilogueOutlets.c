@@ -293,14 +293,14 @@ class RZ_EpiOutlets
 		RZ_EpilogueSave s = m_Epi.Data();
 		if (!m_GM.GetInfection().SeemsInfected(playerId))
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"You're not bitten. It's for the bitten. Come back if that changes, and hope it doesn't.\"");
+			m_GM.NotifyPlayer(playerId, title, "You're not bitten. It's for the bitten. Come back if that changes, and hope it doesn't.");
 			return;
 		}
 
 		string lifeKey = string.Format("%1|%2", p.m_sIdentity, p.m_iLives);
 		if (s.dosed.Contains(lifeKey))
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"You've had yours this life. One each. The old ways work as well as they ever did.\"");
+			m_GM.NotifyPlayer(playerId, title, "You've had yours this life. One each. The old ways work as well as they ever did.");
 			return;
 		}
 
@@ -320,7 +320,7 @@ class RZ_EpiOutlets
 
 		if (Stock(key) <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, title, string.Format("\"None left. Come back in about %1 minutes.\"", MinutesToNext(o)));
+			m_GM.NotifyPlayer(playerId, title, string.Format("None left. Come back in about %1 minutes.", MinutesToNext(o)));
 			return;
 		}
 
@@ -388,7 +388,7 @@ class RZ_EpiOutlets
 			if (all)
 				return "";
 
-			return "\"We put you out. That hasn't changed because the lab finished something.\"";
+			return "We put you out. That hasn't changed because the lab finished something.";
 		}
 
 		if (o.faction == RZ_EFaction.MILITARY && m_iTerms == 3)
@@ -434,7 +434,7 @@ class RZ_EpiOutlets
 					if (m_bCondition)
 						return true;
 
-					return Favor(playerId, RZ_EFaction.SURVIVORS, 10, title, "\"Ten for the batch. The method's free. The hands aren't.\"", paid);
+					return Favor(playerId, RZ_EFaction.SURVIVORS, 10, title, "Ten for the batch. The method's free. The hands aren't.", paid);
 				}
 
 				// The cook's sister's house under the first pan
@@ -451,7 +451,7 @@ class RZ_EpiOutlets
 				if (m_iTerms == 3 && m_GM.GetProfile(playerId).m_aFavor[RZ_EFaction.SURVIVORS] < 5)
 					return true;
 
-				return Favor(playerId, RZ_EFaction.SURVIVORS, 5, title, "\"Five for the pot. If you've got none, ask at the big house.\"", paid);
+				return Favor(playerId, RZ_EFaction.SURVIVORS, 5, title, "Five for the pot. If you've got none, ask at the big house.", paid);
 			}
 			case RZ_EFaction.MILITARY:
 			{
@@ -464,13 +464,13 @@ class RZ_EpiOutlets
 					return true;
 				}
 
-				return Favor(playerId, RZ_EFaction.MILITARY, 15, title, "\"One firearm, or fifteen on the books. You've neither.\"", paid);
+				return Favor(playerId, RZ_EFaction.MILITARY, 15, title, "One firearm, or fifteen on the books. You've neither.", paid);
 			}
 			case RZ_EFaction.BANDITS:
 			{
 				if (phase >= 3 && m_iTerms == 1)
 				{
-					paid = "\"Free. We're not carrying it out.\"";
+					paid = "Free. We're not carrying it out.";
 					return true;
 				}
 
@@ -479,7 +479,7 @@ class RZ_EpiOutlets
 					if (!s.owed.Contains(ident))
 						s.owed.Insert(ident);
 
-					paid = "\"Free. Thirty on your line in the book. You'll pay it. Everyone does.\"";
+					paid = "Free. Thirty on your line in the book. You'll pay it. Everyone does.";
 					return true;
 				}
 
@@ -490,7 +490,7 @@ class RZ_EpiOutlets
 				if (!m_bCondition && !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.KNOWN))
 					price = RZ_Util.RoundToInt(price * 1.5);
 
-				if (!Favor(playerId, RZ_EFaction.BANDITS, price, title, string.Format("\"%1 Favor. The board's always right.\"", price), paid))
+				if (!Favor(playerId, RZ_EFaction.BANDITS, price, title, string.Format("%1 Favor. The board's always right.", price), paid))
 					return false;
 
 				if (m_iTerms == 2 && !s.owed.Contains(ident))
@@ -513,7 +513,7 @@ class RZ_EpiOutlets
 				if (m_iTerms == 3 && p.m_fInfectionTotal - p.m_fInfectionLeft <= 1200)
 					return true;
 
-				return Favor(playerId, RZ_EFaction.INSTITUTE, 10, title, "\"Ten Favor. The order is on the door.\"", paid);
+				return Favor(playerId, RZ_EFaction.INSTITUTE, 10, title, "Ten Favor. The order is on the door.", paid);
 			}
 		}
 

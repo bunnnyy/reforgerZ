@@ -503,7 +503,7 @@ class RZ_RepVoice
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		RZ_EPictureKind kind = Kind(gm, playerId);
 		if (kind == RZ_EPictureKind.UNKNOWN)
-			return "\"Nobody's heard of you. Enjoy it.\"";
+			return "Nobody's heard of you. Enjoy it.";
 
 		int first = -1;
 		int second = -1;
@@ -526,17 +526,17 @@ class RZ_RepVoice
 		}
 
 		if (all >= RZ_Factions.COUNT)
-			return "\"Everybody's got an opinion about you. None of them agree.\"";
+			return "Everybody's got an opinion about you. None of them agree.";
 
 		string one = string.Format("%1 %2", Possessive(first), RZ_RepNames.Shown(p.GetFame(first), p.GetInfamy(first)));
 		if (second < 0 || RZ_RepNames.Notoriety(p.GetFame(second), p.GetInfamy(second)) == 0)
-			return string.Format("\"Word is you're %1. That's all anyone says.\"", one);
+			return string.Format("Word is you're %1. That's all anyone says.", one);
 
 		string two = string.Format("%1 %2", Possessive(second), RZ_RepNames.Shown(p.GetFame(second), p.GetInfamy(second)));
 		if (kind == RZ_EPictureKind.WANTED)
-			return string.Format("\"Word is you're %1 and %2. I'd keep off the roads.\"", one, two);
+			return string.Format("Word is you're %1 and %2. I'd keep off the roads.", one, two);
 
-		return string.Format("\"Word is you're %1 and %2. I'll believe the better half.\"", one, two);
+		return string.Format("Word is you're %1 and %2. I'll believe the better half.", one, two);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -593,12 +593,12 @@ class RZ_RepVoice
 			{
 				int mem = leader.GetMemory(ident);
 				if ((mem & RZ_Leaders.MEM_SAVED) != 0)
-					lines.Insert("\"You were there when it counted. I don't forget that.\"");
+					lines.Insert("You were there when it counted. I don't forget that.");
 				else if ((mem & RZ_Leaders.MEM_HELPED) != 0)
-					lines.Insert("\"You've done work for us. It was done properly.\"");
+					lines.Insert("You've done work for us. It was done properly.");
 
 				if ((mem & RZ_Leaders.MEM_CROSSED) != 0)
-					lines.Insert("\"And I haven't forgotten the other thing.\"");
+					lines.Insert("And I haven't forgotten the other thing.");
 			}
 		}
 
@@ -617,46 +617,46 @@ class RZ_RepVoice
 			case RZ_EFaction.SURVIVORS:
 			{
 				if (b && w)
-					return string.Format("\"People have started calling you %1. You %2. You also %3. I'd rather they didn't have to.\"", rep, best, worst);
+					return string.Format("People have started calling you %1. You %2. You also %3. I'd rather they didn't have to.", rep, best, worst);
 				if (b)
-					return string.Format("\"People call you %1. You %2. That gets around a house.\"", rep, best);
+					return string.Format("People call you %1. You %2. That gets around a house.", rep, best);
 				if (w)
-					return string.Format("\"People call you %1. You %2. That gets around a house too.\"", rep, worst);
+					return string.Format("People call you %1. You %2. That gets around a house too.", rep, worst);
 
-				return string.Format("\"People call you %1. Nobody can say why yet.\"", rep);
+				return string.Format("People call you %1. Nobody can say why yet.", rep);
 			}
 			case RZ_EFaction.MILITARY:
 			{
 				if (b && w)
-					return string.Format("\"Your file says %1. Commendation: %2. Incident: %3. Both signed for.\"", rep, best, worst);
+					return string.Format("Your file says %1. Commendation: %2. Incident: %3. Both signed for.", rep, best, worst);
 				if (b)
-					return string.Format("\"Your file says %1. Commendation: %2. It went in the log.\"", rep, best);
+					return string.Format("Your file says %1. Commendation: %2. It went in the log.", rep, best);
 				if (w)
-					return string.Format("\"Your file says %1. Incident: %2. Noted, and initialled.\"", rep, worst);
+					return string.Format("Your file says %1. Incident: %2. Noted, and initialled.", rep, worst);
 
-				return string.Format("\"Your file says %1. The rest of the page is blank.\"", rep);
+				return string.Format("Your file says %1. The rest of the page is blank.", rep);
 			}
 			case RZ_EFaction.BANDITS:
 			{
 				if (b && w)
-					return string.Format("\"Crews call you %1. The book says %2. Owed: %3. Owing: %4. The book's never wrong, only late.\"", word, rep, best, worst);
+					return string.Format("Crews call you %1. The book says %2. Owed: %3. Owing: %4. The book's never wrong, only late.", word, rep, best, worst);
 				if (b)
-					return string.Format("\"Crews call you %1. The book says %2. Owed: %3. We'll get round to paying.\"", word, rep, best);
+					return string.Format("Crews call you %1. The book says %2. Owed: %3. We'll get round to paying.", word, rep, best);
 				if (w)
-					return string.Format("\"Crews call you %1. The book says %2. Owing: %3. We'll get round to collecting.\"", word, rep, worst);
+					return string.Format("Crews call you %1. The book says %2. Owing: %3. We'll get round to collecting.", word, rep, worst);
 
-				return string.Format("\"The book says %1. Short entry.\"", rep);
+				return string.Format("The book says %1. Short entry.", rep);
 			}
 		}
 
 		if (b && w)
-			return string.Format("\"We have you as %1. It's a category, not a judgement. Contribution: %2. Incident: %3. Both are in the record.\"", rep, best, worst);
+			return string.Format("We have you as %1. It's a category, not a judgement. Contribution: %2. Incident: %3. Both are in the record.", rep, best, worst);
 		if (b)
-			return string.Format("\"We have you as %1. Contribution: %2. It's in the record.\"", rep, best);
+			return string.Format("We have you as %1. Contribution: %2. It's in the record.", rep, best);
 		if (w)
-			return string.Format("\"We have you as %1. Incident: %2. It's in the record.\"", rep, worst);
+			return string.Format("We have you as %1. Incident: %2. It's in the record.", rep, worst);
 
-		return string.Format("\"We have you as %1. Insufficient data.\"", rep);
+		return string.Format("We have you as %1. Insufficient data.", rep);
 	}
 
 	// ================================================================ The opening line
@@ -683,15 +683,15 @@ class RZ_RepVoice
 
 		string deed = LocalDeed(playerId, seat);
 		if (!deed.IsEmpty())
-			return string.Format("\"You're the one who %1.\"", deed);
+			return string.Format("You're the one who %1.", deed);
 
 		int mem = l.GetMemory(ident);
 		if (l.MemoryLife(ident) == p.m_iLives)
 		{
 			if ((mem & RZ_Leaders.MEM_SAVED) != 0)
-				return "\"Here's the one I owe. Sit down.\"";
+				return "Here's the one I owe. Sit down.";
 			if ((mem & RZ_Leaders.MEM_CROSSED) != 0)
-				return "\"You. I remember.\"";
+				return "You. I remember.";
 		}
 		else
 		{
@@ -701,9 +701,9 @@ class RZ_RepVoice
 			{
 				trees.GetMemory().Add(playerId, RZ_DialogueMemory.NOTES, once);
 				if ((old & RZ_Leaders.MEM_CROSSED) != 0)
-					return string.Format("\"There was a %1 who crossed me once. Different face. Same name. Should I be worried?\"", RZ_Util.PlayerName(playerId));
+					return string.Format("There was a %1 who crossed me once. Different face. Same name. Should I be worried?", RZ_Util.PlayerName(playerId));
 
-				return string.Format("\"There was a %1 who did right by us once. Different face. I'll take the name as a start.\"", RZ_Util.PlayerName(playerId));
+				return string.Format("There was a %1 who did right by us once. Different face. I'll take the name as a start.", RZ_Util.PlayerName(playerId));
 			}
 		}
 
@@ -729,7 +729,7 @@ class RZ_RepVoice
 			if (p.m_bFallenKin && l.m_eFaction == RZ_EFaction.SURVIVORS && trees && !trees.GetMemory().Has(playerId, RZ_DialogueMemory.NOTES, kinKey))
 			{
 				trees.GetMemory().Add(playerId, RZ_DialogueMemory.NOTES, kinKey);
-				return "\"Family. Sit by me. We read the name every supper, you know. We haven't stopped.\"";
+				return "Family. Sit by me. We read the name every supper, you know. We haven't stopped.";
 			}
 
 			string aside = WhoYouWorkFor(gm, playerId, l);
@@ -746,14 +746,14 @@ class RZ_RepVoice
 					trees.GetMemory().NoteTopic(playerId, callKey);
 					string called = RZ_Deeds.CallbackPhrase(p, Math.RandomInt(0, 3));
 					if (!called.IsEmpty())
-						return string.Format("\"You're the one who %1.\"", called);
+						return string.Format("You're the one who %1.", called);
 				}
 			}
 
 			// One time in three, the best thing they know you did
 			string best = p.m_aBestDeed[l.m_eFaction];
 			if (!best.IsEmpty() && Math.RandomInt(0, 3) == 0)
-				return string.Format("\"You're the one who %1.\"", best);
+				return string.Format("You're the one who %1.", best);
 		}
 
 		// One time in four, a tally standing in for the worst deed: how many of theirs you've put down
@@ -808,7 +808,7 @@ class RZ_RepVoice
 				text += "\n" + place;
 		}
 
-		return "\"" + text + "\"";
+		return text;	// spoken: no quotes around it (docs/WRITING.md, "Talk")
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -929,12 +929,12 @@ class RZ_RepVoice
 	{
 		switch (faction)
 		{
-			case RZ_EFaction.SURVIVORS: return string.Format("\"You're the one who was there for %1. The house remembers who stood up.\"", ending);
-			case RZ_EFaction.MILITARY: return string.Format("\"You were at %1. It's in the log, with your name beside it.\"", ending);
-			case RZ_EFaction.BANDITS: return string.Format("\"%1. That was you. The book's got a line about it, in red.\"", ending);
+			case RZ_EFaction.SURVIVORS: return string.Format("You're the one who was there for %1. The house remembers who stood up.", ending);
+			case RZ_EFaction.MILITARY: return string.Format("You were at %1. It's in the log, with your name beside it.", ending);
+			case RZ_EFaction.BANDITS: return string.Format("%1. That was you. The book's got a line about it, in red.", ending);
 		}
 
-		return string.Format("\"You were one of the people who decided %1. Noted, in the margin.\"", ending);
+		return string.Format("You were one of the people who decided %1. Noted, in the margin.", ending);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -947,12 +947,12 @@ class RZ_RepVoice
 
 		switch (faction)
 		{
-			case RZ_EFaction.SURVIVORS: return string.Format("\"You've put %1 of ours in the ground. I count. Somebody has to.\"", kills);
-			case RZ_EFaction.MILITARY: return string.Format("\"%1 of ours, by your hand. It's in the log. So are you.\"", kills);
-			case RZ_EFaction.BANDITS: return string.Format("\"%1 of the crew. The book has a page just for you. It's a long page.\"", kills);
+			case RZ_EFaction.SURVIVORS: return string.Format("You've put %1 of ours in the ground. I count. Somebody has to.", kills);
+			case RZ_EFaction.MILITARY: return string.Format("%1 of ours, by your hand. It's in the log. So are you.", kills);
+			case RZ_EFaction.BANDITS: return string.Format("%1 of the crew. The book has a page just for you. It's a long page.", kills);
 		}
 
-		return string.Format("\"%1 of our people. We recorded each one. We record everything.\"", kills);
+		return string.Format("%1 of our people. We recorded each one. We record everything.", kills);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1028,12 +1028,12 @@ class RZ_RepVoice
 		string who = RZ_Factions.GetName(best);
 		switch (l.m_eFaction)
 		{
-			case RZ_EFaction.SURVIVORS: return string.Format("\"You run for %1 these days, I hear. Eat first. Then tell me about it.\"", who);
-			case RZ_EFaction.MILITARY: return string.Format("\"You run for %1. Noted. Arms out.\"", who);
-			case RZ_EFaction.BANDITS: return string.Format("\"Running for %1 now? Whatever they pay you, it's in our book too.\"", who);
+			case RZ_EFaction.SURVIVORS: return string.Format("You run for %1 these days, I hear. Eat first. Then tell me about it.", who);
+			case RZ_EFaction.MILITARY: return string.Format("You run for %1. Noted. Arms out.", who);
+			case RZ_EFaction.BANDITS: return string.Format("Running for %1 now? Whatever they pay you, it's in our book too.", who);
 		}
 
-		return string.Format("\"You work for %1, mostly. We've adjusted for it.\"", who);
+		return string.Format("You work for %1, mostly. We've adjusted for it.", who);
 	}
 
 	// ================================================================ Local deeds

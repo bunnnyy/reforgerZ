@@ -192,7 +192,7 @@ class RZ_DialoguePack_posts
 		db.Node("start");
 		db.Say("", "Go on, then. What does the crew call you, and who'd say so? A name's no good to me without somebody I know standing behind it.");
 		db.Choice("crew", "They call me {cover:crew}.", "said", "", "", "", "", "cover:crew", "cover:crew", "", "");
-		db.Choice("boss", "Ask {cover:name}. We go back.", "said", "", "", "", "", "cover:name", "cover:name", "", "");
+		db.Choice("boss", "{cover:name} knows me. We go back.", "said", "", "", "", "", "cover:name", "cover:name", "", "");
 		db.Choice("leave", "Forget it.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("said");
 		db.Jump("caught", "wrong");

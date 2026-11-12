@@ -12,20 +12,20 @@ class RZ_Errand_Courtesy : RZ_ErrandCard
 		m_sFamily = "background";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"You've done roads. Everyone can tell. Different crew, no hard feelings: is the bend below {subject_place} a good spot for a stop, or am I an idiot?\"",
-			"\"Professional question, one raider to another. The bend by {subject_place}. Would you hit a lorry there?\"");
-		Over("\"Never mind. The boss picked somewhere else. He always does.\"");
+		Offer("You've done roads. Everyone can tell. Different crew, no hard feelings: is the bend below {subject_place} a good spot for a stop, or am I an idiot?",
+			"Professional question, one raider to another. The bend by {subject_place}. Would you hit a lorry there?");
+		Over("Never mind. The boss picked somewhere else. He always does.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Give it to him straight";
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
-		w.Done("\"Huh. The ditch. Never thought of the ditch. Cheers.\"");
+		w.Done("Huh. The ditch. Never thought of the ditch. Cheers.");
 
 		w = Way("lie");
 		w.m_sLabel = "Steer him wrong";
 		w.m_iFavor = 2;
-		w.Done("\"Right on the trail? Brave. All right. If you say so.\"");
+		w.Done("Right on the trail? Brave. All right. If you say so.");
 
 		w = Way("report");
 		w.m_sLabel = "Tell Bastion where it is";
@@ -34,7 +34,7 @@ class RZ_Errand_Courtesy : RZ_ErrandCard
 		w.m_fRadius = 30;
 		w.m_sStep = "Tell Bastion's people {post} about the bend (5 s there).";
 		w.m_iPayFaction = RZ_EFaction.MILITARY;
-		w.Done("\"Noted. We'll have someone sit on that bend.\"");
+		w.Done("Noted. We'll have someone sit on that bend.");
 	}
 
 	//------------------------------------------------------------------------------------------------

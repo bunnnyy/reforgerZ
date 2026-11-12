@@ -435,7 +435,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.BANDITS, 0, 10);
 				RZ_HavenQuest.LeaderRemembers(gm, run, RZ_HavenQuest.KeptLeader(gm, run, "boss"), RZ_Leaders.MEM_CROSSED);
 				Headline(gm, run.Fill("The safehouse in {house} has stopped paying the Red Hand. It has boards on its windows instead."));
-				SpreadRumour(gm, run.Fill("\"{house} told the Red Hand no. To their faces. I'd have liked to see that.\""), 6);
+				SpreadRumour(gm, run.Fill("{house} told the Red Hand no. To their faces. I'd have liked to see that."), 6);
 				return;
 			}
 			case E_BASTION:
@@ -446,7 +446,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.MILITARY, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 8, 0);
 				Headline(gm, run.Fill("Bastion patrols the road to {house} now, and has the house on its census."));
-				SpreadRumour(gm, run.Fill("\"There's a Bastion truck on the road to {house} most nights. They get bread. The Red Hand gets nothing.\""), 6);
+				SpreadRumour(gm, run.Fill("There's a Bastion truck on the road to {house} most nights. They get bread. The Red Hand gets nothing."), 6);
 				return;
 			}
 			case E_TINS:
@@ -456,7 +456,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 5, 0);
 				ChangeFood(gm, house, -4);
 				Headline(gm, run.Fill("The safehouse in {house} eats a little less every month. The Red Hand never bothers it."), false);
-				SpreadRumour(gm, run.Fill("\"{house} pays. Everybody knows. Nobody says.\""), 6);
+				SpreadRumour(gm, run.Fill("{house} pays. Everybody knows. Nobody says."), 6);
 				return;
 			}
 			case E_DEBT:
@@ -464,7 +464,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.BANDITS, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 				Headline(gm, run.Fill("The safehouse in {house} owes the Red Hand nothing. Somebody else is paying its debt."), false);
-				SpreadRumour(gm, run.Fill("\"Somebody took {house}'s debt to the Red Hand on themselves. Mad, or kind. Same thing these days.\""), 6);
+				SpreadRumour(gm, run.Fill("Somebody took {house}'s debt to the Red Hand on themselves. Mad, or kind. Same thing these days."), 6);
 			}
 		}
 	}
@@ -485,10 +485,10 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage == S_ENVELOPE || run.m_iStage == S_GRID)
-			return "\"The safehouse in {house} pays the Red Hand to be left alone. This month it isn't tins, they say.\"";
+			return "The safehouse in {house} pays the Red Hand to be left alone. This month it isn't tins, they say.";
 
 		if (run.m_iStage == S_TALK || run.m_iStage == S_VOTE)
-			return "\"{house} is voting on its council head. About time, some say. Others say the opposite, louder.\"";
+			return "{house} is voting on its council head. About time, some say. Others say the opposite, louder.";
 
 		return "";
 	}
@@ -500,10 +500,10 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 			return "";
 
 		if (leaderId == run.Flag("head", -1) && (run.m_iStage == S_TALK || run.m_iStage == S_VOTE) && RZ_HavenQuest.KeptLeader(gm, run, "head"))
-			return "\"They're voting on me tonight. Say what you think. I'll still be here in the morning, or I won't.\"";
+			return "They're voting on me tonight. Say what you think. I'll still be here in the morning, or I won't.";
 
 		if (leaderId == run.Flag("boss", -1) && run.m_iStage == S_COLLECT && RZ_HavenQuest.KeptLeader(gm, run, "boss"))
-			return "\"{house} owes. I'm going to collect. You can be there or not.\"";
+			return "{house} owes. I'm going to collect. You can be there or not.";
 
 		return "";
 	}
@@ -707,7 +707,7 @@ class RZ_QM_DoorEnvelope : RZ_HavenQM
 
 		if (playerId != m_iCarrier)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Not from you, friend. Whoever's carrying it brings it.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Not from you, friend. Whoever's carrying it brings it.");
 			return;
 		}
 
@@ -1180,7 +1180,7 @@ class RZ_QM_DoorCollect : RZ_HavenQM
 
 		if (playerId != m_iCarrier)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Whose bread is this? Bring the one who's carrying it.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Whose bread is this? Bring the one who's carrying it.");
 			return;
 		}
 

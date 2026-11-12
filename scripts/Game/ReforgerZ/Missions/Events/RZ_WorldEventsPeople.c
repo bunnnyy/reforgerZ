@@ -283,7 +283,7 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 			string sister = "Bastion's post: \"the soldiers\"";
 			string labels = "The nearest house";
 			if (m_iSister >= 0)
-				labels += "|" + string.Format("\"My sister's in %1\"", gm.GetSafehouses().Get(m_iSister).m_sName);
+				labels += "|" + string.Format("My sister's in %1", gm.GetSafehouses().Get(m_iSister).m_sName);
 			else
 				labels += "|The nearest house, the long way";
 
@@ -316,7 +316,7 @@ class RZ_Event_DistressCall : RZ_Event_DistressBase
 		foreach (int playerId : ids)
 		{
 			if (RZ_Reputation.IsAtLeast(gm.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.TRUSTED))
-				gm.NotifyPlayer(playerId, "Red Hand (secure)", string.Format("\"Leave the house outside %1 alone. It's spoken for.\"", GetLocationName(gm)));
+				gm.NotifyPlayer(playerId, "Red Hand (secure)", string.Format("Leave the house outside %1 alone. It's spoken for.", GetLocationName(gm)));
 		}
 	}
 
@@ -950,17 +950,17 @@ class RZ_Event_PrisonBreak : RZ_Mission
 		m_Job.Read("opened", "mechanic", "The lock wasn't picked. It was cut from the outside, with good cutters.");
 		m_Job.Read("", "hunter", "Twelve sets of prints, fresh, all one way. They're not running. They know where they're going.");
 
-		string reveal = "\"Thieves, mostly. One poet. I'd have let the poet go if he'd stopped reciting.\"";
+		string reveal = "Thieves, mostly. One poet. I'd have let the poet go if he'd stopped reciting.";
 		if (truth == "swept")
-			reveal = "\"Half of them were only out after curfew. Bastion brought them in by the lorry. I said I hadn't the room.\"";
+			reveal = "Half of them were only out after curfew. Bastion brought them in by the lorry. I said I hadn't the room.";
 		else if (truth == "opened")
-			reveal = string.Format("\"Men with red on their hands came at two and cut the lock. Said they were from %1, and to thank you for the hospitality.\"", m_sTarget);
+			reveal = string.Format("Men with red on their hands came at two and cut the lock. Said they were from %1, and to thank you for the hospitality.", m_sTarget);
 
 		RZ_TalkScene sc = m_Job.Scene("The jailer", "prison.jailer", LandPointNear(start, 4, 8));
 		int n0 = sc.Node("A jailer stands by the open cells. \"They took the keys. I had them on a string. They took the string.\"");
-		int n1 = sc.Node("\"The bell's still mine. They didn't think to take the bell.\"");
-		sc.Ask(n0, "\"Who was in there?\"", n1, reveal, true);
-		sc.Way(n1, "\"Ring the bell.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_BELL, "He hauls on the rope. The whole town hears it, and so does everything in it.", "\"For you? They'd hang me for it.\"");
+		int n1 = sc.Node("The bell's still mine. They didn't think to take the bell.");
+		sc.Ask(n0, "Who was in there?", n1, reveal, true);
+		sc.Way(n1, "Ring the bell.", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_BELL, "He hauls on the rope. The whole town hears it, and so does everything in it.", "For you? They'd hang me for it.");
 		sc.Way(n1, "Two tins and he rings it", RZ_TalkScene.FOOD, -1, 2, WAY_BELL, "He pockets the tins and rings like he means it.");
 		if (truth == "swept")
 			sc.Decide(n0, "Tell the curfew lot to go home", "send the curfew lot home", WAY_HOME, "Half of them stop on the road, look at each other, and walk off toward the houses.", RZ_EFaction.SURVIVORS);
@@ -1423,7 +1423,7 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 		int attitude = Attitude(gm, playerId);
 		if (attitude < 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"We know who you are. Walk away while we're letting you.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "We know who you are. Walk away while we're letting you.");
 			return;
 		}
 
@@ -1435,7 +1435,7 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 
 		if (m_iTrades >= MAX_TRADES || m_aTraded.Contains(playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"That's all we can spare. We've a long way to go.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "That's all we can spare. We've a long way to go.");
 			return;
 		}
 
@@ -1453,7 +1453,7 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 
 		if (!user || RZ_ItemHelper.Count(user, keywords) < cost)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"%1 tins, or whatever you've got that's food. Then we talk.\"", cost));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 tins, or whatever you've got that's food. Then we talk.", cost));
 			return;
 		}
 
@@ -1480,9 +1480,9 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 		}
 
 		if (!worst)
-			return "\"Nothing worth telling. It's quiet. Too quiet, if you ask me.\"";
+			return "Nothing worth telling. It's quiet. Too quiet, if you ask me.";
 
-		return string.Format("\"Stay out of %1. We went in for water and left two behind. It's crawling.\"", worst.m_sName);
+		return string.Format("Stay out of %1. We went in for water and left two behind. It's crawling.", worst.m_sName);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1631,17 +1631,17 @@ class RZ_Event_CollapseShelter : RZ_PuzzleMission
 		m_Job.Read("chained", "soldier", "A Bastion padlock on the outside of the shelter's doors, opened since. Somebody sealed it with them in.");
 		m_Job.Read("", "hunter", "Four sets of prints run out of the back, each a different way. They scattered like they were told to.");
 
-		string reveal = "\"They came through the windows. I counted them in. I'd counted everyone in.\"";
+		string reveal = "They came through the windows. I counted them in. I'd counted everyone in.";
 		if (truth == "inside")
 			reveal = "He looks at his list. \"Number nine had a bandage. He said it was a dog. I wrote 'dog'.\"";
 		else if (truth == "chained")
-			reveal = "\"Bastion chained the doors at dusk. For our safety, the corporal said. We broke a window to get out.\"";
+			reveal = "Bastion chained the doors at dusk. For our safety, the corporal said. We broke a window to get out.";
 
 		RZ_TalkScene sc = m_Job.Scene("The warden", "shelter.warden", LandPointNear(m_vShelter, 5, 10));
 		int n0 = sc.Node("A man in a warden's armband sits on the steps. \"I was in charge of the shelter. I'd like that to stop being true.\"");
-		int n1 = sc.Node("\"Forty-one names on the list. I've been crossing them off.\"");
-		sc.Ask(n0, "\"What happened?\"", n1, reveal, true);
-		sc.Way(n0, "\"Where would they hide?\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_LIST, "He runs a finger down the list and names doorways. You've a few more minutes than you thought.", "\"How would I know? I'm only the warden.\"");
+		int n1 = sc.Node("Forty-one names on the list. I've been crossing them off.");
+		sc.Ask(n0, "What happened?", n1, reveal, true);
+		sc.Way(n0, "Where would they hide?", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_LIST, "He runs a finger down the list and names doorways. You've a few more minutes than you thought.", "How would I know? I'm only the warden.");
 		sc.Way(n0, "Two tins for his whistle", RZ_TalkScene.FOOD, -1, 2, WAY_WHISTLE, "He blows three short notes. Somewhere near, someone who knows that whistle starts running toward it.");
 		if (truth == "inside")
 			sc.Decide(n1, "Tell the house it was number nine", "tell the house how it started", WAY_NAME, "You'll tell them. He nods and goes on crossing out names.");

@@ -70,8 +70,26 @@ class RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Their greeting. While s.m_bQuiet (the usual case) it says only what's real now: a refusal, a
+	//! first meeting, a callback, news, a job waiting; never a plain hello (docs/DIALOGUE.md).
 	void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! They have something to say before you speak (an opening's contact as a step starts, a
+	//! stranger who called you over): their greeting is said in full.
+	bool SpeaksFirst(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! They're there to talk to: a quiet greeting that said nothing still opens the screen on the
+	//! replies. False (a leader away from their seat): no screen.
+	bool Here(RZ_GameModeComponent gm)
+	{
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -133,6 +151,65 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	void RZ_TalkGeneric(IEntity owner)
 	{
 		m_Owner = owner;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Their name and sub-line before the greeting, so they show even when a quiet greeting says
+	//! nothing: the same title their handler speaks under.
+	override void Setup(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
+	{
+		string title = TitleFor(gm);
+		if (title.IsEmpty())
+			return;
+
+		s.m_sHeader = title;
+		FromHeader(gm, s, title);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The title a wanderer's, an occupant's, a safehouse resident's or a holding's person's lines come
+	//! under (their greeting handlers' own); "" for anyone else (the greeting's first title is used).
+	protected string TitleFor(RZ_GameModeComponent gm)
+	{
+		if (!m_Owner)
+			return "";
+
+		RZ_ClueComponent clue = RZ_ClueComponent.Cast(m_Owner.FindComponent(RZ_ClueComponent));
+		if (!clue)
+			return "";
+
+		int tag = clue.GetMissionId();
+		int idx = clue.GetClueIndex();
+		if (tag == RZ_Wanderers.TAG && gm.GetWanderers())
+		{
+			RZ_Wanderer w = gm.GetWanderers().FindById(idx);
+			if (w)
+				return w.GetTitle();
+		}
+
+		if (tag == RZ_Safehouses.TAG_OCCUPANT && gm.GetSafehouses())
+		{
+			RZ_Safehouse h = gm.GetSafehouses().Get(idx);
+			if (h)
+				return "Safehouse: " + h.m_sName;
+		}
+
+		if (tag == RZ_NamedPeople.TAG_HOUSE && gm.GetErrands())
+		{
+			RZ_NamedPerson p = gm.GetErrands().GetPeople().FromHouse(idx / 10, idx % 10);
+			if (p)
+				return p.m_sTitle;
+		}
+
+		if (tag == RZ_Territory.TAG && gm.GetTerritory())
+		{
+			RZ_Holding hold = gm.GetTerritory().GetHolding(idx / 10);
+			int person = idx % 10;
+			if (hold && person >= 0 && person < hold.m_aPeople.Count())
+				return hold.m_aPeople[person] + ", " + hold.GetTitle();
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -362,11 +439,17 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 		if (!comp)
 			return;
 
+		// An errand on offer: its ways are what you'd agree to do ("I'll fetch the cleaning kits.")
+		bool ways = gm.GetErrands() && gm.GetErrands().OffersOn(m_Owner);
 		for (int slot = 0; slot < 8; slot++)
 		{
 			string choice = comp.GetSlotLabel(true, slot);
-			if (!choice.IsEmpty())
-				replies.Insert(Reply(slot, choice));
+			if (choice.IsEmpty())
+				continue;
+
+			RZ_TalkReply said = Reply(slot, choice);
+			said.m_bWay = ways;
+			replies.Insert(said);
 		}
 
 		for (int u = 0; u < 8; u++)
@@ -491,8 +574,12 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 //! asking for work, for news, and what they make of you (RZ_Leaders.HandleChoice 0-2).
 class RZ_TalkLeader : RZ_TalkSpeaker
 {
+	static const int TAKE_JOB = 6;		// "I'll do it.": a pitched job taken (RZ_Leaders.TakeWork)
+	static const int LEAVE_JOB = 7;		// "Not today.": left with them
+
 	protected RZ_Leader m_Leader;
 	protected IEntity m_Seat;
+	protected int m_iPitch = -1;		// the job they've just explained and wait on your answer for, -1 none
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_TalkLeader(RZ_Leader l)
@@ -519,6 +606,12 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	{
 		if (m_Leader && gm.GetLeaders())
 			gm.GetLeaders().HandleTalk(playerId, m_Leader.m_iId, m_Seat);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Here(RZ_GameModeComponent gm)
+	{
+		return m_Leader && m_Leader.IsPresent();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -565,6 +658,14 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	//------------------------------------------------------------------------------------------------
 	override void Replies(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user, notnull array<ref RZ_TalkReply> replies)
 	{
+		// A job just explained: yes or no first (docs/WRITING.md, "Talk")
+		if (m_iPitch >= 0)
+		{
+			replies.Insert(Reply(TAKE_JOB, "I'll do it."));
+			replies.Insert(Reply(LEAVE_JOB, "Not today."));
+			return;
+		}
+
 		replies.Insert(Reply(0, "Ask for work"));
 		replies.Insert(Reply(1, "Heard anything?"));
 		replies.Insert(Reply(2, "What do you make of me?"));
@@ -586,6 +687,24 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	//------------------------------------------------------------------------------------------------
 	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
+		// Your answer to the job they've just explained
+		int pitched = m_iPitch;
+		m_iPitch = -1;
+		if ((replyId == TAKE_JOB || replyId == LEAVE_JOB) && pitched >= 0 && m_Leader && gm.GetLeaders())
+		{
+			gm.GetLeaders().TakeWork(playerId, m_Leader.m_iId, pitched, replyId == TAKE_JOB, user);
+			return;
+		}
+
+		// Ask for work said to them: their own job is explained first, then you say yes or no. From
+		// a conversation's call:slot:0 (Trees) the talk already led there: it's yours as built
+		bool fromTree = s.m_Tree && s.m_Tree.m_bInNode;
+		if (replyId == 0 && !fromTree && m_Leader && gm.GetLeaders())
+		{
+			m_iPitch = gm.GetLeaders().PitchWork(playerId, m_Leader.m_iId, user);
+			return;
+		}
+
 		// The epilogue week's replies (40-59)
 		if (replyId >= 40 && replyId <= 59 && m_Leader && gm.GetLeaders())
 		{

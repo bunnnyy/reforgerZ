@@ -177,8 +177,8 @@ class RZ_DialoguePack_leaders
 		db.Choice("back8", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("bastion.leader.roster", "stronghold:bastion,seat:bastion/outpost_lead", "", "What's that board on the wall?", 2, 0, "bastion");
 		db.Node("start");
-		db.Say("", "That's the roster. Every name at this post and every duty, in grease pencil. Shift change at oh-five-thirty and seventeen-thirty. Night watch at twenty-thirty.");
-		db.Say("", "A name on that board eats, stands a watch if it can, and gets looked for if it doesn't come back. The dead stay on it. We read every one of them at the roll.");
+		db.Say("", "That's the roster. Every name at this post and every duty, in grease pencil. Shifts change at oh-five-thirty and seventeen-thirty.");
+		db.Say("", "A name on that board eats, stands a watch if it can, and gets looked for if it doesn't come back. The dead stay on it. We read them all at the roll.");
 		db.Say("stronghold", "Lieutenant Sedlak keeps it. On Day 6 she wrote the families from her Day 2 column onto it, under civilians attached. They've been ours since.");
 		db.Choice("rubout", "Do you ever rub a name off it?", "rubout", "", "", "", "", "", "", "", "");
 		db.Choice("roll", "What happens at the roll?", "roll", "", "", "", "", "", "", "", "");
@@ -308,8 +308,8 @@ class RZ_DialoguePack_leaders
 		db.Choice("help5", "Then put me in one of the gaps.", "offer", "", "", "", "", "", "", "", "");
 		db.Choice("back4", "Noted. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("offer");
-		db.Say("", "Here's how it works. I give you a task off this table: a town to clear, a patrol to find, a road to watch, a checkpoint to hold. You go, you do it, you report to any Bastion post.");
-		db.Say("", "It pays in Favor and rations and a line in the log. It's dangerous: every pin on this table is there because something went wrong. Listen to all of it before you say yes.");
+		db.Say("", "Here's how it works. I give you a task off this table: a town to clear, a patrol to find, a road to watch, a checkpoint to hold. You do it, you report to any post.");
+		db.Say("", "It pays in Favor and rations and a line in the log. It's dangerous: every pin on this table is there because something went wrong.");
 		db.Say("tier:bastion>=trusted", "You're on the roster already, under civilians attached, so you get the same tasking the soldiers get.");
 		db.Choice("take", "I'll do it. Give me the task.", "hub", "", "", "", "", "", "call:slot:0", "", "");
 		db.Choice("risk", "How bad does it get out there?", "risk", "", "", "", "", "", "", "", "");
@@ -905,7 +905,7 @@ class RZ_DialoguePack_leaders
 		db.Conv("haven.leader.supper", "stronghold:haven,seat:haven/council_head", "", "Who do you read out at supper?", 4, 0, "haven");
 		db.Node("start");
 		db.Say("", "Before anyone eats, somebody reads a name. One of ours who's gone: bitten, or lost on a road, or worn out. Then the bowls go round, and we count them twice.");
-		db.Say("", "When it's somebody who stood up for the Haven, every house lights a candle in the window that night too. It's not much of a ceremony. It's what we've got.");
+		db.Say("", "When it's somebody who stood up for the Haven, every house lights a candle in the window that night too. It's not much. It's what we've got.");
 		db.Say("kin", "We read one of yours, once. That's why there's always a bowl for you here, and the medic won't take your Favor.");
 		db.Choice("stay", "Can I stay and hear it?", "stay", "", "", "", "", "", "", "", "");
 		db.Choice("count", "Why count the bowls twice?", "count", "", "", "", "", "", "", "", "");
@@ -1155,7 +1155,7 @@ class RZ_DialoguePack_leaders
 		db.Node("start");
 		db.Say("", "Somebody sold you a job short? Careful. The crew loves a story like that, and it'll want a name to go with it.");
 		db.Say("", "Tell it, and it's round the fires by dark and somebody's page gets longer. Keep it, and you're holding something on them. Both are worth something.");
-		db.Choice("tell", "Tell the crew. I want it heard.", "told", "", "", "", "", "", "", "", "");
+		db.Choice("tell", "Read it out. I want it heard.", "told", "", "", "", "", "", "", "", "");
 		db.Choice("keep", "Let it lie. I'll hold on to it.", "kept", "", "", "", "", "", "", "", "");
 		db.Node("told");
 		db.Say("", "That'll go round the fires by dark. Somebody's evening just got a lot worse.");
@@ -1371,7 +1371,7 @@ class RZ_DialoguePack_leaders
 		db.Node("cut");
 		db.Say("trait:greedy", "Your cut is what I say it is, and I'm generous on Tuesdays. Is it Tuesday? Nobody knows any more. Let's say it is.");
 		db.Say("", "Red Hand Favor, which buys what you can't find in a cupboard. Fuel. And a line in the book that says you're useful. Useful people don't get pages.");
-		db.Choice("help4", "Done. What's the job?", "offer", "", "", "", "", "", "", "", "");
+		db.Choice("help4", "Deal. What's the job?", "offer", "", "", "", "", "", "", "", "");
 		db.Choice("dry4", "I'll take Tuesday's rate.", "offer", "", "", "", "", "", "", "", "");
 		db.Choice("back3", "Let me think about it.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("straight");

@@ -268,16 +268,16 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 
 		if (gm.GetFacts().IsCured())
 		{
-			gm.NotifyPlayer(playerId, "Halcyon", "\"Keep them. The cure is out: we don't need them any more. I never thought I'd say that.\"");
+			gm.NotifyPlayer(playerId, "Halcyon", "Keep them. The cure is out: we don't need them any more. I never thought I'd say that.");
 			return false;
 		}
 
 		if (gm.GetCure().IsLabFull())
 		{
 			if (gm.GetCure().IsAtFinaleGate())
-				gm.NotifyPlayer(playerId, "Halcyon", "\"The cold store is full, and the work has stopped at the last step. Samples won't finish it. Keep them.\"");
+				gm.NotifyPlayer(playerId, "Halcyon", "The cold store is full, and the work has stopped at the last step. Samples won't finish it. Keep them.");
 			else
-				gm.NotifyPlayer(playerId, "Halcyon", "\"The cold store is full. We can't take another sample until the lab works through what's waiting. Come back tomorrow.\"");
+				gm.NotifyPlayer(playerId, "Halcyon", "The cold store is full. We can't take another sample until the lab works through what's waiting. Come back tomorrow.");
 
 			return false;
 		}
@@ -295,7 +295,7 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 	//------------------------------------------------------------------------------------------------
 	override protected void OnPartlyTaken(RZ_GameModeComponent gm, int playerId, int taken, int offered)
 	{
-		gm.NotifyPlayer(playerId, "Halcyon", string.Format("\"We can take %1 of them. The cold store is full after that: keep the other %2 and come back tomorrow.\"", taken, offered - taken));
+		gm.NotifyPlayer(playerId, "Halcyon", string.Format("We can take %1 of them. The cold store is full after that: keep the other %2 and come back tomorrow.", taken, offered - taken));
 	}
 }
 

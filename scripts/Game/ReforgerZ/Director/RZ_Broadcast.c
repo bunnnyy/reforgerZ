@@ -103,9 +103,9 @@ class RZ_Broadcast
 	{
 		int day = GetDay();
 		if (m_GM.GetFacts() && m_GM.GetFacts().IsCured())
-			return string.Format("\"%1. The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints.\"", RZ_NoteText.Day(day));
+			return string.Format("%1. The quarantine order for this area has been lifted. Remain where you are. Processing will begin at the road checkpoints.", RZ_NoteText.Day(day));
 
-		return string.Format("\"%1. This area is under federal quarantine. Do not approach the perimeter. %2\"", RZ_NoteText.Day(day), GetToneLine());
+		return string.Format("%1. This area is under federal quarantine. Do not approach the perimeter. %2", RZ_NoteText.Day(day), GetToneLine());
 	}
 
 	//------------------------------------------------------------------------------------------------

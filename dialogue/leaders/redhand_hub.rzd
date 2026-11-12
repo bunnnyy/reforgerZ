@@ -43,7 +43,7 @@ node letgo
 node cut
   say? trait:greedy :: Your cut is what I say it is, and I'm generous on Tuesdays. Is it Tuesday? Nobody knows any more. Let's say it is.
   say Red Hand Favor, which buys what you can't find in a cupboard. Fuel. And a line in the book that says you're useful. Useful people don't get pages.
-  > @help4 Done. What's the job? -> offer
+  > @help4 Deal. What's the job? -> offer
   > @dry4 I'll take Tuesday's rate. -> offer   dry
   > @back3 Let me think about it. -> hub
 

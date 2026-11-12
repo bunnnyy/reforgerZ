@@ -550,11 +550,11 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		m_vScav = LandPointNear(box, 30, 60);
 		m_iScav = AddClue("A scavenger", "\"Lab coat? Saw one. Limping, or walking like a man who wished he wasn't.\" He looks at your pack, not at you. \"Memory's better with a tin in it.\"");
 
-		string sighting = "\"A man with a lab badge. Bought matches and asked nothing. Went out past the last houses.\"";
+		string sighting = "A man with a lab badge. Bought matches and asked nothing. Went out past the last houses.";
 		if (m_sTruth == "walked_out")
-			sighting = string.Format("\"A man with a lab badge. Asked the way to %1, and whether they needed hands.\"", m_sHouse);
+			sighting = string.Format("A man with a lab badge. Asked the way to %1, and whether they needed hands.", m_sHouse);
 		else if (m_sTruth == "sold")
-			sighting = "\"A man with a lab badge, with one of the crew's lads. Nobody walks with them by choice.\"";
+			sighting = "A man with a lab badge, with one of the crew's lads. Nobody walks with them by choice.";
 
 		int town = PickSettlementAway(gm, m_vHim, 300, 2500, 0, 60);
 		RZ_Settlement t = gm.GetSettlement(town);
@@ -809,14 +809,14 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	{
 		if (option != 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Suit yourself. He's not getting any less lost.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Suit yourself. He's not getting any less lost.");
 			return;
 		}
 
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (!me || !RZ_StoryStats.TakeFood(gm, me, 1))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"A tin. A real one, with food in it.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "A tin. A real one, with food in it.");
 			return;
 		}
 
@@ -881,13 +881,13 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 			if (!RZ_Reputation.IsAtLeast(gm.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.KNOWN))
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "\"I don't sell to faces I don't know.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "I don't sell to faces I don't know.");
 				return;
 			}
 
 			if (!me || RZ_HavenQuest.CountFood(gm, me) < BUY_FOOD || !RZ_StoryStats.TakeFood(gm, me, BUY_FOOD))
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "\"Five tins. Not four. I can count.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "Five tins. Not four. I can count.");
 				return;
 			}
 
@@ -946,7 +946,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		{
 			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_StoryStats.TakeFood(gm, me, TRADE_FOOD))
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "\"Four tins, and the notes are yours. We need the tins more.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "Four tins, and the notes are yours. We need the tins more.");
 				return;
 			}
 
@@ -958,7 +958,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 
 			// His tag: a lie to Halcyon, found when someone Halcyon knows comes to the house
 			RZ_WorldFacts.Get().Memory().Lies().Tell(gm, playerId, "colleague.turned", m_sName, RZ_EFaction.INSTITUTE, "", m_vHouse, RZ_ELieTest.VISIT, LIE_INFAMY,
-				string.Format("\"You told us he turned. He signed a Haven ration card in %1 last week.\"", m_sHouse));
+				string.Format("You told us he turned. He signed a Haven ration card in %1 last week.", m_sHouse));
 			Finish(gm, playerId, 1, 0.6, "walked", "He gives you his tag with the notes. \"Tell them I turned.\" You will.");
 			return;
 		}
@@ -1146,17 +1146,17 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		m_Job.Read("trials", "nurse,doctor", "Bite charts on the clinic wall, dated and initialled. People were treated here, and written down.");
 		m_Job.Read("copied", "labtech", "The access sticker's been peeled and put back. Somebody read this drive two days ago, on a machine that isn't the lab's.");
 
-		string reveal = "\"Numbers. Lots of numbers. The doctor said they'd save us. Then he left.\"";
+		string reveal = "Numbers. Lots of numbers. The doctor said they'd save us. Then he left.";
 		if (truth == "trials")
-			reveal = "\"They tried things on people from the house. Paid them in tins. The names are all on there.\"";
+			reveal = "They tried things on people from the house. Paid them in tins. The names are all on there.";
 		else if (truth == "copied")
-			reveal = "\"A soldier came Tuesday with a laptop. Sat right there an hour. Said thank you. Lovely manners.\"";
+			reveal = "A soldier came Tuesday with a laptop. Sat right there an hour. Said thank you. Lovely manners.";
 
 		RZ_TalkScene sc = m_Job.Scene("The orderly", "researchdata.orderly", LandPointNear(m_vPos, 4, 8));
 		int n0 = sc.Node("A man in a stained orderly's coat sweeps broken glass into neat piles. \"Mind the floor. I just did it.\"");
 		int n1 = sc.Node("He leans the broom on the wall. \"Somebody should know what was on it. I'm somebody, I suppose.\"");
-		sc.Ask(n0, "\"What happened here?\"", n1, reveal, true);
-		sc.Way(n0, "\"Where's the drive?\"", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHOW, "He fetches it from a drawer and wipes it on his coat before he hands it over.", "\"Which drive? There are no drives. There's a floor.\"");
+		sc.Ask(n0, "What happened here?", n1, reveal, true);
+		sc.Way(n0, "Where's the drive?", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHOW, "He fetches it from a drawer and wipes it on his coat before he hands it over.", "Which drive? There are no drives. There's a floor.");
 		sc.Way(n0, "A tin for the drive", RZ_TalkScene.FOOD, -1, 1, WAY_SHOW, "He takes the tin and points under the counter with the broom.");
 		if (truth == "trials")
 			sc.Decide(n1, "Give the names to the house", "give the trial's names to the house", WAY_HOUSE, "The drive goes to the house that's on it. Halcyon will hear where.", RZ_EFaction.SURVIVORS);

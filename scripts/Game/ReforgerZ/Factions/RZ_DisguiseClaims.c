@@ -177,12 +177,12 @@ class RZ_DisguiseClaims
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return "\"Never heard of him. Hands on the barrier.\"";
-			case RZ_EFaction.BANDITS: return "\"Nobody calls you that. Nobody ever has.\"";
-			case RZ_EFaction.INSTITUTE: return "\"There's no notebook with that number. Security, please.\"";
+			case RZ_EFaction.MILITARY: return "Never heard of him. Hands on the barrier.";
+			case RZ_EFaction.BANDITS: return "Nobody calls you that. Nobody ever has.";
+			case RZ_EFaction.INSTITUTE: return "There's no notebook with that number. Security, please.";
 		}
 
-		return "\"No. Try that on someone else.\"";
+		return "No. Try that on someone else.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -417,9 +417,9 @@ class RZ_DisguiseClaims
 		string line = "";
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: line = "\"Somebody came to %1 in a soldier's coat asking for bread. We gave him bread. The coat didn't fit.\""; break;
-			case RZ_EFaction.BANDITS: line = "\"A lad came to %1 with a red rag round his arm asking for soup. We gave him soup. He kept the rag on while he ate it.\""; break;
-			case RZ_EFaction.INSTITUTE: line = "\"Somebody in one of those white coats came to %1 asking for tea. We gave her tea. She held the cup like she'd never had to wash one.\""; break;
+			case RZ_EFaction.MILITARY: line = "Somebody came to %1 in a soldier's coat asking for bread. We gave him bread. The coat didn't fit."; break;
+			case RZ_EFaction.BANDITS: line = "A lad came to %1 with a red rag round his arm asking for soup. We gave him soup. He kept the rag on while he ate it."; break;
+			case RZ_EFaction.INSTITUTE: line = "Somebody in one of those white coats came to %1 asking for tea. We gave her tea. She held the cup like she'd never had to wash one."; break;
 		}
 
 		if (line.IsEmpty())
@@ -481,7 +481,7 @@ class RZ_DisguiseClaims
 		if (!nail)
 			return "";
 
-		return string.Format("\"And whoever signed the roster as %1: he's still dead.\"", RZ_DisguiseMarks.Surname(nail.name));
+		return string.Format("And whoever signed the roster as %1: he's still dead.", RZ_DisguiseMarks.Surname(nail.name));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -567,7 +567,7 @@ class RZ_DisguiseClaims
 						continue;
 
 					marks.TakeHome(piece, null);
-					m_GM.Say(playerId, RZ_Factions.GetName(f), f, "\"Off one of ours, then. He's home. Mark him.\"");
+					m_GM.Say(playerId, RZ_Factions.GetName(f), f, "Off one of ours, then. He's home. Mark him.");
 					continue;
 				}
 
@@ -579,10 +579,10 @@ class RZ_DisguiseClaims
 
 					string owner = m.m_sOwner;
 					marks.TakeHome(piece, null);
-					m_GM.Say(playerId, RZ_Factions.GetName(f), f, "\"Back on the shelf. No questions this week.\"");
+					m_GM.Say(playerId, RZ_Factions.GetName(f), f, "Back on the shelf. No questions this week.");
 					int buyerId = OnlineId(owner);
 					if (buyerId > 0)
-						m_GM.Say(buyerId, RZ_Factions.GetName(f), f, "\"Your jacket came home. Clean, mostly.\"");
+						m_GM.Say(buyerId, RZ_Factions.GetName(f), f, "Your jacket came home. Clean, mostly.");
 				}
 			}
 		}
@@ -634,16 +634,16 @@ class RZ_DisguiseClaims
 			{
 				string jackets = RZ_WorldFacts.NumberWords(bastion);
 				jackets = RZ_Tribes.Capitalize(jackets);
-				life.OpenChannelLine(RZ_EFaction.MILITARY, string.Format("\"%1 jackets on the wire this season. None of them fit anyone.\"", jackets));
+				life.OpenChannelLine(RZ_EFaction.MILITARY, string.Format("%1 jackets on the wire this season. None of them fit anyone.", jackets));
 			}
 
 			if (!best.IsEmpty())
-				life.OpenChannelLine(RZ_EFaction.BANDITS, string.Format("\"Best-dressed of the season: %1. Drinks are on Bastion.\"", best));
+				life.OpenChannelLine(RZ_EFaction.BANDITS, string.Format("Best-dressed of the season: %1. Drinks are on Bastion.", best));
 
 			if (d.coatsOut > 0)
-				life.OpenChannelLine(RZ_EFaction.INSTITUTE, string.Format("\"Coats returned: %1 of %2. The rest are listed as authors.\"", d.coatsBack, d.coatsOut));
+				life.OpenChannelLine(RZ_EFaction.INSTITUTE, string.Format("Coats returned: %1 of %2. The rest are listed as authors.", d.coatsBack, d.coatsOut));
 
-			life.OpenChannelLine(RZ_EFaction.SURVIVORS, "\"The ribbon only ever went on the people it was given to. Mostly.\"");
+			life.OpenChannelLine(RZ_EFaction.SURVIVORS, "The ribbon only ever went on the people it was given to. Mostly.");
 		}
 
 		RZ_HallOfFame hall = m_GM.GetHall();

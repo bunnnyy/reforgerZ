@@ -51,6 +51,7 @@ CHANNELS = {
     "leader":      "a leader's opener, closer or remark",
     "hint":        "a guidance tip (voiced or plain)",
     "speech":      "a line on the talk screen (Say)",
+    "reply":       "a reply you say on the talk screen, built in code (Reply, OwnRow, RZ_TalkWords)",
     "ambient":     "a line from the voice pools (people, routines, life events)",
     "trace":       "a trace's line: a town's doors, a scene, a grave (World/Traces)",
     "door":        "a door mark's line by level (World/Traces/RZ_TraceText.c)",
@@ -193,7 +194,7 @@ def tokens(src):
 
 class Literal:
     __slots__ = ("file", "line", "text", "calls", "target", "function", "faction", "channel",
-                 "register", "repeats", "returned")
+                 "register", "repeats", "returned", "node", "cond", "role")
 
     def as_dict(self):
         return {k: getattr(self, k) for k in ("file", "line", "channel", "faction", "register",
@@ -270,7 +271,8 @@ def scan_file(path, rel):
             lit.text = unescape(text)
             lit.calls = [(p[0], p[1], p[2]) for p in reversed(parens) if not p[3]]
             lit.target = assignment_target(statement)
-            lit.returned = bool(statement) and statement[0][1] == "return"
+            lit.returned = any(t[1] == "return" for t in statement)
+            lit.node, lit.cond, lit.role = "", "", False
             lit.function = function or ""
             lit.faction = None
             for b in reversed(braces):
@@ -347,7 +349,17 @@ def guess_channel(lit):
     if any(n in ("Print", "PrintFormat", "Info", "Warn", "Error") for n in names):
         return None
 
+    # What you say on the talk screen, built from an action's label: only what's returned is speech
+    # (the case labels are the action names it's built from)
+    if lit.file.endswith("RZ_TalkWords.c"):
+        if lit.returned and is_prose(lit.text):
+            return "reply"
+        return None
+
     eff = effective_call(calls)
+    # A reply the talk screen's code builds (Dialogue/: Reply, OwnRow, a scene's Verb)
+    if eff and "/Dialogue/" in lit.file and eff[0] in ("Reply", "OwnRow", "Verb") and eff[1] == 1 and is_prose(lit.text):
+        return "reply"
     if eff:
         name, idx, _ = eff
         if name in SKIP_CALLS:
@@ -414,10 +426,11 @@ def rzd_literals(root=ROOT):
     for c in convs:
         rel = os.path.relpath(c.path, root).replace(os.sep, "/")
 
-        def add(text, channel, line):
+        def add(text, channel, line, node="", cond="", role=False):
             lit = Literal()
             lit.file, lit.line, lit.text = rel, line, text
             lit.calls, lit.target, lit.returned = [], "", False
+            lit.node, lit.cond, lit.role = node, cond, role
             lit.function = c.id
             lit.faction = RZD_FACTIONS.get(c.voice, "-")
             lit.channel = channel
@@ -428,9 +441,9 @@ def rzd_literals(root=ROOT):
         for n in c.nodes:
             for kind, cond, val in n.items:
                 if kind == "say":
-                    add(val, "speech", n.line)
+                    add(val, "speech", n.line, c.id + "/" + n.id, cond or "", val in dp.ROLE_LINES)
             for ch in n.choices:
-                add(ch.label, "choice", ch.line)
+                add(ch.label, "choice", ch.line, c.id + "/" + n.id)
     return lits
 
 

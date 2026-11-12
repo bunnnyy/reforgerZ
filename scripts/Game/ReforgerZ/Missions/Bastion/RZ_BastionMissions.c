@@ -694,7 +694,7 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 			m_bHasGiver = false;
 			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
 			gm.GetFacts().Memory().Lies().Tell(gm, decider, "patrol.crew", m_sCall, RZ_EFaction.MILITARY, "", m_vPos, RZ_ELieTest.ROAD, 5,
-				string.Format("\"%1 didn't turn. A crew had their rifles, and someone told the crew we knew.\"", m_sCall));
+				string.Format("%1 didn't turn. A crew had their rifles, and someone told the crew we knew.", m_sCall));
 			RZ_StoryKit.Record(this, "fate", m_sCall, "sold", who);
 			NotifyParticipants(gm, m_sTitle, "The crew pays for a quiet word: the post will hear they turned, and nothing about rifles. Bastion pays nothing for what it doesn't know.");
 			return;
@@ -1178,7 +1178,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 
 			gone = m_Ways.TryTrust(gm, playerId, "carriers", RZ_EFaction.BANDITS, 1, "") == RZ_ECheck.PASS;
 			if (!gone)
-				gm.NotifyPlayer(playerId, m_sTitle, "\"The fence pays now. Bastion pays one day. Walk on.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "The fence pays now. Bastion pays one day. Walk on.");
 		}
 		else if (option == 1)
 		{
@@ -1470,16 +1470,16 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 		m_Job.Read("held", "hunter", "Two sets of tracks in from the road with short steps. Feet tied together.");
 		m_Job.Read("camp", "excon,raider", "Lookouts on a rota and a latrine dug properly. This crew's been here a while and got comfortable.");
 
-		string reveal = "\"Lads. Rifles. A pot. Mostly the pot.\"";
+		string reveal = "Lads. Rifles. A pot. Mostly the pot.";
 		if (truth == "held")
-			reveal = "\"Some people from a house. They're for trading. Don't look at me like that, I only look.\"";
+			reveal = "Some people from a house. They're for trading. Don't look at me like that, I only look.";
 		else if (truth == "deserters")
-			reveal = "\"Half of them were Bastion last month. They still salute when they're drunk.\"";
+			reveal = "Half of them were Bastion last month. They still salute when they're drunk.";
 
 		RZ_TalkScene sc = m_Job.Scene("The lookout", "raid.lookout", LandPointNear(m_vPos, 60, 90));
 		int n0 = sc.Node("A lad with a rifle too big for him. \"I'm the lookout. I looked. I'd like to stop looking now.\"");
-		int n1 = sc.Node("\"They'll kill me if you get in. You'll kill me if you don't. It's not a great job.\"");
-		sc.Ask(n0, "\"Who's in there?\"", n1, reveal, true);
+		int n1 = sc.Node("They'll kill me if you get in. You'll kill me if you don't. It's not a great job.");
+		sc.Ask(n0, "Who's in there?", n1, reveal, true);
 		sc.Way(n1, "Tell them to clear out", RZ_TalkScene.FEAR, RZ_EFaction.BANDITS, 2, WAY_GO, "He runs. A minute later the camp is packing up, fast and badly.", "He laughs, and shouts for the others.");
 		sc.Way(n1, "Three tins and you never saw me", RZ_TalkScene.FOOD, -1, 3, WAY_GATE, "He takes the tins and walks off into the trees. One fire fewer in the camp tonight.");
 

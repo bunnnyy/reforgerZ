@@ -440,7 +440,7 @@ class RZ_FinaleRest
 			return;
 		}
 
-		m_GM.NotifyPlayer(playerId, title, "\"You know nothing about anyone's route that we don't. Come back when you do.\"");
+		m_GM.NotifyPlayer(playerId, title, "You know nothing about anyone's route that we don't. Come back when you do.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -494,7 +494,7 @@ class RZ_FinaleRest
 		int mine = m_Finale.RouteOfPlayer(playerId);
 		if (!me || mine != route)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"Buy it for whom? Sign with us first.\"");
+			m_GM.NotifyPlayer(playerId, title, "Buy it for whom? Sign with us first.");
 			return;
 		}
 
@@ -514,7 +514,7 @@ class RZ_FinaleRest
 			int f = RZ_CureFinale.PayFaction(theirs);
 			if (!RZ_Factions.IsValid(f) || !m_GM.SpendFavor(playerId, f, 30))
 			{
-				m_GM.NotifyPlayer(playerId, title, "\"Thirty. With their people, not ours.\"");
+				m_GM.NotifyPlayer(playerId, title, "Thirty. With their people, not ours.");
 				return;
 			}
 
@@ -541,7 +541,7 @@ class RZ_FinaleRest
 
 		if (handed <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"Nothing of ours on you.\"");
+			m_GM.NotifyPlayer(playerId, title, "Nothing of ours on you.");
 			return;
 		}
 
@@ -562,13 +562,13 @@ class RZ_FinaleRest
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (m_S.gateDeal || !m_Finale.IsBatchReady() && m_Finale.Finisher() < 0)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"A deal at the gate? Not now. Only while a batch is in the hold.\"");
+			m_GM.NotifyPlayer(playerId, title, "A deal at the gate? Not now. Only while a batch is in the hold.");
 			return;
 		}
 
 		if (!me || !m_GM.HasLab() || RZ_Util.DistXZ(me.GetOrigin(), m_GM.GetLabPosition()) > 200 || mine == RZ_CureFinale.NONE)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"At the lab gate. Both of you. In person.\"");
+			m_GM.NotifyPlayer(playerId, title, "At the lab gate. Both of you. In person.");
 			return;
 		}
 
@@ -591,7 +591,7 @@ class RZ_FinaleRest
 
 		if (!holderIn || !partnerIn)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"Your word's down. Now theirs.\"");
+			m_GM.NotifyPlayer(playerId, title, "Your word's down. Now theirs.");
 			return;
 		}
 
@@ -704,7 +704,7 @@ class RZ_FinaleRest
 		if (!sneakOrTrick)
 		{
 			if (m_Finale.PactOf(route) != mine)
-				return "\"The door's being watched. Without a pact, nobody's talking to you here.\"";
+				return "The door's being watched. Without a pact, nobody's talking to you here.";
 
 			return "";
 		}
@@ -910,14 +910,14 @@ class RZ_FinaleRest
 		vector house = people.Pos("woman");
 		if (stage == RZ_FinaleRoute.S_DOOR)
 		{
-			int terms = scene.Person(RZ_Mission.LandPointNear(house, 3, 6), "her, at the table", "Sit with her", "\"One at a time. Say each one and mean it. Leave the gun twenty metres off.\"");
+			int terms = scene.Person(RZ_Mission.LandPointNear(house, 3, 6), "her, at the table", "Sit with her", "One at a time. Say each one and mean it. Leave the gun twenty metres off.");
 			scene.Choice(terms, "Promise: never up that hill").Sets("term1").Says("\"Not up the hill. Good.\" She ticks a finger.", "promised her the first term");
 			scene.Choice(terms, "Promise: nobody first for guns").Only("term1").Sets("term2").Says("\"Nobody first because they're armed.\" Two fingers.", "promised her the second term");
-			scene.Choice(terms, "Promise her name read at supper").Only("term2").Sets("do:rest:name").Says("\"Out loud. At the table. Where I can hear it.\"", "promised her name at supper");
+			scene.Choice(terms, "Promise her name read at supper").Only("term2").Sets("do:rest:name").Says("Out loud. At the table. Where I can hear it.", "promised her name at supper");
 			scene.Choice(terms, "Promise her boy goes free").Only("term3").Sets("do:rest:yes").Says("\"And my boy.\" She holds your eye. \"Then yes.\"", "kept all four of her terms");
-			int chair = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "the chair's runner", "Talk to the runner", "\"She moves at dusk. Never the same two nights. A locked hand can move her once a day.\"");
+			int chair = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "the chair's runner", "Talk to the runner", "She moves at dusk. Never the same two nights. A locked hand can move her once a day.");
 			scene.Choice(chair, "Move her tonight [the Haven's route]").Sets("do:rest:move").Says("A different house tonight, a different bowl. Whoever was watching the last one can keep watching it.", "moved her to another house");
-			int hungry = scene.Person(RZ_Mission.LandPointNear(house, 30, 60), "the hungry house next door", "Talk to them", "\"We're short. We know which house has her tonight. Everyone's short.\"");
+			int hungry = scene.Person(RZ_Mission.LandPointNear(house, 30, 60), "the hungry house next door", "Talk to them", "We're short. We know which house has her tonight. Everyone's short.");
 			// Under the Far House (haven.rule 2) her house is known and sold more readily: one food
 			int spotPrice = 2;
 			if (RZ_MajorHelp.World(m_GM, "haven.rule") == 2)
@@ -930,7 +930,7 @@ class RZ_FinaleRest
 			int annex = scene.Person(RZ_Mission.LandPointNear(house, 40, 80), "the annex with the generator", "Look at the annex", "A generator, a pharmacy fridge, and somewhere to lie down. The vet's centrifuge is at the crossroads.");
 			scene.Choice(annex, "Hire the vet's centrifuge [25 Favor]").Bribe(RZ_EFaction.BANDITS, 25).Sets("do:draw").Says("The centrifuge comes in a crew's van and leaves the same way. The draw goes cleaner.", "drew a bag at the annex");
 			scene.Choice(annex, "Draw it quietly [unseen]").Sneak().Sets("do:draw").Says("No lamp, no queue at the door. One bag, and nobody saw it go.", "drew a bag quietly");
-			scene.Choice(annex, "Ask her for one more").Only("spared").Persuade(RZ_EFaction.SURVIVORS, 3, "nurse,doctor").Sets("do:draw").Says("\"One more. Then that's all of me you get.\"", "asked her for one more").Refused("\"I said two. I meant two.\"");
+			scene.Choice(annex, "Ask her for one more").Only("spared").Persuade(RZ_EFaction.SURVIVORS, 3, "nurse,doctor").Sets("do:draw").Says("One more. Then that's all of me you get.", "asked her for one more").Refused("I said two. I meant two.");
 		}
 		else if (stage == RZ_FinaleRoute.S_ACT4)
 		{
@@ -953,13 +953,13 @@ class RZ_FinaleRest
 			scene.Choice(books, "Read the post's ledger").Sets("ledger1").Says("Day 2: a column of names and a bus number.", "read the post's ledger");
 			scene.Choice(books, "Read the quartermaster's ledger").Only("ledger1").Sets("ledger2").Says("Diesel, twenty litres, stores. Every week since Day 2.", "read the quartermaster's ledger");
 			scene.Choice(books, "Read the medical store's ledger").Only("ledger2").Decides(RZ_FinaleRoute.OUT_DOOR).Says("R1 to R4, a name beside each, in pencil. Three ledgers agree.", "named the tubes from three ledgers");
-			scene.Choice(books, "Name nobody at all").Persuade(RZ_EFaction.MILITARY, 2, "soldier").Decides(RZ_FinaleRoute.OUT_OTHER).Says("\"No names. Numbers only.\" The captain signs for numbers.", "had the tubes released by number").Refused("\"The captain wants names.\"");
+			scene.Choice(books, "Name nobody at all").Persuade(RZ_EFaction.MILITARY, 2, "soldier").Decides(RZ_FinaleRoute.OUT_OTHER).Says("\"No names. Numbers only.\" The captain signs for numbers.", "had the tubes released by number").Refused("The captain wants names.");
 		}
 		else if (stage == RZ_FinaleRoute.S_PIECE && RZ_MajorHelp.World(m_GM, "orders.stance") == 2)
 		{
 			// All Stations: by need at Known, and the captain one step easier
-			int need = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 6, 12), "the captain, after All Stations", "Talk to the captain", "\"Civilians first, the CO said on the net. Then this box is civilians'. Ask me properly.\"");
-			scene.Choice(need, "Ask for the box, by need [Known]").Needs(RZ_EFaction.MILITARY, 1).Persuade(RZ_EFaction.MILITARY, 1, "nurse,doctor").Decides(RZ_FinaleRoute.OUT_PIECE).Says("\"By need. Fine. Sign here, and keep it cold.\"", "had the box released by need").Refused("\"Need isn't a word. Show me.\"");
+			int need = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 6, 12), "the captain, after All Stations", "Talk to the captain", "Civilians first, the CO said on the net. Then this box is civilians'. Ask me properly.");
+			scene.Choice(need, "Ask for the box, by need [Known]").Needs(RZ_EFaction.MILITARY, 1).Persuade(RZ_EFaction.MILITARY, 1, "nurse,doctor").Decides(RZ_FinaleRoute.OUT_PIECE).Says("By need. Fine. Sign here, and keep it cold.", "had the box released by need").Refused("Need isn't a word. Show me.");
 		}
 		else if (stage == RZ_FinaleRoute.S_ACT4)
 		{
@@ -979,13 +979,13 @@ class RZ_FinaleRest
 	{
 		if (stage == RZ_FinaleRoute.S_ACT1)
 		{
-			int haven = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "a Haven cook who knew her", "Talk to the cook", "\"Who came back from her pan? I'll tell you for a price. Everyone's got one this week.\"");
-			scene.Choice(haven, "Buy her line at the Haven [10 Favor]").Bribe(RZ_EFaction.SURVIVORS, 10).Sets("line_h").Says("\"Four came back. One didn't, and she knows his name.\"", "bought a line at the Haven");
-			int lab = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HALCYON)), "a lab orderly", "Talk to the orderly", "\"The cook's patients? We logged them. For a price.\"");
+			int haven = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "a Haven cook who knew her", "Talk to the cook", "Who came back from her pan? I'll tell you for a price. Everyone's got one this week.");
+			scene.Choice(haven, "Buy her line at the Haven [10 Favor]").Bribe(RZ_EFaction.SURVIVORS, 10).Sets("line_h").Says("Four came back. One didn't, and she knows his name.", "bought a line at the Haven");
+			int lab = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HALCYON)), "a lab orderly", "Talk to the orderly", "The cook's patients? We logged them. For a price.");
 			scene.Choice(lab, "Buy the lab's line [10 Favor]").Only("line_h").Bribe(RZ_EFaction.INSTITUTE, 10).Decides(RZ_FinaleRoute.OUT_ACT1).Says("Three lines that agree: who came back, and from which pan.", "had Who Came Back from three lines");
 			scene.Choice(lab, "Make up who came back").Way(RZ_EQuestApproach.BETRAY).Sets("do:rest:false").Says("You give the boss a list. Some of it might even be true.", "gave the boss a false answer");
-			int boss = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.REDHAND)), "the boss's man", "Talk to the boss's man", "\"Somebody's asking about the cook. The boss likes to know who.\"");
-			scene.Choice(boss, "Tell the boss who's asking [Known]").Needs(RZ_EFaction.BANDITS, 1).Sets("told_boss").Says("\"Good. The boss remembers who tells him things.\"", "told the boss someone was asking");
+			int boss = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.REDHAND)), "the boss's man", "Talk to the boss's man", "Somebody's asking about the cook. The boss likes to know who.");
+			scene.Choice(boss, "Tell the boss who's asking [Known]").Needs(RZ_EFaction.BANDITS, 1).Sets("told_boss").Says("Good. The boss remembers who tells him things.", "told the boss someone was asking");
 		}
 		else if (stage == RZ_FinaleRoute.S_PIECE)
 		{
@@ -1002,7 +1002,7 @@ class RZ_FinaleRest
 	{
 		if (stage == RZ_FinaleRoute.S_ACT1)
 		{
-			int haven = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "a council head who read the Day 3 page", "Talk to the council head", "\"We read the Day 3 page. We could forget we did. For the right price.\"");
+			int haven = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.HAVEN)), "a council head who read the Day 3 page", "Talk to the council head", "We read the Day 3 page. We could forget we did. For the right price.");
 			scene.Choice(haven, "Trade the Haven's silence [Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sets("world:ref.haven_silence").Says("\"Forgotten. For now.\" The council head doesn't smile.", "traded for the Haven's silence");
 		}
 		else if (stage == RZ_FinaleRoute.S_DOOR)
@@ -1010,13 +1010,13 @@ class RZ_FinaleRest
 			// Expended: a Rogue commander sells 114; Under Seal: 114 at Known with Bastion
 			if (RZ_MajorHelp.World(m_GM, "orders.stance") == 4)
 			{
-				int rogue = scene.Person(RZ_Mission.LandPointNear(SeatOf(RZ_CureFinale.BASTION), 60, 120), "a commander who stopped answering the net", "Talk to the commander", "\"Expended, they said. Then I'm selling. Item one-one-four, thirty.\"");
+				int rogue = scene.Person(RZ_Mission.LandPointNear(SeatOf(RZ_CureFinale.BASTION), 60, 120), "a commander who stopped answering the net", "Talk to the commander", "Expended, they said. Then I'm selling. Item one-one-four, thirty.");
 				scene.Choice(rogue, "Buy 114 off the commander [30 Favor]").Bribe(RZ_EFaction.MILITARY, 30).Decides(RZ_FinaleRoute.OUT_DOOR).Says("The key comes out of a sock. \"Don't tell me what it opens.\"", "bought item 114 off a Rogue commander");
 			}
 
 			if (RZ_MajorHelp.World(m_GM, "proof.first_page") == 4)
 			{
-				int seal = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.BASTION)), "the adjutant, under seal", "Talk to the adjutant", "\"Under seal means under our seal. One-one-four goes to people we know.\"");
+				int seal = scene.Person(RZ_MajorHelp.NearSeat(SeatOf(RZ_CureFinale.BASTION)), "the adjutant, under seal", "Talk to the adjutant", "Under seal means under our seal. One-one-four goes to people we know.");
 				scene.Choice(seal, "Ask for 114 under seal [Bastion: Known]").Needs(RZ_EFaction.MILITARY, 1).Decides(RZ_FinaleRoute.OUT_DOOR).Says("The adjutant signs it out to you and keeps the carbon.", "had item 114 under seal");
 			}
 		}
@@ -1047,10 +1047,10 @@ class RZ_FinaleRest
 		if (stage != RZ_FinaleRoute.S_ACT4)
 			return;
 
-		int air = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 20, 40), "the Doctor with a handset", "Talk to the Doctor", "\"If they hear it on air, nobody can say it was anyone's. Or we do it quietly and hope.\"");
+		int air = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 20, 40), "the Doctor with a handset", "Talk to the Doctor", "If they hear it on air, nobody can say it was anyone's. Or we do it quietly and hope.");
 		scene.Choice(air, "Have the Doctor read it on air").Sets("do:rest:onair").Says("\"This is the Doctor. Released to: nobody. That means you.\" Every channel at once.", "had the release read on air");
 		scene.Choice(air, "Carry it quietly [unseen]").Sneak().Sets("quiet").Says("Nobody hears. Nobody comes. That's the idea.", "carried it in quietly");
-		scene.Choice(air, "Ask the duty officer to vouch").Persuade(RZ_EFaction.INSTITUTE, 2, "labtech").Sets("vouched").Says("\"I'll say it came in the front door. Because it did.\"", "had the duty officer vouch for the carry").Refused("\"Vouch for nobody? I'd rather not.\"");
+		scene.Choice(air, "Ask the duty officer to vouch").Persuade(RZ_EFaction.INSTITUTE, 2, "labtech").Sets("vouched").Says("I'll say it came in the front door. Because it did.", "had the duty officer vouch for the carry").Refused("Vouch for nobody? I'd rather not.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1068,27 +1068,27 @@ class RZ_FinaleRest
 			case "guard":
 			{
 				if (mine != route)
-					return "\"Only the route that holds the door moves it.\"";
+					return "Only the route that holds the door moves it.";
 
 				if (Guarded(route))
-					return "\"It's been moved once. Everyone knows where now.\"";
+					return "It's been moved once. Everyone knows where now.";
 
 				break;
 			}
 			case "yes":
 			{
 				if (me && RZ_Util.IsArmed(me))
-					return "\"Twenty metres off. The gun.\"";
+					return "Twenty metres off. The gun.";
 
 				break;
 			}
 			case "move":
 			{
 				if (mine != RZ_CureFinale.HAVEN)
-					return "\"Only the Haven's people move her.\"";
+					return "Only the Haven's people move her.";
 
 				if (RZ_SeasonClock.Now() - run.Flag("moved_unix") < DAY * m_GM.GetQuestlines().WaitScale())
-					return "\"She's moved once today. Twice and the houses talk.\"";
+					return "She's moved once today. Twice and the houses talk.";
 
 				break;
 			}

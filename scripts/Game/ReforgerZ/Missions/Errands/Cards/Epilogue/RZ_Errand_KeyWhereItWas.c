@@ -11,9 +11,9 @@ class RZ_Errand_KeyWhereItWas : RZ_EpiCard
 		m_sTitle = "The Key Where It Was";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"You read Petr's note? That was his kitchen. He's in the queue now, and the key's still under the step where he leaves it.\"",
-			"\"Petr went up the north road without his key. If it's still under the step, he'd want it. Photos in that house.\"");
-		Over("\"Never mind. Petr's neighbour took it up to him.\"");
+		Offer("You read Petr's note? That was his kitchen. He's in the queue now, and the key's still under the step where he leaves it.",
+			"Petr went up the north road without his key. If it's still under the step, he'd want it. Photos in that house.");
+		Over("Never mind. Petr's neighbour took it up to him.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take the key up to Petr";
@@ -23,8 +23,8 @@ class RZ_Errand_KeyWhereItWas : RZ_EpiCard
 		w.m_sStep = "The key's under the step. Take it up to Petr in the queue on the north road (10 s), then come back to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"He took it? He'll hold onto it the whole way. That's Petr.\"",
-			"\"Good. A man should have his own key, even in a queue.\"");
+		w.Done("He took it? He'll hold onto it the whole way. That's Petr.",
+			"Good. A man should have his own key, even in a queue.");
 
 		w = Way("sneak");
 		w.m_sLabel = "Use the key yourself";

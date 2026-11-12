@@ -113,10 +113,10 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "cook";
 		m_iNeed = RZ_ENeed.FOOD;
-		Offer("\"The pot's thin. Two tins would make it soup again. Or tell me there's somewhere left to pick.\"",
-			"\"We're on half ladles at {house}. If you've food on you, I'll take it. If not, the farms out east might have something.\"",
-			"\"Supper's water with ideas in it. Anything you can spare, or anywhere you know that isn't picked clean.\"");
-		Over("\"Never mind. The truck came in after all.\"", "\"Forget it. Someone else filled the pot. Don't ask me who, I was busy crying into it.\"");
+		Offer("The pot's thin. Two tins would make it soup again. Or tell me there's somewhere left to pick.",
+			"We're on half ladles at {house}. If you've food on you, I'll take it. If not, the farms out east might have something.",
+			"Supper's water with ideas in it. Anything you can spare, or anywhere you know that isn't picked clean.");
+		Over("Never mind. The truck came in after all.", "Forget it. Someone else filled the pot. Don't ask me who, I was busy crying into it.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Hand over two tins";
@@ -125,7 +125,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
 		w.m_iEffect = FX_FOOD;
-		w.Done("\"That's supper. The ham bone gets another night off.\"", "\"Two tins. I'll make it look like four.\"");
+		w.Done("That's supper. The ham bone gets another night off.", "Two tins. I'll make it look like four.");
 
 		w = Way("do");
 		w.m_sLabel = "Ask where's left to pick";
@@ -135,8 +135,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Search the gardens and sheds at {place} for anything that grows (30 s there), then bring it to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FOOD;
-		w.Take("\"Try {place}. Nobody's been out there since the frost. Bring a bag.\"");
-		w.Done("\"Potatoes. Small ones, but potatoes. Who wants seconds? Nobody gets seconds.\"", "\"Carrots with the soil still on. The children will complain. Good.\"");
+		w.Take("Try {place}. Nobody's been out there since the frost. Bring a bag.");
+		w.Done("Potatoes. Small ones, but potatoes. Who wants seconds? Nobody gets seconds.", "Carrots with the soil still on. The children will complain. Good.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -148,9 +148,9 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sRoles = "storekeeper";
 		m_iFault = RZ_EFault.FUEL;
 		m_bTimed = true;
-		Offer("\"Generator's dry. One can, before the lamps. Otherwise it's candles and ghost stories.\"",
-			"\"The lamps go out at dusk unless someone finds fuel. I've written it on the board twice.\"");
-		Over("\"The lamps are on. Someone beat you to it.\"");
+		Offer("Generator's dry. One can, before the lamps. Otherwise it's candles and ghost stories.",
+			"The lamps go out at dusk unless someone finds fuel. I've written it on the board twice.");
+		Over("The lamps are on. Someone beat you to it.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Pour in a can of fuel";
@@ -158,7 +158,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_iItems = 1;
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"Hear that? That's the sound of nobody tripping over the bucket tonight.\"");
+		w.Done("Hear that? That's the sound of nobody tripping over the bucket tonight.");
 
 		w = Way("give");
 		w.m_sLabel = "Wire in a car battery";
@@ -167,7 +167,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_iItems = 1;
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"A battery? Huh. I'd have kept looking for a can until Tuesday.\"");
+		w.Done("A battery? Huh. I'd have kept looking for a can until Tuesday.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -178,9 +178,9 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "lookout";
 		m_iFault = RZ_EFault.WATER;
-		Offer("\"Barrels are at the sludge. Two bottles from the well at {next_town} would carry us to the next run.\"",
-			"\"We're down to washing in tea. The well at {next_town} still runs, if you go quiet.\"");
-		Over("\"Somebody's filled the barrels. You're off the hook.\"");
+		Offer("Barrels are at the sludge. Two bottles from the well at {next_town} would carry us to the next run.",
+			"We're down to washing in tea. The well at {next_town} still runs, if you go quiet.");
+		Over("Somebody's filled the barrels. You're off the hook.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch water from {next_town}";
@@ -192,8 +192,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Fill two bottles at the well in {place} (20 s there) and bring them to {giver}. Quieter is better.";
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX_FOOD;
-		w.Take("\"The short way runs through the bad street. Don't take the short way.\"");
-		w.Done("\"Clean enough to boil. We'll have tea that tastes of tea.\"");
+		w.Take("The short way runs through the bad street. Don't take the short way.");
+		w.Done("Clean enough to boil. We'll have tea that tastes of tea.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -204,8 +204,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "storekeeper";
 		m_iFault = RZ_EFault.WATER;
-		Offer("\"The filter's choking. There's a pump house at {next_town} with the part we need, if nobody's had it.\"");
-		Over("\"The filter's running again. Someone found the part.\"");
+		Offer("The filter's choking. There's a pump house at {next_town} with the part we need, if nobody's had it.");
+		Over("The filter's running again. Someone found the part.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Strip the part at {next_town}";
@@ -216,7 +216,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"That's the one. I'll tell everyone it was me.\"");
+		w.Done("That's the one. I'll tell everyone it was me.");
 
 		w = Way("do");
 		w.m_sLabel = "Take only the good part";
@@ -228,7 +228,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"One part, not two. You know what you're doing. That's rare.\"");
+		w.Done("One part, not two. You know what you're doing. That's rare.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -239,9 +239,9 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "lookout";
 		m_bTimed = true;
-		Offer("\"It's me on the gate tonight, and only me. {near_town} has been loud. Stand with me a while?\"",
-			"\"Dusk soon. One on the gate, and {near_town} is restless. I'd rather not be the only one listening.\"");
-		Over("\"The others are back. Go on, I'm fine.\"");
+		Offer("It's me on the gate tonight, and only me. {near_town} has been loud. Stand with me a while?",
+			"Dusk soon. One on the gate, and {near_town} is restless. I'd rather not be the only one listening.");
+		Over("The others are back. Go on, I'm fine.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Stand at the gate with them";
@@ -250,7 +250,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Stand at the gate at {house} through dusk (10 real minutes there), then tell {giver} it's done.";
 		w.m_iFavor = 5;
-		w.Done("\"Quiet night. I'll remember who stood with me.\"", "\"Nothing came. That's the best sort of night. Thank you.\"");
+		w.Done("Quiet night. I'll remember who stood with me.", "Nothing came. That's the best sort of night. Thank you.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -260,9 +260,9 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"We lost someone today. The ground's hard at the edge of town, and I can't dig on my own.\"",
-			"\"There's a grave to dig. We read the name at supper. Dig it deep.\"");
-		Over("\"It's dug. The others did it while you were away.\"");
+		Offer("We lost someone today. The ground's hard at the edge of town, and I can't dig on my own.",
+			"There's a grave to dig. We read the name at supper. Dig it deep.");
+		Over("It's dug. The others did it while you were away.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Dig at the edge of town";
@@ -272,7 +272,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Dig the grave at the edge of {house} (30 s there), then tell {giver}.";
 		w.m_iFavor = 3;
 		w.m_iEffect = FX_RECORD;
-		w.Done("\"Deep enough. We'll read the name at supper. Come, if you like.\"");
+		w.Done("Deep enough. We'll read the name at supper. Come, if you like.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -282,8 +282,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"No medic here, and three coughing in the back room. You've the hands for it. A minute at each bed?\"");
-		Over("\"The medic from the next house came after all.\"");
+		Offer("No medic here, and three coughing in the back room. You've the hands for it. A minute at each bed?");
+		Over("The medic from the next house came after all.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "See to the sick";
@@ -293,7 +293,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "See to the sick at {house}, a minute at each bed (2 real minutes there).";
 		w.m_iFavor = 4;
-		w.Done("\"They'll sleep tonight. So will I, which is the real gift.\"");
+		w.Done("They'll sleep tonight. So will I, which is the real gift.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -303,8 +303,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"We took someone in today. No coat, no shoes worth the name. There's a clothes shop at {next_town} nobody's emptied.\"");
-		Over("\"Someone gave him a coat already. It is too big. He loves it.\"");
+		Offer("We took someone in today. No coat, no shoes worth the name. There's a clothes shop at {next_town} nobody's emptied.");
+		Over("Someone gave him a coat already. It is too big. He loves it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Find a coat at {next_town}";
@@ -313,7 +313,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 60;
 		w.m_sStep = "Find a coat in {place} (20 s there) and bring it to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("\"It fits. He's asked for a job already. We gave him the bucket.\"");
+		w.Done("It fits. He's asked for a job already. We gave him the bucket.");
 
 		w = Way("do");
 		w.m_sLabel = "Check him over";
@@ -323,7 +323,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Look the newcomer over at {house} (30 s there).";
 		w.m_iFavor = 4;
-		w.Done("\"No bites, no fever. Just hungry. We can fix hungry, given a week.\"");
+		w.Done("No bites, no fever. Just hungry. We can fix hungry, given a week.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -333,8 +333,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_bTimed = true;
-		Offer("\"The gate's open for a delivery and the little ones won't stay in the yard. Five minutes, keep them in?\"");
-		Over("\"Gate's shut. They've all gone in for lunch.\"");
+		Offer("The gate's open for a delivery and the little ones won't stay in the yard. Five minutes, keep them in?");
+		Over("Gate's shut. They've all gone in for lunch.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Watch the children in the yard";
@@ -344,7 +344,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_bQuiet = true;
 		w.m_sStep = "Keep the children in the yard at {house} (5 real minutes there). No shooting near them.";
 		w.m_iFavor = 4;
-		w.Done("\"Count them in, count them out. Same number, ideally. Same number.\"");
+		w.Done("Count them in, count them out. Same number, ideally. Same number.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -355,8 +355,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "lookout";
-		Offer("\"People here know your face, and not kindly. Keep the gate a while, or carry the night water. It's a start.\"");
-		Over("\"Not now. Something's happening at the house.\"");
+		Offer("People here know your face, and not kindly. Keep the gate a while, or carry the night water. It's a start.");
+		Over("Not now. Something's happening at the house.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Keep the gate at dusk";
@@ -365,7 +365,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Keep the gate at {house} (3 real minutes there), then tell {giver}.";
 		w.m_bAmends = true;
-		w.Done("\"You stood there. People saw you stand there. That's how it starts.\"");
+		w.Done("You stood there. People saw you stand there. That's how it starts.");
 
 		w = Way("do");
 		w.m_sLabel = "Carry the night water";
@@ -374,7 +374,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 60;
 		w.m_sStep = "Fill the house's cans at {place} (15 s there) and bring them to {giver}.";
 		w.m_bAmends = true;
-		w.Done("\"Full cans. Nobody will say thank you. That's how you know it's counted.\"");
+		w.Done("Full cans. Nobody will say thank you. That's how you know it's counted.");
 	}
 
 	// ---------------------------------------------------------------- A Bastion post
@@ -385,9 +385,9 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_iFault = RZ_EFault.RELIEF;
-		Offer("\"Relief hasn't shown. Last seen walking to a car out on the road with a blanket. Wake him, or stand his post.\"",
-			"\"One on the gate and the relief missing. I know where he is. I'd rather not know.\"");
-		Over("\"Relief's turned up. Carry on.\"");
+		Offer("Relief hasn't shown. Last seen walking to a car out on the road with a blanket. Wake him, or stand his post.",
+			"One on the gate and the relief missing. I know where he is. I'd rather not know.");
+		Over("Relief's turned up. Carry on.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Find and wake the relief";
@@ -397,12 +397,12 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Find the private asleep in a car {place} and wake him (10 s there), then report to {giver}.";
 		w.m_iFavor = 4;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"He'll be on the gate in five. He owes you. He'll pretend he doesn't.\"");
+		w.Done("He'll be on the gate in five. He owes you. He'll pretend he doesn't.");
 
 		w = Way("report");
 		w.m_sLabel = "Report him asleep";
 		w.m_iFame = 1;
-		w.Done("\"Charge him with what? Sleeping through the end of the world? I'll write it up anyway.\"");
+		w.Done("Charge him with what? Sleeping through the end of the world? I'll write it up anyway.");
 
 		w = Way("do");
 		w.m_sLabel = "Stand the post yourself";
@@ -412,7 +412,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Stand at the gate at {here} (3 real minutes there), then report to {giver}.";
 		w.m_iFavor = 6;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"Post held. Logged as a volunteer. The form has no box for that, so I drew one.\"");
+		w.Done("Post held. Logged as a volunteer. The form has no box for that, so I drew one.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -424,8 +424,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sRoles = "radio operator";
 		m_iFault = RZ_EFault.SET;
 		m_bTimed = true;
-		Offer("\"Set's flat. Tonight's numbers go out as a hiss unless someone has a battery. Command won't notice. Command doesn't notice.\"");
-		Over("\"A spare turned up in a drawer, under a sandwich.\"");
+		Offer("Set's flat. Tonight's numbers go out as a hiss unless someone has a battery. Command won't notice. Command doesn't notice.");
+		Over("A spare turned up in a drawer, under a sandwich.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Hand over a battery";
@@ -433,7 +433,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_iItems = 1;
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"Signal's clean. The numbers go out on time, to nobody, as usual.\"");
+		w.Done("Signal's clean. The numbers go out on time, to nobody, as usual.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -442,9 +442,9 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sTitle = "The Wire";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"Contact on the north road tonight, and the wire's thin. Five minutes on the wire with us.\"",
-			"\"Pressure on the post since the truck went. Another pair of eyes on the wire would be logged gratefully.\"");
-		Over("\"Stand down. The pressure's moved off.\"");
+		Offer("Contact on the north road tonight, and the wire's thin. Five minutes on the wire with us.",
+			"Pressure on the post since the truck went. Another pair of eyes on the wire would be logged gratefully.");
+		Over("Stand down. The pressure's moved off.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Man the wire";
@@ -453,7 +453,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Stand on the wire at {here} (5 real minutes there), then report to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"Wire held. Logged. You weren't here, officially, which is a compliment.\"");
+		w.Done("Wire held. Logged. You weren't here, officially, which is a compliment.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -462,8 +462,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sTitle = "The Count";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"Stores count is due and the numbers don't add. Three stacks. Count them, and write what's there.\"");
-		Over("\"Count's done. Someone signed it already.\"");
+		Offer("Stores count is due and the numbers don't add. Three stacks. Count them, and write what's there.");
+		Over("Count's done. Someone signed it already.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Count it and write what's there";
@@ -473,7 +473,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Count the three stacks at {here} (30 s there), then hand the sheet to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"That's short. That's very short. I'll file it, and nobody will read it.\"");
+		w.Done("That's short. That's very short. I'll file it, and nobody will read it.");
 
 		w = Way("do");
 		w.m_sLabel = "Count it and write what they want";
@@ -484,7 +484,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Count the three stacks at {here} (30 s there), then hand the sheet to {giver}.";
 		w.m_iFavor = 10;
 		w.m_iEffect = FX_RECORD;
-		w.Done("\"Signed correct. Every one. Don't look at me like that.\"");
+		w.Done("Signed correct. Every one. Don't look at me like that.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -494,8 +494,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_bTimed = true;
-		Offer("\"Put this in the mail bag by the radio? I'd do it, but I'm not allowed to want things.\"");
-		Over("\"Never mind. Corporal took it.\"");
+		Offer("Put this in the mail bag by the radio? I'd do it, but I'm not allowed to want things.");
+		Over("Never mind. Corporal took it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Put his letter in the mail bag";
@@ -504,7 +504,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Put the letter in the mail bag by the radio at {here} (5 s there).";
 		w.m_iEffect = FX_MORALE;
-		w.Done("\"The bag's full. Nobody has collected it since Day 3. It goes in anyway.\"");
+		w.Done("The bag's full. Nobody has collected it since Day 3. It goes in anyway.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -514,15 +514,15 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_iNeed = RZ_ENeed.SUPPLIES;
-		Offer("\"Truck didn't make it, and the generator's on fumes. A can from your own pack would be logged.\"");
-		Over("\"Resupply's in. Stand down.\"");
+		Offer("Truck didn't make it, and the generator's on fumes. A can from your own pack would be logged.");
+		Over("Resupply's in. Stand down.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Hand over a can of fuel";
 		w.m_eItem = RZ_EErrandItem.FUEL;
 		w.m_iItems = 1;
 		w.m_iFavor = 6;
-		w.Done("\"Signed for. You'll get a receipt when the gates open.\"");
+		w.Done("Signed for. You'll get a receipt when the gates open.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -532,8 +532,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sFamily = "amends";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"There's a hole to dig behind the post. Nobody volunteers. You look like a volunteer.\"");
-		Over("\"Dug already. Lucky you.\"");
+		Offer("There's a hole to dig behind the post. Nobody volunteers. You look like a volunteer.");
+		Over("Dug already. Lucky you.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Dig the latrine";
@@ -543,7 +543,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Dig the new latrine behind {here} (30 s there), then report to {giver}.";
 		w.m_iFavor = 3;
 		w.m_bAmends = true;
-		w.Done("\"Everything is signed for. Including this.\"");
+		w.Done("Everything is signed for. Including this.");
 	}
 
 	// ---------------------------------------------------------------- A Red Hand camp
@@ -555,19 +555,19 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "toll man,mechanic";
 		m_iNeed = RZ_ENeed.SUPPLIES;
-		Offer("\"Lorry's dry and the boss is in a mood. A can from your pack and I'll forget I saw your face. In a good way.\"");
-		Over("\"Somebody found a can. You're too slow, friend.\"");
+		Offer("Lorry's dry and the boss is in a mood. A can from your pack and I'll forget I saw your face. In a good way.");
+		Over("Somebody found a can. You're too slow, friend.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Hand over a can of fuel";
 		w.m_eItem = RZ_EErrandItem.FUEL;
 		w.m_iItems = 1;
 		w.m_iFavor = 6;
-		w.Done("\"There she goes. The book says you're alright. The book's never wrong, except when it is.\"");
+		w.Done("There she goes. The book says you're alright. The book's never wrong, except when it is.");
 
 		w = Way("talk");
 		w.m_sLabel = "Say there's no fuel left";
-		w.Done("\"Then we're all walking. Good. Walking pays tolls too.\"");
+		w.Done("Then we're all walking. Good. Walking pays tolls too.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -577,15 +577,15 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "cook";
-		Offer("\"The still wants feeding. Two tins of fruit. It's for the medicine. The medicine is also the brandy.\"");
-		Over("\"Still's fed. Come back when it's thirsty.\"");
+		Offer("The still wants feeding. Two tins of fruit. It's for the medicine. The medicine is also the brandy.");
+		Over("Still's fed. Come back when it's thirsty.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Hand over two tins";
 		w.m_eItem = RZ_EErrandItem.FOOD;
 		w.m_iItems = 2;
 		w.m_iFavor = 6;
-		w.Done("\"Lovely. In a week it'll strip paint and cure coughs. Same bottle.\"");
+		w.Done("Lovely. In a week it'll strip paint and cure coughs. Same bottle.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -595,8 +595,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "lookout";
-		Offer("\"Two collectors on the toll, and the take's light. One of them is pocketing. Watch them and tell me which.\"");
-		Over("\"Forget it. The boss sorted it himself, loudly.\"");
+		Offer("Two collectors on the toll, and the take's light. One of them is pocketing. Watch them and tell me which.");
+		Over("Forget it. The boss sorted it himself, loudly.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Watch them, then name him";
@@ -606,7 +606,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Watch the two collectors at {here} (a minute there), then tell {giver} which one.";
 		w.m_iFavor = 8;
-		w.Done("\"Him? Course it's him. He's got new boots. Nobody gets new boots.\"");
+		w.Done("Him? Course it's him. He's got new boots. Nobody gets new boots.");
 
 		w = Way("do");
 		w.m_sLabel = "Pick him out";
@@ -617,7 +617,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Watch the collectors at {here} (20 s there): you know what to look for. Then tell {giver}.";
 		w.m_iFavor = 8;
-		w.Done("\"Twenty seconds. You've done this before, haven't you. Don't answer.\"");
+		w.Done("Twenty seconds. You've done this before, haven't you. Don't answer.");
 
 		w = Way("do");
 		w.m_sLabel = "Watch them, then warn him";
@@ -625,7 +625,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 60;
 		w.m_fRadius = 25;
 		w.m_sStep = "Watch the two collectors at {here} (a minute there), then come back to {giver}.";
-		w.Done("\"Couldn't tell, eh? Funny. He's suddenly very honest. Funny, that.\"");
+		w.Done("Couldn't tell, eh? Funny. He's suddenly very honest. Funny, that.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -634,8 +634,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sTitle = "The Pit Count";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"There's a fight on tonight and nobody here can count past their fingers. Count the bets into the book?\"");
-		Over("\"Fight's off. Someone's knuckles gave out early.\"");
+		Offer("There's a fight on tonight and nobody here can count past their fingers. Count the bets into the book?");
+		Over("Fight's off. Someone's knuckles gave out early.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Count the bets into the book";
@@ -644,7 +644,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Count the bets into the book at {here} (2 real minutes there), then hand it to {giver}.";
 		w.m_iFavor = 5;
-		w.Done("\"Balanced to the tin. You'd make a terrible gambler and a lovely bookie.\"");
+		w.Done("Balanced to the tin. You'd make a terrible gambler and a lovely bookie.");
 	}
 
 	// ---------------------------------------------------------------- A Halcyon station or the lab
@@ -656,8 +656,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		m_sRoles = "technician,lab assistant";
 		m_iFault = RZ_EFault.FUEL;
-		Offer("\"The freezers have fuel for one night, perhaps less. A can, or a battery for the backup. Samples first. We apologise to the samples.\"");
-		Over("\"Fuel arrived. The samples will survive. So will we, incidentally.\"");
+		Offer("The freezers have fuel for one night, perhaps less. A can, or a battery for the backup. Samples first. We apologise to the samples.");
+		Over("Fuel arrived. The samples will survive. So will we, incidentally.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Hand over a can of fuel";
@@ -666,7 +666,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"Temperature holding. I'll note who supplied it. Notes are what we have.\"");
+		w.Done("Temperature holding. I'll note who supplied it. Notes are what we have.");
 
 		w = Way("give");
 		w.m_sLabel = "Wire in a battery";
@@ -675,7 +675,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"The backup's live. Not ideal. Ideal ended some weeks ago.\"");
+		w.Done("The backup's live. Not ideal. Ideal ended some weeks ago.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -685,9 +685,9 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		m_iFault = RZ_EFault.SENSOR;
-		Offer("\"Sensor four has gone dark, {place}. A fresh battery, or a reset if you can do it unseen. We'd like the readings.\"",
-			"\"No data from sensor four since the shift change. Possibly the cable. Possibly not a rat. We'd like it to be a rat.\"");
-		Over("\"Sensor four is back. Perhaps it was the rat.\"");
+		Offer("Sensor four has gone dark, {place}. A fresh battery, or a reset if you can do it unseen. We'd like the readings.",
+			"No data from sensor four since the shift change. Possibly the cable. Possibly not a rat. We'd like it to be a rat.");
+		Over("Sensor four is back. Perhaps it was the rat.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Put a battery in the sensor";
@@ -700,7 +700,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Fit a battery to sensor four, {place} (at the sensor), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"Data flowing. Nothing of note. Nothing of note is the best data.\"");
+		w.Done("Data flowing. Nothing of note. Nothing of note is the best data.");
 
 		w = Way("sneak");
 		w.m_sLabel = "Reset it unseen";
@@ -711,7 +711,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_sStep = "Reset sensor four, {place}, without being seen (15 s there, hidden), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX;
-		w.Done("\"Reset clean. Whatever chewed the cable didn't see you. Excellent. For you.\"");
+		w.Done("Reset clean. Whatever chewed the cable didn't see you. Excellent. For you.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -721,8 +721,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		m_bTimed = true;
-		Offer("\"Night shift. The trays need relabelling before the morning count. Nobody reads them. That's not the point.\"");
-		Over("\"Morning shift will do it. Thank you anyway.\"");
+		Offer("Night shift. The trays need relabelling before the morning count. Nobody reads them. That's not the point.");
+		Over("Morning shift will do it. Thank you anyway.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Relabel the trays";
@@ -731,7 +731,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Relabel the trays at the bench at {here} (2 real minutes there).";
 		w.m_iFavor = 4;
-		w.Done("\"Legible. Correct. I will sleep for an hour, if the freezers allow it.\"");
+		w.Done("Legible. Correct. I will sleep for an hour, if the freezers allow it.");
 
 		w = Way("do");
 		w.m_sLabel = "Relabel them properly";
@@ -741,7 +741,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Relabel the trays at the bench at {here} (a minute there): you know the codes.";
 		w.m_iFavor = 4;
-		w.Done("\"You used the old codes. Nobody uses the old codes any more. Thank you.\"");
+		w.Done("You used the old codes. Nobody uses the old codes any more. Thank you.");
 	}
 
 	// ---------------------------------------------------------------- The wanderers' asks
@@ -754,8 +754,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_iWandererRole = RZ_EWandererRole.DOCTOR;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_bTimed = true;
-		Offer("\"There's someone in {next_town} with a fresh bite and a clean rag. Something from a medical kit before half eight, and they'll see the morning.\"");
-		Over("\"Too late, or too early. Either way, not you. Not today.\"");
+		Offer("There's someone in {next_town} with a fresh bite and a clean rag. Something from a medical kit before half eight, and they'll see the morning.");
+		Over("Too late, or too early. Either way, not you. Not today.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Take them something medical";
@@ -768,7 +768,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fBefore = 20.5;
 		w.m_sStep = "Take something medical to the bitten survivor in {place} and leave it with them, then find {giver} again.";
 		w.m_iFavor = 6;
-		w.Done("\"They'll see the morning. After that, it's the lab or prayer, and I've seen how both go.\"");
+		w.Done("They'll see the morning. After that, it's the lab or prayer, and I've seen how both go.");
 
 		w = Way("do");
 		w.m_sLabel = "Dress the bite yourself";
@@ -779,7 +779,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fBefore = 20.5;
 		w.m_sStep = "Dress the bite of the survivor in {place} (45 s there), then find {giver} again.";
 		w.m_iFavor = 6;
-		w.Done("\"Clean dressing? Good. You'd have made a decent doctor. Shame about the world.\"");
+		w.Done("Clean dressing? Good. You'd have made a decent doctor. Shame about the world.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -789,23 +789,23 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		m_sFamily = "wanderer";
 		m_eAnchor = RZ_EErrandAnchor.WANDERER;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"I've seen your face on a notice. Somebody would pay to know where you sleep. You could pay more.\"");
-		Over("\"Forget it. Your face is old news now.\"");
+		Offer("I've seen your face on a notice. Somebody would pay to know where you sleep. You could pay more.");
+		Over("Forget it. Your face is old news now.");
 
 		RZ_ErrandWay w = Way("pay");
 		w.m_sLabel = "Pay him to forget your face";
 		w.m_iFavorCost = 8;
-		w.Done("\"Forgotten. Faces are hard to remember. Yours especially, now.\"");
+		w.Done("Forgotten. Faces are hard to remember. Yours especially, now.");
 
 		w = Way("press");
 		w.m_sLabel = "Lean on him";
 		w.m_bThreat = true;
-		w.Done("\"Alright. Alright. I never saw you. I never see anyone.\"");
+		w.Done("Alright. Alright. I never saw you. I never see anyone.");
 
 		w = Way("leave");
 		w.m_sLabel = "Let him sell it";
 		w.m_iEffect = FX_HUNTERS;
-		w.Done("\"No hard feelings. Business. Sleep somewhere else tonight.\"");
+		w.Done("No hard feelings. Business. Sleep somewhere else tonight.");
 	}
 
 	// ================================================================ Why

@@ -1581,9 +1581,13 @@ so the lint fails only on new or changed text. Fixing a line leaves a stale entr
 reports; `--update-baseline` rewrites the file from what's found now. Don't regenerate it to get a
 new finding through: fix the line.
 
+The talk pass ([WRITING.md](WRITING.md#talk)) added `quote`, `speaker`, `reply`, `split` and
+`ellipsis`; most of the baseline is their findings in the conversation files and the errands' cards,
+and each rewrite shrinks it. A rewritten line that still breaks one fails the lint.
+
 | What it shows | What it can't |
 |---|---|
-| Text that breaks a rule a script can check, in literals the inventory finds | Whether a line is good. Text built from pieces (`"Talk to " + name`) is checked piece by piece. Channels and factions are guessed from the call, the folder and the nearest `case RZ_EFaction.X:` |
+| Text that breaks a rule a script can check, in literals the inventory finds | Whether a line is good, gives context or has narration in it. Text built from pieces (`"Talk to " + name`) is checked piece by piece. Channels and factions are guessed from the call, the folder and the nearest `case RZ_EFaction.X:` |
 
 ### Runtime test without Workbench
 
@@ -1893,7 +1897,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Loot.c:1555` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:787` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:270` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:952`, `:967` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:953`, `:968` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:67` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
@@ -2008,16 +2012,16 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_Notebook.c:1067` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
-| `UI/RZ_TalkMenu.c:48` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
+| `UI/RZ_TalkMenu.c:51` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_Menus.c:55` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
 | `UI/RZ_UIData.c:1050` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
-| `UI/RZ_TalkMenu.c:59`, `:363` | `OnMouseWheel` reaches a reply row's `Button` and the reply box's frame (`ReplyPanel`), with `wheel` positive rolled up, so the wheel moves the selection and past the ends turns the page | The wheel does nothing or runs the wrong way (flip the sign in `RZ_TalkMenu.Wheel`); the arrow keys, Q/E and the arrows' clicks still move and turn the page |
-| `UI/RZ_TalkMenu.c:615` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls a box that overflows toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; boxes are cut to fit, so it's rarely needed |
-| `UI/RZ_TalkMenu.c:655` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
+| `UI/RZ_TalkMenu.c:62`, `:400` | `OnMouseWheel` reaches a reply row's `Button` and the reply box's frame (`ReplyPanel`), with `wheel` positive rolled up, so the wheel moves the selection and past the ends turns the page | The wheel does nothing or runs the wrong way (flip the sign in `RZ_TalkMenu.Wheel`); the arrow keys, Q/E and the arrows' clicks still move and turn the page |
+| `UI/RZ_TalkMenu.c:652` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls a box that overflows toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; boxes are cut to fit, so it's rarely needed |
+| `UI/RZ_TalkMenu.c:692` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
 | `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
 | `UI/RZ_UIData.c:1110` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `UI/RZ_UIData.c:1249` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
-| `Dialogue/RZ_Dialogue.c:951` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:999` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:185` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:563` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
@@ -3069,7 +3073,15 @@ when it happens)
   Radio tab. A plain "Radio" notice (no power, nothing in range) and the government broadcast stay
   cards. With the tracker and the radio indicator both showing, nothing overlaps; on a TV every line
   reads.
-- [ ] Talk to a Trader wanderer: the talk screen opens with their name and sub-line at the top right
+- [ ] **No filler greeting, speech not labels.** Talk to a Trader wanderer you've already met (no
+  news about them): the screen opens **straight on your replies**, their name top right, no line.
+  The replies are speech (*What are you selling?* with its Favor tag, *Here. Have something to eat.*,
+  *You look like you could use a hand.*, *Hand over the bag. Slowly, and nobody gets hurt.*) and the
+  way out is *I'll be going.* Nothing on the screen is in quotation marks or has a name in front.
+  A bitten wanderer, or one who's lost a town: that line shows first. A Haven house's resident you've
+  never met, with Trees on and a `say? !met` intro written: the intro shows once, and the next talk
+  opens on the replies. Pick a topic and come back to the hub with `hub`: no line, just the replies.
+- [ ] Talk to a Trader wanderer whose greeting has something to say: the talk screen opens with their name and sub-line at the top right
   in their colour and **only their line** in the band in the lower middle, **typing out**, the
   footer "A Skip" / "B Leave". It never moves on by itself: once it's typed a ▼ bounces at the
   band's bottom right and the footer says "A Continue". A finishes the typing at once, the next A
@@ -3085,11 +3097,16 @@ when it happens)
   a TV with a pad: the line, the tags and the footer readable from the sofa.
 - [ ] **One Talk prompt per person.** At each quartermaster the action menu shows **Talk to the
   quartermaster** and nothing else of ours (vanilla's own stay). It opens the talk screen: "The
-  quartermaster", "<faction> - quartermaster - <town>", a greeting in its voice, and the replies
-  **Trade** (the shop screen opens, the talk screen closes; B there leaves cleanly), **Ask for
-  whoever's in charge** (the leader takes over in the same screen: their name, sub-line and
-  greeting, then Ask for work, Heard anything?, What do you make of me?; Ask for work gives the job
-  as a card, the leader's line in the band; with nobody in the chair they say so), at the Haven the
+  quartermaster", "<faction> - quartermaster - <town>", **no greeting** (straight on the replies), and
+  the replies in words (the Red Hand's *Show me what you've got.*, Bastion's *I need to draw from
+  stores.*) for **Trade** (the shop screen opens, the talk screen closes; B there leaves cleanly), *Who's
+  in charge here? I'd like a word.* for **Ask for whoever's in charge** (the leader takes over in the
+  same screen: their name and sub-line, a line only if they have one (a first meeting, a job waiting),
+  then *Got any work for me?*, *What's in the morning report?*, *Be honest. What do you make of me?*
+  (by faction). Ask for work said to them explains their own job: the brief in their voice, where it
+  is, the pay in Favor and Fame, the danger; the replies are then only *I'll do it.* and *Not today.*:
+  yes puts it in your Quests tab with a short "Off the books" card, no leaves it ("Understood. It
+  stays on my desk..."). With nobody in the chair they say so), at the Haven the
   house's services (Hand over food faint "you have nothing to eat" with none on you, Tell them
   you've been bitten faint unless you are, the board opens the board menu), and at Halcyon **Ask
   for the trial dose** faint with "for the bitten only" until you're bitten and the bite has taken,
@@ -3179,7 +3196,7 @@ when it happens)
   or don't talk at all, and walk on: the built search or turn-back applies at the barrier. In
   kit signed out to someone else, the greeting names them and any claim is caught at once.
 - [ ] Trees on, a seat leader at attitude -2 who doesn't hunt you: the hub shows "[Make it right]
-  "What would it take?"", which reserves their faction's amends job for an hour. Finish it: the
+  What would it take to fix this?", which reserves their faction's amends job for an hour. Finish it: the
   leader's "We start again." line, they deal with you again, and the reply is dim for the rest of the
   season. Fail it or let the hour run out: nothing changes.
 - [ ] Trees on, a Radio Operator with Bastion's net cracked: the radio's "Call on the open channel"

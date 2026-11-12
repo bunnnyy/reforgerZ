@@ -464,11 +464,11 @@ class RZ_CureFinale
 	{
 		switch (r)
 		{
-			case HAVEN: return "\"The houses decide who goes first, and the houses kept the List.\"";
-			case BASTION: return "\"It reaches those who comply, and the register is a census.\"";
-			case REDHAND: return "\"The price is the queue. The cut dose was sold the same way.\"";
-			case HALCYON: return "\"The paper starts on Day 1. The three weeks are on page one, or not at all.\"";
-			case INDEP: return "\"Nobody guards it and nobody counts it, and every faction remembers who took it from them.\"";
+			case HAVEN: return "The houses decide who goes first, and the houses kept the List.";
+			case BASTION: return "It reaches those who comply, and the register is a census.";
+			case REDHAND: return "The price is the queue. The cut dose was sold the same way.";
+			case HALCYON: return "The paper starts on Day 1. The three weeks are on page one, or not at all.";
+			case INDEP: return "Nobody guards it and nobody counts it, and every faction remembers who took it from them.";
 		}
 
 		return "";
@@ -480,11 +480,11 @@ class RZ_CureFinale
 	{
 		switch (r)
 		{
-			case HAVEN: return "\"The cure goes hand to hand, to the people the others would leave till last.\"";
-			case BASTION: return "\"Order: a queue, a register, nobody trampled at the gate.\"";
-			case REDHAND: return "\"It reaches anyone who can pay, including people nobody else would serve.\"";
-			case HALCYON: return "\"Published, fast, checked, with every author named.\"";
-			case INDEP: return "\"Four lots of people are about to tell you the cure is theirs. It isn't anyone's yet.\"";
+			case HAVEN: return "The cure goes hand to hand, to the people the others would leave till last.";
+			case BASTION: return "Order: a queue, a register, nobody trampled at the gate.";
+			case REDHAND: return "It reaches anyone who can pay, including people nobody else would serve.";
+			case HALCYON: return "Published, fast, checked, with every author named.";
+			case INDEP: return "Four lots of people are about to tell you the cure is theirs. It isn't anyone's yet.";
 		}
 
 		return "";
@@ -810,26 +810,26 @@ class RZ_CureFinale
 	string CanCommit(int playerId, int r)
 	{
 		if (!IsOn() || r < 0 || r >= ROUTES)
-			return "\"Nothing to sign.\"";
+			return "Nothing to sign.";
 
 		if (!m_S.routesOpen)
-			return "\"Ask me again when it's nearly done.\"";
+			return "Ask me again when it's nearly done.";
 
 		if (IsCured())
-			return "\"It's over. Talk to whoever you like.\"";
+			return "It's over. Talk to whoever you like.";
 
 		int mine = RouteOfPlayer(playerId);
 		if (mine == r)
-			return "\"You're already written down.\"";
+			return "You're already written down.";
 
 		if (mine != NONE)
-			return "\"You've picked your side. This isn't it.\"";
+			return "You've picked your side. This isn't it.";
 
 		if (r == INDEP)
 			return "";
 
 		if (!CanSideWith(playerId, r))
-			return "\"Not you. Not without paying the price for it first.\"";
+			return "Not you. Not without paying the price for it first.";
 
 		return "";
 	}
@@ -928,15 +928,15 @@ class RZ_CureFinale
 	{
 		int mine = RouteOfPlayer(playerId);
 		if (mine != NONE && mine != r)
-			return "\"You've picked your side. This isn't it.\"";
+			return "You've picked your side. This isn't it.";
 
 		if (sworn && mine != r)
-			return "\"This is for the ones who signed. Sign first.\"";
+			return "This is for the ones who signed. Sign first.";
 
 		if (mine == r || CanSideWith(playerId, r))
 			return "";
 
-		return "\"Not from you.\"";
+		return "Not from you.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2457,19 +2457,19 @@ class RZ_CureFinale
 
 		string ident = Ident(playerId);
 		if (RouteOf(ident) != from || from == to || to < 0 || to >= ROUTES)
-			return "\"You've picked your side. This isn't it.\"";
+			return "You've picked your side. This isn't it.";
 
 		if (!IsActive(ident))
-			return "\"Only the regulars get a say. Come back when you've put the hours in.\"";
+			return "Only the regulars get a say. Come back when you've put the hours in.";
 
 		if (IsCured() || m_bStandOn)
-			return "\"Too late for that.\"";
+			return "Too late for that.";
 
 		// Bastion and the Red Hand can't while a feud from the majors stands (Expended)
 		if ((from == BASTION && to == REDHAND) || (from == REDHAND && to == BASTION))
 		{
 			if (RZ_MajorHelp.World(m_GM, "book.last") == 5 || RZ_MajorHelp.World(m_GM, "orders.stance") == 4)
-				return "\"Not with them. Not this season.\"";
+				return "Not with them. Not this season.";
 		}
 
 		string vote = string.Format("%1|%2|%3", from, to, ident);
@@ -2490,7 +2490,7 @@ class RZ_CureFinale
 		}
 
 		if (m_S.pactWith[from] >= 0 || m_S.pactWith[to] >= 0)
-			return "\"One pact a route. We've got one, or they have.\"";
+			return "One pact a route. We've got one, or they have.";
 
 		if (!m_S.votes.Contains(vote))
 			m_S.votes.Insert(vote);

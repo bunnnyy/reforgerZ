@@ -11,9 +11,9 @@ class RZ_Errand_CopiesFarHouse : RZ_EpiCard
 		m_sTitle = "Copies for the Far House";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("\"The method is published. Publishing means nothing until it's in {house}. It's the farthest house. Their medic needs a copy.\"",
-			"\"Twelve pages, the method in full, for the medic at {house}. Nobody else on the list is that far out.\"");
-		Over("\"Never mind. {house} sent someone for it.\"");
+		Offer("The method is published. Publishing means nothing until it's in {house}. It's the farthest house. Their medic needs a copy.",
+			"Twelve pages, the method in full, for the medic at {house}. Nobody else on the list is that far out.");
+		Over("Never mind. {house} sent someone for it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry the method to {house}";
@@ -23,7 +23,7 @@ class RZ_Errand_CopiesFarHouse : RZ_EpiCard
 		w.m_sStep = "Take the method to the medic at {house} (at the gate, 10 s, nothing in your hands), then report to {giver}.";
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
-		w.Done("\"Received at {house}. Then it's published.\"");
+		w.Done("Received at {house}. Then it's published.");
 
 		w = Way("press");
 		w.m_sLabel = "Sell the copies to the fence";

@@ -954,7 +954,7 @@ class RZ_Disguise
 			text += string.Format(" +%1 Infamy with %2.", infamy, RZ_Factions.GetNameInText(f));
 
 		if (catches >= Math.Max(1, m_Settings.m_iCatchesPerLife))
-			text += " \"Your description is on the board at every post.\"";
+			text += " Your description is on the board at every post.";
 
 		// Held: a moment's stand-down while they deal with you, never over a fight
 		if (hostility && me && !hostility.IsFightFor(playerId, f, me.GetOrigin(), 300))
@@ -1026,7 +1026,7 @@ class RZ_Disguise
 		if (!RZ_RepNames.IsMixed(rep))
 			return "";
 
-		return string.Format("\"Hang on. You're that %1.\"", RZ_RepNames.GetName(rep));
+		return string.Format("Hang on. You're that %1.", RZ_RepNames.GetName(rep));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1039,7 +1039,7 @@ class RZ_Disguise
 
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life)
-			life.OpenChannelLine(RZ_EFaction.BANDITS, string.Format("\"That's %1 this season caught in Bastion green. We should open a tailor's.\"", n));
+			life.OpenChannelLine(RZ_EFaction.BANDITS, string.Format("That's %1 this season caught in Bastion green. We should open a tailor's.", n));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1062,9 +1062,9 @@ class RZ_Disguise
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return "\"Name? Doesn't matter. You're on the board now.\"";
-			case RZ_EFaction.BANDITS: return "\"Nobody calls you anything. That's the problem. Wallet or teeth?\"";
-			case RZ_EFaction.INSTITUTE: return "\"It's numbered. Please take the coat off. Slowly.\"";
+			case RZ_EFaction.MILITARY: return "Name? Doesn't matter. You're on the board now.";
+			case RZ_EFaction.BANDITS: return "Nobody calls you anything. That's the problem. Wallet or teeth?";
+			case RZ_EFaction.INSTITUTE: return "It's numbered. Please take the coat off. Slowly.";
 		}
 
 		return "";
@@ -1148,11 +1148,11 @@ class RZ_Disguise
 	{
 		string line = "";
 		if (f == RZ_EFaction.BANDITS)
-			line = "\"Some clown tried to pay the toll with a salute. Drinks are on him.\"";
+			line = "Some clown tried to pay the toll with a salute. Drinks are on him.";
 		else if (f == RZ_EFaction.INSTITUTE)
-			line = "\"Security notice: a coat was presented by someone not in the record. Please check numbers.\"";
+			line = "Security notice: a coat was presented by someone not in the record. Please check numbers.";
 		else if (f == RZ_EFaction.MILITARY)
-			line = "\"All stations: civilian in our kit. Check faces. Bastion out.\"";
+			line = "All stations: civilian in our kit. Check faces. Bastion out.";
 
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life && !line.IsEmpty())
@@ -1166,10 +1166,10 @@ class RZ_Disguise
 	string ShopRefusal(int playerId, int shop)
 	{
 		if (shop == RZ_EFaction.BANDITS && WearsColours(playerId, RZ_EFaction.MILITARY))
-			return "\"Take the costume off, soldier. Then we'll talk prices.\"";
+			return "Take the costume off, soldier. Then we'll talk prices.";
 
 		if (shop == RZ_EFaction.MILITARY && WearsColours(playerId, RZ_EFaction.BANDITS))
-			return "\"Not in those colours. Take the red off and come back.\"";
+			return "Not in those colours. Take the red off and come back.";
 
 		return "";
 	}
@@ -1183,17 +1183,17 @@ class RZ_Disguise
 			return "";
 
 		if (deserter && WearsColours(playerId, RZ_EFaction.MILITARY))
-			return "\"Not in that jacket. I walked away from that jacket. Take it off or walk on.\"";
+			return "Not in that jacket. I walked away from that jacket. Take it off or walk on.";
 
 		if (!haven)
 			return "";
 
 		if (WearsColours(playerId, RZ_EFaction.BANDITS))
-			return "\"Not in red. Not here. Take it off out of sight of the children and we'll talk.\"";
+			return "Not in red. Not here. Take it off out of sight of the children and we'll talk.";
 
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		if (MarksOn() && m_Marks.WearsOthersRibbon(me, playerId))
-			return "\"Where did you get that ribbon? We know who we gave them to.\"";
+			return "Where did you get that ribbon? We know who we gave them to.";
 
 		return "";
 	}
@@ -1230,7 +1230,7 @@ class RZ_Disguise
 				if (m_Watch.RoguePrice(playerId, f, l))
 					continue;
 
-				Caught(playerId, f, me, "\"I know every face under my command, and yours isn't one of them.\"");
+				Caught(playerId, f, me, "I know every face under my command, and yours isn't one of them.");
 				continue;
 			}
 

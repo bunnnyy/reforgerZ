@@ -12,9 +12,9 @@ class RZ_Errand_JarRun : RZ_ErrandCard
 		m_sFamily = "table";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"Run up to the farm at {subject_place} and get us a jar. The boss likes a jar. Don't ask what's in it.\"",
-			"\"A jar from the farm at {subject_place}. Pay what they ask. Don't stay for supper.\"");
-		Over("\"Never mind the jar. Nobody's going up there today.\"");
+		Offer("Run up to the farm at {subject_place} and get us a jar. The boss likes a jar. Don't ask what's in it.",
+			"A jar from the farm at {subject_place}. Pay what they ask. Don't stay for supper.");
+		Over("Never mind the jar. Nobody's going up there today.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch a jar from the farm";

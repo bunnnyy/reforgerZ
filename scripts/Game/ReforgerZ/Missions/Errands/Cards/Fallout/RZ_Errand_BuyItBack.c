@@ -14,8 +14,8 @@ class RZ_Errand_BuyItBack : RZ_ErrandCard
 		m_sFamily = "aftermath";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"The box from that wreck {where_place}. A fence's lad is sitting on it, waiting for a price. Buy it back. Don't tell me how.\"");
-		Over("\"Forget the box. It's gone where boxes go.\"");
+		Offer("The box from that wreck {where_place}. A fence's lad is sitting on it, waiting for a price. Buy it back. Don't tell me how.");
+		Over("Forget the box. It's gone where boxes go.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Pay the runner in tins";
@@ -28,7 +28,7 @@ class RZ_Errand_BuyItBack : RZ_ErrandCard
 		w.m_sStep = "Take five tins to the runner at the wreck {where_place}, then bring the box to {giver}.";
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 6;
-		w.Done("\"That's the box. I won't ask what it cost. Weather, then. Write it down.\"");
+		w.Done("That's the box. I won't ask what it cost. Weather, then. Write it down.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay the runner in crew money [25 Red Hand Favor]";
@@ -38,7 +38,7 @@ class RZ_Errand_BuyItBack : RZ_ErrandCard
 		w.m_sStep = "Settle with the runner at the wreck {where_place} on the crew's account (25 Red Hand Favor), then bring the box to {giver}.";
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 6;
-		w.Done("\"I don't want to know whose account. The box is back. That's all I asked.\"");
+		w.Done("I don't want to know whose account. The box is back. That's all I asked.");
 	}
 
 	//------------------------------------------------------------------------------------------------

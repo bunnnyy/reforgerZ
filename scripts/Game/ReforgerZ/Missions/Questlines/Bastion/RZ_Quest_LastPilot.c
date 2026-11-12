@@ -497,7 +497,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 				if (run.Flag("ran") == 1)
 					RZ_Mission_LastHelicopter.Boost(gm, 7200);
 
-				SpreadRumour(gm, run.Fill("\"Bastion's pilot, {pilot}. He was going to fly for the line. Somebody talked him out of it.\""), 8);
+				SpreadRumour(gm, run.Fill("Bastion's pilot, {pilot}. He was going to fly for the line. Somebody talked him out of it."), 8);
 				break;
 			}
 			case E_GROUNDED:
@@ -505,7 +505,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.MILITARY, 10, 0);
 				RZ_BastionQuest.SetWorld(gm, KEY + ".grounded", 1);
 				SetDown(gm, 2, DOWN_PILOT);
-				SpreadRumour(gm, "\"Bastion's helicopter is on the ground. No pilot. They're teaching a sergeant on the old airframes.\"", 4);
+				SpreadRumour(gm, "Bastion's helicopter is on the ground. No pilot. They're teaching a sergeant on the old airframes.", 4);
 				break;
 			}
 			case E_LINE:
@@ -517,7 +517,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 				NudgeMorale(gm, RZ_EFaction.MILITARY, -10);
 				Headline(gm, run.Fill("Bastion's last pilot flew for the line " + RZ_BastionQuest.When() + ". The line shot him down short of it, like the one before."));
 				StartWreck(gm, run);
-				SpreadRumour(gm, "\"Bastion hasn't got a helicopter any more. The line saw to that. Second time.\"", 12);
+				SpreadRumour(gm, "Bastion hasn't got a helicopter any more. The line saw to that. Second time.", 12);
 				break;
 			}
 			case E_BURNT:
@@ -595,10 +595,10 @@ class RZ_Quest_LastPilot : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage <= S_WRECK)
-			return "\"Bastion's last pilot asks people what the line looks like from the ground. Nobody's sure what answer he wants.\"";
+			return "Bastion's last pilot asks people what the line looks like from the ground. Nobody's sure what answer he wants.";
 
 		if (run.m_iStage == S_DECIDE)
-			return "\"They say the pilot at {stronghold} has been working out fuel and distances. Not for anywhere inside.\"";
+			return "They say the pilot at {stronghold} has been working out fuel and distances. Not for anywhere inside.";
 
 		return "";
 	}
@@ -1539,7 +1539,7 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 
 		if (RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS) < 2)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"You? Sell me something about Bastion? I'd have to trust you first.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You? Sell me something about Bastion? I'd have to trust you first.");
 			return;
 		}
 
@@ -1576,7 +1576,7 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 		if (run)
 			run.Reward(gm, playerId, RZ_EFaction.MILITARY, 10, 30, "Bastion keeps its last pilot.");
 
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, text + " \"One more run, then. With the LZ clear. So they know I meant it.\""));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, text + " One more run, then. With the LZ clear. So they know I meant it."));
 		Resolve(gm, playerId, RZ_EQuestApproach.PERSUADE, RZ_Quest_LastPilot.OUT_STAYS, "talked him down");
 	}
 

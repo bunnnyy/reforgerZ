@@ -10,9 +10,9 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 		m_sKey = "epi_carry_dose";
 		m_sTitle = "Carry the Dose";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("\"There's one in a cold box with {holdout}'s name on it. {holdout} won't come in. Somebody has to go out.\"",
-			"\"Sealed, labelled, one dose. {holdout} is holding out in a village nobody lives in. Take it to the door.\"");
-		Over("\"Never mind. {holdout} walked in this morning.\"");
+		Offer("There's one in a cold box with {holdout}'s name on it. {holdout} won't come in. Somebody has to go out.",
+			"Sealed, labelled, one dose. {holdout} is holding out in a village nobody lives in. Take it to the door.");
+		Over("Never mind. {holdout} walked in this morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry the box to {holdout}";
@@ -22,12 +22,12 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 		w.m_sStep = "Take the cold box to {holdout} in {place} (at the door, 15 s), then come back to {giver}.";
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
-		w.Done("\"Signed for? In that handwriting? Then it's done.\"",
-			"\"Good. One less name on the list of people we couldn't reach.\"");
+		w.Done("Signed for? In that handwriting? Then it's done.",
+			"Good. One less name on the list of people we couldn't reach.");
 
 		w = Way("sneak");
 		w.m_sLabel = "Open the box yourself";
-		w.Done("\"The seal's broken. Don't tell me why. We'll find out anyway.\"");
+		w.Done("The seal's broken. Don't tell me why. We'll find out anyway.");
 	}
 
 	//------------------------------------------------------------------------------------------------

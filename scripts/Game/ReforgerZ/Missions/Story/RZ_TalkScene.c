@@ -561,7 +561,7 @@ class RZ_TalkScene
 
 		if (!m.IsEligible(gm, playerId))
 		{
-			gm.NotifyPlayer(playerId, m.m_sTitle, "\"It's not your call. You weren't hired for this.\"");
+			gm.NotifyPlayer(playerId, m.m_sTitle, "It's not your call. You weren't hired for this.");
 			return false;
 		}
 

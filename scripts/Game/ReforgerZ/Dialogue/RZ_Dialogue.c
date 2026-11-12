@@ -138,6 +138,7 @@ class RZ_TalkReply
 	bool m_bOwn;		// a tree's topic or choice: tagged by the trees, not by RZ_TalkNeeds
 	bool m_bAdmin;		// a server admin's reply: listed under [Admin], not with the others
 	bool m_bHeard;		// nothing new behind it: shown grey, still picked as any other
+	bool m_bWay;		// one of an errand's ways on offer: said as what you agree to (RZ_TalkWords.Agree)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -164,6 +165,9 @@ class RZ_TalkSession
 	int m_iPages = 1;					// pages in the list now
 	string m_sList;						// the list the page belongs to (the hub, a node, the admin list)
 	ref array<string> m_aPicked = {};	// built replies picked in this conversation (shown grey after)
+	bool m_bQuiet;						// no filler greeting: only what they actually have to say (docs/DIALOGUE.md)
+	bool m_bGreeting;					// the greeting runs now (RZ_Dialogue.IsQuiet)
+	bool m_bSilent;						// nothing new is said on purpose: the replies show with no line
 }
 
 //------------------------------------------------------------------------------------------------
@@ -247,7 +251,7 @@ class RZ_Dialogue
 			string name = gone.m_sName;
 			int faction = gone.m_iFaction;
 			End(id, "", true);
-			m_GM.Say(id, name, faction, "\"Didn't you just change? Never mind. Off you go.\"");
+			m_GM.Say(id, name, faction, "Didn't you just change your clothes? Never mind. Off you go.");
 		}
 	}
 
@@ -342,12 +346,30 @@ class RZ_Dialogue
 	//------------------------------------------------------------------------------------------------
 	//! "Talk to ..." on a person (RZ_ReadClueAction). False: not handled, the caller does what it
 	//! always did. True: the talk screen took it (or ignored a second Talk within 2 s).
-	bool Open(int playerId, IEntity owner, IEntity user)
+	//! `calledOver`: the speaker opened it (a greet that opens by itself), so they speak first.
+	bool Open(int playerId, IEntity owner, IEntity user, bool calledOver = false)
 	{
 		if (!IsOn() || !IsPerson(owner))
 			return false;
 
-		return Start(playerId, owner, user, RZ_TalkSpeaker.For(m_GM, owner));
+		return Start(playerId, owner, user, RZ_TalkSpeaker.For(m_GM, owner), calledOver);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a talk-screen greeting runs for this player with nothing to say first: the greeting
+	//! handlers leave out their filler (a plain hello, the routine line, the status readout) and say
+	//! only what's real now (a refusal, a first meeting, a callback, news, a job waiting).
+	bool IsQuiet(int playerId)
+	{
+		RZ_TalkSession s;
+		return m_mSessions.Find(playerId, s) && s.m_bGreeting && s.m_bQuiet;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! IsQuiet for code that holds the game mode (the greeting handlers in World/ and Factions/).
+	static bool Quiet(RZ_GameModeComponent gm, int playerId)
+	{
+		return gm && gm.GetDialogue() && gm.GetDialogue().IsQuiet(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -411,23 +433,32 @@ class RZ_Dialogue
 
 		s.m_Tree = m_Trees.Begin(s, user);
 		s.m_aNew.Clear();
+		s.m_bQuiet = true;
+		s.m_bGreeting = true;
 		adapter.Greet(m_GM, s, s.m_iPlayer, user);
-		if (!s.m_Tree)
-			return true;
-
-		// Trees: a greet whose `when` holds goes before the built greeting, as at Start
-		array<string> opening = {};
-		m_Trees.Opening(s, opening);
-		for (int i = opening.Count() - 1; i >= 0; i--)
+		s.m_bGreeting = false;
+		if (s.m_Tree)
 		{
-			s.m_aNew.InsertAt(opening[i], 0);
+			// Trees: a greet whose `when` holds goes before the built greeting, as at Start
+			array<string> opening = {};
+			m_Trees.Opening(s, opening, true);
+			for (int i = opening.Count() - 1; i >= 0; i--)
+			{
+				s.m_aNew.InsertAt(opening[i], 0);
+			}
+
+			m_Trees.MarkMet(s);
 		}
+
+		// Nothing to say: the leader's replies show with no line
+		if (s.m_aNew.IsEmpty())
+			s.m_bSilent = true;
 
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool Start(int playerId, IEntity owner, IEntity user, RZ_TalkSpeaker adapter)
+	protected bool Start(int playerId, IEntity owner, IEntity user, RZ_TalkSpeaker adapter, bool calledOver = false)
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
@@ -443,7 +474,7 @@ class RZ_Dialogue
 		m_mSessions.Remove(playerId);
 		if (!RoomAt(owner))
 		{
-			m_GM.NotifyPlayer(playerId, "Talk", "\"One at a time.\"");
+			m_GM.NotifyPlayer(playerId, "Talk", "One at a time. Somebody's already talking to them.");
 			return true;
 		}
 
@@ -457,19 +488,26 @@ class RZ_Dialogue
 
 		m_mSessions.Insert(playerId, s);
 		s.m_Tree = m_Trees.Begin(s, user);
+
+		// No filler greeting: unless they called you over or speak first (an opening's contact, a
+		// stranger), the screen opens on your replies and they say only what's real now
+		s.m_bQuiet = !calledOver && !adapter.SpeaksFirst(m_GM, s, playerId);
 		s.m_bCapturing = true;
+		s.m_bGreeting = true;
 		adapter.Greet(m_GM, s, playerId, user);
+		s.m_bGreeting = false;
 		s.m_bCapturing = false;
 
-		// The handler may have ended it, or said nothing at all: no screen then
+		// The handler may have ended it
 		if (!m_mSessions.Contains(playerId))
 			return true;
 
-		// Trees: a greet whose `when` holds goes before the built greeting
+		// Trees: a greet whose `when` holds goes before the built greeting (quiet: only its say?
+		// lines that hold, and what's still promised to them)
 		if (s.m_Tree)
 		{
 			array<string> opening = {};
-			m_Trees.Opening(s, opening);
+			m_Trees.Opening(s, opening, s.m_bQuiet);
 			for (int i = opening.Count() - 1; i >= 0; i--)
 			{
 				s.m_aNew.InsertAt(opening[i], 0);
@@ -479,30 +517,31 @@ class RZ_Dialogue
 			array<string> resumed = {};
 			if (Resume(s, resumed))
 			{
-				KeepHubSaid(s);
 				s.m_aNew.Clear();
-				s.m_aNew.Insert("\"Where were we?\"");
+				s.m_aNew.Insert("Where were we?");
 				s.m_aNew.InsertAll(resumed);
 			}
 		}
 
+		// Nothing to say: a quiet greeting opens on the replies with no line; anyone else who says
+		// nothing at all (gone, not there) gets no screen
 		if (s.m_aNew.IsEmpty())
 		{
-			End(playerId, "", false);
-			return true;
+			if (!s.m_bQuiet || !adapter.Here(m_GM))
+			{
+				End(playerId, "", false);
+				return true;
+			}
+
+			s.m_aSaid.Clear();
 		}
+
+		if (s.m_Tree)
+			m_Trees.MarkMet(s);
 
 		TakeNew(s);
 		SendNode(s, user);
 		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The hub's greeting is kept for going back to the hub from a resumed node.
-	protected void KeepHubSaid(RZ_TalkSession s)
-	{
-		s.m_Tree.m_aHubSaid.Clear();
-		s.m_Tree.m_aHubSaid.InsertAll(s.m_aNew);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -704,7 +743,7 @@ class RZ_Dialogue
 		{
 			string name = s.m_sName;
 			End(playerId, "", true);
-			m_GM.Say(playerId, name, s.m_iFaction, "\"Didn't you just change? Never mind. Off you go.\"");
+			m_GM.Say(playerId, name, s.m_iFaction, "Didn't you just change your clothes? Never mind. Off you go.");
 			return;
 		}
 
@@ -730,6 +769,7 @@ class RZ_Dialogue
 			s.m_aPicked.Insert(reply.m_sLabel);
 
 		s.m_aNew.Clear();
+		s.m_bSilent = false;
 		s.m_bCapturing = true;
 		if (s.m_Tree && RZ_DialogueTrees.IsOurs(replyId))
 		{
@@ -764,8 +804,12 @@ class RZ_Dialogue
 			return;
 		}
 
-		// Every reply is answered in the screen, then the replies after it
-		if (s.m_aNew.IsEmpty())
+		// Every reply is answered in the screen, then the replies after it; back at the hub with
+		// nothing new (a tree's `hub`, a leader taking over with nothing to say) there's no line
+		bool backAtHub = s.m_Tree && RZ_DialogueTrees.IsOurs(replyId) && !s.m_Tree.m_bInNode;
+		if (s.m_aNew.IsEmpty() && (s.m_bSilent || backAtHub))
+			s.m_aSaid.Clear();
+		else if (s.m_aNew.IsEmpty())
 			s.m_aNew.Insert(NO_ANSWER);
 
 		TakeNew(s);
@@ -821,7 +865,8 @@ class RZ_Dialogue
 	//------------------------------------------------------------------------------------------------
 	//! T|serial|faction|name|sub|said|page|pages, then R|id|label|tag|need|enabled|heard per reply (the
 	//! last is the way out). Line breaks in what they said travel as ^. At most ROWS replies go: a page
-	//! of up to 4, and I'll be going. (Back. in the [Admin] list); page is from 0.
+	//! of up to 4, and the way out (RZ_TalkWords.WayOut; Back. in the [Admin] list); page is from 0.
+	//! `said` may be empty: the screen opens on the replies (no filler greeting).
 	protected void SendNode(RZ_TalkSession s, IEntity user)
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(s.m_iPlayer);
@@ -849,7 +894,10 @@ class RZ_Dialogue
 		foreach (RZ_TalkReply r : all)
 		{
 			if (!r.m_bOwn)
+			{
 				RZ_TalkNeeds.Apply(m_GM, s.m_iPlayer, user, r);
+				RZ_TalkWords.Apply(s, r);	// what you'd say, not the action's name
+			}
 
 			if (r.m_bAdmin)
 				admin.Insert(r);
@@ -868,7 +916,7 @@ class RZ_Dialogue
 			s.m_bAdmin = false;
 		}
 
-		RZ_TalkReply way = OwnRow(LEAVE, "I'll be going.");
+		RZ_TalkReply way = OwnRow(LEAVE, RZ_TalkWords.WayOut(s));
 		string listKey = "hub";
 		if (s.m_bAdmin)
 		{

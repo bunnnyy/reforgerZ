@@ -670,7 +670,7 @@ class RZ_FactionLife
 		if (leaders && !leaders.GetHeadlines().IsEmpty())
 		{
 			array<string> headlines = leaders.GetHeadlines();
-			lines.Insert("\"Have you heard? " + headlines[headlines.Count() - 1] + "\"");
+			lines.Insert("Have you heard? " + headlines[headlines.Count() - 1]);
 		}
 
 		string rumour = Rumour(speaker, m_Settings.m_fFalseRumourChance);
@@ -727,7 +727,7 @@ class RZ_FactionLife
 		{
 			string haven = m_GM.GetHeadlines().HavenFlavour();
 			if (!haven.IsEmpty())
-				return "\"" + haven + "\"";
+				return haven;
 		}
 
 		// A dead character's journal, found on the road (town memory)
@@ -1293,7 +1293,7 @@ class RZ_FactionLife
 		{
 			string bastionDest = supply.TruckDestination(RZ_EFaction.MILITARY);
 			if (!bastionDest.IsEmpty())
-				options.Insert(string.Format("\"Bastion's truck is on the %1 road. Nobody touches it till it's past the bridge. Then it's ours.\"", bastionDest));
+				options.Insert(string.Format("Bastion's truck is on the %1 road. Nobody touches it till it's past the bridge. Then it's ours.", bastionDest));
 		}
 
 		if (options.IsEmpty())
@@ -1307,9 +1307,9 @@ class RZ_FactionLife
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return string.Format("\"Vehicle to %1, Command. Crew of two. If contact, hold position. We'll come and get you.\"", dest);
-			case RZ_EFaction.BANDITS: return string.Format("\"Boss, the truck's going to %1. Two lads in it. If anyone stops it, I want names.\"", dest);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"Courier vehicle to %1. Cold boxes on board. Do not open them for anyone.\"", dest);
+			case RZ_EFaction.MILITARY: return string.Format("Vehicle to %1, Command. Crew of two. If contact, hold position. We'll come and get you.", dest);
+			case RZ_EFaction.BANDITS: return string.Format("Boss, the truck's going to %1. Two lads in it. If anyone stops it, I want names.", dest);
+			case RZ_EFaction.INSTITUTE: return string.Format("Courier vehicle to %1. Cold boxes on board. Do not open them for anyone.", dest);
 		}
 
 		return "";
@@ -1320,9 +1320,9 @@ class RZ_FactionLife
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return string.Format("\"Logistics, Command. Next run departs in %1 minutes. Route to follow. Do not broadcast it in the clear.\"", minutes);
-			case RZ_EFaction.BANDITS: return string.Format("\"Truck goes out in %1 minutes. Keep the road clear and your mouths shut.\"", minutes);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"The next transfer leaves in %1 minutes. Samples first, people second. I'm sorry, but that's the order.\"", minutes);
+			case RZ_EFaction.MILITARY: return string.Format("Logistics, Command. Next run departs in %1 minutes. Route to follow. Do not broadcast it in the clear.", minutes);
+			case RZ_EFaction.BANDITS: return string.Format("Truck goes out in %1 minutes. Keep the road clear and your mouths shut.", minutes);
+			case RZ_EFaction.INSTITUTE: return string.Format("The next transfer leaves in %1 minutes. Samples first, people second. I'm sorry, but that's the order.", minutes);
 		}
 
 		return "";
@@ -1333,9 +1333,9 @@ class RZ_FactionLife
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return string.Format("\"%1 is dry. Requisitions suspended until resupply. Do not tell the civilians.\"", place);
-			case RZ_EFaction.BANDITS: return string.Format("\"%1's empty. Double the prices till the truck comes. Nobody's going anywhere else.\"", place);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"%1 is out of stock. We are rationing reagents. Note it in the log.\"", place);
+			case RZ_EFaction.MILITARY: return string.Format("%1 is dry. Requisitions suspended until resupply. Do not tell the civilians.", place);
+			case RZ_EFaction.BANDITS: return string.Format("%1's empty. Double the prices till the truck comes. Nobody's going anywhere else.", place);
+			case RZ_EFaction.INSTITUTE: return string.Format("%1 is out of stock. We are rationing reagents. Note it in the log.", place);
 		}
 
 		return "";
@@ -1346,9 +1346,9 @@ class RZ_FactionLife
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return string.Format("\"All stations: %1 rotates the watch at %2. Two on the gate, the rest stood down. Ten minutes where nobody's looking.\"", place, clock);
-			case RZ_EFaction.BANDITS: return string.Format("\"%1 changes over at %2. The new lot are always late. Don't be.\"", place, clock);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"The station at %1 rotates at %2. The guards don't check bags at changeover.\"", place, clock);
+			case RZ_EFaction.MILITARY: return string.Format("All stations: %1 rotates the watch at %2. Two on the gate, the rest stood down. Ten minutes where nobody's looking.", place, clock);
+			case RZ_EFaction.BANDITS: return string.Format("%1 changes over at %2. The new lot are always late. Don't be.", place, clock);
+			case RZ_EFaction.INSTITUTE: return string.Format("The station at %1 rotates at %2. The guards don't check bags at changeover.", place, clock);
 		}
 
 		return "";
@@ -1360,23 +1360,23 @@ class RZ_FactionLife
 	{
 		RZ_CureResearch cure = m_GM.GetCure();
 		if (cure.m_iMilestone >= 4)
-			return "\"Director, lab. Every result is in. Now we have to hold this building long enough to finish. Pray they don't hear us.\"";
+			return "Director, lab. Every result is in. Now we have to hold this building long enough to finish. Pray they don't hear us.";
 
 		// Samples won't help at the finale's gate, and a full cold store turns them away
 		if (cure.IsAtFinaleGate())
-			return "\"Director, lab. Ninety percent, and that's where the samples stop helping. The last step isn't in the cold store. Don't put that in the log.\"";
+			return "Director, lab. Ninety percent, and that's where the samples stop helping. The last step isn't in the cold store. Don't put that in the log.";
 
 		if (cure.IsLabFull())
-			return string.Format("\"Director, lab. We are %1 percent there and the cold store is full. Hold the samples until we've worked through it. Don't put that in the log.\"", RZ_Util.RoundToInt(cure.m_fProgress));
+			return string.Format("Director, lab. We are %1 percent there and the cold store is full. Hold the samples until we've worked through it. Don't put that in the log.", RZ_Util.RoundToInt(cure.m_fProgress));
 
 		// What the next result still needs beyond what already waits in the cold store
 		float next = (cure.m_iMilestone + 1) * 25;
 		float per = Math.Max(0.01, cure.SampleWorth(0, m_GM.GetResearchPerSample()));
 		float missing = next - cure.m_fProgress - cure.GetBacklog();
 		if (missing <= 0)
-			return string.Format("\"Director, lab. We are %1 percent there, and everything for the next result is in the cold store. It's hours now, not samples. Don't put that in the log.\"", RZ_Util.RoundToInt(cure.m_fProgress));
+			return string.Format("Director, lab. We are %1 percent there, and everything for the next result is in the cold store. It's hours now, not samples. Don't put that in the log.", RZ_Util.RoundToInt(cure.m_fProgress));
 
 		int needed = Math.Max(1, RZ_Util.RoundToInt(Math.Ceil(missing / per)));
-		return string.Format("\"Director, lab. We are %1 percent there. Roughly %2 more samples for the next result. Whatever it costs. Don't put that in the log.\"", RZ_Util.RoundToInt(cure.m_fProgress), needed);
+		return string.Format("Director, lab. We are %1 percent there. Roughly %2 more samples for the next result. Whatever it costs. Don't put that in the log.", RZ_Util.RoundToInt(cure.m_fProgress), needed);
 	}
 }

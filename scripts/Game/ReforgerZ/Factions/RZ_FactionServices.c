@@ -404,13 +404,13 @@ class RZ_FactionServices
 		RZ_EFaction f = qm.GetFaction();
 		if (!RZ_ReputationSettings.Get().m_bSettling || !m_GM.GetCheckpoints())
 		{
-			m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), "\"We don't do that here.\"");
+			m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), "We don't do that here.");
 			return;
 		}
 
 		if (m_GM.GetTier(playerId, f) == RZ_ETier.KILL_ON_SIGHT)
 		{
-			m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), "\"Fame? From you? They want blood.\"");
+			m_GM.NotifyPlayer(playerId, RZ_Factions.GetName(f), "Fame? From you? They want blood.");
 			return;
 		}
 
@@ -458,20 +458,20 @@ class RZ_FactionServices
 		float cooldown = m_Settings.m_fFireMissionCooldownMinutes * 60;
 		if (m_mFireAt.Find(ident, last) && m_fClock - last < cooldown)
 		{
-			m_GM.NotifyPlayer(playerId, bastion, string.Format("\"Negative. The guns are rationed. Next fire mission in about %1 minutes.\"", Math.Max(1, RZ_Util.RoundToInt((cooldown - (m_fClock - last)) / 60))));
+			m_GM.NotifyPlayer(playerId, bastion, string.Format("Negative. The guns are rationed. Next fire mission in about %1 minutes.", Math.Max(1, RZ_Util.RoundToInt((cooldown - (m_fClock - last)) / 60))));
 			return;
 		}
 
 		if (IsNearPeople(pos))
 		{
-			m_GM.NotifyPlayer(playerId, bastion, "\"Negative. That's too close to people. We don't shell our own.\"");
+			m_GM.NotifyPlayer(playerId, bastion, "Negative. That's too close to people. We don't shell our own.");
 			return;
 		}
 
 		int needed = Math.Max(1, m_Settings.m_iFireMissionMinInfected);
 		if (m_GM.GetSpawner().CountZombiesNear(pos, m_Settings.m_fFireMissionRadius, needed) < needed)
 		{
-			m_GM.NotifyPlayer(playerId, bastion, "\"We see your smoke. We don't see a horde. Not wasting shells on a handful.\"");
+			m_GM.NotifyPlayer(playerId, bastion, "We see your smoke. We don't see a horde. Not wasting shells on a handful.");
 			return;
 		}
 
@@ -553,7 +553,7 @@ class RZ_FactionServices
 		int maxItems = Math.Min(m_Settings.m_iFenceMaxItems, room / price);
 		if (maxItems <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, title, string.Format("\"I've had enough from you for one hour. Come back in %1 minutes.\"", Math.Max(1, RZ_Util.RoundToInt((3600 - (nowUnix - window)) / 60))));
+			m_GM.NotifyPlayer(playerId, title, string.Format("I've had enough from you for one hour. Come back in %1 minutes.", Math.Max(1, RZ_Util.RoundToInt((3600 - (nowUnix - window)) / 60))));
 			return;
 		}
 
@@ -571,7 +571,7 @@ class RZ_FactionServices
 				return;
 			}
 
-			m_GM.NotifyPlayer(playerId, title, "\"Nothing here I can move. And don't bring me shop goods: I know my own stock.\"");
+			m_GM.NotifyPlayer(playerId, title, "Nothing here I can move. And don't bring me shop goods: I know my own stock.");
 			return;
 		}
 
@@ -651,13 +651,13 @@ class RZ_FactionServices
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		if (p.m_bBoosted)
 		{
-			m_GM.NotifyPlayer(playerId, halcyon, "\"You've had it. A second shot does nothing but make you sick.\"");
+			m_GM.NotifyPlayer(playerId, halcyon, "You've had it. A second shot does nothing but make you sick.");
 			return;
 		}
 
 		if (p.IsInfected())
 		{
-			m_GM.NotifyPlayer(playerId, halcyon, "\"It's for the next bite, not this one. For this one, ask about the trial.\"");
+			m_GM.NotifyPlayer(playerId, halcyon, "It's for the next bite, not this one. For this one, ask about the trial.");
 			return;
 		}
 
@@ -740,7 +740,7 @@ class RZ_FactionServices
 		RZ_ETier tier = p.GetTier(f);
 		if (tier == RZ_ETier.KILL_ON_SIGHT)
 		{
-			m_GM.NotifyPlayer(playerId, name, "\"Favor? From you? They want blood, not Favor.\"");
+			m_GM.NotifyPlayer(playerId, name, "Favor? From you? They want blood, not Favor.");
 			return;
 		}
 
@@ -756,13 +756,13 @@ class RZ_FactionServices
 		amount = Math.Min(amount, Math.Min(lifeRoom, infamy - minInfamy));
 		if (infamy <= minInfamy)
 		{
-			m_GM.NotifyPlayer(playerId, name, "\"Nothing to pay for. Whatever's left, you work off with your hands, not your Favor.\"");
+			m_GM.NotifyPlayer(playerId, name, "Nothing to pay for. Whatever's left, you work off with your hands, not your Favor.");
 			return;
 		}
 
 		if (p.ForgiveLeft(f) <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, name, "\"No. Not for Favor, not for anything.\" " + m_GM.ForgiveSpentText(f));
+			m_GM.NotifyPlayer(playerId, name, "No. Not for Favor, not for anything. " + m_GM.ForgiveSpentText(f));
 			return;
 		}
 
@@ -777,7 +777,7 @@ class RZ_FactionServices
 		float gap = m_Settings.m_fAmendsCooldownMinutes * 60;
 		if (m_mAmendsAt.Find(key, last) && m_fClock - last < gap)
 		{
-			m_GM.NotifyPlayer(playerId, name, string.Format("\"You just paid. Let it settle. Come back in %1 minutes.\"", Math.Max(1, RZ_Util.RoundToInt((gap - (m_fClock - last)) / 60))));
+			m_GM.NotifyPlayer(playerId, name, string.Format("You just paid. Let it settle. Come back in %1 minutes.", Math.Max(1, RZ_Util.RoundToInt((gap - (m_fClock - last)) / 60))));
 			return;
 		}
 

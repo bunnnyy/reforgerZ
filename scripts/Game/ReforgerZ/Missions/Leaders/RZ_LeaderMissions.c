@@ -496,10 +496,10 @@ class RZ_Mission_ReinIn : RZ_PuzzleMission
 		string pitch;
 		switch (l.m_eFaction)
 		{
-			case RZ_EFaction.SURVIVORS: pitch = "\"They sent you. Of course they did. Look around: these people eat because of what I do. Tell the council I listened, and take this for your trouble.\""; break;
-			case RZ_EFaction.MILITARY: pitch = "\"So the stronghold remembered we exist. Here's the situation: they can't hold this post without me, and you can't eat their gratitude. Report that I complied. This is for the walk.\""; break;
-			case RZ_EFaction.BANDITS: pitch = "\"The boss sent a messenger. That's sweet. Here's a better message: you never found me, and you're a little richer.\""; break;
-			case RZ_EFaction.INSTITUTE: pitch = "\"The director would like me to stop doing the useful part of my job. I'd like you to tell the director I agreed. I can make that worth your while.\""; break;
+			case RZ_EFaction.SURVIVORS: pitch = "They sent you. Of course they did. Look around: these people eat because of what I do. Tell the council I listened, and take this for your trouble."; break;
+			case RZ_EFaction.MILITARY: pitch = "So the stronghold remembered we exist. Here's the situation: they can't hold this post without me, and you can't eat their gratitude. Report that I complied. This is for the walk."; break;
+			case RZ_EFaction.BANDITS: pitch = "The boss sent a messenger. That's sweet. Here's a better message: you never found me, and you're a little richer."; break;
+			case RZ_EFaction.INSTITUTE: pitch = "The director would like me to stop doing the useful part of my job. I'd like you to tell the director I agreed. I can make that worth your while."; break;
 		}
 
 		return string.Format("%1 (%2 Favor.)", pitch, favor);

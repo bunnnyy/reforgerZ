@@ -15,6 +15,9 @@
 //!    up on the first to the page before's last (the D-pad, the stick, the arrow keys, the wheel).
 //!    The last reply is always the way out.
 //! A reply you say fades and their answer takes the band: back to step 1.
+//! Their line is spoken straight to you: their name shows only at the top right, never in front of
+//! the line, and a line that comes in quotation marks shows without them (Spoken). With nothing to
+//! say (no filler greeting) the screen opens straight on the replies.
 //!
 //! Keys: up/down or 1-5, Enter; mouse: hover lights a reply, a click says it; Esc leaves. Pad: D-pad
 //! or left stick, A says it, B leaves (from either step). The server sends the line and the replies
@@ -339,6 +342,40 @@ class RZ_TalkMenu : RZ_MenuBase
 			return space;
 
 		return most;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What they said as it shows (breaks as ^): each line without its speaker's own name in front
+	//! ("Ines Calder: ...", the name is at the top right) and without quotation marks around it
+	//! (RZ_TalkWords.Unquote). Someone else's name in front of their line stays.
+	static string Spoken(string said, string name)
+	{
+		if (said.IsEmpty())
+			return said;
+
+		array<string> parts = {};
+		said.Split("^", parts, false);
+		string lowerName = name.Trim();
+		lowerName.ToLower();
+		string result = "";
+		foreach (int i, string part : parts)
+		{
+			string line = part.Trim();
+			if (!lowerName.IsEmpty())
+			{
+				string lower = line;
+				lower.ToLower();
+				if (lower.StartsWith(lowerName + ": "))
+					line = line.Substring(lowerName.Length() + 2, line.Length() - lowerName.Length() - 2).Trim();
+			}
+
+			if (i > 0)
+				result += "^";
+
+			result += RZ_TalkWords.Unquote(line);
+		}
+
+		return result;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -818,7 +855,7 @@ class RZ_TalkMenu : RZ_MenuBase
 		RZ_UIW.Tint(m_wRoot, "PagePrevIcon", m_Accent);
 		RZ_UIW.Tint(m_wRoot, "PageNextIcon", m_Accent);
 		RZ_UIW.Tint(m_wRoot, "PageText", m_Accent);
-		string said = RZ_UIText.Str(m_aHead, 5);
+		string said = Spoken(RZ_UIText.Str(m_aHead, 5), RZ_UIText.Str(m_aHead, 3));
 		ShowPage();
 		BuildRows();
 		bool answer = m_bSaid || said != m_sLastSaid;
@@ -1032,7 +1069,7 @@ class RZ_TalkMenu : RZ_MenuBase
 			bool enabled = m_aEnabled[i];
 			string need = RZ_UIText.Str(f, 4);
 			string tag = RZ_UIText.Str(f, 3);
-			RZ_UIW.SetText(row, "ReplyText", RZ_UIText.Str(f, 2));
+			RZ_UIW.SetText(row, "ReplyText", RZ_TalkWords.Unquote(RZ_UIText.Str(f, 2)));
 			RZ_UIW.SetText(row, "ReplyTag", TagText(tag));
 			RZ_UIW.Show(row, "ReplyTag", !tag.IsEmpty());
 			RZ_UIW.SetText(row, "ReplyNeed", "(" + need + ")");

@@ -265,15 +265,15 @@ class RZ_RepGates
 		{
 			case RZ_EFaction.MILITARY:
 			{
-				line = string.Format("\"%1's colours at a Bastion gate. Noted, and logged.\"", RZ_Factions.GetName(rival));
+				line = string.Format("%1's colours at a Bastion gate. Noted, and logged.", RZ_Factions.GetName(rival));
 				if (!hostile && RZ_Reputation.IsAtLeast(m_GM.GetTier(pid, f), RZ_ETier.KNOWN))
-					line = string.Format("\"%1's colours at a Bastion gate. Bold. You're on the list. So are the colours.\"", RZ_Factions.GetName(rival));
+					line = string.Format("%1's colours at a Bastion gate. Bold. You're on the list. So are the colours.", RZ_Factions.GetName(rival));
 
 				break;
 			}
-			case RZ_EFaction.BANDITS: line = string.Format("\"Wearing %1's colours on our road. Brave. Or stupid. We'll find out which.\"", theirs); break;
-			case RZ_EFaction.INSTITUTE: line = string.Format("\"Another faction's insignia: %1. Recorded.\"", theirs); break;
-			default: line = "\"We don't mind whose colours. Leave the rifle by the door.\""; break;
+			case RZ_EFaction.BANDITS: line = string.Format("Wearing %1's colours on our road. Brave. Or stupid. We'll find out which.", theirs); break;
+			case RZ_EFaction.INSTITUTE: line = string.Format("Another faction's insignia: %1. Recorded.", theirs); break;
+			default: line = "We don't mind whose colours. Leave the rifle by the door."; break;
 		}
 
 		return line;
@@ -299,12 +299,12 @@ class RZ_RepGates
 		{
 			switch (f)
 			{
-				case RZ_EFaction.SURVIVORS: return string.Format("\"Here's the one who %1. Mind the step.\"", deed);
-				case RZ_EFaction.MILITARY: return string.Format("\"That's the one who %1. Let them by.\"", deed);
-				case RZ_EFaction.BANDITS: return string.Format("\"Oi, it's the one who %1. Don't charge them twice.\"", deed);
+				case RZ_EFaction.SURVIVORS: return string.Format("Here's the one who %1. Mind the step.", deed);
+				case RZ_EFaction.MILITARY: return string.Format("That's the one who %1. Let them by.", deed);
+				case RZ_EFaction.BANDITS: return string.Format("Oi, it's the one who %1. Don't charge them twice.", deed);
 			}
 
-			return string.Format("\"The one who %1. Noted.\"", deed);
+			return string.Format("The one who %1. Noted.", deed);
 		}
 
 		string word = RZ_RepVoice.Word(m_GM, pid, f);
@@ -312,9 +312,9 @@ class RZ_RepGates
 			word = RZ_RepNames.GetName(RZ_RepNames.GetRep(m_GM.GetProfile(pid).GetFame(f), m_GM.GetProfile(pid).GetInfamy(f)));
 
 		if (first)
-			return string.Format("\"%1. Haven't seen you this way before.\"", Cap(word));
+			return string.Format("%1. Haven't seen you this way before.", Cap(word));
 
-		return string.Format("\"%1 again. Something's changed about you.\"", Cap(word));
+		return string.Format("%1 again. Something's changed about you.", Cap(word));
 	}
 
 	//------------------------------------------------------------------------------------------------

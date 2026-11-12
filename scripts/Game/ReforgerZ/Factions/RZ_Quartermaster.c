@@ -372,7 +372,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 		{
 			if (RZ_Reputation.GetAccessRank(m_eRequiredTier) > 1)
 			{
-				refusal = string.Format("\"%1 is for people the stronghold trusts. I can do the basics for you, quietly. Not that.\"", m_sDisplayName);
+				refusal = string.Format("%1 is for people the stronghold trusts. I can do the basics for you, quietly. Not that.", m_sDisplayName);
 				need = "Only the basics, quietly";
 				state = STATE_LOCKED;
 				return -1;
@@ -400,7 +400,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 		RZ_WorldFacts facts = gm.GetFacts();
 		if (m_bOncePerLife && facts && facts.Flag(OnceKey(gm, playerId)) > 0)
 		{
-			refusal = string.Format("\"One %1 a life. You've had yours.\"", m_sDisplayName);
+			refusal = string.Format("One %1 a life. You've had yours.", m_sDisplayName);
 			need = "Once a life: you've had it";
 			state = STATE_LOCKED;
 			return -1;
@@ -460,9 +460,9 @@ class RZ_FactionShopAction : ScriptedUserAction
 
 			if (doses <= 0)
 			{
-				refusal = "\"Antidotes? Fresh out. Somebody would have to fetch us some from the lab.\"";
+				refusal = "Antidotes? Fresh out. Somebody would have to fetch us some from the lab.";
 				if (fromLab)
-					refusal = string.Format("\"No doses left. The lab makes one about every %1 minutes, faster as the research goes. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().AntidoteInterval() / 60));
+					refusal = string.Format("No doses left. The lab makes one about every %1 minutes, faster as the research goes. Come back.", RZ_Util.RoundToInt(gm.GetCure().AntidoteInterval() / 60));
 
 				need = "No doses left";
 				state = STATE_OUT;
@@ -477,7 +477,7 @@ class RZ_FactionShopAction : ScriptedUserAction
 		{
 			if (gm.GetCure().GetLabStabilisers() <= 0)
 			{
-				refusal = string.Format("\"No stabilisers. We make about one every %1 minutes, and they go fast. Come back.\"", RZ_Util.RoundToInt(gm.GetCure().StabiliserInterval() / 60));
+				refusal = string.Format("No stabilisers. We make about one every %1 minutes, and they go fast. Come back.", RZ_Util.RoundToInt(gm.GetCure().StabiliserInterval() / 60));
 				need = "None left";
 				state = STATE_OUT;
 				return -1;
@@ -689,7 +689,7 @@ class RZ_RequisitionAction : ScriptedUserAction
 			if (forbidden || rank < 0 || rank > RZ_Reputation.GetAccessRank(RZ_ETier.TRUSTED))
 			{
 				RZ_Log.Warn("Requisition '" + m_sDisplayName + "' (" + m_sItemPrefab + ") isn't Trusted stock here (a shop action on this quartermaster at Trusted or below, never a vehicle or a car part): refused");
-				gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.MILITARY), string.Format("\"We don't sign out %1. Buy it, if you can.\"", m_sDisplayName));
+				gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.MILITARY), string.Format("We don't sign out %1. Buy it, if you can.", m_sDisplayName));
 				return;
 			}
 		}

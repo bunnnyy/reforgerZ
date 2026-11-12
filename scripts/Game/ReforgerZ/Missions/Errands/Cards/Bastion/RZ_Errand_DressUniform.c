@@ -11,9 +11,9 @@ class RZ_Errand_DressUniform : RZ_ErrandCard
 		m_sFamily = "background";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"Sergeant wants a dress uniform folded for a locker. A lad's. None of us know the fold. You were in, weren't you? You've got the walk.\"",
-			"\"Dress uniform, for the locker, properly. The sergeant said find someone who knows. I'm told that's you.\"");
-		Over("\"Never mind. The sergeant did it himself. Took him an hour. He wouldn't let anyone help.\"");
+		Offer("Sergeant wants a dress uniform folded for a locker. A lad's. None of us know the fold. You were in, weren't you? You've got the walk.",
+			"Dress uniform, for the locker, properly. The sergeant said find someone who knows. I'm told that's you.");
+		Over("Never mind. The sergeant did it himself. Took him an hour. He wouldn't let anyone help.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fold it the regulation way";

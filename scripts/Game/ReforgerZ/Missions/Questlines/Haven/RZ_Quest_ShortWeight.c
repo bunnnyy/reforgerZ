@@ -211,7 +211,7 @@ class RZ_Quest_ShortWeight : RZ_Questline
 			}
 
 			ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 4, 0);
-			SpreadRumour(gm, run.Fill("\"The safehouse in {town} eats properly again. Somebody caught the mouse, they say. A big one.\""), 6);
+			SpreadRumour(gm, run.Fill("The safehouse in {town} eats properly again. Somebody caught the mouse, they say. A big one."), 6);
 			return;
 		}
 
@@ -222,14 +222,14 @@ class RZ_Quest_ShortWeight : RZ_Questline
 		// Whoever warned the runner is remembered by the Red Hand
 		ChangeStanding(gm, run, RZ_EFaction.BANDITS, 3, 0, RZ_EQuestApproach.SIDE);
 		Headline(gm, run.Fill("The safehouse in {town} eats a little less and coughs a little less. Nobody asks why."));
-		SpreadRumour(gm, "\"The Red Hand's eating tinned peaches. Haven tins. Make of that what you like.\"", 6);
+		SpreadRumour(gm, "The Red Hand's eating tinned peaches. Haven tins. Make of that what you like.", 6);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage == S_WAIT || run.m_iStage == S_HANDOVER)
-			return "\"The safehouse in {town} comes up short every week. Someone says mice. Mice don't eat tins.\"";
+			return "The safehouse in {town} comes up short every week. Someone says mice. Mice don't eat tins.";
 
 		return "";
 	}

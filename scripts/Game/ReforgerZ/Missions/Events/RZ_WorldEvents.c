@@ -212,16 +212,16 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 		m_Job.Read("stolen", "labtech", "His price list has tins at a quarter of what they're worth. Goods you didn't pay for are cheap to sell.");
 		m_Job.Read("roads", "excon,raider", string.Format("A notebook in his coat with times and number plates. %1 buys that kind of list.", m_sCrew));
 
-		string reveal = "\"Bought, swapped, found. Mostly found. Nobody minds where.\"";
+		string reveal = "Bought, swapped, found. Mostly found. Nobody minds where.";
 		if (truth == "stolen")
-			reveal = string.Format("\"Off a cart outside %1. The people who owned it weren't using it any more. Not in the way you'd think.\"", house);
+			reveal = string.Format("Off a cart outside %1. The people who owned it weren't using it any more. Not in the way you'd think.", house);
 		else if (truth == "roads")
-			reveal = "\"He writes down who passes. Somebody pays for that. Don't look at his notebook, he's shy.\"";
+			reveal = "He writes down who passes. Somebody pays for that. Don't look at his notebook, he's shy.";
 
 		RZ_TalkScene sc = m_Job.Scene("The trader's wife", "trader.wife", LandPointNear(m_vPos, 4, 7));
 		int n0 = sc.Node("A woman sits on the wagon's step, shelling peas. \"Everything's half price. The other half's what it costs you.\"");
-		int n1 = sc.Node("\"So you know. Now what?\"");
-		sc.Ask(n0, "\"Where's it all from?\"", n1, reveal, true);
+		int n1 = sc.Node("So you know. Now what?");
+		sc.Ask(n0, "Where's it all from?", n1, reveal, true);
 		if (truth == "stolen" && m_iHouse >= 0)
 			sc.Decide(n1, "Send the crates home", "send the trader's crates back to the house", WAY_HOME, "She sighs and starts loading the crates back. \"He'll sulk for a week.\"", RZ_EFaction.SURVIVORS);
 		else if (truth == "roads")
@@ -230,7 +230,7 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 			sc.Way(n1, "Two tins and I wasn't here", RZ_TalkScene.FOOD, -1, 2, WAY_QUIET, "She tears a page out of his notebook and gives it to you. Your page.");
 		}
 		else
-			sc.Ask(n1, "\"Where are you headed?\"", -1, "\"Wherever the road's least shot at. It moves about.\"");
+			sc.Ask(n1, "Where are you headed?", -1, "Wherever the road's least shot at. It moves about.");
 	}
 
 	//------------------------------------------------------------------------------------------------

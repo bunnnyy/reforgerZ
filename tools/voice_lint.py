@@ -10,10 +10,21 @@
 Checks every player-facing literal that tools/strings_inventory.py finds against the rules in
 docs/WRITING.md:
 
-    length       radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers,
-                 talk-screen lines and Traces' lines (trace, door): 200 characters or fewer. Labels and choices: the action part
+    length       radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers and
+                 Traces' lines (trace, door): 200 characters or fewer. Labels and choices: the action part
                  (before a bracket) 40 or fewer, the whole label 64 or fewer. Briefs: a warning
                  over 500.
+    quote        a spoken line (talk, radio, loudspeakers, the broadcast, the voice pools, replies,
+                 a conversation's says and choices) has no double quotation marks: it's speech
+                 already (a quote inside it takes single quotes)
+    speaker      a talk line doesn't start with a speaker's label ("The guard: ...", "Sgt Hale: ")
+    reply        a reply is what you say, not a menu label: not a bare label word ("Trade",
+                 "Leave.", "Something else."), not an action ("Ask for work", "Tell them..."),
+                 and it ends like speech (. ? !). Check tags in brackets are fine; a built
+                 reply with an entry in RZ_TalkWords is said in its words
+    split        a talk line (a code line, or a conversation node's says together) is 420
+                 characters or fewer: longer, split it into nodes ("Go on.")
+    ellipsis     no line that's only an ellipsis
     bang         '!' only in Red Hand lines, notice titles and loudspeakers (alarms)
     format       %1-%9 only (no %0, %10, %s, %d)
     token        every {token} is a world token (RZ_WorldFacts.Fill) or a questline text key
@@ -46,8 +57,34 @@ import strings_inventory as si  # noqa: E402
 BASELINE = os.path.join(si.ROOT, "tools", "voice_lint_baseline.txt")
 LORE = os.path.join(si.ROOT, "docs", "LORE.md")
 
-SHORT_CHANNELS = {"radio", "hint", "leader", "rumour", "headline", "broadcast", "loudspeaker", "speech", "trace", "door"}
+SHORT_CHANNELS = {"radio", "hint", "leader", "rumour", "headline", "broadcast", "loudspeaker", "trace", "door"}
 SHORT_LIMIT = 200
+SPLIT_LIMIT = 420
+
+# Spoken channels: no quotation marks around or in them (docs/WRITING.md, "Talk")
+SPOKEN_CHANNELS = {"speech", "radio", "loudspeaker", "broadcast", "leader", "ambient", "reply"}
+QUOTE_RE = re.compile("[\"\u201c\u201d]")
+# "The guard: ", "Sgt Hale: ", "Ines: " at the start of a talk line (a role line in a scene is the engine's)
+# A voice's own heading words (Bastion's "Report: ...", Halcyon's "Subject: ...") are speech, not a label
+VOICE_HEADINGS = {"Report", "Entry", "Subject", "Status", "Note", "Update", "Item", "Correction"}
+SPEAKER_RE = re.compile(r"^((The|A|An) [a-z]+( [a-z]+)?|(Sgt|Cpl|Pte|Dr|Mr|Mrs|Ms|Old|Corporal|Sergeant|Private|Captain|Lieutenant) [A-Z][a-z]+|[A-Z][a-z]+( [A-Z][a-z]+)?)\s?: ")
+ELLIPSIS_RE = re.compile(r"^[\s.\u2026()]*$")
+# Replies (docs/WRITING.md, "Replies"): a menu label's words
+LABEL_WORDS = {"Ask", "Tell", "Check", "Trade", "Leave", "Talk", "Show", "Request", "Buy", "Sell", "Hand",
+               "Listen", "Read", "Rob", "Share", "Offer", "Accept", "Decline", "Refuse", "Report", "Inquire",
+               "Greet", "Persuade", "Threaten", "Bribe", "Give", "Pay", "Inspect", "Examine", "Investigate",
+               "Mention", "Discuss", "Explain", "Request", "Continue", "Goodbye", "Bye", "Back", "Exit",
+               "Cancel", "Return", "Something", "Done", "Next", "Agree", "Leave", "Volunteer", "Deliver"}
+# ...unless the next word makes it speech to the listener ("Show me.", "Tell me about Rudi.", "Leave it.")
+SPEECH_SECOND = {"me", "us", "you", "it", "that", "this", "up", "over", "him", "her", "them", "anything", "nothing"}
+SHORT_LABELS = {"Leave", "Goodbye", "Bye", "Back", "Trade", "Talk", "Something", "Continue", "Next", "Done",
+                "Accept", "Decline", "Refuse", "Agree", "Exit", "Cancel", "Return", "Ask", "Tell", "Check"}
+TAGS_HEAD_RE = re.compile(r"^(\[[^\]]*\]\s*)+")
+TAGS_TAIL_RE = re.compile(r"(\s*(\[[^\]]*\]|\([^)]*\)))+$")
+SPEECH_END_RE = re.compile("[.?!\u2026]['\u2019]?$")
+TALKWORDS = os.path.join(si.ROOT, "scripts", "Game", "ReforgerZ", "Dialogue", "RZ_TalkWords.c")
+# Built labels RZ_TalkWords says in other words by their start ("Rob <name>")
+TALKWORDS_PREFIXES = ("Rob ", "Ask about ", "Send them to ")
 BRIEF_WARN = 500
 LABEL_ACTION_LIMIT = 40
 LABEL_LIMIT = 64
@@ -176,6 +213,61 @@ def lore_names():
     return {w for w in caps if w.lower() not in lower}
 
 
+def talkwords_labels():
+    """The built labels RZ_TalkWords turns into speech (its case labels)."""
+    try:
+        with open(TALKWORDS, encoding="utf-8") as f:
+            return set(re.findall(r'case "([^"]+)":', f.read()))
+    except OSError:
+        return set()
+
+
+def reply_problem(text, mapped):
+    """Why a reply reads as a menu label, or None."""
+    t = text.strip()
+    if t.startswith("[Admin]") or not t:
+        return None
+    t = TAGS_HEAD_RE.sub("", QUOTE_RE.sub("", t)).strip()
+    t = TAGS_TAIL_RE.sub("", t).strip()
+    if not t or t in mapped or t.startswith(TALKWORDS_PREFIXES):
+        return None
+    words = re.findall(r"[A-Za-z']+", TOKEN_RE.sub("x", t))
+    if not words:
+        return None
+    first = words[0]
+    if len(words) <= 2 and first in SHORT_LABELS:
+        return "'%s' is a menu label, not something you'd say" % excerpt(t, 40)
+    if first in LABEL_WORDS and (len(words) < 2 or words[1].lower() not in SPEECH_SECOND):
+        return "starts like a menu label ('%s ...'): say it as the words you'd use" % first
+    if not SPEECH_END_RE.search(t.rstrip("\"")) and not text.endswith(" "):
+        return "doesn't end like speech (. ? !)"
+    return None
+
+
+def node_lengths(lits):
+    """A conversation node's says together, as the screen shows them: a say? variant stands in for
+    the next plain say, so the longest of them counts. {(file, node): (first lit, characters)}"""
+    nodes = {}
+    pending = {}
+    for lit in lits:
+        node = getattr(lit, "node", "")
+        if lit.channel != "speech" or not node:
+            continue
+        key = (lit.file, node)
+        first, total = nodes.get(key, (lit, 0))
+        n = len(lit.text)
+        if lit.cond:
+            pending[key] = max(pending.get(key, 0), n)
+            nodes[key] = (first, total)
+            continue
+        total += max(n, pending.pop(key, 0))
+        nodes[key] = (first, total)
+    for key, n in pending.items():
+        first, total = nodes[key]
+        nodes[key] = (first, total + n)
+    return nodes
+
+
 def label_parts(text):
     return [p.strip() for p in text.split("|") if p.strip()]
 
@@ -198,10 +290,35 @@ def check(lits, all_lits):
             clue_texts.setdefault(lit.text.strip().lower(), lit)
 
     punchlines = defaultdict(set)
+    mapped = talkwords_labels()
 
     for lit in lits:
         t = lit.text
         ch = lit.channel
+        rzd = lit.file.endswith(".rzd")
+
+        # quote: spoken lines carry no quotation marks
+        if (ch in SPOKEN_CHANNELS or (rzd and ch == "choice")) and QUOTE_RE.search(t):
+            findings.append(Finding("quote", lit, "quotation marks in a spoken line (it's speech already; a quote inside takes single quotes)"))
+
+        # speaker: no speaker's label in front of a talk line
+        if ch == "speech" and not getattr(lit, "role", False) and SPEAKER_RE.match(t) and not t.startswith("[") \
+                and t.split(":")[0] not in VOICE_HEADINGS:
+            findings.append(Finding("speaker", lit, "a speaker's label in front of the line (the name shows on screen)"))
+
+        # reply: what you say, not a menu label
+        if ch == "reply" or (rzd and ch == "choice"):
+            why = reply_problem(t, mapped)
+            if why:
+                findings.append(Finding("reply", lit, why))
+
+        # split: a talk line over 420 (a conversation node: below, all its says together)
+        if ch == "speech" and not rzd and len(t) > SPLIT_LIMIT:
+            findings.append(Finding("split", lit, "talk line of %d characters (over %d): split it" % (len(t), SPLIT_LIMIT)))
+
+        # ellipsis: never a line that's only "..."
+        if ch in SPOKEN_CHANNELS and t.strip() and ELLIPSIS_RE.match(QUOTE_RE.sub("", t)):
+            findings.append(Finding("ellipsis", lit, "a line that's only an ellipsis"))
 
         # length
         if ch in SHORT_CHANNELS and len(t) > SHORT_LIMIT:
@@ -291,6 +408,11 @@ def check(lits, all_lits):
                     and not re.search(r"[%{0-9]", last) and not FORMULA_RE.fullmatch(last)):
                 punchlines[last.lower()].add(t)
 
+    # split: a conversation node's says together
+    for (path, node), (first, total) in node_lengths(lits).items():
+        if total > SPLIT_LIMIT:
+            findings.append(Finding("split", first, "node %s says %d characters (over %d): split it into nodes" % (node, total, SPLIT_LIMIT)))
+
     # seed-name
     names = lore_names()
     for lit in seeded_people(all_lits):
@@ -348,6 +470,12 @@ SELF_TEST = [
     ("pronoun", "journal", "Red Hand", "", "{keeper} said he would pay by Sunday."),
     ("info-token", "radio", "Bastion", "ChatterTruck", "\"Logistics, Command. The truck leaves soon.\""),
     ("label", "label", "-", "", "Persuade the quartermaster to open the stores for everyone in town"),
+    ("quote", "speech", "Haven", "", "\"We're managing. Don't tell anyone I said that.\""),
+    ("speaker", "speech", "Bastion", "", "The guard: Papers. Now."),
+    ("reply", "reply", "-", "", "Request a lift to the lab"),
+    ("reply", "reply", "-", "", "Something else."),
+    ("split", "speech", "-", "", "We buried him by the wall. " * 16),
+    ("ellipsis", "speech", "-", "", "..."),
 ]
 
 
@@ -357,6 +485,7 @@ def self_test(all_lits):
         lit = si.Literal()
         lit.file, lit.line, lit.text = "self-test", i + 1, text
         lit.calls, lit.target, lit.returned = [], "", False
+        lit.node, lit.cond, lit.role = "", "", False
         lit.function, lit.faction, lit.channel = function, faction, channel
         lit.register, lit.repeats = "PLAIN", 1
         got = {f.check for f in check([lit], all_lits) if not f.warning}

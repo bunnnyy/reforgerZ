@@ -12,9 +12,9 @@ class RZ_Errand_SleeveDown : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"Something for the fever. Don't make a fuss. It's only a fever.\"",
-			"\"Have you anything for a temperature? It's for me. It's nothing. Keep your voice down.\"");
-		Over("\"Never mind. It's passed. Forget I asked.\"");
+		Offer("Something for the fever. Don't make a fuss. It's only a fever.",
+			"Have you anything for a temperature? It's for me. It's nothing. Keep your voice down.");
+		Over("Never mind. It's passed. Forget I asked.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Hand over something for the fever";
@@ -63,7 +63,7 @@ class RZ_Errand_SleeveDown : RZ_ErrandCard
 		{
 			case 0:
 			{
-				said.Insert("\"Thank you. I'll be better by morning.\"");
+				said.Insert("Thank you. I'll be better by morning.");
 				if (bite && h && h.m_iPopulation > 2)
 				{
 					// Kept quiet: the house loses someone in the night

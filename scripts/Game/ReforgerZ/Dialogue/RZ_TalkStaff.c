@@ -150,32 +150,10 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Their one line when you walk up, in their faction's voice.
+	//! No greeting: a quartermaster or the medic has nothing to say until you do, so the screen opens
+	//! on your replies (docs/DIALOGUE.md, "No filler greeting").
 	override void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
 	{
-		if (!m_Talk || !m_Owner)
-			return;
-
-		bool counter = m_Owner.FindComponent(RZ_QuartermasterComponent) != null;
-		s.m_aNew.Insert(Greeting(m_Talk.GetFaction(), counter));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A quartermaster's greeting by faction; anyone else's (the safehouse medic) is the Haven's.
-	static string Greeting(RZ_EFaction faction, bool counter)
-	{
-		if (!counter)
-			return "\"Sit where I can see you. Anything bleeding? Anything bitten? Tell me the truth, it's quicker.\"";
-
-		switch (faction)
-		{
-			case RZ_EFaction.SURVIVORS: return "\"Stores are open, such as they are. Tins, dressings, the odd rifle. What do you need, love?\"";
-			case RZ_EFaction.MILITARY: return "\"Stores. State what you need. Everything is signed for, including you.\"";
-			case RZ_EFaction.BANDITS: return "\"A customer. Everything's for sale, and everything's counted. Including the questions.\"";
-			case RZ_EFaction.INSTITUTE: return "\"Supplies are issued against Favor. I log every item, and every name.\"";
-		}
-
-		return "\"Yes?\"";
 	}
 
 	//------------------------------------------------------------------------------------------------

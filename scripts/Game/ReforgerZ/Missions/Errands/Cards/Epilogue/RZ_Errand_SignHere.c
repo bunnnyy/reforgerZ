@@ -11,9 +11,9 @@ class RZ_Errand_SignHere : RZ_EpiCard
 		m_sTitle = "Sign Here";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"Roster's short three names for the next shift. The queue's full of names. Go and get me three, signed.\"",
-			"\"Three signatures from the queue before the shift changes. Name, house, signature. No initials.\"");
-		Over("\"Never mind. The queue sent three up on their own.\"");
+		Offer("Roster's short three names for the next shift. The queue's full of names. Go and get me three, signed.",
+			"Three signatures from the queue before the shift changes. Name, house, signature. No initials.");
+		Over("Never mind. The queue sent three up on their own.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take three names at the queue";
@@ -23,7 +23,7 @@ class RZ_Errand_SignHere : RZ_EpiCard
 		w.m_sStep = "Walk the queue on the north road and take three names and signatures (30 s there), then bring the sheet to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"Three. Legible. You'd be surprised how rare that is.\"");
+		w.Done("Three. Legible. You'd be surprised how rare that is.");
 
 		w = Way("sneak");
 		w.m_sLabel = "Write three names yourself";

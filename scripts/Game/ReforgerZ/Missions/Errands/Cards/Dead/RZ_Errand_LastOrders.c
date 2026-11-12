@@ -10,9 +10,9 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		m_sTitle = "Last Orders";
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("\"His book's still on his seat {subject_place}. His last orders. I'd like them before someone else reads them.\"",
-			"\"Whatever he decided last, it's written down {subject_place}. Bring it here. Don't read it. Or do. Just bring it.\"");
-		Over("\"The book's come in. Thank you all the same.\"");
+		Offer("His book's still on his seat {subject_place}. His last orders. I'd like them before someone else reads them.",
+			"Whatever he decided last, it's written down {subject_place}. Bring it here. Don't read it. Or do. Just bring it.");
+		Over("The book's come in. Thank you all the same.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring it in unread";
@@ -22,7 +22,7 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		w.m_sStep = "Fetch the order book from his seat {subject_place} (10 s there), and bring it to {giver} unread.";
 		w.m_eProp = RZ_EErrandProp.PAPERS;
 		w.m_iFavor = 4;
-		w.Done("\"Unread. Thank you. I'll read it tonight, and then I'll decide whether anyone else does.\"");
+		w.Done("Unread. Thank you. I'll read it tonight, and then I'll decide whether anyone else does.");
 
 		w = Way("do");
 		w.m_sLabel = "Read it on the way";
@@ -33,7 +33,7 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		w.m_sStep = "Fetch the order book from his seat {subject_place} (10 s there), read the last page, and bring it to {giver}.";
 		w.m_eProp = RZ_EErrandProp.PAPERS;
 		w.m_iFavor = 3;
-		w.Done("\"You read it. Of course you did. Well. Now two of us know.\"");
+		w.Done("You read it. Of course you did. Well. Now two of us know.");
 	}
 
 	//------------------------------------------------------------------------------------------------

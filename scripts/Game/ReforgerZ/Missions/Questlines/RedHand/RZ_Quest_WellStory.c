@@ -416,7 +416,7 @@ class RZ_Quest_WellStory : RZ_Questline
 			if (run.Flag("dues") != 1)
 				ChangeFood(gm, house, -2);
 
-			SpreadRumour(gm, run.Fill("\"Ask the Red Hand what happened to the well in the village that didn't pay. Go on. They'll tell you a story.\""), 8);
+			SpreadRumour(gm, run.Fill("Ask the Red Hand what happened to the well in the village that didn't pay. Go on. They'll tell you a story."), 8);
 			return;
 		}
 
@@ -450,7 +450,7 @@ class RZ_Quest_WellStory : RZ_Questline
 			}
 
 			Headline(gm, run.Fill("Nobody in {village} is drinking from the well."));
-			SpreadRumour(gm, run.Fill("\"They say the Red Hand put something in the well at {village}. They say it like a joke. It isn't.\""), 12);
+			SpreadRumour(gm, run.Fill("They say the Red Hand put something in the well at {village}. They say it like a joke. It isn't."), 12);
 			return;
 		}
 
@@ -464,7 +464,7 @@ class RZ_Quest_WellStory : RZ_Questline
 				Headline(gm, run.Fill("{crew_short} found out what really went in the bucket at {village}, and is telling everyone who did it."), false);
 			}
 
-			SpreadRumour(gm, run.Fill("\"Somebody found a dead dog in the well bucket at {village}. Red Hand, they say. The story spreads itself.\""), 8);
+			SpreadRumour(gm, run.Fill("Somebody found a dead dog in the well bucket at {village}. Red Hand, they say. The story spreads itself."), 8);
 			return;
 		}
 
@@ -478,7 +478,7 @@ class RZ_Quest_WellStory : RZ_Questline
 			RZ_RedHandQuest.SwingLoyalty(gm, RZ_RedHandQuest.Same(gm, run, "crew"), -RZ_RedHandQuest.SWING);
 
 		Headline(gm, run.Fill("{village} kept its well. The Red Hand crew that wanted it hasn't been back."));
-		SpreadRumour(gm, run.Fill("\"Somebody stood at the well in {village} when the Red Hand came. The crew went home.\""), 8);
+		SpreadRumour(gm, run.Fill("Somebody stood at the well in {village} when the Red Hand came. The crew went home."), 8);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -495,7 +495,7 @@ class RZ_Quest_WellStory : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage >= S_WHY && run.m_iStage <= S_ORDER)
-			return "\"Ask the Red Hand about the well in {village}. Go on. They'll tell you a story.\"";
+			return "Ask the Red Hand about the well in {village}. Go on. They'll tell you a story.";
 
 		return "";
 	}

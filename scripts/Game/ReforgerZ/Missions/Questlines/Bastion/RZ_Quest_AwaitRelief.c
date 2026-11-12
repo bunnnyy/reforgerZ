@@ -950,7 +950,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 				if (gm.GetFactionLife())
 					gm.GetFactionLife().StartRelation(RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, RZ_FactionLife.REL_FEUD);
 
-				SpreadRumour(gm, "\"Expended. That's what Bastion's orders say. The Red Hand reads it out every hour, in a posh voice.\"", 12);
+				SpreadRumour(gm, "Expended. That's what Bastion's orders say. The Red Hand reads it out every hour, in a posh voice.", 12);
 				break;
 			}
 			case E_HAVEN:
@@ -959,7 +959,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.MILITARY, 5, 0);
 				RZ_BastionQuest.SetWorld(gm, KEY + ".haven", 1);
-				SpreadRumour(gm, "\"The chair's got something on Bastion. You can tell: their trucks slow down past her door now.\"", 10);
+				SpreadRumour(gm, "The chair's got something on Bastion. You can tell: their trucks slow down past her door now.", 10);
 				break;
 			}
 		}
@@ -988,7 +988,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 		if (cmd && ReplaceLeader(gm, cmd.m_iId, run.Fill("{commander} has been relieved of {post}. The stronghold gave no reason.")))
 			run.Note("{cmd} has been relieved of {post}.");
 
-		SpreadRumour(gm, run.Fill("\"The log at {post} says 'No reply' again. Their operator's at the stronghold now. Nobody asks why.\""), 8);
+		SpreadRumour(gm, run.Fill("The log at {post} says 'No reply' again. Their operator's at the stronghold now. Nobody asks why."), 8);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1113,16 +1113,16 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage <= S_RUNNER)
-			return "\"An operator at {post} wrote 'reply received' in the log. Then he crossed it out. They say he's stopped sleeping.\"";
+			return "An operator at {post} wrote 'reply received' in the log. Then he crossed it out. They say he's stopped sleeping.";
 
 		if (run.m_iStage == S_WHO)
-			return "\"Bastion lost a runner on Day 3. Somebody's out looking for what he was carrying. Bastion would rather they didn't find it.\"";
+			return "Bastion lost a runner on Day 3. Somebody's out looking for what he was carrying. Bastion would rather they didn't find it.";
 
 		if (run.m_iBranch == BRANCH_MOCKED)
-			return "\"The Red Hand's got Bastion's real orders. One word. They won't stop saying it.\"";
+			return "The Red Hand's got Bastion's real orders. One word. They won't stop saying it.";
 
 		if (run.m_iBranch == BRANCH_READ)
-			return "\"Two soldiers walked off {post} with their rifles. Something they were told at the shift change.\"";
+			return "Two soldiers walked off {post} with their rifles. Something they were told at the shift change.";
 
 		return "";
 	}

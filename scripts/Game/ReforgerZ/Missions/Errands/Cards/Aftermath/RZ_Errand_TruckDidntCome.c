@@ -14,9 +14,9 @@ class RZ_Errand_TruckDidntCome : RZ_ErrandCard
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "storekeeper";
 		m_iNeed = RZ_ENeed.FOOD;
-		Offer("\"The truck never came. It's on its side {where_place}, by the sound of it. Whatever's left in the back is ours, if you're quick.\"",
-			"\"Our truck's lying {where_place}. The driver's gone. The sacks might not be.\"");
-		Over("\"Leave it. The next truck's in.\"");
+		Offer("The truck never came. It's on its side {where_place}, by the sound of it. Whatever's left in the back is ours, if you're quick.",
+			"Our truck's lying {where_place}. The driver's gone. The sacks might not be.");
+		Over("Leave it. The next truck's in.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Salvage what's left of the load";
@@ -26,14 +26,14 @@ class RZ_Errand_TruckDidntCome : RZ_ErrandCard
 		w.m_sStep = "Go through the wreck {where_place} for what the robbers left (30 s there), then bring it to {giver}.";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 4;
-		w.Done("\"Two sacks, and one of them's flour. The other's flour too. We'll manage.\"");
+		w.Done("Two sacks, and one of them's flour. The other's flour too. We'll manage.");
 
 		w = Way("talk");
 		w.m_sLabel = "Ask a toll lad who did it";
 		w.m_iMinTier = RZ_ETier.KNOWN;
 		w.m_iTierFaction = RZ_EFaction.BANDITS;
 		w.m_iFavor = 3;
-		w.Done("\"A crew from the crossroads, you say. Knowing doesn't fill a pot. It helps, though.\"");
+		w.Done("A crew from the crossroads, you say. Knowing doesn't fill a pot. It helps, though.");
 	}
 
 	//------------------------------------------------------------------------------------------------

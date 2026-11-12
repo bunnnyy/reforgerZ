@@ -11,9 +11,9 @@ class RZ_Errand_ClearTheWay : RZ_EpiCard
 		m_sTitle = "Clear the Way";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"Two families turned back on the road to the queue yesterday. Something at the bend. Walk it, and stay a while so they'll walk it too.\"",
-			"\"People won't go up the north road past the bend. Clear it, stand there a minute, and the word gets round.\"");
-		Over("\"The road's clear. Somebody from Bastion walked it this morning.\"");
+		Offer("Two families turned back on the road to the queue yesterday. Something at the bend. Walk it, and stay a while so they'll walk it too.",
+			"People won't go up the north road past the bend. Clear it, stand there a minute, and the word gets round.");
+		Over("The road's clear. Somebody from Bastion walked it this morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Hold the bend on the queue road";
@@ -23,7 +23,7 @@ class RZ_Errand_ClearTheWay : RZ_EpiCard
 		w.m_sStep = "Walk up to the bend on the road to the queue and keep it clear for a minute, then come back to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"Clear? Then they'll go. Thank you.\"");
+		w.Done("Clear? Then they'll go. Thank you.");
 	}
 
 	//------------------------------------------------------------------------------------------------

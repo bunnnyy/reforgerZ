@@ -10,9 +10,9 @@ class RZ_Errand_LastLetters : RZ_EpiCard
 		m_eAnchor = RZ_EErrandAnchor.WANDERER;
 		m_iWandererRole = RZ_EWandererRole.COURIER;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"Letters from the houses for people already in the queue. Last round I'll ever do. My feet say you should do it.\"",
-			"\"A bag of letters for the north road. Names on the front. They'll be out of reach once the gates open.\"");
-		Over("\"Never mind. I'll walk it myself. Slowly.\"");
+		Offer("Letters from the houses for people already in the queue. Last round I'll ever do. My feet say you should do it.",
+			"A bag of letters for the north road. Names on the front. They'll be out of reach once the gates open.");
+		Over("Never mind. I'll walk it myself. Slowly.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry the bag to the queue";
@@ -22,7 +22,7 @@ class RZ_Errand_LastLetters : RZ_EpiCard
 		w.m_sStep = "Walk the letters up to the queue on the north road and hand them out (20 s there, nothing in your hands), then find {giver} again.";
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
-		w.Done("\"All of them? Then the post's done. First time all season.\"");
+		w.Done("All of them? Then the post's done. First time all season.");
 	}
 
 	//------------------------------------------------------------------------------------------------

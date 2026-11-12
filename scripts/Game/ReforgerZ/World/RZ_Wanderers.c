@@ -1208,9 +1208,9 @@ class RZ_Wanderers
 		m_fMoodUntil = m_fClock + LOSS_NEWS_SECONDS;
 		m_fRumourUntil = m_fClock + LOSS_NEWS_SECONDS;
 		if (taker >= 0)
-			m_sLossRumour = string.Format("\"Heard %1 lost %2 to %3. The roads round there are bad now. I'm going the long way.\"", RZ_Factions.GetName(loser), place, RZ_Factions.GetNameInText(taker));
+			m_sLossRumour = string.Format("Heard %1 lost %2 to %3. The roads round there are bad now. I'm going the long way.", RZ_Factions.GetName(loser), place, RZ_Factions.GetNameInText(taker));
 		else
-			m_sLossRumour = string.Format("\"%1 pulled out of %2. Nobody's sure why. Nobody's going to look, either.\"", RZ_Factions.GetName(loser), place);
+			m_sLossRumour = string.Format("%1 pulled out of %2. Nobody's sure why. Nobody's going to look, either.", RZ_Factions.GetName(loser), place);
 
 		foreach (RZ_Wanderer w : m_aList)
 		{
@@ -1249,13 +1249,13 @@ class RZ_Wanderers
 			return "";
 
 		if (w.m_eRole == RZ_EWandererRole.DESERTER && m_iMoodFaction == RZ_EFaction.MILITARY)
-			return string.Format("\"Bastion lost %1? Told them. Nobody listens to a deserter.\" ", m_sMoodPlace);
+			return string.Format("Bastion lost %1? Told them. Nobody listens to a deserter. ", m_sMoodPlace);
 
 		if (m_iMoodFaction == RZ_EFaction.SURVIVORS && w.IsHaven())
-			return string.Format("They keep looking back the way they came. \"We lost %1. People we knew.\" ", m_sMoodPlace);
+			return string.Format("We lost %1. People we knew. I keep looking back the way we came. ", m_sMoodPlace);
 
 		if (m_iMoodWinner == RZ_EFaction.BANDITS && w.IsHaven())
-			return string.Format("\"The Red Hand's in %1 now. Keep your voice down.\" ", m_sMoodPlace);
+			return string.Format("The Red Hand's in %1 now. Keep your voice down. ", m_sMoodPlace);
 
 		return "";
 	}
@@ -1902,7 +1902,7 @@ class RZ_Wanderers
 					continue;
 
 				m_mWarned.Set(key, m_fClock);
-				m_GM.Say(ids[j], w.GetTitle(), -1, string.Format("\"That one there. %1. The Haven turned them out. Don't let them follow you home.\"", RZ_Util.PlayerName(ids[i])));
+				m_GM.Say(ids[j], w.GetTitle(), -1, string.Format("That one there. %1. The Haven turned them out. Don't let them follow you home.", RZ_Util.PlayerName(ids[i])));
 			}
 		}
 	}
@@ -1978,7 +1978,7 @@ class RZ_Wanderers
 		w.m_bTagged = false; // back to the usual labels
 		w.Remember(m_GM.GetProfile(playerId).m_sIdentity, MEM_SAVED);
 		m_GM.AddFame(playerId, RZ_EFaction.SURVIVORS, CURED_FAME);
-		m_GM.NotifyPlayer(playerId, w.GetTitle(), "The needle goes in. A long minute, then the shaking stops. \"I owe you. I'll remember. All season, I'll remember.\"");
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), "Oh. Oh, the shaking's stopping. I owe you. I'll remember this. All season, I'll remember.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2271,18 +2271,18 @@ class RZ_Wanderers
 	protected string RefuseText(RZ_Wanderer w, int attitude)
 	{
 		if (attitude <= -9)
-			return "He has a pistol out before you're close. \"I know that face from the briefings. Walk away. Now.\"";
+			return "Stop there. I know that face from the briefings. Walk away. Now, or this pistol does the talking.";
 
 		if (w.m_eRole == RZ_EWandererRole.DOCTOR && attitude == -4)
-			return "\"I've seen what the Red Hand's friends do with medicine. Not you. Not from me.\"";
+			return "I've seen what the Red Hand's friends do with medicine. Not you. Not from me.";
 
 		if (attitude == -5)
-			return "\"The Haven turned you out. I don't argue with the Haven.\" They back away, hands where you can see them.";
+			return "The Haven turned you out. I don't argue with the Haven. I'm backing away now. Hands where you can see them.";
 
 		if (w.m_eRole == RZ_EWandererRole.KID)
 			return "The kid takes one look at you and runs.";
 
-		return "\"I know what you did. Stay back.\"";
+		return "I know what you did. Stay back.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2290,14 +2290,14 @@ class RZ_Wanderers
 	{
 		switch (w.m_eRole)
 		{
-			case RZ_EWandererRole.TRADER: return "\"Prices are what they are. Nobody's making more of anything.\"";
-			case RZ_EWandererRole.DOCTOR: return "\"Sit down, let me look at you. No? Then at least drink something.\"";
-			case RZ_EWandererRole.SCAVENGER: return "\"I know every cellar from here to the coast. Most of them are empty now. Most.\"";
-			case RZ_EWandererRole.DESERTER: return "\"I took the patch off. Doesn't mean I forgot how to shoot. Keep your hands where I can see them.\"";
-			case RZ_EWandererRole.PREACHER: return "\"The bells are for them, not for us. Somebody has to tell them where to go.\"";
-			case RZ_EWandererRole.COURIER: return "\"Letters, mostly. People still write to each other. Isn't that something?\"";
-			case RZ_EWandererRole.KID: return "The kid holds on to the strap of a bag that's far too big. \"Mum said to wait at the safehouse. I don't know which one.\"";
-			case RZ_EWandererRole.MECHANIC: return "Oil to the elbows, a spanner in a back pocket. \"Everything's broken. That's the good news, if you know how to fix things.\"";
+			case RZ_EWandererRole.TRADER: return "Prices are what they are. Nobody's making more of anything.";
+			case RZ_EWandererRole.DOCTOR: return "Sit down, let me look at you. No? Then at least drink something.";
+			case RZ_EWandererRole.SCAVENGER: return "I know every cellar from here to the coast. Most of them are empty now. Most.";
+			case RZ_EWandererRole.DESERTER: return "I took the patch off. Doesn't mean I forgot how to shoot. Keep your hands where I can see them.";
+			case RZ_EWandererRole.PREACHER: return "The bells are for them, not for us. Somebody has to tell them where to go.";
+			case RZ_EWandererRole.COURIER: return "Letters, mostly. People still write to each other. Isn't that something?";
+			case RZ_EWandererRole.KID: return "Mum said to wait at the safehouse. I don't know which one. This bag's hers. It's heavy.";
+			case RZ_EWandererRole.MECHANIC: return "Everything's broken. That's the good news, if you know how to fix things. Don't mind the oil.";
 		}
 
 		return "";
@@ -2312,7 +2312,7 @@ class RZ_Wanderers
 		vector hot;
 		float heat;
 		if (m_GM.GetHeat().GetHottest(hot, heat) && heat >= 40 && RZ_Util.DistXZ(from, hot) <= 2500)
-			lines.Insert(string.Format("\"Something's stirred them up, %1 from here. Don't go that way.\"", RZ_Util.DirectionText(from, hot)));
+			lines.Insert(string.Format("Something's stirred them up, %1 from here. Don't go that way.", RZ_Util.DirectionText(from, hot)));
 
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		if (houses)
@@ -2322,7 +2322,7 @@ class RZ_Wanderers
 				RZ_Safehouse h = houses.Get(i);
 				if (h.m_bShort)
 				{
-					lines.Insert(string.Format("\"The safehouse in %1 is out of food. They'd take anything you can carry.\"", h.m_sName));
+					lines.Insert(string.Format("The safehouse in %1 is out of food. They'd take anything you can carry.", h.m_sName));
 					break;
 				}
 			}
@@ -2333,12 +2333,12 @@ class RZ_Wanderers
 			if (m.m_bContract || m.m_bGlobal || RZ_Util.DistXZ(m.m_vPos, from) > 3000)
 				continue;
 
-			lines.Insert(string.Format("\"People on the road were talking about %1 near %2.\"", m.m_sTitle, m.GetLocationName(m_GM)));
+			lines.Insert(string.Format("People on the road were talking about %1 near %2.", m.m_sTitle, m.GetLocationName(m_GM)));
 			break;
 		}
 
 		if (!w.m_sDestName.IsEmpty())
-			lines.Insert(string.Format("\"I'm heading for %1. If you're going that way, it's quiet enough.\"", w.m_sDestName));
+			lines.Insert(string.Format("I'm heading for %1. If you're going that way, it's quiet enough.", w.m_sDestName));
 
 		// Road news about the packs, always with the place (the Haven's words)
 		RZ_Tribes tribes = m_GM.GetTribes();
@@ -2368,7 +2368,7 @@ class RZ_Wanderers
 		}
 
 		if (lines.IsEmpty())
-			return "\"Quiet out here. I don't trust it.\"";
+			return "Quiet out here. I don't trust it.";
 
 		return lines.GetRandomElement();
 	}
@@ -2380,13 +2380,13 @@ class RZ_Wanderers
 		array<vector> specials = {};
 		m_GM.GetSpawner().GetSpecialsNear(from, 500, specials);
 		if (!specials.IsEmpty())
-			return string.Format("\"Careful. One of the changed ones, %1. Big. Keep your distance.\"", RZ_Util.DirectionText(from, specials[0]));
+			return string.Format("Careful. One of the changed ones, %1. Big. Keep your distance.", RZ_Util.DirectionText(from, specials[0]));
 
 		RZ_Settlement s = m_GM.GetSettlement(m_GM.FindNearestSettlement(from));
 		if (s && s.m_fInfection >= 50)
-			return string.Format("\"%1 is getting worse every day. I wouldn't sleep there.\"", s.m_sName);
+			return string.Format("%1 is getting worse every day. I wouldn't sleep there.", s.m_sName);
 
-		return "\"Stay off the main road after dark. That's all I know.\"";
+		return "Stay off the main road after dark. That's all I know.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2424,11 +2424,18 @@ class RZ_Wanderers
 			return;
 		}
 
-		string text = MoodLine(w) + IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
-		// Dialogue > Trees: their greeting by what they remember of you, else your Haven standing
-		string greet = RZ_RepVoice.WandererGreeting(m_GM, playerId, w, player.GetOrigin());
-		if (!greet.IsEmpty())
-			text = greet + "\n" + text;
+		// The talk screen: no filler greeting. What they've lost and what's going on still comes
+		// first; their hello, the road's news and the warnings wait to be asked
+		bool quiet = RZ_Dialogue.Quiet(m_GM, playerId);
+		string text = MoodLine(w);
+		if (!quiet)
+		{
+			text += IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
+			// Dialogue > Trees: their greeting by what they remember of you, else your Haven standing
+			string greet = RZ_RepVoice.WandererGreeting(m_GM, playerId, w, player.GetOrigin());
+			if (!greet.IsEmpty())
+				text = greet + "\n" + text;
+		}
 		// The epilogue week: road news about the season, by role
 		if (RZ_Epilogue.Get())
 		{
@@ -2439,7 +2446,7 @@ class RZ_Wanderers
 		if (m_GM.GetTribes() && m_GM.GetTribes().GetPeople().IsOn())
 			m_GM.GetTribes().GetPeople().OnRoadNews(playerId, player.GetOrigin());
 
-		if (attitude >= 2)
+		if (attitude >= 2 && !quiet)
 			text += "\n" + WarningText(player.GetOrigin());
 
 		// Faction gossip, mostly for players who are new to the Zone (new-player guidance)
@@ -2475,11 +2482,15 @@ class RZ_Wanderers
 		}
 
 		// Dialogue > Trees: one time in four, after the road news, what the roads say about you
-		if (RZ_RepVoice.TreesOn() && w.m_eRole != RZ_EWandererRole.KID && Math.RandomFloat01() < 0.25)
+		if (RZ_RepVoice.TreesOn() && !quiet && w.m_eRole != RZ_EWandererRole.KID && Math.RandomFloat01() < 0.25)
 			text += "\n" + RZ_RepVoice.Picture(m_GM, playerId);
 
 		if (w.IsBitten())
-			text += "\nThere's a dressing on their arm, already dark through. \"Don't. I know.\"";
+			text += "\nDon't look at the arm. I know what it is. The dressing's already dark through, and I know what that means.";
+
+		text = text.Trim();
+		if (text.IsEmpty())
+			return;
 
 		m_GM.NotifyPlayer(playerId, w.GetTitle(), text);
 	}
@@ -2565,7 +2576,7 @@ class RZ_Wanderers
 		RZ_Interactions hub = RZ_Interactions.Get();
 		if (!hub)
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Cars? Nothing out here runs any more.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "Cars? Nothing out here runs any more.");
 			return;
 		}
 
@@ -2613,7 +2624,7 @@ class RZ_Wanderers
 
 		if (part.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Nothing in the bag today. Try the boots of the wrecks; that's where mine come from.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "Nothing in the bag today. Try the boots of the wrecks; that's where mine come from.");
 			return;
 		}
 
@@ -2641,7 +2652,7 @@ class RZ_Wanderers
 		if (m_GM.SpendFavor(playerId, RZ_EFaction.SURVIVORS, cost))
 			return true;
 
-		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("\"That's %1 Haven Favor. You've got %2. Come back when you have it.\"",
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("That's %1 Haven Favor. You've got %2. Come back when you have it.",
 			cost, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.SURVIVORS)));
 		return false;
 	}
@@ -2651,7 +2662,7 @@ class RZ_Wanderers
 	{
 		if (!m_Settings.m_aTraderGoods || m_Settings.m_aTraderGoods.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Nothing you'd want today. Ask me again at the next safehouse.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "Nothing you'd want today. Ask me again at the next safehouse.");
 			return;
 		}
 
@@ -2666,7 +2677,7 @@ class RZ_Wanderers
 
 			RZ_ItemHelper.Take(user, events.m_sJewelleryWords, 1);
 			w.Remember(ident, MEM_HELPED);
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "They hold the jewellery up to the light, turn it twice, and don't ask where it came from. \"That'll do. Gold still means something to somebody.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "Let me see that in the light. I won't ask where it came from. That'll do. Gold still means something to somebody.");
 			return;
 		}
 
@@ -2694,7 +2705,7 @@ class RZ_Wanderers
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		if (m_GM.GetInfection().SeemsInfected(playerId) && profile.m_bDoctorTreated)
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"I've done what I can for that. I'm sorry. Find an antidote.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "I've done what I can for that. I'm sorry. Find an antidote.");
 			return;
 		}
 
@@ -2708,7 +2719,7 @@ class RZ_Wanderers
 		if (pending > 0)
 		{
 			profile.m_bDoctorTreated = true;
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("They clean the bite, pack it with something that smells of cloves, and don't lie to you. \"Slower now. About %1 minutes. Not a cure.\"",
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("Hold still while I clean it. That's clove oil, it'll sting. I won't lie to you: it's slower now, about %1 minutes. It's not a cure.",
 				RZ_Util.RoundToInt(pending * 1.25 / 60)));
 			return;
 		}
@@ -2717,13 +2728,13 @@ class RZ_Wanderers
 		{
 			profile.m_bDoctorTreated = true;
 			profile.m_fInfectionLeft = profile.m_fInfectionLeft * 1.25;
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("They clean the bite, pack it with something that smells of cloves, and don't lie to you. \"Slower now. About %1 minutes. Not a cure.\"",
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("Hold still while I clean it. That's clove oil, it'll sting. I won't lie to you: it's slower now, about %1 minutes. It's not a cure.",
 				RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60)));
 			return;
 		}
 
 		RZ_Util.HealCharacter(user);
-		m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Hold still.\" A few minutes, a few stitches. \"There. Try not to need me again.\"");
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), "Hold still. A few stitches, that's all. ...There. Try not to need me again.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2734,7 +2745,7 @@ class RZ_Wanderers
 		float last;
 		if (m_mRumourAt.Find(ident, last) && m_fClock - last < JOB_COOLDOWN)
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"I've told you all I know. Give it a while.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "I've told you all I know. Give it a while.");
 			return;
 		}
 
@@ -2758,13 +2769,13 @@ class RZ_Wanderers
 		RZ_Settlement s = m_GM.GetSettlement(idx);
 		if (!s)
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Funny. I had something, and now I can't remember it. Keep your Favor next time.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "Funny. I had something, and now I can't remember it. Keep your Favor next time.");
 			return;
 		}
 
 		vector stash = RZ_Mission.LandPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius);
 		m_GM.SpawnRewardCrate(stash);
-		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("\"A family in %1 buried their good things before they left. Grid %2. Don't tell anyone where you heard it.\"",
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("A family in %1 buried their good things before they left. Grid %2. Don't tell anyone where you heard it.",
 			s.m_sName, RZ_SettlementScanner.GridReference(stash)));
 	}
 
@@ -2773,7 +2784,7 @@ class RZ_Wanderers
 	{
 		if (RZ_Reputation.IsHunted(m_GM.GetTier(playerId, RZ_EFaction.MILITARY)))
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"You're on a list. I've seen the list. Stay off the main roads and never sleep in the same place twice.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "You're on a list. I've seen the list. Stay off the main roads and never sleep in the same place twice.");
 			return;
 		}
 
@@ -2790,19 +2801,19 @@ class RZ_Wanderers
 			if (!m.m_bContract || m.m_Req.m_eGiver != RZ_EFaction.MILITARY || m.m_bGlobal)
 				continue;
 
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("\"Bastion's got people busy near %1: %2. Get paid by them or stay out of their way. Your choice. I made mine.\"",
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("Bastion's got people busy near %1: %2. Get paid by them or stay out of their way. Your choice. I made mine.",
 				m.GetLocationName(m_GM), m.m_sTitle));
 			return;
 		}
 
-		m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Bastion's quiet. That's never good. They're either out of fuel or planning something.\"");
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), "Bastion's quiet. That's never good. They're either out of fuel or planning something.");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void StopBells(RZ_Wanderer w, int playerId)
 	{
 		w.m_fBellsOffUntil = m_fClock + JOB_COOLDOWN;
-		m_GM.NotifyPlayer(playerId, w.GetTitle(), "He looks at you a long time. \"For you, a little while. They'll find their own way for an hour.\"");
+		m_GM.NotifyPlayer(playerId, w.GetTitle(), "For you, I'll stop. A little while. They'll find their own way for an hour.");
 		if (m_GM.GetStoryArcs())
 			m_GM.GetStoryArcs().OnPreacherStopped(w.m_iId, w.m_vPos);
 	}
@@ -2816,7 +2827,7 @@ class RZ_Wanderers
 		RZ_MissionManager missions = m_GM.GetMissions();
 		if ((m_mJobAt.Find(ident, last) && m_fClock - last < JOB_COOLDOWN) || missions.IsTypeRunning(RZ_Mission_CourierJob))
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Nothing right now. Someone's already carrying the last of it.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "Nothing right now. Someone's already carrying the last of it.");
 			return;
 		}
 
@@ -2824,14 +2835,14 @@ class RZ_Wanderers
 		job.Configure(m_GM);
 		if (!job.IsEligible(m_GM, playerId) || !job.Prepare(m_GM, w.m_vPos, w.GetShortName(), playerId))
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"I've letters, but nowhere they can go today. Ask me tomorrow.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "I've letters, but nowhere they can go today. Ask me tomorrow.");
 			return;
 		}
 
 		// The same check as any mission (RZ_MissionManager.CanRunNow)
 		if (!missions.StartIfCan(job, GetGame().GetPlayerManager().GetPlayerCount()))
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"I've letters, but nowhere they can go today. Ask me tomorrow.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "I've letters, but nowhere they can go today. Ask me tomorrow.");
 			return;
 		}
 
@@ -2916,7 +2927,7 @@ class RZ_Wanderers
 		if (w.m_eRole == RZ_EWandererRole.TRADER && m_Settings.m_aTraderGoods && !m_Settings.m_aTraderGoods.IsEmpty())
 		{
 			RZ_QuartermasterHelper.SpawnNear(m_Settings.m_aTraderGoods.GetRandomElement(), owner, user);
-			text = "The trader drops the pack and backs away. \"Take it. Take it and remember my face.\"";
+			text = "Take it. Take the pack, and remember my face when this is over.";
 		}
 
 		m_GM.NotifyPlayer(playerId, w.GetTitle(), string.Format("%1\nThe safehouses will hear about this. (+%2 Haven Infamy)", text, m_Settings.m_iRobInfamy));

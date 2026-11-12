@@ -190,30 +190,30 @@ class RZ_EpiText
 	{
 		switch (route)
 		{
-			case 0: return "\"The Haven has the batch in its kitchens. They're writing down names. We asked for numbers.\"";
-			case 1: return "\"The method is in a crate, and the crate is signed for. I signed for it. Twice: the first one smudged.\"";
-			case 2: return "\"They took the batch and left the paperwork. They said we could keep the paperwork.\"";
+			case 0: return "The Haven has the batch in its kitchens. They're writing down names. We asked for numbers.";
+			case 1: return "The method is in a crate, and the crate is signed for. I signed for it. Twice: the first one smudged.";
+			case 2: return "They took the batch and left the paperwork. They said we could keep the paperwork.";
 			case 3:
 			{
 				if (terms == 4)
-					return "\"It went out on the open channel at six this morning, every reading. If anyone outside is writing our numbers down, they can stop.\"";
+					return "It went out on the open channel at six this morning, every reading. If anyone outside is writing our numbers down, they can stop.";
 
-				return "\"We're doing it in order. The order is on the door. The order is correct.\"";
+				return "We're doing it in order. The order is on the door. The order is correct.";
 			}
 			case 4:
 			{
 				if (terms == 2)
-					return "\"The conditions are written on the back of my own form. They're better than the form.\"";
+					return "The conditions are written on the back of my own form. They're better than the form.";
 				if (terms == 3)
-					return "\"They're selling it at the crossroads price, minus the crossroads. I'm told that's progress.\"";
+					return "They're selling it at the crossroads price, minus the crossroads. I'm told that's progress.";
 				if (terms == 4)
-					return "\"It's somewhere safe. Nobody will tell me where. That was my line for three weeks.\"";
+					return "It's somewhere safe. Nobody will tell me where. That was my line for three weeks.";
 
-				return "\"They took the batch out of my hands and gave it to everyone. I would have done the same. Eventually.\"";
+				return "They took the batch out of my hands and gave it to everyone. I would have done the same. Eventually.";
 			}
 		}
 
-		return "\"Nobody came for it in the end. We finished it anyway. It's what we're for.\"";
+		return "Nobody came for it in the end. We finished it anyway. It's what we're for.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -254,24 +254,24 @@ class RZ_EpiText
 		{
 			switch (route)
 			{
-				case 0: return "\"Everyone gets a dose, then everyone gets a bowl. In that order, for once.\"";
-				case 1: return "\"They want our names before they'll give us a dose. We've got a list of names. We've had one for weeks.\"";
-				case 2: return "\"Two tins a dose at the crossroads. The houses are pooling. We're always pooling.\"";
-				case 3: return "\"The lab put the recipe on our board. Half of us can't read it. The nurse can. Mostly.\"";
+				case 0: return "Everyone gets a dose, then everyone gets a bowl. In that order, for once.";
+				case 1: return "They want our names before they'll give us a dose. We've got a list of names. We've had one for weeks.";
+				case 2: return "Two tins a dose at the crossroads. The houses are pooling. We're always pooling.";
+				case 3: return "The lab put the recipe on our board. Half of us can't read it. The nurse can. Mostly.";
 				case 4:
 				{
 					if (terms == 2)
-						return "\"It went out on terms. We read the terms at supper. Twice.\"";
+						return "It went out on terms. We read the terms at supper. Twice.";
 					if (terms == 3)
-						return "\"It's for sale at the north road. We're pooling.\"";
+						return "It's for sale at the north road. We're pooling.";
 					if (terms == 4)
-						return "\"Somebody has it somewhere. We've sent a note. We've sent a pot.\"";
+						return "Somebody has it somewhere. We've sent a note. We've sent a pot.";
 
-					return "\"Somebody walked in with a crate and didn't ask for anything. We've counted it twice.\"";
+					return "Somebody walked in with a crate and didn't ask for anything. We've counted it twice.";
 				}
 			}
 
-			return string.Format("\"It came to %1. Nobody fought for it. We'll take it.\"", RZ_Factions.GetNameInText(winner));
+			return string.Format("It came to %1. Nobody fought for it. We'll take it.", RZ_Factions.GetNameInText(winner));
 		}
 
 		if (faction == RZ_EFaction.MILITARY)
@@ -279,42 +279,42 @@ class RZ_EpiText
 			switch (route)
 			{
 				case 0: return "\"Cure is with the civilians. Requesting instructions. Over.\" A long hiss. \"No reply.\"";
-				case 1: return "\"Cure secured. Distribution by roster. All signed for.\"";
-				case 2: return "\"The Red Hand holds the cure. Bastion is buying it. Entered in the log as contribution.\"";
-				case 3: return "\"Published without clearance. Noted. Bastion out.\"";
-				case 4: return "\"Unauthorised distribution by civilians. Logged. Not stopped. Bastion out.\"";
+				case 1: return "Cure secured. Distribution by roster. All signed for.";
+				case 2: return "The Red Hand holds the cure. Bastion is buying it. Entered in the log as contribution.";
+				case 3: return "Published without clearance. Noted. Bastion out.";
+				case 4: return "Unauthorised distribution by civilians. Logged. Not stopped. Bastion out.";
 			}
 
-			return "\"Cure issued. Source: the lab. Logged.\"";
+			return "Cure issued. Source: the lab. Logged.";
 		}
 
 		// The boss
 		switch (route)
 		{
-			case 0: return "\"They're giving it away. You can't sell water by a river. We'll sell cups.\"";
-			case 1: return "\"Bastion's handing it out in a queue. We're selling places in the queue.\"";
+			case 0: return "They're giving it away. You can't sell water by a river. We'll sell cups.";
+			case 1: return "Bastion's handing it out in a queue. We're selling places in the queue.";
 			case 2:
 			{
 				if (terms == 1)
-					return "\"Market price. Everybody pays. That's what fair means.\"";
+					return "Market price. Everybody pays. That's what fair means.";
 
-				return "\"Already decided. Not by me. The book still balances.\"";
+				return "Already decided. Not by me. The book still balances.";
 			}
-			case 3: return "\"They gave it away. Who does that? We've gone into printing.\"";
+			case 3: return "They gave it away. Who does that? We've gone into printing.";
 			case 4:
 			{
 				if (terms == 2)
-					return "\"Somebody walked in with the only thing worth selling and gave it away on terms. Amateurs with terms.\"";
+					return "Somebody walked in with the only thing worth selling and gave it away on terms. Amateurs with terms.";
 				if (terms == 3)
-					return "\"Somebody's undercutting us with our own business model. I'm nearly proud.\"";
+					return "Somebody's undercutting us with our own business model. I'm nearly proud.";
 				if (terms == 4)
-					return "\"Holding it till the price is right. Now that I respect.\"";
+					return "Holding it till the price is right. Now that I respect.";
 
-				return "\"Free. Fine. Then nobody owes anybody. First time for everything.\"";
+				return "Free. Fine. Then nobody owes anybody. First time for everything.";
 			}
 		}
 
-		return "\"Nobody won. Everybody's buying. Best week we've had.\"";
+		return "Nobody won. Everybody's buying. Best week we've had.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -356,9 +356,9 @@ class RZ_EpiText
 	static string QueueTalk(int step)
 	{
 		if (step >= 3)
-			return "\"I've packed twice. I keep taking the kettle out.\"";
+			return "I've packed twice. I keep taking the kettle out.";
 
-		return "\"Been here since the order. Nobody's been processed. I'm keeping a place for my sister. She won't come, but it's a good place.\"";
+		return "Been here since the order. Nobody's been processed. I'm keeping a place for my sister. She won't come, but it's a good place.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -379,15 +379,15 @@ class RZ_EpiText
 	static string Resident(int step, string house, int died, int grew)
 	{
 		if (step >= 3)
-			return "\"I've packed twice. I keep taking the kettle out.\"";
+			return "I've packed twice. I keep taking the kettle out.";
 
 		if (grew > 0)
-			return string.Format("\"There's a new rota on the door. %1 names on it. No excuses.\"", grew);
+			return string.Format("There's a new rota on the door. %1 names on it. No excuses.", grew);
 
 		if (died > 0)
-			return string.Format("\"%1 of ours this season. The head reads them at supper. Then the ones we don't say.\"", died);
+			return string.Format("%1 of ours this season. The head reads them at supper. Then the ones we don't say.", died);
 
-		return "\"Gates open soon, they say. I'll believe it when I'm on the other side of one.\"";
+		return "Gates open soon, they say. I'll believe it when I'm on the other side of one.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -397,19 +397,19 @@ class RZ_EpiText
 	{
 		switch (role)
 		{
-			case 0: return "\"Tins are worth nothing and everything now. " + where + "\"";
-			case 1: return "\"If you're bitten, don't wait. " + where + "\"";
-			case 3: return "\"They'll read the roll at the north road. Nobody answers for a man like me.\"";
-			case 4: return "\"I read the names where I rest. It takes longer every town.\"";
-			case 5: return "\"Last letters. Everybody's writing to somebody who isn't there.\"";
-			case 6: return "\"Going to the queue. Everyone is.\"";
-			case 7: return "\"The road north is clear to the bend. Leave a car by the queue, if you've got one spare.\"";
+			case 0: return "Tins are worth nothing and everything now. " + where;
+			case 1: return "If you're bitten, don't wait. " + where;
+			case 3: return "They'll read the roll at the north road. Nobody answers for a man like me.";
+			case 4: return "I read the names where I rest. It takes longer every town.";
+			case 5: return "Last letters. Everybody's writing to somebody who isn't there.";
+			case 6: return "Going to the queue. Everyone is.";
+			case 7: return "The road north is clear to the bend. Leave a car by the queue, if you've got one spare.";
 		}
 
 		if (!echo.IsEmpty())
-			return "\"Worth a look: " + echo + "\"";
+			return "Worth a look: " + echo;
 
-		return "\"Places worth seeing, now there's time. Mostly boards.\"";
+		return "Places worth seeing, now there's time. Mostly boards.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -421,30 +421,30 @@ class RZ_EpiText
 			case RZ_EFaction.SURVIVORS:
 			{
 				if (step >= 3)
-					return "\"Mine's in a car on the north road. If you can hear this, the pot's still on at the houses.\"";
+					return "Mine's in a car on the north road. If you can hear this, the pot's still on at the houses.";
 
-				return "\"The houses are open. The pot's on. Bring a cup, and bring the names of anyone you've lost.\"";
+				return "The houses are open. The pot's on. Bring a cup, and bring the names of anyone you've lost.";
 			}
 			case RZ_EFaction.MILITARY:
 			{
 				if (route == 1)
-					return "\"All stations: issue at the north road from 0530. Roster first. Bastion out.\"";
+					return "All stations: issue at the north road from 0530. Roster first. Bastion out.";
 
-				return "\"All stations: listening watch at 20:30. Nothing heard so far. Bastion out.\"";
+				return "All stations: listening watch at 20:30. Nothing heard so far. Bastion out.";
 			}
 			case RZ_EFaction.BANDITS:
 			{
 				if (route == 2)
-					return "\"Crossroads board says two tins. The board is always right.\"";
+					return "Crossroads board says two tins. The board is always right.";
 
-				return "\"Queue's free at the north road. Places near the front aren't. Ask the lad.\"";
+				return "Queue's free at the north road. Places near the front aren't. Ask the lad.";
 			}
 		}
 
 		if (route == 3)
-			return "\"The lab's table is open. Order of issue on the door. Please read the door.\"";
+			return "The lab's table is open. Order of issue on the door. Please read the door.";
 
-		return "\"The lab is closed to samples. We're writing it up. It will take longer than the cure did.\"";
+		return "The lab is closed to samples. We're writing it up. It will take longer than the cure did.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -453,9 +453,9 @@ class RZ_EpiText
 	{
 		switch (faction)
 		{
-			case RZ_EFaction.MILITARY: return "\"All stations: issue to the roster first. Civilians after. Log it as priority.\"";
-			case RZ_EFaction.BANDITS: return "\"Double at the checkpoint road. Half price for the Haven. Don't tell the Haven it's half.\"";
-			case RZ_EFaction.INSTITUTE: return "\"How many copies of page one are left? Don't hand them out at the barrier.\"";
+			case RZ_EFaction.MILITARY: return "All stations: issue to the roster first. Civilians after. Log it as priority.";
+			case RZ_EFaction.BANDITS: return "Double at the checkpoint road. Half price for the Haven. Don't tell the Haven it's half.";
+			case RZ_EFaction.INSTITUTE: return "How many copies of page one are left? Don't hand them out at the barrier.";
 		}
 
 		return "";
@@ -467,10 +467,10 @@ class RZ_EpiText
 	{
 		switch (which)
 		{
-			case 0: return "\"Whose names do we read tonight?\"";
-			case 1: return "\"The 20:30 watch. Do we keep listening?\"";
-			case 2: return "\"The price. Leave it to the market?\"";
-			case 3: return "\"The thing in the isolation room. Do we keep it for the paper?\"";
+			case 0: return "Whose names do we read tonight?";
+			case 1: return "The 20:30 watch. Do we keep listening?";
+			case 2: return "The price. Leave it to the market?";
+			case 3: return "The thing in the isolation room. Do we keep it for the paper?";
 		}
 
 		return "";
@@ -485,26 +485,26 @@ class RZ_EpiText
 			case 0:
 			{
 				if (first)
-					return "\"Ours, as usual.\"";
-				return "\"All of them. The ones you put out too.\"";
+					return "Ours, as usual.";
+				return "All of them. The ones you put out too.";
 			}
 			case 1:
 			{
 				if (first)
-					return "\"Keep the watch.\"";
-				return "\"Close the net.\"";
+					return "Keep the watch.";
+				return "Close the net.";
 			}
 			case 2:
 			{
 				if (first)
-					return "\"Leave it to the market.\"";
-				return "\"Drop it now. One tin.\"";
+					return "Leave it to the market.";
+				return "Drop it now. One tin.";
 			}
 			case 3:
 			{
 				if (first)
-					return "\"Keep it for the paper.\"";
-				return "\"Let it go quiet.\"";
+					return "Keep it for the paper.";
+				return "Let it go quiet.";
 			}
 		}
 
@@ -568,15 +568,15 @@ class RZ_EpiText
 			case 0:
 			{
 				if (names.IsEmpty())
-					return "\"This is the Zone. These are our dead. We don't have all their names. We've written down the ones we have.\"";
+					return "This is the Zone. These are our dead. We don't have all their names. We've written down the ones we have.";
 
 				return "\"This is the Zone. These are our dead: " + names + ". And the ones we don't say.\"";
 			}
-			case 1: return "\"This is the Zone. The lab knew three weeks before Day 1. It's written in its own pages. We're reading them out.\"";
-			case 2: return "\"This is the Zone. Every page we found is in the open now: the List, the orders, the book's back page, the site log. Ask for them.\"";
+			case 1: return "This is the Zone. The lab knew three weeks before Day 1. It's written in its own pages. We're reading them out.";
+			case 2: return "This is the Zone. Every page we found is in the open now: the List, the orders, the book's back page, the site log. Ask for them.";
 		}
 
-		return "\"This is the Zone. We're still here.\"";
+		return "This is the Zone. We're still here.";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -103,47 +103,47 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 			case S_ACT1:
 			{
 				scene.m_vPos = lab;
-				int duty = DutyOfficer(gm, scene, "\"Batch at ninety. Reference: none. You can read the rest yourself.\"");
-				scene.Choice(duty, "Ask what's missing").Persuade(RZ_EFaction.INSTITUTE, 2, "labtech,doctor").Decides(OUT_ACT1).Says(run.Fill("\"The first isolate. It's in a dewar at {site}, behind Bastion's chain.\""), "had the duty officer say where").Refused("\"Reference: none. That's all I'm allowed.\"");
+				int duty = DutyOfficer(gm, scene, "Batch at ninety. Reference: none. You can read the rest yourself.");
+				scene.Choice(duty, "Ask what's missing").Persuade(RZ_EFaction.INSTITUTE, 2, "labtech,doctor").Decides(OUT_ACT1).Says(run.Fill("The first isolate. It's in a dewar at {site}, behind Bastion's chain."), "had the duty officer say where").Refused("Reference: none. That's all I'm allowed.");
 				if (Major(gm, "proof.first_page") == 2)
 					scene.Choice(duty, "Ask the director").Decides(OUT_ACT1).Says("The director has nothing left to hide. \"The lower store. We've known since Day 3.\"", "asked the director outright");
 
 				scene.Choice(duty, "Read the records room at night [unseen]").Sneak().Decides(OUT_ACT1).Says("The order on the chained door, filed. And a note: reference stock still wanted.", "read the records room at night");
-				int stand = scene.Person(RZ_MajorHelp.NearSeat(lab), "the director's stand-in", "Talk to the stand-in", "\"We've known where it was since Day 3.\"");
+				int stand = scene.Person(RZ_MajorHelp.NearSeat(lab), "the director's stand-in", "Talk to the stand-in", "We've known where it was since Day 3.");
 				int step = 3;
 				if (Major(gm, "weeks.record") != 0)
 					step = 2;
 
-				scene.Choice(stand, "Ask for the vial map").Persuade(RZ_EFaction.INSTITUTE, step, "labtech").Sets("map").Decides(OUT_ACT1).Says("A sketch of the dewar: four canisters, a surname and a date on the right one.", "had the vial map").Refused("\"Not before the paper is.\"");
-				scene.Choice(stand, "Sign the map out in a Halcyon coat").Trick(RZ_EFaction.INSTITUTE, 2).Sets("map").Decides(OUT_ACT1).Says("A coat, a notebook number, the map signed out. Somebody will count the numbers later.", "signed the vial map out in a borrowed coat").Refused("\"Your number isn't in the book.\"");
-				int sergeant = scene.Person(PersonAt("sergeant", lower), run.Fill("{sergeant}"), "Talk to the sergeant", "\"We chained a door up there on Day 1. Two keys. I've still got mine. Nobody ever asked.\"");
-				scene.Choice(sergeant, "Ask about the door").Decides(OUT_ACT1).Says("\"The lower store. A dewar. I never looked in it.\"", "heard about the lower store from the sergeant");
-				scene.Choice(sergeant, "Lean on the sergeant").Threaten(RZ_EFaction.MILITARY, 2).Decides(OUT_ACT1).Says("\"The lower store. Now go away.\" He'll tell his post you asked.", "leaned on the sergeant").Refused("\"I chained it. I can chain you.\"");
+				scene.Choice(stand, "Ask for the vial map").Persuade(RZ_EFaction.INSTITUTE, step, "labtech").Sets("map").Decides(OUT_ACT1).Says("A sketch of the dewar: four canisters, a surname and a date on the right one.", "had the vial map").Refused("Not before the paper is.");
+				scene.Choice(stand, "Sign the map out in a Halcyon coat").Trick(RZ_EFaction.INSTITUTE, 2).Sets("map").Decides(OUT_ACT1).Says("A coat, a notebook number, the map signed out. Somebody will count the numbers later.", "signed the vial map out in a borrowed coat").Refused("Your number isn't in the book.");
+				int sergeant = scene.Person(PersonAt("sergeant", lower), run.Fill("{sergeant}"), "Talk to the sergeant", "We chained a door up there on Day 1. Two keys. I've still got mine. Nobody ever asked.");
+				scene.Choice(sergeant, "Ask about the door").Decides(OUT_ACT1).Says("The lower store. A dewar. I never looked in it.", "heard about the lower store from the sergeant");
+				scene.Choice(sergeant, "Lean on the sergeant").Threaten(RZ_EFaction.MILITARY, 2).Decides(OUT_ACT1).Says("\"The lower store. Now go away.\" He'll tell his post you asked.", "leaned on the sergeant").Refused("I chained it. I can chain you.");
 				return true;
 			}
 			case S_DOOR:
 			{
 				scene.m_vPos = Seat(gm, RZ_EFaction.MILITARY);
-				int adj = scene.Person(scene.m_vPos, "the CO's adjutant", "Talk to the adjutant", "\"Item one-one-four stays in the safe. CO's orders.\"");
-				scene.Choice(adj, "Ask for item 114, signed out").Persuade(RZ_EFaction.MILITARY, 2, "soldier,police").Decides(OUT_DOOR).Says("Signed out to you by name. Bastion's condition goes in the terms: the result is read on its call first.", "had item 114 signed out").Refused("\"It's been signed for since Day 1. It stays signed for.\"");
+				int adj = scene.Person(scene.m_vPos, "the CO's adjutant", "Talk to the adjutant", "Item one-one-four stays in the safe. CO's orders.");
+				scene.Choice(adj, "Ask for item 114, signed out").Persuade(RZ_EFaction.MILITARY, 2, "soldier,police").Decides(OUT_DOOR).Says("Signed out to you by name. Bastion's condition goes in the terms: the result is read on its call first.", "had item 114 signed out").Refused("It's been signed for since Day 1. It stays signed for.");
 				scene.Choice(adj, "Bribe the quartermaster [40 Favor]").Bribe(RZ_EFaction.MILITARY, 40).Decides(OUT_DOOR).Says("Twenty-four hours. Bring it back, or it's your name in the book.", "bought item 114 for a day");
 				scene.Choice(adj, "Lift it off the key board [unseen]").Sneak().Decides(OUT_DOOR).Says("20:30, the call is being read. The board is in reach.", "took item 114 off the board");
 				if (Finale().PactOf(m_iRoute) == RZ_CureFinale.BASTION || Major(gm, "proof.first_page") == 4)
 					scene.Choice(adj, "Under the pact, the key").Decides(OUT_DOOR).Says("The key comes in an envelope. Bastion's condition is in the terms.", "had item 114 by the pact");
 
-				int keyholder = scene.Person(PersonAt("sergeant", lower), run.Fill("{sergeant} at dusk"), "Talk to the sergeant", "\"Nobody's to know where I sleep.\"");
+				int keyholder = scene.Person(PersonAt("sergeant", lower), run.Fill("{sergeant} at dusk"), "Talk to the sergeant", "Nobody's to know where I sleep.");
 				scene.Choice(keyholder, "Ask for the second key [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Decides(OUT_OTHER).Says("He hands it over without a word.", "had the sergeant's second key");
 				scene.Choice(keyholder, "Cut the chain instead [loud]").Side(-1, RZ_EFaction.MILITARY, 0, 10).HoldAt(lower, 180, OUT_OTHER, -1).Says("Three minutes on the chain with a crowbar. Bastion's seal breaks, and the noise carries.", "cut Bastion's chain");
 				scene.Choice(keyholder, "Pay a crew's lockpick [25 Red Hand Favor]").Bribe(RZ_EFaction.BANDITS, 25).Decides(OUT_OTHER).Says("An ex-con with a bent wire. The chain stays on; the lock doesn't.", "had the chain picked");
 				int commander = scene.Person(RZ_Mission.LandPointNear(Seat(gm, RZ_EFaction.MILITARY), 20, 40), "the outpost commander", "Talk to the commander", "A key on a bootlace round his neck. He doesn't know which door it opens.");
 				scene.Choice(commander, "Press a wax copy off it [unseen]").Sneak().Decides(OUT_DOOR).Says("Wax, a thumb, ten seconds while he sleeps. A copy of 114.", "copied item 114 off a bootlace");
-				scene.Choice(commander, "Swap it for Bastion's wrong key").Trick(RZ_EFaction.MILITARY, 2).Decides(OUT_DOOR).Says("Item 113 on the bootlace, 114 in your pocket. They look the same from the front.", "swapped item 113 for 114").Refused("\"That's not mine. Where's mine?\"");
+				scene.Choice(commander, "Swap it for Bastion's wrong key").Trick(RZ_EFaction.MILITARY, 2).Decides(OUT_DOOR).Says("Item 113 on the bootlace, 114 in your pocket. They look the same from the front.", "swapped item 113 for 114").Refused("That's not mine. Where's mine?");
 				return true;
 			}
 			case S_PIECE:
 			{
 				scene.m_vPos = lower;
-				int vet = scene.Person(PersonAt("vet", lower), "the vet with the tank", "Talk to the vet", "\"The tank holds six. The first ampoules go to my house.\"");
+				int vet = scene.Person(PersonAt("vet", lower), "the vet with the tank", "Talk to the vet", "The tank holds six. The first ampoules go to my house.");
 				scene.Choice(vet, "Borrow the tank [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sets("tank").Says("A promise: her house first. The tank keeps a real day.", "borrowed the vet's tank");
 				scene.Choice(vet, "Pay for the tank [25 Haven Favor]").Bribe(RZ_EFaction.SURVIVORS, 25).Sets("tank").Says("The tank, and a look that says she'll remember.", "paid for the vet's tank");
 				scene.Choice(vet, "Take the tank at night [unseen]").Sneak().Sets("tank").Says("The tank goes out of the surgery at night. Her house won't be first now.", "took the vet's tank at night");
@@ -173,7 +173,7 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 			case S_ACT4:
 			{
 				scene.m_vPos = lab;
-				int officer = DutyOfficer(gm, scene, "\"The reference? Into the freezers. Then we compare.\"");
+				int officer = DutyOfficer(gm, scene, "The reference? Into the freezers. Then we compare.");
 				scene.Choice(officer, "Hand in the reference stock").Sets("do:compare").Says("The comparison starts. A real day, more or less, while the lab has power.", "handed in the reference stock");
 				scene.Choice(officer, "Hold the lab while it spins [4 min]").Only("compare").Sets("do:wait:compare_until").HoldAt(lab, 240, OUT_LAST, -1).Says("The centrifuge winds up. Everything for a mile hears it.", "held the lab through the centrifuge");
 				return true;
@@ -246,7 +246,7 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. Halcyon's people choose the order of the doses.";
 		scene.m_vPos = gm.GetLabPosition();
-		int form = DutyOfficer(gm, scene, "\"The order of the doses. Write it in. It goes on the paper.\"");
+		int form = DutyOfficer(gm, scene, "The order of the doses. Write it in. It goes on the paper.");
 		scene.Choice(form, "The authors first").Decides(OUT_TERMS + 1).Says("Halcyon's own first, and the two Bastion men at the lab since Day 5.", "chose the authors first");
 		scene.Choice(form, "The volunteers first").Decides(OUT_TERMS + 2).Says("The other two and the Day 6 cohort first, by name where the names are known.", "chose the volunteers first");
 		scene.Choice(form, "By the numbers").Decides(OUT_TERMS + 3).Says("The newly bitten first. They're likeliest to walk out.", "chose by the numbers");

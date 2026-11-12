@@ -427,7 +427,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 				{
 					gm.GetFactionLife().StartRelation(RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE, RZ_FactionLife.REL_TRUCE);
 					if (gm.GetFactionLife().HasTruce(RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE))
-						SpreadRumour(gm, "\"The Haven and the lab are talking again. A list of names will do that.\"", 6);
+						SpreadRumour(gm, "The Haven and the lab are talking again. A list of names will do that.", 6);
 				}
 
 				break;
@@ -458,7 +458,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 			}
 		}
 
-		SpreadRumour(gm, "\"Eight in ten walk out. Ask the lab what the other two are for.\"", 8);
+		SpreadRumour(gm, "Eight in ten walk out. Ask the lab what the other two are for.", 8);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -513,7 +513,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage >= S_ROOM && run.m_iStage <= S_LEAD)
-			return "\"Halcyon couriers carry cold cases out to {lead_place} and come back empty-handed. Nothing lives out there that needs a cold case.\"";
+			return "Halcyon couriers carry cold cases out to {lead_place} and come back empty-handed. Nothing lives out there that needs a cold case.";
 
 		return "";
 	}

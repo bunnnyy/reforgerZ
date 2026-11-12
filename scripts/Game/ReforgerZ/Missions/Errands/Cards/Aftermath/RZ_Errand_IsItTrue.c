@@ -11,9 +11,9 @@ class RZ_Errand_IsItTrue : RZ_ErrandCard
 		m_sFamily = "aftermath";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"Somebody said: {rumour} Is it true? You could go and look. {town}'s not far.\"",
-			"\"They're saying {rumour} I want to know before I start believing it.\"");
-		Over("\"Never mind. Someone came back from {town} and told us.\"");
+		Offer("Somebody said: {rumour} Is it true? You could go and look. {town}'s not far.",
+			"They're saying {rumour} I want to know before I start believing it.");
+		Over("Never mind. Someone came back from {town} and told us.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Go to {town} and look";
@@ -22,11 +22,11 @@ class RZ_Errand_IsItTrue : RZ_ErrandCard
 		w.m_fRadius = 80;
 		w.m_sStep = "Go to {town} and see for yourself (15 s there), then tell {giver} what you saw.";
 		w.m_iFavor = 4;
-		w.Done("\"So that's how it is. Better to know. Usually.\"");
+		w.Done("So that's how it is. Better to know. Usually.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell them it's true";
-		w.Done("\"I knew it. I'll tell the others.\"");
+		w.Done("I knew it. I'll tell the others.");
 	}
 
 	//------------------------------------------------------------------------------------------------

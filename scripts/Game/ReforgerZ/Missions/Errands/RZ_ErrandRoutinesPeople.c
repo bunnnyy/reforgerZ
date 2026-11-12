@@ -15,18 +15,18 @@ class RZ_Routine_WhosAtTheGate : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "lookout";
-		Offer("\"There's someone at the gate. Says they were sent. I've let nobody in since Tuesday without a second pair of eyes.\"",
-			"\"Stranger at the gate, holding an arm. Could be a fence. Could be not. Will you look?\"");
-		Over("\"Never mind the gate. They've gone. Or someone else let them in. I'm not asking which.\"");
+		Offer("There's someone at the gate. Says they were sent. I've let nobody in since Tuesday without a second pair of eyes.",
+			"Stranger at the gate, holding an arm. Could be a fence. Could be not. Will you look?");
+		Over("Never mind the gate. They've gone. Or someone else let them in. I'm not asking which.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Let them in";
-		w.Done("\"In you come, then. Shoes off. Everyone takes their shoes off. It's a rule now.\"");
+		w.Done("In you come, then. Shoes off. Everyone takes their shoes off. It's a rule now.");
 
 		w = Way("talk");
 		w.m_sLabel = "Look them over first";
 		w.m_sBackground = "nurse,doctor,police";
-		w.Done("\"Right. Now we know. Thank you for doing it properly.\"");
+		w.Done("Right. Now we know. Thank you for doing it properly.");
 
 		w = Way("do");
 		w.m_sLabel = "Walk them to Bastion's post";
@@ -34,7 +34,7 @@ class RZ_Routine_WhosAtTheGate : RZ_ErrandDef
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_sStep = "Walk the stranger to the Bastion post {subject_place}, then come back to {giver}.";
-		w.Done("\"The army can have them. Not a nice thing to say. It's true, though.\"");
+		w.Done("The army can have them. Not a nice thing to say. It's true, though.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -110,9 +110,9 @@ class RZ_Routine_SitWithHim : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"There's a man in the back room who's bitten. He told us himself. Would you sit with him? Nobody else can face it today.\"",
-			"\"He's bitten, and he's frightened, and he's very polite about it. Sit with him a while, that's all I ask.\"");
-		Over("\"You needn't go in now. It's over. He was polite to the end.\"");
+		Offer("There's a man in the back room who's bitten. He told us himself. Would you sit with him? Nobody else can face it today.",
+			"He's bitten, and he's frightened, and he's very polite about it. Sit with him a while, that's all I ask.");
+		Over("You needn't go in now. It's over. He was polite to the end.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Sit with him";
@@ -120,7 +120,7 @@ class RZ_Routine_SitWithHim : RZ_ErrandDef
 		w.m_fSeconds = 120;
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit with him in the back room at {here} (2 minutes).";
-		w.Done("\"Thank you. He asked if you'd come back. I said probably.\"");
+		w.Done("Thank you. He asked if you'd come back. I said probably.");
 
 		w = Way("do");
 		w.m_sLabel = "Sit with him, and see to the bite";
@@ -129,7 +129,7 @@ class RZ_Routine_SitWithHim : RZ_ErrandDef
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit with him and dress the bite properly (a minute).";
-		w.Done("\"He's easier. You can tell when someone knows what they're doing. So can he.\"");
+		w.Done("He's easier. You can tell when someone knows what they're doing. So can he.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -170,15 +170,15 @@ class RZ_Routine_SitWithHim : RZ_ErrandDef
 		{
 			RZ_Tribe t = tribes.NearestTribe(at, 3000);
 			if (t)
-				return string.Format("\"The lot from %1 come out at dusk. Always the same way. I watched them from the roof for a week.\"", t.m_sPlace);
+				return string.Format("The lot from %1 come out at dusk. Always the same way. I watched them from the roof for a week.", t.m_sPlace);
 		}
 
 		array<RZ_Reason> towns = {};
 		RZ_WorldFacts.Get().Memory().ReasonsNear(at, 3000, towns, "town.infested");
 		if (!towns.IsEmpty())
-			return "\"" + towns[0].text + " That's where I got it.\"";
+			return towns[0].text + " That's where I got it.";
 
-		return "\"The well at the crossroads is good. The one by the church isn't. Tell them.\"";
+		return "The well at the crossroads is good. The one by the church isn't. Tell them.";
 	}
 }
 
@@ -197,9 +197,9 @@ class RZ_Routine_FreshChalk : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "lookout";
-		Offer("\"The chalk on the mark for {lot} is days old. Watch the edge a minute, unseen, and write today's date. People go by that mark.\"",
-			"\"Somebody needs to look at {lot} and chalk the date. If the date's old, people guess. Guessing gets people eaten.\"");
-		Over("\"Somebody chalked it already, fresh as anything. You can leave it.\"");
+		Offer("The chalk on the mark for {lot} is days old. Watch the edge a minute, unseen, and write today's date. People go by that mark.",
+			"Somebody needs to look at {lot} and chalk the date. If the date's old, people guess. Guessing gets people eaten.");
+		Over("Somebody chalked it already, fresh as anything. You can leave it.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Watch the edge, unseen";
@@ -209,7 +209,7 @@ class RZ_Routine_FreshChalk : RZ_ErrandDef
 		w.m_bUnseen = true;
 		w.m_sStep = "Watch the edge of the ground {lot} keep, {subject_place}, for 30 s without being seen, then chalk the date on the mark. Report to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"Today's date. In your writing. That's a good thing to have on a gatepost.\"");
+		w.Done("Today's date. In your writing. That's a good thing to have on a gatepost.");
 
 		w = Way("do");
 		w.m_sLabel = "Read them by their call at dusk";
@@ -219,12 +219,12 @@ class RZ_Routine_FreshChalk : RZ_ErrandDef
 		w.m_fRadius = 60;
 		w.m_sStep = "From 300 m out {subject_place}, listen for {lot} calling at dusk (20 s), then chalk the date. Report to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"By ear. I've heard of people who can. I'd never met one.\"");
+		w.Done("By ear. I've heard of people who can. I'd never met one.");
 
 		w = Way("lie");
 		w.m_sLabel = "Chalk the date without looking";
 		w.m_iFavor = 3;
-		w.Done("\"Lovely. That'll do people some good.\"");
+		w.Done("Lovely. That'll do people some good.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -304,9 +304,9 @@ class RZ_Routine_FellOff : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_sRoles = "sentry,mechanic";
 		m_bTimed = true;
-		Offer("\"A rifle fell off the inventory. It's not lost. I know exactly where it is. It's at the fence's, and the count is at the shift change.\"",
-			"\"Shift change soon, and the rack's one short. I sold it. Well. Somebody sold it. I need it back before the count.\"");
-		Over("\"The count's done. It came out right. Don't ask me how. I really don't know.\"");
+		Offer("A rifle fell off the inventory. It's not lost. I know exactly where it is. It's at the fence's, and the count is at the shift change.",
+			"Shift change soon, and the rack's one short. I sold it. Well. Somebody sold it. I need it back before the count.");
+		Over("The count's done. It came out right. Don't ask me how. I really don't know.");
 
 		RZ_ErrandWay w = Way("pay");
 		w.m_sLabel = "Buy it back from the fence";
@@ -318,7 +318,7 @@ class RZ_Routine_FellOff : RZ_ErrandDef
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_sStep = "Buy the rifle back at the Red Hand's place {subject_place} (paid already), then bring it to {giver} before the count.";
-		w.Done("\"That's it. That's the one. I'd know that scratch anywhere. I made it.\"");
+		w.Done("That's it. That's the one. I'd know that scratch anywhere. I made it.");
 
 		w = Way("report");
 		w.m_sLabel = "Tell the sergeant";
@@ -334,7 +334,7 @@ class RZ_Routine_FellOff : RZ_ErrandDef
 		w.m_fRadius = 30;
 		w.m_sStep = "Sell his spare magazine to the Red Hand's lookout {subject_place}, quietly, and bring him what it fetched.";
 		w.m_iFavor = 6;
-		w.Done("\"Tins. Good. Don't tell me which crew. I'd rather not know which crew.\"");
+		w.Done("Tins. Good. Don't tell me which crew. I'd rather not know which crew.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -404,9 +404,9 @@ class RZ_Routine_Sandbags : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_sRoles = "sentry";
-		Offer("\"The wire took a beating. Sandbags at the gap, two high, before it's dark. Shovels by the gate.\"",
-			"\"We've a gap in the line where the bags went. Fill, tie, stack. Two minutes. You'll ache.\"");
-		Over("\"Gap's filled. The relief did it before you got the shovel.\"");
+		Offer("The wire took a beating. Sandbags at the gap, two high, before it's dark. Shovels by the gate.",
+			"We've a gap in the line where the bags went. Fill, tie, stack. Two minutes. You'll ache.");
+		Over("Gap's filled. The relief did it before you got the shovel.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fill and stack sandbags";
@@ -415,7 +415,7 @@ class RZ_Routine_Sandbags : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Fill and stack sandbags at the gap by the gate (2 minutes).";
 		w.m_iFavor = 5;
-		w.Done("\"Regulation height. Near enough. Thank you.\"", "\"That'll stop a bullet. Not a big one. A polite one.\"");
+		w.Done("Regulation height. Near enough. Thank you.", "That'll stop a bullet. Not a big one. A polite one.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -443,9 +443,9 @@ class RZ_Routine_RentsDue : RZ_ErrandDef
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "toll man,lookout";
 		m_bTimed = true;
-		Offer("\"Every crossroads pays somebody. At dusk it's {lot}. Get up on the lorry roof and count them past. Don't wave.\"",
-			"\"Rent's due. Theirs, not ours. Count {lot} going by at dusk so we know how many to not argue with.\"");
-		Over("\"Never mind the count. Somebody's done it, or they didn't come. Either way, drink up.\"");
+		Offer("Every crossroads pays somebody. At dusk it's {lot}. Get up on the lorry roof and count them past. Don't wave.",
+			"Rent's due. Theirs, not ours. Count {lot} going by at dusk so we know how many to not argue with.");
+		Over("Never mind the count. Somebody's done it, or they didn't come. Either way, drink up.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Count them from the lorry roof";
@@ -455,12 +455,12 @@ class RZ_Routine_RentsDue : RZ_ErrandDef
 		w.m_bUnseen = true;
 		w.m_sStep = "Count {lot} passing from {place}, unseen (2 minutes), then tell {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"That many. Right. We'll be indoors, then.\"");
+		w.Done("That many. Right. We'll be indoors, then.");
 
 		w = Way("lie");
 		w.m_sLabel = "Make a number up";
 		w.m_iFavor = 3;
-		w.Done("\"That few? Lovely. Doors open, then.\"");
+		w.Done("That few? Lovely. Doors open, then.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -502,9 +502,9 @@ class RZ_Routine_TheNumber : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		m_sRoles = "lab assistant,technician";
-		Offer("\"A dose didn't take today. We write a number, not a name. Would you sit with the night shift? We're not good company. That's rather the point.\"",
-			"\"Number forty-something went home in a bag tonight. Sit with us a while. You needn't talk. We don't.\"");
-		Over("\"It's all right. The shift changed. The new ones didn't see it.\"");
+		Offer("A dose didn't take today. We write a number, not a name. Would you sit with the night shift? We're not good company. That's rather the point.",
+			"Number forty-something went home in a bag tonight. Sit with us a while. You needn't talk. We don't.");
+		Over("It's all right. The shift changed. The new ones didn't see it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Sit with the night shift";
@@ -512,7 +512,7 @@ class RZ_Routine_TheNumber : RZ_ErrandDef
 		w.m_fSeconds = 90;
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit with the night shift at {here} a while (90 s).";
-		w.Done("\"Thank you. The number stays a number. But someone sat with it.\"");
+		w.Done("Thank you. The number stays a number. But someone sat with it.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)

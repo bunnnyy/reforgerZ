@@ -86,17 +86,17 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 		m_Job.Read("halcyon", "labtech", "The cool box is Halcyon's. The number's scratched off, but the lab's tape is still on the hinge.");
 		m_Job.Read("samples", "excon,raider", "The usual price at the usual drop. This crew sells on to someone who pays better.");
 
-		string reveal = "\"Somebody pays more than me. That's all anybody's for.\"";
+		string reveal = "Somebody pays more than me. That's all anybody's for.";
 		if (truth == "cut")
-			reveal = "\"Mixed with saline, a label on, sold to the houses as the cure. Don't make that face. It's mostly saline.\"";
+			reveal = "Mixed with saline, a label on, sold to the houses as the cure. Don't make that face. It's mostly saline.";
 		else if (truth == "halcyon")
-			reveal = "\"Between us? A man from the lab buys them back. His bosses think he finds them.\"";
+			reveal = "Between us? A man from the lab buys them back. His bosses think he finds them.";
 
 		RZ_TalkScene sc = m_Job.Scene("The buyer", "deaddrop.buyer", LandPointNear(m_vPos, 4, 8));
 		int n0 = sc.Node("A man in rubber gloves sits by the drop. \"Fresh, please. I'm not paying for last week's.\"");
-		int n1 = sc.Node("\"You're asking a lot of questions for a seller.\"");
-		sc.Ask(n0, "\"What are they for?\"", n1, reveal, true);
-		sc.Way(n0, "\"Pay me in person.\"", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FACE, "\"Face to face, then. Better rate. Longer memory.\"", "\"In the drop, like everyone.\"");
+		int n1 = sc.Node("You're asking a lot of questions for a seller.");
+		sc.Ask(n0, "What are they for?", n1, reveal, true);
+		sc.Way(n0, "Pay me in person.", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FACE, "Face to face, then. Better rate. Longer memory.", "In the drop, like everyone.");
 		if (truth == "cut")
 			sc.Decide(n1, "Warn the houses", "warn the houses about the doses", WAY_WARN, "You'll put it on the house radio: the cheap cure is saline. The buyer packs his box without a word.", RZ_EFaction.SURVIVORS);
 		else if (truth == "halcyon")
@@ -383,7 +383,7 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 		// Stock the Pit: two caged young come out in the last round (docs/MISSIONS.md)
 		RZ_Tribes tribes = gm.GetTribes();
 		if (tribes && tribes.GetPeople().IsOn() && tribes.GetPeople().TakePitStock(m_sStockCrew, m_sStockPrefab))
-			m_sBrief += string.Format(" \"Fresh hires tonight, from %1.\"", m_sStockCrew);
+			m_sBrief += string.Format(" Fresh hires tonight, from %1.", m_sStockCrew);
 
 		return true;
 	}
@@ -650,12 +650,12 @@ class RZ_Mission_ZombieBait : RZ_Mission
 		if (went == RZ_HordeWhere.EMPTY)
 		{
 			m_fRewardScale = 0.5;
-			NotifyParticipants(gm, m_sTitle, "\"Into an empty town. Lovely. Very kind. Half.\"");
+			NotifyParticipants(gm, m_sTitle, "Into an empty town. Lovely. Very kind. Half.");
 			return;
 		}
 
 		m_fRewardScale = 0;
-		NotifyParticipants(gm, m_sTitle, "\"Past our own camp. Our own. You're not getting paid for that, and you know why.\"");
+		NotifyParticipants(gm, m_sTitle, "Past our own camp. Our own. You're not getting paid for that, and you know why.");
 	}
 
 	protected static const float HEAT_NEEDED = 60;

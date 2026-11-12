@@ -13,9 +13,9 @@ class RZ_Errand_ShoesInARow : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"They leave their shoes in a row by {lair}. Nobody knows why. Count them for the book. From a distance. A long distance.\"",
-			"\"The book has a page for {lair}. It wants a number. Count the shoes, unseen, and come back with it.\"");
-		Over("\"Never mind. The count's been done. Somebody braver. Or stupider.\"");
+		Offer("They leave their shoes in a row by {lair}. Nobody knows why. Count them for the book. From a distance. A long distance.",
+			"The book has a page for {lair}. It wants a number. Count the shoes, unseen, and come back with it.");
+		Over("Never mind. The count's been done. Somebody braver. Or stupider.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Count the shoes, unseen";
@@ -25,7 +25,7 @@ class RZ_Errand_ShoesInARow : RZ_ErrandCard
 		w.m_bUnseen = true;
 		w.m_sStep = "Count the shoes by {lair} from {subject_place}, unseen (30 s hidden there), then tell {giver}.";
 		w.m_iFavor = 5;
-		w.Done("\"{count}. Written. In ink, even. Thank you.\"");
+		w.Done("{count}. Written. In ink, even. Thank you.");
 
 		w = Way("sneak");
 		w.m_sLabel = "Count them from further off";
@@ -36,12 +36,12 @@ class RZ_Errand_ShoesInARow : RZ_ErrandCard
 		w.m_bUnseen = true;
 		w.m_sStep = "Count the shoes by {lair} from 150 m out, unseen (30 s hidden there), then tell {giver}.";
 		w.m_iFavor = 5;
-		w.Done("\"{count}, from that far? I'll put a note: counted by someone who knew how.\"");
+		w.Done("{count}, from that far? I'll put a note: counted by someone who knew how.");
 
 		w = Way("lie");
 		w.m_sLabel = "Make a number up";
 		w.m_iFavor = 3;
-		w.Done("\"About that many. I'll write 'about'.\"");
+		w.Done("About that many. I'll write 'about'.");
 	}
 
 	//------------------------------------------------------------------------------------------------

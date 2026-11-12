@@ -65,10 +65,10 @@ class RZ_DialogueMakeRight
 			return "off";
 
 		if (WasMadeRight(ctx))
-			return "\"We did this once. I don't do it twice in a season.\"";
+			return "We did this once. I don't do it twice in a season.";
 
 		if (Pending(ctx.m_iPlayer, ctx.m_Leader.m_iId))
-			return "\"You know what it takes. Go and do it.\"";
+			return "You know what it takes. Go and do it.";
 
 		return "";
 	}
@@ -98,7 +98,7 @@ class RZ_DialogueMakeRight
 
 		RZ_TalkReply r = new RZ_TalkReply();
 		r.m_iId = VERB;
-		r.m_sLabel = "\"What would it take?\"";
+		r.m_sLabel = "What would it take to fix this?";
 		r.m_sTag = "[Make it right]";
 		r.m_bOwn = true;
 		if (!why.IsEmpty())
@@ -132,7 +132,7 @@ class RZ_DialogueMakeRight
 
 		if (offer.IsEmpty())
 		{
-			s.m_aNew.Insert("\"Nothing I'd trust you with today. Ask me tomorrow.\"");
+			s.m_aNew.Insert("Nothing I'd trust you with today. Ask me tomorrow.");
 			return;
 		}
 
@@ -156,13 +156,13 @@ class RZ_DialogueMakeRight
 	{
 		switch (f)
 		{
-			case RZ_EFaction.SURVIVORS: return "\"Work. The kind you do for people who can't thank you. Then we'll see.\"";
-			case RZ_EFaction.MILITARY: return "\"A job, done properly, signed for. Then the file gets a new page.\"";
-			case RZ_EFaction.BANDITS: return "\"Everything's for sale. Even this. Here's the price, and it isn't Favor.\"";
-			case RZ_EFaction.INSTITUTE: return "\"A contribution. Measurable. We'll revise our notes afterwards.\"";
+			case RZ_EFaction.SURVIVORS: return "Work. The kind you do for people who can't thank you. Then we'll see.";
+			case RZ_EFaction.MILITARY: return "A job, done properly, signed for. Then the file gets a new page.";
+			case RZ_EFaction.BANDITS: return "Everything's for sale. Even this. Here's the price, and it isn't Favor.";
+			case RZ_EFaction.INSTITUTE: return "A contribution. Measurable. We'll revise our notes afterwards.";
 		}
 
-		return "\"Do something useful. Then come back.\"";
+		return "Do something useful. Then come back.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ class RZ_DialogueMakeRight
 		if (idx >= 0 && idx < l.m_aMemFlags.Count())
 			l.m_aMemFlags[idx] = l.m_aMemFlags[idx] - (l.m_aMemFlags[idx] & RZ_Leaders.MEM_CROSSED);
 
-		gm.NotifyPlayer(m.m_iPlayer, l.GetHeader(), "\"That's done, then. We start again. Don't make me regret it.\"");
+		gm.NotifyPlayer(m.m_iPlayer, l.GetHeader(), "That's done, then. We start again. Don't make me regret it.");
 		RZ_Log.Info(string.Format("Dialogue: made right %1 with %2", RZ_Util.PlayerName(m.m_iPlayer), m.m_sKey));
 	}
 }

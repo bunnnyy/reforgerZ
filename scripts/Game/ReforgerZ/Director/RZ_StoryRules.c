@@ -349,7 +349,7 @@ class RZ_StoryRules
 
 			r.m_aGreeted.Insert(p.m_sIdentity);
 			string name = crew.Substring(head.Length(), crew.Length() - head.Length());
-			gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.BANDITS), string.Format("\"%1. Last season the book balanced. The crews remember who held the pen.\"", name));
+			gm.NotifyPlayer(playerId, RZ_Factions.GetName(RZ_EFaction.BANDITS), string.Format("%1. Last season the book balanced. The crews remember who held the pen.", name));
 			return;
 		}
 	}

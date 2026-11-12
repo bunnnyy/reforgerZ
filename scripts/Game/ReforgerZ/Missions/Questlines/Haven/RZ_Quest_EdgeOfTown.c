@@ -434,7 +434,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 						q.SetWorldFlag("walk.truce", 1);
 				}
 
-				SpreadRumour(gm, "\"The Haven sends its bitten to the lab now. Most of them come back. The ones who don't get a number.\"", 8);
+				SpreadRumour(gm, "The Haven sends its bitten to the lab now. Most of them come back. The ones who don't get a number.", 8);
 				return;
 			}
 			case E_WALKS:
@@ -443,7 +443,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 				NudgeMorale(gm, RZ_EFaction.INSTITUTE, -3);
 				Headline(gm, run.Fill("{walker} still walks people out of {walkhouse} at dusk. The house says his name now, at supper, with the others."), false);
-				SpreadRumour(gm, run.Fill("\"In {walkhouse} they still walk you out, if it comes to it. {walker} holds your hand. Better than a number.\""), 8);
+				SpreadRumour(gm, run.Fill("In {walkhouse} they still walk you out, if it comes to it. {walker} holds your hand. Better than a number."), 8);
 				return;
 			}
 			case E_CUT:
@@ -453,7 +453,7 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 0, 10, RZ_EQuestApproach.SIDE);
 				RZ_HavenQuest.TakePeople(gm, run.Flag("walkhouse", -1), 2);
 				Headline(gm, "Half of them walked out. The Red Hand calls that a good rate.");
-				SpreadRumour(gm, "\"The Red Hand's dose works half the time. The houses owe them for every one of it.\"", 8);
+				SpreadRumour(gm, "The Red Hand's dose works half the time. The houses owe them for every one of it.", 8);
 			}
 		}
 	}
@@ -462,10 +462,10 @@ class RZ_Quest_EdgeOfTown : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage == S_TALLY || run.m_iStage == S_NUMBERS)
-			return "\"In {walkhouse} they walk you to the edge of town at dusk, if you're bitten. Somebody comes back alone. Every time.\"";
+			return "In {walkhouse} they walk you to the edge of town at dusk, if you're bitten. Somebody comes back alone. Every time.";
 
 		if (run.m_iStage == S_OFFERS)
-			return "\"The lab wants the Haven's bitten. The Red Hand wants to sell the Haven a cheap cure. Guess which one the houses can afford.\"";
+			return "The lab wants the Haven's bitten. The Red Hand wants to sell the Haven a cheap cure. Guess which one the houses can afford.";
 
 		return "";
 	}
@@ -1062,7 +1062,7 @@ class RZ_QM_EdgeOffers : RZ_HavenQM
 		{
 			int playerId = gm.GetQuestlines().OnlineId(ident);
 			if (playerId > 0 && RZ_QuestApproach.HasBackground(gm, playerId, "radioham"))
-				gm.NotifyPlayer(playerId, "Secure channel: Halcyon", QFill(gm, "\"{director} to all Haven houses. The lab will accept every bitten member of the Haven who presents in time. Doses for your clinics at Known prices. Eight in ten. We will be honest about the other two.\""));
+				gm.NotifyPlayer(playerId, "Secure channel: Halcyon", QFill(gm, "{director} to all Haven houses. The lab will accept every bitten member of the Haven who presents in time. Doses for your clinics at Known prices. Eight in ten. We will be honest about the other two."));
 		}
 
 		return true;
@@ -1314,7 +1314,7 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 
 		if (playerId != m_iCarrier)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Whoever's carrying it brings it in.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Whoever's carrying it brings it in.");
 			return;
 		}
 

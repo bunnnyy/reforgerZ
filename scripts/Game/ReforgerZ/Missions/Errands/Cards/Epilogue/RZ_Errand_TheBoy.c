@@ -10,9 +10,9 @@ class RZ_Errand_TheBoy : RZ_EpiCard
 		m_sTitle = "The Boy";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"The boy from the farm is still on the roads. {kid}. Somebody has to bring him in before the gates open, and he won't come for me.\"",
-			"\"{kid} sleeps in barns. Find him. The queue, or here: his choice, but not the road.\"");
-		Over("\"Never mind. {kid} turned up at the gate this morning. Alone.\"");
+		Offer("The boy from the farm is still on the roads. {kid}. Somebody has to bring him in before the gates open, and he won't come for me.",
+			"{kid} sleeps in barns. Find him. The queue, or here: his choice, but not the road.");
+		Over("Never mind. {kid} turned up at the gate this morning. Alone.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk {kid} to the queue";
@@ -22,7 +22,7 @@ class RZ_Errand_TheBoy : RZ_EpiCard
 		w.m_sStep = "Find {kid} {where} and talk the boy into the queue (15 s together), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"The queue? Good. A line is somewhere to stand, at least.\"");
+		w.Done("The queue? Good. A line is somewhere to stand, at least.");
 
 		w = Way("do");
 		w.m_sLabel = "Bring {kid} to this house";
@@ -32,7 +32,7 @@ class RZ_Errand_TheBoy : RZ_EpiCard
 		w.m_sStep = "Find {kid} {where} and bring the boy here (15 s together), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"Here. Good. We've a blanket and a bowl. That's what we've got.\"");
+		w.Done("Here. Good. We've a blanket and a bowl. That's what we've got.");
 	}
 
 	//------------------------------------------------------------------------------------------------

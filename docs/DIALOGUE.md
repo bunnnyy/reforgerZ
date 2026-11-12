@@ -27,6 +27,7 @@ What you know rows), `Dialogue/Pack/` (generated). Server only, except the scree
 ## Contents
 
 - [The talk screen](#the-talk-screen)
+- [No filler greeting](#no-filler-greeting)
 - [Trees: hubs, topics and nodes](#trees-hubs-topics-and-nodes)
 - [Who talks](#who-talks)
 - [Checks and tags](#checks-and-tags)
@@ -74,8 +75,11 @@ up to 8 labelled slots, or (a quartermaster, the medic) their own actions. The e
 rewrite them; it wraps them:
 
 - **Greeting:** their Talk handler, run while the engine *captures* the player's notices and
-  spoken lines. Lines under the speaker's title (a leader's is known; otherwise the first title the
-  greeting uses) go into the screen as theirs. So does everything else the handler tells you, so
+  spoken lines. It says only what they really have to say now: with nothing, the screen opens straight
+  on your replies ([No filler greeting](#no-filler-greeting)). Captured lines under the speaker's
+  title (a leader's, a quartermaster's, a wanderer's, an occupant's, a resident's and a holding
+  person's are known before the greeting; otherwise the first title it uses) go into the screen as
+  theirs, without their name in front: it's at the top right only. So does everything else the handler tells you, so
   every answer is in the screen: another title's notice ("Nothing happens", a standing change) as
   it is, another person's line with their name in front. A line the journal also needs (a contract
   or an off-the-books offer, a mission's end, a background unlocked, anything tagged as about you
@@ -84,14 +88,32 @@ rewrite them; it wraps them:
   radio channel's voice in the radio-line box, [UI.md](UI.md#subtitles-and-the-reader)). A line from
   the speaker that arrives later (a treatment finishing) also goes into the screen while it's open.
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
-  **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me? (with
-  Trees on, talk carries them: [Hubs](#hubs-work-comes-out-of-talk)).
+  the way out. On the screen each built reply is what you'd say, not the action's name
+  (`Dialogue/RZ_TalkWords.c`, by the speaker's faction; the label itself stays the world prompt's and
+  the object menu's): a leader's Ask for work is *Got any work for me?* to Bastion and *Is there
+  anything the house needs doing?* at the Haven, Heard anything? *What's in the morning report?*, Rob
+  *Hand over the bag. Slowly, and nobody gets hurt.* A check or cost after a label ("Fix it
+  [Mechanic]") becomes the reply's tag, in front of the words. An errand's ways on offer are said as
+  what you agree to (*I'll fetch the cleaning kits.*, *Not now. Ask me again another time.*). The way
+  out is said to this person: *I'll let you get on.* (the Haven), *That's all for now.* (Bastion),
+  *I'll be on my way.* (the Red Hand), *I won't keep you from your work.* (Halcyon), *Look after
+  yourself. I have to go.* (a stranger), else *I'll be going.* How replies are written:
+  [WRITING.md](WRITING.md#talk). With Trees on, talk carries a leader's asks ([Hubs](#hubs-work-comes-out-of-talk)).
+- **A leader's job** (Ask for work said straight to them, not through a conversation): their own
+  job is explained first, in their voice: their intro, the brief and their sign-off, where it is,
+  what it pays (Favor and Fame) and the danger (off the stronghold's books, a rival who'll remember
+  you, your background's edge). Then the replies are *I'll do it.* and *Not today.*: yes hires you for
+  it (your Quests tab, and a short card), no leaves it with them (`RZ_Leaders.PitchWork`,
+  `TakeWork`). With no job of their own, the stronghold's contracts are listed, or there's nothing
+  today, as built. Through a conversation's `call:slot:0` the talk already led there: the job is
+  yours as built, its pitch the answer.
 - **A quartermaster or the medic** (`RZ_TalkStaff`): their name is their role ("The quartermaster",
-  sub-line "The Haven - quartermaster - Morton"), their greeting one line in the faction's voice,
-  and their replies their own actions in the prefab's order: **Trade** (opens the [shop
-  screen](UI.md#the-shop-screen), while it's used), **Ask for whoever's in charge** (the seat's
-  leader takes the conversation over in the same screen, greeting, topics and all; nobody in the
-  chair, or held, and they say so), **Ask for the trial dose** on Halcyon's (greyed with what it
+  sub-line "The Haven - quartermaster - Morton"), no greeting (they have nothing to say until you
+  do), and their replies their own actions in the prefab's order, said as speech: **Trade** (*Show
+  me what you've got.*, *I need to draw from stores.*...; opens the [shop
+  screen](UI.md#the-shop-screen), while it's used), **Ask for whoever's in charge** (*Who's in charge
+  here? I'd like a word.*; the seat's leader takes the conversation over in the same screen, topics
+  and all, saying only what they have to say; nobody in the chair, or held, and they say so), **Ask for the trial dose** on Halcyon's (greyed with what it
   needs until it applies: "for the bitten only", "the bite hasn't taken yet", "once a life: you've
   had yours", "not for you"), and the Haven house's services (Ask how things are, Hand over food,
   Listen to the safehouse radio, Ask the medic to patch you up, Tell them you've been bitten, Ask for
@@ -102,10 +124,11 @@ rewrite them; it wraps them:
 - **A pick** runs that slot's handler, capturing again. Their answer shows on its own, then
   the replies after it (the hub's again, or the node's), New Vegas style: the two steps are the
   client's, from one node ([UI.md](UI.md#the-talk-screen)). A reply that says nothing
-  at all is answered "(They have nothing to add to that.)". It closes only when you leave, when
+  at all is answered "(They have nothing to add to that.)"; a tree's pick back to the hub with
+  nothing new shows no line, only the replies. It closes only when you leave, when
   danger or distance ends it, or when the reply opens another screen (the shop, the reader): that
   screen takes over. A tree choice that ends the conversation (`end`) shows their last words with
-  only I'll be going.; with nothing said, it closes at once.
+  only the way out; with nothing said, it closes at once.
 - **Five at most on the screen.** The server sends a page of the list: up to four replies and the
   way out, with the page and the count. When there's more than one page the screen shows which one
   you're on ("1/2" and the arrows); down past the last reply or up past the first turns it, and
@@ -119,6 +142,42 @@ rewrite them; it wraps them:
   you've picked in this conversation (forgotten when it ends); with Trees on, a topic or a choice
   whose nodes you've seen through ([below](#trees-hubs-topics-and-nodes)). The screen's own rows
   and the admins' are never grey.
+
+### No filler greeting
+
+✅ The author's rule from play-testing: nobody says a default hello. When you talk to someone, the
+screen opens straight on your replies, their name at the top right, unless they actually have
+something to say first. Code: `RZ_Dialogue.Start` (`RZ_TalkSession.m_bQuiet`, `RZ_Dialogue.Quiet`),
+`RZ_DialogueTrees.Opening` and `GoHub`.
+
+- **They speak first** when they called you over (a greet that opens by itself:
+  [Who opens a conversation](#who-opens-a-conversation)), an opening's contact as each step starts,
+  and a stranger (their call-out). Then their greeting is said in full, as written.
+- **Otherwise the greeting is quiet.** A conversation's greet says only its `say? <conditions> ::`
+  lines whose conditions hold, never a plain `say`: a first meeting (`say? !met :: ...`), a callback
+  or a promise, news, an event, their state. Consecutive `say?` lines are alternatives: the first one
+  that holds is said (it stands in for the next plain say), so one greet line shows at most per
+  group. What's still promised to them is said, as before.
+- **The built greetings stay quiet too.** A leader says a refusal, a first meeting, what you did for
+  their people, a questline's line, or that they have a job for you; their hello, the news and the
+  faction's need wait to be asked. A wanderer says a refusal, a barter step, what they've lost
+  (the mood line), the epilogue week, a story arc's or a questline's line, the road's word about the
+  farm, and a bite on their own arm; their introduction, road news and warnings wait. An occupant says
+  only a refusal (Ask how things are gives the house's state); a safehouse resident says what's wrong
+  at the house this shift; a holding's person says nothing; a quartermaster and the medic say nothing.
+  An opening's contact you come back to says nothing (*What was it you needed?* is their reply). The
+  Long Table's people, a road post's speaker, the locals and a mission's people speak as built: what
+  they say is the point of talking to them.
+- **Back at the hub** after a topic, nothing is said unless the pick said something new: the greeting
+  isn't repeated. A topic's own start node isn't a greeting: you picked it, so its lines are said in
+  full.
+- **`met` for every speaker.** `met` is true once you've talked to that speaker this life: a
+  leader's and a wanderer's built memory, and for everyone else (occupants, residents, named people,
+  strangers, posts, the table, an opening's contact) the talk memory's note `<speaker key>|met`, left
+  when the screen opens (`RZ_DialogueTrees.MarkMet`; the notes are per character, so a new life meets
+  everyone again). It's read as it was when the conversation opened, so `say? !met :: <intro>` shows
+  once, on the first conversation, and stays a first meeting to the end of it.
+- With nothing to say and nobody there (a leader away from their seat), no screen opens, as before.
 - **Shown before you choose, never rolled.** A reply you can't take stays in the list, dim, with
   what it needs: a price in Favor in its label ("Buy supplies", needs 20 Haven Favor, you have 12),
   "Give them your antidote" (you have none), "Share some food" and "Hand over food" (you have
@@ -154,7 +213,8 @@ one above**, and nothing on this page below this line runs, except the memory fi
 With Trees on, Talk opens a **hub**:
 
 - **The greeting:** the built one, as above. A **greet** conversation whose `when` holds puts its
-  lines first ("There's a candle in the window, and people are talking more quietly than usual.").
+  `say?` lines that hold first (a first meeting, *There's a candle in the window tonight. We lost
+  someone.*); its plain says only when they called you over ([No filler greeting](#no-filler-greeting)).
   A leader's greeting line for someone they've met is their **opening** in reputation's voice
   ([REPUTATION.md](REPUTATION.md#what-people-call-you)).
 - **Verbs:** the person's built replies, unchanged (Share some food, Rob, a shop, a service...),
@@ -165,10 +225,10 @@ With Trees on, Talk opens a **hub**:
   list after the verbs, a page at a time on the screen ([above](#the-talk-screen)). A topic you've
   opened that still has more in it is tagged "heard"; one with nothing new is grey. `once` topics
   go for this life at that speaker, `daily` ones for a real day.
-- **I'll be going.**, always.
+- **The way out**, always.
 
 A topic opens its first **node**: the speaker says one to three lines, and you pick a **choice**
-(at most 6, plus I'll be going., paged as above). A choice goes to another node, back to the hub
+(at most 6, plus the way out, paged as above). A choice goes to another node, back to the hub
 (`hub`), back a node (`back`), or ends the conversation (`end`). Nodes can jump on conditions.
 Picking a choice reads its condition and the conversation's `when` again in the live world; if
 either no longer holds, they "didn't catch that". A choice with a price is refused within 1.5 s of
@@ -541,7 +601,7 @@ A catch taking your kit doesn't count as changing clothes.
 ## Make it right
 
 **Dialogue > Make it right** (on), with Trees. A leader who won't deal with you on attitude (−2 or
-below) still offers one reply, tagged **[Make it right]**: *"What would it take?"*. The Hunted don't
+below) still offers one reply, tagged **[Make it right]**: *What would it take to fix this?* The Hunted don't
 get it (they have the [parley](REPUTATION.md#the-parley-and-the-knock)).
 
 - It reserves that faction's amends contract for you for an hour, the parley's own pick (the Haven's
@@ -706,7 +766,7 @@ is off.
 | `regard`, `face`, `seen`, `claim`, `knows` | `regard>=2`, `face:bastion`, `seen:haven.leader.list/told`, `claim:alone`, `knows:haven.list` | memory |
 | `item`, `armed`, `bite_shown`, `stage` | `item:food*2`, `stage:weakness` | you carry food; a firearm; the HUD shows a bite; the infection stage |
 | Time and season | `night`, `dusk`, `hour>=17`, `day>=5`, `outbreak:collapse`, `cure>=50`, `epilogue`, `mood:grim` | the world facts; the season mood ([WRITING.md](WRITING.md#the-season-mood)) |
-| The speaker | `trait:greedy`, `loyalty:rogue`, `attitude>=1`, `stronghold`, `role:toll_man`, `met`, `helped`, `saved`, `crossed` | the leader's record; the built memory bits of this life |
+| The speaker | `trait:greedy`, `loyalty:rogue`, `attitude>=1`, `stronghold`, `role:toll_man`, `met`, `helped`, `saved`, `crossed` | the leader's record; the built memory bits of this life (a leader's or wanderer's); `met` works for every speaker and is read as it was when the conversation opened ([No filler greeting](#no-filler-greeting)) |
 | Place | `house:short`, `house:fed`, `house:died`, `house:medic`, `town:held=redhand`, `town:infection>=60`, `need:food` | the speaker's house, the nearest town, the faction's need |
 | Wanderers | `wbitten`, `kidlost` | this wanderer is bitten; the Kid is lost and nobody is walking them |
 | The Long Table | `table:guest`, `table:family`, `table:crossed` | its three words, as built |
@@ -784,8 +844,9 @@ about the bound town is learned the moment you walk into it while its infection 
 A `dry` choice is a node's wry way of saying what another choice in the same node says: the lint
 holds it to the same targets, check, cost and effects ([WRITING.md](WRITING.md#conversations)).
 
-A choice's label is everything between `@id` and ` -> `: speech in quotes, actions as plain words,
-40 characters or fewer. Choice ids are unique in a conversation, and memory is keyed by
+A choice's label is everything between `@id` and ` -> `: what the player says, word for word, without
+quotation marks ([WRITING.md](WRITING.md#talk)), 40 characters or fewer. A say is spoken straight to the
+player: no quotation marks, no name in front (a `(role)` says someone else's line, shown "Role: ..."). Choice ids are unique in a conversation, and memory is keyed by
 conversation, node and choice id, never by position.
 
 **Tokens:** the world's (`{day}`, `{cure_percent}`, `{town:N}`...: [WRITING.md](WRITING.md#template-rules)),
@@ -820,7 +881,7 @@ The lint refuses removing one; a gone id is kept as `retired <id>`.
 |---|---|
 | `python3 tools/dialogue_pack.py` | Lint and write the packs. `--check` fails if the packs or the lock are out of date (the compile check runs it first); `--lock` adds new ids to the lock; `--list` lists the conversations |
 | `python3 tools/dialogue_sim.py <conv> --bg nurse --tier haven=trusted` | Walks one conversation as one character sees it: the lines (variants picked), every choice with its tag, whether it shows, and where a check would send them. Also `--infamy`, `--fame`, `--favor`, `--flag`, `--knows`, `--fact night` (any other true term: `--fact heard_lie:scav.chemist`, `--fact kit:in_kit`), `--mem helped`, `--regard`, `--food`, `--house short`, `--trait`; `--all` shows every start node. A look's score needs the game, so it shows only where a pass and a catch lead. **Several characters:** `--chars "Mara:--tier haven=known" --chars "Tom:--bg nurse"` shows each one's start node, and `--race` how the scene settles (who holds, who may object or stand with, what lands once, each sway) |
-| `python3 tools/voice_lint.py` | Also reads every `.rzd` line (says as talk-screen lines, labels as choices) against [WRITING.md](WRITING.md#checking-text) |
+| `python3 tools/voice_lint.py` | Also reads every `.rzd` line (says as talk-screen lines, labels as choices) against [WRITING.md](WRITING.md#checking-text): among them no quotation marks in says or choices, no speaker's label in front of a say, choices that read as speech, not menu labels, and a node's says together 420 characters or fewer |
 | **[Admin] Errands near here** (server admins, under **[Admin]** on any named person, wanderer or occupant: no typing) | The errands' live count, the nearest player's last deal and why each other errand wasn't dealt, and their errands ([ERRANDS.md](ERRANDS.md#telemetry-and-the-admin-view)) |
 | `/talkdebug` (admins, in chat; or the **[Admin] Read this person's conversations** reply) | Whether Trees are on, the conversation and memory counts, your memory, and for the person you're talking to, every conversation for them and the first `when` term that fails |
 | `/talkdebug test` (or **[Admin] Test every conversation, to the log**) | Every conversation's conditions, lines and labels run once for you through the real evaluator and tokens, and a lie, a promise and a callback on test keys; the counts back to you and the log (`Dialogue: Talk test: ...`). The runtime test runs it for its fake player (`RZT Talk test: ...`) |

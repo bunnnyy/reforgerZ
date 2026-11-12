@@ -696,7 +696,7 @@ class RZ_TribePeople
 	{
 		if (!IsOn())
 		{
-			m_GM.NotifyPlayer(playerId, "Nothing to tell", "\"Nothing out there worth telling you about.\"");
+			m_GM.NotifyPlayer(playerId, "Nothing to tell", "Nothing out there worth telling you about.");
 			return true;
 		}
 
@@ -739,7 +739,7 @@ class RZ_TribePeople
 		Nearest(from, 3, near);
 		if (near.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, "The roads", "\"Quiet, round here. Nothing out in the woods we know of.\"");
+			m_GM.NotifyPlayer(playerId, "The roads", "Quiet, round here. Nothing out in the woods we know of.");
 			return true;
 		}
 
@@ -797,7 +797,7 @@ class RZ_TribePeople
 		}
 
 		if (n == 0)
-			text = "\"Board's empty. Nothing near our posts we've had to count.\"";
+			text = "Board's empty. Nothing near our posts we've had to count.";
 
 		m_GM.NotifyPlayer(playerId, "The contact board", text.Trim());
 		return true;
@@ -865,7 +865,7 @@ class RZ_TribePeople
 		{
 			Learn(playerId, t, RZ_EKnow.READ, RZ_EFaction.BANDITS);
 			if (t.m_bMoat)
-				moat = string.Format(" \"And %1 are ours. Don't ask what they eat.\"", NameAt(t, RZ_EFaction.BANDITS));
+				moat = string.Format(" And %1 are ours. Don't ask what they eat.", NameAt(t, RZ_EFaction.BANDITS));
 		}
 
 		m_GM.NotifyPlayer(playerId, "The map of the crews", "A map with pencil rings on it, a name in each ring. It's in your notebook." + moat);
@@ -890,14 +890,14 @@ class RZ_TribePeople
 
 		if (tagged.IsEmpty() && s.m_sTagPrefab.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, "The fence", "\"Nothing on the beaks' frequencies this week. Come back when they've tagged something.\"");
+			m_GM.NotifyPlayer(playerId, "The fence", "Nothing on the beaks' frequencies this week. Come back when they've tagged something.");
 			return true;
 		}
 
 		if (!PayFavor(playerId, RZ_EFaction.BANDITS, s.m_iFrequencyFavor))
 			return true;
 
-		string text = "\"Bought off a beak who needed it more than we did.\"";
+		string text = "Bought off a beak who needed it more than we did.";
 		foreach (RZ_Tribe t2 : tagged)
 		{
 			Learn(playerId, t2, RZ_EKnow.READ, RZ_EFaction.BANDITS);
@@ -908,7 +908,7 @@ class RZ_TribePeople
 		{
 			IEntity tag = RZ_Util.SpawnPrefab(s.m_sTagPrefab, user.GetOrigin() + Vector(0, 0.3, 0));
 			if (tag)
-				text += " \"And a tag, one of theirs. You didn't get it here.\"";
+				text += " And a tag, one of theirs. You didn't get it here.";
 		}
 
 		m_GM.NotifyPlayer(playerId, "The fence", text);
@@ -925,13 +925,13 @@ class RZ_TribePeople
 		RZ_CureResearch cure = m_GM.GetCure();
 		if (!cure || cure.m_fProgress < 25)
 		{
-			m_GM.NotifyPlayer(playerId, "Halcyon", "\"We don't have enough to draw a map yet. When the antiviral's done, perhaps.\"");
+			m_GM.NotifyPlayer(playerId, "Halcyon", "We don't have enough to draw a map yet. When the antiviral's done, perhaps.");
 			return true;
 		}
 
 		int n = GiveRangeMap(playerId);
 		if (n == 0)
-			m_GM.NotifyPlayer(playerId, "Halcyon", "\"Nothing we've read near enough to map. We're sorry.\"");
+			m_GM.NotifyPlayer(playerId, "Halcyon", "Nothing we've read near enough to map. We're sorry.");
 		else
 			m_GM.NotifyPlayer(playerId, "Halcyon's range map", string.Format("A printout with %1 rings on it. It's in your notebook.", n));
 
@@ -1008,7 +1008,7 @@ class RZ_TribePeople
 		RZ_TribeSettings s = m_Tribes.GetSettings();
 		if (s.m_sCallBoxPrefab.IsEmpty() || !user)
 		{
-			m_GM.NotifyPlayer(playerId, "Halcyon", "\"We haven't got one to lend.\"");
+			m_GM.NotifyPlayer(playerId, "Halcyon", "We haven't got one to lend.");
 			return true;
 		}
 
@@ -1018,7 +1018,7 @@ class RZ_TribePeople
 		RZ_CureResearch cure = m_GM.GetCure();
 		if (!cure || cure.m_fProgress < 50)
 		{
-			m_GM.NotifyPlayer(playerId, "Halcyon", "\"The recordings aren't clean enough yet. After the bite treatment.\"");
+			m_GM.NotifyPlayer(playerId, "Halcyon", "The recordings aren't clean enough yet. After the bite treatment.");
 			return true;
 		}
 
@@ -1027,7 +1027,7 @@ class RZ_TribePeople
 		int last;
 		if (p && m_mCallBox.Find(p.m_sIdentity, last) && now - last < 24 * HOUR)
 		{
-			m_GM.NotifyPlayer(playerId, "Halcyon", "\"One a day. You've had today's.\"");
+			m_GM.NotifyPlayer(playerId, "Halcyon", "One a day. You've had today's.");
 			return true;
 		}
 
@@ -1040,7 +1040,7 @@ class RZ_TribePeople
 
 		if (today >= 2)
 		{
-			m_GM.NotifyPlayer(playerId, "Halcyon", "\"Both boxes are out. Try tomorrow.\"");
+			m_GM.NotifyPlayer(playerId, "Halcyon", "Both boxes are out. Try tomorrow.");
 			return true;
 		}
 
@@ -1051,7 +1051,7 @@ class RZ_TribePeople
 		if (p)
 			m_mCallBox.Set(p.m_sIdentity, now);
 
-		m_GM.NotifyPlayer(playerId, "The call box", "\"A recorded call from the ridges, ninety seconds of it. Not near people, and not near anyone who isn't with you. Please bring it back.\"");
+		m_GM.NotifyPlayer(playerId, "The call box", "A recorded call from the ridges, ninety seconds of it. Not near people, and not near anyone who isn't with you. Please bring it back.");
 		return true;
 	}
 
@@ -1244,13 +1244,13 @@ class RZ_TribePeople
 			TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "contact", bastionNews, ContactLine(bastionNews) + " Bastion out.");
 
 		if (havenNews)
-			TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "warn", havenNews, string.Format("\"Nobody on the roads by %1 after seven. %2 are out.\"", havenNews.m_sPlace, RZ_Tribes.Capitalize(Name(havenNews, RZ_EFaction.SURVIVORS))));
+			TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "warn", havenNews, string.Format("Nobody on the roads by %1 after seven. %2 are out.", havenNews.m_sPlace, RZ_Tribes.Capitalize(Name(havenNews, RZ_EFaction.SURVIVORS))));
 
 		if (halcyonNews)
-			TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "index", halcyonNews, string.Format("\"%1: the index is in its %2 as lead. Please don't shoot it.\"", NameAt(halcyonNews, RZ_EFaction.INSTITUTE), WeekWord(halcyonNews)));
+			TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "index", halcyonNews, string.Format("%1: the index is in its %2 as lead. Please don't shoot it.", NameAt(halcyonNews, RZ_EFaction.INSTITUTE), WeekWord(halcyonNews)));
 
 		if (crewNews && Math.RandomFloat01() < 0.3)
-			TellFaction(RZ_EFaction.BANDITS, "The Red Hand", "crew", crewNews, string.Format("\"%1. Same as us: the boss is whoever's got something on the rest.\"", RZ_Tribes.Capitalize(NameAt(crewNews, RZ_EFaction.BANDITS))));
+			TellFaction(RZ_EFaction.BANDITS, "The Red Hand", "crew", crewNews, string.Format("%1. Same as us: the boss is whoever's got something on the rest.", RZ_Tribes.Capitalize(NameAt(crewNews, RZ_EFaction.BANDITS))));
 
 		// Nothing new for the board: a board pack that didn't call is "no contact"; then who leads
 		// a pack now, in each faction's words (RZ_TribeRest)
@@ -1747,17 +1747,17 @@ class RZ_TribePeople
 		foreach (RZ_NamedYoung y : t.m_aNamed)
 		{
 			if (Math.RandomFloat01() < 0.4)
-				return string.Format("\"%1 runs with %2 now. Somebody saw them at dusk.\"", RZ_Tribes.Capitalize(PublicNameOf(y)), NameAt(t, RZ_EFaction.SURVIVORS));
+				return string.Format("%1 runs with %2 now. Somebody saw them at dusk.", RZ_Tribes.Capitalize(PublicNameOf(y)), NameAt(t, RZ_EFaction.SURVIVORS));
 		}
 
 		if (t.Band() >= 2)
-			return string.Format("\"Nobody on the roads by %1 after seven. %2 are out.\"", t.m_sPlace, RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)));
+			return string.Format("Nobody on the roads by %1 after seven. %2 are out.", t.m_sPlace, RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)));
 
 		// The Haven's elders on the road: who leads it now, when the Haven knew them
 		if (HavenKnowsLeader(t) && Math.RandomFloat01() < 0.5)
-			return string.Format("\"Not that way after seven. %1, and %2 was %3, before.\"", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)), t.m_sAlphaName, t.m_sAlphaWho);
+			return string.Format("Not that way after seven. %1, and %2 was %3, before.", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)), t.m_sAlphaName, t.m_sAlphaWho);
 
-		return string.Format("\"%1 call at dusk up at %2. Keep off their side of the valley after dark.\"", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)), t.m_sPlace);
+		return string.Format("%1 call at dusk up at %2. Keep off their side of the valley after dark.", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)), t.m_sPlace);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2009,7 +2009,7 @@ class RZ_TribePeople
 		}
 
 		if (!who.IsEmpty())
-			TellFaction(RZ_EFaction.SURVIVORS, "Gossip", "gossip", t, string.Format("\"Somebody saw %1 at the wire last night. Nobody went out.\"", who));
+			TellFaction(RZ_EFaction.SURVIVORS, "Gossip", "gossip", t, string.Format("Somebody saw %1 at the wire last night. Nobody went out.", who));
 
 		return true;
 	}
@@ -2237,7 +2237,7 @@ class RZ_TribePeople
 		{
 			RZ_TribeHabit road = t.StrongHabit(RZ_EHabit.ROAD);
 			if (road && RZ_Util.DistXZ(road.m_vPos, at) <= 1500)
-				return string.Format("\"Night rate. %1 are out.\"", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.BANDITS)));
+				return string.Format("Night rate. %1 are out.", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.BANDITS)));
 		}
 
 		return "";
@@ -2250,7 +2250,7 @@ class RZ_TribePeople
 		if (!IsOn() || t.m_iTagDay < 0 || !t.m_bHasAlpha || !RZ_TribeWays.IsAName(who) || Math.RandomFloat01() > 0.5)
 			return;
 
-		TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "sorry", t, string.Format("\"%1 took %2. The index is in good condition. We're sorry.\"", PackCode(t), who));
+		TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "sorry", t, string.Format("%1 took %2. The index is in good condition. We're sorry.", PackCode(t), who));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2280,7 +2280,7 @@ class RZ_TribePeople
 		if (nearest > 0)
 			m_GM.AddInfamy(nearest, RZ_EFaction.INSTITUTE, 2, "a year of data");
 
-		TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "lost", t, string.Format("\"%1's tag has stopped moving. That was a year of data.\"", PackCode(t)));
+		TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "lost", t, string.Format("%1's tag has stopped moving. That was a year of data.", PackCode(t)));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2487,7 +2487,7 @@ class RZ_TribePeople
 		t.m_iFuriousOrder = m_iFuriousOrder;
 		m_Tribes.GetRest().OnTakenAlive(t);
 		t.m_iFuriousUntil = m_Tribes.CountedNights() + 2;
-		TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "furious", t, string.Format("\"Whatever they took from %1, %2 want it back.\"", t.m_sPlace, Name(t, RZ_EFaction.SURVIVORS)));
+		TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "furious", t, string.Format("Whatever they took from %1, %2 want it back.", t.m_sPlace, Name(t, RZ_EFaction.SURVIVORS)));
 		AddBeat(string.Format("Taken alive for the lab: the index of %1.", NameAt(t, RZ_EFaction.INSTITUTE)));
 	}
 
@@ -2524,7 +2524,7 @@ class RZ_TribePeople
 		foreach (int playerId : all)
 		{
 			if (RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE), RZ_ETier.KNOWN) && GiveRangeMap(playerId) > 0)
-				m_GM.NotifyPlayer(playerId, "Halcyon", "\"We've drawn up what we know of the packs' ground. It's in your notebook.\"");
+				m_GM.NotifyPlayer(playerId, "Halcyon", "We've drawn up what we know of the packs' ground. It's in your notebook.");
 		}
 	}
 

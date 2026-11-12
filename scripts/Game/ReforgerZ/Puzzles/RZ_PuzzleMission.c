@@ -350,7 +350,7 @@ class RZ_PuzzleMission : RZ_Mission
 		// The Tier 0 audit's decider rule: a contract's choices belong to someone it was offered to
 		if (m_bContract && !m_Story && !RZ_MissionReasons.Tier0Key(Type()).IsEmpty() && !IsEligible(gm, playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"It's not your call. You weren't hired for this.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "It's not your call. You weren't hired for this.");
 			return;
 		}
 

@@ -434,9 +434,9 @@ class RZ_EpiRecord
 
 		string from = FromTown(ident);
 		if (!from.IsEmpty())
-			return string.Format("\"Don't know the face. Know the name. The %1 from %2.\"", title, from);
+			return string.Format("Don't know the face. Know the name. The %1 from %2.", title, from);
 
-		return string.Format("\"Don't know the face. Know the name. The %1.\"", title);
+		return string.Format("Don't know the face. Know the name. The %1.", title);
 	}
 
 	//------------------------------------------------------------------------------------------------

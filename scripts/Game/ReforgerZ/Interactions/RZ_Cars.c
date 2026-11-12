@@ -1383,7 +1383,7 @@ class RZ_Cars
 	string MechanicTalk(int playerId, vector from, bool friendly)
 	{
 		if (!m_bOn)
-			return "\"Cars? Nothing out here runs any more. Believe me, I've looked.\"";
+			return "Cars? Nothing out here runs any more. Believe me, I've looked.";
 
 		RZ_CarProject best;
 		float bestDist = float.MAX;
@@ -1401,9 +1401,9 @@ class RZ_Cars
 		}
 
 		if (!best)
-			return "\"Nothing I know of that runs. Someone beat you to the last one.\"";
+			return "Nothing I know of that runs. Someone beat you to the last one.";
 
-		string text = string.Format("\"There's %1 in %2 (%3) that would run with %4. Most wrecks are just wrecks, mind. That one isn't.\"",
+		string text = string.Format("There's %1 in %2 (%3) that would run with %4. Most wrecks are just wrecks, mind. That one isn't.",
 			best.m_sNoun, TownName(best), RZ_Util.DirectionText(from, best.m_vPos), PartsText(best.m_iMissing));
 		if (friendly && best.m_bHasKeys && !best.m_bKeysFound)
 		{

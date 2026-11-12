@@ -104,7 +104,7 @@ class RZ_FactionVoice
 			line = RZ_VoiceBank.PickFor(gm, "person", f, "", null, playerId, pos, place);
 
 		if (line.IsEmpty())
-			line = "\"Can't stop. Ask someone else.\"";
+			line = "Can't stop. Ask someone else.";
 
 		string routine = PhaseAside(f, phase, playerId, pos);
 		if (!routine.IsEmpty())
@@ -336,30 +336,30 @@ class RZ_FactionVoice
 	{
 		switch (need)
 		{
-			case RZ_ENeed.FOOD: return "\"What we need is food. Tins, flour, anything. The trucks aren't enough.\"";
-			case RZ_ENeed.PEOPLE: return "\"The safehouses are emptying. If you find anyone out there, bring them in.\"";
-			case RZ_ENeed.SAMPLES: return "\"Samples. That's all that matters now. From the big ones, fresh.\"";
+			case RZ_ENeed.FOOD: return "What we need is food. Tins, flour, anything. The trucks aren't enough.";
+			case RZ_ENeed.PEOPLE: return "The safehouses are emptying. If you find anyone out there, bring them in.";
+			case RZ_ENeed.SAMPLES: return "Samples. That's all that matters now. From the big ones, fresh.";
 		}
 
 		if (need == RZ_ENeed.SUPPLIES)
 		{
 			switch (f)
 			{
-				case RZ_EFaction.MILITARY: return "\"Priority is supply. We've lost trucks. Anything that gets stock moving is work.\"";
-				case RZ_EFaction.BANDITS: return "\"Somebody's been taking our trucks. Taking is our job.\"";
+				case RZ_EFaction.MILITARY: return "Priority is supply. We've lost trucks. Anything that gets stock moving is work.";
+				case RZ_EFaction.BANDITS: return "Somebody's been taking our trucks. Taking is our job.";
 			}
 
-			return "\"We've lost trucks on the road. Anything that gets supplies through helps.\"";
+			return "We've lost trucks on the road. Anything that gets supplies through helps.";
 		}
 
 		if (need == RZ_ENeed.SECURITY)
 		{
 			switch (f)
 			{
-				case RZ_EFaction.SURVIVORS: return "\"We've lost people. We need the roads safer. Anyone who'll stand a watch.\"";
-				case RZ_EFaction.MILITARY: return "\"Security is the priority. We've had losses. Hold ground, clear threats.\"";
-				case RZ_EFaction.BANDITS: return "\"We've had losses. Bad for business. Bad for whoever did it, too.\"";
-				case RZ_EFaction.INSTITUTE: return "\"We need protection. We've lost staff. Science doesn't happen behind a dead guard.\"";
+				case RZ_EFaction.SURVIVORS: return "We've lost people. We need the roads safer. Anyone who'll stand a watch.";
+				case RZ_EFaction.MILITARY: return "Security is the priority. We've had losses. Hold ground, clear threats.";
+				case RZ_EFaction.BANDITS: return "We've had losses. Bad for business. Bad for whoever did it, too.";
+				case RZ_EFaction.INSTITUTE: return "We need protection. We've lost staff. Science doesn't happen behind a dead guard.";
 			}
 		}
 
@@ -367,11 +367,11 @@ class RZ_FactionVoice
 		{
 			switch (f)
 			{
-				case RZ_EFaction.MILITARY: return "\"Someone has made an enemy of this task force. Work against them is approved.\"";
-				case RZ_EFaction.BANDITS: return "\"Someone owes us. Anyone who helps collect, eats well.\"";
+				case RZ_EFaction.MILITARY: return "Someone has made an enemy of this task force. Work against them is approved.";
+				case RZ_EFaction.BANDITS: return "Someone owes us. Anyone who helps collect, eats well.";
 			}
 
-			return "\"Someone has wronged us. I'm not proud of what I'd pay to see it put right.\"";
+			return "Someone has wronged us. I'm not proud of what I'd pay to see it put right.";
 		}
 
 		return "";
@@ -385,16 +385,16 @@ class RZ_FactionVoice
 		array<string> lines = {};
 		switch (speaker)
 		{
-			case RZ_EFaction.SURVIVORS: lines.Insert("\"We haven't been this worried since %1.\""); lines.Insert("\"People still light a candle for %1.\""); break;
-			case RZ_EFaction.MILITARY: lines.Insert("\"Not since %1.\""); lines.Insert("\"We train for nights like %1. Didn't help.\""); break;
-			case RZ_EFaction.BANDITS: lines.Insert("\"Quietest it's been since %1. Don't like it.\""); lines.Insert("\"Best night we've had since %1. Or worst. Hard to tell.\""); break;
-			case RZ_EFaction.INSTITUTE: lines.Insert("\"Nothing like it since %1.\""); lines.Insert("\"We still have the data from %1. Nobody reads it twice.\""); break;
+			case RZ_EFaction.SURVIVORS: lines.Insert("We haven't been this worried since %1."); lines.Insert("People still light a candle for %1."); break;
+			case RZ_EFaction.MILITARY: lines.Insert("Not since %1."); lines.Insert("We train for nights like %1. Didn't help."); break;
+			case RZ_EFaction.BANDITS: lines.Insert("Quietest it's been since %1. Don't like it."); lines.Insert("Best night we've had since %1. Or worst. Hard to tell."); break;
+			case RZ_EFaction.INSTITUTE: lines.Insert("Nothing like it since %1."); lines.Insert("We still have the data from %1. Nobody reads it twice."); break;
 		}
 
 		if (lines.IsEmpty())
 		{
-			lines.Insert("\"People still talk about %1.\"");
-			lines.Insert("\"Haven't seen the like since %1.\"");
+			lines.Insert("People still talk about %1.");
+			lines.Insert("Haven't seen the like since %1.");
 		}
 
 		return string.Format(rng.Pick(lines), phrase);
@@ -405,31 +405,31 @@ class RZ_FactionVoice
 	//! "They say...", told as gossip, true or not.
 	static string RumourStrong(RZ_EFaction subject)
 	{
-		return string.Format("\"They say %1 is stronger than it's been in weeks. More guns, more trucks.\"", RZ_Factions.GetNameInText(subject));
+		return string.Format("They say %1 is stronger than it's been in weeks. More guns, more trucks.", RZ_Factions.GetNameInText(subject));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string RumourWeak(RZ_EFaction subject)
 	{
-		return string.Format("\"Word is %1 is on its last legs. Pulling out of everywhere.\"", RZ_Factions.GetNameInText(subject));
+		return string.Format("Word is %1 is on its last legs. Pulling out of everywhere.", RZ_Factions.GetNameInText(subject));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string RumourHolds(RZ_EFaction subject, string place)
 	{
-		return string.Format("\"%1 is holding %2, last I heard.\"", RZ_Factions.GetName(subject), place);
+		return string.Format("%1 is holding %2, last I heard.", RZ_Factions.GetName(subject), place);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string RumourLost(RZ_EFaction subject, string place)
 	{
-		return string.Format("\"I heard %1 got thrown out of %2. Good riddance.\"", RZ_Factions.GetNameInText(subject), place);
+		return string.Format("I heard %1 got thrown out of %2. Good riddance.", RZ_Factions.GetNameInText(subject), place);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string RumourTruck(RZ_EFaction subject, string place)
 	{
-		return string.Format("\"There's a %1 truck heading for %2. Someone should do something about that. Or for it.\"", RZ_Factions.GetShortName(subject), place);
+		return string.Format("There's a %1 truck heading for %2. Someone should do something about that. Or for it.", RZ_Factions.GetShortName(subject), place);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -438,10 +438,10 @@ class RZ_FactionVoice
 		array<string> lines = {};
 		switch (subject)
 		{
-			case RZ_EFaction.SURVIVORS: lines.Insert("\"The Haven waters the soup and sells the rest to the Red Hand. That's what I heard.\""); lines.Insert("\"They say the Haven turns bitten people out at night, and lies about it.\""); break;
-			case RZ_EFaction.MILITARY: lines.Insert("\"Bastion's had a radio to the outside all along. They just don't like what it says.\""); lines.Insert("\"Bastion shoots its own deserters. Everybody knows. Nobody says.\""); break;
-			case RZ_EFaction.BANDITS: lines.Insert("\"The Red Hand poisoned the well at the last place that wouldn't pay.\""); lines.Insert("\"Red Hand trucks carry people, not tins. Don't ask where to.\""); break;
-			case RZ_EFaction.INSTITUTE: lines.Insert("\"Halcyon made this. The lab's not curing it, it's finishing it.\""); lines.Insert("\"Halcyon's paying the Red Hand for live ones. For tests.\""); break;
+			case RZ_EFaction.SURVIVORS: lines.Insert("The Haven waters the soup and sells the rest to the Red Hand. That's what I heard."); lines.Insert("They say the Haven turns bitten people out at night, and lies about it."); break;
+			case RZ_EFaction.MILITARY: lines.Insert("Bastion's had a radio to the outside all along. They just don't like what it says."); lines.Insert("Bastion shoots its own deserters. Everybody knows. Nobody says."); break;
+			case RZ_EFaction.BANDITS: lines.Insert("The Red Hand poisoned the well at the last place that wouldn't pay."); lines.Insert("Red Hand trucks carry people, not tins. Don't ask where to."); break;
+			case RZ_EFaction.INSTITUTE: lines.Insert("Halcyon made this. The lab's not curing it, it's finishing it."); lines.Insert("Halcyon's paying the Red Hand for live ones. For tests."); break;
 		}
 
 		return rng.Pick(lines);
@@ -452,12 +452,12 @@ class RZ_FactionVoice
 	{
 		switch (need)
 		{
-			case RZ_ENeed.FOOD: return string.Format("\"%1 is short of food. They'd pay for tins.\"", RZ_Factions.GetName(subject));
-			case RZ_ENeed.SUPPLIES: return string.Format("\"%1 has been losing trucks. They'll pay for anyone who gets supplies through.\"", RZ_Factions.GetName(subject));
-			case RZ_ENeed.SECURITY: return string.Format("\"%1 has lost people lately. They're nervous. Don't make sudden moves near them.\"", RZ_Factions.GetName(subject));
-			case RZ_ENeed.SAMPLES: return string.Format("\"%1 wants samples, more than ever. Fresh ones.\"", RZ_Factions.GetName(subject));
-			case RZ_ENeed.PEOPLE: return string.Format("\"%1 is taking in anyone. Bring them strays.\"", RZ_Factions.GetName(subject));
-			case RZ_ENeed.REVENGE: return string.Format("\"%1 has a score to settle. Somebody's going to get hurt.\"", RZ_Factions.GetName(subject));
+			case RZ_ENeed.FOOD: return string.Format("%1 is short of food. They'd pay for tins.", RZ_Factions.GetName(subject));
+			case RZ_ENeed.SUPPLIES: return string.Format("%1 has been losing trucks. They'll pay for anyone who gets supplies through.", RZ_Factions.GetName(subject));
+			case RZ_ENeed.SECURITY: return string.Format("%1 has lost people lately. They're nervous. Don't make sudden moves near them.", RZ_Factions.GetName(subject));
+			case RZ_ENeed.SAMPLES: return string.Format("%1 wants samples, more than ever. Fresh ones.", RZ_Factions.GetName(subject));
+			case RZ_ENeed.PEOPLE: return string.Format("%1 is taking in anyone. Bring them strays.", RZ_Factions.GetName(subject));
+			case RZ_ENeed.REVENGE: return string.Format("%1 has a score to settle. Somebody's going to get hurt.", RZ_Factions.GetName(subject));
 		}
 
 		return "";
@@ -469,10 +469,10 @@ class RZ_FactionVoice
 	{
 		switch (f)
 		{
-			case RZ_EFaction.SURVIVORS: return string.Format("\"Haven, open channel. The truck leaves %1 in about %2 minutes, with food for the safehouses. If you're on the road, give it room.\"", from, minutes);
-			case RZ_EFaction.MILITARY: return string.Format("\"All stations, Bastion. Supply run departs %1 in figures %2 minutes. Escorts welcome. Bastion out.\"", from, minutes);
-			case RZ_EFaction.BANDITS: return string.Format("\"Truck's going out of %1 in %2 minutes or so. Anyone touches it, we'll know.\"", from, minutes);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"Halcyon logistics. Next delivery from %1 in approximately %2 minutes.\"", from, minutes);
+			case RZ_EFaction.SURVIVORS: return string.Format("Haven, open channel. The truck leaves %1 in about %2 minutes, with food for the safehouses. If you're on the road, give it room.", from, minutes);
+			case RZ_EFaction.MILITARY: return string.Format("All stations, Bastion. Supply run departs %1 in figures %2 minutes. Escorts welcome. Bastion out.", from, minutes);
+			case RZ_EFaction.BANDITS: return string.Format("Truck's going out of %1 in %2 minutes or so. Anyone touches it, we'll know.", from, minutes);
+			case RZ_EFaction.INSTITUTE: return string.Format("Halcyon logistics. Next delivery from %1 in approximately %2 minutes.", from, minutes);
 		}
 
 		return "";
@@ -483,10 +483,10 @@ class RZ_FactionVoice
 	{
 		switch (f)
 		{
-			case RZ_EFaction.SURVIVORS: return string.Format("\"Haven truck's on its way to %1. Keep the door open, love.\"", dest);
-			case RZ_EFaction.MILITARY: return string.Format("\"Bastion, convoy en route to %1. Report contacts on that road.\"", dest);
-			case RZ_EFaction.BANDITS: return string.Format("\"Our truck's headed for %1. Bastion, don't wave.\"", dest);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"Delivery en route to %1. Please keep the road clear.\"", dest);
+			case RZ_EFaction.SURVIVORS: return string.Format("Haven truck's on its way to %1. Keep the door open, love.", dest);
+			case RZ_EFaction.MILITARY: return string.Format("Bastion, convoy en route to %1. Report contacts on that road.", dest);
+			case RZ_EFaction.BANDITS: return string.Format("Our truck's headed for %1. Bastion, don't wave.", dest);
+			case RZ_EFaction.INSTITUTE: return string.Format("Delivery en route to %1. Please keep the road clear.", dest);
 		}
 
 		return "";
@@ -497,27 +497,27 @@ class RZ_FactionVoice
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return string.Format("\"Post %1, Bastion. Night watch rotates at %2. Acknowledge.\"", place, clock);
-			case RZ_EFaction.SURVIVORS: return string.Format("\"Night watch at %1 starts at %2. Bring a coat, it gets cold on the roof.\"", place, clock);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"Field station %1: overnight readings start at %2. Do not disturb the freezers.\"", place, clock);
+			case RZ_EFaction.MILITARY: return string.Format("Post %1, Bastion. Night watch rotates at %2. Acknowledge.", place, clock);
+			case RZ_EFaction.SURVIVORS: return string.Format("Night watch at %1 starts at %2. Bring a coat, it gets cold on the roof.", place, clock);
+			case RZ_EFaction.INSTITUTE: return string.Format("Field station %1: overnight readings start at %2. Do not disturb the freezers.", place, clock);
 		}
 
-		return string.Format("\"Crew at %1 swaps at %2. Don't be late or don't come back.\"", place, clock);
+		return string.Format("Crew at %1 swaps at %2. Don't be late or don't come back.", place, clock);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string ChatterToll(string place, bool night)
 	{
 		if (night)
-			return string.Format("\"Toll's up on the road out of %1 tonight. Pay or walk round. Walking round is slower. And it's dark.\"", place);
+			return string.Format("Toll's up on the road out of %1 tonight. Pay or walk round. Walking round is slower. And it's dark.", place);
 
-		return string.Format("\"Road past %1 is tolled till dusk. Tins, fuel or something worth knowing. Mostly tins.\"", place);
+		return string.Format("Road past %1 is tolled till dusk. Tins, fuel or something worth knowing. Mostly tins.", place);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static string ChatterSamples(int percent, string labPlace)
 	{
-		return string.Format("\"Halcyon, open channel. Research stands at %1 percent. Samples from special infected are wanted at the lab in %2. Fresh ones, please.\"", percent, labPlace);
+		return string.Format("Halcyon, open channel. Research stands at %1 percent. Samples from special infected are wanted at the lab in %2. Fresh ones, please.", percent, labPlace);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -525,10 +525,10 @@ class RZ_FactionVoice
 	{
 		switch (f)
 		{
-			case RZ_EFaction.SURVIVORS: return string.Format("\"Haven, open channel. %1 is short. Anything in a tin, anything at all.\"", place);
-			case RZ_EFaction.MILITARY: return string.Format("\"Bastion. Post %1 is on short supply. Requisitions suspended there until resupply.\"", place);
-			case RZ_EFaction.BANDITS: return string.Format("\"%1's dry. Prices are up. Blame whoever hit our truck.\"", place);
-			case RZ_EFaction.INSTITUTE: return string.Format("\"Halcyon. %1 is short of supplies. Some items are unavailable.\"", place);
+			case RZ_EFaction.SURVIVORS: return string.Format("Haven, open channel. %1 is short. Anything in a tin, anything at all.", place);
+			case RZ_EFaction.MILITARY: return string.Format("Bastion. Post %1 is on short supply. Requisitions suspended there until resupply.", place);
+			case RZ_EFaction.BANDITS: return string.Format("%1's dry. Prices are up. Blame whoever hit our truck.", place);
+			case RZ_EFaction.INSTITUTE: return string.Format("Halcyon. %1 is short of supplies. Some items are unavailable.", place);
 		}
 
 		return "";
@@ -571,12 +571,12 @@ class RZ_FactionVoice
 	{
 		switch (f)
 		{
-			case RZ_EFaction.MILITARY: return "A sentry on the wall: \"That's close enough. You're on a list here. Turn around, or come back when you've made it right.\"";
-			case RZ_EFaction.BANDITS: return "Someone whistles from a rooftop. \"We know you. You're not welcome. Keep walking.\"";
-			case RZ_EFaction.INSTITUTE: return "A guard steps out from behind the sandbags. \"The lab's closed to you. Please don't make this difficult.\"";
+			case RZ_EFaction.MILITARY: return "That's close enough. You're on a list here. Turn around, or come back when you've made it right.";
+			case RZ_EFaction.BANDITS: return "Oi. We know you. You're not welcome here. Keep walking.";
+			case RZ_EFaction.INSTITUTE: return "Stop there, please. The lab's closed to you. Please don't make this difficult.";
 		}
 
-		return "\"That's close enough.\"";
+		return "That's close enough.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -586,7 +586,7 @@ class RZ_FactionVoice
 		switch (f)
 		{
 			case RZ_EFaction.MILITARY: return "A stencilled sign on the gate: WEAPONS SLUNG. NO FIRING INSIDE THE WIRE. Somebody has added: \"we mean it\".";
-			case RZ_EFaction.BANDITS: return "\"Guns stay quiet in here. You want to shoot someone, do it outside. House rule.\"";
+			case RZ_EFaction.BANDITS: return "Guns stay quiet in here. You want to shoot someone, do it outside. House rule.";
 			case RZ_EFaction.INSTITUTE: return "A laminated notice: NO FIREARMS DISCHARGED WITHIN THE SITE. They will close the doors on you, and worse.";
 		}
 

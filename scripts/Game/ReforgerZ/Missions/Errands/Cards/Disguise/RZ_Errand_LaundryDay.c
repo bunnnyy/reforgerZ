@@ -17,9 +17,9 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"We wash the green post's uniforms for bread. The sack's ready, and there's a red roadblock in between. Don't wear any of it. Please.\"",
-			"\"Laundry for the soldiers {subject_place}. They pay in bread. The crews on the road pay in trouble.\"");
-		Over("\"The truce is off. They'll have to wash their own shirts.\"");
+		Offer("We wash the green post's uniforms for bread. The sack's ready, and there's a red roadblock in between. Don't wear any of it. Please.",
+			"Laundry for the soldiers {subject_place}. They pay in bread. The crews on the road pay in trouble.");
+		Over("The truce is off. They'll have to wash their own shirts.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Carry the sack round the roadblock";
@@ -27,7 +27,7 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 30;
 		w.m_sStep = "Carry the laundry to the Bastion post {subject_place}, the long way: never within 150 m of the red roadblock (10 s at the post). Then come back to {giver}.";
-		w.Done("\"Clean shirts and no trouble. The bread will come tomorrow.\"");
+		w.Done("Clean shirts and no trouble. The bread will come tomorrow.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay the toll twice";
@@ -37,7 +37,7 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 30;
 		w.m_sStep = "Carry the laundry to the Bastion post {subject_place}; your Favor gets it through the roadblock (10 s at the post). Then come back to {giver}.";
-		w.Done("\"Twice? For shirts? Thank you. Don't tell the soldiers what it cost.\"");
+		w.Done("Twice? For shirts? Thank you. Don't tell the soldiers what it cost.");
 
 		w = Way("betray");
 		w.m_sLabel = "Sell the sack to the fence";
@@ -49,7 +49,7 @@ class RZ_Errand_LaundryDay : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Take the sack to the red roadblock and sell it (10 s there). Then tell {giver} the crew took it.";
 		w.m_iFavor = 15;
-		w.Done("\"Took it? All of it? Then there's no bread this week.\"");
+		w.Done("Took it? All of it? Then there's no bread this week.");
 	}
 
 	//------------------------------------------------------------------------------------------------

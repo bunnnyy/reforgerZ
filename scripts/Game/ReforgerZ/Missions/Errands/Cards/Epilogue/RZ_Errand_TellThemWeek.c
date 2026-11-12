@@ -12,9 +12,9 @@ class RZ_Errand_TellThemWeek : RZ_EpiCard
 		m_sTitle = "Somebody Should Tell Them";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"There's a family at this house still waiting for {name}. People say {name} was seen with the lot from {pack}. Somebody should tell them. I can't.\"",
-			"\"{name}'s mother sets a place every night. Somebody's seen {name} with the ones from {pack}. Go and look. Then tell her, one way or another.\"");
-		Over("\"Never mind. She knows. Somebody told her this morning.\"");
+		Offer("There's a family at this house still waiting for {name}. People say {name} was seen with the lot from {pack}. Somebody should tell them. I can't.",
+			"{name}'s mother sets a place every night. Somebody's seen {name} with the ones from {pack}. Go and look. Then tell her, one way or another.");
+		Over("Never mind. She knows. Somebody told her this morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Read the marks below {pack}";

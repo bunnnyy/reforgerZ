@@ -1275,7 +1275,7 @@ class RZ_LongTable
 		if (m_fSuspicion >= RUMOUR_SUSPICION && !m_bRumours)
 		{
 			m_bRumours = true;
-			RZ_Questline.SpreadRumour(m_GM, string.Format("\"There's smoke past %1 most evenings. Nobody lives out there. Nobody should.\"", GetTownName()), 12);
+			RZ_Questline.SpreadRumour(m_GM, string.Format("There's smoke past %1 most evenings. Nobody lives out there. Nobody should.", GetTownName()), 12);
 		}
 
 		if (m_fSuspicion >= RUMOUR_SUSPICION && m_bHeard)
@@ -1482,7 +1482,7 @@ class RZ_LongTable
 	protected void Satchel(string who)
 	{
 		string channel = "\"Anyone missing a satchel? Letters, a hairbrush, a picture of somebody's mum. Fence has it. Make an offer.\" Laughing, then the channel goes quiet.";
-		RZ_Questline.SpreadRumour(m_GM, string.Format("\"%1's satchel turned up at a Red Hand fence. Letters still in it, all addressed. Nobody asked where it came from.\"", RZ_Util.Capitalize(who)), 8);
+		RZ_Questline.SpreadRumour(m_GM, string.Format("%1's satchel turned up at a Red Hand fence. Letters still in it, all addressed. Nobody asked where it came from.", RZ_Util.Capitalize(who)), 8);
 
 		array<int> ids = {};
 		array<IEntity> players = {};
@@ -2388,7 +2388,7 @@ class RZ_LongTable
 				RZ_Safehouse h = houses.Get(i);
 				if (h && h.m_bShort)
 				{
-					lines.Insert(string.Format("\"The safehouse in %1 is out of food. They'll take anything you carry in.\"", h.m_sName));
+					lines.Insert(string.Format("The safehouse in %1 is out of food. They'll take anything you carry in.", h.m_sName));
 					break;
 				}
 			}
@@ -2397,10 +2397,10 @@ class RZ_LongTable
 		vector hot;
 		float heat;
 		if (m_GM.GetHeat().GetHottest(hot, heat) && heat >= 40 && RZ_Util.DistXZ(from, hot) <= 2500)
-			lines.Insert(string.Format("\"Something's stirred them up %1 from here. We heard it at the farm.\"", RZ_Util.DirectionText(from, hot)));
+			lines.Insert(string.Format("Something's stirred them up %1 from here. We heard it at the farm.", RZ_Util.DirectionText(from, hot)));
 
 		if (lines.IsEmpty())
-			return "\"The roads are quiet. Mother says that's when you watch them.\"";
+			return "The roads are quiet. Mother says that's when you watch them.";
 
 		return lines.GetRandomElement();
 	}
@@ -2418,14 +2418,14 @@ class RZ_LongTable
 		{
 			string dest = supply.TruckDestination(f);
 			if (!dest.IsEmpty())
-				return string.Format("\"%1's truck is on the road to %2. Keep off that road if you've no business with them.\"", RZ_Factions.GetName(f), dest);
+				return string.Format("%1's truck is on the road to %2. Keep off that road if you've no business with them.", RZ_Factions.GetName(f), dest);
 		}
 
 		foreach (int g : order)
 		{
 			float secs = supply.SecondsToDeparture(g);
 			if (secs >= 0 && secs <= 1800)
-				return string.Format("\"%1 sends a truck out in about %2 minutes.\"", RZ_Factions.GetName(g), Math.Max(1, RZ_Util.RoundToInt(secs / 60)));
+				return string.Format("%1 sends a truck out in about %2 minutes.", RZ_Factions.GetName(g), Math.Max(1, RZ_Util.RoundToInt(secs / 60)));
 		}
 
 		return "";
@@ -2446,19 +2446,19 @@ class RZ_LongTable
 		string line = "";
 		if (m_eState == RZ_ETableState.EXPOSED && Math.RandomFloat01() < 0.5)
 		{
-			line = string.Format("\"Everyone knows about the farm past %1 now. I keep thinking about the bowls. They set one for everybody.\"", GetTownName());
+			line = string.Format("Everyone knows about the farm past %1 now. I keep thinking about the bowls. They set one for everybody.", GetTownName());
 		}
 		else if (recent && m_iLostRole == ROLE_NO_BAG && Math.RandomFloat01() < 0.5)
 		{
-			line = string.Format("\"The Haven put a man out for taking bread, and a Red Hand crew drove him off in a van. Nobody's seen him since. That van goes out past %1 at night, toward the farm with the smoke.\"", GetTownName());
+			line = string.Format("The Haven put a man out for taking bread, and a Red Hand crew drove him off in a van. Nobody's seen him since. That van goes out past %1 at night, toward the farm with the smoke.", GetTownName());
 		}
 		else if (recent && Math.RandomFloat01() < 0.5)
 		{
-			line = string.Format("\"%1 left %2 for %3 a few days back. Never got there. That road goes past the farm with the smoke, past %4.\"", RZ_Util.Capitalize(m_sLostName), m_sLostFrom, m_sLostTo, GetTownName());
+			line = string.Format("%1 left %2 for %3 a few days back. Never got there. That road goes past the farm with the smoke, past %4.", RZ_Util.Capitalize(m_sLostName), m_sLostFrom, m_sLostTo, GetTownName());
 		}
 		else if (m_fSuspicion >= RUMOUR_SUSPICION && Math.RandomFloat01() < 0.35)
 		{
-			line = string.Format("\"There's smoke past %1 most evenings. Nobody lives out there. Nobody should.\"", GetTownName());
+			line = string.Format("There's smoke past %1 most evenings. Nobody lives out there. Nobody should.", GetTownName());
 		}
 
 		if (line.IsEmpty())
@@ -2653,13 +2653,13 @@ class RZ_LongTable
 
 		// The Haven: it was one of their houses
 		RZ_Questline.NudgeMorale(m_GM, RZ_EFaction.SURVIVORS, -8);
-		RZ_Questline.SpreadRumour(m_GM, "\"It was one of ours. We sent it our mouths, and then we sent it nothing. Don't ask me any more.\"", 12);
+		RZ_Questline.SpreadRumour(m_GM, "It was one of ours. We sent it our mouths, and then we sent it nothing. Don't ask me any more.", 12);
 
 		// Bastion: a line in a report
-		RZ_Questline.SpreadRumour(m_GM, string.Format("\"Bastion has it down as an infected cluster past %1. Containment, they call it. They'll burn it if nobody else ends it.\"", town), 12);
+		RZ_Questline.SpreadRumour(m_GM, string.Format("Bastion has it down as an infected cluster past %1. Containment, they call it. They'll burn it if nobody else ends it.", town), 12);
 
 		// Halcyon: interested, and ashamed of being interested
-		RZ_Questline.SpreadRumour(m_GM, "\"A Halcyon researcher asked whether they ever ate the bitten. Then she wouldn't look at anyone.\"", 8);
+		RZ_Questline.SpreadRumour(m_GM, "A Halcyon researcher asked whether they ever ate the bitten. Then she wouldn't look at anyone.", 8);
 
 		// The Red Hand: the crew that bought the jars is purged (on the next round, not in the middle
 		// of someone's talk with a crew boss), and the open channel laughs

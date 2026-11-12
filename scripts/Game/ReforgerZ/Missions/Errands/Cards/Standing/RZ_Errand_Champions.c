@@ -15,9 +15,9 @@ class RZ_Errand_KidsInspection : RZ_ErrandCard
 		m_sFamily = "champion";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"You're the one from the board, aren't you. Would you look over my post? Before the sergeant does. If you say it's right, it's right.\"",
-			"\"Private on the gate's been asking for you by what the board calls you. He wants his post looked over. By you, he says.\"");
-		Over("\"The sergeant got there first. The private's doing press-ups. He's fine.\"");
+		Offer("You're the one from the board, aren't you. Would you look over my post? Before the sergeant does. If you say it's right, it's right.",
+			"Private on the gate's been asking for you by what the board calls you. He wants his post looked over. By you, he says.");
+		Over("The sergeant got there first. The private's doing press-ups. He's fine.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Look over his post";
@@ -30,7 +30,7 @@ class RZ_Errand_KidsInspection : RZ_ErrandCard
 
 		w = Way("talk");
 		w.m_sLabel = "Tell him you're nobody's sergeant";
-		w.Done("\"That's what the good ones say.\"");
+		w.Done("That's what the good ones say.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -69,9 +69,9 @@ class RZ_Errand_StoryAtTheFire : RZ_ErrandCard
 		m_sFamily = "champion";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"The lads have a bet on whether what they say about you is true. Sit at the fire and settle it. Loser buys. Nobody's buying.\"",
-			"\"You're the one they talk about. Come and tell it yourself, so we can stop telling it wrong.\"");
-		Over("\"Fire's out. They told it without you. You were taller in it.\"");
+		Offer("The lads have a bet on whether what they say about you is true. Sit at the fire and settle it. Loser buys. Nobody's buying.",
+			"You're the one they talk about. Come and tell it yourself, so we can stop telling it wrong.");
+		Over("Fire's out. They told it without you. You were taller in it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Tell it straight";
@@ -93,7 +93,7 @@ class RZ_Errand_StoryAtTheFire : RZ_ErrandCard
 
 		w = Way("talk");
 		w.m_sLabel = "Say there's nothing to tell";
-		w.Done("\"Modest. That's new. We'll put that in too.\"");
+		w.Done("Modest. That's new. We'll put that in too.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -136,9 +136,9 @@ class RZ_Errand_VisitorsLog : RZ_ErrandCard
 		m_sFamily = "champion";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("\"The visitors' log. Would you sign it? For the record. Records outlive everyone in them. That's rather the point of them.\"",
-			"\"A small request: your name in the station's log, in your own hand. My brother saw it on the list at the lab. I'd like it here as well.\"");
-		Over("\"The log's gone to the lab for binding. Another time.\"");
+		Offer("The visitors' log. Would you sign it? For the record. Records outlive everyone in them. That's rather the point of them.",
+			"A small request: your name in the station's log, in your own hand. My brother saw it on the list at the lab. I'd like it here as well.");
+		Over("The log's gone to the lab for binding. Another time.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Sign the log";
@@ -151,7 +151,7 @@ class RZ_Errand_VisitorsLog : RZ_ErrandCard
 
 		w = Way("talk");
 		w.m_sLabel = "Ask to be put down as anonymous";
-		w.Done("\"Anonymous is a valid entry. It's the most common one, in fact.\"");
+		w.Done("Anonymous is a valid entry. It's the most common one, in fact.");
 	}
 
 	//------------------------------------------------------------------------------------------------

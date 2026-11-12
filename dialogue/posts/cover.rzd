@@ -45,7 +45,7 @@ voice redhand
 node start
   say Go on, then. What does the crew call you, and who'd say so? A name's no good to me without somebody I know standing behind it.
   > @crew They call me {cover:crew}. -> said   if cover:crew   do cover:crew
-  > @boss Ask {cover:name}. We go back. -> said   if cover:name   do cover:name
+  > @boss {cover:name} knows me. We go back. -> said   if cover:name   do cover:name
   > @leave Forget it. -> hub
 
 node said

@@ -59,8 +59,8 @@ node rota
   > @back4 Noted. Something else. -> hub
 
 node offer
-  say Here's how it works. I give you a task off this table: a town to clear, a patrol to find, a road to watch, a checkpoint to hold. You go, you do it, you report to any Bastion post.
-  say It pays in Favor and rations and a line in the log. It's dangerous: every pin on this table is there because something went wrong. Listen to all of it before you say yes.
+  say Here's how it works. I give you a task off this table: a town to clear, a patrol to find, a road to watch, a checkpoint to hold. You do it, you report to any post.
+  say It pays in Favor and rations and a line in the log. It's dangerous: every pin on this table is there because something went wrong.
   say? tier:bastion>=trusted :: You're on the roster already, under civilians attached, so you get the same tasking the soldiers get.
   > @take I'll do it. Give me the task. -> hub   do call:slot:0
   > @risk How bad does it get out there? -> risk

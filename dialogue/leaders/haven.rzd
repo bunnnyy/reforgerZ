@@ -82,7 +82,7 @@ voice haven
 
 node start
   say Before anyone eats, somebody reads a name. One of ours who's gone: bitten, or lost on a road, or worn out. Then the bowls go round, and we count them twice.
-  say When it's somebody who stood up for the Haven, every house lights a candle in the window that night too. It's not much of a ceremony. It's what we've got.
+  say When it's somebody who stood up for the Haven, every house lights a candle in the window that night too. It's not much. It's what we've got.
   say? kin :: We read one of yours, once. That's why there's always a bowl for you here, and the medic won't take your Favor.
   > @stay Can I stay and hear it? -> stay
   > @count Why count the bowls twice? -> count

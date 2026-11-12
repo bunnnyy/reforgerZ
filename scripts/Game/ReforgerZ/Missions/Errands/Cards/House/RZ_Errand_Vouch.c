@@ -15,22 +15,22 @@ class RZ_Errand_Vouch : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
 		m_bTwists = true;
-		Offer("\"There's someone at the door who needs someone we know to speak for them. That's you, if you'll do it. If they turn out wrong, it's on you too.\"",
-			"\"New face, {name}. Nobody here knows them. Somebody has to say they're all right, and mean it.\"");
-		Over("\"Never mind. {name} went on. Or someone else spoke up. Either way.\"");
+		Offer("There's someone at the door who needs someone we know to speak for them. That's you, if you'll do it. If they turn out wrong, it's on you too.",
+			"New face, {name}. Nobody here knows them. Somebody has to say they're all right, and mean it.");
+		Over("Never mind. {name} went on. Or someone else spoke up. Either way.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Speak for {name}";
-		w.Done("\"Right. Your word, then. In you come, {name}.\"");
+		w.Done("Right. Your word, then. In you come, {name}.");
 
 		w = Way("talk");
 		w.m_sLabel = "Ask about inside first";
 		w.m_sBackground = "excon";
-		w.Done("\"Well? You'd know better than me.\"");
+		w.Done("Well? You'd know better than me.");
 
 		w = Way("leave");
 		w.m_sLabel = "Don't vouch";
-		w.Done("\"Fair. Most don't. I wouldn't.\"");
+		w.Done("Fair. Most don't. I wouldn't.");
 	}
 
 	//------------------------------------------------------------------------------------------------

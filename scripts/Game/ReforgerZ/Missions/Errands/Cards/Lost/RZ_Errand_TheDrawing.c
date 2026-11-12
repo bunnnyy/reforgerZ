@@ -13,17 +13,17 @@ class RZ_Errand_TheDrawing : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"The boy left this. I don't want it in the house. I don't want to throw it away either. You decide.\"",
-			"\"He drew it before he left. A table. Count the chairs. Then count the people. Then tell me what to do with it.\"");
-		Over("\"Never mind. Somebody took it. I didn't ask who.\"");
+		Offer("The boy left this. I don't want it in the house. I don't want to throw it away either. You decide.",
+			"He drew it before he left. A table. Count the chairs. Then count the people. Then tell me what to do with it.");
+		Over("Never mind. Somebody took it. I didn't ask who.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Put it in the drawer";
-		w.Done("\"In the drawer. With the other things we don't talk about.\"");
+		w.Done("In the drawer. With the other things we don't talk about.");
 
 		w = Way("do");
 		w.m_sLabel = "Keep it";
-		w.Done("\"Keep it, then. Don't show it to anyone. Don't look at it at night.\"");
+		w.Done("Keep it, then. Don't show it to anyone. Don't look at it at night.");
 
 		w = Way("do");
 		w.m_sLabel = "Burn it on the stove";

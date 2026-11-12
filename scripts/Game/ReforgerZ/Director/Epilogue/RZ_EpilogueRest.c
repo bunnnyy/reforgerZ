@@ -524,7 +524,7 @@ class RZ_EpiRest
 			k.person = true;
 			k.pos = RZ_Mission.LandPointNear(st.m_vCenter, 20, 40);
 			k.title = "A resident from " + st.m_sName;
-			k.talk = string.Format("\"I'd like to see the kitchen once more. In %1. I won't stay. I just want to see it.\"", st.m_sName);
+			k.talk = string.Format("I'd like to see the kitchen once more. In %1. I won't stay. I just want to see it.", st.m_sName);
 			k.faction = RZ_EFaction.SURVIVORS;
 			k.Verb("Walk them to their kitchen", "rest:kitchen:" + idx.ToString());
 			result.Insert(k);
@@ -608,10 +608,10 @@ class RZ_EpiRest
 		int cap = m_Epi.GetSettings().m_iScenePeople;
 		queue.people = Math.Min(cap, Math.Max(1, queue.people + R().joined - R().shuffles));
 		array<string> said = {
-			"\"Second time I've queued on this road. First time, they turned us round.\"",
-			"\"I brought the dog. Nobody said no dogs.\"",
-			"\"My sister's at the house. She says she'll come when it's shorter. It's never shorter.\"",
-			"\"I've got my slip. Day 2. Bus 1. I kept it in my shoe.\""
+			"Second time I've queued on this road. First time, they turned us round.",
+			"I brought the dog. Nobody said no dogs.",
+			"My sister's at the house. She says she'll come when it's shorter. It's never shorter.",
+			"I've got my slip. Day 2. Bus 1. I kept it in my shoe."
 		};
 		int pick = Math.AbsInt(m_Epi.Now() / 600) % said.Count();
 		queue.talk = queue.talk + "\n" + said[pick];
@@ -774,12 +774,12 @@ class RZ_EpiRest
 	//------------------------------------------------------------------------------------------------
 	protected void PlayBack(int playerId)
 	{
-		string line = "\"Command, Bastion. Holding at the barrier. Requesting relief. Over.\"";
+		string line = "Command, Bastion. Holding at the barrier. Requesting relief. Over.";
 		switch (RZ_MajorHelp.World(m_GM, "orders.stance"))
 		{
-			case 2: line = "\"All stations, all houses, this is Bastion. Civilians first. Bastion out.\""; break;
-			case 3: line = "\"Bastion, Command. Hold the line.\""; break;
-			case 4: line = "\"Effective strength as read. Bastion out.\""; break;
+			case 2: line = "All stations, all houses, this is Bastion. Civilians first. Bastion out."; break;
+			case 3: line = "Bastion, Command. Hold the line."; break;
+			case 4: line = "Effective strength as read. Bastion out."; break;
 		}
 
 		m_GM.NotifyPlayer(playerId, "The roster board", "The operator winds the tape back and plays the last call through the handset: " + line + " Then the hiss, all of it.");
@@ -789,7 +789,7 @@ class RZ_EpiRest
 	//------------------------------------------------------------------------------------------------
 	protected void ReadCase(int playerId)
 	{
-		string text = "\"Contents: the method, the site log, the author list. To be opened on the far side of the barrier.\"";
+		string text = "Contents: the method, the site log, the author list. To be opened on the far side of the barrier.";
 		switch (RZ_MajorHelp.World(m_GM, "proof.first_page"))
 		{
 			case 2: text = "\"Contents: the whole of it. First page: three weeks before Day 1.\" Somebody has underlined three weeks."; break;
@@ -878,13 +878,13 @@ class RZ_EpiRest
 
 		if (!pick)
 		{
-			m_GM.NotifyPlayer(playerId, "Rudi's crossroads", "\"Nothing of anyone's on the table this week. Ask me tomorrow.\"");
+			m_GM.NotifyPlayer(playerId, "Rudi's crossroads", "Nothing of anyone's on the table this week. Ask me tomorrow.");
 			return;
 		}
 
 		if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, 10))
 		{
-			m_GM.NotifyPlayer(playerId, "Rudi's crossroads", "\"Ten Favor. It's somebody's whole life. Ten.\"");
+			m_GM.NotifyPlayer(playerId, "Rudi's crossroads", "Ten Favor. It's somebody's whole life. Ten.");
 			return;
 		}
 
@@ -940,7 +940,7 @@ class RZ_EpiRest
 		string key = string.Format("sit|%1|%2", Ident(playerId), RZ_WorldFacts.Get().Day());
 		if (m_Epi.GetClosing().Count(key) > 0)
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"You sat with her this morning. She's asleep now.\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "You sat with her this morning. She's asleep now.");
 			return;
 		}
 
@@ -981,7 +981,7 @@ class RZ_EpiRest
 		{
 			if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, 15))
 			{
-				m_GM.NotifyPlayer(playerId, "Below " + place, "\"Fifteen on the lot up there. Or nothing.\"");
+				m_GM.NotifyPlayer(playerId, "Below " + place, "Fifteen on the lot up there. Or nothing.");
 				return;
 			}
 
@@ -1269,62 +1269,62 @@ class RZ_EpiRest
 		{
 			case RZ_CureFinale.HAVEN:
 			{
-				lines.Insert("\"She gave three times so we could have this. I say her name at the table now. Everyone does.\"");
-				lines.Insert("\"The medics come round with the cold box in the mornings. They ask your name first.\"");
-				lines.Insert("\"Our house, then the next house. That's the order. Nobody argued.\"");
-				lines.Insert("\"My boy had it this morning. He's asleep. He hasn't slept like that since Day 2.\"");
-				lines.Insert("\"The council voted for once and nobody walked out.\"");
-				lines.Insert("\"We ran out of bowls, so the soup went round in cups.\"");
-				lines.Insert("\"There's a list on the door of who's had it. My name's in pencil. Pencil's fine.\"");
-				lines.Insert("\"I was angry all season. I'm too tired for it now.\"");
+				lines.Insert("She gave three times so we could have this. I say her name at the table now. Everyone does.");
+				lines.Insert("The medics come round with the cold box in the mornings. They ask your name first.");
+				lines.Insert("Our house, then the next house. That's the order. Nobody argued.");
+				lines.Insert("My boy had it this morning. He's asleep. He hasn't slept like that since Day 2.");
+				lines.Insert("The council voted for once and nobody walked out.");
+				lines.Insert("We ran out of bowls, so the soup went round in cups.");
+				lines.Insert("There's a list on the door of who's had it. My name's in pencil. Pencil's fine.");
+				lines.Insert("I was angry all season. I'm too tired for it now.");
 				break;
 			}
 			case RZ_CureFinale.BASTION:
 			{
-				lines.Insert("\"Names on the roster, then the needle. They say it's fair. It's tidy, anyway.\"");
-				lines.Insert("\"A soldier wrote my name down three times this week. I was cured on the third.\"");
-				lines.Insert("\"Bastion says the column first. My bus was the column. I'm not complaining.\"");
-				lines.Insert("\"They stencilled the crates. They stencil everything. Even the cure.\"");
-				lines.Insert("\"Curfew's still curfew. The cure didn't change that.\"");
-				lines.Insert("\"The lieutenant said sorry when he turned my cousin away. I believed him.\"");
-				lines.Insert("\"You queue, you sign, you wait. Like the Day 2 buses, only it works.\"");
-				lines.Insert("\"They gave the children theirs first. Whatever else, they did that.\"");
+				lines.Insert("Names on the roster, then the needle. They say it's fair. It's tidy, anyway.");
+				lines.Insert("A soldier wrote my name down three times this week. I was cured on the third.");
+				lines.Insert("Bastion says the column first. My bus was the column. I'm not complaining.");
+				lines.Insert("They stencilled the crates. They stencil everything. Even the cure.");
+				lines.Insert("Curfew's still curfew. The cure didn't change that.");
+				lines.Insert("The lieutenant said sorry when he turned my cousin away. I believed him.");
+				lines.Insert("You queue, you sign, you wait. Like the Day 2 buses, only it works.");
+				lines.Insert("They gave the children theirs first. Whatever else, they did that.");
 				break;
 			}
 			case RZ_CureFinale.REDHAND:
 			{
-				lines.Insert("\"Everyone's got a line in the book now. Mine says two tins. Cheap, for a life.\"");
-				lines.Insert("\"The crew's price went down on Tuesday. Nobody knows why. Nobody asks.\"");
-				lines.Insert("\"I paid for my mother's. She'll never know what it cost. I'll never tell her.\"");
-				lines.Insert("\"Say what you like about the crossroads. The crossroads had it first.\"");
-				lines.Insert("\"There's soup at the lorry. The cook won't take money for the soup.\"");
-				lines.Insert("\"I owe the Red Hand for the rest of my life. The rest of my life is longer now.\"");
-				lines.Insert("\"The book's open on the tailgate. You can read your own page. Most don't.\"");
-				lines.Insert("\"They wrote my name in the book in very nice handwriting.\"");
+				lines.Insert("Everyone's got a line in the book now. Mine says two tins. Cheap, for a life.");
+				lines.Insert("The crew's price went down on Tuesday. Nobody knows why. Nobody asks.");
+				lines.Insert("I paid for my mother's. She'll never know what it cost. I'll never tell her.");
+				lines.Insert("Say what you like about the crossroads. The crossroads had it first.");
+				lines.Insert("There's soup at the lorry. The cook won't take money for the soup.");
+				lines.Insert("I owe the Red Hand for the rest of my life. The rest of my life is longer now.");
+				lines.Insert("The book's open on the tailgate. You can read your own page. Most don't.");
+				lines.Insert("They wrote my name in the book in very nice handwriting.");
 				break;
 			}
 			case RZ_CureFinale.HALCYON:
 			{
-				lines.Insert("\"They wrote down my blood type, my weight and my house. Then the dose.\"");
-				lines.Insert("\"The researcher thanked me for my participation. I didn't know I'd participated.\"");
-				lines.Insert("\"It works. That's what the paper will say. It works, and it was them.\"");
-				lines.Insert("\"There's a form for everything at the lab gate. Even for crying.\"");
-				lines.Insert("\"They asked if I'd been bitten before Day 1. I said I didn't know there was a before.\"");
-				lines.Insert("\"A beak walked me to the table and back. Polite. Very polite.\"");
-				lines.Insert("\"The method's published. My cousin at the far house read it out to the medic.\"");
-				lines.Insert("\"They gave me a number to keep. I keep it in my shoe.\"");
+				lines.Insert("They wrote down my blood type, my weight and my house. Then the dose.");
+				lines.Insert("The researcher thanked me for my participation. I didn't know I'd participated.");
+				lines.Insert("It works. That's what the paper will say. It works, and it was them.");
+				lines.Insert("There's a form for everything at the lab gate. Even for crying.");
+				lines.Insert("They asked if I'd been bitten before Day 1. I said I didn't know there was a before.");
+				lines.Insert("A beak walked me to the table and back. Polite. Very polite.");
+				lines.Insert("The method's published. My cousin at the far house read it out to the medic.");
+				lines.Insert("They gave me a number to keep. I keep it in my shoe.");
 				break;
 			}
 			case RZ_CureFinale.INDEP:
 			{
-				lines.Insert("\"Released to nobody. So it came to us. Somebody chalked it on a crate.\"");
-				lines.Insert("\"Eight walked out on Day 6. I knew one. He never said.\"");
-				lines.Insert("\"No list, no book, no roster. First come. My feet were first.\"");
-				lines.Insert("\"Nobody's cure, they call it. It feels like everybody's.\"");
-				lines.Insert("\"The crate was open on the road. We took two and left the rest. Everyone did.\"");
-				lines.Insert("\"The factions are sulking. Let them sulk. They're cured too.\"");
-				lines.Insert("\"Somebody did this for nothing. I keep wanting to thank them.\"");
-				lines.Insert("\"WE TRIED, it says on the lab gate. They did, didn't they.\"");
+				lines.Insert("Released to nobody. So it came to us. Somebody chalked it on a crate.");
+				lines.Insert("Eight walked out on Day 6. I knew one. He never said.");
+				lines.Insert("No list, no book, no roster. First come. My feet were first.");
+				lines.Insert("Nobody's cure, they call it. It feels like everybody's.");
+				lines.Insert("The crate was open on the road. We took two and left the rest. Everyone did.");
+				lines.Insert("The factions are sulking. Let them sulk. They're cured too.");
+				lines.Insert("Somebody did this for nothing. I keep wanting to thank them.");
+				lines.Insert("WE TRIED, it says on the lab gate. They did, didn't they.");
 				break;
 			}
 		}
@@ -1341,10 +1341,10 @@ class RZ_EpiRest
 
 		switch (faction)
 		{
-			case RZ_EFaction.SURVIVORS: return "\"We stood on the lab road. We lost. The houses are still the houses.\"";
-			case RZ_EFaction.MILITARY: return "\"We stood on the lab road. We lost. Logged, and the watch goes on.\"";
-			case RZ_EFaction.BANDITS: return "\"We stood on the lab road. We lost. The book says we're square.\"";
-			case RZ_EFaction.INSTITUTE: return "\"We stood on the lab road. We lost. The work's still the work.\"";
+			case RZ_EFaction.SURVIVORS: return "We stood on the lab road. We lost. The houses are still the houses.";
+			case RZ_EFaction.MILITARY: return "We stood on the lab road. We lost. Logged, and the watch goes on.";
+			case RZ_EFaction.BANDITS: return "We stood on the lab road. We lost. The book says we're square.";
+			case RZ_EFaction.INSTITUTE: return "We stood on the lab road. We lost. The work's still the work.";
 		}
 
 		return "";
@@ -1359,26 +1359,26 @@ class RZ_EpiRest
 		{
 			case RZ_EFaction.SURVIVORS:
 			{
-				lines.Insert("\"I'm the cook. I cooked all season for more people than we had bowls. This week I cook for the queue.\"");
-				lines.Insert("\"I've cooked the same soup ninety ways. This week it's the ninety-first.\"");
+				lines.Insert("I'm the cook. I cooked all season for more people than we had bowls. This week I cook for the queue.");
+				lines.Insert("I've cooked the same soup ninety ways. This week it's the ninety-first.");
 				break;
 			}
 			case RZ_EFaction.MILITARY:
 			{
-				lines.Insert("\"I'm on the gate. I was on the gate on Day 2. Same gate. Different reason to stand at it.\"");
-				lines.Insert("\"Sentry. I log who goes in. For the record. Someone should keep a record.\"");
+				lines.Insert("I'm on the gate. I was on the gate on Day 2. Same gate. Different reason to stand at it.");
+				lines.Insert("Sentry. I log who goes in. For the record. Someone should keep a record.");
 				break;
 			}
 			case RZ_EFaction.BANDITS:
 			{
-				lines.Insert("\"I take the toll. One tin, or one dose, whichever's cheaper this week.\"");
-				lines.Insert("\"Toll's still a toll. The road didn't stop being a road because the lab finished.\"");
+				lines.Insert("I take the toll. One tin, or one dose, whichever's cheaper this week.");
+				lines.Insert("Toll's still a toll. The road didn't stop being a road because the lab finished.");
 				break;
 			}
 			case RZ_EFaction.INSTITUTE:
 			{
-				lines.Insert("\"I keep the gate's book. Name, house, time. For the record.\"");
-				lines.Insert("\"We count everything. This week we count the ones who come back to say thank you.\"");
+				lines.Insert("I keep the gate's book. Name, house, time. For the record.");
+				lines.Insert("We count everything. This week we count the ones who come back to say thank you.");
 				break;
 			}
 		}
@@ -1446,7 +1446,7 @@ class RZ_EpiRest
 		string text = "";
 		switch (replyId)
 		{
-			case 44: text = "\"" + RZ_EpiText.Where(m_Epi.Route(), m_Epi.Terms(), m_Epi.Faction()) + "\""; break;
+			case 44: text = RZ_EpiText.Where(m_Epi.Route(), m_Epi.Terms(), m_Epi.Faction()); break;
 			case 45: text = m_Epi.GetBeats().PlaceLine(l.m_vPos, 400); break;
 			case 46: text = (m_Epi.GetRecord().Title(Ident(playerId), l.m_eFaction) + " " + m_Epi.LineOf(Ident(playerId), 1)).Trim(); break;
 			case 47: text = m_Epi.GetClosing().DeadAt(l.m_vPos); break;
@@ -1454,7 +1454,7 @@ class RZ_EpiRest
 		}
 
 		if (text.IsEmpty())
-			text = "\"Nothing I'd say twice.\"";
+			text = "Nothing I'd say twice.";
 
 		string colour = Colour(l, replyId);
 		if (!colour.IsEmpty())
@@ -1478,19 +1478,19 @@ class RZ_EpiRest
 	protected string Colour(RZ_Leader l, int replyId)
 	{
 		if (l.m_iTraitA == RZ_ELeaderTrait.GREEDY || l.m_iTraitB == RZ_ELeaderTrait.GREEDY)
-			return "\"That one's free. The next one won't be.\"";
+			return "That one's free. The next one won't be.";
 
 		if (l.m_iTraitA == RZ_ELeaderTrait.MERCIFUL || l.m_iTraitB == RZ_ELeaderTrait.MERCIFUL)
-			return "\"Have you eaten? Sit. Then ask.\"";
+			return "Have you eaten? Sit. Then ask.";
 
 		if (l.IsStronghold())
 			return "";
 
 		if (l.m_eLoyalty == RZ_ELoyalty.ROGUE)
-			return "\"Don't tell the stronghold I said this.\"";
+			return "Don't tell the stronghold I said this.";
 
 		if (l.m_eLoyalty != RZ_ELoyalty.LOYAL && replyId == 44)
-			return "\"The stronghold has a line on it. Here's mine.\"";
+			return "The stronghold has a line on it. Here's mine.";
 
 		return "";
 	}
@@ -1519,7 +1519,7 @@ class RZ_EpiRest
 		}
 		else
 		{
-			text = "\"You don't owe us anything. Odd thing to say this week. Go on.\"";
+			text = "You don't owe us anything. Odd thing to say this week. Go on.";
 		}
 
 		m_GM.NotifyPlayer(playerId, l.GetHeader(), text);
@@ -1549,10 +1549,10 @@ class RZ_EpiRest
 				continue;
 
 			mem.FoundTruth(t.key, t.subject, "epilogue");
-			return string.Format("\"Since it doesn't matter now: the job about %1 wasn't what we said. It was %2. We knew.\"", Pretty(t.subject), Pretty(t.value));
+			return string.Format("Since it doesn't matter now: the job about %1 wasn't what we said. It was %2. We knew.", Pretty(t.subject), Pretty(t.value));
 		}
 
-		return "\"There's nothing left I didn't tell you. That surprises me too.\"";
+		return "There's nothing left I didn't tell you. That surprises me too.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1591,10 +1591,10 @@ class RZ_EpiRest
 
 		switch (route)
 		{
-			case RZ_CureFinale.BASTION: return "\"Roster first. You're not on it yet. Tomorrow.\"";
-			case RZ_CureFinale.HAVEN: return "\"The houses go in their order. Yours is tomorrow.\"";
-			case RZ_CureFinale.REDHAND: return "\"The crew's people walk with the next shift. You're after.\"";
-			case RZ_CureFinale.HALCYON: return "\"The authors first, then the rest. Tomorrow.\"";
+			case RZ_CureFinale.BASTION: return "Roster first. You're not on it yet. Tomorrow.";
+			case RZ_CureFinale.HAVEN: return "The houses go in their order. Yours is tomorrow.";
+			case RZ_CureFinale.REDHAND: return "The crew's people walk with the next shift. You're after.";
+			case RZ_CureFinale.HALCYON: return "The authors first, then the rest. Tomorrow.";
 		}
 
 		return "";

@@ -23,9 +23,9 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		m_sTitle = "What the Cure Costs Here";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"{local} has the fever, and the cure's going out by somebody else's rules. Nobody's coming to this house with it. What does it cost here?\"",
-			"\"{local} is sick, and the nearest dose isn't ours to give. Find out what it costs, and whether we can pay it.\"");
-		Over("\"Never mind. A dose came for {local} this morning.\"");
+		Offer("{local} has the fever, and the cure's going out by somebody else's rules. Nobody's coming to this house with it. What does it cost here?",
+			"{local} is sick, and the nearest dose isn't ours to give. Find out what it costs, and whether we can pay it.");
+		Over("Never mind. A dose came for {local} this morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Register {local} at the post's list";
@@ -40,7 +40,7 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		w.m_sLabel = "Vouch for {local}";
 		w.m_iMinTier = RZ_ETier.TRUSTED;
 		w.m_iTierFaction = RZ_EFaction.MILITARY;
-		w.Done("\"Your word on the list? Then the medic comes tonight.\"");
+		w.Done("Your word on the list? Then the medic comes tonight.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay for {local}'s dose";
@@ -67,7 +67,7 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit with {local} at the house a while (a minute), then tell {giver}.";
 		w.m_iFavor = 2;
-		w.Done("\"Nobody had a dose for them. You had an hour. They'll remember the hour.\"");
+		w.Done("Nobody had a dose for them. You had an hour. They'll remember the hour.");
 	}
 
 	//------------------------------------------------------------------------------------------------

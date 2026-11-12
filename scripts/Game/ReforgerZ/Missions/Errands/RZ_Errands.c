@@ -1130,7 +1130,7 @@ class RZ_Errands
 		{
 			RZ_NamedPerson busy = m_People.Get(found.m_sGiver);
 			if (busy)
-				m_GM.Say(playerId, busy.m_sTitle, busy.m_iFaction, "\"Give us a minute.\"");
+				m_GM.Say(playerId, busy.m_sTitle, busy.m_iFaction, "Give us a minute.");
 
 			return true;
 		}
@@ -1187,15 +1187,23 @@ class RZ_Errands
 			return;
 		}
 
-		// Talk: the greeting in their own voice, and what's wrong at the house this shift
-		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
-		int phase = RZ_Territory.RoutinePhase(RZ_GameTime.GetHour());
-		string text = RZ_FactionVoice.PersonLine(rng, RZ_EFaction.SURVIVORS, p.m_sRole, phase, p.m_sPlace, playerId, p.m_vPos);
+		// Talk: the greeting in their own voice, and what's wrong at the house this shift. On the talk
+		// screen only what's wrong is said at hello (no filler greeting)
+		string text = "";
+		if (!RZ_Dialogue.Quiet(m_GM, playerId))
+		{
+			RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
+			int phase = RZ_Territory.RoutinePhase(RZ_GameTime.GetHour());
+			text = RZ_FactionVoice.PersonLine(rng, RZ_EFaction.SURVIVORS, p.m_sRole, phase, p.m_sPlace, playerId, p.m_vPos);
+		}
+
 		string fault = m_Faults.HouseLine(house);
 		if (!fault.IsEmpty())
 			text += "\n" + fault;
 
-		m_GM.NotifyPlayer(playerId, p.m_sTitle, text);
+		text = text.Trim();
+		if (!text.IsEmpty())
+			m_GM.NotifyPlayer(playerId, p.m_sTitle, text);
 		RZ_CampLife camp = m_GM.GetCampLife();
 		if (camp)
 			camp.HoldPersonNear(playerId);
@@ -1287,7 +1295,7 @@ class RZ_Errands
 
 		if (!IsOn())
 		{
-			m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, "\"Nothing today. We're managing.\"");
+			m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, "Nothing today. We're managing, just about.");
 			return;
 		}
 
@@ -1324,6 +1332,23 @@ class RZ_Errands
 		}
 
 		ShowOffer(mine, owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This person's slots are an errand's ways right now (an offer waiting on your answer): the talk
+	//! screen says them as what you'd agree to (RZ_TalkWords.Agree).
+	bool OffersOn(IEntity owner)
+	{
+		if (!owner)
+			return false;
+
+		foreach (string giver, RZ_ErrandTalk talk : m_mTalks)
+		{
+			if (talk.m_Owner == owner && talk.m_fUntil > m_fClock)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1369,7 +1394,7 @@ class RZ_Errands
 
 		if (!mine)
 		{
-			m_GM.Say(playerId, p.m_sTitle, -1, "\"Not today. Ask me again on the road somewhere.\"");
+			m_GM.Say(playerId, p.m_sTitle, -1, "Not today. Ask me again on the road somewhere.");
 			return true;
 		}
 
@@ -1383,16 +1408,16 @@ class RZ_Errands
 	{
 		vector at = user.GetOrigin();
 		if (ShotNear(at, 60, 60) || m_GM.GetSpawner().CountZombiesNear(at, 30, 1) > 0)
-			return "\"Not while that lot's at the fence.\"";
+			return "Not while that lot's at the fence.";
 
 		if (RZ_Util.IsInVehicle(user))
-			return "\"Get out of the car first. I'm not shouting.\"";
+			return "Get out of the car first. I'm not shouting.";
 
 		if (RZ_Factions.IsValid(p.m_iFaction) && RZ_Reputation.IsHunted(m_GM.GetTier(playerId, p.m_iFaction)))
-			return "\"You've a nerve. Walk on.\"";
+			return "You've a nerve. Walk on.";
 
 		if (CountHeld(playerId) >= m_Settings.m_iMaxHeld)
-			return "\"You've your hands full already. Finish what you've got.\"";
+			return "You've your hands full already. Finish what you've got.";
 
 		return "";
 	}
@@ -1402,13 +1427,13 @@ class RZ_Errands
 	{
 		switch (p.m_iFaction)
 		{
-			case RZ_EFaction.SURVIVORS: return "\"Not today. Ask the others tomorrow, someone always wants something.\"";
-			case RZ_EFaction.MILITARY: return "\"Nothing on the board for you. Check back after the shift change.\"";
-			case RZ_EFaction.BANDITS: return "\"Nothing little going. Come back when something's broken.\"";
-			case RZ_EFaction.INSTITUTE: return "\"No requests at present. The shift is quiet, which we're told is good.\"";
+			case RZ_EFaction.SURVIVORS: return "Not today. Ask the others tomorrow, someone always wants something.";
+			case RZ_EFaction.MILITARY: return "Nothing on the board for you. Check back after the shift change.";
+			case RZ_EFaction.BANDITS: return "Nothing little going. Come back when something's broken.";
+			case RZ_EFaction.INSTITUTE: return "No requests at present. The shift is quiet, which we're told is good.";
 		}
 
-		return "\"Not today.\"";
+		return "Not today.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1461,7 +1486,7 @@ class RZ_Errands
 
 		// The suspect variant: the giver has a question first
 		if (e.m_bSuspect)
-			Say(e, "\"Where were you Tuesday? Never mind. Don't answer that.\"", false);
+			Say(e, "Where were you on Tuesday? Never mind. Don't answer that.", false);
 
 		Say(e, Pick(e.m_Def.m_aOffer), false);
 		if (!owner)
@@ -1681,7 +1706,7 @@ class RZ_Errands
 		if (wayIdx < 0)
 		{
 			// Not now is always free: the offer stands a while, nothing is remembered
-			Say(e, "\"Fair enough.\"", false);
+			Say(e, "Fair enough.", false);
 			Count(e.m_Def.m_sFamily).declines++;
 			ReleaseTalk(talk.m_sGiver);
 			return;
@@ -1714,7 +1739,7 @@ class RZ_Errands
 		int playerId = e.m_iAsker;
 		int f = w.PayFaction(e.m_iFaction);
 		if (!w.m_sBackground.IsEmpty() && !RZ_QuestApproach.HasBackground(m_GM, playerId, w.m_sBackground))
-			return "\"Not that way. You'd need to know what you're looking at.\"";
+			return "Not that way. You'd need to know what you're looking at.";
 
 		if (w.m_iMinTier >= 0)
 		{
@@ -1723,7 +1748,7 @@ class RZ_Errands
 				tf = f;
 
 			if (!RZ_Factions.IsValid(tf) || !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, tf), w.m_iMinTier))
-				return "\"Not from you. Maybe from someone they know.\"";
+				return "Not from you. Maybe from someone they know.";
 		}
 
 		if (w.m_iTrust > 0)
@@ -1736,14 +1761,14 @@ class RZ_Errands
 			RZ_ECheck result = RZ_Checks.Result(RZ_Checks.TrustScore(m_GM, playerId, trustF, w.m_sBackground), RZ_StoryKit.AtHouse(m_GM, playerId, e.m_iHouse, w.m_iTrust));
 			RZ_Log.Info(string.Format("Story: errand.%1 talk %2 by %3", e.m_Def.m_sKey, RZ_Checks.ResultName(result), RZ_Util.PlayerName(playerId)));
 			if (result != RZ_ECheck.PASS)
-				return "\"Not from you. Maybe from someone the house knows.\"";
+				return "Not from you. Maybe from someone the house knows.";
 		}
 
 		if (w.m_iItems > 0 && !w.m_bGiveThere && CountItems(user, w.m_eItem) < w.m_iItems)
 			return "\"You've nothing I can use for that. " + RZ_Util.Capitalize(ItemNeed(w.m_eItem, w.m_iItems)) + ", it needs.\"";
 
 		if (w.m_iFavorCost > 0 && !m_GM.SpendFavor(playerId, f, w.m_iFavorCost))
-			return string.Format("\"That's %1 Favor. You haven't got it with us.\"", w.m_iFavorCost);
+			return string.Format("That's %1 Favor. You haven't got it with us.", w.m_iFavorCost);
 
 		if (w.m_bThreat)
 		{
@@ -1753,7 +1778,7 @@ class RZ_Errands
 
 			RZ_ECheck threat = RZ_Checks.Threaten(m_GM, playerId, e.m_sGiver, e.m_iFaction, e.m_iFaction, 2, false);
 			if (threat != RZ_ECheck.PASS)
-				return "\"Is that meant to frighten me? Get away from my door.\"";
+				return "Is that meant to frighten me? Get away from my door.";
 		}
 
 		if (w.m_iItems > 0 && !w.m_bGiveThere)
@@ -2338,7 +2363,7 @@ class RZ_Errands
 			if (once)
 				ledger.threadsSaid.Insert(entry);
 
-			return string.Format("\"%1 says you %2.\"", parts[1], parts[2]);
+			return string.Format("%1 says you %2.", parts[1], parts[2]);
 		}
 
 		return "";
@@ -2965,7 +2990,7 @@ class RZ_Errands
 				return;
 
 			m_mLastRadio.Set(ident, m_fClock);
-			m_GM.NotifyPlayer(playerId, "On the Haven's channel", string.Format("\"If you're near %1, %2 the %3 could use a hand. Only if you're passing.\"", h.m_sName, p.m_sName, p.m_sRole));
+			m_GM.NotifyPlayer(playerId, "On the Haven's channel", string.Format("If you're near %1, %2 the %3 could use a hand. Only if you're passing.", h.m_sName, p.m_sName, p.m_sRole));
 			RZ_Log.Info(string.Format("Errands: radio ask to %1 for %2 at %3", RZ_Util.PlayerName(playerId), p.m_sName, h.m_sName));
 			return;
 		}

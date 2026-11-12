@@ -146,7 +146,7 @@ class RZ_EpiClosing
 			}
 		}
 
-		AddItem("broadcast", "The Last Broadcast", -1, StationPos(), 2, "The station", "\"The station goes out at processing, with or without your names.\"");
+		AddItem("broadcast", "The Last Broadcast", -1, StationPos(), 2, "The station", "The station goes out at processing, with or without your names.");
 
 		RZ_WorldFacts facts = RZ_WorldFacts.Get();
 		if (facts.Flag("table.exists") != 0 && facts.Flag("table.exposed") == 0 && facts.Flag("table.burnt") == 0)
@@ -423,17 +423,17 @@ class RZ_EpiClosing
 	protected void LooseCall(string key, out string giver, out string call)
 	{
 		giver = "Word from the houses";
-		call = "\"It ends this week, one way or another. Better if someone's there.\"";
+		call = "It ends this week, one way or another. Better if someone's there.";
 		switch (key)
 		{
-			case "door": giver = "The council head"; call = "\"The crew's man waits for the last envelope. Tomorrow, with or without you.\""; break;
-			case "walk": giver = "The walker"; call = "\"There's one more who needs walking. I'll do it myself if nobody comes.\""; break;
-			case "haven_short_weight": giver = "The head"; call = "\"The stores get counted tomorrow at supper, with or without you.\""; break;
-			case "census": giver = "The CO"; call = "\"The count goes on the board as last reported, unless somebody brings a better one.\""; break;
-			case "pilot": giver = "The pilot"; call = "\"I'm flying at dawn, with or without anyone.\""; break;
-			case "cargo": giver = "The driver"; call = "\"The van goes tomorrow. I'd rather it went somewhere else.\""; break;
-			case "well": giver = "The village"; call = "\"The crew wants its last payment. We'll find the tins if nobody stands with us.\""; break;
-			case "other_two": giver = "The director"; call = "\"His coat is still on the hook. We'll label it.\""; break;
+			case "door": giver = "The council head"; call = "The crew's man waits for the last envelope. Tomorrow, with or without you."; break;
+			case "walk": giver = "The walker"; call = "There's one more who needs walking. I'll do it myself if nobody comes."; break;
+			case "haven_short_weight": giver = "The head"; call = "The stores get counted tomorrow at supper, with or without you."; break;
+			case "census": giver = "The CO"; call = "The count goes on the board as last reported, unless somebody brings a better one."; break;
+			case "pilot": giver = "The pilot"; call = "I'm flying at dawn, with or without anyone."; break;
+			case "cargo": giver = "The driver"; call = "The van goes tomorrow. I'd rather it went somewhere else."; break;
+			case "well": giver = "The village"; call = "The crew wants its last payment. We'll find the tins if nobody stands with us."; break;
+			case "other_two": giver = "The director"; call = "His coat is still on the hook. We'll label it."; break;
 		}
 	}
 
@@ -553,7 +553,7 @@ class RZ_EpiClosing
 
 		if (key == "well" && way == 0 && !m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, 15))
 		{
-			m_GM.NotifyPlayer(playerId, stage, "\"One tin. Fifteen Favor. You haven't got it.\"");
+			m_GM.NotifyPlayer(playerId, stage, "One tin. Fifteen Favor. You haven't got it.");
 			return;
 		}
 
@@ -706,7 +706,7 @@ class RZ_EpiClosing
 		string key = string.Format("cup|%1|%2", ident, day);
 		if (Count(key) > 0)
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"You brought one already today. Sit down a minute.\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "You brought one already today. Sit down a minute.");
 			return;
 		}
 
@@ -716,7 +716,7 @@ class RZ_EpiClosing
 
 		if (RZ_FoodHelper.TakeFood(user, words, 1) <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"A cup of what? Bring something to put in it.\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "A cup of what? Bring something to put in it.");
 			return;
 		}
 
@@ -733,12 +733,12 @@ class RZ_EpiClosing
 	{
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		if (p.m_fLifeSeconds < 7200 * m_Epi.Scale())
-			return "\"You've not been here long enough to be on a list. Two hours, then come back.\"";
+			return "You've not been here long enough to be on a list. Two hours, then come back.";
 
 		foreach (string w : S().walked)
 		{
 			if (w.StartsWith(p.m_sIdentity + "|"))
-				return "\"You've been through once. Nobody comes back.\"";
+				return "You've been through once. Nobody comes back.";
 		}
 
 		// The order by the route's terms (processing's first day)
@@ -765,7 +765,7 @@ class RZ_EpiClosing
 		{
 			if (d.StartsWith(ident + "|"))
 			{
-				m_GM.NotifyPlayer(playerId, spot.title, "\"You're on it already. Third from the bottom.\"");
+				m_GM.NotifyPlayer(playerId, spot.title, "You're on it already. Third from the bottom.");
 				return;
 			}
 		}
@@ -781,14 +781,14 @@ class RZ_EpiClosing
 	{
 		if (!RZ_EpiCarQuery.Near(spot.pos, 25))
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"What car?\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "What car?");
 			return;
 		}
 
 		string key = "car|" + Ident(playerId);
 		if (Count(key) > 0)
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"We've got yours. It's a good one.\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "We've got yours. It's a good one.");
 			return;
 		}
 
@@ -811,7 +811,7 @@ class RZ_EpiClosing
 	{
 		if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, 15))
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"Fifteen. The queue's free. The front isn't.\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "Fifteen. The queue's free. The front isn't.");
 			return;
 		}
 
@@ -1273,9 +1273,9 @@ class RZ_EpiClosing
 			return "";
 
 		if (names.IsEmpty())
-			return string.Format("\"%1 of ours this season. And the ones we don't say.\"", h.m_iSeasonDied);
+			return string.Format("%1 of ours this season. And the ones we don't say.", h.m_iSeasonDied);
 
-		return string.Format("\"%1. And the ones we don't say.\"", names);
+		return string.Format("%1. And the ones we don't say.", names);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1315,13 +1315,13 @@ class RZ_EpiClosing
 		string ident = Ident(playerId);
 		if (S().bookPaid.Contains(ident))
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"Your line says paid already. Don't make me write it twice.\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "Your line says paid already. Don't make me write it twice.");
 			return;
 		}
 
 		if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, 15))
 		{
-			m_GM.NotifyPlayer(playerId, spot.title, "\"Fifteen. The book takes Favor, not promises.\"");
+			m_GM.NotifyPlayer(playerId, spot.title, "Fifteen. The book takes Favor, not promises.");
 			return;
 		}
 
@@ -1526,7 +1526,7 @@ class RZ_EpiClosing
 		string ident = Ident(playerId);
 		if (Count("deeds|" + ident) <= 0 && !RZ_Radio.IsRadioOperator(m_GM, playerId))
 		{
-			m_GM.NotifyPlayer(playerId, "The radio station", "\"Bring something first. A name, a page, anything. Then you get a say.\"");
+			m_GM.NotifyPlayer(playerId, "The radio station", "Bring something first. A name, a page, anything. Then you get a say.");
 			return;
 		}
 
@@ -1739,15 +1739,15 @@ class RZ_EpiClosing
 
 		if (S().choices[which] != 0)
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), "\"Already decided.\"");
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), "Already decided.");
 			return;
 		}
 
 		if (!ChoiceOpen(which))
 		{
-			string none = "\"Nothing to decide. For once.\"";
+			string none = "Nothing to decide. For once.";
 			if (which == 2)
-				none = "\"Already decided. Not by me.\"";
+				none = "Already decided. Not by me.";
 
 			m_GM.NotifyPlayer(playerId, l.GetHeader(), none);
 			return;
@@ -1756,7 +1756,7 @@ class RZ_EpiClosing
 		// Dropping the price takes the Red Hand's trust
 		if (which == 2 && !first && !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.TRUSTED))
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), "\"You don't get a say in the price. Trusted people do.\"");
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), "You don't get a say in the price. Trusted people do.");
 			return;
 		}
 
@@ -1765,13 +1765,13 @@ class RZ_EpiClosing
 		{
 			if (m_bPendingFirst == first)
 			{
-				m_GM.NotifyPlayer(playerId, l.GetHeader(), "\"That's what's on the table already.\"");
+				m_GM.NotifyPlayer(playerId, l.GetHeader(), "That's what's on the table already.");
 				return;
 			}
 
 			if (m_aObjected.Contains(ident))
 			{
-				m_GM.NotifyPlayer(playerId, l.GetHeader(), "\"You've objected once. Let somebody else.\"");
+				m_GM.NotifyPlayer(playerId, l.GetHeader(), "You've objected once. Let somebody else.");
 				return;
 			}
 

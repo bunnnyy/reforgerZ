@@ -155,7 +155,7 @@ class RZ_DialoguePack_openings
 		db.Choice("on", "Stay with him. I'll be quick.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("opening.where_now", "opening", "cflag:opening.step=3", "Where will you go now?", 4, 1, "plain");
 		db.Node("start");
-		db.Say("cflag:opening.end=3", "Not where you're going. The Red Hand would have the coat off my back before I'd said hello. I'll find a door with a bear on it, and somebody behind it who'll let me in.");
+		db.Say("cflag:opening.end=3", "Not where you're going. The Red Hand would have the coat off my back before I'd said hello. I'll find a door with a bear on it, and somebody behind it who'll open up.");
 		db.Say("", "Behind you, at a distance. I'm slower than I look, and I look slow. Don't wait for me, and don't keep looking back to check. I'll get there.");
 		db.Choice("come", "Come with me. We'll go together.", "come", "", "", "", "", "", "", "", "");
 		db.Choice("fine", "Mind how you go.", "hub", "", "", "", "", "", "", "", "");

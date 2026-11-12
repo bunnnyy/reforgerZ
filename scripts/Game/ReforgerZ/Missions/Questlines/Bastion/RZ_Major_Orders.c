@@ -215,7 +215,7 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 				persuade = 2;
 
 			int spot = scene.Person(RZ_MajorHelp.NearSeat(p.m_vPos), "the board at " + p.m_sPlace, "Talk to the duty sergeant", string.Format("The duty board at %1. A roster, a stores ledger, and a number at the bottom that's the same as last week's.", p.m_sPlace));
-			scene.Choice(spot, "Ask for the true count").Persuade(RZ_EFaction.MILITARY, persuade, "police,soldier").Sets(key, 1).Says("The commander shows you the board. The struck-off names are under a strip of tape. The number underneath is smaller.", "got a post's true count").Refused("\"The count is the count. Ask the stronghold.\"");
+			scene.Choice(spot, "Ask for the true count").Persuade(RZ_EFaction.MILITARY, persuade, "police,soldier").Sets(key, 1).Says("The commander shows you the board. The struck-off names are under a strip of tape. The number underneath is smaller.", "got a post's true count").Refused("The count is the count. Ask the stronghold.");
 			scene.Choice(spot, "Read the roster at night").Sneak().Sets(key, 1).Says("The roster and the ledger, by torchlight. Two rifles off the inventory, one man struck off who isn't dead.", "read a post's roster at night");
 			scene.Choice(spot, "Buy the quartermaster's copy (15 Favor)").Bribe(RZ_EFaction.MILITARY, 15).Sets(key, 1).Says("The quartermaster's own copy, folded small. He doesn't say which number is his.", "bought a post's real ledger");
 		}
@@ -263,21 +263,21 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 		scene.m_iFavor = 20;
 		scene.m_fWindow = 5400;
 		scene.m_iTimeout = -1;
-		int radio = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the radio by the CO's seat", "Talk to the CO", run.Fill("\"Effective strength {count}. That's the true number now. What I read after it is up to the people in this room.\""));
-		scene.Choice(radio, "Say keep the call [Known]").Needs(RZ_EFaction.MILITARY, 1).Decides(OUT_CALL).Says("\"Command, Bastion. Effective strength {count}. Requesting relief. Over.\" The hiss after it sounds like every other night's.", "told the CO to keep the call").Refused("\"You'd want to be known on this net first.\"");
-		scene.Choice(radio, "Say read it to them").Persuade(RZ_EFaction.MILITARY, ReadStep(gm, run), "soldier").HoldAt(co.m_vPos, 180, OUT_ALL, OUT_CALL).Says("The CO picks up the handset. \"All stations. This is Bastion. I have something to read you.\" The loudspeakers carry it, and the noise carries further.", "talked the CO into reading the orders").Refused("\"Read them what? That nobody meant to come? Not tonight.\"");
-		scene.Choice(radio, "Say answer it yourself").Persuade(RZ_EFaction.MILITARY, AnswerStep(gm, run), "soldier").Decides(OUT_COMMAND).Says("\"Bastion, Command. Hold the line.\" The CO says it to the net in Command's voice, and every post answers.", "had the stronghold answer as Command").Refused("\"Command doesn't take advice from the queue.\"");
+		int radio = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the radio by the CO's seat", "Talk to the CO", run.Fill("Effective strength {count}. That's the true number now. What I read after it is up to the people in this room."));
+		scene.Choice(radio, "Say keep the call [Known]").Needs(RZ_EFaction.MILITARY, 1).Decides(OUT_CALL).Says("\"Command, Bastion. Effective strength {count}. Requesting relief. Over.\" The hiss after it sounds like every other night's.", "told the CO to keep the call").Refused("You'd want to be known on this net first.");
+		scene.Choice(radio, "Say read it to them").Persuade(RZ_EFaction.MILITARY, ReadStep(gm, run), "soldier").HoldAt(co.m_vPos, 180, OUT_ALL, OUT_CALL).Says("The CO picks up the handset. \"All stations. This is Bastion. I have something to read you.\" The loudspeakers carry it, and the noise carries further.", "talked the CO into reading the orders").Refused("Read them what? That nobody meant to come? Not tonight.");
+		scene.Choice(radio, "Say answer it yourself").Persuade(RZ_EFaction.MILITARY, AnswerStep(gm, run), "soldier").Decides(OUT_COMMAND).Says("\"Bastion, Command. Hold the line.\" The CO says it to the net in Command's voice, and every post answers.", "had the stronghold answer as Command").Refused("Command doesn't take advice from the queue.");
 
 		vector relay = RelayPos(gm, run, co);
-		int crew = scene.Person(RZ_MajorHelp.NearSeat(relay), "the crew's radio man at the relay", "Talk to the radio man", "\"At half eight every post hears a word over the CO's call. You keep them off me for three minutes, the word's free.\"");
+		int crew = scene.Person(RZ_MajorHelp.NearSeat(relay), "the crew's radio man at the relay", "Talk to the radio man", "At half eight every post hears a word over the CO's call. You keep them off me for three minutes, the word's free.");
 		// Bastion's side: break the relay hold (+10 Bastion Fame), the call goes out as the CO says it
 		scene.Choice(crew, "Take the relay back for Bastion [Bastion: Known]").Way(RZ_EQuestApproach.FORCE).Needs(RZ_EFaction.MILITARY, 1).Only("!relay_taken").Side(RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, 10, 5).Sets("relay_taken").Says("You pull the crew's lead out of the relay and sit on it. Whatever the CO says tonight, nobody talks over it.", "took the relay back for Bastion").Refused("The relay's Bastion's already.");
 
 		// The rations bribe: the quartermaster's tins go round before the call (All Stations' morale hit halved)
-		int qm = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the quartermaster", "Talk to the quartermaster", "\"If the CO reads them something hard tonight, they'd take it better on a full stomach. I've tins. You've Favor.\"");
-		scene.Choice(qm, "Pay for rations before the call (30 Favor)").Bribe(RZ_EFaction.MILITARY, 30).Only("!rations").Sets("rations").Says("The tins go round the posts before half eight. Whatever comes over the net, they'll hear it fed.", "paid for the rations before the muster").Refused("\"They've eaten. Twice would be suspicious.\"");
+		int qm = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the quartermaster", "Talk to the quartermaster", "If the CO reads them something hard tonight, they'd take it better on a full stomach. I've tins. You've Favor.");
+		scene.Choice(qm, "Pay for rations before the call (30 Favor)").Bribe(RZ_EFaction.MILITARY, 30).Only("!rations").Sets("rations").Says("The tins go round the posts before half eight. Whatever comes over the net, they'll hear it fed.", "paid for the rations before the muster").Refused("They've eaten. Twice would be suspicious.");
 
-		scene.Choice(crew, "Hold the relay for the crew (+25 Infamy)").Way(RZ_EQuestApproach.BETRAY).Needs(RZ_EFaction.BANDITS, RedHandRank(gm)).Only("!relay_taken").Side(RZ_EFaction.BANDITS, RZ_EFaction.MILITARY, 10, 15).HoldAt(relay, 180, OUT_EXPENDED, OUT_CALL).Says("The radio man keys up. Behind you, something on the hill hears the generator.", "held the relay for the Red Hand").Refused("\"The boss says you're not one of ours. Not for this.\"");
+		scene.Choice(crew, "Hold the relay for the crew (+25 Infamy)").Way(RZ_EQuestApproach.BETRAY).Needs(RZ_EFaction.BANDITS, RedHandRank(gm)).Only("!relay_taken").Side(RZ_EFaction.BANDITS, RZ_EFaction.MILITARY, 10, 15).HoldAt(relay, 180, OUT_EXPENDED, OUT_CALL).Says("The radio man keys up. Behind you, something on the hill hears the generator.", "held the relay for the Red Hand").Refused("The boss says you're not one of ours. Not for this.");
 		return true;
 	}
 
@@ -356,12 +356,12 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 		scene.m_iFavor = 0;
 		scene.m_fWindow = 7200;
 		scene.m_iTimeout = OUT_ROLL;
-		int radio = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the radio by the CO's seat", "Talk to the operator", "\"Effective strength, civilians sheltered, the new names on the nail. Then the stance's line. Read it if you want it read.\"");
+		int radio = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the radio by the CO's seat", "Talk to the operator", "Effective strength, civilians sheltered, the new names on the nail. Then the stance's line. Read it if you want it read.");
 		scene.Choice(radio, "Read the last call").Says(LastCallLine(gm), "read Bastion's last call");
 		vector halt = RZ_MajorHelp.NorthRoad(gm, 150);
 		if (halt != vector.Zero)
 		{
-			int sedlak = scene.Person(halt, "Lieutenant Sedlak at the halt", "Talk to Sedlak", "\"We stop here. Any closer and the voice turns us back. I read the roll from here.\"");
+			int sedlak = scene.Person(halt, "Lieutenant Sedlak at the halt", "Talk to Sedlak", "We stop here. Any closer and the voice turns us back. I read the roll from here.");
 			// Sedlak's box: the tags brought home to the nail in the week (Bring Them Home)
 			string box = "Sedlak reads the roster out loud. The living answer. For the dead, everyone at the halt answers together. For a struck-off man, nobody does.";
 			int tags = SedlakBox();
@@ -397,16 +397,16 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 	{
 		switch (RZ_MajorHelp.World(gm, KEY + ".stance"))
 		{
-			case 2: return "\"All stations, all houses, this is Bastion. Civilians first. Bastion out.\"";
-			case 3: return "\"Bastion, Command. Hold the line.\"";
-			case 4: return "\"Effective strength {count}. Bastion out.\"";
+			case 2: return "All stations, all houses, this is Bastion. Civilians first. Bastion out.";
+			case 3: return "Bastion, Command. Hold the line.";
+			case 4: return "Effective strength {count}. Bastion out.";
 		}
 
 		// The finale's clause: under Bastion's route, the captain and the four R numbers
 		if (gm.GetFinale() && gm.GetFinale().Controller() == RZ_CureFinale.BASTION)
-			return "\"Command, Bastion. Stores held for collection, R1 to R4, released. The captain signed. Requesting relief. Over.\"";
+			return "Command, Bastion. Stores held for collection, R1 to R4, released. The captain signed. Requesting relief. Over.";
 
-		return "\"Command, Bastion. Holding at the barrier. Requesting relief. Over.\"";
+		return "Command, Bastion. Holding at the barrier. Requesting relief. Over.";
 	}
 
 	// ================================================================ How it goes on
@@ -669,7 +669,7 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 	//------------------------------------------------------------------------------------------------
 	override string BetweenLine(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		return "\"The CO's been reading the numbers slower. Like there's more after them.\"";
+		return "The CO's been reading the numbers slower. Like there's more after them.";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -638,11 +638,11 @@ class RZ_Quest_Cargo : RZ_Questline
 			if (IsFarm(run))
 			{
 				RZ_RedHandQuest.SetWorld(gm, "table.supplier_cut", 1);
-				SpreadRumour(gm, "\"There's a farm past the last village that's lost its butcher. That's what the Red Hand says. Then it laughs.\"", 8);
+				SpreadRumour(gm, "There's a farm past the last village that's lost its butcher. That's what the Red Hand says. Then it laughs.", 8);
 			}
 			else if (replaced)
 			{
-				SpreadRumour(gm, "\"The boss emptied a crew boss's pit last night, and put the crew boss in it.\"", 8);
+				SpreadRumour(gm, "The boss emptied a crew boss's pit last night, and put the crew boss in it.", 8);
 			}
 
 			return;
@@ -669,7 +669,7 @@ class RZ_Quest_Cargo : RZ_Questline
 		// Told
 		ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 		Headline(gm, "Every Haven house lit a candle at supper for the ones who never arrived. Somebody told them where they went.");
-		SpreadRumour(gm, "\"The Haven knows where the strays went. It's stopped putting people out at night.\"", 8);
+		SpreadRumour(gm, "The Haven knows where the strays went. It's stopped putting people out at night.", 8);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -702,7 +702,7 @@ class RZ_Quest_Cargo : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage <= S_TELL)
-			return "\"There's a Red Hand van with the canvas tied down. It never stops for tins.\"";
+			return "There's a Red Hand van with the canvas tied down. It never stops for tins.";
 
 		return "";
 	}
@@ -1356,7 +1356,7 @@ class RZ_QM_CargoBuys : RZ_RedHandQuestMission
 			if (!TryPersuade(gm, playerId, RZ_EFaction.BANDITS, 2, ""))
 			{
 				Remember(gm, playerId, RZ_EQuestApproach.TALK, "asked the fence");
-				gm.NotifyPlayer(playerId, m_sTitle, "\"Who buys what's none of your business, friend. Come back when you're somebody.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "Who buys what's none of your business, friend. Come back when you're somebody.");
 				return;
 			}
 
@@ -1376,7 +1376,7 @@ class RZ_QM_CargoBuys : RZ_RedHandQuestMission
 
 			string named = QFill(gm, "\"{crew_short}. It's always {crew_short}. They go to a farm past the last village, and the woman there pays in jars.\" {driver_short} wipes his mouth like he's tasted something.");
 			if (!farm)
-				named = QFill(gm, "\"{crew_short}. The ones who owe nothing go in the crew's own pit, and the bets go in {crew_short}'s tin.\"");
+				named = QFill(gm, "{crew_short}. The ones who owe nothing go in the crew's own pit, and the bets go in {crew_short}'s tin.");
 
 			gm.NotifyPlayer(playerId, m_sTitle, named);
 			Resolve(gm, playerId, RZ_EQuestApproach.BRIBE, RZ_Quest_Cargo.OUT_KNOWN, "paid the driver to name names");

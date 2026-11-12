@@ -11,9 +11,9 @@ class RZ_Errand_Borrowed : RZ_EpiCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "storekeeper,cook";
-		Offer("\"{other_house} borrowed three sacks from us in the bad week. They're eating better than we are now. Ask them for it back. Nicely.\"",
-			"\"We lent {other_house} food when they had none. It's the last week. Debts ought to be square by the end of it.\"");
-		Over("\"{other_house} sent it over themselves. Nobody had to ask.\"");
+		Offer("{other_house} borrowed three sacks from us in the bad week. They're eating better than we are now. Ask them for it back. Nicely.",
+			"We lent {other_house} food when they had none. It's the last week. Debts ought to be square by the end of it.");
+		Over("{other_house} sent it over themselves. Nobody had to ask.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Ask {other_house} for it back";
@@ -22,7 +22,7 @@ class RZ_Errand_Borrowed : RZ_EpiCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Go to {other_house} and ask for the food back (at the gate, 10 s), then carry it to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("\"They gave it back? Without an argument? Then it really is the last week.\"");
+		w.Done("They gave it back? Without an argument? Then it really is the last week.");
 
 		w = Way("leave");
 		w.m_sLabel = "Say you couldn't find them";

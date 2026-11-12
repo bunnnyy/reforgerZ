@@ -527,7 +527,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 
 		RZ_TalkScene sc = m_Job.Scene(who, "crossing.watcher", LandPointNear(inland, 0, 10));
 		int n0 = sc.Node(line);
-		sc.Way(n0, "\"When does it turn?\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GAP, "\"Watch me. When I scratch my ear, go.\" He scratches his ear a lot.", "\"Turns when it likes. Like a cat.\"");
+		sc.Way(n0, "When does it turn?", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GAP, "\"Watch me. When I scratch my ear, go.\" He scratches his ear a lot.", "Turns when it likes. Like a cat.");
 		sc.Way(n0, "Two tins for its turns", RZ_TalkScene.FOOD, -1, 2, WAY_GAP, "He takes the tins and counts the turns out loud for you, slowly.");
 
 		string labels = "Give it to the house";

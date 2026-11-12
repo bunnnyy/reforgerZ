@@ -11,9 +11,9 @@ class RZ_Errand_OneLastToll : RZ_EpiCard
 		m_sTitle = "One Last Toll";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"Everybody's walking up the north road with a bag. A tin a head at the bend. Last toll of the season. Stand it for us.\"",
-			"\"The queue road's the only road anyone uses now. A crew ought to be on it, one last time. You'll do.\"");
-		Over("\"Forget the toll. The boss called it off.\"");
+		Offer("Everybody's walking up the north road with a bag. A tin a head at the bend. Last toll of the season. Stand it for us.",
+			"The queue road's the only road anyone uses now. A crew ought to be on it, one last time. You'll do.");
+		Over("Forget the toll. The boss called it off.");
 
 		RZ_ErrandWay w = Way("press");
 		w.m_sLabel = "Stand the toll at the bend";
@@ -22,7 +22,7 @@ class RZ_Errand_OneLastToll : RZ_EpiCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Stand the toll at the bend on the road to the queue for two minutes, then bring the tins to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"Tins. Good. The book will miss this road.\"");
+		w.Done("Tins. Good. The book will miss this road.");
 
 		w = Way("talk");
 		w.m_sLabel = "Talk the crew out of it";

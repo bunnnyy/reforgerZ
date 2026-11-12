@@ -12,9 +12,9 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_bTimed = true;
-		Offer("\"Old man in the farmhouse out past the chapel won't come in. Says nothing comes past the chapel. Something's been coming past the chapel all week. Before dark, please.\"",
-			"\"He's stubborn and he's on his own and {lot} are hungry. Bring him in, or at least board him in.\"");
-		Over("\"Never mind. He came in on his own. Complaining. But in.\"");
+		Offer("Old man in the farmhouse out past the chapel won't come in. Says nothing comes past the chapel. Something's been coming past the chapel all week. Before dark, please.",
+			"He's stubborn and he's on his own and {lot} are hungry. Bring him in, or at least board him in.");
+		Over("Never mind. He came in on his own. Complaining. But in.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring him in";
@@ -23,7 +23,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		w.m_fRadius = 30;
 		w.m_fBefore = 20.5;
 		w.m_sStep = "Fetch the old man from the farmhouse {place} and walk him back to {here} (10 s there).";
-		w.Later("\"The old man from the farmhouse says the soup's too thin. He's had three bowls. Thank you.\"");
+		w.Later("The old man from the farmhouse says the soup's too thin. He's had three bowls. Thank you.");
 		w.m_iFavor = 5;
 		w.Done("\"I'd have been fine. I'm only here because of the soup.\" He's rude to everyone at supper. They're glad.");
 
@@ -39,7 +39,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 
 		w = Way("leave");
 		w.m_sLabel = "Leave him to it";
-		w.Done("\"He'd only have been rude to you. He's rude to everyone.\"");
+		w.Done("He'd only have been rude to you. He's rude to everyone.");
 	}
 
 	//------------------------------------------------------------------------------------------------

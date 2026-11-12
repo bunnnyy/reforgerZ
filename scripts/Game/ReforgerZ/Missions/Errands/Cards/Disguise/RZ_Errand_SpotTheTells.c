@@ -14,9 +14,9 @@ class RZ_Errand_SpotTheTells : RZ_ErrandCard
 		m_sFamily = "bastion";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"Two civilians in our green this week, and now the sergeant says one of ours doesn't look like one of ours. Walk the line. Look at boots, rifles, caps.\"",
-			"\"Somebody here is wearing our kit and isn't ours. The sergeant can't tell. Can you?\"");
-		Over("\"Never mind. The sergeant counted heads and found one too many. It's sorted.\"");
+		Offer("Two civilians in our green this week, and now the sergeant says one of ours doesn't look like one of ours. Walk the line. Look at boots, rifles, caps.",
+			"Somebody here is wearing our kit and isn't ours. The sergeant can't tell. Can you?");
+		Over("Never mind. The sergeant counted heads and found one too many. It's sorted.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Find the scout by the tells";

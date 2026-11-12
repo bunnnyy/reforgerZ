@@ -429,7 +429,7 @@ class RZ_DisguiseWatch
 			list += n;
 		}
 
-		string line = string.Format("\"The nightly numbers. And the names: %1. On the nail. Bastion out.\"", list);
+		string line = string.Format("The nightly numbers. And the names: %1. On the nail. Bastion out.", list);
 		RZ_FactionLife life = m_GM.GetFactionLife();
 		if (life)
 			life.OpenChannelLine(RZ_EFaction.MILITARY, line);
@@ -543,23 +543,23 @@ class RZ_DisguiseWatch
 		if (f == RZ_EFaction.MILITARY)
 		{
 			if (kill)
-				return string.Format("\"All stations: %1 has a man down. Faces checked at the wire. Bastion out.\"", place);
+				return string.Format("All stations: %1 has a man down. Faces checked at the wire. Bastion out.", place);
 
-			return string.Format("\"All stations: civilian in our kit at %1. Check faces. Bastion out.\"", place);
+			return string.Format("All stations: civilian in our kit at %1. Check faces. Bastion out.", place);
 		}
 
 		if (f == RZ_EFaction.BANDITS)
 		{
 			if (kill)
-				return string.Format("\"Somebody dropped one of ours by %1. Nobody walks through on a smile till dusk.\"", place);
+				return string.Format("Somebody dropped one of ours by %1. Nobody walks through on a smile till dusk.", place);
 
-			return "\"Someone's wearing hands we didn't paint. Ask names at the toll.\"";
+			return "Someone's wearing hands we didn't paint. Ask names at the toll.";
 		}
 
 		if (kill)
-			return "\"A member of staff was killed near the station. Please stay inside the wire.\"";
+			return "A member of staff was killed near the station. Please stay inside the wire.";
 
-		return "\"Security notice: a coat was presented at the station by someone not in the record. Please check numbers.\"";
+		return "Security notice: a coat was presented at the station by someone not in the record. Please check numbers.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -797,9 +797,9 @@ class RZ_DisguiseWatch
 			return "\"Sign here.\" The sergeant reads the name twice, then waves your friend through.";
 
 		if (f == RZ_EFaction.BANDITS)
-			return "\"Yours, is it? Then it's the friends' rate.\"";
+			return "Yours, is it? Then it's the friends' rate.";
 
-		return "\"Visitor. Ten minutes, and they don't touch anything.\"";
+		return "Visitor. Ten minutes, and they don't touch anything.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -960,7 +960,7 @@ class RZ_DisguiseWatch
 
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(shooter);
 		if (me && m_Disguise.NearTheirs(f, me.GetOrigin(), RZ_Disguise.CATCH_RADIUS))
-			m_Disguise.Caught(shooter, f, me, "\"That one. The one in our kit.\"");
+			m_Disguise.Caught(shooter, f, me, "That one. The one in our kit.");
 		else
 			m_Disguise.Expose(shooter, f, "You hit one of theirs.");
 	}

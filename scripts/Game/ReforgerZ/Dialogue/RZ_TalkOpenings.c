@@ -55,7 +55,23 @@ class RZ_TalkOpening : RZ_TalkGeneric
 		if (!openings)
 			return;
 
+		// Quiet (you came back to them with nothing waiting): nothing first, the step's ask is their
+		// one reply. When a step waits for you to talk (Talk to / Back to <them>), or they haven't
+		// spoken yet, they say it: the story's piece and the ask
+		RZ_Opening o = Find();
+		if (s.m_bQuiet && o && o.m_bSpoke && !o.m_bWaitTalk && !o.m_bEnded)
+			return;
+
 		openings.TalkLines(playerId, m_iOpening, s.m_Tree != null, s.m_aNew, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! As each step starts they speak first (the step's piece of the story and its ask); when you
+	//! come back on your own, the screen opens on your replies (What was it you needed?).
+	override bool SpeaksFirst(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
+	{
+		RZ_Opening o = Find();
+		return o && (o.m_bAnnounce || o.m_bWaitTalk || !o.m_bSpoke);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -57,7 +57,7 @@ voice redhand
 node start
   say Somebody sold you a job short? Careful. The crew loves a story like that, and it'll want a name to go with it.
   say Tell it, and it's round the fires by dark and somebody's page gets longer. Keep it, and you're holding something on them. Both are worth something.
-  > @tell Tell the crew. I want it heard. -> told
+  > @tell Read it out. I want it heard. -> told
   > @keep Let it lie. I'll hold on to it. -> kept
 
 node told

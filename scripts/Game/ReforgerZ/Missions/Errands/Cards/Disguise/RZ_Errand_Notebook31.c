@@ -14,9 +14,9 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("\"{dead} did not come back from {where_place}. Notebook {number} was in the coat. The notes are the only copy. Please.\"",
-			"\"We have a coat and a notebook unaccounted for, {where_place}. Number {number}. And {dead}, of course. Mostly {dead}.\"");
-		Over("\"Notebook {number} has been returned. The record is complete, for once.\"");
+		Offer("{dead} did not come back from {where_place}. Notebook {number} was in the coat. The notes are the only copy. Please.",
+			"We have a coat and a notebook unaccounted for, {where_place}. Number {number}. And {dead}, of course. Mostly {dead}.");
+		Over("Notebook {number} has been returned. The record is complete, for once.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring the coat and notebook back";
@@ -26,7 +26,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		w.m_sStep = "Find {dead} {where_place} and take the coat and notebook {number} (15 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFame = 2;
-		w.Done("\"Notebook {number}. It goes into the record tonight, and {dead} goes on the authors' list.\"");
+		w.Done("Notebook {number}. It goes into the record tonight, and {dead} goes on the authors' list.");
 
 		w = Way("do");
 		w.m_sLabel = "Sell the notebook to the fence";
@@ -39,7 +39,7 @@ class RZ_Errand_Notebook31 : RZ_ErrandCard
 		w.m_sStep = "Find {dead} {where_place}, take notebook {number} (15 s there), and sell it at the fence. Then tell {giver} it was gone.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 15;
-		w.Done("\"Gone. Then the work is gone. We will start again. We are good at that.\"");
+		w.Done("Gone. Then the work is gone. We will start again. We are good at that.");
 
 		w = Way("lie");
 		w.m_sLabel = "Keep the notebook";

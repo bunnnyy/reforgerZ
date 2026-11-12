@@ -119,10 +119,10 @@ class RZ_DialogueScenes
 		if (hold && hold.m_iDecider != me)
 		{
 			if (!m_aObjected.Contains(hold.m_sScene + "|" + m_GM.GetProfile(me).m_sIdentity))
-				replies.Insert(Verb(OBJECT, "Object", "once"));
+				replies.Insert(Verb(OBJECT, "Hold on. I don't agree with that.", "Object - once"));
 
 			if (!hold.m_aStood.Contains(me))
-				replies.Insert(Verb(STAND, "Stand with " + RZ_Util.PlayerName(hold.m_iDecider), "shares it"));
+				replies.Insert(Verb(STAND, string.Format("I'm with %1 on this.", RZ_Util.PlayerName(hold.m_iDecider)), "Stand with them - shares it"));
 		}
 
 		array<int> near = {};
@@ -138,15 +138,15 @@ class RZ_DialogueScenes
 		bool signIn = vouchHostility && vouchHostility.GetDisguise().GetWatch().CanSignIn(me, other, f, s.m_Speaker);
 		bool banned = vouchHostility && vouchHostility.GetDisguise().GetWatch().VouchBanned(me);
 		if ((trusted || signIn) && !banned && PairFree("vouch", me, other) && !m_mVoucher.Contains(other))
-			replies.Insert(Verb(VOUCH, string.Format("\"%1's with me.\"", RZ_Util.PlayerName(other)), "Vouch: you answer for them"));
+			replies.Insert(Verb(VOUCH, string.Format("%1's with me.", RZ_Util.PlayerName(other)), "Vouch: you answer for them"));
 
 		RZ_DClaimSeen claim;
 		if (m_mClaims.Find(other, claim) && claim.m_Speaker == s.m_Speaker && m_fClock - claim.m_fAt <= CALLOUT_SECONDS && PairFree("callout", me, other))
-			replies.Insert(Verb(CALLOUT, string.Format("\"%1's lying.\"", RZ_Util.PlayerName(other)), "Call it out"));
+			replies.Insert(Verb(CALLOUT, string.Format("%1's lying.", RZ_Util.PlayerName(other)), "Call it out"));
 
 		RZ_Hostility hostility = m_GM.GetHostility();
 		if (RZ_Factions.IsValid(f) && hostility && hostility.GetDisguise().KitLevel(other, f) > 0 && RZ_Reputation.IsAtLeast(m_GM.GetTier(me, f), RZ_ETier.KNOWN) && PairFree("point", me, other))
-			replies.Insert(Verb(POINT, "\"That one's not yours.\"", "Point them out"));
+			replies.Insert(Verb(POINT, "That one's not yours.", "Point them out"));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -212,7 +212,7 @@ class RZ_DialogueScenes
 			UsePair("vouch", me, other);
 			m_mVoucher.Set(other, me);
 			m_mVouchUntil.Set(other, m_fClock + VOUCH_SECONDS);
-			s.m_aNew.Insert(string.Format("\"%1's with me.\" A nod. You answer for them now.", RZ_Util.PlayerName(other)));
+			s.m_aNew.Insert(string.Format("With you, are they? All right. Then if %1 puts a foot wrong, it's on you.", RZ_Util.PlayerName(other)));
 			m_GM.NotifyPlayer(other, s.m_sHeader, string.Format("%1 vouches for you here.", RZ_Util.PlayerName(me)));
 			RZ_Log.Info(string.Format("Dialogue: %1 vouched for %2", RZ_Util.PlayerName(me), RZ_Util.PlayerName(other)));
 			// At a barrier or Halcyon's gate it also signs them through (RZ_DisguiseWatch)
@@ -236,14 +236,14 @@ class RZ_DialogueScenes
 			if (claim && claim.m_Lie && facts)
 			{
 				facts.Memory().Lies().CatchNow(m_GM, claim.m_Lie, "call-out");
-				s.m_aNew.Insert(string.Format("\"%1's lying.\" The look on their face says you're right.", RZ_Util.PlayerName(other)));
+				s.m_aNew.Insert(string.Format("Lying? ...You're right. Look at %1's face. I'll remember that.", RZ_Util.PlayerName(other)));
 				return;
 			}
 
 			if (trees && !speakerKey.IsEmpty())
 				trees.GetMemory().AddRegard(me, speakerKey, "slander");
 
-			s.m_aNew.Insert("\"Calling an honest man a liar. Nice.\"");
+			s.m_aNew.Insert("Calling an honest man a liar. Nice.");
 			return;
 		}
 
@@ -256,12 +256,12 @@ class RZ_DialogueScenes
 				if (trees && !speakerKey.IsEmpty())
 					trees.GetMemory().AddRegard(me, speakerKey, "slander");
 
-				s.m_aNew.Insert("\"That one's ours. Who are you again?\"");
+				s.m_aNew.Insert("That one's ours. Who are you again?");
 				return;
 			}
 
 			disguise.PointOut(other, f);
-			s.m_aNew.Insert("\"That one's not yours.\" Eyes turn. They'll look harder at that face.");
+			s.m_aNew.Insert("Not one of ours? Then we'll be looking harder at that face from now on.");
 		}
 	}
 

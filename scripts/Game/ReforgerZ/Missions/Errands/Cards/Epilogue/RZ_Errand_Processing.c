@@ -11,9 +11,9 @@ class RZ_Errand_Processing : RZ_EpiCard
 		m_sTitle = "Processing";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"{local} wants walking to the queue. Processing. I've been processed since Day 2, {local} says. Not past the queue. Never to the barrier.\"",
-			"\"{local} has a bag packed and the Day 2 slip in a pocket. Walk them up to the queue? Just the queue.\"");
-		Over("\"Never mind. {local} went up with the morning lot.\"");
+		Offer("{local} wants walking to the queue. Processing. I've been processed since Day 2, {local} says. Not past the queue. Never to the barrier.",
+			"{local} has a bag packed and the Day 2 slip in a pocket. Walk them up to the queue? Just the queue.");
+		Over("Never mind. {local} went up with the morning lot.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk {local} to the queue";
@@ -23,7 +23,7 @@ class RZ_Errand_Processing : RZ_EpiCard
 		w.m_sStep = "Walk {local} up to the queue on the north road (20 s there, nothing in your hands), then tell {giver}.";
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
-		w.Done("\"Sitting in the queue, with the slip out. Thank you. That's where they wanted to be.\"");
+		w.Done("Sitting in the queue, with the slip out. Thank you. That's where they wanted to be.");
 
 		w = Way("talk");
 		w.m_sLabel = "Talk {local} into supper";

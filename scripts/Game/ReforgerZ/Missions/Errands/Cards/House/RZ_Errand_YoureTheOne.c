@@ -11,9 +11,9 @@ class RZ_Errand_YoureTheOne : RZ_ErrandCard
 		m_sFamily = "champion";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"You're the one, aren't you. People say. Would you write my daughter's name in the council book? In your hand. It would mean something.\"",
-			"\"There's a man at the gate asking for you by what people call you. He wants a name written in the book. By you, he says. Only you.\"");
-		Over("\"He's gone home. He said he'd ask again. He will.\"");
+		Offer("You're the one, aren't you. People say. Would you write my daughter's name in the council book? In your hand. It would mean something.",
+			"There's a man at the gate asking for you by what people call you. He wants a name written in the book. By you, he says. Only you.");
+		Over("He's gone home. He said he'd ask again. He will.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Write the name in the book";
@@ -25,7 +25,7 @@ class RZ_Errand_YoureTheOne : RZ_ErrandCard
 
 		w = Way("talk");
 		w.m_sLabel = "Say you're no one";
-		w.Done("\"That's what the last one said.\"");
+		w.Done("That's what the last one said.");
 	}
 
 	//------------------------------------------------------------------------------------------------

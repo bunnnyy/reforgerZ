@@ -12,13 +12,13 @@ class RZ_Errand_WithSide : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"{local} heard. {said}\"",
-			"\"{local} wants a word about who you're standing with. {said}\"");
-		Over("\"{local} has stopped asking.\"");
+		Offer("{local} heard. {said}",
+			"{local} wants a word about who you're standing with. {said}");
+		Over("{local} has stopped asking.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Talk it through";
-		w.Done("\"I don't like it. I understand it. Those aren't the same thing.\"");
+		w.Done("I don't like it. I understand it. Those aren't the same thing.");
 
 		w = Way("do");
 		w.m_sLabel = "Walk them out of the stand's way";
@@ -26,11 +26,11 @@ class RZ_Errand_WithSide : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 80;
 		w.m_sStep = "Walk {local} to {place}, well away from the lab road (5 s there), then come back to {giver}.";
-		w.Done("\"Out of the way. As if there's an out of the way. Thank you.\"");
+		w.Done("Out of the way. As if there's an out of the way. Thank you.");
 
 		w = Way("talk");
 		w.m_sLabel = "Carry one true word to your side";
-		w.Done("\"Tell them we're still here. That's the true word. We're still here.\"");
+		w.Done("Tell them we're still here. That's the true word. We're still here.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -75,12 +75,12 @@ class RZ_Errand_WithSide : RZ_ErrandCard
 	{
 		switch (route)
 		{
-			case RZ_EFaction.MILITARY: return "\"They say you're with the soldiers now. For the cure. Are you?\"";
-			case RZ_EFaction.BANDITS: return "\"They say you're with the crews. That they'll sell it, and you'll help. Tell me that's wrong.\"";
-			case RZ_EFaction.INSTITUTE: return "\"They say you're with the lab. The ones who made it in the first place. Is that true?\"";
+			case RZ_EFaction.MILITARY: return "They say you're with the soldiers now. For the cure. Are you?";
+			case RZ_EFaction.BANDITS: return "They say you're with the crews. That they'll sell it, and you'll help. Tell me that's wrong.";
+			case RZ_EFaction.INSTITUTE: return "They say you're with the lab. The ones who made it in the first place. Is that true?";
 		}
 
-		return "\"You're doing it yourself? Then do it properly.\"";
+		return "You're doing it yourself? Then do it properly.";
 	}
 
 	//------------------------------------------------------------------------------------------------

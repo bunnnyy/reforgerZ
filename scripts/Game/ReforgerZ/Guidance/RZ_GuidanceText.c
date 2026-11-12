@@ -69,9 +69,9 @@ class RZ_GuidanceText
 	static string HavenChannel(RZ_Rng rng, string town)
 	{
 		array<string> lines = {
-			"\"If you can hear this, %1 is open. Bring water if you can. Bring yourself either way.\"",
-			"\"This is the Haven, on the open channel. %1 has beds and soup. Nobody shoots in the house. If you're bitten, say so at the door, and we'll still help.\"",
-			"\"Haven, open channel. Still here, still in %1. If you're out there on your own: you don't have to be.\""
+			"If you can hear this, %1 is open. Bring water if you can. Bring yourself either way.",
+			"This is the Haven, on the open channel. %1 has beds and soup. Nobody shoots in the house. If you're bitten, say so at the door, and we'll still help.",
+			"Haven, open channel. Still here, still in %1. If you're out there on your own: you don't have to be."
 		};
 
 		return string.Format(rng.Pick(lines), town);
@@ -81,9 +81,9 @@ class RZ_GuidanceText
 	static string BastionChatter(RZ_Rng rng, string havenTown)
 	{
 		array<string> lines = {
-			"\"All stations, Bastion. Curfew at dusk remains in effect. Civilians to the Haven safehouse in %1. Armed groups on the roads. Bastion out.\"",
-			"\"Bastion to Command. Requesting status of relief. Over.\" A long hiss. \"Bastion to Command. Over.\" Nothing. \"...Bastion out.\"",
-			"\"Patrol two, Bastion. Report. ...Patrol two, Bastion.\" Someone holds the key down for a long moment without saying anything."
+			"All stations, Bastion. Curfew at dusk remains in effect. Civilians to the Haven safehouse in %1. Armed groups on the roads. Bastion out.",
+			"Bastion to Command. Requesting status of relief. Over. ... Bastion to Command. Over. ... Bastion out.",
+			"Patrol two, Bastion. Report. ... Patrol two, Bastion. Patrol two, do you copy? ... Bastion out."
 		};
 
 		return string.Format(rng.Pick(lines), havenTown);
@@ -93,7 +93,7 @@ class RZ_GuidanceText
 	static string RedHandChatter(RZ_Rng rng, string boss, string place)
 	{
 		array<string> lines = {
-			"\"Toll's due on every road out of %2. Tins, fuel or something worth knowing. Mostly tins.\""
+			"Toll's due on every road out of %2. Tins, fuel or something worth knowing. Mostly tins."
 		};
 
 		// The kettle for Bastion runs while Bastion still waits for relief (the orders' stance unset
@@ -102,13 +102,13 @@ class RZ_GuidanceText
 		RZ_WorldFacts facts = RZ_WorldFacts.Get();
 		RZ_Epilogue epi = RZ_Epilogue.Get();
 		if (epi && epi.IsBuilt() && epi.Data().choices.Count() > 1 && epi.Data().choices[1] == 2)
-			lines.Insert("\"Bastion's net's gone quiet. Nobody left to laugh at.\"");
+			lines.Insert("Bastion's net's gone quiet. Nobody left to laugh at.");
 		else if (!facts || facts.Flag("orders.stance") <= 1)
-			lines.Insert("\"Bastion, Bastion, come in. Still waiting for relief? We'll keep the kettle on.\" Laughter, and the channel goes dead.");
+			lines.Insert("Bastion, Bastion, come in. Still waiting for relief? We'll keep the kettle on. Red Hand out.");
 
 		// Nobody buys samples once the cure is out
 		if (!RZ_WorldFacts.Get().IsCured())
-			lines.Insert("\"Anyone with samples from the big ones: we pay faster than Halcyon. Ask for %1 in %2. No questions. Well. Some questions.\"");
+			lines.Insert("Anyone with samples from the big ones: we pay faster than Halcyon. Ask for %1 in %2. No questions. Well. Some questions.");
 
 		return string.Format(rng.Pick(lines), boss, place);
 	}
@@ -118,8 +118,8 @@ class RZ_GuidanceText
 	static string BastionLoudspeaker(RZ_Rng rng, string havenTown)
 	{
 		array<string> lines = {
-			"From somewhere ahead, a loudspeaker: \"Attention. This is a Task Force Bastion position. Curfew is in force from dusk. Civilians requiring shelter: the Haven safehouse in %1. Armed groups are active on the roads. Approach on foot, weapons slung.\"",
-			"A loudspeaker crackles from the Bastion post: \"Civilians are reminded that relief is on its way. Report infected sightings. Do not approach the quarantine line. Shelter and food at the Haven safehouse in %1.\" The man reading it has stopped believing it."
+			"Attention. This is a Task Force Bastion position. Curfew is in force from dusk. Civilians needing shelter: the Haven safehouse in %1. Armed groups are on the roads. Approach on foot, weapons slung.",
+			"Civilians are reminded that relief is on its way. Report infected sightings. Do not approach the quarantine line. Shelter and food at the Haven safehouse in %1. ... Relief is on its way."
 		};
 
 		return string.Format(rng.Pick(lines), havenTown);
@@ -129,13 +129,13 @@ class RZ_GuidanceText
 	static string RedHandShout(RZ_Rng rng, string boss)
 	{
 		array<string> lines = {
-			"A whistle from a window above you. \"New face! Tolls are fair, %1 is fairer, and Bastion's on a radio nobody answers. Come and say hello.\""
+			"New face! Tolls are fair, %1 is fairer, and Bastion's on a radio nobody answers. Come and say hello."
 		};
 
 		if (RZ_WorldFacts.Get().IsCured())
-			lines.Insert("Someone on a rooftop calls down, laughing: \"Cure's out and you're still here? Gates won't open till they're ready, friend. Ask for %1 in the meantime.\"");
+			lines.Insert("Cure's out and you're still here? Gates won't open till they're ready, friend. Ask for %1 in the meantime.");
 		else
-			lines.Insert("Someone on a rooftop calls down, laughing: \"Lost, are we? Bastion only looks after its own, you know. We look after anyone who pays. Got samples? We pay faster than Halcyon. Ask for %1.\"");
+			lines.Insert("Lost, are we? Bastion only looks after its own, you know. We look after anyone who pays. Got samples? We pay faster than Halcyon. Ask for %1.");
 
 		return string.Format(rng.Pick(lines), boss);
 	}
@@ -148,20 +148,20 @@ class RZ_GuidanceText
 		switch (faction)
 		{
 			case RZ_EFaction.SURVIVORS:
-				return string.Format("\"The Haven's holding out in %1. Soup, a medic, a bed if you're lucky. Don't fire a gun near the door.\"", place);
+				return string.Format("The Haven's holding out in %1. Soup, a medic, a bed if you're lucky. Don't fire a gun near the door.", place);
 			case RZ_EFaction.MILITARY:
 				if (role == RZ_EWandererRole.DESERTER)
-					return RZ_WorldFacts.Get().Fill(string.Format("\"Bastion's dug in at %1. Every night they read the roster out loud. When they get to my name, nobody answers. Don't tell them where you saw me.\"", place));
+					return RZ_WorldFacts.Get().Fill(string.Format("Bastion's dug in at %1. Every night they read the roster out loud. When they get to my name, nobody answers. Don't tell them where you saw me.", place));
 
-				return string.Format("\"Bastion holds %1. Follow their rules and they'll leave you alone. Their rules change.\"", place);
+				return string.Format("Bastion holds %1. Follow their rules and they'll leave you alone. Their rules change.", place);
 			case RZ_EFaction.BANDITS:
-				return string.Format("\"The Red Hand runs %1 these days. They'll sell you anything, including your own boots back.\"", place);
+				return string.Format("The Red Hand runs %1 these days. They'll sell you anything, including your own boots back.", place);
 			case RZ_EFaction.INSTITUTE:
 			{
 				if (RZ_WorldFacts.Get().IsCured())
-					return string.Format("\"The scientists in %1 got their cure out. Now they wait for the gates like the rest of us.\"", place);
+					return string.Format("The scientists in %1 got their cure out. Now they wait for the gates like the rest of us.", place);
 
-				return string.Format("\"The scientists are in %1. They want samples from the big ones. Say it's for a cure. I hope they're right.\"", place);
+				return string.Format("The scientists are in %1. They want samples from the big ones. Say it's for a cure. I hope they're right.", place);
 			}
 		}
 

@@ -10,9 +10,9 @@ class RZ_Errand_NameToTheBoard : RZ_EpiCard
 		m_sTitle = "Take a Name to the Board";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"{dead} died {lies}. Nobody's written it up. There's a board on the north road for that now. Would you?\"",
-			"\"Somebody should put {dead} on the board at the north road. I can't walk that far any more.\"");
-		Over("\"Somebody already wrote {dead} up. Good.\"");
+		Offer("{dead} died {lies}. Nobody's written it up. There's a board on the north road for that now. Would you?",
+			"Somebody should put {dead} on the board at the north road. I can't walk that far any more.");
+		Over("Somebody already wrote {dead} up. Good.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Write {dead} on the Names board";
@@ -22,7 +22,7 @@ class RZ_Errand_NameToTheBoard : RZ_EpiCard
 		w.m_sStep = "Go to the Names board on the north road and write {dead} up (10 s there), then tell {giver}.";
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
-		w.Done("\"On the board. Good. People will walk past it every day until the gates open.\"");
+		w.Done("On the board. Good. People will walk past it every day until the gates open.");
 	}
 
 	//------------------------------------------------------------------------------------------------

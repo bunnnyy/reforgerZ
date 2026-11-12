@@ -253,7 +253,7 @@ once
 voice plain
 
 node start
-  say? cflag:opening.end=3 :: Not where you're going. The Red Hand would have the coat off my back before I'd said hello. I'll find a door with a bear on it, and somebody behind it who'll let me in.
+  say? cflag:opening.end=3 :: Not where you're going. The Red Hand would have the coat off my back before I'd said hello. I'll find a door with a bear on it, and somebody behind it who'll open up.
   say Behind you, at a distance. I'm slower than I look, and I look slow. Don't wait for me, and don't keep looking back to check. I'll get there.
   > @come Come with me. We'll go together. -> come
   > @fine Mind how you go. -> hub
