@@ -2151,35 +2151,6 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One line per faction, the card's fallback text: "The Haven: Useful Trouble (counts as Known;
-	//! Fame 46, Infamy 22, 30 of 30 left to forgive; Favor 30)".
-	string DescribeStanding(int playerId)
-	{
-		RZ_PlayerProfile profile = GetProfile(playerId);
-		int budget = RZ_ReputationSettings.Get().m_iForgiveBudget;
-		string text = "";
-		for (int f = 0; f < RZ_Factions.COUNT; f++)
-		{
-			int fame = profile.GetFame(f);
-			int infamy = profile.GetInfamy(f);
-			string shown = RZ_RepNames.Shown(fame, infamy);
-			string rule = RZ_RepNames.CountsAs(fame, infamy);
-			string ruleText = "";
-			if (rule != shown)
-				ruleText = "counts as " + rule + "; ";
-
-			string budgetText = "";
-			if (budget > 0)
-				budgetText = string.Format(", %1 of %2 left to forgive", profile.ForgiveLeft(f), budget);
-
-			text += string.Format("%1: %2 (%3Fame %4, Infamy %5%6; Favor %7)\n", RZ_Factions.GetName(f), shown, ruleText,
-				fame, infamy, budgetText, profile.GetFavor(f));
-		}
-
-		return text;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! After every standing change: the tier notice at once (leading with the name when it isn't
 	//! the tier word), and the name's own notice, debounced (RZ_RepWatch).
 	protected void CheckTierChange(int playerId, RZ_EFaction faction, RZ_ETier before)

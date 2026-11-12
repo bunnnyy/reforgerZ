@@ -205,6 +205,18 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A person with a Talk prompt of their own (RZ_TalkAction: a quartermaster, the safehouse
+	//! medic): every other ReforgerZ action on them hides while the talk screen is used, since it's
+	//! a reply there. A dedicated server hides nothing (a client without the screen uses them).
+	static bool HidesActionsOn(IEntity owner)
+	{
+		if (RplSession.Mode() == RplMode.Dedicated || !Available() || !RZ_Dialogue.IsPerson(owner))
+			return false;
+
+		return RZ_TalkAction.On(owner) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static bool IsShowing()
 	{
 		return s_Open != null;

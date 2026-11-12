@@ -97,6 +97,12 @@ full-screen `Frame` with no background that ignores the cursor.
 
 ```
 Frame  (root, full screen)
+├─ Frame  NametagPanel          full screen, first so everything else draws over it (docs/UI.md, "Nametags")
+│  └─ VerticalLayout Nametag0, Nametag1, Nametag2   each at (0, 0), alignment 0.5 1 (the script sets its foot over a
+│     │                         head every frame), fits its content, hidden
+│     ├─ Text  NametagName      condensed bold 24, bone, centred, shadow
+│     ├─ Text  NametagRole      condensed 20, dim, centred, shadow; hidden without a role
+│     └─ Text  NametagFaction   condensed 20, centred, shadow, tinted with the faction colour; hidden without one
 ├─ Frame  InfectionPanel        430 × 150, anchor bottom-left, offset (96, -54)
 │  ├─ Image   (panel background)
 │  ├─ Image   InfectionAccent   5 × full height, left edge          tinted by stage
@@ -180,7 +186,8 @@ Frame  (root, full screen)
 ```
 
 Without `SubtitlePanel` the HUD shows spoken lines as cards; without `RadioLinePanel`, radio
-voices stay cards too (and a spoken line from a radio is a subtitle with the radio icon).
+voices stay cards too (and a spoken line from a radio is a subtitle with the radio icon). Without
+`NametagPanel` (or its `Nametag0`–`2`) there are no nametags.
 
 ## Notice card: `RZ_NoticeCard.layout`
 
@@ -525,15 +532,19 @@ Frame (root, full screen; no dim, the world shows as it is)
 ├─ Text   TalkName         anchored top right, its right edge 120 in, top 168; 1,000 × 48, condensed bold 40,
 │                          right-aligned, shadow, tinted with the faction colour
 ├─ Text   TalkSub          the same edge, top 218; 1,000 × 30, regular 24, bone, right-aligned, shadow
-├─ Frame  LinePanel        step 1: 1,320 × 222, anchored bottom centre, its bottom 84 up (x 300–1620, y 774–996)
+├─ Frame  LinePanel        step 1: 1,320 × 232, anchored bottom centre, its bottom 84 up (x 300–1620, y 764–996)
 │  ├─ Image  (LineBg)        (0, 0) 1,320 × 186, #121416 at 85%
 │  ├─ Image  LineAccent      (0, 0) 5 × 186, the band's left edge, tinted with the faction colour
-│  ├─ ScrollLayout SaidScroll  (36, 20) 1,256 × 144: four lines (the right stick and the wheel scroll it)
+│  ├─ ScrollLayout SaidScroll  (36, 20) 1,256 × 128: one box, three rows (the right stick scrolls one that overflows)
 │  │  └─ SizeLayout (SaidWidth)  1,226 wide
-│  │     └─ Text TalkSaid    regular 30, #F4F0E6, wraps
-│  ├─ Image  (LineTrack)     (5, 182) 1,315 × 4, white at 13%: the bar's track
-│  ├─ ProgressBar LineBar    (5, 182) 1,315 × 4, Simple, tinted with the faction colour: the reading time
-│  └─ Text   (SkipHint)      right-aligned, ending at (1320, 194), mono 20, dim: "A / Space: skip"
+│  │     └─ Text TalkSaid    regular 30, #F4F0E6, wraps; the script types the box into it
+│  ├─ Text   LineCount       right-aligned in (1036, 150) 210 × 30, bold 22, tinted, hidden: "2 / 4", the box of the speech
+│  ├─ Image  LineMore        (1258, 150) 28 × 28, static `marker_self`, tinted, hidden: the ▼ (the script turns it
+│  │                         180° and bounces it up to 5 px down once the box is all there)
+│  ├─ HorizontalLayout LinePromptsType (0, 196) 1,000 × 34, hidden: the footer while it types, "A Skip" "B Leave"
+│  ├─ HorizontalLayout LinePromptsRead (0, 196) 1,000 × 34, hidden: the footer once it's there, "A Continue" "B Leave"
+│  └─ Text   LinePromptsText (0, 200) 1,320 × 26, regular 20, dim: "A: continue · B: leave", the static footer,
+│                            shown only when the prompts can't be made (the script words it by state and device)
 └─ Frame  ReplyPanel       step 2, hidden until the script shows it: 1,440 × 352, anchored bottom centre,
    │                       its bottom 56 up (x 240–1680, y 672–1024)
    ├─ Image  (ReplyPanelBg)  (0, 0) 1,440 × 310, #121416 at 90%

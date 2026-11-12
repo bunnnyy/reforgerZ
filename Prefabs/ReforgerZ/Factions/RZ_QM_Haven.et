@@ -17,20 +17,20 @@ SCR_ChimeraCharacter : "{3AE3C1A509298D9D}Prefabs/Characters/Factions/CIV/Generi
   }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    additionalActions {
+    RZ_TalkAction "{F2ED66FFDCC99396}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{21BADE026A6AE768}" {
+      Name "Talk"
+     }
+    }
     RZ_ShopOpenAction "{50EA643F09E7F53C}" {
      ParentContextList {
       "default"
      }
      UIInfo UIInfo "{1EC5BFC77D87E84F}" {
       Name "Trade"
-     }
-    }
-    RZ_StandingStatusAction "{6AD67DC2A1E201A5}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A1E5F4B8}" {
-      Name "My standing"
      }
     }
     RZ_LeaderAction "{6AD67DC2A1E4E6DF}" {

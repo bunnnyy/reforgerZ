@@ -9,7 +9,9 @@ that ship. How the screen looks and is driven with a pad is in [UI.md](UI.md#the
 are written is in [WRITING.md](WRITING.md#conversations).
 
 Code: `Dialogue/RZ_Dialogue.c` (sessions), `Dialogue/RZ_TalkSpeakers.c` (who someone is),
-`Dialogue/RZ_TalkStrangers.c` (strangers), `Dialogue/RZ_DialogueRadio.c` (the open channel and its
+`Dialogue/RZ_TalkStrangers.c` (strangers), `Dialogue/RZ_TalkStaff.c` (a quartermaster's and the
+medic's Talk prompt and replies), `Dialogue/RZ_Nametags.c` (who's near each player, for the
+[nametags](UI.md#nametags)), `Dialogue/RZ_DialogueRadio.c` (the open channel and its
 action), `Dialogue/RZ_DialogueTrees.c` (hubs, nodes, checks, effects), `Dialogue/RZ_DialogueDB.c` (the
 compiled conversations), `Dialogue/RZ_DialogueCond.c` (conditions and tokens),
 `Dialogue/RZ_DialogueMemory.c` (memory and `dialogue.json`), `Dialogue/RZ_DialogueScenes.c` (several
@@ -51,19 +53,22 @@ What you know rows), `Dialogue/Pack/` (generated). Server only, except the scree
 
 ## The talk screen
 
-Look at a person and the action menu shows one line, **Talk to ...**. It opens the talk screen:
-what they say, and your replies as a list. You stay in the conversation until you leave, walk
+Look at a person and the action menu shows one line, **Talk to ...**: everyone who talks has
+exactly one Talk prompt, and everything else they offer is a reply (vanilla's own actions on them
+stay). It opens the talk screen: what they say, and your replies as a list. You stay in the conversation until you leave, walk
 off (6 m), wait 120 s with no reply, or danger comes (the [screen guard](UI.md#how-the-scripts-fit):
 then they say "Not now!" and it closes). You can't move while talking; the world keeps running.
 
-**Who:** stronghold and seat leaders (and the quartermaster's "Talk to whoever's in charge"),
-safehouse occupants, named people at holdings, the wanderers, the Long Table's people, strangers
-(errands), the people missions and questlines spawn, and (with Trees on) a road post's speaker at the
-barrier and the open channel on a radio. Any living character with the puzzle components. Bodies,
+**Who:** stronghold and seat leaders (at a quartermaster, through **Ask for whoever's in charge**),
+the four quartermasters and a safehouse's medic, safehouse occupants, named people at holdings, the
+wanderers, the Long Table's people, strangers (errands), the people missions and questlines spawn,
+and (with Trees on) a road post's speaker at the barrier and the open channel on a radio. Any living
+character with the puzzle components, or with a Talk prompt of its own (`RZ_TalkAction`). Bodies,
 objects, spots and doors keep their actions.
 
 **One engine, built on what's there.** Every one of these people already has a Talk handler and
-up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
+up to 8 labelled slots, or (a quartermaster, the medic) their own actions. The engine doesn't
+rewrite them; it wraps them:
 
 - **Greeting:** their Talk handler, run while the engine *captures* the player's notices and
   spoken lines. Lines under the speaker's title (a leader's is known; otherwise the first title the
@@ -78,6 +83,19 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
   **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me? (with
   Trees on, talk carries them: [Hubs](#hubs-work-comes-out-of-talk)).
+- **A quartermaster or the medic** (`RZ_TalkStaff`): their name is their role ("The quartermaster",
+  sub-line "The Haven - quartermaster - Morton"), their greeting one line in the faction's voice,
+  and their replies their own actions in the prefab's order: **Trade** (opens the [shop
+  screen](UI.md#the-shop-screen), while it's used), **Ask for whoever's in charge** (the seat's
+  leader takes the conversation over in the same screen, greeting, topics and all; nobody in the
+  chair, or held, and they say so), **Ask for the trial dose** on Halcyon's (greyed with what it
+  needs until it applies: "for the bitten only", "the bite hasn't taken yet", "once a life: you've
+  had yours", "not for you"), and the Haven house's services (Ask how things are, Hand over food,
+  Listen to the safehouse radio, Ask the medic to patch you up, Tell them you've been bitten, Ask for
+  something for the fever, the notice board). A leader's own asks there (work, news, standing, the
+  epilogue's) are the leader's replies once they've taken over. The shop's Buy, Requisition and
+  service actions are the shop screen's rows; without it they stay world prompts. The old **Check
+  standing and work** is gone: the notebook's Standing and Quests tabs say it.
 - **A pick** runs that slot's handler, capturing again. Their answer shows on its own, then
   the replies after it (the hub's again, or the node's), New Vegas style: the two steps are the
   client's, from one node ([UI.md](UI.md#the-talk-screen)). A reply that says nothing
@@ -87,8 +105,9 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
   only I'll be going.; with nothing said, it closes at once.
 - **Five at most on the screen.** The server sends a page of the list: up to four replies and the
   way out, with the page and the count. When there's more than one page the screen shows which one
-  you're on ("1/2" and the arrows) and LB/RB or Q/E turn it, round from either end ([UI.md](UI.md#the-talk-screen));
-  a turn is a pick of `MORE` or `PAGE_BACK`, taken only while there are pages to turn. A new list
+  you're on ("1/2" and the arrows); down past the last reply or up past the first turns it, and
+  LB/RB or Q/E turn it round from either end ([UI.md](UI.md#the-talk-screen)). A turn is a pick of
+  `MORE` or `PAGE_BACK` (ids no reply uses), taken only while there are pages to turn. A new list
   (another node, back to the hub) starts on its first page.
 - **[Admin].** A server admin's replies (the admins' chat commands without typing, [Tools](#tools))
   sit under one reply, **[Admin]**, at the end of the list; it opens them as their own list, with
@@ -99,8 +118,9 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
   and the admins' are never grey.
 - **Shown before you choose, never rolled.** A reply you can't take stays in the list, dim, with
   what it needs: a price in Favor in its label ("Buy supplies", needs 20 Haven Favor, you have 12),
-  "Give them your antidote" (you have none), "Share some food" (you have nothing to eat). There are
-  no dice.
+  "Give them your antidote" (you have none), "Share some food" and "Hand over food" (you have
+  nothing to eat), "Tell them you've been bitten" (you haven't been bitten), the trial dose (above).
+  There are no dice.
 
 So every built rule (Rob's Infamy, the Trader's price, a leader's refusal at attitude −2, an
 exile's shut door) works exactly as built.
@@ -115,9 +135,12 @@ that danger or distance ended picks up where it was if you talk to the same pers
 ("Where were we?"), without running the node's effects again.
 
 **The action list.** With the talk screen on (**Dialogue > Talk screen**, and **UI > Talk reply
-layout** set), a person's choice and use actions hide, and so do the quartermaster's leader
-actions for work, news and standing. Without it, or on a client where the screen can't open,
-nothing hides and Talk and the slots work as actions, with notices.
+layout** set), a person's choice and use actions hide, and on a quartermaster or the medic every
+ReforgerZ action but **Talk to the ...** hides (Trade, Talk to whoever's in charge, the leader's
+asks, the trial dose, the house's services; the shop's own rows hide while the shop screen is
+used). Without it, or on a client where the screen can't open, nothing hides and the old prompts
+work as actions, with notices (the quartermaster's leader asks and services in the object menu).
+**Nametags** over the people you can talk to are the HUD's ([UI.md](UI.md#nametags)).
 
 ## Trees: hubs, topics and nodes
 
@@ -216,6 +239,7 @@ behind it.
 | A safehouse's named people (the first two occupants, [ERRANDS.md](ERRANDS.md#givers)) | `resident:<role>` (cook, lookout, storekeeper, clerk), `resident` | `house:<index>:<i>` (errands' regard) | Ask how things are, Anything need doing? |
 | Named people at holdings | `named:<faction>/<role>` (`named:redhand/toll_man`), `named:<faction>`, `named` | `named:<holding>:<index>` | Ask how things are, Anything need doing? (errands) |
 | A road post's speaker | `post:bastion`, `post:redhand`, `post` | `post:<faction>:<town>` | none |
+| A quartermaster, a safehouse's medic (`RZ_TalkStaff`) | none: no conversations, so no topics or barks | none | their own actions ([above](#the-talk-screen)): Trade, Ask for whoever's in charge, the trial dose, the house's services |
 | The Long Table | `table:host`, `table:mother`, `table:son`, `table:boy`, `table:road` (the host out on the road), `table` | `table:<role>` (no regard: its memory stays its three words) | eat, trade a jar, declare a bite; on the road, accept or decline |
 | Strangers ([below](#strangers)) | `stranger:<routine>` (`stranger:tin`, `stranger:digger`...), `stranger` | `stranger:<visit>` | their ask's ways, as built ([ERRANDS.md](ERRANDS.md#strangers)) |
 | The open channel ([below](#the-radio)) | `radio:open`, `radio` | `radio:open` | none |

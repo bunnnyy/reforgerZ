@@ -700,7 +700,7 @@ line. You can also turn a rogue leader in: most rogue deliveries have a drop at 
 
 ### Talking to leaders
 
-Talk to a leader (their body, or "Talk to whoever's in charge" on the quartermaster) and the
+Talk to a leader (their body, or **Ask for whoever's in charge** in the quartermaster's talk) and the
 talk screen opens ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)): **Ask for work** (their personal
 job, else the stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
 safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen these are

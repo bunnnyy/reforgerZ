@@ -154,7 +154,8 @@ and one way to end it: **research the cure.**
   a small quest tracker top left with the tracked job's objectives, a you-are-here
   arrow on the map, a notebook (standing, journal, radio,
   quests, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
-  for everyone who talks, a repair screen for the cars, a shop screen at the quartermasters, a
+  for everyone who talks (one Talk prompt a person, their lines typed out a box at a time, small
+  nametags over the people near you), a repair screen for the cars, a shop screen at the quartermasters, a
   crafting screen at workbenches and one small object menu for props and places (the game's own
   inventory, looting, healing, doors and fuel first, a menu for anything with options, a single
   prompt only for what's done in a hurry),
@@ -258,13 +259,14 @@ scripts/Game/ReforgerZ/
                  traps, generators, fire, secure radio, a medic slowing a bite
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
-                 (strangers and the open channel too), what a reply needs; the trees (hubs,
+                 (strangers, the open channel, the quartermasters and the medic too), what a reply
+                 needs, who's near each player for the nametags; the trees (hubs,
                  nodes, checks, effects), conditions, memory (dialogue.json: promises, callbacks,
                  lies told), scenes and sittings, barks, Make it right, greets that open, the secure
                  nets and distress calls, bindings and world predicates, the notebook's talk rows;
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
-                 pages, the pause menu button and notebook item, the talk screen, the reader,
+                 pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
                  the car repair, shop and crafting screens (and the item picture), the object menu, the screen guard, the notice board, the spawn screen and loadout lock, the
                  map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/

@@ -75,10 +75,12 @@ class RZ_GroupedAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Hidden by another screen (the talk, car repair or crafting screen holds these slots).
+	//! Hidden by another screen (the talk, car repair or crafting screen holds these slots). On a
+	//! person with a Talk prompt (RZ_TalkAction: a quartermaster, the safehouse medic), the talk
+	//! screen holds every one of them.
 	protected bool HiddenByScreens()
 	{
-		return false;
+		return RZ_TalkMenu.HidesActionsOn(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------

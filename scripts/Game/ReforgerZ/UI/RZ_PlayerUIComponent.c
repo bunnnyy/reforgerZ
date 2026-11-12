@@ -425,6 +425,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_ObjectMenu.OnPayload(this, payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_NAMETAGS)
+		{
+			RZ_NametagClient.OnPayload(payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
 		{
 			m_sTracker = payload;
