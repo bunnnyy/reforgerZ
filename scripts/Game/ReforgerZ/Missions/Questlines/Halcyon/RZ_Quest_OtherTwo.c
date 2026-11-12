@@ -559,6 +559,22 @@ class RZ_QM_OtherTwoScene : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override string LockReason(RZ_GameModeComponent gm, int playerId)
+	{
+		if (IsEligible(gm, playerId))
+			return "";
+
+		if (RZ_Reputation.IsHunted(gm.GetTier(playerId, RZ_EFaction.INSTITUTE)))
+			return "Not while Hunted by Halcyon";
+
+		string need = super.LockReason(gm, playerId);
+		if (need != "Not for you now")
+			return need;
+
+		return "Needs Known with Haven or Halcyon";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The field lead's stand-in at her station, held while the stage runs (-1 if she's gone).
 	protected int HoldLead(RZ_GameModeComponent gm)
 	{

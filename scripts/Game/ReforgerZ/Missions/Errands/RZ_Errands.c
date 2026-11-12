@@ -275,6 +275,7 @@ class RZ_Errands
 	protected ref map<string, float> m_mPlaceCool = new map<string, float>();
 	protected ref map<string, float> m_mLastUnasked = new map<string, float>();	// ident -> clock
 	protected ref map<int, string> m_mLastWhy = new map<int, string>();			// playerId -> the last deal and why the rest weren't
+	protected ref map<int, string> m_mPrefer = new map<int, string>();			// playerId -> the errand the talk screen named (Peek), dealt first when asked
 	protected ref map<string, ref RZ_ErrandStats> m_mStats = new map<string, ref RZ_ErrandStats>();
 	protected ref map<string, int> m_mCounters = new map<string, int>();		// "house.<idx>": turns done there this season
 	protected ref map<int, int> m_mHousePop = new map<int, int>();			// safehouse -> people last seen
@@ -1352,6 +1353,118 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! This person's slots are an errand's ways for this player now (their answer is awaited).
+	bool OffersTo(IEntity owner, int playerId)
+	{
+		if (!owner)
+			return false;
+
+		foreach (string giver, RZ_ErrandTalk talk : m_mTalks)
+		{
+			if (talk.m_Owner == owner && talk.m_iPlayer == playerId && talk.m_fUntil > m_fClock)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The talk screen's errand reply on a giver (docs/DIALOGUE.md, "Jobs on the first replies"):
+	//! true with the errand's `title` when they have one for this player (`held`: theirs already, to
+	//! report back on); else false and `why`, short, for the locked reply. Deals nothing: the errand
+	//! looked at is the one dealt when the reply is picked (Deal's preference), while it's still true.
+	bool TalkErrand(int playerId, string giverKey, IEntity user, out string title, out bool held, out string why)
+	{
+		title = "";
+		held = false;
+		why = "";
+		RZ_NamedPerson p = m_People.Get(giverKey);
+		if (!IsOn() || !p || !user)
+		{
+			why = "Nothing today";
+			return false;
+		}
+
+		RZ_Errand mine = FindFor(playerId, giverKey);
+		if (mine && (mine.m_eState == RZ_EErrandState.HELD || mine.m_eState == RZ_EErrandState.OFFERED))
+		{
+			title = mine.Fill(mine.m_Def.m_sTitle);
+			held = mine.m_eState == RZ_EErrandState.HELD;
+			return true;
+		}
+
+		string refusal = Refusal(playerId, p, user);
+		if (!refusal.IsEmpty())
+		{
+			why = refusal;
+			return false;
+		}
+
+		string dealWhy;
+		RZ_Errand next = Deal(playerId, p, user.GetOrigin(), false, dealWhy, true);
+		if (!next)
+		{
+			why = "Nothing today. Ask again tomorrow";
+			return false;
+		}
+
+		m_mPrefer.Set(playerId, next.m_Def.m_sKey);
+		title = next.Fill(next.m_Def.m_sTitle);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A held errand of this player's from this giver whose step is done: reporting back hands it in.
+	bool ReadyToHandIn(int playerId, string giverKey)
+	{
+		RZ_Errand mine = FindFor(playerId, giverKey);
+		return mine && mine.m_eState == RZ_EErrandState.HELD && mine.m_bStepDone;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What stops this player taking the way in slot `option` of the offer on `owner`, short, for its
+	//! locked reply ("Needs a Mechanic", "Needs 2 food", "Needs 10 Haven Favor"); "" when nothing
+	//! does. The talk checks (Trust, a threat) aren't locks: their tags show the score.
+	string WayLock(IEntity owner, int playerId, int option, IEntity user)
+	{
+		foreach (string giver, RZ_ErrandTalk talk : m_mTalks)
+		{
+			if (talk.m_Owner != owner || talk.m_iPlayer != playerId || option < 0 || option >= talk.m_aWays.Count())
+				continue;
+
+			int wayIdx = talk.m_aWays[option];
+			RZ_Errand e = FindById(talk.m_iErrand);
+			if (wayIdx < 0 || !e || wayIdx >= e.m_Def.m_aWays.Count())
+				return "";
+
+			RZ_ErrandWay w = e.m_Def.m_aWays[wayIdx];
+			int f = w.PayFaction(e.m_iFaction);
+			if (!w.m_sBackground.IsEmpty() && !RZ_QuestApproach.HasBackground(m_GM, playerId, w.m_sBackground))
+				return "Needs " + BackgroundWords(w.m_sBackground);
+
+			if (w.m_iMinTier >= 0)
+			{
+				int tf = w.m_iTierFaction;
+				if (tf < 0)
+					tf = f;
+
+				if (!RZ_Factions.IsValid(tf) || !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, tf), w.m_iMinTier))
+					return string.Format("Needs %1 with %2", RZ_Reputation.GetTierName(w.m_iMinTier), RZ_Factions.GetShortName(tf));
+			}
+
+			if (w.m_iItems > 0 && !w.m_bGiveThere && user && CountItems(user, w.m_eItem) < w.m_iItems)
+				return "Needs " + ItemNeed(w.m_eItem, w.m_iItems);
+
+			if (w.m_iFavorCost > 0 && RZ_Factions.IsValid(f) && m_GM.GetProfile(playerId).GetFavor(f) < w.m_iFavorCost)
+				return string.Format("Needs %1 %2 Favor", w.m_iFavorCost, RZ_Factions.GetShortName(f));
+
+			return "";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "Need a hand?" on a wanderer (RZ_Wanderers, slot 2 when it's free). True if handled.
 	bool AskWanderer(int playerId, RZ_Wanderer w, IEntity owner, IEntity user)
 	{
@@ -1841,7 +1954,7 @@ class RZ_Errands
 	//! Deal this giver's best true errand to this player: routines and cards anchored to the giver's
 	//! place, checked cheapest first (on, cooldowns, why, for whom, still, holds), scored, and picked
 	//! weighted among the top three. `why` says what was dealt and why the rest weren't (/errands).
-	RZ_Errand Deal(int playerId, RZ_NamedPerson p, vector from, bool unasked, out string why)
+	RZ_Errand Deal(int playerId, RZ_NamedPerson p, vector from, bool unasked, out string why, bool peek = false)
 	{
 		why = "";
 		if (m_aErrands.Count() >= MAX_LIVE)
@@ -1983,6 +2096,22 @@ class RZ_Errands
 			{
 				pick = order[r];
 				break;
+			}
+		}
+
+		// The talk screen's look ahead (Peek): the best, and nothing is dealt. The errand the talk
+		// screen named on its reply is the one dealt when that reply is picked, while it's still true
+		if (peek)
+			return made[order[0]];
+
+		string prefer;
+		if (m_mPrefer.Find(playerId, prefer))
+		{
+			m_mPrefer.Remove(playerId);
+			foreach (int pi, RZ_Errand cand : made)
+			{
+				if (cand.m_Def.m_sKey == prefer)
+					pick = pi;
 			}
 		}
 

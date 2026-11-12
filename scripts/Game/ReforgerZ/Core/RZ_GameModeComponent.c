@@ -3357,8 +3357,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 
 		// The quiet start (docs/UI.md, "Notices"): for UI > Quiet start after a new life only the
-		// spawn card and urgent notices are cards; the rest go into the notebook without one
-		if (ui && !style.m_bSpawn && style.m_iPriority < RZ_ENoticePriority.URGENT)
+		// spawn card, a job of yours starting and urgent notices are cards; the rest go into the
+		// notebook without one
+		if (ui && !style.m_bSpawn && !style.m_bStart && style.m_iPriority < RZ_ENoticePriority.URGENT)
 		{
 			float lifeAt = ui.GetNewLifeAt();
 			if (lifeAt >= 0 && RZ_UIW.Now() - lifeAt < RZ_UISettings.Get().m_fNoticeCalm)

@@ -702,7 +702,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		{
 			RZ_QueuedNotice q = m_aQueue[0];
 			int qp = q.m_Style.m_iPriority;
-			if (qp < RZ_ENoticePriority.URGENT && !q.m_Style.m_bSpawn && now - m_fLastCardAt < gap)
+			if (qp < RZ_ENoticePriority.URGENT && !q.m_Style.m_bSpawn && !q.m_Style.m_bStart && now - m_fLastCardAt < gap)
 				break;
 
 			m_aQueue.RemoveOrdered(0);
