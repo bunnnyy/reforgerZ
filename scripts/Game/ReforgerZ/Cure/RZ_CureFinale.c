@@ -2337,7 +2337,9 @@ class RZ_CureFinale
 
 	//------------------------------------------------------------------------------------------------
 	//! Pay inside the finale's caps: 50 Fame per faction per player over all finale content, 60 Favor
-	//! and 40 Infamy per faction per player. Online now, or onto the saved profile.
+	//! and 40 Infamy per faction per player. Online now; offline, the Fame and Favor wait in the
+	//! errands' owed pay for that life's next join (AddFame and AddFavor then), the Infamy goes onto
+	//! the saved profile.
 	void PayIdent(string ident, int f, int fame, int favor, int infamy, string why)
 	{
 		if (ident.IsEmpty() || !RZ_Factions.IsValid(f))
@@ -2369,8 +2371,8 @@ class RZ_CureFinale
 		if (!profile)
 			return;
 
-		if (fame > 0)
-			profile.AddFame(ef, fame);
+		if ((fame > 0 || favor > 0) && m_GM.GetErrands())
+			m_GM.GetErrands().AddOwed(ident, RZ_ErrandOwed.Make(f, Math.Max(0, fame), Math.Max(0, favor), "The cure", profile.m_iLives));
 
 		if (infamy > 0)
 			profile.AddInfamy(ef, infamy, true);

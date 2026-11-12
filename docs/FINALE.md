@@ -482,7 +482,9 @@ lists them.
 
 **Caps.** Over all finale content, 50 Fame per faction per player; 60 Favor and 40 Infamy per faction
 per player. The finale is the one place past the limits every questline keeps
-([QUESTLINES.md](QUESTLINES.md#limits-every-questline-keeps)).
+([QUESTLINES.md](QUESTLINES.md#limits-every-questline-keeps)). Someone offline when they're paid
+takes the Infamy on their saved profile; the Fame and Favor wait for that life's next join and are
+paid then as online pay is ([DESIGN.md](DESIGN.md#story-blocks) has the owed pay).
 
 | Control decides | Season Fame decides |
 |---|---|

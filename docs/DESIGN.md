@@ -1161,9 +1161,13 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   **Leave**, for you only: "Leave it to them" on a one-choice job's stand-in (its use slot) takes you
   out of the job: no pay, no blame, and you can't decide it. **Amends need clean hands**: a Press, a
   Trick, a switch or a hidden bite in a story job voids its Infamy work-off for that player (they're
-  paid Fame instead, as when the budget's spent). **Offline participants**: a story job done pays its
-  base, at their next join, to anyone who took part (a step, or 5 minutes in the area) and isn't online
-  when it ends (the errands' ledger keeps it; not for a switch or a leaver).
+  paid Fame instead, as when the budget's spent). **Offline participants**: a story job done pays
+  anyone who took part (a step, or 5 minutes in the area), isn't online when it ends and was eligible
+  for it then, at their next join, and only to the same life (the errands' ledger keeps it; not for a
+  switch, a leaver or a leader's in-person job). It pays as online pay does, without the background
+  bonus: the base x the leader's multipliers, amends through `Forgive()` with clean hands, the job's
+  own rival Infamy (then no rival table) and any Infamy the decider's choice put on those with them.
+  At the join the giver's tier is checked again: Hunted, or below the job's tier, and nothing is paid.
 - **Who benefits** (`RZ_Beneficiaries`): 2–4 parties a result can go to. The side chosen pays those
   with the decider whom it doesn't hunt; a **switch** (the result to another side than the giver)
   pays at most the base, its Fame doesn't count toward season Fame (`RZ_RepFlag.SWITCH`), the giver
@@ -1453,8 +1457,9 @@ time and the world, and how players did each stage decides where it goes and how
   rules: never a stronghold, never the owner's last, no truce, nobody watching), a headline, a
   rumour wanderers and leaders repeat for some hours, a wanderer who remembers everyone who
   took part, and standing for everyone who took part (Fame ±10, Infamy up to 15; optionally only
-  those who took one approach). Players who are offline get their standing on their saved
-  profile.
+  those who took one approach). Players who are offline lose Fame and take Infamy on their saved
+  profile; Fame they earned waits in the errands' ledger for that life's next join, paid through
+  `AddFame` then (another life: not paid).
 - **How many.** At most **Max active** questlines at once (2), never two for the same faction
   (a group that isn't one of the four factions has its own slot). Every 30 minutes or so with
   players online, half the time, a questline that can start does. One that reached an ending

@@ -348,6 +348,74 @@ class RZ_Errand
 }
 
 //------------------------------------------------------------------------------------------------
+//! Pay owed to someone who wasn't online when it was earned (a story job, the finale, a questline's
+//! ending): paid at their next join through AddFame and AddFavor, to the same life only. Saved in
+//! the errand ledger.
+class RZ_ErrandOwed
+{
+	int faction;
+	int fame;
+	int favor;
+	string title;
+	int life;
+	int madeUnix;
+	bool applyRivals;				// the rival table (false when the job names its own rival)
+	int flags;						// RZ_RepFlag for the Fame
+	string deed;
+	bool amends;					// an amends job with clean hands: Forgive while Watched or worse
+	bool checkTier;					// the giver's tier is checked again at the join
+	int minTier;
+	bool allowWatched;
+	bool leaderDecides;
+	ref array<int> infamyFactions = {};	// the explicit rival's Infamy and the job's blame, with the pay
+	ref array<int> infamyAmounts = {};
+	ref array<int> infamyFlags = {};
+	ref array<string> infamyWhy = {};
+
+	//------------------------------------------------------------------------------------------------
+	static RZ_ErrandOwed Make(int f, int fameOwed, int favorOwed, string why, int lifeNo)
+	{
+		RZ_ErrandOwed o = new RZ_ErrandOwed();
+		o.faction = f;
+		o.fame = fameOwed;
+		o.favor = favorOwed;
+		o.title = why;
+		o.life = lifeNo;
+		o.madeUnix = RZ_SeasonClock.Now();
+		return o;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void AddInfamy(int f, int amount, string why, int infamyFlag)
+	{
+		if (amount <= 0 || !RZ_Factions.IsValid(f))
+			return;
+
+		Ensure();
+		infamyFactions.Insert(f);
+		infamyAmounts.Insert(amount);
+		infamyFlags.Insert(infamyFlag);
+		infamyWhy.Insert(why);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Ensure()
+	{
+		if (!infamyFactions)
+			infamyFactions = new array<int>();
+
+		if (!infamyAmounts)
+			infamyAmounts = new array<int>();
+
+		if (!infamyFlags)
+			infamyFlags = new array<int>();
+
+		if (!infamyWhy)
+			infamyWhy = new array<string>();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! The errand ledger, per identity for the season (docs/ERRANDS.md, "Pay"): the cards done, the
 //! routines' cooldowns, the hourly Favor and its diminishing count, cards today, errand Fame per
 //! faction per season day, amends per faction this life, the last three families. Saved.
@@ -372,7 +440,8 @@ class RZ_ErrandLedger
 	int sinceTwist = 9;						// errands dealt since the last twist (one in three at most)
 	ref array<string> threads = {};			// "place|giver|what you did", newest last, 12 at most
 	ref array<string> threadsSaid = {};		// the threads already said back to you
-	ref array<string> pending = {};			// "faction|fame|favor|title": a story job's pay, at the next join
+	ref array<string> pending = {};			// before owed: dropped on load (it had no life)
+	ref array<ref RZ_ErrandOwed> owed = {};	// pay at the next join, to the life that earned it
 	int liedFaction = -1;					// a lie found out on a dead life: that faction's givers...
 	int liedUntil;							// ...open with it, fit x0.8, until this real time
 	bool liedSaid;
@@ -413,6 +482,9 @@ class RZ_ErrandLedger
 
 		if (!pending)
 			pending = new array<string>();
+
+		if (!owed)
+			owed = new array<ref RZ_ErrandOwed>();
 
 		if (!threadsSaid)
 			threadsSaid = new array<string>();

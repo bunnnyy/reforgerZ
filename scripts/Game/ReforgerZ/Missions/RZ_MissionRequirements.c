@@ -291,18 +291,34 @@ class RZ_MissionRequirements
 		if (playerId <= 0)
 			return false;
 
-		RZ_PlayerProfile profile = gm.GetProfile(playerId);
+		return IsEligibleProfile(gm.GetProfile(playerId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The giver's tier test alone (a leader's own job: only never while Hunted). Also used for pay
+	//! owed to someone who wasn't online when a job ended (RZ_Errands' pending pay).
+	static bool GiverTierOk(RZ_ETier giverTier, RZ_ETier minTier, bool allowWatched, bool leaderDecides)
+	{
+		if (RZ_Reputation.IsHunted(giverTier))
+			return false;
+
+		if (leaderDecides)
+			return true;
+
+		bool watchedOk = allowWatched && giverTier == RZ_ETier.WATCHED;
+		return watchedOk || RZ_Reputation.IsAtLeast(giverTier, minTier);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! IsEligible on a profile (online or saved).
+	bool IsEligibleProfile(RZ_PlayerProfile profile)
+	{
+		if (!profile)
+			return false;
+
 		RZ_ETier giverTier = profile.GetTier(m_eGiver);
-
-		if (!m_bLeaderDecides)
-		{
-			if (RZ_Reputation.IsHunted(giverTier))
-				return false;
-
-			bool watchedOk = m_bAllowWatched && giverTier == RZ_ETier.WATCHED;
-			if (!watchedOk && !RZ_Reputation.IsAtLeast(giverTier, m_eMinTier))
-				return false;
-		}
+		if (!m_bLeaderDecides && !GiverTierOk(giverTier, m_eMinTier, m_bAllowWatched, false))
+			return false;
 
 		foreach (RZ_StandingRequirement r : m_aChecks)
 		{

@@ -2155,7 +2155,9 @@ person (no civilian prefab)`, `Callbacks: <title> at the door for <player>`, `St
 <grid>`, `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
-`Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join (N Fame, N Favor)`,
+`Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join, life N (N Fame, N Favor)`,
+`Story: <title> owes <identity> nothing (not eligible as it ended)`, `Errands: '<title>' owed <player> on
+life N; they're on life N: not paid`,
 `Story: <player> hid a bite at house N`, every real hour `Story | per player-hour: Fame N, Favor N | by
 job: ... | picks: ... | food on trades N | fallout: started N, paid N Favor`,
 `Story: crash at <grid> is <truth>`, `Story: <title> group '<what>' at <grid> (N on the server)`,
@@ -3448,7 +3450,8 @@ on the talk screen says why something wasn't dealt)
 - [ ] Leave: at a one-choice job's stand-in, "Leave it to them" says you're out; you aren't paid when
   it ends and can't pick its options. A Watched player who pressed or tricked in an amends job is paid
   Fame, not amends. A story job finished while one who took part (5 minutes there) is offline: at their
-  next join, "Finished while you were away" with the base pay (`Story: <title> pays ...`).
+  next join, "Finished while you were away" with the pay, and the rival's Infamy if the job has one
+  (`Story: <title> pays ...`). Die before rejoining: nothing is paid (`Errands: ... not paid`).
 - [ ] The four tips, once each: the first tagged options (an errand's ways), the first truth found, the
   first background read, the first hold someone near you starts.
 - [ ] "Hid a bite": as a Nurse, dress the hidden bite in Survivors Trapped or Distress Call; that

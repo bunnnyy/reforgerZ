@@ -2090,19 +2090,24 @@ class RZ_Errands
 
 	// ================================================================ Pay at the next join
 	//------------------------------------------------------------------------------------------------
-	//! A story job's pay for someone who took part and wasn't online when it ended (RZ_StoryKit).
-	void AddPending(string ident, int faction, int fame, int favor, string title)
+	//! Pay for someone who earned it and wasn't online (a story job, the finale, a questline's
+	//! ending): paid at their next join, to that life only. 12 at most, oldest dropped.
+	void AddOwed(string ident, RZ_ErrandOwed o)
 	{
+		if (ident.IsEmpty() || !o || !RZ_Factions.IsValid(o.faction))
+			return;
+
 		RZ_ErrandLedger ledger = Ledger(ident);
 		ledger.Ensure();
-		if (ledger.pending.Count() >= 8)
-			ledger.pending.Remove(0);
+		if (ledger.owed.Count() >= 12)
+			ledger.owed.RemoveOrdered(0);
 
-		ledger.pending.Insert(string.Format("%1|%2|%3|%4", faction, fame, favor, title));
+		ledger.owed.Insert(o);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every 30 s: the online players' pending pay, through the usual Fame and Favor.
+	//! Every 30 s: the online players' owed pay, through AddFame, Forgive, AddFavor and AddInfamy,
+	//! to the life that earned it only, and only while the giver would still have them.
 	protected void PayPending(array<int> ids)
 	{
 		foreach (int pid : ids)
@@ -2113,30 +2118,79 @@ class RZ_Errands
 
 			RZ_ErrandLedger ledger = Ledger(profile.m_sIdentity);
 			ledger.Ensure();
-			foreach (string owed : ledger.pending)
+			if (!ledger.pending.IsEmpty())
 			{
-				array<string> parts = {};
-				owed.Split("|", parts, false);
-				if (parts.Count() < 4)
-					continue;
-
-				int f = parts[0].ToInt();
-				int fame = parts[1].ToInt();
-				int favor = parts[2].ToInt();
-				if (!RZ_Factions.IsValid(f))
-					continue;
-
-				if (fame > 0)
-					m_GM.AddFame(pid, f, fame);
-
-				if (favor > 0)
-					m_GM.AddFavor(pid, f, favor);
-
-				m_GM.NotifyPlayerAs(pid, parts[3], string.Format("Finished while you were away. Your part counted: +%1 Fame, +%2 Favor with %3.", fame, favor, RZ_Factions.GetName(f)), RZ_ENoticeTag.MISSION);
+				RZ_Log.Info(string.Format("Errands: %1 old pending pay entries for %2 dropped (no life on them)", ledger.pending.Count(), RZ_Util.PlayerName(pid)));
+				ledger.pending.Clear();
 			}
 
-			ledger.pending.Clear();
+			foreach (RZ_ErrandOwed o : ledger.owed)
+			{
+				if (o)
+					PayOwed(pid, profile, o);
+			}
+
+			ledger.owed.Clear();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void PayOwed(int pid, RZ_PlayerProfile profile, RZ_ErrandOwed o)
+	{
+		RZ_EFaction f = o.faction;
+		if (!RZ_Factions.IsValid(f))
+			return;
+
+		if (o.life != profile.m_iLives)
+		{
+			RZ_Log.Info(string.Format("Errands: '%1' owed %2 on life %3; they're on life %4: not paid", o.title, RZ_Util.PlayerName(pid), o.life, profile.m_iLives));
+			return;
+		}
+
+		string name = RZ_Factions.GetName(f);
+		RZ_ETier minTier = o.minTier;
+		if (o.checkTier && !RZ_MissionRequirements.GiverTierOk(m_GM.GetTier(pid, f), minTier, o.allowWatched, o.leaderDecides))
+		{
+			m_GM.NotifyPlayerAs(pid, o.title, string.Format("Finished while you were away. %1 won't pay you for it now.", name), RZ_ENoticeTag.MISSION);
+			return;
+		}
+
+		string text = "Finished while you were away. Your part counted.";
+		bool forgiven = false;
+		if (o.amends && o.fame > 0 && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(pid, f)))
+		{
+			int off = m_GM.Forgive(pid, f, o.fame, "amends contract");
+			if (off > 0)
+			{
+				forgiven = true;
+				text += string.Format("\n%1 is willing to forget a little: -%2 Infamy.", name, off);
+			}
+		}
+
+		if (!forgiven && o.fame > 0)
+		{
+			m_GM.AddFame(pid, f, o.fame, o.applyRivals, o.flags, o.deed);
+			text += string.Format("\n+%1 Fame with %2.", o.fame, name);
+		}
+
+		if (o.favor > 0)
+		{
+			m_GM.AddFavor(pid, f, o.favor);
+			text += string.Format("\n+%1 Favor with %2.", o.favor, name);
+		}
+
+		o.Ensure();
+		foreach (int i, int rf : o.infamyFactions)
+		{
+			if (i >= o.infamyAmounts.Count() || i >= o.infamyWhy.Count() || i >= o.infamyFlags.Count())
+				break;
+
+			RZ_EFaction ef = rf;
+			m_GM.AddInfamy(pid, ef, o.infamyAmounts[i], o.infamyWhy[i], o.infamyFlags[i]);
+			text += string.Format("\n%1 won't forget this: +%2 Infamy.", RZ_Factions.GetName(ef), o.infamyAmounts[i]);
+		}
+
+		m_GM.NotifyPlayerAs(pid, o.title, text, RZ_ENoticeTag.MISSION);
 	}
 
 	// ================================================================ Threads
