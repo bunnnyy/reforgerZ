@@ -90,6 +90,7 @@ class RZ_Land
 	protected static const int RIDGE_REACH = 4;			// squares: "the highest within 1 km"
 	protected static const int STEP_MS = 8;				// a second's reading stops after this
 	protected static const float SMALL_MAP_KM2 = 25;
+	protected static const float EDGE_REACH = 100;		// m from a square's middle to its forest edge point
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_TribeSettings m_Settings;
@@ -149,6 +150,8 @@ class RZ_Land
 	protected int m_iLakes;
 	protected int m_iLairs;
 	protected ref array<int> m_aLairByKind = {};	// [0] forest, then one per LAIR_KINDS
+	protected ref array<vector> m_aEdge = {};		// per square: its forest edge point (a wooded square with open land beside it), else zero
+	protected int m_iEdges;
 	protected ref array<vector> m_aNoMans = {};		// no man's land: circles round lived-in places
 	protected ref array<float> m_aNoMansR = {};
 
@@ -275,6 +278,65 @@ class RZ_Land
 	int GetRoadWidth(int idx) { return m_aRoad[idx]; }
 	int GetRiverWidth(int idx) { return m_aRiver[idx]; }
 	int GetMark(int idx) { return (m_aBits[idx] >> MARK_SHIFT) & 15; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The square's forest edge point (docs/INFECTED.md, The land): for a wooded square with dry open
+	//! land beside it, a point inside the trees, 100 m from its middle toward the open side; false
+	//! otherwise. Worked out from the cached tree counts, so the cache doesn't change.
+	bool GetEdgePoint(int idx, out vector found)
+	{
+		if (idx < 0 || idx >= m_aEdge.Count())
+			return false;
+
+		vector e = m_aEdge[idx];
+		if (e == vector.Zero)
+			return false;
+
+		found = e;
+		return true;
+	}
+
+	int GetEdgeCount() { return m_iEdges; }
+
+	//------------------------------------------------------------------------------------------------
+	//! The forest edge points: each wooded square with dry open squares beside it (of its four).
+	protected void WorkOutEdges()
+	{
+		int cells = m_iNX * m_iNZ;
+		m_aEdge.Clear();
+		m_aEdge.Resize(cells);
+		m_iEdges = 0;
+		array<int> dx = {1, -1, 0, 0};
+		array<int> dz = {0, 0, 1, -1};
+		for (int idx = 0; idx < cells; idx++)
+		{
+			m_aEdge[idx] = vector.Zero;
+			if (GetTreeClass(idx) == TREES_NONE || !IsDry(idx))
+				continue;
+
+			int gx = idx % m_iNX;
+			int gz = idx / m_iNX;
+			float sx = 0;
+			float sz = 0;
+			for (int k = 0; k < 4; k++)
+			{
+				int n = CellIndex(gx + dx[k], gz + dz[k]);
+				if (n < 0 || GetTreeClass(n) != TREES_NONE || !IsDry(n))
+					continue;
+
+				sx += dx[k];
+				sz += dz[k];
+			}
+
+			if (sx == 0 && sz == 0)
+				continue;
+
+			vector dir = Vector(sx, 0, sz);
+			dir.Normalize();
+			m_aEdge[idx] = CellCenter(idx) + dir * EDGE_REACH;
+			m_iEdges++;
+		}
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! TREES_NONE (open), TREES_SPARSE or TREES_FOREST, from the square's tree count.
@@ -566,6 +628,7 @@ class RZ_Land
 	{
 		int t0 = System.GetTickCount();
 		WorkOutTerrain();
+		WorkOutEdges();
 		RefreshWild();
 		m_bReady = true;
 		m_iWorkMs = System.GetTickCount() - t0;
@@ -1620,8 +1683,8 @@ class RZ_Land
 		if (m_iRoads == 0)
 			roads = "roads: none found (no road network; no bridges)";
 
-		RZ_Log.Info(string.Format("Land: the sea, %1, %2 lakes. %3. Ridge posts %4, valley lines %5, forests %6, fields %7.",
-			rivers, m_iLakes, roads, m_iRidges, m_iValleyLines, m_iForests, m_iFields));
+		RZ_Log.Info(string.Format("Land: the sea, %1, %2 lakes. %3. Ridge posts %4, valley lines %5, forests %6 (%8 edge points), fields %7.",
+			rivers, m_iLakes, roads, m_iRidges, m_iValleyLines, m_iForests, m_iFields, m_iEdges));
 
 		string kinds = "";
 		for (int k = 0; k < GetLairKindCount(); k++)

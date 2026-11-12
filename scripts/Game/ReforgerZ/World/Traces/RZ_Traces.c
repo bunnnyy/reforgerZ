@@ -267,6 +267,18 @@ class RZ_TracesSave
 	int dealt;
 	int sceneKey = 1;
 	bool handed;		// the cure's handover to the epilogue is done
+	ref array<ref RZ_ExileSave> exiles = {};	// the thumbprint: exiles' minutes in towns (across a restart)
+}
+
+//------------------------------------------------------------------------------------------------
+//! An exile's time in one town, toward the thumbprint (RZ_TraceWatch.Exiles).
+class RZ_ExileSave
+{
+	string key;		// "ident|town"
+	float seen;		// seconds seen there
+	float x;
+	float z;
+	int due;		// real time it's written, 0 not yet
 }
 
 //------------------------------------------------------------------------------------------------
@@ -389,6 +401,7 @@ class RZ_Traces
 			m_fRainDays = m_Restored.rainDays;
 			m_Scenes.Restore(m_Restored.scenes, m_Restored.dealDay, m_Restored.dealt, m_Restored.sceneKey);
 			m_bHanded = m_Restored.handed;
+			m_Watch.RestoreExiles(m_Restored.exiles);
 		}
 
 		m_bReady = true;
@@ -417,6 +430,7 @@ class RZ_Traces
 		data.dealt = m_Scenes.Dealt();
 		data.sceneKey = m_Scenes.NextKey();
 		data.handed = m_bHanded;
+		m_Watch.SaveExiles(data.exiles);
 		return data;
 	}
 

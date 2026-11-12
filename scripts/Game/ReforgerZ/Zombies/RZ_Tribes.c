@@ -2464,6 +2464,16 @@ class RZ_Tribes
 			return;
 
 		m_iLastWandererNight = m_iCountedNights;
+		// Traces' V5: a runner taken within 3 km of the lab or a Halcyon field station leaves his case
+		// in the ditch (World/Traces/RZ_Scenes.c)
+		RZ_Traces traces = m_GM.GetTraces();
+		RZ_Territory territory = m_GM.GetTerritory();
+		bool nearLab = m_GM.HasLab() && RZ_Util.DistXZ(p.m_vPos, m_GM.GetLabPosition()) <= 3000;
+		if (!nearLab && territory)
+			nearLab = territory.FindHolding(RZ_EFaction.INSTITUTE, p.m_vPos, 3000) != null;
+
+		if (traces && traces.IsOn() && nearLab)
+			traces.GetScenes().DroppedRun(p.m_vPos, "a pack took a runner");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2999,9 +3009,14 @@ class RZ_Tribes
 	//------------------------------------------------------------------------------------------------
 	protected void PruneTracks(RZ_Tribe t)
 	{
+		// In snow (the Winter rule set) a track keeps twice as long, and always reads fresh
+		float keep = TRACK_KEEP;
+		if (RZ_TribeLife.IsWinter())
+			keep = TRACK_KEEP * 2;
+
 		for (int i = t.m_aTracks.Count() - 1; i >= 0; i--)
 		{
-			if (m_fClock - t.m_aTracks[i].m_fAt > TRACK_KEEP)
+			if (m_fClock - t.m_aTracks[i].m_fAt > keep)
 				t.m_aTracks.Remove(i);
 		}
 	}
@@ -3075,6 +3090,8 @@ class RZ_Tribes
 			when = "a few hours ago";
 
 		string line = string.Format("%1, heading %2, %3.", count, CompassWord(vector.Zero, best.m_vHeading), when);
+		if (RZ_TribeLife.IsWinter())
+			line += " Sharp as the day they were made, in this snow.";
 		if (best.m_bBig)
 			line += " A big one with them.";
 

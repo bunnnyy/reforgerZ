@@ -158,7 +158,7 @@ the Linux dedicated server, see [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md#com
 On a Linux server with Special Zombies loaded, though, none of them load: host on Windows or drop
 Special Zombies until that's fixed ([MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
 That's about 221,000 lines of Enforce Script under `scripts/Game/ReforgerZ/`. Every engine call
-was also checked against the base game's script source; the 95 `VERIFY` markers left in the game
+was also checked against the base game's script source; the 97 `VERIFY` markers left in the game
 scripts (none in the Workbench plugin) are behaviours only a play-test can show, such as
 replication and what the AI does. The game mode also **runs on the server** in a test world with a
 fake player (`tools/runtime_test/`): every mission type, the Perimeter, death and respawn, with no
@@ -206,7 +206,9 @@ remaining ways, the 16 one-choice jobs and 68 work rows, errands to 63 cards wit
 cards,
 [MISSIONS.md](docs/MISSIONS.md)); borrowed kit's phases 2 and 3 (phase 8 in part: again looks, roll
 call, word gets round, vouching at barriers, the Rogue's price, kit that remembers whose it was, the
-nail list and Bastion's board, and the eight side jobs as errand cards,
+nail list and Bastion's board, and the eight side jobs as errand cards; and its rest: cover details
+spoken as claim lines, the look's line on the HUD and the standing page, the look's last minuses, the
+majors' and the finale's hooks, the last week, kit marks kept across a restart,
 [REPUTATION.md](docs/REPUTATION.md#borrowed-kit)); talk
 (phase 2: conversation trees, reputation's voice, the season mood and the voice bank, and talk's
 rest: lies you're told, promises, claims in kit, barks, strangers, the open channel, the season
@@ -243,7 +245,7 @@ are optional kit prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (the rest of the four majors, the cure's finale and the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, disguise, tone) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (the rest of the four majors, the cure's finale and the epilogue week, infected tribes, dialogue, errands, the mission style, reputation names, tone) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 

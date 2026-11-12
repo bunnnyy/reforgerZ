@@ -1651,7 +1651,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **97** lines with the tag, all in the game scripts (one is the comment in
+There are **99** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1672,7 +1672,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:207` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (61)
+### Medium risk: big features, with a fallback (63)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1695,11 +1695,13 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1046` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1251`, `:1129` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
-| `Factions/RZ_Disguise.c:999`, `Factions/RZ_DisguiseMarks.c:567`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
+| `Factions/RZ_Disguise.c:1033`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
 | `Factions/RZ_DisguiseWatch.c:185` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
-| `Factions/RZ_DisguiseMarks.c:228`, `:277` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
-| `Factions/RZ_Disguise.c:774` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
-| `Factions/RZ_DisguiseMarks.c:431` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
+| `Factions/RZ_DisguiseMarks.c:341`, `:390` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
+| `Factions/RZ_Disguise.c:805` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
+| `Factions/RZ_DisguiseMarks.c:544` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
+| `Factions/RZ_DisguiseMarks.c:208` | a worn piece's root parent is the character wearing it (kit marks saved across a restart) | Marks are never saved across a restart (no `kit mark put back` lines): after a restart a dead man's kit passes as clean, as before |
+| `Factions/RZ_DisguiseMarks.c:920` | `TryDeleteItem` through the wearer's inventory manager takes a worn piece off (the last week's homecoming and handing back) | The piece stays on after "He's home. Mark him.": its mark is gone either way, so it passes as clean kit |
 | `Core/RZ_Util.c:1215` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1181` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
@@ -1711,7 +1713,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:473` | a smart-action waypoint set from script (`SetSmartActionEntity`) sends a ReforgerZ faction group to the composition's tagged sentinel, and vanilla's sit, lean and observation behaviours run for our groups in a mod world | People walk to the piece and stand by it: empty **Camp life > Smart action waypoint** and they loiter beside the pieces instead |
 | `Core/RZ_Util.c:555` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
 | `Zombies/Behaviour/RZ_CrawlerLife.c:226` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
-| `Zombies/Behaviour/RZ_Behaviour.c:1180` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
+| `Zombies/Behaviour/RZ_Behaviour.c:1184` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
 | `Zombies/RZ_PlayerEffects.c:260` | a speed cap set on the player's own character on their machine (`SetSpeedLimit`) slows them as a hold (0.25) and a stagger (0.6) should, without a server copy, and doesn't look like slow motion (lab B7 saw only AI) | **Zombies > Behaviour > Client effects** off: the lines and the built grab chance stay |
 | `Zombies/RZ_PlayerEffects.c:172`, `:173` | a stance change to prone and movement controls off, set on the owner's own character, drop the player with the vanilla animation and hold them still 1.2 s, then give movement back | **Client effects** off |
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
@@ -1748,7 +1750,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:939` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
-| `Zombies/Behaviour/RZ_HuntPlan.c:2168` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
+| `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `Factions/RZ_CampLife.c:967` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `Factions/RZ_CampLife.c:1523` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
 | `Factions/RZ_CampLife.c:1590` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
@@ -1771,7 +1773,7 @@ quartermaster's Buy actions, **Spawn row layout** for vanilla's deploy menu, **U
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:959` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:650` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:178` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
 | `UI/RZ_Menus.c:304` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
@@ -1827,7 +1829,7 @@ start) and the active-AI limit; once the clock runs, the day length; about 40 s 
 [ReforgerZ] Tribes: the engine's active-AI limit raised from 128 to 160 (it covers faction AI, wanderers and trucks too).
 [ReforgerZ] Clock: a game day takes 240 real minutes; the time of day is 12:00 (saved --:--).
 [ReforgerZ] Land: 289 squares of 250 m (17 x 17), 6.3 km2 of land, 0.8 km2 wild; read in 39 s (...). File $profile:ReforgerZ/land_<map>_<number>.json.
-[ReforgerZ] Land: the sea, 3 rivers (0.9 km), 0 lakes. ... Ridge posts 3, valley lines 1, forests 3, fields 0.
+[ReforgerZ] Land: the sea, 3 rivers (0.9 km), 0 lakes. ... Ridge posts 3, valley lines 1, forests 3 (N edge points), fields 0.
 [ReforgerZ] Land: lair candidates N (forest N, barn N, ...).
 [ReforgerZ] Tribes: 0.8 km2 of wild land and N lair candidates: under the floor (1.5 km2 and a lair), so no tribes here, crawlers only. Override: none.
 ```
@@ -2038,7 +2040,10 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 bodies N agents, hordes from towns N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
 budget all the time, or the active AI at its limit, means the budget is too high for the server),
-`Heat horde: N units out of <town>, from its side of <grid>.`, `Crawlers: <town> is stirred (N).`,
+`Heat horde: N units out of <town>, from its side of <grid>.`, `Pack horde: N groups of the pack at
+<place> sent to the heat at <grid> (day, its day party | night, its hunters).`, `Pack lookers: young
+of the pack at <place> sent to look at a busy spot at <grid>.`, `Lookers: N of <town>'s own sent to
+look at a busy spot at <grid>.`, `Tribes: R1's rumour of the crew in the woods (...)`, `Crawlers: <town> is stirred (N).`,
 `Crawlers: a kill site at <grid> (...); the slow ones from <town> come out to it at night.`,
 `Crawlers: N from <town> are walking out to the kill site at <grid>.`, `Tribes dump | ...` (an admin's
 `/tribes`: every town with crawlers, a ledger or stir, kill sites, parts, tracked units, last hits),
@@ -2076,7 +2081,9 @@ errand.<key> talk pass|short|refused by <player>`, `Story: <key> resolved by han
 <faction>`, `Mirror: <title> won by <faction>` (or `won by both, half each`), `Story: <title> hold by
 <player> objected to by <player>`.
 
-Borrowed kit and the parley ([REPUTATION.md](REPUTATION.md#borrowed-kit)): `Disguise: <player> look
+Borrowed kit's rest: `Disguise: <player> gave <faction> a cover detail (<key>)` (or `... they don't
+have (<key>): a lie`), `Disguise: a kit mark put back on <player>'s <faction> after the restart`,
+`Disguise: the last week's lines (N caught this season, best-dressed ...)`. Borrowed kit and the parley ([REPUTATION.md](REPUTATION.md#borrowed-kit)): `Disguise: <player> look
 by <faction> at <place>: N of D (pass|caught) <tags>`, `Disguise: <player> caught by <faction> (catch N
 this life)`, `Disguise: <player> exposed to <faction> (<why>)`, `Story: <title> trick pass|refused by
 <identity>`; while passing, `Disguise: again look at <player> by <faction> at <place>`, `Disguise:
@@ -2313,6 +2320,10 @@ call`; a Hunter is useful)
   strings out. Not in your gentle start.
 - [ ] **The young's stagger:** let a young leap at you and land a hit: you slow for under a second,
   at most once in 6 s.
+- [ ] **The young's stare:** near a pack's young by day in a village, watch one walk to a house's door
+  and stand facing it for a few seconds. **The ETA:** in a pincer at night, the nearer group holds
+  still until the further one is on its way; both strike together. **Forest edges:** a stalking group's
+  shadow point sits just inside the trees on the open side, not deep in the wood.
 - [ ] **Hearing:** sprint past a pack's day party at 30 m out of its sight: it turns and walks toward
   where you were (not to you). Crouch-walk past at 10 m: nothing. A noisemaker or a forced lock pulls
   the nearest group to look. Bleeding, walk a field: a group comes along your trail behind you.
@@ -2384,7 +2395,15 @@ when it happens)
 - [ ] **Every Ridge Calls** at dusk: every pack hunts three trails, its range doubled, straight through its
   fear places, and a border with a frenzied side is fought more often (2 Border Nights at most); **The
   Tribe Moves** when a lair moves out of its range ("On the Move", two groups near you); **Red Dusk** at a
-  clear dusk.
+  clear dusk. The towns inside the frenzy hold twice their crawlers until dawn, not just its first 20
+  minutes.
+- [ ] **Siren Test** near two packs, one with the bells habit: it comes, the other keeps away from
+  that town tonight (`keeps away from the siren`). With a pack's group in a town, the crawlers that
+  spawn stand by doors or on the far side. In a Winter season a Hunter's track line ends *"Sharp as
+  the day they were made, in this snow."* At the cure, `/tribes` lists "Walking with it" beats.
+- [ ] **The packs' hordes:** make 80 heat inside a pack's range by day: its day party walks over (`Pack
+  horde:`), no town's crawlers come; at night, its hunters on their trails. Stay put an hour at night
+  in a range: a young group comes to look (`Pack lookers:`).
 - [ ] **Stock the Pit** (Red Hand Known, a camp within 6 km of a pack): lure one young into the cage at
   the lair's edge and drop the door (the second: tie it instead), hold it 30 s, the case to the drop by
   the camp, then the second; the next Fight Pit's brief says *"Fresh hires tonight,
@@ -2667,6 +2686,15 @@ when it happens)
   while held at a barrier (`walked off while held`), shooting a guard while passing with infected
   10 m away (`exposed to` or `caught by`), relogging during a pass (the owed look still comes),
   swapping to fresh kit after a catch (the look still shows "[Caught before -1]").
+- [ ] Borrowed kit's rest: in Bastion kit at a road post, the HUD shows the eye and "PASS AS BASTION:
+  2 OF 2" from 150 m (on a pad too, nothing to press), and it goes when you pass, are caught or walk
+  200 m off. "Give a name that vouches for you." offers only the names you really have; pick one,
+  then the look ("gave Bastion a cover detail"); a second claim line at that speaker isn't offered
+  this life. Carry a mission item from a job against Bastion: "[Something of theirs on you -1]". After
+  the 90% lock, a look by another route's faction: "[Sworn to another side -1]". Wear marked kit,
+  restart the server, log in: "kit mark put back", and the look still fails. The notebook's Standing
+  page shows IN THEIR KIT above Bastion's leaders. After the cure, carry a dead man's jacket to his
+  post: "He's home. Mark him.", and the four factions' lines on the open channel once.
 - [ ] The parley: Hunted by Bastion with 15+ Earned Fame and a best deed, walk to a checkpoint
   empty-handed and alone: the shout at 150 m, no fire while you close, 10 s at the barrier, the
   leader's line and a reserved amends job (Burn the Bodies or Recon) you can take though Hunted.
@@ -2904,8 +2932,10 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 - [ ] Errands' old mark: its line reads at your level and is in the journal; no old mark in the
   Long Table's ground (no marks at all within 2 km of its farm but residents' Day 1–3 words).
 - [ ] The first days' scenes: the log names each `f1`-`f8` it placed. Drive in from the north barrier:
-  the column's cars on the verge (or their line once, **On the verge**), the suitcases nearer the
-  barrier, then the crosses; nothing blocks the road. As a Police Officer the column's line adds the
+  the column's cars on the verge (or their line once, **On the verge**), spread along the road from
+  about 400 m to 1.2 km back from the barrier and clear of junctions, the suitcases nearer the
+  barrier, then the crosses; nothing blocks the road. Park on a scene's spot: its prop doesn't come up
+  until you've moved off (8 m). As a Police Officer the column's line adds the
   ticket numbers. Stand 2 s by a car on foot: the dashboard sheet opens in the reader (B closes it).
 - [ ] The gym, the church, the roadblock (its radio says the broadcast's line as a subtitle within
   12 m), Rudi's shutter, the hill and a square's notices (`/traces` near each lists the scene): one
@@ -2914,11 +2944,14 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   safehouse): `Traces: scene v1.N` in the log, its line once within 40 m; no more than 3 dealt a
   season day, never two in a town, none within 300 m of a running job.
 - [ ] Live traces: lose a supply truck (its wreck on the verge with the destination's stencil), burn a
-  building (scorch at its doorway), let a Bastion road post go (sandbags and the HALT sign). Die in
+  building (scorch at its doorway), let a Bastion road post go (sandbags and the HALT sign). A kill
+  site in a town near a Haven house ends: a candle on the nearest door. Help the Digger stranger dig:
+  a grave by the road. As a Haven exile, spend 20 minutes in a town, restart: the thumbprint still
+  comes 2 hours later. Die in
   the kill zone near a barrier: one more cross outside the warning zone.
 - [ ] After dark at a lived-in place: a lit lantern (with the kit's lantern); at 05:30 and 17:30 near a
-  Bastion holding the loudspeaker's line; as a Hunter near a pack's town before its hunt, *"The dogs
-  in ... have stopped."*; after a Haven Champion's death, one bell at 18:30 and the church's jars.
+  Bastion holding the loudspeaker's line; as a Hunter near the town on a pack's first trail before
+  its hunt, *"The dogs in ... have stopped."* (not on a night it doesn't set out); after a Haven Champion's death, one bell at 18:30 and the church's jars.
 - [ ] Status line: lights and loops count up and down as you come and go; nothing stays up after you
   leave. With **Sound and light** off, nothing at all.
 - [ ] The cure: `Traces: handed over to the epilogue`; the graves come down; no new scene or mark but

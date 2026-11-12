@@ -1457,6 +1457,11 @@ class RZ_QM_OrdersRunner : RZ_QuestMission
 		body.m_sReadLabel = "Search the runner";
 		body.m_iGuards = 5;
 		body.m_bSpecialGuard = true;
+		// The packs' hook: his road crosses the column's range, and he lies at an old kill site there
+		vector onRoad;
+		if (RZ_TribeQuests.RunnerBody(gm, s2.m_vCenter, s3.m_vCenter, onRoad))
+			body.m_vPos = onRoad;
+
 		m_vBody = body.m_vPos;
 		m_sBodyTown = s3.m_sName;
 

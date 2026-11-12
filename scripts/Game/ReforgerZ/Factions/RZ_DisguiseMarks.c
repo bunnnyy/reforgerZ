@@ -1,7 +1,8 @@
 //! Borrowed kit, disguise phase 3 (docs/REPUTATION.md, "Whose kit it was"): kit that remembers whose
 //! it was, the nail list and the season's counts.
 //!
-//! Marks (runtime, weak references, at most 200; a restart forgets them):
+//! Marks (weak references, at most 200; the ones a player wears are saved by their identity and the
+//! piece's prefab, and put back on the same pieces when they're next read on them):
 //! - a dead man's: worn by one of their people when he died (retaliation sees every death of a
 //!   watched unit). Fails at their look. The Red Hand's passes only if it was bought fair at the
 //!   fence (a Red Hand quartermaster's sale is marked fair);
@@ -25,6 +26,22 @@ class RZ_KitMark
 	string m_sOwner;	// signed or given: the identity it belongs to; dead: the killer's identity
 	int m_iUnix;
 	int m_iNail = -1;	// a dead man's entry in the nail list (its id)
+}
+
+//------------------------------------------------------------------------------------------------
+//! A mark on a piece a player wore at the save: put back on a piece of the same prefab when that
+//! identity is next read wearing it (vanilla persistence brings the kit back; the mark doesn't ride
+//! on the entity).
+class RZ_KitMarkSave
+{
+	string ident;
+	string prefab;
+	int kind;
+	int f;
+	string name;
+	string owner;
+	int unix;
+	int nail = -1;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -81,6 +98,7 @@ class RZ_DisguiseSave
 	ref array<string> lookIdents = {};	// looks passed this season, by identity (the "Never caught" line)
 	ref array<int> lookCounts = {};
 	ref array<string> caughtIdents = {};
+	ref array<ref RZ_KitMarkSave> worn = {};		// marks on worn pieces at the save (across a restart)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -114,6 +132,7 @@ class RZ_DisguiseMarks
 	protected RZ_Disguise m_Disguise;
 	protected ref array<ref RZ_KitMark> m_aMarks = {};
 	protected ref RZ_DisguiseSave m_Data = new RZ_DisguiseSave();
+	protected ref array<string> m_aPutBack = {};	// saved marks already put back (PutBackKey)
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_DisguiseMarks(RZ_GameModeComponent gm, RZ_Disguise disguise)
@@ -138,6 +157,7 @@ class RZ_DisguiseMarks
 	//------------------------------------------------------------------------------------------------
 	RZ_DisguiseSave Save()
 	{
+		SaveWorn();
 		return m_Data;
 	}
 
@@ -166,7 +186,100 @@ class RZ_DisguiseMarks
 		if (!m_Data.recent)
 			m_Data.recent = {};
 
+		if (!m_Data.worn)
+			m_Data.worn = {};
+
 		EnsureCounts();
+	}
+
+	// ================================================================ Marks across a restart
+	//------------------------------------------------------------------------------------------------
+	//! The marks on pieces players wear now, by identity and prefab, plus the ones still waiting to
+	//! be put back (a player who hasn't been on since the restart). At most 200.
+	protected void SaveWorn()
+	{
+		array<ref RZ_KitMarkSave> keep = {};
+		PlayerManager pm = GetGame().GetPlayerManager();
+		foreach (RZ_KitMark m : m_aMarks)
+		{
+			if (!m.m_Item)
+				continue;
+
+			// VERIFY: a worn piece's root parent is the character wearing it
+			IEntity root = m.m_Item.GetRootParent();
+			int pid = 0;
+			if (root && root != m.m_Item)
+				pid = pm.GetPlayerIdFromControlledEntity(root);
+
+			if (pid <= 0)
+				continue;
+
+			RZ_KitMarkSave w = new RZ_KitMarkSave();
+			w.ident = m_GM.GetProfile(pid).m_sIdentity;
+			w.prefab = RZ_Util.GetPrefabName(m.m_Item);
+			w.kind = m.m_iKind;
+			w.f = m.m_iFaction;
+			w.name = m.m_sName;
+			w.owner = m.m_sOwner;
+			w.unix = m.m_iUnix;
+			w.nail = m.m_iNail;
+			if (!w.ident.IsEmpty() && !w.prefab.IsEmpty())
+				keep.Insert(w);
+		}
+
+		// Still waiting from the last restart (whose wearer hasn't come back yet)
+		foreach (RZ_KitMarkSave old : m_Data.worn)
+		{
+			if (keep.Count() >= MAX_MARKS)
+				break;
+
+			if (!m_aPutBack.Contains(PutBackKey(old)))
+				keep.Insert(old);
+		}
+
+		m_aPutBack.Clear();
+		m_Data.worn = keep;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string PutBackKey(RZ_KitMarkSave w)
+	{
+		return string.Format("%1|%2|%3|%4|%5", w.ident, w.prefab, w.kind, w.unix, w.nail);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On the kit read: a mark saved on a piece this identity wore goes back on a worn piece of the
+	//! same prefab and faction that has no mark yet.
+	void PutBack(int playerId, IEntity character)
+	{
+		if (!character || !m_Data.worn || m_Data.worn.IsEmpty())
+			return;
+
+		string ident = m_GM.GetProfile(playerId).m_sIdentity;
+		foreach (RZ_KitMarkSave w : m_Data.worn)
+		{
+			if (w.ident != ident || m_aPutBack.Contains(PutBackKey(w)))
+				continue;
+
+			array<IEntity> pieces = {};
+			WornOf(character, w.f, pieces);
+			foreach (IEntity piece : pieces)
+			{
+				if (Find(piece) || RZ_Util.GetPrefabName(piece) != w.prefab)
+					continue;
+
+				RZ_KitMark m = Mark(piece, w.kind, w.f, w.name, w.owner);
+				if (m)
+				{
+					m.m_iUnix = w.unix;
+					m.m_iNail = w.nail;
+				}
+
+				m_aPutBack.Insert(PutBackKey(w));
+				RZ_Log.Info(string.Format("Disguise: a kit mark put back on %1's %2 after the restart", RZ_Util.PlayerName(playerId), RZ_Factions.GetName(w.f)));
+				break;
+			}
+		}
 	}
 
 	// ================================================================ Marks
@@ -780,6 +893,51 @@ class RZ_DisguiseMarks
 		}
 
 		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nail id of a dead man's name on `f`'s list, -1 none.
+	int NailIdOf(int f, string name)
+	{
+		foreach (RZ_NailSave n : m_Data.nails)
+		{
+			if (n.f == f && n.name == name)
+				return n.id;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The season's data as it stands (the last week's lines read it).
+	RZ_DisguiseSave Data()
+	{
+		return m_Data;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The last week (RZ_DisguiseClaims): a marked piece is taken in, off whoever wears it, its mark
+	//! gone; a dead man's comes home (his fate on the list). VERIFY: deleting a worn item through its
+	//! wearer's inventory manager.
+	void TakeHome(IEntity piece, RZ_NailSave nail)
+	{
+		if (!piece)
+			return;
+
+		RZ_KitMark m = Find(piece);
+		if (m)
+			m_aMarks.RemoveItem(m);
+
+		if (nail)
+			SetFate(nail.id, HOW_HOME);
+
+		IEntity root = piece.GetRootParent();
+		SCR_InventoryStorageManagerComponent inv;
+		if (root)
+			inv = SCR_InventoryStorageManagerComponent.Cast(root.FindComponent(SCR_InventoryStorageManagerComponent));
+
+		if (!inv || !inv.TryDeleteItem(piece))
+			SCR_EntityHelper.DeleteEntityAndChildren(piece);
 	}
 
 	// ================================================================ The board and the counts

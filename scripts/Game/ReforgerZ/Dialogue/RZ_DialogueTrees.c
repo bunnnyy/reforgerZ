@@ -1474,6 +1474,15 @@ class RZ_DialogueTrees
 				case "keep":
 					m_Memory.Keep(pid, Scoped(ctx, e.m_sArg));
 					break;
+				case "cover":
+				{
+					// Borrowed kit: a cover detail spoken (RZ_DisguiseClaims); one you don't have is caught
+					RZ_Hostility coverHost = m_GM.GetHostility();
+					if (coverHost && coverHost.GetDisguise() && RZ_Factions.IsValid(ctx.m_iFaction) && coverHost.GetDisguise().GetClaims().Say(pid, ctx.m_iFaction, e.m_sArg, ctx.m_sKey, user))
+						s.m_aNew.Insert("(They write it down.)");
+
+					break;
+				}
 				case "wire":
 				{
 					// Bastion's word at the wire: right, it counts at the next look; wrong, caught

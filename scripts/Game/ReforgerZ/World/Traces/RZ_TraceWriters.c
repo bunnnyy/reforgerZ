@@ -808,6 +808,41 @@ class RZ_TraceWatch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The thumbprint's count across a restart: each exile's minutes in a town, and when it's due.
+	void SaveExiles(notnull array<ref RZ_ExileSave> result)
+	{
+		foreach (string key, float seen : m_mExileAt)
+		{
+			RZ_ExileSave e = new RZ_ExileSave();
+			e.key = key;
+			e.seen = seen;
+			vector pos;
+			m_mExilePos.Find(key, pos);
+			e.x = pos[0];
+			e.z = pos[2];
+			int due;
+			m_mExileDue.Find(key, due);
+			e.due = due;
+			result.Insert(e);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void RestoreExiles(array<ref RZ_ExileSave> saved)
+	{
+		if (!saved)
+			return;
+
+		foreach (RZ_ExileSave e : saved)
+		{
+			m_mExileAt.Set(e.key, e.seen);
+			m_mExilePos.Set(e.key, RZ_Util.GroundPos(Vector(e.x, 0, e.z)));
+			if (e.due > 0)
+				m_mExileDue.Set(e.key, e.due);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A town nobody holds crossed 85: it went dark.
 	protected void Towns(bool first)
 	{

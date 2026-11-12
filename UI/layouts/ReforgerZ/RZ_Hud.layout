@@ -661,6 +661,50 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
     }
    }
   }
+  HorizontalLayoutWidgetClass "{7C1E4A9B2D3F5061}" {
+   Name "LookPanel"
+   Slot FrameWidgetSlot "{8D2F5BAC3E406172}" {
+    Anchor 0 1 0 1
+    PositionX 552
+    OffsetLeft 552
+    PositionY -122
+    OffsetTop -122
+    SizeX 520
+    OffsetRight -1072
+    SizeY 26
+    OffsetBottom 96
+    Alignment 0 1
+    SizeToContent 1
+   }
+   "Is Visible" 0
+   Opacity 0.95
+   {
+    ImageWidgetClass "{9E306CBD4F517283}" {
+     Name "LookIcon"
+     Slot LayoutSlot "{AF417DCE50628394}" {
+      HorizontalAlign 0
+      VerticalAlign 1
+      Padding 0 0 8 0
+     }
+     Color 0.886 0.702 0.235 1
+     Size 24 24
+    }
+    TextWidgetClass "{B0528EDF617394A5}" {
+     Name "LookText"
+     Slot LayoutSlot "{C16390F07284A5B6}" {
+      HorizontalAlign 0
+      VerticalAlign 1
+     }
+     Color 0.91 0.886 0.816 1
+     Text "PASS AS BASTION: 2 OF 2"
+     "Font Size" 20
+     "Min Font Size" 18
+     FontProperties FontProperties "{D274A1018395B6C7}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+   }
+  }
   HorizontalLayoutWidgetClass "{F547112ADB565B88}" {
    Name "SeenPanel"
    Slot FrameWidgetSlot "{320B349B6E109F7D}" {

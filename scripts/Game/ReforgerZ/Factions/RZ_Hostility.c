@@ -564,6 +564,10 @@ class RZ_Hostility
 			if (z.m_bSpareFriends && RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, z.m_eFaction), RZ_ETier.KNOWN))
 				continue;
 
+			// The stand's spare rule: locked on that faction's route and in its colours (RZ_DisguiseClaims)
+			if (z.m_bSpareFriends && m_Disguise && m_Disguise.GetClaims().SpareInColours(playerId, z.m_eFaction))
+				continue;
+
 			mask = mask | RZ_Factions.Bit(z.m_eFaction);
 		}
 

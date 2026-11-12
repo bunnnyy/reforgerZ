@@ -26,6 +26,7 @@ class RZ_UIFeedState
 	int m_iNoise = -1;
 	int m_iSeen = -1;		// visibility level last sent (-1: none yet, the client hides it)
 	bool m_bSeenHidden;
+	string m_sLook;			// the look-coming line last sent ("" hidden)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -369,6 +370,23 @@ class RZ_UIFeed
 		ui.SendVisibility(level, hidden);
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! From borrowed kit (RZ_DisguiseClaims): the HUD's look-coming line, RZ_Hud_Look ("PASS AS
+	//! BASTION: 2 OF 2"; "" hides it). Owner-only, sent only when it changes.
+	void PushLook(int playerId, string line)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (!ui)
+			return;
+
+		RZ_UIFeedState st = State(playerId);
+		if (st.m_sLook == line)
+			return;
+
+		st.m_sLook = line;
+		ui.SendLook(line);
+	}
+
 	// ================================================================ Clues
 	//------------------------------------------------------------------------------------------------
 	//! From RZ_PuzzleMission.HandleRead.
@@ -500,6 +518,7 @@ class RZ_UIFeed
 	//! The fields after the need line are new (docs/REPUTATION.md, "Reputations"): older layouts
 	//! read the first eight and ignore the rest. word and owed come with reputation's later phases.
 	//! L|faction|name|title|what they think of you
+	//! K|faction|borrowed kit with them (shown above the leaders they know)
 	//! R|kind (0 truce, 1 feud)|faction a|faction b|minutes left
 	protected string BuildStanding(int playerId)
 	{
@@ -538,6 +557,16 @@ class RZ_UIFeed
 			lnF.AddInt(f).AddInt(fame).AddInt(infamy).AddInt(p.GetFavor(ef)).AddInt(tier).AddInt(need).Add(needLine);
 			lnF.AddInt(rep).AddInt(RZ_RepNames.Notoriety(fame, infamy)).Add("").Add(RZ_RepNames.Note(fame, infamy)).AddInt(left).AddInt(0);
 			s += lnF.End();
+			// Borrowed kit with them (RZ_DisguiseClaims): K|faction|your face, catches, blown, tells, enemies
+			string kit = "";
+			if (m_GM.GetHostility() && m_GM.GetHostility().GetDisguise())
+				kit = m_GM.GetHostility().GetDisguise().GetClaims().StandingLine(playerId, f);
+
+			if (!kit.IsEmpty())
+			{
+				RZ_UILine lnK = new RZ_UILine("K");
+				s += lnK.AddInt(f).Add(kit).End();
+			}
 		}
 
 		RZ_Leaders leaders = m_GM.GetLeaders();

@@ -88,6 +88,8 @@ class RZ_TribePeople
 	protected bool m_bLastCall;
 	protected bool m_bLastCallDue;
 	protected int m_iLastFrenzyDay = -100;
+	protected vector m_vFrenzyAt;		// tonight's frenzy: its point (Red Dusk) and reach; 0 everywhere
+	protected float m_fFrenzyRadius;
 	protected int m_iLastRedDuskDay = -100;
 	protected int m_iPitStock;				// Stock the Pit: young caged for the next Fight Pit
 	protected string m_sPitCrew;
@@ -1703,6 +1705,9 @@ class RZ_TribePeople
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		if (p)
 			m_mDelivered.Set(p.m_sIdentity, RZ_SeasonClock.Day());
+
+		// The seed for a later questline (Zombies/RZ_TribeQuests.c)
+		RZ_TribeQuests.BroughtHome(m_GM);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1806,7 +1811,9 @@ class RZ_TribePeople
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Siren Test: the crawlers converge; packs come only with a bells habit (within 3 km).
+	//! Siren Test: the crawlers converge; packs come only with a bells habit (within 3 km). The chain
+	//! reaction: every other pack within 3 km keeps away from that town tonight (a fear place there
+	//! until the next counted night; tonight's trails worked out round it).
 	void BellsCome(vector at)
 	{
 		if (!IsOn())
@@ -1814,8 +1821,24 @@ class RZ_TribePeople
 
 		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 		{
-			if (t.StrongHabit(RZ_EHabit.BELLS) && RZ_Util.DistXZ(t.RangeCentre(), at) <= 3000)
+			if (RZ_Util.DistXZ(t.RangeCentre(), at) > 3000)
+				continue;
+
+			if (t.StrongHabit(RZ_EHabit.BELLS))
+			{
 				m_Tribes.DrawTo(t, at, m_Tribes.GetPhase() != RZ_ETribePhase.DAY);
+				continue;
+			}
+
+			if (t.IsRover() || t.m_fFrenzy > 0)
+				continue;
+
+			RZ_FearPlace f = new RZ_FearPlace();
+			f.m_vPos = at;
+			f.m_iUntil = m_Tribes.CountedNights() + 1;
+			t.m_aFear.Insert(f);
+			m_Tribes.BuildTrails(t);
+			RZ_Log.Info(string.Format("Tribes: %1 keeps away from the siren at %2 tonight.", t.m_sPlace, RZ_SettlementScanner.GridReference(at)));
 		}
 	}
 
@@ -2374,6 +2397,9 @@ class RZ_TribePeople
 		if (redDusk)
 			m_iLastRedDuskDay = m_iLastFrenzyDay;
 
+		m_vFrenzyAt = pos;
+		m_fFrenzyRadius = radius;
+
 		int n = 0;
 		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 		{
@@ -2391,6 +2417,30 @@ class RZ_TribePeople
 		// The great one's clan gathers on a frenzy night
 		m_Tribes.GetGreat().OnFrenzy();
 		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A frenzy night is on at pos (until dawn, when the tribes clear it): any pack is frenzied, and
+	//! pos is inside the frenzy's reach (Red Dusk's 3 km, or everywhere).
+	bool FrenzyAt(vector pos)
+	{
+		if (!IsOn())
+			return false;
+
+		bool any = false;
+		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
+		{
+			if (t.m_fFrenzy > 0)
+			{
+				any = true;
+				break;
+			}
+		}
+
+		if (!any)
+			return false;
+
+		return m_fFrenzyRadius <= 0 || RZ_Util.DistXZ(pos, m_vFrenzyAt) <= m_fFrenzyRadius;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2560,6 +2610,18 @@ class RZ_TribePeople
 			{
 				if (still.m_bHasAlpha)
 					AddBeat(string.Format("Still calling: %1, with %2 answering at the cure.", NameAt(still, RZ_EFaction.SURVIVORS), RZ_Tribes.Answers(still.Members())));
+
+				// Walking with it: up to three named young still running with each pack (players'
+				// characters among them by the name setting)
+				int walking = 0;
+				foreach (RZ_NamedYoung y : still.m_aNamed)
+				{
+					if (walking >= 3)
+						break;
+
+					AddBeat(string.Format("Walking with it: %1, still with %2 at the cure.", PublicNameOf(y), NameAt(still, RZ_EFaction.SURVIVORS)));
+					walking++;
+				}
 			}
 
 			RZ_Log.Info("Tribes: the cure is out. Nobody new turns, and the packs run down on real hours.");
@@ -2705,6 +2767,7 @@ class RZ_TribePeople
 		{
 			m_iVoiceDay = day;
 			Moat();
+			RZ_TribeQuests.Daily(m_GM);
 			WriteMarks();
 			foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 			{

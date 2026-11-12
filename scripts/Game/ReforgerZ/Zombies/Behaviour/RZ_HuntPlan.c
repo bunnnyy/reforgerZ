@@ -99,8 +99,12 @@ class RZ_HuntLink
 	float m_fHerdRadius;
 	bool m_bHerdStirred;
 	vector m_vAmbush;
+	// The re-plan: the strategies plan round this spot, moved only when the target has gone 25 m
+	vector m_vPlanned;
+	bool m_bPlanned;
 
 	static const int MAX_ELEMENTS = 3;
+	static const float REPLAN = 25;
 	static const float CLUSTER_RADIUS = 150;
 
 	//------------------------------------------------------------------------------------------------
@@ -142,6 +146,35 @@ class RZ_HuntLink
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot the strategies plan round (docs/INFECTED.md, Formations): the last-known spot, moved
+	//! only when the target has gone 25 m from it, so the flank and shadow points don't jitter. The
+	//! strike always runs at the last-known spot itself.
+	vector Planned()
+	{
+		if (!m_bPlanned || RZ_Util.DistXZ(m_vPlanned, m_vLastKnown) >= REPLAN)
+		{
+			m_vPlanned = m_vLastKnown;
+			m_bPlanned = true;
+		}
+
+		return m_vPlanned;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The longest time to its place among this hunt's elements still on their way, other than one.
+	float SlowestEta(RZ_GroupPlan except)
+	{
+		float slowest = 0;
+		foreach (RZ_GroupPlan p : m_aPlans)
+		{
+			if (p && p != except && p.GetLink() == this && p.GetHuntState() == RZ_EHuntState.APPROACH)
+				slowest = Math.Max(slowest, p.GetEta());
+		}
+
+		return slowest;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -368,6 +401,8 @@ class RZ_GroupPlan
 	protected float m_fSearchUntil;
 	protected float m_fSaidAt;
 	protected bool m_bAmbushSet;
+	protected float m_fEta = -1;	// seconds to its place on the approach (the slower element starts first)
+	protected float m_fPick = 0.5;	// this hunt's roll for distances picked in a range (fixed, no jitter)
 
 	// Senses
 	protected ref array<int> m_aMeterIds = {};
@@ -393,6 +428,8 @@ class RZ_GroupPlan
 
 	static const float GIVE_UP_BLOCK = 600;		// s a group won't take the same player again after giving up
 	static const float SEARCH_SECONDS = 45;
+	static const float ETA_SLACK = 5;			// s an element may arrive before the slowest
+	static const float STARE_RADIUS = 40;		// m: a young stares at a house door this close
 
 	// ================================================================ For the owner
 	//------------------------------------------------------------------------------------------------
@@ -405,6 +442,7 @@ class RZ_GroupPlan
 	bool IsHunting() { return m_Link != null && !m_Link.m_bOver; }
 	RZ_EPlanOrder GetOrder() { return m_eOrder; }
 	int GetElement() { return m_iElement; }
+	float GetEta() { return m_fEta; }
 
 	//------------------------------------------------------------------------------------------------
 	int Living()
@@ -498,6 +536,8 @@ class RZ_GroupPlan
 		m_fHuntAt = Now();
 		m_bLeg2 = false;
 		m_bRoared = false;
+		m_fEta = -1;
+		m_fPick = Math.RandomFloat01();
 		m_bAmbushSet = false;
 		m_iPeak = Living();
 		if (link.m_iTarget != m_iRegroupTarget)
@@ -1477,7 +1517,8 @@ class RZ_GroupPlan
 		if (d < 120 && RZ_Behaviour.AngleOff(target, m_vCentre) < 30)
 			m_fFreezeUntil = now + Math.RandomFloat(3, 6);
 
-		vector b = m_vCentre - link.m_vLastKnown;
+		vector planned = link.Planned();
+		vector b = m_vCentre - planned;
 		b[1] = 0;
 		if (b.Length() < 1)
 			b = RZ_Behaviour.RandomDir();
@@ -1492,7 +1533,7 @@ class RZ_GroupPlan
 			b.Normalize();
 		}
 
-		vector shadow = CoverPoint(bh, link.m_vLastKnown, b, r);
+		vector shadow = CoverPoint(bh, planned, b, r);
 		m_vAnchor = shadow;
 		m_eFormation = RZ_EFormation.FILE;
 		SetWaypoint(RZ_EGait.WALKSTOP, shadow);
@@ -1531,15 +1572,16 @@ class RZ_GroupPlan
 		if (m_iElement % 2 == 0)
 			s = -1;
 
-		vector u = link.m_vLastKnown - m_vCentre;
+		vector planned = link.Planned();
+		vector u = planned - m_vCentre;
 		u[1] = 0;
 		if (u.Length() < 1)
 			u = Vector(0, 0, 1);
 
 		u.Normalize();
 		vector p = Vector(u[2], 0, -u[0]);
-		vector flank = link.m_vLastKnown - u * (rf * Math.Cos(alpha)) + p * (rf * Math.Sin(alpha) * s);
-		flank = CoverPoint(bh, link.m_vLastKnown, Dir(link.m_vLastKnown, flank), rf);
+		vector flank = planned - u * (rf * Math.Cos(alpha)) + p * (rf * Math.Sin(alpha) * s);
+		flank = CoverPoint(bh, planned, Dir(planned, flank), rf);
 		vector leg1 = m_vCentre + p * (s * rf * Math.Sin(alpha));
 		vector goal = flank;
 		if (!m_bLeg2)
@@ -1556,12 +1598,20 @@ class RZ_GroupPlan
 				link.m_fArrivedAt = now;
 		}
 
-		m_vAnchor = goal;
-		m_eFormation = RZ_EFormation.PAIRS;
 		RZ_EGait gait = RZ_EGait.RUN;
 		if (link.m_bDay)
 			gait = RZ_EGait.MARCH;
 
+		// The ETA: the nearer element waits until the further one would arrive with it
+		float route = RZ_Util.DistXZ(m_vCentre, flank);
+		if (!m_bLeg2)
+			route = RZ_Util.DistXZ(m_vCentre, goal) + RZ_Util.DistXZ(goal, flank);
+
+		if (m_eHunt == RZ_EHuntState.APPROACH && WaitForSlower(link, route, gait))
+			return;
+
+		m_vAnchor = goal;
+		m_eFormation = RZ_EFormation.PAIRS;
 		SetWaypoint(gait, goal);
 	}
 
@@ -1583,7 +1633,10 @@ class RZ_GroupPlan
 				link.m_bStrike = true;
 		}
 
-		m_vAnchor = link.m_vLastKnown;
+		if (link.m_fArrivedAt < 0 && WaitForSlower(link, Math.Max(0, d - link.m_fRing), RZ_EGait.WALKSTOP))
+			return;
+
+		m_vAnchor = link.Planned();
 		m_eFormation = RZ_EFormation.RING;
 		SetWaypoint(RZ_EGait.WALKSTOP, link.m_vLastKnown);
 	}
@@ -1633,8 +1686,9 @@ class RZ_GroupPlan
 			return;
 		}
 
-		vector farSide = Dir(pusher.Centre(), link.m_vLastKnown);
-		vector wait = RZ_Util.GroundPos(link.m_vLastKnown + farSide * Math.RandomFloat(40, 60));
+		vector planned = link.Planned();
+		vector farSide = Dir(pusher.Centre(), planned);
+		vector wait = RZ_Util.GroundPos(planned + farSide * (40 + 20 * m_fPick));
 		if (m_eHunt == RZ_EHuntState.APPROACH && RZ_Util.DistXZ(m_vCentre, wait) < 20)
 			m_eHunt = RZ_EHuntState.SET;
 
@@ -1698,7 +1752,10 @@ class RZ_GroupPlan
 			}
 		}
 
-		m_vAnchor = link.m_vLastKnown;
+		if (link.m_fArrivedAt < 0 && WaitForSlower(link, Math.Max(0, d - link.m_fRing), RZ_EGait.WALKSTOP))
+			return;
+
+		m_vAnchor = link.Planned();
 		m_eFormation = RZ_EFormation.RING;
 		SetWaypoint(RZ_EGait.WALKSTOP, link.m_vLastKnown);
 	}
@@ -1730,7 +1787,7 @@ class RZ_GroupPlan
 		}
 
 		vector away = Dir(link.m_vLastKnown, link.m_vAmbush);
-		vector lie = CoverPoint(bh, link.m_vAmbush, away, Math.RandomFloat(20, 40));
+		vector lie = CoverPoint(bh, link.m_vAmbush, away, 20 + 20 * m_fPick);
 		if (!m_bAmbushSet && RZ_Util.DistXZ(m_vCentre, lie) < 15)
 		{
 			m_bAmbushSet = true;
@@ -1762,35 +1819,83 @@ class RZ_GroupPlan
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The formation ETA (docs/INFECTED.md, Formations): this element needs eta seconds to its place.
+	//! True while another element of the hunt still needs more than 5 s longer: this one holds where
+	//! it is, so the slower element starts first and both arrive together.
+	protected bool WaitForSlower(RZ_HuntLink link, float dist, RZ_EGait gait)
+	{
+		float speed = 0.6;
+		if (gait == RZ_EGait.MARCH)
+			speed = 2;
+		else if (gait == RZ_EGait.RUN)
+			speed = 3.7;
+
+		m_fEta = dist / speed;
+		if (link.SlowestEta(this) - m_fEta <= ETA_SLACK)
+			return false;
+
+		m_vAnchor = m_vCentre;
+		SetWaypoint(RZ_EGait.WALKSTOP, m_vCentre);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A point r from center, in direction dir or up to 15 degrees either side, preferring one the
-	//! terrain hides from center, then a wooded square of the land grid (a forest edge or sparse
-	//! trees): 5 cheap checks (docs/INFECTED.md, Formations, "cover").
+	//! terrain hides from center, then a forest edge point of the land grid (inside the trees, the open
+	//! side in view), then a wooded square, and on a tie the lower ground: 5 cheap checks and the
+	//! edge points of their squares (docs/INFECTED.md, Formations, "cover").
 	protected vector CoverPoint(RZ_Behaviour bh, vector center, vector dir, float r)
 	{
 		RZ_Land land = RZ_GameModeComponent.GetInstance().GetLand();
+		bool grid = land && land.IsReady();
 		vector best = RZ_Util.GroundPos(center + dir * r);
 		int bestScore = -1;
 		array<float> offs = {0, -15, 15, -7.5, 7.5};
+		array<vector> cands = {};
 		foreach (float deg : offs)
 		{
 			float a = deg * Math.DEG2RAD;
 			vector rd = Vector(dir[0] * Math.Cos(a) - dir[2] * Math.Sin(a), 0, dir[0] * Math.Sin(a) + dir[2] * Math.Cos(a));
-			vector pt = RZ_Util.GroundPos(center + rd * r);
+			cands.Insert(RZ_Util.GroundPos(center + rd * r));
+		}
+
+		// A candidate's square's forest edge point, when it keeps about the same distance and side
+		if (grid)
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				vector edge;
+				if (!land.GetEdgePoint(land.CellAt(cands[i]), edge))
+					continue;
+
+				float er = RZ_Util.DistXZ(center, edge);
+				if (er < r * 0.6 || er > r * 1.4 || vector.Dot(Dir(center, edge), dir) < 0.7)
+					continue;
+
+				cands.Insert(RZ_Util.GroundPos(edge));
+			}
+		}
+
+		foreach (int ci, vector pt : cands)
+		{
 			if (RZ_Util.IsWater(pt))
 				continue;
 
 			int score = 0;
 			if (RZ_InfectedBodies.TerrainBlocks(center, pt))
-				score += 2;
+				score += 3;
 
-			if (land && land.IsReady())
+			if (ci >= 5)
+				score += 2;
+			else if (grid)
 			{
 				int idx = land.CellAt(pt);
 				if (idx >= 0 && land.GetTreeClass(idx) != RZ_Land.TREES_NONE)
 					score += 1;
 			}
 
-			if (score > bestScore)
+			// Low ground preferred on a leg: a tie goes to the lower point
+			if (score > bestScore || (score == bestScore && pt[1] < best[1] - 1))
 			{
 				bestScore = score;
 				best = pt;
@@ -1875,6 +1980,10 @@ class RZ_GroupPlan
 					}
 
 					vector slot = slots[i];
+					vector stare;
+					if (StareSlot(b, pos, now, stare))
+						slot = stare;
+
 					if (freeze)
 						slot = pos;
 
@@ -1929,7 +2038,8 @@ class RZ_GroupPlan
 	//------------------------------------------------------------------------------------------------
 	//! The kinds' tells while not hunting (docs/INFECTED.md, The kinds): hunters freeze for 3-5 s when
 	//! a player within 120 m looks their way (at most every 20 s); the young jump between slots (every
-	//! 6-12 s a new place in the group, 3-7 m off).
+	//! 6-12 s a new place in the group, 3-7 m off), and one jump in three, with a house's outside door
+	//! within 40 m, is a stare at that house instead (StareAt).
 	protected void Tells(RZ_Behaviour bh, array<IEntity> players, float now)
 	{
 		if (m_Link)
@@ -1958,7 +2068,90 @@ class RZ_GroupPlan
 
 			b.m_fJumpAt = now + Math.RandomFloat(6, 12);
 			b.m_vJitter = RZ_Util.RandomPointInRing(vector.Zero, 3, 7);
+			if (CurrentGait() == RZ_EGait.WALKSTOP && Math.RandomFloat01() < 0.34)
+				StareAt(b, now);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The young's stare at a house: facing a body isn't set by script, so the stare is walked. The
+	//! body goes to a spot 4 m out from an outside door, then to one 1.5 m out, and arrives facing the
+	//! door; it stands there 6-10 s. Only learned buildings near players (the door locks' list), so
+	//! nothing is queried.
+	protected void StareAt(RZ_BodyState b, float now)
+	{
+		RZ_Interactions hub = RZ_GameModeComponent.GetInstance().GetInteractions();
+		if (!hub || !hub.GetDoors())
+			return;
+
+		vector at = b.m_Body.GetOrigin();
+		IEntity best;
+		vector bestOut;
+		float bestD = STARE_RADIUS;
+		foreach (string key, RZ_BuildingDoors bd : hub.GetDoors().GetBuildings())
+		{
+			if (!bd || !bd.m_Building || RZ_Util.DistXZ(bd.m_vPos, at) > STARE_RADIUS + 30)
+				continue;
+
+			foreach (IEntity door : bd.m_aDoors)
+			{
+				if (!door)
+					continue;
+
+				float dd = RZ_Util.DistXZ(door.GetOrigin(), at);
+				if (dd >= bestD)
+					continue;
+
+				// Outward: from the building's middle through the door
+				vector outward = door.GetOrigin() - bd.m_vPos;
+				outward[1] = 0;
+				if (outward.Length() < 0.5)
+					continue;
+
+				outward.Normalize();
+				best = door;
+				bestOut = outward;
+				bestD = dd;
+			}
+		}
+
+		if (!best)
+			return;
+
+		vector d0 = best.GetOrigin();
+		b.m_vStareFrom = RZ_Util.GroundPos(d0 + bestOut * 4);
+		b.m_vStare = RZ_Util.GroundPos(d0 + bestOut * 1.5);
+		if (RZ_Util.IsWater(b.m_vStareFrom) || RZ_Util.IsWater(b.m_vStare))
+			return;
+
+		b.m_bStareClose = false;
+		b.m_fStareUntil = now + Math.RandomFloat(14, 20);
+		b.m_fJumpAt = b.m_fStareUntil;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The slot a staring young walks to (the far spot, then the near one), or false when it isn't
+	//! staring.
+	protected bool StareSlot(RZ_BodyState b, vector pos, float now, out vector slot)
+	{
+		if (now >= b.m_fStareUntil || m_Link || b.m_eKind != RZ_EBodyKind.YOUNG)
+			return false;
+
+		if (!b.m_bStareClose && RZ_Util.DistXZ(pos, b.m_vStareFrom) < 1.5)
+			b.m_bStareClose = true;
+
+		slot = b.m_vStareFrom;
+		if (b.m_bStareClose)
+			slot = b.m_vStare;
+
+		// Wandered off from the group: the stare ends
+		if (RZ_Util.DistXZ(slot, m_vCentre) > STARE_RADIUS + 10)
+		{
+			b.m_fStareUntil = -1;
+			return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2389,9 +2582,8 @@ class RZ_GroupPlan
 				}
 			}
 
-			vector s = target + off;
-			if (m_eFormation != RZ_EFormation.RING)
-				s = m_vAnchor + off;
+			// A ring stands round its anchor: the hunt's planned spot, re-planned at 25 m
+			vector s = m_vAnchor + off;
 
 			// A strike fans out on an arc round the target, closing
 			if (m_Link && m_eHunt == RZ_EHuntState.STRIKE && dt > 30)

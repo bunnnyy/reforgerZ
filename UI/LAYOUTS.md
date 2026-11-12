@@ -126,6 +126,9 @@ Frame  (root, full screen)
 │  └─ Text    NoiseText         mono bold 18, dim (QUIET, HEARD, LOUD, VERY LOUD)
 ├─ HorizontalLayout StandPanel  anchor bottom-left, offset (552, -30), 90% opacity; hidden unless the cure finale's stand line is fresh
 │  └─ Text    StandText         mono bold 18, bone ("CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00.")
+├─ HorizontalLayout LookPanel   anchor bottom-left, offset (552, -122), 8 apart, 95% opacity; hidden unless borrowed kit's look is coming (RZ_Hud_Look)
+│  ├─ Image   LookIcon          24 × 24, the tier_watched eye (set by code), gold
+│  └─ Text    LookText          bold 20 (min 18), bone ("PASS AS BASTION: 2 OF 2", or "PASS AS BASTION: SEEN THROUGH")
 ├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (588, -90), 10 apart, 85% opacity; hidden until the server sends a visibility (Stealth on)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)

@@ -4,10 +4,35 @@ class RZ_DialoguePack_posts
 	static void Add(RZ_DialogueDB db)
 	{
 		Add0(db);
+		Add1(db);
 	}
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
+		db.Conv("named.bastion.kit_dead", "named:bastion", "kit:dead_mans & !passing", "", 4, 6, "bastion");
+		db.Node("start");
+		db.Say("", "\"That's issue kit with the name tape picked off. We know whose tape that was.\"");
+		db.Conv("named.bastion.kit_issued", "named:bastion", "kit:issued & tier:bastion<known", "", 4, 6, "bastion");
+		db.Node("start");
+		db.Say("", "\"You're still in our kit. Take it off before someone asks why.\"");
+		db.Conv("named.bastion.kit_signed", "named:bastion", "kit:signed_other & !passing", "", 4, 6, "bastion");
+		db.Node("start");
+		db.Say("", "\"That set's signed out of our stores, and not to you. The quartermaster keeps a book.\"");
+		db.Conv("named.bastion.kit_turned", "named:bastion", "kit:off_turned", "", 4, 6, "bastion");
+		db.Node("start");
+		db.Say("", "\"That jacket's been on one of the turned. You can smell it from here. Burn it.\"");
+		db.Conv("named.halcyon.cover", "named:halcyon", "kit:in_kit & !caught & !claimed & cover:notebook", "Give them a notebook number.", 0, 0, "halcyon");
+		db.Node("start");
+		db.Say("", "\"I don't have you on the rota. Which notebook are you writing in?\"");
+		db.Choice("book", "\"Notebook {cover:notebook}, nights.\"", "said", "", "", "", "", "", "cover:notebook", "", "");
+		db.Choice("leave", "\"I'll check the rota.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("said");
+		db.Jump("caught", "wrong");
+		db.Say("", "\"Notebook {cover:notebook}. Yes, that's one of ours. Carry on, then, quietly.\"");
+		db.Choice("back1", "\"Thank you.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("wrong");
+		db.Say("", "\"There's no notebook with that number. Security, please.\"");
+		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("post.bastion.claim", "post:bastion", "kit:in_kit & !caught", "Answer as one of theirs.", 0, 0, "bastion");
 		db.Node("start");
 		db.Say("", "\"You. Which unit? I don't know your face.\"");
@@ -24,6 +49,27 @@ class RZ_DialoguePack_posts
 		db.Node("honest");
 		db.Say("", "\"At least you said so. Take it off before somebody less patient asks.\"");
 		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("post.bastion.cover", "post:bastion", "kit:in_kit & !caught & !claimed", "Give a name that vouches for you.", 0, 0, "bastion");
+		db.Node("start");
+		db.Say("", "\"Whose section are you, then? Give me a name who'll stand for you.\"");
+		db.Choice("leader", "\"{cover:name} will stand for me.\"", "said", "", "", "", "", "cover:name", "cover:name", "", "");
+		db.Choice("dead", "\"{cover:dead} signed me on.\"", "said", "", "", "", "", "cover:dead", "cover:dead", "", "");
+		db.Choice("leave", "\"Never mind.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("said");
+		db.Jump("caught", "wrong");
+		db.Say("", "\"I'll remember that name. Now let's see the rest of you.\"");
+		db.Choice("claim", "\"One of yours. Let me through.\"", "passed", "refused", "", "look bastion 2", "", "", "", "", "");
+		db.Choice("wait", "\"I'll wait.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("passed");
+		db.Say("", "\"Go on. And if that name's wrong, it's both of you.\"");
+		db.Do("call:post_wave");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("refused");
+		db.Say("", "\"No. Hands on the barrier. That kit goes back where it came from.\"");
+		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("wrong");
+		db.Say("", "\"Never heard of him. Hands on the barrier.\"");
+		db.Choice("back3", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("post.bastion.search", "post:bastion", "!hunted:bastion", "Ask about the search.", 2, 0, "bastion");
 		db.Node("start");
 		db.Say("", "\"Hands on the barrier, pockets out. We take suppressors and explosives. Everything else you keep.\"");
@@ -87,11 +133,36 @@ class RZ_DialoguePack_posts
 		db.Node("honest");
 		db.Say("", "\"It might, too. Not here. Here we count the armbands.\"");
 		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("post.redhand.cover", "post:redhand", "kit:in_kit & !caught & !claimed", "Tell them what the crew calls you.", 0, 0, "redhand");
+		db.Node("start");
+		db.Say("", "\"Go on, then. What does the crew call you, and who says so?\"");
+		db.Choice("crew", "\"They call me {cover:crew}.\"", "said", "", "", "", "", "cover:crew", "cover:crew", "", "");
+		db.Choice("boss", "\"Ask {cover:name}. He knows me.\"", "said", "", "", "", "", "cover:name", "cover:name", "", "");
+		db.Choice("leave", "\"Forget it.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("said");
+		db.Jump("caught", "wrong");
+		db.Say("", "\"Maybe. I've heard stupider names on better liars.\"");
+		db.Choice("claim", "\"One of yours. Wave me on.\"", "passed", "caught2", "", "look redhand 2", "", "", "", "", "");
+		db.Choice("wait", "\"I'll pay the toll.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("passed");
+		db.Say("", "\"Go on, then. And pay next time like everyone.\"");
+		db.Do("call:post_wave");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught2");
+		db.Say("", "\"No. Nobody's ever called you that. Turn out your pockets.\"");
+		db.Choice("back2", "\"Fine.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("wrong");
+		db.Say("", "\"Nobody calls you that. Nobody ever has.\"");
+		db.Choice("back3", "\"Fine.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("post.redhand.toll", "post:redhand", "!hunted:redhand", "Ask about the toll.", 2, 0, "redhand");
 		db.Node("start");
 		db.Say("", "\"Red hand means stop. Stop means pay. {toll} Favor, or walk round. It's only a few kilometres. Mostly dead people.\"");
 		db.Choice("pay", "\"Pay the toll.\"", "paid", "", "", "", "", "tier:redhand>=known", "call:toll", "", "");
 		db.Choice("move", "\"Move the car out of my way.\"", "moved", "laughed", "laughed", "threaten redhand 2", "", "", "", "", "");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Choice("rudi", "\"Is this Rudi's road?\"", "rudi", "", "", "", "", "", "", "", "");
 		db.Choice("walk", "\"I'll walk round.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("paid");

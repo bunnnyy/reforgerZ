@@ -14,9 +14,9 @@ build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
 - [The model's rest](#the-models-rest)
 - [Tribes](#tribes)
 - [Day parties](#day-parties)
-- [Towns and the land](#towns-and-the-land)
 - [Bodies](#bodies)
 - [People](#people)
+- [The behaviour layer's rest](#the-behaviour-layers-rest)
 - [After the cure: the last week](#after-the-cure-the-last-week)
 - [From Grounds to tribes: the rename table](#from-grounds-to-tribes-the-rename-table)
 - [Phase 0 results](#phase-0-results)
@@ -30,7 +30,7 @@ build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
 | Trails (rule 9) | Trail scoring by prey (wear is built) |
 | Borders (rules 10–18) | Bastion's *"Papa-four: no contact"*; the border's offset moving the ranges |
 | Fed by people (rule 19) | The moat rule stopping for a pack whose leader a finale route took alive, until its succession (with the finale) |
-| Memory (rules 20–23) | An abandoned lair's finds as items from the search table (a line today); tracks always fresh in snow |
+| Memory (rules 20–23) | An abandoned lair's finds as items from the search table (a line today) |
 | Clans | The relay players hear pass along the ridges; all of a clan hunting toward one ground on frenzy nights |
 | The great one | Caught alive it counts +3 on a finale route's track instead of +2 (with the finale) |
 | Next season | After a Halcyon win, seeds could start in Prime too (an option) |
@@ -52,21 +52,10 @@ build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
 
 A Furious pack's day parties walking the capture road.
 
-## Towns and the land
-
-- **Giving way, in placement:** while a pack's part is in a town, the crawlers' placement shifts half
-  indoors and to the side away from the trail (crawler life's night herds already step aside).
-- **Hordes and lookers from the packs:** by day inside a range, a heat horde from that pack's day party
-  only (inside its 6-body cap); at night, from its hunters along its trail (inside the hunt's
-  commitment); favourite-spot lookers from the young at night inside a range.
-- **Frenzy nights:** the crawlers' ×2 at a frenzy's height lasting the night.
-- **Chain reactions:** Siren Test's other packs keeping away from that town that night.
-
 ## Bodies
 
-- Scouts moving to posts above tonight's trails at dusk, and sitting lower in fog; a marked player seen
-  from 1.5 times as far; the building query (a player inside is never seen; the code uses its sight
-  trace within 80 m).
+- Scouts moving to posts above tonight's trails at dusk, and sitting lower in fog; the building query
+  (a player inside is never seen; the code uses its sight trace within 80 m).
 - The corpse kept from the engine's cleanup (VERIFY 15), and the samples kept from the loose-item
   cleanup during the vigil.
 - A second infected faction hostile to the first, so fights could be seen (behind a setting).
@@ -79,20 +68,26 @@ A Furious pack's day parties walking the capture road.
   Bait the Crew's Zombie Bait Infamy when either side lands on a faction's people; Track Them Home's
   "not closer than 80 m"; couriers and columns needing an escort.
 - **Trucks taken** on any road a trail crosses (decision 15).
-- **Questline hooks:** B1 Await Relief (the Day 3 runner's road crosses the column's range, and his page
-  can be at an old kill site); R1 The Book (a page for "the crew in the woods", the moat's feeding, as a
-  rumour); HC3 Authors (tagged leaders numbered in the paper's appendix); the finale routes' live tissue
-  and The Lower Store claiming the site pack in Act II ([FINALE.md](FINALE.md)); seeds for later
-  questlines (the Haven's Bring Them Home chain, Bastion's Not Our Sector, the Red Hand's The Moat,
-  Halcyon's Index).
+
+## The behaviour layer's rest
+
+The layer is built ([docs/INFECTED.md](../docs/INFECTED.md#how-they-move-and-hunt)), with the zombie
+lab's B1–B20 results in [docs/WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#zombie-lab-bacons-real-ai-measured).
+What's left waits on a test; the levers the lab disproved are in the roadmap's Dropped list.
+
+| Part | Still designed | Why it waits |
+|---|---|---|
+| Sight | Calibrate **Notice rate** to phase 0's ladder in a play-test and re-run `tools/tribe_sim.py` with it | Needs a play-test |
+| Crawlers | A forced prone pose (lever L6, `ForceStance`: a prone `SetStanceChange` didn't hold, B12); crawlers steered into a fight within 12 m | Untested lever: needs a lab check on a client first |
+| Pathing | Lever L23: a straight-path cost per kind (×1 young, ×3 hunters) in `SCR_CreateAIExtraMoveParams`, so a chase curves | The hook loads and fires (B2); its effect needs a client check |
+| Danger events | Lever L16: a scripted `AIDangerEventWeaponFire` to pull engaged bodies the way a shot does | Untested lever: needs a client check, and hearing's leads cover it so far |
 
 ## After the cure: the last week
 
 The last week is built ([docs/INFECTED.md](../docs/INFECTED.md#the-last-week)) with its beats kept for
-the epilogue. Still designed: the epilogue reading them, and one more beat, **Walking with it** (up to 3
-named young still running with each pack, players' characters among them by the name setting). The
-closing work that touches the infected (Quiet the Ridges, Bring Them Home as closing work, Take Back a
-Town) is [EPILOGUE.md](EPILOGUE.md)'s.
+the epilogue, Walking with it among them. Still designed: the epilogue reading them. The closing work
+that touches the infected (Quiet the Ridges, Bring Them Home as closing work, Take Back a Town) is
+[EPILOGUE.md](EPILOGUE.md)'s.
 
 ## From Grounds to tribes: the rename table
 

@@ -1066,6 +1066,8 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `place.undercover` | C2 | C1 | C1's proof is done: it starts at stage 4; the undercover guest gets +5 Fame on top when they tell |
 | `place.proof` | C2 | C1 | Got up from grace (or a ★ Police guest walked away) with the proof: C1 starts at stage 4 |
 | `place.family`, `place.by_hand` | C2 | any | Someone sat at the long table and said a name; the house was finished at its own table |
+| `packs.moat`, `packs.index`, `packs.contact`, `packs.home` | the packs, once a season day ([INFECTED.md](INFECTED.md#questline-hooks)) | questlines not written yet (seeds) | The Red Hand feeds a pack now (1/0); leaders Halcyon has tagged (a count); a pack was founded at a lost Bastion post (1); named ones brought home (a count) |
+| `packs.book_told` | the packs | — | R1's rumour of "the crew in the woods" was told for the run that started at that time (unix) |
 | `table.exists`, `table.town` | the Long Table, from the season's start | R2, any | There's a house this season (0 once it's broken up); the settlement it's past, as its index + 1 (0: no house, or none near). R2's loads go there, else to a crew boss's pit |
 | `table.exposed`, `table.exposed_to` | the Long Table, once the house is found out | R2, any | Found out (to the faction told; -1 everyone), for the rest of the season. R2: the cut stops, and the Haven holds it against whoever took it or delivered a load |
 | `table.broken`, `table.burnt`, `table.moved`; `table.suspicion` | the Long Table (the first three only once true) | any | Gone for the season; burnt by Bastion; moved once; how suspected (0–100) |

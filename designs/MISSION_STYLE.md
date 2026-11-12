@@ -302,6 +302,12 @@ coverKey)` and registers its people as watchers (`RZ_Disguise.AddWatcher`).
 The scene also turns, as the mission says: the carriers run with the box, or the person calls their
 people. Being caught is never just a free retry of the fight you'd have had anyway.
 
+Still to build with the missions (from the disguise design, whose own part is built):
+- **A breaker:** a mission's sneak approach that spots someone passing as one of them is a catch.
+- **A trick that lasts:** a stage that offers a trick sets `<key>.disguised` *(you)* for its later
+  stages, and trick objectives sit at least 25 m from a leader's seat. A stage's paper is handed to the
+  look with `RZ_DisguiseClaims.SetPaper` (built: [docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)).
+
 ## Trade and prices
 
 One price table everywhere a way takes items (`RZ_Checks`):

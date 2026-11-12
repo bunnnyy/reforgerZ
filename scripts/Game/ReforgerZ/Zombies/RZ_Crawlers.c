@@ -104,6 +104,7 @@ class RZ_Crawlers
 	static const float PART_SPAWN_RANGE = 600;
 	static const float HELD_DOOR_RADIUS = 150;
 	static const float NOISE_MAX_AGE = 300;
+	static const float FRENZY_TOWNS = 2;		// a frenzy night: the towns' crawlers x2 until dawn
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_CrawlerSettings m_Settings;
@@ -329,6 +330,19 @@ class RZ_Crawlers
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Frenzy nights (docs/INFECTED.md, Contracts and events): a town inside tonight's frenzy holds
+	//! twice its crawlers until dawn. The event's own first 20 minutes of x2 (eventMult) isn't doubled
+	//! again. The agent budget still caps them.
+	float FrenzyMult(RZ_Settlement s, float eventMult)
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!s || !tribes || !tribes.GetPeople() || !tribes.GetPeople().FrenzyAt(s.m_vCenter))
+			return 1;
+
+		return Math.Max(1, FRENZY_TOWNS / Math.Max(1, eventMult));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The town's crawlers out as data: scavenger parts with no bodies.
 	int DataOut(int idx)
 	{
@@ -423,6 +437,27 @@ class RZ_Crawlers
 	vector PickSpot(int idx, RZ_Settlement s, bool reinforce, out RZ_ECrawlerSpot kind)
 	{
 		kind = RollSpot(s, reinforce);
+		// Giving way (docs/INFECTED.md, Towns): with a pack's group out in the town, half go indoors
+		// (by a door) and the rest stand on the side away from it
+		vector pack;
+		if (!reinforce && PackIn(s, pack))
+		{
+			if (Math.RandomFloat01() < 0.5)
+			{
+				kind = RZ_ECrawlerSpot.REST;
+				return RestPoint(s);
+			}
+
+			kind = RZ_ECrawlerSpot.STREET;
+			vector away = s.m_vCenter - pack;
+			away[1] = 0;
+			if (away.Length() > 1)
+			{
+				away.Normalize();
+				return RZ_Util.GroundPos(RZ_Util.RandomPointInRing(s.m_vCenter + away * s.m_fRadius * 0.5, 0, s.m_fRadius * 0.4));
+			}
+		}
+
 		switch (kind)
 		{
 			case RZ_ECrawlerSpot.REST: return RestPoint(s);
@@ -431,6 +466,32 @@ class RZ_Crawlers
 		}
 
 		return RZ_Util.GroundPos(RZ_Util.RandomPointInRing(s.m_vCenter, 0, s.m_fRadius));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pack's group out (as data or with bodies) inside the town's radius + 50 m: where it is.
+	protected bool PackIn(RZ_Settlement s, out vector at)
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!tribes || !tribes.IsEnabled())
+			return false;
+
+		foreach (RZ_Tribe t : tribes.GetTribeList())
+		{
+			if (RZ_Util.DistXZ(t.RangeCentre(), s.m_vCenter) > t.m_fRadius * 2 + s.m_fRadius)
+				continue;
+
+			foreach (RZ_TribePart p : t.m_aParts)
+			{
+				if (p.m_bOut && RZ_Util.DistXZ(p.m_vPos, s.m_vCenter) <= s.m_fRadius + 50)
+				{
+					at = p.m_vPos;
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

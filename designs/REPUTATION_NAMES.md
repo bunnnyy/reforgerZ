@@ -365,7 +365,7 @@ and nothing in it is free:
 | A Kill on Sight bounty | Leave Kill on Sight, through the parley's amends or settling up | The bounty comes down as built when you leave Kill on Sight |
 | Infamy with a faction you can still visit | Amends, paying, settling up, the knock, Come In | All through `Forgive()`. The budget doesn't reset for the week |
 | A line in the Red Hand's book (the price door's 60 Favor, a crew name's debt) | Pay it in Red Hand Favor at the boss's table | The book marks it paid. Nothing else changes |
-| Borrowed kit (signed out to someone else) | Return it to its buyer's quartermaster ([DISGUISE.md](DISGUISE.md#the-last-week)) | No catch, no Infamy |
+| Borrowed kit (signed out to someone else) | Return it to its buyer's quartermaster (built: [docs/REPUTATION.md](../docs/REPUTATION.md#the-last-week)) | No catch, no Infamy |
 | A leader at −2 | Make it right | Through `Forgive()`, once a season per leader |
 
 **Square.** At the end of the week, a player is **square** with a faction if their Infamy with it is under 15 and they

@@ -75,23 +75,26 @@ COND_KEYS = {
     "due": (True, False),
     # Kit and the look (relative to the speaker's faction)
     "kit": (True, False), "passing": (False, False), "caught": (False, False),
+    # A cover detail you could give (cover:name|dead|crew|notebook|paper); a claim line already spoken here this life
+    "cover": (True, False), "claimed": (False, False),
     # The finale's lock and the season record
     "route": (True, False), "lockdays": (False, True), "title": (True, True), "seasoned": (True, False),
     "owed": (True, False), "setword": (True, False), "radio": (False, False),
     # The speaker's faction and another: a truce or a feud now (faction life)
     "truce": (True, False), "feud": (True, False),
 }
-QUIET_KEYS = {"tribe", "alpha", "lean", "cure_held", "ending", "was", "claimed", "stranger"}
+QUIET_KEYS = {"tribe", "alpha", "lean", "cure_held", "ending", "was", "stranger"}
 FINALE_WORDS = {"soon", "pitch", "open", "locked", "voice"}
 COMMIT_ROUTES = {"haven", "bastion", "redhand", "halcyon", "indep"}
-KIT_ARGS = {"own", "in_kit", "full", "other", "any"}
+KIT_ARGS = {"own", "in_kit", "full", "other", "any", "issued", "signed_other", "dead_mans", "off_turned"}
+COVER_ARGS = {"name", "dead", "crew", "notebook", "paper"}
 ROUTE_ARGS = {"none", "any", "in", "out", "independent", "unsided", "won", "lost", "haven", "bastion", "redhand",
               "halcyon", "indep"}
 # Keys that read the world or the player's place in it: an ask needs one (docs/DIALOGUE.md, "Asks").
 WORLD_KEYS = {"house", "town", "need", "wbitten", "kidlost", "bg", "tier", "rep", "exiled", "bite_shown", "hunted",
               "outbreak", "cure", "flag", "stage", "infamy", "fame", "kin"}
 EFFECTS = {"mark", "cset", "nset", "regard", "favor", "take", "claim", "learn", "rumour", "call", "offer", "later",
-           "sway", "decide", "commit", "promise", "keep", "wire"}
+           "sway", "decide", "commit", "promise", "keep", "wire", "cover"}
 SCENE_EFFECTS = {"sway", "decide"}
 WORLD_EFFECTS = {"set", "qset", "resolve", "start", "event", "reward", "pass", "catch", "errand",
                  "approach", "reveal", "begin", "hostile", "flee", "note", "return"}
@@ -108,7 +111,7 @@ SCENE_SCOPES = {"speaker", "season"}
 DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
                    "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss"}
 # Tokens with an argument a conversation may use: a stranger's own words, the season's title with a faction
-DIALOGUE_KINDS = {"their", "title", "wire"}
+DIALOGUE_KINDS = {"their", "title", "wire", "cover"}
 # Tokens that would put a player on air (a radio conversation never uses them)
 PERSONAL_TOKENS = {"player", "name", "crew", "word", "rep", "best", "worst", "kills", "jobs", "picture", "title"}
 MARK_RE = re.compile(r"\s+~(lie|truth):([a-z0-9_.@]+)\s*$")
@@ -404,7 +407,9 @@ def lint_cond(cond, where, errs):
         if key == "finale" and arg not in FINALE_WORDS:
             errs.append("%s: finale is finale:soon|pitch|open|locked|voice" % where)
         if key == "kit" and arg not in KIT_ARGS:
-            errs.append("%s: kit is kit:own, in_kit, full, other or any" % where)
+            errs.append("%s: kit is kit:own, in_kit, full, other, any, issued, signed_other, dead_mans or off_turned" % where)
+        if key == "cover" and arg not in COVER_ARGS:
+            errs.append("%s: cover is cover:name, dead, crew, notebook or paper" % where)
         if key == "route" and arg not in ROUTE_ARGS:
             errs.append("%s: route is route:none, any, in, out, independent, unsided, won, lost or a route's name" % where)
         if key in ("title", "seasoned", "owed", "setword", "truce", "feud") and arg not in ("haven", "bastion", "redhand", "halcyon"):
@@ -454,6 +459,8 @@ def lint_effects(fx, where, conv, errs, favor_total):
             errs.append("%s: %s is %s:<word>" % (where, name, name))
         elif name == "commit" and arg not in COMMIT_ROUTES:
             errs.append("%s: commit is commit:haven|bastion|redhand|halcyon|indep" % where)
+        elif name == "cover" and arg not in COVER_ARGS:
+            errs.append("%s: cover is cover:name, dead, crew, notebook or paper" % where)
         elif name == "take" and not re.match(r"^food\*[0-9]+$", arg):
             errs.append("%s: take is take:food*N" % where)
         elif name == "later" and not re.match(r"^[0-9]+h:[a-z0-9_.@]+$", arg):
