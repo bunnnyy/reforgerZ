@@ -139,7 +139,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		vector site;
 		int anchor = -1;
 		string place;
-		if (!FindSite(gm, rng, site, anchor, place))
+		if (!PickSite(gm, rng, site, anchor, place))
 			return false;
 
 		RZ_Settlement town = gm.GetSettlement(anchor);
@@ -159,6 +159,39 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		run.SetText("director", RZ_QM_HalcyonScene.TopName(gm, RZ_EFaction.INSTITUTE, "the director"));
 		run.SetPlace(lead.m_vPos, lead.m_sPlace);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The season's closed site (the canon fact `origin.site`, the same one Patient Zero's records and
+	//! the finale point to; it has a fallback, so a small map has one too), else one found here.
+	static bool PickSite(RZ_GameModeComponent gm, RZ_Rng rng, out vector site, out int anchor, out string place)
+	{
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		if (facts)
+		{
+			vector canon = facts.CanonPos("origin.site");
+			if (canon != vector.Zero)
+			{
+				int town = facts.CanonSettlement("origin.site.town");
+				if (town < 0)
+					town = gm.FindNearestSettlement(canon);
+
+				if (town >= 0)
+				{
+					array<string> marks = {"military", "industrial", "radio", "power", "tower"};
+					RZ_Landmark l = RZ_LandmarkFinder.FindNearest(canon, 30, marks);
+					site = canon;
+					anchor = town;
+					place = "";
+					if (l)
+						place = l.m_sName;
+
+					return true;
+				}
+			}
+		}
+
+		return FindSite(gm, rng, site, anchor, place);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1459,6 +1459,8 @@ Site), the dead drop, the fuel depot (Arson), the relay, the fallback landmark
 bounty target (Collect the Bounty, The Sniper) and the Bastion outpost commander (Kill the Officer);
 an FIA fire team for the rival group; the canteen for Plant a Tag's tag. Convoy Escort and Hijack the Convoy get a Bastion truck and
 crew, Mobile Lab a Halcyon truck and quiet towns near the lab, the Locked Bunker a keypad prop.
+Contact Report needs a pack with its voice; if the earlier pack jobs left Arland's one pack without
+one, a guard or hunter takes the call first (`RZT forced: a new voice for pack ...`).
 
 **Questlines.** Before the first: no town overrun, the season a couple of days old, every
 safehouse full and hungry, every seat but the strongholds Independent, a Long Table, a scavenger on
@@ -1513,7 +1515,8 @@ listed as loose ends, one closed live by a way and one as data; a named dead per
 and handed in at a house, an epilogue deck card (Take a Name to the Board) true and writing a name
 home, and the Last Entry; the chair's grey choice through its hold and a say at
 the station; a town with crawlers cleared and taken back, the ridges and the Long Table's week
-closed; processing, the broadcast's tally, the tester walking out at the barrier (then a new life);
+closed; processing, the broadcast's tally, the tester (a stranger to the route's faction) told to wait
+on processing's first day by the route's terms, then walking out at the barrier the day after (then a new life);
 and the wipe's lines, the names not brought home, `last_season.json`'s beats, every closing item at
 its end (`RZT epilogue check:
 <name>: OK|FAILED (...)`, then `RZT epilogue done: N checks OK, N FAILED`). Steps the test world can't
@@ -1536,8 +1539,10 @@ mission types started and which didn't, and how far each questline got. It takes
 Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
 in the line's band (The Blind Spot's does by design), and a death there would end the life a
 questline was following (A Place at the Table fizzles when its guest's life ends). It logs
-`RZT perimeter: ...` once per visit instead. If the fake player dies outside the Perimeter test
-anyway, it says where and respawns him.
+`RZT perimeter: ...` once per visit instead. In the Perimeter test itself the line shoots him
+(`Tester was shot at the quarantine line`, then `RZT fake player already dead (the Perimeter got him)`):
+that's the line working. If the fake player dies outside the Perimeter test anyway, it says where
+and respawns him.
 
 ```bash
 SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding the Workshop dependencies> tools/runtime_test/run.sh
