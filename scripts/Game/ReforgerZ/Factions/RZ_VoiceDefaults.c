@@ -83,7 +83,7 @@ class RZ_VoiceDefaults
 		Line(lines, "haven.week.slow.3", HAVEN, "week", "", J, 16, "cure_held:slow", "\"Nobody fought for it, and it came anyway. Like the post used to.\"");
 		Line(lines, "haven.week.slow.4", HAVEN, "week", "", W, 16, "cure_held:slow", "\"We've all decided we were very patient. We weren't. It reads well, though.\"");
 		Line(lines, "haven.week.handed.1", HAVEN, "week", "", J, 16, "cure_held:nobody", "\"The lab handed it over. Very polite. Like giving back a borrowed ladder.\"");
-		Line(lines, "haven.week.handed.2", HAVEN, "week", "", W, 16, "cure_held:nobody", "\"It came to us in the end like everything else: second-hand.\"");
+		Line(lines, "haven.week.handed.2", HAVEN, "week", "", W, 16, "cure_held:nobody", "\"It went to whoever the Zone shouted for loudest. That's how the council picks a chair, too.\"");
 		Line(lines, "haven.week.handed.3", HAVEN, "week", "", J, 16, "cure_held:nobody", "\"Everyone's claiming they asked for it first. The council's keeping a list. Of course it is.\"");
 		Line(lines, "haven.week.handed.4", HAVEN, "week", "", W, 16, "cure_held:nobody", "\"Handed over, no fuss. The council had a speech ready. It's keeping it for the next thing.\"");
 
@@ -112,7 +112,7 @@ class RZ_VoiceDefaults
 		Line(lines, "bastion.week.slow.2", BASTION, "week", "", W, 16, "cure_held:slow", "\"No operation, no objective, and it's done. The sergeant's sat down for the first time in weeks.\"");
 		Line(lines, "bastion.week.slow.3", BASTION, "week", "", J, 16, "cure_held:slow", "\"It came without us. Like the relief. Except it came.\"");
 		Line(lines, "bastion.week.slow.4", BASTION, "week", "", W, 16, "cure_held:slow", "\"Everyone's claiming a share. The post has claimed the radio. Nobody else wanted it.\"");
-		Line(lines, "bastion.week.handed.1", BASTION, "week", "", J, 16, "cure_held:nobody", "\"The lab handed it over. Received and signed for. First delivery that's arrived all season.\"");
+		Line(lines, "bastion.week.handed.1", BASTION, "week", "", J, 16, "cure_held:nobody", "\"The lab handed it over. Somebody signed for it. First delivery anyone's had all season.\"");
 		Line(lines, "bastion.week.handed.2", BASTION, "week", "", W, 16, "cure_held:nobody", "\"Handed over without a fight. The post's never seen that. It's unsettling.\"");
 		Line(lines, "bastion.week.handed.3", BASTION, "week", "", J, 16, "cure_held:nobody", "\"Logged as a transfer of materiel. The sergeant wanted 'miracle'. It isn't on the form.\"");
 		Line(lines, "bastion.week.handed.4", BASTION, "week", "", W, 16, "cure_held:nobody", "\"Handed over and nobody shot. We're checking it was the right building.\"");

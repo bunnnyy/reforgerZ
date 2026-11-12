@@ -99,7 +99,8 @@ COND_KEYS = {
     "fresh": (False, False),
 }
 QUIET_KEYS = {"stranger"}
-CURE_HELD = {"any", "haven", "bastion", "redhand", "halcyon", "everyone", "indep", "nobody", "slow", "none"}
+CURE_HELD = {"any", "haven", "bastion", "redhand", "halcyon", "everyone", "indep", "indep_side", "indep_sold",
+             "indep_kept", "nobody", "slow", "none"}
 MAJORS = {"every_name", "orders", "book", "proof"}
 FINALE_WORDS = {"soon", "pitch", "open", "locked", "voice"}
 COMMIT_ROUTES = {"haven", "bastion", "redhand", "halcyon", "indep"}

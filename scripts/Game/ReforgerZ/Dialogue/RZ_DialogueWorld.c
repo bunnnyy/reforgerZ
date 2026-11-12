@@ -68,8 +68,9 @@ class RZ_DialogueWorld
 
 	// ================================================================ The season's story
 	//------------------------------------------------------------------------------------------------
-	//! cure_held:<who> after the cure: haven, bastion, redhand, halcyon, everyone (the Independent),
-	//! nobody (handed over), slow (the lab on its own), any; none: no cure by the wipe (the last day).
+	//! cure_held:<who> after the cure: haven, bastion, redhand, halcyon; indep (the Independent, any
+	//! terms), everyone (its open terms), indep_side (one side), indep_sold (sold), indep_kept (kept
+	//! back); nobody (handed over), slow (the lab on its own), any; none: no cure by the wipe.
 	static bool CureHeld(RZ_GameModeComponent gm, string who)
 	{
 		RZ_Epilogue epi = RZ_Epilogue.Get();
@@ -90,7 +91,10 @@ class RZ_DialogueWorld
 			case "bastion": return route == RZ_CureFinale.BASTION;
 			case "redhand": return route == RZ_CureFinale.REDHAND;
 			case "halcyon": return route == RZ_CureFinale.HALCYON;
-			case "everyone": return route == RZ_CureFinale.INDEP;
+			case "everyone": return route == RZ_CureFinale.INDEP && epi.Data().terms <= 1;
+			case "indep_side": return route == RZ_CureFinale.INDEP && epi.Data().terms == 2;
+			case "indep_sold": return route == RZ_CureFinale.INDEP && epi.Data().terms == 3;
+			case "indep_kept": return route == RZ_CureFinale.INDEP && epi.Data().terms == 4;
 			case "indep": return route == RZ_CureFinale.INDEP;
 			case "slow": return epi.Data().slow;
 			case "nobody": return route < 0 && !epi.Data().slow;

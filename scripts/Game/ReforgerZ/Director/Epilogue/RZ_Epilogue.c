@@ -232,6 +232,9 @@ class RZ_Epilogue
 			return;
 
 		m_S = saved;
+		if (!m_S.deciderIdents)
+			m_S.deciderIdents = new array<string>();
+
 		while (m_S.choices.Count() < 4)
 		{
 			m_S.choices.Insert(0);
@@ -353,6 +356,15 @@ class RZ_Epilogue
 
 		if (m_S.lastDay)
 			m_S.faction = -1;
+
+		m_S.deciderIdents.Clear();
+		if (finale && RZ_CureFinale.IsOn() && !m_S.lastDay)
+		{
+			foreach (string di : finale.GetDeciders())
+			{
+				m_S.deciderIdents.Insert(di);
+			}
+		}
 
 		m_S.deciders.Clear();
 		RZ_SeasonRecord rec = RZ_Persistence.LoadSeason();

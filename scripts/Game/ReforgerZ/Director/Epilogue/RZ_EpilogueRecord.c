@@ -922,7 +922,7 @@ class RZ_EpiRecord
 	{
 		int score = 0;
 		RZ_EpilogueSave s = m_Epi.Data();
-		if (s.deciders.Contains(ident))
+		if (s.deciderIdents.Contains(ident))
 			score += 5;
 
 		int majors = 0;
