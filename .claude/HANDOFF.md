@@ -11,6 +11,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 76b52d0: play the minimum subset on `Missions/RZ_Arland.conf`. Check the log lines in WBS §7, report every script exception and missing log line here, and run the play-test checklist in WBS §8.
 
 **UI (WBS §4, "Setting up the UI")**
+- 2026-11-12 (cloud, docs pass): `Prefabs/ReforgerZ/UI/RZ_Notebook.et:40`, the item's Description: it still lists the map key (now on the map) and lacks the season tab. Set it to exactly: `Your notebook: standing, the jobs you know of, what you heard, the hall of fame and the season. Take it in hand to read it.`
 - 2026-11-12 (cloud, docs pass): the map key moved up to offset (96, -190) in `RZ_MapLegend.layout`, clear of vanilla's key hints and scale bar: check in play that it covers none of vanilla's map widgets (WBS §8, the map key).
 - 2026-11-12 91fcf47: open `UI/layouts/ReforgerZ/RZ_Hud.layout` (its new `LookPanel` with `LookIcon` and `LookText`, `RZ_Hud_Look`, written as text) in Workbench, fix what it reports, and see the look line in play in Bastion kit at a road post, with a pad and on a TV (UI.md, the HUD; UI/LAYOUTS.md).
 - 2026-11-11 98c9c51: read a safehouse board in play and check its menu (**UI > Board menus** is on by default; turn it off only if the menu fails).
