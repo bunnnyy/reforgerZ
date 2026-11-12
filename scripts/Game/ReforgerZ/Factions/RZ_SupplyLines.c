@@ -1314,6 +1314,17 @@ class RZ_SupplyLines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the trucks on the road are now (the packs' prey: docs/INFECTED.md, Memory).
+	void TruckSpots(notnull array<vector> result)
+	{
+		foreach (RZ_SupplyTruck t : m_aTrucks)
+		{
+			if (!t.m_bDone && !t.m_bFailed && t.m_Vehicle)
+				result.Insert(t.m_Vehicle.GetOrigin());
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The tribes take a truck as data (docs/INFECTED.md, Trucks taken as data): a truck on the road
 	//! within radius of pos, with no player within playerFree of it, is lost the way any truck is (the
 	//! shortage where it was going), its crew and the truck gone. False if none. Out: who drove it and

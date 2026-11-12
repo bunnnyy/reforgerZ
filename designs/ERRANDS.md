@@ -43,6 +43,13 @@ described in [docs/ERRANDS.md](../docs/ERRANDS.md); the lie store and the witnes
   label is the same for everyone).
 - A local's spot used as a place (the gate at dusk, the stove at supper).
 
+## Cards on traces
+
+- **Anchored on Traces' scenes** (from the Traces design, whose own part is built:
+  [docs/TRACES.md](../docs/TRACES.md)): Boarded Up on V2, Is She Gone? near L1, His Effects on L5 or V7
+  (a driver's papers, a soldier's tags); a stranger's fresh event at a live trace's place. Traces never
+  deals an errand: the dealer finds the scene with `RZ_Scenes.SceneNear(kinds, pos, radius, at, key)`.
+
 ## The catalogue
 
 - **His Effects in full:** the effects as a carried item; the jacket and the photo frame at the fence (3

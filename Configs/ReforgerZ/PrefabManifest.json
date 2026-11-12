@@ -1728,6 +1728,42 @@
    "notes": "Manual: the sound itself. As the radio"
   },
   {
+   "id": "TraceGeneratorHumNight",
+   "kind": "create",
+   "system": "Traces",
+   "path": "Prefabs/ReforgerZ/Traces/RZ_Sound_GeneratorHumNight.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has the generator hum, quieter, looped on the event SOUND_LOOP; no mesh needed",
+   "components": [{"cls": "RZ_AmbientLoopComponent", "values": ["m_sEvent=SOUND_LOOP"], "name": ""}],
+   "actions": [],
+   "slots": ["m_TraceSettings.m_Kit.m_sGeneratorHumNight"],
+   "listSlot": false,
+   "slotLabel": "World > Traces > Kit > Generator hum, night",
+   "required": false,
+   "minimum": false,
+   "use": "S5 after dark, quieter; empty = the day's hum all night",
+   "notes": "Manual: the sound itself. As the generator hum"
+  },
+  {
+   "id": "TracePieces",
+   "kind": "manual",
+   "system": "Traces",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "compositions built like the scenes' own (Prefabs/ReforgerZ/Traces/): one more piece for a scene (a suitcase, a chair, a bucket) and its faded twin, or a faded twin of a scene's own piece (section 4, Traces)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_TraceSettings.m_Kit.m_aPieces[].m_sPrefab", "m_TraceSettings.m_Kit.m_aPieces[].m_sFaded"],
+   "listSlot": false,
+   "slotLabel": "World > Traces > Kit > Pieces that age (each entry's Piece and Faded)",
+   "required": false,
+   "minimum": false,
+   "use": "scenes that drop a piece as they age, and boards with a fresh and a faded look; empty = each scene is its one composition",
+   "notes": ""
+  },
+  {
    "id": "TraceDogs",
    "kind": "create",
    "system": "Traces",
@@ -6479,6 +6515,7 @@
     "m_iLiveTraces": "24",
     "m_bSoundLight": "1",
     "m_bLitWindows": "0",
+    "m_bIndoorScenes": "0",
     "m_bDebug": "0"
    }
   },
@@ -6713,7 +6750,9 @@
     "m_iCrewMapFavor": "15",
     "m_iFrequencyFavor": "25",
     "m_bGreatOne": "1",
-    "m_fBrightMoon": "0.85"
+    "m_fBrightMoon": "0.85",
+    "m_bPrimeAfterHalcyon": "0",
+    "m_sRivalFaction": ""
    }
   },
   {

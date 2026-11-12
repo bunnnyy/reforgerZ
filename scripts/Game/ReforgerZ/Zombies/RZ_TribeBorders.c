@@ -294,6 +294,35 @@ class RZ_TribeBorders
 				m_GM.NotifyPlayer(id, "On the radio", string.Format("Calls across %1 at dusk. %2 answered weaker tonight.", What(br, land), RZ_Util.Capitalize(weaker.m_sPlace)));
 			}
 		}
+
+		// The offsets move the ranges (RZ_TribeRest)
+		m_Tribes.GetRest().BorderShifts();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each border's two packs and how far it has moved toward B (negative: toward A).
+	void Offsets(notnull array<int> aIds, notnull array<int> bIds, notnull array<float> offsets)
+	{
+		foreach (RZ_Border br : m_aBorders)
+		{
+			aIds.Insert(br.m_iA);
+			bIds.Insert(br.m_iB);
+			offsets.Insert(br.m_fOffset);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Border Nights being staged now: each one's second side and its border point.
+	void StagedNow(notnull array<int> tribes, notnull array<vector> points)
+	{
+		foreach (RZ_Border br : m_aBorders)
+		{
+			if (!br.m_bStaged)
+				continue;
+
+			tribes.Insert(br.m_iB);
+			points.Insert(br.m_vAt);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -132,8 +132,9 @@ The build-review fixes are done. Everything below is approved. The order of the 
   the cure's finale, the epilogue week, dialogue, errands, the mission style, reputation names,
   tone and Traces) are in [designs/](../designs/README.md). Their build order, from step 0 (now)
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
-  Traces' own phases 1 to 7 are built ([TRACES.md](TRACES.md)); what's left of it waits on other
-  systems ([designs/TRACES.md](../designs/TRACES.md)).
+  Traces is built in full ([TRACES.md](TRACES.md)), and so are the tribes and crawlers
+  ([INFECTED.md](INFECTED.md)): their design files are done and gone. Errands anchoring cards on
+  traces, and the packs' jobs' rest, are the missions' and errands' designs now.
 - Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md), with
   the epilogue deck's 20 cards in [ERRANDS.md](ERRANDS.md#the-epilogue-deck); its design is done: the
   fuller record, the beats in full, notables and titles, the standing versions, the supper scene,
@@ -163,12 +164,16 @@ The build-review fixes are done. Everything below is approved. The order of the 
   other strategies and the crawlers' life), its phase 4 (people and content: words, knowing,
   contracts and events, the moat, the cure's hooks, the last week, [INFECTED.md](INFECTED.md#people))
   and its phase 5 (the great one, signs and sounds, the range rings,
-  [INFECTED.md](INFECTED.md#the-great-one)), one held
+  [INFECTED.md](INFECTED.md#the-great-one)), and its small rules (prey, the borders moving the
+  ranges, the stragglers, the factions on a new leader, scouts over tonight's trails, starving walkers,
+  a rival faction behind a setting, the epilogue's beats), one held
   waypoint per group,
   and `tools/tribe_sim.py`, which simulates the tribes as data over a season at 2, 5 and 10 players on
   the wild land the land survey measured, on the code's rules ([its numbers](INFECTED.md#the-simulator)).
   Phase 0's other proposed retunes (seeds on every unkept slot, the ones who ran at 6 points, weakened
-  tribes posting no scouts) still wait for the author: `python3 tools/tribe_sim.py --proposed`.
+  tribes posting no scouts) still wait for the author: `python3 tools/tribe_sim.py --proposed`. The
+  behaviour layer's untested levers (L6, L16, L23) and the notice rate's calibration are play-test
+  items ([INFECTED.md](INFECTED.md#play-test-and-the-author)).
 
 ## Play-test priorities
 

@@ -1251,6 +1251,13 @@ class RZ_TribePeople
 
 		if (crewNews && Math.RandomFloat01() < 0.3)
 			TellFaction(RZ_EFaction.BANDITS, "The Red Hand", "crew", crewNews, string.Format("\"%1. Same as us: the boss is whoever's got something on the rest.\"", RZ_Tribes.Capitalize(NameAt(crewNews, RZ_EFaction.BANDITS))));
+
+		// Nothing new for the board: a board pack that didn't call is "no contact"; then who leads
+		// a pack now, in each faction's words (RZ_TribeRest)
+		if (!bastionNews && presence >= 0.2)
+			m_Tribes.GetRest().NoContact();
+
+		m_Tribes.GetRest().LeaderVoices();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1732,6 +1739,10 @@ class RZ_TribePeople
 		if (t.Band() >= 2)
 			return string.Format("\"Nobody on the roads by %1 after seven. %2 are out.\"", t.m_sPlace, RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)));
 
+		// The Haven's elders on the road: who leads it now, when the Haven knew them
+		if (HavenKnowsLeader(t) && Math.RandomFloat01() < 0.5)
+			return string.Format("\"Not that way after seven. %1, and %2 was %3, before.\"", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)), t.m_sAlphaName, t.m_sAlphaWho);
+
 		return string.Format("\"%1 call at dusk up at %2. Keep off their side of the valley after dark.\"", RZ_Tribes.Capitalize(Name(t, RZ_EFaction.SURVIVORS)), t.m_sPlace);
 	}
 
@@ -2077,6 +2088,10 @@ class RZ_TribePeople
 		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 		{
 			t.m_bMoat = false;
+			// Its leader taken alive: not the crews' until it has a new one
+			if (RZ_TribeRest.MoatWaits(t))
+				continue;
+
 			vector c = t.RangeCentre();
 			RZ_Holding camp = territory.FindHolding(RZ_EFaction.BANDITS, c, 3000);
 			if (!camp)
@@ -2150,7 +2165,7 @@ class RZ_TribePeople
 		RZ_Tribe blocker;
 		foreach (RZ_Tribe t : m_Tribes.GetTribeList())
 		{
-			if (t.m_bHasAlpha && t.Stage() >= 1 && Between(t.RangeCentre(), from, to, t.m_fRadius))
+			if (t.m_bHasAlpha && t.Stage() >= 1 && !RZ_TribeRest.MoatWaits(t) && Between(t.RangeCentre(), from, to, t.m_fRadius))
 			{
 				blocker = t;
 				break;
@@ -2456,6 +2471,7 @@ class RZ_TribePeople
 	{
 		m_iFuriousOrder++;
 		t.m_iFuriousOrder = m_iFuriousOrder;
+		m_Tribes.GetRest().OnTakenAlive(t);
 		t.m_iFuriousUntil = m_Tribes.CountedNights() + 2;
 		TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "furious", t, string.Format("\"Whatever they took from %1, %2 want it back.\"", t.m_sPlace, Name(t, RZ_EFaction.SURVIVORS)));
 		AddBeat(string.Format("Taken alive for the lab: the index of %1.", NameAt(t, RZ_EFaction.INSTITUTE)));
@@ -2714,10 +2730,12 @@ class RZ_TribePeople
 
 	//------------------------------------------------------------------------------------------------
 	//! A beat handed to the epilogue (docs/INFECTED.md, "The last week"), shown by /tribes; the
-	//! epilogue's closing work reads them when it's built.
+	//! epilogue's closing work reads them, and one made in the last week is a since-the-cure beat
+	//! at its pack too (RZ_TribeRest.BeatToEpilogue).
 	void AddBeat(string beat)
 	{
 		m_aBeats.Insert(beat);
+		m_Tribes.GetRest().BeatToEpilogue(beat);
 		while (m_aBeats.Count() > 40)
 		{
 			m_aBeats.Remove(0);

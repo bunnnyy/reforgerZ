@@ -101,6 +101,7 @@ class RZ_TraceAmbience
 	protected RZ_Traces m_Traces;
 	protected ref array<ref RZ_TraceLook> m_aUp = {};
 	protected ref map<string, vector> m_mSpot = new map<string, vector>();	// a place's lantern or hum, once a run
+	protected ref set<string> m_aExact = new set<string>();		// keys whose spot is a camp piece's own (on its table): spawned exactly there
 	protected ref array<IEntity> m_aShots = {};
 	protected ref array<float> m_aShotUntil = {};
 	protected ref map<string, float> m_mFired = new map<string, float>();	// "dogs|tribe", "speaker|holding" -> clock
@@ -250,8 +251,20 @@ class RZ_TraceAmbience
 					best = j;
 			}
 
+			// Camp life's own table lamp, swapped for its lit twin: the lit lantern exactly where the
+			// lamp stands (on its table), else a spot near the place's middle
+			vector lamp;
+			if (PieceSpot(centers[best], 60, "LampKerosene", lamp))
+			{
+				spots.Insert(lamp);
+				m_aExact.Insert(placeKeys[best]);
+			}
+			else
+			{
+				spots.Insert(SpotFor(placeKeys[best], centers[best], 5, 12));
+			}
+
 			keys.Insert(placeKeys[best]);
-			spots.Insert(SpotFor(placeKeys[best], centers[best], 5, 12));
 			prefabs.Insert(lantern);
 			loops.Insert(false);
 			placeKeys.Remove(best);
@@ -336,6 +349,12 @@ class RZ_TraceAmbience
 		if (hum.IsEmpty() || players.IsEmpty())
 			return;
 
+		// Quieter at night: the kit's night hum when it has one
+		float hour = RZ_GameTime.GetHour();
+		ResourceName night = m_Traces.GetKit().m_sGeneratorHumNight;
+		if (!night.IsEmpty() && RZ_GameTime.IsNightHour(hour))
+			hum = night;
+
 		if (m_GM.HasLab() && RZ_Util.NearestDistance(m_GM.GetLabPosition(), players) <= LOOP_FAR)
 		{
 			keys.Insert("hum.lab");
@@ -355,9 +374,15 @@ class RZ_TraceAmbience
 			if (RZ_Util.NearestDistance(h.m_vPos, players) > LOOP_FAR)
 				continue;
 
+			// On camp life's own generator piece when the station has one
 			string key = "hum.h" + h.m_iId.ToString();
+			vector gen;
+			if (PieceSpot(h.m_vPos, 60, "Generator", gen))
+				spots.Insert(gen);
+			else
+				spots.Insert(SpotFor(key, h.m_vPos, 10, 20));
+
 			keys.Insert(key);
-			spots.Insert(SpotFor(key, h.m_vPos, 10, 20));
 			prefabs.Insert(hum);
 			loops.Insert(true);
 		}
@@ -398,7 +423,7 @@ class RZ_TraceAmbience
 			if (CountUp(loops[k]) >= cap || RZ_Util.NearestDistance(spots[k], players) > near)
 				continue;
 
-			IEntity e = SpawnLook(prefabs[k], spots[k]);
+			IEntity e = SpawnLook(prefabs[k], spots[k], m_aExact.Contains(keys[k]));
 			if (!e)
 				continue;
 
@@ -423,10 +448,58 @@ class RZ_TraceAmbience
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A look-only prop: through the dressing guard and marked as scenery. Null if the guard took it.
-	protected IEntity SpawnLook(ResourceName prefab, vector pos)
+	//! Camp life's pieces (S1, S5, S7): the world spot of a piece within radius of near whose
+	//! composition, or one of its parts (two levels down), has `word` in its prefab name.
+	static bool PieceSpot(vector near, float radius, string word, out vector at)
 	{
-		IEntity e = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(pos), Math.RandomFloat(0, 360));
+		array<IEntity> pieces = {};
+		RZ_CampLife.PiecesNear(near, radius, pieces);
+		foreach (IEntity root : pieces)
+		{
+			IEntity hit = PartNamed(root, word, 0);
+			if (hit)
+			{
+				at = hit.GetOrigin();
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! VERIFY: a composition's child props carry their own prefab data, so GetPrefabName names
+	//! them (else only a composition named for its piece, such as RZ_Dress_Loudspeaker, is found)
+	protected static IEntity PartNamed(IEntity e, string word, int depth)
+	{
+		if (!e || depth > 2)
+			return null;
+
+		if (RZ_Util.GetPrefabName(e).Contains(word))
+			return e;
+
+		IEntity child = e.GetChildren();
+		while (child)
+		{
+			IEntity hit = PartNamed(child, word, depth + 1);
+			if (hit)
+				return hit;
+
+			child = child.GetSibling();
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A look-only prop: through the dressing guard and marked as scenery. Null if the guard took it.
+	protected IEntity SpawnLook(ResourceName prefab, vector pos, bool exact = false)
+	{
+		vector at = RZ_Util.GroundPos(pos);
+		if (exact)
+			at = pos;
+
+		IEntity e = RZ_Util.SpawnPrefab(prefab, at, Math.RandomFloat(0, 360));
 		if (!e)
 			return null;
 
@@ -674,7 +747,13 @@ class RZ_TraceAmbience
 			if (!FireOnce("speaker|" + h.m_iId.ToString()))
 				continue;
 
-			Shot(m_Traces.GetKit().m_sLoudspeaker, h.m_vPos);
+			// From camp life's loudspeaker pole (RZ_Dress_Loudspeaker) when the holding has one
+			vector speaker = h.m_vPos;
+			vector pole;
+			if (PieceSpot(h.m_vPos, 80, "Loudspeaker", pole))
+				speaker = pole;
+
+			Shot(m_Traces.GetKit().m_sLoudspeaker, speaker);
 			foreach (int i, IEntity p : players)
 			{
 				if (RZ_Util.DistXZ(p.GetOrigin(), h.m_vPos) > SPEAKER_REACH)

@@ -68,12 +68,20 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 61d3d8e: re-run `py tools/camp_kit/build.py`: it now writes each kit piece's **At** (where it stands by a building, from `pieces.py`'s `AT`) and the new barricade counts (Bastion 3, Red Hand 2, Haven 2) onto `RZ_GameMode.et`; check the new setting **Territory > Camp life > Buildings** (on) came through (WBS §5).
 - 2026-11-12 61d3d8e: play-test each faction's base on Everon (WBS §8, *Faction bases on Everon*): its stronghold and one outpost, a Haven safehouse and Halcyon's field station. Report each `Camp life: ... moves into ...` log line (or `no building fits`), any building that looks wrong for the faction, pieces inside or on top of the building, and whether the gate and barricades sit at the real road entries.
 
+**From the cloud's infected and Traces rest (2026-11-12; all optional)**
+- 2026-11-12 8039776: create `RZ_Sound_GeneratorHumNight.et` (the plugin makes it; add the quieter hum), slot **World > Traces > Kit > Generator hum, night** (WBS §4, Traces).
+- 2026-11-12 8039776: build `Dressing/Bastion/RZ_Dress_Loudspeaker.et` (a loudspeaker on a pole, camp life's composition rules) and add it to Bastion's kits (**Territory > Camp life > Kits**), so S7's chime comes from it (WBS §4, Camp life).
+- 2026-11-12 8039776: **World > Traces > Kit > Pieces that age**: entries for a scene's extra pieces and faded twins, if wanted (WBS §4, Traces; TRACES.md, How scenes age).
+- 2026-11-12 8039776: if wanted, a second infected faction in the faction manager, hostile to the infected's own, and its key in **Zombies > Tribes > Rival faction** (empty = off; VERIFY at `Zombies/RZ_TribeRest.c:1069`).
+- 2026-11-12 8039776: check the new settings came through on the game mode: **Zombies > Tribes > Prime after Halcyon** (off), **Rival faction** (empty), **World > Traces > Indoor scenes** (off) (WBS §5).
+- 2026-11-12 8039776: play-test the behaviour layer's untested levers L6, L16 and L23 and calibrate **Notice rate** (WBS §8, "The tribes' life cycle"; not in the code until a client shows them working).
+
 **Manual entries (WBS §4)**
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
 - 2026-11-11 76b52d0: stand-in bases still left: `RZ_Explosion.et` (a real HE round) and `RZ_Nest.et` (spawns its own) — both need a design call from the cloud (is shelling meant to hurt? should the nest spawn?).
 
 **Engine checks**
-- 2026-11-12 17a4c83: check all 101 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers; and now the lab's named children, `IsUnconscious()` in the clean room, the Walk Out's land-edge fallback and the scenes' car clearance.
+- 2026-11-12 8039776: check all 104 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers, the lab's named children, `IsUnconscious()` in the clean room, the Walk Out's land-edge fallback and the scenes' car clearance; and now a leader's corpse kept through the vigil, the rival faction's fight and a camp composition's child prefab names.
 - 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back on the spawn screen cleanly (new VERIFY).
 - 2026-11-12 7c2f323: can the dedicated server open a file inside the addon with `FileIO` (for example `dialogue/radio/open.rzd`, read-only)? Report "yes" or "no, <the error>": it decides whether conversations are read from `.rzd` files at start (designs/DIALOGUE.md).
 - 2026-11-12 b0b0090: measure a player's real run and sprint speed in m/s (the code assumes about 4 and 5.5: VERIFY) and Bacon's run and sprint speed; the young's sprint is tuned to about 10% faster than a sprinting player (WBS §6).
@@ -98,12 +106,16 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 6c66be6 (cloud, missions, for the UI owner): order per player is a query: `RZ_MissionReasons.OrderScore(gm, mission, playerId, playerPos)` (higher first; near, reason-started, a leader they helped). The journal's and the quartermaster's lists can sort by it (DESIGN "Story blocks" says they don't yet).
 - 2026-11-12 6c66be6 (cloud, missions, for the majors' owner): post `major.<act>` reasons as acts open (`facts.Memory().PostReason("major.<act>", ...)`) so stage missions and margin cards can answer them (designs/MISSION_STYLE.md, Reasons). The margin cards for all four majors are now built (docs/ERRANDS.md), so that bullet is gone from designs/MAJORS.md, and Crash Site now reads `majors.pages_open` and `orders.stance` (docs/QUESTLINES.md's flag table).
 
+- 2026-11-12 8039776 (cloud, infected, for the missions owner): the packs' jobs' rest is in designs/MISSION_STYLE.md ("The tribes and the conversion"): Clear the Trail on a truck road (`RZ_Tribe.m_aRoadCross`), Bait the Crew's Zombie Bait Infamy, Track Them Home's 80 m, couriers and columns asking for an escort, and the capture case's pack following it (`RZ_Tribes.DrawTo(pack, the case's spot, night)` while it's carried). Burn the Lair's splinter is built on the packs' side.
+- 2026-11-12 8039776 (cloud, Traces, for the errands owner): cards on traces (Boarded Up on V2, Is She Gone? near L1, His Effects on L5 or V7) can find their scene with `gm.GetTraces().GetScenes().SceneNear("V2", pos, radius, at, key)`; the item is in designs/ERRANDS.md.
+
 ## Claims
 
 (none)
 
 ## Status
 
+- Cloud, 2026-11-12 8039776: the infected's and Traces' designs are built in full (simplified as INFECTED.md and TRACES.md say) and their design files removed; their cross-owner leftovers are in MISSION_STYLE.md and ERRANDS.md.
 - Cloud, 2026-11-12 6924ec7: the spawn screen (in place of vanilla's deploy menu) and the map key on the map are built as code and text; both need their slots set and a play (under "For the PC").
 - Cloud, 2026-11-12 17a4c83: the finale's, the majors' and the epilogue's designs are built (simplified as each doc says) and their design files removed; the epilogue deck has 20 cards.
 - Cloud, 2026-11-12: merged the finale/majors/epilogue leftovers onto the missions/errands ones. The look's −1 after the lock counts once (`RZ_DisguiseClaims.OtherRoute`; the branch's second copy in `RZ_FinaleRest` removed), and the finale's Hand to Hand reads `RZ_Errands.PromisedAt`.

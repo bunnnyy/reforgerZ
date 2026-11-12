@@ -331,6 +331,9 @@ class RZ_TribeLife
 		if (vacuum && t.m_eTemper != RZ_ETemperament.NOMADIC)
 			AddVacuum(t.RangeCentre(), t.m_sPlace);
 
+		if (!Cured())
+			m_Tribes.GetRest().OffBoard(t);
+
 		m_Tribes.GetTribeList().RemoveItem(t);
 		m_Tribes.GetBorders().Forget(t.m_iId);
 	}
@@ -1798,6 +1801,14 @@ class RZ_TribeLife
 				array<string> who = {};
 				finds.Split("|", who, true);
 				m_GM.NotifyPlayer(ids[k], "Found", string.Format("Somebody's things at the back of it: what's left of %1.", who[0]));
+				// Their things as items from the body search's table, once a lair
+				if (!finds.Contains("|items"))
+				{
+					m_aLairFinds[i] = m_aLairFinds[i] + "|items";
+					finds = m_aLairFinds[i];
+					m_Tribes.GetRest().LairFinds(pos);
+				}
+
 				if (finds.Contains("courier") && !finds.Contains("|taken") && !Cured())
 				{
 					m_aLairFinds[i] = finds + "|taken";
@@ -2022,6 +2033,8 @@ class RZ_TribeLife
 				if (playerId > 0)
 					Ways().Mark(t, playerId);
 
+				// 4 or more of it dead there first: some of the rest break off (Burn the Lair)
+				m_Tribes.GetRest().LairBurned(t);
 				Disturb(t, 100, -1);
 			}
 			else if (d <= 50)
@@ -2108,6 +2121,9 @@ class RZ_TribeLife
 
 			RZ_Settlement s = ToCrawlers(t.m_vLair, got);
 			if (s)
+				m_Tribes.GetRest().StarvingWalk(t, m_GM.FindNearestSettlement(s.m_vCenter));
+
+			if (s)
 				m_Tribes.Tell(s.m_vCenter, s.m_fRadius + 1500, "In the night", string.Format("Some of the quick ones from %1 came down into %2 in the night, and stayed with the slow ones.", t.m_sPlace, s.m_sName));
 
 			t.AddHistory("starved, and some of it walked into the towns");
@@ -2152,6 +2168,14 @@ class RZ_TribeLife
 	//! shortage where it was going), its crew taken, and a road habit at that hour.
 	bool TryTruck(RZ_Tribe t, RZ_TribePart p)
 	{
+		return TryTruckAt(t, p.m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The same at a spot: a hunting part's, or where one of tonight's trails crosses a road
+	//! (decision 15, RZ_TribeRest.TrucksAtCrossings).
+	bool TryTruckAt(RZ_Tribe t, vector pos)
+	{
 		if (!IsOn() || m_Tribes.CountedNights() - m_iLastTruckNight < 3 || Math.RandomFloat01() > 0.15)
 			return false;
 
@@ -2161,7 +2185,7 @@ class RZ_TribeLife
 
 		string driver;
 		vector at;
-		if (!supply.TakeByInfected(p.m_vPos, 200, 1000, driver, at))
+		if (!supply.TakeByInfected(pos, 200, 1000, driver, at))
 			return false;
 
 		m_iLastTruckNight = m_Tribes.CountedNights();
@@ -2261,6 +2285,7 @@ class RZ_TribeLife
 		}
 
 		Clans();
+		m_Tribes.GetRest().PreyDay();
 		m_Tribes.GetGreat().SeasonDay();
 		m_Tribes.GetBorders().Merges();
 		NewTribes();

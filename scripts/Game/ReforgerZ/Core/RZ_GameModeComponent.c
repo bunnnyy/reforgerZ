@@ -982,6 +982,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_MajorSettings GetMajorSettings() { return m_MajorSettings; }
 	RZ_CureFinale GetFinale() { return m_Finale; }
 	RZ_Epilogue GetEpilogue() { return m_Epilogue; }
+	ResourceName GetSamplePrefab() { return m_sSamplePrefab; }
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
