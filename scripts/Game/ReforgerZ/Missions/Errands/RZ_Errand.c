@@ -94,6 +94,7 @@ class RZ_ErrandWay
 	string m_sStep;				// the system line: "Search the farm buildings at {place}."
 	RZ_EErrandProp m_eProp = RZ_EErrandProp.NONE;	// a prop at the place while the step is open
 	bool m_bCarry;				// the step gives a carried item: only the asker or a helper hands it in (RZ_ErrandsPay)
+	bool m_bEndsThere;			// done at the place: no going back to the giver (an opening's last step, Guidance/RZ_Openings.c)
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")
 	int m_iFavor;
@@ -177,6 +178,9 @@ class RZ_ErrandDef
 	float m_fWeight = 1;
 	bool m_bTimed;				// needs a running game clock (RZ_GameTime.IsCalibrated)
 	bool m_bTwists;				// can have a twist (the giver lies or hides something): rolled at Twist chance
+	bool m_bHanded;				// handed straight to a player by another system (an opening's chain, Guidance/RZ_Openings.c):
+								// never dealt, its giver isn't a named person, no cooldowns and no small pay (its owner pays)
+	float m_fLapseMinutes;		// > 0: a held one lapses after this many real minutes instead of Lapse minutes
 	ref array<ref RZ_ErrandWay> m_aWays = {};
 	ref array<string> m_aOffer = {};	// the ask, in the giver's voice
 	ref array<string> m_aOver = {};		// the world changed: "Never mind. The truck came in after all."
@@ -191,6 +195,15 @@ class RZ_ErrandDef
 	//! True now for this giver and player: fill e's subject (its soft hold), places and text. Spawns
 	//! nothing.
 	bool Why(RZ_Errands dealer, RZ_Errand e)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A step of an opening's chain (Guidance/RZ_OpeningChain.c): the one job in the game that starts
+	//! without the player talking to anyone or using anything. Every other errand starts from a person
+	//! or a thing.
+	bool IsOpening()
 	{
 		return false;
 	}
@@ -301,6 +314,13 @@ class RZ_Errand
 	bool m_bCarried;			// it was given (so a null m_Carried means lost)
 	ref map<int, float> m_mWith = new map<int, float>();	// group members near the asker: seconds
 	ref map<string, string> m_mText = new map<string, string>();
+
+	//------------------------------------------------------------------------------------------------
+	//! An opening's chain step (RZ_ErrandDef.IsOpening): handed to the player at spawn, not asked for.
+	bool IsOpening()
+	{
+		return m_Def && m_Def.IsOpening();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A text slot the lines use as {key} (the lint knows these keys from here).

@@ -91,6 +91,18 @@ class RZ_GuidanceSettings
 	[Attribute("1", desc: "A Courier or Scavenger wanderer comes looking for brand-new players in their first 15 minutes")]
 	bool m_bWandererFinds;
 
+	[Attribute("1", desc: "Openings: every life starts at a random place that fits its background (never a chosen one), coming out of its hiding place, with someone from before who speaks first and a three-step chain on the errands (docs/DESIGN.md, Openings). It replaces that life's spawn scenario and the wanderer who finds you. Off: the spawn point the spawn screen picks at random, and the spawn scenarios")]
+	bool m_bOpenings;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the hiding place's props by the door you come out of (a small composition: an empty water bottle, a bedroll, a bucket). Empty: the calendar note only", "et")]
+	ResourceName m_sHidingScenePrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the contact's body, someone from before (a person with the puzzle components). Empty: Puzzles > Civilian", "et")]
+	ResourceName m_sContactPrefab;
+
+	[Attribute("10", UIWidgets.Slider, "Openings: Fame with the faction the chain ends with, at the end of its walk (small pay: never season Fame)", "0 20 1")]
+	int m_iOpeningFame;
+
 	[Attribute("90", desc: "Seconds after a new life before any tip that isn't critical (the spawn is quiet: docs/UI.md, Notices)")]
 	float m_fTipQuietSeconds;
 
@@ -110,6 +122,7 @@ class RZ_GuidePlayer
 	float m_fNudgeAt;
 	bool m_bNudged;
 	string m_sSpawnLine;	// the spawn card's "where" line (RZ_GuidanceText.SpawnLine), taken once
+	bool m_bOpening;		// this life has an opening (RZ_Openings): no spawn scenario, no wanderer comes looking
 }
 
 //------------------------------------------------------------------------------------------------
@@ -136,6 +149,7 @@ class RZ_Guidance
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_GuidanceSettings m_Settings;
 	protected ref RZ_GuidanceWorld m_World;
+	protected ref RZ_Openings m_Openings;
 	protected ref array<ref RZ_GuidanceTip> m_aTips = {};
 	protected ref map<int, ref RZ_GuidePlayer> m_mPlayers = new map<int, ref RZ_GuidePlayer>();
 	protected ref map<string, float> m_mTipAt = new map<string, float>();
@@ -165,12 +179,22 @@ class RZ_Guidance
 		}
 
 		m_World = new RZ_GuidanceWorld(gm, this, settings);
+		m_Openings = new RZ_Openings(gm, this, settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	bool IsEnabled() { return m_Settings.m_bEnabled; }
 	RZ_GuidanceSettings GetSettings() { return m_Settings; }
 	float GetClock() { return m_fClock; }
+	RZ_Openings GetOpenings() { return m_Openings; }
+	RZ_GuidanceWorld GetWorld() { return m_World; }
+
+	//------------------------------------------------------------------------------------------------
+	//! This life has an opening (RZ_Openings.OnSpawned, after BeginLife).
+	void MarkOpening(int playerId)
+	{
+		GetState(playerId).m_bOpening = true;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Real-world seconds since 1970, 0 if unknown.
@@ -206,10 +230,11 @@ class RZ_Guidance
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The first meaningful life gets the goal "Find the Haven" (RZ_Objectives).
+	//! The first meaningful life gets the goal "Find the Haven" (RZ_Objectives), unless its opening's
+	//! whole chain runs: its walk takes you to where you belong instead.
 	bool WantsHavenGoal(RZ_PlayerProfile p)
 	{
-		return m_Settings.m_bEnabled && p.m_iGuideLives == 0;
+		return m_Settings.m_bEnabled && p.m_iGuideLives == 0 && !m_Openings.FullChainFor(p.m_sIdentity);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -318,6 +343,7 @@ class RZ_Guidance
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
 		m_fClock += dt;
+		m_Openings.Tick(dt);
 		RetryHeldTips();
 		m_aGentlePos.Clear();
 		m_aGentleMult.Clear();

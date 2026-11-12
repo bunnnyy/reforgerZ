@@ -85,7 +85,9 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   grid reference ("Outskirts 13-29"). Label names are string-table keys, translated on the
   server. Each has a centre, a size class and an infection level (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
 - **Spawn points:** 6 at a time in random towns, and one is moved to a new town every
-  20 minutes. Every Haven safehouse is also a spawn point for everyone.
+  20 minutes. Nobody picks one: the spawn screen asks for one at random, and with openings on the
+  new character is moved on to a place rolled for its background
+  ([Openings](#openings-how-every-life-starts)). No safehouse is a spawn point.
 - **Missions are announced** with distance and direction ("1.2 km NE"). Messages arrive a few at
   a time, the most important first, as styled notice cards or vanilla hints without the UI; the
   notebook's Radio tab keeps the radio, mission and world ones ([UI.md](UI.md#notices)).
@@ -553,7 +555,8 @@ Code: `Backgrounds/RZ_Background.c`, `Backgrounds/RZ_Objectives.c`, `Backgrounds
 
 You pick a background on our spawn screen, which replaces vanilla's deploy menu (each background is a
 loadout); it shows its perk, flaw, starting gear, starting standing and whether it's locked, and
-where you'll start ([UI.md](UI.md#the-spawn-screen)). Gear comes from the
+the kind of place it starts at, never where ([UI.md](UI.md#the-spawn-screen),
+[Openings](#openings-how-every-life-starts)). Gear comes from the
 loadout; the perk and flaw change ReforgerZ systems, so they work with any other mods.
 Starting standing is Fame (+) or Infamy (−) ([REPUTATION.md](REPUTATION.md)).
 
@@ -583,7 +586,8 @@ its gear for that life but plays as Unemployed, and is told how to unlock it.
 their cabin, the Ex-Con goes back for an old stash): reach a town 1.2–4 km away, survive a while,
 deliver samples, take part in missions, or become Trusted with a faction. Completing it gives a
 **Legacy** point and 10 Haven Fame, never loot, so a fresh life can't farm crates. A player's first life that lasts 10 minutes is always
-**Find the Haven**: reach a safehouse ([New-player guidance](#new-player-guidance)).
+**Find the Haven**: reach a safehouse ([New-player guidance](#new-player-guidance)), unless its
+opening runs the whole chain, whose walk takes you where your background belongs.
 
 ## Factions in the background
 
@@ -1079,7 +1083,7 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
 
   | Population | Becomes | Effects |
   |---|---|---|
-  | 0–4 | Shelter | Spawn point; shop sells Known items only; 3 occupants |
+  | 0–4 | Shelter | Shop sells Known items only; 3 occupants |
   | 5–11 | Community | Trusted stock, one guard, 4 occupants |
   | 12–19 | Settlement | A medic (heals for Favor) and a radio (missions within 3 km); 5 occupants |
   | 20–30 | Town | Champion stock, two guards, 6 occupants |
@@ -2776,13 +2780,132 @@ Every line is in a speaker's voice ([WRITING.md](WRITING.md#the-voices)).
 ### The welcome: one card, then quiet
 
 A new life gets **one card**: the background's name and where you wake, in a line or two (the
-spawn scenario's line, `RZ_GuidanceText.SpawnLine`: "A cold basement in Morton. Scratches on the
-back of the door."; without a scenario "You come to east of Levie."). Everything else at spawn goes
+opening's line, `RZ_OpeningText.SpawnLine`: "A farmhouse cellar in Morton. Day 11. The last bottle
+is empty, so you open the door."; without an opening, the spawn scenario's, `RZ_GuidanceText.SpawnLine`:
+"A cold basement in Morton. Scratches on the back of the door."; without either, "You come to east
+of Levie."). Everything else at spawn goes
 quietly into the notebook: the perk, flaw and goal, the scene in full with its clue, the outbreak,
 the broadcast, the season with the news and the hall of fame in one entry, the radio's jobs, pay
 owed while you were away in one entry. For the first 30 s nothing else is a card unless it's urgent,
 and for the first five minutes cards come at most one every 45 s; the rules and settings are in
 [UI.md](UI.md#notices).
+
+### Openings: how every life starts
+
+Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningChain.c`, `RZ_OpeningText.c`,
+`Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
+
+Every life starts somewhere random that suits who you were, coming out of the place you hid in
+since the seal, and within a few seconds someone who knew you before is talking to you and there is
+one obvious thing to do: the first of three steps that teach the Zone and tell its story, then hand
+you to the faction your background belongs with. Nobody is new: everyone has been trapped since the
+roads shut. What's still to come is in [designs/OPENINGS.md](../designs/OPENINGS.md).
+
+**Where you start.** Rolled on the server for each life; nobody picks it, and there are no chosen
+starts. The spawn screen asks for one of the spawn points at random; the spawn point handler
+(`SCR_SpawnPointSpawnHandlerComponent`, modded) moves the new character to the rolled place before
+it's handed over, and the world streams in there.
+
+- **Fits the background**, by the building's prefab name (the door marks' kinds and the landmark
+  finder's words):
+
+| Background | Place kinds | The spawn screen says |
+|---|---|---|
+| Nurse | clinic, house | A clinic, or a house near one |
+| Doctor | clinic | A back room at a clinic |
+| Mechanic | garage, petrol station, farm | A garage, a pump or a farm shed |
+| Hunter | farm | A farm at the edge of things |
+| Police Officer | police post, public building | A police post or a town hall |
+| Ex-Con | garage, farm | A lock-up or a shed |
+| Lab Technician | school, clinic | A school lab or a clinic |
+| Radio Operator | radio mast, house | Somewhere under an aerial |
+| Unemployed | house, shop | A house or a shop |
+| Soldier | military building, public building | An old barracks, or a hall |
+| Raider | house | A stash house |
+| Elder | house | A house on a square |
+| Drifter | house, shop, farm, garage, public building | Anywhere at all |
+
+- **Safe enough to stand up in:** a town nobody holds or lives in, not the lab's, under 60 infection
+  for a brand-new player (80 for others); by a building that isn't locked, 2 m out of an outside
+  door, at a point 400 m from any holding, safehouse, road post or the lab, 600 m from a sealed
+  checkpoint, off the line, no player within 300 m, no running mission within 500 m, 1 km from a
+  pack's lair, outside the errands' quiet places, and 2 km from this player's last two starts.
+- **Near where it ends:** towns within 3 km of where the chain will end are tried first, so the walk
+  stays short; up to 8 towns are tried.
+- **Fallback:** no fitting building, any house in one of those towns (the scene still comes);
+  nothing at all, the spawn point the screen asked for, with the contact but no scene.
+
+**The scene: out of the hiding place.** The door you came out of stands open behind you; by it, the
+**Guidance > Hiding place scene** composition (empty: none) and a calendar to read, every day up to
+the season's day crossed off, Day 2 ringed: ROADS SHUT. The spawn card says the place's kind, the
+town and the day. The props go with the guidance clues (20 minutes once nobody is near).
+
+**The contact: someone from before.** A few metres out of the door, facing you (**Guidance >
+Contact**, empty: **Puzzles > Civilian**; counted as a story body, so the budget doesn't refuse
+them; with no body at all there's no opening that life). They never say "you're new": they say
+"Christ, you're alive." They talk only to you; anyone else is told they're waiting for someone.
+
+| Background | Who they were | Background | Who they were |
+|---|---|---|---|
+| Nurse | a patient's mother | Radio Operator | a voice from the night band |
+| Doctor | a nurse from your ward | Unemployed | the neighbour who lent you money |
+| Mechanic | a regular at the garage | Soldier | a private from your unit |
+| Hunter | the farmer whose land you hunted | Raider | someone you robbed |
+| Police Officer | a shopkeeper on your beat | Elder | a mother from your street |
+| Ex-Con | your old cellmate | Drifter | a face you half know |
+| Lab Technician | a junior from the institute | | |
+
+**They speak first.** Four seconds after the spawn, and again as each later step starts while
+you're within 30 m of them, they open the talk screen on you ([DIALOGUE.md](DIALOGUE.md#who-talks)),
+or say it as subtitles without it: that step's piece of the story, then the step's ask. Whatever you
+answer, the step is already yours and tracked. Their one built reply is "What was it you needed?"
+(the step again, short). If you leave the first step alone for two minutes and are still by them,
+they ask once more. This is the **only job in the game that starts without you talking to anyone or
+using anything**; its errands say so (`RZ_ErrandDef.IsOpening()`, `RZ_Errand.IsOpening()`).
+
+**The chain: three steps** on the errand engine, handed straight to you
+([ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)), so the tracker follows each one as it
+starts (the HUD and the Quests tab), with the giver's lines on the talk screen. About 15 minutes.
+
+| Step | What you do | It teaches | The story, as it starts |
+|---|---|---|---|
+| 1. Across the Road | Search a house 50–250 m from them for 20 s, within 10 m of it, and come back | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 2. Water, or The Cut | Water: stand 15 s at the nearest well or water tower (within 400 m) and come back. The Cut: dress their hand with anything medical you carry (a Nurse or Doctor with something medical always gets this one) | where water is; treating | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
+
+No step 2 (no well near and nothing medical on you): straight to the walk. With **Dialogue >
+Trees** on, the conversations `for opening` add their greeting by your background and things to ask
+on the way ([DIALOGUE.md](DIALOGUE.md#the-conversations)).
+
+**Where the chain ends** fits who you were:
+
+| Who | Backgrounds | Ends at |
+|---|---|---|
+| Medical people | Nurse, Doctor, Lab Technician | Halcyon's nearest holding, or the lab if that's nearer |
+| Trouble | Ex-Con, Raider | the Red Hand's nearest holding |
+| Military and the law | Soldier, Police Officer | Bastion's nearest holding |
+| Everyone else | Mechanic, Hunter, Radio Operator, Unemployed, Elder, Drifter | the nearest Haven safehouse |
+
+A faction that hunts you, or holds nothing, sends you to the nearest safehouse instead. On arrival
+someone there says one line, and you get **Guidance > Opening Fame** (10) with them as small pay
+(not while they hunt you; never season Fame). The steps themselves pay nothing: no Favor, no items,
+no hall-of-fame helped line, no deeds.
+
+**When it ends early.** The contact killed during steps 1–2: whoever finds you says so, the step
+ends, and the chain goes straight to the walk to the nearest safehouse. A step that lapses, death or
+leaving ends it. Nobody waves you over for errands while it runs. One opening per life, runtime only
+(a restart ends it). None in the epilogue week (the place is still rolled). The contact leaves once
+nobody is within 150 m after the walk starts, or 45 minutes on with nobody within 50 m.
+
+**Log lines:** `Openings: started for ...` (background, place, town, grid, level, who, chain, where
+it ends), `... spoke first to ... at step N (the talk screen | subtitles)`, `... step N (key) for
+...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
+and the fallbacks' `no ... place fits`, `no place`, `no contact could stand`.
+
+*Simplified:* the hiding place is the only reason; one chain shape for every background (step 2 is
+water or the hand, not the background's own system); one kind of contact (someone from before, by
+background); the guidance levels only shorten it to one step; no scene composition ships (the slot
+is empty until the author makes one), so the calendar is the scene.
 
 ### Experience levels
 
@@ -2797,6 +2920,8 @@ never disappears.
 | 3, veteran | 8+ | The floor: a scenario clue, the open channels (every 42 min), and critical tips as one short line |
 
 A player who comes back after 30+ real days gets two levels more guidance for two lives.
+With an [opening](#openings-how-every-life-starts), levels 0 and 1 get its whole chain and levels 2
+and 3 its first step only; the scenario and the wanderer who comes looking are for a life without one.
 
 ### Contextual tips
 
@@ -2820,7 +2945,7 @@ a stack at spawn. The table is data (**Guidance > Tips**, defaults in
 | hunted | Hunted or Kill on Sight | ✅ |
 | perimeter | near the edge or a checkpoint, while the line is sealed | |
 | loud | heat 45+ where you stand | |
-| bleeding | you're bleeding (checked every 10 s; VERIFY `Guidance/RZ_Guidance.c:439`) | |
+| bleeding | you're bleeding (checked every 10 s; VERIFY `Guidance/RZ_Guidance.c:465`) | |
 | quartermaster | within 25 m of a quartermaster of a faction that doesn't hunt you | |
 | night | the first night | |
 | safehouse | your first safehouse | |
@@ -2837,11 +2962,13 @@ a stack at spawn. The table is data (**Guidance > Tips**, defaults in
 ### Gentle start and first-life goal
 
 For the first 15 minutes of a brand-new player's life, zombie spawns near them run at half
-density. Their first counted life gets the goal **Find the Haven**.
+density. Their first counted life gets the goal **Find the Haven**, unless its opening runs the whole
+chain (its last step is the walk to where they belong).
 
 ### Spawn scenarios
 
-Every new life starts a few metres from a small clue (brand-new players lean toward the Haven):
+A life without an opening (**Guidance > Openings** off, no contact could stand, or the epilogue
+week) starts a few metres from a small clue (brand-new players lean toward the Haven):
 
 | Scenario | The clue | Points to |
 |---|---|---|
@@ -2872,8 +2999,8 @@ wherever the spawn point put you.
 
 ### A wanderer finds you
 
-Two to seven minutes into a brand-new player's life, the nearest Courier or Scavenger comes
-looking for them, waves, and waits 5 minutes. Their talk includes faction gossip.
+Two to seven minutes into a brand-new player's life without an opening, the nearest Courier or
+Scavenger comes looking for them, waves, and waits 5 minutes. Their talk includes faction gossip.
 
 ## Cure research and the season's end
 

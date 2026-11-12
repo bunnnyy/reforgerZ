@@ -6,6 +6,7 @@ class RZ_DialoguePacks
 		RZ_DialoguePack_barks.Add(db);
 		RZ_DialoguePack_finale.Add(db);
 		RZ_DialoguePack_leaders.Add(db);
+		RZ_DialoguePack_openings.Add(db);
 		RZ_DialoguePack_posts.Add(db);
 		RZ_DialoguePack_radio.Add(db);
 		RZ_DialoguePack_residents.Add(db);
@@ -16,6 +17,6 @@ class RZ_DialoguePacks
 
 	static int Count()
 	{
-		return 197;
+		return 213;
 	}
 }

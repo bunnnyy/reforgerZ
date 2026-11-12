@@ -12,6 +12,9 @@ and one way to end it: **research the cure.**
 - **Backgrounds** picked on our own spawn screen (Nurse, Mechanic, Hunter, Police Officer, Ex-Con,
   Lab Technician, Radio Operator, Unemployed), each with a real perk and flaw. Five more are
   unlocked through Legacy.
+- **Openings:** every life starts somewhere random that suits who you were, coming out of the place
+  you hid in since the seal, and someone who knew you before speaks first. Their three small asks
+  teach the Zone, tell its story and walk you to the Haven or the faction your background belongs with.
 - **The Director** moves the server through four outbreak stages over a season of about 45
   real days, spreads infection from town to town and sends hordes toward noise. The infected adapt
   a little as the cure advances. Research is scaled to how much the server really plays over the
@@ -168,8 +171,8 @@ and one way to end it: **research the cure.**
 
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
-server's runtime test and in Workbench play on Everon and Arland; every approved design is built,
-simplified as each doc says. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+server's runtime test and in Workbench play on Everon and Arland; every approved design is built
+but Openings' later phases, simplified as each doc says. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).

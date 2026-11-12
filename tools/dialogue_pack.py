@@ -42,7 +42,7 @@ SPEAKER_RE = re.compile(r"^(leader|leader:(haven|bastion|redhand|halcyon)|strong
                         r"named|named:(haven|bastion|redhand|halcyon)(/[a-z_]+)?|"
                         r"post|post:(bastion|redhand)|table|table:(host|mother|son|boy|road)|"
                         r"stranger|stranger:[a-z_]+|radio|radio:open|radio:secure|radio:(bastion|redhand|halcyon)|"
-                        r"quest|quest:[a-z_]+|mission)$")
+                        r"quest|quest:[a-z_]+|mission|opening)$")
 
 TIERS = ["kill_on_sight", "hunted", "watched", "uneasy", "stranger", "tolerated", "wildcard", "known", "respected",
          "trusted", "champion"]
@@ -145,7 +145,8 @@ KNOWABLE_KEYS = {"bg", "tier", "fame", "infamy", "rep", "hunted", "exiled", "kin
                  "cover", "group", "secure"}
 NUMBER_RE = re.compile(r"[0-9]|\{cure_percent\}|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|"
                        r"twenty|thirty|fifty|hundred|percent|half|minutes?)\b", re.I)
-GENERIC_SPEAKERS = {"occupant", "resident", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission"}
+GENERIC_SPEAKERS = {"occupant", "resident", "named", "post", "wanderer", "leader", "stranger", "table", "quest", "mission",
+                    "opening"}
 FORBIDDEN_EFFECTS = {"fame", "house", "infamy", "follow", "escort", "companion"}
 REGARD_WORDS = {"thanks", "kept", "broke", "threatened", "slander", "vouched_liar", "lied"}
 CALLS = re.compile(r"^(slot:[0-9]|hand_in:[0-9]+|toll|post_wave|standing|season|look|distress|net_word|net_lost|declare_bite|caught_bite|brief_public)$")

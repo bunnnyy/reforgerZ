@@ -955,10 +955,8 @@ Frame (root, full screen)
 │  ├─ Text  Legacy          at (32, 672), mono bold 20, dim ("LEGACY 6 / 10 - THE DRIFTER AT 10")
 │  └─ Overlay (LegacyTrack) at (700, 680), 240 × 10: Image (LegacyTrackBg) #2A2E31 and ProgressBar LegacyBar, fill #E3A33B
 ├─ Text    (label "START")  at (696, 928)
-├─ Button  PlacePrev       40 × 40 at (788, 922), "<" on #1A1D20 (a click: the previous place)
-├─ Text    PlaceName       at (838, 924), 420 wide, centred, condensed bold 28: the spawn point's name
-├─ Button  PlaceNext       40 × 40 at (1,268, 922), ">" (the next place); both arrows hidden with one place
-├─ Text    PlaceCount      at (1,322, 930), mono bold 18, dim ("2 OF 7")
+├─ Text    PlaceName       at (788, 924), 660 wide, condensed bold 28: the kind of place the picked
+│                          background starts at ("A clinic, or a house near one"); there's no picker
 ├─ Text    SpawnStatus     at (696, 974), 740 wide, regular 22, #F4F0E6: why nothing happened (hidden when empty)
 ├─ Button  DeployButton    360 × 72 at (1,464, 920)
 │  └─ Overlay: Image DeployBg (bone; #1B1F22 while it can't go) and Text DeployText (condensed bold 30:

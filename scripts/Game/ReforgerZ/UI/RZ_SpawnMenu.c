@@ -1,15 +1,17 @@
 //! The spawn screen (docs/UI.md, "The spawn screen"): our own screen in place of vanilla's deploy
 //! menu and role selection. The 13 backgrounds as a list; the picked one's name, perk, flaw,
 //! starting gear, starting standing, whether it's locked (and how to unlock it) and Legacy toward
-//! the Drifter; where you start; Deploy. The faction is forced to SURV (SCR_MenuSpawnLogic's Forced
-//! faction), so there's no faction or group step.
+//! the Drifter; the kind of place that background starts at; Deploy. Nobody picks where they
+//! start: the screen asks for one of the open spawn points at random, and the server's opening
+//! rolls the real place (Guidance/RZ_OpeningPlaces.c). The faction is forced to SURV
+//! (SCR_MenuSpawnLogic's Forced faction), so there's no faction or group step.
 //!
 //! It spawns through the vanilla requests: the loadout (SCR_PlayerLoadoutComponent.RequestLoadout),
 //! then the spawn (SCR_RespawnComponent.RequestSpawn with the spawn point), so the server's checks,
 //! RZ_LoadoutLock.c among them, apply as they did to the vanilla menu.
 //!
-//! Pad first: up/down pick a background, left/right the place you start, A deploys, B opens the
-//! pause menu. Keys: the arrows, Enter, Esc. Mouse: click a row, the arrows by the place, Deploy.
+//! Pad first: up/down pick a background, A deploys, B opens the pause menu. Keys: the arrows,
+//! Enter, Esc. Mouse: click a row, Deploy.
 //!
 //! Hook: SCR_PlayerDeployMenuHandlerComponent (modded, below) opens this screen where vanilla would
 //! open its deploy menu or role selection. With UI > Spawn row layout empty, or if the screen can't
@@ -109,14 +111,9 @@ class RZ_SpawnMenu : RZ_MenuBase
 		InputManager input = GetGame().GetInputManager();
 		input.AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
-		input.AddActionListener("MenuLeft", EActionTrigger.DOWN, OnPlacePrev);
-		input.AddActionListener("MenuRight", EActionTrigger.DOWN, OnPlaceNext);
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		RZ_UIW.OnClick(m_wRoot, "DeployButton", m_Click);
-		RZ_UIW.OnClick(m_wRoot, "PlacePrev", m_Click);
-		RZ_UIW.OnClick(m_wRoot, "PlaceNext", m_Click);
 		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuDown", "Background");
-		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuRight", "Where you start") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Deploy") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Menu") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
@@ -148,8 +145,6 @@ class RZ_SpawnMenu : RZ_MenuBase
 		InputManager input = GetGame().GetInputManager();
 		input.RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
-		input.RemoveActionListener("MenuLeft", EActionTrigger.DOWN, OnPlacePrev);
-		input.RemoveActionListener("MenuRight", EActionTrigger.DOWN, OnPlaceNext);
 		input.RemoveActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		if (m_LoadoutComp)
 			m_LoadoutComp.GetOnPlayerLoadoutResponseInvoker_O().Remove(OnLoadoutResponse);
@@ -164,8 +159,8 @@ class RZ_SpawnMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Once a second: the places you can start (spawn points move every 20 minutes) and the
-	//! respawn timer's wait.
+	//! Once a second: the spawn points open to you (they move every 20 minutes) and the respawn
+	//! timer's wait.
 	override void OnMenuUpdate(float tDelta)
 	{
 		m_fPlacesAge += tDelta;
@@ -218,20 +213,6 @@ class RZ_SpawnMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnPlacePrev(float value = 0, EActionTrigger reason = 0)
-	{
-		if (IsTop())
-			StepPlace(-1);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void OnPlaceNext(float value = 0, EActionTrigger reason = 0)
-	{
-		if (IsTop())
-			StepPlace(1);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected void OnSelect(float value = 0, EActionTrigger reason = 0)
 	{
 		if (IsTop())
@@ -253,15 +234,11 @@ class RZ_SpawnMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Mouse: a row picks it, the arrows change the place, Deploy deploys.
+	//! Mouse: a row picks it, Deploy deploys.
 	override protected void OnClickOther(Widget w, string name)
 	{
 		if (name == "DeployButton")
 			TryDeploy();
-		else if (name == "PlacePrev")
-			StepPlace(-1);
-		else if (name == "PlaceNext")
-			StepPlace(1);
 		else if (name == "SpawnRow")
 			Pick(RZ_UIW.GetTag(w));
 	}
@@ -282,10 +259,11 @@ class RZ_SpawnMenu : RZ_MenuBase
 		m_iLocal++;
 	}
 
-	// ================================================================ Where you start
+	// ================================================================ The spawn point
 	//------------------------------------------------------------------------------------------------
-	//! The player faction's spawn points that are on, the chosen one kept if it's still there; the
-	//! first time, the one used last, else one at random.
+	//! The player faction's spawn points that are on; the one drawn at random is kept while it's
+	//! still there. Nobody chooses it: it's only what the spawn request names, and the server's
+	//! opening moves the new character to the place it rolls.
 	protected void RefreshPlaces()
 	{
 		m_fPlacesAge = 0;
@@ -321,32 +299,7 @@ class RZ_SpawnMenu : RZ_MenuBase
 			return;
 		}
 
-		SCR_PlayerDeployMenuHandlerComponent handler = Handler();
-		RplId last = RplId.Invalid();
-		if (handler)
-			last = handler.GetLastUsedSpawnPointId();
-
 		m_PlaceId = m_aPlaces.GetRandomElement().GetRplId();
-		foreach (SCR_SpawnPoint place : m_aPlaces)
-		{
-			if (place.GetRplId() == last)
-				m_PlaceId = last;
-		}
-
-		m_iLocal++;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void StepPlace(int dir)
-	{
-		int count = m_aPlaces.Count();
-		if (count < 2 || m_bBusy)
-			return;
-
-		int at = PlaceIndex();
-		at = (at + dir + count) % count;
-		m_PlaceId = m_aPlaces[at].GetRplId();
-		m_sStatus = "";
 		m_iLocal++;
 	}
 
@@ -484,10 +437,6 @@ class RZ_SpawnMenu : RZ_MenuBase
 		}
 
 		SCR_SpawnPointSpawnData data = new SCR_SpawnPointSpawnData(m_Pending.GetLoadoutResource(), sp.GetRplId());
-		SCR_PlayerDeployMenuHandlerComponent handler = Handler();
-		if (handler)
-			handler.SetLastUsedSpawnPointId(sp.GetRplId());
-
 		if (!m_Respawn.RequestSpawn(data))
 		{
 			m_bBusy = false;
@@ -532,7 +481,7 @@ class RZ_SpawnMenu : RZ_MenuBase
 	// ================================================================ Drawing
 	//------------------------------------------------------------------------------------------------
 	//! G|legacy|Legacy for the Drifter, then B|id|name|loadout|perk|flaw|locked|unlock text|Haven|
-	//! Bastion|Red Hand|Halcyon|gear per background, in the game mode's order.
+	//! Bastion|Red Hand|Halcyon|gear|where you start per background, in the game mode's order.
 	protected void Parse(string payload)
 	{
 		array<ref array<string>> recs = {};
@@ -703,25 +652,16 @@ class RZ_SpawnMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where you start, what's holding you, and Deploy.
+	//! The kind of place the picked background starts at (never where: the server rolls it), what's
+	//! holding you, and Deploy.
 	protected void DrawFoot()
 	{
 		SCR_SpawnPoint sp = Place();
-		string place = "Nowhere yet";
-		if (sp)
-			place = sp.GetSpawnPointName();
-
-		if (place.IsEmpty())
-			place = "Somewhere in the Zone";
+		string place = "Somewhere in the Zone";
+		if (m_iSelected >= 0 && m_iSelected < m_aBackgrounds.Count() && !RZ_UIText.Str(m_aBackgrounds[m_iSelected], 13).IsEmpty())
+			place = RZ_UIText.Str(m_aBackgrounds[m_iSelected], 13);
 
 		RZ_UIW.SetText(m_wRoot, "PlaceName", place);
-		string count = "";
-		if (m_aPlaces.Count() > 1)
-			count = string.Format("%1 OF %2", PlaceIndex() + 1, m_aPlaces.Count());
-
-		RZ_UIW.SetText(m_wRoot, "PlaceCount", count);
-		RZ_UIW.Show(m_wRoot, "PlacePrev", m_aPlaces.Count() > 1);
-		RZ_UIW.Show(m_wRoot, "PlaceNext", m_aPlaces.Count() > 1);
 
 		bool locked = false;
 		if (m_iSelected >= 0 && m_iSelected < m_aBackgrounds.Count())

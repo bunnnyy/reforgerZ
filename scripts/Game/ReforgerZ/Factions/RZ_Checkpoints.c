@@ -238,6 +238,19 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A road post (either faction's) within radius of pos (an opening's start keeps clear of them).
+	bool PostNear(vector pos, float radius)
+	{
+		foreach (RZ_RoadPost post : m_aPosts)
+		{
+			if (post && RZ_Util.DistXZ(post.m_vPos, pos) <= radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A new life: the posts and camps forget what they said to this player.
 	void OnPlayerSpawned(int playerId)
 	{

@@ -768,6 +768,13 @@ class RZ_Errands
 					continue;
 				}
 
+				// An opening's last step: done where it's done, nobody to go back to
+				if (w.m_bEndsThere)
+				{
+					Resolve(e, w);
+					continue;
+				}
+
 				if (w.m_bCarry)
 				{
 					m_PayKinds.GiveCarried(e, me);
@@ -927,7 +934,7 @@ class RZ_Errands
 				continue;
 			}
 
-			float lapse = m_Settings.m_fLapseMinutes * 60;
+			float lapse = LapseSeconds(e);
 			if (e.m_fOfflineSince >= 0)
 			{
 				if (ids.Contains(e.m_iAsker))
@@ -946,7 +953,7 @@ class RZ_Errands
 				continue;
 			}
 
-			if (!m_People.Get(e.m_sGiver) || !e.m_Def.Still(this, e) || Overtaken(e, facts))
+			if ((!e.m_Def.m_bHanded && !m_People.Get(e.m_sGiver)) || !e.m_Def.Still(this, e) || Overtaken(e, facts))
 				Overtake(e);
 		}
 	}
@@ -2474,12 +2481,19 @@ class RZ_Errands
 		}
 
 		ConsumeCarried(e);
-		string pay = Pay(e, w, e.m_iAsker, false);
+		// A handed errand (an opening's step) is paid by its owner, never through the ledger
+		string pay = "";
+		if (!e.m_Def.m_bHanded)
+			pay = Pay(e, w, e.m_iAsker, false);
+
 		if (!pay.IsEmpty())
 			m_GM.NotifyPlayerAs(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), pay, RZ_ENoticeTag.MISSION);
 
 		foreach (int helper : e.m_aHelpers)
 		{
+			if (e.m_Def.m_bHanded)
+				break;
+
 			string helperPay = Pay(e, w, helper, true);
 			if (!helperPay.IsEmpty())
 				m_GM.NotifyPlayerAs(helper, "Errand: " + e.Fill(e.m_Def.m_sTitle), helperPay, RZ_ENoticeTag.MISSION);
@@ -2505,10 +2519,10 @@ class RZ_Errands
 		RZ_Shared callShared = m_GM.GetShared();
 		if (!w.m_aLater.IsEmpty() && callShared && callShared.GetCallbacks())
 			callShared.GetCallbacks().Queue(e.m_iAsker, e.m_sGiverTitle, e.Fill(Pick(w.m_aLater)), e.m_vGiver);
-		if (m_Settings.m_bHelpedLine && m_GM.GetHall() && !(m_GM.GetCure() && m_GM.GetCure().IsCured()))
+		if (m_Settings.m_bHelpedLine && !e.m_Def.m_bHanded && m_GM.GetHall() && !(m_GM.GetCure() && m_GM.GetCure().IsCured()))
 			m_GM.GetHall().AddHelped(e.m_iAsker);
 
-		if (!e.m_Def.m_bCard)
+		if (!e.m_Def.m_bCard && !e.m_Def.m_bHanded)
 		{
 			int now = RZ_SeasonClock.Now();
 			string place = PlaceKey(m_People.Get(e.m_sGiver));
@@ -2523,7 +2537,7 @@ class RZ_Errands
 		EndFallout(e);
 		// A light callback deed (Core/RZ_Deeds.c): at most four of the twelve
 		RZ_PlayerProfile doer = m_GM.FindProfile(e.m_iAsker);
-		if (doer && !e.m_sGiverName.IsEmpty())
+		if (doer && !e.m_sGiverName.IsEmpty() && !e.m_Def.m_bHanded)
 			RZ_Deeds.Callback(doer, "errand." + e.m_Def.m_sKey, "did " + e.m_sGiverName + " a favour", RZ_Deeds.LIGHT);
 
 		Count(e.m_Def.m_sFamily).done++;
@@ -2940,6 +2954,10 @@ class RZ_Errands
 		if (profile.m_fLifeSeconds < 180 || profile.m_iInfectionStage >= RZ_EInfectionStage.FINAL)
 			return false;
 
+		// Nobody waves over a player whose opening's chain is still running (Guidance/RZ_Openings.c)
+		if (RZ_Openings.IsRunningFor(playerId))
+			return false;
+
 		// A first life finding the Haven: nobody waves them over until 10 minutes after they get there
 		if (profile.m_iObjType == RZ_EObjective.FIND_HAVEN)
 		{
@@ -3135,6 +3153,68 @@ class RZ_Errands
 		return null;
 	}
 
+	// ================================================================ Handed errands
+	//------------------------------------------------------------------------------------------------
+	//! An errand another system hands a player, taken already (an opening's chain step,
+	//! Guidance/RZ_Openings.c): its definition's first way, its step at `place` ("{place}" in the
+	//! step's text is `placeText`), its giver someone outside the named people who stands at
+	//! `giverAt`. The giver's take line, the step's notice and the tracker, as for any taken errand.
+	//! Null with errands off, or for a definition that isn't handed or has no way.
+	RZ_Errand Hand(RZ_ErrandDef d, int playerId, string giverKey, string giverName, string giverTitle, int faction, vector giverAt, vector place, string placeText, IEntity user)
+	{
+		if (!IsOn() || !d || !d.m_bHanded || d.m_aWays.IsEmpty() || !user)
+			return null;
+
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		RZ_ErrandWay w = d.m_aWays[0];
+		RZ_Errand e = new RZ_Errand();
+		e.m_Def = d;
+		e.m_iAsker = playerId;
+		e.m_sIdent = profile.m_sIdentity;
+		e.m_iLife = profile.m_iLives;
+		e.m_sGiver = giverKey;
+		e.m_sGiverName = giverName;
+		e.m_sGiverTitle = giverTitle;
+		e.m_iFaction = faction;
+		if (!RZ_Factions.IsValid(e.m_iFaction))
+			e.m_iFaction = RZ_EFaction.SURVIVORS;
+
+		e.m_vGiver = giverAt;
+		e.m_vOffer = giverAt;
+		e.m_iSettlement = m_GM.FindNearestSettlement(giverAt);
+		e.SetText("giver", giverName);
+		RZ_Settlement town = m_GM.GetSettlement(e.m_iSettlement);
+		if (town)
+			e.SetText("here", town.m_sName);
+
+		e.SetText("place", placeText);
+		e.m_iId = m_iNextId;
+		m_iNextId++;
+		e.m_fOfferedAt = m_fClock;
+		e.m_iWay = 0;
+		e.m_fTakenAt = m_fClock;
+		e.m_bStepDone = !w.HasStep();
+		e.m_eState = RZ_EErrandState.HELD;
+		e.m_vPlace = place;
+		m_aErrands.Insert(e);
+		Count(d.m_sFamily).deals++;
+
+		Say(e, Pick(w.m_aTake), false);
+		if (w.HasStep())
+			m_GM.NotifyPlayerAs(playerId, "Errand: " + e.Fill(d.m_sTitle), e.Fill(w.m_sStep) + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), place)) + ".", RZ_ENoticeTag.MISSION);
+
+		RZ_Log.Info(string.Format("Errands: %1 handed to %2 (%3)", d.m_sKey, RZ_Util.PlayerName(playerId), giverName));
+		return e;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A handed errand its owner ends (its giver died, the chain moved on): quietly, no pay.
+	void Drop(RZ_Errand e, string why)
+	{
+		if (e && e.m_Def && e.m_Def.m_bHanded)
+			End(e, why);
+	}
+
 	// ================================================================ The journal
 	//------------------------------------------------------------------------------------------------
 	//! This player's errands, for the journal (RZ_UIFeed): the giver as "by", the exact place, the
@@ -3152,7 +3232,17 @@ class RZ_Errands
 	//! Real minutes before a held errand lapses.
 	int MinutesLeft(RZ_Errand e)
 	{
-		return Math.Max(0, RZ_Util.RoundToInt((m_Settings.m_fLapseMinutes * 60 - (m_fClock - e.m_fTakenAt)) / 60));
+		return Math.Max(0, RZ_Util.RoundToInt((LapseSeconds(e) - (m_fClock - e.m_fTakenAt)) / 60));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real seconds a held errand waits: its definition's own (an opening's step), else Lapse minutes.
+	protected float LapseSeconds(RZ_Errand e)
+	{
+		if (e.m_Def && e.m_Def.m_fLapseMinutes > 0)
+			return e.m_Def.m_fLapseMinutes * 60;
+
+		return m_Settings.m_fLapseMinutes * 60;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3163,7 +3253,7 @@ class RZ_Errands
 		if (!w)
 			return "";
 
-		if (e.m_bStepDone)
+		if (e.m_bStepDone && !w.m_bEndsThere)
 			return e.Fill("Done. Go back to {giver} at {here}.");
 
 		return e.Fill(w.m_sStep);

@@ -34,6 +34,7 @@ Server only, except the journal row.
 - [Threads and callbacks](#threads-and-callbacks)
 - [Twists](#twists)
 - [Board and radio asks](#board-and-radio-asks)
+- [Handed errands: the openings' chain](#handed-errands-the-openings-chain)
 - [Telemetry and the admin view](#telemetry-and-the-admin-view)
 - [Saving and performance](#saving-and-performance)
 - [Simplified](#simplified)
@@ -580,6 +581,30 @@ found by events (a visit, a road, a rumour round, the next real reading).
   hand. Only if you're passing."* Never broadcast, so it can't bait an ambush. At most one a player
   every 60 real minutes (**Radio ask minutes**), and never within 5 minutes of a contract offered to
   them on the radio (the contract goes first).
+
+## Handed errands: the openings' chain
+
+An opening's three steps ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) are errands another
+system hands a player, already taken (`RZ_Errands.Hand`, code in `Guidance/RZ_OpeningChain.c`). They
+are the **only errands, and the only jobs, that start without the player talking to anyone or using
+anything**: `RZ_ErrandDef.IsOpening()` and `RZ_Errand.IsOpening()` are true for them and for nothing
+else.
+
+| Step | Key | Way | The step |
+|---|---|---|---|
+| ✅ Across the Road | `opening.search` | sneak | 20 s within 10 m of a house 50–250 m from the contact (quiet), then back to them |
+| ✅ Water | `opening.water` | do | 15 s at the nearest well or water tower, then back |
+| ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact |
+| ✅ To the Haven, To Bastion, To the Red Hand, To Halcyon | `opening.walk.<faction>` | do | within 40 m of the place, done there (`m_bEndsThere`: nobody to go back to); 90 minutes before it lapses (`m_fLapseMinutes`) |
+
+How a handed errand differs (`m_bHanded`): the dealer never deals it; its giver is the contact, not a
+named person, so the "giver gone" guard doesn't apply; it pays nothing through the ledger (no Favor,
+no Fame, no helpers' share), sets no cooldowns, adds no helped line to the hall and no deed (the
+opening pays its own Fame at the end of the walk); the owner drops it quietly (`RZ_Errands.Drop`)
+when the contact dies or the chain ends. Everything else is an errand's: the take and done lines in
+the giver's voice (into the talk screen while it's open on them), the step notice, the journal row,
+the Quests tab and the tracker, which the opening points at each step as it starts. While a
+player's chain runs, nobody waves them over for another errand.
 
 ## Telemetry and the admin view
 

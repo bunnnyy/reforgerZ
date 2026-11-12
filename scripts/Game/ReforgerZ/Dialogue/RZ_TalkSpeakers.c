@@ -23,6 +23,10 @@ class RZ_TalkSpeaker
 		if (obj && obj.GetMissionId() == RZ_Strangers.TAG)
 			return new RZ_TalkStranger(owner, obj.GetObjectIndex());
 
+		// An opening's contact, someone from before (Guidance/RZ_Openings.c)
+		if (obj && obj.GetMissionId() == RZ_Openings.TAG)
+			return new RZ_TalkOpening(owner, obj.GetObjectIndex());
+
 		return new RZ_TalkGeneric(owner);
 	}
 

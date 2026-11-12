@@ -1586,6 +1586,18 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The background this life plays as: the picked one, or the default while it's locked (as the
+	//! spawn decides). For the openings' place roll, before the spawn is finished.
+	RZ_Background LifeBackground(int playerId)
+	{
+		RZ_Background bg = ResolveBackground(playerId);
+		if (bg.m_bLocked && !GetProfile(playerId).HasUnlocked(bg.m_sUnlockId))
+			return GetDefaultBackground();
+
+		return bg;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The background is whichever loadout the player picked in the spawn screen.
 	protected RZ_Background ResolveBackground(int playerId)
 	{
@@ -1664,6 +1676,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		profile.StartNewLife(bg);
 		// Experience and refresher first: the first life that counts gets "Find the Haven"
 		m_Guidance.BeginLife(playerId, profile);
+		// The opening at the place rolled for this spawn: the scene, someone from before, the chain
+		// (Guidance/RZ_Openings.c). Its whole chain replaces "Find the Haven"
+		m_Guidance.GetOpenings().OnSpawned(playerId, controlledEntity, profile, bg);
 		RZ_Objectives.Assign(this, profile, bg, controlledEntity.GetOrigin());
 
 		m_BiteDetector.Reset(playerId);
@@ -1747,10 +1762,6 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// The epilogue week: the cure line and your own first line, its news, your last goal
 		m_Epilogue.OnSpawn(playerId, controlledEntity);
 
-		// The spawn screen can't hide a safehouse spawn point from one player, so an exile
-		// who picks one is told the door stays shut (its services refuse them)
-		if (m_Safehouses.FindAt(controlledEntity.GetOrigin()) >= 0 && m_Safehouses.IsExiled(playerId))
-			NotifyPlayer(playerId, "The Haven", "You come to outside the safehouse door. It stays shut. Nobody inside will look at you, and if you're carrying a gun, the guards will in a minute. Move on.");
 		m_Perks.OnPlayerSpawned(playerId, controlledEntity);
 		m_Services.OnPlayerSpawned(playerId, controlledEntity);
 		if (m_Tribes)
@@ -2831,8 +2842,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawn points sit in random, not-too-infected towns and move over time, so
-	//! the spawn screen offers different starting places every life.
+	//! Spawn points sit in random, not-too-infected towns and move over time: the spawn screen asks
+	//! for one at random (nobody picks a start), and with openings on the spawn moves on from there.
 	protected void RefreshSpawnPoints(bool all)
 	{
 		if (m_sSpawnPointPrefab.IsEmpty() || m_aSettlements.IsEmpty())
@@ -2897,8 +2908,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A player spawn point (the World > Spawn point prefab) with a name in the spawn screen.
-	//! Null without the prefab. Also used for the Haven safehouses' permanent spawn points.
+	//! A player spawn point (the World > Spawn point prefab), named after its town. Null without the
+	//! prefab. The spawn screen asks for one at random; an opening then moves the new character to the
+	//! place it rolled (Guidance/RZ_OpeningPlaces.c).
 	IEntity SpawnNamedSpawnPoint(vector pos, string name)
 	{
 		IEntity ent = RZ_Util.SpawnPrefab(m_sSpawnPointPrefab, pos, Math.RandomFloat(0, 360));
