@@ -139,6 +139,13 @@ class RZ_UIFeed
 		// The notebook item, once the inventory exists
 		if (!RZ_UISettings.Get().m_sNotebookPrefab.IsEmpty())
 			GetGame().GetCallqueue().CallLater(GiveNotebook, 3000, false, playerId);
+
+		// A compass and a map, so everyone can tell where they are and where they're facing
+		if (!RZ_UISettings.Get().m_sCompassPrefab.IsEmpty())
+			GetGame().GetCallqueue().CallLater(GiveCompass, 3500, false, playerId);
+
+		if (!RZ_UISettings.Get().m_sMapPrefab.IsEmpty())
+			GetGame().GetCallqueue().CallLater(GiveMap, 4000, false, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -151,6 +158,38 @@ class RZ_UIFeed
 			return;
 
 		IEntity item = RZ_Util.SpawnPrefab(RZ_UISettings.Get().m_sNotebookPrefab, ent.GetOrigin() + Vector(0, 0.3, 0));
+		if (!item)
+			return;
+
+		RZ_GameModeComponent.TrackLooseItem(item);
+		RZ_Util.InsertIntoInventory(ent, item);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every life carries a compass, unless its loadout already has one (any item named "compass").
+	protected void GiveCompass(int playerId)
+	{
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!ent || !RZ_Util.IsCharacterAlive(ent) || RZ_ItemHelper.Has(ent, "compass"))
+			return;
+
+		IEntity item = RZ_Util.SpawnPrefab(RZ_UISettings.Get().m_sCompassPrefab, ent.GetOrigin() + Vector(0, 0.3, 0));
+		if (!item)
+			return;
+
+		RZ_GameModeComponent.TrackLooseItem(item);
+		RZ_Util.InsertIntoInventory(ent, item);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every life carries a paper map, unless its loadout already has one (any item named "papermap").
+	protected void GiveMap(int playerId)
+	{
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!ent || !RZ_Util.IsCharacterAlive(ent) || RZ_ItemHelper.Has(ent, "papermap,map_paper"))
+			return;
+
+		IEntity item = RZ_Util.SpawnPrefab(RZ_UISettings.Get().m_sMapPrefab, ent.GetOrigin() + Vector(0, 0.3, 0));
 		if (!item)
 			return;
 

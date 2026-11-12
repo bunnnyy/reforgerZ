@@ -202,6 +202,12 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every new life is given (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
 	ResourceName m_sNotebookPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The compass every new life is given (vanilla Compass_Adrianov.et), unless the loadout already has one. Empty = none", "et")]
+	ResourceName m_sCompassPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The paper map every new life is given (vanilla PaperMap_01_folded.et), unless the loadout already has one. Empty = none", "et")]
+	ResourceName m_sMapPrefab;
+
 	protected static ref RZ_UISettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------

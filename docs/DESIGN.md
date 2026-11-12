@@ -2766,6 +2766,9 @@ wherever the spawn point put you.
 
 ### The wind-up radio and faction voices
 
+- Every new life gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
+  (vanilla's folded map, **UI > Map prefab**) a few seconds after spawn, unless its loadout already
+  has one; one that doesn't fit lies at your feet.
 - Every new life gets a **wind-up radio** (unless they carry one). It picks up the **open
   channels**: the Haven ("If you can hear this, *town* is open. Bring water if you can. Bring
   yourself either way."), Bastion's net and the Red Hand's taunts. About every 12 minutes for a

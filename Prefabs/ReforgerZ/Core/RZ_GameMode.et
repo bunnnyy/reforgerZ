@@ -1921,6 +1921,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sHallPage "{FCD5A2E4F7512EFF}UI/layouts/ReforgerZ/RZ_HallPage.layout"
     m_sSeasonPage "{4942F4A3AB72EA37}UI/layouts/ReforgerZ/RZ_SeasonPage.layout"
     m_sNotebookPrefab "{6C1F4A7B92D3E0C1}Prefabs/ReforgerZ/UI/RZ_Notebook.et"
+    m_sCompassPrefab "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et"
+    m_sMapPrefab "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et"
    }
   }
   SCR_RespawnSystemComponent "{56B2B4793051E7C9}" {

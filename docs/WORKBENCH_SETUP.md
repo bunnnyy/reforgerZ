@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **314 prefab fields**: 46 on `RZ_GameModeComponent`, 259 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **294 entries**: 181 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **316 prefab fields**: 46 on `RZ_GameModeComponent`, 261 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **296 entries**: 181 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -799,6 +799,8 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the SpawnRow layout (UI/LAYOUTS.md) | — | UI > Spawn row layout | optional | our spawn screen, the background picker, in place of vanilla's deploy menu (empty = vanilla's deploy menu). Needs the RZ_SpawnMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the MapLegend layout (UI/LAYOUTS.md) | — | UI > Map legend layout | optional | the map key in the full-screen map's bottom-left, shown zoomed out (empty = no legend; needs the map icon layout) |
 | `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent`; `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
+| (existing prefab) | vanilla's compass ({7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et) | — | UI > Compass prefab | optional | every new life carries one (unless the loadout has a compass) |
+| (existing prefab) | vanilla's folded paper map ({13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et) | — | UI > Map prefab | optional | every new life carries one (unless the loadout has a paper map) |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
 | (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
