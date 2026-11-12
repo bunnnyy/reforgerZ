@@ -17,7 +17,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 (cloud, docs pass): `Prefabs/ReforgerZ/UI/RZ_Notebook.et:40`, the item's Description: it still lists the map key (now on the map) and lacks the season tab. Set it to exactly: `Your notebook: standing, the jobs you know of, what you heard, the hall of fame and the season. Take it in hand to read it.`
 - 2026-11-12 (cloud, docs pass): the map key moved up to offset (96, -190) in `RZ_MapLegend.layout`, clear of vanilla's key hints and scale bar: check in play that it covers none of vanilla's map widgets (WBS §8, the map key).
 - 2026-11-12 07f80de: the crafting screen (UI.md, "The crafting screen"): in Workbench add `MenuPreset RZ_CraftMenu` to `Configs/System/chimeraMenus.conf` (layout `RZ_CraftMenu.layout`, class `RZ_CraftMenu`, like the `RZ_ShopMenu` entry), and set **UI > Craft row layout** to `RZ_CraftRow.layout` on `RZ_GameMode.et` (WBS §4, Setting up the UI, step 4a.4). Until then every server start logs `GUI (E): Menu preset 'RZ_CraftMenu' not found!` (harmless: the actions stay).
-- 2026-11-12 07f80de: open `UI/layouts/ReforgerZ/RZ_CraftMenu.layout` and `RZ_CraftRow.layout` (written as text) in the layout editor, fix what it reports, and check nothing runs past its slot at 1920×1080 (UI/LAYOUTS.md, "Crafting screen").
 - 2026-11-12 07f80de: play the crafting screen with a pad, the mouse and on a TV at a workbench, with a few recipes' outputs set: open, move, short and ready recipes, Craft, the countdown, the item in your pack, B, danger closing it, and the slot emptied (WBS §8, "The crafting screen"); and the new VERIFY `UI/RZ_ItemPreview.c:65` (the output's description and weight).
 - 2026-11-12 91fcf47: open `UI/layouts/ReforgerZ/RZ_Hud.layout` (its new `LookPanel` with `LookIcon` and `LookText`, `RZ_Hud_Look`, written as text) in Workbench, fix what it reports, and see the look line in play in Bastion kit at a road post, with a pad and on a TV (UI.md, the HUD; UI/LAYOUTS.md).
 - 2026-11-11 98c9c51: read a safehouse board in play and check its menu (**UI > Board menus** is on by default; turn it off only if the menu fails).
@@ -105,6 +104,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (PC): **static icons now have images** (the HUD's PausedIcon, NoiseIcon, RadioIcon and the Radio page's Chan0..8: `Texture` the RZ_Icons imageset, `Image` the icon name, after each `Color`); they drew as flat squares. Seen right in play. UI/LAYOUTS.md and UI.md updated. The crafting preset and **UI > Craft row layout** are set; every screen looks right in the layout preview at 1920 x 1080.
+- 2026-11-12 (PC): seen in play at Morton: a leaning Halcyon person by a house wall showed no head (looked clipped into the wall). If lean seats are placed against walls by code, keep them about 0.4 m off the wall.
 - 2026-11-12 (PC): **script fixes (one-liners, compile check OK):** negative seeds indexed arrays. `RZ_Tribes.c` CallPattern and AlphaWho, `RZ_TribePeople.c` CrewName now use `Math.AbsInt(...) % Count()` (each threw "Index out of bounds" in Workbench play on Everon); `RZ_SupplyLines.c` out-of-stock hash too (a negative seed made every item out of stock). Please scan for the same pattern in new code.
 
 ## Claims

@@ -123,8 +123,7 @@ waits is play, engine checks and the author's calls.
 ### UI
 - **Controllers in play:** play every screen with a pad, and look over the pages in the layout
   editor where text grew to 18 ([UI.md](UI.md#controllers), "What needs Workbench").
-- **The crafting screen in play:** add its menu preset, set **UI > Craft row layout** and craft
-  with a pad and the mouse ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)).
+- **The crafting screen in play:** craft at a workbench with a pad and the mouse ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui)).
 
 ### World interactions (from play-testing)
 - **The spawn screen and the map with a pad:** both are seen in Workbench play with the keyboard;

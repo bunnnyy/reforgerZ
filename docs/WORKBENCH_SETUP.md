@@ -1200,13 +1200,11 @@ in `UI/layouts/ReforgerZ/`.
       car repair screen is on. The same for `RZ_ShopMenu.layout` and `RZ_ShopItem.layout` (**UI >
       Shop item layout** is set, so the shop screen is on), and open one quartermaster prefab to
       see **Trade** (`RZ_ShopOpenAction`) at the top of its actions.
-   4. **The crafting screen** (written as text; not set yet). Add the `RZ_CraftMenu` preset to
-      `Configs/System/chimeraMenus.conf` in Workbench (layout `RZ_CraftMenu.layout`, class
-      `RZ_CraftMenu`, as the `RZ_ShopMenu` entry), open `RZ_CraftMenu.layout` and
-      `RZ_CraftRow.layout` once so Workbench registers them, and set **UI > Craft row layout** to
-      `RZ_CraftRow.layout`. Until then a workbench keeps its **Make:** actions; with the slot set
-      and the preset missing, the first **Use the workbench** says the recipes are in the action
-      menu and they come back.
+   4. **The crafting screen** (done). The `RZ_CraftMenu` preset is in
+      `Configs/System/chimeraMenus.conf` (layout `RZ_CraftMenu.layout`, class `RZ_CraftMenu`, as
+      the `RZ_ShopMenu` entry) and **UI > Craft row layout** is `RZ_CraftRow.layout`. Empty the slot
+      and a workbench keeps its **Make:** actions; with the slot set and the preset missing, the
+      first **Use the workbench** says the recipes are in the action menu and they come back.
    5. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
       transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
@@ -1958,7 +1956,7 @@ Warnings worth acting on:
 
 | Line | Means |
 |---|---|
-| `GUI (E): Menu preset 'RZ_NotebookMenu' not found!` (or another `RZ_` preset) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing. `RZ_CraftMenu` alone is expected until its preset is added (Setting up the UI, step 4a.4): the workbench keeps its Make actions |
+| `GUI (E): Menu preset 'RZ_NotebookMenu' not found!` (or another `RZ_` preset) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing. |
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off (the roads give N spots).` | Set Perimeter > Barricade prefab; N is how many checkpoints it would build |

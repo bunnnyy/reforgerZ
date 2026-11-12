@@ -376,6 +376,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
             Padding 0 0 8 0
            }
            Color 0.31 0.722 0.69 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "item_stabiliser"
            Size 18 18
           }
           TextWidgetClass "{FF077CABE7760E04}" {
@@ -465,6 +467,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
       Alignment 0 0
      }
      Color 0.604 0.639 0.369 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "status_secure_radio"
      Size 34 34
     }
     TextWidgetClass "{2AA03968B2731248}" {
@@ -539,6 +543,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
       Padding 0 0 10 0
      }
      Color 0.91 0.886 0.816 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "status_noise"
      Size 26 26
     }
     HorizontalLayoutWidgetClass "{AE179BB5561FE695}" {

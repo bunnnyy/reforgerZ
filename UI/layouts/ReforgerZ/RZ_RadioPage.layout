@@ -83,6 +83,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.949 0.761 0.188 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "status_broadcast"
      Size 28 28
     }
     TextWidgetClass "{96B8827204372515}" {
@@ -166,6 +168,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.89 0.639 0.231 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "faction_haven"
      Size 28 28
     }
     TextWidgetClass "{C7BBBBBF69EEB17A}" {
@@ -227,6 +231,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.604 0.639 0.369 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "faction_bastion"
      Size 28 28
     }
     TextWidgetClass "{D85798BD498BDFD4}" {
@@ -288,6 +294,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.784 0.208 0.169 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "faction_redhand"
      Size 28 28
     }
     TextWidgetClass "{F82478AEB9DE8169}" {
@@ -349,6 +357,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.31 0.722 0.69 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "faction_halcyon"
      Size 28 28
     }
     TextWidgetClass "{7ABED4E09FA6458F}" {
@@ -410,6 +420,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.91 0.886 0.816 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "marker_radio"
      Size 28 28
     }
     TextWidgetClass "{CD62590360B61D54}" {
@@ -493,6 +505,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.604 0.639 0.369 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "status_secure_radio"
      Size 28 28
     }
     TextWidgetClass "{B3A75731666AA7D7}" {
@@ -554,6 +568,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.784 0.208 0.169 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "status_secure_radio"
      Size 28 28
     }
     TextWidgetClass "{B08BE7347A3A8E08}" {
@@ -615,6 +631,8 @@ FrameWidgetClass "{F188BC08250C5B55}" {
       Alignment 0 0
      }
      Color 0.31 0.722 0.69 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "status_secure_radio"
      Size 28 28
     }
     TextWidgetClass "{5DCC67166C7C2A9F}" {

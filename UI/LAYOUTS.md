@@ -33,11 +33,10 @@ mockup, its section says so.
   Borders are a `Panel` with the `outline_2px` style. Accent bars are an `Image` 4–5 units thick;
   the scripts tint them (`SetColor`). A bar's background is an `Image` under its `ProgressBar`.
   Gaps ("10 apart") are the slots' padding. Text that "wraps" has wrapping on.
-- **Icons** are `Image` widgets, and no layout sets an image yet. An icon a script swaps gets its
-  image by name from **UI > Icon imageset**, and its tint. An icon marked *static* below draws as
-  a flat square in its colour until it's given its image from the `RZ_Icons` imageset in the
-  layout editor (not done yet). The Radio page's static icons are named after their icon
-  (`Chan6_status_secure_radio`).
+- **Icons** are `Image` widgets. An icon a script swaps gets its image by name from **UI > Icon
+  imageset**, and its tint. An icon marked *static* below has its image set in the layout: `Texture`
+  is the `RZ_Icons` imageset and `Image` the icon's name (without them it draws as a flat square in
+  its colour). The Radio page's static icons are named after their icon (`Chan6_status_secure_radio`).
 - **Fonts.** The game's UI fonts (`UI/Fonts/` in 1.9) have no mono or serif face. Where the trees
   say *mono* (and the clue paper's *serif*), the layouts use Roboto:
   `UI/Fonts/Roboto/Roboto_Bold.fnt` or `Roboto_Regular.fnt`. Everything else is RobotoCondensed:
@@ -224,7 +223,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_CarMenu` | `RZ_CarMenu` | `RZ_CarMenu.layout` |
 | `RZ_ShopMenu` | `RZ_ShopMenu` | `RZ_ShopMenu.layout` |
 | `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
-| `RZ_CraftMenu` | `RZ_CraftMenu` | `RZ_CraftMenu.layout` (not in the conf yet: added in Workbench, [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#setting-up-the-ui)) |
+| `RZ_CraftMenu` | `RZ_CraftMenu` | `RZ_CraftMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**, pad **View + RB**) in `IngameContext`, and
