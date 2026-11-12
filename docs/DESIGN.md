@@ -2807,14 +2807,14 @@ horde somewhere else. Players within 1.2 km hear it.
 
 - **Open channels** are faction chatter and the guidance broadcasts. A **house radio** tunes
   every faction's open channel with power, two of them on weak batteries.
-- **A house radio is switched on first.** Vanilla's small radio keeps its own **Turn on/off** (and
-  its music); **Listen to the radio** sits in the same prompt list and opens the object menu with
-  its options: Tune through the open channels, Work on a scrambled channel, Call on the open
-  channel and View radio. While it's off the menu says so and every option is dim with "Turn it on
-  first". A radio from a mod, with no switch of vanilla's, is never off. *Simplified:* switching it
-  off doesn't stop a crack already under way on it, and the switch isn't in the menu: vanilla's
-  own prompt is one step away, and its on/off runs on the player's machine as well as the server,
-  which a menu pick (server only) wouldn't do.
+- **On the radio itself.** Vanilla's small house radio keeps its own **Turn on/off** (and its
+  music); **Listen to the radio** sits in the same prompt list and opens the object menu with its
+  options: Tune through the open channels, Work on a scrambled channel, Call on the open channel
+  and View radio. *Simplified:* they work whether it's switched on or not, and the switch isn't in
+  the menu. The server can't tell: on the dedicated server vanilla's radio stays "off" even after
+  `EnableRadio(true)` (tried in the runtime test), since its on/off only plays sound on the players'
+  machines, so requiring it on would lock every house radio, and a menu pick runs only on the
+  server. Vanilla's own prompt is one step away in the same list.
 - **Secure channels** (Bastion's command net, the Red Hand boss, Halcyon's lab): only a Radio
   Operator can crack one, on a radio on the ground or a house radio: stand still 60 s with
   nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short

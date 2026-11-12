@@ -169,20 +169,6 @@ class RZ_PuzzleChoiceAction : RZ_GroupedAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! On a vanilla house radio the options need it switched on: vanilla's Turn on is in the same
-	//! prompt list (RZ_SecureRadio.IsSwitchedOff). Dim with why in the object menu.
-	override bool CanBePerformedScript(IEntity user)
-	{
-		if (RZ_SecureRadio.IsSwitchedOff(GetOwner()))
-		{
-			SetCannotPerformReason(RZ_SecureRadio.SWITCHED_OFF_REASON);
-			return false;
-		}
-
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	override protected bool HiddenByScreens()
 	{
 		// On a fixable car, the jobs are in the repair screen; at a workbench, the recipes in the crafting screen

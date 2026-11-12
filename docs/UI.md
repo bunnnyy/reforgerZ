@@ -52,7 +52,7 @@ The audit of 2026-11-12: 9 vanilla, 20 menu, 11 quick.
 | The power station: the door, the breakers, the generator, the main switch, its upkeep | Menu | [The power panel](#the-power-panel), one prompt (**Open the panel**) |
 | A stove: boil water, brew a remedy, cook | Menu | [The cooking screen](#the-cooking-screen); without its layout, [the object menu](#the-object-menu) |
 | A generator found in town: start, stop, refuel | Menu | The object menu |
-| A house radio: listen, tune, crack a channel, call, view | Menu | The object menu, from **Listen to the radio** on vanilla's radio itself, beside its **Turn on/off**; the options are dim until it's on (the call opens the talk screen, **View radio** [the radio screen](#the-radio-screen)) |
+| A house radio: listen, tune, crack a channel, call, view | Menu | The object menu, from **Listen to the radio** on vanilla's radio itself, beside its **Turn on/off** (the call opens the talk screen, **View radio** [the radio screen](#the-radio-screen)) |
 | A well (**Interactions > Well spots** on) | Menu | The object menu |
 | Puzzle objects: read, use, choose | Menu | The object menu: the read is its text, the uses and choices its rows |
 | Keypads and terminals | Menu | The object menu: the twelve keys as rows, what's typed on the Enter row |

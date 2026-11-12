@@ -88,10 +88,7 @@ class RZ_Listener
 //------------------------------------------------------------------------------------------------
 class RZ_SecureRadio
 {
-	static const string SWITCHED_OFF_REASON = "Turn it on first";
-
 	protected static const float ANCHOR_RADIUS = 30;
-	protected static const string SWITCHED_OFF_TEXT = "It's switched off. Turn it on first.";
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -152,37 +149,9 @@ class RZ_SecureRadio
 
 	// ================================================================ House radios
 	//------------------------------------------------------------------------------------------------
-	//! A house radio with vanilla's own on/off switch (RadioBroadcastComponent: the repo's override
-	//! of vanilla's small radio carries our prompts beside its Turn on) that's off now. A set
-	//! without one (another mod's, under an interaction spot) is never off.
-	static bool IsSwitchedOff(IEntity radio)
-	{
-		if (!radio)
-			return false;
-
-		// VERIFY: vanilla's Turn on/off (SCR_TurnOnAction) runs on the server too, so GetState there is what the player switched
-		RadioBroadcastComponent broadcast = RadioBroadcastComponent.Cast(radio.FindComponent(RadioBroadcastComponent));
-		return broadcast && !broadcast.GetState();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The spot's radio is switched off: says so (the object menu shows it as its text). True if so.
-	protected bool RefuseSwitchedOff(int playerId, RZ_Spot s)
-	{
-		if (!s.m_Comp || !IsSwitchedOff(s.m_Comp.GetOwner()))
-			return false;
-
-		m_GM.NotifyPlayer(playerId, "Radio", SWITCHED_OFF_TEXT);
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! "Listen to the radio": one thing on the air right now.
 	void ListenHouseRadio(int playerId, RZ_Spot s, IEntity user)
 	{
-		if (RefuseSwitchedOff(playerId, s))
-			return;
-
 		string line = OpenLine(-1);
 		if (line.IsEmpty())
 			line = "Static, and under it the same government recording, over and over.";
@@ -195,10 +164,6 @@ class RZ_SecureRadio
 	//! the open channel, 3 the radio screen (UI/RZ_RadioMenu.c).
 	void HandleHouseRadio(int playerId, RZ_Spot s, int option, IEntity user)
 	{
-		// Every option needs vanilla's switch on, where the set has one
-		if (RefuseSwitchedOff(playerId, s))
-			return;
-
 		if (option == 3)
 		{
 			if (s.m_Comp)

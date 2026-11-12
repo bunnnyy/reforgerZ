@@ -861,7 +861,7 @@ still to do:
 | Prefab | Add | Why | Need |
 |---|---|---|---|
 | any vanilla radio prefab you want crackable | `RZ_TuneRadioAction`, `RZ_RadioCallAction` | secure radio channels, and calling on the open channel with Dialogue > Trees on (the wind-up radio gets both already) | optional |
-| vanilla's small house radio, Prefabs/Props/Civilian/RadioSmall_01_Base.et (done in the repo: a copy with vanilla's GUID and these added, the actions in its own SCR_TurnOnAction context; its four colours inherit it) | `RZ_PuzzleObjectComponent` (Hidden until tagged on), `RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction` (Option 0-3) | the house radio is its own interaction spot: Listen to the radio (the object menu) sits in one prompt list with vanilla's Turn on/off, and its options need it switched on (docs/DESIGN.md, World interactions). Other radios, a mod's, keep an interaction spot | optional |
+| vanilla's small house radio, Prefabs/Props/Civilian/RadioSmall_01_Base.et (done in the repo: a copy with vanilla's GUID and these added, the actions in its own SCR_TurnOnAction context; its four colours inherit it) | `RZ_PuzzleObjectComponent` (Hidden until tagged on), `RZ_ClueComponent`, `RZ_ReadClueAction`, 4 × `RZ_PuzzleChoiceAction` (Option 0-3) | the house radio is its own interaction spot: Listen to the radio (the object menu) sits in one prompt list with vanilla's Turn on/off (docs/DESIGN.md, World interactions). Other radios, a mod's, keep an interaction spot | optional |
 | quartermasters you placed by hand (not from the manifest) | `RZ_TalkAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused) | optional |
 | any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item or crate, never a vehicle or a car part (refused: cars are only found) | optional |
@@ -1814,7 +1814,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **143** lines with the tag, all in the game scripts (one is the comment in
+There are **142** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 30 are in `UI/`: 25 of [the UI's](#the-ui-28), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/` and two are the radio screen's in `Interactions/`). The Workbench plugin has none left: its real
@@ -1836,12 +1836,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (77)
+### Medium risk: big features, with a fallback (76)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
-| `Interactions/RZ_Interactions.c:1468` | the repo's `Prefabs/Props/Civilian/RadioSmall_01_Base.et` (vanilla's GUID `{B68D3829D4442F80}`, a full copy of vanilla's with our set added) replaces vanilla's prefab, so every small radio on the map and in compositions, its four colours too, carries **Listen to the radio** and the four options in its own `SCR_TurnOnAction` context, beside vanilla's Turn on/off | The radio gets its own invisible spot again, a second prompt beside vanilla's (as before). In Workbench, open the radio's prefab: the Resource Browser should show the ReforgerZ copy, and its ActionsManagerComponent our five actions; if Workbench wants an override made its own way, use **Override in ReforgerZ** on vanilla's prefab and add the same set (the table in [Add to prefabs you already have](#add-to-prefabs-you-already-have)) |
-| `Interactions/RZ_SecureRadio.c:163` | vanilla's Turn on/off (`SCR_TurnOnAction`) runs on the server as well as on the player's machine, so `RadioBroadcastComponent.GetState()` on the server is what the player switched | Every option of a house radio stays dim with "Turn it on first", or works while it's off. Make `RZ_SecureRadio.IsSwitchedOff` return false: the options then work whether it's on or not |
+| `Interactions/RZ_Interactions.c:1468` | the repo's `Prefabs/Props/Civilian/RadioSmall_01_Base.et` (vanilla's GUID `{B68D3829D4442F80}`, a full copy of vanilla's with our set added) replaces vanilla's prefab, so every small radio on the map and in compositions, its four colours too, carries **Listen to the radio** and the four options in its own `SCR_TurnOnAction` context, beside vanilla's Turn on/off. The hosting itself ran in the runtime test (a new-GUID copy spawned by the tester: tagged, untagged when the tester left, no exception), but the Linux test server doesn't apply a same-GUID copy from an unpacked addon (no more than `chimeraMenus.conf`), so only Workbench or a packed build shows this | The radio gets its own invisible spot again, a second prompt beside vanilla's (as before). In Workbench, open the radio's prefab: the Resource Browser should show the ReforgerZ copy, and its ActionsManagerComponent our five actions; if Workbench wants an override made its own way, use **Override in ReforgerZ** on vanilla's prefab and add the same set (the table in [Add to prefabs you already have](#add-to-prefabs-you-already-have)) |
 | `Interactions/RZ_Medical.c:15` | vanilla's consumable item component runs `ApplyItemEffect` on the server when a medic finishes vanilla's heal on another character (a bandage, tourniquet, morphine or saline used on them) | A Nurse or Doctor no longer slows a bite when treating someone: no line comes. Find the server-side point of vanilla's heal on another character (`SCR_HealingUserAction`, the health item's `ApplyEffect`) and move the hook there |
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
 | `Factions/RZ_Checkpoints.c:562` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
@@ -2520,12 +2519,10 @@ session, tick off:
   copy of `Prefabs/Props/Civilian/RadioSmall_01_Base.et`, VERIFY `Interactions/RZ_Interactions.c:1468`).
   Far from players it shows only vanilla's **Turn on**. Walk up (within 30 m, then a few seconds):
   looking at the radio shows one prompt list with **Turn on** and **Listen to the radio**, the
-  D-pad moves between them and A uses one; there's no second prompt floating beside it. Off, Listen
-  opens the menu "Radio" with "It's switched off. Turn it on first." and every option dim with
-  "Turn it on first". B, pick **Turn on** (the music starts), then Listen: the radio's line, and
-  Tune, Work on a scrambled channel, Call on the open channel and View radio work (VERIFY
-  `Interactions/RZ_SecureRadio.c:163`). A second player sees the same state. Walk 60 m off and
-  back: still one list. A radio in a camp's dressing (the radio table) shows only Turn on/off.
+  D-pad moves between them and A uses one; there's no second prompt floating beside it. **Turn on**
+  starts the music and becomes **Turn off**; **Listen to the radio** opens the menu "Radio" with the
+  radio's line, and Tune, Work on a scrambled channel, Call on the open channel and View radio work
+  (on or off). Walk 60 m off and back: still one list. A radio in a camp's dressing (the radio table) shows only Turn on/off.
   Empty **UI > Object row layout**: Listen and the options are prompts again, all on the radio beside Turn on.
 - [ ] The cooking screen, with a pad (**UI > Cook row layout** set): at a stove only **Use the
   stove** shows; it opens the crafting screen headed "Stove" with Boiled water, Home remedy and the

@@ -6178,7 +6178,7 @@
     {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=2"], "name": "Choose"},
     {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=3"], "name": "Choose"}
    ],
-   "why": "the house radio is its own interaction spot: Listen to the radio (the object menu) sits in one prompt list with vanilla's Turn on/off, and its options need it switched on (docs/DESIGN.md, World interactions). Other radios, a mod's, keep an interaction spot",
+   "why": "the house radio is its own interaction spot: Listen to the radio (the object menu) sits in one prompt list with vanilla's Turn on/off (docs/DESIGN.md, World interactions). Other radios, a mod's, keep an interaction spot",
    "required": false,
    "minimum": false
   },
