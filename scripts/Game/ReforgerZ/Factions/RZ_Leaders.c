@@ -2712,7 +2712,7 @@ class RZ_Leaders
 				m_GM.AddInfamy(killer, l.m_eFaction, m_Settings.m_iKillInfamy, "killed a leader", RZ_RepFlag.ACT, "shot " + l.m_sName);
 			}
 
-			AddHeadline(string.Format("%1 was wounded in %2. They're still in charge.", l.m_sName, l.m_sPlace));
+			AddHeadline(string.Format("%1 was wounded in %2, and is still giving orders, from a chair.", l.m_sName, l.m_sPlace));
 			return;
 		}
 
@@ -3084,7 +3084,7 @@ class RZ_Leaders
 				RZ_Safehouse h = houses.Get(i);
 				if (h.m_bShort)
 				{
-					lines.Insert(string.Format("The safehouse in %1 is out of food.", h.m_sName));
+					lines.Insert(string.Format("The safehouse in %1 is out of food. They're rationing water and talking about walking to the next house.", h.m_sName));
 					break;
 				}
 			}
@@ -3093,7 +3093,7 @@ class RZ_Leaders
 		vector hot;
 		float heat;
 		if (m_GM.GetHeat().GetHottest(hot, heat) && heat >= 40 && RZ_Util.DistXZ(from, hot) <= 2500)
-			lines.Insert(string.Format("Something's stirred them up, %1 from here.", RZ_Util.DirectionText(from, hot)));
+			lines.Insert(string.Format("Something's stirred the infected up, %1 from here. They're all walking the same way.", RZ_Util.DirectionText(from, hot)));
 
 		// Territory and faction news: the latest quiet headline, a rumour (true or not)
 		if (m_GM.GetFactionLife())

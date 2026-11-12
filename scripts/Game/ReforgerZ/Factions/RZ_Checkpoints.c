@@ -961,7 +961,7 @@ class RZ_Checkpoints
 			if (hostility)
 				hostility.AddGrudge(playerId, RZ_EFaction.MILITARY, post.m_vPos);
 
-			SayThen(playerId, title, RZ_EFaction.MILITARY, "Stop! STOP!", "You ran the checkpoint. They'll remember the face.");
+			SayThen(playerId, title, RZ_EFaction.MILITARY, "Halt. Halt or we fire. Runner at the checkpoint, all stations.", "You ran the checkpoint. They'll remember the face.");
 		}
 	}
 
