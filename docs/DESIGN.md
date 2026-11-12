@@ -2840,8 +2840,8 @@ Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningScenes.c`, `RZ_
 Every life starts somewhere random that suits who you were, coming out of a door for a reason, and
 within a few seconds someone outside is talking to you and there is one obvious thing to do: the
 first of the steps that teach the Zone and tell its story, then hand you to the faction your
-background belongs with. Nobody is new: everyone has been trapped since the roads shut. What's still
-to come is in [designs/OPENINGS.md](../designs/OPENINGS.md).
+background belongs with. Nobody is new: everyone has been trapped since the roads shut. How their
+lines are written is in [WRITING.md](WRITING.md#the-voices).
 
 **Where you start.** Rolled on the server for each life; nobody picks it, and there are no chosen
 starts. The spawn screen asks for one of the spawn points at random; the spawn point handler
@@ -2918,7 +2918,7 @@ the camp pieces ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has 
 
 | Who | How often | Who they are, by why today |
 |---|---|---|
-| Someone from before | about three in four | who they were to you, by your background (below); the hiding place: "Christ. You're alive. I'd stopped knocking on that door."; your group gone: the one who came back; the fever: who wrote on the door |
+| Someone from before | about three in four | who they were to you, by your background (below); the hiding place: "Look at you. Alive. I'd stopped knocking on that door."; your group gone: the one who came back; the fever: who wrote on the door |
 | A stranger | about one in four | a stranger who heard the door; someone who saw them go; the stranger who wrote on the door |
 | An earlier life's | 35%, when a wanderer remembers an earlier life of yours and hasn't met this one ([life-stamped memory](REPUTATION.md#face-and-name)) | that wanderer, by name and role ("Old Marta, a trader who thinks they know you"): "You look like someone I knew." Their greeting reads what they remember: a kindness, a wrong, or only the face |
 
@@ -2971,8 +2971,10 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
 No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
-With **Dialogue > Trees** on, the conversations `for opening` add their greeting by your background
-and things to ask on the way ([DIALOGUE.md](DIALOGUE.md#the-conversations)).
+With **Dialogue > Trees** on, the conversations `for opening` add their greeting (by who they are,
+your background and why today) and things to ask on the way
+([DIALOGUE.md](DIALOGUE.md#the-conversations)); without it, a plain greeting by who they are and why
+today opens the first step.
 
 **Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
 errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's

@@ -244,7 +244,7 @@ class RZ_OpeningText
 			case RZ_EOpeningReason.FEVER: return "\"It's you. It's really you. I wrote that on the door and then I couldn't bear to look.\"";
 		}
 
-		return "\"Christ. You're alive. I'd stopped knocking on that door.\"";
+		return "\"Look at you. Alive. I'd stopped knocking on that door.\"";
 	}
 
 	//------------------------------------------------------------------------------------------------

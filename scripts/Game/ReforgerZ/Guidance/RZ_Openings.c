@@ -1279,6 +1279,7 @@ class RZ_Openings
 		o.m_bEnded = true;
 		DropStep(o, why);
 		SetFlag(o, FLAG_STEP, 4);
+		SetFlag(o, FLAG_FIRST, 0);
 		RZ_Log.Info(string.Format("Openings: ended for %1: %2 (step %3, %4 min)", RZ_Util.PlayerName(o.m_iPlayer), why, o.m_iStep, RZ_Util.RoundToInt((m_fClock - o.m_fBorn) / 60)));
 	}
 

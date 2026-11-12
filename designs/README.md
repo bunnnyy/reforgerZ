@@ -6,6 +6,5 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 ## Order of work
 
-| # | Design | What it is |
-|---|---|---|
-| 1 | [OPENINGS.md](OPENINGS.md) | Openings' phase 4 (phases 1 to 3 are built: [DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts)): lines for every background and reason, and a voice pass |
+No design waits today: the last one, Openings, is built ([DESIGN.md](../docs/DESIGN.md#openings-how-every-life-starts)).
+A new approved design is added here with its place in the order of work.

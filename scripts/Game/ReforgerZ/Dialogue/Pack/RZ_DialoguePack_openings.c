@@ -4,6 +4,7 @@ class RZ_DialoguePack_openings
 	static void Add(RZ_DialogueDB db)
 	{
 		Add0(db);
+		Add1(db);
 	}
 
 	protected static void Add0(RZ_DialogueDB db)
@@ -18,11 +19,26 @@ class RZ_DialoguePack_openings
 		db.Say("", "\"Somebody. Somebody's there. I'll keep this on. I'll call again at dusk, if you'll listen.\"");
 		db.Do("cset:opening.answered=1");
 		db.Choice("dusk", "\"I'll listen at dusk.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.earlier_who", "opening", "cflag:opening.who=3 & cflag:opening.step>=1 & cflag:opening.step<=3", "Ask who they think you are.", 4, 1, "plain");
+		db.Node("start");
+		db.Say("cflag:opening.earlier=2", "\"Someone who did me wrong on the road. Took what I had and left me the walk. Different face. I'm choosing to think so.\"");
+		db.Say("cflag:opening.earlier=1", "\"Someone who did me a kindness on the road and never stayed to be thanked. Different face. Same way of standing.\"");
+		db.Say("", "\"Someone I passed on the road, before. Different face, same hands. I'm probably wrong.\"");
+		db.Say("", "\"If I'm not, you owe me a story. If I am, you owe me nothing. Either way, sit a minute.\"");
+		db.Choice("maybe", "\"Maybe I was.\"", "maybe", "", "", "", "", "", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("maybe");
+		db.Say("", "\"Then welcome back. It's no better out here than it was. The roads still go nowhere you'd want.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("opening.greet.doctor", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:doctor", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"Doctor. They went for the clinic at the crossroads and I turned back halfway. I'm not proud of it. I'm here, though.\"");
+		db.Say("cflag:opening.why=3", "\"I chalked the door, Doctor. Ward rule: if they talk sense on day four, they're through it. You talked sense.\"");
 		db.Say("", "\"Doctor. I'd know that cough through a wall. Ward three's gone, you know. All of it. We're what's left of the rota.\"");
 		db.Conv("opening.greet.drifter", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:drifter", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"You were with that lot who went out with the map. I know you. Everyone knows you a bit. They're not back.\"");
+		db.Say("cflag:opening.why=3", "\"Somebody had to write on your door. I've seen you at every pump and market from here to the line. Couldn't not.\"");
 		db.Say("", "\"I know you. Everyone knows you a bit, don't they. Never mind from where. You're alive, that's the thing.\"");
 		db.Conv("opening.greet.earlier", "opening", "cflag:opening.first=1 & cflag:opening.who=3", "", 0, 5, "plain");
 		db.Node("start");
@@ -31,33 +47,53 @@ class RZ_DialoguePack_openings
 		db.Say("", "\"You look like someone I knew. Same walk. I don't suppose you'd remember a face from the road.\"");
 		db.Conv("opening.greet.elder", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:elder", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"They went to see about the next town. I stayed. Somebody ought to be here when the old ones open their doors.\"");
+		db.Say("cflag:opening.why=3", "\"I sat with your door like I sat with my mother's. She didn't come through it. You did.\"");
 		db.Say("", "\"It's you. The children kept asking if you'd gone. I kept saying no. I'm glad I wasn't lying to them.\"");
 		db.Conv("opening.greet.excon", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:excon", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"Four went out, three days back. I stayed. I've done enough time waiting on people who said back by dark.\"");
+		db.Say("cflag:opening.why=3", "\"Wrote it on your door like a cell wall. Counted the mornings the same way. Some things you don't unlearn.\"");
 		db.Say("", "\"Look at you. Out of one box and straight into another. Some of us have a gift for it.\"");
 		db.Conv("opening.greet.hunter", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:hunter", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"They went off across my bottom field three mornings back, the four of them. I'd know their tracks. Nobody's walked them home.\"");
+		db.Say("cflag:opening.why=3", "\"I wrote that on your door. Saw a fox come through a fever like that, once. Never a person, till now.\"");
 		db.Say("", "\"Thought that was you. Nobody else walks that quiet. My top field's yours now, if anyone still wants fields.\"");
 		db.Conv("opening.greet.labtech", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:labtech", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"They took our notes to the lab to trade for a place. I said I'd mind you. I'm minding you.\"");
+		db.Say("cflag:opening.why=3", "\"Day four, the fever broke and the bite closed over. I wrote it all down. Somebody at the lab will want those notes.\"");
 		db.Say("", "\"You're alive. They read your name out at the lab gate, with the missing. They still want hands like yours.\"");
 		db.Conv("opening.greet.mechanic", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:mechanic", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"You're still here. They took my van to go and look, and the van's not back either. You'd have heard her coming.\"");
+		db.Say("cflag:opening.why=3", "\"That cough's gone. Good. I sat out here with my toolbox, fixing nothing, just to have something in my hands.\"");
 		db.Say("", "\"It's you. You fixed my van twice and charged me once. I always meant to pay the other one.\"");
 		db.Conv("opening.greet.nurse", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:nurse", "", 0, 5, "plain");
 		db.Node("start");
-		db.Say("", "\"Christ. It's you. You did my boy's stitches in May. He still shows people the scar, when there's people to show.\"");
+		db.Say("cflag:opening.why=2", "\"It's you. I came back and the others didn't. My boy kept asking for the nurse who did his stitches. I said you'd be here.\"");
+		db.Say("cflag:opening.why=3", "\"You did my boy's stitches in May, and I sat outside your door four nights. I wasn't leaving you to it.\"");
+		db.Say("", "\"It's you. You did my boy's stitches in May. He still shows people the scar, when there's people to show.\"");
 		db.Conv("opening.greet.police", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:police", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"Officer. Your lot went out with a map and a whistle. I kept the shop door open for them. I'll keep it open a while yet.\"");
+		db.Say("cflag:opening.why=3", "\"Officer. I locked you in. Sorry. It was the only key I had, and you'd have done the same on your beat.\"");
 		db.Say("", "\"Officer. You bought one apple every morning and never ate it. I used to wonder about that. I still do.\"");
 		db.Conv("opening.greet.radioham", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:radioham", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"They took the good set and went looking for a higher roof. I've listened on the old one every night. Nothing on it.\"");
+		db.Say("cflag:opening.why=3", "\"I chalked your door and sat out here with the wind-up, reading you the weather. Every night. You never answered, till now.\"");
 		db.Say("", "\"I know that voice. Half past one, the night band. You always signed off with the weather.\"");
 		db.Conv("opening.greet.raider", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:raider", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"Your crew left you three days ago. I'd have left you too. I came back for my watch, and here you are.\"");
+		db.Say("cflag:opening.why=3", "\"I wrote on your door. Don't look at me like that. If you'd turned, I wanted my watch back first.\"");
 		db.Say("", "\"You. You took my watch in March. Keep it. I want something else from you, and it isn't what you think.\"");
 		db.Conv("opening.greet.soldier", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:soldier", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"Sarge. The others went to find the line, to see if it's still there. I stayed with you. Somebody had to hold here.\"");
+		db.Say("cflag:opening.why=3", "\"Sarge. Bitten on the arm, and still you. I chalked it on the door like a sitrep. I didn't believe it either.\"");
 		db.Say("", "\"Sarge? It's me. The line went and I never made it back to it. Looks like you didn't either.\"");
 		db.Conv("opening.greet.stranger", "opening", "cflag:opening.first=1 & cflag:opening.who=2", "", 0, 5, "plain");
 		db.Node("start");
@@ -66,6 +102,8 @@ class RZ_DialoguePack_openings
 		db.Say("", "\"I heard the bolt go. Don't mind me. I don't know you, but nobody should come out of a door on their own.\"");
 		db.Conv("opening.greet.unemployed", "opening", "cflag:opening.first=1 & cflag:opening.who=1 & bg:unemployed", "", 0, 5, "plain");
 		db.Node("start");
+		db.Say("cflag:opening.why=2", "\"They went out to see about food and I stayed to see about you. Neither of us had anything better on.\"");
+		db.Say("cflag:opening.why=3", "\"I sat outside four nights. Didn't have anywhere else to be. Never have, really.\"");
 		db.Say("", "\"You're alive. Good. Don't worry about the money. Money's a joke now, and not a good one.\"");
 		db.Conv("opening.settle", "opening", "cflag:opening.step=2 & cflag:opening.task=16 & cflag:opening.settled=0", "Hear the two families out.", 0, 0, "plain");
 		db.Node("start");
@@ -105,6 +143,37 @@ class RZ_DialoguePack_openings
 		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("lab");
 		db.Say("", "\"Halcyon. White coats in a school, in masks. They say there's a cure in the specials, if enough of them get cut open.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.why_fever", "opening", "cflag:opening.why=3 & cflag:opening.step>=1 & cflag:opening.step<=3", "Ask what happened to you.", 4, 1, "plain");
+		db.Node("start");
+		db.Say("", "\"You were bitten on the third day. Then the fever. Most don't come out of it, or they come out as something else.\"");
+		db.Say("", "\"You came out as you. The lab people would want to know how. I wouldn't tell them yet.\"");
+		db.Choice("why", "\"Why not tell them?\"", "lab", "", "", "", "", "", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("lab");
+		db.Say("", "\"Because they'd want more than your story. Let them earn it. Go and see them when you choose, not when they send for you.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.why_group", "opening", "cflag:opening.why=2 & cflag:opening.step>=1 & cflag:opening.step<=3", "Ask where the others went.", 4, 1, "plain");
+		db.Node("start");
+		db.Say("", "\"To see about the next town. Bread, somebody said. Somebody always says bread.\"");
+		db.Say("", "\"There's three days of dark between back by dark and now. Count them if you want. I've stopped counting.\"");
+		db.Choice("look", "\"Should we go and look?\"", "look", "", "", "", "", "", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
+		db.Node("look");
+		db.Say("", "\"Not today, and not the two of us. If they're anywhere, someone at a safehouse will have their names. Ask there.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("opening.why_hiding", "opening", "cflag:opening.why=1 & cflag:opening.step>=1 & cflag:opening.step<=3", "Ask how long it's been.", 4, 1, "plain");
+		db.Node("start");
+		db.Say("", "\"Long enough that the calendar's mostly pencil. Long enough that I stopped knocking every day and started knocking every other.\"");
+		db.Say("", "\"People came out of their doors in ones and twos all week. You're the last on this street, I think.\"");
+		db.Choice("others", "\"Who else came out?\"", "others", "", "", "", "", "", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("others");
+		db.Say("", "\"The baker's girl. The man with the dogs, without the dogs. A few I didn't know. Everybody looks thinner than I remember.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 }

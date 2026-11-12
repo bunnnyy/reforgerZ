@@ -67,6 +67,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | World interactions: loose loot in houses (rolled as data from the pool or built-in vanilla items by building type, 4 to 6 things a building in a fresh town and one or two in a picked-over one, no prefab twice in a building, one roll per building, none at faction places, put out on furniture and floors on every storey only near players, taken with vanilla's Pick up, refilled after 45 minutes, never in front of a player, with a loot log; keys, letters and mission items lie loose too), bodies looted with the vanilla inventory (what they carry goes into the body, or beside it; no search prompt), car wrecks as one boot opened with the vanilla inventory (no siphoning or stripping), locked doors (the vanilla door action hooked; Unlock, Lock and Force on the door leaf; AI kept out by doorway blockers with local navmesh rebuilds, an optional AI door hook, and infected banging on the door) and keys as real items, readable things, fixable cars (only ever found: two or three missing parts, a wrench or toolkit to fit them, long loud hotwiring that can fail, rare keys; the tyre and planks are carryable items), crafting, traps, generators, fire (a thrown molotov, or a full fuel can in your hands at the doorway), water, a Nurse or Doctor slowing a bite when they treat someone with vanilla's medical items, bells, secure radio | [World interactions](DESIGN.md#world-interactions) |
 | New-player guidance: experience levels, tips, wind-up radio, faction voices | [New-player guidance](DESIGN.md#new-player-guidance) |
 | Openings, phase 1 (**Guidance > Openings**): every life starts at a random place that fits its background (no start picker, no chosen starts), out of its hiding place with a calendar by the open door; someone from before speaks first on the talk screen; a three-step chain on handed errands (search a house, water or a cut hand, the walk), the story told a piece a step, ending at Halcyon, the Red Hand, Bastion or the Haven by background with 10 Fame; the tracker follows each step; the only job that starts without interacting (`IsOpening()`); 16 conversations `for opening` | [Openings](DESIGN.md#openings-how-every-life-starts), [ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain) |
+| Openings, phase 4: lines for every background and reason (each background's greeting in the hiding place, with its group gone and after the fever; a stranger's and an earlier life's by why today and what they remember; something to ask for each reason and for the earlier life's wanderer), and a voice pass over all opening text ([WRITING.md](WRITING.md#the-voices)) | [DIALOGUE.md](DIALOGUE.md#the-conversations) |
 | Openings, phase 3: why today (the hiding place, your group gone 18, the fever broke 12; **Guidance > Group gone weight**, **Fever weight**; a brand-new player leans to the hiding place), three scenes per reason with their reads, the old spawn scenarios' six clues moved into the scenes (two to a reason, each only while true) and the scenarios gone; who's outside (someone from before, a stranger one time in four, a wanderer from an earlier life held off the road while they stand there); the chain by experience (levels 0-1 all three steps, level 1's search shorter; level 2 the background's step then Where the Work Is; level 3 Where the Work Is and someone outside one time in three; nobody outside: the scene's read hands it) | [Openings](DESIGN.md#openings-how-every-life-starts) |
 | Openings, phase 2: each background's own step 2 on the errand engine (the Nurse's fever, the Doctor's clock, the Mechanic's pump, the Hunter's watch unseen, the Police Officer's keys, the Ex-Con's toll, the Lab Technician's sample, the Radio Operator's open channel, the Unemployed's swap, the Soldier's gate, the Raider's debt, the Elder's two families, the Drifter's three asks), each falling back to water or the cut; step 1 at a building of the background's kind; `RZ_ErrandDef.StepCounts`; the 13 backgrounds' props by the door (**Guidance > Opening scenes**, built from `pieces.py`) | [Openings](DESIGN.md#openings-how-every-life-starts), [ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain) |
 | Cure research, antidotes, the final stand, the season's winner; the pace by play (research ×0.25 to ×2.5 for the last week's player-hours); the lab's capacity (a backlog worked through at 3% a real day, capped at 4 days of work as a backstop: samples refused and mission research lost while it's full, +25% on what fills a near-empty backlog to half a day); breakthrough news held until someone is online | [Cure research](DESIGN.md#cure-research-and-the-seasons-end) |
@@ -92,11 +93,9 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 
 ## Next
 
-Everything below is approved. One approved design waits to be finished: **Openings**' phase 4
-(lines for every background and reason, and a voice pass; [designs/OPENINGS.md](../designs/OPENINGS.md), order in
-[designs/README.md](../designs/README.md)).
-Everything else is built (simplified as each doc says); what waits is play, engine checks and the
-author's calls.
+Everything below is approved. Every approved design is built (simplified as each doc says), and no
+design waits in [designs/](../designs/README.md); what waits is play, engine checks and the author's
+calls.
 
 ### Get it playable
 - **Special Zombies on a Linux server (open issue).** With it as a dependency, a Linux dedicated
@@ -155,8 +154,10 @@ author's calls.
   layout** and build `RZ_FuelPumpStation.et`; then a stove, a keypad, the Haven quartermaster and a
   petrol pump with a pad ([UI.md](UI.md#the-object-menu), [DESIGN.md](DESIGN.md#fuel)).
 - **Openings:** a Nurse, a Soldier and a Mechanic from spawn to the chain's end with a pad: the place
-  fits, the contact speaks first, the tracker follows each step, and the chain takes about 15 minutes
-  ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#8-play-test-checklist), [DESIGN.md](DESIGN.md#openings-how-every-life-starts)).
+  fits, the contact speaks first, the tracker follows each step, each background's step 2 runs (the
+  gate's noise draws the infected, the pump fills a can, the keys open a real lock), and the chain
+  takes about 15 minutes; then a familiar and a veteran life (Where the Work Is), and the group-gone
+  and fever scenes with their clues ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#8-play-test-checklist), [DESIGN.md](DESIGN.md#openings-how-every-life-starts)).
 - **Spawn: one card, then quiet, and the quest tracker:** respawn a few times and count the cards;
   take jobs and track them from the Quests tab with a pad ([UI.md](UI.md#notices),
   [UI.md](UI.md#the-quest-tracker)).

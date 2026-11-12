@@ -2346,7 +2346,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 217 conversations, 588 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 221 conversations, 596 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2866,11 +2866,11 @@ when it happens)
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
   of an open door of a clinic or a house in a town nobody holds, facing out, the world already
   loaded; the card says where you hid, the town and the day. A calendar lies by the door. About 4 s
-  in, someone ("..., a patient's mother") a few metres off opens the talk screen on you: "Christ.
-  You're alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the
+  in, someone ("..., a patient's mother") a few metres off opens the talk screen on you: "Look at you.
+  Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the
   roads, then the ask. The tracker already shows *Across the Road*, and the Quests tab has it under
   ERRANDS, tracked. Search the house for 20 s and come back: the next step opens the talk screen again
-  (the broadcast, nobody coming) with *Water* or *The Cut*; then *To Halcyon* with the Perimeter and
+  (the broadcast, nobody coming) with *The Fever* (her own step 2); then *To Halcyon* with the Perimeter and
   the cure, the tracker pointing at Halcyon's nearest holding or the lab. Arrive: one line there and
   +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
   next start is a different town (2 km from the last two). Try a Soldier (ends at Bastion) and a
