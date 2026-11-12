@@ -2,6 +2,6 @@ SCR_AIGroup : "{3790F412BF585C32}Prefabs/ReforgerZ/Factions/RZ_RedHandPostCrew.e
  ID "0000000000000001"
  coords 0 0 0
  m_aUnitPrefabSlots {
-  "{68B6C1CFF30D8063}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Tracksuit.et" "{803C92747E1DB476}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_ThreeHole.et" "{56E7E022BF6C0B53}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Helmet.et"
+  "{68B6C1CFF30D8063}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Tracksuit.et" "{2CE403C9D321C6C2}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Hood.et" "{56E7E022BF6C0B53}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Helmet.et"
  }
 }

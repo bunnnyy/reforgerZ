@@ -5,18 +5,22 @@
     py tools/people_looks.py --arrays   # also print the look arrays to paste into RZ_GameMode.et
 
 Every faction person slot (a guard, an occupant, a quartermaster, a crew, a hunter squad, a council
-head, an outpost leader) can list variant prefabs; a body picks one by a stable seed
+head, an outpost or stronghold leader) can list variant prefabs; a body picks one by a stable seed
 (scripts/Game/ReforgerZ/Factions/RZ_Looks.c, docs/DESIGN.md "People's looks"). This tool writes those
 variants as text prefabs:
 
 - a character look inherits the slot's own character prefab (or, for a group slot, the vanilla soldier
-  its group spawns) and overrides clothing slots only (Hat, Face, Head, Jacket, Pants, Boots, Vest,
-  ArmoredVest, Back, HandWear). Face and Head are Zelik's Character slots, which BanditGear,
+  its group spawns, for his weapon) and overrides clothing slots only (Hat, Face, Head, Jacket, Pants,
+  Boots, Vest, ArmoredVest, Back, HandWear). It must set every garment you can see (DRESSED), so none
+  of the parent's own kit shows through. Face and Head are Zelik's Character slots, which BanditGear,
   BasicHazmatSuit, MedicalAccessories and Domins bring with them.
 - when a look changes a garment the parent's starting items are packed into, those item lists are
   pointed at the new garment (TargetStorage), or at another slot when the garment is gone (a suit
   that covers the legs blocks the trousers).
 - a group look inherits the slot's group and lists other character looks as its members.
+- the faction group prefabs themselves (BASES: the slots' own groups and the missions' faction groups)
+  get looks as their members, so a group spawned without a look is dressed too.
+- a look dropped from the tables is deleted with its .meta.
 
 Faces aren't set: the vanilla identity picks one from the faction's identity config at each spawn.
 
@@ -27,6 +31,7 @@ elsewhere, or RZ_RESOURCE_INDEX=none to skip the check. No dependencies beyond P
 """
 import hashlib
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,17 +60,10 @@ I = {
     "beret_brown": "{6E0EC7AC1F6D748F}Prefabs/Characters/HeadGear/Hat_RadiovkaBeret_01/Hat_RadiovkaBeret_01_brown.et",
     "beret_black_dirty": "{5D7350496AEA24C8}Prefabs/Characters/HeadGear/Hat_RadiovkaBeret_01/Hat_RadiovkaBeret_01_black_Dirty.et",
     "boonie_olive": "{8D75122D5BF561FB}Prefabs/Characters/HeadGear/Hat_Boonie_US_01/Hat_Boonie_US_olive.et",
-    "pasgt_scrim": "{03C1F3DB6BB9796A}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_01_cover_w_scrim.et",
     "pasgt_goggles": "{79D240C0D2390F4A}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_01_goggles.et",
-    "patrol_dark": "{7891C761B31741BD}Prefabs/Characters/HeadGear/Hat_Patrol_US_01/Hat_Patrol_US_dark.et",  # [L]
-    "boonie_dark": "{1E8E0AF46736D299}Prefabs/Characters/HeadGear/Hat_Boonie_US_01/Hat_Boonie_US_dark.et",  # [L]
-    "woodland_cap": "{129457E7C45EB342}Prefabs/Characters/HeadGear/Hat_M70_01/Hat_woodland_cap.et",  # [L]
     "m1_nostrap": "{1D0B60CC90DA7330}Prefabs/Characters/HeadGear/Helmet_M1_01/Helmet_M1_No Strap.et",  # [L]
-    "cap_tourist_back": "{BDEC5F396E369CEA}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_Backwards.et",  # [B]
-    "cap_plain": "{503CADDC8B459C03}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_02.et",  # [B]
     "cap_plain_back": "{F42EB93651D94D60}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_02_backwards.et",  # [B]
     "cap_trophy": "{B5A0E12587A00B68}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_03.et",  # [B]
-    "cap_trophy_back": "{DD43DAD304AC5085}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_03_backwards.et",  # [B]
     "pasgt_black": "{E503F84CD6E31B21}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_Black.et",  # [B]
     # face (Zelik's Face slot) and head (Zelik's Head slot)
     "balaclava_black": "{C500301CF7AE1ACB}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Black.et",  # [B]
@@ -78,8 +76,6 @@ I = {
     "gasmask": "{FB66C1EC2E5DB34C}Prefabs/Clothing/Gas_Mask.et",  # [D] Head slot
     # jackets, shirts, suits
     "denim_brown": "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et",
-    "denim_striped": "{EB0D74A43F74B522}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_strippedShirt.et",
-    "denim_striped_dirty": "{23A15812C40D34C2}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_strippedShirt_dirty.et",
     "raincoat_green": "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et",
     "raincoat_orange": "{690819A92A3A8D14}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_orange.et",
     "raincoat_yellow": "{FD39B0B833BB927E}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_yellow.et",
@@ -87,14 +83,8 @@ I = {
     "suit_brown": "{52AB6EC3FE535303}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Brown_V1.et",
     "suit_black": "{AE93D885FDF713D4}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_black_V1.et",
     "turtle_grey": "{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et",
-    "turtle_blue": "{6A3F994EFFE22995}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_DarkBlue.et",
     "turtle_beige": "{50F8B1F928F93ABD}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_beige.et",
-    "bdu": "{C7861F11D5334C0E}Prefabs/Characters/Uniforms/Jacket_US_BDU.et",
-    "bdu_rolled": "{3CCA7A9BB4FD3197}Prefabs/Characters/Uniforms/Jacket_US_BDU_rolledup.et",
     "bdu_rolled_02": "{A080C1AEBF921DC4}Prefabs/Characters/Uniforms/Jacket_US_BDU_rolledup_02.et",
-    "bdu_darklong": "{C890D96D16AD5EEF}Prefabs/Characters/Uniforms/Jacket_US_BDU_darklong.et",  # [L]
-    "bdu_rolled_dark": "{28372136A9F0818A}Prefabs/Characters/Uniforms/Jacket_US_BDU_rolledup_dark.et",  # [L]
-    "night_camo": "{D24304848E14A064}Prefabs/Characters/Uniforms/Jacket_KZS/Jacket_night_camo.et",  # [L]
     "us_raincoat": "{7B8BBB818BD62015}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/US RAINCOAT.et",  # [L]
     "bandit_1": "{DB053443800A3FCB}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_01.et",  # [B]
     "bandit_2": "{5FA71197901F8EEF}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_02.et",  # [B]
@@ -121,9 +111,7 @@ I = {
     "suitpants_grey": "{401072A652DD9849}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_grey_V1.et",
     "suitpants_black": "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et",
     "suitpants_brown": "{E65D5C9848AC18E9}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_brown_V1.et",
-    "pants_bdu": "{604BB72BE8E023C2}Prefabs/Characters/Uniforms/Pants_US_BDU.et",
     "m65": "{86BB79B9A2233780}Prefabs/Characters/Uniforms/Pants_US_M65.et",
-    "m65_dark": "{F2ACE9E8181679BB}Prefabs/Characters/Uniforms/Pants_US_M65_dark.et",  # [L]
     "cargo_black": "{21DC09217E13C1C7}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Black.et",  # [B]
     "cargo_tan": "{C542EA4B3ED3B61B}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Tan.et",  # [B]
     "jeans_1": "{C40CEB198DAABF5B}Prefabs/Characters/Uniforms/Pants_Jeans/Pants_Jeans_01.et",  # [B]
@@ -140,7 +128,6 @@ I = {
     "gloves_leather": "{4F71E7468E78DDD2}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et",
     "gloves_wool": "{8266820FFDE17477}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_01.et",
     "gloves_pilot": "{D19C474FA0F42CC4}Prefabs/Characters/Handwear/Gloves_Pilot_US_01/Gloves_Pilot_US_01.et",
-    "gloves_rally_black": "{EC5F60A22D3C2236}Prefabs/Characters/Handwear/Gloves_Rally_01/Gloves_Rally_01_black.et",
     "gloves_wool_dirty": "{7277FBDCDC013DDF}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_Dirty.et",  # [B]
     "gloves_wool_black": "{3F155F317D83D375}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_Black.et",  # [B]
     "gloves_skeleton": "{7A32D0C6743CCEBE}Prefabs/Characters/Handwear/Gloves_Wool_Skeleton/Gloves_Wool_Skeleton.et",  # [B]
@@ -150,9 +137,17 @@ I = {
     "nitrile_purple": "{395D1185E649EDE2}Prefabs/Characters/Handwear/Gloves_Purple/Medical_Gloves_Purple_Base.et",  # [M]
     "nitrile_white": "{D90A181625AD1F9A}Prefabs/Characters/Handwear/Gloves_White/Medical_Gloves_White_Base.et",  # [M]
     "nitrile_yellow": "{4B4ED1DF956F00D9}Prefabs/Characters/Handwear/Gloves_yellow/Medical_Gloves_yellow_Base.et",  # [M]
+    # Bastion's olive kit (vanilla): the M65 field jacket (sleeves down, or rolled: bdu_rolled_02),
+    # M65 trousers, US boots, the PASGT flak vest, plain helmets and olive caps
+    "m65_jacket": "{293F577C298061E3}Prefabs/Characters/Uniforms/Jacket_US_BDU_02.et",
+    "pasgt": "{B74A4FF0DD8BB116}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_01.et",
+    "patrol_olive": "{9911F55EC05D1A64}Prefabs/Characters/HeadGear/Hat_Patrol_US_01/Hat_Patrol_US_02.et",
+    "boots_us": "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et",
+    "pasgt_vest": "{4B57C11AA5161760}Prefabs/Characters/Vests/Vest_PASGT/Vest_PASGT.et",
+    # the Red Hand's red (vanilla)
+    "zcap_red": "{1B568A254D1E519B}Prefabs/Characters/HeadGear/Hat_ZmijovkaCap_01/Hat_ZmijovkaCap_01_red.et",
     # packs
     "veshmeshok": "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et",
-    "medpack_nocross_1": "{AC298BA8A7D27007}Prefabs/Items/Equipment/Backpacks/Backpack_Medical_Soviet_NoCross_01.et",
     "": "",
 }
 
@@ -194,8 +189,24 @@ PARENTS = {
     "qm_halcyon": ("{C70CEA8F1DC07FC7}Prefabs/ReforgerZ/Factions/RZ_QM_Halcyon.et", "520EC961A090B1EE",
                    {"Pants": ["{5D7CC173FAA7C00E}"], "Jacket": ["{5D7CC173FAA7C00C}"],
                     "Back": ["{7A13C0A0F1A85008}", "{5DF8B4EAF98C1278}"]}),
+    "us_tl": ("{E398E44759DA1A43}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_TL.et", "51FA90A5D40EA513",
+              {"Pants": ["{5D7CAAFB9235E902}"]}),
+    "fia_medic": ("{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Medic.et", "520EC961A090B1EE",
+                  {"Pants": ["{5D7CC173FAA7C00E}"], "Jacket": ["{5D7CC173FAA7C00C}"],
+                   "Back": ["{7A13C0A0F1A85008}", "{5DF8B4EAF98C1278}"]}),
+    # the stronghold leaders
+    "leader_haven": ("{D5F88991398C10EA}Prefabs/ReforgerZ/Leaders/RZ_Leader_Haven.et", "520EC961A090B1EE",
+                     {"Pants": ["{60DCBCECAC6C6E65}"]}),
+    "leader_bastion": ("{6592F081196646EB}Prefabs/ReforgerZ/Leaders/RZ_Leader_Bastion.et", "520EC961A090B1EE",
+                       {"Pants": ["{5D7CAAFB9235E902}"]}),
+    "leader_redhand": ("{107CC0E8F3111405}Prefabs/ReforgerZ/Leaders/RZ_Leader_RedHand.et", "520EC961A090B1EE",
+                       {"Pants": ["{5D7CC173FAA7C00C}"], "Jacket": ["{5F28BB79AC280275}"],
+                        "Back": ["{5D7CC173FAA7C00E}", "{7A13C0A0F1A85008}"]}),
+    "leader_halcyon": ("{58F27F42964ACC7A}Prefabs/ReforgerZ/Leaders/RZ_Leader_Halcyon.et", "520EC961A090B1EE",
+                       {"Pants": ["{5D7CC173FAA7C00E}"], "Jacket": ["{5D7CC173FAA7C00C}"],
+                        "Back": ["{7A13C0A0F1A85008}", "{5DF8B4EAF98C1278}"]}),
     # leaders who stand at more than one place
-    "council": ("{70CB458FA07F01CC}Prefabs/ReforgerZ/Leaders/RZ_CouncilHead.et", "520EC961A090B1EE",
+    "council":("{70CB458FA07F01CC}Prefabs/ReforgerZ/Leaders/RZ_CouncilHead.et", "520EC961A090B1EE",
                 {"Pants": ["{60DCBCECAC6C6E65}"]}),
     "outpost_bastion": ("{AF96D259B26C1DA4}Prefabs/ReforgerZ/Leaders/RZ_Outpost_Bastion.et", "520EC961A090B1EE",
                         {"Pants": ["{5D7CAAFB9235E902}"]}),
@@ -223,113 +234,178 @@ PARENTS = {
 
 # ------------------------------------------------------------------------------------------ the looks
 # (folder, file stem, parent, {slot: item}, {slot whose items move: to slot}). "" empties a slot.
-# Each faction keeps one identity: the Haven in farm and work clothes, Bastion in worn US kit, the
-# Red Hand in dirty scavenged clothes and balaclavas, Halcyon in lab clothes, masks and hazmat.
+# Every look sets every garment you can see (DRESSED below), so nothing of the parent's own kit (a US
+# soldier's woodland helmet, flak vest or trousers) shows through; the tool stops if one is missing.
+# Each faction dresses as one people, and its armed people as a unit: one base, details that vary.
+#   The Haven: civilians in work clothes. Its watch (guards, safehouse guards) in green oilskins and
+#     fisherman's trousers; its drivers in overalls and work clothes; nobody in red.
+#   Task Force Bastion: one olive kit, the M65 jacket (sleeves down or rolled) and trousers, US
+#     boots; on duty the PASGT vest and a plain helmet or olive cap; off duty no webbing.
+#   The Red Hand: scavenged and mismatched, dark trousers, and every armed one wears red (a red
+#     knitted hat or cap, or a red sweatshirt).
+#   Halcyon: its security in black hooded hazmat suits, masks and black gloves; its field crews in
+#     olive hazmat; its staff in suits, turtlenecks, paramedic kit and the hazmat with masks and
+#     nitrile gloves. Nobody of Halcyon's in US Army kit.
+DRESSED = ["Hat", "Jacket", "Pants", "Boots", "ArmoredVest", "HandWear"]
+
 CHARS = [
-    # The Haven: occupants (also the safehouses' occupants), armed (guards, crews), quartermasters
-    ("Haven", "RZ_Occupant_Haven_Farmer", "occ_haven", {"Hat": "knit_brown", "Jacket": "overalls", "HandWear": "gloves_leather"}, {}),
-    ("Haven", "RZ_Occupant_Haven_Dungarees", "occ_haven", {"Hat": "trucker_sawmill", "Jacket": "overalls_denim"}, {}),
-    ("Haven", "RZ_Occupant_Haven_Mechanic", "occ_haven", {"Hat": "", "Jacket": "mechanic", "HandWear": "gloves_wool"}, {}),
-    ("Haven", "RZ_Occupant_Haven_Fisher", "occ_haven", {"Hat": "knit_blue", "Jacket": "raincoat_yellow", "Pants": "fisher_green", "Boots": "boots_soviet_dirty"}, {}),
-    ("Haven", "RZ_Occupant_Haven_Builder", "occ_haven", {"Hat": "hardhat_yellow", "Jacket": "shirt_2", "Pants": "trousers_lightbrown", "Back": "veshmeshok"}, {}),
-    ("Haven", "RZ_Occupant_Haven_Carer", "occ_haven", {"Hat": "", "Face": "medmask", "Jacket": "turtle_grey", "Pants": "trousers_darkbrown", "HandWear": "nitrile_white"}, {}),
-    ("Haven", "RZ_Armed_Haven_Hunter", "fia_ac", {"Hat": "knit_black", "Jacket": "raincoat_green", "Pants": "fisher_green"}, {}),
-    ("Haven", "RZ_Armed_Haven_Farmhand", "fia_ac", {"Hat": "trucker_everon", "Jacket": "denim_brown", "Pants": "trousers_darkbrown"}, {}),
-    ("Haven", "RZ_Armed_Haven_Worker", "fia_ac", {"Hat": "hardhat_white", "Jacket": "shirt_3", "Pants": "trousers_darkgrey", "HandWear": "gloves_leather"}, {}),
-    ("Haven", "RZ_Armed_Haven_Winter", "fia_ac", {"Hat": "ushanka_folded", "Jacket": "denim_striped", "Back": "veshmeshok"}, {}),
-    ("Haven", "RZ_Armed_Haven_Overalls", "fia_ac", {"Hat": "flatcap_blue", "Jacket": "overalls"}, {"Pants": "Back"}),
-    ("Haven", "RZ_QM_Haven_Storekeeper", "qm_haven", {"Hat": "flatcap_lightgrey", "Jacket": "shirt_1", "Pants": "trousers_lightbrown"}, {}),
-    ("Haven", "RZ_QM_Haven_Dungarees", "qm_haven", {"Hat": "knit_red", "Jacket": "overalls_denim"}, {"Pants": "Jacket"}),
-    ("Haven", "RZ_QM_Haven_Raincoat", "qm_haven", {"Hat": "trucker_pohona", "Jacket": "raincoat_orange", "Pants": "fisher_yellow"}, {}),
-    ("Haven", "RZ_CouncilHead_Brown", "council", {"Hat": "flatcap_darkgrey", "Jacket": "suit_brown", "Pants": "suitpants_brown"}, {}),
-    ("Haven", "RZ_CouncilHead_Denim", "council", {"Jacket": "denim_brown", "Pants": "trousers_darkbrown"}, {}),
-    ("Haven", "RZ_CouncilHead_Beret", "council", {"Hat": "beret_brown", "Jacket": "turtle_beige", "Pants": "suitpants_black"}, {}),
-    # Task Force Bastion
-    ("Bastion", "RZ_Occupant_Bastion_Rolled", "occ_bastion", {"Hat": "patrol_dark", "Jacket": "bdu_rolled_dark", "Pants": "m65_dark"}, {}),
-    ("Bastion", "RZ_Occupant_Bastion_Night", "occ_bastion", {"Hat": "woodland_cap", "Jacket": "night_camo"}, {}),
-    ("Bastion", "RZ_Occupant_Bastion_Raincoat", "occ_bastion", {"Hat": "", "Jacket": "us_raincoat", "Pants": "m65"}, {}),
-    ("Bastion", "RZ_Occupant_Bastion_Long", "occ_bastion", {"Hat": "boonie_dark", "Jacket": "bdu_darklong"}, {}),
-    ("Bastion", "RZ_Occupant_Bastion_OffDuty", "occ_bastion", {"Hat": "", "Jacket": "bdu_rolled_02", "Pants": "m65_dark"}, {}),
-    ("Bastion", "RZ_Armed_Bastion_Scrim", "us_rifleman", {"Hat": "pasgt_scrim", "Jacket": "bdu_rolled"}, {}),
-    ("Bastion", "RZ_Armed_Bastion_M1", "us_rifleman", {"Hat": "m1_nostrap", "Jacket": "bdu_darklong", "Pants": "m65_dark"}, {}),
-    ("Bastion", "RZ_Armed_Bastion_Cap", "us_rifleman", {"Hat": "patrol_dark", "Jacket": "bdu_rolled_dark", "ArmoredVest": ""}, {}),
-    ("Bastion", "RZ_Armed_Bastion_Night", "us_rifleman", {"Hat": "boonie_olive", "Jacket": "night_camo", "Pants": "m65", "HandWear": "gloves_pilot"}, {}),
-    ("Bastion", "RZ_Armed_Bastion_Raincoat", "us_rifleman", {"Hat": "pasgt_goggles", "Jacket": "us_raincoat"}, {}),
-    ("Bastion", "RZ_QM_Bastion_Long", "qm_bastion", {"Hat": "patrol_dark", "Jacket": "bdu_darklong"}, {}),
-    ("Bastion", "RZ_QM_Bastion_Woodland", "qm_bastion", {"Hat": "woodland_cap", "Jacket": "bdu", "Pants": "m65_dark"}, {}),
-    ("Bastion", "RZ_QM_Bastion_Gloves", "qm_bastion", {"Hat": "", "Jacket": "bdu_rolled_dark", "HandWear": "gloves_pilot"}, {}),
-    ("Bastion", "RZ_Outpost_Bastion_Long", "outpost_bastion", {"Hat": "patrol_dark", "Jacket": "bdu_darklong"}, {}),
-    ("Bastion", "RZ_Outpost_Bastion_Woodland", "outpost_bastion", {"Hat": "woodland_cap", "Jacket": "bdu", "Pants": "m65_dark"}, {}),
-    # The Red Hand
-    ("RedHand", "RZ_Occupant_RedHand_Balaclava", "occ_redhand", {"Hat": "", "Face": "balaclava_black", "Jacket": "bandit_1", "Pants": "cargo_black", "HandWear": "gloves_wool_dirty"}, {}),
-    ("RedHand", "RZ_Occupant_RedHand_Tracksuit", "occ_redhand", {"Hat": "cap_plain_back", "Jacket": "track_black", "Pants": "trackpants_black", "Boots": "sneakers_dirty"}, {}),
-    ("RedHand", "RZ_Occupant_RedHand_Sweatshirt", "occ_redhand", {"Hat": "knit_black", "Jacket": "sweat_dirty", "Pants": "jeans_1", "HandWear": "gloves_skeleton"}, {}),
-    ("RedHand", "RZ_Occupant_RedHand_ThreeHole", "occ_redhand", {"Hat": "", "Face": "balaclava3_olive", "Jacket": "bandit_2", "Pants": "cargo_tan", "Boots": "sneakers_black"}, {}),
-    ("RedHand", "RZ_Occupant_RedHand_RedTop", "occ_redhand", {"Hat": "cap_trophy", "Jacket": "sweat_red", "Pants": "jeans_2", "HandWear": "gloves_leather_black"}, {}),
-    ("RedHand", "RZ_Armed_RedHand_Balaclava", "fia_partisan", {"Hat": "", "Face": "balaclava_black", "Jacket": "bandit_1", "Pants": "cargo_black"}, {}),
-    ("RedHand", "RZ_Armed_RedHand_Tracksuit", "fia_partisan", {"Hat": "cap_tourist_back", "Jacket": "track_navy", "Pants": "trackpants_navy", "HandWear": "gloves_wool_black"}, {}),
-    ("RedHand", "RZ_Armed_RedHand_ThreeHole", "fia_partisan", {"Hat": "", "Face": "balaclava3_black", "Jacket": "sweat_dirty", "Pants": "jeans_1", "Boots": "sneakers_dirty"}, {}),
-    ("RedHand", "RZ_Armed_RedHand_Beret", "fia_partisan", {"Hat": "beret_black_dirty", "Jacket": "bandit_2", "HandWear": "gloves_leather_black"}, {}),
-    ("RedHand", "RZ_Armed_RedHand_Helmet", "fia_partisan", {"Hat": "pasgt_black", "Jacket": "denim_striped_dirty", "Pants": "cargo_tan"}, {}),
-    ("RedHand", "RZ_QM_RedHand_Cap", "qm_redhand", {"Hat": "cap_plain", "Jacket": "bandit_1", "HandWear": "gloves_leather_black"}, {}),
-    ("RedHand", "RZ_QM_RedHand_Balaclava", "qm_redhand", {"Hat": "", "Face": "balaclava_black", "Jacket": "track_black", "Pants": "trackpants_black"}, {}),
-    ("RedHand", "RZ_QM_RedHand_Beret", "qm_redhand", {"Hat": "beret_black_dirty", "Jacket": "sweat_red", "Pants": "jeans_2"}, {}),
-    ("RedHand", "RZ_Outpost_RedHand_Balaclava", "outpost_redhand", {"Hat": "", "Face": "balaclava_olive", "Jacket": "bandit_2"}, {}),
-    ("RedHand", "RZ_Outpost_RedHand_Tracksuit", "outpost_redhand", {"Hat": "cap_trophy_back", "Jacket": "track_navy", "Pants": "trackpants_navy"}, {}),
-    # Halcyon
-    ("Halcyon", "RZ_Occupant_Halcyon_Beak", "occ_halcyon", {"Hat": "", "Face": "hazmask", "Jacket": "hazmat_olive", "HandWear": "nitrile_blue"}, {}),
-    ("Halcyon", "RZ_Occupant_Halcyon_BlackSuit", "occ_halcyon", {"Hat": "", "Face": "hazmask_tinted", "Jacket": "hazmat_black", "HandWear": "gloves_pilot_black"}, {}),
-    ("Halcyon", "RZ_Occupant_Halcyon_Technician", "occ_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "turtle_grey", "Pants": "suitpants_grey", "HandWear": "nitrile_purple"}, {}),
-    ("Halcyon", "RZ_Occupant_Halcyon_Paramedic", "occ_halcyon", {"Hat": "", "Jacket": "ems_jacket", "Pants": "ems_pants", "Boots": "boots_paramedic", "HandWear": "nitrile_white"}, {}),
-    ("Halcyon", "RZ_Occupant_Halcyon_Researcher", "occ_halcyon", {"Hat": "", "Head": "gasmask", "Jacket": "suit_grey", "Pants": "suitpants_black", "HandWear": "nitrile_white"}, {}),
-    ("Halcyon", "RZ_Occupant_Halcyon_HiVis", "occ_halcyon", {"Hat": "", "Face": "hazmask", "Jacket": "hazmat_hivis", "HandWear": "nitrile_yellow"}, {}),
-    ("Halcyon", "RZ_Armed_Halcyon_GasMask", "us_rifleman_v1", {"Hat": "", "Head": "gasmask", "Jacket": "bdu_darklong", "HandWear": "gloves_pilot_black"}, {}),
-    ("Halcyon", "RZ_Armed_Halcyon_Hazmat", "us_rifleman_v1", {"Hat": "", "Face": "hazmask", "Jacket": "hazmat_olive", "ArmoredVest": ""}, {"Pants": "Vest"}),
-    ("Halcyon", "RZ_Armed_Halcyon_Masked", "us_rifleman_v1", {"Hat": "", "Face": "medmask", "Jacket": "turtle_blue", "Pants": "m65_dark", "HandWear": "gloves_rally_black"}, {}),
-    ("Halcyon", "RZ_Armed_Halcyon_BlackSuit", "us_rifleman_v1", {"Hat": "", "Face": "hazmask_tinted", "Jacket": "hazmat_black", "ArmoredVest": "", "HandWear": "gloves_pilot_black"}, {"Pants": "Vest"}),
-    ("Halcyon", "RZ_Armed_Halcyon_Medic", "us_rifleman_v1", {"Hat": "", "Face": "medmask", "Jacket": "ems_jacket", "Pants": "ems_pants"}, {}),
-    ("Halcyon", "RZ_QM_Halcyon_Coat", "qm_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "suit_grey", "Pants": "suitpants_grey"}, {}),
-    ("Halcyon", "RZ_QM_Halcyon_Paramedic", "qm_halcyon", {"Hat": "", "Jacket": "ems_jacket", "Pants": "ems_pants", "HandWear": "nitrile_blue"}, {}),
-    ("Halcyon", "RZ_QM_Halcyon_GasMask", "qm_halcyon", {"Hat": "", "Head": "gasmask", "Jacket": "turtle_grey", "Pants": "suitpants_black"}, {}),
-    ("Halcyon", "RZ_Outpost_Halcyon_Paramedic", "outpost_halcyon", {"Hat": "", "Jacket": "ems_jacket", "Pants": "ems_pants"}, {}),
-    ("Halcyon", "RZ_Outpost_Halcyon_Coat", "outpost_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "suit_black", "Pants": "suitpants_black"}, {}),
+    # ---- The Haven: occupants (also the safehouses' occupants), quartermasters, council heads, leader
+    ("Haven", "RZ_Occupant_Haven_Farmer", "occ_haven", {"Hat": "knit_brown", "Jacket": "overalls", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather"}, {}),
+    ("Haven", "RZ_Occupant_Haven_Dungarees", "occ_haven", {"Hat": "trucker_sawmill", "Jacket": "overalls_denim", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_Occupant_Haven_Mechanic", "occ_haven", {"Hat": "", "Jacket": "mechanic", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool"}, {}),
+    ("Haven", "RZ_Occupant_Haven_Fisher", "occ_haven", {"Hat": "knit_blue", "Jacket": "raincoat_yellow", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_Occupant_Haven_Builder", "occ_haven", {"Hat": "hardhat_yellow", "Jacket": "shirt_2", "Pants": "trousers_lightbrown", "Boots": "boots_soviet_dirty", "Back": "veshmeshok", "ArmoredVest": "", "HandWear": "gloves_leather"}, {}),
+    ("Haven", "RZ_Occupant_Haven_Carer", "occ_haven", {"Hat": "", "Face": "medmask", "Jacket": "turtle_grey", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Haven", "RZ_QM_Haven_Storekeeper", "qm_haven", {"Hat": "flatcap_lightgrey", "Jacket": "shirt_1", "Pants": "trousers_lightbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_QM_Haven_Dungarees", "qm_haven", {"Hat": "knit_brown", "Jacket": "overalls_denim", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather"}, {"Pants": "Jacket"}),
+    ("Haven", "RZ_QM_Haven_Raincoat", "qm_haven", {"Hat": "trucker_pohona", "Jacket": "raincoat_orange", "Pants": "fisher_yellow", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_CouncilHead_Brown", "council", {"Hat": "flatcap_darkgrey", "Jacket": "suit_brown", "Pants": "suitpants_brown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_CouncilHead_Denim", "council", {"Hat": "", "Jacket": "denim_brown", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_CouncilHead_Beret", "council", {"Hat": "beret_brown", "Jacket": "turtle_beige", "Pants": "suitpants_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_Leader_Haven_Denim", "leader_haven", {"Hat": "flatcap_darkgrey", "Jacket": "denim_brown", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_Leader_Haven_Knit", "leader_haven", {"Hat": "knit_brown", "Jacket": "turtle_beige", "Pants": "trousers_lightbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool"}, {}),
+    # The Haven's watch (guards, safehouse guards): green oilskins and fisherman's trousers, the hat varies
+    ("Haven", "RZ_Armed_Haven_Hunter", "fia_ac", {"Hat": "knit_black", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_Armed_Haven_Watch", "fia_ac", {"Hat": "trucker_everon", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather"}, {}),
+    ("Haven", "RZ_Armed_Haven_Winter", "fia_ac", {"Hat": "ushanka_folded", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "Back": "veshmeshok", "ArmoredVest": "", "HandWear": "gloves_wool"}, {}),
+    ("Haven", "RZ_Armed_Haven_Lookout", "fia_ac", {"Hat": "flatcap_blue", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    # The Haven's drivers and the survivors' armed men: work clothes
+    ("Haven", "RZ_Armed_Haven_Farmhand", "fia_ac", {"Hat": "trucker_everon", "Jacket": "denim_brown", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Haven", "RZ_Armed_Haven_Worker", "fia_ac", {"Hat": "hardhat_white", "Jacket": "shirt_3", "Pants": "trousers_darkgrey", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather"}, {}),
+    ("Haven", "RZ_Armed_Haven_Overalls", "fia_ac", {"Hat": "flatcap_blue", "Jacket": "overalls", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {"Pants": "Back"}),
+    ("Haven", "RZ_Armed_Haven_Mechanic", "fia_ac", {"Hat": "", "Jacket": "mechanic", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool"}, {"Pants": "Back"}),
+
+    # ---- Task Force Bastion: one olive kit
+    # off duty (occupants): no webbing, a cap or bare-headed
+    ("Bastion", "RZ_Occupant_Bastion_Rolled", "occ_bastion", {"Hat": "patrol_olive", "Jacket": "bdu_rolled_02", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "Vest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Occupant_Bastion_Boonie", "occ_bastion", {"Hat": "boonie_olive", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "Vest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Occupant_Bastion_Raincoat", "occ_bastion", {"Hat": "patrol_olive", "Jacket": "us_raincoat", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "Vest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Occupant_Bastion_Jacket", "occ_bastion", {"Hat": "", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "Vest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Occupant_Bastion_OffDuty", "occ_bastion", {"Hat": "", "Jacket": "bdu_rolled_02", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "Vest": "", "HandWear": "gloves_pilot"}, {}),
+    ("Bastion", "RZ_QM_Bastion_Patrol", "qm_bastion", {"Hat": "patrol_olive", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_QM_Bastion_Rolled", "qm_bastion", {"Hat": "", "Jacket": "bdu_rolled_02", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_QM_Bastion_Gloves", "qm_bastion", {"Hat": "boonie_olive", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "gloves_pilot"}, {}),
+    ("Bastion", "RZ_Outpost_Bastion_Patrol", "outpost_bastion", {"Hat": "patrol_olive", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Outpost_Bastion_Helmet", "outpost_bastion", {"Hat": "pasgt", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "pasgt_vest", "HandWear": "gloves_pilot"}, {}),
+    ("Bastion", "RZ_Leader_Bastion_Patrol", "leader_bastion", {"Hat": "patrol_olive", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Leader_Bastion_Rolled", "leader_bastion", {"Hat": "patrol_olive", "Jacket": "bdu_rolled_02", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "gloves_pilot"}, {}),
+    # on duty (guards, road posts, hunters, truck crews, the mission squads): flak vest and webbing
+    ("Bastion", "RZ_Armed_Bastion_Helmet", "us_rifleman", {"Hat": "pasgt", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "pasgt_vest", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Armed_Bastion_Goggles", "us_rifleman", {"Hat": "pasgt_goggles", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "pasgt_vest", "HandWear": "gloves_pilot"}, {}),
+    ("Bastion", "RZ_Armed_Bastion_M1", "us_rifleman", {"Hat": "m1_nostrap", "Jacket": "bdu_rolled_02", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "pasgt_vest", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Armed_Bastion_Patrol", "us_rifleman", {"Hat": "patrol_olive", "Jacket": "bdu_rolled_02", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "pasgt_vest", "HandWear": ""}, {}),
+    ("Bastion", "RZ_Armed_Bastion_Boonie", "us_rifleman", {"Hat": "boonie_olive", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "pasgt_vest", "HandWear": "gloves_pilot"}, {}),
+    ("Bastion", "RZ_Armed_Bastion_Lead", "us_tl", {"Hat": "pasgt_goggles", "Jacket": "m65_jacket", "Pants": "m65", "Boots": "boots_us", "ArmoredVest": "pasgt_vest", "HandWear": "gloves_pilot"}, {}),
+
+    # ---- The Red Hand: scavenged and mismatched, every armed one in red
+    ("RedHand", "RZ_Occupant_RedHand_Balaclava", "occ_redhand", {"Hat": "", "Face": "balaclava_black", "Jacket": "bandit_1", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool_dirty"}, {}),
+    ("RedHand", "RZ_Occupant_RedHand_Tracksuit", "occ_redhand", {"Hat": "cap_plain_back", "Jacket": "track_black", "Pants": "trackpants_black", "Boots": "sneakers_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("RedHand", "RZ_Occupant_RedHand_Sweatshirt", "occ_redhand", {"Hat": "knit_red", "Jacket": "sweat_dirty", "Pants": "jeans_1", "Boots": "sneakers_black", "ArmoredVest": "", "HandWear": "gloves_skeleton"}, {}),
+    ("RedHand", "RZ_Occupant_RedHand_ThreeHole", "occ_redhand", {"Hat": "", "Face": "balaclava3_olive", "Jacket": "bandit_2", "Pants": "cargo_tan", "Boots": "sneakers_black", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("RedHand", "RZ_Occupant_RedHand_RedTop", "occ_redhand", {"Hat": "cap_trophy", "Jacket": "sweat_red", "Pants": "jeans_2", "Boots": "sneakers_dirty", "ArmoredVest": "", "HandWear": "gloves_leather_black"}, {}),
+    ("RedHand", "RZ_QM_RedHand_Cap", "qm_redhand", {"Hat": "zcap_red", "Jacket": "bandit_1", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather_black"}, {}),
+    ("RedHand", "RZ_QM_RedHand_Balaclava", "qm_redhand", {"Hat": "knit_red", "Face": "balaclava_black", "Jacket": "track_black", "Pants": "trackpants_black", "Boots": "sneakers_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("RedHand", "RZ_QM_RedHand_Beret", "qm_redhand", {"Hat": "beret_black_dirty", "Jacket": "sweat_red", "Pants": "jeans_2", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("RedHand", "RZ_Outpost_RedHand_Balaclava", "outpost_redhand", {"Hat": "knit_red", "Face": "balaclava_olive", "Jacket": "bandit_2", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather_black"}, {}),
+    ("RedHand", "RZ_Outpost_RedHand_Tracksuit", "outpost_redhand", {"Hat": "zcap_red", "Jacket": "track_navy", "Pants": "trackpants_navy", "Boots": "sneakers_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
+    ("RedHand", "RZ_Leader_RedHand_Boss", "leader_redhand", {"Hat": "knit_red", "Jacket": "bandit_1", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather_black"}, {}),
+    ("RedHand", "RZ_Leader_RedHand_Beret", "leader_redhand", {"Hat": "beret_black_dirty", "Jacket": "sweat_red", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather_black"}, {}),
+    ("RedHand", "RZ_Armed_RedHand_Balaclava", "fia_partisan", {"Hat": "knit_red", "Face": "balaclava_black", "Jacket": "bandit_1", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool_dirty"}, {}),
+    ("RedHand", "RZ_Armed_RedHand_Tracksuit", "fia_partisan", {"Hat": "zcap_red", "Jacket": "track_black", "Pants": "trackpants_black", "Boots": "sneakers_dirty", "ArmoredVest": "", "HandWear": "gloves_wool_black"}, {}),
+    ("RedHand", "RZ_Armed_RedHand_RedTop", "fia_partisan", {"Hat": "", "Face": "balaclava3_black", "Jacket": "sweat_red", "Pants": "jeans_1", "Boots": "sneakers_black", "ArmoredVest": "", "HandWear": "gloves_leather_black"}, {}),
+    ("RedHand", "RZ_Armed_RedHand_Hood", "fia_partisan", {"Hat": "knit_red", "Face": "balaclava3_olive", "Jacket": "bandit_2", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_skeleton"}, {}),
+    ("RedHand", "RZ_Armed_RedHand_Helmet", "fia_partisan", {"Hat": "pasgt_black", "Jacket": "sweat_red", "Pants": "cargo_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather_black"}, {}),
+
+    # ---- Halcyon: staff (occupants), quartermasters, field leads, the director
+    ("Halcyon", "RZ_Occupant_Halcyon_Beak", "occ_halcyon", {"Hat": "", "Face": "hazmask", "Jacket": "hazmat_olive", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "nitrile_blue"}, {}),
+    ("Halcyon", "RZ_Occupant_Halcyon_Clerk", "occ_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "suit_black", "Pants": "suitpants_black", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_Occupant_Halcyon_Technician", "occ_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "turtle_grey", "Pants": "suitpants_grey", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_purple"}, {}),
+    ("Halcyon", "RZ_Occupant_Halcyon_Paramedic", "occ_halcyon", {"Hat": "", "Jacket": "ems_jacket", "Pants": "ems_pants", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_Occupant_Halcyon_Researcher", "occ_halcyon", {"Hat": "", "Head": "gasmask", "Jacket": "suit_grey", "Pants": "suitpants_black", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_Occupant_Halcyon_HiVis", "occ_halcyon", {"Hat": "", "Face": "hazmask", "Jacket": "hazmat_hivis", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "nitrile_yellow"}, {}),
+    ("Halcyon", "RZ_QM_Halcyon_Coat", "qm_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "suit_grey", "Pants": "suitpants_grey", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_QM_Halcyon_Paramedic", "qm_halcyon", {"Hat": "", "Jacket": "ems_jacket", "Pants": "ems_pants", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_blue"}, {}),
+    ("Halcyon", "RZ_QM_Halcyon_GasMask", "qm_halcyon", {"Hat": "", "Head": "gasmask", "Jacket": "turtle_grey", "Pants": "suitpants_black", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_Outpost_Halcyon_Paramedic", "outpost_halcyon", {"Hat": "", "Jacket": "ems_jacket", "Pants": "ems_pants", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_Outpost_Halcyon_Coat", "outpost_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "suit_black", "Pants": "suitpants_black", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_Leader_Halcyon_Coat", "leader_halcyon", {"Hat": "", "Face": "medmask", "Jacket": "suit_grey", "Pants": "suitpants_grey", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    ("Halcyon", "RZ_Leader_Halcyon_Black", "leader_halcyon", {"Hat": "", "Jacket": "suit_black", "Pants": "suitpants_black", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    # the escorted scientist: a researcher, not a soldier
+    ("Halcyon", "RZ_Staff_Halcyon_Researcher", "fia_medic", {"Hat": "", "Face": "medmask", "Jacket": "suit_grey", "Pants": "suitpants_grey", "Boots": "boots_paramedic", "ArmoredVest": "", "HandWear": "nitrile_white"}, {}),
+    # Halcyon's security (guards, the lab's extras): black hooded hazmat, black gloves, the mask varies
+    ("Halcyon", "RZ_Armed_Halcyon_BlackSuit", "us_rifleman_v1", {"Hat": "", "Face": "hazmask_tinted", "Jacket": "hazmat_black", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "gloves_pilot_black"}, {"Pants": "Vest"}),
+    ("Halcyon", "RZ_Armed_Halcyon_Hood", "us_rifleman_v1", {"Hat": "", "Face": "hazmask", "Jacket": "hazmat_black", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "gloves_pilot_black"}, {"Pants": "Vest"}),
+    ("Halcyon", "RZ_Armed_Halcyon_GasMask", "us_rifleman_v1", {"Hat": "", "Head": "gasmask", "Jacket": "hazmat_black", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "gloves_pilot_black"}, {"Pants": "Vest"}),
+    # Halcyon's field crews (supply trucks): olive hazmat
+    ("Halcyon", "RZ_Armed_Halcyon_Hazmat", "us_rifleman_v1", {"Hat": "", "Face": "hazmask", "Jacket": "hazmat_olive", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "nitrile_blue"}, {"Pants": "Vest"}),
+    ("Halcyon", "RZ_Armed_Halcyon_Field", "us_rifleman_v1", {"Hat": "", "Face": "hazmask_tinted", "Jacket": "hazmat_olive", "Boots": "boots_us", "ArmoredVest": "", "HandWear": "gloves_pilot_black"}, {"Pants": "Vest"}),
 ]
 
 # (folder, file stem, parent group, [member stems]): no two groups of a slot share their mix.
 GROUPS = [
-    ("Haven", "RZ_Guard_Haven_1", "grp_guard_haven", ["RZ_Armed_Haven_Hunter", "RZ_Armed_Haven_Farmhand"]),
-    ("Haven", "RZ_Guard_Haven_2", "grp_guard_haven", ["RZ_Armed_Haven_Worker", "RZ_Armed_Haven_Winter"]),
-    ("Haven", "RZ_Guard_Haven_3", "grp_guard_haven", ["RZ_Armed_Haven_Overalls", "RZ_Armed_Haven_Worker"]),
-    ("Haven", "RZ_SafehouseGuard_1", "grp_safehouse_guard", ["RZ_Armed_Haven_Farmhand"]),
-    ("Haven", "RZ_SafehouseGuard_2", "grp_safehouse_guard", ["RZ_Armed_Haven_Winter"]),
-    ("Haven", "RZ_SafehouseGuard_3", "grp_safehouse_guard", ["RZ_Armed_Haven_Overalls"]),
-    ("Haven", "RZ_TruckCrew_Haven_1", "grp_truck_haven", ["RZ_Armed_Haven_Farmhand", "RZ_Armed_Haven_Winter"]),
-    ("Haven", "RZ_TruckCrew_Haven_2", "grp_truck_haven", ["RZ_Armed_Haven_Overalls", "RZ_Armed_Haven_Hunter"]),
-    ("Bastion", "RZ_Guard_Bastion_1", "grp_guard_bastion", ["RZ_Armed_Bastion_Scrim", "RZ_Armed_Bastion_M1"]),
-    ("Bastion", "RZ_Guard_Bastion_2", "grp_guard_bastion", ["RZ_Armed_Bastion_Cap", "RZ_Armed_Bastion_Night"]),
-    ("Bastion", "RZ_Guard_Bastion_3", "grp_guard_bastion", ["RZ_Armed_Bastion_Raincoat", "RZ_Armed_Bastion_Scrim"]),
-    ("Bastion", "RZ_BastionPostCrew_1", "grp_post_bastion", ["RZ_Armed_Bastion_Scrim", "RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Cap"]),
-    ("Bastion", "RZ_BastionPostCrew_2", "grp_post_bastion", ["RZ_Armed_Bastion_Night", "RZ_Armed_Bastion_Raincoat", "RZ_Armed_Bastion_Scrim"]),
-    ("Bastion", "RZ_BastionPostCrew_3", "grp_post_bastion", ["RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Cap", "RZ_Armed_Bastion_Raincoat"]),
-    ("Bastion", "RZ_BastionHunters_1", "grp_hunters_bastion", ["RZ_Armed_Bastion_Scrim", "RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Cap", "RZ_Armed_Bastion_Night"]),
-    ("Bastion", "RZ_BastionHunters_2", "grp_hunters_bastion", ["RZ_Armed_Bastion_Raincoat", "RZ_Armed_Bastion_Night", "RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Scrim"]),
-    ("Bastion", "RZ_TruckCrew_Bastion_1", "grp_truck_bastion", ["RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Raincoat"]),
-    ("Bastion", "RZ_TruckCrew_Bastion_2", "grp_truck_bastion", ["RZ_Armed_Bastion_Night", "RZ_Armed_Bastion_Cap"]),
+    ("Haven", "RZ_Guard_Haven_1", "grp_guard_haven", ["RZ_Armed_Haven_Hunter", "RZ_Armed_Haven_Watch"]),
+    ("Haven", "RZ_Guard_Haven_2", "grp_guard_haven", ["RZ_Armed_Haven_Winter", "RZ_Armed_Haven_Lookout"]),
+    ("Haven", "RZ_Guard_Haven_3", "grp_guard_haven", ["RZ_Armed_Haven_Watch", "RZ_Armed_Haven_Winter"]),
+    ("Haven", "RZ_SafehouseGuard_1", "grp_safehouse_guard", ["RZ_Armed_Haven_Watch"]),
+    ("Haven", "RZ_SafehouseGuard_2", "grp_safehouse_guard", ["RZ_Armed_Haven_Lookout"]),
+    ("Haven", "RZ_SafehouseGuard_3", "grp_safehouse_guard", ["RZ_Armed_Haven_Hunter"]),
+    ("Haven", "RZ_TruckCrew_Haven_1", "grp_truck_haven", ["RZ_Armed_Haven_Farmhand", "RZ_Armed_Haven_Mechanic"]),
+    ("Haven", "RZ_TruckCrew_Haven_2", "grp_truck_haven", ["RZ_Armed_Haven_Overalls", "RZ_Armed_Haven_Worker"]),
+    ("Bastion", "RZ_Guard_Bastion_1", "grp_guard_bastion", ["RZ_Armed_Bastion_Helmet", "RZ_Armed_Bastion_M1"]),
+    ("Bastion", "RZ_Guard_Bastion_2", "grp_guard_bastion", ["RZ_Armed_Bastion_Goggles", "RZ_Armed_Bastion_Helmet"]),
+    ("Bastion", "RZ_Guard_Bastion_3", "grp_guard_bastion", ["RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Goggles"]),
+    ("Bastion", "RZ_BastionPostCrew_1", "grp_post_bastion", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_Helmet", "RZ_Armed_Bastion_M1"]),
+    ("Bastion", "RZ_BastionPostCrew_2", "grp_post_bastion", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_Goggles", "RZ_Armed_Bastion_Helmet"]),
+    ("Bastion", "RZ_BastionPostCrew_3", "grp_post_bastion", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Patrol"]),
+    ("Bastion", "RZ_BastionHunters_1", "grp_hunters_bastion", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_Boonie", "RZ_Armed_Bastion_Patrol", "RZ_Armed_Bastion_Helmet"]),
+    ("Bastion", "RZ_BastionHunters_2", "grp_hunters_bastion", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_Patrol", "RZ_Armed_Bastion_Boonie", "RZ_Armed_Bastion_M1"]),
+    ("Bastion", "RZ_TruckCrew_Bastion_1", "grp_truck_bastion", ["RZ_Armed_Bastion_Patrol", "RZ_Armed_Bastion_Boonie"]),
+    ("Bastion", "RZ_TruckCrew_Bastion_2", "grp_truck_bastion", ["RZ_Armed_Bastion_Boonie", "RZ_Armed_Bastion_Helmet"]),
     ("RedHand", "RZ_Guard_RedHand_1", "grp_guard_redhand", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Tracksuit"]),
-    ("RedHand", "RZ_Guard_RedHand_2", "grp_guard_redhand", ["RZ_Armed_RedHand_ThreeHole", "RZ_Armed_RedHand_Beret"]),
+    ("RedHand", "RZ_Guard_RedHand_2", "grp_guard_redhand", ["RZ_Armed_RedHand_Hood", "RZ_Armed_RedHand_RedTop"]),
     ("RedHand", "RZ_Guard_RedHand_3", "grp_guard_redhand", ["RZ_Armed_RedHand_Helmet", "RZ_Armed_RedHand_Tracksuit"]),
-    ("RedHand", "RZ_RedHandPostCrew_1", "grp_post_redhand", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_ThreeHole"]),
-    ("RedHand", "RZ_RedHandPostCrew_2", "grp_post_redhand", ["RZ_Armed_RedHand_Beret", "RZ_Armed_RedHand_Helmet", "RZ_Armed_RedHand_Balaclava"]),
-    ("RedHand", "RZ_RedHandPostCrew_3", "grp_post_redhand", ["RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_ThreeHole", "RZ_Armed_RedHand_Helmet"]),
-    ("RedHand", "RZ_RedHandHunters_1", "grp_hunters_redhand", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_ThreeHole", "RZ_Armed_RedHand_Beret"]),
-    ("RedHand", "RZ_RedHandHunters_2", "grp_hunters_redhand", ["RZ_Armed_RedHand_Helmet", "RZ_Armed_RedHand_Beret", "RZ_Armed_RedHand_ThreeHole", "RZ_Armed_RedHand_Balaclava"]),
+    ("RedHand", "RZ_RedHandPostCrew_1", "grp_post_redhand", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Hood"]),
+    ("RedHand", "RZ_RedHandPostCrew_2", "grp_post_redhand", ["RZ_Armed_RedHand_Helmet", "RZ_Armed_RedHand_RedTop", "RZ_Armed_RedHand_Balaclava"]),
+    ("RedHand", "RZ_RedHandPostCrew_3", "grp_post_redhand", ["RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Hood", "RZ_Armed_RedHand_Helmet"]),
+    ("RedHand", "RZ_RedHandHunters_1", "grp_hunters_redhand", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Hood", "RZ_Armed_RedHand_RedTop"]),
+    ("RedHand", "RZ_RedHandHunters_2", "grp_hunters_redhand", ["RZ_Armed_RedHand_Helmet", "RZ_Armed_RedHand_RedTop", "RZ_Armed_RedHand_Hood", "RZ_Armed_RedHand_Balaclava"]),
     ("RedHand", "RZ_TruckCrew_RedHand_1", "grp_truck_redhand", ["RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Helmet"]),
-    ("RedHand", "RZ_TruckCrew_RedHand_2", "grp_truck_redhand", ["RZ_Armed_RedHand_Beret", "RZ_Armed_RedHand_Balaclava"]),
-    ("Halcyon", "RZ_Guard_Halcyon_1", "grp_guard_halcyon", ["RZ_Armed_Halcyon_GasMask", "RZ_Armed_Halcyon_Hazmat"]),
-    ("Halcyon", "RZ_Guard_Halcyon_2", "grp_guard_halcyon", ["RZ_Armed_Halcyon_Masked", "RZ_Armed_Halcyon_BlackSuit"]),
-    ("Halcyon", "RZ_Guard_Halcyon_3", "grp_guard_halcyon", ["RZ_Armed_Halcyon_Medic", "RZ_Armed_Halcyon_GasMask"]),
-    ("Halcyon", "RZ_TruckCrew_Halcyon_1", "grp_truck_halcyon", ["RZ_Armed_Halcyon_Medic", "RZ_Armed_Halcyon_Masked"]),
-    ("Halcyon", "RZ_TruckCrew_Halcyon_2", "grp_truck_halcyon", ["RZ_Armed_Halcyon_Hazmat", "RZ_Armed_Halcyon_Medic"]),
+    ("RedHand", "RZ_TruckCrew_RedHand_2", "grp_truck_redhand", ["RZ_Armed_RedHand_RedTop", "RZ_Armed_RedHand_Balaclava"]),
+    ("Halcyon", "RZ_Guard_Halcyon_1", "grp_guard_halcyon", ["RZ_Armed_Halcyon_BlackSuit", "RZ_Armed_Halcyon_GasMask"]),
+    ("Halcyon", "RZ_Guard_Halcyon_2", "grp_guard_halcyon", ["RZ_Armed_Halcyon_Hood", "RZ_Armed_Halcyon_BlackSuit"]),
+    ("Halcyon", "RZ_Guard_Halcyon_3", "grp_guard_halcyon", ["RZ_Armed_Halcyon_GasMask", "RZ_Armed_Halcyon_Hood"]),
+    ("Halcyon", "RZ_TruckCrew_Halcyon_1", "grp_truck_halcyon", ["RZ_Armed_Halcyon_Hazmat", "RZ_Armed_Halcyon_Field"]),
+    ("Halcyon", "RZ_TruckCrew_Halcyon_2", "grp_truck_halcyon", ["RZ_Armed_Halcyon_Field", "RZ_Armed_Halcyon_Hazmat"]),
+]
+
+# The faction group prefabs themselves, dressed: their members are rewritten to these looks (a stem)
+# or kept as given (a full ResourceName). Every path that spawns a slot's own prefab, not a look of it
+# (a mission's group, a slot whose Looks list is empty), then still puts the faction's people in the
+# field, never a vanilla US or FIA soldier. (base prefab path, [members])
+BASES = [
+    ("Prefabs/ReforgerZ/Territory/RZ_Guard_Haven.et", ["RZ_Armed_Haven_Hunter", "RZ_Armed_Haven_Watch"]),
+    ("Prefabs/ReforgerZ/Territory/RZ_Guard_Bastion.et", ["RZ_Armed_Bastion_Helmet", "RZ_Armed_Bastion_M1"]),
+    ("Prefabs/ReforgerZ/Territory/RZ_Guard_RedHand.et", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Hood"]),
+    ("Prefabs/ReforgerZ/Territory/RZ_Guard_Halcyon.et", ["RZ_Armed_Halcyon_BlackSuit", "RZ_Armed_Halcyon_Hood"]),
+    ("Prefabs/ReforgerZ/Haven/RZ_SafehouseGuard.et", ["RZ_Armed_Haven_Watch"]),
+    ("Prefabs/ReforgerZ/Factions/RZ_BastionPostCrew.et", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_Helmet", "RZ_Armed_Bastion_Goggles"]),
+    ("Prefabs/ReforgerZ/Factions/RZ_RedHandPostCrew.et", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Hood", "RZ_Armed_RedHand_Tracksuit"]),
+    ("Prefabs/ReforgerZ/Factions/RZ_BastionHunters.et", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_Boonie", "RZ_Armed_Bastion_Patrol", "RZ_Armed_Bastion_Helmet"]),
+    ("Prefabs/ReforgerZ/Factions/RZ_RedHandHunters.et", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Hood", "RZ_Armed_RedHand_RedTop"]),
+    ("Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Haven.et", ["RZ_Armed_Haven_Farmhand", "RZ_Armed_Haven_Overalls"]),
+    ("Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Bastion.et", ["RZ_Armed_Bastion_Patrol", "RZ_Armed_Bastion_Boonie"]),
+    ("Prefabs/ReforgerZ/Supply/RZ_TruckCrew_RedHand.et", ["RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Helmet"]),
+    ("Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Halcyon.et", ["RZ_Armed_Halcyon_Hazmat", "RZ_Armed_Halcyon_Field"]),
+    # the missions' faction groups (no Looks list: they spawn as themselves)
+    ("Prefabs/ReforgerZ/Missions/RZ_BastionSquad.et", ["RZ_Armed_Bastion_Lead", "RZ_Armed_Bastion_Helmet", "RZ_Armed_Bastion_M1", "RZ_Armed_Bastion_Goggles"]),
+    ("Prefabs/ReforgerZ/Missions/RZ_EscortSoldier.et", ["RZ_Armed_Bastion_Patrol"]),
+    ("Prefabs/ReforgerZ/Missions/RZ_RedHandGroup.et", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Helmet", "RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Hood"]),
+    ("Prefabs/ReforgerZ/Missions/RZ_EscortScientist.et", ["RZ_Staff_Halcyon_Researcher"]),
+    # the survivors (the Haven's side): their armed men in work clothes, the two civilians as they are
+    ("Prefabs/ReforgerZ/Missions/RZ_SurvivorGroup.et", ["RZ_Armed_Haven_Farmhand",
+                                                        "{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_2.et",
+                                                        "RZ_Armed_Haven_Worker",
+                                                        "{408B8BD5E3F09FF3}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_3.et"]),
 ]
 
 # The arrays on RZ_GameMode.et: (settings block, field, parent key, stem prefix).
@@ -344,6 +420,10 @@ ARRAYS = [
     ("m_TerritorySettings", "m_aHalcyonOccupantLooks", "occ_halcyon", "RZ_Occupant_Halcyon_"),
     ("m_SafehouseSettings", "m_aGuardLooks", "grp_safehouse_guard", "RZ_SafehouseGuard_"),
     ("m_SafehouseSettings", "m_aOccupantPrefabs (append)", "occ_haven", "RZ_Occupant_Haven_"),
+    ("m_LeaderSettings", "m_aHavenLeaderLooks", "leader_haven", "RZ_Leader_Haven_"),
+    ("m_LeaderSettings", "m_aBastionLeaderLooks", "leader_bastion", "RZ_Leader_Bastion_"),
+    ("m_LeaderSettings", "m_aRedHandLeaderLooks", "leader_redhand", "RZ_Leader_RedHand_"),
+    ("m_LeaderSettings", "m_aHalcyonLeaderLooks", "leader_halcyon", "RZ_Leader_Halcyon_"),
     ("m_LeaderSettings", "m_aCouncilHeadLooks", "council", "RZ_CouncilHead_"),
     ("m_LeaderSettings", "m_aBastionOutpostLooks", "outpost_bastion", "RZ_Outpost_Bastion_"),
     ("m_LeaderSettings", "m_aRedHandOutpostLooks", "outpost_redhand", "RZ_Outpost_RedHand_"),
@@ -403,6 +483,10 @@ def char_text(parent_key, slots, moves):
             sys.exit("people_looks: unknown item %r" % item)
         if item in BLOCKS_PANTS:
             worn["Pants"] = ""
+    # Every garment you can see is the look's own: a slot left to the parent shows its vanilla kit
+    missing = [slot for slot in DRESSED if slot not in worn]
+    if missing:
+        sys.exit("people_looks: a look on %s leaves %s to the parent: set them (\"\" empties one)" % (parent_key, ", ".join(missing)))
     lines = ['SCR_ChimeraCharacter : "%s" {' % parent, ' ID "%s"' % entity_id, " components {",
              '  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {', "   Slots {"]
     for slot in SLOT_ORDER:
@@ -455,6 +539,17 @@ def group_text(parent_key, members):
     return "\n".join(lines) + "\n"
 
 
+def base_text(path, members):
+    """The slot's own group prefab with its members replaced (BASES)."""
+    full = os.path.join(ROOT, path)
+    text = open(full, encoding="utf-8").read()
+    m = re.search(r"( m_aUnitPrefabSlots \{\n)  [^\n]*\n( \})", text)
+    if not m:
+        sys.exit("people_looks: no m_aUnitPrefabSlots in %s" % path)
+    line = "  " + " ".join('"%s"' % n for n in members) + "\n"
+    return text[:m.start()] + m.group(1) + line + m.group(2) + text[m.end():]
+
+
 def check_index(names):
     path = os.environ.get("RZ_RESOURCE_INDEX", DEFAULT_INDEX)
     if path == "none":
@@ -491,7 +586,31 @@ def main():
         write(path, group_text(parent, [made[m] for m in members]))
         write(path + ".meta", META % rn)
         made[stem] = rn
-    print("people_looks: wrote %d prefabs under %s" % (len(made), OUT))
+    for path, members in BASES:
+        names = []
+        for m in members:
+            if m.startswith("{"):
+                names.append(m)
+            elif m in made:
+                names.append(made[m])
+            else:
+                sys.exit("people_looks: %s lists unknown look %s" % (path, m))
+        write(path, base_text(path, names))
+    # Looks no longer in the tables go, with their .meta
+    kept = set(resource(f, st)[1] for f, st, *_ in CHARS + GROUPS)
+    gone = 0
+    for dirpath, _, files in os.walk(os.path.join(ROOT, OUT)):
+        for f in files:
+            if not f.endswith(".et"):
+                continue
+            rel = os.path.relpath(os.path.join(dirpath, f), ROOT).replace(os.sep, "/")
+            if rel not in kept:
+                os.remove(os.path.join(dirpath, f))
+                if os.path.exists(os.path.join(dirpath, f + ".meta")):
+                    os.remove(os.path.join(dirpath, f + ".meta"))
+                gone += 1
+    print("people_looks: wrote %d prefabs under %s, dressed %d faction groups, removed %d old looks"
+          % (len(made), OUT, len(BASES), gone))
     if "--arrays" in sys.argv:
         for block, field, _, prefix in ARRAYS:
             names = [made[s] for s in made if s.startswith(prefix)]

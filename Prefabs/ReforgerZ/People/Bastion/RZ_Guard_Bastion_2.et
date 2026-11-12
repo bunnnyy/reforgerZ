@@ -2,6 +2,6 @@ SCR_AIGroup : "{5E86B5DA97C6C436}Prefabs/ReforgerZ/Territory/RZ_Guard_Bastion.et
  ID "0000000000000001"
  coords 0 0 0
  m_aUnitPrefabSlots {
-  "{8DC7BBBFA435ACA7}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Cap.et" "{0B5358AAD0F02E93}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Night.et"
+  "{A5F7BB3C05F94473}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Goggles.et" "{2BB4043E2C03EAB3}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Helmet.et"
  }
 }

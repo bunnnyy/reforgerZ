@@ -18,6 +18,12 @@ SCR_ChimeraCharacter : "{EA158B6EB6A24B4B}Prefabs/Characters/Factions/BLUFOR/US_
     LoadoutSlotInfo Pants {
      Prefab ""
     }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{D8326FEE52670D2A}Prefabs/Characters/Handwear/Gloves_Blue/Medical_Gloves_Blue_Base.et"
+    }
    }
   }
   SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {

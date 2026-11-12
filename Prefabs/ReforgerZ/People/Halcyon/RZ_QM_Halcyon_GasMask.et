@@ -12,8 +12,17 @@ SCR_ChimeraCharacter : "{C70CEA8F1DC07FC7}Prefabs/ReforgerZ/Factions/RZ_QM_Halcy
     LoadoutSlotInfo Jacket {
      Prefab "{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{A38C67B3E56B7D26}Prefabs/Characters/Footwear/paramedic_boots.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{D90A181625AD1F9A}Prefabs/Characters/Handwear/Gloves_White/Medical_Gloves_White_Base.et"
     }
    }
   }

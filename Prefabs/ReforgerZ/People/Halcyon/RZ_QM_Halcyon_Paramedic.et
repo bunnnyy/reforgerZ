@@ -9,8 +9,14 @@ SCR_ChimeraCharacter : "{C70CEA8F1DC07FC7}Prefabs/ReforgerZ/Factions/RZ_QM_Halcy
     LoadoutSlotInfo Jacket {
      Prefab "{C1FF82A0F6813A48}Prefabs/Characters/Uniforms/Jacket_EMS.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{B8F5E8DB8D633E31}Prefabs/Characters/Uniforms/Pants_EMS.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{A38C67B3E56B7D26}Prefabs/Characters/Footwear/paramedic_boots.et"
     }
     LoadoutSlotInfo HandWear {
      Prefab "{D8326FEE52670D2A}Prefabs/Characters/Handwear/Gloves_Blue/Medical_Gloves_Blue_Base.et"

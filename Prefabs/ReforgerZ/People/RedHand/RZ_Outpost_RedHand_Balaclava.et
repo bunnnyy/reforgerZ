@@ -4,7 +4,7 @@ SCR_ChimeraCharacter : "{DA78E230581B4F4A}Prefabs/ReforgerZ/Leaders/RZ_Outpost_R
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Hat {
-     Prefab ""
+     Prefab "{D8D9EE7F3966589E}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_red.et"
     }
     LoadoutSlotInfo Face {
      Prefab "{09843B703114507C}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Wool_Olive.et"
@@ -12,12 +12,30 @@ SCR_ChimeraCharacter : "{DA78E230581B4F4A}Prefabs/ReforgerZ/Leaders/RZ_Outpost_R
     LoadoutSlotInfo Jacket {
      Prefab "{5FA71197901F8EEF}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_02.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{21DC09217E13C1C7}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Black.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{CDDA2A133111E1A6}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_Black.et"
+    }
    }
   }
   SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
    InitialInventoryItems {
     ItemsInitConfigurationItem "{608AC3CC37F93DCA}" {
      TargetStorage "Jacket/Jacket_Bandit_02.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     TargetStorage "Pants/Pants_Cargo_Black.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Pants/Pants_Cargo_Black.et"
     }
    }
   }

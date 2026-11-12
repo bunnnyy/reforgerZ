@@ -3,6 +3,6 @@ SCR_AIGroup : "{581106FA58919E89}Prefabs/Groups/INDFOR/Group_FIA_MedicalSection.
  coords 0 0 0
  m_faction "INST"
  m_aUnitPrefabSlots {
-  "{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Medic.et" "{C9E4FEAF5AAC8D8C}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Medic.et"
+  "{15B170021C3B2DC8}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_Hazmat.et" "{30D507F3E267ACE3}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_Field.et"
  }
 }

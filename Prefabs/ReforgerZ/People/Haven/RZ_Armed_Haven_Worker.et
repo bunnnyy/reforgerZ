@@ -9,8 +9,14 @@ SCR_ChimeraCharacter : "{9503CB9B3463BA1E}Prefabs/Characters/Factions/INDFOR/FIA
     LoadoutSlotInfo Jacket {
      Prefab "{C51983A3690A5A7A}Prefabs/Characters/Uniforms/Shirt/Shirt3.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
     }
     LoadoutSlotInfo HandWear {
      Prefab "{4F71E7468E78DDD2}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et"

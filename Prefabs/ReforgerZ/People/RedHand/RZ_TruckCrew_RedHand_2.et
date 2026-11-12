@@ -2,6 +2,6 @@ SCR_AIGroup : "{ECB246D273480AAE}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_RedHand.e
  ID "0000000000000001"
  coords 0 0 0
  m_aUnitPrefabSlots {
-  "{6715895D00355DE0}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Beret.et" "{6084D305DD046772}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Balaclava.et"
+  "{83DB6D95360F0F5F}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_RedTop.et" "{6084D305DD046772}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Balaclava.et"
  }
 }

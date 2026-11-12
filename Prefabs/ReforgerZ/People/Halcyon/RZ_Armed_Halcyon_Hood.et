@@ -1,0 +1,38 @@
+SCR_ChimeraCharacter : "{EA158B6EB6A24B4B}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Rifleman_Variant_1.et" {
+ ID "52092032B0E62200"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Face {
+     Prefab "{85C22207DAACE451}Prefabs/Characters/HeadGear/Mask_Hazmat/Mask_Hazmat_Gas_01.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{703E0F4C614C348D}Prefabs/Characters/Uniforms/Suit_Hazmat/Suit_Hazmat_v2_Black.et"
+    }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
+    LoadoutSlotInfo Pants {
+     Prefab ""
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{EF604A05A5998102}Prefabs/Characters/Handwear/Gloves_Pilot_US_01/Gloves_Pilot_US_Black.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CAAFB9235E902}" {
+     TargetStorage "Vest/Vest_ALICE_rifleman.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

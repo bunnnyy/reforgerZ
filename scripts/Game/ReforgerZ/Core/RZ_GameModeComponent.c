@@ -1255,6 +1255,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		m_Looks.Add(l.m_sBastionOutpostPrefab, l.m_aBastionOutpostLooks);
 		m_Looks.Add(l.m_sRedHandOutpostPrefab, l.m_aRedHandOutpostLooks);
 		m_Looks.Add(l.m_sHalcyonOutpostPrefab, l.m_aHalcyonOutpostLooks);
+		m_Looks.Add(l.m_sHavenLeaderPrefab, l.m_aHavenLeaderLooks);
+		m_Looks.Add(l.m_sBastionLeaderPrefab, l.m_aBastionLeaderLooks);
+		m_Looks.Add(l.m_sRedHandLeaderPrefab, l.m_aRedHandLeaderLooks);
+		m_Looks.Add(l.m_sHalcyonLeaderPrefab, l.m_aHalcyonLeaderLooks);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -92,7 +92,7 @@ class RZ_HostilitySettings
 	[Attribute("1", desc: "Disguises: claims in a faction's kit, judged by the look at barriers, gates and in missions (docs/REPUTATION.md, Borrowed kit). Off: kit does nothing")]
 	bool m_bDisguises;
 
-	[Attribute("us_army,usarmy,bdu,m81,ocp,woodland_us", desc: "Disguises: keywords of Bastion uniform pieces (prefab names, lower case). Check them against your Bastion loadouts")]
+	[Attribute("us_army,usarmy,bdu,us_m65,m81,ocp,woodland_us", desc: "Disguises: keywords of Bastion uniform pieces (prefab names, lower case). Check them against your Bastion loadouts")]
 	string m_sBastionUniformWords;
 
 	[Attribute("bandit,redhand,red_hand,armband_red", desc: "Disguises: keywords of Red Hand clothing (e.g. a red armband or bandana)")]
@@ -101,7 +101,7 @@ class RZ_HostilitySettings
 	[Attribute("hazmat,labcoat,lab_coat,cbrn,scientist,respirator,gasmask,gas_mask", desc: "Disguises: keywords of Halcyon clothing: the coat, and the beak (a hood or mask with a respirator)")]
 	string m_sHalcyonUniformWords;
 
-	[Attribute("helmet,pasgt,patrol_cap,cap_,beret,boonie", desc: "Disguises: Bastion head pieces (full kit needs one); anything in the head slot that matches the uniform words counts too")]
+	[Attribute("helmet,pasgt,patrol_cap,hat_patrol,cap_,beret,boonie", desc: "Disguises: Bastion head pieces (full kit needs one); anything in the head slot that matches the uniform words counts too")]
 	string m_sBastionHeadWords;
 
 	[Attribute("bandana,balaclava,shemagh", desc: "Disguises: Red Hand head pieces")]

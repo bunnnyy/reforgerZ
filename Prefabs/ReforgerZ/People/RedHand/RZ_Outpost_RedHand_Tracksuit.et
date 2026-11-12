@@ -4,13 +4,22 @@ SCR_ChimeraCharacter : "{DA78E230581B4F4A}Prefabs/ReforgerZ/Leaders/RZ_Outpost_R
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Hat {
-     Prefab "{DD43DAD304AC5085}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_03_backwards.et"
+     Prefab "{1B568A254D1E519B}Prefabs/Characters/HeadGear/Hat_ZmijovkaCap_01/Hat_ZmijovkaCap_01_red.et"
     }
     LoadoutSlotInfo Jacket {
      Prefab "{3A948BD491BC06DE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Navy.et"
     }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
     LoadoutSlotInfo Pants {
      Prefab "{821386465B3C63AB}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Navy.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{CABF701DF5212647}Prefabs/Characters/Footwear/Sneakers/Sneakers_Dirty.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab ""
     }
    }
   }

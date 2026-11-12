@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{AD14B5FEB08CEBCE}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_Hood.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
