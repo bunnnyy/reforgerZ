@@ -193,13 +193,27 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A spoken line for this player only (RZ_GameModeComponent.Say): a subtitle.
+	//! A plain spoken line for this player only: a subtitle, the client working out the rest from
+	//! the title (RZ_SayLine.Make). Kept for callers without a line; RZ_GameModeComponent.Say uses
+	//! SendSayLine.
 	void SendSay(string speaker, int faction, string text)
 	{
 		if (IsLocalOwner())
 			RpcDo_Say(speaker, faction, text);
 		else
 			Rpc(RpcDo_Say, speaker, faction, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spoken line for this player only, with who says it and how it reaches them (RZ_SayLine):
+	//! "name|role|channel", the faction, the source (RZ_ESaySource), where the speaker stood
+	//! (vector.Zero: nowhere) and their body's RplId (invalid: none), then the line.
+	void SendSayLine(RZ_SayLine line)
+	{
+		if (IsLocalOwner())
+			RpcDo_SayLine(line.Head(), line.m_iFaction, line.m_iSource, line.m_vAt, line.m_Who, line.m_sText);
+		else
+			Rpc(RpcDo_SayLine, line.Head(), line.m_iFaction, line.m_iSource, line.m_vAt, line.m_Who, line.m_sText);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -315,6 +329,15 @@ class RZ_PlayerUIComponent : ScriptComponent
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (gm)
 			gm.ShowSay(speaker, faction, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_SayLine(string head, int faction, int source, vector at, RplId who, string text)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm)
+			gm.ShowSayLine(RZ_SayLine.FromWire(head, faction, source, at, who, text));
 	}
 
 	//------------------------------------------------------------------------------------------------

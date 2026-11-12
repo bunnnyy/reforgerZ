@@ -1213,3 +1213,55 @@ class RZ_UIFeed
 		return RZ_EMissionKindUI.CONTRACT;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Server: who is speaking, for a spoken line whose caller has no body to give (RZ_GameModeComponent.Say):
+//! the nearest living character to the player that isn't a player or one of the infected, people
+//! you can talk to (a clue or puzzle component) before anyone else. One small sphere query per line.
+class RZ_SpeakerFinder
+{
+	protected vector m_vFrom;
+	protected IEntity m_Best;
+	protected float m_fBest;
+	protected bool m_bBestTalks;
+
+	//------------------------------------------------------------------------------------------------
+	//! The speaker within `radius` of `from`, or null.
+	static IEntity Nearest(vector from, float radius)
+	{
+		RZ_SpeakerFinder finder = new RZ_SpeakerFinder();
+		return finder.Run(from, radius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected IEntity Run(vector from, float radius)
+	{
+		m_vFrom = from;
+		GetGame().GetWorld().QueryEntitiesBySphere(from, radius, OnEntity, null, EQueryEntitiesFlags.DYNAMIC);
+		return m_Best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool OnEntity(IEntity e)
+	{
+		if (!ChimeraCharacter.Cast(e) || !RZ_Util.IsCharacterAlive(e) || RZ_BaconBody.IsBacon(e))
+			return true;
+
+		if (GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(e) > 0)
+			return true;
+
+		bool talks = e.FindComponent(RZ_ClueComponent) != null || e.FindComponent(RZ_PuzzleObjectComponent) != null;
+		float d = RZ_Util.DistXZ(e.GetOrigin(), m_vFrom);
+		if (m_Best && (m_bBestTalks && !talks))
+			return true;
+
+		if (!m_Best || (talks && !m_bBestTalks) || d < m_fBest)
+		{
+			m_Best = e;
+			m_fBest = d;
+			m_bBestTalks = talks;
+		}
+
+		return true;
+	}
+}

@@ -145,7 +145,7 @@ class RZ_DialogueBarks
 		if (!s.m_sName.IsEmpty())
 			name = s.m_sName;
 
-		m_GM.Say(pid, name, ctx.m_iFaction, lines[0]);
+		m_GM.Say(pid, name, ctx.m_iFaction, lines[0], body);
 		RZ_Log.Info(string.Format("Dialogue: bark %1 to %2", best.m_sId, RZ_Util.PlayerName(pid)));
 		return true;
 	}
