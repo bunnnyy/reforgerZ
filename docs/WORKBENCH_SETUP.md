@@ -1049,10 +1049,11 @@ a blocker comes or goes); off, AI walk into the blocker and stop there.
 
 **The loot pool** (Search > Loot pool) is one list of every item that can lie in a house or turn
 up in a wreck's boot or on a body. Each building type takes the items whose prefab names contain its
-keywords (the lists are in `RZ_Search.TypeWords`). To control a type exactly, add a **Loot table**
-for it. A type left thin (fewer than 8 everyday finds or 3 rare ones) gets the built-in vanilla
-items for it (`RZ_LootDefaults`, [DESIGN.md](DESIGN.md#loot-in-houses)), so loot works with the pool
-empty too; the log's `Search:` line shows each table's size.
+keywords (the lists are in `RZ_Search.TypeWords`), plus the built-in vanilla items for it
+(`RZ_LootDefaults`, [DESIGN.md](DESIGN.md#loot-in-houses)), so loot works with the pool empty too.
+To control a type exactly, add a **Loot table** for it: a list set by hand is only topped up with
+the built-in items while it's thin (fewer than 8 everyday finds or 3 rare ones). The log's
+`Search:` line shows each table's size.
 
 **Loose loot: by hand in Workbench.** Nothing new to build: **Interactions > Loot** comes with its
 defaults. Check that everything that can lie in a house is a real item that can be picked up (an
@@ -1388,8 +1389,8 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
-| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
-| Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
+| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: a body; **Boot chance** 0.8 and **Boot two chance** 0.4: a wreck's boot; rare 0.1, electronics 0.1; a house's slots are **Loot > Slot chance**), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
+| Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 55 m, put away past 80 m (after a minute), fresh roll distance (20 m), **refill** (45 min ÷ the town's loot level), at most 500 items lying on the server, **Place per tick** (6 buildings), slots per building (house 5, shop and farm 7, pharmacy, police and garage 8; locked +1), **Slot chance** (0.75), **Sure items** (2; one in a picked-over town), town loot per item taken (0.01), **Kept clear** (20 m past a faction's place, 40 m round a quartermaster), **Loot log** (on: a line per building put out and a summary every 2 minutes) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
 | Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
@@ -1786,7 +1787,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
-| `Interactions/RZ_Loot.c:1078` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
+| `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
 ### Medium risk: big features, with a fallback (73)
 
@@ -1799,8 +1800,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:1003` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:1016` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:1031` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
-| `Interactions/RZ_Loot.c:201` | furniture inside buildings is found as static entities | Loose loot lies only on the floor points in each building's box |
-| `Interactions/RZ_Loot.c:1076` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
+| `Interactions/RZ_Loot.c:391` | a building's furniture props are found: as its children, or by the sphere query over every entity in its box (vanilla's props aren't flagged static and have no `Hierarchy`) | Loose loot lies only on the floor points in each building's box, and upstairs only on the guessed floor above: the `Loot: put out` lines say 0 on furniture everywhere |
+| `Interactions/RZ_Loot.c:1555` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:787` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
 | `World/RZ_Perimeter.c:270` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
 | `World/RZ_Perimeter.c:952`, `:967` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
@@ -1875,7 +1876,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:806` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
-| `Interactions/RZ_Search.c:838` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
+| `Interactions/RZ_Search.c:851` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_WreckBoots.c:123` | a wreck prop faces its local +Z like a vehicle, so its rear (the boot) is its box's −Z side | **Open the boot** shows at the bonnet: flip the sign in `RZ_WreckBoots.BootPoint` |
 | `Interactions/RZ_DoorLocks.c:395` | `UserActionContext.GetOrigin()` on a door's actions manager is the world position of vanilla's Open door point (its first context) | Unlock, Lock and Force sit at 1.05 m on the leaf instead of at the handle's height (the 0.6–1.5 m guard throws out anything else) |
 | `Interactions/RZ_KeyItem.c:95` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages |
@@ -1957,7 +1958,8 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Search: 0 items in the loot pool, 0 tables set by hand. Tables (common/rare/electronics): house 17/4/2, shop 10/3/2, farm 9/3/2, pharmacy 9/3/2, garage 8/3/2, police 8/4/2, body 7/3/2.
 [ReforgerZ] Locks: on the outside doors; keys are off (no key prefab).
 [ReforgerZ] Door blockers: off (no blocker prefab); AI door hook on.
-[ReforgerZ] Loose loot: on. Put out within 45 m, put away past 70 m, at most 350 items lying, refill 60 min; 4/5/6 items per house/shop/pharmacy.
+[ReforgerZ] Loose loot: on. Put out within 55 m (6 buildings a tick), put away past 80 m, at most 500 items lying, refill 45 min; 5/7/8 slots per house/shop/pharmacy, slot chance 0.75.
+[ReforgerZ] Loose loot: 2 sure items a building (one in a picked-over town), kept clear 20 m past faction places, loot log on.
 [ReforgerZ] World interactions: on. 0 fixable cars on the map.
 [ReforgerZ] Story arcs: on, running none.
 [ReforgerZ] Questlines: on, 17 registered (Short Weight, The List, The Price of the Door, The Edge of Town, Every Name, Await Relief, The Census, The Last Pilot, The Book Has to Balance, Cargo, The Well Story, The Three Weeks, The Other Two, Authors, Proof, The House That Went Quiet, A Place at the Table), at most 2 at once, running none.
@@ -2071,7 +2073,7 @@ roads all branch off roads that go on, so it has no road checkpoints):
 [ReforgerZ] Perimeter: 0 road checkpoints (from roads).
 [ReforgerZ] Perimeter: no road checkpoints on this map (the lines above say why). Place RZ_CheckpointMarkerEntity entities on roads to add them.
 [ReforgerZ] Supply trucks: Haven, Bastion, Red Hand, Halcyon.
-[ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand. Tables (common/rare/electronics): house 10/5/2, shop 8/3/2, farm 10/3/2, pharmacy 9/3/2, garage 8/3/2, police 9/4/2, body 8/3/2.
+[ReforgerZ] Search: 30 items in the loot pool, 0 tables set by hand. Tables (common/rare/electronics): house 22/5/2, shop 12/3/2, farm 10/3/2, pharmacy 9/3/2, garage 8/3/2, police 13/4/2, body 12/3/2.
 [ReforgerZ] Locks: on the outside doors; keys are key items.
 [ReforgerZ] World interactions: on. 5 fixable cars on the map.
 [ReforgerZ] Hostility: bitmask mode, all 15 variant factions found.
@@ -2115,6 +2117,8 @@ Warnings worth acting on:
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
 | `Key prefab is empty, has no RZ_KeyItemComponent or didn't spawn: no keys ...` | Set **Search > Key prefab** to an item with `RZ_KeyItemComponent`; until then no keys are given or placed |
 | `Loose loot: off.` | Expected only if you turned **Loot > Loose loot** off: nothing lies in houses |
+| `Loot: put out <key> (<type>, <building>) at <x z>: <a> anchors (<f> on furniture), rolled\|kept <n> items, <s> spawned: <items>` | With **Loot > Loot log** on, one line each time a building's loot is put out: its record's key (the same building under two keys is a building rolled twice: report it), its type and prefab, its spots (how many on vanilla's item spots or furniture), whether it was rolled now or put out as it was left, and what lies there (`note`, `key` or the prefab's name). 0 anchors: nothing can lie there (a box the floor traces miss). 0 on furniture in every building: the furniture isn't found (the VERIFY on `RZ_Loot.c`'s children walk, and the sphere query): loot still lies on the floors |
+| `Loot: <n> items lying in <b> buildings out; <k> known, <c> kept clear by faction places, <p> parts of another building. Last 2 min: ...` | With **Loot > Loot log** on, every 2 minutes while anything is out: the totals, and since the last one the buildings put out, items placed and taken, buildings with no anchors, and sightings of a building's parts (doors, its light probe, its furniture prefab) counted as the building or as nothing. Many with no anchors, or nothing put out while you walk a town: report the lines |
 | `Fuel pump station: no SCR_FuelManagerComponent on ...` | **Cars > Fuel pump station** names a prefab without vanilla's fuel manager: build `RZ_FuelPumpStation.et` with it ([§4](#4-the-prefab-manifest)), or empty the slot for the hand pump |
 | `Wreck boots: off (...). Wrecks hold nothing.` | **Cars > Wreck boot prefab** is empty (or **Cars > Enabled** is off): set it to `RZ_WreckBoot.et` |
 | `Wreck boot: ... doesn't fit in the boot (...)` | Printed once: a loot item is too big or heavy for the boot's storage and lies beside the wreck instead. Raise the volume, item size or weight on `RZ_WreckBoot.et`'s storage |
@@ -3462,7 +3466,7 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 - [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack.
 - [ ] The stove's prompt ("Look at the stove") shows on the stove, at about worktop height on its
   front, not on the wall beside or behind it; the same for a workbench, a generator and a house
-  radio (VERIFY `Interactions/RZ_Interactions.c:177`).
+  radio (VERIFY `Interactions/RZ_Interactions.c:183`).
 - [ ] As a Nurse or Doctor, treat a bitten player (the infection has taken) with a bandage from
   your hands, vanilla's way: both of you get a line that the bite was cleaned properly, and their
   time left grows by about 15%; a second treatment that life does nothing more. There's no
@@ -3473,10 +3477,13 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   tag), or lying beside the body if it has no room; sometimes a note lies by it ("Read it").
   Kill a big group at once: only the first 8 a minute carry anything. A special still drops its
   sample on the ground.
-- [ ] Walk into a house in a fresh town: items on the floor and shelves, usually 2 to 4 (up to 5 in
-  a shop, 6 in a pharmacy, police station or garage), on worktops, desks, tables and cupboards and on
-  the floors (upstairs too, in a two-storey house), inside the walls, not floating, not in a wall,
-  not under the floor and not on the roof; nothing in a building offers "Search". They suit the
+- [ ] Walk into a house in a fresh town: items on the floor and shelves, usually 3 to 5 (up to 7 in
+  a shop or farm, 8 in a pharmacy, police station or garage), already there as you reach the door,
+  on worktops, desks, tables and cupboards and on the floors (upstairs too, and in the attic, in a
+  two-storey house), inside the walls, not floating, not in a wall, not under the floor and not on
+  the roof; nothing in a building offers "Search". The inventory's nearby list never shows the same
+  thing twice in a room unless it comes in twos (food, magazines, dressings), and a house with a
+  garage or shed against it doesn't have both buildings' loot in one room. They suit the
   building: medicine in a pharmacy, tools and jerrycans in a garage, food on a farm, magazines in a
   police station, a bit of everything in a house. Pick one up with F (or from the inventory's
   nearby list). Walk 100 m away for a minute and come back: what you left is still there. Empty a
@@ -3484,9 +3491,14 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   things again, and nothing new ever appears while you stand inside. A locked one, once open, has
   one more.
 - [ ] Loose loot thins: empty a dozen houses in one town, then walk into a fresh one there: it
-  has a thing or none. A faction's stronghold, outpost or a safehouse has no loose loot at all.
+  has one or two things. A faction's stronghold, outpost, a safehouse and a road post have no
+  loose loot in their building and yard; an empty house elsewhere in that town has a little.
 - [ ] Loose loot and performance: walk into the middle of a town and note the server frame time
-  while the buildings around you are put out (four a tick, up to 350 items on the server).
+  while the buildings around you are put out (six a tick, up to 500 items on the server).
+- [ ] The loot log (**Loot > Loot log** on): walk through a town and read the `Loot: put out` lines
+  ([§7](#7-log-lines-to-check)): each building once (no two keys a few metres apart for one house),
+  most houses with some anchors on furniture, none with 0 anchors that you could walk into. Report
+  the lines and the 2-minute `Loot:` summaries with what you saw.
 - [ ] A letter lying in a house reads with **Read it**; now and then a key with a tag lies next to
   it and opens that kind of building in that town.
 - [ ] Car Keys: the Mechanic's keys lie in one of the five houses; picking them up starts the
