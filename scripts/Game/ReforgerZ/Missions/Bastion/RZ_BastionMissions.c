@@ -1298,10 +1298,18 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 			went = "redhand";
 
 		string epilogue = "";
+		// The majors' flags: Bastion's pay for the box under the muster's stance (Expended: command has
+		// gone quiet, x0.75), and the stove's silence is worth less once a stronghold's page is out (x0.8)
+		if (faction == RZ_EFaction.MILITARY && RZ_MajorHelp.World(gm, "orders.stance") == 4)
+			m_fRewardScale *= 0.75;
+
 		if (faction == RZ_EFaction.MILITARY && m_sTruth == "inventory")
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, "The commander thanks you, takes the box into his office, and you hear the stove door open. \"Weather,\" he says when he comes out. \"Write it down.\"");
 			went = "stove";
+			if (RZ_MajorHelp.World(gm, "majors.pages_open") >= 1)
+				m_fRewardScale *= 0.8;
+
 			// The commander, quietly: his loyalty up, Bastion's standing for the one who brought it, and
 			// a silence that comes out if the manifest ever turns up another way
 			RZ_Leaders leaders = gm.GetLeaders();

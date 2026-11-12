@@ -49,10 +49,8 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
 
 ## Reasons
 
-- **Still to post:** the majors' `major.<act>` (by the majors, for their stage missions and margin cards).
-- **Order per player:** the journal and the quartermaster's list put first the jobs near you, those
-  answering a reason where you have a record, and those from a giver you've helped. Only the order
-  changes, never the odds.
+- **The majors' reasons** (`major.<act>`), posted by the majors as an act opens, for their stage missions
+  and the margin cards to answer.
 
 ## The tribes and the conversion
 

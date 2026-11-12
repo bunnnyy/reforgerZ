@@ -1196,6 +1196,10 @@ Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout, Smu
   server-wide, inside the contract cap and every check (`CanRunNow`, someone online eligible,
   claims), and only if it lands within 3 km of the reason; each reason starts one contract at most.
   Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.
+- **Order per player** (`RZ_MissionReasons.OrderScore`): how far up a list a job goes for one
+  player: near them (+2 within 1.5 km, +1 within 4 km), started by a reason (+1), from a leader who
+  remembers they helped (+1). Only the order changes, never the odds. The journal and the
+  quartermaster's list don't sort by it yet (planned, with the UI).
 - **One weight clamp.** A contract's leader traits (±20%), its faction's needs (×0.85–1.2) and the
   majors' season weights multiply, and the product is clamped once to ×0.75–1.3.
 - **Mirror offers** (`RZ_Mirror`): one class with two givers, rolled once when the job is set up

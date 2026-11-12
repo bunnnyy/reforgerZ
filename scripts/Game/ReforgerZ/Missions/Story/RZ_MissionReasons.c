@@ -112,6 +112,37 @@ class RZ_MissionReasons
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Order per player (docs/DESIGN.md, "Story blocks"): how far up a list (the journal, a
+	//! quartermaster's offers) this job goes for this player standing at `at`. Higher first: near
+	//! (within 1.5 km +2, 4 km +1), started by a reason (+1), from a leader who remembers being helped by
+	//! them (+1). Only the order changes, never the odds of being offered.
+	static int OrderScore(RZ_GameModeComponent gm, RZ_Mission m, int playerId, vector at)
+	{
+		if (!m)
+			return 0;
+
+		int score = 0;
+		float dist = RZ_Util.DistXZ(at, m.m_vPos);
+		if (dist <= 1500)
+			score += 2;
+		else if (dist <= 4000)
+			score += 1;
+
+		if (m.m_vReasonAt != vector.Zero)
+			score += 1;
+
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		if (p && m.m_iLeaderId >= 0 && gm.GetLeaders())
+		{
+			RZ_Leader l = gm.GetLeaders().Get(m.m_iLeaderId);
+			if (l && l.Remembers(p.m_sIdentity, RZ_Leaders.MEM_HELPED))
+				score += 1;
+		}
+
+		return score;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! What the world says when a job of type `t` fails, told to those it was offered to after the fail
 	//! text; "" none. Story jobs with a fallout errand say theirs through the errand instead.
 	static string FalloutLine(typename t)
