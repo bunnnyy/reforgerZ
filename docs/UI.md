@@ -9,7 +9,7 @@ every line of text are in [WRITING.md](WRITING.md).
 **Status:** the icon set, the mockups, the layouts, the icon atlas and its imageset, and the
 menu and input config overrides are built. In Workbench play the HUD works: the styled notice
 cards, the stealth visibility bars and the noise meter show. The notebook, the talk screen, the
-reader, the car repair screen, the shop screen, the crafting screen, the object menu, the subtitles and notice pacing
+reader, the car repair screen, the shop screen, the crafting screen, the object menu, the death brief, the subtitles and notice pacing
 are written (their layouts as text) and compile, but haven't been played. The spawn screen, the map key and the map's
 icons are seen in Workbench play with the keyboard; pad not yet ([Built and planned](#built-and-planned)).
 
@@ -155,6 +155,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Notebook: Quests | `tracker.png` (right) | Every job you have, in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, its rough area, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
 | Notebook: The season | — | One page that scrolls: the four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)); then the hall of fame: this season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_SeasonPage` | Page built as text (one scroll since the hall merged in), not checked in play; no mockup |
 | The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, where you start, and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
+| The death brief | — | At a death, one card over the spawn screen: the name, the background and which life, the day and place, how it ended, how long you lived, and a few of the life's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
 | Talk | `talk.png` | New Vegas style, in two steps: their line on its own in a subtitle band with a reading bar, then your replies on their own in an outlined box, with what each needs; their name top right ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
 | Subtitles | `hud.png` (the old one-line name) | What people say outside the talk screen, at the bottom centre: how it reaches you (an icon), the name in their faction colour and their role, for someone in person an arrow to them and how far; the line in bright bone. Radio channels' voices in their own box at the top centre, clear of the quest tracker ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` and `RadioLinePanel` built as text in the HUD layout, not checked in play |
@@ -827,6 +828,62 @@ spawn screen off, the client marks the loadout unavailable in vanilla's deploy m
 background. Before the server-side refusal, Workbench play spawned the locked Soldier loadout as
 the default background; the refusal itself is still to be checked in play.
 
+### The death brief
+
+When you die, one card of the life that just ended opens over the spawn screen (or vanilla's deploy
+menu). Clean and short: a 1,040 × 700 dark panel with a bone rule along its top, the world dimmed
+behind it.
+
+| Part | What it shows |
+|---|---|
+| Kicker (bold 22, dim, upper case) | the season day and where you fell: "DAY 14, NEAR MORTON" (the nearest settlement, else the grid) |
+| Name (bold 48, bone, upper case) | your player name |
+| Who (26, dim) | the background and which life it was: "Nurse, life 3" |
+| The lines (26: labels dim, values bold bone) | at most seven, in this order: **How it ended**; **Lived**; **Infected put down**; **People killed** (only when there were any); **Jobs done**; **Travelled**; **Standing** (only with Fame gained) |
+| Closing (26, bone) | one line in the narrator's plain voice, by how it ended ([WRITING.md](WRITING.md#tone)): no joke, nothing about the body |
+| Footer | the Continue prompt by device, and **CONTINUE** at the bottom right |
+
+What each line says, and where it comes from (all this life's, server-side):
+
+| Line | Value | From |
+|---|---|---|
+| How it ended | Turned; The infected; Killed by *a player's public name* (or "another survivor"); Killed by Task Force Bastion, the Red Hand or Halcyon; Killed by other survivors (guards, wanderers, farm people); Your own doing; Nobody saw how | turned: the game mode's `TurnPlayer`; a player: the killer the bounties use; otherwise the faction of whoever dealt the last blow (the damage manager's instigator), and with nothing recorded, an infected within 6 m of the body |
+| Lived | "41 minutes, Day 3" or "2 hours 5 min, Days 3 to 4" | the life's played time (`m_fLifeSeconds`) and the season days it spanned |
+| Infected put down | a count, or None | `m_iLifeInfected`: each infected death counts for the nearest living player within 120 m |
+| People killed | a count | the life's kills of faction people (`m_aKills`, the tally reputation keeps) |
+| Jobs done | a count, or None | contracts and jobs finished this life (`m_iLifeMissions`) |
+| Travelled | "800 m", "3.4 km" | `m_fLifeMetres`: the ground covered each server tick, on foot or in a car (a jump over 300 m in one tick, a respawn or a teleport, doesn't count) |
+| Standing | "+35 Fame with the Haven" | the faction this life gained the most Fame with (`m_aFameGained`) |
+
+The closing lines: a life under 10 minutes, *"Not long. It rarely is, out here."*; otherwise one per
+way it ended (turned, the infected, a player, a faction, other survivors, your own doing, nobody saw).
+
+| | Keyboard and mouse | Gamepad |
+|---|---|---|
+| Continue to the spawn screen | Enter, Space, Esc, or a click anywhere | A or B |
+
+Presses in its first 0.6 s don't count (you may still be firing). It never holds up the respawn:
+the spawn screen and its respawn timer run under it, and it closes by itself if you're alive again.
+
+**How it works.** At a death (`RZ_FactionPerks.OnPlayerDied`, before any other system hears of it)
+`RZ_DeathBrief.OnDied` builds the brief once and sends it as its own payload kind (30, kept apart
+from `RZ_UIFeed`'s list) to that player only: `H|name|who|day and place`, then
+`L|label|value` per line, then `C|closing line`. The two new counters are on the profile (saved,
+reset with every new life); the game mode's tick adds the ground covered and `OnZombiesKilled`
+credits the infected. The client holds the brief until a respawn screen is open (ours, vanilla's
+deploy menu or role selection; at most 20 s), then opens the `RZ_DeathBriefMenu` preset on top of
+it. The spawn screen and vanilla's menus only take input while they're on top, so the press that
+closes the brief must not reach them: A's `MenuSelect` comes on the release and closes it on the
+next frame, and anything else (Space, a click, A's press through `RZ_TalkSkip`, the button) closes
+it 0.4 s later, after the release.
+
+**Fallbacks.** **UI > Death brief** (on) off: nothing at a death, as before. No UI component on the
+player's controller: nothing. A client that can't open the screen (no preset or layout) shows the
+same lines as one notice card. If you're already alive again when it arrives, it's dropped.
+*Simplified:* infected deaths are credited to the nearest player, whoever fired; the cause is what
+the engine recorded for the last blow (a bleed-out after a shot names the shooter, a fall names
+nobody); players killed aren't counted.
+
 ### The map
 
 `RZ_MapIconsUI` is a component on the map configuration: while the map is open it asks the server
@@ -931,7 +988,7 @@ each only in its own screen.
 | Part | Checked | Fixed |
 |---|---|---|
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
-| The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop, the crafting screen and the object menu each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen opens by itself), close with B (the spawn screen's B opens the pause menu), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
+| The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop, the crafting screen, the object menu and the death brief each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen and the death brief open by themselves), close with B (the spawn screen's B opens the pause menu; the death brief's A closes it too), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
 | Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5: a reply · Q/E: page · Esc: leave", with D-pad, A, LB/RB and B in the footer) and its skip hint ("A / Space: skip") |
 | Hover, typing, chat | No screen needs hover or a tooltip (the talk screen lights the reply under the cursor and the Standing page highlights the row under it, as the D-pad does; a click opens it). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the old Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The Standing page (G2) has nothing under 18; its names are 40 and its detail text 22. |
@@ -975,6 +1032,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_TraceLightsClient` | client, from the HUD's update | Traces' lit windows (S2) near the player, from the game mode's replicated list: a small warm point light each within 150 m ([TRACES.md](TRACES.md#sound-and-light)); nothing unless **World > Traces > Lit windows** is on |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
 | `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |
+| `RZ_DeathBrief`, `RZ_DeathBriefMenu` | server, client (`ChimeraMenuBase`) | The death brief: this life's two new counters (infected put down, ground covered), the brief built once at a death and sent to that player; the card over the spawn screen ([above](#the-death-brief)) |
 | `RZ_SpawnMenu`, `SCR_PlayerDeployMenuHandlerComponent` (modded, `RZ_SpawnMenu.c`) | client (`ChimeraMenuBase`) | The spawn screen in place of vanilla's deploy menu: the backgrounds, where you start, Deploy through the vanilla loadout and spawn requests ([above](#the-spawn-screen)) |
 | `SCR_BasePlayerLoadout`, `SCR_LoadoutManager`, `SCR_BaseGameMode` (modded, `RZ_LoadoutLock.c`) | server (the client only marks the loadout unavailable in vanilla's deploy menu) | Never assigns or spawns a locked background's loadout |
 | `RZ_MapIconsUI` | client (map component) | The icon layer on the map, you-are-here, and the map key in its corner ([The map](#the-map)) |
@@ -1006,7 +1064,7 @@ are open on the server; each check is a few distance tests. The client says when
 closes one (`RpcAsk_ScreenClosed`).
 
 **Turning it off.** Styled notices off gives the vanilla hints back. Emptying **UI > Spawn row
-layout** gives vanilla's deploy menu back. Emptying **UI > Car job
+layout** gives vanilla's deploy menu back. **UI > Death brief** off shows nothing at a death. Emptying **UI > Car job
 layout** gives a fixable car its prompts and notices back, emptying **UI > Shop item layout**
 a quartermaster its Buy actions, emptying **UI > Craft row layout** a workbench its Make actions, and
 emptying **UI > Object row layout** every prop and place its world prompts. Taking
@@ -1041,8 +1099,8 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; twelve mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the object menu on props and places, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer with you-are-here and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
-| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, object menu and spawn screens' and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting and spawn screen presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
+| Built | The icon set and its renderer; twelve mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the object menu on props and places, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, object menu and spawn screens', the death brief's and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting, spawn screen and death brief presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
-| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the object menu (its preset and **UI > Object row layout** aren't set yet); the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
+| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the object menu (its preset and **UI > Object row layout** aren't set yet); the death brief; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
 | Planned | Mockups of the notice board, the object menu and the season page; finished jobs on the Journal tab (they aren't kept yet); the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |
