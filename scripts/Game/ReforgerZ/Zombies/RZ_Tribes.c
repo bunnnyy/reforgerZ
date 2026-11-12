@@ -3653,7 +3653,7 @@ class RZ_Tribes
 	{
 		if (!RZ_NoticeBoard.IsAdmin(playerId))
 		{
-			m_GM.NotifyPlayer(playerId, "Not allowed", "Only a server admin can use /tribes.");
+			m_GM.NotifyPlayer(playerId, "Not allowed", "That command is for server admins.");
 			return;
 		}
 
@@ -3717,7 +3717,7 @@ class RZ_Tribes
 	{
 		if (playerId > 0 && !RZ_NoticeBoard.IsAdmin(playerId))
 		{
-			m_GM.NotifyPlayer(playerId, "Not allowed", "Only a server admin can use /tribes.");
+			m_GM.NotifyPlayer(playerId, "Not allowed", "That command is for server admins.");
 			return;
 		}
 

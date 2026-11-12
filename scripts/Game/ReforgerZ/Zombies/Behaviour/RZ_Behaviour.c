@@ -758,10 +758,11 @@ class RZ_Behaviour
 		if (!body)
 			return;
 
+		// A shorter sprint (a lunge in a young's burst) never cuts a longer one short
 		int at = m_aSprinting.Find(body);
 		if (at >= 0)
 		{
-			m_aSprintUntil[at] = m_fNow + seconds;
+			m_aSprintUntil[at] = Math.Max(m_aSprintUntil[at], m_fNow + seconds);
 		}
 		else
 		{
@@ -1111,11 +1112,22 @@ class RZ_Behaviour
 	//! A young in a chase (docs/INFECTED.md, The kinds). With Young sprint on: at SPRINT (set every
 	//! 0.25 s, lab B7: about 6 m/s, a little faster than a sprinting player) for Young sprint seconds
 	//! (+-1), then Young rest seconds (+-1) at a run, and again; only with its target within its reach
-	//! (35 m) and never in the gentle start. Its speed factor (0.88-1) scales the sprint's length, so a
-	//! group strings out (a cap above 0.7 doesn't slow a body, B7). Off: bursts of 2-4 s every 8-15 s.
+	//! (35 m) and in its line of sight (a broken line loses them), never in the gentle start. Its speed
+	//! factor (0.88-1) scales the sprint's length, so a group strings out (a cap above 0.7 doesn't slow
+	//! a body, B7). Off: bursts of 2-4 s every 8-15 s, on the same conditions.
 	void TryBurst(RZ_BodyState b, IEntity foe, float d)
 	{
 		if (!Kind(b.m_eKind).m_bBursts || m_fNow < b.m_fBurstAt)
+			return;
+
+		if (!foe || d > Kind(b.m_eKind).m_fEngage || RZ_Util.IsInVehicle(foe))
+			return;
+
+		RZ_Guidance guide = m_GM.GetGuidance();
+		if (guide && guide.GetDensityMult(foe.GetOrigin(), 5) < 1)
+			return;
+
+		if (!LineOfSight(b.m_Body, foe))
 			return;
 
 		if (!m_Settings.m_bYoungSprint)
@@ -1124,13 +1136,6 @@ class RZ_Behaviour
 			Sprint(b.m_Body, Math.RandomFloat(2, 4));
 			return;
 		}
-
-		if (!foe || d > Kind(b.m_eKind).m_fEngage || RZ_Util.IsInVehicle(foe))
-			return;
-
-		RZ_Guidance guide = m_GM.GetGuidance();
-		if (guide && guide.GetDensityMult(foe.GetOrigin(), 5) < 1)
-			return;
 
 		float run = Math.Max(1, m_Settings.m_fYoungSprintSeconds + Math.RandomFloat(-1, 1)) * b.m_fSpeedFactor;
 		float rest = Math.Max(1, m_Settings.m_fYoungRestSeconds + Math.RandomFloat(-1, 1));

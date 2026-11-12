@@ -1180,8 +1180,11 @@ class RZ_Safehouses
 	{
 		foreach (RZ_Safehouse h : m_aSafehouses)
 		{
+			// A new tier's people wait until nobody is within the visible radius, so nobody sees the
+			// house empty and fill again
 			float nearest = RZ_Util.NearestDistance(h.m_vPos, players);
-			if (h.m_bSpawned && (nearest > m_Settings.m_fVisibleRadius + DESPAWN_MARGIN || h.m_iSpawnedTier != h.GetTier()))
+			bool retier = h.m_iSpawnedTier != h.GetTier() && nearest > m_Settings.m_fVisibleRadius;
+			if (h.m_bSpawned && (nearest > m_Settings.m_fVisibleRadius + DESPAWN_MARGIN || retier))
 				DespawnBodies(h);
 
 			if (!h.m_bSpawned && nearest <= m_Settings.m_fVisibleRadius)

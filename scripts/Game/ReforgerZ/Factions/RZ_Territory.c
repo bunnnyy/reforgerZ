@@ -562,12 +562,24 @@ class RZ_Territory
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The outpost's leader sits where its people spawn: the yard of the building camp life moves it
+	//! into (RZ_CampLife.HomeFor), else the town's middle. A saved leader is moved there too.
 	protected void RegisterLeader(RZ_Holding h)
 	{
 		h.m_iLeaderId = -1;
 		RZ_Leaders leaders = m_GM.GetLeaders();
-		if (leaders)
-			h.m_iLeaderId = leaders.RegisterOutpost(h.m_eFaction, h.m_vPos, h.m_sName, false);
+		if (!leaders)
+			return;
+
+		vector seat = h.m_vPos;
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (camp)
+			seat = camp.HomeFor("h" + h.m_iId.ToString(), h.m_eFaction, RZ_ECampPlace.OUTPOST, h.m_vPos);
+
+		h.m_iLeaderId = leaders.RegisterOutpost(h.m_eFaction, seat, h.m_sName, false);
+		RZ_Leader l = leaders.Get(h.m_iLeaderId);
+		if (l && l.m_iSource != RZ_Leader.SOURCE_MARKER)
+			l.m_vPos = RZ_Util.GroundPos(seat);
 	}
 
 	//------------------------------------------------------------------------------------------------

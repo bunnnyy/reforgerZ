@@ -203,6 +203,12 @@ are warned; Radio Operators hear it anywhere.
   weakened, already hunting, or deaf to that spot after a hunt lost someone there sends nobody (and the
   horde's wait still runs). The log says `Pack horde:`.
 - **With no town that near, or Tribes off,** as before: a Horde prefab 360–540 m out in any direction.
+- **Every horde spawns out of sight** (`SpawnHorde`, `SpawnHordeAt`): no closer to a player than the
+  minimum spawn distance (120 m) and not where a player within 300 m could see it over the terrain.
+  A spot that fails moves 20–80 m, else just beyond 300 m from every player; with nowhere, no horde.
+- **Inside the budget** ([The agent budget](#the-agent-budget)): a heat horde waits, keeping its heat,
+  until its cluster has room for 4 agents. A horde's crawlers on their way (and a town's lookers) are
+  never put to sleep, herded or drifted home by [crawler life](#crawler-life).
 
 Remembered noises (8+ heat at once, the last 16) also lead infected that a mission controls: they walk
 to a nearby noise and stay about 90 s. The unarmed missions are built on that
@@ -342,8 +348,17 @@ Settings under **Zombies > Tribes**; they apply with either switch on.
 | The engine's active-AI limit | It covers **all** AI (faction AI, wanderers and trucks share it). 128 by default; raised to **160** at start with Tribes on |
 
 Mission infected count toward the budget but are never removed for it. Nothing is trimmed to fit: the
-budget only stops new spawns. Group prefabs count the members they had the last time one spawned (4
-until then).
+budget only stops new spawns.
+
+**Hordes** take their agents in the budget as each unit spawns, and a horde with less than 4 agents
+of room doesn't come (the status line counts `hordes refused`):
+
+| Horde | Room |
+|---|---|
+| Heat hordes, and the world's without a mission (the generator, the arcs) | Its cluster's share, and only in a tick that has spawned at most 4 agents |
+| **Set pieces:** a mission's hordes (missions, events, questlines, Red Hand) and the final stand's waves | The server's 100 agents **plus a reserve of 20**, ignoring the cluster share: at most 120 living infected, however many waves come. A wave with no room is thinner, never pushed past 120 |
+
+Group prefabs count the members they had the last time one spawned (4 until then).
 
 ### The one body budget
 
@@ -357,16 +372,18 @@ caps apply.
 
 | Kind | Rule | Callers |
 |---|---|---|
-| `story` | A mission's people: always allowed, so no job stalls, but counted | The escort block (`Missions/Blocks/RZ_Escort.c`): every escort, rescue and walk-along |
+| `story` | A mission's people: always allowed, so no job stalls, but counted | The escort block (`Missions/Blocks/RZ_Escort.c`): every escort, rescue and walk-along; story groups (`Missions/Story/RZ_StoryGroups.c`), such as Crash Site's recovery team |
 | `wanderer` | Needs room in the server's 100 agents; refused, the wanderer stays data and tries again next tick | Wanderers (`World/RZ_Wanderers.c`) |
-| `scene`, `asker` | 16 agents together, and room in the budget | *Planned:* dialogue's scenes and askers |
-| `errand` | 10, and room | *Planned:* errand scenes |
-| `stranger` | 6, and room | *Planned:* strangers |
+| `scene`, `asker` | 16 agents together, and room in the budget | Talk scenes' people (`Missions/Story/RZ_TalkScene.c`: refused, they wait for room) and door callers (`Missions/Story/RZ_DoorCallers.c`: refused, the line alone) |
+| `errand` | 10, and room | Locals walking up to you (`Missions/Errands/RZ_ErrandsDealer.c`: refused, not this time) |
+| `stranger` | 6, and room | Strangers (`Missions/Errands/RZ_Strangers.c`) |
 | `epilogue` | 18 (3 scenes of 6), and room | The epilogue's people: the queue, the route's table, the lab gate, the barrier, Loose Ends' people ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)) |
-| `speaker` | Only within 100 m of a player, and room | *Planned:* post speakers |
+| `speaker` | Only within 100 m of a player, and room | Checkpoint post speakers (`Factions/RZ_Checkpoints.c`) |
 
-Faction AI, leaders, camp life, supply trucks and the Long Table keep their own limits; they share only
-the engine's active-AI limit ([above](#the-agent-budget)). The status line shows the ledger as
+Faction AI, leaders, camp life, supply trucks, hunter squads (two after one player, four on the
+server: [REPUTATION.md](REPUTATION.md#consequences-for-everyone)), checkpoint guards (only while a
+player is within 600 m: [DESIGN.md](DESIGN.md#the-perimeter)) and the Long Table keep their own
+limits; they share only the engine's active-AI limit ([above](#the-agent-budget)). The status line shows the ledger as
 `other bodies N agents`.
 
 ### Runtime groups
@@ -1111,11 +1128,12 @@ jitter, so a group strings out and no two move alike.
 **The young are a little faster than you.** A player runs at about 4 m/s and sprints at about 5.5 m/s
 (the base game's soldier; VERIFY in play); Bacon's bodies run at about 3.7 m/s, and a sprint set every
 0.25 s gives about 6 m/s (lab B7). So with **Young sprint** on, an engaged young within its reach (35 m)
-of its target chases at a sprint for **Young sprint seconds** (7, ±1), then runs for **Young rest
+of its target, and with it in its line of sight, chases at a sprint for **Young sprint seconds** (7, ±1), then runs for **Young rest
 seconds** (5, ±1): it catches a sprinting player in the open within about 10 s, and a door, a fence
 over 1.4 m, a car or a broken line of sight still loses it. Never in the gentle start. Its speed factor
 scales the sprint's length rather than its speed (a cap above 0.7 doesn't slow a body, B7), so a group
-strings out. Off: bursts of 2–4 s every 8–15 s. Hunters, guards and scouts run at Bacon's run or their
+strings out. A lunge or leap during a sprint never cuts it short. Off: bursts of 2–4 s every 8–15 s,
+on the same conditions (reach, sight, not in the gentle start). Hunters, guards and scouts run at Bacon's run or their
 caps, the alpha's only sprint is its charge, and crawlers are unchanged.
 
 **Senses** (steered groups with a player within 250 m, once a second, the leader's eye): a notice meter
@@ -1272,7 +1290,8 @@ client has seen them ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)
 Code: `Zombies/Behaviour/RZ_CrawlerLife.c`, with **Zombies > Behaviour > Crawler life** (on) and the
 built placement ([Towns](#towns-the-crawlers)). Only their walking slots, their sleep and an optional
 cap: their senses and their fight stay Bacon's, and a group that's drifting to a noise, walking
-somewhere, in a stirred town or with a player within 150 m is left alone.
+somewhere, in a horde or sent to look somewhere, in a stirred town or with a player within 150 m is
+left alone.
 
 | When | The town's crawlers |
 |---|---|
@@ -1508,7 +1527,7 @@ The finale routes' live tissue and The Lower Store's site pack are [FINALE.md](F
 | 50% | **The call box** (Halcyon's quartermaster, Trusted; 2 a real day on the server, one per player a real day; **Call box prefab**): put down and played, 90 s of a recorded dusk call, +25 heat, and the nearest pack within 1.5 km sends its hunters and young to it at dusk and night (as data, so it works with no bodies near; never its leader or guard), its walkers by day (within 1.5 km). Never in no man's land, or within 150 m of another player who isn't in your group. Lab Technicians read samples |
 | 75% | Each person taken comes back as a young only half the time; the ones who ran are halved (built before) |
 | 90% | The finale's live tissue: each route's Act III is a hunt for a leader taken alive (Capture the Index's rules, +2 on the route's track at once) or one of its guard or young (Live Capture's, +2 after 12 real hours) ([FINALE.md](FINALE.md#live-tissue)) |
-| 100%, the final stand | Each wave's hordes come from the crawler towns within 3 km of the lab and the nearest pack within 3 km (its hunters drawn too), alternating, 350–450 m out on the line they come from. Their number is the built waves' × 0.7–1.3 by the neighbours' average infection (carried over between waves, at least one), so clearing them helps but never trivialises it. The last wave adds the most recently Furious pack. With neither near: the built waves |
+| 100%, the final stand | Each wave's hordes come from the crawler towns within 3 km of the lab and the nearest pack within 3 km (its hunters drawn too), alternating, 350–450 m out on the line they come from. Their number is the built waves' × 0.7–1.3 by the neighbours' average infection (carried over between waves, at least one), so clearing them helps but never trivialises it. The last wave adds the most recently Furious pack. With neither near: the built waves. Every wave is a set piece inside the budget's 120 ([The agent budget](#the-agent-budget)) |
 | Lost | The packs that came go home, and the lab's nearest pack is kept Hungry (hunger 60 or more) for a season day |
 
 ### The last week
@@ -1583,7 +1602,8 @@ always told.
 
 - **Props** appear only while a player is within 200 m and go once nobody is within 250 m (checked
   every 5 s): 6 a pack and 30 on the server at most, never saved. They're looks only; reading them is
-  the lines' job.
+  the lines' job. As every mark, each goes through the dressing guard as it spawns (anything a player
+  could use is deleted, [DESIGN.md](DESIGN.md#camp-life)) and the interaction scan leaves it alone.
 - **The bright moon** (**Bright moon**, from phase 0.85): on a clear night (no rain, fog or storm) with
   the engine's moon at least that full, every pack hunts with its range ×1.25 (on top of hunger; a
   frenzy's own) and stays out until 05:30, its hunt too. Players near a pack are told at nightfall:

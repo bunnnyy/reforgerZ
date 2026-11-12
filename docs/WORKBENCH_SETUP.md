@@ -1671,7 +1671,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Factions/RZ_FactionRelations.c:18` | AI perception and target selection pick up a changed `DoCheckIfFactionFriendly` answer quickly (the engine calls it often) | **The biggest unknown.** Test with a Bastion-Hunted player near Bastion AI. If they never fire, set **Hostility > Mode** to *Outlaw* and give `SURV_OUTLAW` real enemies |
-| `Factions/RZ_Checkpoints.c:535` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
+| `Factions/RZ_Checkpoints.c:542` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the spawn screen's places, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:894` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
 | `Factions/RZ_SupplyLines.c:980` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
@@ -1679,8 +1679,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Loot.c:178` | furniture inside buildings is found as static entities | Loose loot lies only on up to five floor points in each building's box |
 | `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
 | `Core/RZ_Util.c:678` | `GetVObject().GetResourceName()` names the mesh of map objects that aren't prefab instances | Such objects aren't recognised as landmarks, building types or furniture; prefab instances still are, and puzzles use the fallback landmark |
-| `World/RZ_Perimeter.c:264` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
-| `World/RZ_Perimeter.c:919`, `:934` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
+| `World/RZ_Perimeter.c:270` | `BaseWorld.GetBoundBox()` covers the terrain (it may be larger; `FitToLand` trims it) | Turn on **Override** and type in the corners |
+| `World/RZ_Perimeter.c:952`, `:934` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
@@ -1707,14 +1707,14 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `UI/RZ_LoadoutLock.c:67` | the server asks `SCR_BaseGameMode.CanPlayerSpawn_S` for every spawn request, with the prefab the client asked for (1.9's respawn system does) | A locked loadout can spawn: the player keeps its gear for that life but plays as the default background (`ResolveBackground`, the log line below). Check with a fresh profile: pick Soldier, press spawn (mouse and gamepad); it must refuse |
 | `Core/RZ_Util.c:473` | a smart-action waypoint set from script (`SetSmartActionEntity`) sends a ReforgerZ faction group to the composition's tagged sentinel, and vanilla's sit, lean and observation behaviours run for our groups in a mod world | People walk to the piece and stand by it: empty **Camp life > Smart action waypoint** and they loiter beside the pieces instead |
 | `Core/RZ_Util.c:555` | an empty group prefab (vanilla `Group_Base.et`) stays alive until a member joins, takes the character's faction, and a spawned lone character joins it and takes its waypoints | Lone occupants and single guards stand where they spawn, as before: empty **Camp life > Group prefab**. Guards that are AI groups still take jobs |
-| `Zombies/Behaviour/RZ_CrawlerLife.c:226` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
-| `Zombies/Behaviour/RZ_Behaviour.c:1184` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
+| `Zombies/Behaviour/RZ_CrawlerLife.c:227` | a crawler group's agent switched off with `DeactivateAI` (lying up by day) stays in its group and wakes with `ActivateAI` (lab B12: awake in 0.2 s, moving in 6.5 s), and a sleeping body hit by a player is woken by the player near it | Sleeping crawlers drop out of their groups or don't wake: set **Behaviour > Sleep lying crawlers** off (they stand hunched instead) |
+| `Zombies/Behaviour/RZ_Behaviour.c:1189` | a light bleed opened from the server on a player's arm or leg (`AddParticularBleeding`) replicates and bleeds at the usual rate (a hunter's lunge that lands) | The lunge still makes the bite chance x1.5; with no bleed, set **Behaviour > Own attacks** off if it misbehaves |
 | `Zombies/RZ_PlayerEffects.c:260` | a speed cap set on the player's own character on their machine (`SetSpeedLimit`) slows them as a hold (0.25) and a stagger (0.6) should, without a server copy, and doesn't look like slow motion (lab B7 saw only AI) | **Zombies > Behaviour > Client effects** off: the lines and the built grab chance stay |
 | `Zombies/RZ_PlayerEffects.c:172`, `:173` | a stance change to prone and movement controls off, set on the owner's own character, drop the player with the vanilla animation and hold them still 1.2 s, then give movement back | **Client effects** off |
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:904` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:952` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
 | `Missions/Errands/RZ_Strangers.c:1188` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
@@ -1757,8 +1757,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:47` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
-| `Factions/RZ_CampLife.c:2365` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:2445` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:2424` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:2504` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
 ### The UI (14)
 
@@ -1948,7 +1948,7 @@ Warnings worth acting on:
 | `No checkpoint barricade prefab set: road checkpoints are off (the roads give N spots).` | Set Perimeter > Barricade prefab; N is how many checkpoints it would build |
 | `Perimeter checkpoints: N roads come within 350 m of the edge; M crossings of the checkpoint line ...` | Roads that cross the line. N = 0 means the edge runs at sea all round (an island): the shore lines below fill in |
 | `Perimeter checkpoints: N roads, M road ends with the sea within 40 m past them: K usable, ...` | Roads that end at the shore, and why the rest were left out: an end at a junction, a barrier in the sea or outside the line, or another road within 75 m of the barrier (it would close that road). Everon: about 7 usable |
-| `Perimeter checkpoint at grid G: a road ends at the shore (road W m wide), N guards.` (or "a road crosses the line", "a placed marker") | One line per checkpoint built. 0 guards: no Perimeter > Guard prefab, or water behind a shore barrier |
+| `Perimeter checkpoint at grid G: a road ends at the shore (road W m wide), N guards.` (or "a road crosses the line", "a placed marker") | One line per checkpoint built. N is its guard spots: the bodies stand only while a player is within 600 m. 0 guards: no Perimeter > Guard prefab, or water behind a shore barrier |
 | `Perimeter: the checkpoint barricade prefab didn't spawn at grid G, ...` | The barricade prefab is set but doesn't spawn: check its path |
 | `Perimeter: no road checkpoints on this map (the lines above say why). ...` | The `Perimeter checkpoints:` lines say what was found. Place `RZ_CheckpointMarkerEntity`s on roads, or accept a line without checkpoints (Arland) |
 | `Perimeter shore: N points along the edge with land within 600 m, M of them on a sea edge.` | Printed once, the first time a Perimeter mission is considered. N near 0 means the edge sits too far out to sea for missions at the line: lower **Sea margin** or set the **Override** rectangle |
@@ -2052,7 +2052,7 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `... opens again past ...`, `Long Table: broken up (N).`,
 `Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`, `shop`; `left`,
 `idle`, `gone`: a screen the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
-bodies N agents, hordes from towns N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
+bodies N agents, hordes from towns N, hordes refused N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
 budget all the time, or the active AI at its limit, means the budget is too high for the server),
 `Heat horde: N units out of <town>, from its side of <grid>.`, `Pack horde: N groups of the pack at
@@ -2289,7 +2289,10 @@ session, tick off:
 - [ ] In the countryside, the two infected near you walk somewhere (by day toward a town, at night
   toward the woods); follow one into town. None appears in the open within 300 m of you.
 - [ ] Make 80 heat near a town (a long firefight): the horde comes from the town's side, and the
-  log names the town. Far from any town, it comes from anywhere, as before.
+  log names the town. Far from any town, it comes from anywhere, as before. By day the horde's
+  crawlers keep walking to the heat (none lies down out in the field); no horde appears in sight.
+- [ ] The final stand with many players: the status line's agents never pass 120, and `hordes
+  refused` rises once the budget is full.
 - [ ] The status line's agents stay at or under 100 with two groups of players far apart (28 each
   at most), and the active AI stays under its limit with trucks and patrols out.
 - [ ] A special killed in a group drops its sample where it fell. Burn the Nest's brief reads "The
@@ -2849,7 +2852,9 @@ when it happens)
 - [ ] A supply truck leaves, is driven by its crew, and arrives. Its whole crew gets in before it
   pulls out of the stronghold's yard, and nobody is left standing there.
 - [ ] A leader answers Talk, Work, News and Standing.
-- [ ] Hunted by Bastion, stay put through three hunter rounds: never more than two squads after you.
+- [ ] Hunted by Bastion, stay put through three hunter rounds: never more than two squads after you,
+  and never more than four on the server with three Hunted players; none appears where you can see
+  it over the ground.
 - [ ] Kill a truck crew from 300 m, then drive the truck in: no Fame. (Known gap: a friend who
   didn't shoot can still drive it in for Fame; watch for that pattern.)
 - [ ] Retaliation in a crossfire: a Red Hand group attacking a Bastion outpost while you shoot
@@ -3338,8 +3343,9 @@ on the talk screen says why something wasn't dealt)
   dead man, at most 3 a life.
 - [ ] Strangers: one appears 60–90 m off, out of sight (no pop-in), and goes once you can't see them;
   a junction of two busy roads deals one; robbing a dead one's pockets (within 3 m) is +8 Haven Infamy.
-- [ ] A local you helped walks up as you pass their house (once a real day); their labels show only
-  while you (or someone who knows them) are within 100 m.
+- [ ] A local you helped walks up as you pass their house (once a real day), appearing 15–25 m off
+  where you weren't looking, and leaves once you look away; their labels show only while you (or
+  someone who knows them) are within 100 m.
 - [ ] A lie found out: a Paranoid leader of that faction offers you no in-person job for 2 hours of
   play; on your next life, that faction's next errand opens with "The last one who said that lied".
 - [ ] A major's act opening logs `Story: reason major.<key> posted`, and its margin card opens with the
@@ -3348,8 +3354,8 @@ on the talk screen says why something wasn't dealt)
   within 25 m of someone in the giver's kit breaks their look.
 - [ ] Each kit job once: its truth in the log, a read for the right background at its place, the tins
   way and the check way at its person, the end question's options by truth, and its record. A
-  callback at the door (The Cache's family, the boy from Bust Out) turns up as a person beside you
-  some hours of play later, then goes.
+  callback at the door (The Cache's family, the boy from Bust Out) turns up as a person 15–25 m off,
+  out of your sight, some hours of play later, then goes once you look away.
 - [ ] Protection Racket: a Short persuade, then the next collection at that house: the brief mentions
   the promise. Collected: a note at the house comes back some hours of play later.
 - [ ] The bed by the stove (Dialogue > Trees on, a short house): someone Known with the Haven decides;
@@ -3505,6 +3511,12 @@ on the talk screen says why something wasn't dealt)
   one yourself: you are (the log says who).
 - [ ] Drive and boat into the Perimeter's warning zone: the drone follows over the vehicle (not
   stuck where you entered), the kill zone still shoots, and leaving removes the drone.
+- [ ] A checkpoint's guards stand behind the barrier as you come within 600 m, and are gone (out of
+  sight) once you're 700 m away; the active AI count drops with them.
+- [ ] A safehouse grows a tier while you're at it: nobody vanishes; the new guards and medic are there
+  the next time you come back from beyond 300 m.
+- [ ] The Book's send-off at Rudi's crossroads: the lorry is a look-only wreck (no driving it) and the
+  bonfire has no interactions.
 - [ ] The Missing Courier's radio offer is titled "The Missing Courier", not "Lost Colleague".
 - [ ] Ring bells, sirens and read clues repeatedly: one bell or siren per 15 minutes, no extra
   spawns or rewards from rereading.

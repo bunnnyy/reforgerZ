@@ -357,7 +357,8 @@ No action, no button, no typing: the same with a pad.
 ### Where scenes stand
 
 Never in the warning zone or the kill zone, within 2 km of the Long Table's farm, within 300 m of the
-closed site (`origin.site`) or within 60 m of a lived-in place. Vignettes and live traces also keep
+closed site (`origin.site`) or within 60 m of a lived-in place (a camp measured from its yard out to
+its farthest piece, and the road posts: [DESIGN.md](DESIGN.md#camp-life)). Vignettes and live traces also keep
 300 m off a running job, 600 m off a lair (the chair and the kill site's chalk aside: they're about
 packs), off the evening's set piece (`IsQuietAt`), and 1 km off an active questline clue of the same
 faction (`World/Traces/RZ_TraceClues.c`: each running questline's place and its stage job's spot; the

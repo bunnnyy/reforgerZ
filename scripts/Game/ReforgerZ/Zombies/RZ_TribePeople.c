@@ -2565,7 +2565,7 @@ class RZ_TribePeople
 
 			// Out of sight, 350-450 m out, on the line from where they come
 			vector at = RZ_Util.GroundPos(lab + Dir(lab, from) * (350 + 50 * h));
-			spawner.SpawnHordeAt(at, lab);
+			spawner.SpawnHordeAt(at, lab, -1, null, true, null, true);
 		}
 
 		if (last)
@@ -2574,7 +2574,7 @@ class RZ_TribePeople
 			if (furious)
 			{
 				m_Tribes.DrawTo(furious, lab, true);
-				spawner.SpawnHordeAt(RZ_Util.GroundPos(lab + Dir(lab, furious.RangeCentre()) * 400), lab);
+				spawner.SpawnHordeAt(RZ_Util.GroundPos(lab + Dir(lab, furious.RangeCentre()) * 400), lab, -1, null, true, null, true);
 
 				m_GM.NotifyAll("The last wave", string.Format("%1 came down from %2 with the last of them.", RZ_Tribes.Capitalize(Name(furious, RZ_EFaction.SURVIVORS)), furious.m_sPlace));
 			}

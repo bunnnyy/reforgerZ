@@ -420,7 +420,8 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
   shot by a sniper you never see.
 - **Sealed road checkpoints.** Up to 6 by default, 8 at most, at least 800 m apart, the widest
   roads first. The road ends in concrete blocks and a closed barrier, with 0–4 guards behind it
-  who can't be hurt. Nobody passes in either direction. Within 150 m the loudspeaker warns you;
+  who can't be hurt (bodies only while a player is within 600 m, as road posts; they go once
+  nobody is within 700 m or can see them). Nobody passes in either direction. Within 150 m the loudspeaker warns you;
   closer than 60 m the guards shoot. Placed `RZ_CheckpointMarkerEntity`s win; otherwise the road
   network gives them, once at start:
   - **Roads that cross the line** (60 m inside the edge): the guards stand outside the playable area.
@@ -707,7 +708,14 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   cooking side left or right by the seed.
 - **Its people** come out in the yard: the territory spawns a holding's guards, named people and
   an outpost's quartermaster there (a stronghold's quartermaster stays where it's placed). Named
-  people stay within 20 m of the yard, more beside a long building.
+  people stay within 20 m of the yard, more beside a long building. An outpost's **leader** sits in
+  the yard too: registered there when the outpost appears or changes hands (a placed marker's seat
+  stays where it's placed), and kept clear of pieces like any seat.
+- **Lived-in ground.** What keeps off lived-in places (scenes and traces, shelling, lair moves,
+  the doors the infected break) measures a camp from its yard out to its farthest piece (the
+  building, its entry ring and the pieces standing), not from the town's middle; a camp whose
+  building isn't read yet counts 120 m round its middle (60 m for a safehouse). Road posts count
+  as lived in while they stand.
 - **Where each piece stands** is its kit entry's **At** (written by `tools/camp_kit/build.py`
   from `pieces.py`), or Auto from its ring and use. Tents aren't put up: in a building they sleep
   indoors.
@@ -739,14 +747,16 @@ distance, then roads. Road posts don't (they stand beside their barrier).
 - **Any spot**, by a building or on a ring, is used only on flat
   ground (under about 12°, from four ground heights), out of the water and away from the line,
   at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
-  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece (the rules
-  are one placer, `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). A piece with no good
+  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece, its
+  own place's or any other system's scenery (the rules are one placer,
+  `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). A piece with no good
   spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
   safehouse at its own stronghold) isn't dressed twice.
 - **Nothing to abuse.** `RZ_DressingGuard` checks every piece and its children as it spawns and
   deletes any part with an arsenal, any inventory storage, a pick-up item, a support station
   (resupply, heal, fuel, repair), supplies, fuel, a vehicle or vehicle spawner, a spawn point,
-  or any ReforgerZ component or action, with a log line. The interaction scan and the puzzles'
+  a body (a character, an AI group or anything AI-controlled), or any ReforgerZ component or
+  action, with a log line. The interaction scan and the puzzles'
   landmark finder ignore the pieces: a decor fire isn't a stove, a decor generator isn't a
   generator, a barrel, a wash stand or a shower isn't water, a radio on a table is only a
   shape, an antenna isn't a mission's landmark. The quartermaster and
@@ -755,7 +765,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   owner's visible radius: 300 m for holdings). The layout is worked out at once, but the pieces
   spawn **4 per server tick** for all places together (a 20-piece stronghold is up in about 25 s
   at the 5 s tick); when a place's last piece is up, its people are given their jobs again. At
-  most **90** pieces stand or wait to spawn on the server.
+  most **90** of camp life's own pieces stand or wait to spawn on the server (Traces' props,
+  boards and sound looks are scenery too but don't count toward it).
 
 **What people do.** The bodies are the ones the built systems spawn (guards, named people,
 safehouse occupants, road-post crews); camp life gives them **jobs**. Only at the **3 places
@@ -772,7 +783,7 @@ nearest players** (Live places); elsewhere they stand.
 | Chop (by day) | the chopping block at the woodpile |
 | Cook (17:30–18:30, before the meal) | the cook pot |
 | Stroll, courier | a walk out and back: to the road (by a building, the gate), or 60–90 m to the edge |
-| Off shift | to the tents (by a building, in at the front door); with nobody within 80 m they **sleep**: despawned as data, back in the morning, out of the same tent or door |
+| Off shift | to the tents (by a building, in at the front door); with nobody within 150 m of the place and nobody who could see them they **sleep**: despawned as data, back in the morning (with nobody that near or in sight of the yard), out of the same tent or door |
 
 A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`,
 `RZ_Cook`, `RZ_Wash`, `RZ_Chop`) and seats are counted, so two people never take the same chair.
@@ -982,7 +993,9 @@ isn't kept as an AI body: they become **+1 population** at the nearest safehouse
   least 1.2 km apart, away from the lab and the quarantine line. Saved. Placing any
   `RZ_SafehouseMarkerEntity` turns the picking off.
 - **Few bodies.** While a player is within 300 m, a safehouse shows 3–6 occupants (never
-  more than its population), its guards, its medic and its own quartermaster.
+  more than its population), its guards, its medic and its own quartermaster. A new tier's
+  people (more guards, the medic) come once nobody is within 300 m, so nobody sees the house
+  empty and fill again.
 - **Population tiers** (cap 30; past it, new arrivals go to the next safehouse):
 
   | Population | Becomes | Effects |
@@ -1346,8 +1359,8 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   other (Off-Book Requisition's and Rein In's Favor, The Pit's Debtor's debt, Honour Among Thieves'
   *[Talk - 3 in 5]*, Rival Survivors' *[Trade]*).
 - **Talk scenes** (`RZ_TalkScene`): a scene person (the civilian puzzle prefab, object index 91)
-  stands at the job's place, spawned once someone is within 80 m; no prefab, no person, and the job
-  goes on its own ways. It has 2 or 3 **nodes**: a line and up to four options on its choice slots,
+  stands at the job's place, spawned once someone is within 80 m and the body budget has room (a
+  `scene`; until then they wait); no prefab, no person, and the job goes on its own ways. It has 2 or 3 **nodes**: a line and up to four options on its choice slots,
   the last always "Leave it" (back to the first node). Options ask (a line, maybe a truth found,
   maybe the next node: anyone in the room may pick them), check (Trust, Fear, a trick in a kit, with
   the usual tags and one try per player per person), pay (tins, which need no standing, or Favor),
@@ -2137,9 +2150,11 @@ Saved with the season (**Shared > Callbacks** and the numbers above). The story 
 (`RZ_StoryKit.Later`), as do errands and dialogue.
 
 - **At the door** (`Missions/Story/RZ_DoorCallers.c`): a story job's callback can be a person: when
-  it comes due within 300 m of its place, a stand-in (the civilian puzzle prefab) turns up 4–7 m from
-  the player as the line is told, and goes after 90 s. One at a time on the server; no prefab, or
-  further off, the line alone.
+  it comes due within 300 m of its place, a stand-in (the civilian puzzle prefab) turns up 15–25 m from
+  the player, somewhere they can't see, as the line is told, and goes after 90 s once nobody can see
+  them (5 minutes at most). One at a time on the server, an `asker` in the body budget
+  ([INFECTED.md](INFECTED.md#the-one-body-budget)); no prefab, no room, no hidden spot, or further
+  off, the line alone.
 
 ### Notice lanes
 

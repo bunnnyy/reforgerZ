@@ -346,6 +346,8 @@ class RZ_DressingGuard
 
 		if (Vehicle.Cast(e) || e.FindComponent(SCR_CatalogEntitySpawnerComponent))
 			return "vehicle";
+		if (ChimeraCharacter.Cast(e) || AIGroup.Cast(e) || e.FindComponent(AIControlComponent))
+			return "body";
 		if (SCR_SpawnPoint.Cast(e))
 			return "spawn point";
 		if (e.FindComponent(SCR_ArsenalComponent) || e.FindComponent(SCR_ArsenalInventoryStorageManagerComponent))
@@ -424,7 +426,7 @@ class RZ_CampLife
 	protected static const float LIVE_INTERVAL = 30;
 	protected static const float ROLL_SECONDS = 180;		// the roll at 20:30, before the night watch
 	protected static const float COURIER_SECONDS = 1200;	// Halcyon's courier walks out and back
-	protected static const float SLEEP_CLEAR = 80;			// nobody this close sees anyone vanish or appear
+	protected static const float SLEEP_CLEAR = 150;			// nobody this close (or in sight) sees anyone vanish or appear
 	protected static const float EXTRA_CLEAR = 60;
 	protected static const float HOLD_SECONDS = 45;			// someone talked to stands still
 	protected static const float PERSON_RADIUS = 20;		// named people stay this close to the centre
@@ -445,6 +447,7 @@ class RZ_CampLife
 	protected static const int MAX_ENTRIES = 5;
 	protected static const float LOOKOUT_OUT = 2;			// the lookout stands this far out from the front corner
 	protected static const int MAX_SITES = 64;			// sites kept per run
+	protected static const float RINGS_REACH = 62;		// a place on rings: its edge pieces stand up to this far out
 
 	protected static ref array<IEntity> s_aPieces;			// every standing piece (IsDressing)
 
@@ -543,7 +546,8 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pieces standing and waiting to spawn, on the whole server.
+	//! Camp life's own pieces standing and waiting to spawn, on the whole server (the cap). Other
+	//! systems' props in s_aPieces (Traces' boards, scenes and sound looks) don't count.
 	int CountPieces()
 	{
 		for (int i = s_aPieces.Count() - 1; i >= 0; i--)
@@ -552,12 +556,12 @@ class RZ_CampLife
 				s_aPieces.Remove(i);
 		}
 
-		int n = s_aPieces.Count();
+		int n = 0;
 		foreach (RZ_CampPlace p : m_aPlaces)
 		{
 			foreach (RZ_CampPiece piece : p.m_aPieces)
 			{
-				if (!piece.m_sPending.IsEmpty())
+				if (piece.m_Entity || !piece.m_sPending.IsEmpty())
 					n++;
 			}
 		}
@@ -602,13 +606,13 @@ class RZ_CampLife
 		if (kind == RZ_ECampPlace.ROAD_POST)
 			p.m_aKeepClear.Insert(pos);
 
-		AddLeaderSeats(p);
 		m_aPlaces.Insert(p);
 		m_bLiveDirty = true;
 
 		RZ_CampGround ground = new RZ_CampGround();
 		ReadGround(p, ground);
 		UseSite(p, ground, FindSite(p, ground));
+		AddLeaderSeats(p);
 		if (m_Settings.m_bDressing && !IsDressedNear(p))
 			Dress(p, ground);
 	}
@@ -646,6 +650,43 @@ class RZ_CampLife
 			return pos;
 
 		return site.m_vHome;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place's lived-in ground, for what keeps away from it (RZ_WorldFacts.IsNearLivedIn): the yard
+	//! of the building it moved into (or its rings) and how far its pieces may reach from there,
+	//! standing ones included. False while its site hasn't been read (with buildings off, too).
+	bool SiteReachOf(string key, out vector home, out float reach)
+	{
+		RZ_CampSite site;
+		if (!m_mSites.Find(key, site) || !site)
+			return false;
+
+		if (site.m_bNone)
+		{
+			home = site.m_vPlace;
+			reach = RINGS_REACH;
+		}
+		else
+		{
+			home = site.m_vHome;
+			vector size = site.m_vMaxs - site.m_vMins;
+			float halfDiag = 0.5 * Math.Sqrt(size[0] * size[0] + size[2] * size[2]);
+			reach = RZ_Util.DistXZ(site.m_vHome, site.m_vCentre) + halfDiag + EntryRing(site.m_eKind);
+		}
+
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (p.m_sKey != key)
+				continue;
+
+			foreach (RZ_CampPiece piece : p.m_aPieces)
+			{
+				reach = Math.Max(reach, RZ_Util.DistXZ(piece.m_vPos, home) + 3);
+			}
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -708,16 +749,23 @@ class RZ_CampLife
 
 		// The faction's placed quartermaster (a stronghold's, the Haven's anchored safehouse)
 		vector qm;
-		if (m_GM.GetPerks() && m_GM.GetPerks().GetQuartermasterPos(p.m_eFaction, qm) && RZ_Util.DistXZ(qm, p.m_vPos) < SHARE_RADIUS)
+		if (m_GM.GetPerks() && m_GM.GetPerks().GetQuartermasterPos(p.m_eFaction, qm) && NearPlace(p, qm))
 			p.m_aLeaderSeats.Insert(qm);
 
+		// An outpost's leader sits in the yard (RZ_Territory.RegisterLeader), up to 90 m from m_vPos
 		array<RZ_Leader> list = {};
 		leaders.GetFactionLeaders(p.m_eFaction, list);
 		foreach (RZ_Leader l : list)
 		{
-			if (l && RZ_Util.DistXZ(l.m_vPos, p.m_vPos) < SHARE_RADIUS)
+			if (l && NearPlace(p, l.m_vPos))
 				p.m_aLeaderSeats.Insert(l.m_vPos);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool NearPlace(RZ_CampPlace p, vector pos)
+	{
+		return RZ_Util.DistXZ(pos, p.m_vPos) < SHARE_RADIUS || RZ_Util.DistXZ(pos, p.m_vHome) < SHARE_RADIUS;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1032,7 +1080,17 @@ class RZ_CampLife
 			taken.Insert(other.m_vPos);
 		}
 
-		return RZ_DressPlacer.Good(spot, ground, p.m_aKeepClear, KEEP_CLEAR, taken, PIECE_GAP);
+		if (!RZ_DressPlacer.Good(spot, ground, p.m_aKeepClear, KEEP_CLEAR, taken, PIECE_GAP))
+			return false;
+
+		// Other systems' props standing there (Traces' scenes, boards and sound looks) are taken too
+		foreach (IEntity e : s_aPieces)
+		{
+			if (e && RZ_Util.DistXZ(e.GetOrigin(), spot) < PIECE_GAP)
+				return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1940,11 +1998,12 @@ class RZ_CampLife
 		}
 
 		bool night = phase == RZ_Territory.PHASE_NIGHT && p.m_fGatherUntil == 0;
-		if (nearest > SLEEP_CLEAR)
+		float nearHome = Math.Min(nearest, RZ_Util.NearestDistance(p.m_vHome, players));
+		if (nearHome > SLEEP_CLEAR)
 		{
 			if (night)
-				PutToBed(p);
-			else
+				PutToBed(p, players);
+			else if (!RZ_InfectedBodies.InSight(p.m_vHome, players, false))
 				Wake(p, phase);
 		}
 
@@ -2553,13 +2612,17 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Night, nobody within 80 m: the off-shift guards and extras go to sleep (as data).
-	protected void PutToBed(RZ_CampPlace p)
+	//! Night, nobody within 150 m: the off-shift guards and extras out of sight go to sleep (as data).
+	protected void PutToBed(RZ_CampPlace p, array<IEntity> players)
 	{
 		for (int i = p.m_aWorkers.Count() - 1; i >= 0; i--)
 		{
 			RZ_CampWorker w = p.m_aWorkers[i];
 			if (w.m_iJob != JOB_OFF || !IsWorking(w) || (w.m_iRole != ROLE_GUARD && w.m_iRole != ROLE_EXTRA))
+				continue;
+
+			// Someone could see them go: they turn in at a later look
+			if (RZ_InfectedBodies.InSight(RZ_Util.GetUnitPosition(w.m_Unit), players, true))
 				continue;
 
 			ClearJob(p, w);
@@ -2577,7 +2640,7 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Morning (any phase but night), nobody within 80 m: the sleepers come out of the tents.
+	//! Morning (any phase but night), nobody within 150 m or in sight: the sleepers come out of the tents.
 	protected void Wake(RZ_CampPlace p, int phase)
 	{
 		int total = p.m_iAsleepGuards + p.m_iAsleepExtras;

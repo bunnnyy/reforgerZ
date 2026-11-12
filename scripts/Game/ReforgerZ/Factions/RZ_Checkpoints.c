@@ -180,6 +180,7 @@ class RZ_Checkpoints
 	protected ref map<string, float> m_mSignedIn = new map<string, float>();		// "player:place" -> clock a vouch let them in until (Halcyon's gates)
 
 	protected static const float TELL_GAP = 600;
+	protected static const float SPEAKER_KEEP = 150;	// the speaker stays until nobody is this close (or can see them)
 	protected static const float GATE_GAP = 180;
 	protected static const float SHOT_GAP = 20;
 	protected static const float DEFEND_RADIUS = 40;
@@ -445,7 +446,7 @@ class RZ_Checkpoints
 			if (!post.m_bSpawned)
 				continue;
 
-			UpdateSpeaker(post, nearest);
+			UpdateSpeaker(post, nearest, players);
 			foreach (int j, IEntity p : players)
 			{
 				float d = RZ_Util.DistXZ(p.GetOrigin(), post.m_vPos);
@@ -497,16 +498,22 @@ class RZ_Checkpoints
 
 	// ================================================================ The speaker at the barrier
 	//------------------------------------------------------------------------------------------------
-	//! Dialogue > Trees only: one of the crew stands at the barrier to talk to while a player is
-	//! within 100 m (the body budget's speaker), and goes when nobody is. The crew stays an AI group.
-	protected void UpdateSpeaker(RZ_RoadPost post, float nearest)
+	//! Dialogue > Trees only: one of the crew stands at the barrier to talk to once a player is
+	//! within 100 m (the body budget's speaker), and goes when nobody is within 150 m or can see
+	//! the barrier. The crew stays an AI group.
+	protected void UpdateSpeaker(RZ_RoadPost post, float nearest, array<IEntity> players)
 	{
 		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
-		bool wanted = trees && trees.IsOn() && nearest <= RZ_BodyBudget.SPEAKER_RANGE;
-		if (post.m_Speaker && (!wanted || !RZ_Util.IsCharacterAlive(post.m_Speaker)))
+		bool on = trees && trees.IsOn();
+		bool wanted = on && nearest <= RZ_BodyBudget.SPEAKER_RANGE;
+		if (post.m_Speaker)
 		{
-			if (!wanted)
+			if (RZ_Util.IsCharacterAlive(post.m_Speaker))
 			{
+				bool gone = !on || (nearest > SPEAKER_KEEP && !RZ_InfectedBodies.InSight(post.m_Speaker.GetOrigin(), players, true));
+				if (!gone)
+					return;
+
 				post.m_aBodies.RemoveItem(post.m_Speaker);
 				RZ_Util.DeleteUnit(post.m_Speaker);
 			}
@@ -515,7 +522,7 @@ class RZ_Checkpoints
 			return;
 		}
 
-		if (post.m_Speaker || !wanted)
+		if (!wanted)
 			return;
 
 		RZ_Territory territory = m_GM.GetTerritory();

@@ -137,6 +137,9 @@ class RZ_WorldFacts
 	static const float DUSK_START = 18.5;
 
 	protected static const int MAX_RUMOURS = 8;
+	protected static const float UNREAD_REACH = 120;	// a holding's camp unread: it may move 90 m into a building, its pieces round it
+	protected static const float HOUSE_REACH = 60;		// a safehouse's camp unread: 30 m, and its pieces
+	protected static const float POST_REACH = 15;		// a road post's barrier, crew and pieces
 	protected static const string CURE_OWNER = "cure";
 
 	protected static ref RZ_WorldFacts s_Empty;
@@ -682,16 +685,26 @@ class RZ_WorldFacts
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! People live within `radius` of pos: a Haven safehouse, a faction holding, or the lab. What
-	//! shelling, fire and other harm keep away from (Bastion's Fire Mission).
+	//! People live within `radius` of pos: a Haven safehouse, a faction holding, a road post, or the
+	//! lab. A camp counts from its yard and as far as its pieces reach (RZ_CampLife.SiteReachOf); one
+	//! whose building isn't read yet, from its middle plus the most a camp may reach (UNREAD_REACH).
+	//! What shelling, fire, scenes and other harm keep away from (Bastion's Fire Mission).
 	bool IsNearLivedIn(vector pos, float radius)
 	{
 		if (!m_GM)
 			return false;
 
+		RZ_CampLife camp = m_GM.GetCampLife();
 		RZ_Safehouses houses = m_GM.GetSafehouses();
-		if (houses && houses.FindNearest(pos, radius) >= 0)
-			return true;
+		if (houses)
+		{
+			if (houses.FindNearest(pos, radius) >= 0)
+				return true;
+
+			int near = houses.FindNearest(pos, radius + HOUSE_REACH);
+			if (near >= 0 && NearCamp(camp, "s" + near.ToString(), houses.Get(near).m_vPos, pos, radius, HOUSE_REACH))
+				return true;
+		}
 
 		if (m_GM.HasLab() && RZ_Util.DistXZ(pos, m_GM.GetLabPosition()) < radius)
 			return true;
@@ -701,12 +714,37 @@ class RZ_WorldFacts
 		{
 			foreach (RZ_Holding h : territory.GetHoldings())
 			{
-				if (RZ_Util.DistXZ(h.m_vPos, pos) < radius)
+				float d = RZ_Util.DistXZ(h.m_vPos, pos);
+				if (d < radius)
+					return true;
+
+				if (d < radius + UNREAD_REACH && NearCamp(camp, "h" + h.m_iId.ToString(), h.m_vPos, pos, radius, UNREAD_REACH))
 					return true;
 			}
 		}
 
+		RZ_Checkpoints checkpoints = m_GM.GetCheckpoints();
+		if (checkpoints)
+		{
+			array<RZ_RoadPost> posts = {};
+			checkpoints.PostsNear(-1, pos, radius + POST_REACH, posts);
+			if (!posts.IsEmpty())
+				return true;
+		}
+
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! pos is within radius of the camp `key` (at `middle`) as its pieces reach; unread, unread more.
+	protected bool NearCamp(RZ_CampLife camp, string key, vector middle, vector pos, float radius, float unread)
+	{
+		vector home;
+		float reach;
+		if (camp && camp.SiteReachOf(key, home, reach))
+			return RZ_Util.DistXZ(home, pos) < radius + reach;
+
+		return RZ_Util.DistXZ(middle, pos) < radius + unread;
 	}
 
 	// ================================================================ People

@@ -834,7 +834,7 @@ class RZ_Interactions
 	//------------------------------------------------------------------------------------------------
 	protected bool OnScanEntity(IEntity e)
 	{
-		if (!e || ChimeraCharacter.Cast(e) || SCR_AIGroup.Cast(e) || RZ_CampLife.IsDressing(e))
+		if (!e || ChimeraCharacter.Cast(e) || SCR_AIGroup.Cast(e))
 			return true;
 
 		string name = RZ_ItemHelper.LowerName(e);
@@ -842,8 +842,9 @@ class RZ_Interactions
 		if (name.IsEmpty() && !building)
 			return true;
 
+		// The cheap name filter first: only what it keeps is looked up among the scenery
 		int kind = Classify(name, building);
-		if (kind < 0)
+		if (kind < 0 || RZ_CampLife.IsDressing(e))
 			return true;
 
 		RZ_SpotCandidate c = new RZ_SpotCandidate();

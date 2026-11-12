@@ -110,7 +110,8 @@ class RZ_CrawlerLife
 			float nearest = RZ_Util.NearestDistance(z.m_vLastPos, players);
 			RZ_Settlement s = m_GM.GetSettlement(z.m_iSettlement);
 			bool stirred = s && crawlers.IsStirred(s);
-			bool busy = z.m_bDrifting || z.m_bWalking || stirred;
+			// A heat horde or lookers sent somewhere are on their way: never put to sleep or herded
+			bool busy = z.m_bDrifting || z.m_bWalking || stirred || z.m_bHorde || z.m_bHasGoal;
 
 			// Asleep: woken by a player within 40 m, a shot or a noise in hearing, the night, or stir
 			if (z.m_bAsleep)
