@@ -8,59 +8,43 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+  GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
    ID "34FD932330644416"
    components {
     Hierarchy "{6F2B808012F17462}" {
     }
    }
-   coords -1.9 0 -0.3
+   coords 0 0 0
+   angles 0 4 0
   }
-  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+  GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
    ID "BC57F445B5EBE94B"
    components {
     Hierarchy "{3765EF22444794F3}" {
-    }
-   }
-   coords 1.8 0 0.4
-  }
-  GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
-   ID "375F177C453DAA0A"
-   components {
-    Hierarchy "{8BF2EEBA73C9C369}" {
     }
    }
    coords -0.4 0 0.8
    angles 0 18 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
-   ID "AB2D739B68D7CD89"
+   ID "375F177C453DAA0A"
    components {
-    Hierarchy "{8EDFAD55666DF6E6}" {
+    Hierarchy "{8BF2EEBA73C9C369}" {
     }
    }
    coords 0.7 0 0.9
   }
-  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
-   ID "E53C227DE974C51C"
-   components {
-    Hierarchy "{453A2A2873266251}" {
-    }
-   }
-   coords 0.2 0 0.05
-   angles 0 79 0
-  }
   GenericEntity {
-   ID "651F116303B0574B"
+   ID "AB2D739B68D7CD89"
    components {
-    SCR_AISmartActionSentinelComponent "{0D2DABBA0F45427F}" {
+    SCR_AISmartActionSentinelComponent "{8EDFAD55666DF6E6}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{E21B1606758334C3}" {
+    Hierarchy "{E53C227DE974C51C}" {
     }
    }
    coords 0.2 0 1.0

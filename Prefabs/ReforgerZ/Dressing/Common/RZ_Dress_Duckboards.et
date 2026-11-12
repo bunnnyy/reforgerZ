@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "763FDF36615417E6"
+ components {
+  RplComponent "{AE2B084C29D0625D}" {
+  }
+  Hierarchy "{8E073BD4CC6B92A7}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "0E028762233BAD01"
+   components {
+    Hierarchy "{8165718F47FD5B70}" {
+    }
+   }
+   coords 0 0 -1.3
+   angles 0 90 0
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "49DFF407B88B45B7"
+   components {
+    Hierarchy "{44D81DA875420B3D}" {
+    }
+   }
+   coords 0.05 0 0
+   angles 0 92 0
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "E35CDF54FFC1914C"
+   components {
+    Hierarchy "{30E811271D83454B}" {
+    }
+   }
+   coords -0.05 0 1.3
+   angles 0 88 0
+  }
+ }
+}
