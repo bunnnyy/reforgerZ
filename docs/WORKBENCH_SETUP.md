@@ -1563,9 +1563,12 @@ A mission or questline that still doesn't start needs a world state the test doe
 outpost of the right faction, a spot on the map, the weather). Expected on Arland: **Gas Station
 Fire** starts only when the island's petrol station is in a town nobody holds, which depends on the
 season's territory roll (about one run in three). The same roll decides how many towns are lived in
-(11 to 13 of Arland's 14), so the jobs that need towns well clear of where people live (**Fire
-Mission**, **Install Sensors**, **Bastion Shelling**, **Bust Out**, **Lead Them Away**) start in some
-runs and not others. Arland's one pack is a fresh one, so the packs' contracts that need a pack's
+(11 to 14 of Arland's 14: a holding counts for every settlement within 400 m of it, or inside its edge), so the jobs that
+need towns well clear of where people live (**Fire Mission**, **Install Sensors**, **Bastion
+Shelling**, **Bust Out**, **Lead Them Away**) start in some runs and not others. When the roll holds
+all 14 (`towns 14 held, 0 busy, 0 free` in the `why` lines), every job that needs an empty town
+misses too (about 88 of 131 start), and there's no Long Table (`no empty place far enough from
+everyone`), so A Place at the Table and The Long Table don't start: run the test again. Arland's one pack is a fresh one, so the packs' contracts that need a pack's
 history or a second pack are expected misses: **Bring Them Home** (a named young who was someone's),
 **Break the Habit** (a habit come due), **Cull** (12 or more round a heavy, near a Bastion holding),
 **Capture the Index** and **Plant a Tag** (a pack at stage 1 with its heavy; Capture also an alpha
