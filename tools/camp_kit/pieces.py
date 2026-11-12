@@ -20,7 +20,7 @@ FP = {
     "CamoNet_Small_US.et": (4.0, 4.0, "r", "net"), "CrateWooden_01_plain.et": (0.9, 0.6, "r", "wood"), "CrateWooden_02_1x1x1.et": (1.0, 1.0, "r", "wood"),
     "BarrelMetal_01_rust.et": (0.6, 0.6, "c", "metal"), "BarrelMetal_01_blue.et": (0.6, 0.6, "c", "metal"), "BarrelMetal_01_grey.et": (0.6, 0.6, "c", "metal"),
     "TentSmall_02_red.et": (2.0, 2.4, "r", "tent"), "TentSmall_02_blue.et": (2.0, 2.4, "r", "tent"), "TentBig_01_orange.et": (3.0, 4.0, "r", "tent"), "TentBig_02_green.et": (3.0, 4.0, "r", "tent"),
-    "TentSmallUS_01.et": (2.0, 2.6, "r", "tent"), "TentUS_01_Assembled.et": (5.0, 7.0, "r", "tent"), "TentFIA_01_medical.et": (4.2, 5.0, "r", "tent"),
+    "TentSmallUS_01.et": (2.0, 2.6, "r", "tent"), "TentUS_01_Assembled.et": (5.0, 7.0, "r", "tent"), "TentFIA_01.et": (4.2, 5.0, "r", "tent"),
     "BlanketFolded_01_green.et": (0.4, 0.5, "r", "cloth"), "BlanketBeach_01_brown.et": (0.9, 1.7, "r", "cloth"), "BlanketBeach_01_red.et": (0.9, 1.7, "r", "cloth"),
     "Sandbag_01_long_burlap.et": (2.0, 0.5, "r", "sand"), "Sandbag_01_end_burlap.et": (0.6, 0.5, "r", "sand"), "Sandbag_01_single_burlap.et": (0.6, 0.35, "r", "sand"),
     "ChalkBoard_01.et": (1.2, 0.5, "r", "board"), "Notice_A4_Vertical_V1.et": (0.25, 0.05, "r", "paper"),
@@ -30,8 +30,8 @@ FP = {
     "ChairOld_01.et": (0.5, 0.5, "r", "wood"), "ChairOld_02.et": (0.5, 0.5, "r", "wood"), "Stool_01.et": (0.35, 0.35, "c", "wood"), "Chair_01_white.et": (0.5, 0.5, "r", "plastic"),
     "DeckChair_01_ochre.et": (0.6, 1.2, "r", "cloth"), "Armchair_01.et": (0.9, 0.9, "r", "cloth"), "Sofa_02_green.et": (2.0, 0.9, "r", "cloth"),
     "BeerBottle_01_empty_brown.et": (0.1, 0.1, "c", "glass"), "BeerBottle_01_group.et": (0.3, 0.3, "c", "glass"),
-    "ClotheslinePole_01.et": (0.15, 0.15, "c", "metal"), "BasketLaundry_01.et": (0.6, 0.4, "r", "cloth"),
-    "VegetableBed_01_small.et": (1.2, 3.0, "r", "soil"), "VegetableBed_01_big.et": (2.0, 5.0, "r", "soil"), "Hutch_01.et": (1.2, 0.7, "r", "wood"),
+    "ClotheslineFrame_01.et": (3.2, 0.4, "r", "metal"), "BasketLaundry_01.et": (0.6, 0.4, "r", "cloth"),
+    "VegetableBed_01_small.et": (1.2, 3.0, "r", "soil"), "VegetableBed_01_big.et": (2.0, 5.0, "r", "soil"),
     "Bucket_01.et": (0.3, 0.3, "c", "metal"), "Bucket_02.et": (0.3, 0.3, "c", "metal"),
     "TableMilitary_US_01.et": (2.0, 0.8, "r", "metal"),
     "Notebook_01_Stack.et": (0.3, 0.2, "r", "paper"), "FileOffice_01_Stack.et": (0.3, 0.2, "r", "paper"),
@@ -82,8 +82,8 @@ piece("FireBarrel", "Common", "Lean", "Centre", "A burning barrel with a pallet 
 piece("Tent_Small_Civilian", "Common", "Sleep", "Inner", "A small tent, its flap side lived in: boots, a bag, a blanket airing on a crate.", [
     P("TentSmall_02_red.et", 0, 0, -6), P("SackUniversal_01.et", 1.4, 0.9, 60), P("BlanketFolded_01_green.et", -1.3, 1.0, 20), P("CrateWooden_01_plain.et", -1.3, 1.0, 15),
     P("Bucket_02.et", 1.2, -1.0)])
-piece("Tent_Large_Civilian", "Common", "Sleep", "Inner", "A big family tent with a washing line from its pole, a chair at the door.", [
-    P("TentBig_01_orange.et", 0, 0, 4), P("ChairOld_02.et", 1.0, 2.6, 200), P("ClotheslinePole_01.et", -2.4, 2.4), P("BlanketBeach_01_brown.et", -1.6, 2.6, 80, 0, 0, 0),
+piece("Tent_Large_Civilian", "Common", "Sleep", "Inner", "A big family tent, a chair at the door with a blanket over it, the sacks and the water bucket by its side.", [
+    P("TentBig_01_orange.et", 0, 0, 4), P("ChairOld_02.et", 1.0, 2.6, 200), P("BlanketFolded_01_green.et", 1.0, 2.6, 200, 0.45),
     P("SackUniversal_01_Pile.et", 2.4, -1.4, 30), P("Bucket_01.et", -1.9, -1.8)])
 piece("Firewood", "Common", "Chop", "Inner", "A chopping block in a scatter of split logs, the stack behind it.", [
     P("WoodPile_01_A.et", -1.6, 0.2, 86), P("LogChopping_01.et", 0.7, 0.3), P("WoodLog_01_A.et", 1.6, -0.5, 31), P("WoodLog_01_A.et", 1.4, 0.9, 77),
@@ -101,10 +101,12 @@ piece("WashStand", "Common", "Wash", "Inner", "A mirror nailed to a post, a basi
 piece("Latrine", "Common", "None", "Edge", "Two tin sheets in an L for privacy, a plank over a bucket, a sack of lime.", [
     P("TinWall_01_3m.et", 0, 1.5, 3), P("TinWall_01_3m.et", -1.5, 0, 88), P("Bucket_01.et", -0.6, 0.8), P("Junk_01_single_planks.et", -0.6, 0.8, 5, 0.35),
     P("SackUniversal_01.et", 0.6, 0.9, 70)])
-piece("DryingLine", "Common", "Work", "Edge", "A line between two poles at an angle, a basket, a stool to stand on.", [
-    P("ClotheslinePole_01.et", -1.9, -0.3), P("ClotheslinePole_01.et", 1.8, 0.4), P("BasketLaundry_01.et", -0.4, 0.8, 18), P("Stool_01.et", 0.7, 0.9),
-    P("BlanketBeach_01_brown.et", 0.2, 0.05, 79, 0, 0, 0),
+piece("DryingLine", "Common", "Work", "Edge", "A clothesline frame with its lines strung, a laundry basket and a stool to stand on.", [
+    P("ClotheslineFrame_01.et", 0, 0, 4), P("BasketLaundry_01.et", -0.4, 0.8, 18), P("Stool_01.et", 0.7, 0.9),
     S("RZ_Work", 0.2, 1.0, "loiter", 0, -1.0)])
+
+piece("Duckboards", "Common", "None", "Inner", "Pallets laid flat end to end: a dry walk from the tents to the fire, the ground under it trodden bare.", [
+    P("Pallet_01.et", 0, -1.3, 90), P("Pallet_01.et", 0.05, 0, 92), P("Pallet_01.et", -0.05, 1.3, 88)])
 piece("CrateChairs", "Common", "Sit", "Centre", "Mismatched chairs round a crate table, a lantern on it, two more lanterns on poles.", [
     P("CrateWooden_01_plain.et", 0, 0, 14), P("ChairOld_01.et", 0.1, 1.0, 190), P("ChairOld_02.et", 1.0, -0.3, 255), P("Stool_01.et", -1.0, -0.4),
     P("LanternMilitary_US_01.et", 0.1, 0, 0, 0.62), P("WoodenFenceOld_01_pole.et", 1.9, 1.1), P("WoodenFenceOld_01_pole.et", -2.1, 1.3),
@@ -185,12 +187,11 @@ piece("Sofa", "RedHand", "Sit", "Centre", "A sofa and armchair round a barrel si
     S("RZ_Sit", -0.5, 0.4, "sit", 0.9, 1.5), S("RZ_Sit", 0.5, 0.4, "sit", 0.9, 1.5), S("RZ_Sit", 1.9, 1.3, "sit", -0.9, 0.2)])
 
 # ------------------------------------------------------------------- Haven
-piece("WashingLine", "Haven", "Work", "Edge", "A long line across the yard on three poles, sheets on it, a basket and a bucket.", [
-    P("ClotheslinePole_01.et", -2.8, -0.2), P("ClotheslinePole_01.et", 0.1, 0.3), P("ClotheslinePole_01.et", 2.9, -0.1), P("BlanketBeach_01_red.et", -1.4, 0.05, 80),
-    P("BlanketBeach_01_brown.et", 1.5, 0.1, 95), P("BasketLaundry_01.et", -0.7, 0.9, 15), P("Bucket_01.et", 0.5, 1.0),
+piece("WashingLine", "Haven", "Work", "Edge", "Two clothesline frames end to end across the yard, the washing on them, a basket and a bucket.", [
+    P("ClotheslineFrame_01.et", -1.7, 0, 2), P("ClotheslineFrame_01.et", 1.7, 0.1, -2), P("BasketLaundry_01.et", -0.7, 0.9, 15), P("Bucket_01.et", 0.5, 1.0),
     S("RZ_Work", -0.2, 1.0, "loiter", 0, -1.0)])
-piece("Garden", "Haven", "Work", "Edge", "Two vegetable beds, a rabbit hutch, sacks of seed and a wheelbarrow.", [
-    P("VegetableBed_01_small.et", -1.0, 0, 3), P("VegetableBed_01_small.et", 0.6, 0.2, -4), P("Hutch_01.et", 2.4, 0.6, -88), P("SackUniversal_01.et", -2.1, 1.4, 30),
+piece("Garden", "Haven", "Work", "Edge", "Two vegetable beds side by side, sacks of seed and a bucket at their end, the wheelbarrow beside them.", [
+    P("VegetableBed_01_small.et", -1.0, 0, 3), P("VegetableBed_01_small.et", 0.6, 0.2, -4), P("SackUniversal_01.et", 2.0, 1.1, 30), P("SackUniversal_01.et", 2.3, 0.6, 75),
     P("Wheelbarrow_01.et", 1.6, -1.9, 60), P("Bucket_02.et", -0.2, 1.8),
     S("RZ_Work", -0.2, 1.5, "loiter", 0, -1.0)])
 piece("WaterBarrel", "Haven", "Work", "Inner", "A rain barrel and a second one beside it, buckets, a ladle mug on the lid.", [
@@ -213,8 +214,8 @@ piece("VegStall", "Haven", "Work", "Edge", "A market stand with crates and sacks
     S("RZ_Work", 0, -1.0, "loiter", 0, 1.0)])
 
 # ------------------------------------------------------------------- Halcyon
-piece("Tent_Halcyon", "Halcyon", "Work", "Inner", "The medical tent, its flap to the yard: a field table out front with a sample drum and a lamp, a crate of cases by the door.", [
-    P("TentFIA_01_medical.et", 0, 0), P("TableMilitary_US_01.et", 0, 3.4), P("ToolsSurgical_01_autoclavedrum.et", 0.5, 3.4, 0, 0.78),
+piece("Tent_Halcyon", "Halcyon", "Work", "Inner", "The ward tent, its flap to the yard: a field table out front with a sample drum and a lamp, a crate of cases by the door.", [
+    P("TentFIA_01.et", 0, 0), P("TableMilitary_US_01.et", 0, 3.4), P("ToolsSurgical_01_autoclavedrum.et", 0.5, 3.4, 0, 0.78),
     P("LampKerosene_01_green.et", -0.6, 3.45, 0, 0.78), P("CrateWooden_02_1x1x1.et", 2.0, 2.9, 6),
     S("RZ_Work", 0, 4.2, "loiter", 0, -1.0)])
 piece("FieldTable", "Halcyon", "Sit", "Centre", "A field table with notebooks and a sample drum, two stools, the cases stacked at its end with a lantern on top.", [
@@ -288,11 +289,11 @@ KITS = [
         ("Counter_Bastion", -10, 9, 0), ("SentryNest_Bastion", 0, 26, 0), ("RosterBoard", -3, 5, 8), ("FlagPole", 2, 3, 0), ("FirePit", 5, -3, 0),
         ("Barricade_Sandbag", -6.5, 25, 4), ("Barricade_Sandbag", 7, 24.5, -6), ("Table", -4, -4, 12), ("Tent_Small_Bastion", -14, -10, 4), ("Tent_Small_Bastion", -9, -12.5, -3),
         ("Tent_Large_Bastion", 1, -16, 2), ("CookPot", 15, -3, 30), ("Firewood", 17, -9, 60), ("ShavingStand", -16, -3, 90), ("CrateSeats", 10, 3, 20),
-        ("DutyBoard", -8, 4, 10), ("Tarp", 15, 8, 25), ("Tent_Small_Bastion", 10, -13, -8), ("DryingLine", 21, -16, 35), ("Latrine", -22, -18, 140)]),
+        ("DutyBoard", -8, 4, 10), ("Tarp", 15, 8, 25), ("Tent_Small_Bastion", 10, -13, -8), ("DryingLine", 21, -16, 35), ("Latrine", -22, -18, 140), ("Duckboards", -5, -8.5, 0)]),
     ("MILITARY", "OUTPOST", "A section at a farm on the junction: a nest and a sandbag run on the road, two tents squared to it, the fire, the table and the roll board in the yard.", [
         ("Counter_Bastion", -10, 7, 0), ("SentryNest_Bastion", 0, 20, 0), ("FirePit", 4, 0, 0), ("Barricade_Sandbag", -6.5, 19, 6), ("Tent_Small_Bastion", -8, -8, 6),
         ("Tent_Small_Bastion", -3, -10.5, -4), ("RosterBoard", -4, 4, 6), ("Table", -5, -2, 10), ("CookPot", 11, -3, 30), ("Firewood", 13, -9, 60),
-        ("ShavingStand", -12, -2, 90), ("FlagPole", 2, 6, 0), ("Barricade_Sandbag", 6.5, 19, -6)]),
+        ("ShavingStand", -12, -2, 90), ("FlagPole", 2, 6, 0), ("Barricade_Sandbag", 6.5, 19, -6), ("Duckboards", -4.5, -6, 0)]),
     ("MILITARY", "ROAD_POST", "The checkpoint: a nest beside the barrier facing down the road, a sandbag run on the other verge, a fire barrel and a net to wait under.", [
         ("SentryNest_Bastion", 7.5, 2, 0), ("Barricade_Sandbag", -7.5, 2.5, 0), ("FireBarrel", 7.5, -4.5, 0), ("Tarp", -8.5, -4.5, 10)]),
     ("BANDITS", "STRONGHOLD", "A squat, not a camp: things where they were dropped, but round the fire. The toll on the road, the sofa round the barrel, tents tucked behind scrap, the fence's table by the way in.", [
@@ -318,12 +319,12 @@ KITS = [
     ("SURVIVORS", "SAFEHOUSE", "A house that kept its door open: the bear at the gate, the table outside, the pot and the barrel by the kitchen, the line and the bed of vegetables in the garden.", [
         ("Counter_Haven", -4, 6, 10), ("BearDoor", 0, 14, 0), ("Table", 2, 2, 6), ("CookPot", 8, -2, 40), ("WaterBarrel", 5, -8, 0),
         ("WashingLine", -7, -9, 12), ("Garden", -11, -2, 80), ("Firewood", 10, -8, 70)]),
-    ("INSTITUTE", "STRONGHOLD", "The lab grounds: tidy and compact, everything within reach of the generators; the tables in front, the medical tent and the decon shower behind, the plague board where the track comes in.", [
+    ("INSTITUTE", "STRONGHOLD", "The lab grounds: tidy and compact, everything within reach of the generators; the tables in front, the ward tent and the decon shower behind, the plague board where the track comes in.", [
         ("Counter_Halcyon", -10, 12, 10), ("PlagueBoard", 0, 22, 0), ("FieldTable", -2, 4, 3), ("Tent_Halcyon", 0, -11, 0), ("FieldTable", 3.5, 3, -8),
         ("DeconShower", -8, -9, 10), ("Generator", 14, -10, 20), ("ColdBox", 10, -1, -30), ("SampleTable", 7, -7, -15), ("Antenna", 16, 3, 0),
         ("Barricade_Fence", -7, 21, 3), ("Barricade_Fence", 7, 21, -3), ("NotebookBench", -7, 7, 15), ("RadioTable", 10, 8, -20), ("Tarp", -12, -1, 35),
         ("Latrine", -18, -16, 120), ("CrateChairs", -3, -2, 0), ("DryingLine", -16, -9, 70), ("Generator", 17, -14, 10)]),
-    ("INSTITUTE", "OUTPOST", "A field station at a house: a table for the notes, the medical tent and the decon shower in the yard, the cold store on the generator, the antenna, the plague board at the gate.", [
+    ("INSTITUTE", "OUTPOST", "A field station at a house: a table for the notes, the ward tent and the decon shower in the yard, the cold store on the generator, the antenna, the plague board at the gate.", [
         ("Counter_Halcyon", -6, 8, 10), ("PlagueBoard", 0, 16, 0), ("FieldTable", -2, 3, 3), ("Tent_Halcyon", 1, -9, 0), ("Generator", 10, -6, 20),
         ("Antenna", 11, 2, 0), ("DeconShower", -7, -6, 10), ("ColdBox", 6, 1, -30), ("NotebookBench", -7, 2, 15)]),
 ]

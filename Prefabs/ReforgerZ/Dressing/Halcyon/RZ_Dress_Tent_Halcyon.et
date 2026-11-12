@@ -8,7 +8,7 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  SCR_DestructibleBuildingEntity : "{9110077F59864EF1}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01_medical.et" {
+  SCR_DestructibleBuildingEntity : "{4A1E3B17DB672E35}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01.et" {
    ID "FBF04A83092F50DF"
    coords 0 0 0
   }

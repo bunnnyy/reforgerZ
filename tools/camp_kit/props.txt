@@ -21,6 +21,7 @@ GenericEntity {261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et
 GenericEntity {4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et
 GenericEntity {D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et
 GenericEntity {30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et
+GenericEntity {801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et
 GenericEntity {3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et
 GenericEntity {B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et
 GenericEntity {E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et
@@ -79,6 +80,7 @@ GenericEntity {2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.
 GenericEntity {8FB2845D48F4E02A}Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et
 GenericEntity {D8EF213A192382E0}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et
 GenericEntity {CC98E67AC15E257D}Prefabs/Props/Recreation/Camp/TentBig_01/TentBig_01_orange.et
+SCR_DestructibleBuildingEntity {4A1E3B17DB672E35}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01.et hier
 SCR_DestructibleBuildingEntity {9110077F59864EF1}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01_medical.et hier
 StaticModelEntity {01AE5FD77A9A4C21}Prefabs/Structures/Military/Camps/TentSmallUS_01/TentSmallUS_01.et
 GenericEntity {2BF6748C6440D818}Prefabs/Props/Recreation/Camp/TentSmall_02/TentSmall_02_red.et

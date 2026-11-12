@@ -217,6 +217,7 @@ class RZ_CampWorker
 	int m_iAfterErrand;		// the job to go back to after the courier's walk
 	int m_iPiece = -1;
 	int m_iSeat = -1;			// which of the piece's sentinels with its tag (0 = the first)
+	int m_iHow;					// how the job is done (RZ_CampLife.HOW_*): for the jobs log
 	float m_fHoldUntil;
 	ref array<IEntity> m_aWaypoints = {};
 }
@@ -458,6 +459,14 @@ class RZ_CampLife
 	static const int JOB_WASH = 11;		// the wash stand (the decon shower), in the morning
 	static const int JOB_CHOP = 12;		// the chopping block, by day
 
+	// How a job is done (the jobs log)
+	static const int HOW_NONE = 0;		// no group to take waypoints: they stand where they are
+	static const int HOW_SEAT = 1;		// a smart action: sitting, leaning, working, watching at a seat
+	static const int HOW_SPOT = 2;		// standing about at one spot (a loiter or observation waypoint)
+	static const int HOW_WALK = 3;		// walking round the camp, piece to piece
+	static const int HOW_MOVE = 4;		// on the move: the patrol, an errand, off to bed
+	protected static const int POTTER_STOPS = 3;		// pieces someone with nothing free walks between
+
 	protected static const int SPAWN_PER_TICK = 4;			// pieces spawned per server tick, all places together
 	protected static const float CHECK_INTERVAL = 10;
 	protected static const float LIVE_INTERVAL = 30;
@@ -487,6 +496,8 @@ class RZ_CampLife
 	protected static const float COUNTER_AHEAD = 0.95;		// the counter's middle in front of the quartermaster
 	protected static const float CUSTOMER_AHEAD = 2.4;		// where his customers stand, kept clear
 	protected static const float WALL_NEAR = 8;				// a quartermaster this close to the building serves with his back to it
+	protected static const float OUTLOOK_REACH = 80;		// the camp's front never faces water or a drop this near
+	protected static const float BARRIER_OUTLOOK = 50;		// a nest, barrier or sign never faces water or a drop this near
 
 	static const int FACE_FRONT = 0;
 	static const int FACE_BACK = 1;
@@ -960,6 +971,7 @@ class RZ_CampLife
 
 		int tried = 0;
 		int placed = 0;
+		int seaward = 0;
 		foreach (RZ_DressingPiece entry : plan)
 		{
 			if (p.m_aPieces.Count() >= cap || CountPieces() >= m_Settings.m_iPiecesMax)
@@ -972,12 +984,27 @@ class RZ_CampLife
 			if (!Slot(p, lay, entry, pos, yaw, nudge))
 				continue;
 
+			// A nest, a barrier or a sign looks out at the land: never at the sea or over a drop
+			if (FacesOut(entry) && BadOutlook(pos, yaw, BARRIER_OUTLOOK))
+			{
+				seaward++;
+				continue;
+			}
+
 			if (PlaceFitted(p, fit, entry, pos, yaw, nudge))
 				placed++;
 		}
 
 		string what = string.Format("%1 %2", RZ_Factions.GetName(p.m_eFaction), typename.EnumToString(RZ_ECampPlace, p.m_eKind));
-		RZ_Log.Info(string.Format("Camp life: %1 at %2: %3 of %4 planned pieces fit, laid out %5; %6 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), placed, tried, lay.m_sWhere, served));
+		RZ_Log.Info(string.Format("Camp life: %1 at %2: %3 of %4 planned pieces fit, laid out %5; %6 counter(s), %7 left out facing water or a drop.", what, RZ_SettlementScanner.GridReference(p.m_vPos), placed, tried, lay.m_sWhere, served, seaward));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A piece that looks out from the camp: the perimeter, the gate, the closed entries.
+	protected static bool FacesOut(RZ_DressingPiece e)
+	{
+		RZ_EDressAt at = AtOf(e);
+		return e.m_eRole == RZ_EDressRole.APPROACH || at == RZ_EDressAt.GATE || at == RZ_EDressAt.CLOSED;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1222,9 +1249,23 @@ class RZ_CampLife
 		if (turn % 2 == 1)
 			side = -side;
 
-		// No road in: out in front of the building instead
+		// No road in: out in front of the building instead, or off its first side that faces land
 		if (entry < 0)
 		{
+			array<int> sides = {FACE_FRONT, FACE_LEFT, FACE_RIGHT, FACE_BACK};
+			foreach (int face : sides)
+			{
+				vector faceWall = FacePoint(site, face, 0, 0);
+				float faceOut = RZ_Compass.Bearing(faceWall, FacePoint(site, face, 0, 10));
+				if (BadOutlook(faceWall, faceOut, OUTLOOK_REACH))
+					continue;
+
+				wall = faceWall;
+				outB = faceOut;
+				halfFront = RZ_Util.DistXZ(FacePoint(site, face, -1, 0), FacePoint(site, face, 1, 0)) * 0.5;
+				break;
+			}
+
 			x = side * (halfFront * 0.6 + 2);
 			z = 9 - e.m_vFootMin[2] + (turn / 2) * 4;
 			pos = RZ_Util.GroundPos(FramePoint(wall, outB, x, z));
@@ -1294,7 +1335,7 @@ class RZ_CampLife
 		float bearing = p.m_fApproach;
 		lay.m_sWhere = "on open ground, its front to the road";
 		// (sideways, forward, turn): pulled back from the road, sideways, turned a little
-		array<float> openMoves = {0.0, 0.0, 0.0, -4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, -4.0, 0.0, 0.0, -8.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, 12.0, 0.0, 0.0, -12.0};
+		array<float> openMoves = {0.0, 0.0, 0.0, -4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, -4.0, 0.0, 0.0, -8.0, 0.0, 0.0, 4.0, 0.0, 0.0, 8.0, 0.0, 0.0, 0.0, 12.0, 0.0, 0.0, -12.0};
 		array<float> postMoves = {0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, -3.0, 0.0};
 		array<float> moves = openMoves;
 		if (p.m_eKind == RZ_ECampPlace.ROAD_POST)
@@ -1923,17 +1964,64 @@ class RZ_CampLife
 		if (p.m_bHasRoad)
 		{
 			p.m_fApproach = RZ_Compass.Bearing(p.m_vPos, p.m_vRoad);
-			return;
 		}
-
-		if (p.m_bHasTown)
+		else if (p.m_bHasTown)
 		{
 			p.m_fApproach = p.m_fTownBearing;
-			return;
+		}
+		else
+		{
+			RZ_Rng rng = new RZ_Rng(p.m_iSeed + 7);
+			p.m_fApproach = rng.Range(0, 360);
 		}
 
-		RZ_Rng rng = new RZ_Rng(p.m_iSeed + 7);
-		p.m_fApproach = rng.Range(0, 360);
+		// Never toward the sea or over a cliff (a coast road can run between the camp and the
+		// water): the dry way nearest it
+		p.m_fApproach = Landward(p.m_vPos, p.m_fApproach);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Water or a drop that way: ground heights along `bearing` and 25 degrees either side, every
+	//! 10 m out to `reach`. Water is under sea level (RZ_Util.IsWater); a drop is ground 8 m below
+	//! the start within 30 m (a cliff, a quay).
+	protected static bool BadOutlook(vector from, float bearing, float reach)
+	{
+		float startY = GetGame().GetWorld().GetSurfaceY(from[0], from[2]);
+		for (int side = -1; side <= 1; side++)
+		{
+			for (int step = 1; step * 10 <= reach; step++)
+			{
+				vector pt = RZ_Compass.PointAt(from, bearing + side * 25, step * 10);
+				if (RZ_Util.IsWater(pt))
+					return true;
+
+				if (step <= 3 && startY - pt[1] > 8)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `want`, or the nearest of sixteen ways to it with no water or drop within 80 m; `want`
+	//! if every way has one (a spit, an island).
+	protected static float Landward(vector from, float want)
+	{
+		if (!BadOutlook(from, want, OUTLOOK_REACH))
+			return want;
+
+		for (int k = 1; k <= 8; k++)
+		{
+			for (int sign = -1; sign <= 1; sign += 2)
+			{
+				float bearing = RZ_Compass.Normalize(want + sign * k * 22.5);
+				if (!BadOutlook(from, bearing, OUTLOOK_REACH))
+					return bearing;
+			}
+		}
+
+		return want;
 	}
 
 	// ================================================================ The building a place moves into
@@ -2121,7 +2209,10 @@ class RZ_CampLife
 		if (m_mSites.Count() >= MAX_SITES)
 			m_mSites.Clear();
 
-		RZ_CampSite site = PickSite(p, ground);
+		// Any building near beats a raw field: with none of the kind's size in reach, a smaller one a little further
+		RZ_CampSite site = PickSite(p, ground, false);
+		if (site.m_bNone)
+			site = PickSite(p, ground, true);
 		m_mSites.Set(p.m_sKey, site);
 
 		if (!m_mToldSite.Contains(p.m_sKey))
@@ -2147,8 +2238,8 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	//! The best building by kind, size and distance, then by the roads (Bastion on a road, the Red
 	//! Hand where roads meet). Never one with scenery on it, a ruin, a hangar-sized one or one
-	//! smaller than the kind needs.
-	protected RZ_CampSite PickSite(RZ_CampPlace p, RZ_CampGround ground)
+	//! smaller than the kind needs; `relaxed`, one of 25 m² will do, up to half as far again.
+	protected RZ_CampSite PickSite(RZ_CampPlace p, RZ_CampGround ground, bool relaxed)
 	{
 		RZ_CampSite site = new RZ_CampSite();
 		site.m_sKey = p.m_sKey;
@@ -2159,6 +2250,12 @@ class RZ_CampLife
 
 		float reach = SiteReach(p.m_eKind);
 		float minArea = SiteMinArea(p.m_eKind);
+		if (relaxed)
+		{
+			reach = Math.Max(reach * 1.5, 45);
+			minArea = Math.Min(minArea, 25);
+		}
+
 		bool stronghold = p.m_eKind == RZ_ECampPlace.STRONGHOLD;
 		float distWeight = 3;
 		if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
@@ -2554,6 +2651,8 @@ class RZ_CampLife
 		else
 			p.m_fApproach = RZ_Compass.Bearing(site.m_vCentre, FacePoint(site, FACE_FRONT, 0, 10));
 
+		p.m_fApproach = Landward(site.m_vCentre, p.m_fApproach);
+
 		// The building's neighbours too, so no piece stands in one
 		array<IEntity> around = {};
 		RZ_BuildingQuery.FindBuildings(site.m_vCentre, 70, around);
@@ -2763,6 +2862,78 @@ class RZ_CampLife
 			p.m_fGatherUntil = m_fClock + ROLL_SECONDS;
 
 		AssignAll(p, phase);
+		LogJobs(p, phase);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line per place at each phase (and when its pieces are all up): who is on which job and
+	//! how (at a seat, walking the camp, standing at a spot, on the move, or standing still with no
+	//! AI or group), so a play-test can see the place is alive.
+	protected void LogJobs(RZ_CampPlace p, int phase)
+	{
+		array<int> jobs = {};
+		for (int j = 0; j <= JOB_CHOP; j++)
+		{
+			jobs.Insert(0);
+		}
+
+		array<int> how = {0, 0, 0, 0, 0};
+		int people = 0;
+		foreach (RZ_CampWorker w : p.m_aWorkers)
+		{
+			if (!IsWorking(w))
+				continue;
+
+			people++;
+			if (w.m_iJob >= 0 && w.m_iJob <= JOB_CHOP)
+				jobs[w.m_iJob] = jobs[w.m_iJob] + 1;
+
+			int h = w.m_iHow;
+			if (!w.m_Group)
+				h = HOW_NONE;
+
+			how[h] = how[h] + 1;
+		}
+
+		string list = "";
+		for (int k = 1; k <= JOB_CHOP; k++)
+		{
+			if (jobs[k] == 0)
+				continue;
+
+			if (!list.IsEmpty())
+				list += ", ";
+
+			list += string.Format("%1 %2", JobName(k), jobs[k]);
+		}
+
+		if (list.IsEmpty())
+			list = "none";
+
+		RZ_Log.Info(string.Format("Camp life jobs: %1 (phase %2), %3 people: %4; %5 at a seat, %6 walking the camp, %7 standing at a spot, %8 on the move, %9 standing still (no AI or group).",
+			p.m_sTitle, phase, people, list, how[HOW_SEAT], how[HOW_WALK], how[HOW_SPOT], how[HOW_MOVE], how[HOW_NONE]));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string JobName(int job)
+	{
+		switch (job)
+		{
+			case JOB_WATCH: return "watch";
+			case JOB_PATROL: return "patrol";
+			case JOB_SIT: return "sit";
+			case JOB_WORK: return "work";
+			case JOB_GATHER: return "gather";
+			case JOB_LEAN: return "lean";
+			case JOB_STROLL: return "stroll";
+			case JOB_COURIER: return "courier";
+			case JOB_OFF: return "off shift";
+			case JOB_COOK: return "cook";
+			case JOB_WASH: return "wash";
+			case JOB_CHOP: return "chop";
+		}
+
+		return "none";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3053,6 +3224,7 @@ class RZ_CampLife
 
 		w.m_iPiece = -1;
 		w.m_iSeat = -1;
+		w.m_iHow = HOW_NONE;
 		w.m_iJob = JOB_NONE;
 	}
 
@@ -3089,11 +3261,88 @@ class RZ_CampLife
 
 		if (idx < 0)
 		{
-			Loiter(p, w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
+			Potter(p, w, group, person);
 			return;
 		}
 
 		UsePiece(p, w, group, idx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Nothing free to sit or work at: they walk round the camp instead, piece to piece, standing a
+	//! while at each (loiter waypoints in a cycle; a named person only round the pieces near home).
+	//! With fewer than two pieces standing, they stand about near home.
+	protected void Potter(RZ_CampPlace p, RZ_CampWorker w, IEntity group, bool person)
+	{
+		array<int> near = {};
+		foreach (int i, RZ_CampPiece piece : p.m_aPieces)
+		{
+			if (!piece.m_Entity)
+				continue;
+
+			if (person && RZ_Util.DistXZ(piece.m_vPos, p.m_vHome) > p.m_fPersonRadius)
+				continue;
+
+			near.Insert(i);
+		}
+
+		RZ_Rng rng = new RZ_Rng(p.m_iSeed + p.m_iShift * 13 + p.m_aWorkers.Find(w) * 7 + 5);
+		array<vector> stops = {};
+		for (int k = 0; k < POTTER_STOPS && !near.IsEmpty(); k++)
+		{
+			int pick = RZ_Util.PickIndex(rng.Next(), near.Count());
+			RZ_CampPiece at = p.m_aPieces[near[pick]];
+			near.Remove(pick);
+			stops.Insert(StandClear(p, RZ_Util.RandomPointInRing(at.m_vPos, 2.5, 3.5)));
+		}
+
+		ResourceName prefab = m_Settings.m_sLoiterWaypoint;
+		if (prefab.IsEmpty())
+			prefab = m_GM.GetSpawner().GetMoveWaypointPrefab();
+
+		array<IEntity> loop = {};
+		foreach (vector stop : stops)
+		{
+			IEntity spawned = RZ_Util.SpawnPrefab(prefab, stop);
+			AIWaypoint wp = AIWaypoint.Cast(spawned);
+			if (wp)
+			{
+				wp.SetCompletionRadius(3);
+				loop.Insert(spawned);
+			}
+			else if (spawned)
+			{
+				SCR_EntityHelper.DeleteEntityAndChildren(spawned);
+			}
+		}
+
+		if (loop.Count() < 2)
+		{
+			foreach (IEntity l : loop)
+			{
+				SCR_EntityHelper.DeleteEntityAndChildren(l);
+			}
+
+			Loiter(p, w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
+			return;
+		}
+
+		w.m_aWaypoints.InsertAll(loop);
+		w.m_iHow = HOW_WALK;
+		IEntity cycle = RZ_Util.AddGroupCycle(group, loop, m_Settings.m_sCycleWaypoint); // VERIFY: a cycle of loiter waypoints walks the group from piece to piece, standing a while at each (a loiter waypoint completes after its hold), round and round
+		if (cycle)
+		{
+			w.m_aWaypoints.Insert(cycle);
+			return;
+		}
+
+		SCR_AIGroup g = SCR_AIGroup.Cast(group);
+		foreach (IEntity each : loop)
+		{
+			AIWaypoint a = AIWaypoint.Cast(each);
+			if (g && a)
+				g.AddWaypoint(a);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3112,6 +3361,7 @@ class RZ_CampLife
 		if (wp)
 		{
 			w.m_aWaypoints.Insert(wp);
+			w.m_iHow = HOW_SEAT;
 			return;
 		}
 
@@ -3160,7 +3410,10 @@ class RZ_CampLife
 
 		IEntity wp = RZ_Util.AddGroupWaypoint(group, StandClear(p, at), prefab, 4); // VERIFY: a loiter (timed defend) waypoint with a 4 m radius uses only the smart actions within it, and holds the group there
 		if (wp)
+		{
 			w.m_aWaypoints.Insert(wp);
+			w.m_iHow = HOW_SPOT;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3168,7 +3421,10 @@ class RZ_CampLife
 	{
 		IEntity wp = RZ_Util.AddGroupWaypoint(group, at, m_GM.GetSpawner().GetMoveWaypointPrefab(), 3);
 		if (wp)
+		{
 			w.m_aWaypoints.Insert(wp);
+			w.m_iHow = HOW_MOVE;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3297,7 +3553,10 @@ class RZ_CampLife
 
 		IEntity wp = RZ_Util.AddGroupWaypoint(group, StandClear(p, at), prefab, 3);
 		if (wp)
+		{
 			w.m_aWaypoints.Insert(wp);
+			w.m_iHow = HOW_SPOT;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3326,6 +3585,7 @@ class RZ_CampLife
 			return;
 
 		w.m_aWaypoints.InsertAll(loop);
+		w.m_iHow = HOW_MOVE;
 		IEntity cycle = RZ_Util.AddGroupCycle(group, loop, m_Settings.m_sCycleWaypoint); // VERIFY: a cycle waypoint made from script loops the patrol for our groups
 		if (cycle)
 		{
@@ -3662,15 +3922,20 @@ class RZ_CampLife
 				movers.Insert(w);
 		}
 
-		if (movers.IsEmpty())
-			return;
+		// A third of the seated and working move on (at least one): sitting to work, work to a seat,
+		// and anyone without a free piece walks the camp
+		int moves = Math.Max(1, movers.Count() / 3);
+		for (int m = 0; m < moves && !movers.IsEmpty(); m++)
+		{
+			int pick = Math.RandomInt(0, movers.Count());
+			RZ_CampWorker mover = movers[pick];
+			movers.Remove(pick);
+			int next = JOB_SIT;
+			if (mover.m_iJob == JOB_SIT)
+				next = JOB_WORK;
 
-		RZ_CampWorker mover = movers.GetRandomElement();
-		int next = JOB_SIT;
-		if (mover.m_iJob == JOB_SIT)
-			next = JOB_WORK;
-
-		Give(p, mover, next);
+			Give(p, mover, next);
+		}
 	}
 
 	// ================================================================ Talking

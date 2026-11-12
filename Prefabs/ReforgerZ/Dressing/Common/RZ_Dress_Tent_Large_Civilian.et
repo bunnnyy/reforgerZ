@@ -26,36 +26,28 @@ GenericEntity {
    coords 1.0 0 2.6
    angles 0 200 0
   }
-  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
    ID "71FF032B9D3CDA9D"
    components {
     Hierarchy "{B4741556C437A182}" {
     }
    }
-   coords -2.4 0 2.4
+   coords 1.0 0.45 2.6
+   angles 0 200 0
   }
-  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
    ID "42E86DF6F6666A0D"
    components {
     Hierarchy "{5B19F635524F4E93}" {
-    }
-   }
-   coords -1.6 0 2.6
-   angles 0 80 0
-  }
-  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
-   ID "123B9E38D72089DD"
-   components {
-    Hierarchy "{A8A670E218AE1BD3}" {
     }
    }
    coords 2.4 0 -1.4
    angles 0 30 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "F2A5255E192681F2"
+   ID "123B9E38D72089DD"
    components {
-    Hierarchy "{36525D64E5AE50A9}" {
+    Hierarchy "{A8A670E218AE1BD3}" {
     }
    }
    coords -1.9 0 -1.8

@@ -26,14 +26,14 @@ GenericEntity {
    coords 0.6 0 0.2
    angles 0 -4 0
   }
-  GenericEntity : "{30A496094B91F0C3}Prefabs/Props/Civilian/Hutch_01.et" {
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
    ID "A637DB19B522B061"
    components {
     Hierarchy "{5ED62335CCD30FA6}" {
     }
    }
-   coords 2.4 0 0.6
-   angles 0 -88 0
+   coords 2.0 0 1.1
+   angles 0 30 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
    ID "1D7FAC9C848C1F38"
@@ -41,8 +41,8 @@ GenericEntity {
     Hierarchy "{8E2CCF925ADD1667}" {
     }
    }
-   coords -2.1 0 1.4
-   angles 0 30 0
+   coords 2.3 0 0.6
+   angles 0 75 0
   }
   GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
    ID "D4CA66EFB01394E5"

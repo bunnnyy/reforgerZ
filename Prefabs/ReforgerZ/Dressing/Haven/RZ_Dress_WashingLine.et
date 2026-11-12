@@ -8,76 +8,52 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+  GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
    ID "BAEA15F49AA5E495"
    components {
     Hierarchy "{82AC410B0AF0A48D}" {
     }
    }
-   coords -2.8 0 -0.2
+   coords -1.7 0 0
+   angles 0 2 0
   }
-  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+  GenericEntity : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
    ID "ADA301B10AAC101D"
    components {
     Hierarchy "{B0360833E23F8136}" {
     }
    }
-   coords 0.1 0 0.3
+   coords 1.7 0 0.1
+   angles 0 -2 0
   }
-  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+  GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
    ID "CDE6D7743020CB51"
    components {
     Hierarchy "{E0F90E2E550D2D05}" {
-    }
-   }
-   coords 2.9 0 -0.1
-  }
-  GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
-   ID "623B267A94DDD665"
-   components {
-    Hierarchy "{BF9D821AFCC71794}" {
-    }
-   }
-   coords -1.4 0 0.05
-   angles 0 80 0
-  }
-  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
-   ID "5C94F6C36535D5FD"
-   components {
-    Hierarchy "{25EF56F5769ED473}" {
-    }
-   }
-   coords 1.5 0 0.1
-   angles 0 95 0
-  }
-  GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
-   ID "3CF1FE98B9639BA0"
-   components {
-    Hierarchy "{F3B5095B8066E09A}" {
     }
    }
    coords -0.7 0 0.9
    angles 0 15 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "A51AE14E2A1F2575"
+   ID "623B267A94DDD665"
    components {
-    Hierarchy "{33C6D90079B5E4D7}" {
+    Hierarchy "{BF9D821AFCC71794}" {
     }
    }
    coords 0.5 0 1.0
   }
   GenericEntity {
-   ID "DD538ACB80073E63"
+   ID "5C94F6C36535D5FD"
    components {
-    SCR_AISmartActionSentinelComponent "{298960E15740622F}" {
+    SCR_AISmartActionSentinelComponent "{25EF56F5769ED473}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{F1216DCE3DD1D13C}" {
+    Hierarchy "{3CF1FE98B9639BA0}" {
     }
    }
    coords -0.2 0 1.0
