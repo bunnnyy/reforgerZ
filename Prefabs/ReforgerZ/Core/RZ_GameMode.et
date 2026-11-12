@@ -1752,6 +1752,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
    }
    m_InteractionSettings RZ_InteractionSettings "{7EFF2EC9C6B2E7D8}" {
     m_sSpotPrefab "{9663558A51F14179}Prefabs/ReforgerZ/Interactions/RZ_InteractionSpot.et"
+    m_sDoorSpotPrefab "{7B78F42DEE228888}Prefabs/ReforgerZ/Interactions/RZ_DoorSpot.et"
     m_sDirtyWaterPrefab "{58299CF5D46C2B6B}Prefabs/ReforgerZ/Interactions/RZ_Water_Dirty.et"
     m_sCleanWaterPrefab "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et"
    }
@@ -1773,6 +1774,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sTyrePrefab "{995614D5E087F397}Prefabs/ReforgerZ/Interactions/RZ_Tyre.et"
     m_sSparkPrefab "{6CEB9445ED635609}Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et"
     m_sFuelPrefab "{7BE5A0EEE4464399}Prefabs/ReforgerZ/Interactions/RZ_FuelCan_Full.et"
+    m_sBootPrefab "{68DAED9D4949EE53}Prefabs/ReforgerZ/Interactions/RZ_WreckBoot.et"
    }
    m_CraftSettings RZ_CraftSettings "{6AD67DC2BBC177FB}" {
     m_sBandagePrefab "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"

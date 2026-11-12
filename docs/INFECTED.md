@@ -401,7 +401,7 @@ they stand on their own.
 - **Per-member tracking.** Each tracked unit knows its members. A member missing from its group's
   living agents has died (phase 0: the count drops within a second; the group deletes itself when its
   last member dies; the bodies stay). Each death is a kill **at that member's spot**: a special's
-  sample drops where it fell, the body carries its loot ([DESIGN.md](DESIGN.md#bodies-and-car-boots)), the town's infection and ledger and any
+  sample drops where it fell, the body carries its loot ([DESIGN.md](DESIGN.md#bodies-and-car-wrecks)), the town's infection and ledger and any
   mission's count follow.
 - **Roles** on each tracked unit: crawler, loose one, scavenger, and the tribes' alpha, guard, hunter,
   scout, young and day party. Stealth reads them: the alpha and guard as specials, a hunt on its

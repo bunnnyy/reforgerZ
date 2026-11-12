@@ -109,7 +109,7 @@ class RZ_SaveData
 	// set-piece calendar, the season's deeds by identity. Older saves have none: they start empty
 	ref RZ_SharedSave shared;
 
-	// World interactions: searched car boots, loose loot times, opened locks, burned buildings, stripped wrecks, fixable cars
+	// World interactions: loose loot and wreck boot times, opened locks, burned buildings, pumps, fixable cars
 	ref RZ_InteractionSave interactions;
 
 	// Errands (Missions/Errands): each player's errand ledger for the season, the safehouses' named

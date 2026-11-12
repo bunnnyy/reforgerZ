@@ -145,7 +145,7 @@ caps at 200 per square.
 | A player being somewhere | 0.5 a tick |
 | In a vehicle | +4 a tick |
 | A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
-| Noisemakers, bells, sirens, generators, car boot searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
+| Noisemakers, bells, sirens, generators, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
 
 - **What the infected do with it:** heat draws extra infected to a town, 80 heat near a player
   sends a horde (from the nearest town, with Tribes on), and a burst of 8+ heat at once is
@@ -2303,7 +2303,7 @@ Code: `World/RZ_TownMemory.c`.
 - **Town flags:** Looted, Barricaded, Powered, Burned. Plain values per settlement, saved except
   Barricaded and Powered.
   - **Looted:** each town has a loot level (0–1). Every item taken from a house (and every find
-    in a car boot) takes a little, and the town counts as Looted under 0.5. It never drops under
+    taken from a wreck's boot) takes a little, and the town counts as Looted under 0.5. It never drops under
     0.2 and comes back over about 2 hours.
   - **Barricaded:** while a player's barricade stands in it, or once Fortify the Safehouse has
     succeeded there. Not kept across a restart (barricades aren't saved).
@@ -2321,7 +2321,7 @@ Code: `World/RZ_TownMemory.c`.
 
 Code: `Interactions/`.
 
-Loot lying in houses and on bodies, car boots to search, locked doors and keys, cars, crafting,
+Loot lying in houses and on bodies, wrecks' boots to open, locked doors and keys, cars, crafting,
 water, barricades and traps, generators, fire, bells, radios and treating each other. Data until a
 player is near, capped and decaying, nothing left behind.
 
@@ -2331,11 +2331,13 @@ player is near, capped and decaying, nothing left behind.
   30 m of each player and sorts them by prefab or mesh name: buildings by type, car wrecks,
   workbenches, wells and pumps, fuel pumps, stoves, bells (every church gets one), sirens, house
   radios and generators. Furniture is where loot lies.
-- **Interaction spots, only near players:** an invisible prop with labelled actions ("Search the
-  boot"), at most 10 per player and 70 on the server. Buildings and furniture get none.
-- **Decided on the server.** Loot lies in houses only while a player is near and is data
-  otherwise; a car boot is rolled when it's searched, a body when it dies. What was searched, opened, stripped
-  or burned is remembered as positions and times, and saved.
+- **Interaction spots, only near players:** an invisible prop with labelled actions ("Ring the
+  bell"), at most 10 per player and 70 on the server. Buildings and furniture get none. A wreck's
+  spot is its boot instead, a storage you open with vanilla's inventory
+  ([Car wrecks](#car-wrecks-one-boot-to-open)).
+- **Decided on the server.** Loot lies in houses and wrecks' boots only while a player is near and
+  is data otherwise; a boot is rolled when it's first put out, a body when it dies. What was
+  emptied, opened or burned is remembered as positions and times, and saved.
 - **Timed actions** run on the 5 s tick: move more than 3.5 m away and they stop.
 
 ### Loot in houses
@@ -2385,15 +2387,15 @@ are no search prompts in buildings and no timers.
   the building nearest it, the first time it's put out.
 
 *Simplified:* the furniture names are guesses, and spots are traced once per building, so an item
-can float on a high shelf or sit in a corner. Car boots are still searched; bodies carry their
-things (below).
+can float on a high shelf or sit in a corner. Wrecks' boots and bodies hold their things
+(below).
 
-### Bodies and car boots
+### Bodies and car wrecks
 
 | What | What it tends to have |
 |---|---|
 | Body (an infected killed within 60 m of a player) | Bandages, ammo, small things; sometimes a key or something to read |
-| Car boot (a wreck) | Jerrycans, tools, rope, batteries, tyres |
+| A wreck's boot | Jerrycans, tools, rope, batteries, tyres; sometimes a car part |
 
 **Bodies are looted with the vanilla inventory.** There's no prompt: when an infected dies within
 60 m of a player, what it carries is rolled at once: something 60% of the time, sometimes two
@@ -2405,9 +2407,34 @@ key taped inside lies next to it. A special's sample drops where it fell, as bef
 ground. Loose, the things are cleaned up like any [loose item](#loose-items); in the body, they go
 with it. Bodies don't use up the town's loot.
 
-**Search the boot** (4 s, 1 heat) finds something 60% of the time (scaled by the town's loot
-level), sometimes two things, plus the treatment roll; the things go into your pack. A searched
-boot has nothing new for an hour. Its finds take 0.015 each off the town's loot level.
+#### Car wrecks: one boot to open
+
+A wreck is a burnt-out shell: there's no fuel in it and nothing to strip. It's one container, its
+boot. **Open the boot** (vanilla's open-storage action, on the wreck's rear) opens the vanilla
+inventory with the boot's things in it, as for any storage box or vehicle trunk, and you drag out
+what you want. There's no other prompt and no timer.
+
+- **Data until a player is near.** While the wreck's spot is out (a player within 30 m of it, kept
+  until everyone is 55 m off), an invisible storage (**Cars > Wreck boot prefab**) stands just
+  behind the middle of the wreck's rear at boot height, filled from the wreck's record. When
+  everyone has gone, what's left is kept as data and the storage is deleted with it.
+- **Rolled the first time it's put out:** something 60% of the time (scaled by the town's loot
+  level) from the car boot table, sometimes two things; two good finds more for a stash someone
+  wrote about; the treatment roll; a car part (a battery, a tyre or spark plugs) 30% of the time
+  (**Wreck part chance**); and 12% of the time something to read, left beside the boot (a key taped
+  inside goes in the boot).
+- **Taken.** On the 5 s tick a thing no longer in the boot was taken: a loot find takes 0.015 off
+  the town's loot level (the part, the treatment and keys don't), and from then on it's an
+  ordinary item ([loose items](#loose-items)).
+- **Refill.** An emptied boot has things again after **Wreck return minutes** (2 hours). One with
+  leftovers keeps them and rolls fresh after three times that. Only the time is saved: after a
+  restart a boot counts as emptied then.
+- **Take only.** Nothing from your own inventory goes into a boot, so a wreck is never a stash
+  (something dragged in from the ground is kept as data like the rest).
+
+*Simplified:* the boot's point comes from the wreck's bounding box, taking its rear as the box's
+back (local −Z, as for vehicles); a wreck modelled the other way round has its boot at the bonnet.
+A thing kept as data comes back as a fresh copy of its prefab (a magazine full, a bag empty).
 
 ### Locks and keys
 
@@ -2432,9 +2459,14 @@ one exception is a lock that is part of the mission (the Locked Bunker's keypad)
   the building's outline (its bounding box). Interior doors never lock. Doors are data: they're
   looked at only when a player comes within 150 m of a locked place (one look per player every
   30 s, after moving 40 m), or tries one.
-- **At the door.** Each outside door of a locked place gets an interaction spot just outside it,
-  with Unlock, Lock and Force (at most three per building; a double door shares one). Looking at
-  it, or trying the locked door, tells you what the key's tag says.
+- **At the door.** Each outside door of a locked place gets an interaction spot on the door
+  itself, with Unlock, Lock and Force (at most three per building; a double door shares one, on
+  its first leaf). It sits on the shut leaf at handle height (the height of vanilla's own door
+  action point when the door has one, else 1.05 m), on the leaf's middle line, 8 cm out from its
+  outside face, so the prompts are on the door beside vanilla's Open door at the handle. The
+  **door spot prefab** is the spot with a tiny interaction box and a 0.35 m action radius, so it
+  doesn't cover the handle. A spot placed while its door stood open (on the open leaf) moves onto
+  the shut leaf at the next look-around (after you've moved 10 m). Looking at it, or trying the locked door, tells you what the key's tag says.
 - **Inside always opens.** Inside means anywhere in the building's bounding box, at least 0.5 m
   in from its sides, or past the door toward the middle of the building and within its width.
   The first covers a shallow closet behind a door near the outline. Shutting a door is never
@@ -2495,14 +2527,14 @@ survive a restart.
 
 ### Readable things
 
-12% of buildings' loot (and of car boot searches, 30% of bodies) includes an ID card, letter,
+12% of buildings' loot (and of wrecks' boots, 30% of bodies) includes an ID card, letter,
 receipt or photo in the Zone's voice ([WRITING.md](WRITING.md#the-voices)). In a building it lies
 like the rest of the loot, as a note prop read where it lies, and goes with the building's loot;
-one a search turns up is left beside the boot for half an hour, and a body's lies beside the body
-as long. One in five had a key taped inside: in a building or by a body the key lies next to it,
-from a boot search it goes into your pack. About
-one in seven has a stash grid on the back (two good finds in the building nearest it, or a car
-boot searched there, within 90 minutes), one in ten a puzzle mission circled on a map.
+a boot's is left beside the boot for half an hour, and a body's lies beside the body as long. One
+in five had a key taped inside: in a building or by a body the key lies next to it, from a wreck
+it's in the boot. About one in seven has a stash grid on the back (two good finds in the building
+nearest it, or a wreck's boot filled there, within 90 minutes), one in ten a puzzle mission circled
+on a map.
 Reading one opens it in the reader, a sheet of paper you page through, as do puzzle notes, letters
 and orders, guidance notes and safehouse flyers ([UI.md](UI.md#subtitles-and-the-reader)).
 
@@ -2516,8 +2548,8 @@ and locked so nobody can get in, with its prompts in front of its grille.
 | Step | How | Settings (defaults) |
 |---|---|---|
 | **Look over the car** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different (on the repair screen, below, where it's used) | **Min parts** 2, **Max parts** 3 |
-| **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, come from car boots, **stripping** wrecks (one part each) and the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
-| **Fuel it** | A full can, from siphoning a wreck (60% have some) or a petrol station's hand pump (10 heat). No tool needed | |
+| **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, are sometimes in a wreck's boot (30%) and come from the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
+| **Fuel it** | A full can: found as loot (garages, wrecks' boots), or filled at a petrol station's hand pump (an empty can, 30 s, 10 heat). Wrecks have no fuel in them. No tool needed | |
 | **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
@@ -2631,7 +2663,7 @@ horde somewhere else. Players within 1.2 km hear it.
   nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short
   places, samples needed.
 
-*Simplified:* spots stand on the object's origin (door spots just outside the door). Carrying
+*Simplified:* spots stand on the object's origin (door spots on the door leaf, a wreck's boot at its rear). Carrying
 the wounded isn't added. Item names are matched by keyword. Fuel cans are full or empty by name:
 nothing with "empty" in its name counts as fuel (cars, generators, fires, the power station, the
 molotov recipe).

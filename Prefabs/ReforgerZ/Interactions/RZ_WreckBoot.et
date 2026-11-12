@@ -1,0 +1,57 @@
+GenericEntity {
+ ID "AEA16D26E2874F26"
+ components {
+  RigidBody "{8E6DF796C688B685}" {
+   ResponseIndex "NoCollision"
+   Geometries {
+    PhysicsBoxGeometry UserAction {
+     LayerPreset "Interaction"
+     Extents 0.5 0.3 0.3
+    }
+   }
+   Static 1
+  }
+  RZ_WreckBootStorageComponent "{EE60DBEDACA448D2}" {
+   Attributes SCR_ItemAttributeCollection "{F2D1C3ED51A605F7}" {
+    ItemDisplayName SCR_InventoryUIInfo "{987DA6D6494B11C1}" {
+     Name "Car boot"
+     Description "What's left in the wreck's boot"
+    }
+    m_bDraggable 0
+   }
+   Priority 1000
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 100000
+   MaxItemSize 100 100 100
+   m_fMaxWeight 200
+  }
+  SCR_InventoryStorageManagerComponent "{D76BC36D5AB4CFB7}" {
+  }
+  ActionsManagerComponent "{AD27427DE87A6411}" {
+   ActionContexts {
+    UserActionContext "{F5C9899C8732EBB8}" {
+     ContextName "default"
+     Position PointInfo "{B964E135AD7A573C}" {
+      Offset 0 0 0
+     }
+     Radius 1
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    SCR_OpenStorageAction "{C13B98DA2C1B69BC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8846AC750906998C}" {
+      Name "Open the boot"
+     }
+    }
+   }
+  }
+  RplComponent "{6D2B3A6E5D1E9FAE}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

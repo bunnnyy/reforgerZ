@@ -10,9 +10,11 @@
 //!   outside ("Locked"), on the client from a replicated list of locked buildings near
 //!   players, and again on the server, which decides. From inside it always opens: that turns
 //!   the latch, and the building is unlocked for everyone until the reset.
-//! - At each locked building's outside doors, an interaction spot (the same invisible prop and
-//!   routing as the other world interactions) offers Unlock (its key, quiet), Lock (its key) and
-//!   Force the door (a crowbar, 10 s, loud). Forced locks are broken until the reset.
+//! - On each locked building's outside doors, an interaction spot (the door spot prefab, with the
+//!   same routing as the other world interactions) offers Unlock (its key, quiet), Lock (its key)
+//!   and Force the door (a crowbar, 10 s, loud). It sits on the shut door leaf at handle height,
+//!   on the leaf's middle line, just out from its outside face (HandlePoint), so its prompts are
+//!   on the door beside vanilla's Open door at the handle. Forced locks are broken until the reset.
 //! - Reset: an unlocked, latched or forced lock is back to locked after the relock time
 //!   (Search > relock minutes), and its outside doors are pulled shut once nobody stands in
 //!   them. Locked doors that are found open (AI opened them) are shut the same way.
@@ -34,6 +36,8 @@ class RZ_DoorGeometry
 	static const float INSIDE_MARGIN = 0.3;	// inside means this far (m) past the door, toward the middle
 	static const int CHILD_DEPTH = 3;
 	static const float BOX_INSIDE = 0.5;	// in the building means at least this far (m) inside its box
+	static const float HANDLE_HEIGHT = 1.05;	// a door's prompts this high (m) above the bottom of its leaf
+	static const float FACE_GAP = 0.08;		// and this far (m) out from its outside face
 
 	//------------------------------------------------------------------------------------------------
 	static DoorComponent GetDoor(IEntity e)
@@ -331,6 +335,87 @@ class RZ_DoorGeometry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where a locked door's prompts sit: on the door leaf itself, from the door's own transform and
+	//! box (not the building's). On the leaf's middle line, at handle height (vanilla's door action
+	//! point's height when it can be read, else HANDLE_HEIGHT above the leaf's bottom), FACE_GAP out
+	//! from the face on the outside. A door with no usable box: just outside its doorway instead.
+	static vector HandlePoint(IEntity building, IEntity door)
+	{
+		vector mins;
+		vector maxs;
+		door.GetBounds(mins, maxs); // the door leaf's local box
+		float width = maxs[0] - mins[0];
+		float depth = maxs[2] - mins[2];
+		if (width < 0.2 && depth < 0.2)
+			return OutsidePoint(building, door, 0.3) + Vector(0, HANDLE_HEIGHT, 0);
+
+		// The leaf's thickness is its thinner side across
+		int thin = 2;
+		if (width < depth)
+			thin = 0;
+
+		vector mat[4];
+		door.GetWorldTransform(mat);
+		vector c = (mins + maxs) * 0.5;
+		vector bottom = Vector(c[0], mins[1], c[2]);
+		vector at = mat[3] + mat[0] * bottom[0] + mat[1] * bottom[1] + mat[2] * bottom[2];
+
+		float height = HANDLE_HEIGHT;
+		float handleY;
+		if (VanillaActionHeight(door, handleY) && handleY - at[1] > 0.6 && handleY - at[1] < 1.5)
+			height = handleY - at[1];
+
+		at[1] = at[1] + height;
+
+		// Out of the face, on the outside (the building's wall normal; else away from its middle)
+		vector n = mat[thin];
+		n[1] = 0;
+		float len = n.Length();
+		if (len < 0.01)
+			return at;
+
+		n = n * (1 / len);
+		vector outward = WallNormal(building, door);
+		if (outward == vector.Zero)
+		{
+			outward = at - building.GetOrigin();
+			outward[1] = 0;
+		}
+
+		if (vector.Dot(n, outward) < 0)
+			n = n * -1;
+
+		float half = (maxs[thin] - mins[thin]) * 0.5;
+		return at + n * (half + FACE_GAP);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world height of the door's own action point (where vanilla's Open door prompt is): its
+	//! actions manager's first context. False if the door has none.
+	//! VERIFY: UserActionContext.GetOrigin() is the context's world position, and a door's first
+	//! context is the one its Open door action uses (at the handle)
+	protected static bool VanillaActionHeight(IEntity door, out float y)
+	{
+		y = 0;
+		ActionsManagerComponent am = ActionsManagerComponent.Cast(door.FindComponent(ActionsManagerComponent));
+		if (!am)
+			return false;
+
+		array<UserActionContext> contexts = {};
+		am.GetContextList(contexts);
+		foreach (UserActionContext ctx : contexts)
+		{
+			if (!ctx)
+				continue;
+
+			y = ctx.GetOrigin()[1];
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The client side of the vanilla door action: locked for this user right now? Uses the
 	//! game mode's replicated list of locked buildings near players. The server decides again.
 	static bool LooksLocked(IEntity door, IEntity user)
@@ -523,7 +608,8 @@ class RZ_DoorLocks
 
 	//------------------------------------------------------------------------------------------------
 	//! From the look-around: a building near a player. For a locked place with outside doors,
-	//! a spot at each door (at most `room`). Returns how many spots were added.
+	//! a spot on each door (at most `room`), on the leaf at handle height. A shut door's spot
+	//! follows its leaf (the door was open when it was placed). Returns how many spots were added.
 	int OnBuildingSeen(IEntity building, string lowerName, int room)
 	{
 		RZ_BuildingDoors b = LearnIfLocked(building, lowerName);
@@ -539,8 +625,9 @@ class RZ_DoorLocks
 			if (!door)
 				continue;
 
-			vector at = RZ_DoorGeometry.OutsidePoint(b.m_Building, door, 0.6);
-			if (m_Hub.AddDoorSpot(at, b.m_vPos, b.m_sKey, b.m_sType, DoorNoun(b.m_vPos, b.m_sType), i))
+			vector at = RZ_DoorGeometry.HandlePoint(b.m_Building, door);
+			bool shut = !RZ_DoorGeometry.IsOpen(door);
+			if (m_Hub.AddDoorSpot(at, b.m_vPos, b.m_sKey, b.m_sType, DoorNoun(b.m_vPos, b.m_sType), i, shut))
 				added++;
 		}
 

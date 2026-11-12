@@ -138,7 +138,7 @@ and one way to end it: **research the cure.**
   town loudspeaker. Every prop is optional: the words always come. Nothing pays.
 - **Notes between players**: a notice board at every Haven safehouse.
 - **Loot the world**: things lie loose in houses, on worktops and floors, and you pick them up;
-  bodies looted like any body, car boots to search; locked doors that keep the infected out (they bang on them)
+  bodies looted like any body, car wrecks' boots to open like any storage; locked doors that keep the infected out (they bang on them)
   and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting,
   traps, fire (a full fuel can in your hands at the door), water and secure radio channels.
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and

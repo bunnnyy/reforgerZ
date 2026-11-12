@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **312 prefab fields**: 46 on `RZ_GameModeComponent`, 257 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **292 entries**: 179 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **314 prefab fields**: 46 on `RZ_GameModeComponent`, 259 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **294 entries**: 181 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -389,12 +389,13 @@ ResourceNames from vanilla 1.9, Bacon Zombies and Special Zombies, picked by rea
 resource database. The tables' **Suggested base** is what a prefab should be; `basePrefab` is what
 it's built on now, and many are [stand-ins](#stand-in-bases). Two more entries are found by name
 (`baseFind`: the spawn point and the move waypoint), the 9 entries set by hand (the hand-set lists
-and the UI files) need none, and six have no base:
+and the UI files) need none, and eight have no base:
 
 | Entry | Why |
 |---|---|
 | `RZ_Drone.et`, `RZ_WarningShot.et`, Interactions > Crafting > Spear | Vanilla has nothing like them (no drone, no melee weapon) |
 | `RZ_InteractionSpot.et`, `RZ_DoorBlocker.et` | To make from an empty entity (the plugin's option) with collision added by hand; not made yet |
+| `RZ_DoorSpot.et`, `RZ_WreckBoot.et` | Built as text from an empty entity: an interaction box and no mesh (the door spot is the interaction spot's set with a tiny box; the boot is a universal storage with vanilla's open-storage action) |
 | Interactions > General > Clean water | It's Metabolism's own `WaterBottle.et`, set directly ([MOD_STACK.md](MOD_STACK.md)) |
 
 <!-- manifest:prefabs -->
@@ -740,16 +741,18 @@ and the UI files) need none, and six have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every searchable thing, the Unlock/Lock/Force spot, the Clean the bite spot (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
+| `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every world interaction prompt (wells, pumps, stoves, bells, radios, generators, workbenches), the Clean the bite spot, and the Unlock/Lock/Force spot when Door spot is empty (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
+| `RZ_DoorSpot.et` | the interaction spot with a tiny interaction box (0.12 m) and a 0.35 m action radius | the generic set | Interactions > General > Door spot prefab | optional | a locked door's Unlock, Lock and Force, on the door leaf at handle height (empty = the Spot prefab, whose bigger box can cover vanilla's Open door). Built as text (set in the game mode). Keep its box tiny and its action context small, so vanilla's Open door at the handle stays reachable |
+| `RZ_WreckBoot.et` | an empty GenericEntity with a small interaction box (no mesh, no collision) and vanilla's open-storage action | `RZ_WreckBootStorageComponent`, `SCR_InventoryStorageManagerComponent`; `SCR_OpenStorageAction` | Interactions > Cars > Wreck boot prefab | optional | a car wreck's boot: one Open the boot prompt at its rear opens the vanilla inventory with what's in it (empty = wrecks hold nothing). Built as text (set in the game mode). Its storage holds up to 100000 volume, 200 kg and items up to 100 x 100 x 100; a loot item that doesn't fit lies beside the wreck (logged once) |
 | `RZ_Key.et` | a small item (a key or key ring) | `RZ_KeyItemComponent`; `RZ_ReadKeyTagAction` | Interactions > Search > Key prefab | optional | keys: they lie in houses next to letters, car keys in their car's town, and come off bodies and from the Mechanic (empty = no keys). It must be a real item that can be picked up: an InventoryItemComponent and vanilla's pick-up action. The notebook base may be a prop; if the key shows no pick-up prompt on the ground, rebase it on a small vanilla item |
 | `RZ_DoorBlocker.et` | an empty GenericEntity; add the collision-only box by hand (recipe below) | — | Interactions > Search > Doorway blocker | optional | keeps AI out of locked doorways near players. Needs only RplComponent, a collision-only MeshObject and a static RigidBody: see the doorway blocker recipe |
-| (existing prefab) | every item that can lie in a house or turn up in a car boot or on a body (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | nothing lies in houses (and boots and bodies hold nothing) until it's filled; each must be a real item with vanilla's pick-up action |
+| (existing prefab) | every item that can lie in a house or turn up in a wreck's boot or on a body (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | nothing lies in houses (and boots and bodies hold nothing) until it's filled; each must be a real item with vanilla's pick-up action |
 | (existing prefab) | the repo's parked copies of the Car prefabs (Prefabs/ReforgerZ/Interactions/Cars/), each with SCR_BaseLockComponent m_bIsLocked 1 | — | Interactions > Cars > Parked prefabs (list, the same order as Car prefabs) | optional | a fixable car before it runs: the same car, parked and locked. One per Car prefab, in the same order. A new car needs its own parked copy: inherit it and set its SCR_BaseLockComponent > m_bIsLocked |
 | (existing prefab) | vanilla drivable civilian cars | — | Interactions > Cars > Car prefabs (list) | optional | what a fixed car becomes (empty = no fixable cars) |
 | `RZ_CarBattery.et` | an item; keep "battery" in its name | — | Interactions > Cars > Battery | optional | car parts |
 | `RZ_Tyre.et` | an inventory item with a tyre mesh; keep "tyre" in its name | — | Interactions > Cars > Tyre | optional | car parts. The repo's is vanilla Item_Base with the UAZ tyre's mesh: 9 kg, 2x2 |
 | `RZ_SparkPlugs.et` | an item; keep "spark" in its name | — | Interactions > Cars > Spark | optional | car parts |
-| `RZ_FuelCan_Full.et` | a full jerrycan item | — | Interactions > Cars > Fuel prefab | optional | siphoning, pumps, fuel, fire |
+| `RZ_FuelCan_Full.et` | a full jerrycan item | — | Interactions > Cars > Fuel prefab | optional | the hand pump, fuel, fire |
 | `RZ_BoardedDoorway.et` | planks across a door frame, with collision | — | Interactions > Traps > Barricade prefab | optional | the boarded doorway |
 | `RZ_TripwireSet.et` | a set tripwire prop | — | Interactions > Traps > Tripwire set | optional | look of a set tripwire (optional) |
 | `RZ_SpikeSet.et` | a set spike trap prop | — | Interactions > Traps > Spike trap set | optional | look of a set spike trap (optional) |
@@ -773,7 +776,7 @@ and the UI files) need none, and six have no base:
 | `RZ_Bottle.et` | a vanilla grenade with the explosion removed and a bottle mesh | `RZ_NoisemakerComponent` (Heat 20, On throw on, Delete after on) | (loot or shop) | optional | a thrown noise |
 | `RZ_Firecracker.et` | a small item | `RZ_NoisemakerComponent` (Heat 15, Delay 5, Pulses 4, Pulse interval 3, On throw off, Delete after on, Arm label Light the fuse); `RZ_ArmNoisemakerAction` | (loot or shop) | optional | a timed noise |
 | `RZ_AlarmClock.et` | a clock prop item | `RZ_NoisemakerComponent` (Heat 10, Delay 30, Pulses 8, Pulse interval 8, On throw off, Delete after off, Arm label Wind the alarm); `RZ_ArmNoisemakerAction` | (loot or shop) | optional | a long timed noise |
-| `RZ_FuelCan_Empty.et` | an empty jerrycan item | — | (loot) | optional | siphoning, pumps |
+| `RZ_FuelCan_Empty.et` | an empty jerrycan item | — | (loot) | optional | filled at the hand pump |
 
 #### Hand-set list entries
 
@@ -1042,7 +1045,7 @@ Leave **Navmesh rebuild** on unless a rebuild proves too slow (watch the server 
 a blocker comes or goes); off, AI walk into the blocker and stop there.
 
 **The loot pool** (Search > Loot pool) is one list of every item that can lie in a house or turn
-up in a car boot or on a body. Each building type takes the items whose prefab names contain its
+up in a wreck's boot or on a body. Each building type takes the items whose prefab names contain its
 keywords (the lists are in `RZ_Search.TypeWords`). To control a type exactly, add a **Loot table**
 for it.
 
@@ -1364,10 +1367,10 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
-| Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
-| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, and a car boot or body search; rare 0.1, electronics 0.1), car boot and body searches (4 s, 1 heat, a boot empty for 60 min), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
+| Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
+| Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
-| Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), siphon and pump timings, Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix)) |
+| Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), pump timings, **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
 | Interactions | Secure radio | `m_RadioCrackSettings` | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
@@ -1717,7 +1720,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **117** lines with the tag, all in the game scripts (one is the comment in
+There are **120** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 21 are in `UI/`: 16 of [the UI's](#the-ui-17), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
@@ -1739,7 +1742,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (70)
+### Medium risk: big features, with a fallback (71)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1756,9 +1759,10 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_Perimeter.c:952`, `:967` | the drone attached to the player follows them on every client; `SetOrigin` on a spawned prop moves it for clients | Moved each tick instead (jumpier) |
 | `Interactions/RZ_DoorHooks.c:7` | the vanilla door prefabs use `SCR_DoorUserAction` | Players open locked doors: hook the action in the door prefabs' `ActionsManagerComponent`, or turn **Search > Locks** off (nothing is locked) |
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
-| `Interactions/RZ_DoorLocks.c:63` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
-| `Interactions/RZ_DoorLocks.c:75`, `:102` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
-| `Interactions/RZ_Interactions.c:332` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
+| `Interactions/RZ_DoorLocks.c:67` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
+| `Interactions/RZ_DoorLocks.c:79`, `:106` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
+| `Interactions/RZ_Interactions.c:338` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
+| `Interactions/RZ_WreckBoots.c:30` | a wreck's boot (`RZ_WreckBoot.et`): the server's fill (`TryInsertItem` through the box's `SCR_InventoryStorageManagerComponent`) shows its things in vanilla's inventory on every client when **Open the boot** is used, and `RZ_WreckBootStorageComponent.CanStoreItem` refuses only what's dragged in from a character's inventory | Open a wreck's boot on a dedicated server with a second client: both see the same things, and dragging one of your own items in is refused. If the boot shows empty, delete the `CanStoreItem` override (the boot then takes anything, and what's put in comes back as a fresh copy of its prefab); with **Cars > Wreck boot prefab** empty, wrecks hold nothing |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1106` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1311`, `:1189` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
@@ -1805,7 +1809,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (28)
+### Low risk: contained or cosmetic (30)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1821,7 +1825,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:757` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
-| `Interactions/RZ_Search.c:824` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
+| `Interactions/RZ_Search.c:800` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
+| `Interactions/RZ_WreckBoots.c:123` | a wreck prop faces its local +Z like a vehicle, so its rear (the boot) is its box's −Z side | **Open the boot** shows at the bonnet: flip the sign in `RZ_WreckBoots.BootPoint` |
+| `Interactions/RZ_DoorLocks.c:395` | `UserActionContext.GetOrigin()` on a door's actions manager is the world position of vanilla's Open door point (its first context) | Unlock, Lock and Force sit at 1.05 m on the leaf instead of at the handle's height (the 0.6–1.5 m guard throws out anything else) |
 | `Interactions/RZ_KeyItem.c:95` | `GetItems()` also finds a key in a bag inside another bag | Such keys aren't found: carry them in the top-level storages |
 | `Core/RZ_Util.c:1012` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
 | `Core/RZ_Util.c:999` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
@@ -2053,6 +2059,8 @@ Warnings worth acting on:
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
 | `Key prefab is empty, has no RZ_KeyItemComponent or didn't spawn: no keys ...` | Set **Search > Key prefab** to an item with `RZ_KeyItemComponent`; until then no keys are given or placed |
 | `Loose loot: off.` | Expected only if you turned **Loot > Loose loot** off: nothing lies in houses |
+| `Wreck boots: off (...). Wrecks hold nothing.` | **Cars > Wreck boot prefab** is empty (or **Cars > Enabled** is off): set it to `RZ_WreckBoot.et` |
+| `Wreck boot: ... doesn't fit in the boot (...)` | Printed once: a loot item is too big or heavy for the boot's storage and lies beside the wreck instead. Raise the volume, item size or weight on `RZ_WreckBoot.et`'s storage |
 | `Supply: ... truck at ... has nobody to drive it after 90 s (...)` | Printed once per truck, while it waits in the stronghold's yard. Its crew didn't spawn, wasn't within 30 m of the truck, or couldn't take the driver's seat: check the crew prefab (an AI group on the faction) and that the truck has a driver's seat. The truck is lost as late at its deadline |
 | `Supply trucks are off. ...` / `Territory is off. ...` / `Long Table: off.` / `Stealth: off (...)` | Expected only if you turned them off |
 | `Stealth: on. ... searching 45 s: off (no move waypoint).` | Set Zombies > Move waypoint, or infected that lose a hidden player don't go and search |
@@ -3330,6 +3338,16 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   unlocks it); its interior doors and shutting any door always work.
 - [ ] At the door: Unlock with the right key (the wrong one says which tag you need), Lock it
   again, Force it with a crowbar (loud; it can't be locked after). The loot inside is better.
+- [ ] The door's prompts are on the door: aim at the middle of the shut leaf at handle height and
+  Look, Unlock and Force show there; aim at the handle and vanilla's Open door shows ("Locked").
+  Both are reachable with a gamepad. Walk up to a locked place whose door AI left open: once it's
+  pulled shut and you've moved 10 m, the prompts are on the shut leaf. On a double door there's one
+  set, on its first leaf.
+- [ ] A car wreck has one prompt, **Open the boot**, at its rear (not the bonnet): it opens the
+  vanilla inventory with the boot's things (sometimes empty, sometimes a car part); drag one out
+  with a gamepad. Dragging one of your own items in is refused. A second player sees the same
+  boot. Walk 60 m off and back: what you left is still there. Empty it: it stays empty for two
+  hours. No siphon or strip prompt anywhere on a wreck.
 - [ ] A key item can be dropped, picked up by someone else and opens the door for them;
   "Read the tag" shows its label on the ground.
 - [ ] With **Relock minutes** at 5: the door is locked and pulled shut again once you step away.
