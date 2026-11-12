@@ -102,6 +102,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (author's request, via PC): **a crafting screen at the workbench, in the same style as the other ReforgerZ screens** (the shop and car repair screens are the model). The author: "make a UI for the workbench crafting. Same as other UI styles." Today crafting is world actions at a workbench (DESIGN "Light crafting", `Interactions/RZ_Crafting.c`). Wanted: opening the workbench shows the recipes as a list (hidden ones stay hidden), the picked recipe's output with its picture and description, what it takes with have / missing against the player's inventory, how long it takes, and Craft; pad first (D-pad, A to craft, B to close), mouse too, readable on a TV, server-checked as the actions are now; the old actions stay as the fallback when the layout slot is empty. Add the mockup (UI/Mockups), the layouts, UI.md, UI/LAYOUTS.md, the manifest slot and WBS. The PC sets the slot and checks it in play once pushed.
 - 2026-11-12 (PC): **script fixes (one-liners, compile check OK):** negative seeds indexed arrays. `RZ_Tribes.c` CallPattern and AlphaWho, `RZ_TribePeople.c` CrewName now use `Math.AbsInt(...) % Count()` (each threw "Index out of bounds" in Workbench play on Everon); `RZ_SupplyLines.c` out-of-stock hash too (a negative seed made every item out of stock). Please scan for the same pattern in new code.
 
 ## Claims
