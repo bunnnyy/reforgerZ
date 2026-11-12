@@ -128,7 +128,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-(none)
+- PC, 2026-11-12: Openings phase 1 (designs/OPENINGS.md): the spawn screen's start picker and place roll (UI/RZ_SpawnMenu.c, the spawn points), the hiding-place scene, the someone-from-before contact (dialogue/openings/), the first three-step chain on the errand engine, the spawn scenarios and "a wanderer finds you" for players who get an opening. Please leave those alone until it lands.
 
 ## Status
 

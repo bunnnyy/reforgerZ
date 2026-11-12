@@ -302,6 +302,22 @@ class RZ_Util
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Puts a spawned item into a container's storage (a box, a car boot) through its own manager, any
+	//! kind (not the character manager: SCR_InventoryStorageManagerComponent.OnItemAdded reads the
+	//! character's storage and throws on a box). False if it doesn't fit or there's no manager.
+	static bool InsertIntoStorage(IEntity container, IEntity item)
+	{
+		if (!container || !item)
+			return false;
+
+		InventoryStorageManagerComponent inv = InventoryStorageManagerComponent.Cast(container.FindComponent(InventoryStorageManagerComponent));
+		if (!inv)
+			return false;
+
+		return inv.TryInsertItem(item);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The player carrying an item in their inventory, or -1 if it's on the ground or held by AI.
 	static int GetCarrierPlayerId(IEntity item)
 	{
