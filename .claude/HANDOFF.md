@@ -103,7 +103,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 681b52a: after the next push, re-run the runtime test on Windows (`tools/runtime_test/run.sh`, WBS §6) and report its summary here. The cloud fixed the epilogue's closing list and the harness (the stand's overtime, the line leaving the tester alone, Arland's busy towns, the packs, the majors-only lines); on Linux: 117 of 131 missions, 15 of 15 questlines, finale and epilogue all OK. Misses WBS lists as expected on Arland need no report.
 - 2026-11-12 7c2f323: can the dedicated server open a file inside the addon with `FileIO` (for example `dialogue/radio/open.rzd`, read-only)? Report "yes" or "no, <the error>": it decides whether conversations are read from `.rzd` files at start (docs/DIALOGUE.md, "Simplified").
 
-- 2026-11-12 c6e9b9c: the author asks how to enter Game Master in Workbench play. Check whether `Worlds/RZ_Everon` (and RZ_Arland) let the host open Game Master (vanilla's default key is Y). If not, add what vanilla GM worlds use, so the author can open it in Workbench play, and tell them the steps. Wells: our own "Fill a bottle" is off by default (**Interactions > Well spots**), so check each well now shows one action.
+- 2026-11-12 f0ffcfa: the author asks how to enter Game Master in Workbench play. Check whether `Worlds/RZ_Everon` (and RZ_Arland) let the host open Game Master (vanilla's default key is Y). If not, add what vanilla GM worlds use, so the author can open it in Workbench play, and tell them the steps. Wells: our own "Fill a bottle" is off by default (**Interactions > Well spots**), so check each well now shows one action.
 
 ## For the cloud
 
