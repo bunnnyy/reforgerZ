@@ -103,7 +103,7 @@ class RZ_Headlines
 			return "";
 
 		if (fed && Math.RandomFloat01() < 0.5)
-			return string.Format("The safehouse in %1 \"borrowed\" two sacks of flour from %2. Nobody's calling it stealing. Yet.", hungry.m_sName, fed.m_sName);
+			return string.Format("The safehouse in %1 'borrowed' two sacks of flour from the house in %2. Nobody's calling it stealing. Yet.", hungry.m_sName, fed.m_sName);
 
 		return string.Format("The safehouse in %1 has gone to half portions. The children eat first.", hungry.m_sName);
 	}
@@ -155,9 +155,9 @@ class RZ_Headlines
 
 		RZ_CureResearch cure = m_GM.GetCure();
 		if (cure && cure.IsCured())
-			lines.Insert("The cure is out. The line has stopped shooting, and the checkpoints open when the season ends.");
+			lines.Insert("The cure is out. The line has stopped shooting, and the road checkpoints open for processing when the season ends.");
 		else if (cure)
-			lines.Insert(string.Format("Halcyon says the cure is at %1 percent.", RZ_Util.RoundToInt(cure.m_fProgress)));
+			lines.Insert(string.Format("Halcyon's numbers on the open channel put the cure at %1 percent.", RZ_Util.RoundToInt(cure.m_fProgress)));
 
 		string text = "";
 		foreach (string line : lines)

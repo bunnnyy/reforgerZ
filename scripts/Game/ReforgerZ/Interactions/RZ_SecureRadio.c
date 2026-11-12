@@ -162,7 +162,7 @@ class RZ_SecureRadio
 		int heardOn = -1;
 		string line = AnyOpenLine(heardOn);
 		if (line.IsEmpty())
-			line = "Static, and under it the same government recording, over and over.";
+			line = "Static, and under it the same government recording, over and over: remain indoors, do not approach the perimeter.";
 
 		m_mHeardOn.Set(playerId, heardOn);
 		m_GM.NotifyPlayer(playerId, "Radio", line);
@@ -346,7 +346,7 @@ class RZ_SecureRadio
 		}
 
 		if (heard == 0)
-			text = "Nothing but static and the government recording.";
+			text = "Nothing but static and the government recording. Whatever else is on the air is too far off for this set.";
 		else if (!powered)
 			text += "\n(The batteries are weak; with power it would pull in more.)";
 
@@ -492,7 +492,7 @@ class RZ_SecureRadio
 		if (f == RZ_EFaction.MILITARY && hostility && hostility.GetDisguise().IsOn())
 		{
 			hostility.GetDisguise().LearnWord(playerId);
-			traffic += string.Format("\n\"...word at the wire is %1. Until the shift.\"", hostility.GetDisguise().WordToday());
+			traffic += string.Format("\n...word at the wire is %1. Until the shift change. Out.", hostility.GetDisguise().WordToday());
 		}
 
 		m_GM.NotifyPlayer(playerId, "Cracked: " + ChannelName(f), string.Format("The voices come clear. You've got about %1 minutes before they change codes.\n%2", RZ_Util.RoundToInt(m_Settings.m_fListenMinutes), traffic));
@@ -507,7 +507,7 @@ class RZ_SecureRadio
 			line = life.GetSecureTraffic(f);
 
 		if (line.IsEmpty())
-			return "...nothing to report. Maintain.";
+			return "...no contact, nothing moving on the road. Maintain. Out.";
 
 		return line;
 	}

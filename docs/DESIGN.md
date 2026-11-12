@@ -415,7 +415,7 @@ coarse land sampling, so the real margin is never less), so nothing is
 placed by hand. **Nothing is built along the edge** except the road checkpoints.
 
 - **Warning zone** (300 m from the edge): a drone appears above *you* and follows you, and a
-  loudspeaker says *"You are approaching the quarantine line. Turn back."* It leaves when you
+  loudspeaker says *"You are approaching the quarantine line. This area is under federal quarantine. Turn back."* It leaves when you
   do. Never more than one drone per player, and none anywhere else. On foot it's attached to you;
   in a vehicle or a boat it's moved over you on each tick instead.
 - **Kill zone** (100 m): a warning shot (a sound and a near miss), then 8 seconds later you're

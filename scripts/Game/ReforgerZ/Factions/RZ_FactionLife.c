@@ -1309,7 +1309,7 @@ class RZ_FactionLife
 		{
 			case RZ_EFaction.MILITARY: return string.Format("Vehicle to %1, Command. Crew of two. If contact, hold position. We'll come and get you.", dest);
 			case RZ_EFaction.BANDITS: return string.Format("Boss, the truck's going to %1. Two lads in it. If anyone stops it, I want names.", dest);
-			case RZ_EFaction.INSTITUTE: return string.Format("Courier vehicle to %1. Cold boxes on board. Do not open them for anyone.", dest);
+			case RZ_EFaction.INSTITUTE: return string.Format("Courier vehicle to %1. Cold boxes on board, numbered. Do not open them for anyone, including us.", dest);
 		}
 
 		return "";
@@ -1335,7 +1335,7 @@ class RZ_FactionLife
 		{
 			case RZ_EFaction.MILITARY: return string.Format("%1 is dry. Requisitions suspended until resupply. Do not tell the civilians.", place);
 			case RZ_EFaction.BANDITS: return string.Format("%1's empty. Double the prices till the truck comes. Nobody's going anywhere else.", place);
-			case RZ_EFaction.INSTITUTE: return string.Format("%1 is out of stock. We are rationing reagents. Note it in the log.", place);
+			case RZ_EFaction.INSTITUTE: return string.Format("%1 is out of stock. We are rationing reagents. Note it in the log, not on the open channel.", place);
 		}
 
 		return "";
@@ -1347,7 +1347,7 @@ class RZ_FactionLife
 		switch (f)
 		{
 			case RZ_EFaction.MILITARY: return string.Format("All stations: %1 rotates the watch at %2. Two on the gate, the rest stood down. Ten minutes where nobody's looking.", place, clock);
-			case RZ_EFaction.BANDITS: return string.Format("%1 changes over at %2. The new lot are always late. Don't be.", place, clock);
+			case RZ_EFaction.BANDITS: return string.Format("%1 changes over at %2. The new lot are always late, and the toll box sits there on its own. Don't be late.", place, clock);
 			case RZ_EFaction.INSTITUTE: return string.Format("The station at %1 rotates at %2. The guards don't check bags at changeover.", place, clock);
 		}
 
