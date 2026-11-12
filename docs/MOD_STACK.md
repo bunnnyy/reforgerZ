@@ -47,7 +47,14 @@ Until it's resolved, either:
 - **drop Special Zombies** (as in the row above) for a Linux server.
 
 The compile check, the runtime test and the zombie lab drop it from their throwaway copy of
-`addon.gproj` for this reason. Workbench runs on Windows and isn't affected. Open issue:
+`addon.gproj` for this reason. Workbench runs on Windows and isn't affected.
+
+**On Linux they also drop any other dependency missing from `EXTRA_ADDONS_DIR`**, with a line for
+each, because a server that can't find one compiles nothing of ReforgerZ. Only Bacon Zombies must be
+there (our scripts mod its classes); the rest only fill prefab slots, so the check still means
+something without them, and its result line says which it went without
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#compile-check-without-workbench), which also says how to
+fetch them on Linux). Open issue:
 [ROADMAP.md](ROADMAP.md#get-it-playable).
 
 ## Hunger and thirst
