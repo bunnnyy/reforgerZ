@@ -112,6 +112,7 @@ class RZ_Mission_SilentVillage : RZ_PuzzleMission
 
 		m_sTitle = "The Silent Village";
 		m_sBrief = string.Format("Nobody has seen a single infected in %1 for days. Not one. The Haven wants to know why before anyone moves in. Find out what happened there, then decide what to do about it.", v.m_sName);
+		m_sObjective = string.Format("Find out why %1 has no infected.", v.m_sName);
 		return true;
 	}
 
@@ -298,6 +299,7 @@ class RZ_Mission_TheWitness : RZ_PuzzleMission
 		m_fTimeLeft = NightDuration(2400, 10800, 4800);
 		m_sTitle = "The Witness";
 		m_sBrief = string.Format("A Haven courier was killed on the road outside %1. A wanderer saw it happen, they say, but he only talks after dark, and only where she died. Find out who did it.", s.m_sName);
+		m_sObjective = string.Format("Find out who killed the Haven courier outside %1.", s.m_sName);
 		return true;
 	}
 

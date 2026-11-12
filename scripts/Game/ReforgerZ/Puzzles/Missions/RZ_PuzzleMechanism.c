@@ -166,6 +166,7 @@ class RZ_Mission_JunctionBoxes : RZ_PuzzleMission
 
 		m_sTitle = "Junction Boxes";
 		m_sBrief = string.Format("Bastion needs the substation in %1 open: the nearest post's radio runs off that line, and without it the nightly call goes out on batteries. Four fuse boxes around town control the lock, and someone wired them in a hurry on Day 1. Get every lamp green. The electrician left a note at the substation door.", s.m_sName);
+		m_sObjective = string.Format("Turn every lamp green on the four fuse boxes in %1.", s.m_sName);
 		return true;
 	}
 
@@ -339,6 +340,7 @@ class RZ_Mission_WeighingVault : RZ_PuzzleMission
 
 		m_sTitle = "The Weighing Vault";
 		m_sBrief = string.Format("The old miller in %1 kept his savings in a vault that only opens for the right weight on his scale, and nobody has seen him since Day 2. The Haven could trade what's inside for a month of flour. His riddle is pinned up next to it.", s.m_sName);
+		m_sObjective = string.Format("Open the miller's vault in %1 with the right weight.", s.m_sName);
 		return true;
 	}
 
@@ -577,6 +579,7 @@ class RZ_Mission_LastExperiment : RZ_PuzzleMission
 
 		m_sTitle = "The Last Experiment";
 		m_sBrief = string.Format("A Halcyon terminal holds the last results of a team that went into the field and didn't come back. Each of them kept one letter of the password. Find their belongings, %1 of them, in the towns around, and open the terminal.", letters);
+		m_sObjective = string.Format("Find the team's %1 belongings and open the Halcyon terminal near %2.", letters, GetLocationName(gm));
 		return true;
 	}
 

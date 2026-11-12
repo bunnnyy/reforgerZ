@@ -1585,6 +1585,7 @@ The talk pass ([WRITING.md](WRITING.md#talk)) added `quote`, `speaker`, `reply`,
 `ellipsis`; most of the baseline is their findings in the conversation files and the errands' cards,
 and each rewrite shrinks it. A rewritten line that still breaks one fails the lint.
 
+
 | What it shows | What it can't |
 |---|---|
 | Text that breaks a rule a script can check, in literals the inventory finds | Whether a line is good, gives context or has narration in it. Text built from pieces (`"Talk to " + name`) is checked piece by piece. Channels and factions are guessed from the call, the folder and the nearest `case RZ_EFaction.X:` |
@@ -1969,7 +1970,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:973` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:750` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Core/RZ_Util.c:806` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
-| `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
+| `Puzzles/Missions/RZ_PuzzleMechanism.c:427` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:277` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_Search.c:851` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_WreckBoots.c:123` | a wreck prop faces its local +Z like a vehicle, so its rear (the boot) is its box's −Z side | **Open the boot** shows at the bonnet: flip the sign in `RZ_WreckBoots.BootPoint` |

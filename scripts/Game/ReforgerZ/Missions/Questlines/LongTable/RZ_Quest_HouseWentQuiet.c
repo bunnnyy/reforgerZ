@@ -760,6 +760,7 @@ class RZ_QM_TableTrail : RZ_QM_TableBase
 		m_iSettlement = gm.FindNearestSettlement(boot);
 		m_sTitle = "Never arrived";
 		m_sBrief = QFill(gm, "{lost} left {from} for {to} and never got there. Their last road runs past {town}. Start where they were last seen, and see where it goes.");
+		m_sObjective = QFill(gm, "Follow {lost}'s last road from {from}, past {town}.");
 		return true;
 	}
 
@@ -913,6 +914,7 @@ class RZ_QM_TableGuest : RZ_QM_TableBase
 		m_Quiet.Watch(m_vHouse, 160);
 		m_sTitle = "Guest";
 		m_sBrief = QFill(gm, "There's a farm past {town} with smoke in the chimney. {host} keeps the road to it, with a flask of something hot and an invitation. Eat with them, or decline and watch the house unseen.");
+		m_sObjective = QFill(gm, "Eat with {host} at the farm past {town}, or watch the farm unseen.");
 		return true;
 	}
 
@@ -1109,6 +1111,7 @@ class RZ_QM_TableProof : RZ_QM_TableBase
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "Proof";
 		m_sBrief = QFill(gm, "Find three things at the {family} farm that say what it is: the guestbook, the boots by the door, a drawer, the cellar. At supper, half past six, they're all at the table. {boy} is at the stream, away from the house.");
+		m_sObjective = QFill(gm, "Find three things at the {family} farm past {town} that say what it is.");
 		if (wary == 1)
 			m_sBrief += " They've seen you before. They'll be watching.";
 
@@ -1459,6 +1462,7 @@ class RZ_QM_TableTell : RZ_QM_TableBase
 		m_iGateTalk = AddClue("The farm gate", QFill(gm, "The gate of the {family} farm, oiled and standing open. The smoke goes up from the chimney the same as always. Nobody's told anyone yet."));
 		m_sTitle = "Who to tell";
 		m_sBrief = QFill(gm, "You know what the {family} farm past {town} is. Tell a leader who'll end it: a Haven council head, a Bastion commander, a Halcyon researcher, a Red Hand crew boss. Each will end it their own way. Or come back to the farm gate and do it yourself.");
+		m_sObjective = QFill(gm, "Tell a leader what the {family} farm past {town} is, or end it at the gate.");
 		return true;
 	}
 
@@ -1599,6 +1603,7 @@ class RZ_QM_TableWalkOut : RZ_QM_TableBase
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
 		m_sBrief = QFill(gm, RZ_Quest_HouseWentQuiet.EndText(gm, Run(gm)));
+		m_sObjective = QFill(gm, "Walk the {family} family from the farm past {town} to the edge of town at dusk.");
 		return true;
 	}
 
@@ -1780,6 +1785,7 @@ class RZ_QM_TableGuns : RZ_QM_TableBase
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
 		m_sBrief = QFill(gm, RZ_Quest_HouseWentQuiet.EndText(gm, Run(gm)));
+		m_sObjective = QFill(gm, "Get clear of the {family} farm past {town} before Bastion's mortars open up.");
 		return true;
 	}
 
@@ -1930,6 +1936,7 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
 		m_sBrief = QFill(gm, string.Format("Halcyon's director wants one of the {family} family alive, and the kitchen notebook: why they never eat the bitten. Walk %1 to the lab as a volunteer.", name));
+		m_sObjective = QFill(gm, string.Format("Walk %1 from the {family} farm to the lab in {lab_town}.", name));
 		return true;
 	}
 
@@ -2022,6 +2029,7 @@ class RZ_QM_TableMoveOn : RZ_QM_TableBase
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
 		m_sBrief = QFill(gm, "The boss is paying the {family} farm to go away. A crew is coming with a cart. Hold the farm ninety seconds while they load up, and keep the infected off. Don't make it a story.");
+		m_sObjective = QFill(gm, "Hold the {family} farm past {town} for ninety seconds while the crew loads up.");
 		return true;
 	}
 
@@ -2111,6 +2119,7 @@ class RZ_QM_TableByHand : RZ_QM_TableBase
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "The end of the house";
 		m_sBrief = QFill(gm, RZ_Quest_HouseWentQuiet.EndText(gm, Run(gm)));
+		m_sObjective = QFill(gm, "Talk the last of the {family} family out of the farm past {town}.");
 		return true;
 	}
 

@@ -65,6 +65,7 @@ class RZ_Job_OurOwnFirst : RZ_LeaderDelivery
 		m_sTitle = "Our Own First";
 		m_sBrief = string.Format("There's a bundle of tins and bandages waiting in %1 for the safehouse in %2. The council decided that. Nobody asked us, and we have %3 mouths here. Bring it to me instead. Or take it where it was meant to go, if you must. I'll understand. I won't like it.",
 			s.m_sName, m_sOther, own.m_iPopulation);
+		m_sObjective = string.Format("Bring the bundle in %1 to {leader:%2}, or to the safehouse in %3.", s.m_sName, m_iLeaderId, m_sOther);
 		return true;
 	}
 
@@ -138,6 +139,7 @@ class RZ_Job_BringThemHome : RZ_LeaderPuzzle
 		m_sTitle = "Fetch the Family";
 		m_sBrief = string.Format("%1 hasn't slept since the gates closed. Her sister's family, the %2s, are holed up in %3. Bring them here. We'll find the beds. We always do.",
 			local, m_sFamily, s.m_sName);
+		m_sObjective = string.Format("Bring the %1 family from %2 to {leader:%3} in {leader_place:%3}.", m_sFamily, s.m_sName, m_iLeaderId);
 		return true;
 	}
 
@@ -211,6 +213,7 @@ class RZ_Job_OverTheFence : RZ_LeaderDelivery
 		m_sTitle = "Over the Fence";
 		m_sBrief = string.Format("The Bastion post in %1 has medicine it can't use and no bread. We have bread. The council says Bastion can't be trusted. The council isn't feeding this house. Take this sack to {leader_short:%2} and they'll send back what we agreed.",
 			post.m_sPlace, post.m_iId);
+		m_sObjective = string.Format("Take the sack of bread to {leader_short:%1} at the post in %2.", post.m_iId, post.m_sPlace);
 		return true;
 	}
 
@@ -277,6 +280,7 @@ class RZ_Job_RationRun : RZ_LeaderDelivery
 		m_sTitle = "Ration Run";
 		m_sBrief = string.Format("Three of ours have the fever, and the Red Hand has the only antibiotics between here and the coast. They want food for them. I've put three days of our stores in this sack. The council would call it theft. I call it arithmetic. Take it to %1.",
 			meetName);
+		m_sObjective = string.Format("Take the sack of stores to the Red Hand at %1.", meetName);
 		return true;
 	}
 
@@ -347,6 +351,7 @@ class RZ_Job_NamesForBastion : RZ_LeaderDelivery
 		m_sTitle = "Names for Bastion";
 		m_sBrief = string.Format("Bastion leaves alone the safehouses that make themselves useful. I've written a list: people who cause trouble, people the Haven turned out. Take it to %1. It keeps our door off their list. Don't read it.",
 			meetName);
+		m_sObjective = string.Format("Take the list to Bastion at %1.", meetName);
 		return true;
 	}
 
@@ -418,6 +423,7 @@ class RZ_Job_ShutTheDoor : RZ_LeaderPuzzle
 
 		m_sTitle = "Shut the Door";
 		m_sBrief = "There's a family at the edge of town asking to come in. We can't feed who we have. The council would let them in and let us all starve politely. Tell them to keep walking. Be kind about it, if you can.";
+		m_sObjective = string.Format("Turn away the family at the edge of {leader_place:%1}, kindly.", m_iLeaderId);
 		return true;
 	}
 
@@ -501,6 +507,7 @@ class RZ_Job_HiddenStores : RZ_LeaderDelivery
 		m_sTitle = "Hidden Stores";
 		m_sBrief = string.Format("Someone from %1 is coming to count our stores. They'll find what I put aside for the winter, and they'll take it 'for the network'. Move it to the spot I've marked before they get here. Twenty minutes.",
 			auditor);
+		m_sObjective = string.Format("Move the winter stores of {leader:%1} to the marked spot in twenty minutes.", m_iLeaderId);
 		return true;
 	}
 

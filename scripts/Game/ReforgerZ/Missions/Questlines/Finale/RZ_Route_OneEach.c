@@ -50,6 +50,20 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override protected string StageObjective(int stage)
+	{
+		switch (stage)
+		{
+			case S_ACT1: return "Find the eight who walked out of the Day 6 trial, starting with {ham}.";
+			case S_DOOR: return "Ask each of the eight from the Day 6 trial for a yes, at dusk.";
+			case S_PIECE: return "Get three bags of blood into the cold store at the lab in {lab_town}.";
+			case S_ACT4: return "Get a tray off the books at the lab in {lab_town}, released to nobody.";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected string RemakeText()
 	{
 		return "The batch was lost. One more bag from the eight, by consent.";
@@ -101,6 +115,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 		vector lab = gm.GetLabPosition();
 		scene.m_sTitle = StageTitle(stage);
 		scene.m_sBrief = run.Fill(StageKnown(stage));
+		scene.m_sObjective = run.Fill(StageObjective(stage));
 		switch (stage)
 		{
 			case S_ACT1:
@@ -355,6 +370,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 	{
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. Nobody's people choose who it goes to.";
+		scene.m_sObjective = run.Fill(ReleaseObjective());
 		scene.m_vPos = gm.GetLabPosition();
 		int form = DutyOfficer(gm, scene, "Nobody's batch. So who's it for?");
 		scene.Choice(form, "Open: one each").Decides(OUT_TERMS + 1).Says("The ONE EACH crate at the queue. Free, once each, first come first served.", "chose one each");

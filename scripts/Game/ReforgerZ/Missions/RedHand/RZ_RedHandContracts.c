@@ -61,6 +61,7 @@ class RZ_Mission_CarTheft : RZ_Mission
 		m_sTitle = "Car Theft";
 		m_sDeed = "brought in a car from {town}";
 		m_sBrief = string.Format("There's a car in %1 somebody wants. That one, not any one: a buyer has paid in diesel, and the boss doesn't do refunds. Drive it to %2, leave the keys in it and walk away. Don't scratch it. Scratches come off your cut.", s.m_sName, m_sShop);
+		m_sObjective = string.Format("Drive the car from %1 to %2 without a scratch.", s.m_sName, m_sShop);
 		return true;
 	}
 
@@ -277,6 +278,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 		m_sTitle = "Protection Racket";
 		m_sDeed = "collected in {town}";
 		m_sBrief = string.Format("The safehouse in %1 is late with its protection. Everyone's late this week, and the book doesn't care why. Go and remind the storekeeper what we're protecting them from. Tins, preferably. A promise is just a longer line in the book.", h.m_sName);
+		m_sObjective = string.Format("Collect the protection from the storekeeper at the safehouse in %1.", h.m_sName);
 
 		// Someone promised to speak for the house at this collection
 		m_SpokeFor = RZ_WorldFacts.Get().Memory().FindRecord("racket.speak_for", HouseKey());
@@ -764,6 +766,7 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 		m_sTitle = "Hijack the Convoy";
 		m_sDeed = "took a convoy near {town}";
 		m_sBrief = string.Format("Bastion's supply truck leaves %1 for %2 in a couple of minutes, loaded and signed for. Find a bend in the road where it has to slow down. Whatever's on it is ours. Whatever's on the manifest is their problem.", m_Watch.m_sFrom, m_Watch.m_sTo);
+		m_sObjective = string.Format("Take Bastion's supply truck on the road from %1 to %2.", m_Watch.m_sFrom, m_Watch.m_sTo);
 		return true;
 	}
 
@@ -966,6 +969,7 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		m_sTitle = "Bust Out";
 		m_sDeed = "broke one of ours out at {town}";
 		m_sBrief = string.Format("Bastion is holding some of ours in a stockade near %1. They owe us, and nobody pays from a stockade. Cut them out and walk them to %2. In one of their uniforms, the guards won't look twice.", postName, m_sMeetName);
+		m_sObjective = string.Format("Free the crew from the stockade near %1 and walk the crew to %2.", postName, m_sMeetName);
 		if (!m_Escort.Begin(gm, LandPointNear(m_vGate, 3, 6)))
 			return false;
 
@@ -1301,6 +1305,7 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 
 		m_sTitle = "Double Agent";
 		m_sBrief = string.Format("Pick up a dossier from %1 and hand it to Bastion at %2 like you're doing them a favour. Patrol routes, a camp that isn't there. Look them in the eye.", fromName, meetName);
+		m_sObjective = string.Format("Take the dossier from %1 to Bastion at %2.", fromName, meetName);
 		Truth(gm, meet);
 		return true;
 	}
@@ -1534,6 +1539,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 			m_vPos = t.GetOrigin();
 			m_iSettlement = gm.FindNearestSettlement(m_vPos);
 			m_sBrief = string.Format("There's a price on %1 in the book, and the book always collects. Last seen near %2. Whoever puts them down gets paid, and nobody asks who started it.", m_sTarget, GetLocationName(gm));
+			m_sObjective = string.Format("Put down %1, last seen near %2.", m_sTarget, GetLocationName(gm));
 			return true;
 		}
 
@@ -1550,6 +1556,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 		m_vPos = m_vHide;
 		m_sTarget = "the man";
 		m_sBrief = string.Format("A man who owes the book more than he's worth is hiding outside %1, eating the tins he should have paid with. He's armed, and he knows we're coming. Make an example. The road should hear about this one.", s.m_sName);
+		m_sObjective = string.Format("Make an example of the debtor hiding outside %1.", s.m_sName);
 		return true;
 	}
 
@@ -1759,6 +1766,7 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 		m_sTitle = "Kill the Officer";
 		// The seat's tokens: the name is whoever sits there when the brief is read
 		m_sBrief = string.Format("{leader:%1} runs Bastion's post in {leader_place:%1}, and runs it well. That's the problem. Make it a worse post.", l.m_iId);
+		m_sObjective = string.Format("Kill {leader:%1} at Bastion's post in {leader_place:%1}.", l.m_iId);
 		return true;
 	}
 
@@ -1867,10 +1875,12 @@ class RZ_Mission_TakeTheLab : RZ_Mission_Hold
 		m_fParticipationRadius = 40;
 		m_sTitle = "Take the Lab";
 		m_sBrief = "Halcyon is cooking the cure and every gun in the Zone is at their door. While they're busy with the dead, walk into the clean room and hold it for ninety seconds. We'll carry the batch out ourselves.";
+		m_sObjective = "Hold the clean room at the lab in {lab_town} for ninety seconds.";
 		if (m_bFinale)
 		{
 			m_vPos = RZ_CureFinale.Get().BayPos();
 			m_sBrief = "The lorry backs up to the lab's loading bay. Hold the bay while the crew goes in, with none of the holders' people near it, and the clean room is ours.";
+			m_sObjective = "Hold the loading bay at the lab in {lab_town} while the crew goes in.";
 		}
 
 		return true;

@@ -64,7 +64,7 @@ enum RZ_EMajorAnchor
 //------------------------------------------------------------------------------------------------
 //! One act of a major: its stages and its clock (docs/QUESTLINES.md, "Every act's clock"). Built in
 //! Define() with Act(id, name) and tuned by chaining:
-//!   Act(A_SEND, "Send him off").Stage(S_SEND).AnchorCure(50).Need(1).PatienceEvenings(2).SetPiece(16, 21)
+//!   Act(A_SEND, "Send Rudi off").Stage(S_SEND).AnchorCure(50).Need(1).PatienceEvenings(2).SetPiece(16, 21)
 class RZ_MajorAct
 {
 	int m_iId;

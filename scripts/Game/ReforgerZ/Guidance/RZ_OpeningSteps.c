@@ -252,7 +252,7 @@ class RZ_OpeningTasks
 			string type = hub.GetSearch().BuildingType(RZ_ItemHelper.LowerName(b));
 			o.m_Target = b;
 			place = b.GetOrigin();
-			text = "the locked " + KeyWord(type) + " over the way";
+			text = "the " + KeyWord(type);
 			return true;
 		}
 

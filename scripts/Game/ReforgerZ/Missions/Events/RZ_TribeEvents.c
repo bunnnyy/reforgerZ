@@ -55,10 +55,12 @@ class RZ_Event_EveryRidgeCalls : RZ_Event_Timed
 			m_bFrenzy = true;
 			gm.GetTribes().GetPeople().Frenzy(vector.Zero, 0, 2, false);
 			m_sBrief = "Every ridge is calling tonight, and they're answering each other all down the valley. Whatever's out there is coming further than it ever has. Get indoors and stay there till light.";
+			m_sObjective = "Get indoors and stay there till first light.";
 			return true;
 		}
 
 		m_sBrief = "Something has stirred them up. For the next 20 minutes there are twice as many infected, and the changed ones are everywhere. Find somewhere safe.";
+		m_sObjective = "Find shelter for the next 20 minutes.";
 		return true;
 	}
 
@@ -119,6 +121,7 @@ class RZ_Event_RedDusk : RZ_Event_Timed
 
 		m_sTitle = "Red Dusk";
 		m_sBrief = string.Format("The sun's going down red over the hills by %1, and they're all calling. They'll come to the wire tonight.", t.m_sPlace);
+		m_sObjective = string.Format("Stay clear of the hills by %1 after dark.", t.m_sPlace);
 		return true;
 	}
 
@@ -195,6 +198,7 @@ class RZ_Event_TribeMoves : RZ_Mission
 			m_vPos = m_vFrom;
 			RZ_TribePeople people = tribes.GetPeople();
 			m_sBrief = string.Format("%1 are moving %2, from %3 toward %4. Stay off their way, or make them pay for it.", RZ_Tribes.Capitalize(people.Name(t, RZ_EFaction.SURVIVORS)), RZ_Tribes.CompassWord(m_vFrom, m_vTo), m_sWas, t.m_sPlace);
+			m_sObjective = string.Format("Keep off the way of %1, from %2 to %3.", people.Name(t, RZ_EFaction.SURVIVORS), m_sWas, t.m_sPlace);
 			return true;
 		}
 
@@ -213,6 +217,7 @@ class RZ_Event_TribeMoves : RZ_Mission
 		m_vTo = dest.m_vCenter;
 		m_vPos = m_vFrom;
 		m_sBrief = string.Format("A great crowd of them is leaving %1 and heading for %2. Stay off that road, or make them pay for it.", s.m_sName, dest.m_sName);
+		m_sObjective = string.Format("Keep off the road from %1 to %2.", s.m_sName, dest.m_sName);
 		return true;
 	}
 
@@ -348,6 +353,7 @@ class RZ_Event_Gathering : RZ_Mission
 		m.m_vPos = wire;
 		m.m_sTitle = "The Gathering";
 		m.m_sBrief = string.Format("Every ridge answered the call from %1 tonight, and now they're all coming down toward the wire at %2 together. Not one hunt: all of them, in waves, until first light.", place, town);
+		m.m_sObjective = string.Format("Hold the wire at %1 until first light.", town);
 		float secs = RZ_GameTime.RealSecondsUntil(5.5);
 		if (secs > 0)
 			m.m_fTimeLeft = Math.Clamp(secs, 600, 10800);
@@ -439,6 +445,7 @@ class RZ_Event_NightOfManyCalls : RZ_Mission
 	{
 		m_sTitle = "The Night of Many Calls";
 		m_sBrief = "Every ridge is calling at once tonight, and none of them is answering the same voice. Whatever held them together is gone. Stay away from the rivers and the bridges for a night or two.";
+		m_sObjective = "Keep away from rivers and bridges tonight.";
 		return true;
 	}
 

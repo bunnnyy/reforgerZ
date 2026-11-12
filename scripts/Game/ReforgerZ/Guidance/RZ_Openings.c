@@ -1173,7 +1173,7 @@ class RZ_Openings
 		if (fit.IsEmpty())
 		{
 			place = RZ_Mission.LandPointNear(from, 80, 200);
-			text = "the houses over the way";
+			text = "the houses";
 			return;
 		}
 

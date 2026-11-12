@@ -128,6 +128,7 @@ class RZ_Mission_LeadThemAway : RZ_Mission
 		m_sTitle = "Lead Them Away";
 		m_sBrief = string.Format("A horde is drifting toward the safehouse in %1. We can't fight it. Make noise, a bottle, a firecracker, anything, and lead it step by step to the old quarry pit (grid %2). Don't let it see you.",
 			h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
+		m_sObjective = string.Format("Lead the horde away from the safehouse in %1 to the quarry pit at grid %2.", h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
 		if (moving)
 			m_sBrief = string.Format("%1 are on the move, all of them that walk, and the way they're going runs past the safehouse in %2. We can't fight that many. Make noise and lead them step by step to the old quarry pit (grid %3). They'll lie up past it. Don't let them see you.",
 				RZ_Tribes.Capitalize(partyOf), h.m_sName, RZ_SettlementScanner.GridReference(m_vQuarry));
@@ -400,6 +401,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 		m_sTitle = "Trail of Clues";
 		m_sBrief = string.Format("%1 walked out of %2 three days ago and nobody's heard since. Their family asked a wanderer, the wanderer asked us. Start at the house in %2. Follow what they left behind.",
 			m_sName, first.m_sName);
+		m_sObjective = string.Format("Follow %1's trail from the house in %2.", m_sName, first.m_sName);
 		Truth(gm, third);
 		return true;
 	}
@@ -672,6 +674,7 @@ class RZ_Mission_BarterChain : RZ_Mission
 		m_sBrief = string.Format("%1 has been after %2 for weeks. %3 has some, but wants %4 for it. %5 has %4 and hasn't eaten in two days. Bring food, and talk to them in the right order. (%3 is %6; %5 is %7.)",
 			wanderers.GetName(m_aPeople[0]), m_sWant, wanderers.GetName(m_aPeople[1]), m_sMiddle, wanderers.GetName(m_aPeople[2]),
 			wanderers.WhereIs(m_aPeople[1]), wanderers.WhereIs(m_aPeople[2]));
+		m_sObjective = string.Format("Get %1 for %2 by trading with %3 and %4.", m_sWant, wanderers.GetName(m_aPeople[0]), wanderers.GetName(m_aPeople[1]), wanderers.GetName(m_aPeople[2]));
 		return true;
 	}
 
@@ -867,6 +870,7 @@ class RZ_Mission_Distraction : RZ_PuzzleMission
 		m_sTitle = "Distraction";
 		m_sBrief = string.Format("A cellar in %1 is full of what we need, and they're standing on top of it. Someone keeps them busy with noise at grid %2, across the street, for three minutes, while someone else empties the cellar (grid %3). Bring a friend, or a lot of firecrackers.",
 			s.m_sName, RZ_SettlementScanner.GridReference(m_vNoise), RZ_SettlementScanner.GridReference(m_vStash));
+		m_sObjective = string.Format("Empty the cellar at grid %1 in %2 while someone makes noise.", RZ_SettlementScanner.GridReference(m_vStash), s.m_sName);
 		return true;
 	}
 
@@ -1023,6 +1027,7 @@ class RZ_Mission_QuietCount : RZ_PuzzleMission
 		m_sTitle = "Quiet Count";
 		m_sBrief = string.Format("We need to know how many of the changed ones are in %1 right now. Not a fight, a count. Binoculars, patience, and stay at least 50 m from them. Write it in the notebook at the observation post (grid %2).",
 			s.m_sName, RZ_SettlementScanner.GridReference(m_vPost));
+		m_sObjective = string.Format("Count the changed ones in %1 from the post at grid %2.", s.m_sName, RZ_SettlementScanner.GridReference(m_vPost));
 		return true;
 	}
 

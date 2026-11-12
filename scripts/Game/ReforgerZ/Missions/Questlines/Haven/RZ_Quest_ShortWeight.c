@@ -290,6 +290,7 @@ class RZ_QM_ShortWeightAsk : RZ_QuestMission
 		m_Quiet.Watch(h.m_vPos, 60);
 		m_sTitle = "Short Weight";
 		m_sBrief = QFill(gm, "The council in {town} says the stores come up short every week, and nobody's eaten more. {keeper} keeps them. Find out where the food goes. Ask nicely, or don't.");
+		m_sObjective = QFill(gm, "Find out where the food {keeper} keeps in {town} is going.");
 		return true;
 	}
 
@@ -424,6 +425,7 @@ class RZ_QM_ShortWeightHandover : RZ_QuestMission
 		m_iRunnerTalk = AddClue(QText(gm, "runner"), QFill(gm, "{runner} grins. \"Haven's out for a walk. Tins for pills, friend. Everybody wins, except the mice.\""));
 		m_sTitle = "Short Weight: the handover";
 		m_sBrief = QFill(gm, "{keeper} is meeting a Red Hand runner, {runner}, near the old bus shelter outside {town}, with a crate of the house's food. Bring the food back. How is up to you.");
+		m_sObjective = QFill(gm, "Get the food back from {keeper} and {runner} at the bus shelter outside {town}.");
 		return true;
 	}
 

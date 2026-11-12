@@ -361,6 +361,7 @@ class RZ_Mission_NotTonight : RZ_TribeContract
 			m_sTitle = "Not Tonight";
 			m_sDeed = "drew the dark off a house";
 			m_sBrief = string.Format("%1 will be at the wire of the house in %2 tonight. Before nine, make a noise at the marked spot, well off their way, and get clear. They'll turn for it. Nobody needs to fire a shot.", RZ_Tribes.Capitalize(people.NameAt(t, RZ_EFaction.SURVIVORS)), h.m_sName);
+			m_sObjective = string.Format("Turn %1 away from the house in %2 with noise before nine.", people.Name(t, RZ_EFaction.SURVIVORS), h.m_sName);
 			return true;
 		}
 
@@ -513,6 +514,7 @@ class RZ_Mission_BringThemHome : RZ_TribeContract
 				m_sTitle = "Bring Them Home";
 				m_sDeed = "brought someone home";
 				m_sBrief = string.Format("%1 runs with %2 now. Find them with the young ones (by day they may be out walking with a few others), lay them down, and bring back what's in their pockets to any of our houses. We'll read the name.", RZ_Tribes.Capitalize(who), tribes.GetPeople().NameAt(t, RZ_EFaction.SURVIVORS));
+				m_sObjective = string.Format("Find %1 near %2, lay them down and bring the pockets to a Haven safehouse.", who, t.m_sPlace);
 				array<string> values = {"named", "other"};
 				array<float> weights = {0.7, 0.3};
 				m_Job.Draw(this, "named:" + who, values, weights);
@@ -746,6 +748,7 @@ class RZ_Mission_EscortAtDawn : RZ_TribeContract
 					m_sTitle = "Escort at Dawn";
 					m_sDeed = "walked people across at first light";
 					m_sBrief = string.Format("%1 people at the house in %2 need to get to %3, and the way crosses %4. Go at five, while they walk home, and before the walkers are out. Keep off their paths.", m_iPeople, ha.m_sName, m_sDestName, tribes.GetPeople().NameAt(t, RZ_EFaction.SURVIVORS));
+					m_sObjective = string.Format("Walk %1 people from the house in %2 to %3 at dawn.", m_iPeople, ha.m_sName, m_sDestName);
 					return m_Escort.Begin(gm, m_vPos);
 				}
 			}
@@ -872,6 +875,7 @@ class RZ_Mission_ContactReport : RZ_TribeContract
 		m_sTitle = "Contact Report";
 		m_sDeed = "counted the calls for Bastion";
 		m_sBrief = string.Format("Count the calls at dusk from two listening points near %1: thirty seconds at each. If anything up there sees you, the count's no good. Report it in.", tribes.GetPeople().NameAt(pick, RZ_EFaction.MILITARY));
+		m_sObjective = string.Format("Count the calls of %1 from two listening points near %2 at dusk.", tribes.GetPeople().Name(pick, RZ_EFaction.MILITARY), pick.m_sPlace);
 		return true;
 	}
 
@@ -1024,6 +1028,7 @@ class RZ_Mission_ClearTheTrail : RZ_TribeContract
 				m_sTitle = "Clear the Trail";
 				m_sDeed = "cleared a trail for Bastion";
 				m_sBrief = string.Format("%1 come down a path near one of our posts most nights. Tonight, put six of them down on it. Make it not worth their while.", RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, RZ_EFaction.MILITARY)));
+				m_sObjective = string.Format("Put down six of %1 on their path near %2.", tribes.GetPeople().Name(t, RZ_EFaction.MILITARY), t.m_sPlace);
 				return true;
 			}
 		}
@@ -1166,6 +1171,7 @@ class RZ_Mission_Cull : RZ_TribeContract
 			m_sTitle = "Cull";
 			m_sDeed = "culled a pack for Bastion";
 			m_sBrief = string.Format("%1 is too close to our post. Kill the heavy, or three of the ones round it. Smoke's authorised. Bastion out.", RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, RZ_EFaction.MILITARY)));
+			m_sObjective = string.Format("Kill the heavy of %1 near %2, or three round it.", tribes.GetPeople().Name(t, RZ_EFaction.MILITARY), t.m_sPlace);
 			return true;
 		}
 
@@ -1270,6 +1276,7 @@ class RZ_Mission_BurnTheLair : RZ_TribeContract
 			m_sTitle = "Burn the Lair";
 			m_sDeed = "burned out a lair";
 			m_sBrief = string.Format("You know where %1 lie up. Between eleven and two, while the walkers are out and the rest are asleep, set a fire within thirty metres of it, then get out before the big ones are up.", Name(gm, t));
+			m_sObjective = string.Format("Set a fire within thirty metres of where %1 lie up, between eleven and two.", Name(gm, t));
 			return true;
 		}
 
@@ -1400,6 +1407,7 @@ class RZ_Mission_BreakTheHabit : RZ_TribeContract
 		m_sTitle = "Break the Habit";
 		m_sDeed = "broke a pack of a bad habit";
 		m_sBrief = string.Format("%1 have learned the trucks' hour on the road by %2. Be there at %3 and put four of them down. They'll learn something else.", RZ_Tribes.Capitalize(People(gm).NameAt(t, m_eGiver)), GetLocationName(gm), RZ_GameTime.Clock(habit.m_fHour));
+		m_sObjective = string.Format("Put down four of %1 on the road by %2 at %3.", People(gm).Name(t, m_eGiver), GetLocationName(gm), RZ_GameTime.Clock(habit.m_fHour));
 		return true;
 	}
 
@@ -1489,6 +1497,7 @@ class RZ_Mission_BaitTheCrew : RZ_TribeContract
 				m_sTitle = "Bait the Crew";
 				m_sDeed = "set two crews on each other";
 				m_sBrief = string.Format("%1 and %2 don't get on. Make a racket on the line between them tonight, enough to bring one over, and let them sort it out. Then don't be there.", RZ_Tribes.Capitalize(people.NameAt(a, RZ_EFaction.BANDITS)), people.NameAt(b, RZ_EFaction.BANDITS));
+				m_sObjective = string.Format("Make a racket between %1 and %2 tonight, then get clear.", people.NameAt(a, RZ_EFaction.BANDITS), people.NameAt(b, RZ_EFaction.BANDITS));
 				return true;
 			}
 		}
@@ -1626,6 +1635,7 @@ class RZ_Mission_PlantATag : RZ_TribeContract
 			m_sTitle = "Plant a Tag";
 			m_sDeed = "tagged one for Halcyon";
 			m_sBrief = string.Format("There's a tag waiting at the lab. We'd like it in %1's index, by day while it sleeps, without it noticing you. Close enough to touch. It doesn't hurt it. We checked.", tribes.GetPeople().NameAt(t, RZ_EFaction.INSTITUTE));
+			m_sObjective = string.Format("Tag the index of %1 near %2 by day, unseen.", tribes.GetPeople().Name(t, RZ_EFaction.INSTITUTE), t.m_sPlace);
 			return true;
 		}
 
@@ -1708,6 +1718,7 @@ class RZ_Mission_TrackThemHome : RZ_TribeContract
 			m_sTitle = "Track Them Home";
 			m_sDeed = "followed a pack home";
 			m_sBrief = string.Format("%1 are out tonight. At first light they'll walk home. Follow them, not too close and not too far, and see where they lie up. If they see you, come away.", RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, m_eGiver)));
+			m_sObjective = string.Format("Follow %1 home from near %2 at first light.", tribes.GetPeople().Name(t, m_eGiver), t.m_sPlace);
 			return true;
 		}
 
@@ -1891,6 +1902,7 @@ class RZ_Mission_CaptureTheIndex : RZ_TribeContract
 			m_sTitle = "Capture the Index";
 			m_sDeed = "took one alive for the lab";
 			m_sBrief = string.Format("We need %1's index alive. Bring it down without killing it and tie it, hold it until the sedative takes (the rest will come for it), then the case to the lab before it wakes. We're sorry to ask.", tribes.GetPeople().NameAt(t, RZ_EFaction.INSTITUTE));
+			m_sObjective = string.Format("Take the index of %1 near %2 alive and get the case to the lab.", tribes.GetPeople().Name(t, RZ_EFaction.INSTITUTE), t.m_sPlace);
 			return true;
 		}
 
@@ -2059,6 +2071,7 @@ class RZ_Mission_StockThePit : RZ_TribeContract
 			m_sTitle = "Stock the Pit";
 			m_sDeed = "stocked the pit";
 			m_sBrief = string.Format("The pit wants fresh hires. Two of %1's new ones, alive: put one down without killing it, tie it, sit on it till it's under, and get the case to our drop by %2 before it wakes up. Then the other one.", People(gm).NameAt(t, RZ_EFaction.BANDITS), camp.GetTitle());
+			m_sObjective = string.Format("Take two of the new ones of %1 alive to the drop by %2.", People(gm).Name(t, RZ_EFaction.BANDITS), camp.GetTitle());
 			return true;
 		}
 

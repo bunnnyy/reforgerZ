@@ -107,7 +107,7 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
-		w.m_sStep = "Strip and clean a rifle in front of the new lads at {here} (a minute), slowly enough for them to follow.";
+		w.m_sStep = "Strip and clean a rifle in front of the new lads at {here} (a minute), slowly enough for the lads to follow.";
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
 		w.Done("They've got it. Mostly. One of them even put the spring back the right way on his own.");

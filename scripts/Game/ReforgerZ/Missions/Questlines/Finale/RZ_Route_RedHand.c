@@ -51,6 +51,20 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override protected string StageObjective(int stage)
+	{
+		switch (stage)
+		{
+			case S_ACT1: return "Find out if {cook}, at the Red Hand's dusk meal, can finish the cure.";
+			case S_DOOR: return "Get {cook} a tray of the lab's batch, or four stolen doses.";
+			case S_PIECE: return "Run the still near {still} with {cook} on the lab's night shift.";
+			case S_ACT4: return "Dose someone bitten who asks, then take the case to the lab gate in {lab_town} by day.";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected string RemakeText()
 	{
 		return "The batch was lost. The cook kept enough back for one more night on the still.";
@@ -118,6 +132,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 		bool cook = Finale().GetPeople().IsAlive("cook");
 		scene.m_sTitle = StageTitle(stage);
 		scene.m_sBrief = run.Fill(StageKnown(stage));
+		scene.m_sObjective = run.Fill(StageObjective(stage));
 		switch (stage)
 		{
 			case S_ACT1:
@@ -172,6 +187,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 				{
 					// The Book Without Her, or the still moved to the lorry: the tally's method at half speed
 					scene.m_sBrief = "No cook, or no pan. The tally on the kitchen wall says how. It says slowly.";
+					scene.m_sObjective = run.Fill("Run the still near {still} at half speed, by the tally on the kitchen wall.");
 					int lorry = scene.Person(still, "the still, by the tally", "Look at the still", "Her chalk on the boards: temperatures, times, a cut every twenty minutes.");
 					scene.Choice(lorry, "Run the still at half speed").Sets("do:base").HoldAt(still, 960, OUT_PIECE, -1).Says("Sixteen minutes by her chalk, not eight. The smoke will bring them.", "ran the still by the tally");
 					scene.Choice(lorry, "Run it cold by the tally [unseen]").Sneak().Sets("do:base_clean").Decides(OUT_PIECE).Says("No light, no shots, her numbers. It takes all night.", "ran the still cold by the tally");
@@ -290,6 +306,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 	{
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. The Red Hand's people set the price.";
+		scene.m_sObjective = run.Fill(ReleaseObjective());
 		scene.m_vPos = gm.GetLabPosition();
 		int form = DutyOfficer(gm, scene, "Price, then. Write it in. The director signs under protest.");
 		scene.Choice(form, "The boss's price [Trusted]").Needs(RZ_EFaction.BANDITS, 2).Decides(OUT_TERMS + 1).Says("Two tins a dose at the crossroads. Lab stickers extra.", "set the boss's price");

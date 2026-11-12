@@ -392,24 +392,24 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What step 1 calls its building: "the chemist's over the way".
+	//! What step 1 calls its building: "the chemist's" (the step adds whose road it's across).
 	static string SearchPlace(string kind)
 	{
 		switch (kind)
 		{
-			case "clinic": return "the chemist's over the way";
-			case "garage": return "the garage over the way";
-			case "fuel": return "the petrol station over the way";
-			case "farm": return "the farm over the way";
-			case "police": return "the police post over the way";
-			case "public": return "the hall over the way";
-			case "school": return "the school over the way";
-			case "radio": return "the hut under the mast";
-			case "military": return "the old barracks over the way";
-			case "shop": return "the shop over the way";
+			case "clinic": return "the chemist's";
+			case "garage": return "the garage";
+			case "fuel": return "the petrol station";
+			case "farm": return "the farm";
+			case "police": return "the police post";
+			case "public": return "the hall";
+			case "school": return "the school";
+			case "radio": return "the radio hut";
+			case "military": return "the old barracks";
+			case "shop": return "the shop";
 		}
 
-		return "the house over the way";
+		return "the house";
 	}
 
 	//------------------------------------------------------------------------------------------------

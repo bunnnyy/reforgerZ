@@ -115,6 +115,7 @@ class RZ_Event_AbandonedConvoy : RZ_Mission
 
 		m_sTitle = "Abandoned Convoy";
 		m_sBrief = string.Format("Bastion trucks have stood on %1 since the first week, doors open, cargo still in the back. Somebody must have looked before now. Ask yourself why they didn't come back with it.", m_sRoad);
+		m_sObjective = string.Format("Search the Bastion trucks on %1.", m_sRoad);
 		return true;
 	}
 
@@ -289,6 +290,7 @@ class RZ_Event_RemnantCamp : RZ_Mission
 
 		m_bBastion = BastionActive(gm);
 		m_sTitle = "Military Remnant Camp";
+		m_sObjective = string.Format("Search the Bastion camp outside %1.", s.m_sName);
 		if (m_bBastion)
 			m_sBrief = string.Format("Bastion pulled out of a camp outside %1 when the line moved, and left its stores. Its soldiers are still there, after a fashion. It's still Bastion's kit, and Bastion keeps lists.", s.m_sName);
 		else
@@ -450,6 +452,7 @@ class RZ_Event_LockedBunker : RZ_PuzzleMission
 		m_vPos = m_vDoor;
 		m_sTitle = "Locked Bunker";
 		m_sBrief = string.Format("Someone sealed %1 in %2 with a keypad and split the code over three notes before they died. Whatever they locked in there is still in there. Find the notes, or find whoever already has them.", m_sPlace, s.m_sName);
+		m_sObjective = string.Format("Find the three code notes and open %1 in %2.", m_sPlace, s.m_sName);
 		return true;
 	}
 
@@ -685,6 +688,7 @@ class RZ_Event_WeddingParty : RZ_Mission
 		m_vPos = LandPointNear(at, 8, 25);
 		m_sTitle = "Wedding Party";
 		m_sBrief = string.Format("Someone in %1 kept the reception going after the end of the world. The guests are still outside %2, dancing after a fashion, still in their best. The rings never came off. Nobody will miss the speeches.", s.m_sName, where);
+		m_sObjective = string.Format("Take the rings from the wedding guests outside %1 in %2.", where, s.m_sName);
 		return true;
 	}
 
