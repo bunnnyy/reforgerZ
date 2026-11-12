@@ -84,7 +84,7 @@
    "required": true,
    "minimum": true,
    "use": "the cure (spawned in a town if none is placed); a second copy is Mobile Lab's field annex for 3 hours",
-   "notes": ""
+   "notes": "Manual: two empty child entities named RZ_CleanRoom (where the final stand is fought, 10 m round it) and RZ_LoadingBay (Take the Lab's hold); without them the finale picks land points near the lab"
   },
   {
    "id": "RewardCrate",
