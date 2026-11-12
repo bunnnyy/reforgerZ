@@ -600,14 +600,18 @@ class RZ_Dialogue
 	void Pick(int playerId, int serial, int replyId)
 	{
 		RZ_TalkSession s;
-		if (!m_mSessions.Find(playerId, s) || serial != s.m_iSerial)
+		if (!m_mSessions.Find(playerId, s))
 			return;
 
+		// Leaving is taken whatever the serial: B pressed while an answer was on its way still leaves
 		if (replyId == LEAVE)
 		{
 			End(playerId, "", false);
 			return;
 		}
+
+		if (serial != s.m_iSerial)
+			return;
 
 		RZ_TalkReply reply;
 		foreach (RZ_TalkReply r : s.m_aReplies)

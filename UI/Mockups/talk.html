@@ -6,83 +6,102 @@
 <link rel="stylesheet" href="common/zone.css">
 <script src="common/zone.js"></script>
 <style>
+  /* The talk screen in two steps (docs/UI.md, "The talk screen"; layout tree in UI/LAYOUTS.md).
+     Each frame is the game's 1920 x 1080 screen at 48%; positions inside it are the layout's. */
   :root {
-    --deep: #0f1113;      /* deeper panel */
-    --spoken: #F4F0E6;    /* bright bone: what people say */
-    --row: #1b1f22;       /* the selected reply */
-    --ring: #6b5222;      /* pad-key rings, Haven */
-    --acc: var(--haven);  /* the speaker's faction */
+    --spoken: #F4F0E6;   /* bright bone: what people say */
+    --acc: var(--haven); /* the speaker's faction */
   }
-  body { font-family: Inter, 'Segoe UI', sans-serif; }
-  .mono, .callout, .tag, .prompts { font-family: 'JetBrains Mono', Consolas, monospace; }
+  body { font-family: 'Roboto Condensed', 'Arial Narrow', Arial, sans-serif; }
+  .mono { font-family: Roboto, Arial, sans-serif; }
 
-  /* the game view, dimmed, heavier towards the panel */
-  .worlddim { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(8,10,11,.42) 0%, rgba(8,10,11,.55) 38%, rgba(6,7,8,.82) 100%); }
+  .frame { position: absolute; top: 150px; width: 922px; height: 519px; overflow: hidden; border: 1px solid #2a2e31; }
+  .screen { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform: scale(.48); transform-origin: 0 0; }
+  .cap { position: absolute; top: 104px; font: 600 22px/1 Roboto, Arial, sans-serif; color: var(--bone); }
+  .cap b { color: var(--hazard); margin-right: 10px; }
 
-  /* the talk panel across the bottom */
-  .talk { position: absolute; left: 0; right: 0; bottom: 0; height: 660px; background: var(--deep); border-top: 5px solid var(--acc); box-shadow: 0 -18px 60px rgba(0,0,0,.55); }
-  .inner { position: absolute; left: 240px; right: 240px; top: 38px; bottom: 40px; }
+  /* the person, in view */
+  .person { position: absolute; left: 860px; top: 250px; width: 200px; height: 830px; z-index: 1; }
+  .head { position: absolute; left: 50px; top: 0; width: 100px; height: 124px; border-radius: 50px; background: #8a735f; }
+  .body { position: absolute; left: 0; top: 110px; width: 200px; height: 720px; border-radius: 60px 60px 0 0; background: #4b4f3a; }
 
-  .who { display: flex; align-items: baseline; gap: 18px; }
-  .who b { font: 700 30px/1 Inter, 'Segoe UI', sans-serif; color: var(--acc); letter-spacing: .01em; }
-  .who span { font: 400 21px/1 Inter, 'Segoe UI', sans-serif; color: var(--dim); }
+  /* their name and sub-line, top right */
+  .name { position: absolute; right: 120px; top: 168px; z-index: 2; font: 700 40px/48px 'Roboto Condensed', 'Arial Narrow', sans-serif; color: var(--acc); text-shadow: 1px 1px 2px #000; }
+  .sub { position: absolute; right: 120px; top: 218px; z-index: 2; font: 400 24px/30px 'Roboto Condensed', 'Arial Narrow', sans-serif; color: #E8E2D0; text-shadow: 1px 1px 2px #000; }
 
-  .said { margin: 22px 0 0; max-width: 1330px; font: 400 38px/1.5 Inter, 'Segoe UI', sans-serif; color: var(--spoken); }
+  /* step 1: their line on its own */
+  .band { position: absolute; left: 300px; top: 774px; width: 1320px; height: 186px; z-index: 2; background: rgba(18,20,22,.85); border-left: 5px solid var(--acc); }
+  .said { position: absolute; left: 31px; top: 20px; width: 1226px; font: 400 30px/36px 'Roboto Condensed', 'Arial Narrow', sans-serif; color: var(--spoken); }
+  .track { position: absolute; left: 0; bottom: 0; width: 1315px; height: 4px; background: rgba(255,255,255,.13); }
+  .track i { display: block; height: 100%; width: 55%; background: var(--acc); }
+  .skip { position: absolute; left: 1120px; top: 968px; width: 500px; z-index: 2; text-align: right; font: 400 20px/26px Roboto, Arial, sans-serif; color: #A39E90; }
 
-  .replies { margin-top: 30px; width: 1120px; display: flex; flex-direction: column; gap: 4px; }
-  .r { display: flex; align-items: center; gap: 20px; height: 52px; padding: 0 20px 0 18px; border-left: 5px solid transparent; font: 400 25px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
-  .r .t { flex: 1; }
-  .r.on { background: var(--row); border-left-color: var(--acc); color: var(--spoken); }
-  .r.out { color: var(--dim); }
-  .tag { font: 500 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); letter-spacing: .02em; }
-  .r.on .tag { color: #C9C2AF; }
+  /* step 2: your replies on their own */
+  .box { position: absolute; left: 240px; top: 672px; width: 1440px; height: 310px; z-index: 2; background: rgba(18,20,22,.9); border: 2px solid var(--acc); }
+  .rows { position: absolute; left: 50px; top: 14px; width: 1330px; }
+  .r { height: 48px; margin-bottom: 4px; padding: 0 14px; display: flex; align-items: center; gap: 10px; font: 400 28px/1 'Roboto Condensed', 'Arial Narrow', sans-serif; color: #E8E2D0; white-space: nowrap; }
+  .r .tag { color: var(--acc); }
+  .r.on { background: rgba(227,163,59,.16); outline: 2px solid var(--acc); outline-offset: -2px; color: var(--spoken); }
+  .r.heard { color: #96918A; }
+  .r.no, .r.no .tag { color: #6E6A60; }
+  .r .need { font-size: 24px; color: #6E6A60; margin-left: 2px; }
+  .arrow { position: absolute; left: 10px; width: 32px; height: 32px; color: var(--acc); }
+  .arrow svg { width: 100%; height: 100%; }
+  .arrow.down { top: 260px; transform: rotate(180deg); }
+  .page { position: absolute; right: 18px; top: 276px; font: 700 22px/28px Roboto, Arial, sans-serif; color: var(--acc); }
+  .foot { position: absolute; left: 240px; top: 992px; width: 1440px; z-index: 2; display: flex; justify-content: space-between; font: 400 20px/26px Roboto, Arial, sans-serif; }
+  .foot .pad { color: #A39E90; }
+  .foot .keys { color: #6E6A60; }
 
-  /* pad prompts: small rounded keys in the accent colour */
-  .pk { display: inline-flex; align-items: center; justify-content: center; flex: none; min-width: 34px; height: 34px; padding: 0 9px; border: 2px solid var(--ring); border-radius: 17px; color: var(--acc); background: rgba(227,163,59,.06); font: 700 17px/1 'JetBrains Mono', Consolas, monospace; }
-  .r.on .pk.num { border-color: var(--acc); }
-  .r .pk.a { margin-left: 6px; background: var(--acc); border-color: var(--acc); color: #15171a; }
-
-  .prompts { position: absolute; left: 1160px; top: 230px; width: 280px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px; padding-left: 24px; border-left: 1px solid #22262a; font: 600 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); letter-spacing: .04em; }
-  .prompts > span { display: inline-flex; align-items: center; gap: 12px; }
-  .prompts .pk { height: 30px; min-width: 30px; font-size: 15px; }
-  .prompts .kb { margin-top: 10px; color: var(--faint); font-weight: 500; font-size: 18px; line-height: 1.4; }
-  .r.no { color: #6e6a60; }
-  .r.no .pk.num { opacity: .5; }
-  .need { font: 500 18px/1 'JetBrains Mono', Consolas, monospace; color: var(--dim); }
-
-  .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+  .note { position: absolute; left: 24px; right: 24px; top: 700px; font: 400 22px/1.5 Roboto, Arial, sans-serif; color: #cfc8b6; }
+  .note b { color: var(--bone); }
+  .title { position: absolute; left: 24px; top: 40px; font: 700 34px/1 'Roboto Condensed', 'Arial Narrow', sans-serif; color: var(--bone); }
 </style>
 </head>
 <body>
-<canvas class="scene" data-scene="dusk"></canvas>
-<div class="worlddim"></div>
-<div class="layer">
-  <div class="callout" style="left:240px;top:388px">TALK · THE WORLD STAYS IN VIEW, DIMMED ▼</div>
+<div class="title">Talk, New Vegas style: the line on its own, then your replies on their own</div>
 
-  <div class="talk">
-    <div class="inner">
-      <div class="who"><b>Ines Calder</b><span>The Haven - council head - knows your name</span></div>
-      <p class="said">“You're back. Good. The well in Beauregard has gone quiet, and quiet worries me more than screaming.”</p>
-
-      <div class="replies">
-        <div class="r on"><span class="pk num">1</span><span class="t">What's wrong with the well?</span><span class="tag">a job · Favor</span><span class="pk a">A</span></div>
-        <div class="r"><span class="pk num">2</span><span class="t">Heard anything on the road?</span><span class="tag">news</span></div>
-        <div class="r"><span class="pk num">3</span><span class="t">What do you make of me?</span></div>
-        <div class="r no"><span class="pk num">4</span><span class="t">Buy supplies</span><span class="need">(needs 20 Haven Favor, you have 12)</span></div>
-        <div class="r out"><span class="pk num">5</span><span class="t">I'll be going.</span></div>
-      </div>
-
-      <div class="prompts">
-        <span><span class="pk">D-pad</span>Choose</span>
-        <span><span class="pk">A</span>Say it</span>
-        <span><span class="pk">B</span>Leave</span>
-        <span><span class="pk">LB/RB</span>More</span>
-        <span class="kb">Keys 1–7 pick a reply<br>Esc leaves</span>
-      </div>
+<div class="cap" style="left:24px"><b>1</b>They speak: the line on its own</div>
+<div class="frame" style="left:24px">
+  <div class="screen">
+    <canvas class="scene" data-scene="dusk"></canvas>
+    <div class="person"><div class="body"></div><div class="head"></div></div>
+    <div class="name">Ines Calder</div>
+    <div class="sub">The Haven - council head - knows your name</div>
+    <div class="band">
+      <div class="said">"You're back. Good. The well in Beauregard has gone quiet, and quiet worries me more than screaming. Nobody's been up there since the rain."</div>
+      <div class="track"><i></i></div>
     </div>
+    <div class="skip">A / Space: skip</div>
   </div>
+</div>
 
-  <div class="callout" style="left:1400px;top:968px;width:300px">◀ SELECTED: LIGHTER ROW, AMBER BAR. A REPLY YOU CAN'T TAKE SHOWS WHAT IT NEEDS. THE LAST IS ALWAYS A WAY OUT</div>
+<div class="cap" style="left:974px"><b>2</b>Then your replies, on their own</div>
+<div class="frame" style="left:974px">
+  <div class="screen">
+    <canvas class="scene" data-scene="dusk"></canvas>
+    <div class="person"><div class="body"></div><div class="head"></div></div>
+    <div class="name">Ines Calder</div>
+    <div class="sub">The Haven - council head - knows your name</div>
+    <div class="box">
+      <div class="arrow down"><svg viewBox="0 0 64 64"><path fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M32 7 L50 54 L32 44 L14 54 Z"/></svg></div>
+      <div class="rows">
+        <div class="r heard">Quiet how?</div>
+        <div class="r on"><span class="tag">[a job]</span>Want me to go up and look?</div>
+        <div class="r"><span class="tag">[Persuade - Haven - 1 of 2]</span>Quiet might mean it's over.</div>
+        <div class="r no"><span class="tag">[2 food]</span>I brought something for the bowls.<span class="need">(you have 1 food)</span></div>
+        <div class="r">I'll be going.</div>
+      </div>
+      <div class="page">1/2</div>
+    </div>
+    <div class="foot"><span class="pad">D-pad: choose · A: say it · LB/RB: page · B: leave</span><span class="keys">1-5: a reply · Q/E: page · Esc: leave</span></div>
+  </div>
+</div>
+
+<div class="note">
+  <b>Step 1.</b> When they speak, only their line shows, in the band in the lower middle; their name and sub-line stay top right in their faction colour. The thin bar fills over the reading time (0.05 s a character, 2.5 s to 9 s), then the replies come by themselves. A, Space or a click skips to them; the right stick or the wheel scrolls a long line.<br>
+  <b>Step 2.</b> The band becomes the reply box, outlined in the faction colour, with only your choices: the selected one filled and outlined, check tags in the faction colour, a reply you can't take faint with what it needs, one with nothing new behind it grey. The arrows at the left show there's another page (down here, on page 1), "1/2" bottom right; LB/RB, Q/E or a click on an arrow turn it.<br>
+  <b>Step 3.</b> The reply you say fades and their answer takes the band: step 1 again. B or Esc leaves from either step. Nothing dims the world, and the person stays in view.
 </div>
 </body>
 </html>

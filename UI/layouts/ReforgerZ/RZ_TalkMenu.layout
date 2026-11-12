@@ -14,212 +14,119 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
  }
  "Ignore Cursor" 0
  {
-  FrameWidgetClass "{80C2B8E4E6F7512D}" {
-   Name "TalkPanel"
-   Slot FrameWidgetSlot "{9C3909F574E8EAE5}" {
+  TextWidgetClass "{FD1999F5DDB8427F}" {
+   Name "TalkName"
+   Slot FrameWidgetSlot "{092DCCA878FC40DF}" {
+    Anchor 1 0 1 0
+    PositionX -120
+    OffsetLeft -120
+    PositionY 168
+    OffsetTop 168
+    SizeX 1000
+    OffsetRight -880
+    SizeY 48
+    OffsetBottom -216
+    Alignment 1 0
+   }
+   Color 0.89 0.639 0.231 1
+   Text "Ines Calder"
+   "Font Size" 40
+   "Min Font Size" 40
+   "Horizontal Alignment" Right
+   FontProperties FontProperties "{0C9505480E937DCA}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+    ShadowSize 2
+    ShadowOffset 1 1
+    ShadowColor 0 0 0 0.9
+   }
+  }
+  TextWidgetClass "{E32970D773D0DD3C}" {
+   Name "TalkSub"
+   Slot FrameWidgetSlot "{A6A951700B9AA119}" {
+    Anchor 1 0 1 0
+    PositionX -120
+    OffsetLeft -120
+    PositionY 218
+    OffsetTop 218
+    SizeX 1000
+    OffsetRight -880
+    SizeY 30
+    OffsetBottom -248
+    Alignment 1 0
+   }
+   Color 0.91 0.886 0.816 1
+   Text "The Haven - council head - knows your name"
+   "Font Size" 24
+   "Min Font Size" 24
+   "Horizontal Alignment" Right
+   FontProperties FontProperties "{0D53086EC8A43BD9}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+    ShadowSize 2
+    ShadowOffset 1 1
+    ShadowColor 0 0 0 0.9
+   }
+  }
+  FrameWidgetClass "{101BC7F096239292}" {
+   Name "LinePanel"
+   Slot FrameWidgetSlot "{27596EDFA26F628B}" {
     Anchor 0.5 1 0.5 1
     PositionX 0
     OffsetLeft 0
-    PositionY -56
-    OffsetTop -56
-    SizeX 1190
-    OffsetRight -1190
-    SizeY 376
-    OffsetBottom -320
+    PositionY -84
+    OffsetTop -84
+    SizeX 1320
+    OffsetRight -1320
+    SizeY 222
+    OffsetBottom -138
     Alignment 0.5 1
    }
    {
-    ImageWidgetClass "{35A26A2079F8263D}" {
-     Name "TalkBg"
-     Slot FrameWidgetSlot "{01FD76CDC30ABB6C}" {
-      Anchor 0 0 1 1
+    ImageWidgetClass "{5772022A5DB56B4D}" {
+     Name "LineBg"
+     Slot FrameWidgetSlot "{6206CF742B693147}" {
+      Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 0
-      OffsetRight 0
-      SizeY 0
-      OffsetBottom 0
+      SizeX 1320
+      OffsetRight -1320
+      SizeY 186
+      OffsetBottom -186
       Alignment 0 0
      }
      Color 0.071 0.078 0.086 0.85
      Size 1 1
     }
-    PanelWidgetClass "{21315967B863D576}" {
-     Name "TalkLine"
-     Slot FrameWidgetSlot "{98AC550363861564}" {
-      Anchor 0 0 1 1
+    ImageWidgetClass "{34059C108A3A8031}" {
+     Name "LineAccent"
+     Slot FrameWidgetSlot "{88EE782E3DD76D11}" {
+      Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
       PositionY 0
       OffsetTop 0
-      SizeX 0
-      OffsetRight 0
-      SizeY 0
-      OffsetBottom 0
-      Alignment 0 0
-     }
-     Color 0.165 0.18 0.192 1
-     style outline_2px
-    }
-    ImageWidgetClass "{6D13012521F24C7D}" {
-     Name "TalkAccent"
-     Slot FrameWidgetSlot "{F81D49491479309E}" {
-      Anchor 0 0 1 0
-      PositionX 0
-      OffsetLeft 0
-      PositionY 0
-      OffsetTop 0
-      SizeX 0
-      OffsetRight 0
-      SizeY 5
-      OffsetBottom -5
+      SizeX 5
+      OffsetRight -5
+      SizeY 186
+      OffsetBottom -186
       Alignment 0 0
      }
      Color 0.89 0.639 0.231 1
      Size 1 1
     }
-    HorizontalLayoutWidgetClass "{F817F5683A90B735}" {
-     Name "TalkWho"
-     Slot FrameWidgetSlot "{B692E5A8946629AF}" {
-      Anchor 0 0 0 0
-      PositionX 28
-      OffsetLeft 28
-      PositionY 14
-      OffsetTop 14
-      SizeX 1134
-      OffsetRight -1162
-      SizeY 34
-      OffsetBottom -48
-      Alignment 0 0
-     }
-     {
-      TextWidgetClass "{FD1999F5DDB8427F}" {
-       Name "TalkName"
-       Slot LayoutSlot "{41209C60178552BD}" {
-        HorizontalAlign 0
-        VerticalAlign 2
-       }
-       Color 0.89 0.639 0.231 1
-       Text "Ines Calder"
-       "Font Size" 28
-       "Min Font Size" 28
-       FontProperties FontProperties "{0235EB3AED143DFB}" {
-        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-       }
-      }
-      TextWidgetClass "{E32970D773D0DD3C}" {
-       Name "TalkSub"
-       Slot LayoutSlot "{7344E3C6591B52E5}" {
-        HorizontalAlign 0
-        VerticalAlign 2
-        Padding 16 0 0 3
-       }
-       Color 0.639 0.62 0.565 1
-       Text "The Haven - council head - knows your name"
-       "Font Size" 20
-       "Min Font Size" 20
-       FontProperties FontProperties "{7A0352E891890CAD}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-       }
-      }
-     }
-    }
-    HorizontalLayoutWidgetClass "{77468C7FF8EC8FB7}" {
-     Name "TalkPage"
-     Slot FrameWidgetSlot "{24EE8C8BD918CB96}" {
-      Anchor 0 0 0 0
-      PositionX 902
-      OffsetLeft 902
-      PositionY 14
-      OffsetTop 14
-      SizeX 260
-      OffsetRight -1162
-      SizeY 34
-      OffsetBottom -48
-      Alignment 0 0
-     }
-     "Is Visible" 0
-     {
-      ButtonWidgetClass "{B46C678593784683}" {
-       Name "PagePrev"
-       Slot LayoutSlot "{57861FF81AFEA119}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-        Padding 0 0 12 0
-       }
-       style blank
-       {
-        TextWidgetClass "{3E185990878C3D7A}" {
-         Name "PagePrevText"
-         Slot ButtonWidgetSlot "{CF3A67085D5AA67F}" {
-          HorizontalAlign 1
-          VerticalAlign 1
-         }
-         Color 0.639 0.62 0.565 1
-         Text "<"
-         "Font Size" 22
-         "Min Font Size" 22
-         FontProperties FontProperties "{66857797E0CD0FED}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-       }
-      }
-      TextWidgetClass "{DEE158505A593FB9}" {
-       Name "PageText"
-       Slot LayoutSlot "{A8AAAA1A8B61DDAC}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-        Padding 0 0 12 0
-       }
-       Color 0.91 0.886 0.816 1
-       Text "1/2"
-       "Font Size" 20
-       "Min Font Size" 20
-       FontProperties FontProperties "{2341A81E97C89DAA}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-      ButtonWidgetClass "{0988E05C66DD5E22}" {
-       Name "PageNext"
-       Slot LayoutSlot "{625D391B22F49CB2}" {
-        HorizontalAlign 0
-        VerticalAlign 1
-       }
-       style blank
-       {
-        TextWidgetClass "{F1A6C2D0B3E84711}" {
-         Name "PageNextText"
-         Slot ButtonWidgetSlot "{8C2E5D17A4B39F02}" {
-          HorizontalAlign 1
-          VerticalAlign 1
-         }
-         Color 0.89 0.639 0.231 1
-         Text "MORE >"
-         "Font Size" 20
-         "Min Font Size" 20
-         FontProperties FontProperties "{5D0B9E3A71C64F28}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-       }
-      }
-     }
-    }
     ScrollLayoutWidgetClass "{046E489EB41A8BBF}" {
      Name "SaidScroll"
      Slot FrameWidgetSlot "{05C87DC59D744501}" {
       Anchor 0 0 0 0
-      PositionX 28
-      OffsetLeft 28
-      PositionY 52
-      OffsetTop 52
-      SizeX 1134
-      OffsetRight -1162
-      SizeY 94
-      OffsetBottom -146
+      PositionX 36
+      OffsetLeft 36
+      PositionY 20
+      OffsetTop 20
+      SizeX 1256
+      OffsetRight -1292
+      SizeY 144
+      OffsetBottom -164
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
@@ -227,25 +134,25 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
      {
       SizeLayoutWidgetClass "{79D26AF17B3A5B52}" {
        Name "SaidWidth"
-       Slot AlignableSlot "{C8CF4CBA7CA36868}" {
+       Slot AlignableSlot "{648558DE02CC831F}" {
         HorizontalAlign 3
         VerticalAlign 0
        }
        AllowWidthOverride 1
-       WidthOverride 1104
+       WidthOverride 1226
        {
         TextWidgetClass "{A95FA9C20A06AA72}" {
          Name "TalkSaid"
-         Slot AlignableSlot "{8C5B70EE53324E66}" {
+         Slot AlignableSlot "{7991C86CEF4C752B}" {
           HorizontalAlign 3
           VerticalAlign 0
          }
          Color 0.957 0.941 0.902 1
          Text ""
-         "Font Size" 26
-         "Min Font Size" 26
+         "Font Size" 30
+         "Min Font Size" 30
          Wrap 1
-         FontProperties FontProperties "{6EBA74159CC68A56}" {
+         FontProperties FontProperties "{B8FAC4CF633FFDD7}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
          }
         }
@@ -253,33 +160,228 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       }
      }
     }
+    ImageWidgetClass "{FEFF5AD20242BD0F}" {
+     Name "LineTrack"
+     Slot FrameWidgetSlot "{4CCDDA5D9DEEB272}" {
+      Anchor 0 0 0 0
+      PositionX 5
+      OffsetLeft 5
+      PositionY 182
+      OffsetTop 182
+      SizeX 1315
+      OffsetRight -1320
+      SizeY 4
+      OffsetBottom -186
+      Alignment 0 0
+     }
+     Color 1 1 1 0.13
+     Size 1 1
+    }
+    ProgressBarWidgetClass "{195756B85E4FD019}" {
+     Name "LineBar"
+     Slot FrameWidgetSlot "{695B5C953ACCA8E5}" {
+      Anchor 0 0 0 0
+      PositionX 5
+      OffsetLeft 5
+      PositionY 182
+      OffsetTop 182
+      SizeX 1315
+      OffsetRight -1320
+      SizeY 4
+      OffsetBottom -186
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     style Simple
+     Maximum 1
+     Current 0
+    }
+    TextWidgetClass "{492D081C4FB30376}" {
+     Name "SkipHint"
+     Slot FrameWidgetSlot "{EE1F3F2351EB3FA4}" {
+      Anchor 0 0 0 0
+      PositionX 820
+      OffsetLeft 820
+      PositionY 194
+      OffsetTop 194
+      SizeX 500
+      OffsetRight -1320
+      SizeY 26
+      OffsetBottom -220
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "A / Space: skip"
+     "Font Size" 20
+     "Min Font Size" 20
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{AE8DAFA23CF89E65}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+   }
+  }
+  FrameWidgetClass "{1CDB42554680467C}" {
+   Name "ReplyPanel"
+   Slot FrameWidgetSlot "{6B9BFCF06B69F22D}" {
+    Anchor 0.5 1 0.5 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY -56
+    OffsetTop -56
+    SizeX 1440
+    OffsetRight -1440
+    SizeY 352
+    OffsetBottom -296
+    Alignment 0.5 1
+   }
+   "Is Visible" 0
+   {
+    ImageWidgetClass "{D9369D000EC66D52}" {
+     Name "ReplyPanelBg"
+     Slot FrameWidgetSlot "{05B28A3026AE28CD}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 1440
+      OffsetRight -1440
+      SizeY 310
+      OffsetBottom -310
+      Alignment 0 0
+     }
+     Color 0.071 0.078 0.086 0.9
+     Size 1 1
+    }
+    PanelWidgetClass "{E6FD5A5480456794}" {
+     Name "ReplyPanelLine"
+     Slot FrameWidgetSlot "{386A0F595C1A4B0B}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 1440
+      OffsetRight -1440
+      SizeY 310
+      OffsetBottom -310
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     style outline_2px
+    }
+    ButtonWidgetClass "{B46C678593784683}" {
+     Name "PagePrev"
+     Slot FrameWidgetSlot "{6E18329DF059ED78}" {
+      Anchor 0 0 0 0
+      PositionX 12
+      OffsetLeft 12
+      PositionY 16
+      OffsetTop 16
+      SizeX 32
+      OffsetRight -44
+      SizeY 32
+      OffsetBottom -48
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     style blank
+     {
+      ImageWidgetClass "{A58AFD44820A6120}" {
+       Name "PagePrevIcon"
+       Slot ButtonWidgetSlot "{EFAE09515B216FE3}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.89 0.639 0.231 1
+       Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+       Image "marker_self"
+       Size 1 1
+      }
+     }
+    }
+    ButtonWidgetClass "{0988E05C66DD5E22}" {
+     Name "PageNext"
+     Slot FrameWidgetSlot "{515FB26BC50F18B7}" {
+      Anchor 0 0 0 0
+      PositionX 12
+      OffsetLeft 12
+      PositionY 262
+      OffsetTop 262
+      SizeX 32
+      OffsetRight -44
+      SizeY 32
+      OffsetBottom -294
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     style blank
+     {
+      ImageWidgetClass "{C55862DADA3E353C}" {
+       Name "PageNextIcon"
+       Slot ButtonWidgetSlot "{01D9090FAFC6C36C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.89 0.639 0.231 1
+       Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+       Image "marker_self"
+       Size 1 1
+      }
+     }
+    }
     VerticalLayoutWidgetClass "{99B3656DD3E389A1}" {
      Name "Replies"
      Slot FrameWidgetSlot "{440B7A247F9920D4}" {
       Anchor 0 0 0 0
-      PositionX 28
-      OffsetLeft 28
-      PositionY 152
-      OffsetTop 152
-      SizeX 1134
-      OffsetRight -1162
-      SizeY 180
-      OffsetBottom -332
+      PositionX 52
+      OffsetLeft 52
+      PositionY 16
+      OffsetTop 16
+      SizeX 1330
+      OffsetRight -1382
+      SizeY 260
+      OffsetBottom -276
       Alignment 0 0
+     }
+    }
+    TextWidgetClass "{DEE158505A593FB9}" {
+     Name "PageText"
+     Slot FrameWidgetSlot "{29ECD8406109AC4F}" {
+      Anchor 0 0 0 0
+      PositionX 1290
+      OffsetLeft 1290
+      PositionY 278
+      OffsetTop 278
+      SizeX 130
+      OffsetRight -1420
+      SizeY 28
+      OffsetBottom -306
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.89 0.639 0.231 1
+     Text "1/2"
+     "Font Size" 22
+     "Min Font Size" 22
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{6379B40A13E03001}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }
     HorizontalLayoutWidgetClass "{A4539A3E0434CC08}" {
      Name "Prompts"
      Slot FrameWidgetSlot "{25D5D88EBF4559BD}" {
       Anchor 0 0 0 0
-      PositionX 28
-      OffsetLeft 28
-      PositionY 336
-      OffsetTop 336
-      SizeX 760
-      OffsetRight -788
+      PositionX 0
+      OffsetLeft 0
+      PositionY 316
+      OffsetTop 316
+      SizeX 1000
+      OffsetRight -1000
       SizeY 34
-      OffsetBottom -370
+      OffsetBottom -350
       Alignment 0 0
      }
     }
@@ -287,44 +389,44 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
      Name "PromptsText"
      Slot FrameWidgetSlot "{BBE4CF6A802FBAB7}" {
       Anchor 0 0 0 0
-      PositionX 28
-      OffsetLeft 28
-      PositionY 340
-      OffsetTop 340
-      SizeX 760
-      OffsetRight -788
+      PositionX 0
+      OffsetLeft 0
+      PositionY 320
+      OffsetTop 320
+      SizeX 1000
+      OffsetRight -1000
       SizeY 26
-      OffsetBottom -366
+      OffsetBottom -346
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "D-PAD  CHOOSE    A  SAY IT    B  LEAVE    LB / RB  PAGE"
-     "Font Size" 18
-     "Min Font Size" 18
-     FontProperties FontProperties "{3CE328AFCAE189CF}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     Text "D-pad: choose · A: say it · LB/RB: page · B: leave"
+     "Font Size" 20
+     "Min Font Size" 20
+     FontProperties FontProperties "{2CB5828EBDE61488}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
     }
     TextWidgetClass "{42DADA9D62B3C943}" {
      Name "KeysHint"
      Slot FrameWidgetSlot "{D067E8ED357BD3EE}" {
       Anchor 0 0 0 0
-      PositionX 790
-      OffsetLeft 790
-      PositionY 340
-      OffsetTop 340
-      SizeX 372
-      OffsetRight -1162
+      PositionX 1000
+      OffsetLeft 1000
+      PositionY 320
+      OffsetTop 320
+      SizeX 440
+      OffsetRight -1440
       SizeY 26
-      OffsetBottom -366
+      OffsetBottom -346
       Alignment 0 0
      }
-     Color 0.427 0.416 0.384 1
-     Text "1-5: A REPLY    Q / E: PAGE"
-     "Font Size" 18
-     "Min Font Size" 18
+     Color 0.431 0.416 0.376 1
+     Text "1-5: a reply · Q/E: page · Esc: leave"
+     "Font Size" 20
+     "Min Font Size" 20
      "Horizontal Alignment" Right
-     FontProperties FontProperties "{967F8DDBEE1DE306}" {
+     FontProperties FontProperties "{91B32E71C00D8A28}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
     }
