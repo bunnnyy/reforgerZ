@@ -1,9 +1,9 @@
 //! The screen guard (docs/UI.md, "The screen guard"). Server side.
 //!
-//! The talk screen, the reader, the car repair screen and the shop screen stop you moving while
+//! The talk screen, the reader, the car repair, shop and crafting screens stop you moving while
 //! the world keeps running, so the server watches every open one and closes it when the player is
 //! in danger: hurt, firing, an infected close by or closing in, dead, or (all but the reader) the
-//! person, car or quartermaster gone, too far away, or nothing picked for a while. Polled once a second on the game mode's SecondTick; each check is a few distance tests,
+//! person, car, quartermaster or workbench gone, too far away, or nothing picked for a while. Polled once a second on the game mode's SecondTick; each check is a few distance tests,
 //! and at most Dialogue > Open at most screens are open on the server.
 
 //------------------------------------------------------------------------------------------------
@@ -29,6 +29,7 @@ class RZ_ScreenGuard
 	static const int KIND_TALK = 2;
 	static const int KIND_CAR = 3;		// the car repair screen (Interactions/RZ_Cars.c)
 	static const int KIND_SHOP = 4;		// the quartermaster's shop screen (Factions/RZ_ShopScreen.c)
+	static const int KIND_CRAFT = 5;	// the crafting screen at a workbench (Interactions/RZ_Crafting.c)
 
 	protected static const float HURT_DROP = 0.5;
 
@@ -123,6 +124,8 @@ class RZ_ScreenGuard
 			m_GM.GetInteractions().GetCars().OnScreenGone(playerId);
 		else if (kind == KIND_SHOP)
 			RZ_ShopScreen.OnScreenGone(playerId);
+		else if (kind == KIND_CRAFT && m_GM.GetInteractions())
+			m_GM.GetInteractions().GetCrafting().OnScreenGone(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -184,7 +187,7 @@ class RZ_ScreenGuard
 		s.m_fHealth = hp;
 		RZ_DialogueSettings settings = RZ_DialogueSettings.Get();
 		bool talk = s.m_iKind == KIND_TALK;
-		bool near = s.m_iKind != KIND_READER;	// talk, the car and the shop: you stay with them
+		bool near = s.m_iKind != KIND_READER;	// talk, the car, the shop and the bench: you stay with them
 		if (near && s.m_bHasSpeaker)
 		{
 			if (!s.m_Speaker)
@@ -270,6 +273,8 @@ class RZ_ScreenGuard
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_CAR, "X|" + reason);
 			else if (kind == KIND_SHOP)
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_SHOP, "X|" + reason);
+			else if (kind == KIND_CRAFT)
+				ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, "X|" + reason);
 			else
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_READER, "");
 		}
@@ -294,12 +299,15 @@ class RZ_ScreenGuard
 		if (kind == KIND_SHOP)
 			return "shop";
 
+		if (kind == KIND_CRAFT)
+			return "crafting";
+
 		return "reader";
 	}
 }
 
 //------------------------------------------------------------------------------------------------
-//! Server: while a screen acts for its player (a car job, a purchase), what the game would tell
+//! Server: while a screen acts for its player (a car job, a purchase, a recipe), what the game would tell
 //! that player as a notice is caught here instead and shown in the screen's status line
 //! (RZ_GameModeComponent.NotifyPlayerAs asks Take first). One at a time, synchronous only.
 class RZ_ScreenCapture

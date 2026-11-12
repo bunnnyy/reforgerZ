@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ReforgerZ crafting</title>
+<link rel="stylesheet" href="common/zone.css">
+<script src="common/zone.js"></script>
+<style>
+  :root {
+    --deep: #0f1113;
+    --spoken: #F4F0E6;
+    --row: #1b1f22;
+    --ring: #6b5222;
+    --acc: var(--haven);
+    --need: #6d6a62;
+    --have: #9AA35E;
+    --short: #D2553F;
+  }
+  body { font-family: Inter, 'Segoe UI', sans-serif; }
+  .mono, .callout, .pk, .time, .state, .count, .lbl { font-family: 'JetBrains Mono', Consolas, monospace; }
+  .worlddim { position: absolute; inset: 0; z-index: 1; background: rgba(8,9,10,.6); }
+
+  /* the panel: 1600 x 880, centred, as the shop */
+  .bench { position: absolute; left: 160px; top: 100px; width: 1600px; height: 880px; background: #121416; border-top: 5px solid var(--acc); box-shadow: 0 18px 60px rgba(0,0,0,.6); }
+  .head { position: absolute; left: 48px; right: 48px; top: 26px; height: 86px; border-bottom: 2px solid var(--acc); }
+  .head b { display: block; font: 700 36px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
+  .head .sub { display: block; margin-top: 12px; font: 400 22px/1 Inter, sans-serif; color: var(--dim); }
+  .head .me { position: absolute; right: 92px; top: 18px; font: 400 24px/1 Inter, sans-serif; color: var(--bone); }
+  .close { position: absolute; right: 48px; top: 26px; width: 44px; height: 44px; background: var(--row); color: var(--acc); display: flex; align-items: center; justify-content: center; font: 700 22px/1 'JetBrains Mono', monospace; }
+
+  .lbl { position: absolute; font-weight: 700; font-size: 18px; color: var(--dim); letter-spacing: .12em; }
+
+  .list { position: absolute; left: 48px; top: 166px; width: 820px; height: 594px; background: var(--deep); padding-top: 4px; }
+  .r { display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 22px; margin-bottom: 4px; border-left: 5px solid transparent; font: 400 26px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
+  .r .ic { width: 32px; height: 32px; color: currentColor; }
+  .r .ic.none { visibility: hidden; }
+  .r .n { flex: 1; }
+  .r .state { font-weight: 700; font-size: 20px; color: var(--have); }
+  .r .time { font-weight: 700; font-size: 22px; color: var(--acc); width: 64px; text-align: right; }
+  .r.on { background: var(--row); border-left-color: var(--acc); color: var(--spoken); }
+  .r.no { color: var(--need); }
+  .r.no .state { color: var(--dim); }
+
+  .details { position: absolute; left: 900px; top: 132px; width: 652px; height: 628px; }
+  .pic { position: relative; width: 652px; height: 240px; background: var(--deep); border: 1px solid #22262a; overflow: hidden; }
+  .pic .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 50px; background: #16191c; }
+  .pic .plbl { position: absolute; left: 16px; top: 12px; font: 700 18px/1 'JetBrains Mono', monospace; color: var(--faint); letter-spacing: .12em; }
+  .pic svg { position: absolute; left: 196px; top: 26px; width: 260px; height: 200px; }
+  .d-name { margin: 16px 0 0; font: 700 32px/1 Inter, 'Segoe UI', sans-serif; color: var(--bone); }
+  .d-desc { margin: 12px 0 0; height: 100px; font: 400 22px/1.4 Inter, sans-serif; color: #D9D2BE; }
+  .takes { position: absolute; left: 0; top: 402px; }
+  .in { position: absolute; left: 0; width: 652px; height: 40px; display: flex; align-items: center; }
+  .in .bar { width: 5px; height: 28px; background: var(--have); margin-right: 15px; }
+  .in .nm { flex: 1; font: 400 24px/1 Inter, sans-serif; color: var(--bone); }
+  .in .count { width: 130px; text-align: right; font-size: 22px; color: var(--dim); }
+  .in .state { width: 140px; text-align: right; font-weight: 700; font-size: 20px; color: var(--have); }
+  .in.short .bar { background: var(--short); }
+  .in.short .state { color: var(--short); }
+  .d-time { position: absolute; left: 0; top: 562px; font: 700 22px/1 'JetBrains Mono', monospace; color: var(--acc); }
+  .d-noise { position: absolute; left: 0; top: 604px; font: 400 20px/1 Inter, sans-serif; color: var(--dim); }
+  .craft { position: absolute; right: 0; top: 562px; width: 240px; height: 60px; background: var(--acc); color: #15171a; display: flex; align-items: center; justify-content: center; gap: 12px; font: 700 26px/1 Inter, 'Segoe UI', sans-serif; letter-spacing: .06em; }
+  .craft .pk { background: #15171a; color: var(--acc); border-color: #15171a; }
+
+  .status { position: absolute; left: 48px; top: 772px; font: 400 22px/1.4 Inter, sans-serif; color: var(--spoken); }
+  .prompts { position: absolute; left: 48px; top: 828px; display: flex; gap: 28px; align-items: center; font: 600 18px/1 'JetBrains Mono', monospace; color: var(--dim); letter-spacing: .04em; }
+  .prompts > span { display: inline-flex; align-items: center; gap: 10px; }
+  .pk { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; padding: 0 8px; border: 2px solid var(--ring); border-radius: 15px; color: var(--acc); font: 700 15px/1 'JetBrains Mono', monospace; }
+  .note { position: absolute; right: 48px; top: 834px; font: 400 18px/1 'JetBrains Mono', monospace; color: var(--faint); }
+
+  .callout { position: absolute; font: 600 14px/1.3 'JetBrains Mono', Consolas, monospace; color: rgba(242,194,48,.85); letter-spacing: .1em; }
+</style>
+</head>
+<body>
+<canvas class="scene" data-scene="dusk"></canvas>
+<div class="worlddim"></div>
+<div class="layer">
+  <div class="callout" style="left:160px;top:62px">CRAFTING · USE THE WORKBENCH ▼ (THE WORLD STAYS IN VIEW, DIMMED)</div>
+
+  <div class="bench">
+    <div class="head">
+      <b>Workbench</b><span class="sub">A vice, a hammer with a taped handle, sawdust.</span>
+      <div class="me">You can make 3 of 8</div>
+    </div>
+    <div class="close">X</div>
+
+    <span class="lbl" style="left:48px;top:136px">RECIPES</span>
+    <div class="list">
+      <div class="r"><i class="ic" data-i="item_bandage"></i><span class="n">Improvised bandage</span><span class="state">READY</span><span class="time">6 s</span></div>
+      <div class="r no"><i class="ic" data-i="item_molotov"></i><span class="n">Molotov</span><span class="state">1 MISSING</span><span class="time">10 s</span></div>
+      <div class="r"><i class="ic" data-i="item_noisemaker"></i><span class="n">Tin rattle (noisemaker)</span><span class="state">READY</span><span class="time">6 s</span></div>
+      <div class="r no"><i class="ic none"></i><span class="n">Spear</span><span class="state">2 MISSING</span><span class="time">12 s</span></div>
+      <div class="r on"><i class="ic" data-i="item_tripwire"></i><span class="n">Tin-can tripwire</span><span class="state">READY</span><span class="time">8 s</span></div>
+      <div class="r no"><i class="ic" data-i="item_spiketrap"></i><span class="n">Spike trap</span><span class="state">2 MISSING</span><span class="time">15 s</span></div>
+      <div class="r no"><i class="ic" data-i="item_tablets"></i><span class="n">Purification tablets</span><span class="state">1 MISSING</span><span class="time">8 s</span></div>
+      <div class="r no"><i class="ic" data-i="item_tablets"></i><span class="n">Purify water</span><span class="state">2 MISSING</span><span class="time">5 s</span></div>
+    </div>
+
+    <div class="details">
+      <div class="pic">
+        <div class="floor"></div>
+        <span class="plbl">WHAT YOU MAKE</span>
+        <svg viewBox="0 0 130 100">
+          <ellipse cx="65" cy="88" rx="56" ry="5" fill="#0b0d0e"/>
+          <path d="M 8 40 Q 65 52 122 40" stroke="#9a9488" stroke-width="1.6" fill="none"/>
+          <rect x="22" y="40" width="22" height="30" rx="2" fill="#8b9096"/>
+          <ellipse cx="33" cy="40" rx="11" ry="3" fill="#b7bcc1"/>
+          <rect x="22" y="50" width="22" height="10" fill="#6d5a3a"/>
+          <rect x="86" y="44" width="22" height="30" rx="2" fill="#7f858b"/>
+          <ellipse cx="97" cy="44" rx="11" ry="3" fill="#a9aeb3"/>
+          <rect x="86" y="54" width="22" height="10" fill="#4f5d3c"/>
+          <rect x="4" y="30" width="6" height="56" fill="#5a4a36"/>
+          <rect x="120" y="30" width="6" height="56" fill="#5a4a36"/>
+        </svg>
+      </div>
+      <div class="d-name">Tin-can tripwire</div>
+      <div class="d-desc">Two tins on a wire across a doorway. Anything that walks into it tells you.<br>0.3 kg</div>
+      <span class="lbl takes">IT TAKES</span>
+      <div class="in" style="top:432px"><span class="bar"></span><span class="nm">Empty tin</span><span class="count">2 of 2</span><span class="state">HAVE</span></div>
+      <div class="in" style="top:474px"><span class="bar"></span><span class="nm">Wire or string</span><span class="count">1 of 1</span><span class="state">HAVE</span></div>
+      <div class="d-time">About 8 seconds at the bench</div>
+      <div class="d-noise">Some hammering. It carries a little.</div>
+      <div class="craft"><span class="pk">A</span>CRAFT</div>
+    </div>
+
+    <div class="status">Done: Improvised bandage. Not pretty, but it'll do.</div>
+    <div class="prompts">
+      <span><span class="pk">D-pad</span>Recipe</span>
+      <span><span class="pk">A</span>Craft</span>
+      <span><span class="pk">B</span>Close</span>
+    </div>
+  </div>
+
+  <div class="callout" style="left:1780px;top:290px;width:130px">◀ SHORT OF SOMETHING: DIM, WITH HOW MANY THINGS ARE MISSING</div>
+  <div class="callout" style="left:1780px;top:560px;width:130px">◀ EACH INPUT AGAINST WHAT YOU CARRY: HAVE, OR MISSING IN RED</div>
+</div>
+</body>
+</html>

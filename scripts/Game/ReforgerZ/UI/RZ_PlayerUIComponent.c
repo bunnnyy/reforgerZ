@@ -386,6 +386,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_ShopMenu.OnPayload(this, payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_CRAFT)
+		{
+			RZ_CraftMenu.OnPayload(this, payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_DETAIL)
 		{
 			m_sDetail = payload;
@@ -630,7 +634,31 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a car job or a purchase at most every half second (a held button can't flood it).
+	//! Recipe `index` on the crafting screen with this serial.
+	void SendCraft(int serial, int index)
+	{
+		if (Replication.IsServer())
+			RpcAsk_Craft(serial, index);
+		else
+			Rpc(RpcAsk_Craft, serial, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checked on the server (RZ_Crafting.DoCraft): the screen is open, the serial current, the
+	//! workbench there and the player beside it; then the same checks as the bench's actions.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Craft(int serial, int index)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !gm.GetInteractions() || !PickAllowed())
+			return;
+
+		gm.GetInteractions().GetCrafting().DoCraft(playerId, serial, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a car job, a purchase or a recipe at most every half second (a held button can't flood it).
 	protected bool PickAllowed()
 	{
 		float now = RZ_UIW.Now();

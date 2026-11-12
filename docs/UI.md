@@ -9,8 +9,8 @@ every line of text are in [WRITING.md](WRITING.md).
 **Status:** the icon set, the mockups, the layouts, the icon atlas and its imageset, and the
 menu and input config overrides are built. In Workbench play the HUD works: the styled notice
 cards, the stealth visibility bars and the noise meter show. The notebook, the talk screen, the
-reader, the car repair screen, the shop screen, the subtitles and notice pacing are written (their
-layouts as text) and compile, but haven't been played. The spawn screen, the map key and the map's
+reader, the car repair screen, the shop screen, the crafting screen, the subtitles and notice pacing
+are written (their layouts as text) and compile, but haven't been played. The spawn screen, the map key and the map's
 icons are seen in Workbench play with the keyboard; pad not yet ([Built and planned](#built-and-planned)).
 
 ## Art direction
@@ -91,6 +91,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | Car repair | `car_repair.png` | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
+| Crafting | `crafting.png` | A workbench's recipes as a list, and for the picked one a picture of what it makes with its description, each input against what you carry (have or missing), how long and how loud, and Craft ([below](#the-crafting-screen)) | `RZ_CraftMenu` | Layouts built as text; **UI > Craft row layout** and the menu preset not set yet, not checked in play |
 | The map | `map_legend.png` | The marker icons on the vanilla map, per player, and the map key: a compact legend in the bottom-left, shown zoomed out and fading as you zoom in ([below](#the-map)) | `RZ_MapIconsUI` | Icon layout and **UI > Map legend layout** set; the icons and the legend seen in Workbench play with the keyboard (it fades as you zoom in, I hides it); pad not yet |
 
 The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
@@ -422,6 +423,57 @@ hide and **Trade** shows (`RZ_ShopMenu.HidesActionsOn`). With **UI > Shop item l
 shows the actions from then on; when the server can't open one (at its cap of open screens) the
 client shows the actions for a minute.
 
+### The crafting screen
+
+As in `crafting.html`, in the shop's style: **Use the workbench** at a workbench
+([DESIGN.md](DESIGN.md#light-crafting)) opens a panel 1,600 × 880 in the middle of the screen, the
+world dimmed. The header is "Workbench", what the bench looks like, and on the right "You can make
+3 of 8". On the left, under RECIPES, the recipes as a list: each with its item icon (where the icon
+set has one), its name, READY in olive or "2 MISSING" (how many of its inputs you're short of)
+dim, and how long it takes in amber ("8 s"). A recipe you're short for is dim; one whose output slot
+is empty isn't listed. On the right, for the picked recipe: a picture of what it makes (vanilla's
+item preview of the output prefab, as the shop draws its items, labelled WHAT YOU MAKE), its name,
+its own description and weight, then IT TAKES: one row per input, its name ("Empty tin", "Wire or
+string"), "1 of 2" and HAVE in olive or MISSING in red. Under them how long it takes ("About 8
+seconds at the bench") and how loud ("Some hammering. It carries a little.": the heat it adds), and
+**Craft**, amber when it can go now, dark while you're short or at work. While the work is under way
+the row says WORKING, the time reads "Working... 6 s" over a thin amber bar. Under both, what the
+last pick said ("You clear a space and start on the Tin-can tripwire.", "Done: ...").
+
+| | Keyboard and mouse | Gamepad |
+|---|---|---|
+| Pick a recipe | up/down, or click it | D-pad or left stick |
+| Craft | Enter, or the Craft button | A |
+| Close | Esc, or the close button | B |
+
+The text is TV-sized: recipe names 26, inputs 24, the smallest labels 18. You can't move while it's
+open; the world keeps running. Work you start goes on after the screen closes, as long as you stay
+close (the timed action's own rule). The screen guard closes it in danger, more than **Dialogue >
+Range** (6 m) from the bench, or after **Idle seconds** (120) with no pick.
+
+**How it works.** The read action on a workbench's spot ("Use the workbench") reaches the server
+(`RZ_Crafting.Look`), which opens a screen-guard entry and sends `PAYLOAD_CRAFT` (kind 12) to that
+player: `B|serial|title|look|status|ready|recipes`, `W|recipe|seconds left|seconds` while one is under
+way at this bench, then per recipe `R|index|name|prefab|icon|seconds|heat|ready` and per input
+`N|index|name|have|need`; `X|reason` closes it. Have and missing are counted on the server against
+the player's inventory, each carried item counted for one input only. Craft goes back as
+`RpcAsk_Craft(serial, index)` (at most two a second); the client sends it only for a ready recipe
+with nothing under way (it says what's missing instead). The server checks the screen is open on
+that serial, the bench is there and you're within range and not busy, then runs the bench's own
+code (`HandleRecipe`: the inputs checked, the timed work started); what it says is caught for the
+status line and the screen is sent again. When the work is done the server checks the inputs again
+and takes each with `TryDeleteItem`; the output is given only when every one came out. Up to sixteen
+recipes are listed (the action menu has room for the first eight). The picture and its description
+come from the output's preview copy on the client (`RZ_ItemPreview`).
+
+**Fallbacks.** While the screen is used, the bench's **Make:** actions hide
+(`RZ_CraftMenu.HidesSlotsOn`: the spot's read label is "Use the workbench"). With **UI > Craft row
+layout** empty, "Use the workbench" lists what the first eight recipes take as a notice and the
+**Make:** actions are as before. A client that can't open the menu (no `RZ_CraftMenu` preset or
+layout) says so and shows the actions from then on; when the server can't open one (at its cap of
+open screens) the client shows the actions for a minute. *Simplified:* the picture doesn't turn,
+and a recipe added as data has no icon and names its inputs by their first keyword.
+
 ### The spawn screen
 
 As in `background_picker.html`: our own screen opens where vanilla's deploy menu and role selection
@@ -548,7 +600,7 @@ share it, each only in its own screen.
 | Part | Checked | Fixed |
 |---|---|---|
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
-| The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen and the shop each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen opens by itself), close with B (the spawn screen's B opens the pause menu), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
+| The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop and the crafting screen each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen opens by itself), close with B (the spawn screen's B opens the pause menu), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
 | Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-7 or D-pad and A") |
 | Hover, typing, chat | No screen uses hover or a tooltip. The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The reputation grid's headers now read "FAME" and "INFAMY UNDER 15" and so on, and its cells are condensed bold so the longest names fit. |
@@ -578,8 +630,9 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
 | `RZ_Cars` (its repair screen part), `RZ_CarMenu` | server, client | The car repair screen ([above](#the-car-repair-screen)) |
 | `RZ_ShopScreen`, `RZ_ShopOpenAction`, `RZ_ShopMenu` | server, server, client | The shop screen ([above](#the-shop-screen)) |
+| `RZ_Crafting` (its screen part), `RZ_CraftMenu`, `RZ_ItemPreview` | server, client, client | The crafting screen ([above](#the-crafting-screen)) |
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
-| `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair and shop screens and closes them in danger (below) |
+| `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair, shop and crafting screens and closes them in danger (below) |
 | `RZ_PlayerEffectsComponent` | on the player controller | The infected's close moves on the owner's machine: a hold (with the hint and Jump to kick free), a stagger, a knockdown; the server decides each one ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards and the subtitles |
@@ -608,19 +661,19 @@ server picks one of the two per message, never both. `NotifyAll` stays a broadca
 shows it exactly as before.
 
 **The screen guard** (`RZ_ScreenGuard`, server). The talk screen, the reader, the car repair
-screen and the shop screen stop you moving while the world keeps running, so the server watches every open one, once a second on the game
+screen, the shop screen and the crafting screen stop you moving while the world keeps running, so the server watches every open one, once a second on the game
 mode's `SecondTick`, and closes it when: you took damage or fired; an infected is within
 **Dialogue > Danger near** (6 m) of you or of the person you talk to, or one within **Danger
 closing** (30 m) came 2 m closer since the last check; you died, or the person is gone; and, for
 talk only, you're more than **Range** (6 m) from them or **Idle seconds** (120) passed with no
-reply (the repair and shop screens the same, from the car or the quartermaster, with no pick). In danger the person says "Not now!" as a subtitle. At most **Open at most** (32) screens
+reply (the repair, shop and crafting screens the same, from the car, the quartermaster or the bench, with no pick). In danger the person says "Not now!" as a subtitle. At most **Open at most** (32) screens
 are open on the server; each check is a few distance tests. The client says when the player
 closes one (`RpcAsk_ScreenClosed`).
 
 **Turning it off.** Styled notices off gives the vanilla hints back. Emptying **UI > Spawn row
 layout** gives vanilla's deploy menu back. Emptying **UI > Car job
-layout** gives a fixable car its prompts and notices back, and emptying **UI > Shop item layout**
-a quartermaster its Buy actions. Taking
+layout** gives a fixable car its prompts and notices back, emptying **UI > Shop item layout**
+a quartermaster its Buy actions, and emptying **UI > Craft row layout** a workbench its Make actions. Taking
 `RZ_PlayerUIComponent` off the player controller (`Prefabs/Characters/Core/RZ_PlayerController.et`)
 stops all sending. To remove the UI entirely, delete the `UI/` code folder and the lines that use
 it: the `m_UISettings` attribute, `m_UIFeed` (creation, tick, spawn,
@@ -630,7 +683,9 @@ top of `QueueHint` (with the chat commands' registration) in `Core/RZ_GameModeCo
 board menu call in `World/RZ_NoticeBoard.c` (`SendMenu`), the `OnClueRead` call in
 `Puzzles/RZ_PuzzleMission.c`, the repair screen section of `Interactions/RZ_Cars.c` (with its
 calls in `Inspect`, `Hide`, `CompleteFit` and `CompleteHotwire`, and `OnTaskStopped` in
-`RZ_Interactions.c`) the `RZ_CarMenu` check in `Puzzles/RZ_PuzzleActions.c`, `Factions/RZ_ShopScreen.c` with
+`RZ_Interactions.c`), the crafting screen section of `Interactions/RZ_Crafting.c` (with its calls
+in `Look` and `CompleteRecipe`, and `OnTaskStopped` in `RZ_Interactions.c`), the `RZ_CarMenu` and
+`RZ_CraftMenu` checks in `Puzzles/RZ_PuzzleActions.c`, `Factions/RZ_ShopScreen.c` with
 `RZ_ShopOpenAction` and the `RZ_ShopMenu` checks in the quartermaster actions
 (`Factions/RZ_Quartermaster.c`, `RZ_FactionServices.c`). `RZ_LoadoutLock.c`, `RZ_SpawnMenu.c` and `RZ_MapIcons.c` can each be deleted on their
 own (without the first, a locked pick spawns and plays as the default background). Then remove what names the UI's classes: point `RZ_GameMode.et` back at the vanilla player
@@ -648,9 +703,9 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and the shop). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
-| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop and spawn screens' and the map key's written as text; the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop and spawn screen presets; N, 1–7, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
+| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop and the crafting screen). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting and spawn screens' and the map key's written as text (the crafting screen's preset and **UI > Craft row layout** still to set); the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop and spawn screen presets; N, 1–7, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons |
-| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
+| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
 | Not done | Images for the icons the scripts never swap (the radio channel list, the HUD's radio, noise and paused icons): they draw as flat squares in their colour |
 | Planned | Mockups of the notice board and the hall of fame; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |

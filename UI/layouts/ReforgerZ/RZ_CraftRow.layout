@@ -1,0 +1,120 @@
+ButtonWidgetClass "{F583BCA2E7CC9C4C}" {
+ Name "RecipeRow"
+ Slot LayoutSlot "{BCAD9D506F6D6B5C}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+  Padding 0 0 0 4
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{16DEE8BFB54C8D90}" {
+   Name "RecipeSize"
+   Slot ButtonWidgetSlot "{635DC11FA26070AD}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 820
+   AllowHeightOverride 1
+   HeightOverride 64
+   {
+    OverlayWidgetClass "{604A3E6E51ED7085}" {
+     Name "RecipeBox"
+     Slot AlignableSlot "{68C84A996F48F373}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{0C13E6FE838DD5BC}" {
+       Name "RecipeBg"
+       Slot OverlayWidgetSlot "{2779D72BC753F4F2}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.106 0.122 0.133 1
+       Size 1 1
+      }
+      ImageWidgetClass "{139F7F069BBBC8FF}" {
+       Name "RecipeBar"
+       Slot OverlayWidgetSlot "{844273919F7E4FE8}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Size 5 64
+      }
+      HorizontalLayoutWidgetClass "{A0977200468EC031}" {
+       Name "RecipeLine"
+       Slot OverlayWidgetSlot "{32584C64DD67B911}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 22 0 22 0
+       }
+       {
+        ImageWidgetClass "{4EA5929972A2C93A}" {
+         Name "RecipeIcon"
+         Slot LayoutSlot "{4D5AB8EB64432C2D}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 14 0
+         }
+         "Is Visible" 0
+         Color 0.91 0.886 0.816 1
+         Size 32 32
+        }
+        TextWidgetClass "{6360AD65877ED2D9}" {
+         Name "RecipeName"
+         Slot LayoutSlot "{BED0D6B7A2F26DB3}" {
+          HorizontalAlign 3
+          VerticalAlign 1
+          SizeMode Fill
+          FillWeight 1
+         }
+         Color 0.91 0.886 0.816 1
+         Text "Tin-can tripwire"
+         "Font Size" 26
+         "Min Font Size" 26
+         FontProperties FontProperties "{94896A03B2A06DCF}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{592719A211368012}" {
+         Name "RecipeState"
+         Slot LayoutSlot "{172740BAADC0BA57}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Text "READY"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{925B2DEC7C646598}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{FEFAAD95BAC72EAB}" {
+         Name "RecipeTime"
+         Slot LayoutSlot "{DD7954082AE4958A}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 24 0 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Text "8 s"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{384FEEC2EF72053B}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

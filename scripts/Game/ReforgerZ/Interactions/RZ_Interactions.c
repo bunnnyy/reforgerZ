@@ -1408,7 +1408,7 @@ class RZ_Interactions
 			case RZ_ESpotKind.DOOR: m_Doors.Describe(playerId, s); return;
 			case RZ_ESpotKind.WRECK: m_Cars.DescribeWreck(playerId, s); return;
 			case RZ_ESpotKind.CAR: m_Cars.Inspect(playerId, s, user); return;
-			case RZ_ESpotKind.WORKBENCH: m_Crafting.DescribeBench(playerId); return;
+			case RZ_ESpotKind.WORKBENCH: m_Crafting.Look(playerId, s, user); return;
 			case RZ_ESpotKind.RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.DescribeFoundGenerator(playerId, s); return;
 			case RZ_ESpotKind.BURN: return;
@@ -1619,6 +1619,7 @@ class RZ_Interactions
 
 			m_aTasks.Remove(i);
 			m_Cars.OnTaskStopped(playerId);
+			m_Crafting.OnTaskStopped(playerId);
 		}
 	}
 
@@ -1642,6 +1643,7 @@ class RZ_Interactions
 				m_GM.NotifyPlayer(t.m_iPlayerId, "Stopped", string.Format("%1 You leave %2 unfinished.", why, t.m_sLabel));
 				m_aTasks.Remove(i);
 				m_Cars.OnTaskStopped(t.m_iPlayerId);
+				m_Crafting.OnTaskStopped(t.m_iPlayerId);
 				continue;
 			}
 
