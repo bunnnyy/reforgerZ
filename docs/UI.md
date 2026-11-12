@@ -89,7 +89,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Notebook: The season | — | One page that scrolls: the four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)); then the hall of fame: this season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_SeasonPage` | Page built as text (one scroll since the hall merged in), not checked in play; no mockup |
 | The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, where you start, and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
-| Talk | `talk.png` | A person's name and who they are, what they say in large type, your replies with what each needs ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
+| Talk | `talk.png` | New Vegas style, in two steps: their line on its own in a subtitle band with a reading bar, then your replies on their own in an outlined box, with what each needs; their name top right ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
 | Subtitles | `hud.png` | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | Car repair | `car_repair.png` | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
@@ -344,34 +344,50 @@ The notice board opens when you read a safehouse board, with **UI > Board menus*
 
 ### The talk screen
 
-New Vegas style (unlike the mockup `talk.html`, whose full-width panel hid the person): the world
-isn't dimmed and the person stays in view; a compact panel, 1,190 × 376, sits in the lower middle
-of the screen (about 19% to 81% across and 60% to 95% down at 1920 × 1080, below their head and
-chest), #121416 at 85% with a 2 px border and a 5 px top border in their
-faction colour. Inside: their name in that colour (bold 28) and the sub-line, "The Haven - council
-head - knows your name" (20, dim), and on the right of that line, when the list has more than one
-page, the page indicator ([below](#the-talk-screen)); what they say (26, bright bone, three lines in
-a box that scrolls with the right stick or the wheel when it's longer); your replies as a numbered list (25), **at most five**,
-the selected one lighter with an accent bar, a dim tag on the right ("a job", "news", "trade", "20
-Haven Favor"), a reply you can't take faint with what it needs, a reply with nothing new behind it
-**grey** (it still works); the last is always the way out, "I'll be going.". One line of footer
-prompts closes the panel, with "1-5: a reply  Q / E: page" on its right.
+New Vegas style, in **two steps** (the mockup is `talk.html`): the world isn't dimmed, the person
+stays in view, and their name (bold 40) and sub-line, "The Haven - council head - knows your name"
+(24, bone), sit at the top right in their faction colour, with a shadow, from start to end.
+
+1. **Their line on its own.** When they speak, only their line shows, in a subtitle band in the
+   lower middle (1,320 wide, #121416 at 85%, a 5 px bar down its left in the faction colour; the
+   line regular 30, bright bone, four lines in a box that scrolls with the right stick or the wheel
+   when it's longer). A thin bar along the band's foot fills in the faction colour over the reading
+   time: **0.05 s a character, at least 2.5 s and at most 9 s**. Then the replies come by
+   themselves: nothing needs pressing. **A, Space or a click** skips straight to them ("A / Space:
+   skip" under the band). Holding the right stick to read a long line holds the bar.
+2. **Then your replies on their own.** The band becomes the reply box (1,440 wide, the same panel
+   with a 2 px outline in the faction colour), holding only your choices (regular 28), **at most
+   five**: the selected one with a fill and an outline in the faction colour; a reply's tag before
+   it in the faction colour, in brackets ("[a job]", "[news]", "[trade]", "[Speech - Bastion 2/3]");
+   a reply you can't take faint, its tag too, with what it needs after it ("(you have 1)"); a reply
+   with nothing new behind it **grey** (it still works). The last is always the way out, "I'll be
+   going.". Under the box, the footer: "D-pad: choose · A: say it · LB/RB: page · B: leave" (the
+   pad's or the keys' glyphs, by the device in use), with "1-5: a reply · Q/E: page · Esc: leave"
+   on its right.
+3. **Their answer.** The reply you say fades (the others go at once) and their answer takes the
+   band: step 1 again. If no answer comes in 2 s (the server didn't take the pick), the replies
+   come back.
 
 The list is built on the server ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)): a longer list comes a
-page at a time, four replies and the way out. **The page indicator** shows which page you're on,
-"2/3" (bold 20, bone), with "<" before it while there's a page before (dim, 22) and **MORE >** after
-it (bold 20, the faction colour) while there's a page after; with one page it's hidden. LB/RB (Q/E)
-turn the page and go round from either end; a click on "<" or "MORE >" turns it too. A new list (a
+page at a time, four replies and the way out. **The page indicator**: an up arrow at the box's top
+left while there's a page before, a down arrow at its bottom left while there's one after (the
+static `marker_self` icon in the faction colour; the down one is turned 180°), and "1/2" bottom right
+(bold 22, the faction colour); with one page they're hidden. LB/RB (Q/E) turn the page and go round
+from either end; a click on an arrow turns it too. A page turn stays on the replies. A new list (a
 node, back to the hub) starts on its first page. A server admin's replies sit under one **[Admin]**
-reply that opens them as their own list, with **Back.** as its way out (B and Esc go back too).
+reply that opens them as their own list, with **Back.** as its way out (B and Esc go back too); it
+stays on the replies.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
+| Skip their line | Space, Enter, or a click (`RZ_TalkSkip`) | A |
 | Choose | up/down, or **1–5** (`RZ_Reply1`–`5`) to say one at once; the cursor on a reply lights it | D-pad or left stick, or LT/RT + D-pad to say one at once ([Controllers](#controllers)) |
 | Say it | Enter, or click | A |
-| Leave (Back. in the [Admin] list) | Esc | B |
-| Turn the page ("1/2", MORE >) | Q/E, or click "<" or "MORE >" | LB/RB |
+| Leave (Back. in the [Admin] list), from either step | Esc | B |
+| Turn the page ("1/2", the arrows) | Q/E, or click an arrow | LB/RB |
 | Read more of a long line | the wheel | right stick (`RZ_TalkScroll`) |
+
+The keys that choose, say and turn pages work only on the replies; B and Esc work on both steps.
 
 **With Dialogue > Trees on** ([DIALOGUE.md](DIALOGUE.md#trees-hubs-topics-and-nodes)) the same
 screen and payload carry the trees, with no new widgets: the person's built replies, then their
@@ -383,10 +399,13 @@ after a check opens with the result ("[Persuaded]"). Tags are cut at 40 characte
 
 How it works is in [DIALOGUE.md](DIALOGUE.md#the-talk-screen). The screen reads `PAYLOAD_TALK`:
 `T|serial|faction|name|sub|said|page|pages` (line breaks as `^`, the page from 0), then
-`R|id|label|tag|need|enabled|heard` per reply (five at most); `X|reason` closes it. A pick goes back
-as `RpcAsk_TalkPick(serial, id)`, and a page turn as the same call with `RZ_Dialogue.MORE` or
+`R|id|label|tag|need|enabled|heard` per reply (five at most); `X|reason` closes it. The line and the replies come
+together; the two steps are the client's (`RZ_TalkMenu`): a node after a reply you said, or with a
+new line, starts at step 1, and one with the same line (a page turn, the [Admin] list) stays on the
+replies. A pick goes back as `RpcAsk_TalkPick(serial, id)`, and a page turn as the same call with `RZ_Dialogue.MORE` or
 `PAGE_BACK` (the server takes it only while there's more than one page); Esc, B or another menu on
-top send Leave. If the menu can't open on a client, that client shows the line as a card,
+top send Leave, which the server takes whatever the serial (B pressed while an answer is on its
+way still leaves). If the menu can't open on a client, that client shows the line as a card,
 leaves, and shows the person's actions again (`RZ_TalkMenu.Available`).
 
 ### Subtitles and the reader
@@ -699,7 +718,8 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
 | `RZ_TalkScroll` | none: the mouse wheel | right stick (vertical): what they say on the talk screen, when it's long | `MenuContext` |
-| The talk screen's pages (vanilla `MenuTabLeft`/`MenuTabRight`) | Q/E, or a click on "<" or "MORE >" | LB/RB, the page back and on (round from either end) | `MenuContext` |
+| `RZ_TalkSkip` | Space, or a click (left mouse button) | none: A (`MenuSelect`) skips their line on the talk screen | `MenuContext` |
+| The talk screen's pages (vanilla `MenuTabLeft`/`MenuTabRight`) | Q/E, or a click on an arrow | LB/RB, the page back and on (round from either end) | `MenuContext` |
 | `RZ_MapLegend` | I | Y | `MapContext`: show or hide the map key on the full-screen map |
 | Kick free of a hold (vanilla `CharacterJump`, listened to only while held) | Space | the pad's jump button (A) | `IngameContext` |
 
@@ -718,7 +738,9 @@ pairs View (the map on its own) with the D-pad (weapon groups), X (the group men
 between pages (`MenuNavLeft`, `MenuNavRight`), which the talk screen doesn't use, so LT and RT with
 the D-pad say a reply at once there (the D-pad also moves the focus, harmlessly: the reply is picked
 by its number). The talk screen's pages are on LB/RB, which no reply combo uses, so a page turn never
-says a reply; what they say scrolls with the right stick instead. Not yet checked with a pad. X is free in the board menu, so the radio filter and the board's Clear
+says a reply; what they say scrolls with the right stick instead. On their line, A only skips it:
+the replies take A once they show, and a click that skipped the line doesn't also say the reply
+that comes up under the cursor (the screen ignores row clicks for 0.3 s). Not yet checked with a pad. X is free in the board menu, so the radio filter and the board's Clear
 share it, each only in its own screen; Y and T are the car screen's Start and the notebook's Track,
 each only in its own screen.
 
@@ -728,7 +750,7 @@ each only in its own screen.
 |---|---|---|
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
 | The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop and the crafting screen each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen opens by itself), close with B (the spawn screen's B opens the pause menu), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
-| Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5: a reply  Q / E: page", with LB / RB in the pad's line) |
+| Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5: a reply · Q/E: page · Esc: leave", with D-pad, A, LB/RB and B in the footer) and its skip hint ("A / Space: skip") |
 | Hover, typing, chat | No screen needs hover or a tooltip (the talk screen lights the reply under the cursor and the Standing page highlights the row under it, as the D-pad does; a click opens it). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the old Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The Standing page (G2) has nothing under 18; its names are 40 and its detail text 22. |
 

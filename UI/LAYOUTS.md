@@ -475,31 +475,38 @@ Frame SeasonPage (root)
 
 ## Talk screen: `RZ_TalkMenu.layout` and `RZ_TalkReply.layout`
 
-The talk screen (`RZ_TalkMenu` preset), New Vegas style: a compact panel in the lower middle, so
-the person stays in view. Written as text. Positions inside the panel are from its top left.
+The talk screen (`RZ_TalkMenu` preset), New Vegas style, in two steps (docs/UI.md): their line on
+its own in `LinePanel`, then your replies on their own in `ReplyPanel`; the script shows one at a
+time. The person stays in view. Written as text. Positions inside a panel are from its top left.
 
 ```
 Frame (root, full screen; no dim, the world shows as it is)
-└─ Frame   TalkPanel       1,190 × 376, anchored bottom centre, its bottom 56 up (x 365–1555, y 648–1024)
-   ├─ Image  (TalkBg)        #121416 at 85%
-   ├─ Panel  (TalkLine)      border #2A2E31
-   ├─ Image  TalkAccent      full width × 5, top edge, tinted with the faction colour
-   ├─ HorizontalLayout (TalkWho)  at (28, 14), 1,134 × 34
-   │  ├─ Text  TalkName      condensed bold 28, tinted with the faction colour
-   │  └─ Text  TalkSub       regular 20, dim, 16 after the name
-   ├─ HorizontalLayout TalkPage  at (902, 14), 260 × 34, hidden: shown when the list has more than one page
-   │  ├─ Button PagePrev     blank, 12 before the count; shown while there's a page before; a click turns back
-   │  │  └─ Text PagePrevText  mono bold 22, dim: "<"
-   │  ├─ Text   PageText     mono bold 20, bone: "1/2", 12 before MORE
-   │  └─ Button PageNext     blank; shown while there's a page after; a click turns on
-   │     └─ Text PageNextText  mono bold 20, tinted with the faction colour: "MORE >"
-   ├─ ScrollLayout SaidScroll  at (28, 52), 1,134 × 94: three lines (the right stick and the wheel scroll it)
-   │  └─ SizeLayout (SaidWidth)  1,104 wide
-   │     └─ Text TalkSaid    regular 26, #F4F0E6, wraps
-   ├─ VerticalLayout Replies   at (28, 152), 1,134 × 180: the reply rows, five at most
-   ├─ HorizontalLayout Prompts at (28, 336), 760 × 34: the footer prompts the script makes, one line
-   ├─ Text   PromptsText     at (28, 340), mono bold 18, dim: the static prompts, hidden once made
-   └─ Text   (KeysHint)      right-aligned, ending at (1162, 340), mono 18, faint: "1-5: A REPLY    Q / E: PAGE"
+├─ Text   TalkName         anchored top right, its right edge 120 in, top 168; 1,000 × 48, condensed bold 40,
+│                          right-aligned, shadow, tinted with the faction colour
+├─ Text   TalkSub          the same edge, top 218; 1,000 × 30, regular 24, bone, right-aligned, shadow
+├─ Frame  LinePanel        step 1: 1,320 × 222, anchored bottom centre, its bottom 84 up (x 300–1620, y 774–996)
+│  ├─ Image  (LineBg)        (0, 0) 1,320 × 186, #121416 at 85%
+│  ├─ Image  LineAccent      (0, 0) 5 × 186, the band's left edge, tinted with the faction colour
+│  ├─ ScrollLayout SaidScroll  (36, 20) 1,256 × 144: four lines (the right stick and the wheel scroll it)
+│  │  └─ SizeLayout (SaidWidth)  1,226 wide
+│  │     └─ Text TalkSaid    regular 30, #F4F0E6, wraps
+│  ├─ Image  (LineTrack)     (5, 182) 1,315 × 4, white at 13%: the bar's track
+│  ├─ ProgressBar LineBar    (5, 182) 1,315 × 4, Simple, tinted with the faction colour: the reading time
+│  └─ Text   (SkipHint)      right-aligned, ending at (1320, 194), mono 20, dim: "A / Space: skip"
+└─ Frame  ReplyPanel       step 2, hidden until the script shows it: 1,440 × 352, anchored bottom centre,
+   │                       its bottom 56 up (x 240–1680, y 672–1024)
+   ├─ Image  (ReplyPanelBg)  (0, 0) 1,440 × 310, #121416 at 90%
+   ├─ Panel  ReplyPanelLine  (0, 0) 1,440 × 310, outline_2px, tinted with the faction colour
+   ├─ Button PagePrev        (12, 16) 32 × 32, blank, hidden: shown while there's a page before; a click turns back
+   │  └─ Image PagePrevIcon    static `marker_self` (Texture: the RZ_Icons imageset), tinted
+   ├─ Button PageNext        (12, 262) 32 × 32, blank, hidden: shown while there's a page after; a click turns on
+   │  └─ Image PageNextIcon    static `marker_self`, tinted; the script turns it 180° to point down
+   ├─ VerticalLayout Replies (52, 16) 1,330 × 260: the reply rows, five at most
+   ├─ Text   PageText        right-aligned in (1290, 278) 130 × 28, mono bold 22, tinted, hidden: "1/2"
+   ├─ HorizontalLayout Prompts (0, 316) 1,000 × 34: the footer prompts the script makes, one line
+   ├─ Text   PromptsText     (0, 320), mono 20, dim: "D-pad: choose · A: say it · LB/RB: page · B: leave",
+   │                         the static prompts, hidden once made
+   └─ Text   (KeysHint)      right-aligned, ending at (1440, 320), mono 20, faint: "1-5: a reply · Q/E: page · Esc: leave"
 ```
 
 `RZ_TalkReply.layout` (**UI > Talk reply layout**), one row, created into `Replies`. The root
@@ -507,23 +514,21 @@ is a `Button` named `ReplyRow`: the script adds a handler that lights the row wh
 onto it and says it on a click.
 
 ```
-Button ReplyRow (root, 2 below it)
-└─ SizeLayout (ReplySize)    1,134 × 34
+Button ReplyRow (root, 4 below it)
+└─ SizeLayout (ReplySize)    1,330 × 48
    └─ Overlay (ReplyBox)
-      ├─ Image  ReplyBg       #1B1F22, shown on the selected row
-      ├─ Image  ReplyBar      4 × 34, left edge, tinted with the faction colour, shown on the selected row
-      └─ HorizontalLayout (ReplyLine)  padding 16 left and right, centred vertically
-         ├─ SizeLayout (ReplyNumBox) 28 × 28, 16 before the text
-         │  └─ Overlay: Panel (ReplyNumLine, border #6B5222) and Text ReplyNum (mono bold 18, tinted)
-         ├─ Text   ReplyText     regular 25, fills the row (bright on the selected row, grey when there's
-         │                       nothing new behind it, faint when it can't be picked)
-         ├─ Text   ReplyTag      mono 18, dim, right ("a job", "trade")
-         └─ Text   ReplyNeed     mono 18, dim, right, hidden unless the reply can't be picked
+      ├─ Image  ReplyBg       tinted with the faction colour, shown at 16% on the selected row
+      ├─ Panel  ReplyEdge     outline_2px, tinted with the faction colour, shown on the selected row
+      └─ HorizontalLayout (ReplyLine)  padding 14 left and right, centred vertically
+         ├─ Text   ReplyTag      regular 28, tinted (the faction colour, faint when it can't be picked),
+         │                       10 before the text, hidden when there's no tag: "[Speech - Bastion 2/3]"
+         ├─ Text   ReplyText     regular 28 (bright on the selected row, grey when there's nothing new
+         │                       behind it, faint when it can't be picked)
+         └─ Text   ReplyNeed     regular 24, faint, 12 after the text, hidden unless the reply can't be
+                                 picked: "(you have 1)"
 ```
 
-Unlike the mockup (`UI/Mockups/talk.html`), the panel isn't full width and the world isn't dimmed,
-the pad-key ring isn't rounded (a `Panel` border), and the selected row has no extra "A" key on its
-right (the prompts line shows it).
+The rows have no numbers (1–5 still say the reply in that row, counted from the top).
 
 ## Reader: `RZ_ReaderMenu.layout`
 

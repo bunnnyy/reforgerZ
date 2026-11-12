@@ -77,15 +77,16 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
   **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me? (with
   Trees on, talk carries them: [Hubs](#hubs-work-comes-out-of-talk)).
-- **A pick** runs that slot's handler, capturing again. Their answer shows where they speak, then
-  the replies after it (the hub's again, or the node's), New Vegas style. A reply that says nothing
+- **A pick** runs that slot's handler, capturing again. Their answer shows on its own, then
+  the replies after it (the hub's again, or the node's), New Vegas style: the two steps are the
+  client's, from one node ([UI.md](UI.md#the-talk-screen)). A reply that says nothing
   at all is answered "(They have nothing to add to that.)". It closes only when you leave, when
   danger or distance ends it, or when the reply opens another screen (the shop, the reader): that
   screen takes over. A tree choice that ends the conversation (`end`) shows their last words with
   only I'll be going.; with nothing said, it closes at once.
 - **Five at most on the screen.** The server sends a page of the list: up to four replies and the
   way out, with the page and the count. When there's more than one page the screen shows which one
-  you're on ("1/2", MORE >) and LB/RB or Q/E turn it, round from either end ([UI.md](UI.md#the-talk-screen));
+  you're on ("1/2" and the arrows) and LB/RB or Q/E turn it, round from either end ([UI.md](UI.md#the-talk-screen));
   a turn is a pick of `MORE` or `PAGE_BACK`, taken only while there are pages to turn. A new list
   (another node, back to the hub) starts on its first page.
 - **[Admin].** A server admin's replies (the admins' chat commands without typing, [Tools](#tools))
@@ -106,7 +107,7 @@ exile's shut door) works exactly as built.
 **Safety.** At most 32 conversations (and readers) on the server, and 6 with one person at once (16
 while someone there is in a public node; at the cap, the one idle longest, over 30 s, gives way; else
 "One at a time."); a pick is checked for the
-current serial, a reply id that was sent and enabled, a living player in range and not in danger,
+current serial (Leave is taken whatever the serial), a reply id that was sent and enabled, a living player in range and not in danger,
 and at most one every 0.3 s; Talk at most every 2 s. One node at a time goes to that player only
 (the owner-only `PAYLOAD_TALK`). Sessions aren't saved. With Trees on, a conversation in a node
 that danger or distance ended picks up where it was if you talk to the same person within 60 s

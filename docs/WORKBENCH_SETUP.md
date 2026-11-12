@@ -1267,7 +1267,10 @@ in `UI/layouts/ReforgerZ/`.
       weight 0.1 kg. **UI > Notebook prefab** points at it.
    3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
       (its new `SubtitlePanel`, hidden) the same way. **UI > Talk reply layout** is set, so the
-      talk screen is on (**Dialogue > Talk screen**). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
+      talk screen is on (**Dialogue > Talk screen**). The talk screen's layout holds its two steps,
+      `LinePanel` (their line and its `LineBar`) and `ReplyPanel` (hidden; the replies, the arrows
+      and the footer), and the arrows' static `marker_self` icons need the icon atlas imported
+      (UI/LAYOUTS.md, "Importing the icons"). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
       Open `RZ_CarMenu.layout` and `RZ_CarJob.layout` too: **UI > Car job layout** is set, so the
       car repair screen is on. The same for `RZ_ShopMenu.layout` and `RZ_ShopItem.layout` (**UI >
       Shop item layout** is set, so the shop screen is on), and open one quartermaster prefab to
@@ -1892,11 +1895,11 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_Notebook.c:977` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
-| `UI/RZ_TalkMenu.c:39` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
-| `UI/RZ_TalkMenu.c:288` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.OnMenuUpdate`; the wheel still works |
+| `UI/RZ_TalkMenu.c:44` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
+| `UI/RZ_TalkMenu.c:365` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; the wheel still works |
 | `UI/RZ_UIData.c:984` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1082` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
-| `Dialogue/RZ_Dialogue.c:888` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `UI/RZ_UIData.c:1082` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
+| `Dialogue/RZ_Dialogue.c:892` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:182` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
@@ -2728,12 +2731,18 @@ when it happens)
   other's log (owner-only notices).
 - [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre in olive,
   not a card; a Perimeter loudspeaker too. With **Subtitles** off, they're cards again.
-- [ ] Talk to a Trader wanderer: the talk screen opens with their name, what they say and the
-  replies; "Buy supplies" shows its price and is dim with what it needs if you're short; pick a
-  reply with the D-pad and A, with 1–5, with LT/RT + D-pad, and with a click; B leaves. Their choice actions don't show
-  in the action menu while the screen is on. Walk off 6 m, or let an infected come close: it
-  closes ("Not now!"). Do the same with a leader's "Talk to whoever's in charge" (Ask for work
-  gives the job as a card, the leader's line in the screen) and a safehouse occupant.
+- [ ] Talk to a Trader wanderer: the talk screen opens with their name and sub-line at the top right
+  in their colour and **only their line** in the band in the lower middle, its thin bar filling;
+  after the bar (2.5 s for a short line, 9 s at most) the band becomes the reply box with **only
+  your replies**, without pressing anything. Talk again and skip the line with A, with Space and
+  with a click: the replies come at once, and the click doesn't also say a reply. "Buy supplies"
+  shows its price and is faint with what it needs if you're short; pick a reply with the D-pad and
+  A, with 1–5, with LT/RT + D-pad, and with a click: it fades and their answer takes the band. B
+  leaves from the line and from the replies. Their choice actions don't show in the action menu
+  while the screen is on. Walk off 6 m, or let an infected come close: it closes ("Not now!"). Do
+  the same with a leader's "Talk to whoever's in charge" (Ask for work gives the job as a card, the
+  leader's line in the band) and a safehouse occupant. All of it on a TV with a pad: the line, the
+  tags and the footer readable from the sofa.
 - [ ] With **UI > Talk reply layout** empty, Talk and the slots are actions with notices again.
 - [ ] **Dialogue > Trees** off (the default): the talk screen is exactly as above, no topics, no
   speaker at road posts, leaders greet as before.
@@ -2747,11 +2756,14 @@ when it happens)
   whoever's in charge", a safehouse's named cook (the errand from "Ask what's for supper."), a
   holding's named person and a wanderer ("Need a hand?" inside their trouble; a bitten one keeps the
   antidote reply). With errands off, the named people's built replies come back.
-- [ ] **Pages:** when the list doesn't fit (a council head with Trees on), "1/2" and MORE > show on
-  the right of the name line, at 18 px or more on a TV; LB/RB with a pad, Q/E on the keyboard and a
-  click on "<" or "MORE >" turn the page and go round from either end, and none of them says a reply;
-  1–5 and LT/RT + D-pad still say the reply in that row; the right stick and the wheel scroll a long
-  line. A list that fits shows no page indicator; a node starts on page 1.
+- [ ] **Pages:** when the list doesn't fit (a council head with Trees on), "1/2" shows bottom right
+  of the reply box and the arrows at its left (up while there's a page before, down while there's
+  one after, both in the faction colour and pointing the right way); LB/RB with a pad, Q/E on the
+  keyboard and a click on an arrow turn the page and go round from either end, stay on the replies
+  (no line again) and none of them says a reply; 1–5 and LT/RT + D-pad still say the reply in that
+  row; the right stick and the wheel scroll a long line in the band, and the stick holds its bar. A
+  list that fits shows no page indicator; a node starts on page 1. The [Admin] list and its Back.
+  stay on the replies too.
 - [ ] **What's going on:** take or lose an outpost, burn a town, empty a house or bring people in
   (or wait for a heat horde): within a season day the news topics name it ("They're saying the Red
   Hand took ..."); Bastion's report says it "withdrew" from a post it lost, and the Red Hand's post
