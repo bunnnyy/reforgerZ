@@ -68,9 +68,10 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (78) from `UI/Icons/png/128/` into
-   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1280, eight 128-pixel cells to a row, in name
-   order.
+1. `py tools/icon_atlas.py` packs the white icons (88) from `UI/Icons/png/128/` into
+   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1408, eight 128-pixel cells to a row. Icons the
+   imageset already lists keep their cells; new ones go at the end, in name order, so adding an
+   icon never moves the others.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
    becomes `RZ_Icons.edds`.
 3. `py tools/icon_atlas.py imageset` writes `UI/Imagesets/ReforgerZ/RZ_Icons.imageset`: one image
@@ -81,11 +82,11 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 4. **UI > Icon imageset** on `RZ_GameMode.et` points at the imageset (already set).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
-steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for you-are-here (`marker_self` and
-`marker_self_back`), the subtitles' note (`voice_note`) and the three objective marks (`track_current`,
-`track_next`, `track_done`), 78 in all, so import the PNG again (step 2). Until then the imported
-`.edds` is the 72-icon atlas while the imageset lists 78 in a taller atlas, so icons show the wrong
-cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
+steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for the map's disc, ring, glyphs and
+badges (88 in all, the ten new ones in the last cells), so import the PNG again (step 2). Until then
+the imported `.edds` is an older, shorter atlas while the imageset lists 88, so icons show the wrong
+cells (the 78 before these were re-packed in name order, so the old `.edds` doesn't match them either).
+The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -844,22 +845,29 @@ Six options show at once; more scroll (a keypad's twelve keys).
 ## Map icon: `RZ_MapIcon.layout`
 
 One marker on the real map, created into the map's root by `RZ_MapIconsUI` on the map
-configuration when **UI > Map icon layout** names this file. Neither is set up yet
-([UI.md](../docs/UI.md#built-and-planned)). The script centres the 48 × 48 icon on the spot and
-tints it. For a range ring (`marker_range`) it sets the root's and **Icon**'s size every frame to the
-pack's ground on the map (48 to 320 across), so **Icon** must sit in the root's frame slot, top-left,
-not stretched by anchors.
+configuration when **UI > Map icon layout** names this file
+([UI.md](../docs/UI.md#the-map) has the design and the colours). The script centres the 34 × 34
+marker on the spot, sets each image from the imageset and tints it. Every image has the imageset and
+a default image in the layout, so none draws as a flat square. Children are drawn in this order.
 
 ```
-Frame (root, 48 × 48, top-left anchor, ignores the cursor)
-├─ Image  Icon       48 × 48, a marker_* icon (white; the script sets the image and tints it)
-└─ Text   Label      under the icon, offset (-116, 50), 280 × 130 (up to four lines), centred, condensed bold 26, bone, a dark shadow offset by 1
+Frame (root, 34 × 34, top-left anchor, ignores the cursor)
+├─ Image  Ring       34 × 34 at (0, 0), marker_ring, #121416
+├─ Image  Disc       28 × 28 at (3, 3), marker_disc, tinted the owner's colour
+├─ Image  Icon       18 × 18 at (8, 8), the faction's emblem or the place's glyph, bone (near-black on hazard)
+├─ Image  BadgeBack  17 × 17 at (20, 20), marker_disc, #121416; hidden without a badge
+├─ Image  Badge      17 × 17 at (20, 20), badge_*, bone; hidden without a badge
+└─ Text   Label      under the marker, offset (-123, 38), 280 × 112 (up to four lines), centred, condensed bold 22, bone, a dark shadow offset by 1
 ```
 
-**You are here** is two more of these, made after the others so they're drawn above them, 60 × 60
-(the script sets the root's and **Icon**'s size): `marker_self_back` tinted dark under `marker_self`
-in hazard yellow, whose **Icon** the script turns to the player's heading every frame. Their labels
-are empty.
+A **range ring** (a line with a radius) hides the ring, disc and badge and uses **Icon** alone
+(`marker_range`): the script moves it to (0, 0) and sets the root's and **Icon**'s size every frame to
+the pack's ground on the map (48 to 320 across), with **Label** centred 4 under it. So every image must
+sit in the root's frame slot, top-left, not stretched by anchors.
+
+**You are here** is two more of these, made after the others so they're drawn above them, 44 × 44,
+**Icon** alone in the same way: `marker_self_back` tinted dark under `marker_self` in hazard yellow,
+whose **Icon** the script turns to the player's heading every frame. Their labels are empty.
 
 Markers within 40 m of an earlier one share its label, one line each (`RZ_MapIconsUI.MergeLabels`); their
 own labels are empty, so a stronghold, its quartermaster and a job at the same house never draw their
@@ -868,34 +876,36 @@ labels on top of each other. Range rings keep their own.
 ## Map legend: `RZ_MapLegend.layout`
 
 The map key on the full-screen map (**UI > Map legend layout**), created into the map's root by
-`RZ_MapIconsUI` when the map opens, with the icon layer. Written as text. The script sets each
-`Key_<icon>` image from the imageset and tints it as the map does (the stronghold in Bastion's
-olive and the outpost in the Red Hand's red, as examples; the safehouse amber, the lab teal, the
-event, the checkpoint and the range ring hazard yellow, the stations bone), and fades the root
-with the zoom (`SetOpacity`; hidden at 0). Positions are from the root's top left.
+`RZ_MapIconsUI` when the map opens, with the icon layer. Written as text. Each key marker is a small
+frame with the map icon's own children (**Ring**, **Disc**, **Icon**; a badge's **BadgeBack** and
+**Badge**), which the script paints as the map does (`RZ_MapIconsUI.Paint` and `PaintBadge`). It fades
+the root with the zoom (`SetOpacity`; hidden at 0). Positions are from the root's top left.
 
 ```
-Frame MapLegend (root, 640 × 400, anchor bottom-left, offset (96, -190): above vanilla's key hints and scale bar)
+Frame MapLegend (root, 640 × 460, anchor bottom-left, offset (96, -190): above vanilla's key hints and scale bar)
 ├─ Image  (LegendBg)       #121416 at 90%
 ├─ Image  (LegendAccent)   full width × 5, top edge, bone
 ├─ Panel  (LegendLine)     border #2A2E31
 ├─ Text   (LegendTitle)    at (20, 16), condensed bold 28, "MAP KEY"
 ├─ Text   (LegendSub)      right-aligned, ending at (620, 24), mono bold 20, dim, "COLOUR: WHOSE IT IS"
-├─ Text   (label "WHO HOLDS WHAT") at (20, 64), mono bold 20   ├─ Text (label "THE WORLD") at (330, 64)
-├─ Image  Key_marker_stronghold   40 × 40 at (20, 102)  ├─ Image Key_marker_event       at (330, 102)
-├─ Image  Key_marker_outpost      at (20, 152)          ├─ Image Key_marker_checkpoint  at (330, 152)
-├─ Image  Key_marker_safehouse    at (20, 202)          ├─ Image Key_marker_power       at (330, 202)
-├─ Image  Key_marker_lab          at (20, 252)          ├─ Image Key_marker_radio       at (330, 252)
-│                                                      └─ Image Key_marker_range       at (330, 302)
-├─ Text   (KeyName_<icon>) beside each icon, 12 to its right, condensed bold 22, bone: Stronghold,
-│         Outpost, Haven safehouse, Halcyon's lab; World event, Sealed checkpoint, Power station,
-│         Radio station, A pack's ground
+├─ Text   (LabelWho)       at (20, 64), mono bold 20, dim, "WHO HOLDS WHAT"
+├─ Frame  Key_haven, Key_bastion, Key_redhand, Key_halcyon   34 × 34 at x 20, 194, 344, 494, y 100:
+│         Ring 34, Disc 28 at (3, 3), Icon 18 at (8, 8), as on the map
+├─ Text   (KeyName_<faction>)   44 right of each, y 103, condensed bold 22, bone: Haven, Bastion, Red Hand, Halcyon
+├─ Text   (LabelWhat)      at (20, 150), "WHAT THE PLACE IS"
+├─ Frame  Badge_stronghold, Badge_outpost, Badge_safehouse, Badge_lab   26 × 26 at x 24, 198, 348, 498, y 190:
+│         BadgeBack (marker_disc, #121416) and Badge (badge_*, bone), both 26
+├─ Text   (BadgeName_<kind>)    at x 64, 238, 388, 538, y 189, condensed bold 22: Stronghold, Outpost, Safehouse, Lab
+├─ Text   (LabelWorld)     at (20, 236), "THE WORLD"
+├─ Frame  Key_event at (20, 272), Key_checkpoint at (330, 272), Key_power at (20, 316), Key_radio at (330, 316): discs as above
+├─ Frame  Key_range at (20, 360): Icon alone, 34, marker_range in hazard yellow
+├─ Text   (KeyName_<place>) 44 right of each, condensed bold 22: World event, Sealed checkpoint, Power station, Radio station, A pack's ground
 ├─ HorizontalLayout LegendPrompt   bottom left at (20, -14): the script makes the RZ_MapLegend prompt ("Hide the key")
 └─ Text   LegendPromptText         the same place, mono bold 20, dim, "I / Y  HIDE THE KEY": hidden once the prompt is made
 ```
 
-Unlike the mockup (`UI/Mockups/map_legend.html`), it has no Quartermaster or Perimeter rows,
-because `RZ_UIFeed.BuildMap` sends neither.
+The mockup (`UI/Mockups/map_legend.html`) still shows the old line icons, with Quartermaster and
+Perimeter rows the layout doesn't have, because `RZ_UIFeed.BuildMap` sends neither.
 
 ## Spawn screen: `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout`
 
