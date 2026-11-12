@@ -272,6 +272,39 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! They call you over (a subtitle with their name) when a step waits for you to talk to them:
+	//! before the first by who they are; before a later one, by the step just done (`step`), the
+	//! Drifter's next ask once one is done (`asks`).
+	static string CallOver(int step, int who, int asks)
+	{
+		if (step <= 0)
+		{
+			if (who == RZ_EOpeningWho.EARLIER)
+				return "\"Over here. Wait, don't I know you?\"";
+
+			if (who == RZ_EOpeningWho.STRANGER)
+				return "\"You, by the door. Over here, a moment.\"";
+
+			return "\"Hey. Over here. It's me.\"";
+		}
+
+		if (step == 2 && asks > 0)
+			return "\"Hang on. Come here. Someone else has been asking after you.\"";
+
+		if (step == 1)
+			return "\"Come here a minute. There's something else.\"";
+
+		return "\"Come here before you go. You'll want to hear this first.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Two minutes on and you still haven't come over: once more.
+	static string CallAgain()
+	{
+		return "\"I'm still here. Come and talk when you're ready.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Anyone else who talks to the contact.
 	static string NotYou()
 	{

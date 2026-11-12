@@ -58,7 +58,7 @@ class RZ_DialogueSettings
 	[Attribute("1", desc: "Trees: a leader who won't deal with you (attitude -2 or below, not Hunted) offers Make it right: their faction's amends job; done, they start again with you, once a season (docs/DIALOGUE.md)")]
 	bool m_bMakeRight;
 
-	[Attribute("1", desc: "Trees: a greet written to open by itself (a road post asking who you're with, a stranger calling out) opens the talk screen when you walk up, inside the unasked-contact budget")]
+	[Attribute("1", desc: "Trees: a greet written to call out (a road post asking who you're with, a stranger) says its first line as a subtitle when you walk up, inside the unasked-contact budget; the talk screen opens only when you talk to them")]
 	bool m_bOpens;
 
 	[Attribute("1", desc: "Trees: distress calls on the open channel (answering sends the caller to the nearest Haven house's gate) and Radio Operators talking on a cracked secure net")]

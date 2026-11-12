@@ -915,11 +915,11 @@ def lint(convs):
                     errs.append("%s: a commit choice has no if, check or cost (the finale decides who may lock)" % wn)
         if c.opens:
             if c.kind != "greet":
-                errs.append("%s: only a greet opens by itself ('opens approach <metres>')" % where_c)
+                errs.append("%s: only a greet calls out ('opens approach <metres>')" % where_c)
             if not 1 <= c.opens <= 40:
                 errs.append("%s: opens approach 1 to 40 metres" % where_c)
             if any(sp.startswith("radio") for sp in c.speakers):
-                errs.append("%s: the radio never opens by itself" % where_c)
+                errs.append("%s: the radio never calls out" % where_c)
         secure = [sp for sp in c.speakers if sp.startswith("radio:") and sp != "radio:open"]
         if secure:
             if any(not (sp.startswith("radio:") and sp != "radio:open") for sp in c.speakers):

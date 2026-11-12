@@ -18,7 +18,7 @@ compiled conversations), `Dialogue/RZ_DialogueCond.c` (conditions and tokens),
 players), `Dialogue/RZ_DialogueVotes.c` (the majors' sittings), `Dialogue/RZ_DialogueBarks.c` (barks),
 `Dialogue/RZ_DialogueWire.c` (Bastion's word at the wire), `Dialogue/RZ_DialogueWorld.c` (conditions and
 tokens that read the season's story, the infected, the radio and kit marks), `Dialogue/RZ_DialogueMakeRight.c`
-(Make it right), `Dialogue/RZ_DialogueOpens.c` (greets that open by themselves), `Dialogue/RZ_DialogueNets.c`
+(Make it right), `Dialogue/RZ_DialogueOpens.c` (greets that call out), `Dialogue/RZ_DialogueNets.c`
 (the secure nets, distress calls, a house radio's power), `Dialogue/RZ_DialogueStory.c` (scene and
 questline flags, notes, approaches, TryBegin, claims the world tests), `Dialogue/RZ_DialogueBinds.c`
 (bindings, `{claim:...}`, world predicates), `Dialogue/RZ_DialogueJournal.c` (the notebook's Promises and
@@ -55,7 +55,10 @@ What you know rows), `Dialogue/Pack/` (generated). Server only, except the scree
 
 Look at a person and the action menu shows one line, **Talk to ...**: everyone who talks has
 exactly one Talk prompt, and everything else they offer is a reply (vanilla's own actions on them
-stay). It opens the talk screen: what they say, and your replies as a list. You stay in the conversation until you leave, walk
+stay). It opens the talk screen: what they say, and your replies as a list. The screen opens only
+when you use Talk (or another reply that hands you on, or **Call on the open channel**): nobody opens
+it on you by being looked at or walked up to; they call out instead ([Who opens a
+conversation](#who-opens-a-conversation)). You stay in the conversation until you leave, walk
 off (6 m), wait 120 s with no reply, or danger comes (the [screen guard](UI.md#how-the-scripts-fit):
 then they say "Not now!" and it closes). You can't move while talking; the world keeps running.
 
@@ -244,7 +247,7 @@ behind it.
 | Strangers ([below](#strangers)) | `stranger:<routine>` (`stranger:tin`, `stranger:digger`...), `stranger` | `stranger:<visit>` | their ask's ways, as built ([ERRANDS.md](ERRANDS.md#strangers)) |
 | The open channel ([below](#the-radio)) | `radio:open`, `radio` | `radio:open` | none |
 | A cracked secure net ([below](#the-radio)) | `radio:bastion`, `radio:redhand`, `radio:halcyon`, `radio:secure` | `radio:open` | none |
-| An opening's contact: someone from before, a stranger, or a wanderer from an earlier life ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (their step again). They speak first as each step starts; the step's piece of the story and its ask are the built greeting |
+| An opening's contact: someone from before, a stranger, or a wanderer from an earlier life ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) | `opening` (they talk only to the player they waited for) | `opening:<id>` | What was it you needed? (their step again). They call you over and "Talk to *their name*" is tracked; when you talk to them, the step that waited for you starts: its piece of the story and its ask are the built greeting |
 
 | A contract's or questline stage's people | `quest:<questline>` (`quest:every_name`), `quest`; `mission` for a contract's | `mission:<id>:<index>` | their built choices, as built: a conversation picks one with `call:slot:N`, so the stage resolves (and starts anything physical) as built |
 
@@ -528,9 +531,9 @@ The look itself (kit, colours, cover details, catches, word gets round) is reput
 - **Claims the look decides:** your own crew name at the Red Hand's post (*"They call me {crew}."*) and
   a notebook number at Halcyon (*"{cover}. I'm on the field team."*, `if cover:notebook`) are look
   choices, the detail's +1 counted as built.
-- **A road post asks first:** its speaker opens the talk screen at 35 m on someone in their kit below
-  Known ([Who opens a conversation](#who-opens-a-conversation)), reading the kit's marks first (*"Stop
-  there. That's off one of ours. Where is he?"*). A named person at a holding passes you for 10
+- **A road post asks first:** its speaker calls out at 35 m to someone in their kit below Known
+  ([Who opens a conversation](#who-opens-a-conversation)), reading the kit's marks first (*"Stop
+  there. That's off one of ours. Where is he?"*); Talk to them puts the question on the screen. A named person at a holding passes you for 10
   minutes; a post, while it stands.
 
 A catch taking your kit doesn't count as changing clothes.
@@ -554,9 +557,19 @@ get it (they have the [parley](REPUTATION.md#the-parley-and-the-knock)).
 
 ## Who opens a conversation
 
-**Dialogue > Opens** (on), with Trees. A greet written with `opens approach <metres>` (40 at most)
-opens the talk screen by itself for a player who walks up within that distance while its `when`
-holds, so the question is put whether or not they press Talk:
+**You do, always.** The talk screen opens only when the player interacts: **Talk to ...** on a
+person, **Ask for whoever's in charge** in a quartermaster's talk, **Call on the open channel** on a
+radio. Nobody opens it on you because you looked at them or walked up. Someone who wants your
+attention calls out instead: a subtitle with their name ([UI.md](UI.md#subtitles-and-the-reader)),
+their nametag as you come near, and, where it's a step of a job, the tracker and the map's diamond
+on them. The same holds for everyone who calls you: a named person who waves you over (*"Mara waves
+you over."*, [ERRANDS.md](ERRANDS.md#being-asked)), a stranger's call-out, a leader who catches your
+eye, an opening's contact ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)).
+
+**Call-outs** (**Dialogue > Opens**, on, with Trees; `RZ_DialogueOpens`). A greet written with
+`opens approach <metres>` (40 at most) calls out to a player who walks up within that distance while
+its `when` holds: its first line, as that person's subtitle with their name. Talk to them and the
+same greet puts its question on the screen (calling out doesn't use the greet up):
 
 | Who | At | When |
 |---|---|---|
@@ -564,11 +577,10 @@ holds, so the question is put whether or not they press Talk:
 | A stranger | 10 m | once a life per stranger: *"Hey. You. Sorry. Have you got a minute?"* |
 | The Long Table's host on the road | 12 m | once a life, unless the family has crossed you |
 
-Checked every 5 s for bodies already spawned near players. Never while you're talking, in a vehicle
-or in danger (the screen guard refuses it), never twice in 10 minutes from the same person, and each
-is an unasked contact inside the notice lanes' budget (one every 4 minutes, [UI.md](UI.md)). Leaving
-is one button, as always; walking away from a post is no claim, and its search or toll applies as
-built when you reach the barrier.
+Checked every 5 s for bodies already spawned near players. Never while you're talking or in a
+vehicle, never twice in 10 minutes from the same person, and each is an unasked contact inside the
+notice lanes' budget (one every 4 minutes, [UI.md](UI.md)). Walking past a post without talking is
+no claim, and its search or toll applies as built when you reach the barrier.
 
 ## Barks
 
@@ -737,7 +749,7 @@ conv <id>                       unique, dotted, lower case; never renamed once s
 for <speaker>[, <speaker>]      who says it (Who talks)
 when <conditions>               read when the hub is built and on every pick
 topic "<hub label>" | greet | bark   a topic (40 characters at most), a greet (one node of lines), or a bark
-opens approach <metres>         a greet that opens the talk screen by itself (Who opens a conversation)
+opens approach <metres>         a greet that calls out within that distance (Who opens a conversation)
 prio quest|ask|world|reaction|flavour
 once | daily                    per character, per speaker
 always                          shows even when the speaker refuses (the finale's route topics)
@@ -890,14 +902,14 @@ always` (an ordinary lie, believable and never true).
   (voter N)`, `Dialogue: promise <key> made|kept|broken by <player>`, `Dialogue: bark <conv> to <player>`,
   `Dialogue: session cap at <speaker>`, `Dialogue: <player> committed to <route> at <speaker>`,
   `Dialogue: make it right <player> at <speaker>`, `Dialogue: made right <player> with <speaker>`,
-  `Dialogue: <speaker> opened on <player> at N m`, `Dialogue: distress call answered by <player>, sent to
+  `Dialogue: <speaker> called out to <player> at N m`, `Dialogue: distress call answered by <player>, sent to
   house N`
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)).
 
 ## Simplified, and not built yet
 
 - *Simplified:* trees run only on the talk screen: with the talk screen off, there are no trees.
-- *Simplified:* greets are lines only (a greet that opens by itself puts its question as its line, and
+- *Simplified:* greets are lines only (a greet that calls out puts its question as its line, and
   the topics under it are the choices); "dimmed, not hidden" topics show grey, or a "heard" tag while
   there's more in them.
 - *Simplified:* a built reply is grey only for the rest of the conversation you picked it in (the

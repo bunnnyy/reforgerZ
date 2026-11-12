@@ -1,11 +1,13 @@
-//! Server-opened greets (docs/DIALOGUE.md, "Who opens a conversation"): a greet written with
-//! `opens approach <metres>` opens the talk screen by itself for a player who walks up within that
-//! distance while its `when` holds, so the question is put whether or not they press Talk: a road
-//! post's speaker asking someone in their kit below Known which unit they're with (35 m), a stranger
-//! calling out (10 m), the host on the road. With Dialogue > Trees on, on the barks' rhythm (every
-//! 5 s), for bodies already spawned near players. Never while the player is talking, in a vehicle,
-//! in danger (the screen guard refuses), or within 10 minutes of the same speaker opening on them;
-//! each is an unasked contact inside the notice lanes' budget (one every 4 minutes). Server only.
+//! Call-outs (docs/DIALOGUE.md, "Who opens a conversation"): a greet written with
+//! `opens approach <metres>` calls out to a player who walks up within that distance while its
+//! `when` holds: its first line as that person's subtitle, with their name (a road post's speaker
+//! asking someone in their kit below Known which unit they're with, 35 m; a stranger, 10 m; the
+//! host on the road). It never opens the talk screen: that opens only when the player talks to
+//! them, and the same greet puts its question there. With Dialogue > Trees on, on the barks' rhythm
+//! (every 5 s), for bodies already spawned near players. Never while the player is talking or in a
+//! vehicle, or within 10 minutes of the same speaker calling out to them; each is an unasked contact
+//! inside the notice lanes' budget (one every 4 minutes). The greet isn't used up by calling out.
+//! Server only.
 class RZ_DialogueOpens
 {
 	protected static const float EVERY = 5;
@@ -14,8 +16,8 @@ class RZ_DialogueOpens
 
 	protected float m_fClock;
 	protected float m_fNext;
-	protected int m_iOpens = -1;		// conversations that open by themselves (counted once)
-	protected ref map<string, float> m_mOpened = new map<string, float>();	// "ident|speaker" -> clock
+	protected int m_iOpens = -1;		// greets that call out (counted once)
+	protected ref map<string, float> m_mOpened = new map<string, float>();	// "ident|speaker" -> clock of the last call-out
 	protected ref array<IEntity> m_aFound = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -81,7 +83,13 @@ class RZ_DialogueOpens
 				continue;
 
 			float dist = RZ_Util.DistXZ(body.GetOrigin(), me.GetOrigin());
-			if (!Opens(trees, ctx, dist))
+			RZ_DConv greet = Opens(trees, ctx, dist);
+			if (!greet)
+				continue;
+
+			array<string> lines = {};
+			trees.LinesFor(ctx, greet.m_aNodes[0], lines);
+			if (lines.IsEmpty())
 				continue;
 
 			RZ_EContact kind = RZ_EContact.WANDERER;
@@ -93,29 +101,32 @@ class RZ_DialogueOpens
 				return;
 
 			m_mOpened.Set(ident + "|" + ctx.m_sKey, m_fClock);
-			if (dialogue.Open(pid, body, me))
-				RZ_Log.Info(string.Format("Dialogue: %1 opened on %2 at %3 m", ctx.m_sKey, RZ_Util.PlayerName(pid), RZ_Util.RoundToInt(dist)));
+			string name = ctx.m_sName;
+			if (!s.m_sName.IsEmpty())
+				name = s.m_sName;
 
+			gm.Say(pid, name, ctx.m_iFaction, lines[0], body);
+			RZ_Log.Info(string.Format("Dialogue: %1 called out to %2 at %3 m", ctx.m_sKey, RZ_Util.PlayerName(pid), RZ_Util.RoundToInt(dist)));
 			return;
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A greet for this speaker that opens by itself at this distance, and holds now.
-	protected static bool Opens(RZ_DialogueTrees trees, RZ_DCtx ctx, float dist)
+	//! A greet for this speaker that calls out at this distance, and holds now; null for none.
+	protected static RZ_DConv Opens(RZ_DialogueTrees trees, RZ_DCtx ctx, float dist)
 	{
 		array<RZ_DConv> all = {};
 		trees.GetDB().ForSpeaker(ctx.m_aKinds, all);
 		foreach (RZ_DConv c : all)
 		{
-			if (c.m_fOpens <= 0 || dist > c.m_fOpens || !c.IsGreet() || !trees.FreeFor(ctx, c))
+			if (c.m_fOpens <= 0 || dist > c.m_fOpens || !c.IsGreet() || c.m_aNodes.IsEmpty() || !trees.FreeFor(ctx, c))
 				continue;
 
 			if (RZ_DialogueCond.Holds(ctx, c.m_When))
-				return true;
+				return c;
 		}
 
-		return false;
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------

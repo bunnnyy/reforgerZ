@@ -594,12 +594,15 @@ found by events (a visit, a road, a rumour round, the next real reading).
 An opening's steps ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) are errands another
 system hands a player, already taken (`RZ_Errands.Hand`, code in `Guidance/RZ_OpeningChain.c` and
 `RZ_OpeningSteps.c`). They
-are the **only errands, and the only jobs, that start without the player talking to anyone or using
-anything**: `RZ_ErrandDef.IsOpening()` and `RZ_Errand.IsOpening()` are true for them and for nothing
-else.
+are the **only errands, and the only jobs, handed to the player rather than asked for**:
+`RZ_ErrandDef.IsOpening()` and `RZ_Errand.IsOpening()` are true for them and for nothing else. With
+someone outside, each step is handed in a conversation the player opens: before it, a **talk
+objective** is handed and tracked, and talking to the contact ends it and hands the step there
+(nobody outside, or the contact dead: the step is handed at once).
 
 | Step | Key | Way | The step |
 |---|---|---|---|
+| ✅ Outside the Door, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.next` | talk | "Talk to *the contact*.": never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
 | ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | 20 s (10 s) at a building 50–250 m from the contact (quiet), then back to them |
 | ✅ Water | `opening.water` | do | 15 s at the nearest well or water tower, then back |
 | ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact, once you've chosen to on the talk screen (`opening.tend_cut`) |
@@ -624,7 +627,8 @@ no Fame, no helpers' share), sets no cooldowns, adds no helped line to the hall 
 opening pays its own Fame at the end of the walk); the owner drops it quietly (`RZ_Errands.Drop`)
 when the contact dies or the chain ends. Everything else is an errand's: the take and done lines in
 the giver's voice (into the talk screen while it's open on them), the step notice, the journal row,
-the Quests tab and the tracker, which the opening points at each step as it starts. While a
+the Quests tab and the tracker, which the opening points at each step (and each talk objective,
+whose map diamond is the contact) as it starts. While a
 player's chain runs, nobody waves them over for another errand. Two hooks serve them: a handed
 errand's way puts its prop at the place as a taken one does, and `RZ_ErrandDef.StepCounts` (true for
 every other errand) lets a step 2 stop its clock while its own system isn't met, or move its place

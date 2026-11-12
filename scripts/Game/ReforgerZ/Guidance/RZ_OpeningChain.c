@@ -1,6 +1,8 @@
 //! An opening's chain (docs/DESIGN.md, "Openings"): its steps on the errand engine
 //! (Missions/Errands), handed straight to the player (RZ_Errands.Hand), so the tracker, the Quests
-//! tab and the talk screen show them as they show any errand:
+//! tab and the talk screen show them as they show any errand. With someone outside, each step
+//! starts with a talk objective (RZ_OpeningTalkDef: "Talk to {giver}.", done only by talking to
+//! them), and the step itself is handed in that conversation:
 //! 1. close by, quietly: search a building near the contact (one of your background's kinds when
 //!    one is near) and come back;
 //! 2. your background's own system (RZ_OpeningSteps.c), else water from the nearest well, or
@@ -31,7 +33,7 @@ class RZ_OpeningStepDef : RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The one job that starts without the player talking to anyone (RZ_ErrandDef.IsOpening).
+	//! Handed, not asked for: the one job tracked before you've asked anyone (RZ_ErrandDef.IsOpening).
 	override bool IsOpening()
 	{
 		return true;
@@ -58,11 +60,49 @@ class RZ_OpeningStepDef : RZ_ErrandDef
 }
 
 //------------------------------------------------------------------------------------------------
+//! A talk objective: "Talk to {giver}." at the contact, tracked (the HUD and the map's diamond),
+//! never done by being there: it ends when you open talk with them (RZ_Openings.TalkLines), and the
+//! step it waits for is handed in that conversation. It lapses with the contact's 45 minutes.
+class RZ_OpeningTalkDef : RZ_OpeningStepDef
+{
+	//------------------------------------------------------------------------------------------------
+	void RZ_OpeningTalkDef(string key, string title, int step)
+	{
+		// Set here, whatever the base constructor did with the same arguments
+		m_sKey = key;
+		m_sTitle = title;
+		m_iStep = step;
+		m_sFamily = "opening";
+		m_bHanded = true;
+		m_eAnchor = RZ_EErrandAnchor.WANDERER;
+		m_fLapseMinutes = 45;
+		m_aWays.Clear();
+		RZ_ErrandWay w = Way("talk");
+		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
+		w.m_fSeconds = 1;
+		w.m_fRadius = 4;
+		w.m_bEndsThere = true;
+		w.m_sStep = "Talk to {giver}.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Being there never does it: only talking to them.
+	override bool StepCounts(RZ_Errands dealer, RZ_Errand e, IEntity me)
+	{
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_OpeningChain
 {
 	static const string KEY_SEARCH = "opening.search";
 	static const string KEY_WALK = "opening.walk";
 	static const string KEY_LEAD = "opening.lead";
+	static const string KEY_TALK = "opening.talk";
+
+	ref RZ_OpeningTalkDef m_TalkFirst;			// before the first step: whoever's outside
+	ref RZ_OpeningTalkDef m_TalkNext;			// before each later step: back to them
 
 	ref RZ_OpeningStepDef m_Search;
 	ref RZ_OpeningStepDef m_SearchShort;		// a learning player's step 1 (level 1)
@@ -74,6 +114,8 @@ class RZ_OpeningChain
 	//------------------------------------------------------------------------------------------------
 	void RZ_OpeningChain()
 	{
+		m_TalkFirst = new RZ_OpeningTalkDef(KEY_TALK, "Outside the Door", 0);
+		m_TalkNext = new RZ_OpeningTalkDef(KEY_TALK + ".next", "Back to {giver}", 0);
 		m_Search = Search(KEY_SEARCH, 20);
 		m_SearchShort = Search(KEY_SEARCH + ".short", 10);
 

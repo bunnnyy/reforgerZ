@@ -1471,7 +1471,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 4–12 s, 11 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
-| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
+| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that call out as a subtitle), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
@@ -2355,7 +2355,8 @@ records.` and `Shared: N callbacks waiting, N season records.`
 
 Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
-<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> spoke first to <player> at step N (the talk screen|subtitles)`,
+<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: <name> talked to by <player> before
+step N`, `Openings: <name> went on talking with <player> into step N`,
 `Errands: opening.<step> handed to <player> (<name>)`, `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
 <player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
@@ -2418,7 +2419,7 @@ by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> v
 The finale's commit: `Dialogue: <player> committed to <route> at <speaker>`.
 Promises and barks: `Dialogue: promise <key> made|kept|broken by <player>`, `Dialogue: bark <conv> to <player>`.
 Talk's rest: `Dialogue: make it right <player> at <speaker>`, `Dialogue: made right <player> with <speaker>`,
-`Dialogue: <speaker> opened on <player> at N m` (a greet that opens by itself), `Dialogue: distress call
+`Dialogue: <speaker> called out to <player> at N m` (a greet that calls out), `Dialogue: distress call
 answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<claim>.false tested false for
 <player>`, `Dialogue: <player> began <questline>`, `Dialogue: <player> saw for themselves: <key>` (a world
 predicate), `Dialogue: lie <key> found out: its found effects ran`, `Dialogue: Talk test: N conversations ...`
@@ -2979,12 +2980,17 @@ when it happens)
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
   of an open door of a clinic or a house in a town nobody holds, facing out, the world already
   loaded; the card says where you hid, the town and the day. A calendar lies by the door. About 4 s
-  in, someone ("..., a patient's mother") a few metres off opens the talk screen on you: "Look at you.
-  Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the
-  roads, then the ask. The tracker already shows *Across the Road*, and the Quests tab has it under
-  ERRANDS, tracked. Search the house for 20 s and come back: the next step opens the talk screen again
-  (the broadcast, nobody coming) with *The Fever* (her own step 2); then *To Halcyon* with the Perimeter and
-  the cure, the tracker pointing at Halcyon's nearest holding or the lab. Arrive: one line there and
+  in, someone ("..., a patient's mother") a few metres off calls you over, a subtitle with her name
+  (*"Hey. Over here. It's me."*); **no screen opens**, however long you look at her. The tracker shows
+  *Outside the Door*, "Talk to *her name*.", and the map's diamond is on her. Wait two minutes
+  nearby without talking: she calls once more. Talk to her: the talk screen opens with "Look at you.
+  Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the roads,
+  then the ask; the tracker now shows *Across the Road*, and the Quests tab has it under ERRANDS,
+  tracked. Search the house for 20 s and come back: she calls you over again (*Back to her name*
+  tracked) and nothing opens until you talk to her; then the broadcast, nobody coming, and *The
+  Fever* (her own step 2); then the same for *To Halcyon* with the Perimeter and the cure, the tracker
+  pointing at Halcyon's nearest holding or the lab. With the talk screen off (**UI > Talk reply
+  layout** empty), **Talk to** says the same lines as subtitles, in order. Arrive: one line there and
   +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
   next start is a different town (2 km from the last two). Try a Soldier (ends at Bastion) and a
   Mechanic (the Haven). Shoot the contact during step 1: a line from "Someone in a doorway" and the
@@ -3164,11 +3170,13 @@ when it happens)
   10 minutes; nothing while you're talking to someone. The log has `Dialogue: bark ...`.
 - [ ] Trees on, a stranger: Talk repeats their call-out; their ways are there as before, and "Ask
   who they are" style topics fill in their own words (the house, the town, the name). Walk up to a
-  new one: at 10 m the talk screen opens by itself ("Hey. You. Sorry. Have you got a minute?"), once,
-  and never twice inside 4 minutes of another unasked contact (the log's `Dialogue: ... opened on`).
+  new one: at 10 m they call out as a subtitle ("Hey. You. Sorry. Have you got a minute?") and **no
+  screen opens**; Talk to them puts the same question on the screen. Not twice inside 10 minutes from
+  them, nor inside 4 minutes of another unasked contact (the log's `Dialogue: ... called out to`).
 - [ ] Trees on, in Bastion kit you aren't Known in, walk toward a checkpoint: at about 35 m its
-  speaker's screen opens by itself ("You. Not on the board. Stop there."), with the claim, the word and
-  the truth as topics. Leave it and walk on: the built search or turn-back applies at the barrier. In
+  speaker calls out as a subtitle ("You. Not on the board. Stop there."), and no screen opens. Talk to
+  them: the same question on the screen, with the claim, the word and the truth as topics. Leave it,
+  or don't talk at all, and walk on: the built search or turn-back applies at the barrier. In
   kit signed out to someone else, the greeting names them and any claim is caught at once.
 - [ ] Trees on, a seat leader at attitude -2 who doesn't hunt you: the hub shows "[Make it right]
   "What would it take?"", which reserves their faction's amends job for an hour. Finish it: the
