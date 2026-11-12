@@ -147,7 +147,7 @@ class RZ_StrangerKind
 		if (user && RZ_HavenQuest.TakeFood(s.GetGM(), user, count))
 			return true;
 
-		s.Say(v, playerId, "You reach for a tin and there isn't one. They see. \"Never mind. Thanks for looking.\"");
+		s.Say(v, playerId, "No tin on you either? Never mind. Thanks for looking, all the same.");
 		return false;
 	}
 
@@ -195,26 +195,26 @@ class RZ_Stranger_Roof : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Up here. On the roof. Are they gone? Tell me they're gone. I've been holding on up here since the noise started, and my arm's going.";
+		return "Up here. On the roof. Are they gone? Tell me they're gone. I've been holding on up here since the noise started, and my arm's going. If you can clear the street, I can get down.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
 	{
 		if (option != 0)
 		{
-			s.Finish(v, playerId, "\"Don't go. Please.\" You go. The roof is quiet behind you.", false);
+			s.Finish(v, playerId, "Don't go. Please. I can't hold on up here much longer.", false);
 			return;
 		}
 
 		RZ_GameModeComponent gm = s.GetGM();
 		if (gm.GetSpawner() && gm.GetSpawner().IsZombieNear(v.m_vPos, 25))
 		{
-			s.Say(v, playerId, "\"Not with them down there.\" Clear the street first.");
+			s.Say(v, playerId, "Not with them down there. Clear the street first, and I'll come down.");
 			return;
 		}
 
 		s.ToHouse(v.m_iHouse);
-		s.Finish(v, playerId, "They come down the drainpipe faster than you'd think, and go off toward {house} without looking back.", true);
+		s.Finish(v, playerId, "Down. I'm down. I'm going to {house}, and I'm not looking back at this street. Thank you.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 4);
 		Local(s, v, playerId, "who came down off a roof", "You talked me off that roof. I still can't look at a ladder.", "bench", "helped");
 	}
@@ -269,14 +269,14 @@ class RZ_Stranger_Tin : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Got a tin? Just the one. {house} is on half portions and I've a girl there. Look, the sack's empty. I'm not lying to you.";
+		return "Got a tin? Just the one. {house} is on half portions and I've a girl there. Look, the sack's empty. I've walked two villages today and found nothing. I'm not lying to you.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
 	{
 		if (option == 2)
 		{
-			s.Finish(v, playerId, "\"I'd eat a Bastion ration. That's how bad it is.\" He goes back up the road.", false);
+			s.Finish(v, playerId, "Not today. Fair. I'd eat a Bastion ration, that's how bad it is. I'll try up the road.", false);
 			return;
 		}
 
@@ -300,14 +300,14 @@ class RZ_Stranger_Tin : RZ_StrangerKind
 			else
 				s.Gift(playerId, user);
 
-			s.Finish(v, playerId, "He unbuckles the watch slowly, like it's the last thing he owns. It might be. \"It runs fast. So does everything.\"", true);
+			s.Finish(v, playerId, "Two tins for the watch. Here. It's the last thing I own worth anything. It runs fast. So does everything.", true);
 			return;
 		}
 
 		if (!TakeFood(s, v, playerId, user, 1))
 			return;
 
-		s.Finish(v, playerId, "He holds the tin with both hands. Then, quietly: {tip}", true);
+		s.Finish(v, playerId, "Thank you. She'll eat tonight. Here's something for you, and it's true: {tip}", true);
 		Local(s, v, playerId, "who had the empty sack", "You gave me a tin on the road. The girl had it with bread. Well, with water.", "gate", "helped");
 	}
 }
@@ -342,14 +342,14 @@ class RZ_Stranger_Funeral : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "This was my wife's car. She drove it to {town} every Thursday. Take what's in the boot if you want, she'd want it used. Then help me put it in the ditch, would you? Out of the road.";
+		return "This was my wife's car. She drove it to {town} every Thursday, before. She's gone now, and the car's just in everyone's way. Take what's in the boot if you want, she'd want it used. Then help me put it in the ditch, would you? Out of the road.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
 	{
 		if (option == 2)
 		{
-			s.Finish(v, playerId, "You leave him with his hand on the roof. He doesn't look up.", false);
+			s.Finish(v, playerId, "Go on, then. I'll stay with it a bit. Just a bit.", false);
 			return;
 		}
 
@@ -357,21 +357,21 @@ class RZ_Stranger_Funeral : RZ_StrangerKind
 		{
 			if (!Bg(s, playerId, "mechanic"))
 			{
-				s.Say(v, playerId, "You look. It's an engine. He waits for you to say something, and you don't.");
+				s.Say(v, playerId, "Well? It's an engine, isn't it. You don't know either. That's all right.");
 				return;
 			}
 
-			s.Finish(v, playerId, "\"It's not dead,\" you tell him. \"It needs a battery.\" He goes very still. \"There's a mechanic on the roads. I'll tell him.\" He walks off fast, the first time in weeks, by the look of it.", true);
+			s.Finish(v, playerId, "It's not dead? Just a battery? Then it's not going in the ditch. There's a mechanic on the roads. I'll find him. I'll find him today.", true);
 			return;
 		}
 
-		s.StartStep(v, 0, v.m_vSubject, 10, 10, false, "Put your shoulder to the car with him (10 s at the car).");
+		s.StartStep(v, 0, v.m_vSubject, 10, 10, false, "Put your shoulder to the car with him and push it off the road (10 s at the car).");
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
 	{
 		s.GetGM().GetHeat().AddHeat(v.m_vSubject, 8);
-		s.Finish(v, playerId, "It goes over the edge with a sound like furniture. He stands there a while. \"Thursdays,\" he says, to nobody.", true);
+		s.Finish(v, playerId, "There it goes. Sounded like furniture. Thursdays, she drove it. Every Thursday. Thank you.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 	}
 }
@@ -419,7 +419,7 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Which way's {town}? The straight way goes past {trouble}, and I'd rather not. It's only pans in the pram. Everything I could carry.";
+		return "Which way's {town}? I've a cousin there, if she's still there. The straight way goes past {trouble}, and I'd rather not. It's only pans in the pram. Everything I could carry.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -428,7 +428,7 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 		if (option == 0)
 		{
 			s.ToHouse(v.m_iHouse);
-			s.Finish(v, playerId, "You point out the long way round. She repeats it back to you twice, then sets off pushing the pans.", true);
+			s.Finish(v, playerId, "The long way round. Past the barn, left at the stream, then the road. I've got it. Past the barn, left at the stream. Thank you.", true);
 			return;
 		}
 
@@ -438,7 +438,7 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 			if (!h)
 				return;
 
-			s.StartStep(v, 1, RZ_Strangers.Toward(v.m_vPos, h.m_vPos, 500), 5, 25, false, "Walk with her past {trouble}. She'll go on alone from about 500 m.");
+			s.StartStep(v, 1, RZ_Strangers.Toward(v.m_vPos, h.m_vPos, 500), 5, 25, false, "Walk with her past {trouble}. She'll go on alone after about 500 m.");
 			return;
 		}
 
@@ -447,13 +447,13 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 			gm.GetFacts().Memory().Lies().Tell(gm, playerId, "errand.which_way", "post:" + RZ_SettlementScanner.GridReference(v.m_vSubject), RZ_EFaction.SURVIVORS, "",
 				v.m_vSubject, RZ_ELieTest.VISIT, 2, "Word came back from {town}: the toll wasn't cheap, and someone on the road said it was.");
 
-		s.Finish(v, playerId, "\"Cheap. Right.\" She doesn't sound sure. She goes the straight way anyway.", false);
+		s.Finish(v, playerId, "The toll's cheap, you say? Right. All right. The straight way, then.", false);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
 	{
 		s.ToHouse(v.m_iHouse);
-		s.Finish(v, playerId, "\"I can see the smoke from here.\" She goes on with the pans clattering, and waves once without turning round.", true);
+		s.Finish(v, playerId, "I can see the smoke from {town}'s chimneys from here. I'll manage now. Thank you. Mind the pans.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 		Local(s, v, playerId, "with the pram full of pans", "You walked me past it. I still have the pans. Want one? I've too many pans.", "stove", "helped");
 	}
@@ -486,7 +486,7 @@ class RZ_Stranger_Door : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Are you real? Don't come closer, just talk. They come out when it's dark. I've been behind this door since Tuesday. Is there anywhere left?";
+		return "Are you real? Don't come closer, just talk. They come out when it's dark, all over {town}. I've been behind this door since Tuesday, on tap water and crackers. Is there anywhere left? A house? People?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -501,27 +501,27 @@ class RZ_Stranger_Door : RZ_StrangerKind
 			// A noise on the far side of town draws them the other way, under the built heat rules
 			vector far = v.m_vSubject + (v.m_vSubject - v.m_vPos);
 			gm.GetHeat().AddHeat(RZ_Util.GroundPos(far), 20);
-			s.StartStep(v, 0, RZ_Strangers.Toward(v.m_vPos, h.m_vPos, 600), 5, 25, false, "Walk them out toward {house}, quickly. Somewhere on the far side of {town} a gate bangs and keeps banging.");
+			s.StartStep(v, 0, RZ_Strangers.Toward(v.m_vPos, h.m_vPos, 600), 5, 25, false, "Walk them out of {town} toward {house}, quickly. They'll go on alone once the house is in sight.");
 			return;
 		}
 
 		if (option == 1)
 		{
 			s.Later(v, playerId);
-			s.Finish(v, playerId, "\"Dawn. You'll come at dawn.\" The door closes. You hear something heavy pushed back against it.", false);
+			s.Finish(v, playerId, "Dawn. You'll come at dawn. I'm closing the door now. I'm putting the wardrobe back. Dawn.", false);
 			return;
 		}
 
 		if (!TakeFood(s, v, playerId, user, 1))
 			return;
 
-		s.Finish(v, playerId, "A hand takes the tin through the gap. \"Thank you. I'll make it last. I'm good at that now.\"", true);
+		s.Finish(v, playerId, "Thank you. Through the gap, there. I'll make it last. I'm good at that now.", true);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
 	{
 		s.ToHouse(v.m_iHouse);
-		s.Finish(v, playerId, "They don't stop shaking until they can see {house}'s fence. Then they walk the last of it on their own.", true);
+		s.Finish(v, playerId, "I can see {house}'s fence. I can do the rest. I can do the rest on my own. Thank you.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 		Local(s, v, playerId, "who hid behind the door", "You came and got me out. I sleep with the light on. They let me.", "bench", "saved");
 	}
@@ -550,7 +550,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "It was going. Then it wasn't. I've two kids in the back who think this is an adventure. Don't tell them otherwise.";
+		return "It was going. Then it wasn't. We're for {house}, and I've two kids in the back who think this is an adventure. It'll be dark in an hour. Don't tell them otherwise.";
 	}
 
 	override string Labels(RZ_Strangers s, RZ_StrangerVisit v)
@@ -576,7 +576,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 		{
 			if (RZ_Errands.TakeItems(user, RZ_EErrandItem.BATTERY, 1) < 1)
 			{
-				s.Say(v, playerId, "\"A battery, you said?\" You haven't one on you.");
+				s.Say(v, playerId, "A battery? You haven't got one on you either, have you.");
 				return;
 			}
 
@@ -584,7 +584,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 			return;
 		}
 
-		s.StartStep(v, 2, v.m_vSubject, 30, 10, false, "Push with him while he lets the clutch out (30 s at the car).");
+		s.StartStep(v, 2, v.m_vSubject, 30, 10, false, "Push the car downhill while he lets the clutch out (30 s at the car).");
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -597,7 +597,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 
 	protected void Done(RZ_Strangers s, RZ_StrangerVisit v, int playerId)
 	{
-		s.Finish(v, playerId, "It catches. The kids cheer like it's a football match. They drive on to {house} with the windows down.", true);
+		s.Finish(v, playerId, "She's going. Listen to them cheering in the back, like it's a football match. We'll be at {house} before dark. Thank you.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 		Local(s, v, playerId, "with the car and the two kids", "The kids still call you the car man. I've stopped correcting them.", "gate", "helped");
 	}
@@ -627,7 +627,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Nobody should lie by a road. Not even a road this quiet. It's a coal shovel, it's all I had, and it'll do.";
+		return "Somebody died here, by the road, and nobody's come for them. Nobody should lie by a road. Not even a road this quiet. It's a coal shovel, it's all I had, and it'll do.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -635,7 +635,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 		RZ_GameModeComponent gm = s.GetGM();
 		if (option == 0)
 		{
-			s.StartStep(v, 0, v.m_vPos, 30, 10, false, "Dig with her (30 s).");
+			s.StartStep(v, 0, v.m_vPos, 30, 10, false, "Dig the grave with her (30 s).");
 			return;
 		}
 
@@ -644,18 +644,18 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 			string who = v.m_mText.Get("who");
 			if (who.IsEmpty())
 			{
-				s.Say(v, playerId, "You don't know who it was. She nods. \"Nobody does. That's the worst of it.\"");
+				s.Say(v, playerId, "You don't know who it was either. Nobody does. That's the worst of it.");
 				return;
 			}
 
-			s.Finish(v, playerId, "You tell her what you know: " + who + " She says it back to herself, so she'll remember it for the cross.", true);
+			s.Finish(v, playerId, "So it was " + who + ". I'll say that over to myself till I've got it, for the cross.", true);
 			return;
 		}
 
 		// She's right there: she always sees
 		gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 3, "robbed the dead in front of the digger", 0, "went through a dead man's pockets at a graveside");
 		s.Gift(playerId, user);
-		s.Finish(v, playerId, "She watches you go through the pockets and doesn't say a word. She keeps digging. She'll tell the house, though.", false);
+		s.Finish(v, playerId, "Go on, then. Go through the pockets. I'll keep digging. I'll tell {house} what I saw, though.", false);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -666,9 +666,9 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 		if (traces && traces.IsOn())
 			traces.GetPlayers().DiggerGrave(v.m_vPos, v.m_mText.Get("who"));
 
-		string end = "\"There. That's someone's.\" She knocks the soil off the shovel.";
+		string end = "There. That's someone's grave now, not just a ditch. Thank you.";
 		if (Bg(s, playerId, "elder"))
-			end = "You say the words. She mouths them with you, a beat behind, the way people do at funerals they didn't plan to go to.";
+			end = "You know the words. I only know the start. Say them again? I'll follow.";
 
 		s.Finish(v, playerId, end, true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
@@ -712,7 +712,7 @@ class RZ_Stranger_StillWalking : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "They said there's a lab that gives a shot. For, you know. Is that true, or is it the sort of thing people say?";
+		return "They said there's a lab that gives a shot. For, you know. This. I walked on from the house so they wouldn't have to. Is it true, or is it the sort of thing people say?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -720,14 +720,14 @@ class RZ_Stranger_StillWalking : RZ_StrangerKind
 		m_aUsed.Insert(v.m_sSubject);
 		if (option == 0)
 		{
-			s.Finish(v, playerId, "You point. He looks the way you point for a long time, then goes. The lab's gate lets a bitten, unarmed man through for the trial dose. He knows that now.", true);
+			s.Finish(v, playerId, "That way? And they let you in if you go unarmed, and say it at the gate? Then I'll go. Right now, while I can.", true);
 			Dosed(s, v);
 			return;
 		}
 
 		if (option == 1)
 		{
-			s.StartStep(v, 1, RZ_Strangers.Toward(v.m_vPos, v.m_vSubject, 600), 5, 25, false, "Walk him toward the lab. He'll go on from about 600 m.");
+			s.StartStep(v, 1, RZ_Strangers.Toward(v.m_vPos, v.m_vSubject, 600), 5, 25, false, "Walk him toward the lab. He'll go on alone after about 600 m.");
 			return;
 		}
 
@@ -742,12 +742,12 @@ class RZ_Stranger_StillWalking : RZ_StrangerKind
 	{
 		if (option == 1)
 		{
-			s.Finish(v, playerId, "\"I can find it from here.\" He shakes your hand like a man at a station. He goes on.", true);
+			s.Finish(v, playerId, "I can find it from here. Shake my hand. There. Like a man at a station.", true);
 			Dosed(s, v);
 			return;
 		}
 
-		s.Finish(v, playerId, "You sit. He talks about his garden, mostly. When it's dark he gets up, says \"Right,\" and walks toward the lab.", true);
+		s.Finish(v, playerId, "Thank you for sitting. I talked about the garden too much. It's dark now. Right. The lab, then.", true);
 		Dosed(s, v);
 	}
 
@@ -792,14 +792,14 @@ class RZ_Stranger_WarmHands : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Don't shoot. My hands are up. Mind if I sit by you? I'm not armed. I'm just cold.";
+		return "Don't shoot. My hands are up. Mind if I sit by your fire? I'm not armed. I'm just cold, and it's a long walk back to {house} in the dark.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
 	{
 		if (option == 2)
 		{
-			s.Finish(v, playerId, "\"Fair.\" He backs off into the dark the way he came.", false);
+			s.Finish(v, playerId, "Fair. I'll go back the way I came.", false);
 			return;
 		}
 
@@ -809,7 +809,7 @@ class RZ_Stranger_WarmHands : RZ_StrangerKind
 				return;
 
 			v.SetText("house", s.HouseName(v.m_iHouse));
-			s.Finish(v, playerId, "He eats it cold, with his fingers, by your fire. \"I'm at {house}, if you're ever by. Ask for the man who ate your tin.\"", true);
+			s.Finish(v, playerId, "I'll eat it cold, with my fingers, if you don't mind. I'm at {house}, if you're ever by. Ask for the man who ate your tin.", true);
 			Local(s, v, playerId, "who sat at your fire", "You let me sit at your fire. I still think about that fire.", "stove", "helped");
 			return;
 		}
@@ -819,7 +819,7 @@ class RZ_Stranger_WarmHands : RZ_StrangerKind
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
 	{
-		s.Finish(v, playerId, "Before he goes, one true thing from the road: " + TrueThing(s, v.m_vSubject), true);
+		s.Finish(v, playerId, "Thanks for the fire. One true thing from the road, before I go: " + TrueThing(s, v.m_vSubject), true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -888,7 +888,7 @@ class RZ_Stranger_SeedPotatoes : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "This was mine. The farm, I mean, not the mess. I buried a sack of seed potatoes along that field edge on Day 2. Go the day after they've fed. Nobody's out then.";
+		return "This was mine. The farm, I mean, not the mess. I buried a sack of seed potatoes along that field edge on Day 2, for spring. Dig it up and take it to {house}, and they'll plant it. Go the day after the infected have fed. Nobody's out then.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -896,7 +896,7 @@ class RZ_Stranger_SeedPotatoes : RZ_StrangerKind
 		RZ_GameModeComponent gm = s.GetGM();
 		if (option == 2)
 		{
-			s.Finish(v, playerId, "\"No. Course not.\" He goes back to looking at the field.", false);
+			s.Finish(v, playerId, "No. Course not. I'll just look at the field a while, then.", false);
 			return;
 		}
 
@@ -908,11 +908,11 @@ class RZ_Stranger_SeedPotatoes : RZ_StrangerKind
 				gm.GetFacts().Memory().Lies().Tell(gm, playerId, "errand.seed_potatoes", "farm:" + RZ_SettlementScanner.GridReference(v.m_vSubject), RZ_EFaction.SURVIVORS, "",
 					v.m_vSubject, RZ_ELieTest.RUMOUR, 2, "He went and looked. The hole was fresh. {house} knows who said it was gone.");
 
-			s.Finish(v, playerId, "\"Gone. Course it is.\" He believes you. People always say that now.", false);
+			s.Finish(v, playerId, "Gone. Course it is. Everything's gone, isn't it.", false);
 			return;
 		}
 
-		s.StartStep(v, 0, v.m_vSubject, 10, 15, false, "Dig along the field edge where he says (10 s).");
+		s.StartStep(v, 0, v.m_vSubject, 10, 15, false, "Dig along the field edge where he says (10 s there).");
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -920,7 +920,7 @@ class RZ_Stranger_SeedPotatoes : RZ_StrangerKind
 		RZ_GameModeComponent gm = s.GetGM();
 		gm.GetHeat().AddHeat(v.m_vSubject, 6);
 		gm.GetSafehouses().AddFood(v.m_iHouse, 2);
-		s.Finish(v, playerId, "A sack, damp, and the potatoes inside have eyes on them like they're looking for something. He takes it to {house}.", true);
+		s.Finish(v, playerId, "That's the sack. Damp, and they've eyes on them like they're looking for something. Good. That's spring. I'll take it to {house}.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 4);
 	}
 }
@@ -961,7 +961,7 @@ class RZ_Stranger_Manners : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "The bundle's their grandfather's. In the tea towel. It's for the rabbits. They search everything at that post now, don't they?";
+		return "These are my boys, and that bundle's their grandfather's, in the tea towel. It's for the rabbits, nothing else. We need to get past Bastion's post, and they search everything at that post now, don't they?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -975,7 +975,7 @@ class RZ_Stranger_Manners : RZ_StrangerKind
 			}
 
 			s.ToHouse(v.m_iHouse);
-			s.Finish(v, playerId, "The sentry knows your face and waves the lot of you through. They still search the family, on their own terms. Somehow the tea towel never comes up.", true);
+			s.Finish(v, playerId, "They waved us through because they know your face. They searched us anyway, gently. Nobody asked about the tea towel. Thank you.", true);
 			s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 			Rumour(s);
 			return;
@@ -983,19 +983,19 @@ class RZ_Stranger_Manners : RZ_StrangerKind
 
 		if (option == 1)
 		{
-			s.StartStep(v, 1, RZ_Mission.LandPointNear(v.m_vSubject, 180, 230), 5, 30, false, "Lead them round the post, well off the road.");
+			s.StartStep(v, 1, RZ_Mission.LandPointNear(v.m_vSubject, 180, 230), 5, 30, false, "Lead the family round the Bastion post, well off the road.");
 			return;
 		}
 
 		s.ToHouse(v.m_iHouse);
 		s.HouseFavor(playerId, RZ_EFaction.MILITARY, 2);
-		s.Finish(v, playerId, "The sergeant unwraps it, looks at it, and writes something down. The family goes home without it, and without a word to you.", false);
+		s.Finish(v, playerId, "The sergeant unwrapped it and wrote something down, and that's that. We'll go home without it. Don't expect thanks.", false);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
 	{
 		s.ToHouse(v.m_iHouse);
-		s.Finish(v, playerId, "Past the post, the boys run ahead. The mother says thank you twice, once for each of them.", true);
+		s.Finish(v, playerId, "We're past the post. Go on, boys, run. Thank you. Thank you. That's one for each of them.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 		Rumour(s);
 	}
@@ -1005,7 +1005,7 @@ class RZ_Stranger_Manners : RZ_StrangerKind
 	{
 		RZ_WorldFacts facts = s.GetGM().GetFacts();
 		if (facts)
-			facts.AddRumour("Somebody sold the Red Hand a rifle part \"for the rabbits\". Got a week of tins for it, they say.", 6);
+			facts.AddRumour("Somebody sold the Red Hand a rifle part 'for the rabbits'. Got a week of tins for it, they say.", 6);
 	}
 }
 
@@ -1065,9 +1065,9 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
 		if (v.m_bTwist && Knows(s, v.m_iAsker))
-			return "My sister was put out of {house}. Upkeep, they called it. You'll have seen her on the road? I just want to know where she's got to.";
+			return "My sister was put out of {house}, at night, without her things. Upkeep, they called it: too many mouths. You'll have seen her on the road? I just want to know where she's got to.";
 
-		return "My sister was put out of {house}. Upkeep, they called it. You'll have seen her on the road? She'll be in some barn. She always liked barns.";
+		return "My sister was put out of {house}. Upkeep, they called it: too many mouths and not enough tins. You'll have seen her on the road? She'll be in some barn. She always liked barns.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1076,16 +1076,16 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 		{
 			if (v.m_bTwist)
 			{
-				s.Finish(v, playerId, "\"Your sister has a lot of brothers.\" He looks at you, works out you're not worth it, and walks off the way he came.", true);
+				s.Finish(v, playerId, "A lot of brothers, she has? Ha. You've seen the hand, then. All right. I'll be on my way.", true);
 				return;
 			}
 
 			s.GetGM().AddInfamy(playerId, RZ_EFaction.SURVIVORS, 1, "called a grieving man a liar", 0, "");
-			s.Finish(v, playerId, "\"Calling a grieving man a liar. Nice.\" He goes on looking on his own.", false);
+			s.Finish(v, playerId, "Calling a grieving man a liar. Nice. I'll look on my own.", false);
 			return;
 		}
 
-		s.StartStep(v, option, v.m_vSubject, 15, 40, false, "Look for her in {barn} (15 s there).");
+		s.StartStep(v, option, v.m_vSubject, 15, 40, false, "Look for his sister in {barn} (15 s there).");
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -1101,14 +1101,14 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 			v.m_iHouse = other;
 			v.SetText("house", s.HouseName(other));
 			s.ToHouse(other);
-			s.Finish(v, playerId, "She's there, asleep on a feed sack. You tell her someone's asking. She doesn't ask who. She goes to {house} before dark.", true);
+			s.Finish(v, playerId, "Someone's asking after me? Then I'm not staying in this barn. I won't ask who. I'll be at {house} before dark. Thank you.", true);
 			Local(s, v, playerId, "who was asleep in the barn", "You warned me on. I never asked who was looking. I didn't want to know.", "stove", "saved");
 			return;
 		}
 
 		if (!v.m_bTwist)
 		{
-			s.Finish(v, playerId, "She's there. You go back and tell him which barn. Later you see them on the road together, arguing about something from when they were children.", true);
+			s.Finish(v, playerId, "That barn? She always liked barns. Thank you. We'll be arguing about something from when we were kids by tonight. I can't wait.", true);
 			s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 			return;
 		}
@@ -1121,11 +1121,11 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 			if (RZ_Witness.Seen(gm, playerId, v.m_vSubject, RZ_EFaction.SURVIVORS))
 				gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 12, "sold a woman to the crews", 0, "told a crew lad where a woman was sleeping");
 
-			s.Finish(v, playerId, "You tell him which barn. He says thanks like he's paying for something, and in a way he is. She never arrives anywhere.", false);
+			s.Finish(v, playerId, "That barn. Thanks. That's worth a few tins to the right people. Don't look at me like that. Somebody would have sold her.", false);
 			return;
 		}
 
-		s.Finish(v, playerId, "You tell him which barn. He goes off quick. Later you hear she never arrived anywhere, and you don't know why.", false);
+		s.Finish(v, playerId, "That barn. Thanks. I'll go now, quick, before she moves on.", false);
 	}
 }
 
@@ -1162,7 +1162,7 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Is that their toll? I've nothing to pay it with. Everything I own, I'm wearing. {house} is just past it.";
+		return "Is that the Red Hand's toll? A tin a head, they want, and I've nothing to pay it with. Everything I own, I'm wearing. {house} is just past it.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1177,7 +1177,7 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 			}
 
 			s.ToHouse(v.m_iHouse);
-			s.Finish(v, playerId, "The toll lad counts it twice and waves her through like he's doing her a favour. Technically, he is.", true);
+			s.Finish(v, playerId, "You paid my toll? He counted it twice and waved me through like he was doing me a favour. I suppose he was. Thank you.", true);
 			return;
 		}
 
@@ -1190,13 +1190,13 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 			}
 
 			s.ToHouse(v.m_iHouse);
-			s.Finish(v, playerId, "\"She's with me.\" The lad shrugs. \"Your funeral. Hers, I mean.\" He lets her by.", true);
+			s.Finish(v, playerId, "He let me by because you said I was with you. I heard what he said after. I'm not your funeral, thank you very much.", true);
 			return;
 		}
 
 		if (option == 2)
 		{
-			s.StartStep(v, 2, RZ_Mission.LandPointNear(v.m_vSubject, 200, 260), 5, 30, false, "Walk her round the toll, well off the road.");
+			s.StartStep(v, 2, RZ_Mission.LandPointNear(v.m_vSubject, 200, 260), 5, 30, false, "Walk her round the Red Hand's toll, well off the road.");
 			return;
 		}
 
@@ -1208,13 +1208,13 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 		s.GetErrands().HouseShy(playerId, v.m_iHouse);
 		array<int> who = {playerId};
 		RZ_WorldFacts.Get().Memory().Record("errand.toll_sold", RZ_WorldFacts.Safehouse(v.m_iHouse), "sold", RZ_WorldMemory.SOURCE_ERRAND, false, who);
-		s.Finish(v, playerId, "You walk her to the barrier and keep walking without her. Nobody says where she went.", false);
+		s.Finish(v, playerId, "You walked her up to the toll and left her there. The crew took her somewhere. Nobody on that road will say where.", false);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
 	{
 		s.ToHouse(v.m_iHouse);
-		s.Finish(v, playerId, "Past it, she takes one coat off and gives it to you. It doesn't fit. You keep it anyway.", true);
+		s.Finish(v, playerId, "We're past it. Here: have one of my coats. It won't fit you. Keep it anyway. I want you to.", true);
 		Local(s, v, playerId, "in the two coats", "You walked me round the toll. I've still got your coat. Well, my coat.", "gate", "saved");
 	}
 }
@@ -1248,7 +1248,7 @@ class RZ_Stranger_Line : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "He's just there, past the line. Behind the trees. He waves back, sometimes. Can you see him?";
+		return "He's just there, past the line, behind the trees. He was on the other side when they shut it. He waves back, sometimes. Can you see him?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1263,14 +1263,14 @@ class RZ_Stranger_Line : RZ_StrangerKind
 			}
 
 			s.ToHouse(v.m_iHouse);
-			s.Finish(v, playerId, "You talk about nothing until she's walking with you. At {house} she lets them take her coat. She says she'll go back tomorrow. Maybe.", true);
+			s.Finish(v, playerId, "All right. I'll walk with you. Just to {house}. I'll go back tomorrow. Maybe. Maybe not so close.", true);
 			Local(s, v, playerId, "who waves at the line", "You walked me back from the line. I still go some days. I don't go as close.", "gate", "saved");
 			return;
 		}
 
 		if (option == 1)
 		{
-			s.Finish(v, playerId, "You step past her into the warning zone. She stays where she is. The line's rules are for whoever crosses it, and that's you, alone.", false);
+			s.Finish(v, playerId, "You're going out there? Past the warning? The loudspeaker will be talking to you, not me. I'm staying here. Come back.", false);
 			return;
 		}
 
@@ -1278,7 +1278,7 @@ class RZ_Stranger_Line : RZ_StrangerKind
 		if (leaders && gm.GetErrands().PayKinds().MayHeadline())
 			leaders.AddHeadline("A woman from the north road waves at the line every evening. The Haven leaves a chair there now.", false);
 
-		s.Finish(v, playerId, "You leave her waving. When you look back she's still at it, steady, like a lighthouse.", false);
+		s.Finish(v, playerId, "Go on. I'll stay a while. He'll wave back. He always does, in the end.", false);
 	}
 }
 
@@ -1325,24 +1325,24 @@ class RZ_Stranger_Notice : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "You're the face on the notice. Good. I'm not running. I need someone with nothing to lose. My landlord's book is in the crew hut at {hut}. What I owe is in it. All of it.";
+		return "You're the face on the notice. Good. I'm not running. I need someone with nothing to lose. My landlord sold my debt to the crews, and their book's in the hut at {hut}. What I owe is in it, all of it, at a rate I'll never pay. Get the book, or burn it.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
 	{
 		if (option == 2)
 		{
-			s.Finish(v, playerId, "\"Course. Even you.\" He sits down on the verge where he is.", false);
+			s.Finish(v, playerId, "Course. Even you. I'll sit here on the verge, then. Nowhere else to be.", false);
 			return;
 		}
 
 		if (option == 0)
 		{
-			s.StartStep(v, 0, v.m_vSubject, 20, 25, true, "Get into the crew hut at {hut} unseen and take the book (20 s hidden there).");
+			s.StartStep(v, 0, v.m_vSubject, 20, 25, true, "Get into the crew hut at {hut} without being seen and take the book (20 s hidden there).");
 			return;
 		}
 
-		s.StartStep(v, 1, v.m_vSubject, 15, 25, false, "Burn the books at the crew hut at {hut} (15 s there).");
+		s.StartStep(v, 1, v.m_vSubject, 15, 25, false, "Burn the books in the crew hut at {hut} (15 s there).");
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -1356,7 +1356,7 @@ class RZ_Stranger_Notice : RZ_StrangerKind
 		}
 
 		s.Gift(playerId, user);
-		s.Finish(v, playerId, "When you come back he's still on the verge. He gives you what he has in his pocket, which is one thing, and walks off lighter.", true);
+		s.Finish(v, playerId, "You did it? Then I don't owe them. I don't owe anyone. Here, it's all I've got in my pocket. Take it. I'm going for a walk.", true);
 	}
 }
 
@@ -1383,20 +1383,20 @@ class RZ_Stranger_Hiding : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Is it over? I'm under the car. All that noise. I didn't come out. I'm sorry. I didn't come out.";
+		return "Is it over? I'm under the car. All that noise, the shooting, the running. I didn't come out to help. I'm sorry. I didn't come out.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
 	{
 		if (option != 0)
 		{
-			s.Finish(v, playerId, "You leave them where they are. It's what they asked for, nearly.", false);
+			s.Finish(v, playerId, "Leave me here. Just a bit longer. I'll come out when it's quiet.", false);
 			return;
 		}
 
 		s.UseHook(s.HookNear("hiding", v.m_vSubject, 50));
 		s.ToHouse(v.m_iHouse);
-		s.Finish(v, playerId, "They come out a bit at a time, like a tortoise. You point them toward {house}. They go.", true);
+		s.Finish(v, playerId, "I'm out. I'm out. That way to {house}? All right. I'm going.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
 	}
 }
@@ -1424,7 +1424,7 @@ class RZ_Stranger_First : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Hands where you can see them, look. I got here first. Didn't think anyone else would. We can be civil about it.";
+		return "Hands where you can see them, look. I got here first, and I've been through this house already. Didn't think anyone else would come. We can be civil about it.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1432,7 +1432,7 @@ class RZ_Stranger_First : RZ_StrangerKind
 		s.UseHook(s.HookNear("first", v.m_vSubject, 50));
 		if (option == 0)
 		{
-			s.Finish(v, playerId, "You split it down the middle, which is to say there's nothing for either of you. You both laugh, which helps.", true);
+			s.Finish(v, playerId, "Down the middle, then. Half of nothing each. Ha. Well, it helps to laugh at it.", true);
 			return;
 		}
 
@@ -1442,11 +1442,11 @@ class RZ_Stranger_First : RZ_StrangerKind
 				return;
 
 			s.Gift(playerId, user);
-			s.Finish(v, playerId, "A tin for something from the bag. Fair, by today's prices. Nobody's are fair.", true);
+			s.Finish(v, playerId, "A tin for something from the bag. Fair, by today's prices. Nobody's prices are fair.", true);
 			return;
 		}
 
-		s.Finish(v, playerId, "\"Decent of you.\" They go off with the bag, not hurrying.", false);
+		s.Finish(v, playerId, "Decent of you. I'll take the bag and be on my way.", false);
 	}
 }
 
@@ -1478,7 +1478,7 @@ class RZ_Stranger_Bitten : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "It's a scratch. Off a fence. I'm just holding it so it stops throbbing. Is there a house near?";
+		return "It's a scratch. Off a fence. I'm just holding it so it stops throbbing. Is there a house near? Somewhere with a door?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1486,7 +1486,7 @@ class RZ_Stranger_Bitten : RZ_StrangerKind
 		s.UseHook(s.HookNear("bitten", v.m_vSubject, 50));
 		if (option == 2)
 		{
-			s.Finish(v, playerId, "You leave them against the wall. They don't call after you.", false);
+			s.Finish(v, playerId, "Go on, then. I'll find a house myself.", false);
 			return;
 		}
 
@@ -1499,10 +1499,10 @@ class RZ_Stranger_Bitten : RZ_StrangerKind
 		s.SendToGate(v.m_iHouse, true);
 		if (option == 1)
 		{
-			s.Finish(v, playerId, "It isn't a fence. It's a day old. You tell them straight, and send them to {house} anyway: the gate checks everyone, and someone there will sit with them.", true);
+			s.Finish(v, playerId, "It isn't a fence, is it. A day old. Thank you for saying it straight. I'll go to {house} anyway. They check at the gate, and someone there will sit with me.", true);
 			return;
 		}
 
-		s.Finish(v, playerId, "They go off toward {house}, holding the arm. The gate checks everyone at the door. Nobody will blame you for what they find.", true);
+		s.Finish(v, playerId, "{house}, that way? Thank you. I'll go now. I'll tell them at the gate it's a scratch.", true);
 	}
 }
