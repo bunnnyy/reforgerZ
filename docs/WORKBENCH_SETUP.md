@@ -41,11 +41,12 @@ Run **ReforgerZ: Create prefabs** (or follow the manual checklist). First:
 ### 1.1 Before you start: project and dependencies
 
 1. Subscribe to the dependencies in the game ([MOD_STACK.md](MOD_STACK.md)): at minimum
-   **Bacon Zombies** and **Special Zombies** (both are in `addon.gproj`); Metabolism is recommended.
+   everything in `addon.gproj`: **Bacon Zombies**, **Special Zombies**, **Metabolism** and the camps'
+   look mods (the server and the compile check download what's missing by themselves).
 2. Arma Reforger Tools → **+ Add Project → Add Existing Project** → pick this repo's
    `addon.gproj`, then **Open**.
 3. **File → Project Settings → Dependencies**: the repo's `addon.gproj` already lists Arma
-   Reforger, Bacon Zombies and Special Zombies. To add another mod, click **+**, then the new
+   Reforger and every Workshop dependency in [MOD_STACK.md](MOD_STACK.md). To add another mod, click **+**, then the new
    row's **...**, and pick the mod's `addon.gproj` in the game's Workshop folder. Workbench only
    loads a dependency it can find, so start it with that folder in `-addonsDir`
    ([PC_SETUP.md](PC_SETUP.md#5-workbench)). Commit the changed `addon.gproj`.

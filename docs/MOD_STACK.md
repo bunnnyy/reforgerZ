@@ -22,7 +22,7 @@ rebase the prefabs built on it.
 
 ## Required
 
-Both are dependencies in `addon.gproj`, so Workbench and every server need them (the compile check
+Both are dependencies in `addon.gproj` (with the mods below), so Workbench and every server need them (the compile check
 needs Bacon Zombies; it leaves Special Zombies out, see [below](#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
 
 | Mod | Role | How ReforgerZ uses it |
@@ -50,11 +50,11 @@ The compile check, the runtime test and the zombie lab drop it from their throwa
 `addon.gproj` for this reason. Workbench runs on Windows and isn't affected. Open issue:
 [ROADMAP.md](ROADMAP.md#get-it-playable).
 
-## Recommended
+## Hunger and thirst
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
-| [Metabolism](https://reforger.armaplatform.com/workshop/64E3272AFD56FEF7-Metabolism) | Hunger and thirst, **no sleep** | Its food items feed safehouses (by the **Food keywords**); its unsafe and safe water items fill the **Dirty / Clean water** slots. It isn't in `addon.gproj` yet, so those two slots are empty. ReforgerZ can't read hunger itself, so the "hungry" tip waits for a bridge to call `RZ_Guidance.Report` |
+| [Metabolism](https://reforger.armaplatform.com/workshop/64E3272AFD56FEF7-Metabolism) | Hunger and thirst, **no sleep** | A dependency in `addon.gproj` since 2026-11-12. Version 0.0.3; it brings Enfusion Persistence Framework and Enfusion Database Framework with it, and modifies the vanilla game mode, character and player controller prefabs. It has one water item (`WaterBottle.et`, no unsafe/safe pair), so **Dirty / Clean water** both take it; its food items feed safehouses by the **Food keywords**. ReforgerZ can't read hunger itself, so the "hungry" tip waits for a bridge to call `RZ_Guidance.Report`. Compiles with ReforgerZ on 1.9 |
 
 ## Optional
 
@@ -68,27 +68,29 @@ The compile check, the runtime test and the zombie lab drop it from their throwa
 **No sleep and no time skip**, by design. Skip any survival mod that adds either. Keep the
 server's time acceleration fixed.
 
-## Researched for the camps' look (not added)
+## The camps' look
 
-Candidates for how the faction bases look ([DESIGN.md](DESIGN.md#camp-life)), researched on
-2026-11-12. None is added: each needs the compile check and a load test first, and its row moves
-to the tables above only once it's in. Camp life's pieces use vanilla props only. Sizes are the
-Workshop's.
+Dependencies in `addon.gproj` since 2026-11-12, for how the faction bases and their people look
+([DESIGN.md](DESIGN.md#camp-life)). Each passed the compile check with ReforgerZ on 1.9. Sizes are the
+Workshop's; the server downloads their own dependencies (Functional Knives, IH_Better_GM_Props) by itself.
 
 | Mod | Workshop ID | MB | For | Note |
 |---|---|---|---|---|
-| SBBG - Wrecks | `6529635700E0B228` | 3.0 | all | Vanilla wrecks made placeable (UAZ-469 and UAZ-452, Ural and M923 cargo, an M997 ambulance, a BRDM, helicopter parts): blocked roads, the column, ambush sites. Current game version, no dependencies. Downloaded and looked at in Workbench on 2026-11-12: loads cleanly |
-| Lamas vanilla plus gear pack | `64FD478E9982027A` | 4.2 | Bastion | Worn, era-correct US kit: dark BDUs and M65 trousers, a night-camo jacket, a raincoat, patrol and woodland caps, a UN-blue PASGT helmet. Downloaded and looked at in Workbench on 2026-11-12: loads and dresses a character |
-| BanditGear | `66B523AD189F3233` | 101.9 | Red Hand | Dirty scavenged clothing, balaclavas, gloves, Molotovs, spray-painted cars. Already downloaded; maintained |
-| BasicHazmatSuit | `68AB4B626C8AB069` | 49.3 | Halcyon | Hooded hazmat suit with a gas mask in three colours. Already downloaded; APL-ND |
-| MedicalAccessories | `66052DD2B655BF72` | 12.0 | Halcyon, Haven | Medical face mask and nitrile gloves. Already downloaded |
-| Clothing_pack_v2 | `666D2C5F02F88A56` | 68.1 | Haven | Farmers, carpenters, overalls, a mechanic's uniform, prisoner uniforms (the convicts). Already downloaded; not updated for a year |
-| Domins Civilian Expansion | `630B3E95B52F31DF` | 63.1 | Haven, Halcyon | Paramedic and fireman uniforms, gas mask, oxygen tank. Needs Functional Knives; old build |
-| Timmmmmbs Garbage Composition | `62E8BD33444EA5A4` | 4.7 | Red Hand, Haven | Junk and scrap barricades. Needs IH_Better_GM_Props; old |
-| Placeable Posters | `62B40182B1190ACF` | 12.7 | all | Posters with your own textures: quarantine notices, missing posters, the red hand, the bear. Downloaded 2026-11-12: the posters are built on the demolition charge and placed like one (on a wall), not free-standing props, so they need a test in play |
-| Borkeds Props | `670895D328DC3AA9` | 141.5 | Halcyon | 1980s computers, tapes and a reel-to-reel recorder for the lab. CC BY-NC: credit, no commercial use |
-| SecurityFences | `6AB0C0CC87D6EAB1` | 20.2 | Bastion, Halcyon | Mesh fence, razor coil, gates. Already downloaded; its keypad gates are a system, and its licence forbids changes: ask the author |
-| MoreGMProps | `66A920DA264A9F98` | 122.7 | Bastion | Hesco and T-walls, burn piles; also turn-ins to ignore. Already downloaded |
+| SBBG - Wrecks | `6529635700E0B228` | 3.0 | all | Vanilla wrecks made placeable (UAZ-469 and UAZ-452, Ural and M923 cargo, an M997 ambulance, a BRDM, helicopter parts): blocked roads, the column, ambush sites |
+| Lamas vanilla plus gear pack | `64FD478E9982027A` | 4.2 | Bastion | Worn, era-correct US kit: dark BDUs and M65 trousers, a night-camo jacket, a raincoat, patrol and woodland caps, a UN-blue PASGT helmet |
+| BanditGear | `66B523AD189F3233` | 101.9 | Red Hand | Dirty scavenged clothing, balaclavas, gloves, Molotovs, spray-painted cars |
+| BasicHazmatSuit | `68AB4B626C8AB069` | 49.3 | Halcyon | Hooded hazmat suit with a gas mask in three colours. APL-ND |
+| MedicalAccessories | `66052DD2B655BF72` | 12.0 | Halcyon, Haven | Medical face mask and nitrile gloves |
+| Clothing_pack_v2 | `666D2C5F02F88A56` | 68.1 | Haven | Farmers, carpenters, overalls, a mechanic's uniform, prisoner uniforms (the convicts). Some hats have wrong GUIDs: don't use them |
+| Domins Civilian Expansion | `630B3E95B52F31DF` | 63.1 | Haven, Halcyon | Paramedic and fireman uniforms, gas mask, oxygen tank. Brings Functional Knives |
+| Timmmmmbs Garbage Composition | `62E8BD33444EA5A4` | 4.7 | Red Hand, Haven | Junk and scrap barricades. Brings IH_Better_GM_Props |
+| Placeable Posters | `62B40182B1190ACF` | 12.7 | all | Posters with your own textures. Built on the demolition charge and placed like one (on a wall), not free-standing props |
+| SecurityFences | `6AB0C0CC87D6EAB1` | 20.2 | Bastion, Halcyon | Mesh fence, razor coil, gates. Its keypad gates are a system, and its licence forbids changes |
+| MoreGMProps | `66A920DA264A9F98` | 122.7 | Bastion | Hesco and T-walls, burn piles |
+
+**Rejected:** Borkeds Props (`670895D328DC3AA9`, 1980s lab computers) ships old copies of vanilla
+scripts and stops the game's script module compiling on 1.9 (`SCR_CampaignBuildingLayoutComponent.c`:
+`TRAIT_BUILDING_OVERRIDE_KEEP_BUSH` not found). Don't add it until it's updated.
 
 ## Not used
 

@@ -941,6 +941,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      m_sLantern "{97A0EBD94A0A8325}Prefabs/ReforgerZ/Traces/RZ_Trace_Lantern_Lit.et"
     }
    }
+   m_DialogueSettings RZ_DialogueSettings "{6B2E1D4C9A7F3051}" {
+    m_bTrees 1
+   }
    m_UISettings RZ_UISettings "{4054E5A3C0EBB38F}" {
     m_sIconImageset "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
     m_sNoticeLayout "{9DDD3521A90DB6BA}UI/layouts/ReforgerZ/RZ_NoticeCard.layout"
