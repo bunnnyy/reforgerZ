@@ -66,12 +66,12 @@ class RZ_TalkOpening : RZ_TalkGeneric
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! As each step starts they speak first (the step's piece of the story and its ask); when you
-	//! come back on your own, the screen opens on your replies (What was it you needed?).
+	//! When a step waits for you to talk to them (or they have not spoken yet) they speak first (the
+	//! step's piece of the story and its ask); otherwise the screen opens on your replies.
 	override bool SpeaksFirst(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
 	{
 		RZ_Opening o = Find();
-		return o && (o.m_bAnnounce || o.m_bWaitTalk || !o.m_bSpoke);
+		return o && (o.m_bWaitTalk || !o.m_bSpoke);
 	}
 
 	//------------------------------------------------------------------------------------------------
