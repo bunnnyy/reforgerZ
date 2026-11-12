@@ -4532,7 +4532,9 @@
    "components": [],
    "actions": [
     {"cls": "RZ_TuneRadioAction", "values": [], "name": "Tune"},
-    {"cls": "RZ_RadioCallAction", "values": [], "name": "Call"}
+    {"cls": "RZ_RadioCallAction", "values": [], "name": "Call"},
+    {"cls": "RZ_ViewRadioAction", "values": [], "name": "View radio"},
+    {"cls": "RZ_ViewRadioAction", "values": ["m_bInHand=1"], "name": "View radio"}
    ],
    "slots": ["m_GuidanceSettings.m_sRadioPrefab"],
    "listSlot": false,
@@ -4540,7 +4542,7 @@
    "required": false,
    "minimum": false,
    "use": "given to every new life",
-   "notes": ""
+   "notes": "The two View radio actions: one in the \"default\" context, one in \"knob_toggle\" with In hand on (beside vanilla's Turn on/off)."
   },
   {
    "id": "CarWreck",
@@ -5440,6 +5442,24 @@
    "notes": ""
   },
   {
+   "id": "StoveRecipes",
+   "kind": "manual",
+   "system": "Hand-set list entries",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a cooked food item (e.g. Metabolism's cooked meat)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_CraftSettings.m_aStoveRecipes[].m_sOutput"],
+   "listSlot": false,
+   "slotLabel": "Interactions > Crafting > Stove recipes (each output)",
+   "required": false,
+   "minimum": false,
+   "use": "cookables at a stove (optional; none by default)",
+   "notes": ""
+  },
+  {
    "id": "ShopItems",
    "kind": "manual",
    "system": "Hand-set list entries",
@@ -5837,6 +5857,42 @@
    "required": false,
    "minimum": false,
    "use": "the crafting screen's recipe rows at a workbench (empty = no crafting screen: the workbench's Make actions and notices). Needs the RZ_CraftMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "notes": ""
+  },
+  {
+   "id": "UICookRowLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the CraftRow layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sCookRowLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Cook row layout",
+   "required": false,
+   "minimum": false,
+   "use": "the cooking screen's rows at a stove (empty = the stove's Look at the stove and its actions in the object menu). Reuses the RZ_CraftMenu preset",
+   "notes": ""
+  },
+  {
+   "id": "UIRadioChannelLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the RadioChannel layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sRadioChannelLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Radio channel layout",
+   "required": false,
+   "minimum": false,
+   "use": "the radio screen's channel rows (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
    "notes": ""
   },
   {
@@ -7459,6 +7515,8 @@
    "defaults": {
     "m_bEnabled": "1",
     "m_fFindChance": "0.6",
+    "m_fBootChance": "0.8",
+    "m_fBootTwoChance": "0.4",
     "m_fRareChance": "0.1",
     "m_fElectronicsChance": "0.1",
     "m_bLocks": "1",
@@ -7491,17 +7549,20 @@
    "cls": "RZ_LootSettings",
    "defaults": {
     "m_bEnabled": "1",
-    "m_fSpawnRadius": "45",
-    "m_fDespawnRadius": "70",
+    "m_fSpawnRadius": "55",
+    "m_fDespawnRadius": "80",
     "m_fFreshDistance": "20",
-    "m_fRefillMinutes": "60",
-    "m_iMaxLying": "350",
-    "m_iMaxHouse": "4",
-    "m_iMaxShop": "5",
-    "m_iMaxSpecial": "6",
-    "m_fSlotChance": "0.7",
-    "m_iSureItems": "1",
-    "m_fTownLootPerItem": "0.01"
+    "m_fRefillMinutes": "45",
+    "m_iMaxLying": "500",
+    "m_iPlacePerTick": "6",
+    "m_iMaxHouse": "5",
+    "m_iMaxShop": "7",
+    "m_iMaxSpecial": "8",
+    "m_fSlotChance": "0.75",
+    "m_iSureItems": "2",
+    "m_fTownLootPerItem": "0.01",
+    "m_fClearRadius": "20",
+    "m_bLog": "1"
    }
   },
   {
@@ -7842,7 +7903,8 @@
     "m_fSubtitleMax": "12",
     "m_fSubtitleCps": "11",
     "m_bReader": "1",
-    "m_iReaderPageChars": "700"
+    "m_iReaderPageChars": "700",
+    "m_bDeathBrief": "1"
    }
   },
   {
