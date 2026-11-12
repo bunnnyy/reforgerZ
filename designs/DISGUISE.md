@@ -14,15 +14,15 @@ are errand cards in [ERRANDS.md](../docs/ERRANDS.md#the-cards). This file keeps 
 | **Looks:** "something of theirs from a mission on you" (−1) | The look ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
 | **Breakers:** a mission's sneak approach that spots someone passing is a catch | [MISSION_STYLE.md](MISSION_STYLE.md) |
 | **Missions:** a stage that offers a trick sets `<key>.disguised` *(you)* for later stages; trick objectives at least 25 m from a leader's seat | [MISSION_STYLE.md](MISSION_STYLE.md) |
-| **The majors:** Await Relief's Act IV roster read in Bastion kit at night (the gate sentry at difficulty 2 and the duty board at 3, a name off the nail as the cover detail, the muster's callback *"And whoever signed the roster as {dead_name}: he's still dead."*); Proof's records room in a Halcyon coat at night (the duty officer at 3, a real notebook number) | [MAJORS.md](MAJORS.md) |
-| **The finale:** after the 90% lock every look with every faction whose route you didn't choose is −1, by identity, until the cure; the stand's spare rule for a route's colours | [FINALE.md](FINALE.md) |
+| **The majors:** Await Relief's Act IV roster read in Bastion kit at night (the gate sentry at difficulty 2 and the duty board at 3, a name off the nail as the cover detail, the muster's callback *"And whoever signed the roster as {dead_name}: he's still dead."*); Proof's records room in a Halcyon coat at night (the duty officer at 3, a real notebook number) | [MAJORS.md](../docs/QUESTLINES.md#the-majors) |
+| **The finale:** after the 90% lock every look with every faction whose route you didn't choose is −1, by identity, until the cure; the stand's spare rule for a route's colours | [FINALE.md](../docs/FINALE.md) |
 | **The HUD:** a look-coming widget, `RZ_Hud_Look` (the Watched eye with "2 of 2", owner-only through `RZ_UIFeed`, sent only when it changes), and the standing screen's per-faction lines (your face: unknown, known, caught 1 of 3, blown for 40 more minutes; their tells; what their enemies do to their colours). Today the notices carry it | docs/UI.md and UI/LAYOUTS.md when built |
 | **Haven gossip** about impostors, sideways and about food: *"Somebody came to Morton in a soldier's coat asking for bread. We gave him bread. The coat didn't fit."* | The look's word gets round |
-| **The last week** ([below](#the-last-week)) | [EPILOGUE.md](EPILOGUE.md) |
+| **The last week** ([below](#the-last-week)) | [EPILOGUE.md](../docs/EPILOGUE.md) |
 
 ## The last week
 
-After the cure the epilogue lasts **one week** (168 hours; decision 12). [EPILOGUE.md](EPILOGUE.md) owns the closure set;
+After the cure the epilogue lasts **one week** (168 hours; decision 12). [EPILOGUE.md](../docs/EPILOGUE.md) owns the closure set;
 the disguise system adds these, all finishable within the week:
 - **The lock's −1 ends** with the locks at the cure, and every grudge the contest started stands down once. Looks go
   back to their season rules.

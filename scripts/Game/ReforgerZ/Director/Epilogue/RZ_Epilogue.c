@@ -897,6 +897,9 @@ class RZ_Epilogue
 	//! player's own first line if they missed the commit, and the background's last goal.
 	void OnSpawn(int playerId, IEntity ent)
 	{
+		// Last season's story rule (the book balanced): the crew-name greeting, all season
+		RZ_StoryRules.Greet(m_GM, playerId);
+
 		if (!IsBuilt() || !ent)
 			return;
 
@@ -1166,6 +1169,8 @@ class RZ_Epilogue
 	//! should I look?" and a stronghold's grey choice.
 	void LeaderReplies(RZ_Leader l, int playerId, notnull array<string> labels, notnull array<int> ids)
 	{
+		// The majors: "Ask about ..." on another faction's stronghold leader while a stage is open
+		RZ_MajorRest.AskAbout(m_GM, l, labels, ids);
 		if (!IsBuilt() || !l || m_S.lastDay)
 			return;
 
@@ -1189,6 +1194,9 @@ class RZ_Epilogue
 	void LeaderPick(RZ_Leader l, int playerId, int replyId)
 	{
 		if (!l)
+			return;
+
+		if (RZ_MajorRest.AskPick(m_GM, l, playerId, replyId))
 			return;
 
 		if (!IsBuilt())

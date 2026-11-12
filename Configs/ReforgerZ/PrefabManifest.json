@@ -5626,6 +5626,42 @@
    "minimum": false,
    "use": "the quartermaster's shop screen's item rows (empty = no shop screen: the Buy, Requisition and service actions)",
    "notes": ""
+  },
+  {
+   "id": "MajorsLorry",
+   "kind": "create",
+   "system": "Questlines",
+   "path": "Prefabs/ReforgerZ/Questlines/RZ_RedHandLorry.et",
+   "basePrefab": "",
+   "baseFind": "Truck",
+   "baseHint": "a static civilian lorry or flatbed with no vehicle component (a wreck-style static prop); confirm the name in Workbench",
+   "components": [],
+   "actions": [],
+   "slots": ["m_MajorSettings.m_sLorryPrefab"],
+   "listSlot": false,
+   "slotLabel": "Questlines > Majors > Red Hand lorry",
+   "required": false,
+   "minimum": false,
+   "use": "look only: the lorry across the road at Rudi's crossroads for the Book's send-off and its last line, near players only (else words only)",
+   "notes": ""
+  },
+  {
+   "id": "MajorsBonfire",
+   "kind": "create",
+   "system": "Questlines",
+   "path": "Prefabs/ReforgerZ/Questlines/RZ_Bonfire.et",
+   "basePrefab": "",
+   "baseFind": "Campfire",
+   "baseHint": "a large campfire or bonfire prop, lit; confirm the name in Workbench",
+   "components": [],
+   "actions": [],
+   "slots": ["m_MajorSettings.m_sBonfirePrefab"],
+   "listSlot": false,
+   "slotLabel": "Questlines > Majors > Bonfire prop",
+   "required": false,
+   "minimum": false,
+   "use": "look only: the fire at Rudi's crossroads when the book is sent off loud, near players only (else words only)",
+   "notes": ""
   }
  ],
  "additions": [

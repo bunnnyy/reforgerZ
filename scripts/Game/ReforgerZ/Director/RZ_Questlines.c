@@ -1615,6 +1615,31 @@ class RZ_Questlines
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The clean room changed holder during the stand (RZ_CureFinale.TakeRoom).
+	void OnStandHolder(int from, int to)
+	{
+		array<RZ_QuestRun> runs = {};
+		foreach (RZ_QuestRun r : m_aRuns)
+		{
+			if (!r.m_bDone)
+				runs.Insert(r);
+		}
+
+		foreach (RZ_QuestRun run : runs)
+		{
+			bool major = run.m_Line.IsMajor();
+			if (major)
+				RZ_Majors.Enter(run.m_sKey);
+
+			run.m_Line.OnStandHolder(m_GM, run, from, to);
+			if (major)
+				RZ_Majors.Leave();
+		}
+
+		RZ_Log.Info(string.Format("Questlines: the clean room changed holder (%1 to %2).", from, to));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The final stand ended: won (the cure) or lost (the batch).
 	void OnFinalStandEnd(bool won)
 	{

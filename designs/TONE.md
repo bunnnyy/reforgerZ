@@ -30,7 +30,7 @@ the plan's "Decisions for you". Tone's own options are taken as recommended; the
   lie about it is said flatly. A name never leaves the roster: *"Someone got to him first. His KIA's rubbed
   out."*
 - **"Struck off" is only Bastion's word for a deserter**, struck off as KIA with his name still on the board.
-  The book's word is "paid" (conflict 7, as [FINALE.md](FINALE.md) applies it).
+  The book's word is "paid" (conflict 7, as [FINALE.md](../docs/FINALE.md) applies it).
 - **The finale's keys** (conflict 39). `RouteOf(identity)` everywhere. `finale.route` 0 is nobody (handed
   over); the lab alone is `finale.finisher` 0. The lock is per identity for the season, survives death and
   ends at the cure ([FINALE.md](../docs/FINALE.md#the-lock)), so the option on lock scope is gone.
@@ -59,9 +59,9 @@ Where it meets the other designs, it owns the **voice**, and they own the mechan
 
 | Design | Owns | This piece adds |
 |---|---|---|
-| Finale ([FINALE.md](FINALE.md)): routes, the 90% lock | The routes, the lock and its scope, who can choose, the fight | Wording rules for the pitches. Lines for players on the route (in-group), on another route (out-group), not yet sided (unsided), on a route that lost, and on the Independent route, all face to face (3.4) |
-| Epilogue ([EPILOGUE.md](EPILOGUE.md)) | Which places react, the props, the boards of record, the closing work of the week | Phrasing, variety and honour-line rules (3.5) |
-| Majors ([MAJORS.md](MAJORS.md)) | The four codas (the Gate, the last call and the last roll, the last line, the paper), their lines, the page states | Running jokes switched by their flags (3.10). Nothing at their scenes |
+| Finale ([FINALE.md](../docs/FINALE.md)): routes, the 90% lock | The routes, the lock and its scope, who can choose, the fight | Wording rules for the pitches. Lines for players on the route (in-group), on another route (out-group), not yet sided (unsided), on a route that lost, and on the Independent route, all face to face (3.4) |
+| Epilogue ([EPILOGUE.md](../docs/EPILOGUE.md)) | Which places react, the props, the boards of record, the closing work of the week | Phrasing, variety and honour-line rules (3.5) |
+| Majors ([MAJORS.md](../docs/QUESTLINES.md#the-majors)) | The four codas (the Gate, the last call and the last roll, the last line, the paper), their lines, the page states | Running jokes switched by their flags (3.10). Nothing at their scenes |
 | Infected ([INFECTED.md](INFECTED.md)) | The marks at a range's edge, "Read the mark", each faction's words for the infected | Its word list joins the lint (6), and its rules for writing the infected move into WRITING.md |
 | Mission style ([MISSION_STYLE.md](MISSION_STYLE.md)) | Approaches by mission kind: one table in DESIGN.md | Two columns for that table: who pays, and what to watch for (4.6) |
 | Dialogue ([DIALOGUE.md](DIALOGUE.md)) | Nodes, checks, the vanilla fallback | Dry lines and their limits (3.7) |
@@ -186,8 +186,8 @@ carry it.
 ### 3.5 The epilogue, in the world
 
 **Who owns what.**
-- [EPILOGUE.md](EPILOGUE.md) decides which places react, builds the props and owns the closing work of the week.
-- [MAJORS.md](MAJORS.md) owns the four codas and their lines.
+- [EPILOGUE.md](../docs/EPILOGUE.md) decides which places react, builds the props and owns the closing work of the week.
+- [MAJORS.md](../docs/QUESTLINES.md#the-majors) owns the four codas and their lines.
 - This piece owns only the phrasing rules, for all of them:
 
 - **One line per place**, in its owner's voice, pointing at a flag from this season, not just at the winner.
@@ -298,7 +298,7 @@ Pools are ranked by how often a player hears them, and only the top of the list 
 | **Total** | | ~250 | **about 810** |
 
 The seven endings are the five routes, the slow cure (with handed over) and no cure. The closing work's own lines
-(its stages, hand-ins and scenes) are counted in [EPILOGUE.md](EPILOGUE.md#writing-the-epilogue), not here.
+(its stages, hand-ins and scenes) are counted in [EPILOGUE.md](../docs/EPILOGUE.md#writing-the-epilogue), not here.
 
 That is one author's work, spread over phases 3 and 6. The biggest share waits for the epilogue, and its plain
 lines are built from parts (a route clause, a place line, a "you" line) to keep the count down.
@@ -461,7 +461,7 @@ and get shorter tags in Phase 4.
 
 Built: [WRITING.md](../docs/WRITING.md#dark-humour-not-edginess) (5.1–5.5) and [its template rules](../docs/WRITING.md#template-rules)
 (5.6). What joins them later:
-- **5.2:** a joke about the walk out, once the Walk Out is built ([EPILOGUE.md](EPILOGUE.md)).
+- **5.2:** a joke about the walk out, once the Walk Out is built ([EPILOGUE.md](../docs/EPILOGUE.md)).
 - **5.4:** the infected's row (each speaker's word, always with the place: the Haven's name or "the big one",
   Bastion's contact and "the heavy", the Red Hand's crew nickname and "the boss", Halcyon's pack number and "the
   index"), with the tribes ([INFECTED.md](INFECTED.md#people)).
@@ -480,7 +480,7 @@ Built: [WRITING.md](../docs/WRITING.md#dark-humour-not-edginess) (5.1–5.5) and
 | **3. The voice bank** | Bank, `SeasonMood()`, temper, grief, joke memory, picker. Move the top-ranked pools (3.13) and tag their registers. The broadcast reads the mood and gains its two lines. Loudspeakers, the wipe line and guidance tips get the lint and a review, but stay out of the bank (few lines, or their own attribute class). `tools/voice_sim.py` | `Factions/RZ_FactionVoice.c`, `Factions/RZ_LeaderVoice.c`, `Factions/RZ_FactionLife.c` (chatter, secure channels), `Guidance/RZ_GuidanceText.c` (newcomer open channels), `World/RZ_Wanderers.c` (road news), `World/RZ_Safehouses.c`, `Director/RZ_Broadcast.c`; review only: `World/RZ_Perimeter.c`, `Core/RZ_Seasons.c`, `Guidance/RZ_GuidanceTips.c` | The simulator shows each mood's share inside 3.2 and no repeats inside the windows at the fastest cadence; the compile check passes. WRITING.md and DESIGN.md gain the mood, temper, grief and joke memory |
 | **4. Choice missions** | The grey test on every choice. Each cost line gets a world change behind it: a flag plus at least one reader. The three-beat outcome and system line. Who can choose; the clever way closes the honest one. Labels shortened. Honour Among Thieves' "let him keep it" becomes a branch. Then: Local Law, Shut the Door, The Ledger, Requisition, Protection Racket, Struck Off, No Reply, the three hard edges, Patients Not Samples, The Notebook, Private Collection, The Silent Village, The Witness, Rein In | `Missions/`, `Puzzles/` | Every choice passes 4.1; MISSIONS.md's Result text matches |
 | **5. Givers who lie** | About 12 briefs, each with 2–3 omissions plus an honest version, picked once a season: Learning the Drones, A Quiet Arrangement, Requisition, Names for Bastion, Off-Book Requisition, Rifles for Sale, The Real Orders, Unsanctioned Trial, Private Collection, Sell the Formula, The Pit's Debtor, Debt Collection. For each: the truth-finding approach open to everyone, the checks, the outcome lines, and the morale cap | Missions | No gotchas (4.3); no tag gives a lie away |
-| **6. State variants** | Majors' running jokes on the channels (3.10). Race lines and pitches. Epilogue lines with [EPILOGUE.md](EPILOGUE.md), for every ending including the slow cure, handed over and no cure, and the plain lines for a week. Every after-cure line made ending-aware. (Built: route lines face to face, lost-route and unsided lines, saying the word and crew names, disguise look lines) | Voice bank | Every variant meets the minimum pool size (3.12) |
+| **6. State variants** | Majors' running jokes on the channels (3.10). Race lines and pitches. Epilogue lines with [EPILOGUE.md](../docs/EPILOGUE.md), for every ending including the slow cure, handed over and no cure, and the plain lines for a week. Every after-cure line made ending-aware. (Built: route lines face to face, lost-route and unsided lines, saying the word and crew names, disguise look lines) | Voice bank | Every variant meets the minimum pool size (3.12) |
 | **7. Check** | `voice_sim.py` over three scripted seasons: season speed 1, season speed 2, and a gate that runs to the slow finish. The runtime test with the voice log on and Voice > Force mood cycling the moods, to catch script exceptions and confirm the in-game picker matches the simulator. The author reads one player's radio log for an hour | `tools/`, `tools/runtime_test/` | No exceptions; the shares and repeats in the simulator are inside the targets |
 
 **Order.**

@@ -160,7 +160,7 @@ route and **forgive nothing**.
 | Parley amends ([§6.2](#62-the-parley-for-the-owed)) | The owed, while Hunted | The contract's Fame | One offer per parley; no extra Merciful count |
 | Make it right ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | A player a leader holds at −2 or below | The amends contract's Fame | Clears that leader's built crossed bit once a season |
 | Errand amends ([ERRANDS.md](ERRANDS.md)) | 15+ Infamy with that faction | 2 at a time | 8 a life; never below 15 |
-| Come In (the epilogue's amends, [EPILOGUE.md](EPILOGUE.md)) | As the epilogue sets | Its own amount | — |
+| Come In (the epilogue's amends, [EPILOGUE.md](../docs/EPILOGUE.md)) | As the epilogue sets | Its own amount | — |
 
 Settling up greys out at the budget's end with the built line: "Bastion has forgiven you all it will this life."
 
@@ -355,7 +355,7 @@ book carried.
 
 ## 14. The last week: settling accounts
 
-After the cure the epilogue lasts **one week** (decision 12). [EPILOGUE.md](EPILOGUE.md) owns its closure set. Its
+After the cure the epilogue lasts **one week** (decision 12). [EPILOGUE.md](../docs/EPILOGUE.md) owns its closure set. Its
 **Settle Accounts** (clear bounties, pay what you owe the book, give back borrowed kit, make amends) runs on these hooks,
 and nothing in it is free:
 
@@ -489,7 +489,7 @@ Reputation lands in four steps across the plan's build order.
 
 ## 21. Fits with the majors and the tribes
 
-**The majors** ([MAJORS.md](MAJORS.md)):
+**The majors** ([MAJORS.md](../docs/QUESTLINES.md#the-majors)):
 - Tier and persuade checks are unchanged.
 - "Seen: +8 Infamy" is direct Infamy, so it feeds Feared and the worst deed.
 - Honours go through `SetWord` ("Sergeant {name}").

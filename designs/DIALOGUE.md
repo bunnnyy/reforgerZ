@@ -465,7 +465,7 @@ Still to build:
 
 ### The last week
 
-After the cure the epilogue lasts **one week** (168 hours; decision 12). [EPILOGUE.md](EPILOGUE.md) owns its
+After the cure the epilogue lasts **one week** (168 hours; decision 12). [EPILOGUE.md](../docs/EPILOGUE.md) owns its
 content, the closure set and the hall of fame; dialogue delivers most of it. Lines read four separate things and
 never mix them up:
 
@@ -480,7 +480,7 @@ What dialogue carries in the week:
 - **Leaders' epilogue topics:** "The cure" and "Me", at every leader, in voice.
 - **Last Rounds:** the majors' codas are public scenes (up to 16 sessions): the Haven reads the List at the north
   road, Bastion's last roll at the barrier, the Red Hand closes the book, Halcyon's paper goes out
-  ([MAJORS.md](MAJORS.md)).
+  ([MAJORS.md](../docs/QUESTLINES.md#the-majors)).
 - **Loose Ends:** each unfinished questline's closing stage is a short conversation scene at its own person.
 - **Bring Them Home:** a hand-in topic at each post, house and station for tags, ID cards, notebooks and
   keepsakes of the named dead.

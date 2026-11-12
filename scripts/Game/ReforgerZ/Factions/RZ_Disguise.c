@@ -784,6 +784,11 @@ class RZ_Disguise
 			tags += " [A gun in your hands -1]";
 		}
 
+		// The finale's lock: -1 with every faction whose route you didn't choose, until the cure
+		string lockTag;
+		score += RZ_FinaleRest.LookStep(playerId, f, lockTag);
+		tags += lockTag;
+
 		return score;
 	}
 

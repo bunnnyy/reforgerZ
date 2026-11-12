@@ -483,15 +483,15 @@ It started with the Haven's mouths. On Day 3 Ada Moravec opened her farmhouse pa
 village to anyone the other houses couldn't feed. She had two grown sons, a daughter-in-law and a
 kitchen table long enough for twenty. The council sent her its mouths: the old, the sick, a man in
 a wheelchair, two men who couldn't stop coughing, and a boy of ten whose mother never made it to
-the gym. On Day 7 the Haven truck to the farm didn't come. On Day 8 the council's radio said there
-would be nothing for the farm that week: houses with workers came first. On Day 9 old Mr Halas
+the gym. On Day 6 the Haven truck to the farm didn't come. On Day 7 the council's radio said there
+would be nothing for the farm that week: houses with workers came first. On Day 8 old Mr Halas
 died in the night. In the morning there was soup. Ada said grace and read his name out, the way
 every Haven house reads its dead at supper. Nobody asked. The ones who would have asked weren't
 strong enough to.
 
-On Day 10 one of the coughing men turned out to have a bite he hadn't declared, and by the next
+On Day 9 one of the coughing men turned out to have a bite he hadn't declared, and by the next
 night Ada's daughter-in-law was sick. Her husband walked her out at dusk and came back alone. The
-family has asked every guest about bites ever since. By Day 12 the farm had stopped answering the
+family has asked every guest about bites ever since. By Day 10 the farm had stopped answering the
 radio. The council crossed the whole house off the List and said a prayer for it, and everyone
 agreed the infected must have got there first.
 

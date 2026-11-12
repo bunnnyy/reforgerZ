@@ -493,7 +493,7 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	override void Pick(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
 		// The epilogue week's replies (40-43)
-		if (replyId >= 40 && replyId <= 43 && m_Leader && gm.GetLeaders())
+		if (replyId >= 40 && replyId <= 59 && m_Leader && gm.GetLeaders())
 		{
 			gm.GetLeaders().SeasonPick(playerId, m_Leader, replyId);
 			return;

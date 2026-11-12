@@ -899,6 +899,9 @@ class RZ_Leaders
 		l.m_sShort = shortName;
 		l.m_sTitle = RZ_LeaderVoice.Title(f, role, place);
 		l.m_sBackstory = RZ_LeaderVoice.Backstory(rng, f, place);
+		// The chair's fixed backstory (docs/LORE.md, the Long Table): Every Name's canon
+		if (f == RZ_EFaction.SURVIVORS && role == RZ_ELeaderRole.STRONGHOLD)
+			l.m_sBackstory = "Forced the doors of the school gym on Day 2, for a busload the line had turned back.";
 		l.m_iTraitA = rng.Int(0, TRAIT_COUNT);
 		l.m_iTraitB = rng.Int(0, TRAIT_COUNT - 1);
 		if (l.m_iTraitB >= l.m_iTraitA)

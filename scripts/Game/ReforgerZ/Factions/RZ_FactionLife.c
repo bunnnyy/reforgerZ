@@ -1106,6 +1106,10 @@ class RZ_FactionLife
 	//------------------------------------------------------------------------------------------------
 	protected void SendChatter(int f, string line, array<int> ids, array<IEntity> players)
 	{
+		// A one-night mute of a faction's open channel (RZ_MajorRest.Mute)
+		if (RZ_MajorRest.Muted(f))
+			return;
+
 		foreach (int i, IEntity p : players)
 		{
 			int playerId = ids[i];
@@ -1248,6 +1252,9 @@ class RZ_FactionLife
 		RZ_Territory territory = m_GM.GetTerritory();
 		if (m_GM.GetErrands())
 			m_GM.GetErrands().GetFaults().SecureLines(f, options);
+
+		// The majors' secure lines for Radio Operators (RZ_MajorRest.SecureLine)
+		RZ_MajorRest.SecureLines(f, options);
 
 		if (supply)
 		{

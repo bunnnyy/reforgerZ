@@ -12,7 +12,7 @@ listed as still to build below.
 
 ## What changed in review
 
-Conflict numbers are the plan's, counted from 1 (as in [FINALE.md](FINALE.md) and
+Conflict numbers are the plan's, counted from 1 (as in [FINALE.md](../docs/FINALE.md) and
 [INFECTED.md](INFECTED.md)). Decisions are numbered as in the plan's "Decisions for you". The
 alternatives that were not chosen are gone.
 
@@ -26,7 +26,7 @@ alternatives that were not chosen are gone.
   missions' 25 odd jobs become routines; missions' found hooks and fallout jobs, reputation's 11
   seeds and disguise's 10 side jobs become cards; dialogue's asks and strangers are how they're
   spoken, and its stranger kinds become stranger routines; the epilogue's last errands are the epilogue
-  deck, run by this dealer ([EPILOGUE.md](EPILOGUE.md) owns their content). Missions' reasons are the
+  deck, run by this dealer ([EPILOGUE.md](../docs/EPILOGUE.md) owns their content). Missions' reasons are the
   Why. The plan's duplicates are merged and its premise collisions cut or re-angled
   ([The catalogue](#the-catalogue)).
 - **Folded-in jobs pay by errands' rules**: Fame at most 2 an errand, Favor 3–10, the hourly ledger.
@@ -210,7 +210,7 @@ says so and nothing is lost.
 | **Found hooks** | something at the site of a job (from missions) | one site in five; per kind per player every 4 hours of play; one server-wide every 20 min |
 | **Fallout** | a story job failed at a subject ([MISSION_STYLE.md](MISSION_STYLE.md)) | the job's participants first for 20 minutes, then anyone; at most 30% of the failed job's base |
 | **Margin and lock cards** | around the majors' set pieces and the finale's routes (§20) | never on a set-piece evening at its place |
-| **The epilogue deck** | after the cure (§22) | content owned by [EPILOGUE.md](EPILOGUE.md) |
+| **The epilogue deck** | after the cure (§22) | content owned by [EPILOGUE.md](../docs/EPILOGUE.md) |
 
 **Leaders never give errands.** Asked for work, a council head, crew boss, sergeant or field lead says
 who to see: *"Ask Marta at the stove. She's been on at me about the pot."* Where the quartermaster *is*
@@ -288,7 +288,7 @@ Errands check claims this way:
 - **A story's long hold** (`quest:`, `arc:`) blocks only cards whose Premise lists that subject.
   Routines go on: people cook while the council sits.
 - No errand is dealt within 600 m of a running set piece, or on a set-piece evening at the set piece's
-  place (the majors' one calendar, [MAJORS.md](MAJORS.md)).
+  place (the majors' one calendar, [MAJORS.md](../docs/QUESTLINES.md#the-majors)).
 
 **The premise rule.** Two pieces of content share a premise when they use the same subject (house,
 person, item, tribe, place) for the same question. A card that shares a premise with bigger content is
@@ -596,7 +596,7 @@ kind with their own clock (2 hours of the promiser's play, at most 3 real days).
    default; an option allows +1 per head per season, through the clerk's word).
 3. **Margin cards.** 2–4 per major, in its voice. Never on its set-piece evenings, never inside its
    600 m, and they change only a giver's memory and a rumour. They fill the gaps between beats
-   ([MAJORS.md](MAJORS.md)).
+   ([MAJORS.md](../docs/QUESTLINES.md#the-majors)).
 4. **Route work** means anything touching the lab, the cure, the stand, a route's subjects or a route's
    set pieces. Only route work is limited by the lock. House, post, crew, station and stranger errands
    stay open to everyone for the last 10%.
@@ -607,10 +607,10 @@ kind with their own clock (2 hours of the promiser's play, at most 3 real days).
    - route errands for the finale's **open acts** (I and III) are dealt to that route's locked players
      and to anyone not locked elsewhere (decision 8);
    - route errands for its **sworn acts** (II and IV) only to that route's locked players
-     ([FINALE.md](FINALE.md), §5).
+     ([FINALE.md](../docs/FINALE.md), §5).
 7. **Lock cards** are built (one card, titled by your route: [docs/ERRANDS.md](../docs/ERRANDS.md#the-cards)).
 8. **Hand to Hand** is built as a card ([docs/ERRANDS.md](../docs/ERRANDS.md#the-cards)). In the finale a
-   promise does only two things ([FINALE.md](FINALE.md), §2):
+   promise does only two things ([FINALE.md](../docs/FINALE.md), §2):
    - a promised local living in the same house as one of the eight makes that person's yes one step
      easier;
    - each promised local present at the Independent's lab-gate sit-in takes a minute off it.
@@ -647,7 +647,7 @@ Tribes and crawlers ([INFECTED.md](INFECTED.md)) replace the Grounds design's to
 ## After the cure: the epilogue week
 
 The epilogue lasts **one week: 168 real hours** from the cure to the wipe (decision 12).
-[EPILOGUE.md](EPILOGUE.md) owns the week: its phases, its calendar, the epilogue deck's cards (the last
+[EPILOGUE.md](../docs/EPILOGUE.md) owns the week: its phases, its calendar, the epilogue deck's cards (the last
 errands) and the closing work that lets every story reach an ending inside it. Errands supply the
 machinery and their own season's loose ends.
 
@@ -663,7 +663,7 @@ machinery and their own season's loose ends.
 
 | Closing work | What errands give it |
 |---|---|
-| **Bring Them Home** | The season's **His Effects** cards (tags, lighters, a driver's papers) and **The Name on the Tag** leave their carried items and world records for it. A tag that reached the nail before the walk goes into Sedlak's box ([MAJORS.md](MAJORS.md)) |
+| **Bring Them Home** | The season's **His Effects** cards (tags, lighters, a driver's papers) and **The Name on the Tag** leave their carried items and world records for it. A tag that reached the nail before the walk goes into Sedlak's box ([MAJORS.md](../docs/QUESTLINES.md#the-majors)) |
 | **Settle Accounts** | The amends family's last card, **Come In**; Vouch's open liabilities; promises still open (each gets a closing line: kept, or *"You meant it. That counts for something."*) |
 | **The Walk Out** | **Processing**: a pinned local waits in the queue and goes with the Walk Out when it opens |
 | **Take Back a Town** | Errands never run inside a town being taken back, but a cleared town's houses get their asks again |
@@ -732,7 +732,7 @@ everywhere: Fame at most 2, Favor 3–10, or amends. The built ones, 34 routines
   and The Name on the Tape for Bastion's dead near a post are built). Still to build: the effects as a
   mission item; the jacket and the photo frame at the fence (3 and 10 RH Favor, *"A name the army can't check twice"*) under the witness rule; a kit piece
   off a man you killed refused (*"You'd know. You were there."*, +3 Infamy with his faction); once per
-  dead man, 3 times a life. *After the cure: The Tags* is part of Bring Them Home ([EPILOGUE.md](EPILOGUE.md)).
+  dead man, 3 times a life. *After the cure: The Tags* is part of Bring Them Home ([EPILOGUE.md](../docs/EPILOGUE.md)).
 - **The Name on the Tag**'s named body at a job's site (the satchel variant is built). Carry the ID to
   the house or post it names: 4 Favor from that faction. Red Hand crews don't bury their dead, so it's
   thanks only.
@@ -740,22 +740,9 @@ everywhere: Fame at most 2, Favor 3–10, or amends. The built ones, 34 routines
 **Margin cards** (2–4 per major, in its voice; never on its set-piece evenings or inside its 600 m).
 Clean Glasses (The Book Has to Balance), Count for the Sitting (Every Name) and Hand to Hand (the
 Independent) are built. Await Relief and Proof each get 2–4, written with their remaining build
-([MAJORS.md](MAJORS.md)). Hand to Hand's promises in the finale (§20) are the finale's to read.
+([MAJORS.md](../docs/QUESTLINES.md#the-majors)). Hand to Hand's promises in the finale (§20) are the finale's to read.
 
-**The epilogue** (also listed in [EPILOGUE.md](EPILOGUE.md)'s deck)
-- **Processing** (a pinned local). Why: the cure is out, and a checkpoint is within 1.5 km. Walk them to
-  the queue at the north road, 150–250 m short of the barrier: *"Processing. I've been processed since Day
-  2."* They sit in the queue, and when the Walk Out opens they go with it, and your line says so. Or talk
-  them into supper, where they are the next night. Or leave them sitting by the concrete every time anyone
-  passes, until the Walk Out or the wipe. Never at the barrier itself.
-- **What the Cure Costs Here** (a sick local). Why: the epilogue, and the terms keep this local from a
-  dose. The epilogue's one outlet table decides whether the terms reach them and at what price, and the
-  card offers only the way that table allows: register them at a post's list (Bastion's roster terms;
-  they comply, and it's sad) or [Trusted: Bastion] vouch; pay their dose at the table's price, or put it
-  on their line in the book (the Red Hand's terms) or [Trusted: RH] haggle; or, where no outlet serves
-  them, sit with them. Where the terms reach them, it's a thank-you instead. They tell people who brought
-  it.
-- *After the cure:* **Come In** (the amends family's last card, [EPILOGUE.md](EPILOGUE.md)).
+The epilogue deck is built (20 cards, [docs/ERRANDS.md](../docs/ERRANDS.md#the-epilogue-deck)).
 
 ## One evening in Levie
 
@@ -814,7 +801,7 @@ test is to force each Why true then false and check the Overtake, and place one 
 - **Phase 4, people:** built.
 - **Phase 5:** Await Relief's and Proof's margin cards (the others are built).
 - **Phase 6:** the finale reading Hand to Hand's promises (the lock card and Hand to Hand are built).
-- **Phase 7:** the epilogue deck and the ending contract, with [EPILOGUE.md](EPILOGUE.md).
+- **Phase 7:** the epilogue deck and the ending contract, with [EPILOGUE.md](../docs/EPILOGUE.md).
 - **Phase 8:** built (to 63 cards, with the disguise side jobs); dialogue's strangers and radio speakers in full are dialogue's.
 
 ## 28. Engine needs

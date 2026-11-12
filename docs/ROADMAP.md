@@ -129,19 +129,16 @@ The build-review fixes are done. Everything below is approved. The order of the 
   to phase 8, is [designs/PLAN.md](../designs/PLAN.md#the-build-order); it isn't restated here.
   Traces' own phases 1 to 7 are built ([TRACES.md](TRACES.md)); what's left of it waits on other
   systems ([designs/TRACES.md](../designs/TRACES.md)).
-- Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md), with 13
-  cards of the epilogue deck in [ERRANDS.md](ERRANDS.md#the-epilogue-deck), the evening calendar as
-  radio and the notebook's season tab; what's left of it is in [designs/EPILOGUE.md](../designs/EPILOGUE.md):
-  the deck's last six cards, route marks, the supper reading as a scene and the standing versions,
-  titles from the best life, truth beats, the factions' jobs on the ridges, the Walk Out's escorts;
-  play-test the Walk Out's retirement and a week at Test scale 0.008); phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md); what's left of
-  it is in [designs/FINALE.md](../designs/FINALE.md): what waits on other systems, the carries, guard the
-  door and the other moves, live tissue's remaining rules, the stand's and the majors' remaining
-  pieces, the epilogue's carriers); phase 5, the four majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors);
-  with the story rules next season, the stand's inputs, the epilogue lines by controller, the hall's
-  lines, the season tab and Proof's Before the stand; what's left of it is in
-  [designs/MAJORS.md](../designs/MAJORS.md): the codas' standing versions and second airings,
-  leader stand-ins and channels, and the approaches each major lists as not built); phase 4, the mission style in full (the six story jobs, reputation's
+- Already built for them: phase 7, the epilogue week, simplified ([EPILOGUE.md](EPILOGUE.md), with
+  the epilogue deck's 20 cards in [ERRANDS.md](ERRANDS.md#the-epilogue-deck); its design is done: the
+  fuller record, the beats in full, notables and titles, the standing versions, the supper scene,
+  moving scenes, leaders' topics and the truth, the closing work's rest; play-test the Walk Out's
+  retirement and a week at Test scale 0.008); phase 6, the cure's finale, simplified ([FINALE.md](FINALE.md);
+  its design is done: the lock's rest, notes and the night man, the moves, each route's remaining ways
+  as scene choices, live tissue's rules, the stand's rest, the majors' inputs); phase 5, the four
+  majors, simplified ([QUESTLINES.md](QUESTLINES.md#the-majors); its design is done: the engine's rest
+  in [DESIGN.md](DESIGN.md#the-majors), each act's remaining approaches, the three story-rule pieces,
+  the no-cure codas); phase 4, the mission style in full (the six story jobs, reputation's
   parley and settling up, lies and witnesses, dialogue's scenes for several players, borrowed kit,
   fallout errands, strangers at every spot kind (18 stranger routines and found hooks), locals,
   twists, board and radio asks, 7 more routines and 21 more cards: [MISSIONS.md](MISSIONS.md),
@@ -292,6 +289,23 @@ In this order, because later ones depend on earlier ones:
     right walls? Do the scenes read as history and stay sparse (3 vignettes a day, 3 with props within
     300 m), and are the sounds after dark heard and not tiring
     ([the checklist](WORKBENCH_SETUP.md#8-play-test-checklist), *Traces*)?
+21. **The finale's edges** ([FINALE.md](FINALE.md)): PvP inside the stand at 5 and 20 players (take
+    time, the 10 m room, overtime, the body budget); small servers and time zones (a 3-player server
+    may mostly see slow finishes; routes with no active lock pause after 3 days); a door-holding route
+    stalling a rival (guard the door's cost); the moves (custody, the drains, hand it over) used as
+    griefing; asymmetry (the Independent and Halcyon have no group at the stand: watch lock counts by
+    route); the Fame chunk (about 375 at the design point: calibrate **Route worth** from the status
+    log and `last_season.json`); pacing (an uncontested route about 4–5 real days, the fallback about
+    17); `state.json`'s size after a season.
+22. **The epilogue's week** ([EPILOGUE.md](EPILOGUE.md)): how much closing work gets done in a week,
+    and when; the Walk Out's retirement and the Perimeter's change (the north road, processing,
+    outward, one name at a time); bite rates after the cure's −70% and whether any outlet trivialises
+    the last days; a restart mid-week, a leader killed by a player, an outpost taken while settling is
+    off, the Long Table exposed in the week; the marks pool beside the tribes' signs and `state.json`'s
+    growth over the week; names in public places (admins need `/epilogue strike`); a few names filling
+    everything on a small server (the notables' caps).
+23. **The majors' extra approaches** ([QUESTLINES.md](QUESTLINES.md#the-majors)): do the new choices
+    read as part of their act, and do the no-cure codas land on the last day?
 
 ## Dropped
 

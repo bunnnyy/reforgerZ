@@ -46,7 +46,9 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 			if (!s || !s.m_bUp || !s.m_Ent || RZ_Util.IsCharacterAlive(s.m_Ent) || !finale.GetPeople().IsAlive(key))
 				continue;
 
-			int killer = -1;
+			// The killer read from the kill; the nearest player within 150 m when the kill names nobody
+			int killer = RZ_Util.GetKillerPlayerId(s.m_Ent);
+			int nearest = -1;
 			float best = 150;
 			foreach (int i, IEntity p : players)
 			{
@@ -54,9 +56,12 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 				if (d < best)
 				{
 					best = d;
-					killer = ids[i];
+					nearest = ids[i];
 				}
 			}
+
+			if (killer <= 0)
+				killer = nearest;
 
 			finale.GetPeople().Killed(key, killer);
 			NotifyInterested(gm, m_sTitle, "They're dead. Whatever this route needed from them, it needs from somewhere else now.");
@@ -104,6 +109,10 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 			if (theirs == RZ_CureFinale.NONE || theirs == m_iRoute)
 				why = "\"That's for the other routes' people. Not you.\"";
 		}
+
+		// Guard the door: a rival's talk needs a pact; a sneak or a trick there is one step harder
+		if (rival && why.IsEmpty() && run.m_iStage == RZ_FinaleRoute.S_DOOR)
+			why = finale.GetRest().GuardedRefusal(m_iRoute, playerId, c.m_bSneak || c.m_iTrick > 0);
 
 		if (!why.IsEmpty())
 		{
@@ -165,10 +174,24 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 				c.m_iBribe = c.m_iBribe - c.m_iBribe / 3;
 		}
 
+		// The majors' pages in the open: each makes one finale check one step easier, once
+		bool page = false;
+		if (asset < 0 && c.m_iPersuade > 1 && !rival && finale.GetRest().PageLeft())
+		{
+			c.m_iPersuade = c.m_iPersuade - 1;
+			page = true;
+		}
+
 		bool ok = super.Allowed(gm, run, playerId, c);
 		c.m_iPersuade = persuade;
 		c.m_iRank = rank;
 		c.m_iBribe = bribe;
+		if (ok && page)
+		{
+			finale.GetRest().UsePage();
+			gm.NotifyPlayer(playerId, m_sTitle, "What's in the open already counts here. It won't count twice.");
+		}
+
 		if (ok && asset >= 0)
 		{
 			gm.NotifyPlayer(playerId, m_sTitle, string.Format("What you brought counts here (%1). It won't count twice.", RZ_FinaleAssets.KindName(assets.KindAt(asset))));
@@ -187,6 +210,11 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 			decide = line.DoIt(gm, run, playerId, c.m_sFlag.Substring(3, c.m_sFlag.Length() - 3));
 
 		super.Apply(gm, run, playerId, spot, c);
+
+		// Taking part in another route's scene: a note about that route
+		RZ_CureFinale noteFinale = RZ_CureFinale.Get();
+		if (noteFinale)
+			noteFinale.GetRest().Noted(playerId, m_iRoute);
 
 		// Custody and a drained source change what the stage can be: it's offered again
 		if (c.m_sFlag.StartsWith("do:rival:custody") || c.m_sFlag.StartsWith("do:rival:drain"))
@@ -475,7 +503,12 @@ class RZ_FinaleRoute : RZ_Questline
 			return ReleaseScene(gm, run, scene);
 		}
 
-		return RouteScene(gm, run, stage, scene);
+		if (!RouteScene(gm, run, stage, scene))
+			return false;
+
+		// The rest of the route's ways (RZ_FinaleRest.MoreChoices)
+		Finale().GetRest().MoreChoices(gm, run, stage, scene, m_iRoute);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -541,6 +574,9 @@ class RZ_FinaleRoute : RZ_Questline
 			return "";
 		}
 
+		if (head == "rest")
+			return Finale().GetRest().CanDo(gm, run, playerId, m_iRoute, parts);
+
 		if (head == "rival" && parts.Count() >= 3)
 			return CanMove(gm, run, playerId, parts[1], parts[2]);
 
@@ -564,6 +600,9 @@ class RZ_FinaleRoute : RZ_Questline
 		array<string> parts = {};
 		code.Split(":", parts, false);
 		string head = parts[0];
+		if (head == "rest")
+			return Finale().GetRest().DoIt(gm, run, playerId, m_iRoute, parts);
+
 		if (head == "give" && parts.Count() >= 3)
 		{
 			GiveItem(gm, playerId, parts[1], ItemName(parts[1]), PlayerPos(playerId), ColdFor(gm, playerId, parts[2].ToFloat()));
@@ -1142,6 +1181,11 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		AddSpot(RZ_Mission.LandPointNear(at, 3, 6), RZ_EPuzzleProp.CIVILIAN, 1, between, "Talk to the go-between", pacts, "the go-between");
 		int found = AddClue("the lost-and-found", "\"Picked up something with our name on it? We'll take it back. No questions. Or we'll buy it back, and remember who sold it.\"");
 		AddSpot(RZ_Mission.LandPointNear(at, 3, 6), RZ_EPuzzleProp.OBJECT, 2, found, "Read the note", "Give back what you found|Ransom it back [their Favor]|Spoil another route's find", "");
+		// The night man (the moves and Last Mile's contracts) and the gate sheet (the deal at the gate)
+		int night = AddClue("the night man", "\"Things change hands at night. What you know, what you carry, what somebody else carries. I just write it down.\"");
+		AddSpot(RZ_Mission.LandPointNear(at, 4, 8), RZ_EPuzzleProp.CIVILIAN, 4, night, "Talk to the night man", RZ_FinaleRest.DeskLabels(), "the night man");
+		int sheet = AddClue("the gate sheet", "\"One name from each route, on one sheet, at the lab gate, while a batch is in the hold. Then it's a deal.\"");
+		AddSpot(RZ_Mission.LandPointNear(at, 4, 8), RZ_EPuzzleProp.OBJECT, 5, sheet, "Read the sheet", "Agree the deal at the gate", "");
 		if (m_iRoute == RZ_CureFinale.REDHAND || m_iRoute == RZ_CureFinale.INDEP)
 		{
 			int plan = AddClue("someone who sells plans", PlanTalk());
@@ -1262,6 +1306,16 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 			else
 				GiveBack(gm, f, playerId);
 
+			return;
+		}
+
+		if (objIdx == 4 || objIdx == 5)
+		{
+			int pick = option;
+			if (objIdx == 5)
+				pick = 4;
+
+			f.GetRest().DeskChoice(m_iRoute, playerId, pick);
 			return;
 		}
 
@@ -1606,6 +1660,11 @@ class RZ_QM_RouteTissueIndex : RZ_Mission_CaptureTheIndex
 		if (!super.Setup(gm))
 			return false;
 
+		// Live tissue's rules: within reach of the lab, and never the same pack twice in 6 season days
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && !finale.GetRest().TissueFrom(GetTribe(gm)))
+			return false;
+
 		m_sTitle = RZ_FinaleTissue.Title(m_iRoute);
 		m_sBrief = RZ_FinaleTissue.Brief(m_iRoute) + " " + m_sBrief;
 		return true;
@@ -1615,8 +1674,12 @@ class RZ_QM_RouteTissueIndex : RZ_Mission_CaptureTheIndex
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		RZ_CureFinale f = RZ_CureFinale.Get();
-		if (f)
-			f.OnTissue(m_iRoute, RZ_FinaleTissue.Deliverer(m_aParticipants), true);
+		RZ_Tribe t = GetTribe(gm);
+		if (!f)
+			return;
+
+		f.GetRest().TissueGiven(t);
+		f.OnTissue(m_iRoute, RZ_FinaleTissue.Deliverer(m_aParticipants), true, t && t.m_bGreat);
 	}
 }
 

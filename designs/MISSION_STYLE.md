@@ -12,7 +12,7 @@ trade, lies, failure as a branch and fallout errands, the conversion of every mi
 
 ## What changed in review
 
-Conflict numbers are the plan's, counted from 1 (as in [FINALE.md](FINALE.md) and
+Conflict numbers are the plan's, counted from 1 (as in [FINALE.md](../docs/FINALE.md) and
 [INFECTED.md](INFECTED.md)). Decisions are numbered as in the plan's "Decisions for you". The
 alternatives that were not chosen are gone.
 
@@ -53,17 +53,17 @@ alternatives that were not chosen are gone.
   his name stays on the board. Brought home, his KIA's rubbed out and he answers at the roll. Struck Off
   never uses the finale's canon name (Private Fiala).
 - **Take the Lab** stays as the Red Hand route's once-a-season theft, startable by any Red Hand-locked
-  player who is Trusted with the Red Hand (decision 6). [FINALE.md](FINALE.md) owns it.
+  player who is Trusted with the Red Hand (decision 6). [FINALE.md](../docs/FINALE.md) owns it.
 - **After the lock** (decision 8): the finale's Acts I and III are open to anyone not locked elsewhere.
   An option whose route asset belongs to another route still refuses a locked player.
 - **Reads the finale's keys as it defines them** (conflict 39): `finale.route` 0 is nobody (handed
   over), the lab alone is `finale.finisher` 0, and every lock is read with `RouteOf(identity)`.
 - **The epilogue lasts one week** (decision 12). World records' epilogue lines are shown across that
-  week, and [EPILOGUE.md](EPILOGUE.md) owns the closing work that lets every story finish in it.
+  week, and [EPILOGUE.md](../docs/EPILOGUE.md) owns the closing work that lets every story finish in it.
 - **Dialogue is off by default** (decision 13) until the per-player label test and a play-test pass.
   Talk scenes run in the action menu until then.
 - **Research after the gate** goes into the lab's backlog like samples and never moves research past
-  90% ([FINALE.md](FINALE.md), §3).
+  90% ([FINALE.md](../docs/FINALE.md), §3).
 - **A name collision to settle:** the built Haven leader job "Bring Them Home" is retitled
   **Fetch the Family** when the tribes' Bring Them Home lands, so two jobs never share a name.
 - **The build order** is the plan's phases: the framework in phase 3, the pilot in phase 4 (the stop
@@ -110,7 +110,7 @@ wave, so the later waves are optional growth.
 | Decision | What this design does |
 |---|---|
 | The finale is a fight over who controls the cure: one route per faction plus an Independent route. Locked after 90%, never before | A few outcomes add a **route asset** (an ally, proof or standing). An asset tilts and never closes a route. A player locked to a route can't decide an option whose asset belongs to another route |
-| Endings shown in the world, not as slides | World records carry an **epilogue line and a carrier**: a board note, a voice line, a radio line, a prop, a headline or chalk. [EPILOGUE.md](EPILOGUE.md) shows them during its week |
+| Endings shown in the world, not as slides | World records carry an **epilogue line and a carrier**: a board note, a voice line, a radio line, a prop, a headline or chalk. [EPILOGUE.md](../docs/EPILOGUE.md) shows them during its week |
 | Dialogue trees | **Talk scenes**: 2–3 nodes per person in the action menu now. The dialogue screen ([DIALOGUE.md](DIALOGUE.md)) reads the same nodes once it's built and turned on |
 | No companions | Escorts end with the mission. An errand can only "show someone the way" to a house within 600 m |
 | Reputation as a mixed picture | Persuade reads your **access rank**. Fear reads your **Infamy this life, or who backs you**. A Wildcard can do both |
@@ -354,7 +354,7 @@ count it as help, a switch pays at most the base and leaves season Fame alone, "
 - **Research goes only to the lab.** Notes given to a Haven medic, or read on the open channel, don't
   move the cure. They give a small world effect (−3 infection in the medic's town) and maybe an asset.
   From the 90% gate, research a mission pays goes into the lab's backlog like samples and never moves
-  research past 90 ([FINALE.md](FINALE.md), §3).
+  research past 90 ([FINALE.md](../docs/FINALE.md), §3).
 
 ### Route assets and the 90% lock
 
@@ -514,7 +514,7 @@ name, or an errand (which pays like any errand), beyond the built "saved my life
 | Headline | The session news |
 | Chalk | A decal on a wall (VERIFY: decals at runtime). Falls back to Board |
 
-[EPILOGUE.md](EPILOGUE.md) picks which records show, by importance and carrier, across its one-week
+[EPILOGUE.md](../docs/EPILOGUE.md) picks which records show, by importance and carrier, across its one-week
 epilogue. Nothing it shows is saved as an object.
 
 ## Reasons: why a job is offered now
@@ -554,8 +554,8 @@ Relevance comes from what starts a job, not from a line in front of the brief. R
 | `wanderer.bitten`, `wanderer.owes`, `wanderer.lost` | wanderers | Trail of Clues; errand Before Dark |
 | `crew.skimmed`, `racket.ran` | Red Hand content | errand Short Change |
 | `lab.power`, `lab.short`, `cure.<percent>` | cure research | Cold Chain, Power the Lab; errand The Freezers |
-| `major.<act>` | the majors ([MAJORS.md](MAJORS.md)) | the act's stage missions, and the errands' margin cards |
-| `route.locked` | the finale | the route's own work ([FINALE.md](FINALE.md)) |
+| `major.<act>` | the majors ([MAJORS.md](../docs/QUESTLINES.md#the-majors)) | the act's stage missions, and the errands' margin cards |
+| `route.locked` | the finale | the route's own work ([FINALE.md](../docs/FINALE.md)) |
 
 ## Limits
 
@@ -639,7 +639,7 @@ The first errand's tip is [ERRANDS.md](ERRANDS.md)'s.
 - Player text never says "alpha", "tribe" or "crawler": each faction has its own word (`{tribe:N}`,
   `{alpha:N}`).
 
-**The majors** ([MAJORS.md](MAJORS.md)):
+**The majors** ([MAJORS.md](../docs/QUESTLINES.md#the-majors)):
 - Their stage missions are questline stages on the kit: several ways through, failure as a branch.
   Await Relief's Act IV gets the disguise roster trick, within the questline cap.
 - Contract weights from the majors go into the one clamp.
@@ -652,7 +652,7 @@ The first errand's tip is [ERRANDS.md](ERRANDS.md)'s.
 - **The Bastion record.** The nail list, the roster and "struck off" are one record. Jobs add names to
   it; only the majors and the built nightly call read names on the air.
 
-**The finale** ([FINALE.md](FINALE.md)):
+**The finale** ([FINALE.md](../docs/FINALE.md)):
 - Take the Lab leaves the contract tables. It's the Red Hand route's once-a-season theft, startable by
   any Red Hand-locked player who is Trusted with the Red Hand, and every Red Hand-locked player counts
   for the bay hold.
@@ -664,7 +664,7 @@ The first errand's tip is [ERRANDS.md](ERRANDS.md)'s.
 - the node table ([DIALOGUE.md](DIALOGUE.md));
 - the mixed-reputation title;
 - the look and the own-colours rule ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit));
-- the carrier list above ([EPILOGUE.md](EPILOGUE.md)).
+- the carrier list above ([EPILOGUE.md](../docs/EPILOGUE.md)).
 
 ## The conversion
 

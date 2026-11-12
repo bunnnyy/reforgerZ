@@ -1435,8 +1435,7 @@ text never names it: it's *"the deep voice"*, the call every ridge answers.
   reopens for 2 counted nights (border fights twice as likely), told as a world event. Its fall is an
   epilogue beat.
 - **Losing its clan** (a break-up, a merge) makes it an ordinary leader again.
-- **Caught alive** it would count +3 on a finale route's track: planned ([designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules));
-  today a leader counts +2 ([FINALE.md](FINALE.md#live-tissue)).
+- **Caught alive** it counts +3 on a finale route's track, not a leader's +2 ([FINALE.md](FINALE.md#the-rest-of-the-finale)).
 
 ## Signs and sounds
 
@@ -1471,7 +1470,7 @@ from a pack's own groups, scouts' posts over the night's trails, the jobs' rest 
 the epilogue's beats from the other tribe beats (brought home, culled, burned out) and the factions'
 jobs on the ridges; the behaviour layer's few small rules (the notice rate's
 calibration, the formations' re-plan, forest edge points) and its untested levers. The finale's live
-tissue's rest is [designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)'s.
+tissue's rules are [FINALE.md](FINALE.md#the-rest-of-the-finale)'s.
 
 ## The simulator
 

@@ -321,6 +321,9 @@ class RZ_QM_MajorScene : RZ_QM_HalcyonScene
 		RZ_QuestRun run = Run(gm);
 		if (run && run.m_Line)
 			m_bBuilt = run.m_Line.BuildScene(gm, run, run.m_iStage, this);
+		// The majors' remaining approaches (Director/RZ_MajorRest.c)
+		if (m_bBuilt && run && run.m_Line && run.m_Line.IsMajor())
+			RZ_MajorRest.Get().More(gm, run, run.m_iStage, this);
 
 		RZ_EFaction giver = m_iGiver;
 		SetContract(giver, m_eTier, m_iFame, m_iFavor);

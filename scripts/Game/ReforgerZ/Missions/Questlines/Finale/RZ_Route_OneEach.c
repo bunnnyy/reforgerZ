@@ -189,7 +189,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				int store = scene.Person(RZ_Mission.LandPointNear(lab, 20, 40), "the lab's night store", "Look at the night store", "A cold room with a padlock and a rota. Nobody's on the rota at the change of shift.");
 				scene.Choice(store, "Steal a tray [unseen]").Sneak().Sets("do:tray").Says("Ninety seconds. A tray under your coat, and a gap on the shelf.", "stole a tray for nobody");
 				int sit = scene.Person(LabGate(gm), "the lab gate at the change of shift", "Look at the gate", "\"Released to: -\". It needs saying where the shift can see it.");
-				scene.Choice(sit, "Sit in at the gate, unarmed [10 min]").Only("tray").Sets("do:sitin").HoldAt(LabGate(gm), 600, OUT_LAST, -1).Says("You sit down in the gate with nothing in your hands. The shift has to step round you.", "sat in at the lab gate");
+				scene.Choice(sit, "Sit in at the gate, unarmed [4-10 min]").Only("tray").Sets("do:sitin").HoldAt(LabGate(gm), Finale().GetRest().SitInSeconds(), OUT_LAST, -1).Says("You sit down in the gate with nothing in your hands. The shift has to step round you.", "sat in at the lab gate");
 				return true;
 			}
 		}
@@ -238,32 +238,37 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 			if (p.yes >= 0 && p.yes != m_iRoute)
 				return "\"I've given to someone already. One each.\"";
 
+			// Hand to Hand: a promised local in their house makes the yes one step easier
+			int ease = 0;
+			if (Finale().GetRest().Promised(IdentOf(gm, playerId), Finale().GetPeople().Pos(key)))
+				ease = 1;
+
 			switch (p.faction)
 			{
 				case RZ_EFaction.MILITARY:
 				{
-					if (RZ_Reputation.GetAccessRank(gm.GetTier(playerId, RZ_EFaction.MILITARY)) < 1)
+					if (RZ_Reputation.GetAccessRank(gm.GetTier(playerId, RZ_EFaction.MILITARY)) < 1 - ease)
 						return "\"Sedlak says no. Come back when Bastion knows you.\"";
 
 					break;
 				}
 				case RZ_EFaction.BANDITS:
 				{
-					if (!gm.SpendFavor(playerId, RZ_EFaction.BANDITS, 30))
+					if (!gm.SpendFavor(playerId, RZ_EFaction.BANDITS, 30 - 10 * ease))
 						return "\"The crew boss owns the debt. Thirty Red Hand Favor, or it stays.\"";
 
 					break;
 				}
 				case RZ_EFaction.INSTITUTE:
 				{
-					if (RZ_Reputation.GetAccessRank(gm.GetTier(playerId, RZ_EFaction.INSTITUTE)) < 0)
+					if (RZ_Reputation.GetAccessRank(gm.GetTier(playerId, RZ_EFaction.INSTITUTE)) < 0 - ease)
 						return "\"The field lead wants her blood for the paper. Not from you.\"";
 
 					break;
 				}
 				default:
 				{
-					if (!RZ_QuestApproach.Persuade(gm, playerId, RZ_EFaction.SURVIVORS, 2, "nurse"))
+					if (!RZ_QuestApproach.Persuade(gm, playerId, RZ_EFaction.SURVIVORS, 2 - ease, "nurse"))
 						return "\"The council head lets them choose. They choose not to, for now.\"";
 
 					break;

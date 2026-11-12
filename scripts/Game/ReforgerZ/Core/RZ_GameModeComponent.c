@@ -1213,6 +1213,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	{
 		return m_Perks.TryRequisition(playerId, quartermaster, user, prefab, itemName, fullCost);
 	}
+	//! The lab entity (placed or spawned), null without one.
+	IEntity GetLabEntity() { return m_Lab; }
+
 	bool HasLab() { return m_bHasLab; }
 
 	//------------------------------------------------------------------------------------------------

@@ -1161,7 +1161,7 @@ class RZ_EpiRest
 		{
 			case 0:
 			{
-				if (unturned.IsEmpty())
+				if (unturned.IsEmpty() || RZ_MajorHelp.World(m_GM, "list.buried") != 0)
 					return "";
 
 				return string.Format("If you can hear this: her name is %1. She didn't turn. Say it at your table tonight.", unturned);

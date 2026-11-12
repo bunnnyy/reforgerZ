@@ -5,7 +5,7 @@
 packs' daily life and hunts, the life cycle, the people's side, the great one, signs and sounds, Lead
 Them Away's pack on the move, Stock the Pit's cage). This file keeps only the small rules still to
 build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
-[FINALE.md](FINALE.md)'s; the epilogue reading the last week's beats is [EPILOGUE.md](EPILOGUE.md)'s.
+[FINALE.md](../docs/FINALE.md)'s; the epilogue reading the last week's beats is [EPILOGUE.md](../docs/EPILOGUE.md)'s.
 
 **Player text never says "alpha", "tribe" or "crawler"** ([WRITING.md](../docs/WRITING.md#writing-the-infected)).
 
@@ -82,7 +82,7 @@ A Furious pack's day parties walking the capture road.
 - **Questline hooks:** B1 Await Relief (the Day 3 runner's road crosses the column's range, and his page
   can be at an old kill site); R1 The Book (a page for "the crew in the woods", the moat's feeding, as a
   rumour); HC3 Authors (tagged leaders numbered in the paper's appendix); the finale routes' live tissue
-  and The Lower Store claiming the site pack in Act II ([FINALE.md](FINALE.md)); seeds for later
+  and The Lower Store claiming the site pack in Act II ([FINALE.md](../docs/FINALE.md)); seeds for later
   questlines (the Haven's Bring Them Home chain, Bastion's Not Our Sector, the Red Hand's The Moat,
   Halcyon's Index).
 
@@ -92,7 +92,7 @@ The last week is built ([docs/INFECTED.md](../docs/INFECTED.md#the-last-week)) w
 the epilogue. Still designed: the epilogue reading them, and one more beat, **Walking with it** (up to 3
 named young still running with each pack, players' characters among them by the name setting). The
 closing work that touches the infected (Quiet the Ridges, Bring Them Home as closing work, Take Back a
-Town) is [EPILOGUE.md](EPILOGUE.md)'s.
+Town) is [EPILOGUE.md](../docs/EPILOGUE.md)'s.
 
 ## From Grounds to tribes: the rename table
 
@@ -160,7 +160,7 @@ The 16 tribes decisions, as approved (recommended options, except where noted):
 | 9 | The scout rule | 5 s in sight and in terrain line of sight, checked every second, chasing only the seen player. Changed in review: the sight radius comes from stealth (conflict 46); by day the pack is at most 4 and never the alpha (day parties); the pack's timing is phase 0's |
 | 10 | Your dead run in public text | Described by default (*"a man in a blue jacket"*), named on the ID card, in their own journal and to their group; the server can switch to names, and players can opt out |
 | 11 | Samples from tribes | Alphas 2 in Prime and 3 in Decline, none while Rising, 3 alphas per tribe a season; guards 1 each under a Prime-or-older alpha, capped per played hour; only with a player within 150 m; town specials scaled down by the tribes' share |
-| 12 | Finale tissue | Best first: a Prime-or-older alpha, else a lone one, else two guards, else two Live Capture specials; the same tribe at most once in 6 season days; a great alpha counts more. Now owned by [FINALE.md](FINALE.md), crediting a route's track (conflict 44) |
+| 12 | Finale tissue | Best first: a Prime-or-older alpha, else a lone one, else two guards, else two Live Capture specials; the same tribe at most once in 6 season days; a great alpha counts more. Now owned by [FINALE.md](../docs/FINALE.md), crediting a route's track (conflict 44) |
 | 13 | Alpha Sighting | No option was marked recommended. **(b) renamed The Lone One**, because decision 2 keeps "alpha" out of player text and the mission rework had already renamed it. If the author prefers (a), only the title changes |
 | 14 | Bastion off-screen | Culls only through contracts and events players see |
 | 15 | Data takings with nobody near | A wanderer per tribe and a truck per server every 3 counted nights, on any road a trail crosses, only with no player within 1 km (and only at night) |

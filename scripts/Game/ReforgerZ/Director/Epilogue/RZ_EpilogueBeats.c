@@ -841,6 +841,10 @@ class RZ_EpiBeats
 	//! are the lab gate's), the candles are lit.
 	void OnFirstDusk()
 	{
+		// The finale's route marks: the losing routes' come down, the winner's are made final
+		if (RZ_CureFinale.Get())
+			RZ_CureFinale.Get().GetRest().MarksAtDusk(m_Epi.Route());
+
 		PlaceAll();
 	}
 

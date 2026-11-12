@@ -1495,9 +1495,20 @@ line when the final stand starts and when it's won or lost (`RZ_Questlines`, fro
 | Stall points | 1 | Research over 3 real days with play below which it counts as stalled |
 | Between beats | 4 | The beat gap, in sessions, before a major fills it |
 | Slots | 2 | Majors' stage missions offered at once |
+| Red Hand lorry, Bonfire prop | empty | Optional props at Rudi's crossroads (the send-off and the last line; sent off loud), spawned only while that stage runs and a player is within 300 m; empty: words only |
 
-*Simplified:* the stand events don't fire on a change of holder in the clean room. What's still
-designed only is in [designs/MAJORS.md](../designs/MAJORS.md).
+**The engine's rest** (`Director/RZ_MajorRest.c`): `OnStandHolder` tells every running line when the
+clean room changes holder; `OpenChannel(faction, lines, gap)` reads lines on a faction's open
+channel one at a time (the director's two minutes); `SecureLine(faction, text, hours)` puts a line
+on a faction's secure net for Radio Operators; `AtTime(faction, hour, text, key)` airs a one-off line
+at a set game hour (Bastion's last call at 20:30, the walk at the next 05:30); `Mute(faction)` silences
+a faction's open channel for one night; the per-life "on the roster" flag and Bastion's rank text
+(*"Corporal Novak"*, by standing). `More()` adds each act's remaining approaches to its scene
+([QUESTLINES.md](QUESTLINES.md#the-majors)), and `AtEnding` applies their effects once, at the major's
+ending. With no cure on the last day the codas end as radio (the Haven's Gate at the chair's house,
+Bastion's last call in the last 24 real hours, the Red Hand's ending on its current branch).
+*Simplified:* stand-ins are civilians, not the leader's own body; summons don't claim seats; there's
+no *Ask about...* choice on other factions' leaders while a stage is open.
 
 ## World facts
 
@@ -1957,8 +1968,8 @@ dusk window (18:30–20:30) entered with a player online. One set piece an eveni
 next free one, and after two waits (**Shared > Set piece waits**) `MustRun` says it runs at the next
 free hour. Errands deal nothing within 600 m of the set piece holding the evening (`IsQuietAt`).
 Saved with the season. The majors' set pieces book it ([The majors](#the-majors)), their codas in the
-epilogue week too; the epilogue's own pieces (the supper reading, the 20:30 watch) are planned
-([designs/EPILOGUE.md](../designs/EPILOGUE.md)).
+epilogue week too; the epilogue's own pieces (the supper reading, the 20:30 watch) are radio and scenes
+([EPILOGUE.md](EPILOGUE.md#the-evening-calendar)).
 
 ## Town memory
 
