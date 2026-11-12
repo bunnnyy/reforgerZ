@@ -3060,6 +3060,9 @@ when it happens)
   is imported again (UI/LAYOUTS.md, "Importing the icons"); before that they're blank, never another icon.
 - [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
   other's log (owner-only notices).
+- [ ] Talk to someone while a subtitle is showing (a stranger's call-out, a checkpoint's warning): the
+  subtitle and the radio-line box go as the talk screen opens and never show under it; lines said
+  meanwhile come after you leave (UI.md, Subtitles).
 - [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre, not a card,
   its head row the speech bubble, "The corporal at the barrier" in olive and "· Bastion checkpoint"
   dim, then (with a sentry within 15 m) an arrow and "4 m": turn round and the arrow keeps pointing

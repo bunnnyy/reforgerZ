@@ -667,7 +667,7 @@ on screen for **Subtitle shortest** to **longest** (4–12 s) by length at **rea
 characters a second, slow enough to read while moving; raised from 2.5–8 s at 18 after play-tests
 found the lines gone too soon); a subtitle longer than two rows (130 characters) is split at sentence ends
 into parts shown in turn. At most four subtitles wait; a newer line from the same speaker
-replaces theirs still waiting. While the reader is open both wait. Nothing to press, so nothing to
+replaces theirs still waiting. While the reader or the talk screen is open, neither shows: the line on screen goes at once and the rest wait until it closes, so a subtitle never sits under a conversation. Nothing to press, so nothing to
 bind. A spoken line goes only to its player (`RZ_GameModeComponent.Say`, `SayNear`). With **UI >
 Subtitles** off, without the panel in the HUD layout, or without the UI component, it's a notice
 card, as before (a radio voice without `RadioLinePanel` too).

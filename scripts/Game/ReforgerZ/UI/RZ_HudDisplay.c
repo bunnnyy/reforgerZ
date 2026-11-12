@@ -765,8 +765,9 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	//! person the arrow and the distance (DrawSubtitleDir), and the line under them.
 	protected void DrawSubtitle(RZ_UISettings settings)
 	{
+		// Never under the talk screen or the reader: the line showing goes, the rest wait till it closes
 		float now = RZ_UIW.Now();
-		bool held = RZ_ReaderMenu.IsShowing();
+		bool held = RZ_ReaderMenu.IsShowing() || RZ_TalkMenu.IsShowing();
 		if (m_Subs.Expire(now, held))
 			RZ_UIW.Show(m_wRoot, "SubtitlePanel", false);
 
@@ -831,7 +832,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected void DrawRadioLine(RZ_UISettings settings)
 	{
 		float now = RZ_UIW.Now();
-		bool held = RZ_ReaderMenu.IsShowing();
+		bool held = RZ_ReaderMenu.IsShowing() || RZ_TalkMenu.IsShowing();
 		if (m_Radio.Expire(now, held))
 			RZ_UIW.Show(m_wRoot, "RadioLinePanel", false);
 
