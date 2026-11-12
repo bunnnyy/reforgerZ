@@ -1151,6 +1151,20 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 //! Agree (talk), bargain (Trusted with Halcyon and Bastion) or refuse (+5 Bastion Infamy).
 class RZ_QM_AuthorsAnswer : RZ_QM_HalcyonScene
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: bargaining takes someone both the lab and Bastion trust.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || !choice || objIdx != OBJ_ADJUTANT || slot != 1)
+			return need;
+
+		if (Rank(gm, playerId, RZ_EFaction.INSTITUTE) < 2 || Rank(gm, playerId, RZ_EFaction.MILITARY) < 2)
+			return "Needs Trusted with Halcyon and Bastion";
+
+		return "";
+	}
+
 	protected static const int OBJ_ADJUTANT = 0;
 	protected static const int REFUSE_INFAMY = 5;
 

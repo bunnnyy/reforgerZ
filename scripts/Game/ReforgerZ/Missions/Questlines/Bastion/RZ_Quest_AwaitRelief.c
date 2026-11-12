@@ -406,6 +406,18 @@ class RZ_QuestCarry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! In this user's inventory now (TakeFrom would take it): a hand-over's locked reply reads it.
+	bool IsWith(IEntity user)
+	{
+		if (m_bDelivered || !user || !m_Item)
+			return false;
+
+		array<IEntity> items = {};
+		RZ_MissionItemHelper.FindItems(user, items);
+		return items.Contains(m_Item);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Cleanup()
 	{
 		if (m_Item && !m_bDelivered)
@@ -1764,6 +1776,30 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 			int chairClue = AddClue(RZ_Util.Capitalize(m_sChair), "The chair reads everything that comes to this door. Bastion walked us to the line on Day 2. She'd like to know what they were told.");
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vChair, OBJ_CHAIR, GiveLabel(m_sChair), "", chairClue, "Talk to " + m_sChair);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing the page (or the copy) over is a reply in each person's talk: locked without it on
+	//! you, and where they won't take it from you (docs/DIALOGUE.md, "Jobs on the first replies").
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || choice)
+			return need;
+
+		if (objIdx == OBJ_CREW)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 0, RZ_EFaction.BANDITS);
+		else if (objIdx == OBJ_CHAIR)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.SURVIVORS), 0, RZ_EFaction.SURVIVORS);
+
+		if (!need.IsEmpty())
+			return need;
+
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!m_bCopy && !m_Page.IsWith(user))
+			return "Needs the page on you";
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

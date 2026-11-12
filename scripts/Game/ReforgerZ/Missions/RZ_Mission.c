@@ -393,7 +393,18 @@ class RZ_Mission
 	//! this player is below with `faction`; "" when they have it.
 	static string RankNeed(RZ_GameModeComponent gm, int playerId, int faction, int rank)
 	{
-		if (!RZ_Factions.IsValid(faction) || RZ_Reputation.GetAccessRank(gm.GetTier(playerId, faction)) >= rank)
+		if (!RZ_Factions.IsValid(faction))
+			return "";
+
+		return ScoreNeed(RZ_Reputation.GetAccessRank(gm.GetTier(playerId, faction)), rank, faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! RankNeed for a score a mission works out itself (a rank with its background bonus): "" when
+	//! `have` reaches `rank`.
+	static string ScoreNeed(int have, int rank, int faction)
+	{
+		if (have >= rank)
 			return "";
 
 		if (rank <= 0)

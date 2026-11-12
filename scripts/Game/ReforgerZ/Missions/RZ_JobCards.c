@@ -62,6 +62,16 @@ class RZ_JobCards
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A job's giving faction, for a card: "the Haven"; "" with none.
+	static string FactionGiver(RZ_Mission m)
+	{
+		if (!m || !m.m_bHasGiver || !RZ_Factions.IsValid(m.m_eGiver))
+			return "";
+
+		return RZ_Factions.GetNameInText(m.m_eGiver);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The giver as a card names them: "Sergeant Hale at Fort Kell".
 	static string LeaderGiver(RZ_Leader l)
 	{

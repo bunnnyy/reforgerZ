@@ -390,6 +390,53 @@ class RZ_QM_MajorScene : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A scene choice's hard needs shown before you pick (docs/DIALOGUE.md, "Jobs on the first
+	//! replies"): done here already, the rank (a favoured background counts), the items it trades and
+	//! the Favor it costs. A persuade, a threat or a trick is a check, not a lock: its tag shows it.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		RZ_SceneChoice c = FindChoice(objIdx, slot);
+		if (!need.IsEmpty() || !choice || !c || playerId <= 0)
+			return need;
+
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		if (m_mDone.Contains(string.Format("%1|%2|%3", ident, objIdx, slot)))
+			return "Done already";
+
+		RZ_QuestRun run = Run(gm);
+		if (run && !c.m_sNeed.IsEmpty() && !HasNeed(gm, run, c.m_sNeed))
+			return "Not yet";
+
+		int faction = c.m_iFaction;
+		if (faction < 0)
+			faction = m_iGiver;
+
+		if (c.m_iRank > -99 && !RZ_QuestApproach.HasBackground(gm, playerId, c.m_sFavoured))
+		{
+			need = RankNeed(gm, playerId, faction, c.m_iRank);
+			if (!need.IsEmpty())
+				return need;
+		}
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (c.m_iTradeCount > 0 && (!me || RZ_Errands.CountItems(me, c.m_eTradeItem) < c.m_iTradeCount))
+			return "Needs " + RZ_Errands.ItemNeed(c.m_eTradeItem, c.m_iTradeCount);
+
+		if (c.m_iBribe > 0)
+		{
+			int bf = c.m_iBribeFaction;
+			if (bf < 0)
+				bf = faction;
+
+			if (RZ_Factions.IsValid(bf) && gm.GetProfile(playerId).GetFavor(bf) < c.m_iBribe)
+				return string.Format("Needs %1 %2 Favor", c.m_iBribe, RZ_Factions.GetShortName(bf));
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected RZ_SceneChoice FindChoice(int spot, int option)
 	{
 		int n = 0;

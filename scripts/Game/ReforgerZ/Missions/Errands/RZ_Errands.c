@@ -790,7 +790,10 @@ class RZ_Errands
 				continue;
 			}
 
-			// Done: back to the giver (a wanderer: where they stand now)
+			// Done: back to the giver (a wanderer: where they stand now). With the talk screen the hand-in
+			// is a reply in their talk ("[Errand] It's done: ...", Ask: HandIn); without it, or for a
+			// handed errand (an opening's step, its owner's), being back with them is enough
+			bool byTalk = RZ_Dialogue.IsOn() && !e.m_Def.m_bHanded;
 			vector giverAt = e.m_vGiver;
 			if (e.m_iWanderer >= 0 && m_GM.GetWanderers())
 				m_GM.GetWanderers().GetPosition(e.m_iWanderer, giverAt);
@@ -806,7 +809,7 @@ class RZ_Errands
 				}
 
 				IEntity carrierEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
-				if (carrier > 0 && RZ_Arrive.AtSpot(carrierEnt, giverAt, RETURN_RANGE))
+				if (!byTalk && carrier > 0 && RZ_Arrive.AtSpot(carrierEnt, giverAt, RETURN_RANGE))
 					Resolve(e, w);
 
 				continue;
@@ -819,9 +822,34 @@ class RZ_Errands
 				continue;
 			}
 
-			if (RZ_Arrive.AtSpot(me, giverAt, RETURN_RANGE))
+			if (!byTalk && RZ_Arrive.AtSpot(me, giverAt, RETURN_RANGE))
 				Resolve(e, w);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing a done errand in, in the giver's talk (their "[Errand] It's done: ..." reply). Something
+	//! carried back has to be with you, or with a helper standing by: it's taken off whoever has it
+	//! (Resolve, ConsumeCarried).
+	protected void HandIn(RZ_Errand e, RZ_ErrandWay w, int playerId)
+	{
+		if (w.m_bCarry && e.m_Carried)
+		{
+			int carrier = RZ_ErrandsPay.Carrier(e);
+			IEntity carrierEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
+			vector giverAt = e.m_vGiver;
+			if (e.m_iWanderer >= 0 && m_GM.GetWanderers())
+				m_GM.GetWanderers().GetPosition(e.m_iWanderer, giverAt);
+
+			bool near = carrier > 0 && (carrier == playerId || e.m_aHelpers.Contains(carrier)) && RZ_Arrive.AtSpot(carrierEnt, giverAt, RETURN_RANGE);
+			if (!near)
+			{
+				Say(e, "Where is it, then? Bring it here with you.", false);
+				return;
+			}
+		}
+
+		Resolve(e, w);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -949,10 +977,8 @@ class RZ_Errands
 
 			if (m_fClock - e.m_fTakenAt > lapse)
 			{
+				// Its end card says so (RememberEnd: "Errand failed: ...", "{giver} stopped waiting.")
 				Count(e.m_Def.m_sFamily).lapses++;
-				if (ids.Contains(e.m_iAsker))
-					m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), e.Fill("{giver} stopped waiting. Nobody holds it against you."));
-
 				End(e, "lapsed");
 				continue;
 			}
@@ -1103,6 +1129,29 @@ class RZ_Errands
 		}
 
 		Remember(e, result, line);
+
+		// The end card (RZ_JobCards): "Errand failed: <title>" or "Errand abandoned: <title>"
+		string how = "abandoned";
+		if (result == RZ_EJobResult.FAILED)
+			how = "failed";
+
+		if (GetGame().GetPlayerManager().GetPlayerControlledEntity(e.m_iAsker))
+			RZ_JobCards.Ended(m_GM, e.m_iAsker, "Errand", how, e.Fill(e.m_Def.m_sTitle), line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who an errand is from, for its start card: "Mara, the cook at Morton".
+	protected string GiverWords(RZ_Errand e)
+	{
+		string who = e.m_sGiverName;
+		if (who.IsEmpty())
+			who = e.m_sGiverTitle;
+
+		string here = e.GetText("here");
+		if (!here.IsEmpty() && !who.Contains(here))
+			who += " at " + here;
+
+		return who;
 	}
 
 	// ================================================================ Talking to a giver
@@ -1306,7 +1355,7 @@ class RZ_Errands
 		{
 			RZ_ErrandWay w = mine.GetWay();
 			if (mine.m_bStepDone && w)
-				Resolve(mine, w);
+				HandIn(mine, w, playerId);
 			else if (w)
 				m_GM.NotifyPlayer(playerId, "Errand: " + mine.Fill(mine.m_Def.m_sTitle), mine.Fill(w.m_sStep));
 
@@ -1480,7 +1529,7 @@ class RZ_Errands
 		{
 			RZ_ErrandWay held = mine.GetWay();
 			if (mine.m_bStepDone && held)
-				Resolve(mine, held);
+				HandIn(mine, held, playerId);
 			else if (held)
 				m_GM.NotifyPlayer(playerId, "Errand: " + mine.Fill(mine.m_Def.m_sTitle), mine.Fill(held.m_sStep));
 
@@ -1945,7 +1994,8 @@ class RZ_Errands
 		if (w.m_fBefore >= 0)
 			step += string.Format(" Before %1 (about %2 real minutes).", RZ_GameTime.Clock(w.m_fBefore), RZ_Util.RoundToInt(RZ_GameTime.RealMinutesUntil(w.m_fBefore)));
 
-		m_GM.NotifyPlayerAs(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), step + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), e.m_vPlace)) + ".", RZ_ENoticeTag.MISSION);
+		// The start card (RZ_JobCards): what, from whom, and the step with its direction
+		RZ_JobCards.Started(m_GM, e.m_iAsker, "Errand", e.Fill(e.m_Def.m_sTitle), GiverWords(e), step + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), e.m_vPlace)) + ".");
 		RZ_Log.Info(string.Format("Errands: %1 taken by %2, way %3 (%4)", e.m_Def.m_sKey, RZ_Util.PlayerName(e.m_iAsker), w.m_iIndex, w.m_sWay));
 	}
 
@@ -2700,8 +2750,16 @@ class RZ_Errands
 		if (!e.m_Def.m_bHanded)
 			pay = Pay(e, w, e.m_iAsker, false);
 
-		if (!pay.IsEmpty())
-			m_GM.NotifyPlayerAs(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), pay, RZ_ENoticeTag.MISSION);
+		// The end card (RZ_JobCards): "Errand done: <title>" with the pay (a handed errand's owner
+		// sends its own, with its pay)
+		string title = e.Fill(e.m_Def.m_sTitle);
+		if (!e.m_Def.m_bHanded)
+		{
+			if (pay.IsEmpty())
+				pay = e.Fill("{giver} thanks you.");
+
+			RZ_JobCards.Ended(m_GM, e.m_iAsker, "Errand", "done", title, pay);
+		}
 
 		foreach (int helper : e.m_aHelpers)
 		{
@@ -2710,7 +2768,7 @@ class RZ_Errands
 
 			string helperPay = Pay(e, w, helper, true);
 			if (!helperPay.IsEmpty())
-				m_GM.NotifyPlayerAs(helper, "Errand: " + e.Fill(e.m_Def.m_sTitle), helperPay, RZ_ENoticeTag.MISSION);
+				RZ_JobCards.Ended(m_GM, helper, "Errand", "done", title, helperPay);
 		}
 
 		// Memory: what you did for them (dialogue's regard, on their own key), the town, the hall
@@ -3414,7 +3472,7 @@ class RZ_Errands
 
 		Say(e, Pick(w.m_aTake), false);
 		if (w.HasStep())
-			m_GM.NotifyPlayerAs(playerId, "Errand: " + e.Fill(d.m_sTitle), e.Fill(w.m_sStep) + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), place)) + ".", RZ_ENoticeTag.MISSION);
+			RZ_JobCards.Started(m_GM, playerId, "Errand", e.Fill(d.m_sTitle), GiverWords(e), e.Fill(w.m_sStep) + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), place)) + ".");
 
 		RZ_Log.Info(string.Format("Errands: %1 handed to %2 (%3)", d.m_sKey, RZ_Util.PlayerName(playerId), giverName));
 		return e;

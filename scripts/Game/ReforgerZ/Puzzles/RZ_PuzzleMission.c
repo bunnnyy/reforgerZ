@@ -333,6 +333,16 @@ class RZ_PuzzleMission : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The Tier 0 audit's decider rule shown before you pick (HandleChoice says it after).
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		if (choice && objIdx < RZ_OneChoice.OBJECT_INDEX && m_bContract && !m_Story && !RZ_MissionReasons.Tier0Key(Type()).IsEmpty() && !IsEligible(gm, playerId))
+			return "Only for whoever was hired";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! From RZ_PuzzleChoiceAction.
 	void HandleChoice(RZ_GameModeComponent gm, int playerId, int objIdx, int option, IEntity source)
 	{

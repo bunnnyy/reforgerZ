@@ -686,6 +686,29 @@ class RZ_QM_OtherNumber : RZ_QM_OtherTwoScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick (docs/DIALOGUE.md, "Jobs on the first replies"): the clerk talks to staff
+	//! and friends of the lab (with H3's lab road, the Haven's people too); the ledger is read only
+	//! on the night shift. The courier's price is in his label.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty())
+			return need;
+
+		if (choice && objIdx == OBJ_CLERK && slot == 0)
+		{
+			bool road = gm.GetQuestlines() && gm.GetQuestlines().WorldFlag(RZ_Quest_OtherTwo.FLAG_H3_LAB_ROAD) == 1 && Rank(gm, playerId, RZ_EFaction.SURVIVORS) >= 1;
+			if (!road)
+				return RankNeed(gm, playerId, RZ_EFaction.INSTITUTE, 1);
+		}
+
+		if (!choice && objIdx == OBJ_LEDGER && !RZ_GameTime.IsNight())
+			return "After dark";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The ledger: only on the night shift, only unseen. Seen: the lab hears.
 	override protected void OnUse(RZ_GameModeComponent gm, int playerId, int objIdx, int value, IEntity source, IEntity user)
 	{
@@ -1199,6 +1222,17 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 //! or sell one of the other two to the Red Hand (Trusted with them). She's gone: the room is too.
 class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: selling one of the other two takes a crew that trusts you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && choice && objIdx == OBJ_LEAD && slot == 2)
+			need = RankNeed(gm, playerId, RZ_EFaction.BANDITS, 2);
+
+		return need;
+	}
+
 	protected static const int OBJ_LEAD = 0;
 	protected static const int OBJ_DUTY = 1;
 	protected static const int KEEP_FAVOR = 25;
@@ -1319,6 +1353,23 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 //! came home), the Haven's council clerk, or let them stay numbers.
 class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: the director sees someone the lab trusts, or someone it knows with the
+	//! family beside them (he came home).
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || !choice || objIdx != OBJ_DUTY || slot != 0)
+			return need;
+
+		RZ_QuestRun run = Run(gm);
+		bool home = run && run.Flag("brother") == RZ_Quest_OtherTwo.BRO_HOME;
+		if (home)
+			return RankNeed(gm, playerId, RZ_EFaction.INSTITUTE, 1);
+
+		return RankNeed(gm, playerId, RZ_EFaction.INSTITUTE, 2);
+	}
+
 	protected string m_sAnswer;
 	protected int m_iOther;
 	protected ref array<string> m_aOptions = {};

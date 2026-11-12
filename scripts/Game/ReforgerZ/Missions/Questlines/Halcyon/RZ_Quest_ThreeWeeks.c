@@ -648,6 +648,21 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 //! twice, or threaten him.
 class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: he talks to someone the Haven knows and the lab doesn't trust, or to a
+	//! Radio Operator who heard his call.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || !choice || objIdx != OBJ_DRIVER || slot != 0 || RZ_QuestApproach.HasBackground(gm, playerId, "radioham"))
+			return need;
+
+		if (Rank(gm, playerId, RZ_EFaction.INSTITUTE) >= 2)
+			return "Not while the lab trusts you";
+
+		return RankNeed(gm, playerId, RZ_EFaction.SURVIVORS, 1);
+	}
+
 	protected int m_iDriver = -1;
 	protected bool m_bHeld;
 	protected int m_iTalk = -1;
