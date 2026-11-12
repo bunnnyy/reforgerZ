@@ -707,7 +707,14 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   cooking side left or right by the seed.
 - **Its people** come out in the yard: the territory spawns a holding's guards, named people and
   an outpost's quartermaster there (a stronghold's quartermaster stays where it's placed). Named
-  people stay within 20 m of the yard, more beside a long building.
+  people stay within 20 m of the yard, more beside a long building. An outpost's **leader** sits in
+  the yard too: registered there when the outpost appears or changes hands (a placed marker's seat
+  stays where it's placed), and kept clear of pieces like any seat.
+- **Lived-in ground.** What keeps off lived-in places (scenes and traces, shelling, lair moves,
+  the doors the infected break) measures a camp from its yard out to its farthest piece (the
+  building, its entry ring and the pieces standing), not from the town's middle; a camp whose
+  building isn't read yet counts 120 m round its middle (60 m for a safehouse). Road posts count
+  as lived in while they stand.
 - **Where each piece stands** is its kit entry's **At** (written by `tools/camp_kit/build.py`
   from `pieces.py`), or Auto from its ring and use. Tents aren't put up: in a building they sleep
   indoors.
@@ -739,14 +746,16 @@ distance, then roads. Road posts don't (they stand beside their barrier).
 - **Any spot**, by a building or on a ring, is used only on flat
   ground (under about 12°, from four ground heights), out of the water and away from the line,
   at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
-  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece (the rules
-  are one placer, `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). A piece with no good
+  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece, its
+  own place's or any other system's scenery (the rules are one placer,
+  `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). A piece with no good
   spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
   safehouse at its own stronghold) isn't dressed twice.
 - **Nothing to abuse.** `RZ_DressingGuard` checks every piece and its children as it spawns and
   deletes any part with an arsenal, any inventory storage, a pick-up item, a support station
   (resupply, heal, fuel, repair), supplies, fuel, a vehicle or vehicle spawner, a spawn point,
-  or any ReforgerZ component or action, with a log line. The interaction scan and the puzzles'
+  a body (a character, an AI group or anything AI-controlled), or any ReforgerZ component or
+  action, with a log line. The interaction scan and the puzzles'
   landmark finder ignore the pieces: a decor fire isn't a stove, a decor generator isn't a
   generator, a barrel, a wash stand or a shower isn't water, a radio on a table is only a
   shape, an antenna isn't a mission's landmark. The quartermaster and
@@ -755,7 +764,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   owner's visible radius: 300 m for holdings). The layout is worked out at once, but the pieces
   spawn **4 per server tick** for all places together (a 20-piece stronghold is up in about 25 s
   at the 5 s tick); when a place's last piece is up, its people are given their jobs again. At
-  most **90** pieces stand or wait to spawn on the server.
+  most **90** of camp life's own pieces stand or wait to spawn on the server (Traces' props,
+  boards and sound looks are scenery too but don't count toward it).
 
 **What people do.** The bodies are the ones the built systems spawn (guards, named people,
 safehouse occupants, road-post crews); camp life gives them **jobs**. Only at the **3 places
@@ -772,7 +782,7 @@ nearest players** (Live places); elsewhere they stand.
 | Chop (by day) | the chopping block at the woodpile |
 | Cook (17:30–18:30, before the meal) | the cook pot |
 | Stroll, courier | a walk out and back: to the road (by a building, the gate), or 60–90 m to the edge |
-| Off shift | to the tents (by a building, in at the front door); with nobody within 80 m they **sleep**: despawned as data, back in the morning, out of the same tent or door |
+| Off shift | to the tents (by a building, in at the front door); with nobody within 150 m of the place and nobody who could see them they **sleep**: despawned as data, back in the morning (with nobody that near or in sight of the yard), out of the same tent or door |
 
 A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`,
 `RZ_Cook`, `RZ_Wash`, `RZ_Chop`) and seats are counted, so two people never take the same chair.

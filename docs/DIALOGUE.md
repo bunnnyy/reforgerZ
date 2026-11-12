@@ -152,9 +152,10 @@ Factions are written `haven`, `bastion`, `redhand`, `halcyon`, and `none` for fa
 Strangers and the open channel are factionless; a mission's people speak for its giver.
 
 **The post speaker.** With Trees on, one of the crew stands at the barrier of a Bastion checkpoint
-or a Red Hand roadblock while a player is within 100 m: the faction's territory occupant prefab
+or a Red Hand roadblock once a player is within 100 m: the faction's territory occupant prefab
 (else the puzzle civilian), entered in the one body budget as a speaker
-([INFECTED.md](INFECTED.md#the-one-body-budget)), and gone when nobody is near. Talk gives the post's
+([INFECTED.md](INFECTED.md#the-one-body-budget)), and gone once nobody is within 150 m or can
+see them. Talk gives the post's
 rule for you in its voice; the search and the toll still happen as built at the barrier. The crew
 stays an AI group.
 
