@@ -104,9 +104,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
-- 2026-11-12 (PC): **static icons now have images** (the HUD's PausedIcon, NoiseIcon, RadioIcon and the Radio page's Chan0..8: `Texture` the RZ_Icons imageset, `Image` the icon name, after each `Color`); they drew as flat squares. Seen right in play. UI/LAYOUTS.md and UI.md updated. The crafting preset and **UI > Craft row layout** are set; every screen looks right in the layout preview at 1920 x 1080.
 - 2026-11-12 (PC): seen in play at Morton: a leaning Halcyon person by a house wall showed no head (looked clipped into the wall). If lean seats are placed against walls by code, keep them about 0.4 m off the wall.
-- 2026-11-12 (PC): **script fixes (one-liners, compile check OK):** negative seeds indexed arrays. `RZ_Tribes.c` CallPattern and AlphaWho, `RZ_TribePeople.c` CrewName now use `Math.AbsInt(...) % Count()` (each threw "Index out of bounds" in Workbench play on Everon); `RZ_SupplyLines.c` out-of-stock hash too (a negative seed made every item out of stock). Please scan for the same pattern in new code.
 
 ## Claims
 
