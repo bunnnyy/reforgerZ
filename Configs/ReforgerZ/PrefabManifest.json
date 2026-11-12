@@ -5574,21 +5574,21 @@
    "notes": ""
   },
   {
-   "id": "UIHallPage",
+   "id": "UIQuestsPage",
    "kind": "manual",
    "system": "UI",
    "path": "",
    "basePrefab": "",
    "baseFind": "",
-   "baseHint": "the Hall page layout (UI/LAYOUTS.md)",
+   "baseHint": "the Quests page layout, RZ_QuestsPage.layout (UI/LAYOUTS.md)",
    "components": [],
    "actions": [],
-   "slots": ["m_UISettings.m_sHallPage"],
+   "slots": ["m_UISettings.m_sQuestsPage"],
    "listSlot": false,
-   "slotLabel": "UI > Hall page",
+   "slotLabel": "UI > Quests page",
    "required": false,
    "minimum": false,
-   "use": "the Hall of fame tab (empty = Nothing here yet)",
+   "use": "the Quests tab: every job you have, its objectives and Track (empty = Nothing here yet)",
    "notes": ""
   },
   {
@@ -7245,7 +7245,8 @@
     "m_fClueMinutes": "20",
     "m_bSafehouseFlyers": "1",
     "m_fShoutMinutes": "30",
-    "m_bWandererFinds": "1"
+    "m_bWandererFinds": "1",
+    "m_fTipQuietSeconds": "90"
    }
   },
   {
@@ -7655,7 +7656,9 @@
     "m_iNoticeStack": "2",
     "m_fNoticeGap": "2",
     "m_fNoticeWait": "45",
-    "m_fNoticeCalm": "4",
+    "m_fNoticeCalm": "30",
+    "m_fNoticeEarly": "300",
+    "m_fNoticeEarlyGap": "45",
     "m_iNoticeQueue": "12",
     "m_iRadioLogSize": "60",
     "m_bInfectionTimer": "1",

@@ -714,7 +714,7 @@ and the UI files) need none, and six have no base:
 | (existing prefab) | vanilla AIWaypoint_ObservationPost.et | — | Territory > Camp life > Observation waypoint | optional | a sentry with no nest (empty = the loiter waypoint) |
 | (existing prefab) | vanilla Group_Base.et (an AI group with no members) | — | Territory > Camp life > Group prefab | optional | lone characters (occupants, single guards) join one so they can take jobs (empty = they stand) |
 | (existing prefab) | a new prefab of class SCR_SmartActionWaypoint, saved as Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et (vanilla ships the class, not a prefab) | — | Territory > Camp life > Smart action waypoint | optional | people use a piece's sit, lean, work and watch points (empty = they loiter beside it) |
-| (existing prefab) | the 54 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
+| (existing prefab) | the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
 
 #### New-player guidance
 
@@ -799,7 +799,7 @@ and the UI files) need none, and six have no base:
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
 | (existing prefab) | the Journal page layout (UI/LAYOUTS.md) | — | UI > Journal page | optional | the Journal tab (empty = Nothing here yet) |
 | (existing prefab) | the Radio page layout (UI/LAYOUTS.md) | — | UI > Radio page | optional | the Radio tab (empty = Nothing here yet) |
-| (existing prefab) | the Hall page layout (UI/LAYOUTS.md) | — | UI > Hall page | optional | the Hall of fame tab (empty = Nothing here yet) |
+| (existing prefab) | the Quests page layout, RZ_QuestsPage.layout (UI/LAYOUTS.md) | — | UI > Quests page | optional | the Quests tab: every job you have, its objectives and Track (empty = Nothing here yet) |
 | (existing prefab) | the Season page layout (UI/LAYOUTS.md) | — | UI > Season page | optional | The season tab: the majors, and in the epilogue the season as the Zone tells it (empty = Nothing here yet) |
 | (existing prefab) | the TalkReply layout (UI/LAYOUTS.md) | — | UI > Talk reply layout | optional | the talk screen's reply rows (empty = no talk screen: a person's actions and notices) |
 | (existing prefab) | the CarJob layout (UI/LAYOUTS.md) | — | UI > Car job layout | optional | the car repair screen's job rows (empty = no repair screen: the car's actions and notices) |
@@ -1233,13 +1233,17 @@ in `UI/layouts/ReforgerZ/`.
 2. **The icons** (done). The icon atlas `UI/Textures/ReforgerZ/RZ_Icons.edds` and its imageset
    `UI/Imagesets/ReforgerZ/RZ_Icons.imageset`, made with `tools/icon_atlas.py`
    ([how](../UI/LAYOUTS.md#importing-the-icons)). **UI > Icon imageset** is set to it.
-3. **The HUD** (done). `RZ_Hud.layout` and `RZ_NoticeCard.layout` are built. The player
-   controller's `SCR_HUDManagerComponent` has an info display of class `RZ_HudDisplay` with the HUD
-   layout, and **UI > Notice layout** is set.
+3. **The HUD** (done). `RZ_Hud.layout` and `RZ_NoticeCard.layout` are built, the HUD with the quest
+   tracker top left (`TrackerPanel`, its icons with `Texture` and `Image` set, so none is a flat
+   square). The player controller's `SCR_HUDManagerComponent` has an info display of class
+   `RZ_HudDisplay` with the HUD layout, and **UI > Notice layout** is set.
 4. **The menus** (done as text; not checked in play yet). The notebook's frame
    (`RZ_NotebookMenu.layout`), its five page layouts, the notice board's layout and the two row
    layouts are built, with Buttons for the mouse; **UI > Mission row layout**, **Radio row
-   layout** and the five **page** layouts (the season page too) are set on `RZ_GameMode.et`. Two
+   layout** and the five **page** layouts are set on `RZ_GameMode.et`: Standing, Journal, Radio,
+   **Quests** (`RZ_QuestsPage.layout`, the old hall page's slot and GUID, `{FCD5A2E4F7512EFF}`) and
+   the Season page (with the hall of fame now). `chimeraInputCommon.conf` has `RZ_TrackJob` (T, pad
+   Y) in `MenuContext` for the Quests tab's Track. Two
    overrides of vanilla configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf`
    the presets, `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)).
    **UI > Board menus** is on by default, so reading a safehouse board opens its menu; turn it off
@@ -1738,7 +1742,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **118** lines with the tag, all in the game scripts (one is the comment in
+There are **119** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 21 are in `UI/`: 16 of [the UI's](#the-ui-17), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
@@ -1826,12 +1830,13 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (29)
+### Low risk: contained or cosmetic (30)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
+| `Guidance/RZ_Guidance.c:439` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
@@ -1870,16 +1875,16 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:941` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:197` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_UIData.c:955` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_Notebook.c:201` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
-| `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:940` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse opens | Only hover is lost: up/down and a click still open and pin rows |
+| `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
+| `UI/RZ_Notebook.c:957` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse opens | Only hover is lost: up/down and a click still open and pin rows |
 | `UI/RZ_TalkMenu.c:37` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
-| `UI/RZ_UIData.c:964` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:978` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:700` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:182` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
@@ -2669,8 +2674,8 @@ when it happens)
   100: no stand starts and everyone hears the director won't start the synthesis.
 - [ ] **Rule sets** `Winter, Fog` on a fresh season: both are named on first spawn; at night more
   specials; Fog Banks come more often. `No Vehicles`: no fixable cars, no trucks, no Recover the Bus.
-- [ ] The hall of fame shows on first spawn and on the notebook's Hall of fame tab; a delivered sample and a finished
-  mission show up in it.
+- [ ] The hall of fame is in the first spawn's *This season* entry in the Radio tab (no card) and at the
+  bottom of the notebook's The season tab; a delivered sample and a finished mission show up in it.
 - [ ] At a safehouse: "Read the notice board" (empty), `/note Water at the church, bring a bucket`,
   read again: your name and the note. A second note at once is refused; away from a safehouse
   it's refused. With a word in **Note filter**, it's blanked out. As an admin, `/noteclear` clears
@@ -2682,10 +2687,28 @@ when it happens)
 **UI** ([Setting up the UI](#setting-up-the-ui); the spawn screen and map items need its steps 5 and 6)
 - [ ] A Haven channel message shows as an amber card with the speaker; with **Styled notices** off
   they're vanilla hints again.
-- [ ] Spawn: the background card comes first, then the outbreak and the rest one at a time (two
-  cards at most, about 2 s apart); nothing pours in. Get bitten while the welcome cards wait: the
-  bite card shows at once. Wait a minute with cards queued: "+N in your notebook" appears under
-  them, and the notebook's Radio tab lists them (filter Missions and World).
+- [ ] **Spawn: one card, then quiet** ([UI.md](UI.md#notices)). A first spawn and a respawn each show
+  exactly one card, the background's name and where you wake in a line or two ("A cold basement in
+  Morton. ..."); a locked pick adds its line to the same card. Nothing else pops up for the first
+  30 s: "+N in your notebook" counts what went there, and the Radio tab (World) has the perk and
+  goal, the scene, the outbreak, the broadcast, *This season* (one entry with the news and the
+  hall) and *Radio*. For the next five minutes, cards come at most one every 45 s; a card that
+  waited 45 s is gone (into the notebook). Get bitten in the first seconds: the bite card shows at
+  once. Owed errand pay at a join is one *While you were away* entry, no card.
+- [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
+  by a quartermaster (a Favor line), stay out at dusk; never two at once.
+- [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker)): with no job taken there's no box top
+  left. Take a contract (reach it): the box appears small in the top-left corner with its type icon
+  (a real icon, no flat square), the name and CONTRACT, the current objective with a rough area
+  ("Morton, a few km north-west", never metres) and, if known, "Then: ...". Take a second job: the
+  first stays tracked and the second is one dim line under it; with six jobs, four lines and
+  "+2 more in your notebook". A major you haven't taken part in never shows. Crack a secure channel:
+  the box moves down under the radio panel. The map shows the tracked job as a ring, not a pin.
+- [ ] **Quests tab**: every job, taken ones first, each with its objective and rough area and TRACKED,
+  the time left or Offered. Select one: a short brief, who gave it, roughly where, the reward as far
+  as you know, the objectives (current bright, next dim, "Done: ..."). Press Y (pad), T or the TRACK
+  button: the HUD follows it; again on the same job (the button says UNTRACK): the box goes and
+  stays gone until you take a new job. Relog: the same job is still tracked.
 - [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
   other's log (owner-only notices).
 - [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre in olive,
@@ -2802,11 +2825,12 @@ when it happens)
   stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
 - [ ] Cracking a secure channel shows the indicator until the codes change.
 - [ ] N opens the notebook on Journal the first time, then on the tab last used; Q/E and LB/RB go
-  through Standing, Journal, Radio, Hall of fame and The season with real data; up/down move the
-  journal's selection and scroll the other lists; X or F cycles the Radio filter through six
+  through Standing, Journal, Radio, Quests and The season with real data (the Journal has only
+  notes: packs, doors, the finale, promises; The season scrolls down to the hall of fame); up/down
+  move the Journal's and the Quests tab's selection and scroll the other lists; X or F cycles the Radio filter through six
   names; B or Esc closes. With a pad only: Start, Notebook, A opens it; the notebook item taken in
   hand (inventory or quick slot) opens it and is put away when it closes.
-- [ ] A new contract offer shows a count on the Journal tab, a radio message one on Radio; looking
+- [ ] A new contract offer shows a count on the Quests tab, a radio message one on Radio; looking
   at the tab clears it.
 - [ ] With **Board menus** on (the default), reading a board opens the board menu, and typing in
   its box and pressing Pin it up pins the note (the list refreshes); up/down scroll the notes.
@@ -2833,7 +2857,8 @@ when it happens)
   loadout` if a client sends one). After one life as Nurse, its gear lists the Nurse's real gear.
   With a respawn timer, Deploy counts down and then works. With **UI > Spawn row layout** empty,
   vanilla's deploy menu is back.
-- [ ] The tabs, close button, journal rows and radio filter take clicks; the lists scroll.
+- [ ] The tabs, close button, journal and quest rows, the TRACK button and the radio filter take
+  clicks; the lists scroll.
 - [ ] Open the map: the lab, the safehouses, the strongholds and a world event show with their
   icons and stay on their spots while you pan and zoom; an outpost appears after you've been near
   it (or once you're Known with its faction); no contract is ever on it.

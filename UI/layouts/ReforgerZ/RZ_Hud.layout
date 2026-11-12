@@ -693,6 +693,8 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
       Padding 0 0 8 0
      }
      Color 0.886 0.702 0.235 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "tier_watched"
      Size 24 24
     }
     TextWidgetClass "{B0528EDF617394A5}" {
@@ -801,6 +803,390 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
      "Min Font Size" 18
      FontProperties FontProperties "{93EEF49BC6720E6A}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+   }
+  }
+  VerticalLayoutWidgetClass "{CA2339E135F0B12D}" {
+   Name "TrackerPanel"
+   Slot FrameWidgetSlot "{34991A7B815A2788}" {
+    Anchor 0 0 0 0
+    PositionX 24
+    OffsetLeft 24
+    PositionY 24
+    OffsetTop 24
+    SizeX 400
+    OffsetRight -424
+    SizeY 120
+    OffsetBottom -144
+    Alignment 0 0
+    SizeToContent 1
+   }
+   "Is Visible" 0
+   Opacity 0.92
+   {
+    OverlayWidgetClass "{D1A84E2161EBD218}" {
+     Name "TrackerBox"
+     Slot LayoutSlot "{E2D09110BBFAF9DA}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+     }
+     {
+      ImageWidgetClass "{F50C37993FF3F089}" {
+       Name "TrackerBg"
+       Slot OverlayWidgetSlot "{FA4F03229AA36A67}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.047 0.055 0.059 0.72
+       Size 1 1
+      }
+      ImageWidgetClass "{E2830ECB1DA744C1}" {
+       Name "TrackerAccent"
+       Slot OverlayWidgetSlot "{3E546E43C2A572B8}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       Color 0.949 0.761 0.188 1
+       Size 3 1
+      }
+      SizeLayoutWidgetClass "{5AA772736F744C64}" {
+       Name "TrackerWidth"
+       Slot OverlayWidgetSlot "{CB30DAAB2D07E2CE}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 14 8 12 10
+       }
+       AllowWidthOverride 1
+       WidthOverride 374
+       {
+        VerticalLayoutWidgetClass "{8AFCE2E9796A69D3}" {
+         Name "TrackerBody"
+         Slot AlignableSlot "{F71F2F1D351FCA73}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         {
+          HorizontalLayoutWidgetClass "{7E60F8F33B4140C6}" {
+           Name "TrackerHead"
+           Slot LayoutSlot "{6FFB2A5F6E524FD5}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 0 0 4
+           }
+           {
+            ImageWidgetClass "{8508DE5F067CFDF8}" {
+             Name "TrackerIcon"
+             Slot LayoutSlot "{F51A41634DF4A9E1}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 0 0 8 0
+             }
+             Color 0.949 0.761 0.188 1
+             Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+             Image "mission_contract"
+             Size 22 22
+            }
+            TextWidgetClass "{8731F50F17745600}" {
+             Name "TrackerTitle"
+             Slot LayoutSlot "{DCEC557EB0120AFC}" {
+              HorizontalAlign 3
+              VerticalAlign 1
+              Padding 0 0 8 0
+              SizeMode Fill
+              FillWeight 1
+             }
+             Color 0.91 0.886 0.816 1
+             Text "Every Name"
+             "Font Size" 20
+             "Min Font Size" 18
+             FontProperties FontProperties "{3FF5EEF9DC979A26}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+            TextWidgetClass "{1E81DE38AB9EFCF1}" {
+             Name "TrackerKind"
+             Slot LayoutSlot "{BAC2F24A575C9837}" {
+              HorizontalAlign 2
+              VerticalAlign 1
+              Padding 0 0 0 0
+             }
+             Color 0.639 0.62 0.565 1
+             Text "THE SEASON'S STORY"
+             "Font Size" 18
+             "Min Font Size" 18
+             "Horizontal Alignment" Right
+             FontProperties FontProperties "{E9127E5BD6E91BA7}" {
+              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+             }
+            }
+           }
+          }
+          TextWidgetClass "{8A796C12F0C6FE91}" {
+           Name "TrackerNow"
+           Slot LayoutSlot "{1BF3C7FD04368AAE}" {
+            HorizontalAlign 3
+            VerticalAlign 1
+            Padding 30 0 0 2
+           }
+           Color 0.91 0.886 0.816 1
+           Text "Find who keeps the List. (Morton, a few km north-west)"
+           "Font Size" 18
+           "Min Font Size" 18
+           Wrap 1
+           FontProperties FontProperties "{FBA21FAC9F63E318}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{F751440C53C4ACEF}" {
+           Name "TrackerNext"
+           Slot LayoutSlot "{30746A98D94EFDE3}" {
+            HorizontalAlign 3
+            VerticalAlign 1
+            Padding 30 0 0 2
+           }
+           "Is Visible" 0
+           Color 0.639 0.62 0.565 1
+           Text "Then: take it to the council."
+           "Font Size" 18
+           "Min Font Size" 18
+           Wrap 1
+           FontProperties FontProperties "{605F1A1469AE708F}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          VerticalLayoutWidgetClass "{0CDF6F924BB63999}" {
+           Name "TrackerOthers"
+           Slot LayoutSlot "{698ED2D80DF45BE3}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 6 0 0
+           }
+           "Is Visible" 0
+           Opacity 0.75
+           {
+            HorizontalLayoutWidgetClass "{E23D2117BFB0B910}" {
+             Name "TrackerOther1"
+             Slot LayoutSlot "{F5D83848A120BFB4}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+              Padding 0 2 0 0
+             }
+             "Is Visible" 0
+             {
+              ImageWidgetClass "{473F70BFA861D39F}" {
+               Name "TrackerOtherIcon1"
+               Slot LayoutSlot "{6E449D562BC647BA}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+                Padding 4 0 8 0
+               }
+               Color 0.639 0.62 0.565 1
+               Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+               Image "mission_contract"
+               Size 18 18
+              }
+              TextWidgetClass "{33F45B161141EE15}" {
+               Name "TrackerOtherText1"
+               Slot LayoutSlot "{A8518C59A8C18184}" {
+                HorizontalAlign 3
+                VerticalAlign 1
+                Padding 0 0 0 0
+                SizeMode Fill
+                FillWeight 1
+               }
+               Color 0.639 0.62 0.565 1
+               Text "Medicine Run"
+               "Font Size" 18
+               "Min Font Size" 18
+               FontProperties FontProperties "{D95C9F408F4783FF}" {
+                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+               }
+              }
+             }
+            }
+            HorizontalLayoutWidgetClass "{13FABF96C87C94F0}" {
+             Name "TrackerOther2"
+             Slot LayoutSlot "{99C566075631A3D0}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+              Padding 0 2 0 0
+             }
+             "Is Visible" 0
+             {
+              ImageWidgetClass "{43475B3669F6AEEA}" {
+               Name "TrackerOtherIcon2"
+               Slot LayoutSlot "{480AF2203ADDB680}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+                Padding 4 0 8 0
+               }
+               Color 0.639 0.62 0.565 1
+               Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+               Image "mission_contract"
+               Size 18 18
+              }
+              TextWidgetClass "{B7A03DA0385009F8}" {
+               Name "TrackerOtherText2"
+               Slot LayoutSlot "{A68C6034E5B266F2}" {
+                HorizontalAlign 3
+                VerticalAlign 1
+                Padding 0 0 0 0
+                SizeMode Fill
+                FillWeight 1
+               }
+               Color 0.639 0.62 0.565 1
+               Text "Medicine Run"
+               "Font Size" 18
+               "Min Font Size" 18
+               FontProperties FontProperties "{A268700A210E8B8C}" {
+                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+               }
+              }
+             }
+            }
+            HorizontalLayoutWidgetClass "{00FE932FE8E3F71B}" {
+             Name "TrackerOther3"
+             Slot LayoutSlot "{8E5571161FE4753B}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+              Padding 0 2 0 0
+             }
+             "Is Visible" 0
+             {
+              ImageWidgetClass "{3DF95BD1898019E2}" {
+               Name "TrackerOtherIcon3"
+               Slot LayoutSlot "{78EDA8A89AE1BF9F}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+                Padding 4 0 8 0
+               }
+               Color 0.639 0.62 0.565 1
+               Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+               Image "mission_contract"
+               Size 18 18
+              }
+              TextWidgetClass "{7995E550757B6EBB}" {
+               Name "TrackerOtherText3"
+               Slot LayoutSlot "{A70C24B7E6B1B671}" {
+                HorizontalAlign 3
+                VerticalAlign 1
+                Padding 0 0 0 0
+                SizeMode Fill
+                FillWeight 1
+               }
+               Color 0.639 0.62 0.565 1
+               Text "Medicine Run"
+               "Font Size" 18
+               "Min Font Size" 18
+               FontProperties FontProperties "{6DECCA650AC942EF}" {
+                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+               }
+              }
+             }
+            }
+            HorizontalLayoutWidgetClass "{B28E080DB1CD30EA}" {
+             Name "TrackerOther4"
+             Slot LayoutSlot "{DC28C464249914A8}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+              Padding 0 2 0 0
+             }
+             "Is Visible" 0
+             {
+              ImageWidgetClass "{47CC3F26CBBC90CB}" {
+               Name "TrackerOtherIcon4"
+               Slot LayoutSlot "{1BEB0449A65FB680}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+                Padding 4 0 8 0
+               }
+               Color 0.639 0.62 0.565 1
+               Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+               Image "mission_contract"
+               Size 18 18
+              }
+              TextWidgetClass "{10A6A8538F708533}" {
+               Name "TrackerOtherText4"
+               Slot LayoutSlot "{211F44626BC739A0}" {
+                HorizontalAlign 3
+                VerticalAlign 1
+                Padding 0 0 0 0
+                SizeMode Fill
+                FillWeight 1
+               }
+               Color 0.639 0.62 0.565 1
+               Text "Medicine Run"
+               "Font Size" 18
+               "Min Font Size" 18
+               FontProperties FontProperties "{213313E7782CF853}" {
+                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+               }
+              }
+             }
+            }
+            HorizontalLayoutWidgetClass "{DEB387D23C4E28D7}" {
+             Name "TrackerOther5"
+             Slot LayoutSlot "{A9B42434AD9AEBFD}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+              Padding 0 2 0 0
+             }
+             "Is Visible" 0
+             {
+              ImageWidgetClass "{B9C2FCFA7A08478C}" {
+               Name "TrackerOtherIcon5"
+               Slot LayoutSlot "{E270A63F2C3BEA41}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+                Padding 4 0 8 0
+               }
+               Color 0.639 0.62 0.565 1
+               Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+               Image "mission_contract"
+               Size 18 18
+              }
+              TextWidgetClass "{24A3EEFA877D6211}" {
+               Name "TrackerOtherText5"
+               Slot LayoutSlot "{19B91E1DB608A2E2}" {
+                HorizontalAlign 3
+                VerticalAlign 1
+                Padding 0 0 0 0
+                SizeMode Fill
+                FillWeight 1
+               }
+               Color 0.639 0.62 0.565 1
+               Text "Medicine Run"
+               "Font Size" 18
+               "Min Font Size" 18
+               FontProperties FontProperties "{8B3492F213E6D36A}" {
+                Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+               }
+              }
+             }
+            }
+           }
+          }
+          TextWidgetClass "{252C1FF9AC9017DC}" {
+           Name "TrackerMore"
+           Slot LayoutSlot "{062F73D5DC744C22}" {
+            HorizontalAlign 3
+            VerticalAlign 1
+            Padding 30 2 0 0
+           }
+           "Is Visible" 0
+           Color 0.639 0.62 0.565 1
+           Text "+2 more in your notebook"
+           "Font Size" 18
+           "Min Font Size" 18
+           FontProperties FontProperties "{56A337203FA9A01E}" {
+            Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
      }
     }
    }

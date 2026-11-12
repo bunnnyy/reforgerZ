@@ -1,0 +1,713 @@
+//! Jobs as the player follows them (docs/UI.md, "The quest tracker" and "Notebook: Quests"): each job's
+//! objectives, a rough area instead of metres, and the one job the player tracks.
+//!
+//! Server side: RZ_QuestTracker (held by RZ_UIFeed) keeps each player's tracked job (saved on the
+//! profile), the order they took their jobs in, and sends the HUD's tracker payload when it
+//! changes (owner-only, on the UI feed's tick, every TRACK_SECONDS). The client draws it top left
+//! (RZ_HudDisplay.DrawTracker) and lists the jobs in the notebook's Quests tab (RZ_QuestsPage).
+//!
+//! Objectives come from the job itself: a mission's GetObjectives (its own steps, or the
+//! framework's default), a questline's GetObjectives (its stages), an errand's way. A step shows
+//! only once the player has learned of it: nothing hidden, no placeholders.
+
+//------------------------------------------------------------------------------------------------
+//! One objective's state, New Vegas style: the current one bright, the known next one dim, the
+//! done ones ticked.
+enum RZ_EObjState
+{
+	CURRENT,
+	NEXT,
+	DONE,
+	OPTIONAL,
+	FAILED
+}
+
+//------------------------------------------------------------------------------------------------
+//! A job's objectives, in order.
+class RZ_ObjList
+{
+	static const int MAX = 8;
+
+	ref array<string> m_aLines = {};
+	ref array<int> m_aStates = {};
+
+	//------------------------------------------------------------------------------------------------
+	void Add(string text, int state)
+	{
+		string t = text.Trim();
+		if (t.IsEmpty() || m_aLines.Count() >= MAX || m_aLines.Contains(t))
+			return;
+
+		m_aLines.Insert(t);
+		m_aStates.Insert(state);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The first line in `state`, "" if none.
+	string First(int state)
+	{
+		foreach (int i, string line : m_aLines)
+		{
+			if (m_aStates[i] == state)
+				return line;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsEmpty()
+	{
+		return m_aLines.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Copies the current and next lines of another list (a questline's stage mission).
+	void TakeOpen(RZ_ObjList other)
+	{
+		foreach (int i, string line : other.m_aLines)
+		{
+			int st = other.m_aStates[i];
+			if (st == RZ_EObjState.CURRENT || st == RZ_EObjState.NEXT || st == RZ_EObjState.OPTIONAL)
+				Add(line, st);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Text helpers for jobs: rough areas (never metres), short briefs, objective lines.
+class RZ_QuestText
+{
+	//------------------------------------------------------------------------------------------------
+	//! "Morton, a few km north-west", "East of Levie, under a km south", "Close by". Bands: close
+	//! by (under 150 m), under a km, a few km (under 4 km), far off. The nearest settlement names
+	//! the place; never metres (docs/UI.md, "The quest tracker").
+	static string RoughArea(RZ_GameModeComponent gm, vector from, vector to)
+	{
+		if (!gm || to == vector.Zero)
+			return "";
+
+		string town = "";
+		string side = "";
+		RZ_Settlement s = gm.GetSettlement(gm.FindNearestSettlement(to));
+		if (s)
+		{
+			town = s.m_sName;
+			if (RZ_Util.DistXZ(s.m_vCenter, to) > s.m_fRadius + 150)
+				side = RZ_Compass.DirectionWord(RZ_Compass.Bearing(s.m_vCenter, to));
+		}
+
+		string place = town;
+		if (!side.IsEmpty())
+			place = Cap(side) + " of " + town;
+
+		if (from == vector.Zero)
+			return place;
+
+		float dist = RZ_Util.DistXZ(from, to);
+		if (dist < 150)
+		{
+			if (place.IsEmpty())
+				return "Close by";
+
+			return place + ", close by";
+		}
+
+		string band = "far off";
+		if (dist < 1000)
+			band = "under a km";
+		else if (dist < 4000)
+			band = "a few km";
+
+		string way = RZ_Compass.DirectionWord(RZ_Compass.Bearing(from, to));
+		if (place.IsEmpty())
+			return Cap(band + " " + way);
+
+		return string.Format("%1, %2 %3", place, band, way);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spawn card's line without a scenario: "You come to near Morton."
+	static string SpawnWhere(RZ_GameModeComponent gm, vector pos)
+	{
+		RZ_Settlement s = gm.GetSettlement(gm.FindNearestSettlement(pos));
+		if (!s)
+			return "You come to in the open, nobody in sight.";
+
+		if (RZ_Util.DistXZ(s.m_vCenter, pos) <= s.m_fRadius)
+			return string.Format("You come to in %1.", s.m_sName);
+
+		string side = RZ_Compass.DirectionWord(RZ_Compass.Bearing(s.m_vCenter, pos));
+		return string.Format("You come to %1 of %2.", side, s.m_sName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What kind of job, for the tracker's tag and the Quests tab ("The season's story").
+	static string KindLabel(int kind, bool major)
+	{
+		switch (kind)
+		{
+			case RZ_EMissionKindUI.CONTRACT: return "Contract";
+			case RZ_EMissionKindUI.EVENT: return "World event";
+			case RZ_EMissionKindUI.PUZZLE: return "Puzzle";
+			case RZ_EMissionKindUI.LEADER: return "Leader's job";
+			case RZ_EMissionKindUI.UNARMED: return "Job";
+			case RZ_EMissionKindUI.PERIMETER: return "The Perimeter";
+			case RZ_EMissionKindUI.ARC: return "Story";
+			case RZ_EMissionKindUI.ERRAND: return "Errand";
+			case RZ_EMissionKindUI.FINALE: return "The finale";
+			case RZ_EMissionKindUI.PACK: return "A pack";
+			case RZ_EMissionKindUI.DOORS: return "Doors";
+		}
+
+		if (major)
+			return "The season's story";
+
+		return "Questline";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Up to three sentences and about `maxChars`, cut at a sentence's end: the Quests tab's brief.
+	static string Short(string text, int maxChars = 480)
+	{
+		string t = text.Trim();
+		if (t.Length() <= maxChars)
+			return t;
+
+		int cut = -1;
+		for (int i = maxChars - 1; i > 40; i--)
+		{
+			string ch = t.Get(i);
+			if (ch == "." || ch == "!" || ch == "?")
+			{
+				cut = i;
+				break;
+			}
+		}
+
+		if (cut < 0)
+			return t.Substring(0, maxChars).Trim() + "...";
+
+		return t.Substring(0, cut + 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ask in a brief: the last sentence that starts with a verb telling you what to do
+	//! ("Secure it and hold the area for a minute."), else "".
+	static string AskIn(string brief)
+	{
+		string t = brief;
+		t.Replace("\"", " ");
+		t.Replace("\n", " ");
+		array<string> parts = {};
+		SplitSentences(t, parts);
+		for (int i = parts.Count() - 1; i >= 0; i--)
+		{
+			string sentence = parts[i].Trim();
+			if (sentence.Length() < 6 || sentence.Length() > 120)
+				continue;
+
+			int space = sentence.IndexOf(" ");
+			if (space <= 0)
+				continue;
+
+			string verb = sentence.Substring(0, space);
+			verb.ToLower();
+			verb.Replace(",", "");
+			if (VERBS.Contains(" " + verb + " "))
+				return sentence;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void SplitSentences(string text, notnull array<string> result)
+	{
+		int start = 0;
+		int n = text.Length();
+		for (int i = 0; i < n; i++)
+		{
+			string ch = text.Get(i);
+			if (ch != "." && ch != "!" && ch != "?")
+				continue;
+
+			result.Insert(text.Substring(start, i - start + 1));
+			start = i + 1;
+		}
+
+		if (start < n)
+			result.Insert(text.Substring(start, n - start));
+	}
+
+	//! Verbs that start an ask, space-separated with a space at each end.
+	protected static const string VERBS = " bring take find get secure hold kill clear walk escort deliver search reach go meet talk speak collect recover destroy burn protect defend carry return fix repair mark plant check follow lead help save rescue stop keep put leave read fetch pick gather scout watch remind tell ask pay move clean bury dig drive hand drop light set open break cut count sit stay wait listen look visit warn ring raise lower hunt track ";
+
+	//------------------------------------------------------------------------------------------------
+	static string Cap(string text)
+	{
+		if (text.IsEmpty())
+			return text;
+
+		string first = text.Substring(0, 1);
+		first.ToUpper();
+		return first + text.Substring(1, text.Length() - 1);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! One job a player has, for the tracker and its order.
+class RZ_QuestJob
+{
+	int m_iId;
+	int m_iKind;
+	int m_iGiver = -1;
+	string m_sTitle;
+	bool m_bMajor;
+	bool m_bTaken;
+	int m_iMinutes = -1;
+	bool m_bHasPlace;
+	vector m_vPlace;		// where the job points this player now (a rough centre while rough)
+	float m_fRadius;		// the map's area ring
+}
+
+//------------------------------------------------------------------------------------------------
+//! Server: per player, the order they took their jobs in and what the tracker last sent.
+class RZ_TrackState
+{
+	ref array<int> m_aTakenOrder = {};
+	bool m_bPrimed;			// the jobs taken before the first look don't count as newly taken
+	string m_sSent = "-";
+	float m_fTimer;
+}
+
+//------------------------------------------------------------------------------------------------
+//! Server: the tracked job and the HUD's tracker (docs/UI.md, "The quest tracker").
+class RZ_QuestTracker
+{
+	static const float TRACK_SECONDS = 2;
+	static const int OTHERS_SENT = 20;		// the client shows a few and "+N more"
+	static const float AREA_RING = 300;	// the map's ring round a tracked job's place (m)
+
+	protected RZ_GameModeComponent m_GM;
+	protected ref map<int, ref RZ_TrackState> m_mStates = new map<int, ref RZ_TrackState>();
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_QuestTracker(RZ_GameModeComponent gm)
+	{
+		m_GM = gm;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_TrackState State(int playerId)
+	{
+		RZ_TrackState st;
+		if (!m_mStates.Find(playerId, st))
+		{
+			st = new RZ_TrackState();
+			m_mStates.Set(playerId, st);
+		}
+
+		return st;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A new life or a join: the tracker is sent fresh.
+	void Reset(int playerId)
+	{
+		State(playerId).m_sSent = "-";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tracked job's row id, 0 for none.
+	int TrackedFor(int playerId)
+	{
+		return m_GM.GetProfile(playerId).m_iTrackedId;
+	}
+
+	// ================================================================ Jobs
+	//------------------------------------------------------------------------------------------------
+	//! Every job this player has: missions and contracts they see, the questlines they're part of
+	//! (a major only once they took part), the errands they hold.
+	void Jobs(int playerId, IEntity ent, notnull array<ref RZ_QuestJob> result)
+	{
+		vector from = vector.Zero;
+		if (ent)
+			from = ent.GetOrigin();
+
+		RZ_MissionManager mm = m_GM.GetMissions();
+		if (mm)
+		{
+			array<RZ_Mission> list = {};
+			mm.ListFor(playerId, list);
+			foreach (RZ_Mission m : list)
+			{
+				RZ_QuestJob j = new RZ_QuestJob();
+				j.m_iId = m.m_iId;
+				j.m_iKind = RZ_UIFeed.MissionKind(m);
+				if (m.m_bHasGiver)
+					j.m_iGiver = m.m_Req.m_eGiver;
+
+				j.m_sTitle = m.m_sTitle;
+				j.m_bTaken = m.m_aParticipants.Contains(playerId);
+				j.m_iMinutes = RZ_Util.RoundToInt(m.m_fTimeLeft / 60);
+				j.m_bHasPlace = !m.m_bGlobal;
+				j.m_vPlace = m.GetAreaFor(m_GM, playerId, from);
+				j.m_fRadius = Math.Max(AREA_RING, m.GetAreaRadius(m_GM));
+				result.Insert(j);
+			}
+		}
+
+		RZ_Questlines q = m_GM.GetQuestlines();
+		if (q && q.IsEnabled())
+		{
+			foreach (RZ_QuestRun run : q.GetRuns())
+			{
+				if (!q.IsVisibleTo(run, playerId))
+					continue;
+
+				bool took = run.PlayerTookPart(m_GM, playerId);
+				RZ_Mission stageMission = null;
+				if (mm)
+					stageMission = mm.FindById(run.m_iMissionId);
+
+				if (stageMission && stageMission.m_aParticipants.Contains(playerId))
+					took = true;
+
+				// The majors are everyone's season story (the Season tab): a job once you took part
+				if (run.m_Line.IsMajor() && !took)
+					continue;
+
+				RZ_QuestJob jq = new RZ_QuestJob();
+				jq.m_iId = -run.m_iId;
+				jq.m_iKind = RZ_EMissionKindUI.QUESTLINE;
+				jq.m_iGiver = run.m_Line.m_iFaction;
+				jq.m_sTitle = run.m_Line.m_sTitle;
+				jq.m_bMajor = run.m_Line.IsMajor();
+				jq.m_bTaken = took;
+				jq.m_bHasPlace = run.m_bHasPlace;
+				jq.m_vPlace = run.m_vPlace;
+				jq.m_fRadius = AREA_RING;
+				result.Insert(jq);
+			}
+		}
+
+		RZ_Errands errands = m_GM.GetErrands();
+		if (errands)
+		{
+			array<RZ_Errand> held = {};
+			errands.ForJournal(playerId, held);
+			foreach (RZ_Errand e : held)
+			{
+				RZ_QuestJob je = new RZ_QuestJob();
+				je.m_iId = -(RZ_UIFeed.ERRAND_ID_BASE + e.m_iId);
+				je.m_iKind = RZ_EMissionKindUI.ERRAND;
+				je.m_iGiver = e.m_iFaction;
+				je.m_sTitle = e.Fill(e.m_Def.m_sTitle);
+				je.m_bTaken = true;
+				je.m_iMinutes = errands.MinutesLeft(e);
+				je.m_bHasPlace = true;
+				je.m_vPlace = e.m_vPlace;
+				if (e.m_bStepDone)
+					je.m_vPlace = e.m_vGiver;
+
+				je.m_fRadius = AREA_RING;
+				result.Insert(je);
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static RZ_QuestJob FindJob(array<ref RZ_QuestJob> jobs, int id)
+	{
+		foreach (RZ_QuestJob j : jobs)
+		{
+			if (j.m_iId == id)
+				return j;
+		}
+
+		return null;
+	}
+
+	// ================================================================ Objectives
+	//------------------------------------------------------------------------------------------------
+	//! The objectives of one of this player's jobs, by its row id (a mission's id, -run id for a
+	//! questline, -(errand base + id) for an errand). Only what the player has learned.
+	void Objectives(int playerId, int id, vector from, notnull RZ_ObjList list)
+	{
+		if (id > 0)
+		{
+			RZ_Mission m = null;
+			if (m_GM.GetMissions())
+				m = m_GM.GetMissions().FindById(id);
+
+			if (m)
+				m.GetObjectives(m_GM, playerId, from, list);
+
+			return;
+		}
+
+		if (id <= -RZ_UIFeed.ERRAND_ID_BASE && id > -RZ_UIFeed.TRIBE_ID_BASE)
+		{
+			ErrandObjectives(playerId, -id - RZ_UIFeed.ERRAND_ID_BASE, list);
+			return;
+		}
+
+		RZ_Questlines q = m_GM.GetQuestlines();
+		if (!q || id >= 0 || id <= -RZ_UIFeed.ERRAND_ID_BASE)
+			return;
+
+		foreach (RZ_QuestRun run : q.GetRuns())
+		{
+			if (run.m_iId == -id && q.IsVisibleTo(run, playerId))
+			{
+				run.m_Line.GetObjectives(m_GM, run, playerId, from, list);
+				return;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An errand: the step you agreed to, then back to the giver (they told you both).
+	protected void ErrandObjectives(int playerId, int errandId, RZ_ObjList list)
+	{
+		RZ_Errands errands = m_GM.GetErrands();
+		if (!errands)
+			return;
+
+		RZ_Errand e = errands.FindById(errandId);
+		if (!e || e.m_iAsker != playerId)
+			return;
+
+		RZ_ErrandWay w = e.GetWay();
+		string step = "";
+		if (w)
+			step = e.Fill(w.m_sStep);
+
+		string back = e.Fill("Go back to {giver}.");
+		if (e.m_bStepDone)
+		{
+			list.Add(step, RZ_EObjState.DONE);
+			list.Add(back, RZ_EObjState.CURRENT);
+			return;
+		}
+
+		list.Add(step, RZ_EObjState.CURRENT);
+		list.Add(back, RZ_EObjState.NEXT);
+	}
+
+	// ================================================================ Tracking
+	//------------------------------------------------------------------------------------------------
+	//! Track picked in the Quests tab: that job is followed; the same one again stops it.
+	void Toggle(int playerId, int id)
+	{
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		array<ref RZ_QuestJob> jobs = {};
+		Jobs(playerId, ent, jobs);
+		RZ_QuestJob j = FindJob(jobs, id);
+		if (!j || p.m_iTrackedId == id)
+		{
+			p.m_iTrackedId = 0;
+			p.m_sTrackedTitle = "";
+			p.m_bTrackOff = true;
+		}
+		else
+		{
+			p.m_iTrackedId = id;
+			p.m_sTrackedTitle = j.m_sTitle;
+			p.m_bTrackOff = false;
+		}
+
+		Push(playerId, ent, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From the UI feed's tick.
+	void Tick(float dt, array<int> ids, array<IEntity> players)
+	{
+		foreach (int i, IEntity ent : players)
+		{
+			int playerId = ids[i];
+			RZ_TrackState st = State(playerId);
+			st.m_fTimer -= dt;
+			if (st.m_fTimer > 0)
+				continue;
+
+			st.m_fTimer = TRACK_SECONDS;
+			Push(playerId, ent, false);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the tracked job valid (a newly taken job is tracked if nothing is; one that ended
+	//! falls back to the newest taken, unless the player untracked on purpose) and sends the
+	//! tracker if it changed.
+	protected void Push(int playerId, IEntity ent, bool force)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (!ui)
+			return;
+
+		RZ_TrackState st = State(playerId);
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		array<ref RZ_QuestJob> jobs = {};
+		Jobs(playerId, ent, jobs);
+
+		// The order they were taken in, newest last
+		int newest = 0;
+		foreach (RZ_QuestJob j : jobs)
+		{
+			if (j.m_bTaken && !st.m_aTakenOrder.Contains(j.m_iId))
+			{
+				st.m_aTakenOrder.Insert(j.m_iId);
+				if (st.m_bPrimed)
+					newest = j.m_iId;
+			}
+		}
+
+		st.m_bPrimed = true;
+
+		for (int k = st.m_aTakenOrder.Count() - 1; k >= 0; k--)
+		{
+			RZ_QuestJob still = FindJob(jobs, st.m_aTakenOrder[k]);
+			if (!still || !still.m_bTaken)
+				st.m_aTakenOrder.Remove(k);
+		}
+
+		// A saved choice from an earlier session: the same job by its title
+		RZ_QuestJob tracked = FindJob(jobs, p.m_iTrackedId);
+		if (!tracked && p.m_iTrackedId != 0 && !p.m_sTrackedTitle.IsEmpty())
+		{
+			foreach (RZ_QuestJob byTitle : jobs)
+			{
+				if (byTitle.m_sTitle == p.m_sTrackedTitle)
+				{
+					tracked = byTitle;
+					p.m_iTrackedId = byTitle.m_iId;
+					break;
+				}
+			}
+		}
+
+		if (newest != 0 && (!tracked || p.m_bTrackOff))
+		{
+			tracked = FindJob(jobs, newest);
+			p.m_bTrackOff = false;
+		}
+		else if (!tracked && !p.m_bTrackOff && !st.m_aTakenOrder.IsEmpty())
+		{
+			tracked = FindJob(jobs, st.m_aTakenOrder[st.m_aTakenOrder.Count() - 1]);
+		}
+
+		if (p.m_bTrackOff)
+			tracked = null;
+
+		if (tracked)
+		{
+			p.m_iTrackedId = tracked.m_iId;
+			p.m_sTrackedTitle = tracked.m_sTitle;
+		}
+		else
+		{
+			p.m_iTrackedId = 0;
+		}
+
+		string payload = Build(playerId, ent, jobs, tracked, st);
+		if (!force && payload == st.m_sSent)
+			return;
+
+		st.m_sSent = payload;
+		ui.SendPayload(RZ_UIFeed.PAYLOAD_TRACKER, payload);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! T|id|kind|giver|title|kind label|rough area
+	//! O|state|line (the tracked job's current objective and the known next one)
+	//! A|id|kind|giver|title|minutes left (every other job taken: running out first, then newest)
+	//! "" when nothing is tracked: the box hides.
+	protected string Build(int playerId, IEntity ent, array<ref RZ_QuestJob> jobs, RZ_QuestJob tracked, RZ_TrackState st)
+	{
+		if (!tracked)
+			return "";
+
+		vector from = vector.Zero;
+		if (ent)
+			from = ent.GetOrigin();
+
+		string area = "";
+		if (tracked.m_bHasPlace)
+			area = RZ_QuestText.RoughArea(m_GM, from, tracked.m_vPlace);
+
+		RZ_UILine lnT = new RZ_UILine("T");
+		string s = lnT.AddInt(tracked.m_iId).AddInt(tracked.m_iKind).AddInt(tracked.m_iGiver).Add(tracked.m_sTitle).Add(RZ_QuestText.KindLabel(tracked.m_iKind, tracked.m_bMajor)).Add(area).End();
+
+		RZ_ObjList list = new RZ_ObjList();
+		Objectives(playerId, tracked.m_iId, from, list);
+		string now = list.First(RZ_EObjState.CURRENT);
+		string next = list.First(RZ_EObjState.NEXT);
+		if (now.IsEmpty())
+			now = tracked.m_sTitle;
+
+		RZ_UILine lnNow = new RZ_UILine("O");
+		s += lnNow.AddInt(RZ_EObjState.CURRENT).Add(now).End();
+		if (!next.IsEmpty())
+		{
+			RZ_UILine lnNext = new RZ_UILine("O");
+			s += lnNext.AddInt(RZ_EObjState.NEXT).Add(next).End();
+		}
+
+		// The others taken: running out of time first (under 10 minutes), then newest first
+		array<RZ_QuestJob> others = {};
+		for (int k = st.m_aTakenOrder.Count() - 1; k >= 0; k--)
+		{
+			RZ_QuestJob o = FindJob(jobs, st.m_aTakenOrder[k]);
+			if (o && o.m_iId != tracked.m_iId)
+				others.Insert(o);
+		}
+
+		array<RZ_QuestJob> ordered = {};
+		foreach (RZ_QuestJob urgent : others)
+		{
+			if (urgent.m_iMinutes >= 0 && urgent.m_iMinutes < 10)
+				ordered.Insert(urgent);
+		}
+
+		foreach (RZ_QuestJob rest : others)
+		{
+			if (!ordered.Contains(rest))
+				ordered.Insert(rest);
+		}
+
+		foreach (int n, RZ_QuestJob a : ordered)
+		{
+			if (n >= OTHERS_SENT)
+				break;
+
+			RZ_UILine lnA = new RZ_UILine("A");
+			s += lnA.AddInt(a.m_iId).AddInt(a.m_iKind).AddInt(a.m_iGiver).Add(a.m_sTitle).AddInt(a.m_iMinutes).End();
+		}
+
+		return s;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map's area ring for the tracked job: P|marker_range|faction|x|z|label|radius, "" if
+	//! nothing is tracked or it has no place. Never a pin on the spot.
+	string MapRing(int playerId)
+	{
+		int id = TrackedFor(playerId);
+		if (id == 0)
+			return "";
+
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		array<ref RZ_QuestJob> jobs = {};
+		Jobs(playerId, ent, jobs);
+		RZ_QuestJob j = FindJob(jobs, id);
+		if (!j || !j.m_bHasPlace || j.m_vPlace == vector.Zero)
+			return "";
+
+		RZ_UILine ln = new RZ_UILine("P");
+		return ln.Add("marker_range").AddInt(j.m_iGiver).AddInt(RZ_Util.RoundToInt(j.m_vPlace[0])).AddInt(RZ_Util.RoundToInt(j.m_vPlace[2])).Add(j.m_sTitle).AddInt(RZ_Util.RoundToInt(j.m_fRadius)).End();
+	}
+}

@@ -1,6 +1,7 @@
 //! The ReforgerZ HUD (docs/UI.md, "HUD"): the infection timer with its stages and the golden
 //! window, the secure-radio indicator, a subtle noise meter with how visible you are above it
-//! (Stealth on), and the styled notice cards.
+//! (Stealth on), the quest tracker top left (the tracked job and the others you've taken), and the
+//! styled notice cards.
 //!
 //! An SCR_InfoDisplay: add it to the HUD manager's info displays on the player controller and
 //! give it the layout from UI/LAYOUTS.md ("HUD"). It reads only RZ_PlayerUIComponent's client
@@ -47,6 +48,11 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected ref array<ref RZ_QueuedSubtitle> m_aSubs = {};
 	protected float m_fSubUntil = -1;		// the line showing stays until then; -1 none showing
 	protected static const int SUB_WAITING = 4;
+	protected static const int TRACK_OTHERS = 4;	// collapsed lines under the tracked job, then "+N more"
+	protected static const float TRACK_X = 24;		// the tracker's place, tucked into the top-left corner
+	protected static const float TRACK_Y = 24;
+	protected static const float TRACK_Y_RADIO = 126;	// below the secure-radio panel while it shows
+	protected int m_iTrackerDrawn = -1;
 	protected static const int SUB_CHARS = 130;	// about two lines at 32 px in 1,044 units
 
 	//------------------------------------------------------------------------------------------------
@@ -116,9 +122,11 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			DrawNoise(ui, settings);
 			DrawStand(ui);
 			DrawLook(ui);
+			DrawTracker(ui);
 		}
 		else
 		{
+			RZ_UIW.Show(m_wRoot, "TrackerPanel", false);
 			RZ_UIW.Show(m_wRoot, "StandPanel", false);
 			RZ_UIW.Show(m_wRoot, "LookPanel", false);
 			RZ_UIW.Show(m_wRoot, "InfectionPanel", false);
@@ -277,6 +285,99 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The quest tracker (docs/UI.md, "The quest tracker"), top left, owner-only: the tracked job's
+	//! type icon, name and kind, its current objective with the rough area, the known next one, then
+	//! every other job taken as one dim line each (at most TRACK_OTHERS, then "+N more"). Hidden
+	//! while nothing is tracked. Redrawn only when the server sends a new copy; a layout without
+	//! TrackerPanel shows nothing.
+	protected void DrawTracker(RZ_PlayerUIComponent ui)
+	{
+		Widget panel = RZ_UIW.Find(m_wRoot, "TrackerPanel");
+		if (!panel)
+			return;
+
+		// Below the secure-radio panel while it shows, so they never overlap
+		float y = TRACK_Y;
+		if (ui.GetListenFaction() >= 0)
+			y = TRACK_Y_RADIO;
+
+		RZ_UIW.SetPos(panel, TRACK_X, y);
+
+		int version = ui.GetTrackerVersion();
+		if (version == m_iTrackerDrawn)
+			return;
+
+		m_iTrackerDrawn = version;
+		array<ref array<string>> recs = {};
+		RZ_MenuBase.Records(ui.GetTracker(), recs);
+		array<string> head = null;
+		string now = "";
+		string next = "";
+		array<ref array<string>> others = {};
+		foreach (array<string> f : recs)
+		{
+			string tag = RZ_UIText.Str(f, 0);
+			if (tag == "T")
+				head = f;
+			else if (tag == "A")
+				others.Insert(f);
+			else if (tag == "O" && RZ_UIText.Int(f, 1) == RZ_EObjState.CURRENT && now.IsEmpty())
+				now = RZ_UIText.Str(f, 2);
+			else if (tag == "O" && RZ_UIText.Int(f, 1) == RZ_EObjState.NEXT && next.IsEmpty())
+				next = RZ_UIText.Str(f, 2);
+		}
+
+		RZ_UIW.Show(m_wRoot, "TrackerPanel", head != null);
+		if (!head)
+			return;
+
+		int giver = RZ_UIText.Int(head, 3);
+		Color accent = RZ_UIColor.Hazard();
+		if (giver >= 0)
+			accent = RZ_UIColor.Faction(giver);
+
+		string kind = RZ_UIText.Str(head, 5);
+		kind.ToUpper();
+		RZ_UIW.Icon(m_wRoot, "TrackerIcon", RZ_UIText.MissionIcon(RZ_UIText.Int(head, 2)));
+		RZ_UIW.Tint(m_wRoot, "TrackerIcon", accent);
+		RZ_UIW.Tint(m_wRoot, "TrackerAccent", accent);
+		RZ_UIW.SetText(m_wRoot, "TrackerTitle", RZ_UIText.Str(head, 4));
+		RZ_UIW.SetText(m_wRoot, "TrackerKind", kind);
+
+		// The rough area goes with the current objective only: never metres
+		string area = RZ_UIText.Str(head, 6);
+		if (!area.IsEmpty())
+			now = string.Format("%1 (%2)", now, area);
+
+		RZ_UIW.SetText(m_wRoot, "TrackerNow", now);
+		RZ_UIW.Show(m_wRoot, "TrackerNext", !next.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "TrackerNext", "Then: " + next);
+
+		RZ_UIW.Show(m_wRoot, "TrackerOthers", !others.IsEmpty());
+		for (int i = 1; i <= TRACK_OTHERS + 1; i++)
+		{
+			string n = i.ToString();
+			bool shown = i <= TRACK_OTHERS && i <= others.Count();
+			RZ_UIW.Show(m_wRoot, "TrackerOther" + n, shown);
+			if (!shown)
+				continue;
+
+			array<string> o = others[i - 1];
+			RZ_UIW.Icon(m_wRoot, "TrackerOtherIcon" + n, RZ_UIText.MissionIcon(RZ_UIText.Int(o, 2)));
+			string line = RZ_UIText.Str(o, 4);
+			int minutes = RZ_UIText.Int(o, 5);
+			if (minutes >= 0 && minutes < 10)
+				line += string.Format(" (%1 min left)", minutes);
+
+			RZ_UIW.SetText(m_wRoot, "TrackerOtherText" + n, line);
+		}
+
+		int more = others.Count() - TRACK_OTHERS;
+		RZ_UIW.Show(m_wRoot, "TrackerMore", more > 0);
+		RZ_UIW.SetText(m_wRoot, "TrackerMore", string.Format("+%1 more in your notebook", more));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! How visible you are (Stealth, docs/DESIGN.md), above the noise meter: five segments and a
 	//! word. Not shown with Stealth off (the server never sends it).
 	protected void DrawSeen(RZ_PlayerUIComponent ui)
@@ -334,6 +435,14 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A quiet notice went into the notebook without a card: the line under the cards counts it.
+	static void NoteQuiet()
+	{
+		if (s_Instance)
+			s_Instance.m_iToNotebook++;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The notebook was opened: what went there unseen has been seen.
 	static void ClearNotebookCount()
 	{
@@ -387,9 +496,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 	//------------------------------------------------------------------------------------------------
 	//! A few at a time, by importance (docs/UI.md, "Notices"): at most Notice cards at once, a new
-	//! one at most every Gap seconds; urgent ones skip the gap and may cut the least important card
-	//! short; low and normal ones the Radio tab lists drop out after Wait seconds (counted as "+N in
-	//! your notebook"); for Calm seconds after a new life only urgent and high ones show.
+	//! one at most every Gap seconds (First minutes gap in a life's first minutes); urgent ones skip
+	//! the gap and may cut the least important card short; one that isn't urgent and waits past Wait
+	//! seconds is stale and goes to the notebook only ("+N in your notebook") or is dropped. The quiet
+	//! start is RZ_GameModeComponent.QueueHint's: those notices never reach the queue.
 	protected void DrawNotices(RZ_UISettings settings)
 	{
 		float now = RZ_UIW.Now();
@@ -418,15 +528,18 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			m_iToNotebook = 0;
 		}
 
-		// Waited too long: it's in the notebook already
+		// Waited too long: stale, so no card. A notice the notebook lists is there already; the
+		// rest are dropped (docs/UI.md, "Notices")
 		float wait = Math.Max(5, settings.m_fNoticeWait);
 		for (int w = m_aQueue.Count() - 1; w >= 0; w--)
 		{
 			RZ_NoticeStyle st = m_aQueue[w].m_Style;
-			if (st.m_iPriority <= RZ_ENoticePriority.NORMAL && st.IsLogged() && now - m_aQueue[w].m_fAt > wait)
+			if (st.m_iPriority < RZ_ENoticePriority.URGENT && now - m_aQueue[w].m_fAt > wait)
 			{
+				if (st.IsLogged())
+					m_iToNotebook++;
+
 				m_aQueue.RemoveOrdered(w);
-				m_iToNotebook++;
 			}
 		}
 
@@ -447,15 +560,16 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 				RemoveCard(lowest);
 		}
 
-		bool calm = lifeAt >= 0 && now - lifeAt < settings.m_fNoticeCalm;
+		// The first minutes of a life: one card at most every First minutes gap (urgent ones don't wait)
+		float gap = settings.m_fNoticeGap;
+		if (lifeAt >= 0 && now - lifeAt < settings.m_fNoticeEarly)
+			gap = Math.Max(gap, settings.m_fNoticeEarlyGap);
+
 		while (stack && !m_aQueue.IsEmpty() && m_aCards.Count() < maxCards)
 		{
 			RZ_QueuedNotice q = m_aQueue[0];
 			int qp = q.m_Style.m_iPriority;
-			if (calm && qp < RZ_ENoticePriority.HIGH)
-				break;
-
-			if (qp < RZ_ENoticePriority.URGENT && now - m_fLastCardAt < settings.m_fNoticeGap)
+			if (qp < RZ_ENoticePriority.URGENT && !q.m_Style.m_bSpawn && now - m_fLastCardAt < gap)
 				break;
 
 			m_aQueue.RemoveOrdered(0);

@@ -21,6 +21,11 @@ class RZ_PlayerProfile
 	int m_iGuideLastScenario = -1;		// the last spawn scenario, so the next one differs
 	ref array<string> m_aGuideSeen = {};	// once-only tips already given
 
+	// The quest tracker (UI/RZ_Quests.c): the job this player follows, kept across relogs
+	int m_iTrackedId;					// its journal row id, 0 = none
+	string m_sTrackedTitle;				// its title, to find it again after a restart
+	bool m_bTrackOff;					// untracked on purpose: nothing is tracked until a new job is taken
+
 	// Remembered (Haven Champion perk): a Haven Champion died; the next character is kin
 	bool m_bFallenPending;			// set at the Champion's death, used up by the next life
 	string m_sFallenPlace;			// where they fell (for the greeting)

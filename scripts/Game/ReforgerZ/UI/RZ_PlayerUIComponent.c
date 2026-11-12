@@ -72,6 +72,9 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected int m_iMissionsSeen;
 	protected string m_sReader;
 	protected int m_iReaderVersion;
+	protected string m_sTracker;		// the HUD's quest tracker (RZ_QuestTracker), "" hidden
+	protected int m_iTrackerVersion;
+	protected float m_fTrackAskAt = -100;	// server: the last Track asked (a spam guard)
 
 	// ---------------------------------------------------------------- server
 	protected ref array<float> m_aLastAsk = {-100, -100, -100, -100, -100, -100};
@@ -395,6 +398,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sDetail = payload;
 			m_iDetailVersion++;
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
+		{
+			m_sTracker = payload;
+			m_iTrackerVersion++;
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_BACKGROUNDS)
 		{
 			m_sBackgrounds = payload;
@@ -492,6 +500,38 @@ class RZ_PlayerUIComponent : ScriptComponent
 		int playerId = OwnerPlayerId();
 		if (playerId > 0)
 			SendPayload(RZ_UIFeed.PAYLOAD_DETAIL, gm.GetUIFeed().BuildDetail(playerId, id));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Track in the Quests tab: follow this job, or stop following it if it's the one followed
+	//! (docs/UI.md, "Notebook: Quests"). The server answers with the tracker and the journal.
+	void AskTrack(int id)
+	{
+		if (Replication.IsServer())
+			RpcAsk_Track(id);
+		else
+			Rpc(RpcAsk_Track, id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_Track(int id)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm || !gm.GetUIFeed())
+			return;
+
+		float now = RZ_UIW.Now();
+		if (now - m_fTrackAskAt < 0.3)
+			return;
+
+		m_fTrackAskAt = now;
+		int playerId = OwnerPlayerId();
+		if (playerId <= 0)
+			return;
+
+		gm.GetUIFeed().GetTracker().Toggle(playerId, id);
+		SendPayload(RZ_UIFeed.PAYLOAD_JOURNAL, gm.GetUIFeed().BuildPayload(playerId, RZ_UIFeed.PAYLOAD_JOURNAL));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -869,6 +909,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	bool IsSeenHidden() { return m_bSeenHidden; }
 	string GetStanding() { return m_sStanding; }
 	string GetJournal() { return m_sJournal; }
+	string GetTracker() { return m_sTracker; }
+	int GetTrackerVersion() { return m_iTrackerVersion; }
 	string GetDetail() { return m_sDetail; }
 	int GetDetailVersion() { return m_iDetailVersion; }
 	string GetBackgrounds() { return m_sBackgrounds; }

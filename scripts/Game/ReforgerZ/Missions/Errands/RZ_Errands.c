@@ -2109,7 +2109,9 @@ class RZ_Errands
 
 	//------------------------------------------------------------------------------------------------
 	//! Every 30 s: the online players' owed pay, through AddFame, Forgive, AddFavor and AddInfamy,
-	//! to the life that earned it only, and only while the giver would still have them.
+	//! to the life that earned it only, and only while the giver would still have them. All of one
+	//! player's owed pay is one quiet notebook entry, "While you were away", never a card each
+	//! (docs/UI.md, "Notices").
 	protected void PayPending(array<int> ids)
 	{
 		foreach (int pid : ids)
@@ -2126,38 +2128,46 @@ class RZ_Errands
 				ledger.pending.Clear();
 			}
 
+			string summary = "";
 			foreach (RZ_ErrandOwed o : ledger.owed)
 			{
-				if (o)
-					PayOwed(pid, profile, o);
+				if (!o)
+					continue;
+
+				string paid = PayOwed(pid, profile, o);
+				if (!paid.IsEmpty())
+					summary += paid + "\n\n";
 			}
 
 			ledger.owed.Clear();
+			summary = summary.Trim();
+			if (!summary.IsEmpty())
+				m_GM.NotifyPlayerAs(pid, "While you were away", summary, RZ_ENoticeTag.QUIET);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void PayOwed(int pid, RZ_PlayerProfile profile, RZ_ErrandOwed o)
+	//! Pays one owed entry; returns its line for the summary ("" if nothing is said).
+	protected string PayOwed(int pid, RZ_PlayerProfile profile, RZ_ErrandOwed o)
 	{
 		RZ_EFaction f = o.faction;
 		if (!RZ_Factions.IsValid(f))
-			return;
+			return "";
 
 		if (o.life != profile.m_iLives)
 		{
 			RZ_Log.Info(string.Format("Errands: '%1' owed %2 on life %3; they're on life %4: not paid", o.title, RZ_Util.PlayerName(pid), o.life, profile.m_iLives));
-			return;
+			return "";
 		}
 
 		string name = RZ_Factions.GetName(f);
 		RZ_ETier minTier = o.minTier;
 		if (o.checkTier && !RZ_MissionRequirements.GiverTierOk(m_GM.GetTier(pid, f), minTier, o.allowWatched, o.leaderDecides))
 		{
-			m_GM.NotifyPlayerAs(pid, o.title, string.Format("Finished while you were away. %1 won't pay you for it now.", name), RZ_ENoticeTag.MISSION);
-			return;
+			return string.Format("%1: finished while you were away. %2 won't pay you for it now.", o.title, name);
 		}
 
-		string text = "Finished while you were away. Your part counted.";
+		string text = o.title + ": finished while you were away. Your part counted.";
 		bool forgiven = false;
 		if (o.amends && o.fame > 0 && RZ_Reputation.IsWatchedOrWorse(m_GM.GetTier(pid, f)))
 		{
@@ -2192,7 +2202,7 @@ class RZ_Errands
 			text += string.Format("\n%1 won't forget this: +%2 Infamy.", RZ_Factions.GetName(ef), o.infamyAmounts[i]);
 		}
 
-		m_GM.NotifyPlayerAs(pid, o.title, text, RZ_ENoticeTag.MISSION);
+		return text;
 	}
 
 	// ================================================================ Threads

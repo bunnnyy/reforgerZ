@@ -974,7 +974,7 @@ class RZ_Epilogue
 			if (!look.IsEmpty())
 				text += "\n" + look;
 
-			m_GM.NotifyPlayer(playerId, "Word on the roads", text);
+			m_GM.NotifyPlayerAs(playerId, "Word on the roads", text, RZ_ENoticeTag.QUIET);
 		}
 
 		if (!m_aNewsTold.Contains(playerId))

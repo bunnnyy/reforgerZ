@@ -569,7 +569,7 @@ class RZ_Mission
 	string GetLocationNameFor(RZ_GameModeComponent gm, int playerId, vector from)
 	{
 		if (IsRoughFor(gm, playerId, from))
-			return GetRoughAreaName(gm) + string.Format(" (within %1 m)", RZ_Util.RoundToInt(RoughRadius(gm)));
+			return GetRoughAreaName(gm);
 
 		return GetLocationName(gm);
 	}
@@ -586,6 +586,149 @@ class RZ_Mission
 			return "about " + RZ_Util.DirectionText(from, GetRoughCenter(gm));
 
 		return RZ_Util.DirectionText(from, m_vPos);
+	}
+
+	// ================================================================ Objectives
+	// docs/MISSIONS.md, "Objectives": what the tracker and the Quests tab show. A mission may name
+	// its ask (m_sObjective) or declare its steps (ObjSteps, ObjStepDone, ObjReveal); otherwise the
+	// framework's default is used: get to the place, then the ask from the brief.
+	string m_sObjective;					// the ask in one line ("Hold the cache for a minute."); "" = from the brief
+	protected ref array<string> m_aObjSteps;	// declared steps, in order (ObjSteps)
+	protected ref array<bool> m_aObjOptional;
+	protected int m_iObjStep;					// the current step
+	protected int m_iObjKnown = 1;		// steps the players have learned of (the current one and any revealed)
+
+	//------------------------------------------------------------------------------------------------
+	//! Declares the steps, in order. Only the current one is known until ObjStepDone or ObjReveal.
+	protected void ObjSteps(string a, string b = "", string c = "", string d = "", string e = "")
+	{
+		m_aObjSteps = {};
+		m_aObjOptional = {};
+		array<string> all = {a, b, c, d, e};
+		foreach (string st : all)
+		{
+			if (st.IsEmpty())
+				continue;
+
+			m_aObjSteps.Insert(st);
+			m_aObjOptional.Insert(false);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An optional step after the declared ones: "(Optional)" in the list once it's known.
+	protected void ObjOptional(string text)
+	{
+		if (!m_aObjSteps)
+		{
+			m_aObjSteps = {};
+			m_aObjOptional = {};
+		}
+
+		m_aObjSteps.Insert(text);
+		m_aObjOptional.Insert(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current step is done; the next one becomes current (and known).
+	void ObjStepDone()
+	{
+		m_iObjStep++;
+		m_iObjKnown = Math.Max(m_iObjKnown, m_iObjStep + 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The players have learned of the steps up to `count` (a clue read, a person talked to).
+	void ObjReveal(int count)
+	{
+		m_iObjKnown = Math.Max(m_iObjKnown, count);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the job points this player: the rough circle's centre while they only know the area.
+	vector GetAreaFor(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bGlobal)
+			return vector.Zero;
+
+		if (IsRoughFor(gm, playerId, from))
+			return GetRoughCenter(gm);
+
+		return m_vPos;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The map's ring for the tracked job: the rough circle's radius, 0 for an exact place.
+	float GetAreaRadius(RZ_GameModeComponent gm)
+	{
+		return RoughRadius(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ask in one line: m_sObjective, else the brief's ask (RZ_QuestText.AskIn), else the title.
+	string ObjectiveText(RZ_GameModeComponent gm)
+	{
+		if (!m_sObjective.IsEmpty())
+			return m_sObjective;
+
+		string ask = RZ_QuestText.AskIn(GetBrief(gm));
+		if (!ask.IsEmpty())
+			return ask;
+
+		return m_sTitle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This mission's objectives for one player, only what they know: the declared steps (done,
+	//! current, the known next ones), or by default "get there" until they're taking part, then
+	//! the ask.
+	void GetObjectives(RZ_GameModeComponent gm, int playerId, vector from, notnull RZ_ObjList list)
+	{
+		// A step chain across towns (Missions/Blocks/RZ_StepChain.c): the steps reached, the current one
+		RZ_StepChain chain = RZ_StepChain.ForMission(m_iId);
+		if (chain && chain.Count() > 0)
+		{
+			chain.AddObjectives(list);
+			return;
+		}
+
+		if (m_aObjSteps && !m_aObjSteps.IsEmpty())
+		{
+			foreach (int i, string step : m_aObjSteps)
+			{
+				if (i >= m_iObjKnown && i > m_iObjStep)
+					break;
+
+				int state = RZ_EObjState.NEXT;
+				if (i < m_iObjStep)
+					state = RZ_EObjState.DONE;
+				else if (i == m_iObjStep)
+					state = RZ_EObjState.CURRENT;
+
+				if (state != RZ_EObjState.DONE && i < m_aObjOptional.Count() && m_aObjOptional[i])
+					state = RZ_EObjState.OPTIONAL;
+
+				list.Add(step, state);
+			}
+
+			return;
+		}
+
+		string ask = ObjectiveText(gm);
+		bool there = m_bGlobal || m_aParticipants.Contains(playerId);
+		if (there)
+		{
+			list.Add(ask, RZ_EObjState.CURRENT);
+			return;
+		}
+
+		string place = GetLocationName(gm);
+		if (IsRoughFor(gm, playerId, from))
+			list.Add("Search " + GetRoughAreaName(gm) + ".", RZ_EObjState.CURRENT);
+		else if (!place.IsEmpty())
+			list.Add("Get to " + place + ".", RZ_EObjState.CURRENT);
+
+		list.Add(ask, RZ_EObjState.NEXT);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -111,7 +111,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-(none)
+- Cloud (notices and quest tracker), 2026-11-12: `Configs/System/chimeraInputCommon.conf` (one new action, `RZ_TrackJob`). Don't edit it until this line is gone.
 
 ## Status
 

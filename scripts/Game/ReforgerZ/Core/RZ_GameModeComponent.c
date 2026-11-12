@@ -1640,7 +1640,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		OnLegacyChanged(playerId); // older profiles may already have 10 Legacy
 
 		// Locked backgrounds need an unlock. The loadout's gear stays (we can't take it back
-		// cleanly), but the perks, flaws and standing are the default background's.
+		// cleanly), but the perks, flaws and standing are the default background's. Said on the
+		// spawn card's second line; the why goes into the notebook.
+		string lockedLine = "";
 		if (bg.m_bLocked && !profile.HasUnlocked(bg.m_sUnlockId))
 		{
 			string why = bg.m_sUnlockText;
@@ -1648,7 +1650,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 				why = "You haven't unlocked it yet.";
 
 			RZ_Background fallback = GetDefaultBackground();
-			NotifyPlayerAs(playerId, bg.m_sName + " is locked", string.Format("%1\nYou are playing as %2 this life.", why, fallback.m_sName), RZ_ENoticeTag.HIGH);
+			lockedLine = string.Format("%1 is locked. You're %2 this life.", bg.m_sName, fallback.m_sName);
+			NotifyPlayerAs(playerId, bg.m_sName + " is locked", string.Format("%1\nYou are playing as %2 this life.", why, fallback.m_sName), RZ_ENoticeTag.QUIET);
 			bg = fallback;
 		}
 
@@ -1670,13 +1673,23 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Keys, timed actions and cracked channels belong to the last life
 		m_Interactions.OnPlayerSpawned(playerId);
 
-		// 1. Who you are this life
+		// Where you wake: a small clue nearby, and the wind-up radio (new-player guidance). The
+		// scene's full text goes into the notebook; its one line is the spawn card's.
+		m_Guidance.OnPlayerSpawned(playerId, controlledEntity);
+
+		// 1. The one card at spawn (docs/UI.md, "Notices"): who you are and where, in a line or
+		// two. Everything else at spawn goes quietly into the notebook.
+		string whereLine = m_Guidance.TakeSpawnLine(playerId);
+		if (whereLine.IsEmpty())
+			whereLine = RZ_QuestText.SpawnWhere(this, controlledEntity.GetOrigin());
+
+		if (!lockedLine.IsEmpty())
+			whereLine += "\n" + lockedLine;
+
+		NotifyPlayerAs(playerId, bg.m_sName, whereLine, RZ_ENoticeTag.SPAWN);
 		string intro = string.Format("Perk: %1\nFlaw: %2\n\nYour goal: %3",
 			bg.m_sPerk, bg.m_sFlaw, RZ_Objectives.Describe(this, profile));
-		NotifyPlayerAs(playerId, bg.m_sName, intro, RZ_ENoticeTag.HIGH);
-
-		// Where you wake: a small clue nearby, and the wind-up radio (new-player guidance)
-		m_Guidance.OnPlayerSpawned(playerId, controlledEntity);
+		NotifyPlayerAs(playerId, bg.m_sName, intro, RZ_ENoticeTag.QUIET);
 
 		// 2. The state of the world (first spawn of this session only)
 		if (!m_aWelcomed.Contains(playerId))
@@ -1699,35 +1712,35 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			if (m_Cure.IsCured())
 				research = "The cure is out. The gates open when the season ends.";
 
-			NotifyPlayerAs(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()), research + lab, RZ_ENoticeTag.WORLD);
+			NotifyPlayerAs(playerId, "Outbreak: " + RZ_StageSettings.GetStageName(m_Director.GetStage()), research + lab, RZ_ENoticeTag.QUIET);
 
 			// After the cure the broadcast reads the new order (RZ_Broadcast.GetText)
-			NotifyPlayerAs(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText(), RZ_ENoticeTag.WORLD);
+			NotifyPlayerAs(playerId, RZ_Broadcast.TITLE, m_Broadcast.GetText(), RZ_ENoticeTag.QUIET);
 
 			// A final stand that was running (or restarted with the server) needs defenders
 			if (m_Cure.IsFinalStand())
 				NotifyPlayerAs(playerId, "THE FINAL STAND", string.Format("Halcyon is synthesizing the cure and the lab is under siege. About %1 minutes left to hold it.", m_Cure.GetFinalStandMinutesLeft()), RZ_ENoticeTag.URGENT);
 
-			// Session news: the latest headline, wanderers lost, the biggest rescue, the cure
+			// The season in one notebook entry, no card: its number and rules (the last winner's,
+			// the rule sets, a coming wipe), the session's news, the hall of fame so far
+			string season = m_Seasons.DescribeForWelcome();
 			string news = m_Headlines.Build();
 			news = news.Trim();
 			if (!news.IsEmpty())
-				NotifyPlayerAs(playerId, "Word on the roads", news, RZ_ENoticeTag.WORLD);
+				season += "\n\nWord on the roads: " + news;
 
-			// The season: its number, its rules (the last winner's, the rule sets), a coming wipe
-			NotifyPlayerAs(playerId, "This season", m_Seasons.DescribeForWelcome(), RZ_ENoticeTag.WORLD);
-
-			// The hall of fame, so far
 			if (GetHall())
 			{
 				string hall = GetHall().BuildText();
 				if (!hall.IsEmpty())
-					NotifyPlayerAs(playerId, "Hall of fame", hall, RZ_ENoticeTag.WORLD);
+					season += "\n\n" + hall;
 			}
+
+			NotifyPlayerAs(playerId, "This season", season, RZ_ENoticeTag.QUIET);
 		}
 
-		// 3. What's on the radio
-		NotifyPlayerAs(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity, playerId), RZ_ENoticeTag.WORLD);
+		// 3. What's on the radio, in the notebook (the Quests tab lists the jobs themselves)
+		NotifyPlayerAs(playerId, "Radio", m_Missions.DescribeActiveFor(controlledEntity, playerId), RZ_ENoticeTag.QUIET);
 
 		// The epilogue week: the cure line and your own first line, its news, your last goal
 		m_Epilogue.OnSpawn(playerId, controlledEntity);
@@ -3316,8 +3329,24 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// and the styled card shows it if it can. Otherwise the vanilla hint below.
 		RZ_NoticeStyle style = RZ_NoticeStyle.Classify(title, tag);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+
+		// The quiet start (docs/UI.md, "Notices"): for UI > Quiet start after a new life only the
+		// spawn card and urgent notices are cards; the rest go into the notebook without one
+		if (ui && !style.m_bSpawn && style.m_iPriority < RZ_ENoticePriority.URGENT)
+		{
+			float lifeAt = ui.GetNewLifeAt();
+			if (lifeAt >= 0 && RZ_UIW.Now() - lifeAt < RZ_UISettings.Get().m_fNoticeCalm)
+				style.m_bQuiet = true;
+		}
+
 		if (ui)
 			ui.OnNotice(title, text, style);
+
+		if (style.m_bQuiet && ui)
+		{
+			RZ_HudDisplay.NoteQuiet();
+			return;
+		}
 
 		if (RZ_HudDisplay.PushNotice(title, text, style))
 			return;

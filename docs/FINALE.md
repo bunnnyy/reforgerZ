@@ -170,7 +170,7 @@ pacts, holding the room and deciding.
 
 **After the lock:** other routes' work refuses you (*"You've picked your side. This isn't it."*),
 except the rivals' moves on it; ordinary errands and missions carry on; your route's sworn work is
-told to you as it comes up; and the route's questline is in your journal whether you took part or not.
+told to you as it comes up; and the route's questline is on your Quests tab whether you took part or not.
 
 **A route with no active lock for 3 real days** (× the wait scale, counted from the gate): its sworn
 stages pause and its subject's claim (her, the captain, the cook) is let go, claimed again when a lock
