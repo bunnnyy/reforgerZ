@@ -2607,8 +2607,10 @@ same fire, one building at a time; nothing burns a whole town at once.
 
 ### Water
 
-Fill a bottle at a well or pump (untreated), then boil it on a stove (30 s) or purify it with a
-tablet. What drinking does belongs to the hunger and thirst mod ([MOD_STACK.md](MOD_STACK.md)).
+Wells and pumps use the game's own fill action; ours (**Interactions > Well spots**) is off by default,
+because both at once showed two actions at every well. Untreated water (the **Dirty water** prefab or a
+name the **Untreated water keywords** match) is boiled on a stove (30 s) or purified with a tablet. What
+drinking does belongs to the hunger and thirst mod ([MOD_STACK.md](MOD_STACK.md)).
 
 ### Treating each other
 
