@@ -18,7 +18,7 @@ class RZ_LandmarkFinder
 	protected float m_fMinSpacing = 25;
 
 	//------------------------------------------------------------------------------------------------
-	//! Kinds: church, watertower, tower, castle, lighthouse, school, station, fuel, well, bank, monument,
+	//! Kinds: church, watertower, tower, castle, lighthouse, school, station, fuel, well, pumphouse, bank, monument,
 	//! power, industrial, radio, pharmacy, police, military; and the wild's lairs: barn, mill, silo,
 	//! quarry, culvert, shed, ruin.
 	static void Find(vector center, float radius, array<string> kinds, notnull array<ref RZ_Landmark> result)
@@ -107,6 +107,7 @@ class RZ_LandmarkFinder
 			case "school": return name.Contains("school");
 			case "station": return name.Contains("station") && !name.Contains("gasstation") && !name.Contains("fuelstation");
 			case "fuel": return name.Contains("gasstation") || name.Contains("fuelstation") || name.Contains("petrol");
+			case "pumphouse": return name.Contains("waterstation") || name.Contains("water_station") || name.Contains("pumphouse") || name.Contains("pump_house") || name.Contains("pumpingstation") || name.Contains("watertreatment");
 			case "well": return name.Contains("waterwell") || name.Contains("/well") || name.Contains("_well") || name.Contains("well_0");
 			case "bank": return (name.Contains("/bank") || name.Contains("bank_")) && !name.Contains("embank");
 			case "monument": return name.Contains("monument") || name.Contains("memorial") || name.Contains("statue");
@@ -146,6 +147,7 @@ class RZ_LandmarkFinder
 			case "station": return "the station";
 			case "fuel": return "the petrol station";
 			case "well": return "the well";
+			case "pumphouse": return "the pump house";
 			case "bank": return "the bank";
 			case "monument": return "the monument";
 			case "power": return "the power station";

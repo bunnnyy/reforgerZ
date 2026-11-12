@@ -50,9 +50,21 @@ class RZ_ErrandProps
 			case RZ_EErrandProp.CRATE: return m_sCrate;
 			case RZ_EErrandProp.PAPERS: return m_sPapers;
 			case RZ_EErrandProp.PARTS: return m_sParts;
+			case RZ_EErrandProp.CAR: return CarPrefab();
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The car a step names (Shift Change's private asleep in one): the openings' car in the ditch.
+	static ResourceName CarPrefab()
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (!gm || !gm.GetGuidance() || !gm.GetGuidance().GetSettings())
+			return "";
+
+		return gm.GetGuidance().GetSettings().m_sCarWreckPrefab;
 	}
 }
 
@@ -1514,7 +1526,7 @@ class RZ_Errands
 		if (!e.m_Def.Offers(this, e, w))
 			return false;
 
-		if (w.HasStep() && PlaceFor(e, w.m_ePlace) == vector.Zero)
+		if (w.HasStep() && PlaceFor(e, w.m_ePlace, w.NeedKey()) == vector.Zero)
 			return false;
 
 		return true;
@@ -1790,8 +1802,11 @@ class RZ_Errands
 			return;
 		}
 
-		e.m_vPlace = PlaceFor(e, w.m_ePlace);
+		e.m_vPlace = PlaceFor(e, w.m_ePlace, w.NeedKey());
 		e.SetText("place", PlaceText(e, w.m_ePlace, user.GetOrigin()));
+		RZ_PlaceNeeds.Verify(w.NeedKey(), e.m_vPlace, e.m_Def.m_sKey + ": " + e.Fill(w.m_sStep));
+		if (w.m_eProp != RZ_EErrandProp.NONE)
+			RZ_PlaceNeeds.Verify("errand." + RZ_PlaceThings.PropSlot(w.m_eProp), e.m_vPlace, e.m_Def.m_sKey + ": " + e.Fill(w.m_sStep));
 		// A local's spot at its hour (the gate at dusk, the stove at supper), for someone who knows them
 		vector spot;
 		string localName;
@@ -2436,20 +2451,40 @@ class RZ_Errands
 		return e;
 	}
 
+	protected static const int TOWNS_TRIED = 4;			// towns a way's need is looked for in, nearest first
+	protected static const float TOWN_REACH = 150;		// and this far out of a town's radius at most
+
+	//------------------------------------------------------------------------------------------------
+	//! Every errand definition (the place audit reads their ways, RZ_PlaceAudit).
+	array<ref RZ_ErrandDef> GetDefs()
+	{
+		return m_aDefs;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Where a way's step is, from the giver's place: within 1.5 km of the offer, never in the water
-	//! or at the line. Zero if there's no such place here.
-	vector PlaceFor(RZ_Errand e, RZ_EErrandPlace kind)
+	//! or at the line, and true to its words: a place that meets the way's need (docs/PLACES.md; empty
+	//! `needKey`: the place kind's own), the need's own kind of spot tried first (a house, the well,
+	//! the farmhouse, a road's verge...). Zero if there's no such place here: the way isn't offered.
+	vector PlaceFor(RZ_Errand e, RZ_EErrandPlace kind, string needKey = "")
 	{
+		if (needKey.IsEmpty())
+		{
+			RZ_ErrandWay probe = new RZ_ErrandWay();
+			probe.m_ePlace = kind;
+			needKey = probe.NeedKey();
+		}
+
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get(needKey);
 		vector base = e.m_vGiver;
 		switch (kind)
 		{
-			case RZ_EErrandPlace.HERE: return RZ_Mission.LandPointNear(base, 4, 12);
-			case RZ_EErrandPlace.GATE: return RZ_Mission.LandPointNear(base, 15, 25);
-			case RZ_EErrandPlace.OUT: return RZ_Mission.LandPointNear(base, 200, 400);
-			case RZ_EErrandPlace.FAR: return RZ_Mission.LandPointNear(base, 300, 500);
-			case RZ_EErrandPlace.EMPTY_VILLAGE: return TownNear(e, 1200, true);
-			case RZ_EErrandPlace.NEXT_TOWN: return TownNear(e, MAX_DISTANCE, false);
+			case RZ_EErrandPlace.HERE: return RZ_PlaceFind.Near(base, 4, 12, need);
+			case RZ_EErrandPlace.GATE: return RZ_PlaceFind.Near(base, 15, 25, need);
+			case RZ_EErrandPlace.OUT: return RZ_PlaceFind.NearKept(base, 200, 400, need);
+			case RZ_EErrandPlace.FAR: return RZ_PlaceFind.NearKept(base, 300, 500, need);
+			case RZ_EErrandPlace.EMPTY_VILLAGE: return TownNear(e, 1200, true, need);
+			case RZ_EErrandPlace.NEXT_TOWN: return TownNear(e, MAX_DISTANCE, false, need);
 			case RZ_EErrandPlace.SUBJECT: return Within(e, e.m_vSubject);
 			case RZ_EErrandPlace.SUBJECT2: return Within(e, e.m_vSubject2);
 		}
@@ -2467,34 +2502,51 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest other town within `radius` of the giver (an empty one: nobody holds it), its
-	//! centre on dry land; zero if none.
-	protected vector TownNear(RZ_Errand e, float radius, bool empty)
+	//! The nearest other town within `radius` of the giver (an empty one: nobody holds it) that has
+	//! a place meeting `need` (by a house in it, its well, its school...): that place, which is nearer
+	//! that town than any other, so the {place} its words name is that town; zero if none of the
+	//! TOWNS_TRIED nearest has one.
+	protected vector TownNear(RZ_Errand e, float radius, bool empty, RZ_PlaceNeed need)
 	{
 		RZ_WorldFacts facts = m_GM.GetFacts();
-		int best = -1;
-		float bestDist = radius;
+		array<int> towns = {};
+		array<float> dists = {};
 		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
 		{
-			if (i == e.m_iSettlement)
+			if (i == e.m_iSettlement || s.m_bIsland)
 				continue;
 
 			float d = RZ_Util.DistXZ(s.m_vCenter, e.m_vGiver);
-			if (d > bestDist || d < 150)
+			if (d > radius || d < 150)
 				continue;
 
 			if (empty && facts && facts.IsLivedIn(i))
 				continue;
 
-			best = i;
-			bestDist = d;
+			// Nearest first
+			int at = 0;
+			while (at < dists.Count() && dists[at] < d)
+			{
+				at++;
+			}
+
+			towns.InsertAt(i, at);
+			dists.InsertAt(d, at);
 		}
 
-		if (best < 0)
-			return vector.Zero;
+		for (int k = 0; k < towns.Count() && k < TOWNS_TRIED; k++)
+		{
+			RZ_Settlement town = m_GM.GetSettlement(towns[k]);
+			float reach = town.m_fRadius;
+			if (need)
+				reach += Math.Min(need.m_fTownReach, TOWN_REACH);
 
-		RZ_Settlement town = m_GM.GetSettlement(best);
-		return RZ_Mission.LandPointNear(town.m_vCenter, 0, Math.Min(40, town.m_fRadius * 0.5));
+			vector found = RZ_PlaceFind.NearKept(town.m_vCenter, 0, reach, need);
+			if (found != vector.Zero && m_GM.FindNearestSettlement(found) == towns[k])
+				return found;
+		}
+
+		return vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -17,6 +17,7 @@ class RZ_Settlement
 	int m_iSize = 1;			// 1 = village / outskirts, 2 = town, 3 = city
 	float m_fInfection = 30;	// 0..100
 	bool m_bHasLab;
+	bool m_bIsland;				// on an island (RZ_Mainland; a saved season's town only, not saved): skipped
 	float m_fNoSpreadSeconds;	// Quarantine Line: this town doesn't spread infection for a while (not saved)
 	float m_fSensorSeconds;		// Install Sensors: twice the specials here for a while (not saved)
 	float m_fLedger;			// crawlers killed here lately, halving every 30 played minutes (Zombies/RZ_Crawlers.c; saved)

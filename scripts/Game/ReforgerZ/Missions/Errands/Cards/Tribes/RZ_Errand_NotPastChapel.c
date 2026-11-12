@@ -19,6 +19,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring him in";
 		w.m_ePlace = RZ_EErrandPlace.OUT;
+		w.m_sNeed = "errand.farmhouse";
 		w.m_fSeconds = 10;
 		w.m_fRadius = 30;
 		w.m_fBefore = 20.5;
@@ -30,6 +31,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		w = Way("do");
 		w.m_sLabel = "Board his doors";
 		w.m_ePlace = RZ_EErrandPlace.OUT;
+		w.m_sNeed = "errand.farmhouse";
 		w.m_fSeconds = 25;
 		w.m_fRadius = 30;
 		w.m_fBefore = 20.5;

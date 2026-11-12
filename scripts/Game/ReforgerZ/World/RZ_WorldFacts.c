@@ -632,7 +632,7 @@ class RZ_WorldFacts
 		RZ_MissionManager missions = m_GM.GetMissions();
 		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
 		{
-			if (i == filter.m_iExclude || s.m_iSize < filter.m_iMinSize)
+			if (i == filter.m_iExclude || s.m_iSize < filter.m_iMinSize || s.m_bIsland)
 				continue;
 
 			if (s.m_fInfection < filter.m_fMinInfection || s.m_fInfection > filter.m_fMaxInfection)

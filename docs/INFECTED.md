@@ -258,7 +258,8 @@ hand, so it works on any map.
   valley line), forests (600 or more trees in a square, in groups of three), fields (open, flat
   and near a town: crawlers stand in them at night), lair candidates (forest, or one of the landmarks
   above, 600 m from every town centre and 800 m from where people live; 400 and 600 m on maps under
-  25 km² of land: loose ones walk to them at night), and **wild land**: dry squares outside every
+  25 km² of land: loose ones walk to them at night), and **wild land**: dry squares on the mainland
+  (never an island: [PLACES.md](PLACES.md#the-mainland)) outside every
   settlement's radius + 100 m, 300 m round every lived-in place (a lived-in town's edge, or 100 m
   round a holding, safehouse or the lab), 700 m round the Long Table's farm, and the Perimeter's
   warning zone + 200 m.

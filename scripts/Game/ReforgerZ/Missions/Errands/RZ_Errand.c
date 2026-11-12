@@ -36,7 +36,8 @@ enum RZ_EErrandProp
 	EFFECTS,	// a dead man's things
 	CRATE,		// a small crate or box
 	PAPERS,		// a book or papers
-	PARTS		// a toolbox or a machine part
+	PARTS,		// a toolbox or a machine part
+	CAR			// a car at the verge (Guidance > Car wreck prefab: the openings' car in the ditch)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -95,6 +96,7 @@ class RZ_ErrandWay
 	RZ_EErrandProp m_eProp = RZ_EErrandProp.NONE;	// a prop at the place while the step is open
 	bool m_bCarry;				// the step gives a carried item: only the asker or a helper hands it in (RZ_ErrandsPay)
 	bool m_bEndsThere;			// done at the place: no going back to the giver (an opening's last step, Guidance/RZ_Openings.c)
+	string m_sNeed;				// the place need its words make (World/RZ_PlaceNeeds.c; empty: by its place kind, NeedKey)
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")
 	int m_iFavor;
@@ -113,6 +115,26 @@ class RZ_ErrandWay
 	bool HasStep()
 	{
 		return m_ePlace != RZ_EErrandPlace.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its place need's key (docs/PLACES.md): its own, else by where the step is.
+	string NeedKey()
+	{
+		if (!m_sNeed.IsEmpty())
+			return m_sNeed;
+
+		switch (m_ePlace)
+		{
+			case RZ_EErrandPlace.HERE: return "errand.here";
+			case RZ_EErrandPlace.GATE: return "errand.here";
+			case RZ_EErrandPlace.OUT: return "errand.out";
+			case RZ_EErrandPlace.FAR: return "errand.out";
+			case RZ_EErrandPlace.EMPTY_VILLAGE: return "errand.town";
+			case RZ_EErrandPlace.NEXT_TOWN: return "errand.town";
+		}
+
+		return "errand.subject";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -185,6 +185,13 @@ Then draw its log with `py tools/camp_kit/render.py --placed <the log it names>`
 SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh sites everon
 ```
 
+The task place audit ([PLACES.md](PLACES.md#the-audit)) boots the same way, one map at a time, and
+writes its drawing beside the work folder's logs (`task_places_<map>.html`; open it in a browser):
+
+```bash
+SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh tasks everon
+```
+
 The text lint needs only Python and takes a second
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`. The compile check
 runs the dialogue lint first (`python3`, else `py -3`), and fails if a conversation pack is stale:
@@ -270,4 +277,5 @@ What the sessions on the author's PC haven't confirmed yet. Settle each when a s
 | 6 | The Peer Tool's name; the game's **Direct Join** menu; whether the game client needs `-addonsDir` and `-addons` to join a server running the unpublished mod |
 | 4 | The zombie lab's `sed -i` (it adds Bacon Zombies to the throwaway copy of `addon.gproj`) works in Git Bash, and the lab's server closes itself at the end (`RequestClose`) on Windows too |
 | 4 | The site audit (`run.sh sites`) on Windows: without `unshare` its server takes port 2001, and it closes itself at the end |
+| 4 | The task place audit (`run.sh tasks`) on Windows: the same port and close; with Special Zombies loaded the stand-in special is still used (`places.py`), and `py` runs `places.py` |
 | 5 | The two sites plugins (`scripts/WorkbenchGame/ReforgerZ/RZ_SitesPlugin.c`): **Measure prop footprints** writes `tools/camp_kit/footprints.json` with the same boxes as the server's (compare with `git diff`), and **Fly to the next site** reads `tools/camp_kit/sites_list.txt` through `$ReforgerZ:` |
