@@ -1346,7 +1346,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts and the **map icon layout** (refresh 20 s), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
-| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120; 45 while another player waits at the same person); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
+| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
@@ -2083,7 +2083,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 106 conversations, 236 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 147 conversations, 316 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2095,6 +2095,10 @@ by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> v
 `Dialogue: sway <major>.<vote>.<word> by <player> (voter N)` (a sitting), `Dialogue: session cap at <speaker>`.
 The finale's commit: `Dialogue: <player> committed to <route> at <speaker>`.
 Promises and barks: `Dialogue: promise <key> made|kept|broken by <player>`, `Dialogue: bark <conv> to <player>`.
+Talk's rest: `Dialogue: make it right <player> at <speaker>`, `Dialogue: made right <player> with <speaker>`,
+`Dialogue: <speaker> opened on <player> at N m` (a greet that opens by itself), `Dialogue: distress call
+answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<claim>.false tested false for
+<player>`, `Dialogue: <player> began <questline>`.
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
@@ -2517,7 +2521,34 @@ when it happens)
   lost Kid: each barks one line as a subtitle, at most one a minute, and the same person not again for
   10 minutes; nothing while you're talking to someone. The log has `Dialogue: bark ...`.
 - [ ] Trees on, a stranger: Talk repeats their call-out; their ways are there as before, and "Ask
-  who they are" style topics fill in their own words (the house, the town, the name).
+  who they are" style topics fill in their own words (the house, the town, the name). Walk up to a
+  new one: at 10 m the talk screen opens by itself ("Hey. You. Sorry. Have you got a minute?"), once,
+  and never twice inside 4 minutes of another unasked contact (the log's `Dialogue: ... opened on`).
+- [ ] Trees on, in Bastion kit you aren't Known in, walk toward a checkpoint: at about 35 m its
+  speaker's screen opens by itself ("You. Not on the board. Stop there."), with the claim, the word and
+  the truth as topics. Leave it and walk on: the built search or turn-back applies at the barrier. In
+  kit signed out to someone else, the greeting names them and any claim is caught at once.
+- [ ] Trees on, a seat leader at attitude -2 who doesn't hunt you: the hub shows "[Make it right]
+  "What would it take?"", which reserves their faction's amends job for an hour. Finish it: the
+  leader's "We start again." line, they deal with you again, and the reply is dim for the rest of the
+  season. Fail it or let the hour run out: nothing changes.
+- [ ] Trees on, a Radio Operator with Bastion's net cracked: the radio's "Call on the open channel"
+  also shows "Talk on Bastion's command net." Ask for the word: believed, "(The word at the wire
+  today: ...)" and a post's look counts it; caught, +2 Bastion Infamy and the listening ends. A house
+  radio's third choice calls only next to a running generator.
+- [ ] Trees on, near a Haven house with nobody at its gate: "Answer the call for help." shows on the
+  open channel about one hour in two; answering puts a stranger at that house's gate, and its named
+  person offers Who's at the Gate as built.
+- [ ] Trees on, the routes open: on the open channel, "Speak about the cure." leads to [Point of no
+  return]; saying it locks you to the Independent route, a second player within 1.5 km hears it with no
+  name, and the roads carry the rumour.
+- [ ] Trees on, the epilogue week: every leader has "Ask about the cure." (their own read of who holds
+  it, then the built season and where-to-look lines) and "Ask what they'll do now."; occupants greet
+  you with the week's line.
+- [ ] Trees on: open the notebook's Journal with a promise open: a "Promises" row shows the play left;
+  after seeing through the Scavenger's lie, a "What you know" row quotes it.
+- [ ] Trees on, the Long Table's host on the road: say they're expecting you back by dark, then stay
+  near the road past 20:30: the next meeting opens with "Still expected, are you?".
 - [ ] Trees on, the wind-up radio on the ground: "Call on the open channel" opens the talk screen.
   "Call in what you've seen" puts a rumour on the roads, and a second player within 1.5 km gets "On
   the open channel, someone: ..." with no name.

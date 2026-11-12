@@ -4,10 +4,31 @@ class RZ_DialoguePack_residents
 	static void Add(RZ_DialogueDB db)
 	{
 		Add0(db);
+		Add1(db);
 	}
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
+		db.Conv("epilogue.occupant.greet", "occupant", "epilogue", "", 3, 4, "haven");
+		db.Node("start");
+		db.Say("was:every_name", "\"You were at the table when the names were read. I saw you. Sit, there's soup. Real soup.\"");
+		db.Say("cure_held:bastion", "\"The cure came in a crate with a number on it. We're on a list for it. Everyone's on a list now.\"");
+		db.Say("cure_held:everyone", "\"Somebody walked it out to every house. Mrs {resident} asked who to thank, and nobody would say.\"");
+		db.Say("ending:every_name=every_name", "\"They read every name at supper. Even the crossed ones. Mrs {resident} cried, then went to bed early.\"");
+		db.Say("", "\"The loudspeakers say processing at the checkpoints. Nobody's gone up yet. Nobody quite believes it.\"");
+		db.Conv("epilogue.occupant.route", "occupant", "epilogue & route:bastion", "Tell them you stood with Bastion.", 3, 1, "haven");
+		db.Node("start");
+		db.Say("", "\"I know. Everyone knows. Don't expect soup. ...There's soup. Don't expect it, that's all.\"");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("halcyon.bitten.trial", "leader:halcyon,named:halcyon", "bite_shown", "[Bitten] Ask about the trial dose.", 0, 0, "halcyon");
+		db.Node("start");
+		db.Say("", "\"There is a trial dose. It is a trial. We record everything, including you.\"");
+		db.Say("", "\"Ask at the lab gate's table. Bring the bite while it's young. Older bites are less interesting to us, and to you.\"");
+		db.Choice("consent", "\"What do I sign?\"", "sign", "", "", "", "", "", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("sign");
+		db.Say("", "\"Name, time of bite, consent. The form is short. We are told that is a kindness.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("named.bastion.kit_own", "named:bastion", "kit:own", "", 4, 6, "bastion");
 		db.Node("start");
 		db.Say("", "\"Kit suits you. Mind the collar. The sergeant notices collars.\"");
@@ -61,6 +82,23 @@ class RZ_DialoguePack_residents
 		db.Node("toll");
 		db.Say("", "\"Good. Tins, fuel, the odd watch. Bastion paid in bullets once. We counted that as a tip.\"");
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("occupant.bitten.declare", "occupant", "bite_shown & !declared", "[Bitten] Tell them about the bite.", 0, 0, "haven");
+		db.Node("start");
+		db.Say("", "\"Show me. Go on. Nobody here is going to shout.\"");
+		db.Choice("tell", "\"Here. It's a bite.\"", "told", "", "", "", "", "", "call:declare_bite", "", "");
+		db.Choice("fine", "\"It's nothing. A scratch off a fence.\"", "fine", "caught", "", "lie haven 2", "", "", "", "", "");
+		db.Choice("back", "\"Not now.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("told");
+		db.Say("", "\"Thank you for saying it out loud. Most don't. Sit by the door, where it's cooler.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("fine");
+		db.Say("", "\"A fence. Right. Keep it covered, then, and keep it clean.\"");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught");
+		db.Say("", "\"That's not a fence. I've seen enough of them now. Let me write it down, at least.\"");
+		db.Do("call:caught_bite");
+		db.Choice("tell2", "\"All right. Write it down.\"", "told", "", "", "", "", "", "call:declare_bite", "", "");
+		db.Choice("back3", "\"Leave it.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("occupant.house.bear", "occupant", "!house:died", "Ask about the bear on the door.", 4, 0, "haven");
 		db.Node("start");
 		db.Say("", "\"So nobody shoots through the door. It doesn't always work. It works more than it doesn't.\"");
@@ -121,6 +159,10 @@ class RZ_DialoguePack_residents
 		db.Public();
 		db.Jump("decided", "settled");
 		db.Say("", "\"There's one bed by the stove and three who want it. The old man, the girl with the cough, the new one who stood the gate.\"");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Say("", "\"The council says whoever the house trusts can choose. That might be you. Everyone's listening, so choose kindly.\"");
 		db.Choice("old", "\"The old man. He's cold all the time.\"", "chosen", "", "", "", "", "", "decide:old", "", "");
 		db.Choice("girl", "\"The girl with the cough.\"", "chosen", "", "", "", "", "", "decide:girl", "", "");
@@ -140,5 +182,24 @@ class RZ_DialoguePack_residents
 		db.Conv("occupant.house.tins_kept", "occupant", "kept:house.tins@here", "", 3, 5, "haven");
 		db.Node("start");
 		db.Say("", "\"You're the one who brought the tins. The children asked if you're coming back. I said I'd ask.\"");
+		db.Conv("occupant.nurse.symptoms", "occupant", "house:short & bg:nurse,doctor", "[Nurse] Ask who's coughing.", 2, 0, "haven");
+		db.Node("start");
+		db.Say("", "\"The little one at the back. Since the school trip, her father says. He says it to everyone.\"");
+		db.Say("", "\"People look at her like she's bitten. She isn't. Is she?\"");
+		db.Choice("chest", "\"That isn't a bite. It's her chest.\"", "chest", "", "", "", "", "bg:nurse,doctor", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("chest");
+		db.Say("", "\"Say it again, louder, at supper. They'll listen to you. They don't listen to him.\"");
+		db.Do("learn:house.cough@here");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.doctor.symptoms", "wanderer:doctor", "!bite_shown & stage:fever", "[Fever] Ask what this is.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"Look at me. Eyes. Hands. ...That isn't a bite. That's a fever, and an ordinary one, probably.\"");
+		db.Say("", "\"Water, rest, and stop running everywhere. If it's still there tomorrow, find a house with a medic.\"");
+		db.Choice("sure", "\"Probably?\"", "probably", "", "", "", "", "", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("probably");
+		db.Say("", "\"Everything's probably now. It's the best word we've got left.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 }

@@ -354,8 +354,10 @@ class RZ_DialogueCond
 				return RelationTerm(ctx, t, false);
 		}
 
-		// Keys of designs not built yet (tribes, the majors, disguise, errands): quiet
-		return false;
+		// The season's story, the infected, the radio, kit marks (RZ_DialogueWorld)
+		bool known;
+		bool v = RZ_DialogueWorld.Term(ctx, t, known);
+		return known && v;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -619,7 +621,12 @@ class RZ_DialogueCond
 			case "full": return d.KitLevel(pid, f) >= 2;
 		}
 
-		return false;
+		// What the kit itself says: issued to you, signed out to someone else, a dead man's, off the turned
+		if (d.KitLevel(pid, f) <= 0)
+			return false;
+
+		RZ_KitMark mark;
+		return RZ_DialogueWorld.KitWord(ctx, mark) == what;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -724,6 +731,7 @@ class RZ_DialogueText
 				s.Replace("{boss}", "the boss");
 		}
 
+		s = RZ_DialogueWorld.Fill(ctx, s);
 		s = RZ_RepVoice.FillFor(ctx.m_GM, ctx.m_iPlayer, ctx.m_iFaction, s);
 		if (ctx.m_GM.GetFacts())
 			s = ctx.m_GM.GetFacts().Fill(s);

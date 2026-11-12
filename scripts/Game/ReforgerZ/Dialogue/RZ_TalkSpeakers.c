@@ -150,7 +150,45 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 		if (tag == RZ_LongTable.TAG && gm.GetLongTable())
 			return DescribeTable(gm, idx, ctx);
 
+		if (tag > 0 && gm.GetMissions())
+			return DescribeMission(gm, tag, idx, ctx);
+
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone a contract or a questline stage spawned: `quest:<questline>` and `quest` for a
+	//! questline's people, `mission` for a contract's. Their built choices stay the verbs; a
+	//! conversation picks one with call:slot:N, so the stage resolves as built.
+	protected bool DescribeMission(RZ_GameModeComponent gm, int missionId, int idx, RZ_DCtx ctx)
+	{
+		RZ_Mission m = gm.GetMissions().FindById(missionId);
+		if (!m)
+			return false;
+
+		RZ_QuestRun run;
+		if (gm.GetQuestlines())
+			run = gm.GetQuestlines().RunOf(m);
+
+		if (run)
+		{
+			ctx.m_aKinds.Insert("quest:" + run.m_sKey);
+			ctx.m_aKinds.Insert("quest");
+		}
+		else
+		{
+			ctx.m_aKinds.Insert("mission");
+		}
+
+		ctx.m_sKey = string.Format("mission:%1:%2", missionId, idx);
+		if (m.m_bHasGiver)
+			ctx.m_iFaction = m.m_eGiver;
+
+		ctx.m_sName = "Someone";
+		ctx.m_sShort = "them";
+		ctx.m_sRole = "person";
+		ctx.m_sPlace = m.GetLocationNameFor(gm, ctx.m_iPlayer, ctx.Pos());
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

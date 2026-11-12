@@ -25,6 +25,10 @@ class RZ_DialoguePack_table
 		db.Node("boy");
 		db.Say("", "\"He came with the others. He's ours now. He eats what he's given.\"");
 		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("table.road.hello", "table:road", "!table:crossed", "", 0, 5, "table");
+		db.Opens(12);
+		db.Node("start");
+		db.Say("", "\"Hello there. Don't mind me. Sit, sit, you look thin. Where've you come from?\"");
 		db.Conv("table.road.host", "table:road", "", "Ask about the road ahead.", 2, 0, "table");
 		db.Node("start");
 		db.Say("", "\"Clear to the bridge, if you keep off the verges. The trucks went through this morning, both of them.\"");
@@ -39,10 +43,13 @@ class RZ_DialoguePack_table
 		db.Choice("no", "\"Another time.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("expected");
 		db.Say("", "\"Then you'd best be on your way before the light goes. People worry. Come another day, with them.\"");
-		db.Do("claim:expected");
+		db.Do("claim:expected; test:expected:20.5:300");
 		db.Choice("thanks", "\"Thanks for the road.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("passing");
 		db.Say("", "\"Everyone is. That's what roads are for. The offer stands, whenever you're passing next.\"");
 		db.Choice("back1", "\"I'll remember.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("table.road.still_expected", "table:road", "nmem:expected.false & !table:crossed", "", 3, 5, "table");
+		db.Node("start");
+		db.Say("", "\"Still expected, are you? Never mind, love. Supper's at half six. There's always room.\"");
 	}
 }

@@ -85,6 +85,8 @@ class RZ_TalkRadio : RZ_TalkSpeaker
 	{
 		ctx.m_aKinds.Insert("radio:open");
 		ctx.m_aKinds.Insert("radio");
+		// A Radio Operator on a cracked secure net can talk on it too (RZ_DialogueNets)
+		RZ_DialogueNets.SecureKinds(s.m_iPlayer, ctx.m_aKinds);
 		ctx.m_sKey = "radio:open";
 		ctx.m_iFaction = -1;
 		ctx.m_sName = "The open channel";

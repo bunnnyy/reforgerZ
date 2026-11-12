@@ -18,6 +18,7 @@ class RZ_DMemPlayer
 	ref array<string> failKeys = {};	// "speaker|conv/@choice"
 	ref array<int> failScores = {};
 	ref array<string> knows = {};
+	ref array<int> knowsUntil = {};		// a passing fact's end (real time), 0: kept for the season
 	int favorDay;						// real day (unix / 86400) of favorToday
 	ref array<int> favorToday = {0, 0, 0, 0};
 	ref array<string> heard = {};		// lies this player was told (heard_lie:<key>)
@@ -61,10 +62,10 @@ class RZ_DialogueMemory
 	static const int DAY = 86400;
 	static const int CLAIMS_PER_SPEAKER = 6;
 	static const int KNOWS_MAX = 96;
+	static const int PASSING_MAX = 32;		// passing facts (learned for a few hours) at most
 	static const int SEEN_MAX = 512;
 	static const int HEARD_MAX = 64;
 	static const int PROMISES_OPEN = 3;
-	static const int PROMISE_REAL_DAYS = 3;		// a promise breaks after this many real days whatever the play
 	static const int KEEP_DAYS = 3;				// settled promises and callbacks are kept this long (real days)
 	static const int LATER_MAX = 10;
 	static const int OPEN = 0;
@@ -190,6 +191,14 @@ class RZ_DialogueMemory
 			p.deedTexts = new array<string>();
 		if (!p.heard)
 			p.heard = new array<string>();
+		if (!p.knowsUntil || p.knowsUntil.Count() != p.knows.Count())
+		{
+			p.knowsUntil = new array<int>();
+			foreach (string k : p.knows)
+			{
+				p.knowsUntil.Insert(0);
+			}
+		}
 		RepairPromises(p);
 	}
 
@@ -404,21 +413,144 @@ class RZ_DialogueMemory
 	bool Knows(int playerId, string key)
 	{
 		RZ_DMemPlayer p = For(playerId);
-		return p && p.knows.Find(key) >= 0;
+		if (!p)
+			return false;
+
+		int i = p.knows.Find(key);
+		if (i < 0)
+			return false;
+
+		return i >= p.knowsUntil.Count() || p.knowsUntil[i] <= 0 || p.knowsUntil[i] > RZ_SeasonClock.Now();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	void Learn(int playerId, string key)
+	//! Something this player now knows: for the season (96 at most, the oldest goes), or a passing
+	//! fact for `hours` of real time (32 at most): chatter, today's word.
+	void Learn(int playerId, string key, float hours = 0)
 	{
 		RZ_DMemPlayer p = For(playerId);
-		if (!p || key.IsEmpty() || p.knows.Find(key) >= 0)
+		if (!p || key.IsEmpty())
 			return;
 
+		int until = 0;
+		if (hours > 0)
+			until = RZ_SeasonClock.Now() + RZ_Util.RoundToInt(hours * 3600);
+
+		int had = p.knows.Find(key);
+		if (had >= 0)
+		{
+			// Learned again: a passing fact lasts longer; a season fact stays one
+			if (had < p.knowsUntil.Count() && p.knowsUntil[had] > 0)
+				p.knowsUntil[had] = until;
+
+			m_bDirty = true;
+			return;
+		}
+
+		if (until > 0 && CountPassing(p) >= PASSING_MAX)
+			RemoveKnown(p, OldestPassing(p));
+
 		if (p.knows.Count() >= KNOWS_MAX)
-			p.knows.Remove(0);
+			RemoveKnown(p, 0);
 
 		p.knows.Insert(key);
+		p.knowsUntil.Insert(until);
 		m_bDirty = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int CountPassing(RZ_DMemPlayer p)
+	{
+		int n = 0;
+		foreach (int u : p.knowsUntil)
+		{
+			if (u > 0)
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int OldestPassing(RZ_DMemPlayer p)
+	{
+		foreach (int i, int u : p.knowsUntil)
+		{
+			if (u > 0)
+				return i;
+		}
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RemoveKnown(RZ_DMemPlayer p, int i)
+	{
+		if (i < 0 || i >= p.knows.Count())
+			return;
+
+		p.knows.Remove(i);
+		if (i < p.knowsUntil.Count())
+			p.knowsUntil.Remove(i);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the notebook: what this player was told that turned out false, and knows it (the lie's own
+	//! line, from the conversations), newest first, at most `max`.
+	void FoundLies(int playerId, notnull array<string> keys, int max)
+	{
+		RZ_DMemPlayer p = For(playerId);
+		if (!p)
+			return;
+
+		for (int i = p.heard.Count() - 1; i >= 0 && keys.Count() < max; i--)
+		{
+			if (Knows(playerId, p.heard[i]))
+				keys.Insert(p.heard[i]);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the notebook: every open promise, as "what you said|who to|play left".
+	void OpenPromises(int playerId, notnull array<string> what, notnull array<string> left)
+	{
+		RZ_DMemPlayer p = For(playerId);
+		if (!p)
+			return;
+
+		foreach (int i, string key : p.promKeys)
+		{
+			if (p.promState[i] != OPEN)
+				continue;
+
+			what.Insert(p.promText[i]);
+			left.Insert(PlayLeft(p.promLeft[i]));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A promise kept by the world: an open promise whose key starts `walk.` to a wanderer is kept
+	//! when that wanderer is settled (walked home); checked on the player's tick.
+	protected void KeepByWorld(int playerId, RZ_DMemPlayer p)
+	{
+		RZ_Wanderers wanderers = m_GM.GetWanderers();
+		if (!wanderers)
+			return;
+
+		for (int i = p.promKeys.Count() - 1; i >= 0; i--)
+		{
+			if (p.promState[i] != OPEN || !p.promKeys[i].StartsWith("walk.") || !p.promSpeaker[i].StartsWith("wanderer:"))
+				continue;
+
+			array<string> parts = {};
+			p.promSpeaker[i].Split(":", parts, true);
+			if (parts.Count() < 2)
+				continue;
+
+			RZ_Wanderer w = wanderers.FindById(parts[1].ToInt());
+			if (w && w.m_bSettled)
+				Settle(playerId, p, i, KEPT, "");
+		}
 	}
 
 	// ================================================================ Talk Favor (per player)
@@ -840,9 +972,24 @@ class RZ_DialogueMemory
 	{
 		for (int i = 0; i < p.promKeys.Count(); i++)
 		{
-			if (p.promState[i] == OPEN)
-				Settle(playerId, p, i, BROKEN, why);
+			if (p.promState[i] != OPEN)
+				continue;
+
+			NoteForHouse(p.promSpeaker[i], p.promText[i]);
+			Settle(playerId, p, i, BROKEN, why);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A promise to a house broken by a death: an unsigned note on its board.
+	protected void NoteForHouse(string speaker, string words)
+	{
+		if (!speaker.StartsWith("house:") || !m_GM.GetSafehouses() || !m_GM.GetSafehouses().GetBoard())
+			return;
+
+		RZ_Safehouse h = m_GM.GetSafehouses().Get(speaker.Substring(6, speaker.Length() - 6).ToInt());
+		if (h)
+			m_GM.GetSafehouses().GetBoard().PostUnsigned(h.m_vPos, string.Format("For whoever promised %1, if anyone sees them: we waited.", words));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -922,6 +1069,7 @@ class RZ_DialogueMemory
 
 		RZ_DMemPlayer p = For(playerId);
 		int now = RZ_SeasonClock.Now();
+		KeepByWorld(playerId, p);
 		for (int i = p.promKeys.Count() - 1; i >= 0; i--)
 		{
 			if (p.promState[i] == OPEN)
@@ -929,7 +1077,7 @@ class RZ_DialogueMemory
 				p.promLeft[i] = p.promLeft[i] - dt;
 				if (p.promLeft[i] <= 0)
 					Settle(playerId, p, i, BROKEN, "Time ran out.");
-				else if (now - p.promUnix[i] >= PROMISE_REAL_DAYS * DAY)
+				else if (now - p.promUnix[i] >= RZ_DialogueSettings.Get().m_iPromiseDays * DAY)
 					Settle(playerId, p, i, BROKEN, "Three days went by.");
 			}
 			else if (now - p.promUnix[i] >= KEEP_DAYS * DAY)

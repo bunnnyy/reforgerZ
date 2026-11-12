@@ -87,6 +87,7 @@ class RZ_DialoguePack_wanderers
 		db.Say("", "\"There was a gym. With a bear on the door. They said they'd come back for the ones outside.\"");
 		db.Say("", "\"I waited. Then it got dark, so I walked.\"");
 		db.Choice("show", "\"I'll show you the way to a house.\"", "walk", "", "", "", "", "", "", "", "");
+		db.Choice("promise", "\"I'll get you home. I promise.\"", "walk", "", "", "", "", "", "promise:walk.home:3h", "", "");
 		db.Choice("later", "\"Stay here. Someone will come.\"", "wait", "", "", "", "", "", "", "", "");
 		db.Node("walk");
 		db.Say("", "\"Is it far? I can walk far. I just can't walk at night.\"");
@@ -158,11 +159,11 @@ class RZ_DialoguePack_wanderers
 		db.Do("learn:scav.chemist");
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("shrug");
-		db.Say("", "\"True enough to sell. That's the only kind of true I can afford.\"");
 	}
 
 	protected static void Add1(RZ_DialogueDB db)
 	{
+		db.Say("", "\"True enough to sell. That's the only kind of true I can afford.\"");
 		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.trader.prices", "wanderer:trader", "", "Ask what sells these days.", 4, 0, "plain");
 		db.Node("start");

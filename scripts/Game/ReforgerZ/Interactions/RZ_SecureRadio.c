@@ -175,6 +175,19 @@ class RZ_SecureRadio
 			return;
 		}
 
+		// A house set calls the open channel with power (docs/DIALOGUE.md, "The open channel")
+		if (option == 2)
+		{
+			IEntity houseSet;
+			if (s.m_Comp)
+				houseSet = s.m_Comp.GetOwner();
+
+			if (houseSet && m_GM.GetDialogue())
+				m_GM.GetDialogue().OpenRadio(playerId, houseSet, user);
+
+			return;
+		}
+
 		if (option != 0)
 			return;
 

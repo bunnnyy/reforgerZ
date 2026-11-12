@@ -45,10 +45,7 @@ class RZ_DialogueScenes
 	static const int POINT = 92;
 	static const int OBJECT = 93;
 	static const int STAND = 94;
-	static const float HEAR = 8;
-	static const float ROOM = 30;
 	static const float HEAR_GAP = 10;
-	static const float HOLD = 5;
 	static const float VOUCH_SECONDS = 300;
 	static const float PAIR_GAP = 3600;
 	static const float CALLOUT_SECONDS = 20;
@@ -129,7 +126,7 @@ class RZ_DialogueScenes
 		}
 
 		array<int> near = {};
-		Others(s, HEAR, near);
+		Others(s, RZ_DialogueSettings.Get().m_fHear, near);
 		if (near.IsEmpty())
 			return;
 
@@ -198,7 +195,7 @@ class RZ_DialogueScenes
 		}
 
 		array<int> near = {};
-		Others(s, HEAR, near);
+		Others(s, RZ_DialogueSettings.Get().m_fHear, near);
 		if (near.IsEmpty())
 		{
 			s.m_aNew.Insert("Nobody's there to say it about.");
@@ -280,7 +277,7 @@ class RZ_DialogueScenes
 
 		IEntity a = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		IEntity b = GetGame().GetPlayerManager().GetPlayerControlledEntity(voucher);
-		if (!a || !b || RZ_Util.DistXZ(a.GetOrigin(), b.GetOrigin()) > HEAR)
+		if (!a || !b || RZ_Util.DistXZ(a.GetOrigin(), b.GetOrigin()) > RZ_DialogueSettings.Get().m_fHear)
 			return 0;
 
 		return 1;
@@ -321,7 +318,7 @@ class RZ_DialogueScenes
 
 		// On air: everyone within the channel's reach, no name, no tags (nothing personal on air)
 		bool onAir = RZ_TalkRadio.Cast(s.m_Adapter) != null;
-		float reach = HEAR;
+		float reach = RZ_DialogueSettings.Get().m_fHear;
 		string text = "";
 		if (onAir)
 		{
@@ -422,7 +419,7 @@ class RZ_DialogueScenes
 		h.m_iChoice = choice;
 		h.m_iResult = result;
 		h.m_sVerdict = verdict;
-		h.m_fLeft = HOLD;
+		h.m_fLeft = RZ_DialogueSettings.Get().m_fHold;
 		h.m_vRoom = me.GetOrigin();
 		m_aHolds.Insert(h);
 		TellRoom(h.m_vRoom, string.Format("%1 is about to answer: %2. Anyone talking to them can object, or stand with them.", RZ_Util.PlayerName(s.m_iPlayer), StripTags(what)));
@@ -437,7 +434,7 @@ class RZ_DialogueScenes
 		RZ_Util.GetAlivePlayers(ids, players);
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), at) <= ROOM)
+			if (RZ_Util.DistXZ(p.GetOrigin(), at) <= RZ_DialogueSettings.Get().m_fRoom)
 				m_GM.NotifyPlayer(ids[i], "The room", text);
 		}
 	}

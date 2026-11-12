@@ -10,7 +10,6 @@ are errand cards in [ERRANDS.md](../docs/ERRANDS.md#the-cards). This file keeps 
 
 | What | Where it goes |
 |---|---|
-| **Claim lines in conversations:** cover details spoken as choices, the other kit kinds as `kit:` words, one claim line per speaker per life. Claims as look choices with their tags, the word at the wire and the post's speaker are built ([docs/DIALOGUE.md](../docs/DIALOGUE.md#claims-in-someone-elses-kit)) | [DIALOGUE.md](DIALOGUE.md#12-claims-in-someone-elses-kit) |
 | **Looks:** "something of theirs from a mission on you" (−1) | The look ([REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) |
 | **Breakers:** a mission's sneak approach that spots someone passing is a catch | [MISSION_STYLE.md](MISSION_STYLE.md) |
 | **Missions:** a stage that offers a trick sets `<key>.disguised` *(you)* for later stages; trick objectives at least 25 m from a leader's seat | [MISSION_STYLE.md](MISSION_STYLE.md) |

@@ -44,6 +44,7 @@ class RZ_DialogueTrees
 	protected ref RZ_DialogueMemory m_Memory;
 	protected ref RZ_RepSeason m_Record;
 	protected ref RZ_DialogueBarks m_Barks;
+	protected ref RZ_DialogueOpens m_Opens = new RZ_DialogueOpens();
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_DialogueTrees(RZ_GameModeComponent gm)
@@ -96,6 +97,9 @@ class RZ_DialogueTrees
 		}
 
 		m_Barks.Tick(dt);
+		RZ_DialogueMakeRight.Tick(m_GM, dt);
+		RZ_DialogueStory.Tick(m_GM, dt);
+		m_Opens.Tick(m_GM, dt);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -276,6 +280,8 @@ class RZ_DialogueTrees
 		if (scenes)
 			scenes.HubVerbs(s, replies);
 
+		RZ_DialogueMakeRight.Verb(s, replies);
+
 		CollectTopics(t);
 		while (replies.Count() > MAX_REPLIES - 1 && !t.m_aTopics.IsEmpty())
 		{
@@ -417,7 +423,7 @@ class RZ_DialogueTrees
 	//! Our reply ids: topics, choices and More.
 	static bool IsOurs(int replyId)
 	{
-		return replyId == MORE || replyId >= TOPIC_BASE || RZ_DialogueScenes.IsOurs(replyId);
+		return replyId == MORE || replyId == RZ_DialogueMakeRight.VERB || replyId >= TOPIC_BASE || RZ_DialogueScenes.IsOurs(replyId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -474,6 +480,15 @@ class RZ_DialogueTrees
 		if (replyId == MORE)
 		{
 			t.m_iPage++;
+			return true;
+		}
+
+		if (replyId == RZ_DialogueMakeRight.VERB)
+		{
+			RZ_DialogueMakeRight.Pick(s);
+			if (s.m_aNew.IsEmpty())
+				s.m_aNew.InsertAll(s.m_aSaid);
+
 			return true;
 		}
 
@@ -643,6 +658,15 @@ class RZ_DialogueTrees
 				return true;
 			}
 
+			// One claim per speaker per life: they remember who said they were one of them
+			if (m_Memory.Has(pid, RZ_DialogueMemory.NOTES, ctx.m_sKey + "|claimed"))
+			{
+				s.m_aNew.Insert("\"You told me that already. I'm still thinking about it.\"");
+				s.m_aNew.InsertAll(s.m_aSaid);
+				return true;
+			}
+
+			m_Memory.Add(pid, RZ_DialogueMemory.NOTES, ctx.m_sKey + "|claimed");
 			result = Look(s, c);
 			verdict = LookVerdict(ctx, c, result);
 		}
@@ -722,7 +746,7 @@ class RZ_DialogueTrees
 		if (scenes)
 			bonus = scenes.VouchBonus(pid);
 
-		RZ_ECheck result = RZ_Checks.Lie(m_GM, pid, c.m_iCheckFaction, Difficulty(ctx, c), HasTell(ctx), bonus);
+		RZ_ECheck result = RZ_Checks.Lie(m_GM, pid, c.m_iCheckFaction, LieDifficulty(ctx, c, true), HasTell(ctx), bonus);
 		RZ_WorldFacts facts = m_GM.GetFacts();
 		string key = "talk." + t.m_Conv.m_sId + "/@" + c.m_sId;
 		if (result == RZ_ECheck.PASS)
@@ -741,6 +765,12 @@ class RZ_DialogueTrees
 
 			if (scenes)
 				scenes.NoteClaim(s, lie);
+
+			if (facts && !ctx.m_sScene.IsEmpty())
+			{
+				facts.SetFlag("scene_lied." + ctx.m_sScene, 1);
+				facts.Memory().Record("scene_lied." + ctx.m_sScene, ctx.m_sKey, m_GM.GetProfile(pid).m_sIdentity, RZ_WorldMemory.SOURCE_CHOICE, false);
+			}
 
 			return result;
 		}
@@ -897,10 +927,48 @@ class RZ_DialogueTrees
 		if (pub && scenes)
 			scenes.Overheard(s, label, s.m_aNew);
 
+		// A lie said in a public node is a lie told to everyone who heard it
+		if (s.m_Tree && s.m_Tree.m_Node && s.m_Tree.m_Node.m_bPublic)
+			MarkOverheardLies(s);
+
 		if (scenes && HasEffect(c.m_aDo, "claim") && c.m_sCheck != "lie")
 			scenes.NoteClaim(s, null);
 
 		return goOn;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lies (~lie) in the node just entered go to every other player within hearing, as heard.
+	protected void MarkOverheardLies(RZ_TalkSession s)
+	{
+		RZ_DTalk t = s.m_Tree;
+		array<string> keys = {};
+		foreach (RZ_DSay item : t.m_Node.m_aItems)
+		{
+			if (!item.m_sLie.IsEmpty())
+				keys.Insert(Scoped(t.m_Ctx, item.m_sLie));
+		}
+
+		if (keys.IsEmpty() || !t.m_Ctx.m_User)
+			return;
+
+		float reach = RZ_DialogueSettings.Get().m_fHear;
+		if (t.m_Ctx.m_bRadio)
+			reach = RZ_TalkRadio.REACH;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			if (ids[i] == s.m_iPlayer || RZ_Util.DistXZ(p.GetOrigin(), t.m_Ctx.m_User.GetOrigin()) > reach)
+				continue;
+
+			foreach (string key : keys)
+			{
+				m_Memory.NoteHeardLie(ids[i], key);
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1183,6 +1251,35 @@ class RZ_DialogueTrees
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A lie's difficulty: +1 at a Paranoid leader, +1 where this speaker caught you lying this life,
+	//! -1 for an Ex-Con or a Raider, and (never shown) the speaker's own credulity, seeded by who they
+	//! are and the season: one in three believes a little more, one in three a little less.
+	int LieDifficulty(RZ_DCtx ctx, RZ_DChoice c, bool hidden)
+	{
+		int d = Difficulty(ctx, c);
+		if (ctx.m_Leader && ctx.m_Leader.HasTrait(RZ_ELeaderTrait.PARANOID))
+			d++;
+
+		if (m_Memory.TopicAt(ctx.m_iPlayer, ctx.m_sKey + "|lie_caught") > 0)
+			d++;
+
+		string bg = m_GM.GetProfile(ctx.m_iPlayer).m_sBackgroundId;
+		if (bg == "excon" || bg == "raider")
+			d--;
+
+		if (hidden)
+		{
+			int seed = 0;
+			if (m_GM.GetFacts())
+				seed = m_GM.GetFacts().GetSeed();
+
+			d += Math.AbsInt(ctx.m_sKey.Hash() + seed) % 3 - 1;
+		}
+
+		return Math.ClampInt(d, 1, 4);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The tag a choice carries: what it needs and costs, never what comes of it.
 	protected void Tag(RZ_DTalk t, RZ_DChoice c, RZ_TalkReply r)
 	{
@@ -1240,7 +1337,7 @@ class RZ_DialogueTrees
 			if (HasTell(ctx))
 				tag = "[Lie - they'd see through it]";
 			else
-				tag = string.Format("[Lie - %1 of %2]", Math.Max(0, lieScore), Difficulty(ctx, c));
+				tag = string.Format("[Lie - %1 of %2]", Math.Max(0, lieScore), LieDifficulty(ctx, c, false));
 		}
 		else if (c.m_sCheck == "threaten")
 		{
@@ -1460,7 +1557,23 @@ class RZ_DialogueTrees
 					m_Memory.Add(pid, RZ_DialogueMemory.CLAIMS, ctx.m_sKey + "|" + e.m_sArg);
 					break;
 				case "learn":
-					m_Memory.Learn(pid, e.m_sArg);
+				{
+					// learn:<key>, or learn:<key>:<hours>h for a passing fact
+					int lc = e.m_sArg.IndexOf(":");
+					if (lc > 0 && e.m_sArg.EndsWith("h"))
+						m_Memory.Learn(pid, Scoped(ctx, e.m_sArg.Substring(0, lc)), e.m_sArg.Substring(lc + 1, e.m_sArg.Length() - lc - 2).ToFloat());
+					else
+						m_Memory.Learn(pid, Scoped(ctx, e.m_sArg));
+
+					break;
+				}
+				case "set":
+				case "qset":
+				case "note":
+				case "begin":
+				case "approach":
+				case "test":
+					RZ_DialogueStory.Effect(s, e.m_sName, e.m_sArg);
 					break;
 				case "rumour":
 					Rumour(ctx, e.m_sArg);
@@ -1543,6 +1656,13 @@ class RZ_DialogueTrees
 				}
 				case "offer":
 				{
+					// A speaker a running story holds offers nothing else this turn
+					if (RZ_DialogueWorld.Claimed(ctx) && (!t.m_Conv || t.m_Conv.m_iPrio != 0))
+					{
+						s.m_aNew.Insert("\"Not now. I've got enough on.\"");
+						break;
+					}
+
 					if (ctx.m_Leader && m_GM.GetLeaders())
 						m_GM.GetLeaders().HandleChoice(pid, ctx.m_Leader.m_iId, 0, ctx.m_Body, user);
 
@@ -1562,7 +1682,7 @@ class RZ_DialogueTrees
 	{
 		RZ_DTalk t = s.m_Tree;
 		string key = arg;
-		float hours = 2;
+		float hours = RZ_DialogueSettings.Get().m_fPromiseHours;
 		int colon = arg.IndexOf(":");
 		if (colon > 0)
 		{
@@ -1691,6 +1811,47 @@ class RZ_DialogueTrees
 			array<string> lines = {};
 			RZ_RepVoice.Verdict(m_GM, pid, ctx.m_iFaction, ctx.m_Leader, lines);
 			s.m_aNew.InsertAll(lines);
+			return;
+		}
+
+		// The epilogue week's carriers, as built: the season at this seat, and where to look
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if ((what == "season" || what == "look") && epi && ctx.m_Leader)
+		{
+			s.m_bCapturing = true;
+			if (what == "season")
+				epi.LeaderPick(ctx.m_Leader, pid, 40);
+			else
+				epi.LeaderPick(ctx.m_Leader, pid, 41);
+
+			return;
+		}
+
+		// A bite lie caught at a safehouse counts as caught hiding that bite (the house's own rule)
+		if (what == "caught_bite")
+		{
+			RZ_PlayerProfile bitten = m_GM.GetProfile(pid);
+			if (bitten.IsInfected() && !bitten.m_bBiteDeclared && !bitten.m_bBiteCaught)
+			{
+				bitten.m_bBiteCaught = true;
+				s.m_aNew.Insert("(Caught hiding a bite: the houses won't take your word on it again this life.)");
+			}
+
+			return;
+		}
+
+		// Telling a safehouse about a bite: the house's own service, as built
+		if (what == "declare_bite" && m_GM.GetSafehouses())
+		{
+			m_GM.GetSafehouses().HandleAction(pid, RZ_ESafehouseAction.DECLARE_BITE, ctx.m_Body, user);
+			return;
+		}
+
+		switch (what)
+		{
+			case "distress": RZ_DialogueNets.Answer(s); return;
+			case "net_word": RZ_DialogueNets.NetWord(s); return;
+			case "net_lost": RZ_DialogueNets.NetLost(s); return;
 		}
 	}
 

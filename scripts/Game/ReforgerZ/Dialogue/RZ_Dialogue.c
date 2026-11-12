@@ -49,6 +49,48 @@ class RZ_DialogueSettings
 	[Attribute("20", desc: "Trees: the most Favor talk pays a player with one faction in a real day (all conversations together)")]
 	int m_iTalkFavorPerDay;
 
+	[Attribute("1", desc: "Trees: a leader who won't deal with you (attitude -2 or below, not Hunted) offers Make it right: their faction's amends job; done, they start again with you, once a season (docs/DIALOGUE.md)")]
+	bool m_bMakeRight;
+
+	[Attribute("1", desc: "Trees: a greet written to open by itself (a road post asking who you're with, a stranger calling out) opens the talk screen when you walk up, inside the unasked-contact budget")]
+	bool m_bOpens;
+
+	[Attribute("1", desc: "Trees: distress calls on the open channel (answering sends the caller to the nearest Haven house's gate) and Radio Operators talking on a cracked secure net")]
+	bool m_bRadioCalls;
+
+	[Attribute("45", desc: "Talk: seconds with no reply before a conversation ends while another player waits at the same person")]
+	float m_fWaitingIdle;
+
+	[Attribute("6", desc: "Talk: conversations with one person at once")]
+	int m_iPerSpeaker;
+
+	[Attribute("16", desc: "Talk: conversations with one person at once while someone there is in a public node (a scene)")]
+	int m_iPerSpeakerScene;
+
+	[Attribute("8", desc: "Trees: overheard lines, vouching and call-outs reach this far (m)")]
+	float m_fHear;
+
+	[Attribute("30", desc: "Trees: a deciding hold and a scene's result are told to the room this far (m)")]
+	float m_fRoom;
+
+	[Attribute("5", desc: "Trees: seconds a deciding pick waits for an objection")]
+	float m_fHold;
+
+	[Attribute("2", desc: "Trees: a promise's default hours of the promiser's own play")]
+	float m_fPromiseHours;
+
+	[Attribute("3", desc: "Trees: a promise breaks after this many real days, whatever the play")]
+	int m_iPromiseDays;
+
+	[Attribute("6", desc: "Trees: barks are said to a player passing this close (m)")]
+	float m_fBarkRadius;
+
+	[Attribute("60", desc: "Trees: seconds between two barks to one player")]
+	float m_fBarkPerPlayer;
+
+	[Attribute("600", desc: "Trees: seconds between two barks from one person to one player")]
+	float m_fBarkPerSpeaker;
+
 	protected static ref RZ_DialogueSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -116,9 +158,7 @@ class RZ_Dialogue
 	protected static const float TALK_GAP = 2;
 	protected static const float PICK_GAP = 0.3;
 	protected static const int MAX_SAID = 1400;
-	protected static const int PER_SPEAKER = 6;		// conversations with one person at once
 	protected static const float IDLE_BUMP = 30;		// at the cap, the one idle this long gives way
-	protected static const int PER_SPEAKER_SCENE = 16;	// ...while someone there is in a public node
 	protected static const float RESUME_SECONDS = 60;
 	protected static const string LINE_BREAK = "^";
 
@@ -262,6 +302,13 @@ class RZ_Dialogue
 		if (!IsOn() || !radio || !m_Trees.IsOn())
 			return false;
 
+		// A house set needs power to carry a voice (a carried radio has its own batteries)
+		if (!RZ_DialogueNets.CanCall(radio))
+		{
+			m_GM.NotifyPlayer(playerId, "Radio", "No power. It'll hear the channel, but it won't carry your voice. A generator close by would do it.");
+			return true;
+		}
+
 		return Start(playerId, radio, user, new RZ_TalkRadio(radio));
 	}
 
@@ -397,11 +444,11 @@ class RZ_Dialogue
 
 		array<RZ_TalkSession> with = {};
 		SessionsWith(owner, with);
-		int cap = PER_SPEAKER;
+		int cap = RZ_DialogueSettings.Get().m_iPerSpeaker;
 		foreach (RZ_TalkSession pub : with)
 		{
 			if (pub.m_Tree && pub.m_Tree.m_Node && pub.m_Tree.m_Node.m_bPublic)
-				cap = PER_SPEAKER_SCENE;
+				cap = RZ_DialogueSettings.Get().m_iPerSpeakerScene;
 		}
 
 		if (with.Count() < cap)

@@ -442,6 +442,7 @@ count ×1.2, never the total), then what's left of the budget:
 | **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a life per faction from errands, never below 15 |
 | **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame | at most 10 a real day per faction. Spent Fame is gone: it can drop your band and your tier |
 | **Parley amends** | The owed, at a gate ([below](#the-parley-and-the-knock)): one amends contract reserved for 60 minutes though they're Hunted | the contract's Fame, as Infamy off | one offer per parley |
+| **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *"What would it take?"* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this life) is cleared, once a season per leader |
 
 **When the budget is spent:**
 - An amends contract pays its Fame as ordinary Fame, rival shares and all: "Bastion has forgiven you
@@ -840,9 +841,10 @@ notice: "[Full kit +2] [Background +1] [They know your face −1] Pass as one of
 
 Instant fail: the infection showing at Halcyon's look ("They see bites for a living."), three
 catches this life ("Your description is on the board at every post."), blown, kit that remembers
-whose it was ([below](#whose-kit-it-was)), and a dead man's name given at his own post.
-*Simplified:* the word is +1 when you've heard it; picking among three words (a wrong one fails at
-once) comes with claim lines in conversations ([DIALOGUE.md](../designs/DIALOGUE.md#12-claims-in-someone-elses-kit)).
+whose it was ([below](#whose-kit-it-was)), and a dead man's name given at his own post. In a
+conversation the word is picked among three (a wrong one fails at once), and the other details are
+said as choices; a claim is made once per speaker per life
+([DIALOGUE.md](DIALOGUE.md#claims-in-someone-elses-kit)).
 
 **Passing.** At a barrier: cleared for that post while it stands. At a gate: 10 minutes inside. While
 passing, that faction's AI looks past what it holds against you (not a fight's bit), your persuade

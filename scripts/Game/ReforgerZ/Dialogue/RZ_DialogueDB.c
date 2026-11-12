@@ -129,6 +129,7 @@ class RZ_DConv
 	string m_sScene;		// a scene its decisions settle for the world ("" none)
 	string m_sSceneScope;	// "season" (one for the server) or "speaker" (one per speaker)
 	ref RZ_DCond m_SceneWho;	// who may decide (`scene <id> <scope> who <conditions>`); null: whoever may take the choice
+	float m_fOpens;			// a greet that opens the talk screen by itself within this many metres (0 never)
 	ref array<ref RZ_DNode> m_aNodes = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -197,6 +198,39 @@ class RZ_DialogueDB
 		foreach (RZ_DConv c : m_aConvs)
 		{
 			if (c.IsBark())
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line that tells the lie `key` (a say with ~lie:<key>), "" if none.
+	string LieText(string key)
+	{
+		foreach (RZ_DConv c : m_aConvs)
+		{
+			foreach (RZ_DNode n : c.m_aNodes)
+			{
+				foreach (RZ_DSay item : n.m_aItems)
+				{
+					if (item.m_sLie == key)
+						return item.m_sText;
+				}
+			}
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Greets that open the talk screen by themselves (RZ_DialogueOpens).
+	int CountOpens()
+	{
+		int n = 0;
+		foreach (RZ_DConv c : m_aConvs)
+		{
+			if (c.m_fOpens > 0)
 				n++;
 		}
 
@@ -289,6 +323,14 @@ class RZ_DialogueDB
 	{
 		if (m_Node)
 			m_Node.m_bConfirm = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `opens approach <metres>`: the greet opens the talk screen by itself within that distance.
+	void Opens(float metres)
+	{
+		if (m_Conv)
+			m_Conv.m_fOpens = metres;
 	}
 
 	//------------------------------------------------------------------------------------------------

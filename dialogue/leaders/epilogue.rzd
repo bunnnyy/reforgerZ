@@ -1,0 +1,177 @@
+# The epilogue week at every leader (docs/EPILOGUE.md, "Carriers"; docs/DIALOGUE.md, "The last week").
+# Lines read four separate things and never mix them up: the world's outcome (cure_held, ending), who
+# was there (was), this player's route (route), and this character's memory. "The cure." gives the
+# leader's own read and opens the built carriers (the season at this seat, where to look); "Me." is
+# the leader on themselves, a week from the barrier. Nothing here pays anything.
+
+# ------------------------------------------------------------------ The Haven
+conv epilogue.haven.cure
+for leader:haven
+when epilogue
+topic "Ask about the cure."
+prio world
+voice haven
+
+node start
+  say? cure_held:haven :: "It went hand to hand, like we said. The houses argued about who went first. They're still arguing. That's how you know it's ours."
+  say? cure_held:bastion :: "Bastion has it in a crate with a number on it. We're on their list. Everyone's on a list now."
+  say? cure_held:redhand :: "The Red Hand has it, and a price on it. We're paying in tins. They're keeping the tins, mostly."
+  say? cure_held:halcyon :: "The lab has published. Every name on the paper. I read it twice. I understood the second time."
+  say? cure_held:everyone :: "Somebody walked it out to every house. No crate, no list. Nobody would say who to thank."
+  say "It came. That's the part I keep saying out loud, to see if it's true."
+  > @here "What happened here, this season?" -> season
+  > @look "Where should I look?" -> look
+  > @back "Something else." -> hub
+
+node season
+  say "Sit down. I'll tell it the way the house tells it."
+  do call:season
+  > @back2 "Something else." -> hub
+
+node look
+  say "Places you haven't been. I'll say them; you go."
+  do call:look
+  > @back3 "Something else." -> hub
+
+conv epilogue.haven.me
+for leader:haven
+when epilogue
+topic "Ask what they'll do now."
+prio flavour
+voice haven
+
+node start
+  say? route:won :: "You stood with us. I won't forget it, and nobody here will let me."
+  say? route:lost :: "You picked someone else's way. You'll still be fed here. We've fed people who picked worse."
+  say? was:every_name :: "You were at the table when the names were read. I saw you."
+  say "When they open the north road I'll be the last one out. Somebody has to lock the stores."
+  > @back "Something else." -> hub
+
+# ------------------------------------------------------------------ Bastion
+conv epilogue.bastion.cure
+for leader:bastion
+when epilogue
+topic "Ask about the cure."
+prio world
+voice bastion
+
+node start
+  say? cure_held:bastion :: "Issued against name and signature, at the north road and the posts. In order. As planned."
+  say? cure_held:haven :: "The Haven hands it out at its houses. No register. Somebody has to keep one, so we do."
+  say? cure_held:redhand :: "Sold. At a price. Logged as theft. The log doesn't help, but it's accurate."
+  say? cure_held:halcyon :: "Published. Every name on the paper but ours. Noted."
+  say? cure_held:everyone :: "Carried out by persons unknown. To everyone. Unregistered. I've stopped writing to Command about it."
+  say "Cure confirmed. Processing at the checkpoints. The order hasn't changed. The tone has."
+  > @here "What happened here, this season?" -> season
+  > @look "Where should I look?" -> look
+  > @back "Something else." -> hub
+
+node season
+  say "For the log, then."
+  do call:season
+  > @back2 "Something else." -> hub
+
+node look
+  say "Grid squares you haven't covered. Cover them."
+  do call:look
+  > @back3 "Something else." -> hub
+
+conv epilogue.bastion.me
+for leader:bastion
+when epilogue
+topic "Ask what they'll do now."
+prio flavour
+voice bastion
+
+node start
+  say? route:won :: "You signed the roster and held to it. That goes in the log, in ink."
+  say? route:lost :: "You signed for someone else. Logged. Then eat something."
+  say? was:orders :: "You were there when the orders were read. You'll remember them longer than Command did."
+  say "Hand over the post. Sign for the stores. Walk out last. Same as any posting."
+  > @back "Something else." -> hub
+
+# ------------------------------------------------------------------ The Red Hand
+conv epilogue.redhand.cure
+for leader:redhand
+when epilogue
+topic "Ask about the cure."
+prio world
+voice redhand
+
+node start
+  say? cure_held:redhand :: "Ours. Priced fair. Fair to us. The queue's at the board, and the board's got prices on it."
+  say? cure_held:bastion :: "Bastion's got it in a crate. We've got the crate's address. Patience."
+  say? cure_held:haven :: "The Haven's giving it away. Free! Bad for business. Good for everyone else, I'm told."
+  say? cure_held:halcyon :: "The beaks printed it. Can't sell a recipe everyone's read. I've tried."
+  say? cure_held:everyone :: "Somebody gave it to everyone for nothing. I've been robbed before, but never on behalf of the whole Zone."
+  say "It's out. Everything's for sale again, including leaving."
+  > @here "What happened here, this season?" -> season
+  > @look "Where should I look?" -> look
+  > @back "Something else." -> hub
+
+node season
+  say "The book remembers. Sit. I'll read you the good bits."
+  do call:season
+  > @back2 "Something else." -> hub
+
+node look
+  say "Places you haven't robbed yet. That's a joke. Half of one."
+  do call:look
+  > @back3 "Something else." -> hub
+
+conv epilogue.redhand.me
+for leader:redhand
+when epilogue
+topic "Ask what they'll do now."
+prio flavour
+voice redhand
+
+node start
+  say? route:won :: "You stood with the book. The book stands with you. That's as warm as it gets here."
+  say? route:lost :: "You backed the other horse. No hard feelings. A few soft ones."
+  say? was:book :: "You were at the table when the book was closed. You know what's in it. That makes two of us."
+  say "Me? Close the book. Count it twice. Then see what the outside charges for a sandwich."
+  > @back "Something else." -> hub
+
+# ------------------------------------------------------------------ Halcyon
+conv epilogue.halcyon.cure
+for leader:halcyon
+when epilogue
+topic "Ask about the cure."
+prio world
+voice halcyon
+
+node start
+  say? cure_held:halcyon :: "Published. Every author named. The method is on the lab door. Someone corrected the spelling."
+  say? cure_held:bastion :: "Bastion holds the stock. They issue it alphabetically. We are under H."
+  say? cure_held:haven :: "The Haven distributes by hand. Unmeasured. Effective, by every measure we have."
+  say? cure_held:redhand :: "Sold. The dose is ours. The price is theirs. We have recorded both."
+  say? cure_held:everyone :: "Distributed without control or record. The outcome is good. We are revising our assumptions."
+  say "The work is done. The record is not. It never is."
+  > @here "What happened here, this season?" -> season
+  > @look "Where should I look?" -> look
+  > @back "Something else." -> hub
+
+node season
+  say "The record, then. The short version."
+  do call:season
+  > @back2 "Something else." -> hub
+
+node look
+  say "Unsampled locations. Your notebook should list them. It probably doesn't."
+  do call:look
+  > @back3 "Something else." -> hub
+
+conv epilogue.halcyon.me
+for leader:halcyon
+when epilogue
+topic "Ask what they'll do now."
+prio flavour
+voice halcyon
+
+node start
+  say? route:won :: "You chose the paper. Your name is in the acknowledgements. Small type. Still there."
+  say? route:lost :: "You chose another route. That is also data."
+  say? was:proof :: "You were there when the paper went out. Witness noted."
+  say "Write it up. Every page, including the first one. Then leave by the north road like anyone."
+  > @back "Something else." -> hub

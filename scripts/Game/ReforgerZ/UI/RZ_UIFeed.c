@@ -639,6 +639,7 @@ class RZ_UIFeed
 		s += BuildErrands(playerId, ent, from);
 		s += BuildInfected(playerId, ent, from);
 		s += BuildDoors(playerId);
+		s += RZ_DialogueJournal.Rows(playerId);
 
 		array<ref RZ_UIClue> clues;
 		if (m_mClues.Find(playerId, clues))
@@ -744,6 +745,10 @@ class RZ_UIFeed
 	//! list's 6,000 is never cut for it): D|id|what they told you|what you've found|who it went to.
 	string BuildDetail(int playerId, int id)
 	{
+		// Promises and What you know (Dialogue/RZ_DialogueJournal.c)
+		if (RZ_DialogueJournal.IsOurs(id))
+			return RZ_DialogueJournal.Detail(playerId, id);
+
 		string told = "";
 		string found = "";
 		string went = "";
