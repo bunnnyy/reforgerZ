@@ -8,7 +8,7 @@ GenericEntity {
  }
  coords 0 0 0
  {
-  GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+  GenericEntity : "{6A130E5B3DD3EAA9}Prefabs/Props/Forest/WoodPile/WoodPile_02_end_A.et" {
    ID "34DDA821DA6A9A3E"
    components {
     Hierarchy "{E7A9FB703ADE7E86}" {
@@ -25,53 +25,44 @@ GenericEntity {
    }
    coords 0.7 0 0.3
   }
-  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "3B177FF4756CA7E6"
    components {
     Hierarchy "{D473BB3AE01BD189}" {
     }
    }
-   coords 1.6 0 -0.5
+   coords 1.5 0 -0.6
    angles 0 31 0
   }
-  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+  GenericEntity : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
    ID "1C62581E40F77F9B"
    components {
     Hierarchy "{C725FF41E1F338CD}" {
     }
    }
-   coords 1.4 0 0.9
-   angles 0 77 0
-  }
-  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "AD0DB1837FB516FD"
-   components {
-    Hierarchy "{485BC98926A82344}" {
-    }
-   }
-   coords 0.2 0 -1.2
+   coords 0.1 0 -1.2
    angles 0 120 0
   }
   GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
-   ID "94705885192F6925"
+   ID "AD0DB1837FB516FD"
    components {
-    Hierarchy "{2D9A3D8BA734E97D}" {
+    Hierarchy "{485BC98926A82344}" {
     }
    }
    coords -0.4 0 1.8
    angles 0 150 0
   }
   GenericEntity {
-   ID "80C768EB94EC2047"
+   ID "94705885192F6925"
    components {
-    SCR_AISmartActionSentinelComponent "{7A0501C283EC46BF}" {
+    SCR_AISmartActionSentinelComponent "{2D9A3D8BA734E97D}" {
      Tags {
       "RZ_Chop"
      }
      m_vLookPosition 0 1.6 -0.8
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{9E9D6FD6F1AFE6FA}" {
+    Hierarchy "{80C768EB94EC2047}" {
     }
    }
    coords 0.7 0 1.1

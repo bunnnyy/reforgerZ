@@ -4510,12 +4510,12 @@
    "path": "",
    "basePrefab": "",
    "baseFind": "",
-   "baseHint": "the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits)",
+   "baseHint": "the 83 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits)",
    "components": [],
    "actions": [],
-   "slots": ["m_CampLifeSettings.m_aKits[].m_aPieces[].m_sPrefab"],
+   "slots": ["m_CampLifeSettings.m_aKits[].m_aPieces[].m_sPrefab", "m_CampLifeSettings.m_aKits[].m_aLayers[].m_sPrefab"],
    "listSlot": false,
-   "slotLabel": "Territory > Camp life > Kits (each piece's prefab)",
+   "slotLabel": "Territory > Camp life > Kits (each piece's prefab, the plan's and the layers')",
    "required": false,
    "minimum": false,
    "use": "scenery at holdings, safehouses and road posts (a place with no kit stays bare)",
@@ -6655,7 +6655,7 @@
    "category": "Territory",
    "object": "Camp life",
    "field": "m_CampLifeSettings",
-   "covers": "**Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life))"
+   "covers": "**Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings))"
   },
   {
    "category": "Guidance",
@@ -7444,14 +7444,20 @@
     "m_iPiecesSafehouse": "8",
     "m_iPiecesFieldStation": "9",
     "m_iPiecesRoadPost": "4",
-    "m_iPiecesMax": "90",
+    "m_iPiecesMax": "200",
     "m_iLivePlaces": "3",
     "m_fShuffleMinutes": "3",
     "m_iExtrasPerPlace": "1",
     "m_iExtrasMax": "6",
     "m_bSiteGrid": "1",
     "m_iSiteReadMs": "2",
-    "m_iAuditThreshold": "70"
+    "m_iAuditThreshold": "70",
+    "m_bSolver": "1",
+    "m_iCandidates": "24",
+    "m_bLayers": "1",
+    "m_bBoardWindows": "1",
+    "m_bPreRead": "1",
+    "m_iLayerPieces": "60"
    }
   },
   {

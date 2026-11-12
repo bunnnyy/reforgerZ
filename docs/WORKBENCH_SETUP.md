@@ -12,7 +12,7 @@ reads it and makes what it can; the tables in sections 2 to 5 are generated from
 as the manual checklist.
 
 A first pass is done, in Workbench 1.9 on Arland and Everon: the repo holds the plugin's prefabs
-(the quartermasters' and the notebook's actions among them), camp life's 53 compositions, its
+(the quartermasters' and the notebook's actions among them), camp life's 83 compositions, its
 smart-action waypoint and eleven kits, the faction and loadout managers, the worlds (Everon, the main
 one, and Arland) and their scenarios, and most of the UI. Many prefabs are built on stand-ins
 ([what that means](#stand-in-bases)). The UI is set up ([the UI](#setting-up-the-ui)): the spawn
@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **324 prefab fields**: 46 on `RZ_GameModeComponent`, 267 in its settings objects, and 11 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **325 prefab fields**: 46 on `RZ_GameModeComponent`, 267 in its settings objects, and 12 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -715,7 +715,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | vanilla AIWaypoint_ObservationPost.et | — | Territory > Camp life > Observation waypoint | optional | a sentry with no nest, only where an observation-post smart action stands within 6 m of the spot (vanilla's waypoint needs one; elsewhere, or empty, the loiter waypoint) |
 | (existing prefab) | vanilla Group_Base.et (an AI group with no members) | — | Territory > Camp life > Group prefab | optional | lone characters (occupants, single guards) join one so they can take jobs (empty = they stand) |
 | (existing prefab) | a new prefab of class SCR_SmartActionWaypoint, saved as Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et (vanilla ships the class, not a prefab) | — | Territory > Camp life > Smart action waypoint | optional | people use a piece's sit, lean, work and watch points (empty = they loiter beside it) |
-| (existing prefab) | the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
+| (existing prefab) | the 83 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab, the plan's and the layers') | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
 
 #### New-player guidance
 
@@ -787,7 +787,7 @@ and the UI files) need none, and eight have no base:
 |---|---|---|---|---|---|
 | (existing prefab) | items from the loot pool | — | Interactions > Search > Loot tables (each table's three lists) | optional | exact loot per building type (optional; empty tables are filled from the pool by keywords) |
 | (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
-| `RZ_CookedMeat.et` | Metabolism's `MeatLeg_01.et` (its raw meat: 0.2 sickness), named "Cooked meat", with B_FoodWaterGadgetComponent's m_iFoodValue 0.3 and m_fSicknessChance 0. Metabolism has no cooked food of its own | — | Interactions > Crafting > Stove recipes: **Cook meat** (one `meatleg_01` in, 20 s) | optional | cookables at a stove (more recipes can be added the same way; none without this one) |
+| (existing prefab) | a cooked food item (e.g. Metabolism's cooked meat) | — | Interactions > Crafting > Stove recipes (each output) | optional | cookables at a stove (optional; none by default) |
 | (existing prefab) | vanilla items or crates (never a vehicle or a car part: refused) | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
 | (existing prefab) | vanilla ammo or rations the same quartermaster sells at Trusted or below | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
 
@@ -1078,19 +1078,30 @@ kits every place stays bare, and with no waypoint slots its people walk to their
 **Zombies > Move waypoint** and stand there. The plugin fills the four vanilla waypoint slots and
 the group prefab (section 4, *Camp life*). Everything else is built from one file.
 
-**The source: `tools/camp_kit/pieces.py`.** It holds the 54 camp-life pieces (each piece's props
+**The source: `tools/camp_kit/pieces.py`.** It holds the 83 camp-life pieces (each piece's props
 with their position, turn, height and tilt, and its seats; outdoor props only, see its header), the
 eleven kits, where a piece stands by a building (`AT`, written as each kit piece's **At**; the rest
-are Auto) and the Traces compositions (section 4, *Traces*). Each kit is a **plan**: its pieces in
-order of importance with their spot and turn in the camp (metres from its middle, +Z toward the
-road in). Every kit's plan is drawn, so no place is ever dressed by chance:
+are Auto), each piece's tier, zone and rules (`RULES`, and a kit's own tier in `KIT_TIER`), each kind
+of site's doctrine (`DOCTRINE`: how much of the wire it closes, how hard its building is made, the
+wire's distance, its layers' pieces and what goes indoors; [SITES.md](SITES.md#building-in-layers))
+and the Traces compositions (section 4, *Traces*). Each kit is a **plan**: its pieces in order of
+importance with their spot and turn in the camp (metres from its middle, +Z toward the road in),
+the solver's preference. Every kit's plan is drawn, so no place is ever dressed by chance:
 
-| Kit | Pieces |
-|---|---|
-| Bastion stronghold, outpost, road post | 21, 14, 4 (each with its duckboards last) |
-| Red Hand stronghold, outpost, road post | 20, 13, 4 |
-| Haven stronghold, outpost, safehouse | 20, 13, 8 |
-| Halcyon stronghold, field station | 19, 9 |
+| Kit | Pieces | Layers' pieces |
+|---|---|---|
+| Bastion stronghold, outpost, road post | 22, 14, 4 (each with its duckboards last) | 8, 7, none |
+| Red Hand stronghold, outpost, road post | 20, 13, 4 | 6, 5, none |
+| Haven stronghold, outpost, safehouse | 22, 14, 8 | 7, 6, 7 |
+| Halcyon stronghold, field station | 20, 10 | 9, 6 |
+
+The layers' pieces (on each kit's **Layers**, by **Layer**): the barrier's runs (`Wire_Bastion_L`, `_M`,
+`_S`, `_XS`, Bastion's outpost's `Sandbags_Bastion_L` and `_M`, `Scrap_RedHand_*`, `Fence_Haven_*`,
+`Fence_Halcyon_*`; each run along its own x, its front out), the boards (`BoardWindow`, a pallet over
+a window at its own height; `BoardDoor`, `BoardDoor_Bastion` sandbags, `BoardDoor_RedHand` the
+shutter down), the lookouts (the faction's nest, `Lookout_Haven`, `GuardPost_Halcyon`), Halcyon's
+`Floodlight` and the `StoresBoard`. The new plan pieces are `Gate_Bastion` (the checkpoint),
+`Gate_Haven`, `Lookout_Haven`, `GuardPost_Halcyon` and `SmokingBench`.
 
 Each kit's first entry is its faction's **counter** (`Counter_Bastion`, `Counter_RedHand`,
 `Counter_Haven`, `Counter_Halcyon`, At **Counter**): a table the quartermaster stands behind,
@@ -1098,7 +1109,7 @@ Each kit's first entry is its faction's **counter** (`Counter_Bastion`, `Counter
 
 | Command | Does |
 |---|---|
-| `py tools/camp_kit/build.py` | Refuses a plan whose pieces overlap (with 0.3 m between them, at their real sizes). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, the piece's real footprint, **Foot** (its props' measured boxes from `footprints.json`, up to 8, and a person round each seat: [SITES.md](SITES.md#real-footprints)), and the box round it, **Foot min** and **Foot max**; **Smart action waypoint**), the composition slots of **World > Traces > Kit**, and the openings' compositions (`pieces.OPENINGS`, into `Prefabs/ReforgerZ/Guidance/Openings/`) with their slots, **Guidance > Opening scenes** |
+| `py tools/camp_kit/build.py` | Refuses a piece with no rules, an unknown zone or a doctrine naming a piece that isn't there, and a plan whose pieces overlap (with 0.3 m between them, at their real sizes). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, the piece's real footprint, **Foot** (its props' measured boxes from `footprints.json`, up to 8, and a person round each seat: [SITES.md](SITES.md#real-footprints)), and the box round it, **Foot min** and **Foot max**, its **Tier**, **Zone**, **Rules** and **Indoors**; each kit's **Close**, **Harden**, **Ring**, **Yard** and **Layers**; **Smart action waypoint**), the composition slots of **World > Traces > Kit**, and the openings' compositions (`pieces.OPENINGS`, into `Prefabs/ReforgerZ/Guidance/Openings/`) with their slots, **Guidance > Opening scenes** |
 | `py tools/camp_kit/render.py` | Draws [tools/camp_kit/camp_plans.html](../tools/camp_kit/camp_plans.html): every kit's plan, a top-down plan of every piece (props at their measured size) and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
 | `py tools/camp_kit/render.py --placed <console.log>` | Draws `tools/camp_kit/sites_placed.html` from a site audit's log: the layouts the game actually laid out ([SITES.md](SITES.md#seeing-it)), and writes `tools/camp_kit/sites_list.txt` for **ReforgerZ: Fly to the next site** |
 | **ReforgerZ: Measure prop footprints** (Workbench plugin) | Measures every prop in `props.txt` and writes `tools/camp_kit/footprints.json`; run it after adding a prop, then `build.py` (the site audit measures them on the server too: [SITES.md](SITES.md#real-footprints)) |
@@ -1141,6 +1152,18 @@ at +Z. `ClotheslineFrame_01.et` (the washing and drying lines) is in it as a `Ge
 drawn 3.2 × 0.4 m. With **ReforgerZ: Dump prefabs and classes** correct either line in
 `props.txt`, measure their boxes and correct `FP` if they're another size, check the tent's door
 faces +Z (else turn it in `Tent_Halcyon`), and re-run `build.py`.
+
+**Check the layers' props** (new in `props.txt`, their boxes measured by the site audit on the
+server, their classes read from the vanilla prefabs, not yet from Workbench): `BarbedTape_01_Long`,
+`_Short` and `_Stake`, `NetFence_05_tall_6m_V1`, `_3m` and `_pole`, `WoodenFence_01_8m` and `_4m`,
+`TinWall_01_6m_A_rusty` and `TinWall_01_3m_rusty`, `Sandbag_01_long_high_burlap`, `RoadBlock_01`,
+`CzechHedgehog_01_rusty`, `BarbedTape_KnifeRest`, `SignCheckpoint_01_stop` and
+`GeneratorFloodlight_US_01` (lit, its light switch kept: the guard strips nothing from it, a
+VERIFY). With **ReforgerZ: Dump prefabs and classes** check each line's class and whether it
+already has a `Hierarchy`, then **ReforgerZ: Show the next composition group** for the new pieces:
+the runs stand along their x (a coil's length is its own z, so it's turned 90°), the boards stand
+upright (a pallet tilted 90° about its x: check it isn't lying flat or on its side), the door boards
+cover a door, the floodlight faces +Z.
 
 **Test it.** Show the pieces in Workbench with the plugin **ReforgerZ: Show the next composition group** ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or place each once in a test world, and check the log is silent (no
 `Dressing: removed` lines); then walk up to an outpost of each faction in Workbench play (the
@@ -1427,7 +1450,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
-| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Audit threshold** (70) ([SITES.md](SITES.md#settings)) |
+| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
@@ -1828,7 +1851,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **145** lines with the tag, all but one in the game scripts (one is the comment in
+There are **148** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 32 are in `UI/`: 27 of [the UI's](#the-ui-30), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/` and two are the radio screen's in `Interactions/`), but one: the sites plugin's in
@@ -1851,7 +1874,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (75)
+### Medium risk: big features, with a fallback (76)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1902,7 +1925,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:2470` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:2867` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:2903` | a positive roll in `Math3D.AnglesToMatrix` lowers a piece's +x (measured: the site audit prints `RZS roll`), and a composition spawned rolled tilts its children with it, so a barrier run on a slope follows the ground | The wire's runs on slopes float at one end and sink at the other: set `ROLL_SIGN` the other way, or 0 to stand them level |
 | `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
 | `Missions/Errands/RZ_Strangers.c:1188` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
@@ -1922,7 +1946,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Guidance/RZ_OpeningPlaces.c:341` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
 | `Guidance/RZ_OpeningPlaces.c:381` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 
-### Low risk: contained or cosmetic (38)
+### Low risk: contained or cosmetic (40)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1952,14 +1976,16 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:48` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
-| `Factions/RZ_CampLife.c:3991` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:4094` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
-| `Factions/RZ_CampLife.c:2339` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) across each of a piece's props' boxes (its two diagonals; the site grid off: along its footprint's sides and diagonals) at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
-| `Factions/RZ_SiteGrid.c:751` | a building's ground-floor windows are its children whose prefab names say "window" (the site grid marks them) | Nothing yet reads the window cells (the harden layer will): the audit's drawing shows none; report how a building's windows are named |
+| `Factions/RZ_CampLife.c:4484` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:4587` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
+| `Factions/RZ_CampLife.c:2736` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) across each of a piece's props' boxes (its two diagonals; the site grid off: along its footprint's sides and diagonals) at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
+| `Factions/RZ_SiteGrid.c:802` | a building's ground-floor windows are its children whose prefab names say "window" (the site grid marks them and keeps where they are) | No window is boarded (the `Sites:` line's `0 windows boarded` at every building): report how a building's windows are named |
+| `Factions/RZ_SiteSolver.c:964` | a ground-floor window child's origin is at the middle of its opening (a board spawned at its height covers it) and an outside door's on its sill, not its hinge | Window boards hang above or below their windows, or a door board stands beside its door: report one, with the building |
+| `Factions/RZ_SiteSolver.c:1185` | `GeneratorFloodlight_US_01` in a composition is lit when it spawns and the guard leaves it (no fuel, storage or ReforgerZ part) | Halcyon's floodlights stand dark, or the log says `Dressing: removed GeneratorFloodlight...`: use a lamp post instead |
 | `RZ_SitesPlugin.c:56` (Workbench) | `SourceToEntity` gives the entity just created in the World Editor with its mesh loaded, so `GetWorldBounds` is the prop's box (**ReforgerZ: Measure prop footprints**) | The plugin writes nothing or tiny boxes: measure on the dedicated server instead (`FOOTPRINTS=1 tools/runtime_test/run.sh sites`, which wrote today's file) |
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
-| `Factions/RZ_CampLife.c:4175` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
-| `Factions/RZ_CampLife.c:3912` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
+| `Factions/RZ_CampLife.c:4668` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:4405` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
 | `Guidance/RZ_OpeningPlaces.c:351` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
 | `World/RZ_PowerSite.c:357` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
 | `World/RZ_PowerSite.c:371` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
@@ -2186,11 +2212,14 @@ Warnings worth acting on:
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
-| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
+| `Camp life: pre-reading <n> sites in the background, strongholds first.` | Once a run, when the land grid is read (Pre-read): every site is read and laid out as data before anyone comes near |
+| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m, <prefab>), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
 | `Camp life: <Faction> <KIND> at <grid>: <n> of <m> planned pieces fit, laid out <where>; <c> counter(s), <s> left out facing water or a drop.` | The first time a run dresses a place, once its ground is read: how much of its plan fit and where. Few fitting everywhere: the footprint traces may be catching grass or bushes (the VERIFY); the `Sites:` line says why each was dropped |
-| `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
-| `Sites: <faction> <kind> at <grid>: score <s>; <n> of <m> pieces; perimeter not built yet; front <side> (<why>), water <sides>; dropped: <piece> (<why>), ...; <k> overlaps (...); <f> floating or buried; posts: ...; paths: ...; patrol <a> of <b> points walkable; read <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms), laid out in <ms> ms.` | Once per site a run, when it's laid out on its grid (in play and in the site audit): its audit ([SITES.md](SITES.md#the-audit)). Any overlap is a bug: report the line. "Most" over **Site read ms** by a lot means one part of the reading holds the server (the longest part) |
+| `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | With **Solver** on, the first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)); the `<n> of <m> planned pieces fit` line is the same with Solver off |
+| `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces and <l> of its layers, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
+| `Sites: <faction> <kind> at <grid>: score <s>; <n> of <m> pieces; perimeter <p>% (gap <w> m at <bearing>), <g> gates; <i> indoors, <d> doors blocked, <b> windows boarded[, <o> outside the wire (...)]; front <side> (<why>), water <sides>; dropped: <piece> (<why>), ...; <k> overlaps (...); <f> floating or buried; posts: ...; paths: ...; patrol <a> of <b> points walkable; read <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms), laid out in <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms).` | Once per site a run, when it's laid out (in play and in the site audit): its audit ([SITES.md](SITES.md#the-audit)). Any overlap is a bug: report the line. "Most" over **Site read ms** by a lot means one part of the reading holds the server (the longest part); "laid out in" is the solver's time in all, spread over seconds (its first step, the wire's trace, runs in one go) |
 | `Sites audit: <n> sites, mean <m>, worst <w> (<site>), <k> overlaps; <h> with a hard failure; <u> under <threshold>: ...` | The runtime test's summary, once every site is audited |
+| `Sites audit perimeters: <stronghold> <p>%, ...; <t> tier 1 pieces dropped, <o> pieces outside the wire.` | With the summary: each stronghold's wire closed, and what mustn't be dropped or stand outside |
 | `Camp life jobs: <place> (phase <n>), <p> people: <job counts>; ... at a seat, ... walking the camp, ... standing at a spot, ... on the move, ... standing still (no AI or group).` | At each phase at a live place: who does what. Many standing still: those people have no AI (a prefab without an AI control component) or no group prefab |
 | `Camp life: ... smart actions off, lone characters stand.` | Set **Camp life > Smart action waypoint** (people loiter beside the pieces until then) and **Group prefab** (lone occupants and guards don't move until then) |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
@@ -3563,15 +3592,16 @@ when it happens)
 
 **Camp life** ([DESIGN.md](DESIGN.md#camp-life); the kits filled, set the game clock with the
 editor's time of day)
-- [ ] Walk up to an outpost of each faction: its pieces appear over about 20 s and stand on flat
-  ground round it, none on a road, none in or through a building's wall, a fence or a tree, none on
-  the quartermaster; the log has no `Dressing: removed` line and its `Camp life: ... planned pieces
-  fit` line says most of the plan fit. Leave (past 350 m) and come back: the same pieces in the
+- [ ] Walk up to an outpost of each faction: its pieces appear over about a minute and stand on
+  flat ground round it, none on a road, none in or through a building's wall, a fence or a tree,
+  none on the quartermaster; the log has no `Dressing: removed` line and its `Camp life: ...
+  solved` line says few were dropped. Leave (past 350 m) and come back: the same pieces in the
   same places.
-- [ ] It reads as the plan in `tools/camp_kit/camp_plans.html` (perhaps mirrored): barricades, the
-  nest and the faction's sign across the front, the fire and tables in the middle, the tents
-  together at the back, the cook pot and the woodpile together on one side, the latrine and the
-  line out at the far side. Nothing indoor stands on the grass (no cabinet, shelf or sink).
+- [ ] It reads as a camp (the plan in `tools/camp_kit/camp_plans.html` bent to the ground): the
+  faction's barrier round it with a gate on the road in, the nest beside the gate looking out,
+  the fire and tables together, the cook pot and the woodpile together by the back or side door,
+  the latrine and the line out at the far side. Nothing indoor stands on the grass (no cabinet,
+  shelf or sink).
 - [ ] The quartermaster stands behind his counter facing the open side (the yard, a door, a
   kiosk's window), never into a wall or a corner; the counter isn't in a wall or on a road.
 - [ ] Halcyon's tent stands (no `Dressing: removed` line for it), its flap toward the yard and the field table.
@@ -3621,8 +3651,9 @@ editor's time of day)
   memorial and the decon shower stand beside the front door, the trophy wall and the stall along
   the front.
 - [ ] The gate is on the road in from the next town: the nest or the toll barrier, the red hand
-  sheet or the plague board beside the road; the other road entries have a barricade beside the
-  road. Every road stays drivable (a supply truck and a car get through).
+  sheet or the plague board beside the road; the other roads through the wire are gates too, a
+  barricade beside them. Every road stays drivable (a supply truck and a car get through), and the
+  people walk in and out through the gates, not through the wire (the navmesh VERIFY).
 - [ ] Bastion by day: a lookout at a front corner as well as the nest. Under a curfew season, two on
   watch at night.
 - [ ] Nobody leaning, loitering or on watch by a house wall (Halcyon's guard pair at a field station
@@ -3639,11 +3670,26 @@ editor's time of day)
   on its log; with **ReforgerZ: Fly to the next site** take a screenshot of each site from above
   and at its gate, and hold it against `tools/camp_kit/sites_placed.html`: the pieces stand where
   the drawing has them, and nothing clips a wall, a fence, a tree, a rock or another piece.
-- [ ] Walk up to a stronghold: its pieces start to spawn within about a minute (its `Sites:` line's
-  `read ... ms in ... steps`), the server's frame time doesn't dip while it reads, and leaving and
-  coming back lays it out again at once (`laid out again as before`).
+- [ ] Start a server and wait for `Camp life: pre-reading ... sites` and the `Sites:` lines (about half
+  an hour on Everon); then walk up to a stronghold: its pieces start to spawn at once (`laid out
+  again as before`), the server's frame time doesn't dip while the sites are read in the background
+  (the `Sites:` line's longest parts), and leaving and coming back lays it out again at once.
+- [ ] A stronghold or a safehouse in a harbour town (on Everon: La Roue, Thollevast, Lancre, the
+  north coast at 059-095; on Arland: Angler Bluff, 32-11) stands on dry ground: no boat shed, quay or
+  lighthouse is its building (its `moves into ...` line names the prefab), nobody comes out on a pier
+  or in the water, and its `Sites:` line has no `over water`.
 - [ ] A piece the log says was dropped for "something standing there" really has something there
   (the drawing's `solid` lines name it); report any that stand on open ground.
+- [ ] Each stronghold is closed off: the faction's barrier runs along the drawing's wire line
+  (Bastion's concertina, the Red Hand's rusted tin, the Haven's fences, Halcyon's chain-link),
+  meeting the walls, hedges and water already there, no run floating off a slope or sunk into it;
+  the gaps the `Sites:` line names are where the drawing has them. One way in through the main
+  gate, the way from the door to it clear.
+- [ ] The building: every outside door but the entrance shut with its board (sandbags, the tin
+  shutter, pallets), the ground-floor windows boarded at the window's own height (the window VERIFY:
+  report a board floating above or below its window, or a door board beside its door rather than
+  across it). Halcyon's lab: the floodlights lit at the gate and the corners at night, nothing but
+  the decon shower, the generators, the antenna and a bench outside, the stores board by the door.
 
 **Traces** ([TRACES.md](TRACES.md); the log's `Traces:` lines, `/traces` and `/traces town <name>` as an
 admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)

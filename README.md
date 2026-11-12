@@ -183,7 +183,7 @@ and one way to end it: **research the cure.**
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
 server's runtime test and in Workbench play on Everon and Arland; every approved design is built
-but the sites design's later phases (`designs/SITES.md`: camps built from rules, their people and their stories; its first two, each site's ground read on a grid with real footprints and its surroundings, and the site audit, are built), simplified as each doc says. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+but the sites design's last two phases (`designs/SITES.md`: the camps' people at their posts and each site's story; its first four, each site's ground read on a grid with real footprints and its surroundings, the site audit, the placement rules and the solver, and building in layers by each faction's doctrine, are built), simplified as each doc says. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
@@ -197,7 +197,7 @@ What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start 
 | [LORE.md](docs/LORE.md) | The sealed Zone, the factions as people, endings |
 | [WRITING.md](docs/WRITING.md) | How player text is written: tone, the voices, the season mood and the voice bank, conversations, grey choices, the humour line, the text lint's rules |
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
-| [SITES.md](docs/SITES.md) | Camp sites: each site's ground read on a grid, the props' real footprints, drop don't squeeze, the surroundings and threat, the site audit and its drawing |
+| [SITES.md](docs/SITES.md) | Camp sites: each site's ground read on a grid, the props' real footprints, the surroundings and threat, the rules and the solver, building in layers by doctrine (the wire and its gates, the boards, the watch, valuables indoors), the site audit and its drawing |
 | [DIALOGUE.md](docs/DIALOGUE.md) | Talking to people: the talk screen, conversation trees, checks, memory, the `.rzd` format and its tools |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |

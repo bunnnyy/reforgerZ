@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "215A476848825D6C"
+ components {
+  RplComponent "{2DAD0221DFC3931B}" {
+  }
+  Hierarchy "{602C4A54303112CB}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+   ID "CAEF70436F348FA7"
+   components {
+    Hierarchy "{58F06DE9C5EB9482}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

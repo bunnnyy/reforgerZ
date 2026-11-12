@@ -1,0 +1,85 @@
+GenericEntity {
+ ID "954CAA27441BB5D8"
+ components {
+  RplComponent "{505AD196B5B8A08F}" {
+  }
+  Hierarchy "{DCE6F74F9586201C}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "C8A23CAB1FBE5553"
+   components {
+    Hierarchy "{1335D731F02A8A6D}" {
+    }
+   }
+   coords 0 0 1.1
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "D96CA056478B2E4B"
+   components {
+    Hierarchy "{D27B45A624B350EB}" {
+    }
+   }
+   coords -0.5 0 0.1
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "11516E7A8A5812AD"
+   components {
+    Hierarchy "{356FB8005C702408}" {
+    }
+   }
+   coords 0.6 0 0.0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "6E8BCADD0A73080E"
+   components {
+    Hierarchy "{F88C96E4DF4B05A9}" {
+    }
+   }
+   coords 1.6 0 0.3
+   angles 0 80 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "D898F98CD0501601"
+   components {
+    Hierarchy "{1B004EC0C4C077E4}" {
+    }
+   }
+   coords 1.6 0.62 0.3
+  }
+  GenericEntity {
+   ID "5B4B155983A757EF"
+   components {
+    SCR_AISmartActionSentinelComponent "{B46780B932273E12}" {
+     Tags {
+      "RZ_Watch"
+     }
+     m_vLookPosition 0 1.6 10
+     m_fLookDirectionRange 120
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{17F17BACF91AC89F}" {
+    }
+   }
+   coords -0.5 0 0.1
+  }
+  GenericEntity {
+   ID "EA665455C125E786"
+   components {
+    SCR_AISmartActionSentinelComponent "{83398DBD53A793B6}" {
+     Tags {
+      "RZ_Watch"
+     }
+     m_vLookPosition 0 1.6 10
+     m_fLookDirectionRange 120
+     m_eLoiterAnimation LOITERING
+    }
+    Hierarchy "{2A21C655C4EB4AAA}" {
+    }
+   }
+   coords 0.6 0 0.0
+  }
+ }
+}

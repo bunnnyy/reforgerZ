@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "DFF8C67A562D8638"
+ components {
+  RplComponent "{E0E023D06E0F6F0A}" {
+  }
+  Hierarchy "{9D275192C61625E8}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+   ID "34EB4B082D40F68F"
+   components {
+    Hierarchy "{7D627082C811CE93}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{618F255AD35C55B0}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Wire_Bastion_XS.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

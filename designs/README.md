@@ -8,4 +8,4 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 | # | Design | What it is |
 |---|---|---|
-| 1 | [SITES.md](SITES.md) | Camps that read as real places, phases 3 to 6 (the ground, the surroundings and the audit are built: [docs/SITES.md](../docs/SITES.md)): placement rules and a solver in place of fixed plans, building in layers by each faction's doctrine (close off, harden, watch, then life), the people's posts, shifts, patrols and movement, each site's story, and the audit's perimeter checks |
+| 1 | [SITES.md](SITES.md) | Camps that read as real places, phases 5 and 6 (the ground, the surroundings, the audit, the rules and the solver and building in layers by doctrine are built: [docs/SITES.md](../docs/SITES.md)): the people's posts, shifts, patrols and movement by the site's zones, and each site's story |

@@ -43,17 +43,26 @@ GenericEntity {
    coords 1.0 0 -0.6
    angles 0 70 0
   }
-  GenericEntity {
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
    ID "916B069BFE05F716"
    components {
-    SCR_AISmartActionSentinelComponent "{F3446B6B7EC4B957}" {
+    Hierarchy "{F3446B6B7EC4B957}" {
+    }
+   }
+   coords 0.1 0 -1.6
+   angles 0 2 0
+  }
+  GenericEntity {
+   ID "9BC2F7195C7AEEAA"
+   components {
+    SCR_AISmartActionSentinelComponent "{126C125EA4033030}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{9BC2F7195C7AEEAA}" {
+    Hierarchy "{32BC9C4D59D3CF30}" {
     }
    }
    coords 0 0 1.0

@@ -1,0 +1,29 @@
+GenericEntity {
+ ID "586E1F006F7F02DA"
+ components {
+  RplComponent "{8269EA565E48360E}" {
+  }
+  Hierarchy "{00F0A6A072F48659}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{0C1D044EBE92ADBF}Prefabs/Structures/Walls/Metal/TinWall_01_rusty/TinWall_01_6m_A_rusty.et" {
+   ID "79A93830962A125E"
+   components {
+    Hierarchy "{F543BACAD6FFC20B}" {
+    }
+   }
+   coords -4.55 0 0
+  }
+  SCR_DestructibleEntity : "{D34F3DD5D61E2F71}Prefabs/Structures/Walls/Metal/TinWall_01_rusty/TinWall_01_3m_rusty.et" {
+   ID "3D5A2C4305B30398"
+   components {
+    Hierarchy "{0C721DEE98B0C000}" {
+    }
+   }
+   coords 1.5 0 0.05
+   angles 0 -4 0
+  }
+ }
+}

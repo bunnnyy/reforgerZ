@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{A0E61E2AE1BB97F4}Prefabs/ReforgerZ/Dressing/Haven/RZ_Dress_Fence_Haven_L.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

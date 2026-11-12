@@ -121,11 +121,14 @@ class RZ_SiteGrid
 	static const int KEPT = 4096;	// another system's scenery (Traces' scenes and boards)
 	static const int TAKEN = 8192;	// one of the site's own pieces
 	static const int OUTSIDE = 16384;	// off the grid (not a cell flag: what Blocks says)
+	static const int CLEAR = 32768;	// kept clear by the solver: a path from the door to the gate or the kitchen
 
 	// What a piece may not stand on: water, steep, a step, a building, solid, road, kept, taken
 	static const int BLOCKS = 13597;
 	// What a path may not cross: water, a building, solid, soft, kept, taken
 	static const int NO_WALK = 13073;
+	// What work and life may not stand on: BLOCKS, the shore (within 4 m of water) and the paths kept clear
+	static const int BLOCKS_LIFE = 46367;
 
 	protected static const float STEEP_RISE = 0.2126;	// tan 12 degrees, per metre
 	protected static const float STEP_RISE = 0.3;
@@ -166,6 +169,8 @@ class RZ_SiteGrid
 	int m_iEntities;			// static and dynamic entities read
 	int m_iRasterised;			// of those, drawn into the grid
 	ref array<vector> m_aJetty = {};	// piers, jetties, docks and slipways on the grid (boats are a way in)
+	ref array<vector> m_aDoors = {};	// every building's outside doors on the grid (the solver's harden layer)
+	ref array<vector> m_aWindows = {};	// and their ground-floor windows
 	ref array<string> m_aBig = {};		// the audit's drawing: the big solid things read (class, prefab, size)...
 	ref array<int> m_aBigCount = {};	// ...and how many of each
 	static bool s_bNameBig;				// the audit (the runtime test) names them
@@ -449,6 +454,37 @@ class RZ_SiteGrid
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! As Blocks, but stops at the first rectangle that meets a flag in `mask` (the solver tries many
+	//! spots: most fail early). 0 = it may stand there, with the ground's range under it.
+	int FirstBlock(vector pos, float yaw, RZ_SiteFoot foot, int mask, out float lo, out float hi)
+	{
+		lo = float.MAX;
+		hi = -float.MAX;
+		for (int r = 0; r < foot.Count(); r++)
+		{
+			int found = RectCells(pos, yaw, foot, r, 0.2, mask, 0, lo, hi);
+			if (found != 0)
+				return found;
+		}
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How much the ground varies under one of a footprint's props (rectangle r, the cells whose
+	//! middle is in it): the audit's floating test.
+	float RectSpread(vector pos, float yaw, RZ_SiteFoot foot, int r)
+	{
+		float lo = float.MAX;
+		float hi = -float.MAX;
+		RectCells(pos, yaw, foot, r, 0, 0, 0, lo, hi);
+		if (lo > hi)
+			return 0;
+
+		return hi - lo;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Marks a placed footprint's cells (grown by a cell, so pieces keep a gap) with `flag`.
 	void Paint(vector pos, float yaw, RZ_SiteFoot foot, int flag)
 	{
@@ -492,7 +528,10 @@ class RZ_SiteGrid
 
 				if (paint != 0)
 				{
-					SetFlag(cx, cz, paint);
+					// A piece's gap round it never closes a path kept clear
+					if (paint != TAKEN || (Flags(cx, cz) & CLEAR) == 0 || (Math.AbsFloat(lx) <= hw - grow && Math.AbsFloat(lz) <= hd - grow))
+						SetFlag(cx, cz, paint);
+
 					continue;
 				}
 
@@ -540,6 +579,9 @@ class RZ_SiteGrid
 
 		if (flags & TAKEN)
 			return "another piece";
+
+		if (flags & CLEAR)
+			return "a path kept clear";
 
 		return "the ground";
 	}
@@ -714,8 +756,11 @@ class RZ_SiteGrid
 		fwd[1] = 0;
 		float yaw = RZ_Compass.Bearing(vector.Zero, fwd);
 		vector c = RZ_DoorGeometry.ToWorld(b, (mins + maxs) * 0.5);
-		float hw = (maxs[0] - mins[0]) * 0.5;
-		float hd = (maxs[2] - mins[2]) * 0.5;
+		// A scaled building's box is scaled too (as the audit's boxes, which go through its transform)
+		vector right = mat[0];
+		right[1] = 0;
+		float hw = (maxs[0] - mins[0]) * 0.5 * Math.Max(1, right.Length());
+		float hd = (maxs[2] - mins[2]) * 0.5 * Math.Max(1, fwd.Length());
 		// Every cell the box touches is inside (so no footprint reaches into it between cell middles)
 		Box(c, yaw, hw + WALL_BAND + CELL * 0.5, hd + WALL_BAND + CELL * 0.5, WALL);
 		Box(c, yaw, hw + CELL * 0.5, hd + CELL * 0.5, INSIDE);
@@ -725,7 +770,11 @@ class RZ_SiteGrid
 		foreach (IEntity door : doors)
 		{
 			if (door && RZ_DoorGeometry.IsOuterDoor(b, door))
+			{
 				Disc(door.GetOrigin(), 1, DOOR);
+				if (m_aDoors.Count() < 400)
+					m_aDoors.Insert(door.GetOrigin());
+			}
 		}
 
 		array<IEntity> windows = {};
@@ -733,6 +782,8 @@ class RZ_SiteGrid
 		foreach (IEntity w : windows)
 		{
 			Disc(w.GetOrigin(), 0.6, WINDOW);
+			if (m_aWindows.Count() < 600)
+				m_aWindows.Insert(w.GetOrigin());
 		}
 	}
 
@@ -1068,6 +1119,15 @@ class RZ_SiteGrid
 	//! over the 1 m squares. True if b is reached, or either end is off the grid.
 	bool PathClear(vector a, vector b)
 	{
+		return Path(a, b, null, null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PathClear, and the way found as points 1 m apart (from a to b) in `route` if given (empty
+	//! when an end is off the grid or there's no way); with `within`, only inside that wire line
+	//! (and a metre past it: its gates).
+	bool Path(vector a, vector b, array<vector> route, RZ_SiteWire within)
+	{
 		int n = m_iL - 1;
 		int ax = Math.Floor(a[0] - m_vLow[0]);
 		int az = Math.Floor(a[2] - m_vLow[2]);
@@ -1076,16 +1136,17 @@ class RZ_SiteGrid
 		if (ax < 0 || az < 0 || ax >= n || az >= n || bx < 0 || bz < 0 || bx >= n || bz >= n)
 			return true;
 
-		array<int> seen = {};
-		seen.Resize(n * n);
+		// 0 unseen; else the square it was reached from, plus one
+		array<int> from = {};
+		from.Resize(n * n);
 		for (int i = 0; i < n * n; i++)
 		{
-			seen[i] = 0;
+			from[i] = 0;
 		}
 
-		array<int> queue = {az * n + ax};
-		seen[az * n + ax] = 1;
-		int goal = bz * n + bx;
+		int start = StartSquare(ax, az);
+		array<int> queue = {start};
+		from[start] = start + 1;
 		int head = 0;
 		while (head < queue.Count())
 		{
@@ -1095,7 +1156,26 @@ class RZ_SiteGrid
 			int qx = cur % n;
 			int qz = cur / n;
 			if (Math.AbsInt(qx - bx) <= 1 && Math.AbsInt(qz - bz) <= 1)
+			{
+				if (route)
+				{
+					int back = cur;
+					int guard = 0;
+					while (guard < n * n)
+					{
+						int rx = back % n;
+						int rz = back / n;
+						route.InsertAt(Vector(m_vLow[0] + rx + 0.5, 0, m_vLow[2] + rz + 0.5), 0);
+						if (back == start)
+							break;
+
+						back = from[back] - 1;
+						guard++;
+					}
+				}
+
 				return true;
+			}
 
 			for (int d = 0; d < 4; d++)
 			{
@@ -1114,11 +1194,11 @@ class RZ_SiteGrid
 					continue;
 
 				int j = nz * n + nx;
-				if (seen[j] != 0)
+				if (from[j] != 0)
 					continue;
 
-				seen[j] = 1;
-				if (!Walkable(nx, nz))
+				from[j] = cur + 1;
+				if (!Walkable(nx, nz) || !Within(within, nx, nz))
 					continue;
 
 				queue.Insert(j);
@@ -1126,6 +1206,157 @@ class RZ_SiteGrid
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The 1 m square a way starts from: (ax, az), or with a step or a porch beside a door the
+	//! nearest square a body can stand on within 2 m.
+	protected int StartSquare(int ax, int az)
+	{
+		int n = m_iL - 1;
+		if (Walkable(ax, az))
+			return az * n + ax;
+
+		for (int r = 1; r <= 2; r++)
+		{
+			for (int dz = -r; dz <= r; dz++)
+			{
+				for (int dx = -r; dx <= r; dx++)
+				{
+					int sx = ax + dx;
+					int sz = az + dz;
+					if (sx >= 0 && sz >= 0 && sx < n && sz < n && Walkable(sx, sz))
+						return sz * n + sx;
+				}
+			}
+		}
+
+		return az * n + ax;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The middle of the nearest 1 m square a body can stand on within `reach` m of `at` (a door
+	//! whose step the grid reads as in a building or a porch); `at` itself if none or off the grid.
+	vector NearestWalkable(vector at, int reach)
+	{
+		int n = m_iL - 1;
+		int ax = Math.Floor(at[0] - m_vLow[0]);
+		int az = Math.Floor(at[2] - m_vLow[2]);
+		if (ax < 0 || az < 0 || ax >= n || az >= n || Walkable(ax, az))
+			return at;
+
+		for (int r = 1; r <= reach; r++)
+		{
+			for (int dz = -r; dz <= r; dz++)
+			{
+				for (int dx = -r; dx <= r; dx++)
+				{
+					if (Math.AbsInt(dx) != r && Math.AbsInt(dz) != r)
+						continue;
+
+					int sx = ax + dx;
+					int sz = az + dz;
+					if (sx >= 0 && sz >= 0 && sx < n && sz < n && Walkable(sx, sz))
+						return RZ_Util.GroundPos(Vector(m_vLow[0] + sx + 0.5, 0, m_vLow[2] + sz + 0.5));
+				}
+			}
+		}
+
+		return at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every 1 m square reachable on foot from `a` (1 = reached; a breadth-first search as Path's).
+	//! Empty if `a` is off the grid.
+	array<int> Reach(vector a, RZ_SiteWire within)
+	{
+		int n = m_iL - 1;
+		array<int> reached = {};
+		int ax = Math.Floor(a[0] - m_vLow[0]);
+		int az = Math.Floor(a[2] - m_vLow[2]);
+		if (ax < 0 || az < 0 || ax >= n || az >= n)
+			return reached;
+
+		reached.Resize(n * n);
+		for (int i = 0; i < n * n; i++)
+		{
+			reached[i] = 0;
+		}
+
+		int start = StartSquare(ax, az);
+		array<int> queue = {start};
+		reached[start] = 1;
+		int head = 0;
+		while (head < queue.Count())
+		{
+			int cur = queue[head];
+			head++;
+			int qx = cur % n;
+			int qz = cur / n;
+			for (int d = 0; d < 4; d++)
+			{
+				int nx = qx;
+				int nz = qz;
+				if (d == 0)
+					nx++;
+				else if (d == 1)
+					nx--;
+				else if (d == 2)
+					nz++;
+				else
+					nz--;
+
+				if (nx < 0 || nz < 0 || nx >= n || nz >= n)
+					continue;
+
+				int j = nz * n + nx;
+				if (reached[j] != 0)
+					continue;
+
+				reached[j] = 2;
+				if (!Walkable(nx, nz) || !Within(within, nx, nz))
+					continue;
+
+				reached[j] = 1;
+				queue.Insert(j);
+			}
+		}
+
+		return reached;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A point is reached in `reached` (Reach's): its 1 m square or one beside it.
+	bool Reached(array<int> reached, vector pt)
+	{
+		int n = m_iL - 1;
+		if (reached.IsEmpty())
+			return true;
+
+		int px = Math.Floor(pt[0] - m_vLow[0]);
+		int pz = Math.Floor(pt[2] - m_vLow[2]);
+		for (int dz = -1; dz <= 1; dz++)
+		{
+			for (int dx = -1; dx <= 1; dx++)
+			{
+				int sx = px + dx;
+				int sz = pz + dz;
+				if (sx >= 0 && sz >= 0 && sx < n && sz < n && reached[sz * n + sx] == 1)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A 1 m square inside a wire line, or within a metre outside it (none given: anywhere).
+	protected bool Within(RZ_SiteWire within, int sx, int sz)
+	{
+		if (!within)
+			return true;
+
+		return within.Inside(Vector(m_vLow[0] + sx + 0.5, 0, m_vLow[2] + sz + 0.5), -1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1141,7 +1372,7 @@ class RZ_SiteGrid
 	//------------------------------------------------------------------------------------------------
 	//! One row of the grid at 1 m for the audit's drawing (render.py --placed): a letter a square,
 	//! the strongest thing in it. '.' open, '~' water, 'b' building, '#' solid, '*' bush, '=' road,
-	//! '^' steep, 'k' other scenery, 'p' a piece.
+	//! '^' steep, 'k' other scenery, 'p' a piece, ',' a path kept clear.
 	string DrawRow(int sz)
 	{
 		string row = "";
@@ -1182,6 +1413,9 @@ class RZ_SiteGrid
 
 		if (f & SOFT)
 			return "*";
+
+		if (f & CLEAR)
+			return ",";
 
 		return ".";
 	}
