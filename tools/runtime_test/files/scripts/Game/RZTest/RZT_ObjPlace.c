@@ -160,14 +160,68 @@ modded class RZ_Mission
 		if (m_vPos != vector.Zero)
 			result.Insert(m_vPos);
 
+		// An escort that walks its route (its place is where the job's is): the route's end
+		float radius = m_fParticipationRadius;
+		foreach (RZ_Escort e : RZ_Escort.s_aRZT)
+		{
+			vector end;
+			if (e && e.RZT_RouteEnd(end) && RZ_Util.DistXZ(e.m_vPos, m_vPos) <= 30)
+			{
+				result.Insert(end);
+				radius = Math.Max(radius, e.m_fArriveRadius);
+			}
+		}
+
 		GetPropSpots(result);
-		return m_fParticipationRadius;
+		return radius;
 	}
 
 	//! More steps done by being there, for the tester to walk to one by one (the tracker's place each time).
 	bool RZT_MoreSteps()
 	{
 		return false;
+	}
+}
+
+// The escorts running now, for the truths: a started route's end is where its step is done
+modded class RZ_Escort
+{
+	static ref array<RZ_Escort> s_aRZT = {};
+
+	override bool Begin(RZ_GameModeComponent gm, vector start)
+	{
+		bool ok = super.Begin(gm, start);
+		if (ok && !s_aRZT.Contains(this))
+			s_aRZT.Insert(this);
+
+		return ok;
+	}
+
+	override void Cleanup()
+	{
+		s_aRZT.RemoveItem(this);
+		super.Cleanup();
+	}
+
+	//! Walking (or stopped on) its route, not following anyone: the route's last point.
+	bool RZT_RouteEnd(out vector end)
+	{
+		if (!m_bStarted || m_iFollow > 0 || m_aRoute.IsEmpty() || m_eState == RZ_EEscortState.ARRIVED || m_eState == RZ_EEscortState.DEAD)
+			return false;
+
+		end = m_aRoute[m_aRoute.Count() - 1];
+		return true;
+	}
+}
+
+// Done when the horde is at the quarry: leading it there is the step
+modded class RZ_Mission_LeadThemAway
+{
+	override float RZT_Truths(RZ_GameModeComponent gm, notnull array<vector> result)
+	{
+		super.RZT_Truths(gm, result);
+		result.Insert(m_vQuarry);
+		return ARRIVE_QUARRY;
 	}
 }
 
