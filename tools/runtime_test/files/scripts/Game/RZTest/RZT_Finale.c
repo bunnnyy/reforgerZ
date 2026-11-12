@@ -324,6 +324,7 @@ class RZT_Finale
 		cure.RZT_Lose();
 		Check("a lost stand: research back to 90", RZ_Util.RoundToInt(cure.m_fProgress) == 90 && !cure.IsFinalStand(), string.Format("research %1", cure.m_fProgress));
 		Check("a lost stand: the finisher stays finished", f.Finisher() == RZ_CureFinale.HAVEN, "finisher changed");
+		Check("a lost stand: the HUD shows 90, not 99", RZ_Util.RoundToInt(cure.ShownProgress()) == 90, string.Format("shown %1", cure.ShownProgress()));
 		Next();
 		return false;
 	}
@@ -352,6 +353,8 @@ class RZT_Finale
 		}
 
 		Check("the remake makes the batch again", true, "");
+		// Only the remake step (or the backlog) makes it, never the batch hold run again
+		Check("a lost stand waits for the remake", run && run.m_iStage != RZ_FinaleRoute.S_REMAKE, string.Format("route stage %1", RunStage(run)));
 		f.RZT_SealNow();
 		Next();
 		return false;
@@ -385,7 +388,7 @@ class RZT_Finale
 		if (cure.IsCured())
 		{
 			Check("the stand is won after overtime", f.RZT_InOvertime(), "no overtime ran");
-			Check("finale.came counts the routes that came for it", RZ_WorldFacts.Get().Flag("finale.came") >= 1, string.Format("came %1", RZ_WorldFacts.Get().Flag("finale.came")));
+			Check("finale.came counts the routes that came for it, the holder's too", RZ_WorldFacts.Get().Flag("finale.came") >= 2, string.Format("came %1", RZ_WorldFacts.Get().Flag("finale.came")));
 			Next();
 			return false;
 		}

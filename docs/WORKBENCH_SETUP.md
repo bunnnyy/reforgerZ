@@ -1466,10 +1466,10 @@ five routes; a route asset on the lock card, dormant until the lock and played o
 dialogue's `route:` and `finale:` conditions before and after the lock; no route paused at the gate;
 the tester locked to the Haven and stand-in identities to Bastion and the Red Hand, with
 a Bastion–Red Hand pact by tally; the Haven and Bastion racing, the Haven finishing and the others
-freezing; the seal and a stand lost, the Haven's remake step making the batch again; the second stand
+freezing; the seal and a stand lost (the HUD at 90), only the Haven's remake step making the batch again; the second stand
 with a scripted take by the pact's side and the tester in the clean room running it into overtime
 (20 s), the stand's HUD line naming the holder's route; the win, the controller, the winner rule, the
-route's chunk and `finale.came`; and the release's terms
+route's chunk and `finale.came` (the holder's route counted); and the release's terms
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
 five routes are left out of the questlines' phase: they only start at the gate. The stand finds who
 stands in the clean room (and at the bay) by their character, and the fake player has no engine id,
@@ -1485,7 +1485,7 @@ to a hold, a truth kept after a restart, a reason starting a contract and a lock
 a play (§8).
 
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
-week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
+week runs scripted (`RZT_Epilogue.c`): the commit (its record holding the release's terms), the hall's freeze, beats and phase A; phase B;
 the tester bitten and dosed at the first outlet, and refused a second; two questlines begun and
 listed as loose ends, one closed live by a way and one as data; a named dead person's keepsake taken
 and handed in at a house, an epilogue deck card (Take a Name to the Board) true and writing a name
