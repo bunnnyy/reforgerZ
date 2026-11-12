@@ -1,0 +1,29 @@
+GenericEntity {
+ ID "7B3415958901EE59"
+ components {
+  RplComponent "{60EE425D31E05220}" {
+  }
+  Hierarchy "{9180FAE59F1F63D3}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "05C6C84F148614A6"
+   components {
+    Hierarchy "{EDAED2203B74433A}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+   ID "85E7BAF80C3632EC"
+   components {
+    Hierarchy "{23EC16FD568DFA50}" {
+    }
+   }
+   coords 0 0.62 0
+   angles 0 30 0
+  }
+ }
+}

@@ -29,6 +29,9 @@ NOT_ON_PREFABS = {
 }
 # Vanilla component bases (outside our scripts) that make a class a component.
 VANILLA_COMPONENT_BASES = {"SCR_GadgetComponent", "ScriptGameComponent", "SCR_UniversalInventoryStorageComponent"}
+# The engine's own properties of a user action (not script attributes) a manifest action may set:
+# Duration makes it a timed hold with vanilla's progress bar (RZ_WorkSiteAction).
+NATIVE_ACTION_KEYS = {"Duration"}
 # Consumable effects are set on an item's consumable component by hand (see the entry notes).
 CONSUMABLE_EFFECTS = {"RZ_ConsumableAntidote", "RZ_ConsumableMed"}
 
@@ -236,6 +239,8 @@ def check(m, classes, enums):
             errors.append("%s: %s is listed as a %s but derives from %s" % (where, cls, kind, " > ".join(chain)))
         for kv in p["values"]:
             k, _, v = kv.partition("=")
+            if kind == "action" and k in NATIVE_ACTION_KEYS:
+                continue
             a = find_attr(classes, cls, k)
             if not a:
                 errors.append("%s: %s has no attribute %s" % (where, cls, k))

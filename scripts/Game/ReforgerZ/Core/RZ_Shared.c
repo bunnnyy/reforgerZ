@@ -6,6 +6,7 @@
 //! - The marks spawner (World/RZ_Marks.c)
 //! - The season budget and its lanes, and the set-piece calendar (Director/RZ_MajorBudget.c)
 //! - The season scope of the deeds (Core/RZ_Deeds.c)
+//! - Work sites: steps done with your hands at a visible thing (Missions/Blocks/RZ_WorkSites.c)
 //! Elsewhere, and also shared: the checks and ways (Missions/RZ_Checks.c, RZ_Ways.c), world memory
 //! (in the world facts, World/RZ_WorldMemory.c), the clocks (Core/RZ_Clocks.c, RZ_GameTime), and
 //! the standing calls with flags and Forgive() on RZ_GameModeComponent.
@@ -134,6 +135,19 @@ class RZ_SharedSettings
 	[Attribute("2", UIWidgets.Slider, "Set-piece calendar: evenings a set piece waits for a free one before it runs at the next free hour", "0 5 1")]
 	int m_iSetPieceWaits;
 
+	// Work sites
+	[Attribute(desc: "Work sites: a step you do with your hands is a thing at its place with one hold prompt, and the world shows the result (docs/DESIGN.md, Work site)")]
+	ref RZ_WorkSiteSettings m_WorkSites;
+
+	//------------------------------------------------------------------------------------------------
+	RZ_WorkSiteSettings WorkSites()
+	{
+		if (!m_WorkSites)
+			m_WorkSites = RZ_WorkSiteSettings.Cast(RZ_Util.NewWithDefaults("RZ_WorkSiteSettings"));
+
+		return m_WorkSites;
+	}
+
 	protected static ref RZ_SharedSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -172,6 +186,7 @@ class RZ_Shared
 	protected ref RZ_MajorBudget m_Budget;
 	protected ref RZ_SetPieceCalendar m_Calendar;
 	protected ref RZ_SeasonDeeds m_SeasonDeeds = new RZ_SeasonDeeds();
+	protected ref RZ_WorkSites m_WorkSites;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Shared(RZ_GameModeComponent gm, RZ_SharedSettings settings)
@@ -183,6 +198,7 @@ class RZ_Shared
 		m_Marks = new RZ_Marks(settings);
 		m_Budget = new RZ_MajorBudget(settings);
 		m_Calendar = new RZ_SetPieceCalendar(settings);
+		m_WorkSites = new RZ_WorkSites(settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -192,6 +208,7 @@ class RZ_Shared
 	RZ_MajorBudget GetBudget() { return m_Budget; }
 	RZ_SetPieceCalendar GetCalendar() { return m_Calendar; }
 	RZ_SeasonDeeds GetSeasonDeeds() { return m_SeasonDeeds; }
+	RZ_WorkSites GetWorkSites() { return m_WorkSites; }
 
 	//------------------------------------------------------------------------------------------------
 	//! The shared engine from anywhere on the server, null without a game mode.
@@ -242,6 +259,13 @@ class RZ_Shared
 		m_Marks.Tick(dt, players);
 		m_Budget.Tick();
 		m_Calendar.Tick(dt, !ids.IsEmpty());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Once a second: who is working at which work site, and their props near players.
+	void SecondTick(array<int> ids, array<IEntity> players)
+	{
+		m_WorkSites.Tick(1, ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------

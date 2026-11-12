@@ -2127,6 +2127,83 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
    }
    m_SharedSettings RZ_SharedSettings "{6AD75E0A340B85EE}" {
     m_sSeasonMarkPrefab "{84CF52BC897D197C}Prefabs/ReforgerZ/World/RZ_SeasonMark.et"
+    m_WorkSites RZ_WorkSiteSettings "{EF3A58062E819E34}" {
+     m_sSitePrefab "{4B78886FD8E5AC98}Prefabs/ReforgerZ/Work/RZ_WorkSite.et"
+     m_aLooks {
+      RZ_WorkLook "{EE02BEF4D6CE8C18}" {
+       m_eKind LATRINE
+       m_sBefore "{3F44EF349128B8B5}Prefabs/ReforgerZ/Work/RZ_Work_LatrinePit.et"
+       m_sAfter "{5A04E1440160CFEE}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Latrine.et"
+      }
+      RZ_WorkLook "{FACC184E78A29A39}" {
+       m_eKind GRAVE
+       m_sBefore "{01EAA57542EBF081}Prefabs/ReforgerZ/Work/RZ_Work_GravePlot.et"
+       m_sAfter "{C72DF84B576CC834}Prefabs/ReforgerZ/Traces/RZ_Trace_Grave.et"
+      }
+      RZ_WorkLook "{113F8676873DD06F}" {
+       m_eKind BOARDS
+       m_sBefore "{C0E757D6137B4964}Prefabs/ReforgerZ/Work/RZ_Work_Planks.et"
+       m_sAfter "{828D8E56E748FB2D}Prefabs/ReforgerZ/Interactions/RZ_BoardedDoorway.et"
+      }
+      RZ_WorkLook "{23C27B6AD7B34AA8}" {
+       m_eKind SANDBAGS
+       m_sBefore "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et"
+       m_sAfter "{5C121A788CD4C5B4}Prefabs/ReforgerZ/Dressing/Bastion/RZ_Dress_Barricade_Sandbag.et"
+      }
+      RZ_WorkLook "{FD22670D3AE1EE09}" {
+       m_eKind REPAIR
+       m_sBefore "{24EEE691C0EBECF7}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Parts.et"
+      }
+      RZ_WorkLook "{00C2F8F89F835F80}" {
+       m_eKind INSTALL
+       m_sBefore "{24EEE691C0EBECF7}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Parts.et"
+       m_sAfter "{31C9525EE46DD354}Prefabs/ReforgerZ/Work/RZ_Work_Sensor.et"
+      }
+      RZ_WorkLook "{4E35D281DD3D90FF}" {
+       m_eKind SEARCH
+       m_sBefore "{F0991212CFA72F49}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Crate.et"
+       m_sAfter "{34030C655055CC99}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Clutter.et"
+      }
+      RZ_WorkLook "{7DEF51B1A7DDCB5D}" {
+       m_eKind TAKE
+       m_sBefore "{7144274EFF1E57D7}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Effects.et"
+      }
+      RZ_WorkLook "{41D7A533DDA55B9C}" {
+       m_eKind FILL
+       m_sBefore "{5A52AFB0D187CD84}Prefabs/ReforgerZ/Work/RZ_Work_Cans.et"
+      }
+      RZ_WorkLook "{D9FA13ED337365B7}" {
+       m_eKind PAINT
+       m_sBefore "{E4B0A5CE44B54E3A}Prefabs/ReforgerZ/Work/RZ_Work_PaintBoard.et"
+       m_sAfter "{9477AA339E25AD55}Prefabs/ReforgerZ/Traces/RZ_SeasonMark_Stencil.et"
+      }
+      RZ_WorkLook "{C523B8BEFCDCA97B}" {
+       m_eKind WRITE
+       m_sBefore "{1101AD807FBDF61D}Prefabs/ReforgerZ/Traces/RZ_SeasonMark_Board.et"
+       m_sAfter "{8862D996D535E6EE}Prefabs/ReforgerZ/Traces/RZ_Trace_NoticeWall.et"
+      }
+      RZ_WorkLook "{9898B57611C1ABC6}" {
+       m_eKind BURN
+       m_sBefore "{CC67500203DC4E03}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Papers.et"
+       m_sAfter "{554083E387E7760C}Prefabs/ReforgerZ/Traces/RZ_Trace_Pyre.et"
+      }
+      RZ_WorkLook "{7A3922535A446626}" {
+       m_eKind CARE
+       m_sBefore "{E9F86F3F5EC825F2}Prefabs/ReforgerZ/Work/RZ_Work_Patient.et"
+       m_sAfter "{E9F86F3F5EC825F2}Prefabs/ReforgerZ/Work/RZ_Work_Patient.et"
+      }
+      RZ_WorkLook "{4706B626D6161C7A}" {
+       m_eKind BENCH
+       m_sBefore "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
+       m_sAfter "{D205C96A784B806B}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_Table.et"
+      }
+      RZ_WorkLook "{C6DE5EB484CB2ECA}" {
+       m_eKind DIG
+       m_sBefore "{38DE8B75377F2D22}Prefabs/ReforgerZ/Work/RZ_Work_DigMark.et"
+       m_sAfter "{79120CE2B844B975}Prefabs/Compositions/Misc/SubCompositions/DirtPile_Cluttered_01.et"
+      }
+     }
+    }
    }
    m_TraceSettings RZ_TraceSettings "{1306D313FE32D2A6}" {
     m_Kit RZ_TraceKit "{F7E59D74238B20A4}" {

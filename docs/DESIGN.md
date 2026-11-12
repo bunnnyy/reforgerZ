@@ -1286,12 +1286,70 @@ Contracts** ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)).
 | **Live capture** (`RZ_LiveCapture`) | A cage trap and a special, both spawned only when a player is near. Lure it into the cage and drop the door within 4 m, or wound it to a third of its health and get within 3 m to tie it. Hold it for 30 s while it fights (heat), then a transport case (the mission item) to deliver before it wakes (12 min). A case lost with a carrier who left is put back where they were, still sedated (up to 3 times). It leaves the world without a kill, so no sample. Killing it fails. At most 2 at once | Live Capture, Private Collection; The Three Weeks (Dr Wolff) |
 | **Vehicle zone** (`RZ_VehicleZone`, `RZ_ConvoyWatch`) | A specific vehicle, or any vehicle whose prefab name has a keyword (or is one of a list), driven into a zone by a player. Works with vehicles a mission spawns, fixed cars and supply trucks. The convoy watch asks the supply system for a faction's next truck to an outpost and reports whether it arrived, was robbed, destroyed, stolen or late | Recover the Bus, Car Theft, Mobile Lab, Tied Down and the Cargo questline (one van, `RZ_CargoVan`); Convoy Escort, Hijack the Convoy; questline stages in The Three Weeks and The Other Two |
 | **Health cost** (`RZ_HealthCost`) | Takes a share of a player's health (the bite detector's health accessor against the hit zone's maximum), refuses below a floor, once per life per giver. The bite detector forgets its last reading afterwards, so the drop never counts as a bite | Blood Drive |
-| **Arriving** (`RZ_Arrive`) | The one rule for a step done by getting somewhere, so nobody has to find the exact metre. A spot (a job's points, an errand's or an opening's place, a chain's step, a puzzle's "go here", a meeting, the walk back to an errand's giver) counts within the **Arrive radius** (15 m), or within the step's own radius if that's wider. A place with a size counts inside it or within the **Arrive margin** (25 m) of its edge: a town by its radius, a building known only by its centre within the margin of it. In a vehicle, where the vehicle is counts. Checked on the server on each caller's own tick; the radius is kept to 5–40 m and the margin to 0–50 m, so nothing finishes from across a river. Steps done by an interaction (talk, use, pick up, hand over, read) keep it: getting there may finish at the radius, the interaction doesn't. Steps that stand for working at a thing you can see keep their own short reach: a corpse pile to burn (5 m), a charge to wire (3 m), a body's tags or a nest's tissue (4 m), a lock to cut, a well, a truck to repair, a wreck's box, a grave or a clue prop to stand at, a stranger's car to push. Holding an area (the hold base, a questline's hold) is not arriving and keeps its own radius | every "go to" step: visit points, the step chain, the vehicle zone, errands and the openings' chain, puzzles, personal goals, the steps named in [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
+| **Arriving** (`RZ_Arrive`) | The one rule for a step done by getting somewhere, so nobody has to find the exact metre. A spot (a job's points, an errand's or an opening's place, a chain's step, a puzzle's "go here", a meeting, the walk back to an errand's giver) counts within the **Arrive radius** (15 m), or within the step's own radius if that's wider. A place with a size counts inside it or within the **Arrive margin** (25 m) of its edge: a town by its radius, a building known only by its centre within the margin of it. In a vehicle, where the vehicle is counts. Checked on the server on each caller's own tick; the radius is kept to 5–40 m and the margin to 0–50 m, so nothing finishes from across a river. Steps done by an interaction (talk, use, pick up, hand over, read) keep it: getting there may finish at the radius, the interaction doesn't. Steps that stand for working at a thing you can see keep their own short reach: a corpse pile to burn (5 m), a charge to wire (3 m), a body's tags or a nest's tissue (4 m), a lock to cut, a well, a truck to repair, a wreck's box, a grave or a clue prop to stand at, a stranger's car to push (those that are work, with work sites on, are a hold at the thing instead: [Work site](#work-site)). Holding an area (the hold base, a questline's hold) is not arriving and keeps its own radius | every "go to" step: visit points, the step chain, the vehicle zone, errands and the openings' chain, puzzles, personal goals, the steps named in [MISSIONS.md](MISSIONS.md#who-gets-offered-what) |
+| **Work site** (`RZ_WorkSites`) | A step done with your hands at a visible thing: its before look and one hold prompt (5–20 s, vanilla's bar), checked on the server; done, the after look stands there ([below](#work-site)) | errands, the openings and strangers ([ERRANDS.md](ERRANDS.md#work-sites)); Install Sensors, Water Survey, Burn the Bodies (and The Authors' burning), Convoy Escort's engine, Specimen from the Nest, The Armory's well; The Well Story's sample |
 | **Step chain** (`RZ_StepChain`) | Ordered steps across towns. Only the current step is live: its infected and its clue appear within 250 m of it. A step is done when someone has stood there long enough and read its clue. A clue that disappears before it's read is put back (a few times) | Patient Zero, Struck Off (his pack), The Three Weeks, Tied Down; The Book (questline) |
 | **Borrowed kit** (`Factions/RZ_Disguise.c`, `RZ_Ways.PassAs`) | A claim in a faction's kit, judged by the fixed look (`RZ_Checks.LookScore`); a mission sets the difficulty, may give its paper as the cover detail and registers its people as watchers (`AddWatcher`). Caught: the one cost ([REPUTATION.md](REPUTATION.md#borrowed-kit)) plus the stage's own outcome. Approach `TRICK` | Bust Out (the claim at the stockade and the second look); road posts and gates |
 
 *Simplified:* escorted people without an AI body can't be hurt (only a body can die), and
 move in a straight line. A caught special is carried as a case, not dragged in its cage.
+
+#### Work site
+
+Code: `Missions/Blocks/RZ_WorkSites.c` (owned by the shared engine, `RZ_Shared.GetWorkSites()`),
+`Interactions/RZ_WorkSiteAction.c`; settings **Shared > Work sites**. A step whose words say you *do*
+something with your hands (dig, build, board up, fix, search, take, fill, paint, write up, burn, dress
+a wound, work at a bench) is done at a visible thing, not by standing somewhere for a time.
+
+- **The thing.** At the step's place stands its **before** look (a marked pit, a pile of planks, a
+  crate, a toolbox), with one world prompt on an invisible box: the step's own words (*Dig the
+  latrine*, *Board up the doors*, *Fill and stack the sandbags*).
+- **The hold.** Hold the prompt (vanilla's hold-progress bar, [UI.md](UI.md#the-hold-prompt)) for the
+  work's time, 5 to 20 s (a step that used to take 2 minutes or more there: 20 s; a background's way
+  that was quicker stays quicker). Move more than 1.5 m or get hurt and the bar starts again.
+- **Server-checked.** The server keeps, once a second, who has been within **Reach** (3 m) of each
+  spawned site, unhurt (and hidden, for unseen work), since when. The hold's end counts only when
+  that player has been at it for its time, less a second and a half; otherwise *"Not finished"*. Only
+  the step's holder may do an errand's or a stranger's work; a mission's is anyone's.
+- **The result.** Done, the before look goes and the **after** look stands there (the latrine
+  screen, the boarded doorway, a grave, a sandbag barricade, the stencilled board, rummaged clutter,
+  ash); for what's taken or fitted, nothing. It stays for the step's life and goes once nobody is
+  within 200 m after; nothing is saved. A built camp piece (the latrine) is the camp kit's own
+  composition: the camp's own pieces carry on as camp life places them.
+- **Near players only.** Its props spawn within the marks' spawn radius (150 m) and go past the
+  despawn radius, like marks; at most **Sites at once** (40). The hold's time × **Time scale**.
+- **Materials.** None, unless the step already asks for an item at its place (a battery at the
+  sensor: handed over after the hold, at the place). Nothing is given for the work itself.
+- **Off.** With **Work sites** off or no **Site prefab**, every such step is done as before: by
+  staying at its place for its time.
+
+| Kind | Before | After |
+|---|---|---|
+| Latrine | a marked pit (`RZ_Work_LatrinePit`) | the camp latrine (`RZ_Dress_Latrine`) |
+| Grave (and cairns) | a marked plot (`RZ_Work_GravePlot`) | Traces' grave (`RZ_Trace_Grave`) |
+| Boards | planks and nails (`RZ_Work_Planks`) | the boarded doorway (`RZ_BoardedDoorway`) |
+| Sandbags | empty sacks (`SackUniversal_01_Pile`) | the sandbag barricade (`RZ_Dress_Barricade_Sandbag`) |
+| Repair | a toolbox and parts (`RZ_ErrandProp_Parts`) | nothing |
+| Install | a toolbox and parts | the sensor (`RZ_Work_Sensor`) |
+| Search | a crate (`RZ_ErrandProp_Crate`, or the step's own prop) | rummaged clutter (`RZ_Dress_Clutter`) |
+| Take | the effects (`RZ_ErrandProp_Effects`, or the step's own prop) | nothing |
+| Fill | empty cans (`RZ_Work_Cans`) | nothing |
+| Paint | a bare board and a tin (`RZ_Work_PaintBoard`) | the stencilled board (`RZ_SeasonMark_Stencil`) |
+| Write | a board on a post (`RZ_SeasonMark_Board`) | the notice wall (`RZ_Trace_NoticeWall`) |
+| Burn | papers (`RZ_ErrandProp_Papers`), or the job's corpse pile | ash (`RZ_Trace_Pyre`) |
+| Care | a patient's bed (`RZ_Work_Patient`) | the same |
+| Bench | a table (`RZ_Dress_Table`) | the same |
+| Dig | a stake and a sack (`RZ_Work_DigMark`) | turned earth (`DirtPile_Cluttered_01`) |
+| Hands | what's already there (a car, a hive, a well) | nothing |
+
+Owners open a site by key and read `IsDone(key)` on their own tick: errands and the openings
+(`RZ_ErrandWay.Work`), strangers (`RZ_Strangers.StartWork`), a visit-points job's points
+(`PointWork`), and a few jobs' own steps. Which steps are held is in [ERRANDS.md](ERRANDS.md#work-sites),
+[MISSIONS.md](MISSIONS.md) and [QUESTLINES.md](QUESTLINES.md) at each step. A step's line drops its
+"(30 s there)" when it's held (`RZ_WorkSites.WithoutTime`).
+
+*Simplified:* the props stand on the ground at the place (a search inside a house is a crate there,
+not the house's own rooms); a hold isn't an animation of the work, only vanilla's bar.
 
 ### Story blocks
 
@@ -2087,6 +2145,9 @@ only.
 The pieces every later system stands on (errands, the mission style, dialogue's trees, the majors,
 the finale, the epilogue week), built once so no system keeps its own copy. Each is built and has its limits and save; most of their writers
 and readers come with the phases that use them, and each part says which are wired today.
+
+**Work sites** (a step done with your hands at a visible thing, by a hold prompt) are in the shared
+engine too: [Work site](#work-site).
 
 **The one body budget** is the infected's agent budget: a body that isn't an infected asks
 `RZ_Shared.CanSpawnBody(kind, pos)` and is entered with `AddBody`, so it counts inside the same 100
@@ -3020,8 +3081,8 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Across the Road | Search a building 50–250 m from them for 20 s (10 s for a learning player, level 1), within 15 m of it ([arriving](#mission-building-blocks)), and come back. One of your background's kinds when one is there (below), else any house | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Your background's own | Its own system (below); else water (15 s at the nearest well or water tower within 400 m, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 1. Across the Road | Search a building 50–250 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m of it ([arriving](#mission-building-blocks)), and come back. One of your background's kinds when one is there (below), else any house | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
 No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
@@ -3038,7 +3099,7 @@ Cut. Step 1's building is of your background's kind when one is 50–250 m off.
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
 | Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | you choose to see to him on the talk screen (**See to the boy.**, `opening.tend_fever`), then one medical item handed over at the contact |
-| | | else **Water for the Fever** | a well within 400 m | 15 s at the well, and back (it'll be boiled) |
+| | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s), and back (it'll be boiled) |
 | Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | **Give him the antidote.** on the talk screen (`opening.tend_clock`), then the antidote handed over at the contact |
 | | | else **The Clock** with a dressing | something medical | **Keep him going.** on the talk screen (`opening.tend_clock_med`), then one medical item handed over |
 | Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can, and back |

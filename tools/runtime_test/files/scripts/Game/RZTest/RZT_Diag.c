@@ -81,6 +81,13 @@ modded class RZ_MissionManager
 		{
 			if (m_RZTCur && m_RZTCur.m_eState == RZ_EMissionState.ACTIVE && !m_RZTCur.m_bGlobal && m_RZTCur.m_vPos != vector.Zero)
 				RZT_Fake.MoveTo(m_RZTCur.m_vPos);
+			// The fake player can't hold a prompt: its work sites are done for it (the server's path)
+			if (m_RZTCur && m_RZTCur.m_eState == RZ_EMissionState.ACTIVE && RZ_WorkSites.Get())
+			{
+				int worked = RZ_WorkSites.Get().CompleteAllFor(string.Format("mission.%1.", m_RZTCur.m_iId), RZT_Fake.ID);
+				if (worked > 0)
+					Print(string.Format("RZT work sites: %1 done for '%2'", worked, m_RZTCur.m_sTitle));
+			}
 			return true;
 		}
 		if (m_iRZTPhase >= 5)

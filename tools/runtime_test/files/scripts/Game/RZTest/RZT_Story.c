@@ -116,6 +116,22 @@ class RZT_Story
 		bool reasons = RZ_MissionReasons.Answers(RZ_Mission_SupplyCache, "house.hungry") && RZ_MissionReasons.Answers(RZ_Mission_ResearchData, "major.proof") && RZ_MissionReasons.Answers(RZ_Mission_MissingPatrol, "major.orders");
 		Check("story jobs answer their reasons", reasons, "");
 
+		// Work sites: a stand-in site prefab (the crate: no prompt, the server's path only), a site
+		// opened for the fake player and done for it (it can't hold a key), its after look up near it
+		RZ_WorkSiteSettings ws = RZ_SharedSettings.Get().WorkSites();
+		if (ws.m_sSitePrefab.IsEmpty())
+			ws.m_sSitePrefab = "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et";
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		bool opened = sites && RZ_WorkSites.Available() && sites.Open("rzt.work", RZ_EWork.LATRINE, "Dig the latrine", 15, pos + Vector(4, 0, 0), me, "", "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et") >= 0;
+		Check("work site opened", opened && sites.Has("rzt.work") && !sites.IsDone("rzt.work"), "");
+		bool worked = opened && sites.CompleteFor("rzt.work", me) && sites.IsDone("rzt.work") && sites.DoneBy("rzt.work") == me;
+		Check("work site done for its player, its after look up", worked && sites.PropOf("rzt.work") != null, "");
+		if (sites)
+			sites.Close("rzt.work");
+		string cut = RZ_WorkSites.WithoutTime("Dig it (30 s there), then go.");
+		string kept = RZ_WorkSites.WithoutTime("Walk up (20 s there, nothing in your hands).");
+		Check("work site: a held step's line loses its time", cut == "Dig it, then go." && kept == "Walk up (nothing in your hands).", cut + " / " + kept);
+
 		// A route asset never refuses a player locked to nothing
 		Check("route assets: a free player isn't refused", RZ_RouteAssets.Refuse(gm, me, RZ_EFaction.MILITARY).IsEmpty(), "");
 	}
