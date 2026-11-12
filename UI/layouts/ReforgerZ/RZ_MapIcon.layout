@@ -1,62 +1,140 @@
 FrameWidgetClass "{98721C3D930BE900}" {
  Name "MapIcon"
- Slot FrameWidgetSlot "{E3FD5A33B4C6B44B}" {
+ Slot FrameWidgetSlot "{AC45A2DB2E72C58D}" {
   Anchor 0 0 0 0
   PositionX 0
   OffsetLeft 0
   PositionY 0
   OffsetTop 0
-  SizeX 48
-  OffsetRight -48
-  SizeY 48
-  OffsetBottom -48
+  SizeX 34
+  OffsetRight -34
+  SizeY 34
+  OffsetBottom -34
   Alignment 0 0
  }
  Clipping False
  "Ignore Cursor" 1
  {
-  ImageWidgetClass "{2941D70049238ED6}" {
-   Name "Icon"
-   Slot FrameWidgetSlot "{9E3739D89F61EF46}" {
-    Anchor 0 0 0 0
-    PositionX 0
-    OffsetLeft 0
-    PositionY 0
-    OffsetTop 0
-    SizeX 48
-    OffsetRight -48
-    SizeY 48
-    OffsetBottom -48
-    Alignment 0 0
+   ImageWidgetClass "{0E3B9ACAD31F98D8}" {
+    Name "Ring"
+    Slot FrameWidgetSlot "{442B3F49F92932F0}" {
+     Anchor 0 0 0 0
+     PositionX 0
+     OffsetLeft 0
+     PositionY 0
+     OffsetTop 0
+     SizeX 34
+     OffsetRight -34
+     SizeY 34
+     OffsetBottom -34
+     Alignment 0 0
+    }
+    Color 0.071 0.078 0.086 1
+    Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+    Image "marker_ring"
+    Size 34 34
    }
-   Color 1 1 1 1
-   Size 48 48
-  }
-  TextWidgetClass "{DE8F1B932416DE2E}" {
-   Name "Label"
-   Slot FrameWidgetSlot "{50B4916BA760C3F3}" {
-    Anchor 0 0 0 0
-    PositionX -116
-    OffsetLeft -116
-    PositionY 50
-    OffsetTop 50
-    SizeX 280
-    OffsetRight -164
-    SizeY 130
-    OffsetBottom -180
-    Alignment 0 0
+   ImageWidgetClass "{125A6D41140F5052}" {
+    Name "Disc"
+    Slot FrameWidgetSlot "{7375A1279830053B}" {
+     Anchor 0 0 0 0
+     PositionX 3
+     OffsetLeft 3
+     PositionY 3
+     OffsetTop 3
+     SizeX 28
+     OffsetRight -31
+     SizeY 28
+     OffsetBottom -31
+     Alignment 0 0
+    }
+    Color 0.91 0.886 0.816 1
+    Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+    Image "marker_disc"
+    Size 28 28
    }
-   Color 0.91 0.886 0.816 1
-   Text "Morton"
-   "Font Size" 26
-   "Min Font Size" 26
-   "Horizontal Alignment" Center
-   FontProperties FontProperties "{A15EA06DAE21F912}" {
-    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-    ShadowSize 2
-    ShadowOffset 1 1
-    ShadowColor 0 0 0 0.9
+   ImageWidgetClass "{8ABBADFBC9A2E318}" {
+    Name "Icon"
+    Slot FrameWidgetSlot "{8F01BAE5EE966944}" {
+     Anchor 0 0 0 0
+     PositionX 8
+     OffsetLeft 8
+     PositionY 8
+     OffsetTop 8
+     SizeX 18
+     OffsetRight -26
+     SizeY 18
+     OffsetBottom -26
+     Alignment 0 0
+    }
+    Color 0.91 0.886 0.816 1
+    Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+    Image "faction_haven"
+    Size 18 18
    }
-  }
+   ImageWidgetClass "{1ACD18623FDEC345}" {
+    Name "BadgeBack"
+    Slot FrameWidgetSlot "{82EC1F0EE224C181}" {
+     Anchor 0 0 0 0
+     PositionX 20
+     OffsetLeft 20
+     PositionY 20
+     OffsetTop 20
+     SizeX 17
+     OffsetRight -37
+     SizeY 17
+     OffsetBottom -37
+     Alignment 0 0
+    }
+    Color 0.071 0.078 0.086 1
+    Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+    Image "marker_disc"
+    Size 17 17
+   }
+   ImageWidgetClass "{B75BA15F3CBB3AE0}" {
+    Name "Badge"
+    Slot FrameWidgetSlot "{FE50179F063D786D}" {
+     Anchor 0 0 0 0
+     PositionX 20
+     OffsetLeft 20
+     PositionY 20
+     OffsetTop 20
+     SizeX 17
+     OffsetRight -37
+     SizeY 17
+     OffsetBottom -37
+     Alignment 0 0
+    }
+    Color 0.91 0.886 0.816 1
+    Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+    Image "badge_stronghold"
+    Size 17 17
+   }
+   TextWidgetClass "{E5CFCA1C27FE1EE0}" {
+    Name "Label"
+    Slot FrameWidgetSlot "{35B206181623AEFF}" {
+     Anchor 0 0 0 0
+     PositionX -123
+     OffsetLeft -123
+     PositionY 38
+     OffsetTop 38
+     SizeX 280
+     OffsetRight -157
+     SizeY 112
+     OffsetBottom -150
+     Alignment 0 0
+    }
+    Color 0.91 0.886 0.816 1
+    Text "Morton"
+    "Font Size" 22
+    "Min Font Size" 22
+    "Horizontal Alignment" Center
+    FontProperties FontProperties "{36137B2C8A21E5E9}" {
+     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     ShadowSize 2
+     ShadowOffset 1 1
+     ShadowColor 0 0 0 0.9
+    }
+   }
  }
 }

@@ -163,7 +163,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
 | Crafting | `crafting.png` | A workbench's recipes as a list, and for the picked one a picture of what it makes with its description, each input against what you carry (have or missing), how long and how loud, and Craft ([below](#the-crafting-screen)) | `RZ_CraftMenu` | Layouts built as text, preset and **UI > Craft row layout** set; seen in the layout preview, not checked in play |
 | Object menu | — | A prop's or a place's name, what you see, and its options as a list, with a countdown while work is under way ([below](#the-object-menu)) | `RZ_ObjectMenu` | Layouts built as text, not checked in play; no mockup |
-| The map | `map_legend.png` | The marker icons on the vanilla map, per player, and the map key: a compact legend in the bottom-left, shown zoomed out and fading as you zoom in ([below](#the-map)) | `RZ_MapIconsUI` | Icon layout and **UI > Map legend layout** set; the icons and the legend seen in Workbench play with the keyboard (it fades as you zoom in, I hides it); pad not yet |
+| The map | `map_legend.png` (the old line-icon style; the markers are now design A) | The markers on the vanilla map, per player (a faction-coloured disc with its emblem, a near-black ring, a badge for what the place is), and the map key: a compact legend in the bottom-left, shown zoomed out and fading as you zoom in ([below](#the-map)) | `RZ_MapIconsUI` | Icon layout and **UI > Map legend layout** set; the old icons and legend seen in Workbench play with the keyboard (it fades as you zoom in, I hides it); the design A markers and key not checked in play yet (they need the atlas imported again); pad not yet |
 
 The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
 the close button close it. Left and right put a ready-made note in its box and A pins it up, so
@@ -829,20 +829,30 @@ the default background; the refusal itself is still to be checked in play.
 ### The map
 
 `RZ_MapIconsUI` is a component on the map configuration: while the map is open it asks the server
-for this player's list (on open, then every 20 s) and draws one icon per place, in its colour
-(the faction's, hazard yellow for events, the sealed checkpoints and the packs, bone for the
-stations), with a label, following pan and zoom. Icons are 48 across and their labels condensed
-bold 26 with a dark shadow, so they read on a TV.
+for this player's list (on open, then every 20 s) and draws one marker per place, with a label,
+following pan and zoom. Each marker is 34 across (design A, approved by the author):
+
+| Part | Size | What it is |
+|---|---|---|
+| Ring | 34, about 2 thick | a thin hollow ring (`marker_ring`), near-black (#121416), with a small gap to the disc |
+| Disc | 28 | a solid disc (`marker_disc`) in its owner's colour: the faction's; hazard yellow for world events and the sealed checkpoints; steel grey (#4E5459) for the power and radio stations |
+| On the disc | 18 | a faction's emblem (`faction_*`) in bone; for a place without a faction, its glyph without a plate (`glyph_power`, `glyph_radio` in bone; `glyph_event`, `glyph_checkpoint` near-black, as bone wouldn't read on yellow) |
+| Badge | 17, bottom right, over the ring's corner | only on a faction's place: a dark chip (`marker_disc`, #121416) with a bone glyph in a 1.5-thick ring saying what the place is: `badge_stronghold` (a keep), `badge_outpost` (a flag), `badge_safehouse` (a house), `badge_lab` (a flask) |
+| Label | condensed bold 22, a dark shadow | under the marker, so it reads on a TV |
+
+The feed still names each place by its plated icon (`marker_stronghold` and so on); the layer turns
+that into the glyph and the badge (`RZ_MapIconsUI.Glyph` and `Badge`).
 The packs your character knows of are **range
-rings** (`marker_range`): a line's last field is a radius in metres, and the ring is sized to it on the
-map every frame (48 to 320 units across), so it grows and shrinks with the zoom: Heard of, half a
-kilometre round the rough area; Read and Mapped, the pack's ground (Mapped adds where it lies up to the
-label). The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
+rings** (`marker_range`, in hazard yellow, or the giver's colour for the tracked job's ring), drawn
+as before, without disc or badge: a line's last field is a radius in metres, and the ring is sized to
+it on the map every frame (48 to 320 units across), its label centred under it, so it grows and
+shrinks with the zoom: Heard of, half a kilometre round the rough area; Read and Mapped, the pack's
+ground (Mapped adds where it lies up to the label). The list is what this player may know ([DESIGN.md](DESIGN.md#settlements-spawn-points-and-the-map)):
 contracts are never on it. With **UI > Map icon layout** set, the vanilla text markers for
 events and the lab are off; without it, the layer does nothing and those markers stay.
 
 **You are here.** Above the other icons, the layer draws your own position: a hazard-yellow arrow
-(`marker_self`) on a dark disc (`marker_self_back`), 60 across, turned to where your character (or
+(`marker_self`) on a dark disc (`marker_self_back`), 44 across, turned to where your character (or
 the vehicle you're in) faces, moved every frame while the map is open. It's worked out on your
 machine from the entity you control; nothing is sent, and it's hidden while you control nothing
 (dead, spectating). It needs only **UI > Map icon layout**, so it shows whatever vanilla's map
@@ -852,10 +862,11 @@ config does; whether vanilla can show its own player marker in this game mode ha
 inside the safe area and 190 px up, above vanilla's own bottom-left widgets (the map's key hints and
 the scale bar, about the first 330 px across and the bottom 120 px) (`RZ_MapLegend.layout`, **UI > Map
 legend layout**; it needs the icon layer).
-It names what the icons mean in two columns, *Who holds what* (stronghold, outpost, Haven
-safehouse, Halcyon's lab) and *The world* (world event, sealed checkpoint, power station, radio
-station, a pack's ground), each with its icon in the colour the map draws it (40 across, names 22),
-and says the colour is whose it is. It's there in full while the map is zoomed out and fades as you zoom in: full while
+It shows the markers as the map draws them, in three blocks: *Who holds what*, the four factions'
+discs (ring, disc and emblem, 34 across) with their names (Haven, Bastion, Red Hand, Halcyon);
+*What the place is*, the four badges (26 across) with theirs (Stronghold, Outpost, Safehouse,
+Lab); and *The world*, the discs for a world event, a sealed checkpoint, the power and radio
+stations, and the range ring for a pack's ground. Names are 22, and it says the colour is whose it is. It's there in full while the map is zoomed out and fades as you zoom in: full while
 a kilometre of map is at most **Legend full zoom** (150) units across on screen, gone at **Legend
 gone zoom** (450), fading in between, so it never covers the streets you're reading. One input
 shows or hides it, `RZ_MapLegend` (**I**, pad **Y**); its own prompt says so, and the choice lasts
@@ -1031,6 +1042,6 @@ Infamy that may fade.
 |---|---|
 | Built | The icon set and its renderer; twelve mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the object menu on props and places, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer with you-are-here and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, object menu and spawn screens' and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting and spawn screen presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
-| Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons; the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
-| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the object menu (its preset and **UI > Object row layout** aren't set yet); the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
+| Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
+| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the object menu (its preset and **UI > Object row layout** aren't set yet); the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
 | Planned | Mockups of the notice board, the object menu and the season page; finished jobs on the Journal tab (they aren't kept yet); the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |
