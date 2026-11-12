@@ -1135,7 +1135,8 @@ settlements above 8). Names come from a seed; roster, positions and memories are
   (they refuse and run, or shoot if armed), *saved my life* (a one-off gift of Favor).
   Standing effects are in [REPUTATION.md](REPUTATION.md).
 - **Talking** gives one piece of road news. Actions: the role's special, "Share some food"
-  and "Rob".
+  and "Rob". Robbed (or frightened off), they run: a lone body is put into a group (vanilla
+  `Group_Base`) and sent 250 m away, and goes only once nobody is near, never in front of you.
 - **Death is permanent and makes the news.** A replacement shows up a real day later. Who
   killed them is read from the body where the engine records it; otherwise the player who shot
   near them in the last 30 s is blamed, but never while the infected are on them (so nobody is

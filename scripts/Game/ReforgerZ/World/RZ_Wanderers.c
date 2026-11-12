@@ -162,6 +162,7 @@ class RZ_Wanderer
 
 	// Runtime only
 	IEntity m_Body;
+	IEntity m_FleeGroup;		// a lone body wrapped in a group so it can run off (Flee); gone with the body
 	bool m_bHasBody;
 	float m_fHiddenUntil;		// no body until then (just fled)
 	int m_iLastShooter = -1;
@@ -1689,6 +1690,10 @@ class RZ_Wanderers
 	//------------------------------------------------------------------------------------------------
 	protected void DespawnBody(RZ_Wanderer w)
 	{
+		if (w.m_FleeGroup)
+			RZ_Util.UnwrapGroup(w.m_Body, w.m_FleeGroup);
+
+		w.m_FleeGroup = null;
 		if (w.m_Body)
 			RZ_Util.DeleteUnit(w.m_Body);
 
@@ -1729,6 +1734,9 @@ class RZ_Wanderers
 
 	//------------------------------------------------------------------------------------------------
 	//! Runs away from `from`. A body that can't walk is removed and moves on unseen.
+	protected static const ResourceName FLEE_GROUP = "{000CD338713F2B5A}Prefabs/AI/Groups/Group_Base.et";
+
+	//------------------------------------------------------------------------------------------------
 	protected void Flee(RZ_Wanderer w, vector from)
 	{
 		vector dir = w.m_vPos - from;
@@ -1743,6 +1751,21 @@ class RZ_Wanderers
 		if (w.m_Body && SCR_AIGroup.Cast(w.m_Body))
 		{
 			RZ_Util.RedirectGroup(w.m_Body, away, m_GM.GetSpawner().GetMoveWaypointPrefab());
+			return;
+		}
+
+		// A lone body runs off in front of you instead of vanishing: it goes into a group for the
+		// move, and its body is put away once nobody is near (as any wanderer's is)
+		if (w.m_Body && !w.m_FleeGroup)
+		{
+			w.m_FleeGroup = RZ_Util.GroupOf(w.m_Body);
+			if (!w.m_FleeGroup)
+				w.m_FleeGroup = RZ_Util.WrapInGroup(w.m_Body, FLEE_GROUP);
+		}
+
+		if (w.m_FleeGroup)
+		{
+			RZ_Util.RedirectGroup(w.m_FleeGroup, away, m_GM.GetSpawner().GetMoveWaypointPrefab());
 			return;
 		}
 
