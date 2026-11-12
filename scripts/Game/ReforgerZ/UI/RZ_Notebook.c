@@ -92,13 +92,26 @@ class RZ_Notebook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The notebook item goes back from the hand. VERIFY: RemoveHeldGadget on the owning client
-	//! puts a held gadget away (vanilla's gadget input does the same); if not, it stays in the hand.
+	//! The notebook item goes back from the hand (only the notebook: another gadget in the hand
+	//! stays). VERIFY: RemoveHeldGadget on the owning client puts a held gadget away (vanilla's
+	//! gadget cancel input does the same); if not, it stays in the hand.
 	protected static void PutAway(IEntity holder)
 	{
 		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(holder);
-		if (gadgets)
+		if (!gadgets)
+			return;
+
+		IEntity held = gadgets.GetHeldGadget();
+		if (held && held.FindComponent(RZ_NotebookGadgetComponent))
+		{
 			gadgets.RemoveHeldGadget();
+			return;
+		}
+
+		// In the hand without the manager knowing: back to storage, as vanilla's gadget toggle does
+		IEntity item = RZ_NotebookItem.Find(holder);
+		if (item && RZ_NotebookItem.IsHeld(holder))
+			gadgets.SetGadgetMode(item, EGadgetMode.IN_STORAGE);
 	}
 
 	//------------------------------------------------------------------------------------------------

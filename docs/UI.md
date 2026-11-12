@@ -61,7 +61,7 @@ The audit of 2026-11-12: 9 vanilla, 20 menu, 11 quick.
 | A quartermaster's trial dose (Halcyon) | Menu | The talk screen: **Ask for the trial dose**, greyed with what it needs until it applies; without it, its own prompt |
 | Leaders | Menu | The talk screen: talk to them, or **Ask for whoever's in charge** in a quartermaster's talk; without it, **Talk to whoever's in charge** and their asks in the object menu |
 | People: wanderers, residents, named people, posts | Menu | The talk screen |
-| The notebook item | Menu | In hand: [the notebook](#the-notebook). On the ground, its name and season actions are one object menu, **Your name and the season** |
+| The notebook item | Menu | A vanilla gadget: taken into the hand (N, a quick slot, the inventory's **Equip**) it opens [the notebook](#the-notebook), as vanilla's map opens in the hand. On the ground, **Read the notebook**, and its name and season actions as one object menu, **Your name and the season** |
 | Samples and the lab: deliver, research progress | Menu | The object menu at the lab (a single prompt where there's only one) |
 | A radio item: the open channel, a scrambled channel, what's on the air | Menu | **Call on the open channel** opens the talk screen; **Work on a scrambled channel** joins the item's object menu when it has others; **View radio**, held up in hand beside vanilla's Turn on/off or on the ground, opens [the radio screen](#the-radio-screen) |
 | Key tags | Menu | [The reader](#subtitles-and-the-reader) (the prompt names the tag too) |
@@ -402,9 +402,9 @@ key isn't a tab: it's on the map ([The map](#the-map)). The hall of fame is part
 
 | Open it | Keyboard and mouse | Gamepad / console |
 |---|---|---|
-| A key | **N** (`RZ_OpenNotebook`) | **View + RB** |
+| A key | **N** (`RZ_OpenNotebook`): the notebook item comes into your hand, then the notebook opens; without the item, it just opens | **View + RB**, the same |
 | The pause menu | Esc, then **Notebook** | Start, then **Notebook**, A |
-| The notebook item | In the inventory, take it into your hand | The same, or from a quick slot |
+| The notebook item | N takes it into your hand; or its quick slot; or **Equip** in the inventory | View + RB; or its quick slot on the quick slot wheel; or **Equip** in the inventory |
 
 - It opens on the tab you last used this session (the first time: Quests).
 - LB/RB or Q/E switch tabs; clicking a tab works too. Up/down (D-pad, stick, arrows) move in the
@@ -441,14 +441,30 @@ made from vanilla's own pause menu button layout and moved just after Field Manu
 focus column. Its click closes the pause menu and opens the notebook. No layout override is
 needed.
 
-**The notebook item** (`Prefabs/ReforgerZ/UI/RZ_Notebook.et`, `RZ_NotebookGadgetComponent`): a
-small notebook every new life is given a few seconds after spawn (**UI > Notebook prefab**; one
-that doesn't fit lies at your feet). Taken into the hand by its owner it opens the notebook; when
-the notebook closes, it goes back. The item holds like a flashlight (its hold animation is the
-MX991's). The HUD's 0.2 s refresh watches the held gadget and opens the notebook once each time
-the item comes into the hand (`RZ_NotebookItem.CheckHeld`): the gadget's own IN_HAND switch
-didn't open it in play. *Simplified:* it's given at spawn by script rather than added
-to each of the 13 loadouts, so it works with any loadout.
+**The notebook item** (`Prefabs/ReforgerZ/UI/RZ_Notebook.et`, `RZ_NotebookItem.c`): a small
+notebook every new life is given a few seconds after spawn (**UI > Notebook prefab**; one that
+doesn't fit lies at your feet). It's a vanilla gadget, as the map and the compass are: vanilla's
+`Item_Base` with the notebook's mesh, a gadget component (`RZ_NotebookGadgetComponent`) held in the
+left hand like the MX991 flashlight (**Gadget anim variable** MX991 and the MX991's hold), and
+the gadget slot type, so it goes in a pack or vest like the map.
+
+| Way in | What happens |
+|---|---|
+| N / View + RB | `RZ_NotebookItem.OpenByKey`: as vanilla's M with the map, the item comes into the hand through the gadget manager and the notebook opens there. With no item, in a seat (it isn't held in vehicles) or if the character can't take it, the notebook just opens; if the item isn't in the hand 1.5 s later, the notebook opens anyway (and the log says so) |
+| Its quick slot | A notebook new to you goes on the last free quick slot that isn't a weapon slot (once per item: take it off and it stays off), so a pad reaches it on the quick slot wheel. Using the slot is vanilla's: the gadget comes into the hand |
+| **Equip** in the inventory | Vanilla's: the gadget comes into the hand; the inventory closes and the notebook opens |
+| **Read the notebook** | On the item: on the ground, and in your hand while you hold it up and look at it (vanilla's inspection). Opens the notebook on your machine, the fallback if the hand doesn't work |
+
+In the hand, the notebook opens 0.3 s later (the hold shows first, as vanilla's map waits), from
+the gadget's own `IN_HAND` mode switch as vanilla's map does, and from the HUD's 0.2 s watch
+(`RZ_NotebookItem.CheckHeld`, which asks the gadget manager, the character's left hand and the
+item's own mode) in case the switch doesn't run on your machine; once each time it comes into the
+hand. When the notebook closes, the item is put away (only the notebook: a compass in the hand
+stays). Another gadget in the hand is put away first, as vanilla's quick slot does. *Why it
+didn't open before:* the item was a destructible prop with no hold animation set, so the
+character never finished taking it into the hand and the gadget never reached `IN_HAND`.
+*Simplified:* it's given at spawn by script rather than added to each of the 13 loadouts, so it
+works with any loadout.
 
 **Errands and the detail.** A held errand is a Quests row of its own (kind ERRAND, the
 `mission_errand` icon: a small parcel tied with string): the giver as "by", where, the direction (to the
@@ -1318,7 +1334,7 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 
 | Action | Keyboard | Gamepad | Context |
 |---|---|---|---|
-| `RZ_OpenNotebook` | N | View + RB (also the pause menu's **Notebook** button, or the notebook item) | `IngameContext` |
+| `RZ_OpenNotebook` | N (the notebook item into the hand, then the notebook) | View + RB, the same (also the pause menu's **Notebook** button, the item's quick slot, or **Read the notebook**) | `IngameContext` |
 | `RZ_RadioFilter` | F | X | `MenuContext` |
 | `RZ_TrackJob` | T, Space | Y | `MenuContext`: Track or untrack the selected job on the notebook's Quests tab, as A (`MenuSelect`), the TRACK button and a double click on the job's row (two clicks within 0.4 s) do there |
 | `RZ_BoardClear` | Delete | X | `MenuContext`: the notice board's Clear, server admins only |
@@ -1422,7 +1438,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_DoorMarkClient` | client, from the HUD's update | Traces' door marks as decals near the player, from the game mode's replicated list and the kit's atlas ([TRACES.md](TRACES.md#doors-you-can-see)); nothing without the atlas |
 | `RZ_TraceLightsClient` | client, from the HUD's update | Traces' lit windows (S2) near the player, from the game mode's replicated list: a small warm point light each within 150 m ([TRACES.md](TRACES.md#sound-and-light)); nothing unless **World > Traces > Lit windows** is on |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
-| `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookGadgetComponent` | client | Open the notebook: N, the pause menu's button, the notebook item |
+| `RZ_Notebook`, `RZ_PauseNotebook`, `RZ_NotebookItem` (`RZ_NotebookGadgetComponent`, `RZ_ReadNotebookAction`) | client | Open the notebook: N (through the item in the hand), the pause menu's button, the notebook item (a gadget) and its **Read the notebook** |
 | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | server, client (`ChimeraMenuBase`) | The death brief: this life's two new counters (infected put down, ground covered), the brief built once at a death and sent to that player; the card over the spawn screen ([above](#the-death-brief)) |
 | `RZ_SpawnMenu`, `SCR_PlayerDeployMenuHandlerComponent` (modded, `RZ_SpawnMenu.c`) | client (`ChimeraMenuBase`) | The spawn screen in place of vanilla's deploy menu: the backgrounds, the kind of place you start at, Deploy through the vanilla loadout and spawn requests ([above](#the-spawn-screen)) |
 | `SCR_BasePlayerLoadout`, `SCR_LoadoutManager`, `SCR_BaseGameMode` (modded, `RZ_LoadoutLock.c`) | server (the client only marks the loadout unavailable in vanilla's deploy menu) | Never assigns or spawns a locked background's loadout |

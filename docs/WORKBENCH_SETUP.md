@@ -802,7 +802,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
 | (existing prefab) | the SpawnRow layout (UI/LAYOUTS.md) | — | UI > Spawn row layout | optional | our spawn screen, the background picker, in place of vanilla's deploy menu (empty = vanilla's deploy menu). Needs the RZ_SpawnMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the MapLegend layout (UI/LAYOUTS.md) | — | UI > Map legend layout | optional | the map key in the full-screen map's bottom-left, shown zoomed out (empty = no legend; needs the map icon layout) |
-| `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent`; `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
+| `RZ_Notebook.et` | a gadget on vanilla's Item_Base with the notebook's mesh (Notebook_01_Single.xob, marble black); display name Notebook, weight 0.1 kg, slot type SLOT_GADGETS_STORAGE, held like the MX991 flashlight | `RZ_NotebookGadgetComponent`; `RZ_ReadNotebookAction`, `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes. Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on |
 | (existing prefab) | vanilla's compass ({7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et) | — | UI > Compass prefab | optional | every new life carries one (unless the loadout has a compass) |
 | (existing prefab) | vanilla's folded paper map ({13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et) | — | UI > Map prefab | optional | every new life carries one (unless the loadout has a paper map) |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
@@ -1297,9 +1297,28 @@ in `UI/layouts/ReforgerZ/`.
       files). Check each page's content sits between the header rule and the footer, inside the
       safe area, and nothing overlaps the tabs. If a page looks squeezed, widen it in the editor:
       the script only looks up the names in UI/LAYOUTS.md.
-   2. Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as text on vanilla's carryable notebook,
-      with `RZ_NotebookGadgetComponent`): it should show the component, display name Notebook and
-      weight 0.1 kg. **UI > Notebook prefab** points at it.
+   2. **The notebook item as a gadget.** Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as
+      text; [UI.md](UI.md#the-notebook) says how it works). If Workbench shows the old prop (a
+      destructible notebook, no hold), make it again by hand from these settings:
+      - **Parent:** vanilla's `Prefabs/Items/Core/Item_Base.et` (as the map and the compass), not the
+        Combat Ops notebook prop: the prop is a static, destructible prop and can't be held.
+      - **MeshObject:** `Assets/Props/Civilian/Notebook_01/Notebook_01_Single.xob`, with the
+        materials `Notebook_01` → `Notebook_01_MarbleBlack.emat` and `Palette` →
+        `Notebook_01_MarbleBlack_MLOD.emat`. **RigidBody:** Model Geometry on, not Static, damping
+        0.5 / 0.5 (as the paper map).
+      - **RZ_NotebookGadgetComponent:** **Gadget anim variable** `MX991` (the one that matters:
+        with none, the character never finishes taking it into the hand), **Can be held** on.
+      - **InventoryItemComponent > Attributes:** display name Notebook and its description; weight
+        0.1, size Manual 5 × 5 × 5, volume 50; **Item Animation Attributes** with one attachment,
+        graph `Assets/Items/Equipment/workspaces/Flashlight_MX991.agr`, instance `MX991_player.asi`,
+        binding `Gadget`, and **Allow Inspection** on; **Character Modifier Attributes** with **Can
+        be equipped in vehicle** off; Size `SLOT_1x1`, Slot type `SLOT_GADGETS_STORAGE`.
+      - **ActionsManagerComponent** (the parent's, with its "default" context and Pick up):
+        `RZ_ReadNotebookAction` (Read the notebook), `RZ_DeadNameAction` and the two
+        `RZ_EpiNotebookAction`s (Kind SEASON, ANONYMOUS), all in the "default" context.
+
+      Save, and check **UI > Notebook prefab** still points at it. Then in Workbench play: drop it
+      and **Pick up**; it sits flat and doesn't break; in the inventory it shows **Equip**.
    3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
       (its `SubtitlePanel` with the head row `SubtitleHead`, and `RadioLinePanel`, both hidden, and
       `NametagPanel` with its three hidden `Nametag0`–`2` first under the root) the same way. **UI > Talk reply layout** is set, so the
@@ -1362,8 +1381,10 @@ in `UI/layouts/ReforgerZ/`.
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
       on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
       `node tools/render_ui.js textures` and import again.
-   11. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
-      with the pad); after spawning, find the notebook in the inventory and take it in hand. If
+   11. Play: press N (the notebook item comes into the left hand, then the notebook opens; B or
+      Esc puts it back); open the pause menu and look for **Notebook** after Field Manual (pick it
+      with the pad); the notebook is on a quick slot after spawning: use it from the quick slot
+      wheel, and **Equip** it in the inventory. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
       it's there.
@@ -1858,7 +1879,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **148** lines with the tag, all but one in the game scripts (one is the comment in
+There are **152** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 34 are in `UI/`: 29 of [the UI's](#the-ui-32), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/` and two are the radio screen's in `Interactions/`), but one: the sites plugin's in
@@ -1995,7 +2016,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerSite.c:357` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
 | `World/RZ_PowerSite.c:371` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
 
-### The UI (32)
+### The UI (36)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2007,11 +2028,15 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `UI/RZ_UIData.c:981` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:194` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_Notebook.c:207` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
-| `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
-| `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:1067` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
+| `UI/RZ_NotebookItem.c:31` | with **Gadget anim variable** MX991 the character takes the notebook item into the left hand as it does the MX991 flashlight (with none, the take never finishes: the old bug), and its `IN_HAND` mode switch, or the HUD's watch, opens the notebook | N says in the log "not in the hand 1.5 s after N" and opens the notebook anyway; the pause menu and **Read the notebook** still work. Try the map's hold instead (**Gadget anim variable** MAP, the paper map's `paper_map.agr`/`player_map.asi`) |
+| `UI/RZ_NotebookItem.c:260` | `CanEquipGadget` is true for the notebook item on foot (the inventory's **Equip** asks the same) | N opens the notebook without taking the item; the inventory has no Equip for it. Check the prefab against vanilla's map |
+| `UI/RZ_NotebookItem.c:336` | quick slots 0–3 are the weapon slots; the notebook goes on the last free one of the others (once per item) | It lands on a weapon slot or none: drag it to one by hand |
+| `UI/RZ_NotebookItem.c:76` | a carried notebook has a parent and one on the ground has none, so **Read the notebook** shows on the ground, and in hand only while it's held up and looked at (vanilla's inspection) | The prompt shows in the wrong place: N and the pause menu still open it |
+| `UI/RZ_NotebookItem.c:94` | **Read the notebook**, a local-only action, runs `PerformAction` on the machine of the player who used it | It does nothing: N and the pause menu still open it |
+| `UI/RZ_Notebook.c:96` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
+| `UI/RZ_Notebook.c:1080` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:51` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_Menus.c:55` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
 | `UI/RZ_UIData.c:1050` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
@@ -2197,6 +2222,7 @@ Warnings worth acting on:
 |---|---|
 | `GUI (E): Menu preset 'RZ_NotebookMenu' not found!` (or another `RZ_` preset) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing. |
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
+| `Notebook item: not in the hand 1.5 s after N; the notebook opened without it ...` | (client) The notebook item couldn't be taken into the hand: check its prefab's **Gadget anim variable** (MX991) and parent ([setting up the UI](#setting-up-the-ui), 4a) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off (the roads give N spots).` | Set Perimeter > Barricade prefab; N is how many checkpoints it would build |
 | `Perimeter checkpoints: N roads come within 350 m of the edge; M crossings of the checkpoint line ...` | Roads that cross the line. N = 0 means the edge runs at sea all round (an island): the shore lines below fill in |
@@ -2566,8 +2592,8 @@ session, tick off:
   (the services are its replies); with **UI > Talk reply layout** empty: **Trade**, **Talk to
   whoever's in charge** and one **Ask the quartermaster** with the leader's asks and the
   safehouse's services; at the lab, Deliver
-  infected samples locked with NO SAMPLES when you carry none. The notebook item on the ground: one
-  **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
+  infected samples locked with NO SAMPLES when you carry none. The notebook item on the ground:
+  **Read the notebook** and one **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
   bite and Douse the doorway are still single prompts. An infected closing in shuts it. Text reads
   from the sofa on a TV. Empty the slot: every prompt is back.
 - [ ] The status strip and locked rows, with a pad and on a TV ([UI.md](UI.md#the-status-strip-and-locked-rows)):
@@ -3258,8 +3284,15 @@ when it happens)
   through Standing, Quests, Radio, Journal and The season with real data (the Journal has the past
   jobs, then the notes: packs, doors, the finale, promises; The season scrolls down to the hall of fame); up/down
   move the Journal's and the Quests tab's selection and scroll the other lists; X or F cycles the Radio filter through six
-  names; B or Esc closes. With a pad only: Start, Notebook, A opens it; the notebook item taken in
-  hand (inventory or quick slot) opens it and is put away when it closes.
+  names; B or Esc closes. With a pad only: Start, Notebook, A opens it.
+- [ ] The notebook item, with the keyboard: N brings it into the left hand (held like the
+  flashlight) and the notebook opens a moment later; Esc closes it and the item goes back. Its quick
+  slot does the same, and **Equip** in the inventory (the inventory closes first). With a compass in
+  hand, N puts the compass away first; after closing, the compass isn't taken out again. In a car, N
+  opens the notebook without the item. Drop it: on the ground, **Read the notebook** opens it; held
+  up and looked at (vanilla's inspection), the same. The log has no "not in the hand 1.5 s after N".
+- [ ] The same with a pad only: View + RB, then the quick slot wheel (the notebook's slot), then
+  **Equip** in the inventory with A; B closes the notebook and the item goes back.
 - [ ] A new contract offer shows a count on the Quests tab, a radio message one on Radio; looking
   at the tab clears it.
 - [ ] With **Board menus** on (the default), reading a board opens the board menu, and typing in
