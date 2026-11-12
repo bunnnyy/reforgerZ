@@ -850,7 +850,6 @@ class RZ_MissionManager
 		// Who was on it before anyone who stepped out is dropped: the notebook's past jobs
 		array<int> before = {};
 		before.InsertAll(m.m_aParticipants);
-		before.InsertAll(m.m_aOfferedTo);
 		if (m.m_bWithdrawn)
 		{
 			RZ_JobHistory.MissionEnded(m_GM, m, false, before);
