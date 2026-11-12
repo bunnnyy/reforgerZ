@@ -105,13 +105,11 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (PC): merged from the author's play-test: the talk screen New Vegas style (compact box, 5 replies, [Admin] sub-list, grey when heard, keys 1-5), map icons 48 px, the Standing page as G2 (rows of icons, 9 new icons, no Fame/Infamy grid), 96 people looks with RZ_Looks.c and PickLook at every faction spawn, camp life laid out by plans (kits are plans now: m_vPlan, m_fPlanYaw, footprints; counters; SetGroupSmartAction finds the sentinel), the notebook item opened by the HUD's held-gadget check, Metabolism water (RZ_Water_Dirty). Claims cleared. Not yet seen in play.
 
 ## Claims
 
-- PC, 2026-11-12, from the author's play-test: the talk screen (RZ_TalkMenu.c, RZ_TalkMenu/RZ_TalkReply layouts, the Dialogue engine scripts: New Vegas style, a compact box, admin replies in one sub-list, at most 5 replies, hover and click, heard replies grey) and the map icons (RZ_MapIcons.c, RZ_MapIcon/RZ_MapLegend layouts, bigger).
-- PC, 2026-11-12: camp life (RZ_CampLife.c, RZ_Util.SetGroupSmartAction, RZ_Quartermaster.c placement, tools/camp_kit, Prefabs/ReforgerZ/Dressing): pieces laid out by the drawn plans, outdoor props outside, a medical tent for Halcyon, nothing large indoors, the quartermaster behind a counter, the "Waypoint is not set properly" VM exception.
-- PC, 2026-11-12: varied people (variant prefabs per faction from the clothing mods, picked per person) and the notebook's Standing page (RZ_StandingPage.layout, its part of RZ_Notebook.c).
-Please leave these files alone until the claims are cleared.
+(none)
 
 ## Status
 
