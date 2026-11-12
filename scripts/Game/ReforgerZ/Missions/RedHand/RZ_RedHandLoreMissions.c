@@ -487,6 +487,19 @@ class RZ_Mission_LearningTheDrones : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Him by the crew, then the marker (walk him there, then count there), or the refuge.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iPath == PATH_WALK || m_iPath == PATH_TIMING)
+			return RZ_ObjPlace.Spot(m_vMark, TIMING_RADIUS);
+
+		if (m_iPath == PATH_AWAY)
+			return RZ_ObjPlace.Spot(m_vRefuge, 25);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -815,6 +828,19 @@ class RZ_Mission_PitsDebtor : RZ_PuzzleMission
 			return m_sFail;
 
 		return string.Format("%1 went in the pit alone. Nobody has said how many rounds he lasted.", m_sDebtor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pit (the rigged rounds are there too); walking him out, the refuge.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iPath == PATH_OUT && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(m_vRefuge, 25);
+
+		if (m_iPath == PATH_RIG)
+			return RZ_ObjPlace.Spot(m_vPit, RING_RADIUS);
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1462,6 +1488,23 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 			return m_sFail;
 
 		return "Tied Down: the truck is gone, and the people in it.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The trail (the chain) to the pen; once they're out, the truck until you're at its wheel,
+	//! then the Haven's refuge.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iChoice == CHOICE_FREE && m_Load.m_Van)
+		{
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			if (!me || RZ_Util.GetVehicleOf(me) != m_Load.m_Van)
+				return RZ_ObjPlace.Spot(m_Load.m_Van.GetOrigin());
+
+			return RZ_ObjPlace.Spot(m_vRefuge, 30);
+		}
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

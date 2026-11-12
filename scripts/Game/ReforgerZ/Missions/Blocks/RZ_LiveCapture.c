@@ -381,6 +381,33 @@ class RZ_LiveCapture
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the objective is done (docs/MISSIONS.md, "Objectives"): the cage while you bait it (the
+	//! lure comes to the cage), where it's held while the sedative takes, then the case where it
+	//! lies, and once someone carries the case `drop` (where the mission takes it; zero: none).
+	RZ_ObjPlace ObjPlace(vector drop)
+	{
+		switch (m_eState)
+		{
+			case RZ_ECaptureState.BAIT:
+				return RZ_ObjPlace.Spot(m_vCage);
+			case RZ_ECaptureState.CAUGHT:
+				return RZ_ObjPlace.Spot(m_vHeld, HOLD_RADIUS);
+			case RZ_ECaptureState.CRATED:
+			{
+				if (m_bItemWasCarried && drop != vector.Zero)
+					return RZ_ObjPlace.Spot(drop);
+
+				if (m_vItemLastPos == vector.Zero)
+					return RZ_ObjPlace.Spot(m_vHeld);
+
+				return RZ_ObjPlace.Spot(m_vItemLastPos);
+			}
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The cage and where the special is held, for the mission's GetPropSpots.
 	void GetSpots(notnull array<vector> result)
 	{

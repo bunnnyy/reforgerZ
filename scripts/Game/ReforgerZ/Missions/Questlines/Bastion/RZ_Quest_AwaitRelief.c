@@ -323,6 +323,27 @@ class RZ_QuestCarry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Someone has it (a player, a body, a vehicle).
+	bool IsCarried()
+	{
+		return m_Item && m_bCarried && !m_bDelivered;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the objective is (docs/MISSIONS.md, "Objectives"): where it lies, then `dest` once
+	//! someone carries it. Null before it's out, or once it's handed over.
+	RZ_ObjPlace ObjPlace(vector dest, float destRadius = 0)
+	{
+		if (!m_bSpawned || m_bDelivered)
+			return null;
+
+		if (m_bCarried && dest != vector.Zero)
+			return RZ_ObjPlace.Spot(dest, destRadius);
+
+		return RZ_ObjPlace.Spot(m_vLast);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Puts it on the ground at pos, tagged for mission `missionId`. False without the prefab.
 	bool Spawn(RZ_GameModeComponent gm, int missionId, vector pos)
 	{
@@ -2194,6 +2215,16 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! His post, then (he walks with you) the stronghold.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Him.GetFollowed() > 0 && !m_Him.IsArrived())
+			return RZ_ObjPlace.Spot(m_vDest, 30);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -2377,6 +2408,19 @@ class RZ_QM_OrdersOperator : RZ_QuestMission
 			return QFill(gm, "Await Relief: {operator} sleeps at a Haven safehouse now. Bastion paid nothing for that.");
 
 		return QFill(gm, "Await Relief: Bastion's own people found {operator} first.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where he hides, then where he walks with you: the stronghold or the safehouse.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iMode == MODE_IN)
+			return RZ_ObjPlace.Spot(m_vStronghold, 30);
+
+		if (m_iMode == MODE_HOUSE)
+			return RZ_ObjPlace.Spot(m_vHouse, 25);
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

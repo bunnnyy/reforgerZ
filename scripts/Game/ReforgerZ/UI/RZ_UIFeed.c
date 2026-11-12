@@ -764,11 +764,25 @@ class RZ_UIFeed
 					by = l.GetHeader();
 			}
 
-			// A rough area, never metres (docs/UI.md, "The quest tracker"); contracts point at the
-			// rough circle until the player knows the spot (RZ_Mission)
+			// A rough area, never metres (docs/UI.md, "The quest tracker"), to where the current
+			// objective is done; contracts point at the rough circle until the player knows the spot
+			// (RZ_Mission). The mission's own place without one.
+			RZ_ObjList objs = new RZ_ObjList();
+			m_Tracker.Objectives(playerId, m.m_iId, from, objs);
+			RZ_ObjPlace nowAt = objs.Now();
+			string where = m.GetLocationNameFor(m_GM, playerId, from);
 			string dir = "";
 			if (ent && !m.m_bGlobal)
 				dir = RZ_QuestText.RoughArea(m_GM, from, m.GetAreaFor(m_GM, playerId, from));
+
+			if (nowAt)
+			{
+				if (ent)
+					dir = RZ_QuestText.RoughArea(m_GM, from, nowAt.m_vPos);
+
+				if (!nowAt.IsRough())
+					where = nowAt.Words(m_GM);
+			}
 
 			string req = "";
 			if (m.m_bContract)
@@ -784,9 +798,9 @@ class RZ_UIFeed
 				part = "1";
 
 			RZ_UILine lnM = new RZ_UILine("M");
-			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(m.GetLocationNameFor(m_GM, playerId, from)).Add(dir);
+			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(where).Add(dir);
 			lnM.AddInt(RZ_Util.RoundToInt(m.m_fTimeLeft / 60)).Add(req).AddInt(m.m_iFameReward).AddInt(m.m_iFavorReward).Add(m.GetBrief(m_GM)).Add(part);
-			lnM.Add(RZ_QuestText.KindLabel(MissionKind(m), false)).Add(NowFor(playerId, m.m_iId, from));
+			lnM.Add(RZ_QuestText.KindLabel(MissionKind(m), false)).Add(objs.First(RZ_EObjState.CURRENT));
 			s += lnM.End();
 			shown.Insert(m.m_iId);
 		}
@@ -815,12 +829,31 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A job's current objective in one line, for its journal row (RZ_QuestTracker.Objectives).
-	protected string NowFor(int playerId, int id, vector from)
+	//! A job's objectives for its journal row (RZ_QuestTracker.Objectives): its current one in one
+	//! line, and where that's done.
+	protected RZ_ObjList ObjsFor(int playerId, int id, vector from)
 	{
 		RZ_ObjList list = new RZ_ObjList();
 		m_Tracker.Objectives(playerId, id, from, list);
-		return list.First(RZ_EObjState.CURRENT);
+		return list;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A journal row's area in words: to the current objective's place, else `fallback` (the job's
+	//! own place, zero for none). "" without a player to measure from.
+	protected string RowArea(RZ_ObjList list, IEntity ent, vector from, vector fallback)
+	{
+		if (!ent)
+			return "";
+
+		RZ_ObjPlace at = list.Now();
+		if (at)
+			return RZ_QuestText.RoughArea(m_GM, from, at.m_vPos);
+
+		if (fallback == vector.Zero)
+			return "";
+
+		return RZ_QuestText.RoughArea(m_GM, from, fallback);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -837,18 +870,18 @@ class RZ_UIFeed
 		string s = "";
 		foreach (RZ_Errand e : held)
 		{
-			string dir = "";
-			if (ent)
-				dir = RZ_QuestText.RoughArea(m_GM, from, e.m_vPlace);
-
-			if (e.m_bStepDone && ent)
-				dir = RZ_QuestText.RoughArea(m_GM, from, e.m_vGiver);
-
-			RZ_UILine lnE = new RZ_UILine("M");
-			lnE.AddInt(-(ERRAND_ID_BASE + e.m_iId)).AddInt(RZ_EMissionKindUI.ERRAND).AddInt(e.m_iFaction).Add(e.Fill(e.m_Def.m_sTitle)).Add(e.m_sGiverTitle).Add(e.GetText("here")).Add(dir);
-			lnE.AddInt(errands.MinutesLeft(e)).Add("Asked of you").AddInt(0).AddInt(0).Add(errands.JournalText(e)).Add("1");
+			// The step's place, then the giver's (RZ_QuestTracker.ErrandObjectives)
 			int errandRow = -(ERRAND_ID_BASE + e.m_iId);
-			lnE.Add(RZ_QuestText.KindLabel(RZ_EMissionKindUI.ERRAND, false)).Add(NowFor(playerId, errandRow, from));
+			RZ_ObjList objs = ObjsFor(playerId, errandRow, from);
+			vector fallback = e.m_vPlace;
+			if (e.m_bStepDone)
+				fallback = errands.GiverAt(e);
+
+			string dir = RowArea(objs, ent, from, fallback);
+			RZ_UILine lnE = new RZ_UILine("M");
+			lnE.AddInt(errandRow).AddInt(RZ_EMissionKindUI.ERRAND).AddInt(e.m_iFaction).Add(e.Fill(e.m_Def.m_sTitle)).Add(e.m_sGiverTitle).Add(e.GetText("here")).Add(dir);
+			lnE.AddInt(errands.MinutesLeft(e)).Add("Asked of you").AddInt(0).AddInt(0).Add(errands.JournalText(e)).Add("1");
+			lnE.Add(RZ_QuestText.KindLabel(RZ_EMissionKindUI.ERRAND, false)).Add(objs.First(RZ_EObjState.CURRENT));
 			s += lnE.End();
 		}
 
@@ -1049,10 +1082,22 @@ class RZ_UIFeed
 			from = ent.GetOrigin();
 
 		m_Tracker.Objectives(playerId, id, from, list);
+		// O|id|state|line|place: an open objective's place in words when it differs from the one
+		// before it ("Go back to Mara" after a step elsewhere: "Morton")
+		string lastPlace = "";
 		foreach (int oi, string objLine : list.m_aLines)
 		{
+			int objState = list.m_aStates[oi];
+			string objPlace = "";
+			if (objState != RZ_EObjState.DONE && objState != RZ_EObjState.FAILED)
+			{
+				objPlace = m_Tracker.OtherPlace(list.m_aPlaces[oi], lastPlace);
+				if (!objPlace.IsEmpty())
+					lastPlace = objPlace;
+			}
+
 			RZ_UILine lnO = new RZ_UILine("O");
-			objectives += lnO.AddInt(id).AddInt(list.m_aStates[oi]).Add(objLine).End();
+			objectives += lnO.AddInt(id).AddInt(objState).Add(objLine).Add(objPlace).End();
 		}
 
 		RZ_UILine ln = new RZ_UILine("D");
@@ -1082,20 +1127,27 @@ class RZ_UIFeed
 			if (st)
 				stageTitle = run.Fill(st.m_sTitle);
 
+			// The stage's current objective's place (its stage mission's), else the questline's own
+			int id = -run.m_iId;
+			RZ_ObjList objs = ObjsFor(playerId, id, from);
 			string where = run.m_sPlaceName;
-			string dir = "";
-			if (run.m_bHasPlace && ent)
-				dir = RZ_QuestText.RoughArea(m_GM, from, run.m_vPlace);
+			vector fallback = vector.Zero;
+			if (run.m_bHasPlace)
+				fallback = run.m_vPlace;
+
+			string dir = RowArea(objs, ent, from, fallback);
+			RZ_ObjPlace nowAt = objs.Now();
+			if (nowAt && !nowAt.IsRough())
+				where = nowAt.Words(m_GM);
 
 			string part = "0";
 			if (run.PlayerTookPart(m_GM, playerId))
 				part = "1";
 
-			int id = -run.m_iId;
 			RZ_UILine lnQ = new RZ_UILine("M");
 			lnQ.AddInt(id).AddInt(RZ_EMissionKindUI.QUESTLINE).AddInt(run.m_Line.m_iFaction).Add(run.m_Line.m_sTitle).Add(stageTitle).Add(where).Add(dir);
 			lnQ.AddInt(-1).Add("Whoever takes the next step").AddInt(0).AddInt(0).Add(q.JournalFor(run)).Add(part);
-			lnQ.Add(RZ_QuestText.KindLabel(RZ_EMissionKindUI.QUESTLINE, run.m_Line.IsMajor())).Add(NowFor(playerId, id, from));
+			lnQ.Add(RZ_QuestText.KindLabel(RZ_EMissionKindUI.QUESTLINE, run.m_Line.IsMajor())).Add(objs.First(RZ_EObjState.CURRENT));
 			s += lnQ.End();
 
 			foreach (int n, string note : run.m_aNotes)

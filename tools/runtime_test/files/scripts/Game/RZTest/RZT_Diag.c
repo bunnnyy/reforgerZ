@@ -6,6 +6,8 @@ modded class RZ_MissionManager
 	protected ref RZ_Mission m_RZTCur;
 	protected int m_iRZTStarted;
 	protected int m_iRZTWon;
+	protected int m_iRZTWalks;
+	protected bool m_bRZTChecked;
 
 	// One mission at a time: start it, move the fake player there, then end it (alternately won
 	// and failed) so the next one has the whole map. Returns false when all were tried.
@@ -80,14 +82,47 @@ modded class RZ_MissionManager
 		}
 		if (m_iRZTPhase == 3)
 		{
+			// The objective's place (RZT_ObjPlace.c): checked from where the tester is, then he goes
+			// where the tracker points, not to the mission's centre
+			m_iRZTWalks = 0;
+			m_bRZTChecked = false;
 			if (m_RZTCur && m_RZTCur.m_eState == RZ_EMissionState.ACTIVE && !m_RZTCur.m_bGlobal && m_RZTCur.m_vPos != vector.Zero)
-				RZT_Fake.MoveTo(m_RZTCur.m_vPos);
+			{
+				RZT_ObjCheck(m_RZTCur, "start");
+				RZT_Obj.Go(m_GM, m_RZTCur.m_iId, m_RZTCur.m_vPos);
+			}
+			return true;
+		}
+		if (m_iRZTPhase == 4)
+		{
+			if (!m_RZTCur || m_RZTCur.m_eState != RZ_EMissionState.ACTIVE || m_RZTCur.m_bGlobal)
+				return true;
+
+			// There: the place again (the step may have moved on), and a delivery's thing carried
+			if (!m_bRZTChecked)
+			{
+				m_bRZTChecked = true;
+				RZT_ObjCheck(m_RZTCur, "there");
+				RZ_Mission_Delivery delivery = RZ_Mission_Delivery.Cast(m_RZTCur);
+				if (delivery && delivery.RZT_Carry())
+					RZT_ObjCheck(m_RZTCur, "carried");
+			}
+
 			// The fake player can't hold a prompt: its work sites are done for it (the server's path)
-			if (m_RZTCur && m_RZTCur.m_eState == RZ_EMissionState.ACTIVE && RZ_WorkSites.Get())
+			if (RZ_WorkSites.Get())
 			{
 				int worked = RZ_WorkSites.Get().CompleteAllFor(string.Format("mission.%1.", m_RZTCur.m_iId), RZT_Fake.ID);
 				if (worked > 0)
 					Print(string.Format("RZT work sites: %1 done for '%2'", worked, m_RZTCur.m_sTitle));
+			}
+
+			// More steps done by being there (points to visit): on to each place the tracker gives,
+			// phase 4 again 3 s later
+			if (m_RZTCur.RZT_MoreSteps() && m_iRZTWalks < 24)
+			{
+				m_iRZTWalks++;
+				RZT_Obj.Go(m_GM, m_RZTCur.m_iId, vector.Zero);
+				m_iRZTPhase = 3;
 			}
 			return true;
 		}
@@ -211,6 +246,14 @@ modded class RZ_MissionManager
 
 		Print(string.Format("RZT mission %1 why: claims held:%2; %3 other missions active, %4 questlines running; towns %5 held, %6 busy, %7 free; packs %8; weight %9",
 			m.Type().ToString(), held, active, runs, heldTowns, busy, openTowns, packs, m.GetWeight(m_GM)));
+	}
+
+	//! The tracker's place for this mission's current objective against where its step is done.
+	void RZT_ObjCheck(RZ_Mission m, string when)
+	{
+		array<vector> truths = {};
+		float radius = m.RZT_Truths(m_GM, truths);
+		RZT_Obj.Check(m_GM, m.m_iId, m.Type().ToString(), when, truths, radius);
 	}
 
 	string RZT_Summary()
@@ -410,6 +453,7 @@ modded class RZ_GameModeComponent
 			if (m_iRZTQuest >= m_aRZTQuestKeys.Count())
 			{
 				Print(string.Format("RZT all questlines tried: %1 of %2 reached an ending, %3 stages entered", m_iRZTQuestEnded, m_aRZTQuestKeys.Count(), m_iRZTQuestStages));
+				Print("RZT objective places (missions and questlines): " + RZT_Obj.Summary());
 				m_bRZTQuestsDone = true;
 				return;
 			}
@@ -484,10 +528,17 @@ modded class RZ_GameModeComponent
 			Print(string.Format("RZT quest %1 stage %2 mission '%3'", qkey, run.m_iStage, m.m_sTitle));
 			// The stage is offered in person (its giver, or the story he's part of already)
 			m.Hire(RZT_Fake.ID);
+			// The questline's row points where the stage's current objective is done (RZT_ObjPlace.c)
+			if (!m.m_bGlobal && m.m_vPos != vector.Zero)
+			{
+				array<vector> truths = {};
+				float radius = m.RZT_Truths(this, truths);
+				RZT_Obj.Check(this, -run.m_iId, qkey + " stage " + run.m_iStage.ToString(), "stage", truths, radius);
+			}
 		}
 		m_iRZTQuestMissionSec++;
 		if (!m.m_bGlobal && m.m_vPos != vector.Zero)
-			RZT_Fake.MoveTo(m.m_vPos);
+			RZT_Obj.Go(this, -run.m_iId, m.m_vPos);
 		if (m_iRZTQuestMissionSec >= 10 && m.m_eState == RZ_EMissionState.ACTIVE)
 		{
 			int forced = RZT_Prep.Outcome(qkey, run.m_iStage);
@@ -565,6 +616,7 @@ modded class RZ_GameModeComponent
 			{
 				m_bRZTMissionsDone = true;
 				Print("RZT all mission types tried: " + GetMissions().RZT_Summary());
+				Print("RZT objective places (missions): " + RZT_Obj.Summary());
 			}
 		}
 		if (!m_bRZTMissionsDone)

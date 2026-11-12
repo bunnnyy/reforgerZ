@@ -1268,6 +1268,24 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! With the cage: the cage, the held special, the case, then the lab's drop (RZ_LiveCapture).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bCage)
+		{
+			vector drop = vector.Zero;
+			if (m_Drop)
+				drop = m_Drop.GetOrigin();
+
+			RZ_ObjPlace at = m_Capture.ObjPlace(drop);
+			if (at)
+				return at;
+		}
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1680,6 +1698,16 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		return "The Three Weeks: the field lead left on her own.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Her at the field station, then (she follows you) where she goes.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_iDest != 0 && m_Escort.GetFollowed() > 0 && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(m_vDest, 25);
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

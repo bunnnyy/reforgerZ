@@ -1009,6 +1009,16 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Him by the wreck, then (he follows you) where you take him.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Escort.GetFollowed() > 0 && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(m_vDest, 25);
+
+		return RZ_ObjPlace.Spot(m_Escort.m_vPos, 20);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1136,6 +1146,17 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 	override string GetWhereText(RZ_GameModeComponent gm, vector from)
 	{
 		return string.Format("%1, the courier is %2\nLab: %3. Bastion: %4", GetLocationName(gm), RZ_Util.DirectionText(from, m_vPos), RZ_Util.DirectionText(from, m_vLab), RZ_Util.DirectionText(from, m_vBastion));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The courier where she waits, then where she walks (the lab, or Bastion if you diverted her).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		RZ_ObjPlace at = m_Escort.ObjPlace();
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

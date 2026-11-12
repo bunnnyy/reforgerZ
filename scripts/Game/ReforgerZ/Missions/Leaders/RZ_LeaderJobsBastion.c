@@ -709,6 +709,17 @@ class RZ_Job_DesertionRoute : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The two soldiers by the commander, then where they walk to (the safehouse, or the stronghold).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		RZ_ObjPlace at = m_Escort.ObjPlace();
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);

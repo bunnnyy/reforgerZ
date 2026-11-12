@@ -203,6 +203,34 @@ Objective lines follow [WRITING.md](WRITING.md#objective-lines): imperative, one
 pronoun without a named person. Briefs aren't rewritten: the Quests tab shows a job's own brief cut
 to about three sentences at a sentence's end.
 
+### Where each objective points
+
+Every objective carries its **own place** (`RZ_ObjPlace`: a spot and how close counts, or a search
+area), where that step is done. The tracker's area line and arrow, the map's diamond or search area
+and the Quests tab's row all follow the **current** objective's place ([UI.md](UI.md#the-quest-tracker));
+the job's own place is only the fallback for an objective without one (a questline's "Wait for word").
+A mission says where its work is now with `ObjectivePlace` (the rough rule kept: a search area while
+you know only the area, never the hidden spot); "Get to *place*." points where getting there counts
+(`GetTherePlace`).
+
+| Job | Where the current objective points |
+|---|---|
+| Most missions and contracts | Their own place (`m_vPos`, which escorts, scenes and multi-site stages move as the work moves), reached within the radius they count you at (at most 50 m) |
+| A delivery (`RZ_Mission_Delivery`, leaders' deliveries, choice jobs) | The thing where it lies (inside a building: that building), so "Get to" points there too; once someone carries it, the drop the job names (the first; a stronghold drop that turns a rogue leader in is a way out, not the ask). Hearts and Minds: the crate at the commander's seat, then the Haven safehouse |
+| Visit points (Recon, Curfew Patrol, Install Sensors...) | The nearest point not done yet |
+| A step chain | Its current step's spot, within the step's radius (the town is named, so the spot is no secret) |
+| A hold | The ground to hold, within its radius |
+| A target to destroy | The target |
+| An escort (`RZ_Escort.ObjPlace`) | Where they wait until they set off; then the route's end, or, following you, where the job takes them |
+| A vehicle job (`RZ_VehicleZone.ObjPlace`) | The vehicle until you sit in it, then the zone |
+| A live capture (`RZ_LiveCapture.ObjPlace`) | The cage, where it's held while the sedative takes, the case, then (carried) the drop |
+| A carried story item (`RZ_QuestCarry.ObjPlace`; the Haven's and Halcyon's data carries) | Where it lies, then where it's taken (the Census's ration crates: the nearest storekeeper still waiting) |
+| A questline | Its stage mission's current objective, as above |
+| An errand | The step's place ([ERRANDS.md](ERRANDS.md)), then the giver where they stand now (a wanderer walks on) |
+
+The runtime test checks it for every mission and questline stage it starts ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)):
+the place the tracker reports must be within the step's arrival radius of where the step is really done.
+
 ### One-choice jobs and work
 
 **One-choice jobs** (16): Survivors Trapped, Radio Relay, Harvest Guard, Burn the Nest, Rescue the Kids,

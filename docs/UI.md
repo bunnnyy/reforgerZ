@@ -157,7 +157,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on). Under the noise meter during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Top left, **the quest tracker** ([below](#the-quest-tracker), mockup `tracker.png`): only the job you track, its current objective, the known next one and a rough area (within a kilometre an arrow and metres); your other jobs are in the Quests tab only. Nothing to press, so it's the same on a pad (Track is in the notebook's Quests tab) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line, the look line and the tracker not seen yet |
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
 | Notebook: Standing | `standing.png` (the old four-column page; the page is now design G2) | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). One row per faction, stacked down the page with the faction's colour as a left bar, mostly icons: the emblem and name; **what they call you**, large (the reputation's name, or the tier word with Reputation > Names off; the tier icon beside it, both in the tier's colour); Favor (a coin and the number); the leaders you've met (a bust and how many, or NONE); what they need (its icon and word, or NONE); and a kit tell (a jacket, only for Bastion, the Red Hand and Halcyon with borrowed kit on: dim while they don't know you, yellow once they know your face or caught you, red while you're blown). No Fame or Infamy numbers, bars or grid. Up/down or the mouse only **highlights** a row (a bone wash and border); a click, A or Enter **opens** it (or closes it again). At most one row is open, filling the free space while the others shrink to their strip; with none open (the start) the four share the page. The open row has four blocks: *How they see you* (their word as a sentence, what the name counts as, what's left to forgive while there's Infamy, a line when they hunt you, and **Next**: the next name up with what earns it, "TRUSTED: 12 more Fame" or "KNOWN: work off 8 Infamy", none at the top), *Leaders you've met* (names and titles, then the nearest one's verdict), *What they need* (the need and its line) and *In their kit* (whether they know your face, catches, blown time, their tells, what their enemies do to their colours: the payload's `K` records). The other rows stay one line, so all four names are always on screen. Under the rows, **between the factions**: the truces and feuds on one line | `RZ_StandingPage` | Page built, not checked in play |
-| Notebook: Quests | `tracker.png` (right) | Every job you have (only jobs offered to you in person: [MISSIONS.md](MISSIONS.md#who-gets-offered-what)), in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, its rough area, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
+| Notebook: Quests | `tracker.png` (right) | Every job you have (only jobs offered to you in person: [MISSIONS.md](MISSIONS.md#who-gets-offered-what)), in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, the rough area of its current objective, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
 | Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, the mission and world notices, the world events (news, never jobs) and the work you heard of with who to ask; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
 | Notebook: Journal | `journal.png` (the mockup still shows the old job list) | Two groups. **PAST JOBS**: every job you had that ended, newest first (the last 40, kept on your profile): its type icon, name, who gave it and where, DONE, FAILED or ABANDONED in its colour, the season day, and one line of how it ended. **WHAT YOU KNOW**: what you know that isn't a job, as before: the packs you know of, Read on doors, the finale's page, and with Dialogue > Trees a **Promises** row and a **What you know** row ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line ([below](#notebook-journal)) | `RZ_JournalPage` | Page built as text, not checked in play |
 | Notebook: The season | — | One page that scrolls: the four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)); then the hall of fame: this season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_SeasonPage` | Page built as text (one scroll since the hall merged in), not checked in play; no mockup |
@@ -305,9 +305,16 @@ under the secure-radio panel while that shows), for the one job you follow. The 
 
 - **The tracked job and nothing else:** its type icon (from the imageset, tinted the giver's
   colour) and its name; its **current objective** after a filled diamond (`track_current`); the
-  **known next objective**, dim, after an open diamond (`track_next`), when there is one; and the
-  **area line**, on a line of its own in amber (`TrackerAreaRow`), as below. No box: the text sits
-  on the world with a dark shadow.
+  **known next objective**, dim, after an open diamond (`track_next`), when there is one, with its
+  place after it when that's somewhere else ("Go back to Mara · Morton"); and the **area line**, on a
+  line of its own in amber (`TrackerAreaRow`), as below. No box: the text sits on the world with a
+  dark shadow.
+- **Where it points: the current objective.** Every objective has its own place, where that step is
+  done ([MISSIONS.md](MISSIONS.md#where-each-objective-points)): a delivery's crate where it lies, then
+  the drop once you carry it; the next point to visit; an escort's destination; an errand's step, then
+  the giver where they stand now. The area line, the arrow and metres, the map's mark and the Quests
+  tab's row all follow the current objective's place, and move on when it does. The job's own place
+  (where it was given, or its town) is only the fallback for an objective without one.
 - **The area line.** Far off, the rough area in words ("Morton, a few km north-west",
   `RZ_QuestText.RoughArea`). **Within a kilometre** of a spot you know: an amber arrow
   (`TrackerArrow`, the `marker_self` icon, 20 across) turned toward it from where your character
@@ -319,15 +326,17 @@ under the secure-radio panel while that shows), for the one job you follow. The 
   the arrow never gives the spot away. Dead, or a job with no place: the words alone, no arrow.
   The arrow turns every frame and the text is set only when it changes, client-side from the
   position the tracker's record carries (as the subtitles' arrow, [below](#subtitles-and-the-reader)).
-- **The arrival radius** is the job's own: an errand's step its way's radius (25 m unless the way
-  says), 15 m back with the giver; a mission the radius it counts you as there at
-  (`m_fParticipationRadius`), at most 50 m so the arrow still leads into a big site, 25 m when it
-  has none; a questline's place 25 m.
+- **The arrival radius** is the current objective's own: an errand's step its way's radius (25 m
+  unless the way says), 15 m back with the giver; a mission's place the radius it counts you as there
+  at (`m_fParticipationRadius`), a hold its ground, a point or a chain's step its own radius, at most
+  50 m so the arrow still leads into a big site, the Arrive radius (15 m) at least; a questline's
+  place 25 m.
 - **Your other jobs are not on the HUD.** They're in the notebook's Quests tab only.
 - **Hidden** while nothing is tracked. Owner-only: sent to your machine alone, only when it changes,
   checked every 2 s on the UI feed's tick (`RZ_QuestTracker`, payload kind 13: `T` and `O` records;
-  `T` carries the area's words, the place alone, where it points, the arrival radius and the search
-  area's radius); the HUD redraws it only when a new copy arrives, and only the area line between.
+  `T` carries the current objective's area in words, the place alone, where it points, the arrival
+  radius and the search area's radius; `O|state|line|place`, the next one's place in words only when
+  it differs); the HUD redraws it only when a new copy arrives, and only the area line between.
 
 **What's tracked.** Nothing, until you pick a job in the Quests tab or take one. Taking a job (being
 counted on it: a job offered to you that you reached, a questline you took part in, an errand you
@@ -340,7 +349,7 @@ chain ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) is tracked by itse
 starts (`RZ_QuestTracker.Follow`), whatever was tracked before.
 
 **On the map** the tracked job's current objective is the only job shown, to you alone: a diamond
-on a spot you know, a search area while you know only the rough one ([The map](#the-map)).
+on its place when you know the spot, a search area while you know only the rough one ([The map](#the-map)).
 
 **Objectives** come from the job ([MISSIONS.md](MISSIONS.md#objectives)): only what you've learned,
 no placeholders, nothing hidden.
@@ -362,7 +371,7 @@ radio. The radio only says who's asking."*
 | ERRANDS | The errands you hold ([ERRANDS.md](ERRANDS.md)) |
 
 In each group the ones you've taken come first, then the ones offered. Each row: the type icon, the
-name, the rough area under it (a major's act first: "Act II · Brod, a few km east"), TRACKED on the
+name, the rough area of its current objective under it (a major's act first: "Act II · Brod, a few km east"), TRACKED on the
 tracked one, and the time left or *Offered* under that. The D-pad (or a click) chooses a job; its
 detail:
 
@@ -370,7 +379,7 @@ detail:
 |---|---|
 | The heading | The name, then one line: the faction, who gave it and the area ("The Haven · from Elder Mara · Morton, a few km north-west"; a questline's stage stands for "from") |
 | The brief | A few lines in the giver's voice: what it is and why it matters (the job's own brief, cut to about three sentences at a sentence's end; `RZ_QuestText.Short`). Only what you were told |
-| Objectives | New Vegas style, up to six: done ones struck through and faint with a tick; the current one bright after a filled diamond; the known next ones dim after an open diamond; an optional one as "(Optional) ..."; a failed one as "Failed: ...", red |
+| Objectives | New Vegas style, up to six: done ones struck through and faint with a tick; the current one bright after a filled diamond; the known next ones dim after an open diamond; an optional one as "(Optional) ..."; a failed one as "Failed: ...", red. An open one shows its place after it when that's somewhere else than the one before ("Take them a crate · Outskirts 59-95") |
 | Reward, as far as you know | About so much Fame and Favor with the giver, "It depends on how it ends.", or "No pay. It shows you the way, that's all." for a job that pays nothing (Where the Work Is) |
 | Requirements | Only on a job that's offered and asks something of you |
 | What you know | What you've found, who it went to, the clues you've read (hidden when empty) |
@@ -488,7 +497,8 @@ step's place, then back to the giver), the real minutes before it lapses, and wh
 do. On the map only while tracked ([The map](#the-map)). Selecting any row asks the server for that row's **detail**
 (`RZ_PlayerUIComponent.AskDetail`, payload kind 10, `D|id|told|found|went`, at most 1,500
 characters, a few a second at most; the server answers only for a row that player's own journal
-shows, nothing for any other id): its objectives (`O|id|state|line`, first, so the cap never cuts
+shows, nothing for any other id): its objectives (`O|id|state|line|place`, the place in words only
+for an open one somewhere else than the one before; first, so the cap never cuts
 them), and its "What you've found" and "Who it went to" at the top of the clues block
 (`DetailClues`), so the journal's 6,000-character list is never cut for them.
 
@@ -1322,7 +1332,7 @@ With **UI > Map icon layout** set, the vanilla text markers for events and the l
 it, the layer does nothing and those markers stay.
 
 **Your objective.** Of the jobs, only the [tracked one](#the-quest-tracker) is on the map, and only
-its current objective, sent to its player alone (`RZ_QuestTracker.MapObjective`, the feed's last
+its current objective, at that objective's own place (the job's own without one), sent to its player alone (`RZ_QuestTracker.MapObjective`, the feed's last
 line, so it's drawn above the rest). No other contract, world event, questline or errand has a
 marker. It comes in two looks, in the objective's amber (#E8B23A, `RZ_UIColor.Objective`):
 
@@ -1456,7 +1466,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | Class | Runs on | Does |
 |---|---|---|
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (the jobs with their kind and current objective, the tracked one, the questlines the player is part of, the notes and the lab's line), background, map, notice board, hall of fame and season tab data when asked (the season tab its own kind, 11, after the kinds only sent). Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
-| `RZ_QuestTracker`, `RZ_QuestText`, `RZ_ObjList` (`UI/RZ_Quests.c`) | server, on the UI feed's tick | Each player's jobs, the tracked one (saved on the profile), the order they were taken in, each job's objectives and the rough-area wording; sends the HUD's tracker (payload kind 13) only when it changes, and the tracked job's current objective for the map ([The quest tracker](#the-quest-tracker)) |
+| `RZ_QuestTracker`, `RZ_QuestText`, `RZ_ObjList`, `RZ_ObjPlace` (`UI/RZ_Quests.c`) | server, on the UI feed's tick | Each player's jobs, the tracked one (saved on the profile), the order they were taken in, each job's objectives with each one's place (the job points where its current one is done: `JobFor`) and the rough-area wording; sends the HUD's tracker (payload kind 13) only when it changes, and the tracked job's current objective for the map ([The quest tracker](#the-quest-tracker)) |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the Radio tab's notices on the client for this life and the notebook's unread counts. A notice board payload from the server opens the board menu; a reader or talk payload opens those screens. Carries talk picks and closed screens back |
 | `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`, `RZ_TalkStaff`), `RZ_TalkNeeds`, `RZ_DialogueTrees` | server | Conversations: sessions, capture, replies and their needs, picks; with Trees on, topics, nodes, checks and their tags ([DIALOGUE.md](DIALOGUE.md)) |
 | `RZ_TalkAction` (`Dialogue/RZ_TalkStaff.c`) | every machine | The one **Talk to the quartermaster** / **Talk to the medic** prompt on a person with no puzzle components; while the talk screen is used, the person's other ReforgerZ actions hide (`RZ_TalkMenu.HidesActionsOn`) |

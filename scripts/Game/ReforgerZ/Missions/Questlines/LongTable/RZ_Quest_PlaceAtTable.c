@@ -965,6 +965,17 @@ class RZ_QM_PlaceStray : RZ_QM_PlaceBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The stray at the barn, then (he walks with you) the farm (a safehouse or a Bastion post
+	//! also ends it, as somewhere safe instead).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bFollowing && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(m_vHouse, 40);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		m_Escort.Cleanup();

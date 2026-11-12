@@ -1021,6 +1021,16 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The trail (the chain) and where it leads; walking him in, his field lead.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Escort.IsStarted() && !m_Escort.IsArrived() && !m_Escort.IsDead())
+			return m_Escort.ObjPlace(m_vLead);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);

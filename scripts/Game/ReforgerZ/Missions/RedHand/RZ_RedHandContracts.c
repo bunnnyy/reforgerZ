@@ -116,6 +116,20 @@ class RZ_Mission_CarTheft : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The car until you're in it, then the chop shop (RZ_VehicleZone.ObjPlace).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (!m_Car || IsRoughFor(gm, playerId, from))
+			return super.ObjectivePlace(gm, playerId, from);
+
+		RZ_ObjPlace at = m_Zone.ObjPlace(playerId);
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		// Stripped at the shop, or never stolen: it goes, unless someone sits in it
@@ -1242,6 +1256,20 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 	override string GetWhereText(RZ_GameModeComponent gm, vector from)
 	{
 		return string.Format("%1, %2\nTo: %3 (%4)", GetLocationName(gm), RZ_Util.DirectionText(from, m_vPos), m_sMeetName, RZ_Util.DirectionText(from, m_vMeet));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The gate, then (once they're out) where they walk to.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Escort.IsStarted())
+		{
+			RZ_ObjPlace at = m_Escort.ObjPlace(m_vMeet);
+			if (at)
+				return at;
+		}
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

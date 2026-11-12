@@ -1876,9 +1876,10 @@ class RZ_QuestsPage : RZ_JournalPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! O|id|state|line from the detail, rows Obj1 to Obj6: a mark (ObjNMark) and the line. Done: a
-	//! tick and the line dim and struck through (ObjNDone); current: a filled diamond, bright; the
-	//! known next: an open diamond, dim; optional: the same with "(Optional)"; failed: "Failed:".
+	//! O|id|state|line|place from the detail, rows Obj1 to Obj6: a mark (ObjNMark) and the line (its place
+	//! after it when that differs: "Go back to Mara · Morton"). Done: a tick and the line dim and struck
+	//! through (ObjNDone); current: a filled diamond, bright; the known next: an open diamond, dim;
+	//! optional: the same with "(Optional)"; failed: "Failed:".
 	override protected void DrawObjectives(string id, array<ref array<string>> detail)
 	{
 		int shown = 0;
@@ -1891,6 +1892,11 @@ class RZ_QuestsPage : RZ_JournalPage
 			string n = "Obj" + shown.ToString();
 			int state = RZ_UIText.Int(o, 2);
 			string line = RZ_UIText.Str(o, 3);
+			// Where it's done, when that's somewhere else than the one before (O|id|state|line|place)
+			string where = RZ_UIText.Str(o, 4);
+			if (!where.IsEmpty())
+				line = line + " · " + where;
+
 			string mark = "track_next";
 			Color c = RZ_UIColor.Dim();
 			Color markColor = RZ_UIColor.Dim();

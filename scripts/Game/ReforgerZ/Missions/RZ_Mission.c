@@ -807,6 +807,87 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The mission's own place as an objective's place (docs/UI.md, "The quest tracker"): the search
+	//! area while this player knows only the rough one, else the spot, reached within the radius it
+	//! counts you as there at. Null for a mission with no place (the whole Zone).
+	RZ_ObjPlace AreaPlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bGlobal || m_vPos == vector.Zero)
+			return null;
+
+		if (IsRoughFor(gm, playerId, from))
+			return RZ_ObjPlace.Area(GetRoughCenter(gm), RoughRadius(gm));
+
+		return RZ_ObjPlace.Spot(m_vPos, m_fParticipationRadius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where this player's current objective is done now (docs/MISSIONS.md, "Objectives"): the
+	//! tracker's arrow, the map's diamond and the Quests tab follow it. Default: the mission's own
+	//! place (AreaPlace). A mission whose work moves (a delivery's drop once the thing is carried,
+	//! the next point, an escort's destination, the next site) overrides it; keep the rough rule
+	//! (AreaPlace while IsRoughFor) for anything the player hasn't been told the spot of. Null: no
+	//! place of its own (the job's place is used).
+	RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		// A step chain's current step (Missions/Blocks/RZ_StepChain.c)
+		RZ_StepChain chain = RZ_StepChain.ForMission(m_iId);
+		if (chain && !chain.IsDone())
+		{
+			RZ_ObjPlace step = chain.NowPlace();
+			if (step)
+				return step;
+		}
+
+		return AreaPlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where "Get to <place>" is done: the mission's place (it counts you within its radius). With
+	//! no radius (a leader's job) the work itself counts you, so it's where the work is. A delivery
+	//! points at the thing (picking it up counts you).
+	RZ_ObjPlace GetTherePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_fParticipationRadius <= 0)
+		{
+			RZ_ObjPlace work = ObjectivePlace(gm, playerId, from);
+			if (work)
+				return work;
+		}
+
+		return AreaPlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A thing to fetch and take somewhere, as an objective's place: where it lies (or `lastSeen`
+	//! once it's gone), then `dest` once someone carries it. Null without either.
+	static RZ_ObjPlace CarryPlace(IEntity item, vector lastSeen, vector dest, float destRadius = 0)
+	{
+		bool carried = item && item.GetRootParent() && item.GetRootParent() != item;
+		if (carried && dest != vector.Zero)
+			return RZ_ObjPlace.Spot(dest, destRadius);
+
+		if (item && !carried)
+			return RZ_ObjPlace.Spot(item.GetOrigin());
+
+		if (lastSeen != vector.Zero)
+			return RZ_ObjPlace.Spot(lastSeen);
+
+		return RZ_ObjPlace.Spot(dest, destRadius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A declared step's place (ObjSteps): the current one's is ObjectivePlace; the others none
+	//! unless the mission says.
+	RZ_ObjPlace StepPlace(RZ_GameModeComponent gm, int playerId, vector from, int step)
+	{
+		if (step == m_iObjStep)
+			return ObjectivePlace(gm, playerId, from);
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The ask in one line: m_sObjective with the world's tokens ({lab_town}, {leader:id}...) filled
 	//! in now, so a name in it is never stale; the title if a mission names none.
 	string ObjectiveText(RZ_GameModeComponent gm)
@@ -850,27 +931,30 @@ class RZ_Mission
 				if (state != RZ_EObjState.DONE && i < m_aObjOptional.Count() && m_aObjOptional[i])
 					state = RZ_EObjState.OPTIONAL;
 
-				list.Add(step, state);
+				list.Add(step, state, StepPlace(gm, playerId, from, i));
 			}
 
 			return;
 		}
 
+		// The ask is done where the work is now (ObjectivePlace)
 		string ask = ObjectiveText(gm);
+		RZ_ObjPlace work = ObjectivePlace(gm, playerId, from);
 		bool there = m_bGlobal || m_aParticipants.Contains(playerId);
 		if (there)
 		{
-			list.Add(ask, RZ_EObjState.CURRENT);
+			list.Add(ask, RZ_EObjState.CURRENT, work);
 			return;
 		}
 
+		RZ_ObjPlace getThere = GetTherePlace(gm, playerId, from);
 		string place = GetLocationName(gm);
 		if (IsRoughFor(gm, playerId, from))
-			list.Add("Search " + GetRoughAreaName(gm) + ".", RZ_EObjState.CURRENT);
+			list.Add("Search " + GetRoughAreaName(gm) + ".", RZ_EObjState.CURRENT, getThere);
 		else if (!place.IsEmpty())
-			list.Add("Get to " + place + ".", RZ_EObjState.CURRENT);
+			list.Add("Get to " + place + ".", RZ_EObjState.CURRENT, getThere);
 
-		list.Add(ask, RZ_EObjState.NEXT);
+		list.Add(ask, RZ_EObjState.NEXT, work);
 	}
 
 	//------------------------------------------------------------------------------------------------

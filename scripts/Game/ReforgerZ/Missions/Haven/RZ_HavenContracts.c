@@ -435,6 +435,20 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The column where it waits (the rough area until you know it), then where they walk to.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (!m_Escort.IsStarted() && IsRoughFor(gm, playerId, from))
+			return AreaPlace(gm, playerId, from);
+
+		RZ_ObjPlace at = m_Escort.ObjPlace();
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		return "Refugee Column: the column never reached " + m_sDestName + ".";
@@ -937,6 +951,21 @@ class RZ_Mission_RecoverTheBus : RZ_Mission
 			text += string.Format("\nTo: the safehouse in %1 (%2)", h.m_sName, RZ_Util.DirectionText(from, h.m_vPos));
 
 		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The depot's bus until you sit in a vehicle that counts (or the bus is gone), then the safehouse.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		bool aboard = me && m_Zone.Matches(RZ_Util.GetVehicleOf(me));
+		if (m_bArrived || aboard || m_bBusLost)
+			return RZ_ObjPlace.Spot(m_Zone.m_vPos, m_Zone.m_fRadius);
+
+		if (m_Bus && !IsRoughFor(gm, playerId, from))
+			return RZ_ObjPlace.Spot(m_Bus.GetOrigin());
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

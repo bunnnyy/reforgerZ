@@ -882,6 +882,17 @@ class RZ_QM_PilotFuel : RZ_QuestMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The pad (any fuel, poured there); the Red Hand's siphoned cans where they lie, then the pad.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		RZ_ObjPlace at = m_Fuel.ObjPlace(m_vPoint);
+		if (at)
+			return at;
+
+		return RZ_ObjPlace.Spot(m_vPoint);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1865,6 +1876,16 @@ class RZ_QM_PilotWalk : RZ_QuestMission
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		return QFill(gm, "The Last Pilot: {pilot} walked to {stronghold} unescorted, helmet in hand.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Him at the LZ, then (he walks with you) the stronghold.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Him.GetFollowed() > 0 && !m_Him.IsArrived())
+			return RZ_ObjPlace.Spot(m_vDest, 30);
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

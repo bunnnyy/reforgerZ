@@ -1728,6 +1728,20 @@ would loop, the test reports the outcome that moves the story on. The majors are
 mission and questline phases (The Book and Await Relief run there as their built questlines, and
 nothing starts by itself).
 
+**Objective places.** For every mission and questline stage it starts, the test checks that the
+place the quest tracker reports for the current objective (`RZ_QuestTracker.JobFor`: the HUD's
+arrow, the map's mark, the Quests tab's row) is within the step's arrival radius of where the step
+is really done, read from the job's own data (`RZT_ObjPlace.c`): a delivery's thing where it lies,
+then, once the tester carries it (into his pack, or as if), one of its drops; the points of a visit
+not done yet; a chain's current step; a hold's ground; else the job's own place or one of its props.
+A search area passes when the spot is inside it. The tester then goes where the tracker points, not
+to the mission's centre, and on a visit walks to each place it gives in turn: a point done anywhere
+else than where it sent him is wrong too. A questline stage is checked on the questline's own row.
+Each wrong place is a line `RZT objplace FAIL <type> [start|there|carried|step done|stage] '<objective>':
+the tracker points at <grid>, the step is done at <grid> (<n> m off, allowed <m>)`, the sum is
+`RZT objective places (...): N checked, N steps done where the tracker sent the tester, N wrong, N
+without a place (N world events, not jobs)` (a world event is news, never on the tester's Quests tab, so nothing points), and the run fails on any wrong one.
+
 **The cure finale.** Last, after the route walk (the cure stands the line down), the questlines'
 **Wait scale** goes to 0.1 and a scripted finale runs: a commit refused below the gate; the slow
 finish (the lab-alone track to 10, nobody holding the room), then a fresh finale; the gate opening the
@@ -1784,7 +1798,8 @@ tab's lines and the stand's groups by Bastion's stance (`RZT majors check:
 Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
-mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes.
+mission types started and which didn't, the objective places checked and every wrong one (it fails
+on one), and how far each questline got. It takes 60 to 90 minutes.
 Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
 in the line's band (The Blind Spot's does by design), and a death there would end the life a
 questline was following (A Place at the Table fizzles when its guest's life ends). It logs
@@ -2081,7 +2096,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:750` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Core/RZ_Util.c:806` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:427` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
-| `Missions/RZ_MissionBases.c:361` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
+| `Missions/RZ_MissionBases.c:430` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_Search.c:851` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_WreckBoots.c:123` | a wreck prop faces its local +Z like a vehicle, so its rear (the boot) is its box's −Z side | **Open the boot** shows at the bonnet: flip the sign in `RZ_WreckBoots.BootPoint` |
 | `Interactions/RZ_DoorLocks.c:395` | `UserActionContext.GetOrigin()` on a door's actions manager is the world position of vanilla's Open door point (its first context) | Unlock, Lock and Force sit at 1.05 m on the leaf instead of at the handle's height (the 0.6–1.5 m guard throws out anything else) |
@@ -3200,6 +3215,14 @@ when it happens)
   to the circle's edge, then "In the search area" with no arrow inside it; learn the spot and it
   becomes the spot's metres. Die: the arrow goes, the words stay. If the arrow points the wrong way
   or spins about a corner, report it (the rotation's own VERIFY row, `RZ_UIData.c`).
+- [ ] **Each objective points at its own place** ([MISSIONS.md](MISSIONS.md#where-each-objective-points)):
+  take a leader's delivery (Hearts and Minds from a Bastion commander). By the commander the area line,
+  the map's diamond and the Quests row point at the crate by his seat; pick it up and, within 2 s,
+  all three point at the drop the brief names (the Haven safehouse), with the metres counting down
+  there, not at the commander. A visit job (Recon) points at the nearest point not done, then the next.
+  An errand points at its step, then "Go back to ..." at the giver (a wanderer: where they've walked
+  to). In the Quests tab's detail a next objective somewhere else shows its place after it
+  ("Go back to Mara · Morton"), and so does the tracker's dim next line.
 - [ ] **Only the tracked job on the HUD**: take a second and a third job. The first stays tracked
   and the tracker still shows that one job alone: no dim lines under it and no "+N more". The others
   are in the Quests tab only. A major you haven't taken part in never shows. Crack a secure channel:

@@ -1212,6 +1212,16 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! His bed, then (he walks with you) home.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Walk.GetFollowed() > 0 && !m_Walk.IsArrived())
+			return RZ_ObjPlace.Spot(m_vHome, 25);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1662,5 +1672,16 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		return "The Other Two: the numbers stay numbers.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The safehouse with the list; once she has the names, the lab's duty officer (the director's
+	//! is the ask; the Haven's chair is the other door).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bNamed)
+			return RZ_ObjPlace.Spot(SpotPos(m_iLabSpot));
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 }

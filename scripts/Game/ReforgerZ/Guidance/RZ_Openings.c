@@ -799,6 +799,10 @@ class RZ_Openings
 			return;
 		}
 
+		// "Talk to them" points where they stand now (the tracker and the map follow the step's place)
+		if (o.m_bWaitTalk && o.m_Contact)
+			e.m_vPlace = o.m_Contact.GetOrigin();
+
 		if (o.m_bWaitTalk)
 			CallAgain(o, me);
 		else

@@ -192,6 +192,20 @@ class RZ_Mission_CarKeys : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The car (the five houses are round it) until it runs, then back to the mechanic.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bStarted)
+		{
+			RZ_ObjPlace at = m_Zone.ObjPlace(playerId);
+			if (at)
+				return at;
+		}
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
 		RZ_Interactions hub = gm.GetInteractions();

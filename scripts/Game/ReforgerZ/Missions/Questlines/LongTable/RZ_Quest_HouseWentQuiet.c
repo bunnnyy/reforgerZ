@@ -1985,6 +1985,16 @@ class RZ_QM_TableVolunteer : RZ_QM_TableBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The volunteer at the house, then (they walk with you) the lab.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_bFollowing && !m_Escort.IsArrived())
+			return RZ_ObjPlace.Spot(gm.GetLabPosition(), 40);
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		m_Escort.Cleanup();

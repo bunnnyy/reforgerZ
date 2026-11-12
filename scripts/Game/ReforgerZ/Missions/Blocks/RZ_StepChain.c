@@ -69,9 +69,10 @@ class RZ_StepChain
 	{
 		foreach (int i, RZ_ChainStep st : m_aSteps)
 		{
+			RZ_ObjPlace at = StepPlace(st);
 			if (i < m_iCurrent)
 			{
-				list.Add(string.Format("Went to %1.", st.m_sPlace), RZ_EObjState.DONE);
+				list.Add(string.Format("Went to %1.", st.m_sPlace), RZ_EObjState.DONE, at);
 				continue;
 			}
 
@@ -79,10 +80,28 @@ class RZ_StepChain
 				break;
 
 			if (st.m_iClue >= 0 && st.m_fDwelt > 0 && !st.m_bRead)
-				list.Add(string.Format("Find what was left in %1.", st.m_sPlace), RZ_EObjState.CURRENT);
+				list.Add(string.Format("Find what was left in %1.", st.m_sPlace), RZ_EObjState.CURRENT, at);
 			else
-				list.Add(string.Format("Go to %1.", st.m_sPlace), RZ_EObjState.CURRENT);
+				list.Add(string.Format("Go to %1.", st.m_sPlace), RZ_EObjState.CURRENT, at);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a step is done: its spot, within its radius (the town is named, so the spot is no
+	//! secret; the steps after it aren't shown at all).
+	static RZ_ObjPlace StepPlace(RZ_ChainStep st)
+	{
+		if (!st)
+			return null;
+
+		return RZ_ObjPlace.Spot(st.m_vPos, st.m_fRadius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current step's place (RZ_Mission.ObjectivePlace), null once the chain is done.
+	RZ_ObjPlace NowPlace()
+	{
+		return StepPlace(GetCurrent());
 	}
 
 	//------------------------------------------------------------------------------------------------

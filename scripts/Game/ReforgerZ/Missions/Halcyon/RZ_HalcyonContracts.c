@@ -788,6 +788,16 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Her at the lab until she follows you, then the next site (she reads it there).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (m_Escort.GetFollowed() > 0 && m_iSite < m_aSites.Count())
+			return RZ_ObjPlace.Spot(m_aSites[m_iSite], SITE_RADIUS);
+
+		return RZ_ObjPlace.Spot(m_Escort.m_vPos);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override string GetWhereText(RZ_GameModeComponent gm, vector from)
 	{
 		string text = string.Format("The researcher is %1", RZ_Util.DirectionText(from, m_vPos));
@@ -1393,6 +1403,21 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The cage, the held special, the case, then the lab's drop (RZ_LiveCapture.ObjPlace).
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		vector drop = vector.Zero;
+		if (m_Drop)
+			drop = m_Drop.GetOrigin();
+
+		RZ_ObjPlace at = m_Capture.ObjPlace(drop);
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		super.Cleanup(gm);
@@ -1621,6 +1646,20 @@ class RZ_Mission_MobileLab : RZ_Mission
 	override string GetWhereText(RZ_GameModeComponent gm, vector from)
 	{
 		return string.Format("The truck is %1\nTo: %2 (%3)", RZ_Util.DirectionText(from, m_vPos), m_sDest, RZ_Util.DirectionText(from, m_Zone.m_vPos));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The truck at the lab until you're aboard, then the town it goes to.
+	override RZ_ObjPlace ObjectivePlace(RZ_GameModeComponent gm, int playerId, vector from)
+	{
+		if (!m_Truck)
+			return super.ObjectivePlace(gm, playerId, from);
+
+		RZ_ObjPlace at = m_Zone.ObjPlace(playerId);
+		if (at)
+			return at;
+
+		return super.ObjectivePlace(gm, playerId, from);
 	}
 
 	//------------------------------------------------------------------------------------------------

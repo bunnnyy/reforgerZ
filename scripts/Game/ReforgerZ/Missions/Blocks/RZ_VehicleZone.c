@@ -73,6 +73,26 @@ class RZ_VehicleZone
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the objective is done (docs/MISSIONS.md, "Objectives"): the specific vehicle where it
+	//! stands until this player is aboard it, then the zone; any vehicle of a type: the zone. Null
+	//! once it came in.
+	RZ_ObjPlace ObjPlace(int playerId)
+	{
+		if (m_Arrived || m_vPos == vector.Zero)
+			return null;
+
+		if (m_bHasTarget && m_Target && !IsLost())
+		{
+			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+			bool aboard = me && RZ_Util.GetVehicleOf(me) == m_Target;
+			if (!aboard && RZ_Util.DistXZ(m_Target.GetOrigin(), m_vPos) > RZ_Arrive.Spot(m_fRadius))
+				return RZ_ObjPlace.Spot(m_Target.GetOrigin());
+		}
+
+		return RZ_ObjPlace.Spot(m_vPos, m_fRadius);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The specific vehicle is gone or burnt out. Always false without one.
 	bool IsLost()
 	{
