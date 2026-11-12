@@ -1202,24 +1202,48 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
           }
          }
         }
-        TextWidgetClass "{29459F8515288274}" {
-         Name "TrackerArea"
-         Slot LayoutSlot "{ABDE65307C22F095}" {
+        HorizontalLayoutWidgetClass "{814DF751C8A40304}" {
+         Name "TrackerAreaRow"
+         Slot LayoutSlot "{D77BF924F6714A7F}" {
           HorizontalAlign 3
           VerticalAlign 0
           Padding 30 2 0 0
          }
          "Is Visible" 0
-         Color 0.949 0.761 0.188 1
-         Text "Morton, a few km north-west"
-         "Font Size" 18
-         "Min Font Size" 18
-         Wrap 1
-         FontProperties FontProperties "{0F3909F7D16FBDDA}" {
-          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-          ShadowSize 2
-          ShadowOffset 1 1
-          ShadowColor 0 0 0 0.9
+         {
+          ImageWidgetClass "{EF11F643F15953D8}" {
+           Name "TrackerArrow"
+           Slot LayoutSlot "{55172F0D58C16F3E}" {
+            HorizontalAlign 0
+            VerticalAlign 1
+            Padding 0 0 6 0
+           }
+           "Is Visible" 0
+           Color 0.949 0.761 0.188 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "marker_self"
+           Size 20 20
+          }
+          TextWidgetClass "{29459F8515288274}" {
+           Name "TrackerArea"
+           Slot LayoutSlot "{ABDE65307C22F095}" {
+            HorizontalAlign 3
+            VerticalAlign 1
+            SizeMode Fill
+            FillWeight 1
+           }
+           Color 0.949 0.761 0.188 1
+           Text "Camurac, 120 m"
+           "Font Size" 18
+           "Min Font Size" 18
+           Wrap 1
+           FontProperties FontProperties "{0F3909F7D16FBDDA}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+            ShadowSize 2
+            ShadowOffset 1 1
+            ShadowColor 0 0 0 0.9
+           }
+          }
          }
         }
        }

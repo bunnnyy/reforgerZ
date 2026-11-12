@@ -171,7 +171,10 @@ Frame  (root, full screen)
 │        ├─ HorizontalLayout TrackerNextRow  30 in, hidden without a known next objective
 │        │  ├─ Image  TrackerNextMark 14 × 14, Texture the RZ_Icons imageset, Image track_next (an open diamond), dim
 │        │  └─ Text   TrackerNext     condensed 18, dim, wraps: the known next objective
-│        └─ Text  TrackerArea       condensed 18, hazard yellow, wraps, 30 in, hidden without a place: the rough area ("Morton, a few km north-west")
+│        └─ HorizontalLayout TrackerAreaRow  30 in, hidden without a place: the area line
+│           ├─ Image  TrackerArrow   20 × 20, Texture the RZ_Icons imageset, Image marker_self, hazard yellow, 6 before the text, hidden;
+│           │                        within a km, turned to the objective (UI.md, "The quest tracker")
+│           └─ Text   TrackerArea    condensed 18, hazard yellow, fills, wraps: "Morton, a few km north-west", or "Camurac, 120 m" with the arrow
 ├─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
 │  ├─ VerticalLayout NoticeStack  the notice cards
 │  └─ Text   NoticeQueued       under the stack, right-aligned, mono 18, faint ("+3 in your notebook")

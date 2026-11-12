@@ -1,5 +1,6 @@
 //! Jobs as the player follows them (docs/UI.md, "The quest tracker" and "Notebook: Quests"): each job's
-//! objectives, a rough area instead of metres, and the one job the player tracks.
+//! objectives, its area in words (the tracker adds an arrow and metres within a km), and the one job
+//! the player tracks.
 //!
 //! Server side: RZ_QuestTracker (held by RZ_UIFeed) keeps each player's tracked job (saved on the
 //! profile), the order they took their jobs in, and sends the HUD's tracker payload when it
@@ -75,13 +76,14 @@ class RZ_ObjList
 }
 
 //------------------------------------------------------------------------------------------------
-//! Text helpers for jobs: rough areas (never metres), short briefs, objective lines.
+//! Text helpers for jobs: rough areas in words, the tracker's metres, short briefs, objective lines.
 class RZ_QuestText
 {
 	//------------------------------------------------------------------------------------------------
 	//! "Morton, a few km north-west", "East of Levie, under a km south", "Close by". Bands: close
 	//! by (under 150 m), under a km, a few km (under 4 km), far off. The nearest settlement names
-	//! the place; never metres (docs/UI.md, "The quest tracker").
+	//! the place; never metres (the tracker's own arrow and metres: docs/UI.md, "The quest tracker").
+	//! `from` zero: the place alone ("East of Levie").
 	static string RoughArea(RZ_GameModeComponent gm, vector from, vector to)
 	{
 		if (!gm || to == vector.Zero)
@@ -124,6 +126,21 @@ class RZ_QuestText
 			return Cap(band + " " + way);
 
 		return string.Format("%1, %2 %3", place, band, way);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tracker's distance: "120 m", to 10 m from 100 m up, to 5 m below (at least 5 m).
+	static string Metres(float metres)
+	{
+		int step = 10;
+		if (metres < 100)
+			step = 5;
+
+		int m = RZ_Util.RoundToInt(metres / step) * step;
+		if (m < 5)
+			m = 5;
+
+		return string.Format("%1 m", m);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -270,6 +287,7 @@ class RZ_QuestJob
 	vector m_vPlace;		// where the job points this player now (a rough centre while rough)
 	bool m_bRough;			// they know only the rough area: the map's search area, not the spot
 	float m_fRadius;		// the search area's radius (m), while rough
+	float m_fArrive = 25;	// within this of the spot it's reached (unless the job says): the tracker's arrow hides
 }
 
 //------------------------------------------------------------------------------------------------
@@ -287,6 +305,8 @@ class RZ_TrackState
 class RZ_QuestTracker
 {
 	static const float TRACK_SECONDS = 2;
+	static const float ARRIVE_MAX = 50;		// a mission's counting radius, at most this: the arrow leads into a big site
+	static const float ERRAND_RETURN = 15;	// back with the giver: RZ_Errands.RETURN_RANGE
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<int, ref RZ_TrackState> m_mStates = new map<int, ref RZ_TrackState>();
@@ -355,6 +375,10 @@ class RZ_QuestTracker
 				j.m_bRough = j.m_bHasPlace && m.IsRoughFor(m_GM, playerId, from);
 				if (j.m_bRough)
 					j.m_fRadius = m.GetAreaRadius(m_GM);
+
+				// Reached once it counts you as there (its participation radius), at most 50 m
+				j.m_fArrive = Math.Min(RZ_Arrive.Spot(m.m_fParticipationRadius), ARRIVE_MAX);
+
 				result.Insert(j);
 			}
 		}
@@ -408,8 +432,18 @@ class RZ_QuestTracker
 				je.m_iMinutes = errands.MinutesLeft(e);
 				je.m_bHasPlace = true;
 				je.m_vPlace = e.m_vPlace;
+				RZ_ErrandWay way = e.GetWay();
+				float wayR = 0;
+				if (way)
+					wayR = way.m_fRadius;
+
+				je.m_fArrive = RZ_Arrive.Spot(wayR);
+
 				if (e.m_bStepDone)
+				{
 					je.m_vPlace = e.m_vGiver;
+					je.m_fArrive = RZ_Arrive.Spot(ERRAND_RETURN);
+				}
 
 				result.Insert(je);
 			}
@@ -640,7 +674,11 @@ class RZ_QuestTracker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! T|id|kind|giver|title|kind label|rough area
+	//! T|id|kind|giver|title|kind label|rough area|place|x|z|arrive|search
+	//!   place: the area's place alone ("East of Levie"); x, z: where it points (the rough circle's
+	//!   centre while rough, never the hidden spot), empty without a place; arrive: the spot is
+	//!   reached within it (m); search: the rough circle's radius (m), 0 for a known spot. The HUD
+	//!   turns them into an arrow and metres within a km (RZ_HudDisplay.DrawTrackerDir).
 	//! O|state|line (the tracked job's current objective and the known next one)
 	//! Only the tracked job: the other jobs taken are the Quests tab's, never the HUD's.
 	//! "" when nothing is tracked: the box hides.
@@ -654,11 +692,27 @@ class RZ_QuestTracker
 			from = ent.GetOrigin();
 
 		string area = "";
+		string place = "";
+		string x = "";
+		string z = "";
+		int search = 0;
 		if (tracked.m_bHasPlace)
 			area = RZ_QuestText.RoughArea(m_GM, from, tracked.m_vPlace);
 
+		if (tracked.m_bHasPlace && tracked.m_vPlace != vector.Zero)
+		{
+			place = RZ_QuestText.RoughArea(m_GM, vector.Zero, tracked.m_vPlace);
+			int xi = RZ_Util.RoundToInt(tracked.m_vPlace[0]);
+			int zi = RZ_Util.RoundToInt(tracked.m_vPlace[2]);
+			x = xi.ToString();
+			z = zi.ToString();
+			if (tracked.m_bRough && tracked.m_fRadius > 0)
+				search = RZ_Util.RoundToInt(tracked.m_fRadius);
+		}
+
 		RZ_UILine lnT = new RZ_UILine("T");
-		string s = lnT.AddInt(tracked.m_iId).AddInt(tracked.m_iKind).AddInt(tracked.m_iGiver).Add(tracked.m_sTitle).Add(RZ_QuestText.KindLabel(tracked.m_iKind, tracked.m_bMajor)).Add(area).End();
+		lnT.AddInt(tracked.m_iId).AddInt(tracked.m_iKind).AddInt(tracked.m_iGiver).Add(tracked.m_sTitle).Add(RZ_QuestText.KindLabel(tracked.m_iKind, tracked.m_bMajor)).Add(area);
+		string s = lnT.Add(place).Add(x).Add(z).AddInt(RZ_Util.RoundToInt(tracked.m_fArrive)).AddInt(search).End();
 
 		RZ_ObjList list = new RZ_ObjList();
 		Objectives(playerId, tracked.m_iId, from, list);
