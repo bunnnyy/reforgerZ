@@ -1,0 +1,17 @@
+GenericEntity : "{128A19AA9F731095}prefabs/Items/Food/MeatLeg_01.et" {
+ ID "1F23AE02AC43D743"
+ components {
+  B_FoodWaterGadgetComponent "{65174938F8CD897A}" {
+   m_iFoodValue 0.3
+   m_fSicknessChance 0
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Cooked meat"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

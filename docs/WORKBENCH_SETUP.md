@@ -787,7 +787,7 @@ and the UI files) need none, and eight have no base:
 |---|---|---|---|---|---|
 | (existing prefab) | items from the loot pool | — | Interactions > Search > Loot tables (each table's three lists) | optional | exact loot per building type (optional; empty tables are filled from the pool by keywords) |
 | (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
-| (existing prefab) | a cooked food item (e.g. Metabolism's cooked meat) | — | Interactions > Crafting > Stove recipes (each output) | optional | cookables at a stove (optional; none by default) |
+| `RZ_CookedMeat.et` | Metabolism's `MeatLeg_01.et` (its raw meat: 0.2 sickness), named "Cooked meat", with B_FoodWaterGadgetComponent's m_iFoodValue 0.3 and m_fSicknessChance 0. Metabolism has no cooked food of its own | — | Interactions > Crafting > Stove recipes: **Cook meat** (one `meatleg_01` in, 20 s) | optional | cookables at a stove (more recipes can be added the same way; none without this one) |
 | (existing prefab) | vanilla items or crates (never a vehicle or a car part: refused) | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
 | (existing prefab) | vanilla ammo or rations the same quartermaster sells at Trusted or below | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
 

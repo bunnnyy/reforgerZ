@@ -1897,6 +1897,16 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sPumpStationPrefab "{FE30B9DD9761E1CE}Prefabs/ReforgerZ/Interactions/RZ_FuelPumpStation.et"
    }
    m_CraftSettings RZ_CraftSettings "{6AD67DC2BBC177FB}" {
+    m_aStoveRecipes {
+     RZ_Recipe "{B46115829BD75D1D}" {
+      m_sName "Cook meat"
+      m_sIn1 "meatleg_01"
+      m_iN2 0
+      m_iN3 0
+      m_sOutput "{9057637421E84A36}Prefabs/ReforgerZ/Interactions/RZ_CookedMeat.et"
+      m_fSeconds 20
+     }
+    }
     m_sBandagePrefab "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
     m_sMolotovPrefab "{7C9D5212448CE5DD}Prefabs/ReforgerZ/Interactions/RZ_Molotov.et"
     m_sNoisemakerPrefab "{4D54E83B5BBADD07}Prefabs/ReforgerZ/Interactions/RZ_TinRattle.et"
