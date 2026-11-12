@@ -546,6 +546,7 @@ class RZ_UIColor
 	static Color Hazard() { return RZ_UIW.Rgb(242, 194, 48); }
 	static Color Good() { return RZ_UIW.Rgb(191, 211, 155); }
 	static Color Bad() { return RZ_UIW.Rgb(228, 130, 111); }
+	static Color Objective() { return RZ_UIW.Rgb(232, 178, 58); }	// the map's objective (#E8B23A)
 
 	//------------------------------------------------------------------------------------------------
 	static Color Stage(int state)
@@ -1052,6 +1053,47 @@ class RZ_UIW
 		sx = ws.DPIUnscale(px);
 		sy = ws.DPIUnscale(py);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Layout units to screen pixels (a canvas's draw commands are in pixels).
+	static float Native(float units)
+	{
+		return GetGame().GetWorkspace().DPIScale(units);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A canvas filling `parent` (the map's search area is drawn on one, not stretched from an image),
+	//! ignoring the cursor. Null without a parent.
+	//! VERIFY: a CanvasWidget made in script with WorkspaceWidget.CreateWidget fills its frame with
+	//! anchors 0 to 1, and its draw commands are in screen pixels from its top left (vanilla's map
+	//! selection circle and the career page's spider net use them that way).
+	static CanvasWidget MakeCanvas(Widget parent)
+	{
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		if (!ws || !parent)
+			return null;
+
+		Widget w = ws.CreateWidget(WidgetType.CanvasWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.BLEND | WidgetFlags.IGNORE_CURSOR, Color.FromInt(Color.WHITE), 0, parent);
+		CanvasWidget canvas = CanvasWidget.Cast(w);
+		if (!canvas)
+		{
+			Remove(w);
+			return null;
+		}
+
+		FrameSlot.SetAnchorMin(canvas, 0, 0);
+		FrameSlot.SetAnchorMax(canvas, 1, 1);
+		FrameSlot.SetOffsets(canvas, 0, 0, 0, 0);
+		return canvas;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces what a canvas draws (an empty list clears it).
+	static void Draw(CanvasWidget canvas, array<ref CanvasWidgetCommand> commands)
+	{
+		if (canvas)
+			canvas.SetDrawCommands(commands);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1766,8 +1766,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **127** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 23 are in `UI/`: 18 of [the UI's](#the-ui-19), the loadout
+There are **128** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 24 are in `UI/`: 19 of [the UI's](#the-ui-20), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1776,7 +1776,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-19)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-20)
 come last.
 
 ### High risk: the core loop (2)
@@ -1894,7 +1894,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:3595` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 | `Factions/RZ_CampLife.c:3332` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
 
-### The UI (19)
+### The UI (20)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -1905,7 +1905,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:964` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:965` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:194` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
@@ -1913,8 +1913,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Notebook.c:1048` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:44` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_TalkMenu.c:366` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; the wheel still works |
-| `UI/RZ_UIData.c:987` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1085` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
+| `UI/RZ_UIData.c:988` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1127` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
 | `Dialogue/RZ_Dialogue.c:892` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:182` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
@@ -1923,7 +1923,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Menus.c:307` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:19` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
-| `UI/RZ_MapIcons.c:454` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
+| `UI/RZ_UIData.c:1068` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 
 ## 7. Log lines to check
 
@@ -2761,7 +2762,8 @@ when it happens)
 - [ ] **Only the tracked job on the HUD**: take a second and a third job. The first stays tracked
   and the tracker still shows that one job alone: no dim lines under it and no "+N more". The others
   are in the Quests tab only. A major you haven't taken part in never shows. Crack a secure channel:
-  the tracker moves down under the radio panel. The map shows the tracked job as a ring, not a pin.
+  the tracker moves down under the radio panel. The map shows the tracked job alone (the next
+  item has how).
 - [ ] **Quests tab** (the mockup's right half): the jobs under three headings, THE SEASON'S STORY,
   QUESTLINES AND JOBS and ERRANDS (a heading only where its group has a job), taken ones first in
   each; each row its icon, name and rough area (a major's act first), TRACKED in yellow on the
@@ -2966,14 +2968,25 @@ when it happens)
   vanilla's deploy menu is back.
 - [ ] The tabs, close button, journal and quest rows, the TRACK button and the radio filter take
   clicks; the lists scroll.
-- [ ] Open the map: the lab, the safehouses, the strongholds and a world event show with their
-  icons and stay on their spots while you pan and zoom; an outpost appears after you've been near
-  it (or once you're Known with its faction); no contract is ever on it.
+- [ ] Open the map: the lab, the safehouses and the strongholds show with their icons and stay on
+  their spots while you pan and zoom; an outpost appears after you've been near it (or once you're
+  Known with its faction). Each label is black and says the kind alone ("Stronghold", "Safehouse",
+  "Lab", "Field station", "Checkpoint"), readable on the light map. Morton (or wherever the lab is)
+  has one marker, the lab's, and the Haven's stronghold town one, the stronghold's, not a safehouse
+  stacked on it. No job is on it but the one you track, and no other player sees yours.
+- [ ] Your objective on the map: track an errand (a known spot) and an amber diamond with a dark
+  outline and a dark dot in the middle sits on its place, labelled with the current objective, above
+  the other icons; a stronghold at the same spot puts its name under the objective's line. Track a
+  contract you know only roughly (not Trusted with its giver, far off): no diamond, a soft amber
+  disc with a thin solid amber edge round the rough area instead, its edge as thin zoomed in as
+  zoomed out, the objective under it ("Search ..."). Come within 500 m of the spot: within
+  20 s of the map open it turns into the diamond. Track nothing: neither shows. A filled area missing
+  or off its spot is the canvas VERIFY.
 - [ ] You are here: open the map and a yellow arrow on a dark disc sits where you stand, above the
   other icons; turn round and it turns with you (an arrow pointing the wrong way, or turning about a
   corner, is the rotation VERIFY); it follows you in a car; dead, it's gone.
 - [ ] The map key: open the full-screen map zoomed out and the key is in the bottom-left, its icons
-  in their colours; zoom in on a town and it fades out, zoom out and it comes back. I (pad Y) hides
+  in their colours, its last row the diamond (Your objective) and the amber disc (Search area); zoom in on a town and it fades out, zoom out and it comes back. I (pad Y) hides
   it and shows it again, and it stays hidden the next time you open the map. It covers none of
   vanilla's own map widgets; if the fade starts too early or too late, change **UI > Legend full
   zoom** and **Legend gone zoom**.

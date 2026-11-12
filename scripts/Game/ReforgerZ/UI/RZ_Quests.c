@@ -268,7 +268,8 @@ class RZ_QuestJob
 	int m_iMinutes = -1;
 	bool m_bHasPlace;
 	vector m_vPlace;		// where the job points this player now (a rough centre while rough)
-	float m_fRadius;		// the map's area ring
+	bool m_bRough;			// they know only the rough area: the map's search area, not the spot
+	float m_fRadius;		// the search area's radius (m), while rough
 }
 
 //------------------------------------------------------------------------------------------------
@@ -286,7 +287,6 @@ class RZ_TrackState
 class RZ_QuestTracker
 {
 	static const float TRACK_SECONDS = 2;
-	static const float AREA_RING = 300;	// the map's ring round a tracked job's place (m)
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<int, ref RZ_TrackState> m_mStates = new map<int, ref RZ_TrackState>();
@@ -352,7 +352,9 @@ class RZ_QuestTracker
 				j.m_iMinutes = RZ_Util.RoundToInt(m.m_fTimeLeft / 60);
 				j.m_bHasPlace = !m.m_bGlobal;
 				j.m_vPlace = m.GetAreaFor(m_GM, playerId, from);
-				j.m_fRadius = Math.Max(AREA_RING, m.GetAreaRadius(m_GM));
+				j.m_bRough = j.m_bHasPlace && m.IsRoughFor(m_GM, playerId, from);
+				if (j.m_bRough)
+					j.m_fRadius = m.GetAreaRadius(m_GM);
 				result.Insert(j);
 			}
 		}
@@ -386,7 +388,6 @@ class RZ_QuestTracker
 				jq.m_bTaken = took;
 				jq.m_bHasPlace = run.m_bHasPlace;
 				jq.m_vPlace = run.m_vPlace;
-				jq.m_fRadius = AREA_RING;
 				result.Insert(jq);
 			}
 		}
@@ -410,7 +411,6 @@ class RZ_QuestTracker
 				if (e.m_bStepDone)
 					je.m_vPlace = e.m_vGiver;
 
-				je.m_fRadius = AREA_RING;
 				result.Insert(je);
 			}
 		}
@@ -660,9 +660,11 @@ class RZ_QuestTracker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The map's area ring for the tracked job: P|marker_range|faction|x|z|label|radius, "" if
-	//! nothing is tracked or it has no place. Never a pin on the spot.
-	string MapRing(int playerId)
+	//! The map's mark for the tracked job's current objective (docs/UI.md, "The map"), for this
+	//! player alone; "" if nothing is tracked or it has no place. A known spot is a diamond on it:
+	//! P|objective_spot|-1|x|z|objective. A search only is the rough circle, never the spot:
+	//! P|objective_area|-1|x|z|objective|radius. Every other job stays off the map.
+	string MapObjective(int playerId)
 	{
 		int id = TrackedFor(playerId);
 		if (id == 0)
@@ -675,7 +677,22 @@ class RZ_QuestTracker
 		if (!j || !j.m_bHasPlace || j.m_vPlace == vector.Zero)
 			return "";
 
+		vector from = vector.Zero;
+		if (ent)
+			from = ent.GetOrigin();
+
+		RZ_ObjList list = new RZ_ObjList();
+		Objectives(playerId, id, from, list);
+		string now = list.First(RZ_EObjState.CURRENT);
+		if (now.IsEmpty())
+			now = j.m_sTitle;
+
+		int x = RZ_Util.RoundToInt(j.m_vPlace[0]);
+		int z = RZ_Util.RoundToInt(j.m_vPlace[2]);
 		RZ_UILine ln = new RZ_UILine("P");
-		return ln.Add("marker_range").AddInt(j.m_iGiver).AddInt(RZ_Util.RoundToInt(j.m_vPlace[0])).AddInt(RZ_Util.RoundToInt(j.m_vPlace[2])).Add(j.m_sTitle).AddInt(RZ_Util.RoundToInt(j.m_fRadius)).End();
+		if (j.m_bRough && j.m_fRadius > 0)
+			return ln.Add("objective_area").AddInt(-1).AddInt(x).AddInt(z).Add(now).AddInt(RZ_Util.RoundToInt(j.m_fRadius)).End();
+
+		return ln.Add("objective_spot").AddInt(-1).AddInt(x).AddInt(z).Add(now).End();
 	}
 }
