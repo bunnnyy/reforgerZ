@@ -24,6 +24,7 @@ class RZ_Errand_LastApples : RZ_ErrandCard
 		w.m_fRadius = 80;
 		w.m_bQuiet = true;
 		w.m_sStep = "Pick what's left in the orchard at {place} (30 s there), then bring it to {giver}.";
+		w.Work(RZ_EWork.SEARCH, "Pick what's left");
 		w.Later("The apples went in a pie. Two pies. One for the house, and one we're not talking about.");
 		w.m_iFavor = 4;
 		w.Done("Wormy. Perfect. That's pudding for the whole house tonight. Nobody look in the pot.");

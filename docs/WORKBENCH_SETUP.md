@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **329 prefab fields**: 46 on `RZ_GameModeComponent`, 271 in its settings objects, and 12 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **332 prefab fields**: 46 on `RZ_GameModeComponent`, 272 in its settings objects, and 14 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **306 entries**: 183 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 89 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -541,6 +541,8 @@ and the UI files) need none, and eight have no base:
 | `RZ_Relay.et` | a radio mast with a damage manager | — | Missions > Relay | optional | Sabotage the Relay |
 | `RZ_Trader.et` | a character or vehicle (e.g. a Shop System trader) | — | Missions > Trader | optional | Wandering Trader |
 | `RZ_Explosion.et` | a mortar or shell impact effect | — | Missions > Explosion | optional | Bastion Shelling; charges in Blow the Bridge, shells in Fire Mission, Gas Station Fire's blast, the burning helicopter in The Last Pilot |
+| `RZ_WorkSite.et` | an empty GenericEntity with an invisible interaction box (0.5 m, no collision, off the character layer) and a 1.5 m action radius | `RZ_WorkSiteComponent`; `RZ_WorkSiteAction` (Duration 10) | Shared > Work sites > Site prefab | optional | every step done with your hands (dig, build, board up, fix, search, fill, paint, burn, dress a wound): the one hold prompt at the work site; empty = those steps are done by staying there, as before. Built as text (set in the game mode). The action's Duration (10) is what the hold's bar is scaled from: keep it positive (a timed hold), never negative (a continuous action) |
+| (existing prefab) | the RZ_Work_* compositions in Prefabs/ReforgerZ/Work/ (vanilla props: planks, sacks, a stake, cans, a paint tin, a mattress) and existing pieces for the results (the camp latrine, Traces' grave, pyre and stencilled board, the boarded doorway, the sandbag barricade, the clutter); nothing with actions | — | Shared > Work sites > Looks (each kind's Before and After) | optional | what stands at a work site before and after the work (docs/DESIGN.md, Work site); a kind with no entry shows only the prompt. Set in the game mode; up only while a player is within 150 m |
 | (existing prefab) | a dead man's things: a kit bag or rucksack with a jacket over it, as one composition (`RZ_ErrandProp_Effects.et`): an empty root with an RplComponent, vanilla props as children, no physics | — | Missions > Errands > Props > Effects | optional | His Effects, The Name on the Tape, Notebook 31 and its fallout, Into the Record: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
 | (existing prefab) | a small wooden supply crate or a cardboard box of odds and ends (`RZ_ErrandProp_Crate.et`) | — | Missions > Errands > Props > Crate | optional | The Truck Didn't Come, Clean Glasses, Pack for the Queue: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
 | (existing prefab) | a ledger or a few papers on a stool (`RZ_ErrandProp_Papers.et`; a vanilla notebook or clipboard prop will do) | — | Missions > Errands > Props > Papers | optional | Last Orders' order book at his seat: at the step's place while it's open; empty = words only. Shown only while a player is within 150 m (the marks' props pool); nothing is saved |
@@ -722,7 +724,7 @@ and the UI files) need none, and eight have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Radio prefab | optional | given to every new life. The two View radio actions: one in the "default" context, one in "knob_toggle" with In hand on (beside vanilla's Turn on/off) |
-| `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch; also Shift Change's car at the verge (an errand prop, up while a player is within 150 m) |
+| `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch |
 | `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | an opening's clue in the hiding place: the scratched door |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | an opening's clue when your group is gone (the flyer they went after), safehouse flyers |
 | `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | an opening's clue in the hiding place: the radio still talking; beside the operators in No Reply and Await Relief, and The Census's nightly call |
@@ -903,6 +905,15 @@ spot. Make sure the loot pool has some alcohol, antiseptic and herbs.
 
 **Missions.** One mission item prefab serves everything (medicine, notes, black box, package):
 the mission tags it when it spawns. Missions spawn and remove their own drop points.
+
+**Work sites** ([DESIGN.md](DESIGN.md#work-site)). `Prefabs/ReforgerZ/Work/RZ_WorkSite.et` is written
+as text and set in the game mode (**Shared > Work sites > Site prefab**), with **Looks**: the
+`RZ_Work_*` compositions in the same folder (vanilla props only) for what stands there before, and
+existing pieces for after (the camp latrine, Traces' grave, pyre, stencilled board and notice wall,
+the boarded doorway, the sandbag barricade, the clutter, `DirtPile_Cluttered_01`). Open
+`RZ_WorkSite.et` once: its **RZ_WorkSiteAction** should show **Duration** 10 (vanilla's timed hold;
+never negative) and its box the Interaction layer. Place each `RZ_Work_*` once and check its props
+sit on the ground (none floats or sinks); a camp piece's footprint comes from `tools/camp_kit`.
 
 **Contracts** (how the blocks work is in [DESIGN.md](DESIGN.md#mission-building-blocks)). An
 escort prefab that isn't an AI group (a character or prop) still works: the people then move as
@@ -1737,8 +1748,12 @@ so the test's patch tells it which character is his.
 errands' data paths run once: a truth kept for its subject, the check results, a record written and
 read, a callback queued and the door mark, a fallout dealt to its participant, the dealer's context
 cache, a lie found by its owner's tick, a talk scene's three options a node, mission goods' tag, the
-reasons the story jobs and the majors answer, and a free player never refused a route asset
-(`RZT story check: <name>: OK|FAILED (...)`, then `RZT story done: N checks OK, N FAILED`). An objection
+reasons the story jobs and the majors answer, a free player never refused a route asset, and a
+[work site](DESIGN.md#work-site) (the crate stands in as its site prefab: opened for the fake player,
+done for it, its after look up, a held step's line without its time)
+(`RZT story check: <name>: OK|FAILED (...)`, then `RZT story done: N checks OK, N FAILED`). From then
+on the fake player can't hold a prompt, so while it stands at a mission its open work sites are done
+for it (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
 to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
 a play (§8).
 
@@ -1950,10 +1965,10 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **157** lines with the tag, all but one in the game scripts (one is the comment in
+There are **159** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 34 are in `UI/`: 29 of [the UI's](#the-ui-32), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
-`Dialogue/` and two are the radio screen's in `Interactions/`), but one: the sites plugin's in
+`Dialogue/`, two are the radio screen's and two the hold prompt's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
 ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
@@ -1973,7 +1988,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (77)
+### Medium risk: big features, with a fallback (79)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2029,7 +2044,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:2903` | a positive roll in `Math3D.AnglesToMatrix` lowers a piece's +x (measured: the site audit prints `RZS roll`), and a composition spawned rolled tilts its children with it, so a barrier run on a slope follows the ground | The wire's runs on slopes float at one end and sink at the other: set `ROLL_SIGN` the other way, or 0 to stand them level |
 | `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
-| `Missions/Errands/RZ_Strangers.c:1188` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
+| `Missions/Errands/RZ_Strangers.c:1191` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
 | `Missions/Errands/RZ_ErrandsDealer.c:260` | a local's labels set and cleared on its body as a knower comes and goes reach clients (the same labels for everyone near: per-player labels need an engine check) | A local shows to anyone near while a knower is there, as before |
 | `Missions/RZ_MissionGoods.c:6` | an item tagged as someone's goods keeps its entity through inventory moves, a body and a car's boot (the list holds entities, like the fence's bought list) | A tagged ration or carried item may count as ordinary food after a move; pay in kind can be left empty (**Props > Pay ration**) |
 | `Zombies/RZ_TribeProps.c:68`, `:354` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
@@ -2045,6 +2060,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 | `Guidance/RZ_OpeningPlaces.c:447` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
 | `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
+| `Interactions/RZ_WorkSiteAction.c:151`, `:133` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
 
 ### Low risk: contained or cosmetic (42)
 
@@ -2065,7 +2081,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:750` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Core/RZ_Util.c:806` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:427` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
-| `Missions/RZ_MissionBases.c:277` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
+| `Missions/RZ_MissionBases.c:361` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_Search.c:851` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_WreckBoots.c:123` | a wreck prop faces its local +Z like a vehicle, so its rear (the boot) is its box's −Z side | **Open the boot** shows at the bonnet: flip the sign in `RZ_WreckBoots.BootPoint` |
 | `Interactions/RZ_DoorLocks.c:395` | `UserActionContext.GetOrigin()` on a door's actions manager is the world position of vanilla's Open door point (its first context) | Unlock, Lock and Force sit at 1.05 m on the leaf instead of at the handle's height (the 0.6–1.5 m guard throws out anything else) |
@@ -2490,7 +2506,10 @@ Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#st
 start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
-<player> overtaken`, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
+<player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
+`Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
+`.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: the Site prefab has no
+RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
 view: ...`; `Story: truth <key>.<subject> = <truth> (kept|new)` and `...; found by <how>`, `Story:
@@ -4146,6 +4165,31 @@ on the talk screen says why something wasn't dealt)
   brief opening with the reason's line, at most one every 30 minutes.
 - [ ] The journal shows a held errand (the giver, what to do, minutes left), and a selected
   contract's detail adds "Who it went to" once it's decided.
+
+**Work sites** ([DESIGN.md](DESIGN.md#work-site); the log's `Work sites:` lines)
+- [ ] Take **The Latrine** at a Bastion post (Watched or a Stranger with Bastion): a marked pit stands
+  3–6 m behind the post with one prompt, **Dig the latrine**, and only you see it. Hold F (a pad's
+  interact): vanilla's ring fills in about 15 s; let go half-way and it stops; walk off and it stops;
+  get hit and it drops back to empty. Hold it through: the pit goes and the latrine screen stands
+  there; the step says *"That's done"* within 5 s. It's still there when you come back from the
+  sergeant, and gone after you've been 200 m away.
+- [ ] A second player can't see your errand's prompt; a hold the server didn't count (pressed the
+  moment you arrived, with the Duration missing) says *"Not finished..."*.
+- [ ] One of each look: The Burying (a grave), Not Past the Chapel (planks, then the boarded doorway),
+  Sandbags (sacks, then the barricade), Night Readings' battery (a toolbox; the battery taken after
+  the hold), The New Number (the stencilled board), The Pot (a crate, then clutter), His Effects (the
+  effects, then nothing), Labels (a table that stays), Reset the sensor unseen (seen: *"They'd see
+  you like that"*, start again hidden).
+- [ ] Missions: Burn the Bodies (five piles, **Burn the pile**, ash after; a Nurse holds faster),
+  Install Sensors (a set on a crate after; a Radio Op or Lab Tech in half the time), Convoy Escort's
+  breakdown (**Fix the engine** by the bonnet; a Mechanic in a third), Specimen from the Nest
+  (**Cut the tissue**), The Armory's Nobody (**Drop the rifles down the well**, the case's carrier
+  only), The Well Story's sample (**Fill a sample bottle**), Bust Out (**Cut the chain** after Cut the lock;
+  in Bastion kit the second look comes 15 s in), Tied Down and Cargo (**Cut the padlock** at the van).
+- [ ] Strangers: The Digger (**Dig the grave**), Seed Potatoes (**Dig along the field edge**, turned
+  earth after), Two in the Back (**Push the car**; [Mechanic] **Fix the car**).
+- [ ] With **Shared > Work sites** off, the same steps are done by staying there as before.
+- [ ] On a pad: the prompt shows vanilla's interact button and holds the same way.
 
 **Contracts on the building blocks** (start one by raising its weight, or wait for the radio)
 - [ ] Escort: Refugee Column's group walks when you're within 150 m, stops when you run ahead or

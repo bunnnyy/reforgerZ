@@ -19,6 +19,7 @@ class RZ_Errand_WrecksName : RZ_EpiCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 30;
 		w.m_sStep = "Search the wrecked truck {lies} for the driver's papers (20 s there), then bring them to {giver}.";
+		w.Work(RZ_EWork.SEARCH, "Search the cab for papers");
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("That's the name. I'd forgotten it. That's worse than anything that happened to the truck.");
@@ -31,6 +32,7 @@ class RZ_Errand_WrecksName : RZ_EpiCard
 		w.m_iFavor = 5;
 		w.m_iPayFaction = RZ_EFaction.BANDITS;
 		w.m_sStep = "Search the wrecked truck {lies} for a photo frame the fence will pay for (20 s there), then go back to {giver}.";
+		w.Work(RZ_EWork.SEARCH, "Search the cab");
 		w.Done("No papers. Then the truck drove itself, I suppose. I'll write that on the roll.");
 	}
 

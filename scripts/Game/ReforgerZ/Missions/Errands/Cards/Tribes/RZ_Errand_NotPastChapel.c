@@ -36,6 +36,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		w.m_fRadius = 30;
 		w.m_fBefore = 20.5;
 		w.m_sStep = "Board the old man's doors at the farmhouse {place}, two planks each (25 s there), then tell {giver}.";
+		w.Work(RZ_EWork.BOARDS, "Board up the doors", 15);
 		w.m_iFavor = 4;
 		w.Done("Boarded? He shouted the whole time, I expect. Yes, I thought so.");
 

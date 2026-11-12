@@ -1913,6 +1913,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// Open talk screens and readers close when danger comes
 		m_ScreenGuard.Tick();
+
+		// Work sites: who is at which, their props near players
+		if (m_Shared)
+			m_Shared.SecondTick(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------

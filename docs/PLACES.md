@@ -122,6 +122,7 @@ fallback happens, and the audit prints which.
 | `spawnpoint` | World > Spawn point prefab | spawn points |
 | `prop.effects`, `prop.crate`, `prop.papers`, `prop.parts` | Missions > Errands > Props | an errand way's prop |
 | `prop.car` | Guidance > Car wreck prefab | Shift Change's car at the verge |
+| `work.site` | Shared > Work sites > Site prefab | every [work site](DESIGN.md#work-site)'s prompt |
 
 ## The needs
 
@@ -158,6 +159,7 @@ or way isn't offered here.
 | `errand.orchard` | the orchard at {place} | IN_TOWN(+300) BUILDING(orchard/40) | | The Last Apples |
 | `errand.police`, `errand.school`, `errand.hall` | the police station, the school, the hall in {place} | IN_TOWN(+300) BUILDING(police, school, public/30) | | Clean Rifles, Clean Paper, the hall's chairs |
 | `errand.prop.effects`, `.crate`, `.papers`, `.parts`, `.car` | the way's prop at the place | | PROP within 6 m (the car 8 m; empty: words only, and a warning) | a way with a prop |
+| `work.site` | beside the thing you work at: its before look and its prompt | NOT_STEEP(25) NOT_LOCKED | SLOT the work site's prompt (empty: the step is done by staying there) | `RZ_WorkSites.Spot`: a work site's spot beside its place (an errand's at the giver's place or gate 3–6 m off, at water 1.5–3 m; a job's by its engine, well, gate, door, charge or hive), else the place itself; every site opened is checked live |
 | `mission` | at {town}: the town its brief names | IN_TOWN(+1500) | | every contract, event and stage, when it starts (live only) |
 | `world.place` | a town, a holding, a safehouse, the lab, the Long Table, a wanderer | DRY MAINLAND only (a town by the map's edge is by the line) | | the audit's check of what stands all season |
 

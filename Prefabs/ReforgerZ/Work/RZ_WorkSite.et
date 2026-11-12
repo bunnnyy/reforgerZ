@@ -1,0 +1,44 @@
+GenericEntity {
+ ID "8F76AE183253D956"
+ components {
+  RigidBody "{2B4BE9607AA8FE0B}" {
+   ResponseIndex "NoCollision"
+   Geometries {
+    PhysicsBoxGeometry UserAction {
+     LayerPreset "Interaction"
+     Extents 0.5 0.4 0.5
+    }
+   }
+   Static 1
+  }
+  RZ_WorkSiteComponent "{4F3150C04FEF25A0}" {
+  }
+  ActionsManagerComponent "{A1171B6C61B2D824}" {
+   ActionContexts {
+    UserActionContext "{C3B1B855A275CCA3}" {
+     ContextName "default"
+     Position PointInfo "{83888DE088A0CAB4}" {
+      Offset 0 0 0
+     }
+     Radius 1.5
+     Omnidirectional 1
+    }
+   }
+   additionalActions {
+    RZ_WorkSiteAction "{A9B658C7FF488E4E}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A3FC2715D8300259}" {
+      Name "Work"
+     }
+     Duration 10
+    }
+   }
+  }
+  RplComponent "{5F1988150436E2E9}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

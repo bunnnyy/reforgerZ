@@ -21,6 +21,7 @@ class RZ_Errand_TheTags : RZ_EpiCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
 		w.m_sStep = "Find the body of {dead} {lies} and take the tags (15 s there), then bring them to {giver} for the nail.";
+		w.Work(RZ_EWork.TAKE, "Take the tags");
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
 		w.Done("On the nail. That name gets answered at the roll now, one way or the other.",
@@ -34,6 +35,7 @@ class RZ_Errand_TheTags : RZ_EpiCard
 		w.m_iFavor = 6;
 		w.m_iPayFaction = RZ_EFaction.BANDITS;
 		w.m_sStep = "Find the body of {dead} {lies} and take the silver photo frame for the fence (15 s there), then go back to {giver}.";
+		w.Work(RZ_EWork.TAKE, "Take the photo frame");
 		w.Done("No tags? You came back with empty hands? Then {dead} is still out there.");
 	}
 

@@ -24,6 +24,7 @@ class RZ_Errand_TruckDidntCome : RZ_ErrandCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 40;
 		w.m_sStep = "Search the wrecked truck {where_place} for what the robbers left (30 s there), then bring it to {giver}.";
+		w.Work(RZ_EWork.SEARCH, "Search the truck");
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 4;
 		w.Done("Two sacks, and one of them's flour. The other's flour too. That's bread for the week. We'll manage.");

@@ -252,6 +252,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 		m_fVisitRadius = 12;
 		m_fVisitSeconds = 10;
 		m_sPointName = "Well";
+		PointWork(RZ_EWork.FILL, "Take a water sample", 10);
 		m_fTimeLeft = 3600;
 	}
 

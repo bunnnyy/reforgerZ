@@ -1127,15 +1127,32 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		if (m_iCutter <= 0)
 			return;
 
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		string key = string.Format("mission.%1.chain", m_iId);
 		IEntity cutter = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iCutter);
 		if (!cutter || RZ_Util.DistXZ(cutter.GetOrigin(), m_vGate) > 4)
 		{
 			m_iCutter = -1;
 			m_fCut = 0;
+			if (sites)
+				sites.Close(key);
+
 			return;
 		}
 
-		m_fCut += dt;
+		// With work sites: Cut the chain, a hold at the gate for whoever picked it; the server's count
+		// times the second look
+		bool held = RZ_WorkSites.Available() && sites;
+		if (held)
+		{
+			if (!sites.Has(key))
+				sites.Open(key, RZ_EWork.HANDS, "Cut the chain", m_fCutNeeded, RZ_WorkSites.Spot(m_vGate, 1, 1.5), m_iCutter);
+
+			m_fCut = sites.WorkedFor(key, m_iCutter);
+		}
+		else
+			m_fCut += dt;
+
 		// The second look, at 15 s into a 20 s cut: "What are you doing with those?"
 		if (m_bClaimed && !m_bSecondLook && !m_bAlarm && m_fCut >= SECOND_LOOK && m_fCutNeeded > SECOND_LOOK)
 		{
@@ -1145,7 +1162,14 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 				Alarm(gm, m_iCutter, "\"Moved where?\" He's already shouting.");
 		}
 
-		if (m_fCut < m_fCutNeeded)
+		if (held)
+		{
+			if (!sites.IsDone(key))
+				return;
+
+			sites.Close(key);
+		}
+		else if (m_fCut < m_fCutNeeded)
 			return;
 
 		m_bOpen = true;
@@ -1225,6 +1249,8 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 	{
 		super.Cleanup(gm);
 		m_Escort.Cleanup();
+		if (RZ_WorkSites.Get())
+			RZ_WorkSites.Get().Close(string.Format("mission.%1.chain", m_iId));
 	}
 }
 

@@ -338,9 +338,29 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		if (m_fAtWell == 0)
 			gm.NotifyPlayer(m_iCarrier, m_sTitle, "The well. Ten seconds, and nobody gets these rifles. Nobody.");
 
-		m_fAtWell += dt;
-		if (m_fAtWell < WELL_SECONDS)
-			return;
+		// With work sites: Drop the rifles down the well, a hold by its wall, for whoever carries the case
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		string key = string.Format("mission.%1.well", m_iId);
+		if (RZ_WorkSites.Available() && sites)
+		{
+			m_fAtWell += dt;
+			if (sites.Has(key) && sites.IsDone(key) && sites.DoneBy(key) != m_iCarrier)
+				sites.Close(key);
+
+			if (!sites.Has(key))
+				sites.Open(key, RZ_EWork.HANDS, "Drop the rifles down the well", 8, RZ_WorkSites.Spot(m_vWell, 1.5, 2.5), m_iCarrier);
+
+			if (!sites.IsDone(key) || sites.DoneBy(key) != m_iCarrier)
+				return;
+
+			sites.Close(key);
+		}
+		else
+		{
+			m_fAtWell += dt;
+			if (m_fAtWell < WELL_SECONDS)
+				return;
+		}
 
 		// Nobody: both sides are angry, nobody pays, the world remembers
 		RZ_Beneficiaries parties = m_Story.m_Parties;
@@ -373,6 +393,8 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 	{
 		super.Cleanup(gm);
 		RZ_Util.DeleteUnit(m_Well);
+		if (RZ_WorkSites.Get())
+			RZ_WorkSites.Get().Close(string.Format("mission.%1.well", m_iId));
 	}
 }
 
@@ -553,6 +575,30 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 		if (m_bFixed)
 			return;
 
+		// With work sites: Fix the engine, a hold at the truck's bonnet (a Mechanic's three times faster)
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		string key = string.Format("mission.%1.truck", m_iId);
+		if (RZ_WorkSites.Available() && sites)
+		{
+			if (!sites.Has(key))
+				sites.Open(key, RZ_EWork.REPAIR, "Fix the engine", 15, RZ_WorkSites.Spot(at, 2.5, 3.5));
+
+			foreach (int j, IEntity q : players)
+			{
+				if (RZ_Util.DistXZ(q.GetOrigin(), at) <= 8 && HasBonus(gm, ids[j]))
+					sites.SetFast(key, ids[j], REPAIR_SECONDS / MECHANIC_SECONDS);
+			}
+
+			if (!sites.IsDone(key))
+				return;
+
+			sites.Close(key);
+			m_bFixed = true;
+			RZ_Util.RedirectGroup(t.m_Crew, t.m_vDest, wp);
+			RZ_ContractHelp.NotifyNear(gm, at, NEAR + 50, m_sTitle, "It coughs back to life. The driver slaps the door twice and pulls away.");
+			return;
+		}
+
 		// Someone by the truck gets it going; a Mechanic in a third of the time
 		float rate = 0;
 		foreach (int i, IEntity p : players)
@@ -629,6 +675,8 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		RZ_Util.DeleteUnit(m_Raiders);
+		if (RZ_WorkSites.Get())
+			RZ_WorkSites.Get().Close(string.Format("mission.%1.truck", m_iId));
 	}
 }
 
@@ -1307,7 +1355,10 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 				SpawnObject(gm, RZ_EPuzzleProp.OBJECT, spot, n + 1, "Check the charge", "");
 			}
 
-			RZ_ContractHelp.NotifyNear(gm, m_vChoke, 300, m_sTitle, string.Format("The charges are stacked at the narrow point (grid %1). Stand by each for %2 seconds to wire it, then blow them from the detonator.", ChargeGrids(), RZ_Util.RoundToInt(CHARGE_SECONDS)));
+			if (RZ_WorkSites.Available())
+				RZ_ContractHelp.NotifyNear(gm, m_vChoke, 300, m_sTitle, string.Format("The charges are stacked at the narrow point (grid %1). Wire each one where it lies, about %2 seconds a charge, then blow them from the detonator.", ChargeGrids(), RZ_Util.RoundToInt(CHARGE_SECONDS)));
+			else
+				RZ_ContractHelp.NotifyNear(gm, m_vChoke, 300, m_sTitle, string.Format("The charges are stacked at the narrow point (grid %1). Stand by each for %2 seconds to wire it, then blow them from the detonator.", ChargeGrids(), RZ_Util.RoundToInt(CHARGE_SECONDS)));
 		}
 
 		if (!m_bBonusChecked && AnyBonusNear(gm, ids, players, m_vChoke, 40))
@@ -1317,17 +1368,40 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			RZ_ContractHelp.NotifyNear(gm, m_vChoke, 60, m_sTitle, "You know where to put them: two charges will do the work of three.");
 		}
 
+		// With work sites: Wire the charge, a hold at each (shown with the detonator)
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		bool held = RZ_WorkSites.Available() && sites && m_bDetonatorShown;
 		foreach (int i, vector c : m_aCharges)
 		{
+			string key = string.Format("mission.%1.charge.%2", m_iId, i);
 			if (m_aPlanted[i] >= CHARGE_SECONDS || m_iPlanted >= m_iNeeded)
-				continue;
+			{
+				if (sites)
+					sites.Close(key);
 
-			if (!ReachedBy(ids, players, c, 3, true))	// wiring a charge: at it
 				continue;
+			}
 
-			m_aPlanted[i] = m_aPlanted[i] + dt;
-			if (m_aPlanted[i] < CHARGE_SECONDS)
-				continue;
+			if (held)
+			{
+				if (!sites.Has(key))
+					sites.Open(key, RZ_EWork.HANDS, "Wire the charge", CHARGE_SECONDS, RZ_WorkSites.Spot(c, 1, 1.5));
+
+				if (!sites.IsDone(key))
+					continue;
+
+				sites.Close(key);
+				m_aPlanted[i] = CHARGE_SECONDS;
+			}
+			else
+			{
+				if (!ReachedBy(ids, players, c, 3, true))	// wiring a charge: at it
+					continue;
+
+				m_aPlanted[i] = m_aPlanted[i] + dt;
+				if (m_aPlanted[i] < CHARGE_SECONDS)
+					continue;
+			}
 
 			m_iPlanted++;
 			RZ_ContractHelp.NotifyNear(gm, m_vChoke, 60, m_sTitle, string.Format("Charge %1 of %2 set. Get clear before you blow them.", m_iPlanted, m_iNeeded));
@@ -1508,6 +1582,20 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			return string.Format("Blow the Bridge: the horde reached %1.", GetLocationName(gm));
 
 		return string.Format("Blow the Bridge: nobody blew the narrow point, and the horde is still on the road to %1.", GetLocationName(gm));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		super.Cleanup(gm);
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites)
+			return;
+
+		foreach (int i, vector c : m_aCharges)
+		{
+			sites.Close(string.Format("mission.%1.charge.%2", m_iId, i));
+		}
 	}
 }
 

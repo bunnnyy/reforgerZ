@@ -1,0 +1,37 @@
+GenericEntity {
+ ID "2DF0D7FF9B6D5C3B"
+ components {
+  RplComponent "{F84DBBDD38911418}" {
+  }
+  Hierarchy "{BE3508DF3868691F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{A8D8015D0E2B600A}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et" {
+   ID "64431A3A5D6D261B"
+   components {
+    Hierarchy "{4AF5EC940A70CAA1}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "240AD43506B0AD42"
+   components {
+    Hierarchy "{060F2A27C977812C}" {
+    }
+   }
+   coords 0.1 0.12 0.2
+   angles 0 10 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "94166CD49CEECBD2"
+   components {
+    Hierarchy "{378B11CDCB04A401}" {
+    }
+   }
+   coords 0.8 0 -0.6
+  }
+ }
+}

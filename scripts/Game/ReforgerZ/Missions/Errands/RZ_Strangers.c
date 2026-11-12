@@ -1159,6 +1159,9 @@ class RZ_Strangers
 			}
 
 			RZ_Util.DeleteUnit(v.m_Body);
+			if (RZ_WorkSites.Get())
+				RZ_WorkSites.Get().Close(WorkKey(v));
+
 			m_aVisits.Remove(i);
 		}
 	}
@@ -1263,15 +1266,31 @@ class RZ_Strangers
 				continue;
 
 			int idx = ids.Find(v.m_iAsker);
-			if (idx < 0 || RZ_Util.DistXZ(players[idx].GetOrigin(), v.m_vStep) > v.m_fStepRadius)
+			if (idx < 0)
 				continue;
 
-			if (v.m_bStepUnseen && !RZ_Stealth.IsHidden(v.m_iAsker))
-				continue;
+			// Work with your hands: done when its hold is done (RZ_WorkSites)
+			RZ_WorkSites sites = RZ_WorkSites.Get();
+			string key = WorkKey(v);
+			if (sites && sites.Has(key))
+			{
+				if (!sites.IsDone(key))
+					continue;
 
-			v.m_fStepDone += dt;
-			if (v.m_fStepDone < v.m_fStepNeed)
-				continue;
+				sites.Close(key);
+			}
+			else
+			{
+				if (RZ_Util.DistXZ(players[idx].GetOrigin(), v.m_vStep) > v.m_fStepRadius)
+					continue;
+
+				if (v.m_bStepUnseen && !RZ_Stealth.IsHidden(v.m_iAsker))
+					continue;
+
+				v.m_fStepDone += dt;
+				if (v.m_fStepDone < v.m_fStepNeed)
+					continue;
+			}
 
 			int step = v.m_iStep;
 			v.m_iStep = -1;
@@ -1296,6 +1315,39 @@ class RZ_Strangers
 			where = " " + RZ_Util.Capitalize(RZ_Util.DirectionText(me.GetOrigin(), at)) + ".";
 
 		m_GM.NotifyPlayerAs(v.m_iAsker, "A stranger", v.Fill(line) + where, RZ_ENoticeTag.MISSION);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A way done with your hands (docs/DESIGN.md, Work site): a work site at `at` for the asker,
+	//! held `hold` s; with work sites off, the old rule (stay there `seconds`). The line's time
+	//! there goes when it's held.
+	void StartWork(RZ_StrangerVisit v, int option, vector at, float seconds, float radius, bool unseen, string line, RZ_EWork kind, string label, float hold)
+	{
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!RZ_WorkSites.Available() || !sites)
+		{
+			StartStep(v, option, at, seconds, radius, unseen, line);
+			return;
+		}
+
+		string key = WorkKey(v);
+		sites.Close(key);
+		if (sites.Open(key, kind, label, hold, at, v.m_iAsker) < 0)
+		{
+			StartStep(v, option, at, seconds, radius, unseen, line);
+			return;
+		}
+
+		if (unseen)
+			sites.SetUnseen(key);
+
+		StartStep(v, option, at, seconds, radius, unseen, RZ_WorkSites.WithoutTime(line));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string WorkKey(RZ_StrangerVisit v)
+	{
+		return "stranger." + v.m_iId.ToString();
 	}
 
 	//------------------------------------------------------------------------------------------------

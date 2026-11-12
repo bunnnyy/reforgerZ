@@ -33,6 +33,7 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 30;
 		w.m_sStep = "Put {local}'s name on Bastion's roster at {subject_place} (20 s there), then tell {giver}.";
+		w.Work(RZ_EWork.WRITE, "Put the name on the roster");
 		w.m_iFavor = 3;
 		w.Done("On the roster. They'll come down the list to {local}. It's a long list. They'll come.");
 

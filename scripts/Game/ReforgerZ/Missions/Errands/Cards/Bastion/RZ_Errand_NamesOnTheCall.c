@@ -22,6 +22,7 @@ class RZ_Errand_NamesOnTheCall : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_sStep = "Pin the list of sheltered civilians on the board at {subject_place} (5 s at the door), then tell {giver}.";
+		w.Work(RZ_EWork.WRITE, "Pin the list up", 5);
 		w.m_iFavor = 4;
 		w.Done("Somebody found a name on it? Good. That's the first time the number's been for anything but Command.");
 	}

@@ -139,6 +139,75 @@ class RZ_Mission_VisitPoints : RZ_Mission
 	protected int m_iVisited;
 	protected string m_sPointName = "point";
 	protected bool m_bHandsOn;		// the points are things you work at (a corpse pile): m_fVisitRadius as it is
+	// Work at each point (docs/DESIGN.md, Work site): a hold prompt there, not a stay; off: the stay
+	protected RZ_EWork m_eWork = RZ_EWork.NONE;
+	protected string m_sWorkLabel;
+	protected float m_fWorkHold;
+	protected ResourceName m_sWorkBefore;	// this mission's own before look (empty: the kind's)
+	protected ResourceName m_sWorkAfter;
+
+	//------------------------------------------------------------------------------------------------
+	//! The points are work you do with your hands at a thing there (with work sites on).
+	protected void PointWork(RZ_EWork kind, string label, float hold)
+	{
+		m_eWork = kind;
+		m_sWorkLabel = label;
+		m_fWorkHold = hold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string PointKey(int idx)
+	{
+		return string.Format("mission.%1.point.%2", m_iId, idx);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The point is held at a work site (open now, or opened here). False: work sites are off.
+	protected bool PointWorked(RZ_GameModeComponent gm, int idx, array<int> ids, array<IEntity> players)
+	{
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (m_eWork == RZ_EWork.NONE || !sites || !RZ_WorkSites.Available())
+			return false;
+
+		string key = PointKey(idx);
+		if (!sites.Has(key) && sites.Open(key, m_eWork, m_sWorkLabel, m_fWorkHold, m_aPoints[idx], 0, m_sWorkBefore, m_sWorkAfter) < 0)
+			return false;
+
+		// Whoever is at it takes part; a background's bonus holds faster
+		array<int> near = {};
+		GetPlayersNear(ids, players, m_aPoints[idx], 6, near);
+		foreach (int playerId : near)
+		{
+			if (!m_aParticipants.Contains(playerId))
+				m_aParticipants.Insert(playerId);
+
+			if (m_fBonusVisitSpeed > 1 && HasBonus(gm, playerId))
+				sites.SetFast(key, playerId, m_fBonusVisitSpeed);
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its work sites go with the mission (a done one stays until nobody is near).
+	protected void CloseWork()
+	{
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites)
+			return;
+
+		foreach (int i, vector p : m_aPoints)
+		{
+			sites.Close(PointKey(i));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		CloseWork();
+		super.Cleanup(gm);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! How close counts at a point.
@@ -173,6 +242,21 @@ class RZ_Mission_VisitPoints : RZ_Mission
 		{
 			if (m_aDone[i])
 				continue;
+
+			// Work at it: done when its hold is done
+			if (PointWorked(gm, i, ids, players))
+			{
+				if (!RZ_WorkSites.Get().IsDone(PointKey(i)))
+					continue;
+
+				m_aDone[i] = true;
+				m_iVisited++;
+				OnPointDone(gm, i);
+				if (m_iVisited < m_aPoints.Count())
+					NotifyParticipants(gm, m_sTitle, string.Format("%1 %2 of %3 done.", m_sPointName, m_iVisited, m_aPoints.Count()));
+
+				continue;
+			}
 
 			// Anyone at a point takes part, even if it's far from the mission centre
 			array<int> near = {};

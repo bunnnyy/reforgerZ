@@ -20,6 +20,7 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Fetch the dead leader's order book {subject_place} (10 s there), and bring it to {giver} unread.";
+		w.Work(RZ_EWork.TAKE, "Take the order book");
 		w.m_eProp = RZ_EErrandProp.PAPERS;
 		w.m_iFavor = 4;
 		w.Done("Unread. Thank you. I'll read it tonight, alone, and then I'll decide whether anyone else does.");
@@ -31,6 +32,7 @@ class RZ_Errand_LastOrders : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Fetch the dead leader's order book {subject_place} (10 s there), read the last page, and bring it to {giver}.";
+		w.Work(RZ_EWork.TAKE, "Take the order book");
 		w.m_eProp = RZ_EErrandProp.PAPERS;
 		w.m_iFavor = 3;
 		w.Done("You read it. Of course you did. Well. Now two of us know what the last page says.");

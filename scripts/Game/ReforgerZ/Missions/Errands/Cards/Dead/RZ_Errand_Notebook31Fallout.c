@@ -22,6 +22,7 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find the body {subject_place} and take the coat and notebook thirty-one (15 s there), then bring them to {giver}.";
+		w.Work(RZ_EWork.TAKE, "Take the coat and notebook");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 5;
 		w.m_iFame = 2;
@@ -36,6 +37,7 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Take the notebook from the body {subject_place} (15 s), sell it at the fence, and tell {giver} it wasn't there.";
+		w.Work(RZ_EWork.TAKE, "Take the notebook");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 6;
 		w.Done("Not there. I see. I'll write 'notes lost' in the record.");
@@ -46,6 +48,7 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_sStep = "Take the notebook from the body {subject_place} (15 s) and keep it. Tell {giver} what you like.";
+		w.Work(RZ_EWork.TAKE, "Take the notebook");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.Done("You've kept it. Of course you have. It has a number on the cover, and numbers open doors at our gate.");
 	}

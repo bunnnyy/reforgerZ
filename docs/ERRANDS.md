@@ -23,6 +23,7 @@ Server only, except the journal row.
 - [The dealer](#the-dealer)
 - [Keeping them true](#keeping-them-true)
 - [Ways and steps](#ways-and-steps)
+- [Work sites](#work-sites)
 - [Pay: nothing for free](#pay-nothing-for-free)
 - [The faults table](#the-faults-table)
 - [The routines](#the-routines)
@@ -198,7 +199,7 @@ Don't answer that."* Every other card keeps the rule: never to whoever made its 
 | Way | What it is |
 |---|---|
 | Give | Hand items over, on the spot or at the step's place: food, a fuel can, a battery, something medical, an antidote (by the prefab's name; mission items never count) |
-| Do | Go to a place and stay there long enough: search a farm, stand the gate, dig, count, fetch water |
+| Do | Go to a place and stay there long enough: stand the gate, watch, sit with someone, look around. Work with your hands there (dig, search, fill, fix, paint, board up) is a hold at a thing you can see: [Work sites](#work-sites) |
 | Sneak | The same, only while hidden (built [stealth](DESIGN.md#stealth)): seen, and the clock stops |
 | Talk | A reply that resolves on the spot, sometimes with a Trust check ([RZ_Checks](DESIGN.md#checks-and-ways)), fixed, no roll |
 | Pay | Favor with the giver's faction, paid when picked |
@@ -225,6 +226,91 @@ step was done, three at most.
 A way's **step** is the line the tracker shows: it names who and where with the card's tokens
 (`{giver}`, `{place}`, `{here}`...), and the way back names the giver's place
 ([MISSIONS.md](MISSIONS.md#objectives); how it's written: [WRITING.md](WRITING.md#objective-lines)).
+
+## Work sites
+
+A way whose step is work with your hands is a [work site](DESIGN.md#work-site) at its place: the
+thing to work at stands there (its before look, or the way's own prop), with one prompt in the step's
+words. Hold it for its time (vanilla's bar); the step is done, and the result stands there until the
+errand is over and nobody is near. Only the asker can do it (the prompt doesn't show for anyone
+else); at the giver's place or its gate it stands 3–6 m off, at water 1.5–3 m off. An item the step
+needs at its place (a battery) is handed over after the hold, there. The step's line drops its time
+there. With work sites off, these steps are done by staying there as before (the times in the
+tables below).
+
+| Errand | The prompt | Hold | Before → after |
+|---|---|---|---|
+| The Pot | **Search the gardens and sheds** | 9 s | a crate of odds and ends → rummaged clutter |
+| Water for {house} | **Fill the bottles** | 8 s | empty cans and buckets → nothing (carried off) |
+| Filter Parts | **Take the filter housing off** | 8 s | a toolbox and parts → nothing (fitted, packed away) |
+| Filter Parts | **Take the part off** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
+| The Burying | **Dig the grave** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
+| The Round | **See to the sick** | 20 s | a mattress, a blanket, a bucket → the same (it stays) |
+| The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter |
+| The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Make It Right | **Fill the water cans** | 7 s | empty cans and buckets → nothing (carried off) |
+| The Count | **Count the stores** | 9 s | a table with a lamp → the same (it stays) |
+| The Latrine | **Dig the latrine** | 15 s | a marked pit (stakes, planks, a sack of lime) → the latrine screen |
+| The Pit Count | **Count the bets into the book** | 20 s | a table with a lamp → the same (it stays) |
+| Night Readings | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
+| Night Readings | **Reset the sensor** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
+| Labels | **Relabel the sample trays** | 20 s | a table with a lamp → the same (it stays) |
+| Labels | **Relabel the sample trays** | 12 s | a table with a lamp → the same (it stays) |
+| Before Dark | **Clean and dress the bite** | 11 s | a mattress, a blanket, a bucket → the same (it stays) |
+| The Market | **Search the grass** | 8 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| The Receiver | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
+| The Receiver | **Re-seat the cable** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
+| Sit With Him | **Dress the bite** | 12 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Sandbags | **Fill and stack the sandbags** | 18 s | a pile of empty sacks → a sandbag barricade |
+| The New Number | **Paint the new number** | 10 s | a bare board on a post, a paint tin → the stencilled board |
+| Behind the Red Door | **Search what's left** | 7 s | a crate of odds and ends → rummaged clutter |
+| Behind the Red Door | **Search the boy's room** | 8 s | a crate of odds and ends → rummaged clutter |
+| Clean Rifles | **Search for cleaning kits** | 8 s | a crate of odds and ends → rummaged clutter |
+| Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) |
+| Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter |
+| Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) |
+| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) |
+| What the Cure Costs Here | **Put the name on the roster** | 8 s | a board on a post → the notice wall |
+| Into the Record | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| Take a Name to the Board | **Write the name up** | 8 s | a board on a post → the notice wall |
+| Pack for the Queue | **Search the house** | 9 s | a crate of odds and ends → rummaged clutter |
+| The Tags | **Take the tags** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| The Tags | **Take the photo frame** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| The Wreck's Name | **Search the cab for papers** | 8 s | a crate of odds and ends → rummaged clutter |
+| The Wreck's Name | **Search the cab** | 8 s | a crate of odds and ends → rummaged clutter |
+| Clean Glasses | **Search for whole glasses** | 9 s | a crate of odds and ends → rummaged clutter |
+| Name Day | **Take the clock down** | 8 s | a toolbox and parts → nothing (fitted, packed away) |
+| The Truck Didn't Come | **Search the truck** | 9 s | a crate of odds and ends → rummaged clutter |
+| Clean Slate | **Dig at the burial pit** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
+| Civvies | **Search for plain clothes** | 8 s | a crate of odds and ends → rummaged clutter |
+| The Name on the Tape | **Take the tag and jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| The Name on the Tape | **Take the jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| Notebook 31 | **Take the coat and notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| Notebook 31 | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| Notebook 31 | **Pocket the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| Paint | **Paint the hand** | 12 s | a bare board on a post, a paint tin → the stencilled board |
+| Dress Uniform | **Fold the uniform** | 12 s | a table with a lamp → the same (it stays) |
+| Names on the Call | **Pin the list up** | 5 s | a board on a post → the notice wall |
+| The Last Apples | **Pick what's left** | 9 s | a crate of odds and ends → rummaged clutter |
+| You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) |
+| The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) |
+| Not Past the Chapel | **Board up the doors** | 15 s | planks and a bucket of nails → the boarded doorway |
+| His Effects | **Gather their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| His Effects | **Take their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| Last Orders | **Take the order book** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| The Name on the Tag | **Raise the cairn** | 12 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
+| The Name on the Tag | **Take the ID** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
+| The openings: Water, Water for the Fever | **Fill what you can carry** | 8 s | empty cans and buckets → nothing |
+| The openings: Across the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter |
+| Strangers: The Funeral for the Car, Two in the Back (push-start) | **Push the car** | 10 s | the car itself |
+| Strangers: Two in the Back ([Mechanic]) | **Fix the car** | 15 s | a toolbox and parts → nothing |
+| Strangers: The Digger | **Dig the grave** | 15 s | a marked plot → a grave |
+| Strangers: Seed Potatoes | **Dig along the field edge** | 10 s | a stake and a sack → turned earth |
+| Strangers: The Face on the Notice | **Take the book** (unseen) / **Burn the books** | 10 s | papers → nothing / ash |
+
+The rest stay as they are: standing a post or the wire, watching, counting from cover, sitting with
+someone, talking, walking someone somewhere, handing something over, and leaving something at a
+door (a moment's work, not a job of work).
 
 ## Pay: nothing for free
 
@@ -282,12 +368,12 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 
 | Routine | Where, giver | True when | Ways and pay |
 |---|---|---|---|
-| **The Pot** | Haven safehouse, the cook | food under one upkeep, and no Haven truck on its way to it | Hand over two tins [2 food]: 4 Favor, 1 Fame, +2 food. Search the gardens at the nearest empty village (30 s): 5 Favor, +2 food. Writes `errand.fed` |
+| **The Pot** | Haven safehouse, the cook | food under one upkeep, and no Haven truck on its way to it | Hand over two tins [2 food]: 4 Favor, 1 Fame, +2 food. Search the gardens at the nearest empty village (a crate: hold **Search the gardens and sheds**): 5 Favor, +2 food. Writes `errand.fed` |
 | **Lights** | safehouse, the storekeeper | the house's fuel fault, dusk within 20 real min (or dusk) | A fuel can, or [Mechanic] a car battery: 5 Favor, the fault fixed. Writes `errand.lit` |
 | **Water for {house}** | safehouse, the lookout | the house's water fault | Fetch water from the next town (20 s): 5 Favor (×1.3 quiet), +2 food, fixed |
 | **Filter Parts** | safehouse, the storekeeper | the water fault, 8+ people, Known | The pump house part at the next town (25 s; [Mechanic or Lab Tech] 12 s): 8 Favor, fixed |
 | **The Gate at Dusk** | safehouse, the lookout | dusk near, one guard or none, a town at 60+ infection within 1.5 km, not Every Ridge Calls | Stand at the gate 10 real min: 5 Favor |
-| **The Burying** | safehouse, the clerk | someone died at the house lately | Dig at the edge of town (30 s): 3 Favor; a world record |
+| **The Burying** | safehouse, the clerk | someone died at the house lately | Dig the grave at the edge of town (hold, 15 s; a grave stands there after): 3 Favor; a world record |
 | **The Round** | safehouse, the clerk | [Nurse or Doctor], no medic, 4+ people | A minute at each bed (2 min): 4 Favor |
 | **The Newcomer** | safehouse, the clerk | the house took someone in this season day | A coat from the next town (20 s), or [Nurse or Doctor] check him over (30 s): 4 Favor |
 | **The Children's Hour** | safehouse | 5+ people, 08:00–17:00 | Watch the yard 5 real min: 4 Favor |
@@ -295,10 +381,10 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 | **Shift Change** | Bastion post | the relief fault | Wake the relief in a car at a road's verge 200–400 m out (10 s): 4 Favor, fixed. Report him: 1 Fame. Stand the post (3 min): 6 Favor, fixed |
 | **The Set** | Bastion post, the radio operator | the set fault, 17:30–20:30 | A battery: 5 Favor, fixed |
 | **The Wire** | Bastion post | a Bastion truck lost within 1.5 km in a season day, or a town at 50+ within 1.5 km; not Watched | Man the wire 5 min: 6 Favor |
-| **The Count** | Bastion post | a Bastion truck lost near, or the post short; Known | Count three stacks (30 s), then write what's there (6 Favor) or what they want (10 Favor; a world record) |
+| **The Count** | Bastion post | a Bastion truck lost near, or the post short; Known | Count three stacks at the table (hold, 9 s), then write what's there (6 Favor) or what they want (10 Favor; a world record) |
 | **The Bag** | Bastion post | night, Bastion morale under 40 | Put his letter in the mail bag: no pay; Bastion morale +1 |
 | **Fuel for the Post** | Bastion post | the post short after a lost truck | A fuel can: 6 Favor |
-| **The Latrine** (amends) | Bastion post | Watched or Stranger with Bastion | Dig it (30 s): Watched, amends; Stranger, 3 Favor |
+| **The Latrine** (amends) | Bastion post | Watched or Stranger with Bastion | Dig it: hold **Dig the latrine** (15 s) at the marked pit behind the post; the latrine screen stands there after: Watched, amends; Stranger, 3 Favor |
 | **Fuel for the Lorry** | Red Hand camp, the toll man | the Red Hand needs supplies | A fuel can: 6 Favor. Or say there's no fuel left |
 | **Medicine** | Red Hand camp (not the stronghold), the cook | always | Two tins for the still: 6 Favor |
 | **Short Change** | Red Hand camp, the lookout | Red Hand morale under 55; Known | Watch the collectors (a minute) and name him, or [Police or Ex-Con] pick him out (20 s): 8 Favor. Or watch and warn him: nothing |
@@ -344,7 +430,7 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **A Word to {house}** | house, the clerk | this house short, another lived-in house within 1.5 km fed | Carry the word to the other house: as it was said [Known], softened [Trusted - Haven], or with your own threat [Feared]: 5 Favor; which you chose is a world record |
 | **I'd Rather Be Wrong** | house | a house with a medic, the lab, before the cure; you're a Nurse, Doctor or Lab Tech | Go through the numbers [Doctor or Nurse], read them the labels [Lab Tech]: 3 Favor. Or agree |
 | **A Word for Me** | house | Champion with the Haven; the house's head alive | Speak to the head (10 s beside them): a world record, no vote moved. Or say you're no one to ask |
-| **The Truck Didn't Come** | aftermath, the storekeeper | this house's truck lost within 1.5 km in 2 played hours (never to whoever robbed it, or their group) | Salvage the wreck (30 s): 4 Favor, +2 food. [Known: Red Hand] ask a toll lad who: 3 Favor, a rumour naming no one |
+| **The Truck Didn't Come** | aftermath, the storekeeper | this house's truck lost within 1.5 km in 2 played hours (never to whoever robbed it, or their group) | Salvage the wreck (search it: hold, 9 s): 4 Favor, +2 food. [Known: Red Hand] ask a toll lad who: 3 Favor, a rumour naming no one |
 | **The Smoke Was Ours** | aftermath, a Bastion named person | shells within 1.5 km in 2 played hours (never to whoever called them) | Count at the impact (10 s): 5 Favor. Two rations to the nearest house: 1 Bastion Fame, 1 Haven Fame, +2 food there. Tell the Haven whose shells: a world record |
 | **Is It True?** | aftermath, a Haven named person | a rumour going round names a town within 1.5 km | Go and look (15 s): 4 Favor. Tell them it's true: the rumour runs 6 hours longer, no pay |
 | **The Letter Nobody Can Take** | lost, the Courier | a house that lost people lately, another lived-in house within 1.5 km | Carry it there: 4 Haven Favor. Or give it back |
@@ -355,19 +441,19 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **The Name on the Tag** | dead, the clerk | a death within 1.5 km in a season day (the background and how long they lasted, never the name), or the fallout of a Distress Call or Survivors Trapped whose people died | Leave the satchel on a cairn where they fell (10 s): 4 Favor. Or pin the line to the board. A fallout's **named body** at the job's site: take the ID (10 s, a carried item) and carry it in yourself: 4 Favor from the faction it names (a Red Hand crewman's: thanks only, crews don't bury their dead). A world record with an epilogue line (carrier: the board) |
 | **Not for the Crew** | crews, a Red Hand named person | a bite within 1 km in the last played hour, a Halcyon station within 1.5 km, before the cure | Walk him to the station: 4 Halcyon Favor, a world record. Your own antidote: 6 Red Hand Favor. Tell the book-keeper: 2 Red Hand Fame |
 | **Wildcard Money** | crews, a Red Hand named person | Wildcard or Tolerated with the Red Hand; another Red Hand holding within 1.5 km | Carry the cut there: 6 Favor; skim a little: 8 Favor; give it to a hungry house within 1.5 km: +2 food there, 2 Haven Fame, +8 Red Hand Infamy |
-| **Clean Slate** (amends) | any faction's named person | that faction Watches you | The worst shift going (a minute): amends |
+| **Clean Slate** (amends) | any faction's named person | that faction Watches you | The worst shift going: dig at the burial pit (hold, 15 s): amends |
 | **Dress Rehearsal** (disguises) | crews, a Red Hand named person; Known with the Red Hand, below Known with Bastion; disguises on | a Bastion road post within 2 km | Walk up to it in Bastion kit and pass the look, 10 s at the barrier, and walk back: 10 Favor, 2 Fame. At the barrier and not passing: it's over, and the open channel laughs at someone in borrowed green (no name) |
 | **The Officer's Coat** (house; disguises) | a Haven named person; you're disguised in Bastion kit; disguises on | a Bastion holding or post within 1.5 km | Tell her you're not Bastion (regard). Take the tin "for the paperwork": the house −1 food, a lie found by rumour (+3 Haven Infamy). [Known: Bastion] ask at the post yourself (10 s): 4 Favor, and her answer: *"On the roster as killed, or struck off? Which?"* |
 | **The Name on the Tape** (the dead; disguises) | a Bastion named person; Known with Bastion; disguises on | one of Bastion's people died within 1.5 km this season day and is still out there (the nail list, [REPUTATION.md](REPUTATION.md#whose-kit-it-was)); never to whoever killed them | Bring the tag and jacket home (15 s where they fell): 4 Favor, 1 Fame; the name is marked home and read on the nightly call. [Known: Red Hand] sell the jacket to the fence: 10 Red Hand Favor, and the board lists "kit lost". Once per dead name |
 | **Spot the Tells** (Bastion; disguises) | a Bastion named person; Known with Bastion; disguises on | two or more different players caught by Bastion within 2.5 km in the last 2 season days | Find the scout by the tells (20 s among the three on duty): right (always with a Soldier or Police background, else two times in three) 5 Favor, 2 Fame; wrong, Private Hollis spends the night in the stockade and nobody pays. [Known: Red Hand] take the scout's money and point at Hollis: 10 Red Hand Favor, 35% it comes out (+5 Bastion Infamy) |
-| **Paint** (the crews; disguises; with Name Day's Brush) | a Red Hand named person; Known with the Red Hand; disguises on | night, a Bastion road post within 2.5 km | Paint a red hand on the barrier (20 s there): in Bastion kit asking for a light (you must be passing as Bastion at the barrier, else it's over), from the back unseen, or in plain sight (Bastion's timed grudge and +3 Bastion Infamy). 2 Fame, the crew name Brush if you have none, and "a civilian with a paint tin" on Bastion's board |
+| **Paint** (the crews; disguises; with Name Day's Brush) | a Red Hand named person; Known with the Red Hand; disguises on | night, a Bastion road post within 2.5 km | Paint a red hand on the barrier (hold, 12 s): in Bastion kit asking for a light (you must be passing as Bastion at the barrier, else it's over), from the back unseen, or in plain sight (Bastion's timed grudge and +3 Bastion Infamy). 2 Fame, the crew name Brush if you have none, and "a civilian with a paint tin" on Bastion's board |
 | **Wrong Way Round** (the crews) | a Red Hand named person; Trusted with the Red Hand | a lived-in house within 2 km with no Red Hand holding within 1.5 km of it | Look at the house's backwards red hands (10 s there), then: tell the boss (2 Fame; the house loses a person; +5 Haven Infamy); take a cut (6 Haven Favor; 35% the house finds out, +5 Haven Infamy); warn them off (2 Haven Fame); recruit them (2 Fame; the house loses a person) |
 | **Laundry Day** (help across lines) | a Haven named person; Known with the Haven | a Haven and Bastion truce, a Bastion post and a Red Hand roadblock both within 1.5 km | Carry the uniforms' sack to the post (10 s there) the long way, never within 150 m of the roadblock (else the crew keeps it and it's over), or pay the toll twice (20 Red Hand Favor): 2 Haven Fame, 1 Bastion Fame, +2 food at the house. [Known: Red Hand] sell the sack at the roadblock: 15 Red Hand Favor, the house −2 food, 35% found out (+3 Haven Infamy) |
 | **Civvies** (help across lines) | a Haven named person | a Bastion holding within 3 km: a deserter struck off as KIA shelters at the house (a seeded name, never the finale's canon deserter) | Bring civilian clothes from the next town (20 s there): 2 Fame, +1 person. [Known: Red Hand] sell where the deserter sleeps (10 s with a runner): 10 Red Hand Favor, a rumour, and the back room is empty |
 | **Masks Off** (help across lines) | a Halcyon named person; Known with Halcyon | a house within 2 km took a bite declaration (its reason is up) | Find the beak at the house (15 s there), a Haven orderly selling samples: turn them in (2 Fame, coat 17 back in the record), let them go (2 Haven Fame), or take the coat (no good at Halcyon's looks; 35% the lab finds out, +3 Halcyon Infamy) |
 | **Notebook 31** (the dead; merged with His Notebook and Into the Record) | a Halcyon named person; disguises on | one of Halcyon's people died within 2 km this season and the coat and notebook are still out there; never to whoever killed them | Bring both back (15 s there): 2 Fame, the name on the authors' list at the change of shift. [Known: Red Hand] sell the notebook: 15 Red Hand Favor, 35% found out (+5 Halcyon Infamy). Keep it: its number is a cover detail at one Halcyon look |
 | **Vouch** (house; the two Vouch cards merged) | a Haven named person (Known with the Haven) or a Red Hand one (Trusted) | always: a newcomer, seeded | Speak for them: the record `vouched.<name>`. The Haven: +1 person; with the card's twist they steal (−1 food, +5 Haven Infamy on you). The Red Hand: one time in three he's selling to Bastion, a liability in the lie store (+5 Red Hand Infamy when found). [Ex-Con] ask about inside first: the truth, before you decide. Or don't vouch. No pay |
-| **You're the One** (champions) | a Haven named person; Champion with the Haven | always | Write his daughter's name in the council book (10 s): a line on the board. Or say you're no one: *"That's what the last one said."* No pay |
+| **You're the One** (champions) | a Haven named person; Champion with the Haven | always | Write his daughter's name in the council book (hold, 6 s): a line on the board. Or say you're no one: *"That's what the last one said."* No pay |
 | **Pay Packet** (backgrounds: Unemployed) | the clerk | a house of 6+, not short | Hand out the payroll (3 min): 4 Favor, 1 Fame |
 | **Behind the Red Door** (the lost) | a Haven named person; the Kid lives at this house, and you're Known with the Haven or he remembers you | the next town within 1.5 km | Find the red door (15–25 s there), then tell him the truth (4 Favor), bring him a thing from his room (4 Favor), or tell him she's coming: he waits at the gate at dusk from then on (a pinned local) |
 | **Somebody Should Tell Them** (the lost) | the clerk | the house lost people lately, the infected's ground within 1.5 km | Read the marks at their ground's edge unseen (15 s), [Hunter] tell them, or check the book of names (20 s): the reason `house.lost_to`; regard, no pay |
@@ -376,7 +462,7 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Professional Courtesy** (backgrounds: Raider) | a Red Hand named person | always | Give it straight: 4 Favor, 1 Fame. Steer him wrong: 2 Favor and a lie (+3 Red Hand Infamy when found). Tell Bastion at a post within 1.5 km: 2 Bastion Fame; a crew body seeing it, +6 Red Hand Infamy |
 | **A Debt Gone Quiet** (the crews) | a Red Hand named person; Feared band 2+ with anyone | a lived-in house within 1.5 km | Find him and lean on him (15 s there): 6 Favor, +3 Haven Infamy (he was paying for medicine). Pay it yourself (10 Favor): 1 Fame. Say he's dead: 3 Favor and a lie (+3 Red Hand Infamy when found) |
 | **Off the Report** (Bastion) | a Bastion named person; Known+ with Bastion, some Bastion Infamy | always | Lose the report: 4 Favor and a lie (+3 Bastion Infamy when found). Tell him to own it. [Soldier] tell him how to answer for it: 3 Favor, 1 Fame |
-| **Dress Uniform** (backgrounds: Soldier) | a Bastion named person; Soldier, Known with Bastion | a death within 2 km this season day | Fold it the regulation way (30 s): 4 Favor |
+| **Dress Uniform** (backgrounds: Soldier) | a Bastion named person; Soldier, Known with Bastion | a death within 2 km this season day | Fold it the regulation way at the table (hold, 12 s): 4 Favor |
 | **Borrowed Green** (help across lines; disguises) | a Haven named person | a bite declared at the house today, the lab, before the cure, a Bastion road post between the house and the lab within 1.5 km | Walk them round the post (180 m off it, 10 s); ask the sergeant straight (persuade 1 with Bastion); walk through in Bastion kit (you must pass their look at the barrier; not passing there ends it), or with disguises off pay their way (15 Bastion Favor). 8 Haven Favor, 2 Haven Fame; half the time the dose takes (+1 person); the record `errand.borrowed_green` |
 | **Both Doors** (backgrounds: Drifter) | a Bastion named person; Drifter, Known with all four | a Red Hand holding within 1.5 km | Carry true shift times both ways (5 s there): 5 Favor and 1 Fame from each. Give the crews a false one: 3 Favor and a lie (+3 Red Hand Infamy when found). Carry nothing, and say so |
 | **Character Reference** (help across lines) | any holding's named person; Known with them and another faction | always | Say what you've seen (a rumour from the other side's real morale): 3 Favor. Speak well or ill of them whatever the truth: a rumour, and a callback later |
@@ -393,12 +479,12 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Is She Gone?** (the infected) | a Haven named person | a pack within 1.5 km standing its vigil for a leader the house knew by name (the watching place at Traces' kill-site candle, L1, when one stands within 600 m of the lair) | Watch from the lair's edge, unseen (15 s): 4 Favor. [Elder] sit at supper while they say her name (a minute): 3 Favor, a record with an epilogue line |
 | **Boarded Up** (players' traces) | a Haven named person | a town within 1.5 km that nobody holds, at 30+ infection, with a player's barricade standing; or Traces' held-out house (V2) within 1.5 km, first | Bring the family out (10 s): +1 at the house, 4 Favor. Leave a tin there: 3 Favor. *"Their father sent word back with the lookout: whoever boarded that house, tell them it held."* (never the builder's name) |
 | **Old Habits** (backgrounds: Ex-Con) | a Bastion named person | a Red Hand camp within 1.5 km | Walk the wire and say where you'd come in (a minute at the gate): 5 Favor, 1 Fame. Tell him the wrong place: 3 Favor and a lie (+3 Bastion Infamy when found) |
-| **Names on the Call** (Bastion) | the radio operator | civilians sheltered at Bastion's posts this season (`bastion.sheltered`), a house within 1.5 km | Pin the list on the house's board (5 s there): 4 Favor |
+| **Names on the Call** (Bastion) | the radio operator | civilians sheltered at Bastion's posts this season (`bastion.sheltered`), a house within 1.5 km | Pin the list on the house's board (hold, 5 s; the notices stay up): 4 Favor |
 | **The Chalk on the Door** (the house) | the clerk | a town within 1.5 km with a work tally ([MISSIONS.md](MISSIONS.md#one-choice-jobs-and-work)) | Go and read the wall (15 s): 3 Favor. Say it's still true: 2 Favor and a lie |
 | **After the Noise** (aftermath) | the lookout | a horde passed a town within 1.5 km (the reason `horde.passed`) | Walk the edge unseen (20 s): 5 Favor. [Hunter] read the ground (10 s): 5 Favor |
 | **Last Orders** (the dead) | any holding's named person | one of their own leaders died within 3 km (the reason `leader.died`) | Bring his order book in unread (10 s at his seat): 4 Favor. [Known] read it on the way: 3 Favor and his last page, in his faction's voice |
-| **The New Number** (Halcyon) | a Halcyon named person | a cure milestone in the last season day (the reason `cure.<percent>`) | Paint the new number on the board at the gate (10 s): 3 Favor |
-| **The Last Apples** (the house) | the cook | Overrun or later, the house under two upkeeps, an empty village within 1.2 km | Pick the last of the orchard (30 s): 4 Favor, +2 food |
+| **The New Number** (Halcyon) | a Halcyon named person | a cure milestone in the last season day (the reason `cure.<percent>`) | Paint the new number on the board at the gate (hold, 10 s; the painted board stays): 3 Favor |
+| **The Last Apples** (the house) | the cook | Overrun or later, the house under two upkeeps, an empty village within 1.2 km | Pick the last of the orchard (hold, 9 s): 4 Favor, +2 food |
 | **Clean Glasses** (margin: The Book Has to Balance) | a Red Hand named person | the major waits for its settling day or its last page; not 16:00–21:00 | Six unbroken glasses from an empty village (30 s): 5 Favor |
 | **Count for the Sitting** (margin: Every Name) | the clerk | the major waits for a sitting; before 17:00; another house within 1.5 km | Carry the count before half past six (5 s there): 3 Favor; or carry it and say the house is hungrier than it says: 3 Favor, a record. It changes no vote |
 | **Hand to Hand** (margin: the Independent) | a Haven named person | the finale's routes are open, you've locked to none, a local at this house knows you | Promise: no pay, the local pinned, the record `errand.hands` with an epilogue line; six a player a season. Or don't. A promise moves no track. The finale can count them (`RZ_Errands.PromisedAt(house)`, `PromisedNear(pos, radius)`, by anyone or by one identity), and does: a promise eases one of the eight's yes ([FINALE.md](FINALE.md#the-rest-of-the-finale)) |
@@ -408,7 +494,7 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Chairs for the Reading** (margin: Proof) | Halcyon's technician or lab assistant | as Clean Paper | Carry the chairs from an empty village's hall (30 s): 4 Favor. Or tell her they can stand: no pay |
 | **The Kid's Inspection** (champions: Bastion) | a Bastion named person; Champion with Bastion | always | Look over his post at the gate (20 s): a rumour, no pay. Or say you're nobody's sergeant |
 | **A Story at the Fire** (champions: the Red Hand) | a Red Hand named person; Champion with the Red Hand | always | Tell it straight, or tell it bigger (a minute at the fire): a rumour either way, no pay. Or say there's nothing to tell |
-| **The Visitors' Log** (champions: Halcyon) | a Halcyon named person; Champion with Halcyon | always | Sign the log (10 s): a world record with an epilogue line, no pay. Or be put down as anonymous |
+| **The Visitors' Log** (champions: Halcyon) | a Halcyon named person; Champion with Halcyon | always | Sign the log (hold, 5 s): a world record with an epilogue line, no pay. Or be put down as anonymous |
 | **They Say You're With …** (lock card) | a Haven named person | you've locked to a route that isn't the Haven's, a local at this house knows you | Titled by your route (Bastion, the Red Hand, Halcyon; the Independent's: *They Say You're Doing It Yourself*). Talk it through; walk them to the next town, out of the stand's way; or carry one true word to your side. No pay; the local remembers |
 
 ### The epilogue deck
@@ -428,7 +514,7 @@ card (not the card's own beat).
 | **Carry the Dose** | epilogue, a named person of the faction whose rules hold | the route has dose outlets, before processing | Carry the sealed box to a holdout in an empty village (15 s at the door, where the holdout stands in the doorway while the box is on its way): 6 Favor, 1 Fame. Open it yourself: the dose, if you're bitten and haven't had an outlet dose this life; 10 Infamy with the giver's faction either way |
 | **Pack for the Queue** | epilogue, a Haven named person; Known with the Haven | the house has people and the queue stands, before processing | Fetch both things from their old house in an empty village (30 s): 4 Favor, 1 Fame. Bring one and say the other was gone (10 s): 2 Favor |
 | **Borrowed** | epilogue, the storekeeper or cook | this house short, a fed house within 1.5 km | Ask that house for it back (10 s at its gate): 4 Favor, 2 food comes back. Say you couldn't find them: nothing moves |
-| **Take a Name to the Board** | epilogue, a Haven named person | a named dead person still lying out within 4 km, the Names board stands | Write the name on the board (10 s there): 3 Favor, 1 Fame; the wall lists it as home, by you |
+| **Take a Name to the Board** | epilogue, a Haven named person | a named dead person still lying out within 4 km, the Names board stands | Write the name on the board (hold, 8 s): 3 Favor, 1 Fame; the wall lists it as home, by you |
 | **The Toll Man's Last Debt** | epilogue, a Red Hand named person | the Red Hand's route or its book balanced, a house within 3 km, before processing | Carry the tins to the house (at the gate): 5 Favor, +2 food there. Sell them back to the crew: 4 Favor, +5 Haven Infamy |
 | **Sign Here** | epilogue, a Bastion named person; Known with Bastion | Bastion's route on the roster or the column, the queue stands | Take three names at the queue (30 s): 5 Favor, 1 Fame. Write three yourself: 5 Favor; three in ten the corporal notices, +4 Bastion Infamy |
 | **Copies for the Far House** | epilogue, a Halcyon named person | Halcyon's route, the method published | Carry the method to the lived-in house farthest from the lab (10 s, unarmed: a gun in your hands there spoils it): 6 Favor, 1 Fame. Sell the copies to the fence: 6 Red Hand Favor, +5 Halcyon Infamy |
@@ -631,10 +717,10 @@ objective** is handed and tracked, and talking to the contact ends it and hands 
 | Step | Key | Way | The step |
 |---|---|---|---|
 | ✅ Outside the Door, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.next` | talk | "Talk to *the contact*.": never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
-| ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | 20 s (10 s) at a building 50–250 m from the contact (quiet), then back to them |
-| ✅ Water | `opening.water` | do | 15 s at the nearest well or water tower, then back |
+| ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | a building 50–250 m from the contact (quiet): hold **Search it, quietly** at the crate there (8 s; 6 s), then back to them (off: 20 s, 10 s there) |
+| ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), then back |
 | ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact, once you've chosen to on the talk screen (`opening.tend_cut`) |
-| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact once you've chosen to on the talk screen (`opening.tend_fever`); 15 s at the well |
+| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact once you've chosen to on the talk screen (`opening.tend_fever`); **Fill what you can carry** at the well (8 s) |
 | ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the contact once you've chosen to on the talk screen (`opening.tend_clock`, `opening.tend_clock_med`); 10 minutes before it lapses |
 | ✅ The Pump | `opening.pump` | do | 5 s at a petrol station's pump with fuel in a can |
 | ✅ Downwind | `opening.downwind` | sneak | 30 s within 25 m, only while hidden (`m_bUnseen`), quiet |

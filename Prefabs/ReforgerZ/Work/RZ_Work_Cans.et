@@ -1,0 +1,37 @@
+GenericEntity {
+ ID "0F90FDB29813E61B"
+ components {
+  RplComponent "{36C17334D507BE28}" {
+  }
+  Hierarchy "{58CB2CC45DA30ABB}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "B54630BE311B8F65"
+   components {
+    Hierarchy "{274B75B8A6CD9861}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 20 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "E317BF32EBDF81C4"
+   components {
+    Hierarchy "{B79C3324125EB1ED}" {
+    }
+   }
+   coords 0.6 0 0.2
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "EEB41E8665FAD86B"
+   components {
+    Hierarchy "{6E09DAC08A701D18}" {
+    }
+   }
+   coords 0.5 0 -0.4
+  }
+ }
+}

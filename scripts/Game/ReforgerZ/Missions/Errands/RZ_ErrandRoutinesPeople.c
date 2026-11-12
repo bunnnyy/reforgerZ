@@ -129,6 +129,7 @@ class RZ_Routine_SitWithHim : RZ_ErrandDef
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit with the bitten man at {here} and dress the bite properly (a minute).";
+		w.Work(RZ_EWork.CARE, "Dress the bite");
 		w.Done("He's easier. You can tell when someone knows what they're doing. So can he.");
 	}
 
@@ -414,6 +415,7 @@ class RZ_Routine_Sandbags : RZ_ErrandDef
 		w.m_fSeconds = 120;
 		w.m_fRadius = 20;
 		w.m_sStep = "Fill and stack sandbags at the gap by the gate of {here} (2 minutes).";
+		w.Work(RZ_EWork.SANDBAGS, "Fill and stack the sandbags", 18);
 		w.m_iFavor = 5;
 		w.Done("Regulation height. Near enough. Thank you.", "That'll stop a bullet. Not a big one. A polite one.");
 	}

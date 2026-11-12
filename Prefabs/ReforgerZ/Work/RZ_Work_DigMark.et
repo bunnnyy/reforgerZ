@@ -1,0 +1,29 @@
+GenericEntity {
+ ID "9D0F2B44765F6906"
+ components {
+  RplComponent "{D9958DE61BE97EF6}" {
+  }
+  Hierarchy "{8938CDC3ED82D054}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "92137BAE6AF8D7CA"
+   components {
+    Hierarchy "{7313F2937231EAEC}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "07F4E2455ADB5353"
+   components {
+    Hierarchy "{BCB5B3B83E31384F}" {
+    }
+   }
+   coords 0.6 0 0.3
+   angles 0 40 0
+  }
+ }
+}

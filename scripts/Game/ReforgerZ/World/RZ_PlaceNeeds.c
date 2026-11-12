@@ -740,6 +740,7 @@ class RZ_PlaceThings
 			case "prop.papers": return RZ_ErrandSettings.Get().Props().For(RZ_EErrandProp.PAPERS);
 			case "prop.parts": return RZ_ErrandSettings.Get().Props().For(RZ_EErrandProp.PARTS);
 			case "prop.car": return RZ_ErrandSettings.Get().Props().For(RZ_EErrandProp.CAR);
+			case "work.site": return RZ_SharedSettings.Get().WorkSites().m_sSitePrefab;
 		}
 
 		return "";
@@ -762,6 +763,7 @@ class RZ_PlaceThings
 			case "prop.papers": return "Missions > Errands > Props > Papers";
 			case "prop.parts": return "Missions > Errands > Props > Parts";
 			case "prop.car": return "Guidance > Car wreck prefab";
+			case "work.site": return "Shared > Work sites > Site prefab";
 		}
 
 		return key;
@@ -1261,6 +1263,12 @@ class RZ_PlaceNeeds
 		// the Long Table's farm, quartermasters, wanderers and the towns themselves
 		n = Add("world.place", "a holding, a safehouse, the lab, the Long Table, a wanderer or a town");
 		n.m_iFlags = RZ_EPlaceFlag.DRY | RZ_EPlaceFlag.MAINLAND;	// a town by the edge is by the line: that's the map
+
+		// Work sites (Missions/Blocks/RZ_WorkSites.c): the spot beside the thing a step says you work at
+		n = Add("work.site", "beside the thing you work at: its before look and its prompt");
+		n.Steep(25);
+		n.NotLocked();
+		n.Thing(RZ_EThingKind.SLOT, "the work site's prompt", "work.site", 0, "the step is done by staying there");
 
 		// Contracts and world events, questline stages and arcs (Missions/): checked when one starts
 		n = Add("mission", "at {town}: the town its brief names");
