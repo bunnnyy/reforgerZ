@@ -54,8 +54,8 @@ How the code does it:
 
   | Kind | Starts from |
   |---|---|
-  | Faction contracts, the hard edges, the packs' contracts, puzzle and unarmed contracts, Perimeter and Haven house contracts, Rein In, the arcs' contracts, questline and majors' stage missions | Its faction, in person: a leader's **Ask for work** (at a quartermaster, **Ask for whoever's in charge** first) offers every open contract of that faction you qualify for. The Haven's within 3 km are also offered on a safehouse radio (**Listen to the safehouse radio**) |
-  | A leader's own job (an Independent or Rogue leader's, or a questline's in-person stage such as The operator's tape) | That leader's **Ask for work**, at their seat |
+  | Faction contracts, the hard edges, the packs' contracts, puzzle and unarmed contracts, Perimeter and Haven house contracts, Rein In, the arcs' contracts, questline and majors' stage missions | Its faction, in person: a leader's or a quartermaster's first replies list every open contract of that faction, one reply each tagged [Job] or [Quest], those you can't take yet locked with what they need; picked, it's explained, and *I'll do it.* takes it ([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)). A safehouse radio (**Listen to the safehouse radio**) names the Haven's within 3 km, to take from the quartermaster there. Without the talk screen, a leader's **Ask for work** offers every one you qualify for at once |
+  | A leader's own job (an Independent or Rogue leader's, or a questline's in-person stage such as The operator's tape) | That leader, at their seat: first among their job replies (or their quartermaster's while they're in the chair) |
   | The car keys job, the Courier's letters, Barter Chain | The wanderer you ask |
   | A parley's amends job | The parley itself (reserved for you for the hour) |
   | A puzzle or arc no faction gives (The Deserter's Map) | Its thing: reading its clue makes it yours |
@@ -69,12 +69,13 @@ How the code does it:
   east of Levie, a few km north-west. Ask Sergeant Hale at Fort Kell, or at any Bastion
   quartermaster."* The spawn's *Radio* entry lists the world events and the work going, each with
   who to ask. Walking up to a quartermaster with work you could be offered gets one line
-  (*"There are 2 jobs going here. Ask for whoever's in charge."*), every 5 minutes at most. A
+  (*"There are 2 jobs going here. Talk to the quartermaster."*), every 5 minutes at most. A
   leader's own job is only heard of from the leader (*"A word, somewhere quieter..."*) or, for a questline's
   in-person stage, by word of mouth naming who to see.
 
-  **An offered job is yours:** it's on your Quests tab (*Offered* until you get there, then
-  taken). **Who's paid:** only players it was offered to, and anyone in their vanilla group, who
+  **A taken job is yours at once:** one conversation is enough, it's on your Quests tab (*Offered*
+  until you get there, then taken) and its start card shows ([UI.md](UI.md#notices)); a questline's
+  next stage sends the same card to everyone part of it. **Who's paid:** only players it was offered to, and anyone in their vanilla group, who
   meet the requirements when it ends. Anyone else who turns up hears *"Nobody asked you to. Bastion
   pays the people it hired."*
 - **Built from a few blocks:** hold an area, kill what the mission spawned, visit points, destroy
@@ -137,7 +138,7 @@ How the code does it:
 - **Mirror offers** ([DESIGN.md](DESIGN.md#story-blocks)): The Cache and The Armory are one class
   with two givers. One time in ten (**Missions > Story > Mirror chance**; off on a PvE server) the
   second side wants it too. Its eligible players hear 5 minutes later, with a rough area twice as
-  wide and who to ask: it's theirs once their own side offers it (a leader's **Ask for work**). The side with more holders at the end wins; a draw is half each, and neither leader counts
+  wide and who to ask: it's theirs once their own side offers it (its job reply at a leader or quartermaster). The side with more holders at the end wins; a draw is half each, and neither leader counts
   it. The losing side gets a line, never a fallout errand.
 - **Story jobs** ([DESIGN.md](DESIGN.md#story-blocks)): Protection Racket, Lost Colleague, Crash
   Site, Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout and Smuggler's Run,
@@ -805,7 +806,7 @@ which also holds what the three Bastion lines share.
 
 | # | Stage | Kind | Approaches | Leads to | Status |
 |---|---|---|---|---|---|
-| 1 | **The operator's tape** | Bastion contract, Known, in person from the commander (word reaches Bastion's Known players that he wants a word, not on the radio, as a Radio-tab line; the job is theirs when he offers it: **Ask for work**), only after the nightly call (at night); ★ Radio Op; 50 min; 12 Fame, 15 Favor | At the post: *talk* to the operator and take his tape, or *sneak*: copy it onto your own set while he isn't looking (a radio on you; no shots within 60 m and not noticed; seen, you take it openly). On the hill 0.7–1.6 km away (the radio mast, else the generic object): play it into the relay and stay within 30 m for 3 min (heat; a horde after the first minute; ★ Radio Op: twice as fast). The relay's log names the runner | Stage 2. Time up: once more; then, or with the commander gone, it fizzles | ✅ |
+| 1 | **The operator's tape** | Bastion contract, Known, in person from the commander (word reaches Bastion's Known players that he wants a word, not on the radio, as a Radio-tab line; the job is theirs when they take it from his job replies), only after the nightly call (at night); ★ Radio Op; 50 min; 12 Fame, 15 Favor | At the post: *talk* to the operator and take his tape, or *sneak*: copy it onto your own set while he isn't looking (a radio on you; no shots within 60 m and not noticed; seen, you take it openly). On the hill 0.7–1.6 km away (the radio mast, else the generic object): play it into the relay and stay within 30 m for 3 min (heat; a horde after the first minute; ★ Radio Op: twice as fast). The relay's log names the runner | Stage 2. Time up: once more; then, or with the commander gone, it fizzles | ✅ |
 | 2 | **The runner** | Bastion contract, Known, in the commander's voice (nobody's once he's gone); 60 min; 15 Fame, 15 Favor | A step chain through three towns 0.7–2.5 km apart: his satchel, his fire (2 infected), his body (5 infected, one a special). Reading the page on him ends it | Stage 3. Time up: once more | ✅ |
 | 3 | **Who reads it** | Bastion contract, Known; 60 min; 10 Fame, 10 Favor | The page (the mission item) is on the body. *Talk:* to the duty officer at the stronghold (Trusted, or ★ Soldier): the stove, +8 Bastion Fame and 30 Favor on top; or to the commander, held for the stage and standing in at his post: he reads it to his men. *Side with the Red Hand:* a crew boss's radio man at the nearest Red Hand seat within 6 km (else a Red Hand meeting point; not if the Red Hand is hostile to you): +5 Red Hand Fame, 40 Red Hand Favor, +8 Bastion Infamy, no pay. *Side with the Haven:* the chair's clerk at the Haven stronghold: +5 Haven Fame, no pay | Stage 4 on that branch (`orders.stove`, `.read`, `.mocked`, `.haven`). Lost or time up: once more | ✅ |
 | 4 | **Word gets round** | Wait | 2 hours of play or 12 real hours. Read: a headline, two men walked off the post. Open channel: a headline, "expended" on the open channel every hour | Stage 5. The commander gone (read), or no copy of the tape (stove): the ending at once | ✅ |

@@ -28,6 +28,8 @@ What you know rows), `Dialogue/Pack/` (generated). Server only, except the scree
 
 - [The talk screen](#the-talk-screen)
 - [No filler greeting](#no-filler-greeting)
+- [Jobs on the first replies](#jobs-on-the-first-replies)
+- [The order of the replies](#the-order-of-the-replies)
 - [Trees: hubs, topics and nodes](#trees-hubs-topics-and-nodes)
 - [Who talks](#who-talks)
 - [Checks and tags](#checks-and-tags)
@@ -90,26 +92,30 @@ rewrite them; it wraps them:
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
   the way out. On the screen each built reply is what you'd say, not the action's name
   (`Dialogue/RZ_TalkWords.c`, by the speaker's faction; the label itself stays the world prompt's and
-  the object menu's): a leader's Ask for work is *Got any work for me?* to Bastion and *Is there
-  anything the house needs doing?* at the Haven, Heard anything? *What's in the morning report?*, Rob
+  the object menu's): a leader's Heard anything? is *What's in the morning report?* to Bastion, Rob
   *Hand over the bag. Slowly, and nobody gets hurt.* A check or cost after a label ("Fix it
-  [Mechanic]") becomes the reply's tag, in front of the words. An errand's ways on offer are said as
-  what you agree to (*I'll fetch the cleaning kits.*, *Not now. Ask me again another time.*). The way
+  [Mechanic]") becomes the reply's tag, in front of the words. A job's reply is its title with its
+  kind in front ([below](#jobs-on-the-first-replies)). An errand's ways on offer are said as
+  what you agree to (*[Errand] I'll fetch the cleaning kits.*, *Not now. Ask me again another time.*). The way
   out is said to this person: *I'll let you get on.* (the Haven), *That's all for now.* (Bastion),
   *I'll be on my way.* (the Red Hand), *I won't keep you from your work.* (Halcyon), *Look after
   yourself. I have to go.* (a stranger), else *I'll be going.* How replies are written:
-  [WRITING.md](WRITING.md#talk). With Trees on, talk carries a leader's asks ([Hubs](#hubs-work-comes-out-of-talk)).
-- **A leader's job** (Ask for work said straight to them, not through a conversation): their own
-  job is explained first, in their voice: their intro, the brief and their sign-off, where it is,
-  what it pays (Favor and Fame) and the danger (off the stronghold's books, a rival who'll remember
-  you, your background's edge). Then the replies are *I'll do it.* and *Not today.*: yes hires you for
-  it (your Quests tab, and a short card), no leaves it with them (`RZ_Leaders.PitchWork`,
-  `TakeWork`). With no job of their own, the stronghold's contracts are listed, or there's nothing
-  today, as built. Through a conversation's `call:slot:0` the talk already led there: the job is
-  yours as built, its pitch the answer.
+  [WRITING.md](WRITING.md#talk). With Trees on, talk carries a leader's news and verdict ([Hubs](#hubs-work-comes-out-of-talk)); jobs never hide.
+- **A leader's jobs** are their first replies, one a job ([Jobs on the first
+  replies](#jobs-on-the-first-replies)): picking one has them explain it in their voice (their intro,
+  the brief and their sign-off, where it is, what it pays in Favor and Fame, and the danger: off the
+  stronghold's books, a rival who'll remember you, your background's edge). Then the replies are
+  *[Job] I'll do it.* and *Not today.*: yes takes it at once (your Quests tab and the start card), no
+  leaves it with them (`RZ_Leaders.PitchJob`, `TakeWork`). A conversation's `call:slot:0` (or
+  `offer:`) has them explain their first job for you the same way, then waits on your yes or no
+  (`PitchFirst`); with none, they say there's nothing today.
 - **A quartermaster or the medic** (`RZ_TalkStaff`): their name is their role ("The quartermaster",
   sub-line "The Haven - quartermaster - Morton"), no greeting (they have nothing to say until you
-  do), and their replies their own actions in the prefab's order, said as speech: **Trade** (*Show
+  do). A faction's quartermaster gives its work first: every job of the faction's here, one reply each,
+  locked with what it needs, and the seat leader's own job while they're in the chair ([Jobs on the
+  first replies](#jobs-on-the-first-replies)); picked, it's explained in the seat leader's words (the
+  faction's when nobody's in the chair) and *I'll do it.* takes it. Then their own actions in the
+  prefab's order, said as speech: **Trade** (*Show
   me what you've got.*, *I need to draw from stores.*...; opens the [shop
   screen](UI.md#the-shop-screen), while it's used), **Ask for whoever's in charge** (*Who's in charge
   here? I'd like a word.*; the seat's leader takes the conversation over in the same screen, topics
@@ -140,8 +146,81 @@ rewrite them; it wraps them:
   **Back.** as its way out (B and Esc too). Only at the hub, never in a node.
 - **Grey: nothing new.** A reply with nothing new behind it is grey and still works: a built reply
   you've picked in this conversation (forgotten when it ends); with Trees on, a topic or a choice
-  whose nodes you've seen through ([below](#trees-hubs-topics-and-nodes)). The screen's own rows
-  and the admins' are never grey.
+  whose nodes you've seen through ([below](#trees-hubs-topics-and-nodes)). The screen's own rows,
+  the admins' and a job's reply are never grey. There's no "heard" tag: a topic you've opened that
+  still has more in it looks like any other (the author's call: the tag showed on some topics and
+  not on others for reasons nobody could see); only the grey is left.
+- **Locked: what it needs.** A reply you can't take shows dim, with the object menu's lock before
+  it and what it needs after it ("Needs Known with Halcyon"), and does nothing when picked
+  ([UI.md](UI.md#the-talk-screen)).
+
+### Jobs on the first replies
+
+✅ The author's rule from play-testing: anyone who has work for you shows it on their first replies,
+plainly, never behind a topic, and says why when they have none. Code: `Dialogue/RZ_TalkJobs.c`, the
+adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockReason` and
+`ChoiceLock`, `RZ_Errands.TalkErrand`, `WayLock` and `HandIn`.
+
+- **One reply a job, tagged by its kind** in front, New Vegas style, in the engine's tag style:
+  **[Quest]** for a questline's or a major's stage, **[Job]** for a contract, a leader's own job and
+  a wanderer's job (the Courier's letters, Barter Chain), **[Errand]** for an errand. No event starts
+  by talk. The reply is the job's title: *[Job] Recover the Bus*, *[Quest] The Other Two: his number*,
+  *[Errand] Water for Morton*.
+- **Picking it explains it** (the pitch: what and why, where, the pay, the danger), and *I'll do it.*
+  takes it at once: it's on your Quests tab, the start card shows ([UI.md](UI.md#notices)), and that's
+  the whole of it: one conversation, no second talk, no world action after. *Not today.* leaves it
+  with them. An errand's offer is its giver's lines and its ways (each *[Errand] I'll ...*), as built
+  ([ERRANDS.md](ERRANDS.md#being-asked)).
+- **Locked when you can't take it yet**, with the job's own start check said short: *[Quest] The
+  Other Two: his number (Needs Known with Haven or Halcyon)*, *[Job] The Armory (Needs Trusted with
+  Bastion)*, "Needs a Lab Technician", "Not while Hunted with Red Hand", "Only for the bitten"
+  (`RZ_MissionRequirements.NeedFor`; a mission with its own rule says it in `LockReason`). A job kept
+  for someone else, or one you could never take, isn't listed.
+- **Nothing to give** shows too, locked with why: *Got any work for me? (Nothing today. Ask again
+  later)*, "You've taken all they have. Check your Quests", "They won't work with you" (attitude −2),
+  "Not while Hunted with Bastion"; at an errand giver *Anything need doing? (Nothing today. Ask again
+  tomorrow)* or their refusal ("Not while that lot's at the fence.", "You've your hands full already.
+  Finish what you've got."). A wanderer with no errand keeps *Need a hand?* open while Barter Chain
+  could start from them.
+- **Who shows what:**
+
+  | Giver | Their job replies |
+  |---|---|
+  | A stronghold or seat leader | Their own job (Independent or Rogue, a questline's in-person stage), then every open contract of their faction you can take (nearest and most pressing first), then the ones you can't yet, locked |
+  | A faction's quartermaster | The same list (the seat leader's own job while they're in the chair); the safehouse radio only names the Haven's, with "ask the quartermaster here" |
+  | A safehouse's or a holding's named person, a wanderer | The errand they have for you, named (looked at without dealing it: the one named is the one dealt when you pick it, while it's true); yours already: *[Errand] About Water for Morton.* or, its step done, *[Errand] It's done: Water for Morton.* |
+  | A mission's or a stage's person | Their choices move the job you're on (first in the list), each locked with what it needs (`ChoiceLock`: *Ask for Jonas Weber's number (Needs Known with Halcyon)*, a scene's rank, items and Favor, "Done already"); a hand-over is tagged by the job's kind (*[Quest] Hand over Bastion's rations*) and locked without the thing on you ("Needs the page on you") |
+  | A stranger, an opening's contact | Their ask's ways and their step, as built (both are errands handed in person) |
+
+- **Handing things in is talk.** With the talk screen on, a done errand is handed in with the giver's
+  *[Errand] It's done: ...* reply, not by walking up to them; something carried back must be on you
+  or a helper beside you, and is taken off them. A questline's hand-over (the page, the crates, the
+  sack, the black box, the fuel) is a reply on the person who takes it, which takes that very item
+  from your inventory. The ways that pay in items (*[Errand] I'll hand over two tins. [2 food]*) take
+  them when picked, and are locked without them ("Needs 2 food"; fuel is counted by the can, any
+  jerrycan, canister or fuel can whatever is in it, as errands always have: *simplified*, no litres).
+  Without the talk screen, the old world actions and being back near the giver
+  still work.
+- **Topics never carry a job** ([Hubs](#hubs-work-comes-out-of-talk)): a topic about their need still
+  shows, and its *I'll do it.* runs the same pitch, tagged and locked the same way (`JobTag`).
+
+### The order of the replies
+
+✅ The most pertinent first, for every speaker, in one place (`RZ_Dialogue.SendNode`, `ByRank`; each
+reply's `m_iRank`): a hub's replies are sorted by rank, keeping their order within a rank, and the way
+out is always last. A node's choices stay in the order they're written.
+
+| Rank | What | Examples |
+|---|---|---|
+| 1 | Moves or hands in a job you're on | *[Errand] It's done: ...*, a stage person's choices and hand-overs, a questline's topic (prio `quest`), the scenes' verbs |
+| 2 | A new job you can take | *[Job] Recover the Bus*, *[Errand] Water for Morton*, an errand's ways |
+| 3 | A job you can't take yet, locked | *[Quest] ... (Needs Known with Halcyon)*, *Got any work for me? (Nothing today...)* |
+| 4 | Trade, services, items, favours (a built reply's default) | Trade, the trial dose, the medic, Hand over food, Share some food, Make it right |
+| 5 | Information | Heard anything?, What do you make of me?, Ask how things are, the epilogue's questions, a topic of prio `ask`, `world` or `reaction` |
+| 6 | Small talk | A topic of prio `flavour` |
+
+A built reply's rank comes from its adapter, else from its label (`RZ_TalkNeeds.RankFor`); a topic's
+from its conversation's `prio`.
 
 ### No filler greeting
 
@@ -218,13 +297,17 @@ With Trees on, Talk opens a **hub**:
   A leader's greeting line for someone they've met is their **opening** in reputation's voice
   ([REPUTATION.md](REPUTATION.md#what-people-call-you)).
 - **Verbs:** the person's built replies, unchanged (Share some food, Rob, a shop, a service...),
-  less the ones a topic carries ([Hubs](#hubs-work-comes-out-of-talk)): the work, the news and what
-  they make of you come out of talk.
+  less the ones a topic carries ([Hubs](#hubs-work-comes-out-of-talk)): the news and what they make of
+  you come out of talk. Their jobs never hide: they stay first ([Jobs on the first
+  replies](#jobs-on-the-first-replies)).
 - **Topics:** every conversation for that kind of speaker whose `when` holds, in priority order
-  (quest, ask, world, reaction, flavour; flavour rotates on the speaker and the day). They fill the
-  list after the verbs, a page at a time on the screen ([above](#the-talk-screen)). A topic you've
-  opened that still has more in it is tagged "heard"; one with nothing new is grey. `once` topics
-  go for this life at that speaker, `daily` ones for a real day.
+  (quest, ask, world, reaction, flavour; flavour rotates on the speaker and the day). They take their place in
+  the list by rank ([The order of the replies](#the-order-of-the-replies)), a page at a time on the
+  screen ([above](#the-talk-screen)). A topic with nothing new is grey (no "heard" tag). `once`
+  topics go for this life at that speaker, `daily` ones for a real day.
+- **While they wait on your answer** (a job just explained, an errand's ways on offer), the hub shows
+  only that answer's replies, no topics; a choice that put the job to you lands there, wherever it was
+  going (`RZ_TalkSpeaker.Asking`).
 - **The way out**, always.
 
 A topic opens its first **node**: the speaker says one to three lines, and you pick a **choice**
@@ -249,6 +332,11 @@ wanderer's conversation heard is heard at the next).
 New Vegas style, nobody has a menu of "Ask for work / Heard anything? / What do you make of me?".
 A topic that runs a built reply (`call:slot:N` on one of its choices) **carries** it: while the topic
 shows, that reply hides from the hub (`RZ_DialogueTrees.CarryVerbs`) and is reached through the talk.
+**A job is never carried** (the author's rule): the job replies, an errand's ways and the errand
+reply stay first on the hub, and a topic about the work shows beside them; its choice that runs the
+job slot is tagged and locked like the reply ([Jobs on the first replies](#jobs-on-the-first-replies)).
+A leader's job slot isn't a reply at all (their jobs are listed one by one), so their work topics
+show as long as their `when` holds.
 The person brings up what's wrong in their own voice; you ask about it, dig (who, why, what's in it
 for them), push back, bargain or take a check; only then comes the choice that runs the built reply,
 so the job is the built mission or errand, dealt as built. A topic that carries a reply this person
@@ -259,10 +347,10 @@ callout), and a wanderer's slot 2 topic reads `wbitten`.
 
 | Speaker | What's carried, and by what |
 |---|---|
-| Every leader (4 factions, stronghold and seat) | **The job** (slot 0): two asks a faction, by its need (the Haven: the bowls half full, or what keeps them up; Bastion: the map table, or what needs doing at the wire; the Red Hand: who owes the book, or what's worth the fuel; Halcyon: what the count is short of, or what the lab needs). **The news** (slot 1): what the houses are saying, the morning report, what's going round, what the radio logs say. **What they make of you** (slot 2): if you're welcome, how you'd be logged, what the crew calls you, how they'd file you |
+| Every leader (4 factions, stronghold and seat) | **The work talk** (slot 0, their first job's pitch; the jobs themselves are the first replies): two asks a faction, by its need (the Haven: the bowls half full, or what keeps them up; Bastion: the map table, or what needs doing at the wire; the Red Hand: who owes the book, or what's worth the fuel; Halcyon: what the count is short of, or what the lab needs). **The news** (slot 1): what the houses are saying, the morning report, what's going round, what the radio logs say. **What they make of you** (slot 2): if you're welcome, how you'd be logged, what the crew calls you, how they'd file you |
 | Occupants | "Ask how things are" (slot 0), from what people are saying |
-| A safehouse's named residents (`resident:<role>`) | The errand (slot 1) and the house's news (slot 0), from their own work: the cook's supper, the lookout's roof, the storekeeper's count, the clerk's names |
-| Named people at holdings | The errand (slot 1) from their day or shift, by role and persona; "Ask how things are" (slot 0) from what's going round, with the patrol's or the lookouts' report |
+| A safehouse's named residents (`resident:<role>`) | The errand talk (slot 1; the errand itself is a first reply) and the house's news (slot 0), from their own work: the cook's supper, the lookout's roof, the storekeeper's count, the clerk's names |
+| Named people at holdings | The errand talk (slot 1; the errand itself is a first reply) from their day or shift, by role and persona; "Ask how things are" (slot 0) from what's going round, with the patrol's or the lookouts' report |
 | Wanderers (all but the Kid and the Mechanic) | "Need a hand?" (slot 2) from their own trouble: the Trader's trade, the Doctor's worries, what the Scavenger is after, whether the Deserter is followed, the Preacher's prayers, the Courier's late letters |
 
 Lines change with what's going on (the stage, the cure and the lock, the majors' acts, the epilogue,
@@ -295,7 +383,7 @@ behind it.
 
 | Speaker | `for` | Memory key | Built verbs |
 |---|---|---|---|
-| Stronghold leaders | `stronghold:<faction>`, `leader:<faction>`, `leader` | `leader:<seat>:<generation>` (someone new in the chair starts fresh) | Ask for work, Heard anything?, What do you make of me?; in the epilogue week About the season, Where should I look? and the grey choice's two answers |
+| Stronghold leaders | `stronghold:<faction>`, `leader:<faction>`, `leader` | `leader:<seat>:<generation>` (someone new in the chair starts fresh) | their jobs, one reply each ([below](#jobs-on-the-first-replies)), Heard anything?, What do you make of me?; in the epilogue week About the season, Where should I look? and the grey choice's two answers |
 | Seat leaders | `seat:haven/council_head`, `seat:bastion/outpost_lead`, `seat:redhand/crew_boss`, `seat:halcyon/field_lead`, `leader:<faction>`, `leader` | as above | as above (no grey choice) |
 | Wanderers | `wanderer:<role>` (trader, doctor, scavenger, deserter, preacher, courier, kid, mechanic), `wanderer` | `wanderer:<id>:<generation>` | the role's special, Share some food, the antidote while bitten (else Need a hand?, [errands](ERRANDS.md#the-wanderers-asks); the Mechanic: Ask about cars), Rob |
 | Safehouse occupants | `occupant` | `house:<index>` | Ask how things are |
@@ -330,7 +418,8 @@ greeting refuses, and no topics show (`RZ_DialogueTrees.Refuses`).
 
 Every check goes through `RZ_Checks` ([DESIGN.md](DESIGN.md#checks-and-ways)), and its tag is
 written by the engine from the check, never by the writer. **Tags show what a choice needs and
-costs, never what comes of it.**
+costs, never what comes of it**; the one tag about what a reply is, its job's kind ([Job], [Quest],
+[Errand]), says only that it starts a job ([Jobs on the first replies](#jobs-on-the-first-replies)).
 
 | Check | Tag | Score |
 |---|---|---|
@@ -343,6 +432,7 @@ costs, never what comes of it.**
 | `callout <lie key>` (a choice option) | [Evidence] | Shown only to a player who was told that lie and knows the truth ([Lies you're told](#lies-youre-told)) |
 | `cost favor:<faction> N` | [20 Haven Favor] | Dim with what it needs when you can't pay. Paid when picked |
 | `cost item:food*N` | [2 food] | Dim with "you have 1 food" when you can't. Taken when picked |
+| A choice that starts a job or opens its pitch (`call:slot:N` on the speaker's job slot, `offer:`, `begin:`) | [Job], [Errand], [Quest], in front of any other tag | Not a check: the job's kind, as on the hub's job replies. Dim with why when the slot has nothing for you now ("Nothing today. Ask again later") |
 
 A trait on the speaker can move a check one step (`easier:merciful`, `harder:paranoid`).
 Difficulty runs 1 to 4.
@@ -381,7 +471,7 @@ system's caps.
 | `call` (more) | `call:season`, `call:look`, `call:declare_bite`, `call:caught_bite`, `call:distress`, `call:net_word`, `call:net_lost`, `call:brief_public` | A leader's epilogue carriers, as built (the season at this seat; where to look); the safehouse's bite service, as built; a bite lie caught at a safehouse counts as caught hiding that bite; a distress caller sent to a house's gate; the word at the wire from Bastion's net; codes changed on an intruder ([The radio](#the-radio)); a giver's lie taken public ([DESIGN.md](DESIGN.md#story-blocks)). The lint holds each to its own speaker |
 | `decide` | `decide:all_in` | In a conversation with a `scene`: the pick waits 5 s for objections ([Several players](#several-players)), then writes the scene's record (who, which), once for the world |
 | `sway` | `sway:council.workers` | In a conversation with a `scene`: one contribution per player to a count its owner reads (`tally.<name>`) |
-| `offer` | `offer:leader_job` | A leader's personal job (the built Ask for work) |
+| `offer` | `offer:leader_job` | A leader's first job for you, explained, then your yes or no (`RZ_Leaders.PitchFirst`) |
 | `commit` | `commit:bastion` | The finale's lock, from a confirm node only ([The finale's commit](#the-finales-commit)) |
 | `promise` | `promise:house.tins@here:2h` | A promise to this speaker, in the words of the choice that made it ([Promises](#promises-and-callbacks)) |
 | `keep` | `keep:house.tins@here` | Keeps that promise, if it's open |
@@ -971,8 +1061,8 @@ always` (an ordinary lie, believable and never true).
 
 - *Simplified:* trees run only on the talk screen: with the talk screen off, there are no trees.
 - *Simplified:* greets are lines only (a greet that calls out puts its question as its line, and
-  the topics under it are the choices); "dimmed, not hidden" topics show grey, or a "heard" tag while
-  there's more in them.
+  the topics under it are the choices); "dimmed, not hidden" topics show grey once there's nothing
+  new in them.
 - *Simplified:* a built reply is grey only for the rest of the conversation you picked it in (the
   engine keeps no memory of built replies), whether or not its answer would change.
 - *Simplified:* a stage's or a contract's people keep their built choices as verbs; a conversation at

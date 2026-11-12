@@ -87,11 +87,17 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
 ## Being asked
 
 - **"Anything need doing?"** is the second reply on a named person (beside **Ask how things are**),
-  in the action menu or on the [talk screen](DIALOGUE.md#the-talk-screen). A wanderer's is **Need a
+  in the action menu or on the [talk screen](DIALOGUE.md#the-talk-screen). On the talk screen it names
+  what they have for you, first, tagged: *[Errand] Water for Morton* (yours already: *[Errand] About
+  Water for Morton.*, or *[Errand] It's done: ...* to hand it in), looked at without dealing it
+  (`RZ_Errands.TalkErrand`, `Deal`'s look-ahead; the one named is the one dealt when you pick it, while
+  it's still true), or shows locked with why (*Nothing today. Ask again tomorrow*, or the refusal
+  below) ([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)). A wanderer's is **Need a
   hand?**, in their free third slot (not on the Kid, the Mechanic, whose slot is Ask about cars, or
-  a bitten wanderer, whose slot is the antidote). With **Dialogue > Trees** both are reached inside
-  the person's own topic (the cook's supper, a sentry's shift, the Courier's late letters), not as a
-  reply of their own ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)); the deal is the same.
+  a bitten wanderer, whose slot is the antidote); with no errand it stays open while Barter Chain
+  could start from them. With **Dialogue > Trees** the person's own topic (the cook's supper, a
+  sentry's shift, the Courier's late letters) shows beside it and its *Put me to work* runs the same
+  ask; the errand reply never hides ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)).
 - **Waved over.** A safehouse's or holding's shown named person may call a passing player within
   30 m: *"You there. Have you got a minute? Something wants doing, when you're free."* Nothing more: the errand waits as their open offer (10 minutes),
   and they say what it is only when you ask **Anything need doing?** (jobs only by interaction,
@@ -106,13 +112,20 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   or until they pick or walk 20 m off; anyone else at the same person hears *"Give us a minute. I'm in the middle of something with someone else."*
 - **Not now** is always free: nothing is remembered, and the offer stands 10 minutes.
 - **On the talk screen** the ways are said as what you agree to (`RZ_TalkWords.Agree`): "Hand over
-  two tins" is *I'll hand over two tins.*, with its tag in front, and "Not now" is *Not now. Ask me
-  again another time.* ([WRITING.md](WRITING.md#talk)). The labels above stay the world prompt's.
+  two tins" is *[Errand] I'll hand over two tins.*, with [Errand] and its tags in front, and "Not now"
+  is *Not now. Ask me again another time.* ([WRITING.md](WRITING.md#talk)). A way you can't take shows
+  locked with what it needs (`RZ_Errands.WayLock`: *Needs Mechanic*, *Needs Trusted with Haven*,
+  *Needs 2 food*, *Needs 8 Haven Favor*); a Trust check or a threat isn't a lock, its tag shows the
+  score. While the ways show, the giver's topics wait (they're waiting on your answer). The labels
+  above stay the world prompt's.
 - **The reason in their voice.** Asked when nothing's true, or when it isn't safe, the giver says
   why: *"Not while that lot's at the fence."*, *"You've your hands full already."*, *"Nothing on the
   board for you. Check back after the shift change."*
 - **Every line is personal**: the giver's lines are spoken (subtitles, or the talk screen under the
   giver's name), the step and the pay are notices to that player only.
+- **Its cards:** taken, *Errand started: <title>* with the giver and the step and its direction; ended,
+  *Errand done: <title>* with the pay, *Errand failed: ...* or *Errand abandoned: ...* with why
+  ([UI.md](UI.md#notices)).
 - **When it ends**, a held errand is a past job in the holder's Journal
   ([UI.md](UI.md#notebook-journal)): done (the giver's thanks as its line), failed (late, lapsed,
   what you carried gone, you died) or abandoned (the world moved on, the fence instead, an opening's
@@ -197,8 +210,12 @@ place (a wreck, an impact, another house, the warning point at the line). A way 
 exist here isn't offered. You're at a place within the way's own radius or 15 m, whichever is wider,
 in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)).
 
-**Done** is coming back: to the giver's place, arriving as above (a wanderer: where they stand now), or
-asking them again. **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
+**Done** is coming back and handing it in, in their talk: the giver's *[Errand] It's done: <title>.*
+reply, first on their list ([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)); something you
+carried back has to be on you, or on a helper beside you (*"Where is it, then? Bring it here with
+you."*), and is taken off whoever has it (`RZ_Errands.HandIn`). Without the talk screen, and for a
+handed errand (an opening's step), arriving back (as above; a wanderer: where they stand now) is enough,
+as before. **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
 step was done, three at most.
 
 ## Pay: nothing for free
