@@ -886,7 +886,7 @@ while."*
 ### Burned land
 
 The fire system (`Interactions/RZ_Traps.c`) tells the tribes where things burn. An event's fire
-(Burning Town, a gas station) is no lair for 3 season days and no trail for 6 counted nights (about
+(Gas Station Fire) is no lair for 3 season days and no trail for 6 counted nights (about
 3 season days) within 150 m; a player's fire (a molotov, a doused doorway) is no lair for 3 season
 days and no trail for one counted night, so nobody keeps a corridor open with matches. Tribes whose
 range is near have their trails worked out again.

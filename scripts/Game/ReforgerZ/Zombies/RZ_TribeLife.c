@@ -1988,7 +1988,7 @@ class RZ_TribeLife
 
 	// ================================================================ Burned land (rule 23)
 	//------------------------------------------------------------------------------------------------
-	//! A fire (the fire system): an event fire (playerId <= 0: Burning Town, a gas station) gives no
+	//! A fire (the fire system): an event fire (playerId <= 0: Gas Station Fire) gives no
 	//! lair and no trail for 3 season days; a player's fire no lair for 3 season days and no trail for
 	//! one counted night, so nobody keeps a corridor open with matches. Fire within 50 m of a lair
 	//! disturbs it (+60), within 30 m burns it (+100) and marks whoever set it.
