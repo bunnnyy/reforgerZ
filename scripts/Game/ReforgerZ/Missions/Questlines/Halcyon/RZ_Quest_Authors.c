@@ -358,7 +358,7 @@ class RZ_Quest_Authors : RZ_Questline
 			case S_ANSWER:
 				return AfterAnswer(gm, run, outcome);
 			case S_OFFER:
-				return AfterOffer(run, outcome);
+				return AfterOffer(gm, run, outcome);
 			case S_READY:
 			{
 				if (outcome == OUTCOME_FAILED)
@@ -505,7 +505,7 @@ class RZ_Quest_Authors : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected int AfterOffer(RZ_QuestRun run, int outcome)
+	protected int AfterOffer(RZ_GameModeComponent gm, RZ_QuestRun run, int outcome)
 	{
 		if (outcome == OUT_BETRAYED)
 		{
