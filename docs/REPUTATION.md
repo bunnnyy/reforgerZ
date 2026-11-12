@@ -979,7 +979,11 @@ vouch bans you for 2 hours too. Without a vouch everyone is checked on their own
 restart:** the marks on pieces players wear are saved by the wearer's identity and the piece's prefab,
 and go back on a worn piece of that prefab and faction (without a mark) when that identity is next read
 wearing it (vanilla persistence brings the kit back; VERIFY a worn piece's root parent is the character).
-A piece lying in the world forgets its mark.
+A piece in storage or on the ground can't be found again on its entity, so it doesn't launder by a
+restart: each mark of that kind (a dead man's, off the turned, signed for) leaves a slot by faction and
+prefab, and the first unmarked piece of that prefab read on someone after the restart is of **unknown
+origin**: −1 at their look (*[Unknown origin -1]*), for 3 real days. Bought fair or signed for since,
+it carries its new mark instead.
 
 | Kind | How a piece gets it | At their look | Elsewhere |
 |---|---|---|---|

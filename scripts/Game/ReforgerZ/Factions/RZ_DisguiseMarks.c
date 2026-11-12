@@ -99,6 +99,7 @@ class RZ_DisguiseSave
 	ref array<int> lookCounts = {};
 	ref array<string> caughtIdents = {};
 	ref array<ref RZ_KitMarkSave> worn = {};		// marks on worn pieces at the save (across a restart)
+	ref array<ref RZ_KitMarkSave> lost = {};		// marks on pieces in storage or on the ground at the save
 }
 
 //------------------------------------------------------------------------------------------------
@@ -109,6 +110,7 @@ class RZ_DisguiseMarks
 	static const int SIGNED = 3;
 	static const int FAIR = 4;
 	static const int GIVEN = 5;
+	static const int UNKNOWN = 6;	// after a restart: unmarked kit of a prefab whose mark was lost off a body
 
 	static const int HOW_INFECTED = 0;	// died to the infected or nobody saw who
 	static const int HOW_KILLED = 1;	// a player's shot
@@ -133,6 +135,8 @@ class RZ_DisguiseMarks
 	protected ref array<ref RZ_KitMark> m_aMarks = {};
 	protected ref RZ_DisguiseSave m_Data = new RZ_DisguiseSave();
 	protected ref array<string> m_aPutBack = {};	// saved marks already put back (PutBackKey)
+	protected ref array<ref RZ_KitMarkSave> m_aLostLeft = {};	// lost at the last restart, not yet read on anyone
+	protected static const int LOST_DAYS = 3;		// a lost mark's slot lasts this many real days
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_DisguiseMarks(RZ_GameModeComponent gm, RZ_Disguise disguise)
@@ -189,6 +193,19 @@ class RZ_DisguiseMarks
 		if (!m_Data.worn)
 			m_Data.worn = {};
 
+		if (!m_Data.lost)
+			m_Data.lost = {};
+
+		// Marks on pieces nobody wore at the save can't be found again on their entities: each one
+		// leaves a slot, and the first unmarked piece of that faction and prefab read on someone
+		// after the restart is of unknown origin
+		m_aLostLeft.Clear();
+		foreach (RZ_KitMarkSave l : m_Data.lost)
+		{
+			if (l && !l.prefab.IsEmpty())
+				m_aLostLeft.Insert(l);
+		}
+
 		EnsureCounts();
 	}
 
@@ -239,6 +256,88 @@ class RZ_DisguiseMarks
 
 		m_aPutBack.Clear();
 		m_Data.worn = keep;
+		SaveLost();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A slot per mark that would be lost at a restart: a dead man's, off the turned, or signed for,
+	//! on a piece nobody wears (in storage or on the ground), plus the slots from the last restart
+	//! not read on anyone yet. At most 200, each for LOST_DAYS real days.
+	protected void SaveLost()
+	{
+		array<ref RZ_KitMarkSave> lost = {};
+		int now = RZ_SeasonClock.Now();
+		foreach (RZ_KitMarkSave left : m_aLostLeft)
+		{
+			if (lost.Count() < MAX_MARKS && now - left.unix < LOST_DAYS * 86400)
+				lost.Insert(left);
+		}
+
+		PlayerManager pm = GetGame().GetPlayerManager();
+		foreach (RZ_KitMark m : m_aMarks)
+		{
+			if (lost.Count() >= MAX_MARKS)
+				break;
+
+			if (!m.m_Item || (m.m_iKind != DEAD && m.m_iKind != TURNED && m.m_iKind != SIGNED))
+				continue;
+
+			IEntity root = m.m_Item.GetRootParent();
+			if (root && root != m.m_Item && pm.GetPlayerIdFromControlledEntity(root) > 0)
+				continue;
+
+			RZ_KitMarkSave l = new RZ_KitMarkSave();
+			l.prefab = RZ_Util.GetPrefabName(m.m_Item);
+			l.kind = m.m_iKind;
+			l.f = m.m_iFaction;
+			l.unix = now;
+			if (!l.prefab.IsEmpty())
+				lost.Insert(l);
+		}
+
+		m_Data.lost = lost;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pieces of `f`'s kit this character wears whose origin is unknown: marked so already, or an
+	//! unmarked piece of a prefab a mark was lost on at the last restart (that slot is used up and
+	//! the piece marked). Bought fair or signed for since, a piece has its new mark instead.
+	int UnknownOf(IEntity character, int f)
+	{
+		if (!character)
+			return 0;
+
+		array<IEntity> pieces = {};
+		WornOf(character, f, pieces);
+		int count = 0;
+		foreach (IEntity piece : pieces)
+		{
+			RZ_KitMark m = Find(piece);
+			if (m)
+			{
+				if (m.m_iKind == UNKNOWN)
+					count++;
+
+				continue;
+			}
+
+			if (m_aLostLeft.IsEmpty())
+				continue;
+
+			string prefab = RZ_Util.GetPrefabName(piece);
+			for (int i = 0; i < m_aLostLeft.Count(); i++)
+			{
+				if (m_aLostLeft[i].f != f || m_aLostLeft[i].prefab != prefab)
+					continue;
+
+				m_aLostLeft.Remove(i);
+				Mark(piece, UNKNOWN, f, "", "");
+				count++;
+				break;
+			}
+		}
+
+		return count;
 	}
 
 	//------------------------------------------------------------------------------------------------
