@@ -47,7 +47,7 @@ make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-63 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+72 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
@@ -59,6 +59,7 @@ transparent background, so the game can tint them. Every icon with its intended 
 | Map markers | 10 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, and the range ring. Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
 | Items | 18 | key, sample, antidote, stabiliser, low-grade med, noisemaker, battery, tyre, spark plugs, fuel can, wind-up radio, molotov, bandage, tin-can tripwire, spike trap, purification tablets, planks, jewellery |
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
+| Standing and needs | 9 | the Standing page's Favor (a coin), leader met, their kit, the next name and how they see you; four of a faction's needs (food, people, security, revenge; supplies and samples use `status_shortage` and `item_sample`) |
 
 **Files.** Sources in `UI/Icons/src/`. White PNGs at 64 and 128 px in `UI/Icons/png/64/` and
 `png/128/`. Coloured map and emblem variants (25, with a dark backing behind the plated markers'
@@ -67,8 +68,9 @@ cut-out glyphs, and one per faction for strongholds, outposts and quartermasters
 Chromium, nothing else). The game reads the white icons from one atlas,
 `UI/Textures/ReforgerZ/RZ_Icons.edds`, through the `RZ_Icons` imageset: after re-rendering, pack
 them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). The atlas
-PNG holds all 62; the imported `.edds` and the imageset are still the 61 before the range ring until
-it's imported again (steps 2 and 3 there).
+PNG and the imageset hold all 72; the imported `.edds` is still the 63 before the Standing page's
+nine until the PNG is imported again (step 2 there). The nine were rendered with headless Chrome the
+way `render_ui.js` does (no Playwright on the author's PC), so the contact sheet doesn't show them yet.
 
 ## Screens
 

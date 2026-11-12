@@ -376,5 +376,59 @@
   "category": "Status and HUD",
   "use": "A forced door (crowbar: noise, and the lock is broken)",
   "plate": false
+ },
+ {
+  "name": "standing_favor",
+  "category": "Standing and needs",
+  "use": "Favor: a stamped coin. The Standing page's Favor column",
+  "plate": false
+ },
+ {
+  "name": "standing_leader",
+  "category": "Standing and needs",
+  "use": "A leader you have met: a bust with rank chevrons. The Standing page's leaders column and its Leaders you've met block",
+  "plate": false
+ },
+ {
+  "name": "standing_kit",
+  "category": "Standing and needs",
+  "use": "Their kit: a jacket. The Standing page's kit column (tinted by what they make of you in it) and its In their kit block",
+  "plate": false
+ },
+ {
+  "name": "standing_next",
+  "category": "Standing and needs",
+  "use": "The next name up: two chevrons. The Standing page's Next line",
+  "plate": false
+ },
+ {
+  "name": "standing_word",
+  "category": "Standing and needs",
+  "use": "How they see you: a speech bubble with quote marks. The Standing page's How they see you block",
+  "plate": false
+ },
+ {
+  "name": "need_food",
+  "category": "Standing and needs",
+  "use": "A faction needs food: a tin can. The Standing page's need column",
+  "plate": false
+ },
+ {
+  "name": "need_people",
+  "category": "Standing and needs",
+  "use": "A faction needs people: two figures. The Standing page's need column",
+  "plate": false
+ },
+ {
+  "name": "need_ammo",
+  "category": "Standing and needs",
+  "use": "A faction needs security: three rounds. The Standing page's need column",
+  "plate": false
+ },
+ {
+  "name": "need_revenge",
+  "category": "Standing and needs",
+  "use": "A faction wants revenge: a dagger. The Standing page's need column",
+  "plate": false
  }
 ]

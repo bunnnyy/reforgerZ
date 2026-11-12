@@ -1,6 +1,6 @@
 # ReforgerZ icons
 
-The icon set for the ReforgerZ UI: 63 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
+The icon set for the ReforgerZ UI: 72 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
 
 - **Sources:** `src/<name>.svg`, hand-written, 64×64 viewBox, one colour (`currentColor`), 4-unit strokes, transparent background.
 - **Mono exports:** `png/64/` and `png/128/`, white on transparent so the game can tint them (`ImageWidget.SetColor`).
@@ -102,3 +102,19 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/status_door_locked.svg" width="32"> | `status_door_locked` | A locked door (needs its key, or force it) |
 | <img src="src/status_door_unlocked.svg" width="32"> | `status_door_unlocked` | An unlocked door (you have the key, or it was opened) |
 | <img src="src/status_door_forced.svg" width="32"> | `status_door_forced` | A forced door (crowbar: noise, and the lock is broken) |
+
+## Standing and needs (9)
+
+The Standing page's columns and blocks, and what a faction needs. The other two needs use icons above: supplies `status_shortage`, samples `item_sample`.
+
+| Icon | Name | Use |
+|---|---|---|
+| <img src="src/standing_favor.svg" width="32"> | `standing_favor` | Favor: a stamped coin. The Standing page's Favor column |
+| <img src="src/standing_leader.svg" width="32"> | `standing_leader` | A leader you have met: a bust with rank chevrons. The Standing page's leaders column and its *Leaders you've met* block |
+| <img src="src/standing_kit.svg" width="32"> | `standing_kit` | Their kit: a jacket. The Standing page's kit column (tinted by what they make of you in it) and its *In their kit* block |
+| <img src="src/standing_next.svg" width="32"> | `standing_next` | The next name up: two chevrons. The Standing page's *Next* line |
+| <img src="src/standing_word.svg" width="32"> | `standing_word` | How they see you: a speech bubble with quote marks. The Standing page's *How they see you* block |
+| <img src="src/need_food.svg" width="32"> | `need_food` | A faction needs food: a tin can |
+| <img src="src/need_people.svg" width="32"> | `need_people` | A faction needs people: two figures |
+| <img src="src/need_ammo.svg" width="32"> | `need_ammo` | A faction needs security: three rounds |
+| <img src="src/need_revenge.svg" width="32"> | `need_revenge` | A faction wants revenge: a dagger |
