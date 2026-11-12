@@ -1406,6 +1406,10 @@ class RZ_JournalPage : RZ_NotebookPage
 		if (RZ_UIText.Int(m, 8) < 0)
 			return "It depends on how it ends.";
 
+		// A job that pays nothing (Where the Work Is): say so, not "About 0 Fame and 0 Favor"
+		if (giver >= 0 && RZ_UIText.Int(m, 10) <= 0 && RZ_UIText.Int(m, 11) <= 0)
+			return "No pay. It shows you the way, that's all.";
+
 		if (giver >= 0)
 			return string.Format("About %1 Fame and %2 Favor with %3", RZ_UIText.Str(m, 10), RZ_UIText.Str(m, 11), RZ_Factions.GetNameInText(giver));
 
@@ -1616,7 +1620,9 @@ class RZ_QuestsPage : RZ_JournalPage
 
 	//------------------------------------------------------------------------------------------------
 	//! By group (the season's story, questlines and jobs, errands); in each, the jobs you've taken
-	//! first, then the ones offered, each in the server's order.
+	//! first, then the ones offered, each in the server's order. The season's story lists only the
+	//! majors you took part in: the others are everyone's story (The season tab), not your jobs, and
+	//! the tracker can't follow them.
 	override protected void Collect(array<ref array<string>> rows)
 	{
 		for (int rank = 0; rank < 3; rank++)
@@ -1626,6 +1632,9 @@ class RZ_QuestsPage : RZ_JournalPage
 				if (GroupRank(taken) == rank && RZ_UIText.Int(taken, 13) == 1)
 					m_aMissions.Insert(taken);
 			}
+
+			if (rank == 0)
+				continue;
 
 			foreach (array<string> offered : rows)
 			{
