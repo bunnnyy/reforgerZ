@@ -1,0 +1,17 @@
+# name x z gate_x gate_z: written by render.py --placed for the Workbench plugin ReforgerZ: Fly to the next site
+Haven_stronghold_28-62 2816.4 6304.3 2855.9 6273.6
+Bastion_stronghold_51-40 5106.0 4039.3 5156.0 4038.4
+RedHand_stronghold_59-95 5966.4 9542.4 5951.3 9562.3
+Halcyon_stronghold_12-59 1249.2 5944.1 1294.4 5922.7
+Haven_outpost_62-77 6260.2 7762.5 6285.2 7764.1
+Haven_outpost_49-90 4983.4 9099.7 4955.5 9071.1
+Haven_outpost_55-52 5495.1 5301.3 5511.1 5337.9
+Bastion_outpost_61-43 6152.5 4369.6 6177.0 4374.5
+Bastion_outpost_88-27 8806.7 2740.3 8832.6 2709.9
+Bastion_outpost_75-42 7587.1 4327.7 7547.2 4330.4
+RedHand_outpost_74-47 7433.3 4687.5 7410.1 4696.9
+RedHand_outpost_52-63 5253.4 6313.8 5222.3 6288.7
+RedHand_outpost_68-88 6876.6 8855.2 6889.7 8876.5
+Halcyon_outpost_28-48 2869.1 4865.3 2895.3 4895.5
+Haven_safehouse_92-54 9205.1 5456.1 9214.2 5432.8
+Haven_safehouse_67-56 6740.8 5667.9 6752.3 5693.4

@@ -1,0 +1,814 @@
+{
+ "version": 1,
+ "source": "tools/runtime_test/run.sh sites (the dedicated server's boxes; the Workbench plugin ReforgerZ: Measure prop footprints writes the same)",
+ "props": {
+  "Antenna_R161_01.et": {
+   "w": 7.599,
+   "d": 6.583,
+   "h": 13.139,
+   "ox": -0.0,
+   "oz": 1.095,
+   "feet": false
+  },
+  "Armchair_01.et": {
+   "w": 0.71,
+   "d": 0.868,
+   "h": 1.03,
+   "ox": -0.0,
+   "oz": -0.037,
+   "feet": true
+  },
+  "BarrelMetal_01_blue.et": {
+   "w": 0.759,
+   "d": 0.762,
+   "h": 1.104,
+   "ox": 0.0,
+   "oz": -0.001,
+   "feet": true
+  },
+  "BarrelMetal_01_grey.et": {
+   "w": 0.759,
+   "d": 0.762,
+   "h": 1.1,
+   "ox": 0.0,
+   "oz": -0.001,
+   "feet": true
+  },
+  "BarrelMetal_01_rust.et": {
+   "w": 0.759,
+   "d": 0.762,
+   "h": 1.1,
+   "ox": 0.0,
+   "oz": -0.001,
+   "feet": true
+  },
+  "BasketLaundry_01.et": {
+   "w": 0.747,
+   "d": 0.494,
+   "h": 0.571,
+   "ox": -0.001,
+   "oz": 0.0,
+   "feet": true
+  },
+  "BeerBottle_01_empty_brown.et": {
+   "w": 0.085,
+   "d": 0.082,
+   "h": 0.26,
+   "ox": -0.002,
+   "oz": 0.0,
+   "feet": true
+  },
+  "BeerBottle_01_group.et": {
+   "w": 0.446,
+   "d": 0.325,
+   "h": 0.281,
+   "ox": -0.002,
+   "oz": -0.0,
+   "feet": true
+  },
+  "BlanketBeach_01_brown.et": {
+   "w": 1.923,
+   "d": 1.735,
+   "h": 0.061,
+   "ox": 0.007,
+   "oz": 0.02,
+   "feet": true
+  },
+  "BlanketBeach_01_red.et": {
+   "w": 1.923,
+   "d": 1.735,
+   "h": 0.061,
+   "ox": 0.007,
+   "oz": 0.02,
+   "feet": true
+  },
+  "BlanketFolded_01_green.et": {
+   "w": 0.431,
+   "d": 0.335,
+   "h": 0.07,
+   "ox": -0.029,
+   "oz": -0.016,
+   "feet": true
+  },
+  "Bucket_01.et": {
+   "w": 0.43,
+   "d": 0.416,
+   "h": 0.403,
+   "ox": -0.0,
+   "oz": 0.001,
+   "feet": true
+  },
+  "Bucket_02.et": {
+   "w": 0.43,
+   "d": 0.416,
+   "h": 0.403,
+   "ox": -0.0,
+   "oz": 0.001,
+   "feet": true
+  },
+  "BunkBed_01_Mattress.et": {
+   "w": 0.905,
+   "d": 0.806,
+   "h": 0.152,
+   "ox": 0.007,
+   "oz": -0.0,
+   "feet": true
+  },
+  "CabinetMedical_01.et": {
+   "w": 0.907,
+   "d": 0.55,
+   "h": 1.772,
+   "ox": 0.0,
+   "oz": 0.021,
+   "feet": true
+  },
+  "CamoNet_Small_US.et": {
+   "w": 13.639,
+   "d": 12.527,
+   "h": 5.634,
+   "ox": 0.121,
+   "oz": -0.164,
+   "feet": false
+  },
+  "CandleHolderDecorative_01.et": {
+   "w": 0.156,
+   "d": 0.156,
+   "h": 0.369,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "ChairOld_01.et": {
+   "w": 0.486,
+   "d": 0.565,
+   "h": 1.002,
+   "ox": 0.013,
+   "oz": 0.036,
+   "feet": true
+  },
+  "ChairOld_02.et": {
+   "w": 0.47,
+   "d": 0.466,
+   "h": 1.001,
+   "ox": -0.0,
+   "oz": -0.002,
+   "feet": true
+  },
+  "Chair_01_white.et": {
+   "w": 0.477,
+   "d": 0.563,
+   "h": 1.017,
+   "ox": 0.0,
+   "oz": -0.034,
+   "feet": true
+  },
+  "ChalkBoard_01.et": {
+   "w": 2.227,
+   "d": 0.36,
+   "h": 2.126,
+   "ox": 0.001,
+   "oz": 0.115,
+   "feet": true
+  },
+  "ClotheslineFrame_01.et": {
+   "w": 2.432,
+   "d": 0.08,
+   "h": 2.777,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": false
+  },
+  "ClotheslinePole_01.et": {
+   "w": 1.564,
+   "d": 0.107,
+   "h": 2.928,
+   "ox": 0.002,
+   "oz": -0.019,
+   "feet": false
+  },
+  "CrateWooden_01_plain.et": {
+   "w": 0.879,
+   "d": 1.455,
+   "h": 0.834,
+   "ox": -0.001,
+   "oz": 0.001,
+   "feet": true
+  },
+  "CrateWooden_02_1x1x1.et": {
+   "w": 1.006,
+   "d": 1.009,
+   "h": 1.008,
+   "ox": 0.0,
+   "oz": 0.002,
+   "feet": true
+  },
+  "DeckChair_01_ochre.et": {
+   "w": 0.755,
+   "d": 1.006,
+   "h": 1.151,
+   "ox": -0.0,
+   "oz": -0.045,
+   "feet": true
+  },
+  "DeerSkull_01_board.et": {
+   "w": 1.146,
+   "d": 0.651,
+   "h": 1.098,
+   "ox": -0.001,
+   "oz": -0.325,
+   "feet": false
+  },
+  "DogHouse_01.et": {
+   "w": 0.897,
+   "d": 1.086,
+   "h": 0.941,
+   "ox": 0.003,
+   "oz": 0.003,
+   "feet": true
+  },
+  "FileOffice_01_Stack.et": {
+   "w": 0.258,
+   "d": 0.293,
+   "h": 0.308,
+   "ox": 0.004,
+   "oz": 0.015,
+   "feet": true
+  },
+  "Fireplace_01.et": {
+   "w": 1.467,
+   "d": 1.408,
+   "h": 0.396,
+   "ox": 0.055,
+   "oz": 0.08,
+   "feet": false
+  },
+  "FlagPole_01_empty.et": {
+   "w": 0.134,
+   "d": 0.282,
+   "h": 6.814,
+   "ox": -0.001,
+   "oz": -0.073,
+   "feet": false
+  },
+  "FlowerpotFlowers_01_begonia_white.et": {
+   "w": 0.28,
+   "d": 0.273,
+   "h": 0.265,
+   "ox": 0.002,
+   "oz": -0.001,
+   "feet": true
+  },
+  "ForestBench_01.et": {
+   "w": 2.223,
+   "d": 2.027,
+   "h": 1.146,
+   "ox": 0.002,
+   "oz": -0.007,
+   "feet": false
+  },
+  "GeneratorPortable_US_01_Off.et": {
+   "w": 0.525,
+   "d": 0.987,
+   "h": 0.815,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "Guitar_01.et": {
+   "w": 0.439,
+   "d": 1.178,
+   "h": 0.122,
+   "ox": 0.002,
+   "oz": -0.001,
+   "feet": true
+  },
+  "Hutch_01.et": {
+   "w": 3.473,
+   "d": 1.088,
+   "h": 2.036,
+   "ox": 0.033,
+   "oz": -0.011,
+   "feet": true
+  },
+  "Junk_01_pile_small.et": {
+   "w": 3.618,
+   "d": 2.824,
+   "h": 0.339,
+   "ox": 0.058,
+   "oz": 0.04,
+   "feet": true
+  },
+  "Junk_01_single_mattress.et": {
+   "w": 2.22,
+   "d": 2.279,
+   "h": 0.514,
+   "ox": -0.306,
+   "oz": 0.009,
+   "feet": true
+  },
+  "Junk_01_single_planks.et": {
+   "w": 2.185,
+   "d": 4.719,
+   "h": 0.285,
+   "ox": -0.05,
+   "oz": 0.103,
+   "feet": true
+  },
+  "LampKerosene_01_green.et": {
+   "w": 0.198,
+   "d": 0.176,
+   "h": 0.4,
+   "ox": 0.0,
+   "oz": -0.002,
+   "feet": true
+  },
+  "LanternMilitary_US_01.et": {
+   "w": 0.172,
+   "d": 0.158,
+   "h": 0.354,
+   "ox": 0.001,
+   "oz": 0.0,
+   "feet": true
+  },
+  "LitterInterior_USSR_01_bowl.et": {
+   "w": 0.257,
+   "d": 0.257,
+   "h": 0.063,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "LitterInterior_USSR_01_mug.et": {
+   "w": 0.132,
+   "d": 0.105,
+   "h": 0.095,
+   "ox": 0.014,
+   "oz": 0.0,
+   "feet": true
+  },
+  "LitterInterior_USSR_01_pile_V1.et": {
+   "w": 0.647,
+   "d": 0.715,
+   "h": 0.022,
+   "ox": -0.219,
+   "oz": 0.05,
+   "feet": true
+  },
+  "LitterInterior_USSR_01_tincan_V1.et": {
+   "w": 0.101,
+   "d": 0.101,
+   "h": 0.08,
+   "ox": 0.001,
+   "oz": -0.001,
+   "feet": true
+  },
+  "LitterInterior_USSR_01_tincan_V2.et": {
+   "w": 0.101,
+   "d": 0.101,
+   "h": 0.097,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "LogChopping_01.et": {
+   "w": 0.475,
+   "d": 0.489,
+   "h": 0.722,
+   "ox": -0.003,
+   "oz": 0.009,
+   "feet": true
+  },
+  "M923A1_wreck_static.et": {
+   "w": 3.205,
+   "d": 8.267,
+   "h": 2.8,
+   "ox": 0.211,
+   "oz": -0.362,
+   "feet": true
+  },
+  "MarketStand_01.et": {
+   "w": 2.531,
+   "d": 1.296,
+   "h": 1.028,
+   "ox": 0.141,
+   "oz": -0.067,
+   "feet": true
+  },
+  "MirrorBathroom_01.et": {
+   "w": 0.589,
+   "d": 0.167,
+   "h": 0.443,
+   "ox": 0.0,
+   "oz": 0.08,
+   "feet": true
+  },
+  "Notebook_01_Stack.et": {
+   "w": 0.229,
+   "d": 0.332,
+   "h": 0.074,
+   "ox": -0.01,
+   "oz": 0.054,
+   "feet": true
+  },
+  "Notice_A4_Vertical_V1.et": {
+   "w": 0.212,
+   "d": 0.002,
+   "h": 0.299,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": false
+  },
+  "Pallet_01.et": {
+   "w": 0.816,
+   "d": 1.232,
+   "h": 0.146,
+   "ox": -0.008,
+   "oz": 0.012,
+   "feet": true
+  },
+  "Pallet_01_Pile.et": {
+   "w": 0.994,
+   "d": 1.447,
+   "h": 0.979,
+   "ox": 0.007,
+   "oz": -0.009,
+   "feet": true
+  },
+  "Photo_Square_01_V1.et": {
+   "w": 0.181,
+   "d": 0.003,
+   "h": 0.129,
+   "ox": 0.0,
+   "oz": -0.0,
+   "feet": true
+  },
+  "PicnicTable_01.et": {
+   "w": 1.99,
+   "d": 2.381,
+   "h": 0.974,
+   "ox": -0.0,
+   "oz": 0.006,
+   "feet": true
+  },
+  "RadioSmall_01_black.et": {
+   "w": 0.365,
+   "d": 0.091,
+   "h": 0.301,
+   "ox": -0.003,
+   "oz": 0.006,
+   "feet": true
+  },
+  "S105_wreck_static.et": {
+   "w": 2.487,
+   "d": 4.531,
+   "h": 1.463,
+   "ox": 0.008,
+   "oz": -0.031,
+   "feet": true
+  },
+  "S1203_wreck_static.et": {
+   "w": 1.833,
+   "d": 4.596,
+   "h": 1.798,
+   "ox": 0.014,
+   "oz": 0.037,
+   "feet": true
+  },
+  "SackUniversal_01.et": {
+   "w": 0.793,
+   "d": 0.544,
+   "h": 1.36,
+   "ox": -0.006,
+   "oz": 0.031,
+   "feet": true
+  },
+  "SackUniversal_01_Pile.et": {
+   "w": 1.961,
+   "d": 1.484,
+   "h": 1.257,
+   "ox": 0.086,
+   "oz": 0.039,
+   "feet": true
+  },
+  "Sandbag_01_end_burlap.et": {
+   "w": 2.035,
+   "d": 1.33,
+   "h": 0.815,
+   "ox": 0.023,
+   "oz": 0.004,
+   "feet": true
+  },
+  "Sandbag_01_long_burlap.et": {
+   "w": 3.452,
+   "d": 1.217,
+   "h": 0.921,
+   "ox": -0.035,
+   "oz": 0.008,
+   "feet": false
+  },
+  "Sandbag_01_single_burlap.et": {
+   "w": 0.832,
+   "d": 0.436,
+   "h": 0.247,
+   "ox": 0.013,
+   "oz": -0.02,
+   "feet": true
+  },
+  "ShelfUniversal_01_narrow.et": {
+   "w": 1.027,
+   "d": 0.491,
+   "h": 2.595,
+   "ox": -0.512,
+   "oz": 0.244,
+   "feet": true
+  },
+  "ShowerBeach_01.et": {
+   "w": 2.201,
+   "d": 2.199,
+   "h": 3.102,
+   "ox": -0.001,
+   "oz": 0.0,
+   "feet": false
+  },
+  "ShowerCurtains_01_straight.et": {
+   "w": 1.418,
+   "d": 0.106,
+   "h": 0.106,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "SignNoEntryBothDir_01_pole.et": {
+   "w": 0.702,
+   "d": 0.095,
+   "h": 3.096,
+   "ox": 0.0,
+   "oz": 0.009,
+   "feet": false
+  },
+  "SinkOld_01.et": {
+   "w": 0.845,
+   "d": 1.452,
+   "h": 1.004,
+   "ox": -0.001,
+   "oz": 0.0,
+   "feet": true
+  },
+  "SkewerGrill_01.et": {
+   "w": 1.356,
+   "d": 0.414,
+   "h": 0.876,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "Sofa_02_green.et": {
+   "w": 2.043,
+   "d": 0.91,
+   "h": 0.817,
+   "ox": 0.0,
+   "oz": 0.003,
+   "feet": true
+  },
+  "Stool_01.et": {
+   "w": 0.413,
+   "d": 0.413,
+   "h": 0.503,
+   "ox": -0.001,
+   "oz": 0.0,
+   "feet": true
+  },
+  "Suitcase_01.et": {
+   "w": 0.712,
+   "d": 0.249,
+   "h": 0.478,
+   "ox": 0.0,
+   "oz": 0.024,
+   "feet": true
+  },
+  "Suitcase_04_open.et": {
+   "w": 0.506,
+   "d": 0.567,
+   "h": 0.497,
+   "ox": 0.0,
+   "oz": -0.044,
+   "feet": true
+  },
+  "TableMedical_01.et": {
+   "w": 1.139,
+   "d": 0.577,
+   "h": 1.249,
+   "ox": 0.024,
+   "oz": 0.042,
+   "feet": true
+  },
+  "TableMilitary_US_01.et": {
+   "w": 1.309,
+   "d": 0.794,
+   "h": 0.902,
+   "ox": 0.0,
+   "oz": 0.0,
+   "feet": true
+  },
+  "TableOld_01.et": {
+   "w": 1.712,
+   "d": 0.909,
+   "h": 0.906,
+   "ox": 0.006,
+   "oz": 0.003,
+   "feet": true
+  },
+  "TableOld_01_white.et": {
+   "w": 1.712,
+   "d": 0.909,
+   "h": 0.906,
+   "ox": 0.006,
+   "oz": 0.003,
+   "feet": true
+  },
+  "TablePhotoFrame_01.et": {
+   "w": 0.163,
+   "d": 0.084,
+   "h": 0.209,
+   "ox": 0.002,
+   "oz": -0.004,
+   "feet": true
+  },
+  "TentBig_01_orange.et": {
+   "w": 5.356,
+   "d": 3.63,
+   "h": 2.471,
+   "ox": 0.0,
+   "oz": 0.009,
+   "feet": false
+  },
+  "TentFIA_01.et": {
+   "w": 7.925,
+   "d": 8.618,
+   "h": 4.856,
+   "ox": 0.011,
+   "oz": 0.391,
+   "feet": false
+  },
+  "TentFIA_01_medical.et": {
+   "w": 8.002,
+   "d": 8.701,
+   "h": 20.002,
+   "ox": 0.0,
+   "oz": 0.349,
+   "feet": false
+  },
+  "TentSmallUS_01.et": {
+   "w": 2.148,
+   "d": 4.505,
+   "h": 1.445,
+   "ox": 0.007,
+   "oz": 0.0,
+   "feet": false
+  },
+  "TentSmall_02_red.et": {
+   "w": 2.218,
+   "d": 4.173,
+   "h": 1.449,
+   "ox": 0.002,
+   "oz": 0.0,
+   "feet": true
+  },
+  "TentSmall_03_white.et": {
+   "w": 3.367,
+   "d": 6.217,
+   "h": 1.913,
+   "ox": -0.03,
+   "oz": -0.002,
+   "feet": false
+  },
+  "TentUS_01_Assembled.et": {
+   "w": 6.349,
+   "d": 9.941,
+   "h": 3.924,
+   "ox": 0.0,
+   "oz": 1.199,
+   "feet": true
+  },
+  "TinWall_01_3m.et": {
+   "w": 3.059,
+   "d": 0.213,
+   "h": 2.755,
+   "ox": 1.528,
+   "oz": 0.037,
+   "feet": false
+  },
+  "TinWall_01_6m_A.et": {
+   "w": 6.046,
+   "d": 0.396,
+   "h": 2.761,
+   "ox": 3.022,
+   "oz": 0.058,
+   "feet": false
+  },
+  "TirePile_01_small.et": {
+   "w": 2.016,
+   "d": 2.267,
+   "h": 0.645,
+   "ox": 0.073,
+   "oz": -0.009,
+   "feet": true
+  },
+  "Tire_UAZ469.et": {
+   "w": 0.851,
+   "d": 0.845,
+   "h": 0.219,
+   "ox": 0.003,
+   "oz": 0.0,
+   "feet": true
+  },
+  "ToolsSurgical_01_autoclavedrum.et": {
+   "w": 0.333,
+   "d": 0.311,
+   "h": 0.167,
+   "ox": 0.0,
+   "oz": 0.001,
+   "feet": true
+  },
+  "TowelRack_01.et": {
+   "w": 0.698,
+   "d": 0.127,
+   "h": 0.643,
+   "ox": 0.0,
+   "oz": 0.028,
+   "feet": false
+  },
+  "UAZ452_wreck_static.et": {
+   "w": 2.273,
+   "d": 4.574,
+   "h": 1.871,
+   "ox": 0.007,
+   "oz": -0.042,
+   "feet": true
+  },
+  "UAZ469_wreck_blue_static.et": {
+   "w": 2.274,
+   "d": 4.088,
+   "h": 1.636,
+   "ox": -0.028,
+   "oz": 0.169,
+   "feet": false
+  },
+  "Ural4320_wreck_static.et": {
+   "w": 3.159,
+   "d": 7.622,
+   "h": 2.611,
+   "ox": -0.222,
+   "oz": 0.097,
+   "feet": false
+  },
+  "VegetableBed_01_small.et": {
+   "w": 2.55,
+   "d": 2.278,
+   "h": 0.757,
+   "ox": 0.012,
+   "oz": 0.13,
+   "feet": false
+  },
+  "Wheelbarrow_01.et": {
+   "w": 0.868,
+   "d": 2.162,
+   "h": 0.673,
+   "ox": 0.0,
+   "oz": -0.049,
+   "feet": true
+  },
+  "WoodLog_01_A.et": {
+   "w": 0.337,
+   "d": 6.006,
+   "h": 0.291,
+   "ox": -0.033,
+   "oz": 0.058,
+   "feet": true
+  },
+  "WoodPile_01_A.et": {
+   "w": 1.92,
+   "d": 6.6,
+   "h": 1.61,
+   "ox": -0.008,
+   "oz": -0.011,
+   "feet": true
+  },
+  "WoodenFenceOld_01_4m.et": {
+   "w": 4.067,
+   "d": 0.219,
+   "h": 2.507,
+   "ox": 1.963,
+   "oz": 0.034,
+   "feet": false
+  },
+  "WoodenFenceOld_01_pole.et": {
+   "w": 0.136,
+   "d": 0.126,
+   "h": 2.227,
+   "ox": -0.012,
+   "oz": 0.007,
+   "feet": false
+  }
+ }
+}

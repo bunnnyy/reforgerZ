@@ -1,23 +1,23 @@
 # Sites: camps that read as real places
 
-**Designed, not built.** Approved by the author on 2026-11-12. Today's camp life (the building a
-place moves into, the plans, the fit rules, the jobs) is in [DESIGN.md](../docs/DESIGN.md#camp-life);
-the pieces and kits and how they're built are in
-[WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits); scenes and their
-ageing are in [TRACES.md](../docs/TRACES.md#scenes); the land grid is in
+**Designed, not built** (phases 3 to 6). Approved by the author on 2026-11-12. Phases 1 and 2 are
+built: each site's ground read on a grid, real footprints, drop don't squeeze, the surroundings and
+the threat sectors, and the audit with its drawing and the fly-to plugin are in
+[docs/SITES.md](../docs/SITES.md). Today's camp life (the building a place moves into, the plans,
+the fit rules, the jobs) is in [DESIGN.md](../docs/DESIGN.md#camp-life); the pieces and kits and how
+they're built are in [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits);
+scenes and their ageing are in [TRACES.md](../docs/TRACES.md#scenes); the land grid is in
 [INFECTED.md](../docs/INFECTED.md#the-land). This file says only what changes. When a phase is built,
-its part moves into those docs (camp life's section of DESIGN.md grows, or becomes its own doc,
-`docs/SITES.md`, if it outgrows it) and is cut from here.
+its part moves into those docs (most of it into docs/SITES.md) and is cut from here.
 
 ## Contents
 
 - [Why](#why)
-- [1. Reading the ground](#1-reading-the-ground)
 - [2. The rules: where things belong](#2-the-rules-where-things-belong)
 - [3. Building in layers, by doctrine](#3-building-in-layers-by-doctrine)
 - [4. The people](#4-the-people)
 - [5. The story of each site](#5-the-story-of-each-site)
-- [6. The audit](#6-the-audit)
+- [6. The audit's rest](#6-the-audits-rest)
 - [Performance](#performance)
 - [What stays as it is](#what-stays-as-it-is)
 - [Settings](#settings)
@@ -32,73 +32,13 @@ things out in the open and nothing guards its building. The causes in today's co
 
 | Cause | Today (`Factions/RZ_CampLife.c`) |
 |---|---|
-| A fixed drawing | Each kit is one plan (`tools/camp_kit/pieces.py`, `KITS`) laid down whole; a piece that doesn't fit is nudged up to 1.6 m or left out (`Slot`, `PlaceFitted`) |
-| Hand-typed sizes | Footprints come from `pieces.FP`, typed by hand; a prop drawn too small clips |
-| A thin view of the ground | `Fits` samples nine points for height and flat traces at two heights; it can't see a low wall, a kerb, a bush, a slope between samples or a fence post |
+| A fixed drawing | Each kit is one plan (`tools/camp_kit/pieces.py`, `KITS`) laid down whole; a piece that doesn't fit where the plan puts it is dropped |
 | No purpose | Nothing knows that a generator is noisy, that stores must be guarded, or that a perimeter must close; roles are four bands (`RZ_EDressRole`: Centre, Inner, Approach, Edge) |
-| No surroundings | The front faces the nearest road, landward (`ReadGround`, `Landward`); nothing reads hostile neighbours, high ground, the infected's land or what happened here |
+| Surroundings unused | Each site's surroundings and threat sectors are read ([docs/SITES.md](../docs/SITES.md#the-surroundings-and-the-threat)), but nothing places a piece by them |
 
 The fix stays automatic and works on any map: every site is **built from rules** against a
 **reading of its ground and surroundings**, in the order real people would build it, with a
 **story** of its own, and every result is **measured** by an audit.
-
-## 1. Reading the ground
-
-### The site grid
-
-Read once per site per run when it's first dressed (as `RZ_CampSite` is today), kept, never saved.
-
-| What | How it's read | Cells |
-|---|---|---|
-| The grid | 0.5 m cells over the site's reach (a stronghold's 60 m ring plus its entry ring: about 240 × 240 cells; an outpost about 180 × 180; a road post 40 × 40) | one byte each: flags below; one byte height step |
-| Height and slope | `GetSurfaceY` at every cell corner, sampled 1 in 2 (1 m) and interpolated; slope from neighbours | **steep** over 12°, **step** a jump over 0.3 m between cells (a kerb, a bank) |
-| Water | `RZ_Util.IsWater` per 2 m; the land grid's sea, river and lake shares (`RZ_Land`) for the cells' 250 m square | **water**, **shore** (within 4 m) |
-| Buildings | Each building's real box (`RZ_DoorGeometry.LocalBox`, as `AddBox` today), plus its doors (`RZ_DoorSlots`) and ground-floor windows (the building's window children, by name, where the prefab has them) | **inside**, **wall** (within 0.4 m), **door**, **window** |
-| Walls, fences, hedges, kerbs | One `QueryEntitiesBySphere` over the reach, every entity; each static entity's world box rasterised into the grid (oriented, not axis-aligned) | **solid** |
-| Trees and bushes | The same query; trees by prefab name ("tree", as `RZ_Land` reads them) with a 1 m trunk disc, bushes as soft cells | **solid**, **soft** (a prop may stand on it, a path may not) |
-| Cars and wrecks | The same query (vehicles, `Wrecks` prefabs) | **solid** |
-| Roads | The road segments `RZ_DressPlacer.ReadGroundWithin` already reads, painted with their real width (from the land grid's road width, else 6 m) | **road**, **verge** (2 m) |
-| Other systems' scenery | Traces' scenes and boards (`s_aPieces`, the TRACES pool), loot spots, the quartermaster, the medic, leader seats (today's `m_aKeep`) | **kept** |
-| Our own pieces | Each piece's real footprint rasterised as it's placed | **taken** |
-
-A cell a piece may use is dry, not steep, not solid, not inside, not road, not kept and not taken.
-A piece's footprint is a set of cells (its props' real boxes, plus a person round each seat), so
-**every** part of it is tested, not nine points. The flat traces stay as a last check on the
-chosen spot only (one placement, not every try).
-
-### Real footprints
-
-| Today | Designed |
-|---|---|
-| `pieces.FP`: width and depth typed by hand | A Workbench plugin, **ReforgerZ: Measure prop footprints**, spawns each prop `pieces.py` uses, reads its mesh bounds (`GetBounds` on the spawned entity) and writes `tools/camp_kit/footprints.json`: width, depth, height, the box's offset from the origin, and whether its origin is at its feet |
-| A piece's footprint is a rectangle round its props | `build.py` writes each piece's footprint as its props' boxes (up to 8 rectangles) plus a 0.6 m disc for each seat's person, so an L-shaped piece doesn't claim its empty corner |
-| A prop missing from `FP` is drawn 0.5 m | `build.py` refuses a prop with no measured footprint |
-
-### Drop, don't squeeze
-
-A piece that fits nowhere its rules allow is **dropped**, never pushed into a worse spot. The plan
-order (importance) decides what's dropped first ([tiers](#importance-tiers)). A smaller site that
-sits right beats a full one that clips. The log and the audit say what was dropped and why.
-
-### The surroundings
-
-Read once per site from data the game already has; each is a small record on the site, so the
-rules below can ask "where is the threat?" without a query.
-
-| Context | Read from | What the site keeps | Used by |
-|---|---|---|---|
-| **Roads** | `RZ_DressPlacer.ReadGroundWithin` (as now) and the entries (`ReadEntries`) | the main road in (toward the nearest other town, `m_fTownBearing`), each entry, through-roads (a road that passes and leaves again) | the gate on the main road; barricades on the others; a **through-road is never closed** (a vehicle lane is kept), only watched |
-| **Sea, shore, rivers** | `RZ_Util.IsWater`, `BadOutlook`, the land grid's water shares | the **sea side** (bearings with water within 80 m), a jetty or pier within 60 m (by prefab name, as `SiteTier` refuses them today) | no wall on the sea side (water is the wall), a watch on a jetty or slipway (boats are a way in); nothing within 4 m of water |
-| **High ground** | The land grid's ridges (`RZ_Land`, ridge posts), and the site grid's own heights within 150 m | the **high point** near the site, and any ridge that overlooks it (ground 10 m above the yard within 200 m) | a watch post wants the highest free cell with a view; a camp under a ridge puts a watch facing the ridge and its sandbags on that side |
-| **Open ground and cover** | The land grid's fields and tree counts; the site grid's soft and solid cells | **open** sides (fields of fire) and **covered** sides (trees, buildings close) | open sides get wire and a clear strip; covered sides get the most watch (that's where the infected come from unseen) |
-| **Hostile and friendly bases** | `RZ_Territory` (holdings by faction), `RZ_Safehouses`, the road posts (`RZ_Checkpoints`); hostility from `RZ_FactionLife.HasFeud`/`HasTruce` and the FactionManager's relations | the bearing and distance to the **nearest hostile holding** and to the road from it; the bearing to the nearest **friendly** one | defences face the hostile side; the friendly side is lighter (a fence, not sandbags); a feud makes it heavier |
-| **The infected** | The land grid's lairs and wild land (`RZ_Land.IsWild`, `NearestCellWith`), the heat map (`RZ_HeatMap`), the town's infection (`RZ_Settlement.m_fInfection`) | the bearing to the nearest **lair** or wild land, and the town's infection band (under 30, 30–60, over 60) | burn pits and kill zones face it; infection over 60 adds a second line of wire and a watch at night |
-| **History** | `RZ_TownHistory` (the town's events), `RZ_TownMemory` (burned buildings, barricades), `RZ_WorldFacts` (records), the holding's own changes of hands (`RZ_Territory` losses) | the site's **state** and **story** ([below](#5-the-story-of-each-site)) | the story's props and how worn the site is |
-
-Each **side** of the site (eight 45° sectors from its middle) gets a **threat score** from these:
-hostile base that way, road in, open approach, lair or wild land, ridge over it; minus sea, a
-friendly base, a cliff. The highest sector is the **front**; the rules read the score of the
-sector a piece is in.
 
 ## 2. The rules: where things belong
 
@@ -162,10 +102,10 @@ The plan's order already ranks pieces; tiers make "what goes first" explicit:
 
 ### The solver
 
-Server-side, once per site per run, the result cached in `RZ_CampSite` (positions and yaws as data),
-so the next visit lays the same site with no solving.
+Server-side, once per site per run, the result kept as today's layout is (positions and yaws as
+data, `RZ_SiteLayout`), so the next visit lays the same site with no solving.
 
-1. Read the grid and the surroundings (above).
+1. Read the grid and the surroundings ([docs/SITES.md](../docs/SITES.md)), as today.
 2. **Zones**: the wire line first ([layer 1](#3-building-in-layers-by-doctrine)), then the gate on the
    main road, the kill zone outside, then the inside zones by distance from the wire and the door.
 3. **Pieces in tier order**, plan order within a tier. For each: the candidate cells are those in
@@ -412,47 +352,25 @@ Player text follows [WRITING.md](../docs/WRITING.md): plain, short, the faction'
 | Haven | *"There's soup. There's always soup."* | *"We buried Marta yesterday. Sit with us."* |
 | Halcyon | *"Through the shower first. All of you."* | *"Nobody goes out past the lights."* |
 
-## 6. The audit
+## 6. The audit's rest
 
-Headless, in the runtime test (`tools/runtime_test`), and as a log summary in play.
-
-### What it checks
-
-The test solves **every site on the map** as data (no props spawned: the solver's output is
-positions and footprints), so it runs on the dedicated server with no players.
+The audit is built ([docs/SITES.md](../docs/SITES.md#the-audit)). With the wire line (layer 1) come
+its last two checks, and the drawing's wire, zones and gaps:
 
 | Check | How | Fails |
 |---|---|---|
-| Overlaps | each placed footprint against the others, the buildings' boxes and the grid's solid cells | any overlap over 0.1 m² |
-| Floating or buried | height spread under each footprint against the prop's measured height | spread over 0.3 m on a flat piece |
 | Outside the wire | a tier 2–4 piece outside the wire zone | any |
 | Perimeter | the share of the wire line closed (pieces, walls, fences, water) | under 80% at a stronghold, 60% at an outpost; each gap named by bearing and width |
-| Posts | gate and each threat sector's watch filled; their **Covers** lines clear | a stronghold without a gate watch |
-| Paths | the Clear rules: door to gate, door to kitchen | a path blocked |
-| Dropped | pieces dropped by tier, with the rule that failed | a tier 1 piece dropped |
-| Routes | each patrol route's points walkable, none in water or over a drop | any |
 
-Each site gets a **score** (0–100) from the checks; the run's summary lists every site under
-**Sites > Audit threshold** (70) and the test fails if any stronghold is under it.
-
-Log lines: *"Sites: <faction> <kind> at <grid>: score 84; 18 of 20 pieces; perimeter 91% (gap 4 m
-at 230°); dropped: Latrine (Away from: kitchen 15 m)."* and one summary *"Sites audit: 31 sites,
-mean 82, worst 64 (Red Hand outpost at 041-077), 0 overlaps."*
-
-### Seeing it
-
-| Tool | Does |
-|---|---|
-| `render.py --placed <log>` | draws the layouts **actually placed** on the map from the audit's log lines: each site top-down with its building, roads, water, wire, zones, pieces, posts, routes and gaps, with its score, in `tools/camp_kit/sites_placed.html` |
-| **ReforgerZ: Fly to the next site** (Workbench plugin) | in Workbench play or the World Editor, moves the camera above the next site in the audit's list, then to its gate at eye height, so the author can take screenshots of every base in a few minutes |
+The site's log line then gives the share closed and the widest gap: *"perimeter 91% (gap 4 m at
+230°)"*, and the drop's rule: *"dropped: Latrine (Away from: kitchen 15 m)"*. The tiers come from
+`pieces.py` (the audit reads them from the piece's name until then).
 
 ## Performance
 
 | Cost | Budget |
 |---|---|
-| Reading a site's grid | one sphere query, one height sample per metre, under 20 ms spread over ticks (2 ms a step); once a run per site |
-| Solving | at most 24 candidates a piece, 30 pieces: under 10 ms a site, spread over ticks; cached |
-| Memory | about 60 KB a stronghold's grid while solving, freed after; the cached layout under 2 KB a site |
+| Solving | at most 24 candidates a piece, 30 pieces: under 10 ms a site, spread over ticks; cached as the layout is today |
 | Spawning | unchanged: 4 pieces a tick, **Pieces max** (90); story pieces count toward it and are the first left out at the cap |
 | People | unchanged: Live places (3), extras (6) |
 
@@ -468,36 +386,32 @@ mean 82, worst 64 (Red Hand outpost at 041-077), 0 overlaps."*
 
 ## Settings
 
-New on **Territory > Camp life** (`RZ_CampLifeSettings`):
+New on **Territory > Camp life** (`RZ_CampLifeSettings`; **Site grid**, **Site read ms** and
+**Audit threshold** are built):
 
 | Setting | Default | What |
 |---|---|---|
 | **Solver** | on | build sites by the rules; off = today's plans |
-| **Grid cell** | 0.5 | metres a cell |
 | **Candidates a piece** | 24 | cells scored before a piece is dropped |
 | **Layers** | on | close off, harden, watch before work and life |
 | **Story** | on | each site's story elements |
 | **Board windows** | on | harden: windows boarded with the faction's door board |
 | **Alert states** | on | posts and movement change with a threat |
 | **Road post run** | on | a walk to the nearest road post once a day |
-| **Audit threshold** | 70 | the runtime test fails a stronghold under this score |
 
 ## For the PC
 
-- Run **ReforgerZ: Measure prop footprints** once (and after adding a prop): it writes
-  `tools/camp_kit/footprints.json`; then `py tools/camp_kit/build.py`.
 - Choose the new props each layer needs (vanilla first, nothing usable): wire coils and pickets,
   chain-link or security fence sections, floodlights on poles (look only), a tin roof, a bench, a bucket
-  for the water run, a cage look; and decals for the kill zone if the Traces spike found a way.
-- With **ReforgerZ: Fly to the next site**, take a screenshot of every site of one map after each
-  phase and compare it with `sites_placed.html`.
+  for the water run, a cage look; and decals for the kill zone if the Traces spike found a way. Then
+  measure them (**ReforgerZ: Measure prop footprints**) and run `build.py`.
+- After each phase, a screenshot of every site of one map with **ReforgerZ: Fly to the next site**,
+  held against `sites_placed.html`.
 
 ## Build order
 
 | Phase | Builds | Done when |
 |---|---|---|
-| 1 | **The ground**: the site grid, real footprints (the plugin, `footprints.json`, `build.py`), drop don't squeeze, the surroundings record and the threat sectors | no overlaps in the audit's overlap check on Arland and Everon |
-| 2 | **The audit**: the headless solve in the runtime test, the log lines, the score and threshold, `render.py --placed`, the fly-to plugin | every site on two maps scored and drawn |
 | 3 | **The rules and the solver**: zones, rule types, tiers, the solver; pieces in `pieces.py` get their rules | mean score 80 on Everon; no tier 1 drops |
 | 4 | **The layers**: close off, harden (windows and doors), watch; each faction's doctrine table; the lab as the first site to pass | the lab and every stronghold perimeter at 80% |
 | 5 | **The people**: posts, shifts by post, patrol routes from the wire and roads, everyday movement by zone, alert states | the jobs log shows posts filled and routes walked |

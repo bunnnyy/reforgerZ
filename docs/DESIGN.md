@@ -720,7 +720,7 @@ the items go into the new garment, or into the pack or vest when the new one cov
 
 ### Camp life
 
-Code: `Factions/RZ_CampLife.c`; settings: **Territory > Camp life**. Holdings, Haven safehouses,
+Code: `Factions/RZ_CampLife.c` (the ground and the audit: `RZ_SiteGrid.c`, `RZ_SiteSurroundings.c`, `RZ_SiteAudit.c`, [SITES.md](SITES.md)); settings: **Territory > Camp life**. Holdings, Haven safehouses,
 Halcyon's field stations and road posts look lived in, and their people do things. It's
 scenery and behaviour only: nobody new decides who is there, and nothing is saved. Each faction
 moves into the building in its town that suits what it does and lays its camp out in the yard
@@ -817,20 +817,24 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   front landward, then pulled back 4 or 8 m, pushed on 4 or 8 m, shifted 4 m sideways or turned
   12°, whichever fits most. **At a road post** the plan's front runs along the road and
   its pieces stand on the verges either side of the barrier (shifted 3 m along it if that fits better).
-- **Every piece fits, its whole footprint.** Each kit entry carries its piece's footprint (its
-  props' boxes and a person round each seat, from `pieces.py`). A piece stands only where all of it
-  is on dry, flat ground (the ground under its corners, edges and middle rises at most about 12°
-  across it), away from the line, every point 4 m from a road's centre line, outside every
-  building's box by 0.8 m (so nothing large ever stands in a building or through its wall),
-  0.8 m from the other pieces, 2 m from a quartermaster, the medic or the barrier, 3.5 m from a
-  leader's seat, 1.5 m from the front door's step and 1 m from any other system's scenery (Traces'
-  scenes and boards). Then **nothing may stand in it**: flat traces along its four sides and
-  across both diagonals at knee and chest height must meet no wall, fence, tree, car or prop.
-  One that doesn't fit is **nudged** up to 1.6 m (3 m by the road or the front wall) and checked
-  again, else **left out**: it is never moved somewhere else. The log says how much of each plan
-  fit, where, and how many were left out facing water (`Camp life: ... of ... planned pieces fit,
-  laid out ...`). A place within 60 m of
-  one already dressed (the Haven's safehouse at its own stronghold) isn't dressed twice.
+- **Every piece fits, its whole footprint, or it's dropped.** Each kit entry carries its piece's
+  real footprint (its props' measured boxes and a person round each seat: `m_sFoot`, from
+  `pieces.py` and `footprints.json`). With **Site grid** on (the default) the place's ground is
+  first read on a 0.5 m grid and every cell under every part of the footprint must be free: dry, not
+  steep or a bank, no building, nothing standing (a wall, a fence, a tree's trunk, a rock, a car), off
+  the road, no other scenery, no other piece; the ground across it rises at most about 12°; it's
+  away from the line, 2 m from a quartermaster, the medic or the barrier, 3.5 m from a leader's seat
+  and 1.5 m from the front door's step; last, flat traces across each of its props' boxes at knee
+  and chest height must meet nothing. How the grid is read, and the site's surroundings read with it,
+  are in [SITES.md](SITES.md). A piece that doesn't fit right where the plan puts it is **dropped**,
+  never nudged or moved somewhere else (the plan as a whole is still shifted and turned to where
+  most of it fits). The log says how much of each plan fit, where, and how many were left out facing
+  water (`Camp life: ... of ... planned pieces fit, laid out ...`), and the site's audit line says
+  what was dropped and why (`Sites: ...`). With **Site grid** off the older point checks apply (the
+  ground under its corners, edges and middle, every point 4 m from a road's centre line, 0.8 m out of
+  every building's box and from the other pieces, 1 m from other scenery, flat traces along its
+  sides and diagonals). A place within 60 m of one already dressed (the Haven's safehouse at its own
+  stronghold) isn't dressed twice.
 - **The quartermaster's counter.** Every quartermaster at the place (an outpost's or a safehouse's,
   and the faction's own when its stronghold is here) turns to serve: of sixteen ways, the most open
   one (traced up to 5 m), toward his customers when it's about as open, never a way with a wall
@@ -851,7 +855,9 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   shape, an antenna isn't a mission's landmark. The quartermaster and
   a safehouse's own services stay what they are and are never scenery.
 - **Only near players.** Pieces spawn and go with the place's bodies (a player within the
-  owner's visible radius: 300 m for holdings). The layout is worked out at once, but the pieces
+  owner's visible radius: 300 m for holdings). The first time a run dresses a place its ground is
+  read on the grid, a little each second ([SITES.md](SITES.md#the-site-grid)), and the layout worked
+  out once it's read; the layout is kept, so every later visit lays it out at once. The pieces
   spawn **4 per server tick** for all places together (a 20-piece stronghold is up in about 25 s
   at the 5 s tick); when a place's last piece is up, its people are given their jobs again. At
   most **90** of camp life's own pieces stand or wait to spawn on the server (Traces' props,

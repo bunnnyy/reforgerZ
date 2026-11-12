@@ -7,7 +7,10 @@ Writes Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et and Prefabs/Refor
 (keeping an existing .meta, so the GUID stays; a piece no longer in pieces.py has its files deleted),
 and on RZ_GameMode.et the camp-life kits (each plan entry's piece, ring, use, seats, its place and turn
 in the plan, the piece's footprint and, from pieces.AT, where it stands by a building), the
-smart-action waypoint and the composition slots of World > Traces > Kit. Each composition is an
+smart-action waypoint and the composition slots of World > Traces > Kit. Each piece's footprint
+(m_sFoot, and the box round it) is its props' real boxes from footprints.json (written by the
+Workbench plugin "ReforgerZ: Measure prop footprints", docs/SITES.md), up to 8, and a person round
+each seat; a prop with no measured box falls back to pieces.FP and is listed. Each composition is an
 empty root with an RplComponent and a Hierarchy, its props as children, and its seats as direct
 children with an SCR_AISmartActionSentinelComponent. A plan whose pieces overlap is refused.
 
@@ -23,6 +26,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, HERE)
 from pieces import AT, C, FP, KITS, OPENINGS, TRACES  # noqa: E402
+import footprints  # noqa: E402
 
 PROPS = os.path.join(HERE, "props.txt")
 GM = os.path.join(REPO, "Prefabs/ReforgerZ/Core/RZ_GameMode.et")
@@ -135,17 +139,15 @@ def rot(x, z, yaw):
 
 
 def footprint(parts):
-    """The piece's footprint in its own space (min x, min z, max x, max z): every prop's box turned
-    by its yaw, and a person round each seat."""
+    """The box round the piece's footprint in its own space (min x, min z, max x, max z): its props'
+    real boxes (footprints.piece_rects), and a person round each seat."""
     xs, zs = [], []
+    for r in footprints.piece_rects(parts, FP):
+        for x, z in footprints.corners(r):
+            xs.append(x)
+            zs.append(z)
     for p in parts:
-        if p[0] == "p":
-            w, d = FP.get(p[1], (0.5, 0.5))[:2]
-            for cx, cz in ((-w / 2, -d / 2), (w / 2, -d / 2), (w / 2, d / 2), (-w / 2, d / 2)):
-                rx, rz = rot(cx, cz, p[4])
-                xs.append(p[2] + rx)
-                zs.append(p[3] + rz)
-        else:
+        if p[0] == "s":
             pad = 0.6 if p[4].startswith("lean") else SEAT_PAD
             xs += [p[2] - pad, p[2] + pad]
             zs += [p[3] - pad, p[3] + pad]
@@ -230,7 +232,8 @@ def write_kits():
             L.append("        m_vPlan %s 0 %s" % (num(x), num(z)))
             if yaw:
                 L.append("        m_fPlanYaw %s" % num(yaw))
-            L += ["        m_vFootMin %s 0 %s" % (num(x0), num(z0)), "        m_vFootMax %s 0 %s" % (num(x1), num(z1)), "       }"]
+            L += ["        m_vFootMin %s 0 %s" % (num(x0), num(z0)), "        m_vFootMax %s 0 %s" % (num(x1), num(z1)),
+                  '        m_sFoot "%s"' % footprints.foot_text(parts, FP), "       }"]
         L += ["      }", "     }"]
     L.append("    }")
     block = nl.join(L)
@@ -316,6 +319,10 @@ def main():
     lines += ["%s %s%s" % (v[0], v[1], " hier" if v[2] else "") for _, v in sorted(props.items())]
     write_text(os.path.relpath(PROPS, REPO), LF.join(lines) + LF)
     print("built %d pieces, %d kits, %d trace compositions and %d opening scenes" % (len(C), len(KITS), len(TRACES), len(OPENINGS)))
+    every = [c[4] for c in C.values()] + [parts for _, parts in TRACES.values()] + [parts for _, parts in OPENINGS.values()]
+    missing = footprints.unmeasured(every, FP)
+    if missing:
+        print("%d props have no measured footprint (pieces.FP used; run the Workbench plugin ReforgerZ: Measure prop footprints): %s" % (len(missing), ", ".join(missing)))
 
 
 if __name__ == "__main__":
