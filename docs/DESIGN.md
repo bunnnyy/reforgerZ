@@ -698,10 +698,10 @@ look and the next one along wears another. An empty list keeps the slot's own pr
 | A safehouse's occupants and guards; its quartermaster | the house and the row; the house's spot |
 | Camp life's extras (guards and workers who sleep and wake) | the place and how many are already out |
 | A road post's crew and speaker | the post |
-| A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad) | the spot it spawns at |
+| A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad, the crash site's recovery team, the squad sent to arrest a post's commander) | the spot it spawns at |
 | A stronghold leader, council head or outpost leader | the seat and the generation: a successor wears another look |
 
-**Nobody of a faction wears a vanilla soldier's kit.** Two rules make sure of it:
+**Nobody of a faction wears a vanilla soldier's kit.** Three rules make sure of it:
 
 - **A look dresses the whole body.** Every look sets every garment you can see (hat, jacket,
   trousers, boots, flak vest, gloves; a mask where it has one), so nothing of the soldier it's built
@@ -709,9 +709,20 @@ look and the next one along wears another. An empty list keeps the slot's own pr
   stops on a look that leaves one to its parent.
 - **The faction groups are dressed themselves.** Each slot's own group prefab (guards, road-post and
   truck crews, hunter squads, the safehouse guard) and each mission's faction group (the Bastion
-  squad, the escorted soldier, the Red Hand group, the escorted scientist, the survivors) has looks
-  as its members. A group that spawns as itself, not as one of its looks (a mission's group, or a
-  slot whose list is empty), still puts the faction's people in the field.
+  squad, the escorted soldier, the Red Hand group, the escorted scientist, the survivors, their two
+  civilians included) has looks as its members, its first (leader) slot too. A group that spawns as
+  itself, not as one of its looks (a mission's group, or a slot whose list is empty), still puts the
+  faction's people in the field.
+- **A look is never swapped for its parent.** A vanilla AI group spawns each member as a random
+  *variant* of its prefab (the Game Master's editable-entity variants), and the US rifleman and his
+  variant 1 list each other. So a look built on either came out as the plain US rifleman half the
+  time: a Halcyon pair at a site showed one guard in black hazmat and one in woodland with a flak
+  vest. Every look switches its parent's variants off, so each member is the look the group lists.
+
+`tools/people_looks.py --check` holds all three: it fails on a faction group with a member that
+isn't a look, a look with a variant left on, a garment or parent that doesn't resolve in the game
+(read from the game's and the Workshop mods' own data), and a script that spawns a faction person
+slot without picking a look ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#peoples-looks-the-variant-prefabs)).
 
 Each faction dresses as one people, and its armed people as a unit: one base, details that vary,
 so the guards at one place look like they serve together whichever looks they drew
@@ -719,7 +730,7 @@ so the guards at one place look like they serve together whichever looks they dr
 
 | Faction | Armed (guards, posts, patrols, hunters, crews) | Everyone else |
 |---|---|---|
-| The Haven | the watch (guards, safehouse guards): green oilskins and fisherman's trousers, the hat and gloves vary; drivers and the survivors' armed men in work clothes (overalls, a mechanic's suit, denim, a hard hat) | civilians in work clothes: overalls and dungarees, a mechanic, a fisherman, a builder, a carer in a medical mask; a council head and the leader in a suit, denim or a turtleneck. Nobody in red |
+| The Haven | the watch (guards, safehouse guards): green oilskins and fisherman's trousers, the hat and gloves vary; drivers and the survivors' armed men in work clothes (overalls, a mechanic's suit, denim, a hard hat) | civilians in work clothes: overalls and dungarees, a mechanic, a fisherman, a builder, a carer in a medical mask, the survivors' two in a turtleneck or denim; a council head and the leader in a suit, denim or a turtleneck. Nobody in red |
 | Task Force Bastion | one olive kit: the M65 jacket (sleeves down or rolled) and trousers, US boots, the flak vest and webbing; a plain PASGT or M1 helmet, an olive patrol cap or boonie | the same olive off duty, without webbing: occupants, quartermasters, the post commanders and the leader in caps |
 | The Red Hand | scavenged and mismatched (bandit jackets, tracksuits, sweatshirts, dark cargo trousers and jeans, balaclavas), and every armed one in red: a red knitted hat or cap, or a red sweatshirt | the same scavenged clothes, some in red; the boss in a bandit jacket and a red hat |
 | Halcyon | its security (guards, the lab's extras): black hooded hazmat suits, masks or a gas mask, black gloves; its field crews (supply trucks) in olive hazmat | its staff: the beaks (hazmat with masks, [LORE.md](LORE.md)), technicians and clerks in turtlenecks and suits with medical masks and nitrile gloves, paramedics; the director, field leads, quartermasters and the escorted scientist in suits or paramedic kit |

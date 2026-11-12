@@ -2023,7 +2023,8 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 		{
 			m_bShown = true;
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSergeant, OBJ_SERGEANT, "", QFill(gm, "Talk {co} down on the radio (Champion, or Trusted and a Soldier)|Stand aside and let them make the arrest"), m_iSergeantClue, "Talk to the sergeant");
-			ResourceName squad = RZ_Mission_BustOut.SquadPrefab(gm);
+			// The squad wears Bastion's looks (People's looks)
+			ResourceName squad = gm.PickLook(RZ_Mission_BustOut.SquadPrefab(gm), RZ_Looks.SeedAt(m_vPost));
 			if (!squad.IsEmpty() && m_Squad.Spawn(squad, LandPointNear(m_vPost, 20, 35)))
 			{
 				TrackProp(m_Squad.m_Unit);

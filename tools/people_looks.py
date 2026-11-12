@@ -3,6 +3,8 @@
 
     py tools/people_looks.py            # write the prefabs (and their .meta) under Prefabs/ReforgerZ/People/
     py tools/people_looks.py --arrays   # also print the look arrays to paste into RZ_GameMode.et
+    py tools/people_looks.py --check [--game <game folder> --mods <Workshop mods folder>]
+                                        # fail if any faction person can spawn in anything but a look
 
 Every faction person slot (a guard, an occupant, a quartermaster, a crew, a hunter squad, a council
 head, an outpost or stronghold leader) can list variant prefabs; a body picks one by a stable seed
@@ -20,7 +22,21 @@ variants as text prefabs:
 - a group look inherits the slot's group and lists other character looks as its members.
 - the faction group prefabs themselves (BASES: the slots' own groups and the missions' faction groups)
   get looks as their members, so a group spawned without a look is dressed too.
+- a look built on a parent with editable-entity variants switches them off (VARIANTS): a vanilla AI
+  group spawns each member as a random variant of its prefab, so without it a look came out as the
+  vanilla soldier it's built on half the time.
 - a look dropped from the tables is deleted with its .meta.
+
+--check writes nothing. It fails if the prefabs on disk aren't what the tables write; if a faction group
+(the dressed groups, the group looks, the slots' groups) lists anything but character looks, its first
+(leader) slot included; if a look leaves a random variant on; if RZ_GameMode.et's Looks lists aren't the
+tables' looks, aren't registered in RegisterLooks, or sit next to a slot prefab other than the look's
+parent (PickLook keys on it); or if a script spawns a faction person slot (a field RegisterLooks gives
+looks, a function returning one, or a local set from one) without PickLook. With --game and --mods (or
+RZ_GAME_DIR and RZ_MODS_DIR) it also reads the game's and the Workshop dependencies' .rdb and .pak files:
+every garment and parent ResourceName must resolve by its GUID, every slot a look sets must be on its
+parent (Zelik's Face and Head included), every item list packed into a garment a look changes must move
+with it, and VARIANTS must be the parents' real variants.
 
 Faces aren't set: the vanilla identity picks one from the faction's identity config at each spawn.
 
@@ -32,7 +48,9 @@ elsewhere, or RZ_RESOURCE_INDEX=none to skip the check. No dependencies beyond P
 import hashlib
 import os
 import re
+import struct
 import sys
+import zlib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = "Prefabs/ReforgerZ/People"
@@ -194,6 +212,11 @@ PARENTS = {
     "fia_medic": ("{4E29194BA809DF32}Prefabs/Characters/Factions/INDFOR/FIA/Character_FIA_AC_Medic.et", "520EC961A090B1EE",
                   {"Pants": ["{5D7CC173FAA7C00E}"], "Jacket": ["{5D7CC173FAA7C00C}"],
                    "Back": ["{7A13C0A0F1A85008}", "{5DF8B4EAF98C1278}"]}),
+    # the survivor group's two civilians
+    "civ_turtleneck": ("{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_2.et",
+                       "520EC961A090B1EE", {"Pants": ["{60DCBCECAC6C6E65}"]}),
+    "civ_cottonshirt": ("{408B8BD5E3F09FF3}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_3.et",
+                        "520EC961A090B1EE", {"Pants": ["{60DCBCECAC6C6E65}"]}),
     # the stronghold leaders
     "leader_haven": ("{D5F88991398C10EA}Prefabs/ReforgerZ/Leaders/RZ_Leader_Haven.et", "520EC961A090B1EE",
                      {"Pants": ["{60DCBCECAC6C6E65}"]}),
@@ -232,6 +255,21 @@ PARENTS = {
     "grp_truck_halcyon": ("{A43CF9781613D2D1}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Halcyon.et", "0000000000000001", None),
 }
 
+# The editable-entity variants a parent inherits (SCR_EditableCharacterComponent's m_VariantData):
+# parent key -> (component line, variant data line, [variant ids]). A vanilla AI group spawns each
+# member with SpawnEntityPrefabEx(prefab, true): it swaps the prefab for one of its enabled variants
+# at random, the prefab itself counting as one. The US rifleman and his variant 1 list each other, so
+# a look built on either came out of a group as the plain US rifleman half the time (the play-test's
+# Halcyon pair: one in hazmat, one in woodland). Every look switches its parent's variants off.
+# Read from the game by --check, which fails if this table falls behind.
+EDITABLE = 'SCR_EditableCharacterComponent "{520EA1D2F659C85C}"'
+US_VARIANTS = (EDITABLE, 'SCR_EditableEntityVariantData "{60F6B2B4BAE04806}"', ["{60F6B2B4B9D3CC9B}"])
+VARIANTS = {
+    "us_rifleman": US_VARIANTS,
+    "us_rifleman_v1": US_VARIANTS,
+    "occ_bastion": US_VARIANTS,
+}
+
 # ------------------------------------------------------------------------------------------ the looks
 # (folder, file stem, parent, {slot: item}, {slot whose items move: to slot}). "" empties a slot.
 # Every look sets every garment you can see (DRESSED below), so nothing of the parent's own kit (a US
@@ -264,6 +302,9 @@ CHARS = [
     ("Haven", "RZ_CouncilHead_Beret", "council", {"Hat": "beret_brown", "Jacket": "turtle_beige", "Pants": "suitpants_black", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
     ("Haven", "RZ_Leader_Haven_Denim", "leader_haven", {"Hat": "flatcap_darkgrey", "Jacket": "denim_brown", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
     ("Haven", "RZ_Leader_Haven_Knit", "leader_haven", {"Hat": "knit_brown", "Jacket": "turtle_beige", "Pants": "trousers_lightbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool"}, {}),
+    # The survivors' two civilians (the survivor group): the Haven's people, unarmed
+    ("Haven", "RZ_Civ_Haven_Knit", "civ_turtleneck", {"Hat": "knit_blue", "Jacket": "turtle_beige", "Pants": "trousers_darkbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_wool"}, {}),
+    ("Haven", "RZ_Civ_Haven_Denim", "civ_cottonshirt", {"Hat": "flatcap_lightgrey", "Jacket": "denim_brown", "Pants": "trousers_lightbrown", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
     # The Haven's watch (guards, safehouse guards): green oilskins and fisherman's trousers, the hat varies
     ("Haven", "RZ_Armed_Haven_Hunter", "fia_ac", {"Hat": "knit_black", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": ""}, {}),
     ("Haven", "RZ_Armed_Haven_Watch", "fia_ac", {"Hat": "trucker_everon", "Jacket": "raincoat_green", "Pants": "fisher_green", "Boots": "boots_soviet_dirty", "ArmoredVest": "", "HandWear": "gloves_leather"}, {}),
@@ -401,11 +442,9 @@ BASES = [
     ("Prefabs/ReforgerZ/Missions/RZ_EscortSoldier.et", ["RZ_Armed_Bastion_Patrol"]),
     ("Prefabs/ReforgerZ/Missions/RZ_RedHandGroup.et", ["RZ_Armed_RedHand_Balaclava", "RZ_Armed_RedHand_Helmet", "RZ_Armed_RedHand_Tracksuit", "RZ_Armed_RedHand_Hood"]),
     ("Prefabs/ReforgerZ/Missions/RZ_EscortScientist.et", ["RZ_Staff_Halcyon_Researcher"]),
-    # the survivors (the Haven's side): their armed men in work clothes, the two civilians as they are
-    ("Prefabs/ReforgerZ/Missions/RZ_SurvivorGroup.et", ["RZ_Armed_Haven_Farmhand",
-                                                        "{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_2.et",
-                                                        "RZ_Armed_Haven_Worker",
-                                                        "{408B8BD5E3F09FF3}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_3.et"]),
+    # the survivors (the Haven's side): their armed men and two unarmed civilians, in work clothes
+    ("Prefabs/ReforgerZ/Missions/RZ_SurvivorGroup.et", ["RZ_Armed_Haven_Farmhand", "RZ_Civ_Haven_Knit",
+                                                        "RZ_Armed_Haven_Worker", "RZ_Civ_Haven_Denim"]),
 ]
 
 # The arrays on RZ_GameMode.et: (settings block, field, parent key, stem prefix).
@@ -487,8 +526,15 @@ def char_text(parent_key, slots, moves):
     missing = [slot for slot in DRESSED if slot not in worn]
     if missing:
         sys.exit("people_looks: a look on %s leaves %s to the parent: set them (\"\" empties one)" % (parent_key, ", ".join(missing)))
-    lines = ['SCR_ChimeraCharacter : "%s" {' % parent, ' ID "%s"' % entity_id, " components {",
-             '  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {', "   Slots {"]
+    lines = ['SCR_ChimeraCharacter : "%s" {' % parent, ' ID "%s"' % entity_id, " components {"]
+    # No random variant: a group spawns the look itself, never the vanilla soldier it's built on
+    if parent_key in VARIANTS:
+        component, data, ids = VARIANTS[parent_key]
+        lines += ["  %s {" % component, "   m_VariantData %s {" % data, "    m_aVariants {"]
+        for vid in ids:
+            lines += ['     SCR_EditableEntityVariant "%s" {' % vid, "      m_bEnabled 0", "     }"]
+        lines += ["    }", "   }", "  }"]
+    lines += ['  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {', "   Slots {"]
     for slot in SLOT_ORDER:
         if slot not in worn:
             continue
@@ -570,21 +616,23 @@ def write(path, text):
         f.write(text)
 
 
-def main():
-    check_index([v for v in I.values()] + [PARENTS[k][0] for k in PARENTS if not PARENTS[k][0].split("}")[1].startswith("Prefabs/ReforgerZ")])
+def build():
+    """Every file the tool owns ({path: text}: the looks, their .meta and the dressed groups) and the
+    looks' ResourceNames by stem."""
+    files = {}
     made = {}
     for folder, stem, parent, slots, moves in CHARS:
         rn, path = resource(folder, stem)
-        write(path, char_text(parent, slots, moves))
-        write(path + ".meta", META % rn)
+        files[path] = char_text(parent, slots, moves)
+        files[path + ".meta"] = META % rn
         made[stem] = rn
     for folder, stem, parent, members in GROUPS:
         rn, path = resource(folder, stem)
         for m in members:
             if m not in made:
                 sys.exit("people_looks: group %s lists unknown look %s" % (stem, m))
-        write(path, group_text(parent, [made[m] for m in members]))
-        write(path + ".meta", META % rn)
+        files[path] = group_text(parent, [made[m] for m in members])
+        files[path + ".meta"] = META % rn
         made[stem] = rn
     for path, members in BASES:
         names = []
@@ -595,26 +643,568 @@ def main():
                 names.append(made[m])
             else:
                 sys.exit("people_looks: %s lists unknown look %s" % (path, m))
-        write(path, base_text(path, names))
+        files[path] = base_text(path, names)
+    return files, made
+
+
+def looks_on_disk():
+    """The .et files under OUT now, relative to ROOT."""
+    found = []
+    for dirpath, _, names in os.walk(os.path.join(ROOT, OUT)):
+        for f in names:
+            if f.endswith(".et"):
+                found.append(os.path.relpath(os.path.join(dirpath, f), ROOT).replace(os.sep, "/"))
+    return sorted(found)
+
+
+def main():
+    if "--check" in sys.argv:
+        sys.exit(check())
+    check_index([v for v in I.values()] + [PARENTS[k][0] for k in PARENTS if not PARENTS[k][0].split("}")[1].startswith("Prefabs/ReforgerZ")])
+    files, made = build()
+    for path, text in files.items():
+        write(path, text)
     # Looks no longer in the tables go, with their .meta
-    kept = set(resource(f, st)[1] for f, st, *_ in CHARS + GROUPS)
     gone = 0
-    for dirpath, _, files in os.walk(os.path.join(ROOT, OUT)):
-        for f in files:
-            if not f.endswith(".et"):
-                continue
-            rel = os.path.relpath(os.path.join(dirpath, f), ROOT).replace(os.sep, "/")
-            if rel not in kept:
-                os.remove(os.path.join(dirpath, f))
-                if os.path.exists(os.path.join(dirpath, f + ".meta")):
-                    os.remove(os.path.join(dirpath, f + ".meta"))
-                gone += 1
+    for rel in looks_on_disk():
+        if rel not in files:
+            os.remove(os.path.join(ROOT, rel))
+            if os.path.exists(os.path.join(ROOT, rel + ".meta")):
+                os.remove(os.path.join(ROOT, rel + ".meta"))
+            gone += 1
     print("people_looks: wrote %d prefabs under %s, dressed %d faction groups, removed %d old looks"
           % (len(made), OUT, len(BASES), gone))
     if "--arrays" in sys.argv:
         for block, field, _, prefix in ARRAYS:
             names = [made[s] for s in made if s.startswith(prefix)]
             print("%s.%s {\n %s\n}" % (block, field, " ".join('"%s"' % n for n in names)))
+
+
+# ------------------------------------------------------------------------------------------ prefab text
+def parse_et(text):
+    """An Enfusion text prefab as a tree: {"h": header, "p": [property lines], "c": [child nodes]}.
+    Line based, which is how Workbench writes them: a line ending in { opens a node, } closes it."""
+    root = {"h": "", "p": [], "c": []}
+    stack = [root]
+    for line in text.split("\n"):
+        s = line.strip()
+        if not s:
+            continue
+        if s.endswith("{"):
+            node = {"h": s[:-1].strip(), "p": [], "c": []}
+            stack[-1]["c"].append(node)
+            stack.append(node)
+        elif s == "}" and len(stack) > 1:
+            stack.pop()
+        else:
+            stack[-1]["p"].append(s)
+    return root["c"][0] if root["c"] else None
+
+
+def child(node, start):
+    for c in node["c"] if node else []:
+        if c["h"] == start or c["h"].startswith(start + " "):
+            return c
+    return None
+
+
+def strings(node):
+    """The quoted values of a node's lines (an array of ResourceNames)."""
+    found = []
+    for line in node["p"] if node else []:
+        found += re.findall(r'"([^"]*)"', line)
+    return found
+
+
+def prop(node, key):
+    for line in node["p"] if node else []:
+        if line == key or line.startswith(key + " "):
+            return line[len(key):].strip().strip('"')
+    return None
+
+
+def parent_of(node):
+    m = re.search(r':\s*"(\{[0-9A-F]{16}\}[^"]+)"', node["h"]) if node else None
+    return m.group(1) if m else None
+
+
+def rn_path(rn):
+    return rn.split("}", 1)[1] if rn.startswith("{") else rn
+
+
+def rn_guid(rn):
+    return rn[1:17] if rn.startswith("{") else None
+
+
+def disk_guid(path):
+    """A file of ours: the GUID its .meta gives it."""
+    meta = os.path.join(ROOT, path + ".meta")
+    if not os.path.exists(meta):
+        return None
+    m = re.search(r'Name "\{([0-9A-F]{16})\}', open(meta, encoding="utf-8").read())
+    return m.group(1) if m else None
+
+
+# ------------------------------------------------------------------------------------------ game data
+class GameData:
+    """The game's and the Workshop dependencies' packed data, for --check: each resource's GUID from
+    the resourceDatabase.rdb files, and prefab text from the .pak files (read as tools/pak_extract.py
+    does). game: the game's or the server's folder (or its addons folder); mods: the folder that holds
+    the downloaded Workshop mods (BaconZombies_622120A5448725E3 and the rest)."""
+
+    def __init__(self, game, mods):
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from pak_extract import read_tree
+        addons = os.path.join(game, "addons") if os.path.isdir(os.path.join(game, "addons")) else game
+        self.rdbs = []
+        self.files = {}  # path -> [(pak, offset, packed size, size)]: the game's first, then the mods'
+        for sub in ("core", "data"):
+            self._add(os.path.join(addons, sub), read_tree)
+        if not self.rdbs:
+            sys.exit("people_looks: no resourceDatabase.rdb under %s" % addons)
+        # Only the mods the project loads: addon.gproj's dependencies, and theirs
+        by_guid = {}
+        for d in sorted(os.listdir(mods)) if mods and os.path.isdir(mods) else []:
+            m = re.search(r"_([0-9A-F]{16})$", d)
+            if m:
+                by_guid[m.group(1)] = os.path.join(mods, d)
+        wanted = self._deps(os.path.join(ROOT, "addon.gproj"))
+        seen = set()
+        while wanted:
+            g = wanted.pop()
+            if g in seen or g not in by_guid:
+                continue
+            seen.add(g)
+            self._add(by_guid[g], read_tree)
+            wanted += self._deps(os.path.join(by_guid[g], "addon.gproj"))
+        self.mod_count = len(seen)
+
+    @staticmethod
+    def _deps(gproj):
+        if not os.path.exists(gproj):
+            return []
+        text = open(gproj, encoding="utf-8", errors="replace").read()
+        m = re.search(r"Dependencies \{([^}]*)\}", text)
+        return re.findall(r'"([0-9A-F]{16})"', m.group(1)) if m else []
+
+    def _add(self, folder, read_tree):
+        if not os.path.isdir(folder):
+            return
+        rdb = os.path.join(folder, "resourceDatabase.rdb")
+        if os.path.exists(rdb):
+            self.rdbs.append(open(rdb, "rb").read())
+        for pak in sorted(f for f in os.listdir(folder) if f.endswith(".pak")):
+            handle, entries = read_tree(os.path.join(folder, pak))
+            handle.close()
+            for name, off, packed, size in entries:
+                self.files.setdefault(name.lstrip("/"), []).append((os.path.join(folder, pak), off, packed, size))
+
+    def guids(self, path):
+        """The GUIDs the game knows a path by: usually one, but two mods can each ship a file at the
+        same path (MedicalAccessories' mask sits at Zelik's ZEL_FaceClothing_Base.et), and the game
+        tells them apart by GUID. An .rdb entry is the length (u32) of the path and its closing zero,
+        the path, the zero, six bytes, then the GUID (eight bytes, little-endian)."""
+        key = struct.pack("<I", len(path.encode()) + 1) + path.encode() + b"\x00"
+        found = []
+        for data in self.rdbs:
+            i = data.find(key)
+            if i >= 0:
+                j = i + len(key) + 6
+                found.append(data[j:j + 8][::-1].hex().upper())
+        return found
+
+    def texts(self, path):
+        """A prefab's text, then each override of the same path a mod brings (Zelik's Character adds
+        its Face and Head slots to Character_Base that way)."""
+        local = os.path.join(ROOT, path)
+        if path.startswith("Prefabs/ReforgerZ/") and os.path.exists(local):
+            return [open(local, encoding="utf-8").read()]
+        found = []
+        for pak, off, packed, size in self.files.get(path, []):
+            with open(pak, "rb") as f:
+                f.seek(off)
+                blob = f.read(packed)
+            if packed != size:
+                blob = zlib.decompress(blob)
+            found.append(blob.decode("utf-8", "replace"))
+        return found
+
+    def resolves(self, rn):
+        """Whether the game finds this ResourceName by its GUID: ours by the .meta, the rest by .rdb."""
+        path = rn_path(rn)
+        if path.startswith("Prefabs/ReforgerZ/"):
+            return disk_guid(path) == rn_guid(rn)
+        return rn_guid(rn) in self.guids(path)
+
+    def view(self, rn):
+        """What a prefab ends up with, merged down its chain: its loadout slots {name: prefab}, its
+        starting item lists {id: [target storage, items]} and its editable-entity variants
+        {id: [prefab, enabled]}. None if a prefab of the chain can't be read."""
+        chain = []
+        while rn:
+            texts = self.texts(rn_path(rn))
+            if not texts:
+                return None
+            nodes = [parse_et(t) for t in texts]
+            chain.append(nodes)
+            rn = parent_of(nodes[0])
+        out = {"slots": {}, "items": {}, "variants": {}, "variant_lines": None}
+        for nodes in reversed(chain):
+            for node in nodes:
+                comps = child(node, "components")
+                loadout = child(child(comps, "BaseLoadoutManagerComponent"), "Slots")
+                for slot in loadout["c"] if loadout else []:
+                    name = slot["h"].split()[-1]
+                    out["slots"].setdefault(name, "")
+                    if prop(slot, "Prefab") is not None:
+                        out["slots"][name] = prop(slot, "Prefab")
+                inv = child(child(comps, "SCR_InventoryStorageManagerComponent"), "InitialInventoryItems")
+                for item in inv["c"] if inv else []:
+                    m = re.search(r'"(\{[0-9A-F]{16}\})"', item["h"])
+                    if not m:
+                        continue
+                    entry = out["items"].setdefault(m.group(1), ["", []])
+                    if prop(item, "TargetStorage") is not None:
+                        entry[0] = prop(item, "TargetStorage")
+                    spawn = child(item, "PrefabsToSpawn")
+                    if spawn is not None:
+                        entry[1] = (entry[1] if spawn["h"].endswith("+") else []) + strings(spawn)
+                editable = child(comps, EDITABLE.split()[0])
+                data = child(editable, "m_VariantData")
+                if data is not None:
+                    out["variant_lines"] = (editable["h"], data["h"][len("m_VariantData "):])
+                variants = child(data, "m_aVariants")
+                for v in variants["c"] if variants else []:
+                    m = re.search(r'"(\{[0-9A-F]{16}\})"', v["h"])
+                    if not m:
+                        continue
+                    entry = out["variants"].setdefault(m.group(1), ["", True])
+                    if prop(v, "m_sVariantPrefab") is not None:
+                        entry[0] = prop(v, "m_sVariantPrefab")
+                    if prop(v, "m_bEnabled") is not None:
+                        entry[1] = prop(v, "m_bEnabled") != "0"
+        return out
+
+
+def game_data():
+    """--game <folder> and --mods <folder> (or RZ_GAME_DIR and RZ_MODS_DIR), else None."""
+    found = {"--game": os.environ.get("RZ_GAME_DIR", ""), "--mods": os.environ.get("RZ_MODS_DIR", "")}
+    args = sys.argv[1:]
+    for flag in found:
+        if flag in args and args.index(flag) + 1 < len(args):
+            found[flag] = args[args.index(flag) + 1]
+    if not found["--game"]:
+        return None
+    return GameData(found["--game"], found["--mods"])
+
+
+def check_game(game):
+    """Against the game's own data: every ResourceName a look uses resolves by its GUID, every slot it
+    sets is on its parent, every item list packed into a garment it changes moves with it, and the
+    VARIANTS table is the parents' real variants."""
+    errors = []
+    for short, rn in sorted(I.items()):
+        if rn and not game.resolves(rn):
+            known = ", ".join("{%s}" % g for g in game.guids(rn_path(rn)))
+            errors.append("garment %s: %s doesn't resolve (the game has that path as %s)"
+                          % (short, rn, known if known else "nothing"))
+    views = {}
+    for key, (rn, _, packed) in sorted(PARENTS.items()):
+        if not game.resolves(rn):
+            errors.append("parent %s: %s doesn't resolve" % (key, rn))
+            continue
+        if packed is None:
+            continue
+        view = game.view(rn)
+        if view is None:
+            errors.append("parent %s: a prefab of its chain can't be read (a Workshop mod missing?)" % key)
+            continue
+        views[key] = view
+        on = sorted(vid for vid, (_, enabled) in view["variants"].items() if enabled)
+        table = VARIANTS.get(key)
+        if on and (not table or sorted(table[2]) != on or (table[0], table[1]) != view["variant_lines"]):
+            errors.append("parent %s has random variants %s (%s): put them in VARIANTS"
+                          % (key, on, ", ".join(view["variants"][v][0] for v in on)))
+        if table and not on:
+            errors.append("parent %s has no random variant: take it out of VARIANTS" % key)
+    for folder, stem, parent, slots, moves in CHARS:
+        view = views.get(parent)
+        if view is None:
+            continue
+        worn = dict(slots)
+        for item in slots.values():
+            if item in BLOCKS_PANTS:
+                worn["Pants"] = ""
+        for slot in sorted(worn):
+            if slot not in view["slots"]:
+                errors.append("%s sets %s, a slot its parent hasn't (a Workshop mod missing?)" % (stem, slot))
+        # Every item list the parent packs into a garment the look changes must move with it
+        packed = PARENTS[parent][2] or {}
+        for cid, (target, items) in sorted(view["items"].items()):
+            slot = target.split("/")[0]
+            if not items or slot not in worn or I.get(worn[slot]) == view["slots"].get(slot):
+                continue
+            if cid not in packed.get(slot, []):
+                errors.append("%s changes %s, but its parent's items %s (in %s) don't move: add them to PARENTS[%r]"
+                              % (stem, slot, cid, target, parent))
+    return errors
+
+
+# ------------------------------------------------------------------------------------------ spawn paths
+SCRIPTS = os.path.join(ROOT, "scripts", "Game", "ReforgerZ")
+GAME_MODE_CODE = os.path.join(SCRIPTS, "Core", "RZ_GameModeComponent.c")
+# A call that puts a body in the world, or hands a prefab on to one that does
+SPAWN_CALL = re.compile(r"\b(\w*Spawn\w*|Place|WrapInGroup)\s*\(")
+
+
+def strip_code(text):
+    """Comments and string contents out; line breaks kept, so line numbers still match."""
+    text = re.sub(r"/\*.*?\*/", lambda m: "\n" * m.group(0).count("\n"), text, flags=re.S)
+    text = re.sub(r'"(\\.|[^"\\\n])*"', '""', text)
+    return re.sub(r"//[^\n]*", "", text)
+
+
+def functions(text):
+    """(class, function, parameters, body, body offset) for every function of every class."""
+    found = []
+    cls = None
+    depth = 0
+    pending = None
+    start = None
+    last = 0
+    for m in re.finditer(r"[{}]", text):
+        before = text[last:m.start()]
+        last = m.end()
+        if m.group(0) == "{":
+            if depth == 0:
+                c = re.search(r"\bclass\s+(\w+)[^;{}]*$", before)
+                cls = c.group(1) if c else None
+            elif depth == 1:
+                f = re.search(r"\b(\w+)\s*\(([^;{}]*)\)\s*$", before)
+                start = (f.group(1), f.group(2), m.end()) if f else None
+            depth += 1
+        else:
+            depth -= 1
+            if depth == 1 and start:
+                name, params, at = start
+                found.append((cls, name, params, text[at:m.start()], at))
+                start = None
+    return found
+
+
+def slot_fields(code):
+    """RegisterLooks: the faction person slots, as {(owner class, slot field)}, and the
+    (settings block, slot field, looks field) of each m_Looks.Add."""
+    body = re.search(r"void RegisterLooks\(\)\s*\{(.*?)\n\t\}", code, re.S)
+    if not body:
+        return set(), []
+    local = dict((v, (t, b)) for t, v, b in re.findall(r"(\w+) (\w+) = (m_\w+Settings);", body.group(1)))
+    fields = set()
+    pairs = []
+    for recv, field, looks in re.findall(r"m_Looks\.Add\((?:(\w+)\.)?(\w+), (?:\w+\.)?(\w+)\)", body.group(1)):
+        owner, block = "RZ_GameModeComponent", "(game mode)"
+        if recv in local:
+            owner, block = local[recv]
+        elif recv:
+            decl = re.search(r"\b(RZ_\w+) %s;" % recv, code)
+            owner, block = (decl.group(1) if decl else "?"), recv
+        fields.add((owner, field))
+        pairs.append((block, field, looks))
+    return fields, pairs
+
+
+def scan_spawns():
+    """Every spawn of a faction person slot goes through PickLook, or through a helper that calls it
+    on the prefab it's given. A slot source is a slot field, a function that returns one, or a local
+    set from one."""
+    scripts = {}
+    for dirpath, _, names in os.walk(SCRIPTS):
+        for f in sorted(names):
+            if f.endswith(".c"):
+                path = os.path.join(dirpath, f)
+                scripts[path] = strip_code(open(path, encoding="utf-8").read())
+    sources, _ = slot_fields(open(GAME_MODE_CODE, encoding="utf-8").read())
+    bases = {}
+    classes = set()
+    for text in scripts.values():
+        for c, b in re.findall(r"\bclass (\w+)(?:\s*:\s*(\w+))?", text):
+            classes.add(c)
+            if b:
+                bases[c] = b
+
+    def kin(a, b):
+        for x, y in ((a, b), (b, a)):
+            while x:
+                if x == y:
+                    return True
+                x = bases.get(x)
+        return False
+
+    def type_of(recv, body, text):
+        if recv in classes:
+            return recv
+        for where in (body, text):
+            d = re.search(r"\b([A-Z]\w+)\s+%s\s*[;=,)]" % re.escape(recv), where)
+            if d:
+                return d.group(1)
+        return None
+
+    def uses(expr, cls, body, text, tainted):
+        """The slot sources an expression reads."""
+        hits = []
+        for owner, name in sources:
+            if name not in expr:
+                continue
+            for m in re.finditer(r"(?:(\w+)\s*(?:\(\))?\s*\.\s*)?\b%s\b" % name, expr):
+                if m.group(1):
+                    t = type_of(m.group(1), body, text)
+                    if t is None or kin(t, owner):
+                        hits.append(name)
+                elif cls and kin(cls, owner):
+                    hits.append(name)
+        for var in tainted:
+            if re.search(r"(?<![.\w])%s\b" % var, expr):
+                hits.append(var)
+        return hits
+
+    def mentions(body):
+        return any(name in body for _, name in sources)
+
+    def tainted_in(cls, body, text):
+        tainted = set()
+        if not mentions(body):
+            return tainted
+        for _ in range(3):
+            for stmt in body.split(";"):
+                if "=" not in stmt:
+                    continue
+                a = re.search(r"\b(\w+)\s*=\s*([^=].*)$", stmt.strip(), re.S)
+                if a and "PickLook" not in a.group(2) and uses(a.group(2), cls, body, text, tainted):
+                    tainted.add(a.group(1))
+        return tainted
+
+    funcs = [(path, cls, name, params, body, at) for path, text in scripts.items()
+             for cls, name, params, body, at in functions(text)]
+    # Getters: functions that return a source, to a fixed point
+    grown = True
+    while grown:
+        grown = False
+        for path, cls, name, params, body, at in funcs:
+            if not cls or (cls, name) in sources or not mentions(body):
+                continue
+            tainted = tainted_in(cls, body, scripts[path])
+            for ret in re.findall(r"\breturn\b([^;]*);", body):
+                if "PickLook" not in ret and uses(ret, cls, body, scripts[path], tainted):
+                    sources.add((cls, name))
+                    grown = True
+                    break
+    # Helpers that dress the prefab they're given: a ResourceName parameter goes into PickLook
+    helpers = set()
+    for path, cls, name, params, body, at in funcs:
+        for p in re.findall(r"\bResourceName\s+(\w+)", params):
+            if re.search(r"PickLook\([^;]*\b%s\b" % p, body):
+                helpers.add(name)
+    errors = []
+    for path, cls, name, params, body, at in funcs:
+        if (cls, name) in sources or name in helpers or not mentions(body):
+            continue
+        text = scripts[path]
+        tainted = tainted_in(cls, body, text)
+        offset = at
+        for stmt in body.split(";"):
+            here = offset
+            offset += len(stmt) + 1
+            if "PickLook" in stmt or not [c for c in SPAWN_CALL.findall(stmt) if c not in helpers]:
+                continue
+            hit = uses(stmt, cls, body, text, tainted)
+            if hit:
+                line = text[:here + SPAWN_CALL.search(stmt).start()].count("\n") + 1
+                errors.append("%s:%d %s.%s spawns a faction person slot (%s) without PickLook"
+                              % (os.path.relpath(path, ROOT).replace(os.sep, "/"), line, cls, name,
+                                 ", ".join(sorted(set(hit)))))
+    return errors
+
+
+# ------------------------------------------------------------------------------------------ the check
+def check():
+    """Exit 1 if any faction person can come out in anything but a faction look."""
+    errors = []
+    files, made = build()
+    chars = set(made[stem] for _, stem, *_ in CHARS)
+    # 1. The prefabs on disk are what the tables write
+    for path, text in sorted(files.items()):
+        full = os.path.join(ROOT, path)
+        if not os.path.exists(full) or open(full, encoding="utf-8").read() != text:
+            errors.append("%s isn't what the tables write: run py tools/people_looks.py" % path)
+    for rel in looks_on_disk():
+        if rel not in files:
+            errors.append("%s isn't in the tables: run py tools/people_looks.py" % rel)
+    # 2. Every faction group lists character looks only, its first (leader) slot included
+    groups = set(path for path, _ in BASES)
+    groups |= set(resource(f, st)[1] for f, st, *_ in GROUPS)
+    groups |= set(rn_path(rn) for rn, _, packed in PARENTS.values() if packed is None)
+    for path in sorted(groups):
+        node = parse_et(open(os.path.join(ROOT, path), encoding="utf-8").read())
+        members = strings(child(node, "m_aUnitPrefabSlots"))
+        if not members:
+            errors.append("%s: no members" % path)
+        for m in members:
+            if m not in chars:
+                errors.append("%s lists %s, not a faction look" % (path, m))
+            elif disk_guid(rn_path(m)) != rn_guid(m):
+                errors.append("%s lists %s, whose .meta has another GUID" % (path, m))
+    # 3. No look can be swapped for a random variant of its parent
+    for folder, stem, parent, slots, moves in CHARS:
+        if parent not in VARIANTS:
+            continue
+        node = parse_et(files[resource(folder, stem)[1]])
+        data = child(child(child(node, "components"), EDITABLE.split()[0]), "m_VariantData")
+        off = set()
+        for v in child(data, "m_aVariants")["c"] if child(data, "m_aVariants") else []:
+            if prop(v, "m_bEnabled") == "0":
+                off.add(re.search(r'"(\{[0-9A-F]{16}\})"', v["h"]).group(1))
+        if off != set(VARIANTS[parent][2]):
+            errors.append("%s leaves its parent's random variants on" % stem)
+    # 4. The game mode registers every slot's looks, under the slot's own prefab
+    _, pairs = slot_fields(open(GAME_MODE_CODE, encoding="utf-8").read())
+    registered = dict(((block, looks), field) for block, field, looks in pairs)
+    gm = parse_et(open(os.path.join(ROOT, "Prefabs/ReforgerZ/Core/RZ_GameMode.et"), encoding="utf-8").read())
+    comp = child(child(gm, "components"), "RZ_GameModeComponent")
+    for block, field, parent, prefix in ARRAYS:
+        append = field.endswith(" (append)")
+        field = field.replace(" (append)", "")
+        holder = comp if block == "(game mode)" else child(comp, block)
+        listed = strings(child(holder, field))
+        want = [made[s] for s in made if s.startswith(prefix)]
+        if append:
+            missing = [w for w in want if w not in listed]
+            if missing:
+                errors.append("RZ_GameMode.et %s.%s misses %s" % (block, field, ", ".join(missing)))
+            continue
+        if sorted(listed) != sorted(want):
+            errors.append("RZ_GameMode.et %s.%s isn't the %s* looks: paste people_looks.py --arrays" % (block, field, prefix))
+        slot = registered.get((block, field))
+        if not slot:
+            errors.append("RegisterLooks doesn't register %s.%s" % (block, field))
+            continue
+        value = prop(holder, slot) if holder else None
+        if value != PARENTS[parent][0]:
+            errors.append("RZ_GameMode.et %s.%s is %s, not %s: PickLook would find no looks for it"
+                          % (block, slot, value, PARENTS[parent][0]))
+    # 5. Every spawn of a slot picks a look
+    errors += scan_spawns()
+    # 6. Against the game's own data, when it's given
+    game = game_data()
+    if game:
+        errors += check_game(game)
+        where = "read against the game and %d Workshop mods" % game.mod_count
+    else:
+        where = "no game data given (--game, --mods): GUIDs, slots and variants not read"
+    for e in errors:
+        print("people_looks: " + e)
+    print("people_looks --check: %d looks, %d faction groups, %s: %s"
+          % (len(made), len(groups), where, "FAILED (%d)" % len(errors) if errors else "OK"))
+    return 1 if errors else 0
 
 
 if __name__ == "__main__":
