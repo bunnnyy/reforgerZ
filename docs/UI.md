@@ -333,7 +333,7 @@ detail:
 | The heading | The name, then one line: the faction, who gave it and the area ("The Haven · from Elder Mara · Morton, a few km north-west"; a questline's stage stands for "from") |
 | The brief | A few lines in the giver's voice: what it is and why it matters (the job's own brief, cut to about three sentences at a sentence's end; `RZ_QuestText.Short`). Only what you were told |
 | Objectives | New Vegas style, up to six: done ones struck through and faint with a tick; the current one bright after a filled diamond; the known next ones dim after an open diamond; an optional one as "(Optional) ..."; a failed one as "Failed: ...", red |
-| Reward, as far as you know | About so much Fame and Favor with the giver, or "It depends on how it ends." |
+| Reward, as far as you know | About so much Fame and Favor with the giver, "It depends on how it ends.", or "No pay. It shows you the way, that's all." for a job that pays nothing (Where the Work Is) |
 | Requirements | Only on a job that's offered and asks something of you |
 | What you know | What you've found, who it went to, the clues you've read (hidden when empty) |
 

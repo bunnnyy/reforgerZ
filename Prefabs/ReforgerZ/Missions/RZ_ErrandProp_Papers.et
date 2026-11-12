@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "0544EA8975A2EC02"
+ components {
+  RplComponent "{09726A6CC64F10A3}" {
+  }
+  Hierarchy "{FA506E36D9DBC359}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "228717E9D49DC0B9"
+   components {
+    Hierarchy "{FC9D4EE24A288C8E}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 0
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "F65D3670B6675DDC"
+   components {
+    Hierarchy "{44D2FB86317889DF}" {
+    }
+   }
+   coords 0 0.45 0
+   angles 0 15 0
+  }
+ }
+}

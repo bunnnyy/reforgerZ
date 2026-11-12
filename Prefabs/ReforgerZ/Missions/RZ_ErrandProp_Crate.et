@@ -1,0 +1,31 @@
+GenericEntity {
+ ID "D597EC27FA24D012"
+ components {
+  RplComponent "{AF49DB228E5A67CA}" {
+  }
+  Hierarchy "{6E97D7D749E6C2A6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "77C6F2ACA9537731"
+   components {
+    Hierarchy "{3178B527C1ACCBE0}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 10 0
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "769D9EE7D9FC8F13"
+   coords 0.65 0 0.15
+   angles 0 0 0
+  }
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "DC5E50F2B8800A89"
+   coords 0.7 0 -0.1
+   angles 0 40 0
+  }
+ }
+}
