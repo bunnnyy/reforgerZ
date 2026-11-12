@@ -165,7 +165,7 @@ class RZ_Mission_JunctionBoxes : RZ_PuzzleMission
 		m_iExtraHint = PickSwitch(true, inFix);
 
 		m_sTitle = "Junction Boxes";
-		m_sBrief = string.Format("Bastion needs the substation in %1 open. Four fuse boxes around town control the lock, and someone wired them in a hurry. Get every lamp green. The electrician left a note at the substation door.", s.m_sName);
+		m_sBrief = string.Format("Bastion needs the substation in %1 open: the nearest post's radio runs off that line, and without it the nightly call goes out on batteries. Four fuse boxes around town control the lock, and someone wired them in a hurry on Day 1. Get every lamp green. The electrician left a note at the substation door.", s.m_sName);
 		return true;
 	}
 
@@ -338,7 +338,7 @@ class RZ_Mission_WeighingVault : RZ_PuzzleMission
 		SpawnClue(gm, RZ_EPuzzleProp.CLUE, RZ_Util.RandomPointInRing(m_vScale, 2, 5), clue, "Read the riddle");
 
 		m_sTitle = "The Weighing Vault";
-		m_sBrief = string.Format("The old miller in %1 kept his savings in a vault that only opens for the right weight on his scale. The Haven could use what's inside. His riddle is pinned up next to it.", s.m_sName);
+		m_sBrief = string.Format("The old miller in %1 kept his savings in a vault that only opens for the right weight on his scale, and nobody has seen him since Day 2. The Haven could trade what's inside for a month of flour. His riddle is pinned up next to it.", s.m_sName);
 		return true;
 	}
 

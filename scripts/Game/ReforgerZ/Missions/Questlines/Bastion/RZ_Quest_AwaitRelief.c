@@ -642,7 +642,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 			run.Note("At {post}, {operator} wrote \"Reply received\" in the log after the nightly call, then crossed it out. It's happened four nights running.");
 
 		if (run.Flag("rifles") == 1)
-			run.Note("{cmd} is the commander whose name was on the Red Hand's page, for the rifles. He can't afford another mark against him.");
+			run.Note("{cmd} is the commander whose name was on the Red Hand's page, for the rifles. That post can't afford another mark against its commander.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1094,7 +1094,7 @@ class RZ_Quest_AwaitRelief : RZ_Questline
 	{
 		switch (run.m_iBranch)
 		{
-			case BRANCH_READ: return run.Fill("{co} has sent a squad to {post} to arrest {cmd}. Fight for him, take him in yourself, or talk {co} down.");
+			case BRANCH_READ: return run.Fill("{co} has sent a squad to {post} to arrest {cmd} for reading the page aloud. Stand with the post's commander, make the arrest yourself, or talk {co} down.");
 			case BRANCH_MOCKED: return run.Fill("The stronghold blames {operator} for the leak, and he has run. Find him: bring him in, or walk him to a safehouse.");
 			case BRANCH_STOVE:
 			{
@@ -1860,7 +1860,7 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 		if (m_bCopy)
 		{
 			// After the stove, this goes against the stronghold: it pays nothing for it
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{cmd} plays your copy twice with the volume low. Then he calls his men in. \"The page burned. This didn't.\""));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{cmd} plays your copy twice with the volume low, then calls the whole post in. \"The page burned. This didn't.\""));
 			Resolve(gm, playerId, RZ_EQuestApproach.BETRAY, RZ_Quest_AwaitRelief.OUT_READ, "played the copy to the commander", false);
 			return;
 		}
@@ -2106,7 +2106,7 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 		{
 			if (TryPersuade(gm, playerId, RZ_EFaction.MILITARY, 3, "soldier"))
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "The sergeant hands you his handset. You tell {co} what the page said, and that {cmd} only said it out loud. A long silence. Then: \"Squad, return to base. {cmd} stays. He answers to me.\""));
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "The sergeant hands you his handset. You tell {co} what the page said, and that {cmd} only said it out loud. A long silence. Then: \"Squad, return to base. {cmd} stays, and answers to me.\""));
 				Resolve(gm, playerId, RZ_EQuestApproach.PERSUADE, RZ_Quest_AwaitRelief.OUT_TALKED, "talked the commanding officer down");
 				return;
 			}
