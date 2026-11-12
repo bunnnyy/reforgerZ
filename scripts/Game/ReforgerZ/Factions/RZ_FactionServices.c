@@ -598,8 +598,8 @@ class RZ_FactionServices
 			if (!item || RZ_QuartermasterHelper.WasBought(item) || !RZ_FoodHelper.IsFood(item, m_aFenceWords))
 				continue;
 
-			inv.TryDeleteItem(item);
-			taken++;
+			if (inv.TryDeleteItem(item))
+				taken++;
 		}
 
 		return taken;

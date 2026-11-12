@@ -393,8 +393,8 @@ class RZ_ItemHelper
 			if (!Matches(item, words))
 				continue;
 
-			inv.TryDeleteItem(item);
-			taken++;
+			if (inv.TryDeleteItem(item))
+				taken++;
 		}
 
 		return taken;

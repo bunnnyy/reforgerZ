@@ -183,10 +183,10 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 			if (taken >= want)
 				break;
 
-			// As before the lab had a capacity: the item counts once it's asked to go (its value
-			// read first, while it still exists)
-			taken += RZ_LabHelper.ItemValue(item);
-			inv.TryDeleteItem(item);
+			// The item counts only once it's really gone (its value read first, while it still exists)
+			int itemValue = RZ_LabHelper.ItemValue(item);
+			if (inv.TryDeleteItem(item))
+				taken += itemValue;
 		}
 
 		if (taken <= 0)

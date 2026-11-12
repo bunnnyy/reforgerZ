@@ -67,13 +67,21 @@ class RZ_MissionItemHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Removes a handed-in mission item. If the inventory won't let go of it, the entity is deleted
+	//! outright, so a paid hand-in never leaves the item behind.
 	static void RemoveItem(IEntity user, IEntity item)
 	{
-		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
-		if (inv)
-			inv.TryDeleteItem(item);
-		else
-			SCR_EntityHelper.DeleteEntityAndChildren(item);
+		if (!item)
+			return;
+
+		SCR_InventoryStorageManagerComponent inv;
+		if (user)
+			inv = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
+
+		if (inv && inv.TryDeleteItem(item))
+			return;
+
+		SCR_EntityHelper.DeleteEntityAndChildren(item);
 	}
 }
 

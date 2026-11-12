@@ -47,7 +47,7 @@ class RZ_AntidoteHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Removes one antidote from the character's inventory. True if there was one.
+	//! Removes one antidote from the character's inventory. True only if one was really removed.
 	static bool TakeOne(IEntity character)
 	{
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
@@ -60,7 +60,6 @@ class RZ_AntidoteHelper
 		if (items.IsEmpty())
 			return false;
 
-		inv.TryDeleteItem(items[0]);
-		return true;
+		return inv.TryDeleteItem(items[0]);
 	}
 }
