@@ -57,7 +57,7 @@ The plated `marker_*` icons name each kind of place in the map's feed. The map i
 | <img src="src/marker_safehouse.svg" width="32"> | `marker_safehouse` | A Haven safehouse |
 | <img src="src/marker_stronghold.svg" width="32"> | `marker_stronghold` | A faction's stronghold (never falls) |
 | <img src="src/marker_outpost.svg" width="32"> | `marker_outpost` | A faction outpost (can change hands) |
-| <img src="src/marker_event.svg" width="32"> | `marker_event` | A world event on the map (diamond plate) |
+| <img src="src/marker_event.svg" width="32"> | `marker_event` | A world event (diamond plate). The map shows no events: of the jobs, only the tracked one's objective |
 | <img src="src/marker_quartermaster.svg" width="32"> | `marker_quartermaster` | A quartermaster and the leader who runs the place |
 | <img src="src/marker_power.svg" width="32"> | `marker_power` | The power station |
 | <img src="src/marker_radio.svg" width="32"> | `marker_radio` | The radio station |
@@ -65,11 +65,11 @@ The plated `marker_*` icons name each kind of place in the map's feed. The map i
 | <img src="src/marker_range.svg" width="32"> | `marker_range` | A pack's ground: a broken ring with three claw marks, no plate. The map sizes it to the ground; the journal's pack rows |
 | <img src="src/marker_self.svg" width="32"> | `marker_self` | You are here: a heading arrow, turned to where you face, no plate. The map's own marker (on `marker_self_back`) and the HUD tracker's arrow |
 | <img src="src/marker_self_back.svg" width="32"> | `marker_self_back` | The disc behind you-are-here on the map, tinted dark so the arrow reads on any ground |
-| <img src="src/marker_disc.svg" width="32"> | `marker_disc` | A solid disc: a map marker's middle, tinted in its owner's colour, and the dark chip under a place badge |
-| <img src="src/marker_ring.svg" width="32"> | `marker_ring` | A thin hollow ring round a map marker's disc, with a small gap, tinted near-black |
+| <img src="src/marker_disc.svg" width="32"> | `marker_disc` | A solid disc: a map marker's middle, tinted in its owner's colour, the dark chip under a place badge, the objective diamond's centre dot, and the search area's fill in the map key |
+| <img src="src/marker_ring.svg" width="32"> | `marker_ring` | A thin hollow ring round a map marker's disc, with a small gap, tinted near-black; amber, the search area's edge in the map key |
 | <img src="src/glyph_power.svg" width="32"> | `glyph_power` | The power station's bolt, no plate: bone on its steel-grey map disc |
 | <img src="src/glyph_radio.svg" width="32"> | `glyph_radio` | The radio station's mast, no plate: bone on its steel-grey map disc |
-| <img src="src/glyph_event.svg" width="32"> | `glyph_event` | A world event's exclamation mark, no plate: dark on its hazard-yellow map disc |
+| <img src="src/glyph_event.svg" width="32"> | `glyph_event` | A world event's exclamation mark, no plate, to draw dark on hazard yellow |
 | <img src="src/glyph_checkpoint.svg" width="32"> | `glyph_checkpoint` | A sealed checkpoint's striped barrier, no plate: dark on its hazard-yellow map disc |
 
 ## Map badges (4)
@@ -154,6 +154,6 @@ The marks before a job's objectives on the quest tracker and in the Quests tab, 
 
 | Icon | Name | Use |
 |---|---|---|
-| <img src="src/track_current.svg" width="32"> | `track_current` | The current objective: a filled diamond (hazard yellow) |
+| <img src="src/track_current.svg" width="32"> | `track_current` | The current objective: a filled diamond (hazard yellow). Also the map's objective diamond, near-black under amber |
 | <img src="src/track_next.svg" width="32"> | `track_next` | The next objective you know of, or an optional one: an open diamond (dim) |
 | <img src="src/track_done.svg" width="32"> | `track_done` | An objective done: a tick, beside the struck-through line (the Quests tab) |

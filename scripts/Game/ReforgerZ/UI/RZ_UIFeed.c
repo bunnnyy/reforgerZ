@@ -77,6 +77,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_JOURNAL = 1;
 	static const int PAYLOAD_BACKGROUNDS = 2;
 	static const int PAYLOAD_MAP = 3;
+	static const float MAP_SAME_PLACE = 250;	// two of the map's places this close (m) are one place, one marker
 	static const int PAYLOAD_BOARD = 4;		// the notice board the player stands at (World/RZ_NoticeBoard.c)
 	static const int PAYLOAD_HALL = 5;		// the hall of fame (Persistence/RZ_HallOfFame.c)
 	static const int PAYLOAD_KINDS = 6;		// the kinds a client may ask for; the ones below are only sent
@@ -1082,28 +1083,25 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What this player knows the place of, for the map's icon layer (UI/RZ_MapIcons.c). Contracts
-	//! are never on it: they give a rough area, in the journal. The packs they know of are range rings
-	//! sized to the ground (a radius in metres as the last field).
+	//! What this player knows the place of, for the map's icon layer (UI/RZ_MapIcons.c). Of the jobs,
+	//! only the tracked one's current objective is on it, and for this player alone (last, so it's
+	//! drawn above the rest); no other contract, event or errand. The packs they know of are range
+	//! rings sized to the ground (a radius in metres as the last field). A place's label is its kind
+	//! alone ("Stronghold", "Safehouse"): the disc's colour and badge say whose it is. One place is
+	//! one marker: Halcyon's stronghold at the lab is the lab's, and a safehouse at the Haven's
+	//! stronghold is the stronghold's.
 	//! P|icon|faction (-1 none)|x|z|label[|radius]
 	protected string BuildMap(int playerId)
 	{
 		string s = "";
-		if (m_GM.HasLab())
-			s += MapEntry("marker_lab", RZ_EFaction.INSTITUTE, m_GM.GetLabPosition(), "Halcyon lab");
-
-		// Safehouses: everyone knows them, except the people the Haven turned out
-		RZ_Safehouses houses = m_GM.GetSafehouses();
-		if (houses && !RZ_Reputation.IsHunted(m_GM.GetTier(playerId, RZ_EFaction.SURVIVORS)))
-		{
-			for (int i = 0; i < houses.Count(); i++)
-			{
-				RZ_Safehouse h = houses.Get(i);
-				s += MapEntry("marker_safehouse", RZ_EFaction.SURVIVORS, h.m_vPos, string.Format("Safehouse, %1 (%2)", h.m_sName, RZ_Safehouse.TierName(h.GetTier())));
-			}
-		}
+		bool lab = m_GM.HasLab();
+		vector labPos = m_GM.GetLabPosition();
+		if (lab)
+			s += MapEntry("marker_lab", RZ_EFaction.INSTITUTE, labPos, "Lab");
 
 		// Strongholds are common knowledge; an outpost only once they know the faction or have been there
+		bool haven = false;
+		vector havenSeat;
 		RZ_Territory territory = m_GM.GetTerritory();
 		if (territory && territory.IsActive())
 		{
@@ -1113,23 +1111,52 @@ class RZ_UIFeed
 			{
 				if (hold.m_bStronghold)
 				{
-					s += MapEntry("marker_stronghold", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
+					if (hold.m_eFaction == RZ_EFaction.INSTITUTE && lab && RZ_Util.DistXZ(hold.m_vPos, labPos) <= MAP_SAME_PLACE)
+						continue;
+
+					if (hold.m_eFaction == RZ_EFaction.SURVIVORS)
+					{
+						haven = true;
+						havenSeat = hold.m_vPos;
+					}
+
+					s += MapEntry("marker_stronghold", hold.m_eFaction, hold.m_vPos, "Stronghold");
 					continue;
 				}
 
 				bool known = RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, hold.m_eFaction), RZ_ETier.KNOWN);
-				if (known || (seen && seen.Contains(hold.m_iId)))
-					s += MapEntry("marker_outpost", hold.m_eFaction, hold.m_vPos, hold.GetTitle());
+				if (!known && (!seen || !seen.Contains(hold.m_iId)))
+					continue;
+
+				string outpost = "Outpost";
+				if (hold.m_eFaction == RZ_EFaction.INSTITUTE)
+					outpost = "Field station";
+
+				s += MapEntry("marker_outpost", hold.m_eFaction, hold.m_vPos, outpost);
+			}
+		}
+
+		// Safehouses: everyone knows them, except the people the Haven turned out
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		if (houses && !RZ_Reputation.IsHunted(m_GM.GetTier(playerId, RZ_EFaction.SURVIVORS)))
+		{
+			for (int i = 0; i < houses.Count(); i++)
+			{
+				RZ_Safehouse h = houses.Get(i);
+				if (haven && RZ_Util.DistXZ(h.m_vPos, havenSeat) <= MAP_SAME_PLACE)
+					continue;
+
+				s += MapEntry("marker_safehouse", RZ_EFaction.SURVIVORS, h.m_vPos, "Safehouse");
 			}
 		}
 
 		RZ_PowerGrid grid = m_GM.GetPowerGrid();
 		if (grid && grid.IsActive())
-			s += MapEntry("marker_power", -1, grid.GetPosition(), grid.GetName());
+			s += MapEntry("marker_power", -1, grid.GetPosition(), "Power station");
 
 		RZ_RadioStation radio = m_GM.GetRadioStation();
 		if (radio && radio.IsActive())
-			s += MapEntry("marker_radio", -1, radio.GetPosition(), radio.GetName());
+			s += MapEntry("marker_radio", -1, radio.GetPosition(), "Radio station");
 
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
 		if (perimeter)
@@ -1138,7 +1165,7 @@ class RZ_UIFeed
 			perimeter.GetCheckpoints(checkpoints);
 			foreach (vector cp : checkpoints)
 			{
-				s += MapEntry("marker_checkpoint", -1, cp, "Sealed checkpoint");
+				s += MapEntry("marker_checkpoint", -1, cp, "Checkpoint");
 			}
 		}
 
@@ -1157,20 +1184,9 @@ class RZ_UIFeed
 			}
 		}
 
-		// The tracked job: an area ring round where it points, never a pin (UI/RZ_Quests.c)
-		s += m_Tracker.MapRing(playerId);
-
-		// World events are public; contracts aren't on the map at all
-		RZ_MissionManager mm = m_GM.GetMissions();
-		if (mm)
-		{
-			foreach (RZ_Mission m : mm.GetActive())
-			{
-				if (!m.m_bContract && !m.m_bGlobal)
-					s += MapEntry("marker_event", -1, m.m_vPos, m.m_sTitle);
-			}
-		}
-
+		// The tracked job's current objective: a diamond on a known spot, a search area round a rough
+		// one (UI/RZ_Quests.c). No other job is on the map
+		s += m_Tracker.MapObjective(playerId);
 		return s;
 	}
 

@@ -57,7 +57,7 @@ Two layers:
   character), at most **2 a real day**. 70, every one true only while its reason is (a world fact, a
   place, your standing or background, the season's stage, a major's wait or the finale's lock).
 
-Errands are never stages and never on the map. Every one has a way without a gun. They spawn no
+Errands are never stages, and on the map only while tracked (a diamond on the step's place, then the giver's: [UI.md](UI.md#the-map)). Every one has a way without a gun. They spawn no
 AI, no loot and no items. A few steps show a prop at their place while they're open (**Missions >
 Errands > Props**: a dead man's effects, a crate, papers, a part; up only while a player is within
 150 m, gone when the step is done; empty slots: words only): His Effects, The Name on the Tape,

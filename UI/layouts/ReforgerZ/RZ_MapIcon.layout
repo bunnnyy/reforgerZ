@@ -124,8 +124,8 @@ FrameWidgetClass "{98721C3D930BE900}" {
      OffsetBottom -150
      Alignment 0 0
     }
-    Color 0.91 0.886 0.816 1
-    Text "Morton"
+    Color 0 0 0 1
+    Text "Stronghold"
     "Font Size" 22
     "Min Font Size" 22
     "Horizontal Alignment" Center
@@ -133,7 +133,7 @@ FrameWidgetClass "{98721C3D930BE900}" {
      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      ShadowSize 2
      ShadowOffset 1 1
-     ShadowColor 0 0 0 0.9
+     ShadowColor 0.91 0.886 0.816 0.6
     }
    }
  }

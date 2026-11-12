@@ -91,10 +91,11 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   notebook's Radio tab keeps the radio, mission and world ones ([UI.md](UI.md#notices)).
 - **The map** shows each player what they're allowed to know, with the ReforgerZ icons: the lab,
   the safehouses (not to exiles), every stronghold, the outposts of factions that know them or that
-  they've been near, the power and radio stations, the sealed checkpoints and world events.
-  **Contracts are never on the map**: they give a rough area in the journal. This needs the icon
-  layer ([UI.md](UI.md#the-map)); without it, world events and the lab are vanilla text markers
-  for everyone (a toggle).
+  they've been near, the power and radio stations and the sealed checkpoints. **Of the jobs, only
+  the tracked one's current objective is on it**, for its player alone: a diamond on a known spot, a
+  search area round a rough one. No other contract, event or errand is. This needs the icon layer
+  ([UI.md](UI.md#the-map)); without it, world events and the lab are vanilla text markers for
+  everyone (a toggle).
 
 **The land grid** (`World/RZ_Land.c`): what each 250 m square of the map is like (water, height,
 trees, roads, bridges) and which squares are wild land, read once and cached. Crawlers stand in its
