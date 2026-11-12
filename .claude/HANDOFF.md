@@ -104,7 +104,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-(none)
+- 2026-11-12 (cloud, docs pass): `Configs/System/chimeraInputCommon.conf`, gamepad bindings for `RZ_OpenNotebook` and `RZ_Reply1`-`7` only.
 
 ## Status
 
