@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "D83A232FB3961560"
+ components {
+  RplComponent "{3616E965A50105B1}" {
+  }
+  Hierarchy "{2854D8EF4BDCA5D5}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{18822FB3F0D2ED00}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Long.et" {
+   ID "7F2E98502CD8F974"
+   components {
+    Hierarchy "{6FBE29E17B7F149C}" {
+    }
+   }
+   coords -3.4 0 0
+   angles 0 90 0
+  }
+  StaticModelEntity : "{18822FB3F0D2ED00}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Long.et" {
+   ID "54F2F01764E8575B"
+   components {
+    Hierarchy "{220BBB9452B42AA3}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 90 0
+  }
+  StaticModelEntity : "{18822FB3F0D2ED00}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Long.et" {
+   ID "EB5350BB724B8103"
+   components {
+    Hierarchy "{1EE0551764BF24C4}" {
+    }
+   }
+   coords 3.4 0 0
+   angles 0 92 0
+  }
+ }
+}

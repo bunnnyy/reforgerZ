@@ -46,6 +46,7 @@ class RZ_Errand_CleanPaper : RZ_ErrandCard
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch a ream from the school";
 		w.m_ePlace = RZ_EErrandPlace.NEXT_TOWN;
+		w.m_sNeed = "errand.school";
 		w.m_fSeconds = 20;
 		w.m_fRadius = 80;
 		w.m_sStep = "Search the school in {place} for paper nobody has written on (20 s there), then bring it to {giver}.";
@@ -99,6 +100,7 @@ class RZ_Errand_ChairsForTheReading : RZ_ErrandCard
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry the chairs over";
 		w.m_ePlace = RZ_EErrandPlace.EMPTY_VILLAGE;
+		w.m_sNeed = "errand.hall";
 		w.m_fSeconds = 30;
 		w.m_fRadius = 80;
 		w.m_sStep = "Stack the chairs at the village hall in {place} and bring them back (30 s there), then tell {giver}.";

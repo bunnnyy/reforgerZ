@@ -545,6 +545,7 @@ class RZ_QM_EdgeWalk : RZ_Mission_WalkHimOut
 		{
 			m_sTitle = "The Edge of Town: the last walk";
 			m_sBrief = run.Fill(string.Format("%1 told the council about his bite himself. {walker} walks him out past the edge of {walkhouse} at dusk, and has asked for you to walk with them. At the edge, %1 will ask for one last thing. {walker} will let you give it.", m_sMan));
+			m_sObjective = run.Fill(string.Format("Walk %1 out past the edge of {walkhouse} with {walker} at dusk.", m_sMan));
 			return true;
 		}
 
@@ -770,6 +771,7 @@ class RZ_QM_EdgeTally : RZ_HavenQM
 		m_iBook = AddClue("His notebook", QFill(gm, "A school exercise book, wrapped in oilcloth and tucked under a stone. The names, one to a page, each with a day and a line: what they asked for last. \"A cigarette.\" \"To see the sea.\" \"For you to look away.\" On the inside cover, in another hand, a nurse's: \"Eight in ten, {walker}. Eight.\""));
 		m_sTitle = "The Edge of Town: the walker's tally";
 		m_sBrief = QFill(gm, "{walker} keeps a grave for everyone he's walked out of {walkhouse}, at the edge of town, and their names in a notebook. I want the tally. Count the graves, and get the names, one way or another.");
+		m_sObjective = QFill(gm, "Count {walker}'s graves at the edge of {walkhouse} and get the names.");
 		return true;
 	}
 
@@ -942,6 +944,7 @@ class RZ_QM_EdgeNumbers : RZ_HavenQM
 		m_iCourierTalk = AddClue("A courier", "A Halcyon courier with a satchel she's not supposed to open, waiting for the gate. \"Files? I carry them. I don't read them.\" A pause. \"Mostly.\"");
 		m_sTitle = "The Edge of Town: the lab's numbers";
 		m_sBrief = QFill(gm, "{walker} says the lab writes down the other two in ten. I want to know what that means before I tell another house to send its bitten to {lab}. Find out. Nicely, if you can.");
+		m_sObjective = QFill(gm, "Find out at the lab in {lab_town} what becomes of the other two in ten.");
 		return true;
 	}
 
@@ -1060,6 +1063,7 @@ class RZ_QM_EdgeOffers : RZ_HavenQM
 		m_iTalk = AddClue(QText(gm, "nurse"), QFill(gm, "{nurse} has both offers written on the back of a ration card. \"{director} says the lab will take every bitten Haven member who'll come, and sell doses to our clinics at fair prices. The Red Hand says it has a cheaper dose, for every house. Cut, they don't say how much.\" She turns the card over. \"Or we keep walking them out. You've seen both ends now. You choose.\""));
 		m_sTitle = "The Edge of Town: two offers";
 		m_sBrief = QFill(gm, "The lab has made an offer, and so has the Red Hand. The houses can't agree, so they've agreed to let whoever's seen it all decide. Come to {nursehouse}.");
+		m_sObjective = QFill(gm, "Choose between the lab's offer and the Red Hand's at the safehouse in {nursehouse}.");
 
 		// The director's offer goes out on the secure channel: Radio Operators who are part of it hear it
 		RZ_QuestRun run = Run(gm);
@@ -1201,6 +1205,7 @@ class RZ_QM_EdgeColdChain : RZ_Mission_ColdChain
 
 		m_sTitle = "The Edge of Town: the lab road";
 		m_sBrief = run.Fill("The first batch for the Haven's clinics, as agreed: antidote for {nurse}'s clinic in {nursehouse}. Fifteen minutes out of the cold box. If it spoils, nobody will believe in the lab road. Run.");
+		m_sObjective = run.Fill("Run the antidote to {nurse}'s clinic in {nursehouse} within fifteen minutes.");
 		return true;
 	}
 }
@@ -1251,6 +1256,7 @@ class RZ_QM_EdgeCutDose : RZ_HavenQM
 		m_Courier.m_sWho = "Halcyon's courier, on the road with her satchel,";
 		m_sTitle = "The Edge of Town: the cut dose";
 		m_sBrief = QFill(gm, "The Haven's houses want our dose. Cheap, and for everyone. The crate's at our drop outside " + boss.m_sPlace + ". Get it to {nursehouse}, and keep away from Halcyon's courier on the road. The lab would take it personally.");
+		m_sObjective = QFill(gm, "Take the Red Hand's crate from outside " + boss.m_sPlace + " to the safehouse in {nursehouse}.");
 		return true;
 	}
 

@@ -86,10 +86,10 @@ class RZ_Quest_OtherTwo : RZ_Questline
 	{
 		Info(KEY, "The Other Two", RZ_EFaction.INSTITUTE);
 
-		RZ_QuestStage start = WaitStage(S_START, "His number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell her more than a number.");
+		RZ_QuestStage start = WaitStage(S_START, "{brother}'s number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell her more than a number.");
 		start.Wait(0);
 
-		RZ_QuestStage number = MissionStage(S_NUMBER, "His number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell her more than a number. Find out his, at the lab.");
+		RZ_QuestStage number = MissionStage(S_NUMBER, "{brother}'s number", "{sister} at the safehouse in {town} has a brother, {brother}, who volunteered for the trial dose and didn't come back. The lab won't tell her more than a number. Find out his, at the lab.");
 		number.GiveUp(4, "Nobody ever told {sister} what happened to {brother}.");
 		number.Visits(2);
 
@@ -97,7 +97,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 		room.GiveUp(4, "Nobody got into the back room at {lead_place}. Whatever is in there stays a code in a ledger.");
 		room.Visits(2);
 
-		RZ_QuestStage brother = MissionStage(S_BROTHER, "Her brother", "Inside the back room at {lead_place}: three people in the Final stage, and a chair with a clipboard by each. {brother} is in the bed by the window. He hasn't long.");
+		RZ_QuestStage brother = MissionStage(S_BROTHER, "{brother} in the back room", "Inside the back room at {lead_place}: three people in the Final stage, and a chair with a clipboard by each. {brother} is in the bed by the window. He hasn't long.");
 		brother.GiveUp(2, "Nobody went back into the room for {brother}. The clipboard got its last line.");
 
 		RZ_QuestStage lead = MissionStage(S_LEAD, "The field lead", "{lead} runs the back room at {lead_place}. Somebody has to talk to her about it, or about her.");
@@ -639,8 +639,9 @@ class RZ_QM_OtherNumber : RZ_QM_OtherTwoScene
 		int courier = AddClue("A courier", "A Halcyon courier with an empty steel case, smoking where he's not supposed to. \"I carry the books up and down. I don't read them. For a price I could.\"");
 		AddSpot(LandPointNear(lab, 20, 35), RZ_EPuzzleProp.CIVILIAN, OBJ_COURIER, courier, "Talk to the courier", string.Format("Pay him to look (%1 Halcyon Favor)", COURIER_FAVOR), "a courier by the lab gate");
 
-		m_sTitle = "The Other Two: his number";
+		m_sTitle = QFill(gm, "The Other Two: {brother}'s number");
 		m_sBrief = QFill(gm, "My brother {brother} went up to the lab for the trial dose on {day} and didn't come back. They'll give me a number and nothing else. Find out his number. Then I'll know where to start.");
+		m_sObjective = QFill(gm, "Find {brother_full}'s trial number at the lab in {lab_town}.");
 		return true;
 	}
 
@@ -771,6 +772,7 @@ class RZ_QM_OtherRoom : RZ_QM_OtherTwoScene
 		m_sItemName = "the cold case";
 		m_sTitle = "The Other Two: the back room";
 		m_sBrief = QFill(gm, "F2 is a back room at the field station in {lead_place}. {brother} is in it, or was. Get in: carry a cold case in with the lab's courier, talk {lead_short} into it, or go in the side door at night when nobody's watching.");
+		m_sObjective = QFill(gm, "Get into F2, the back room at the field station in {lead_place}.");
 		return true;
 	}
 
@@ -962,8 +964,9 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 
 		m_Walk.m_sName = QText(gm, "brother");
 		m_Walk.m_sPrefab = RZ_Escort.PrefabFor(gm, 0);
-		m_sTitle = "The Other Two: her brother";
+		m_sTitle = QFill(gm, "The Other Two: {brother}");
 		m_sBrief = QFill(gm, "{brother} is in the back room at {lead_place}, in the Final stage. He hasn't long. Whatever you do for him, do it before the clipboard does.");
+		m_sObjective = QFill(gm, "Do what you can for {brother} in the back room at {lead_place}.");
 		return true;
 	}
 
@@ -1224,6 +1227,7 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 
 		m_sTitle = "The Other Two: the field lead";
 		m_sBrief = QFill(gm, "{lead} runs the back room at {lead_place}. Ask her to close it, tell the director about it, or keep it to yourself. Whatever you choose, {sister} will want to know.");
+		m_sObjective = QFill(gm, "Decide what to do about {lead}'s back room at {lead_place}.");
 		return true;
 	}
 
@@ -1423,6 +1427,7 @@ class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 
 		m_sTitle = "The Other Two: names";
 		m_sBrief = QFill(gm, "The lab's paper lists its volunteers by number. {brother} is Volunteer {number}. Another number on it came from the safehouse in {town}. Find out who it was. Then decide who gets the names: the director, the chair of the Haven, or nobody.");
+		m_sObjective = QFill(gm, "Find out who the other volunteer from {town} was, then choose who gets the names.");
 		return true;
 	}
 

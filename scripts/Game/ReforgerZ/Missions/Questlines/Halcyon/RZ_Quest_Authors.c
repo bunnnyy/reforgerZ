@@ -833,6 +833,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 		m_sItemName = "the director's letter";
 		m_sTitle = "Authors: the director's letter";
 		m_sBrief = QFill(gm, "Take my letter to {co}, by hand. It's the lab's terms for the final stand. Don't open it. If you open it, don't tell me.");
+		m_sObjective = QFill(gm, "Take {director}'s sealed letter from the lab to {co}.");
 		return true;
 	}
 
@@ -1021,6 +1022,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 		m_sItemName = "the cold case";
 		m_sTitle = "Authors: the field lead's plan";
 		m_sBrief = QFill(gm, "I want the method at a Haven clinic before Bastion locks it in a crate. It's packed cold for the clinic at the safehouse in {clinic}. Carry it before it's missed. Or don't, and tell the director. I'll know either way.");
+		m_sObjective = QFill(gm, "Carry the method from the field station to the clinic in {clinic}, or report it.");
 		return true;
 	}
 
@@ -1204,6 +1206,7 @@ class RZ_QM_AuthorsAnswer : RZ_QM_HalcyonScene
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_ADJUTANT, talk, "Talk to the adjutant", "Agree, for the director|Bargain: two guards at the gate, no key|Refuse, for the lab", "the commanding officer's adjutant");
 		m_sTitle = "Authors: the CO's answer";
 		m_sBrief = QFill(gm, "{co} has answered my letter, and wants more than I offered. Go and hear it, and give Bastion the lab's answer. You know what we can live with.");
+		m_sObjective = QFill(gm, "Hear {co}'s answer from the adjutant and give the lab's terms.");
 		return true;
 	}
 
@@ -1303,6 +1306,7 @@ class RZ_QM_AuthorsOffer : RZ_QM_HalcyonScene
 
 		m_sTitle = "Authors: the Red Hand's offer";
 		m_sBrief = QFill(gm, "The Red Hand wants to buy my batch. They've sent someone to make the offer properly. Hear him out, and bring me his terms. I will say no. I'd like to know what I'm saying no to.");
+		m_sObjective = QFill(gm, "Hear the Red Hand's offer for the batch and bring the terms to {director}.");
 		return true;
 	}
 
@@ -1381,6 +1385,7 @@ class RZ_QM_AuthorsPower : RZ_Mission_PowerTheLab
 
 		m_sTitle = "Authors: ready the lab";
 		m_sBrief = string.Format("If Bastion's guards are going to stand at my door, the synthesis had better not stall for want of power. The generator needs a regulator from %1, and fuel. Clean power for the final push.", m_sPartPlace);
+		m_sObjective = string.Format("Bring the regulator from %1 and fuel to the lab's generator.", m_sPartPlace);
 		return true;
 	}
 }
@@ -1416,6 +1421,7 @@ class RZ_QM_AuthorsDecon : RZ_Mission_BurnTheBodies
 
 		m_sTitle = "Authors: ready the lab";
 		m_sBrief = "The Haven's clinics have the method now, and their people will come up the hill for the stand. I won't have them walk through our dead. Burn the four piles around the lab.";
+		m_sObjective = "Burn the four piles of bodies round the lab in {lab_town}.";
 		return true;
 	}
 }
@@ -1445,6 +1451,7 @@ class RZ_QM_AuthorsDefence : RZ_Mission_LabDefence
 
 		m_sTitle = "Authors: ready the lab";
 		m_sBrief = "When the stand comes, nobody else's guns will be at my door. We hold the lab ourselves, so we had better know how. Hold it for four minutes now, while it's only practice.";
+		m_sObjective = "Hold the lab in {lab_town} for four minutes.";
 		return true;
 	}
 }
@@ -1490,6 +1497,7 @@ class RZ_QM_AuthorsStand : RZ_QM_HalcyonScene
 		m_iStolenAtStart = gm.GetCure().GetBatchesStolen();
 		m_sTitle = "Authors: the final stand";
 		m_sBrief = "The cure is being made. Stand at the lab until it's done. Whoever is standing here when it's made is who the paper remembers.";
+		m_sObjective = "Stand at the lab in {lab_town} until the cure is made.";
 		int terms = run.Flag("terms");
 		bool agreed = terms == RZ_Quest_Authors.TERMS_AGREE || terms == RZ_Quest_Authors.TERMS_BARGAIN;
 		if (RZ_CureFinale.IsOn())
@@ -1642,6 +1650,7 @@ class RZ_QM_AuthorsTakeTheLab : RZ_Mission_TakeTheLab
 			return false;
 
 		m_sBrief = "The boss paid for that batch, and somebody on the inside took the money. While Halcyon is busy with the dead, walk into the clean room and hold it for ninety seconds. We'll carry it out ourselves.";
+		m_sObjective = "Hold the clean room at the lab in {lab_town} for ninety seconds.";
 		return true;
 	}
 }

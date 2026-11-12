@@ -1,0 +1,29 @@
+GenericEntity {
+ ID "716C54489A02E3F2"
+ components {
+  RplComponent "{14C840D7C5A1E3B9}" {
+  }
+  Hierarchy "{25176F8E2D11BA1B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{D34F3DD5D61E2F71}Prefabs/Structures/Walls/Metal/TinWall_01_rusty/TinWall_01_3m_rusty.et" {
+   ID "B8BB7F0924868EA5"
+   components {
+    Hierarchy "{1CC1F565FB6F115E}" {
+    }
+   }
+   coords -1.5 0 0.05
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "F897DB5AA6686C23"
+   components {
+    Hierarchy "{4B27B63ECBB201C8}" {
+    }
+   }
+   coords 0.4 0 0.5
+   angles 90 0 0
+  }
+ }
+}

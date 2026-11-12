@@ -34,7 +34,7 @@ class RZ_Errand_CountForTheSitting : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_fBefore = 18.5;
-		w.m_sStep = "Carry the count to the clerk at {subject_place} before half past six, and tell them the house is hungrier than the count says (5 s at the door).";
+		w.m_sStep = "Carry the count to the clerk at {subject_place} before half past six, and tell the clerk the house is hungrier than the count says (5 s at the door).";
 		w.m_iFavor = 3;
 		w.Done("You told them we're hungrier than it says. I'd have told them myself, if I'd been allowed to leave the book.");
 	}

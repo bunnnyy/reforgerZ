@@ -81,7 +81,7 @@ The back page (who outside owes it) goes missing in front of every crew. Code:
 
 | Act | Opens | Anchor, need, patience | What players do | Default | Status |
 |---|---|---|---|---|---|
-| 1. Send him off | Collapse's second evening; a set piece 16:00–21:00 at Rudi's crossroads | 50%; 1; 2 offered evenings | Ask a crew boss to come (persuade 1, ★ Ex-Con), pay a greedy one (15 Favor), hold the crossroads 4 min | The crews send Rudi off without players; the page goes missing the same way | ✅ |
+| 1. Send Rudi off | Collapse's second evening; a set piece 16:00–21:00 at Rudi's crossroads | 50%; 1; 2 offered evenings | Ask a crew boss to come (persuade 1, ★ Ex-Con), pay a greedy one (15 Favor), hold the crossroads 4 min | The crews send Rudi off without players; the page goes missing the same way | ✅ |
 | 2. The torn page | After act 1 (R1 stages 1–2, as built) | 50%; 1 | As R1 | The thief burns the page and runs (`book.burnt`, `book.thief` 5) | ✅ |
 | 3. Who gets the page | After act 2 (R1 stages 3–6, as built) | 50%; 3 | As R1; its endings are the act's results (the page in the book, kept, Bastion's, burnt) | The page stays out; the thief goes in the pit | ✅ |
 | 4. Settling day | 50% (or a lead), a session after act 3; a set piece | the muster; 1; 2 offered evenings | Hold the crossroads while it's read; laugh him off (Known); name him (persuade 2, only with the page in the book); speak for him (persuade 2); stand with him (+15 Infamy); tell Bastion where the crews will be (Bastion: Known); offer his crew a Haven door (Haven: Known) | Page in the book: laughed off; else purged half the time | ✅ |
@@ -646,7 +646,7 @@ people what it looks like from the ground.
 |---|---|---|---|
 | 1 | **Fuel** | The helicopter is dry. **Bring 2 jerrycans** to the LZ. **Sneak**: take fuel from a Red Hand depot (+8 Red Hand Infamy if seen). **Bribe**: buy it from a crew, 25 Red Hand Favor (the boss hears Bastion is buying) | Delivery; Arson's depot |
 | 2 | **Whose flight** | Keep the LZ clear until it lifts off, and choose the load: **Halcyon's samples** (Halcyon Fame +6, research +1), **the Haven's wounded** (Haven Fame +6, +2 people at a safehouse) or **Bastion's ammunition** (Bastion Fame +6, strength +2) (`pilot.flew_for`) | Last Helicopter; choice |
-| 3 | **His friend's wreck** | Find the Day 3 wreck near the line, at the edge of the warning zone (never in the kill zone), and bring him the black box. ★ Mechanic: twice as fast. ★ Radio Op: you can play it there, on a radio | Crash Site |
+| 3 | **{friend}'s wreck** | Find the Day 3 wreck near the line, at the edge of the warning zone (never in the kill zone), and bring him the black box. ★ Mechanic: twice as fast. ★ Radio Op: you can play it there, on a radio | Crash Site |
 | 4 | **The pilot decides** | He wants to fly for the line. **Talk him down** (Trusted, or ★ Soldier; Known is enough if he's heard the black box: the line shooting his friend) (`pilot.stays`). **Report him** to the CO (`pilot.grounded`). **Help him**: fuel to a far LZ (`pilot.line`). **Side with the Red Hand** (Trusted with them): sell the plan, so a crew can take the helicopter on the ground (`pilot.redhand`) | Talk; delivery |
 | 5 | **The last of it** | Stays: one more run, with the LZ kept clear. Grounded: walk him to the stronghold; he goes quietly. The line: hold the far LZ while he lifts off. The Red Hand: hold the LZ for the crew 90 s. They can't fly it, so they burn it | Last Helicopter; escort; hold |
 
@@ -701,7 +701,7 @@ the faction's Rogue leaders where there are any, else Independent ones.
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
 | 1 | **Who tore it** | Three crew members, one of them lying. ★ Police or Ex-Con: more to go on. Wrong: the wrong man goes in the pit and you're told so (+5 Red Hand Infamy, `book.wrong_man` *(you)*) | The Rat |
-| 2 | **Find him** | His trail through two towns to a barn. **Talk** him out (unarmed; ★ Ex-Con, he knows you're one of his). **Fight** (two friends with him). **Bribe**: 20 Red Hand Favor and he runs (`book.thief_ran`). He tells you why: his sister's house is on the page | Step chain; Struck Off |
+| 2 | **Find {thief_short}** | His trail through two towns to a barn. **Talk** him out (unarmed; ★ Ex-Con, he knows you're one of his). **Fight** (two friends with him). **Bribe**: 20 Red Hand Favor and he runs (`book.thief_ran`). He tells you why: his sister's house is on the page | Step chain; Struck Off |
 | 3 | **Read the page** | Three names. For each: **collect** the debt (talk 60%; threaten, +3 Infamy with their faction; or pay it, 15 Red Hand Favor), **leave it**, or **betray: turn them in** to their own stronghold (at most one name: that leader is replaced, their faction's morale −3, Fame +10 with that faction and +15 Red Hand Infamy, because nobody rats). With `door.debt_yours` (H2), your name is on it too: a fourth debt, yours | Debt Collection |
 | 4 | **The page** | **Return it** to the boss (`book.returned`). **Keep it** (`book.kept` *(you)*). **Burn it** (`book.burnt`). **Side with Bastion**: the whole page to the commanding officer (`book.bastion`) | Delivery |
 | 5 | **The thief** | The boss wants him in the pit. **Let it happen**. **Fight**: take his place (4 min of waves). **Bribe**: pay his debt, 30 Red Hand Favor. **Get him out**: walk him to a safehouse (+10 Red Hand Infamy if seen) | Fight Pit; Desertion Route |
@@ -775,7 +775,7 @@ is the nearest Haven safehouse town, or a quiet village under 30 infection. With
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
 | 1 | **Collect** | The keeper won't pay | Protection Racket |
-| 2 | **Why they stopped** | **Talk** to the council head (Known with the Haven): they're short, or they pay Bastion now. **Bribe**: pay their dues yourself, 20 Red Hand Favor. The crew boss doesn't care who paid: the story ends at "The story worked" | Talk |
+| 2 | **Why {village} stopped** | **Talk** to the council head (Known with the Haven): they're short, or they pay Bastion now. **Bribe**: pay their dues yourself, 20 Red Hand Favor. The crew boss doesn't care who paid: the story ends at "The story worked" | Talk |
 | 3 | **Tell the story** | At the well, at dusk, to whoever's there. **Talk** (★ Ex-Con: they believe you): 60% they pay (`well.paid`). **Warn them instead**: they put two people on the well (`well.warned`, Haven Fame +5) | Talk at a point |
 | 4 | **The crew boss's order** | If they didn't pay: put something in the well. **Do it**, at night, unseen (`well.done` *(you)*). **Fake it**: something dead in the bucket; ★ Lab Tech or Nurse knows what's harmless (`well.faked`). **Side with Halcyon**: get the water tested and the well sealed (`well.tested`). **Fight**: the crew comes to do it themselves; hold the well | Visit point; The Poisoned Well; Trader Caravan's raid |
 | 5 | **The boss hears** | A session later the boss sends for you. **Own it**. **Blame the crew boss**: he goes in the pit. **Say nothing** | Wait; talk |
@@ -867,9 +867,9 @@ as `walk.knows_other_two` and `walk.lab_road`.
 
 | # | Stage | Approaches | Uses |
 |---|---|---|---|
-| 1 | **His number** | **Talk** at the lab (Known with Halcyon): a number and a date. **Sneak**: the volunteers' ledger on the night shift (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. ★ Lab Tech reads the ledger's codes | Letters' quiet way; talk |
+| 1 | **{brother}'s number** | **Talk** at the lab (Known with Halcyon): a number and a date. **Sneak**: the volunteers' ledger on the night shift (a heat limit; seen: +8 Halcyon Infamy). **Bribe** a courier: 20 Halcyon Favor. ★ Lab Tech reads the ledger's codes | Letters' quiet way; talk |
 | 2 | **The back room** | **Get in as a courier**: walk a cold case there with Halcyon's courier. **Talk**: the field lead's leave (Trusted with Halcyon). **Sneak**: at night, unseen. Inside: three people in the Final stage, and a chair with a clipboard by each | Escort; sneak |
-| 3 | **Her brother** | He has a few minutes left. **Sit with him** (`brother.sat`). **Take him to his sister** before he turns (`brother.home`). **Take the sample** at the moment of turning (research +1, `brother.sample` *(you)*). **End it** | Patients Not Samples; escort |
+| 3 | **{brother} in the back room** | He has a few minutes left. **Sit with him** (`brother.sat`). **Take him to his sister** before he turns (`brother.home`). **Take the sample** at the moment of turning (research +1, `brother.sample` *(you)*). **End it** | Patients Not Samples; escort |
 | 4 | **The field lead** | **Talk** (Trusted with Halcyon, or ★ Doctor): she closes the room (`ward.closed`). **Report her** to the director: she's replaced and the room moves to the lab (`ward.lab`). **Keep quiet**: 25 Halcyon Favor (`ward.kept`). **Side with the Red Hand** (Trusted with them): one of the other two goes to a crew as a "live one", for 40 Red Hand Favor (`ward.sold` *(you)*) | Talk |
 | 5 | **Names** | The paper lists the volunteers by number. **Bring the names** to the director (Trusted, or Known with the sister beside you after `brother.home`). **Side with the Haven**: the chair reads them at supper instead. **Leave the numbers** | Delivery; talk |
 

@@ -74,6 +74,7 @@ class RZ_Mission_ClockworkHorde : RZ_PuzzleMission
 
 		m_sTitle = "The Clockwork Horde";
 		m_sBrief = string.Format("The air-raid siren in %1 is stuck on a timer. Every two minutes one end of town wails, then the other, and a horde walks back and forth between them, straight through the square. A Haven family's strongbox is still in the middle. Time it, and don't get noticed.", s.m_sName);
+		m_sObjective = string.Format("Get the strongbox out of the square in %1 between the sirens.", s.m_sName);
 		return true;
 	}
 
@@ -217,6 +218,7 @@ class RZ_Mission_TimeLockSafe : RZ_PuzzleMission
 		m_fTimeLeft = Math.Max(1800, until + window + 600);
 		m_sTitle = "Time-Lock Safe";
 		m_sBrief = string.Format("The bank safe in %1 still keeps time. Whatever the manager locked in it on Day 1 is still inside, and the lock opens at 03:00 and not a minute before. Be there in the dark, and be ready to leave fast: it's loud.", s.m_sName);
+		m_sObjective = string.Format("Open the bank safe in %1 at 03:00.", s.m_sName);
 		return true;
 	}
 
@@ -342,6 +344,7 @@ class RZ_Mission_BellOrder : RZ_PuzzleMission
 
 		gm.GetHeat().AddHeat(haven.m_vCenter, 30);
 		m_sTitle = "The Bell Order";
+		m_sObjective = string.Format("Ring the three bells round %1 in the right order.", haven.m_sName);
 		if (m_bSafehouse)
 			m_sBrief = string.Format("The dead are circling the Haven safehouse in %1. The old preacher had a trick: ring three village bells in the right order and they follow the sound away. The order is on a hymn sheet at the safehouse. Ring one out of turn and they come to you instead.", haven.m_sName);
 		else
@@ -526,6 +529,7 @@ class RZ_Mission_LightsInTheWindow : RZ_PuzzleMission
 
 		m_sTitle = "Lights in the Window";
 		m_sBrief = string.Format("A Bastion observer cut off from the post is signalling from a window in %1 after dark, in Morse, with a torch. The signal card is at the old scout post in %2. Read the light, find the meeting place, and get there before the torch batteries give out.", farTown.m_sName, post.m_sName);
+		m_sObjective = string.Format("Read the torch in %1 and reach the meeting place before the batteries go.", farTown.m_sName);
 		return true;
 	}
 

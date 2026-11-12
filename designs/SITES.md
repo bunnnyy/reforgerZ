@@ -1,23 +1,18 @@
 # Sites: camps that read as real places
 
-**Designed, not built** (phases 3 to 6). Approved by the author on 2026-11-12. Phases 1 and 2 are
-built: each site's ground read on a grid, real footprints, drop don't squeeze, the surroundings and
-the threat sectors, and the audit with its drawing and the fly-to plugin are in
-[docs/SITES.md](../docs/SITES.md). Today's camp life (the building a place moves into, the plans,
-the fit rules, the jobs) is in [DESIGN.md](../docs/DESIGN.md#camp-life); the pieces and kits and how
-they're built are in [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits);
-scenes and their ageing are in [TRACES.md](../docs/TRACES.md#scenes); the land grid is in
-[INFECTED.md](../docs/INFECTED.md#the-land). This file says only what changes. When a phase is built,
-its part moves into those docs (most of it into docs/SITES.md) and is cut from here.
+**Designed, not built** (phases 5 and 6). Approved by the author on 2026-11-12. Phases 1 to 4 are
+built: each site's ground read on a grid, real footprints, the surroundings and the threat, the
+audit, the placement rules and the solver, and building in layers by each faction's doctrine (the
+wire and its gates, the boards, the watch, valuables indoors) are in [docs/SITES.md](../docs/SITES.md).
+Today's camp life (the jobs, the routines, the people) is in [DESIGN.md](../docs/DESIGN.md#camp-life);
+scenes and their ageing are in [TRACES.md](../docs/TRACES.md#scenes). This file says only what
+changes. When a phase is built, its part moves into those docs and is cut from here.
 
 ## Contents
 
 - [Why](#why)
-- [2. The rules: where things belong](#2-the-rules-where-things-belong)
-- [3. Building in layers, by doctrine](#3-building-in-layers-by-doctrine)
 - [4. The people](#4-the-people)
 - [5. The story of each site](#5-the-story-of-each-site)
-- [6. The audit's rest](#6-the-audits-rest)
 - [Performance](#performance)
 - [What stays as it is](#what-stays-as-it-is)
 - [Settings](#settings)
@@ -26,159 +21,13 @@ its part moves into those docs (most of it into docs/SITES.md) and is cut from h
 
 ## Why
 
-From the author's play-tests: pieces clip through each other and through walls, layouts don't
-always make sense, and a site doesn't read as what it is: in a sealed, dying Zone the lab keeps its
-things out in the open and nothing guards its building. The causes in today's code:
-
-| Cause | Today (`Factions/RZ_CampLife.c`) |
-|---|---|
-| A fixed drawing | Each kit is one plan (`tools/camp_kit/pieces.py`, `KITS`) laid down whole; a piece that doesn't fit where the plan puts it is dropped |
-| No purpose | Nothing knows that a generator is noisy, that stores must be guarded, or that a perimeter must close; roles are four bands (`RZ_EDressRole`: Centre, Inner, Approach, Edge) |
-| Surroundings unused | Each site's surroundings and threat sectors are read ([docs/SITES.md](../docs/SITES.md#the-surroundings-and-the-threat)), but nothing places a piece by them |
-
-The fix stays automatic and works on any map: every site is **built from rules** against a
-**reading of its ground and surroundings**, in the order real people would build it, with a
-**story** of its own, and every result is **measured** by an audit.
-
-## 2. The rules: where things belong
-
-Each piece in `pieces.py` gets a few **rules** instead of only a spot. The plan's spots stay as
-**preferences** (a rule like any other, worth a little): the solver lays the plan where the
-ground allows and bends it where it doesn't.
-
-### Zones
-
-The solver first divides the site into zones on the grid; pieces then go into their zone.
-
-| Zone | Where | Holds |
-|---|---|---|
-| **Wire** | the closed perimeter line ([layer 1](#3-building-in-layers-by-doctrine)) | barricades, wire, fences, scrap walls, cars as walls |
-| **Gate** | where the main road crosses the wire | the barrier, the nest or tower, lights, the sign, the search spot |
-| **Kill zone** | 10–40 m outside the wire on the threat sides, open ground only | nothing standing; bodies burned at its edge; stakes, a cleared strip |
-| **Inner court** | the yard nearest the main door, most guarded | the quartermaster's counter, the roster, the leader's seat |
-| **Stores** | inside the building, else against its wall at the inner court, the cell furthest from the wire | stores, fuel, ammunition (as scenery), samples |
-| **Work** | the yard, under cover where it can be | the work tables, the workbench look, the radio table, sorting tables |
-| **Kitchen** | by the building's back or side door, upwind of the latrine | the cook pot, firewood, water, the wash stand |
-| **Sleep** | indoors at a building; else the yard's quietest corner (furthest from the gate and the generator) | tents, bedrolls, the drying line |
-| **Sick** | the yard's far corner, screened, upwind, 10 m from the kitchen and sleep | the ward tent, the decon shower (Halcyon), the bitten chair (the Haven) |
-| **Dump** | outside the wire on the down side, away from the threat front | the burn pit, the rubbish pile, broken furniture |
-| **Dead** | outside the wire, on a quiet side, by a tree or a wall where one is | graves, crosses, the memorial's names (the Haven keeps theirs inside) |
-
-### Rule types
-
-| Type | Says | Examples |
-|---|---|---|
-| **In zone** | which zone a piece belongs to | the cook pot in Kitchen; tents in Sleep; the burn pit in Dump |
-| **By a building part** | next to a door, window, wall or corner of the site's building | the cook pot within 4 m of the building's back or side door; the bear board beside the front door; the counter in front of the main door; crates against a wall, never alone in the open; the roster board on the wall by the main door |
-| **By a building kind** | near another building of a kind (`RZ_DoorSlots.KindOf`) | the motor pool by a garage or barn; the water by a well or pump; the graves by the church if there is one |
-| **Near a piece** | within a distance of another piece | chairs round the fire (2–3 m, facing it); the wash stand within 3 m of the water barrel; firewood within 4 m of the cook pot; the chopping block by the woodpile; a lamp within 4 m of every table used at night |
-| **Away from** | at least a distance from a piece or a zone | the latrine 15 m from the kitchen and the water, and downwind of both; no tent within 6 m of a fire; the generator 10 m from Sleep; the burn pit 25 m from the wire's inside; nothing within 4 m of water |
-| **Over** | covers another piece | a tarp or camo net over the work table or the stores' crates; a tin roof over the cold box |
-| **Guarded** | the most guarded cell: furthest from the wire, nearest the main door, inside if it can be | fuel, stores, samples, the armoury look, the quartermaster, the leader's seat; the lab's sample table indoors |
-| **Covers** | in sight of a target (a 2 m-high line on the grid, no solid cells) | the nest sees the gate and the main road out 80 m; a light covers the gate and a gap; a lookout sees the covered side |
-| **High** | the highest free cell within reach, with a view | the lookout, the antenna, the flag |
-| **Faces** | which way its front turns | barricades and nests face the threat front; seats face the fire or the table; a counter faces its customers; backs to walls where they can be |
-| **Behind** | on the far side of something from the threat | the generator behind sandbags against a wall, on the side away from the front; tents behind the building |
-| **Clear** | cells kept free of anything | a path 1.5 m wide from the main door to the gate and to the kitchen; a vehicle lane 4 m wide on a through-road and to a garage; 2 m in front of every door; the customers' spot at the counter |
-| **Ground** | slope and footing | tents, tables and the garden flat (under 5°); the nest may sit on a bank; nothing on a step; a garden on soft ground, never on concrete (by the cell's surface) |
-| **Spacing** | density and gaps | at most one piece per 12 m² in the yard; 1 m between pieces people walk round; clutter (bottles, cans) only near seats |
-| **Varied** | breaks symmetry | mirror by seed (as today); jitter yaw 0–8° and position 0–0.5 m on clutter; two of a kind never in a straight line unless the plan says (Bastion's tents are) |
-
-Each rule is **hard** (must hold: Away from, Clear, Ground, In zone) or **soft** (scored: Near, Covers,
-Faces, the plan's spot). A piece is placed at the free cell with the best soft score that meets every
-hard rule.
-
-### Importance tiers
-
-The plan's order already ranks pieces; tiers make "what goes first" explicit:
-
-| Tier | Pieces | Dropped |
-|---|---|---|
-| 1. Security | the gate, the nest, wire on the threat front, the counter | never (the site logs a failure instead) |
-| 2. Purpose | what the site is for: the roster and stores (Bastion), the toll (the Red Hand), the table and the memorial (the Haven), the sample table and decon (Halcyon) | only if tier 1 took the room |
-| 3. Life | kitchen, water, sleep, the fire, the latrine | before purpose |
-| 4. Character | the faction's marks, the trophy wall, the children's corner, the garden | before life |
-| 5. Clutter and story | bottles, cans, extra crates, story props | first |
-
-### The solver
-
-Server-side, once per site per run, the result kept as today's layout is (positions and yaws as
-data, `RZ_SiteLayout`), so the next visit lays the same site with no solving.
-
-1. Read the grid and the surroundings ([docs/SITES.md](../docs/SITES.md)), as today.
-2. **Zones**: the wire line first ([layer 1](#3-building-in-layers-by-doctrine)), then the gate on the
-   main road, the kill zone outside, then the inside zones by distance from the wire and the door.
-3. **Pieces in tier order**, plan order within a tier. For each: the candidate cells are those in
-   its zone meeting every hard rule; at most **24 candidates** are scored (its plan spot first, then
-   the nearest cells to it, then a spread by seed); the best wins; none = dropped, with the rule that
-   failed.
-4. **Deterministic**: every random choice comes from the place's seed (`Seed`, as today), so the same
-   site is laid the same way after a restart, and a site differs from its neighbour.
-5. **Budget**: at most 2 ms of server time per step of the game mode's tick, spread over ticks
-   (a stronghold takes 3–5 ticks to solve before its first piece spawns); never more than one site
-   solving at once.
-
-## 3. Building in layers, by doctrine
-
-Every site is built in this order; each layer is a set of pieces with the rules above, and a
-later layer never takes a cell a former one needs.
-
-1. **Close it off**: a perimeter that closes: the wire zone traced round the yard and the building,
-   gaps filled by the faction's barrier pieces, the building's own walls and neighbouring walls,
-   fences and hedges counted as closed; water counts as closed. The log and audit give the share
-   closed.
-2. **Harden the building**: one entrance; side doors blocked; ground-floor windows boarded
-   (Traces' door boards, [TRACES.md](../docs/TRACES.md#doors-you-can-see), reused on windows by the
-   same kit, **World > Traces > Kit > Door board** for each faction).
-3. **Watch**: the nest or tower covering the gate, and a watch for every threat sector over the
-   threshold (the covered side, the ridge, the jetty).
-4. **Work and life**: inside the wire only, under cover where it can be; **anything valuable or
-   delicate goes indoors** (as data: the building is where the stores are, shown by a guard at its
-   door and a stores board, not by props inside).
-
-### Bastion: soldiers who occupy
-
-| Kind | Close it off | Harden | Watch | Work and life |
-|---|---|---|---|---|
-| Stronghold | sandbags and wire on every road in, a gate on the main road, wire across the yard's open sides, a cleared strip 20 m deep on the threat front | windows boarded by plank with firing gaps; one door; the stores' window | the nest at the gate, a lookout on the high point, a second nest toward a hostile holding within 3 km | roster board and flag at the inner court, stores indoors with a guard, the motor pool by a garage, the mess by the kitchen door, tents only if no building |
-| Outpost | a sandbag run on the road, wire on the threat front | the farmhouse's door; windows boarded | the nest on the road; a lookout toward the covered side | the fire and the roll board, two tents squared |
-| Road post | the barrier, sandbags on both verges | — | the nest down the road (toward the threat front if it's the other way) | a fire barrel and a net |
-
-### The Red Hand: crews who squat
-
-| Kind | Close it off | Harden | Watch | Work and life |
-|---|---|---|---|---|
-| Stronghold | scrap walls, tyres, a bus or car wrecks as walls where they stand (cars on the site grid count as wall when within 3 m of the line), the toll barrier on the main road | the garage shutter down; one door | a scrappy nest at the toll and one watching the road from the nearest hostile holding | the fire barrel and the sofa in the forecourt, the trophy wall facing out at the gate, the kennel by the gate, tents behind scrap |
-| Outpost | scrap and tyres on the road, the rest open | — | a lookout behind tyres | the card table, the fire, two tents |
-| Road post | the toll barrier, scrap on the verge | — | one leaning at the barrier | the card table |
-
-### The Haven: people keeping a village going
-
-| Kind | Close it off | Harden | Watch | Work and life |
-|---|---|---|---|---|
-| Stronghold | fences and gates, hedges kept, a cart across a side lane | the church doors; windows boarded on the threat side only | the bell tower or high point; the door | the long table and the memorial inside the fence, the garden, the washing, the children's corner furthest from the gate; graves by the church |
-| Outpost | a fence on the road side | the door | the door | the table, the garden, the memorial |
-| Safehouse | the garden gate, a fence on the road side | ground-floor windows boarded, the bear on the door | one at the door | the table outside the door, the pot and barrel by the kitchen |
-
-### Halcyon: a clean zone in a dirty world
-
-| Kind | Close it off | Harden | Watch | Work and life |
-|---|---|---|---|---|
-| The lab (stronghold) | chain-link or fence round the grounds, one gate, floodlights on the gate and the corners, a cleared strip all round | every ground-floor window boarded; one entrance; the decon tent **at** that entrance | guards at the gate and the entrance; a light on each corner; a watch toward the nearest lair | samples, the cold store and the work **indoors** (as data: guarded doors, a stores board); outside only the decon tent, two generators behind sandbags against the back wall away from the beds, the antenna on the high point, a smoking bench by the back door |
-| Field station | a fence on two sides | the house's door with the decon screen | the guard pair at the door | the field table under a tarp, the cold box against the wall behind a tarp, the generator behind it |
-
-**The lab, worked through.** The site grid reads the lab and its yard; the threat front is the road
-in from the nearest town and, if it's nearer, the bearing to the nearest lair. Layer 1 traces a fence
-line 8–12 m off the building, closing on the building's own walls and any wall or hedge on the grid;
-the gate goes where the road crosses it, with two lights and the plague board. Layer 2 boards every
-ground-floor window it can find and marks every door but the main one blocked (a board), and the
-decon tent goes on the cells outside the main door, the path through it kept clear. Layer 3 puts a
-guard post at the gate and one at the entrance, lights on the corners that see the most fence, a
-watch on the side toward the lair. Layer 4: the generators behind sandbags against the back wall,
-10 m from where people sleep; the antenna on the highest free cell; the sample table and the cold
-box are no longer in the yard (indoors, as data); a bench and a tin of butts by the back door for the
-night shift. What a player sees: a fenced, lit, boarded building with one way in through a shower,
-and nothing left lying about.
+The sites now stand right ([docs/SITES.md](../docs/SITES.md): rules, zones, a wire that closes, one
+entrance, a watch over the gate). Two things are left from the author's play-tests: the people
+don't use the site as it's laid out (they stand where today's jobs put them, and the patrol walks a
+loop 40–80 m out that ignores the wire and the roads), and a site doesn't tell what happened to it
+(a camp that was attacked last night looks like one that never was). The people (phase 5) take
+their posts from the layers and walk the zones; the story (phase 6) puts each site's state in the
+world with Traces' own machinery.
 
 ## 4. The people
 
@@ -352,26 +201,11 @@ Player text follows [WRITING.md](../docs/WRITING.md): plain, short, the faction'
 | Haven | *"There's soup. There's always soup."* | *"We buried Marta yesterday. Sit with us."* |
 | Halcyon | *"Through the shower first. All of you."* | *"Nobody goes out past the lights."* |
 
-## 6. The audit's rest
-
-The audit is built ([docs/SITES.md](../docs/SITES.md#the-audit)). With the wire line (layer 1) come
-its last two checks, and the drawing's wire, zones and gaps:
-
-| Check | How | Fails |
-|---|---|---|
-| Outside the wire | a tier 2–4 piece outside the wire zone | any |
-| Perimeter | the share of the wire line closed (pieces, walls, fences, water) | under 80% at a stronghold, 60% at an outpost; each gap named by bearing and width |
-
-The site's log line then gives the share closed and the widest gap: *"perimeter 91% (gap 4 m at
-230°)"*, and the drop's rule: *"dropped: Latrine (Away from: kitchen 15 m)"*. The tiers come from
-`pieces.py` (the audit reads them from the piece's name until then).
-
 ## Performance
 
 | Cost | Budget |
 |---|---|
-| Solving | at most 24 candidates a piece, 30 pieces: under 10 ms a site, spread over ticks; cached as the layout is today |
-| Spawning | unchanged: 4 pieces a tick, **Pieces max** (90); story pieces count toward it and are the first left out at the cap |
+| Spawning | unchanged: 4 pieces a tick, **Pieces max** (200); story pieces count toward it and are the first left out at the cap |
 | People | unchanged: Live places (3), extras (6) |
 
 ## What stays as it is
@@ -381,30 +215,26 @@ The site's log line then gives the share closed and the widest gap: *"perimeter 
 - `RZ_DressingGuard`: nothing at a camp is usable for gain.
 - Pieces spawn and go with the place's bodies, only near players; nothing is saved but what the
   game saves already.
-- The kits stay in `pieces.py`; `build.py` writes them; plans stay as the preference.
-- Today's open-ground layout (no building) is the same solver with no building parts.
+- The solver, the layers and the audit ([docs/SITES.md](../docs/SITES.md)): the people and the story
+  read the site's zones, wire, gates and posts as the solver leaves them; story elements are placed
+  by the same rules, as tier 5 pieces.
 
 ## Settings
 
-New on **Territory > Camp life** (`RZ_CampLifeSettings`; **Site grid**, **Site read ms** and
-**Audit threshold** are built):
+New on **Territory > Camp life** (`RZ_CampLifeSettings`; the grid's, the solver's and the layers'
+settings are built):
 
 | Setting | Default | What |
 |---|---|---|
-| **Solver** | on | build sites by the rules; off = today's plans |
-| **Candidates a piece** | 24 | cells scored before a piece is dropped |
-| **Layers** | on | close off, harden, watch before work and life |
 | **Story** | on | each site's story elements |
-| **Board windows** | on | harden: windows boarded with the faction's door board |
 | **Alert states** | on | posts and movement change with a threat |
 | **Road post run** | on | a walk to the nearest road post once a day |
 
 ## For the PC
 
-- Choose the new props each layer needs (vanilla first, nothing usable): wire coils and pickets,
-  chain-link or security fence sections, floodlights on poles (look only), a tin roof, a bench, a bucket
-  for the water run, a cage look; and decals for the kill zone if the Traces spike found a way. Then
-  measure them (**ReforgerZ: Measure prop footprints**) and run `build.py`.
+- Choose the props the story needs (vanilla first, nothing usable): a cage look, a bucket for the
+  water run, a bell, and decals for the kill zone if the Traces spike found a way. Then measure
+  them (**ReforgerZ: Measure prop footprints**) and run `build.py`.
 - After each phase, a screenshot of every site of one map with **ReforgerZ: Fly to the next site**,
   held against `sites_placed.html`.
 
@@ -412,7 +242,5 @@ New on **Territory > Camp life** (`RZ_CampLifeSettings`; **Site grid**, **Site r
 
 | Phase | Builds | Done when |
 |---|---|---|
-| 3 | **The rules and the solver**: zones, rule types, tiers, the solver; pieces in `pieces.py` get their rules | mean score 80 on Everon; no tier 1 drops |
-| 4 | **The layers**: close off, harden (windows and doors), watch; each faction's doctrine table; the lab as the first site to pass | the lab and every stronghold perimeter at 80% |
 | 5 | **The people**: posts, shifts by post, patrol routes from the wire and roads, everyday movement by zone, alert states | the jobs log shows posts filled and routes walked |
 | 6 | **The story**: the state, the library, its elements as scene kinds, ageing, lines and mentions | each faction's stories seen in play |

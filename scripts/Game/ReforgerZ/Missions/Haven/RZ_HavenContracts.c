@@ -70,6 +70,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 		m_sTitle = "Harvest Guard";
 		m_sDeed = "guarded the harvest at {town}";
 		m_sBrief = string.Format("Farmers from the safehouses are bringing in what's left in the fields outside %1: potatoes, mostly, and the last of the cabbages. That's a week of soup at half portions. Ten minutes of work, with their backs to the hedges. Keep the infected off them.", s.m_sName);
+		m_sObjective = string.Format("Keep the infected off the farmers in the fields outside %1.", s.m_sName);
 		return true;
 	}
 
@@ -226,6 +227,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		m_Escort.SetRoute(route);
 		m_sTitle = "Refugee Column";
 		m_sBrief = string.Format("A family is waiting at the edge of %1 with everything they own on their backs and in a pram. They've been sleeping in a garage since the gates closed. Walk them to %2. They won't move without someone with them, and I don't blame them.", s.m_sName, m_sDestName);
+		m_sObjective = string.Format("Walk the family from the edge of %1 to %2.", s.m_sName, m_sDestName);
 		if (!m_Escort.Begin(gm, m_vPos))
 			return false;
 
@@ -502,6 +504,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 		m_sTitle = "Fortify the Safehouse";
 		m_sDeed = "boarded up the house at {town}";
 		m_sBrief = string.Format("The safehouse in %1 is boarding up its ground-floor windows before the nights get longer. Every nail is a noise, and the hammering will bring them from all over town. Stand with the people working until the last board is up.", h.m_sName);
+		m_sObjective = string.Format("Guard the safehouse in %1 until the last board is up.", h.m_sName);
 		return true;
 	}
 
@@ -599,6 +602,7 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 		m_iTalk = AddClue("The seller", "A thin man in a good coat, who looks at your hands before your face. \"You're new. What are you buying?\"");
 		m_sTitle = "The Informant";
 		m_sBrief = string.Format("The Red Hand sells out of a dead drop outside %1. Wait there like a buyer, buy what they're selling, and bring us the names you hear. Any safehouse will do. Don't get made.", s.m_sName);
+		m_sObjective = string.Format("Buy at the Red Hand's dead drop outside %1 and bring the names to a Haven safehouse.", s.m_sName);
 		return true;
 	}
 
@@ -860,6 +864,7 @@ class RZ_Mission_RecoverTheBus : RZ_Mission
 		m_Zone.AddPrefabs(own);
 		m_sTitle = "Recover the Bus";
 		m_sBrief = string.Format("There's a bus at the depot in %1 with a splash of fuel in it. Get it running and drive it to the safehouse in %2: that's twenty people moved in one trip. Any bus or truck will do if you find a better one.", s.m_sName, h.m_sName);
+		m_sObjective = string.Format("Drive the bus from the depot in %1 to the safehouse in %2.", s.m_sName, h.m_sName);
 		return true;
 	}
 
@@ -1041,6 +1046,7 @@ class RZ_Mission_Memorial : RZ_Mission
 
 		m_sTitle = "Memorial";
 		m_sBrief = string.Format("Nobody buried the people of %1. The Haven wants their names: the tags from five of them, brought to any safehouse. The ones who did this to them are still in the streets.", s.m_sName);
+		m_sObjective = string.Format("Bring the tags of five of the dead of %1 to a Haven safehouse.", s.m_sName);
 		return true;
 	}
 

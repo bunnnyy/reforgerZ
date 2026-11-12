@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "55D588FB22B68C1E"
+ components {
+  RplComponent "{9753F24CD4F32268}" {
+  }
+  Hierarchy "{73750FABE1C8442F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GameEntity : "{0E94F28FD722B1D8}Prefabs/Props/Military/Generators/GeneratorFloodlight_US_01.et" {
+   ID "DE105EAB29DB985C"
+   components {
+    Hierarchy "{D65E9E911D18E2DE}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 180 0
+  }
+ }
+}

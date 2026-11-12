@@ -198,6 +198,7 @@ class RZ_Event_FogBank : RZ_Event_Timed
 
 		m_sTitle = "Fog Bank";
 		m_sBrief = string.Format("A fog bank has rolled into %1 and won't lift for twenty minutes. In there you'll be hard to hear and hard to see. So will they, until they're on top of you.", s.m_sName);
+		m_sObjective = string.Format("Move through %1 while the fog covers you.", s.m_sName);
 		return true;
 	}
 
@@ -274,6 +275,7 @@ class RZ_Event_PowerSurge : RZ_Event_Timed
 
 		m_sTitle = "Power Surge";
 		m_sBrief = string.Format("Something on the old lines has kicked in: %1 has power again, for ten minutes at most. Every shop alarm in town just went off. Anything electric in there is worth looking for while it's on.", s.m_sName);
+		m_sObjective = string.Format("Search %1 for electrics while the power is on.", s.m_sName);
 		return true;
 	}
 
@@ -364,6 +366,7 @@ class RZ_Event_GasStationFire : RZ_Mission
 			m_vPos = station.m_vPos;
 			m_sTitle = "Gas Station Fire";
 			m_sBrief = string.Format("The tanks under the petrol station in %1 are leaking, and something in there is smouldering. It'll go up in about three minutes. Anything standing near it then won't be standing after. Lead them in, or keep well clear.", s.m_sName);
+			m_sObjective = string.Format("Lead the infected to the petrol station in %1, or keep well clear.", s.m_sName);
 			return true;
 		}
 
@@ -514,6 +517,7 @@ class RZ_Event_TunnelRats : RZ_PuzzleMission
 		m_vPos = s.m_vCenter;
 		m_sTitle = "Tunnel Rats";
 		m_sBrief = string.Format("They're coming up out of the drains in %1. Three culverts at the edge of town, and every minute more of them. Bring the roofs down on them, or the town fills up.", s.m_sName);
+		m_sObjective = string.Format("Collapse the three culverts at the edge of %1.", s.m_sName);
 		return true;
 	}
 

@@ -4,19 +4,22 @@
 
 reads the "Sites draw" lines of a site audit's log (tools/runtime_test/run.sh sites) and writes
 tools/camp_kit/sites_placed.html: each site top-down, its ground read on the grid (water, buildings,
-walls and trees, bushes, roads, steep ground), its building, road entries, gate and door, every
-piece placed (its real footprint) and every piece dropped (dashed, with why), the posts and what
-they see, the patrol's loop, any overlap, and the threat round it, with its score. It also writes
+walls and trees, bushes, roads, steep ground, the paths kept clear), its building, road entries,
+gate and door, the wire line (what closes each stretch: the ground, the barrier, a gate, or a gap),
+every piece placed (its real footprint) and every piece dropped (dashed, with why), what went
+indoors, the posts and what they see, the patrol's loop, any overlap, and the threat round it,
+with its score. It also writes
 tools/camp_kit/sites_list.txt for the Workbench plugin "ReforgerZ: Fly to the next site".
 """
 import base64, html, math, os, re, struct, sys, zlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 COLOURS = {".": (233, 230, 216), "~": (120, 160, 196), "b": (90, 74, 58), "#": (120, 112, 100), "*": (150, 178, 120),
-           "=": (178, 176, 168), "^": (205, 180, 140), "k": (160, 130, 180), "p": (233, 210, 170)}
+           "=": (178, 176, 168), "^": (205, 180, 140), "k": (160, 130, 180), "p": (233, 210, 170), ",": (246, 236, 170)}
 FACTIONS = {"0": "Haven", "1": "Bastion", "2": "Red Hand", "3": "Halcyon"}
 KINDS = {"1": "stronghold", "2": "outpost", "3": "safehouse", "4": "road post"}
 SECTORS = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+WIRE_STATES = {0: "a gap", 1: "closed by what stands there (a building, a wall, a fence, a hedge, water)", 2: "the faction's barrier", 3: "a gate", 4: "a road along the line"}
 
 
 def png(rows):
@@ -48,7 +51,7 @@ def parse(log):
         m = re.search(r"Sites draw (\d+) (\w+) ?(.*)$", line.rstrip())
         if m:
             sid, kind, rest = m.group(1), m.group(2), m.group(3)
-            s = sites.setdefault(sid, {"rows": {}, "pieces": [], "drops": [], "posts": [], "entries": [], "overlaps": [], "route": []})
+            s = sites.setdefault(sid, {"rows": {}, "pieces": [], "drops": [], "posts": [], "entries": [], "overlaps": [], "route": [], "wire": [], "indoors": []})
             bits = rest.split(" ")
             if kind == "site":
                 s.update(faction=FACTIONS.get(bits[0], bits[0]), kind=KINDS.get(bits[1], bits[1]), grid=bits[2], cx=float(bits[3]), cz=float(bits[4]), half=float(bits[5]),
@@ -84,6 +87,13 @@ def parse(log):
                 s["route"] = [(float(v[i]), float(v[i + 1]), v[i + 2] == "1") for i in range(0, len(v) - 2, 3)]
             elif kind == "overlap":
                 s["overlaps"].append((float(bits[0]), float(bits[1]), " ".join(bits[2:])))
+            elif kind == "wire":
+                s["wire"].append((int(bits[0]), float(bits[1]), float(bits[2]), float(bits[3]), float(bits[4])))
+            elif kind == "ring":
+                v = [float(t) for t in bits]
+                s["ring"] = list(zip(v[0::2], v[1::2]))
+            elif kind == "indoors":
+                s["indoors"].append(bits[1])
             elif kind == "goto":
                 s["goto"] = tuple(float(t) for t in bits[:4])
             continue
@@ -145,6 +155,11 @@ def site_svg(s, size=560):
                 " front" if i == front else "", min(0.9, 0.15 + t * 0.12), " ".join("%.1f,%.1f" % q for q in p), SECTORS[i], t))
     if "building" in s:
         g.append('<polygon class="bld" points="%s"><title>%s</title></polygon>' % (pts(s["building"][1]), html.escape(s["building"][0])))
+    if "ring" in s:
+        g.append('<polygon class="ring" points="%s"/>' % pts(s["ring"]))
+    for state, ax, az, bx, bz in s["wire"]:
+        g.append('<line class="wire w%d" x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f"><title>%s</title></line>' % (
+            state, X(ax), Y(az), X(bx), Y(bz), WIRE_STATES.get(state, "?")))
     for d in s["drops"]:
         for r in d["rects"][:d["props"]]:
             g.append('<polygon class="drop" points="%s"><title>%s dropped: %s</title></polygon>' % (pts(rect_points(d["x"], d["z"], d["yaw"], r)), html.escape(d["name"]), html.escape(d["why"])))
@@ -177,6 +192,12 @@ def site_svg(s, size=560):
     return "".join(g)
 
 
+def indoors(s):
+    if not s["indoors"]:
+        return ""
+    return " &#183; indoors: " + html.escape(", ".join(n.replace("_", " ") for n in s["indoors"]))
+
+
 def write(log, out=None):
     sites, summary = parse(log)
     out = out or os.path.join(HERE, "sites_placed.html")
@@ -185,7 +206,7 @@ def write(log, out=None):
         tone = "ok" if s["score"] >= 70 else "low"
         cards.append('<article class="card"><header><h3>%s %s at %s</h3><span class="score %s">%d</span></header><p class="title">%s &#183; %s</p>%s<p class="line">%s</p></article>' % (
             html.escape(s["faction"]), html.escape(s["kind"]), s["grid"], tone, s["score"], html.escape(s.get("title", "")),
-            html.escape(s.get("building", ("on open ground", []))[0]), site_svg(s), html.escape(s["line"])))
+            html.escape(s.get("building", ("on open ground", []))[0]) + indoors(s), site_svg(s), html.escape(s["line"])))
     page = PAGE.replace("@@SUMMARY@@", html.escape(summary or "%d sites" % len(sites))).replace("@@CARDS@@", "\n".join(cards)).replace("@@LOG@@", html.escape(os.path.basename(os.path.dirname(log))))
     open(out, "w", encoding="utf-8").write(page)
     listing = ["# name x z gate_x gate_z: written by render.py --placed for the Workbench plugin ReforgerZ: Fly to the next site"]
@@ -225,14 +246,16 @@ svg{display:block;width:100%;height:auto;border-radius:4px}
 .sight{stroke:#3a5f9a;stroke-width:.8;stroke-dasharray:2 3}.sight.blocked{stroke:#c0302a}
 .overlap{fill:none;stroke:#c0302a;stroke-width:2.5}
 .threat{fill:#c0302a}.threat.front{stroke:#22261f;stroke-width:1.5}
+.ring{fill:none;stroke:#22261f;stroke-width:.6;stroke-dasharray:1 3}
+.wire{stroke-width:3.5;stroke-linecap:round}.w0{stroke:#c0302a}.w1{stroke:#4a4f45}.w2{stroke:#2f7d3a}.w3{stroke:#2b5fb4}.w4{stroke:#c0302a;stroke-dasharray:3 3}
 .scale{font-size:9px;fill:#22261f}
 .key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}.key i{display:inline-block;width:12px;height:10px;margin-right:5px;vertical-align:middle}
 </style>
 <main>
 <h1>Sites as placed</h1>
 <p class="lede">@@SUMMARY@@</p>
-<p class="lede">Drawn from the site audit's log (@@LOG@@) by <code>tools/camp_kit/render.py --placed</code>: the layouts the game actually laid out, as data, on the ground it read. Each piece is drawn as its real footprint; dashed red outlines are pieces dropped (hover for why). The ring's wedges are the threat each side carries (the outlined one is the front).</p>
-<div class="key"><span><i style="background:#e9e6d8"></i>open</span><span><i style="background:#78a0c4"></i>water</span><span><i style="background:#5a4a3a"></i>building</span><span><i style="background:#787064"></i>wall, tree, rock, car</span><span><i style="background:#96b278"></i>bush</span><span><i style="background:#b2b0a8"></i>road</span><span><i style="background:#cdb48c"></i>steep</span><span><i style="background:#a082b4"></i>other scenery</span><span><i style="background:#c0302a"></i>tier 1</span><span><i style="background:#d08a2a"></i>tier 2</span><span><i style="background:#6f8455"></i>tier 3</span><span><i style="background:#7d6ab0"></i>tier 4</span><span><i style="background:#9a9a8a"></i>tier 5</span></div>
+<p class="lede">Drawn from the site audit's log (@@LOG@@) by <code>tools/camp_kit/render.py --placed</code>: the layouts the solver laid out, as data, on the ground it read. Each piece is drawn as its real footprint; dashed red outlines are pieces dropped (hover for why). The thick line round each site is its wire: green the faction's barrier, grey closed already by what stands there, blue a gate, red a gap. The ring's wedges are the threat each side carries (the outlined one is the front).</p>
+<div class="key"><span><i style="background:#e9e6d8"></i>open</span><span><i style="background:#78a0c4"></i>water</span><span><i style="background:#5a4a3a"></i>building</span><span><i style="background:#787064"></i>wall, tree, rock, car</span><span><i style="background:#96b278"></i>bush</span><span><i style="background:#b2b0a8"></i>road</span><span><i style="background:#cdb48c"></i>steep</span><span><i style="background:#a082b4"></i>other scenery</span><span><i style="background:#f6ecaa"></i>path kept clear</span><span><i style="background:#2f7d3a"></i>wire: barrier</span><span><i style="background:#4a4f45"></i>wire: closed already</span><span><i style="background:#2b5fb4"></i>wire: gate</span><span><i style="background:#c0302a"></i>wire: gap</span><span><i style="background:#c0302a"></i>tier 1</span><span><i style="background:#d08a2a"></i>tier 2</span><span><i style="background:#6f8455"></i>tier 3</span><span><i style="background:#7d6ab0"></i>tier 4</span><span><i style="background:#9a9a8a"></i>tier 5</span></div>
 <div class="cards">
 @@CARDS@@
 </div>

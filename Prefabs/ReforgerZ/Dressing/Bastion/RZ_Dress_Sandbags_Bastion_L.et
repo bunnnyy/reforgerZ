@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "3C5AAA6380EDE30F"
+ components {
+  RplComponent "{0BB5CADBB245E90F}" {
+  }
+  Hierarchy "{4B32F3140105701B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+   ID "487E891EECDF5834"
+   components {
+    Hierarchy "{F31C3EB1154178ED}" {
+    }
+   }
+   coords -3.4 0 0
+  }
+  GenericEntity : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+   ID "67E2E61D044AD41D"
+   components {
+    Hierarchy "{68546C94489DE47F}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 2 0
+  }
+  GenericEntity : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+   ID "A1944D034529C9BC"
+   components {
+    Hierarchy "{FA4E49D847B6F92A}" {
+    }
+   }
+   coords 3.4 0 0.05
+   angles 0 -1 0
+  }
+ }
+}

@@ -653,10 +653,11 @@ class RZ_Mission
 	}
 
 	// ================================================================ Objectives
-	// docs/MISSIONS.md, "Objectives": what the tracker and the Quests tab show. A mission may name
-	// its ask (m_sObjective) or declare its steps (ObjSteps, ObjStepDone, ObjReveal); otherwise the
-	// framework's default is used: get to the place, then the ask from the brief.
-	string m_sObjective;					// the ask in one line ("Hold the cache for a minute."); "" = from the brief
+	// docs/MISSIONS.md, "Objectives": what the tracker and the Quests tab show. Every mission names
+	// its ask (m_sObjective, set beside its brief) or declares its steps (ObjSteps, ObjStepDone,
+	// ObjReveal); the default is get to the place, then the ask. An objective stands on its own: who,
+	// what and where in one short line (docs/WRITING.md, "Objective lines"; voice_lint checks it).
+	string m_sObjective;					// the ask in one line ("Hold the cellar cache in Levie for a minute."); world tokens filled when shown
 	protected ref array<string> m_aObjSteps;	// declared steps, in order (ObjSteps)
 	protected ref array<bool> m_aObjOptional;
 	protected int m_iObjStep;					// the current step
@@ -810,17 +811,17 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The ask in one line: m_sObjective, else the brief's ask (RZ_QuestText.AskIn), else the title.
+	//! The ask in one line: m_sObjective with the world's tokens ({lab_town}, {leader:id}...) filled
+	//! in now, so a name in it is never stale; the title if a mission names none.
 	string ObjectiveText(RZ_GameModeComponent gm)
 	{
-		if (!m_sObjective.IsEmpty())
+		if (m_sObjective.IsEmpty())
+			return m_sTitle;
+
+		if (!gm || !gm.GetFacts())
 			return m_sObjective;
 
-		string ask = RZ_QuestText.AskIn(GetBrief(gm));
-		if (!ask.IsEmpty())
-			return ask;
-
-		return m_sTitle;
+		return gm.GetFacts().Fill(m_sObjective);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1132,7 +1133,7 @@ class RZ_Mission
 		array<int> candidates = {};
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
-			if (s.m_fInfection >= minInf && s.m_fInfection <= maxInf && !gm.GetMissions().IsSettlementBusy(i, asker))
+			if (s.m_fInfection >= minInf && s.m_fInfection <= maxInf && !s.m_bIsland && !gm.GetMissions().IsSettlementBusy(i, asker))
 				candidates.Insert(i);
 		}
 

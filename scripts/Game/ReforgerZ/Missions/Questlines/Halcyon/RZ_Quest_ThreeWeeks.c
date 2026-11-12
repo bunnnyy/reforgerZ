@@ -703,6 +703,7 @@ class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_DRIVER, m_iTalk, "Talk to " + QText(gm, "driver"), choices, QFill(gm, "{driver}, at the edge of {site_town}"));
 		m_sTitle = "The Three Weeks: the driver";
 		m_sBrief = QFill(gm, "On Day 3 {driver} drove Dr Wolff up to the closed site and came back alone. He sits where he left the van, at the edge of {site_town}, and he won't talk to anyone in a lab coat. Get him to say where the site is, and what he saw.");
+		m_sObjective = QFill(gm, "Get {driver} at the edge of {site_town} to say where the closed site is.");
 		// The quiet threat (Reputation > Quiet success): Fear first, so he doesn't tell the houses
 		m_Ways.m_iMenaceDifficulty = RZ_ReputationSettings.QuietDifficulty();
 		return true;
@@ -951,6 +952,7 @@ class RZ_QM_WeeksSite : RZ_QM_HalcyonScene
 		m_sItemName = "the code";
 		m_sTitle = "The Three Weeks: the site";
 		m_sBrief = QFill(gm, "The closed site is {site_place}, grid {site_grid}. Dr Wolff went into the store there on Day 3 and her team stayed outside. The store has a six-figure lock. Her team will have had the code between them.");
+		m_sObjective = QFill(gm, "Open the store at the closed site, grid {site_grid}, with the team's code.");
 		return true;
 	}
 
@@ -1125,6 +1127,7 @@ class RZ_QM_WeeksLead : RZ_QM_HalcyonScene
 		m_sItemName = "the notebook";
 		m_sTitle = "The Three Weeks: the team lead";
 		m_sBrief = QFill(gm, "Dr Wolff's notebook is in the store at the site near {site_town}, and so is she. She turned a long time ago. Bring the notebook down. What you do about her is up to you.");
+		m_sObjective = QFill(gm, "Bring Dr Wolff's notebook down from the store at the site near {site_town}.");
 		if (m_bCage)
 			m_sBrief += " The lab has left a cage trap outside, if you'd rather bring her too.";
 
@@ -1331,6 +1334,7 @@ class RZ_QM_WeeksReaders : RZ_QM_HalcyonScene
 		m_sItemName = "the notebook";
 		m_sTitle = "The Three Weeks: who reads it";
 		m_sBrief = QFill(gm, "Dr Wolff's notebook says the Institute was told on the first day of the three weeks, and wrote back \"Continue.\" {director} wants it in the record. {lead} wants it out. Bastion, the Haven and the Red Hand would all read it. Take it to one of them.");
+		m_sObjective = QFill(gm, "Take Dr Wolff's notebook to one reader: {director}, Bastion, the Haven or the Red Hand.");
 		if (m_iLead < 0)
 			m_sBrief = QFill(gm, "Dr Wolff's notebook says the Institute was told on the first day of the three weeks, and wrote back \"Continue.\" {director} wants it in the record. Bastion, the Haven and the Red Hand would all read it. Take it to one of them.");
 		return true;
@@ -1476,6 +1480,7 @@ class RZ_QM_WeeksRaid : RZ_Mission_LabDefence
 
 		m_sTitle = "The Three Weeks: the raid";
 		m_sBrief = "Since the notebook was read out, the Red Hand is sure the lab has more to hide, and a crew is coming to look for it with the infected for cover. Hold the lab for four minutes.";
+		m_sObjective = "Hold the lab in {lab_town} for four minutes.";
 		return true;
 	}
 
@@ -1541,6 +1546,7 @@ class RZ_QM_WeeksWalkout : RZ_QM_HalcyonScene
 
 		m_sTitle = "The Three Weeks: the field lead walks out";
 		m_sBrief = string.Format("%1 has heard the notebook went into the record, without the pages about the director, and she's leaving the field station in %2. She shouldn't walk alone. Take her to a safehouse, or back to the lab.", l.m_sName, l.m_sPlace);
+		m_sObjective = string.Format("Walk %1 from the field station in %2 to a safehouse or the lab.", l.m_sName, l.m_sPlace);
 		return true;
 	}
 

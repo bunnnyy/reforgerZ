@@ -24,6 +24,7 @@ built from parts here (below).
 - [Faction kit and disguises](#faction-kit-and-disguises)
 - [Grey choices](#grey-choices)
 - [Phrasing choices and outcomes](#phrasing-choices-and-outcomes)
+- [Objective lines](#objective-lines)
 - [Dark humour, not edginess](#dark-humour-not-edginess)
 - [Template rules](#template-rules)
 - [Names in shared text](#names-in-shared-text)
@@ -140,6 +141,7 @@ while, about food. The boss always jokes. The director never jokes on purpose.
 | Replies on the talk screen | The player | What you say, word for word ([Talk](#talk)) | Only the player's own wry replies (`dry`) | A menu label. Judgement words. Rewards or consequences |
 | Action labels (world prompts, the object menu) | The player | Verb and object, then the cost or check in brackets | None | Judgement words. Rewards or consequences |
 | Status tiles and lock tags ([UI.md](UI.md#the-status-strip-and-locked-rows)) | The screen | Capitals, one word (two at most): the state (ON, COLD, ~25 MIN) or what's missing, in the thing's terms (NEEDS POWER, OPERATOR ONLY, SHORT 1). The full reason is the sentence the action already says | None | A judgement or a reward. A tag that says something the reason doesn't |
+| Objectives (the quest tracker, the Quests tab, the map) | The screen | One plain imperative line: who, what and where ([below](#objective-lines)) | None | A pronoun without a name. Leaning on the brief |
 | Outcomes | What happened, then one reaction | Three beats ([below](#phrasing-choices-and-outcomes)) | Only in the reaction | A verdict. Numbers inside the voiced beats |
 | Guidance | A voiced speaker, or nobody | Voiced tips: the speaker's register. Plain hints: plain | Voiced tips: the speaker's. Plain hints, veterans' short lines, standing and pay notices: none | Burying a critical instruction: it comes first and can't be misread |
 | The Long Table | The family | Homely | None, ever | Describing anything |
@@ -565,6 +567,36 @@ row):
 - **Use the faction's own word:** "contribution", "borrowed", "walked out", "struck off" (Bastion's
   deserter only), "paid" (the book), "expended", "the other two". The euphemism is the grey.
 
+## Objective lines
+
+An objective is the line the quest tracker, the Quests tab and the map's mark show for a job: a
+mission's `m_sObjective`, a questline stage's or finale route's objective, an errand's or an
+opening's step and its "go back" line, and the stage titles listed as done
+([MISSIONS.md](MISSIONS.md#objectives)). A player reads it on the move, often days after the brief,
+so it never leans on the brief.
+
+- **Who, what and where, in one line that stands on its own.** Name the person by their name or
+  token, the thing, and the town, house or grid.
+- **Short and imperative:** a verb first, one line, no second sentence. The brief keeps the voice;
+  the objective is plain.
+- **No pronoun without a named person in the same line.** "Find out his number" fails; so does "Go
+  back to her". A pronoun is fine once the line names who it is, but a name or "the pilot" reads better.
+- **Use the tokens the job already has:** `{giver}` and `{here}` (errands), a questline's keys
+  (`{brother_full}`, `{lead_place}`), `{lab_town}` and `{leader:id}` (filled when shown), or the town
+  in `string.Format`. Add a token only when the name is in the data but no string can reach it.
+- **A stage title is a heading, not a pronoun:** "{brother}'s number", not "His number".
+
+| Not | But |
+|---|---|
+| Find out his number. | Find Emil Novak's trial number at the lab in Morton. |
+| Go back to her. | Go back to Jana Novak at the safehouse in Outskirts 59-95. |
+| Search the houses over the way. | Search the houses across the road from Lucie Brandt's, quietly. |
+| Secure it and hold the area for a minute. | Hold the cellar cache in Levie for a minute. |
+| Find him. | Find the downed pilot outside Morton and walk the pilot to Levie. |
+
+The text lint's `objective` check holds the pronoun and length rules, and that every mission with a
+brief names its objective ([Checking text](#checking-text)).
+
 ## Dark humour, not edginess
 
 ### Three tests
@@ -701,8 +733,8 @@ Two tools check the scripts' text; how to run them is in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint).
 
 - **`tools/strings_inventory.py`** lists every literal that can reach a player: notices, headlines,
-  rumours, briefs, labels and choices, clues, journal lines, outcomes, the guidance tips, the voice
-  pools and the voice bank, the replies the talk screen's code builds (`reply`: `Reply`, `OwnRow`, a
+  rumours, briefs, objective lines (`objective`), labels and choices, clues, journal lines, outcomes,
+  the guidance tips, the voice pools and the voice bank, the replies the talk screen's code builds (`reply`: `Reply`, `OwnRow`, a
   scene's `Verb`, and what `RZ_TalkWords` returns), and every line of the conversation files
   (`dialogue/**/*.rzd`: says as talk-screen lines, labels as choices; the generated packs are skipped). For each: its file and line, the channel (guessed from the call, the assignment or the
   function), the faction (from the folder, or the nearest `case RZ_EFaction.X:`), a register guess
@@ -728,6 +760,7 @@ Two tools check the scripts' text; how to run them is in
 | `clue-echo` | An ambient line never repeats a clue's text |
 | `seed-name` | Seeded name lists never use a name LORE.md gives a person |
 | `punchline` | A short last sentence ends one line only |
+| `objective` | An objective line ([Objective lines](#objective-lines): `m_sObjective`, `ObjSteps`, an errand's or opening's `m_sStep`, a finale route's `StageObjective`, the lines `UI/RZ_Quests.c` and the step chain build) has no he, she, him, her, his, they, them or their without a person named in the same line (a capitalised name, a person's `{token}` or a `%1`), and three words or more. A stage title never leans on a pronoun ("His number"). Every class that sets a mission's brief (`m_sBrief`, or `scene.m_sBrief`) also sets its `m_sObjective` |
 
 `tools/voice_lint_baseline.txt` holds the findings in today's text (the check, the file and a hash of
 the line), so the lint fails only on new or changed text. Each writing pass fixes lines and shrinks

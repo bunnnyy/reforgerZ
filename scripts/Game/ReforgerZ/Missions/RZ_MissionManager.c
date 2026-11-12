@@ -311,6 +311,9 @@ class RZ_MissionManager
 
 		// Briefs often open with a place or a name ("the chemist's in ...")
 		mission.m_sBrief = RZ_Util.Capitalize(mission.m_sBrief);
+		// The live place check (docs/PLACES.md): dry, off the line, near the town its brief names
+		if (!mission.m_bGlobal)
+			RZ_PlaceNeeds.Verify("mission", mission.m_vPos, mission.m_sTitle, mission.m_iSettlement);
 		// The Tier 0 audit: a job that ended here before says how it went
 		RZ_MissionReasons.Tier0Read(mission);
 		// A work job: whose mark is on the wall here (the town tally)

@@ -84,8 +84,13 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   place label within 400 m (a hamlet or a point), or "<name> outskirts" if that's taken, or a
   grid reference ("Outskirts 13-29"). Label names are string-table keys, translated on the
   server. Each has a centre, a size class and an infection level (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
-- **Spawn points:** 6 at a time in random towns, and one is moved to a new town every
-  20 minutes. Nobody picks one: the spawn screen asks for one at random, and with openings on the
+- **Only the mainland:** a fresh scan keeps no town on an island (close to impossible to reach on
+  foot), so nothing a town anchors (holdings, safehouses, the lab, missions, spawn points, the
+  Long Table, the infected's towns) is ever there; a saved season's island town is skipped by the
+  pickers until the next fresh season ([PLACES.md](PLACES.md#the-mainland)). A town whose middle
+  came out in the water is moved to its nearest dry house.
+- **Spawn points:** 6 at a time in random towns, each just outside a house, and one is moved to a
+  new town every 20 minutes. Nobody picks one: the spawn screen asks for one at random, and with openings on the
   new character is moved on to a place rolled for its background
   ([Openings](#openings-how-every-life-starts)). No safehouse is a spawn point.
 - **Missions are announced** with distance and direction ("1.2 km NE"). Messages arrive a few at
@@ -698,10 +703,10 @@ look and the next one along wears another. An empty list keeps the slot's own pr
 | A safehouse's occupants and guards; its quartermaster | the house and the row; the house's spot |
 | Camp life's extras (guards and workers who sleep and wake) | the place and how many are already out |
 | A road post's crew and speaker | the post |
-| A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad) | the spot it spawns at |
+| A supply truck's crew, a hunter squad, a stronghold quartermaster, a mission's faction group (the finale's stand, Authors, the Red Hand vans, Bastion's gate squad, the crash site's recovery team, the squad sent to arrest a post's commander) | the spot it spawns at |
 | A stronghold leader, council head or outpost leader | the seat and the generation: a successor wears another look |
 
-**Nobody of a faction wears a vanilla soldier's kit.** Two rules make sure of it:
+**Nobody of a faction wears a vanilla soldier's kit.** Three rules make sure of it:
 
 - **A look dresses the whole body.** Every look sets every garment you can see (hat, jacket,
   trousers, boots, flak vest, gloves; a mask where it has one), so nothing of the soldier it's built
@@ -709,9 +714,20 @@ look and the next one along wears another. An empty list keeps the slot's own pr
   stops on a look that leaves one to its parent.
 - **The faction groups are dressed themselves.** Each slot's own group prefab (guards, road-post and
   truck crews, hunter squads, the safehouse guard) and each mission's faction group (the Bastion
-  squad, the escorted soldier, the Red Hand group, the escorted scientist, the survivors) has looks
-  as its members. A group that spawns as itself, not as one of its looks (a mission's group, or a
-  slot whose list is empty), still puts the faction's people in the field.
+  squad, the escorted soldier, the Red Hand group, the escorted scientist, the survivors, their two
+  civilians included) has looks as its members, its first (leader) slot too. A group that spawns as
+  itself, not as one of its looks (a mission's group, or a slot whose list is empty), still puts the
+  faction's people in the field.
+- **A look is never swapped for its parent.** A vanilla AI group spawns each member as a random
+  *variant* of its prefab (the Game Master's editable-entity variants), and the US rifleman and his
+  variant 1 list each other. So a look built on either came out as the plain US rifleman half the
+  time: a Halcyon pair at a site showed one guard in black hazmat and one in woodland with a flak
+  vest. Every look switches its parent's variants off, so each member is the look the group lists.
+
+`tools/people_looks.py --check` holds all three: it fails on a faction group with a member that
+isn't a look, a look with a variant left on, a garment or parent that doesn't resolve in the game
+(read from the game's and the Workshop mods' own data), and a script that spawns a faction person
+slot without picking a look ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#peoples-looks-the-variant-prefabs)).
 
 Each faction dresses as one people, and its armed people as a unit: one base, details that vary,
 so the guards at one place look like they serve together whichever looks they drew
@@ -719,7 +735,7 @@ so the guards at one place look like they serve together whichever looks they dr
 
 | Faction | Armed (guards, posts, patrols, hunters, crews) | Everyone else |
 |---|---|---|
-| The Haven | the watch (guards, safehouse guards): green oilskins and fisherman's trousers, the hat and gloves vary; drivers and the survivors' armed men in work clothes (overalls, a mechanic's suit, denim, a hard hat) | civilians in work clothes: overalls and dungarees, a mechanic, a fisherman, a builder, a carer in a medical mask; a council head and the leader in a suit, denim or a turtleneck. Nobody in red |
+| The Haven | the watch (guards, safehouse guards): green oilskins and fisherman's trousers, the hat and gloves vary; drivers and the survivors' armed men in work clothes (overalls, a mechanic's suit, denim, a hard hat) | civilians in work clothes: overalls and dungarees, a mechanic, a fisherman, a builder, a carer in a medical mask, the survivors' two in a turtleneck or denim; a council head and the leader in a suit, denim or a turtleneck. Nobody in red |
 | Task Force Bastion | one olive kit: the M65 jacket (sleeves down or rolled) and trousers, US boots, the flak vest and webbing; a plain PASGT or M1 helmet, an olive patrol cap or boonie | the same olive off duty, without webbing: occupants, quartermasters, the post commanders and the leader in caps |
 | The Red Hand | scavenged and mismatched (bandit jackets, tracksuits, sweatshirts, dark cargo trousers and jeans, balaclavas), and every armed one in red: a red knitted hat or cap, or a red sweatshirt | the same scavenged clothes, some in red; the boss in a bandit jacket and a red hat |
 | Halcyon | its security (guards, the lab's extras): black hooded hazmat suits, masks or a gas mask, black gloves; its field crews (supply trucks) in olive hazmat | its staff: the beaks (hazmat with masks, [LORE.md](LORE.md)), technicians and clerks in turtlenecks and suits with medical masks and nitrile gloves, paramedics; the director, field leads, quartermasters and the escorted scientist in suits or paramedic kit |
@@ -738,11 +754,13 @@ convicts and the sniper are nobody's people and keep vanilla kit too.
 
 ### Camp life
 
-Code: `Factions/RZ_CampLife.c` (the ground and the audit: `RZ_SiteGrid.c`, `RZ_SiteSurroundings.c`, `RZ_SiteAudit.c`, [SITES.md](SITES.md)); settings: **Territory > Camp life**. Holdings, Haven safehouses,
+Code: `Factions/RZ_CampLife.c` (the ground, the rules, the layers and the audit: `RZ_SiteGrid.c`, `RZ_SiteSurroundings.c`, `RZ_SiteRules.c`, `RZ_SiteSolver.c`, `RZ_SiteWire.c`, `RZ_SiteAudit.c`, [SITES.md](SITES.md)); settings: **Territory > Camp life**. Holdings, Haven safehouses,
 Halcyon's field stations and road posts look lived in, and their people do things. It's
 scenery and behaviour only: nobody new decides who is there, and nothing is saved. Each faction
-moves into the building in its town that suits what it does and lays its camp out in the yard
-and at the road entries; with no building that fits, it lays it out on open ground facing the road.
+moves into the building in its town that suits what it does, closes it off, hardens it and sets a
+watch by its doctrine, and lays its camp out inside by each piece's rules
+([SITES.md](SITES.md#building-in-layers)); with no building that fits, it lays it out on open
+ground facing the road.
 
 **What stands there.** Each faction has a **kit** for each kind of place: a **plan**, the camp
 drawn whole, of compositions built from vanilla outdoor props
@@ -754,9 +772,10 @@ drawn whole, of compositions built from vanilla outdoor props
 | Bastion post | a sandbag nest and sandbag runs at the approach, tents, the roster board, a flagless pole, a fire pit, a table, a cook pot and a woodpile, a shaving stand, ammo-crate seats |
 | Red Hand camp | the toll barrier, a scrappy nest, a scrap barricade and the red hand painted on corrugated iron at the approach, an oil-drum fire, a card table, a stolen sofa, a cook pot and a woodpile, tents and a scrap shelter, bags and bottles |
 | Haven safehouse and outpost | a table outside, a cook pot and a woodpile, a water barrel and a wash stand, a washing line, a garden bed, the bear stencil on a door board; an outpost adds a candle memorial with names, a tent, a children's corner, a fence and a vegetable stall |
-| Halcyon field station | a field table, the ward tent (the plain FIA tent: the medical one carries a heal station), a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab grounds too, when Halcyon's stronghold sits at the lab: a sorting table under a net, two generators, the radio table) |
-| Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board, the Red Hand's trophy wall and kennel, the Haven's fire pit and chairs round a crate, Halcyon's sorting table and radio table) |
+| Halcyon field station | a field table, the ward tent (the plain FIA tent: the medical one carries a heal station), a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab, Halcyon's stronghold: a guard post, two generators behind sandbags, a bench by the back door and floodlights outside; in a building its tables, the ward tent, the cold store, the sorting table and the radio table indoors, as data) |
+| Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board and checkpoint, the Red Hand's trophy wall and kennel, the Haven's fire pit, chairs round a crate, its gate and a lookout's chair, Halcyon's sorting table and radio table) |
 | Road posts | 4 pieces on the verges either side of the barrier: a fire barrel, a nest or a card table, a tarp, a barricade |
+| Every site's layers ([SITES.md](SITES.md#each-factions-doctrine)) | the faction's barrier round it with its gates on the roads in (Bastion's concertina wire, the Red Hand's rusted tin and tyres, the Haven's plank fences, Halcyon's chain-link), boards over the windows and the doors that aren't the entrance, a lookout toward each threatened side, Halcyon's floodlights, the stores board by the door when the valuables went indoors |
 | Every place with a quartermaster | his **counter**: a table between him and his customers (Bastion's stores window, the Red Hand fence's table, the Haven's stores table, Halcyon's issue table) |
 
 Every piece stands outdoors, so every prop in one is an outdoor prop: no cabinets, shelves,
@@ -780,14 +799,19 @@ distance, then roads. Road posts don't (they stand beside their barrier).
 - **Which building.** Within 60 m of a stronghold's spot (its quartermaster), 90 m of an outpost's
   (its town's middle), 30 m of a safehouse's. At least 100 m² for a stronghold, 45 m² for an
   outpost or a field station, 30 m² for a safehouse; never a side over 70 m (a hangar, a factory
-  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a pier, jetty,
-  dock, bridge, pontoon or wharf, or a building that is scenery. The best six by kind, size (the largest for a
+  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a bridge, a
+  building that is scenery, or anything of the waterside: a pier, jetty, dock, quay, harbour,
+  breakwater, slipway, pontoon, wharf, marina, mooring, boathouse, fisherman's shed or lighthouse by
+  its prefab's name, anything from the naval structures' folder, or a building whose box stands over
+  water (its middle or two of its corners over the sea, a river or a pond). Its yard is the first side
+  of it that's dry; a place whose spot is over water with no building camps on the nearest dry ground
+  within 80 m, and its people come out there. The best six by kind, size (the largest for a
   stronghold, a middling one elsewhere) and distance are then scored by the roads: Bastion and
   Halcyon's lab want a road within 25 m of the building, the Red Hand roads meeting (each further
   road within 45 m counts). Any building on the shortlist will do when none of the faction's kind
   is there; with none of the size in reach, any building of 25 m² up to half as far again (a camp by
   a house beats a camp in a field); with none at all, open ground (below). It's read once a run and kept; the log says which
-  (`Camp life: ... moves into ...`).
+  (`Camp life: ... moves into ...`, with the building's prefab).
 - **Its shape.** The **front** is the wall with the outside door nearest the way in (the
   building's door children), else the side facing it. The **road entries** are where roads cross
   a ring round the building (50 m for a stronghold, 40 m for an outpost, 28 m for a safehouse), at
@@ -803,14 +827,17 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   building, its entry ring and the pieces standing), not from the town's middle; a camp whose
   building isn't read yet counts 120 m round its middle (60 m for a safehouse). Road posts count
   as lived in while they stand.
-- **The plan, laid down whole.** A kit is drawn as one camp (`tools/camp_kit/pieces.py`): each
-  piece's spot and turn, metres from the camp's middle, its front toward the road in. The game lays
-  the plan down as it's drawn, never piece by piece at random, so the camp keeps its shape: the
-  working area at the heart, the sleeping area at the back, the cooking to one side, the
-  perimeter at the front. Left for right by the seed, so neighbouring camps differ. In plan order
-  (the most important first) until the place's piece count.
-- **By a building.** Tents aren't put up (they sleep indoors). The rest go by each kit entry's
-  **At** (written by `tools/camp_kit/build.py` from `pieces.py`), or Auto:
+- **The plan, a preference.** A kit is drawn as one camp (`tools/camp_kit/pieces.py`): each
+  piece's spot and turn, metres from the camp's middle, its front toward the road in, so the camp
+  keeps its shape: the working area at the heart, the sleeping area at the back, the cooking to one
+  side, the perimeter at the front. Left for right by the seed, so neighbouring camps differ. With
+  **Solver** on (the default) each piece's spot is its preference: the site is built in layers by
+  its faction's doctrine and each piece goes where its rules allow, its plan spot first, bending the
+  plan where the ground doesn't allow it ([SITES.md](SITES.md#the-solver)); valuables go indoors at
+  a building, as data. With it off the plan is laid down whole as drawn, in plan order (the most
+  important first), until the place's piece count.
+- **By a building.** Tents aren't put up (they sleep indoors). The plan's spots go by each kit
+  entry's **At** (written by `tools/camp_kit/build.py` from `pieces.py`), or Auto:
 
   | At | Where | Auto for | Set for |
   |---|---|---|---|
@@ -824,7 +851,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   The yard is tried as drawn and shifted out (2.5 and 5 m) and sideways (4 m); the way most of it
   fits wins, its first pieces counting most. If under 60% fits behind the building, its sides
   (then its front) are tried too. With no road entries, the gate and closed pieces stand 9 m out
-  in front.
+  in front. With the wire up, the gate's and the closed entries' pieces stand at the wire's gates
+  instead ([SITES.md](SITES.md#close-it-off)).
 - **The front faces land.** The camp's front (its approach) is the way to the nearest road, else
   the next town, but never toward water or a drop: if sea level or ground 8 m lower lies within
   80 m that way (or 25° either side), the front turns to the nearest way that has neither (a coast
@@ -835,7 +863,7 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   front landward, then pulled back 4 or 8 m, pushed on 4 or 8 m, shifted 4 m sideways or turned
   12°, whichever fits most. **At a road post** the plan's front runs along the road and
   its pieces stand on the verges either side of the barrier (shifted 3 m along it if that fits better).
-- **Every piece fits, its whole footprint, or it's dropped.** Each kit entry carries its piece's
+- **Every piece fits, its whole footprint, or it's left out.** Each kit entry carries its piece's
   real footprint (its props' measured boxes and a person round each seat: `m_sFoot`, from
   `pieces.py` and `footprints.json`). With **Site grid** on (the default) the place's ground is
   first read on a 0.5 m grid and every cell under every part of the footprint must be free: dry, not
@@ -844,11 +872,14 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   away from the line, 2 m from a quartermaster, the medic or the barrier, 3.5 m from a leader's seat
   and 1.5 m from the front door's step; last, flat traces across each of its props' boxes at knee
   and chest height must meet nothing. How the grid is read, and the site's surroundings read with it,
-  are in [SITES.md](SITES.md). A piece that doesn't fit right where the plan puts it is **dropped**,
-  never nudged or moved somewhere else (the plan as a whole is still shifted and turned to where
-  most of it fits). The log says how much of each plan fit, where, and how many were left out facing
-  water (`Camp life: ... of ... planned pieces fit, laid out ...`), and the site's audit line says
-  what was dropped and why (`Sites: ...`). With **Site grid** off the older point checks apply (the
+  are in [SITES.md](SITES.md). With **Solver** on, a piece that doesn't fit where the plan puts it
+  is tried at other spots its zone and rules allow, and **dropped** if none fits, never squeezed;
+  the log says how much stands and how much of the wire is closed (`Camp life: ... solved, ...`).
+  With it off, a piece that doesn't fit right where the plan puts it is dropped, never nudged (the
+  plan as a whole is still shifted and turned to where most of it fits), and the log says how much
+  of each plan fit, where, and how many were left out facing water (`Camp life: ... of ... planned
+  pieces fit, laid out ...`). The site's audit line says what was dropped and why (`Sites: ...`).
+  With **Site grid** off the older point checks apply (the
   ground under its corners, edges and middle, every point 4 m from a road's centre line, 0.8 m out of
   every building's box and from the other pieces, 1 m from other scenery, flat traces along its
   sides and diagonals). A place within 60 m of one already dressed (the Haven's safehouse at its own
@@ -873,13 +904,16 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   shape, an antenna isn't a mission's landmark. The quartermaster and
   a safehouse's own services stay what they are and are never scenery.
 - **Only near players.** Pieces spawn and go with the place's bodies (a player within the
-  owner's visible radius: 300 m for holdings). The first time a run dresses a place its ground is
-  read on the grid, a little each second ([SITES.md](SITES.md#the-site-grid)), and the layout worked
-  out once it's read; the layout is kept, so every later visit lays it out at once. The pieces
-  spawn **4 per server tick** for all places together (a 20-piece stronghold is up in about 25 s
-  at the 5 s tick); when a place's last piece is up, its people are given their jobs again. At
-  most **90** of camp life's own pieces stand or wait to spawn on the server (Traces' props,
-  boards and sound looks are scenery too but don't count toward it).
+  owner's visible radius: 300 m for holdings). Every site's ground is read on the grid and solved in
+  the background from the start (**Pre-read**, strongholds and the lab first), a little each second
+  ([SITES.md](SITES.md#the-site-grid)), and a place a player comes near first goes before the rest;
+  the layout is kept, so a visit lays it out at once. The pieces spawn **4 per server tick**
+  for all places together (a stronghold's 20 pieces and its layers' 30 to 50 are up in about a
+  minute and a half at the 5 s tick); when a place's last piece is up, its people are given their jobs again.
+  A site's layers (the wire's runs, the boards, the lookouts, the lights) count up to **Layer
+  pieces** (60) on top of its piece count, and at most **200** of camp life's own pieces stand or
+  wait to spawn on the server (Traces' props, boards and sound looks are scenery too but don't
+  count toward it).
 
 **What people do.** The bodies are the ones the built systems spawn (guards, named people,
 safehouse occupants, road-post crews); camp life gives them **jobs**. Only at the **3 places
@@ -887,7 +921,7 @@ nearest players** (Live places); elsewhere they stand.
 
 | Job | How (vanilla AI) |
 |---|---|
-| Sentry | the nest's watch point (a smart action), else a spot toward the approach (vanilla's observation post waypoint where an observation-post smart action stands within 6 m, otherwise the loiter waypoint: a smart-action waypoint is never given to a group without its seat); by a building, the **lookout** at a front corner (the one nearer the gate first, a second watcher the other; a safehouse's at its door) |
+| Sentry | the nest's watch point (a smart action), else a spot toward the approach (vanilla's observation post waypoint where an observation-post smart action stands within 6 m, otherwise the loiter waypoint: a smart-action waypoint is never given to a group without its seat); by a building, the **lookout** beside it where it sees the wire's gate ([SITES.md](SITES.md#watch); a second watcher at the next such spot; a safehouse's one), else at a front corner (the one nearer the gate first) or a safehouse's door |
 | Patrol | a loop of four points 40–80 m out (patrol waypoints in a cycle) |
 | Sit | a free seat at the fire or a table (a sit smart action) |
 | Work, lean | a free loiter or lean point at the line, the garden, the cold box, the barrel, the barrier |
@@ -943,16 +977,16 @@ the group prefab it stands.
 *Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
 despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
 By a building: the lookout stands on the ground at a corner, not on the roof or in the bell
-tower; a closed entry is a barricade beside the road, not across it (the road stays open for the
-supply trucks and players' cars); the building's rooms aren't dressed inside (its stores are the
-quartermaster at his counter, its mess the meal at the yard's table, its barracks the sleepers); a
-piece that doesn't fit leaves a gap in the plan rather than moving; the yard is laid against one
-side of the building's box, so a building of odd shape (an L, a courtyard) gets a plainer yard;
+tower; nothing is ever put on a road: every road into the wire is a gate kept open, with a
+barricade beside it, not across it (for the supply trucks and players' cars); the building's rooms
+aren't dressed inside (its stores are the quartermaster at his counter and the valuables kept
+indoors as data, its mess the meal at the yard's table, its barracks the sleepers); the yard and
+the wire are laid against the building's box, so a building of odd shape (an L, a courtyard) gets
+a plainer yard;
 the quartermaster is turned, not walked to a serving window, and a window's glass may read as a
 wall; the grass isn't cut under a camp (no vanilla prefab clears clutter at run time: the resource
 index has none), so the only ground cover is Bastion's duckboards; there are no
-graves, stockade or dogs; and no searchlight (no vanilla light prop is checked as safe yet, and
-nothing sweeps one). The people in play stay within the guard, occupant and extras caps, so a
+graves or dogs; and the only lights are Halcyon's floodlights, which don't sweep. The people in play stay within the guard, occupant and extras caps, so a
 stronghold seldom reaches its count. Kinds are read from prefab names, so a map whose buildings
 are named otherwise gets the largest building that fits.
 
@@ -2917,9 +2951,14 @@ it's handed over, and the world streams in there.
   checkpoint, off the line, no player within 300 m, no running mission within 500 m, 1 km from a
   pack's lair, outside the errands' quiet places, and 2 km from this player's last two starts.
 - **Near where it ends:** towns within 3 km of where the chain will end are tried first, so the walk
-  stays short; up to 8 towns are tried.
+  stays short; up to 12 towns are tried.
+- **Houses over the way:** a building with another house 50–250 m from it comes first, so step 1
+  has somewhere to send you; a lone one only when no town tried has better
+  ([PLACES.md](PLACES.md#how-a-picker-uses-a-need)).
 - **Fallback:** no fitting building, any house in one of those towns (the scene still comes);
-  nothing at all, the spawn point the screen asked for, with whoever's outside but no scene.
+  nothing by those rules anywhere, a second pass at half the distances without the last starts;
+  nothing at all, the spawn point the screen asked for (just outside a house in its town), with
+  whoever's outside but no scene. The log line says why doors were refused.
 
 **Why today.** Rolled with the place: why you come out of the door now.
 
@@ -3020,7 +3059,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Across the Road | Search a building 50–250 m from them for 20 s (10 s for a learning player, level 1), within 15 m of it ([arriving](#mission-building-blocks)), and come back. One of your background's kinds when one is there (below), else any house | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 1. Across the Road | Search a building 50–250 m from them for 20 s (10 s for a learning player, level 1), within 15 m ([arriving](#mission-building-blocks)) of the spot outside its side facing them, and come back. One of your background's kinds when one is there (below), else a house; no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
 | 2. Your background's own | Its own system (below); else water (15 s at the nearest well or water tower within 400 m, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
@@ -3033,7 +3072,8 @@ today opens the first step, when you first talk to them.
 **Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
 errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's
 own system say whether its clock runs. The first that can run here is yours; else water, else The
-Cut. Step 1's building is of your background's kind when one is 50–250 m off.
+Cut. Step 1's building is of your background's kind when one is 50–250 m off. Each step's place
+meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
@@ -3042,14 +3082,14 @@ Cut. Step 1's building is of your background's kind when one is 50–250 m off.
 | Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | **Give him the antidote.** on the talk screen (`opening.tend_clock`), then the antidote handed over at the contact |
 | | | else **The Clock** with a dressing | something medical | **Keep him going.** on the talk screen (`opening.tend_clock_med`), then one medical item handed over |
 | Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can, and back |
-| Hunter | a farm | **Downwind**: watch a pack's ground, unseen | always: 150 m short of the nearest pack's lair within 1.6 km, else the tree line 150–250 m out | 30 s within 25 m, hidden (built stealth), quiet; back |
+| Hunter | a farm | **Downwind**: watch a pack's ground, unseen | 150 m short of the nearest pack's lair within 1.6 km, else a tree line 150–250 m out (four trees within 40 m) | 30 s within 25 m, hidden (built stealth), quiet; back |
 | Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building, and back |
 | Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute, and back |
-| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–200 m out (a sample lies there: **Cure > Sample prefab**) | the sample prefab; not after the cure | at the remains with a sample in your pack, and back |
+| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–250 m out, on a road's verge, else in a yard by a house: a special that doesn't burst (**Zombies > Special prefabs**) is made and killed there when the step starts, the sample (**Cure > Sample prefab**) beside it; the body is kept from the corpse cleanup until the opening ends | the sample prefab and such a special; not after the cure | at the remains with a sample in your pack, and back |
 | Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered, and back |
 | Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them), and back: a tin you carry is swapped for 3 Haven Favor (small pay) |
-| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | always | 60 s within 15 m, and back |
-| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | always | 10 s at the door, and back: +1 Infamy with the Haven (the word getting round, small) |
+| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | ground there that isn't steep | 60 s within 15 m, and back |
+| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | a house that far off | 10 s at the door, and back: +1 Infamy with the Haven (the word getting round, small) |
 | Elder | — | **Two Families**: hear them out with the contact, persuade 1 (factionless, [Elder] +1: `opening.settle`) | Dialogue > Trees on | the talk settled it (a Short settles it by half, said) |
 | Drifter | — | **Three asks**: up to three in a row of the gate, downwind, the swap, the debt, the two families, water and the cut, shuffled, each that can run here | — | each as above; the second and third come "from" the street's other people |
 

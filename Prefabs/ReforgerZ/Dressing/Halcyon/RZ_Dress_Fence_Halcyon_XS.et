@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "1369521D7EF50DED"
+ components {
+  RplComponent "{23581A5D975E91CF}" {
+  }
+  Hierarchy "{624021D2D3A44931}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{EF39F5715EF2323E}Prefabs/Structures/Walls/BarbedWire/BarbedTape_01/BarbedTape_01_Short.et" {
+   ID "6944DE3EAD48223E"
+   components {
+    Hierarchy "{7E608623E83342BA}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 90 0
+  }
+ }
+}

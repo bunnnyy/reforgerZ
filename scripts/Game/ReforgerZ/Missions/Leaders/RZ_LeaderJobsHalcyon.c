@@ -54,6 +54,7 @@ class RZ_Job_SecondOpinion : RZ_LeaderDelivery
 		m_sTitle = "Second Opinion";
 		m_sBrief = string.Format("Our results disagree with themselves. The Haven's medic in %1 has seen more bites than anyone in this building. Take her my notes and the slides. Ask her what she sees.",
 			h.m_sName);
+		m_sObjective = string.Format("Take the notes and slides to the Haven medic in %1.", h.m_sName);
 		return true;
 	}
 
@@ -106,6 +107,7 @@ class RZ_Job_PatientsNotSamples : RZ_LeaderPuzzle
 		m_sTitle = "Patients Not Samples";
 		m_sBrief = string.Format("There's a man dying in %1. The protocol says collect tissue at the moment of turning. The protocol was written by people who never had to look at him. Go and sit with him. Make it easier. If you take a sample instead, I will know.",
 			s.m_sName);
+		m_sObjective = string.Format("Sit with the dying man in %1.", s.m_sName);
 		return true;
 	}
 
@@ -198,6 +200,7 @@ class RZ_Job_TheNotebook : RZ_LeaderDelivery
 		m_sTitle = "The Notebook";
 		m_sBrief = string.Format("%1 died in %2 with her notebook on her. Half of it is research. Half of it is what she thought of the director. Bring it to me first. The director will want it too. All of it.",
 			m_sAuthor, s.m_sName);
+		m_sObjective = string.Format("Bring %1's notebook from %2 to {leader:%3}.", m_sAuthor, s.m_sName, m_iLeaderId);
 		return true;
 	}
 
@@ -257,6 +260,7 @@ class RZ_Job_UnsanctionedTrial : RZ_LeaderPuzzle
 		m_sTitle = "Unsanctioned Trial";
 		m_sBrief = string.Format("%1 in %2 is bitten and dying, and he's asked for this. Signed it, even. The serum is untested and the director said no. Inject him. Write down everything. If it works, nobody will ask how.",
 			m_sVolunteer, s.m_sName);
+		m_sObjective = string.Format("Inject %1 in %2 with the untested serum.", m_sVolunteer, s.m_sName);
 		return true;
 	}
 
@@ -335,6 +339,7 @@ class RZ_Job_LeakTheData : RZ_LeaderDelivery
 		m_sTitle = "Leak the Data";
 		m_sBrief = string.Format("Everything we know about the bite is on this drive. The director wants to trade it to Bastion for protection. I'd rather the Haven had it for nothing. Take it to the safehouse in %1. Don't let anyone from the lab see you.",
 			h.m_sName);
+		m_sObjective = string.Format("Take the drive to the safehouse in %1 unseen.", h.m_sName);
 		return true;
 	}
 
@@ -391,6 +396,7 @@ class RZ_Job_SellTheFormula : RZ_LeaderDelivery
 		m_sTitle = "Sell the Formula";
 		m_sBrief = string.Format("The antidote formula. Every step. The Red Hand will pay for it in things the lab needs and the director won't ask for. Yes, they'll sell it on. People will be cured either way. The drop is %1.",
 			meetName);
+		m_sObjective = string.Format("Take the formula to the Red Hand drop at %1.", meetName);
 		return true;
 	}
 
@@ -478,6 +484,7 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 		m_vPos = cage;
 		m_sTitle = "Private Collection";
 		m_sBrief = string.Format("I want one of the specials alive, for me, not for the director's committee. The trap is set outside %1. Bring it here in its case. Nobody at the lab needs to know.", s.m_sName);
+		m_sObjective = string.Format("Trap a special outside %1 and bring the case to {leader:%2}.", s.m_sName, m_iLeaderId);
 		return m_Capture.Begin(gm, m_iId, m_iSettlement, cage, lair, 0);
 	}
 

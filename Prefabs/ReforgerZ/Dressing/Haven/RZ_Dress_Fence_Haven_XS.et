@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "793269E73EE5D18C"
+ components {
+  RplComponent "{99B8B433F14F3C38}" {
+  }
+  Hierarchy "{8785B648A28363F4}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "BF26CDAC161805EB"
+   components {
+    Hierarchy "{22D11A4F20F9597F}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 4 0
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "57C0141DAEF538BB"
+   components {
+    Hierarchy "{F55F954DEA5ADE89}" {
+    }
+   }
+   coords 0 1.0 0
+   angles 0 2 0
+  }
+ }
+}

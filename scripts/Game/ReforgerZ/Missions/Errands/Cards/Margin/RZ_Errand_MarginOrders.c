@@ -49,6 +49,7 @@ class RZ_Errand_WeatherWriteItDown : RZ_ErrandCard
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take the reading on the ridge";
 		w.m_ePlace = RZ_EErrandPlace.OUT;
+		w.m_sNeed = "errand.ridge";
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
 		w.m_sStep = "Climb the ridge {place} and note the wind, the cloud and how far you can see (15 s there), then report to {giver}.";
@@ -93,6 +94,7 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch the cleaning kits";
 		w.m_ePlace = RZ_EErrandPlace.NEXT_TOWN;
+		w.m_sNeed = "errand.police";
 		w.m_fSeconds = 20;
 		w.m_fRadius = 80;
 		w.m_sStep = "Search the police station in {place} for cleaning kits (20 s there), then bring them to {giver}.";
@@ -107,7 +109,7 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
-		w.m_sStep = "Strip and clean a rifle in front of the new lads at {here} (a minute), slowly enough for them to follow.";
+		w.m_sStep = "Strip and clean a rifle in front of the new lads at {here} (a minute), slowly enough for the lads to follow.";
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
 		w.Done("They've got it. Mostly. One of them even put the spring back the right way on his own.");

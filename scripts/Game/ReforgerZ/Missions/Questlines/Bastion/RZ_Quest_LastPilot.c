@@ -80,7 +80,7 @@ class RZ_Quest_LastPilot : RZ_Questline
 		flight.GiveUp(6, "The helicopter never flew that run. {pilot} went back to asking people about the line.");
 		flight.Visits(2);
 
-		RZ_QuestStage wreck = MissionStage(S_WRECK, "His friend's wreck", "On Day 3 {pilot} was wingman to {friend}, who flew the wounded for the line and was shot down short of it. The wreck is still there, at the edge of the warning zone. He wants the black box.");
+		RZ_QuestStage wreck = MissionStage(S_WRECK, "{friend}'s wreck", "On Day 3 {pilot} was wingman to {friend}, who flew the wounded for the line and was shot down short of it. The wreck is still there, at the edge of the warning zone. He wants the black box.");
 		wreck.GiveUp(4, "Nobody went to {friend}'s wreck. {pilot} stopped asking.");
 		wreck.Visits(2);
 
@@ -686,6 +686,7 @@ class RZ_QM_PilotFuel : RZ_QuestMission
 		m_vPos = m_vLZ;
 		m_sTitle = "The Last Pilot: fuel";
 		m_sBrief = QFill(gm, "The last helicopter is dry. Two jerrycans to the pad by {stronghold}. Don't ask where the Red Hand's diesel comes from. Don't buy it either.");
+		m_sObjective = QFill(gm, "Bring two jerrycans to the helicopter pad by {stronghold}.");
 		return true;
 	}
 
@@ -1004,6 +1005,7 @@ class RZ_QM_PilotFlight : RZ_QM_PilotLZ
 		m_vPos = m_vLZ;
 		m_sTitle = "The Last Pilot: whose flight";
 		m_sBrief = QFill(gm, "The helicopter flies from the pad by {stronghold} in 12 minutes. Keep the LZ clear. Everyone wants the load: tell {pilot} whose it is.");
+		m_sObjective = QFill(gm, "Keep the LZ by {stronghold} clear and tell {pilot} whose the load is.");
 		return true;
 	}
 
@@ -1198,8 +1200,9 @@ class RZ_QM_PilotWreck : RZ_QuestMission
 		m_vPilot = LandPointNear(m_vLZ, 4, 8);
 		m_iSettlement = gm.FindNearestSettlement(m_vWreck);
 		m_vPos = m_vWreck;
-		m_sTitle = "The Last Pilot: his friend's wreck";
+		m_sTitle = QFill(gm, "The Last Pilot: {friend}'s wreck");
 		m_sBrief = QFill(gm, string.Format("{friend}'s helicopter came down short of the line on Day 3, at grid %1, in the warning zone. Bring {pilot} the black box. Stay out of the kill zone: it starts just past the wreck.", RZ_SettlementScanner.GridReference(m_vWreck)));
+		m_sObjective = QFill(gm, string.Format("Bring {pilot} the black box from {friend}'s wreck at grid %1.", RZ_SettlementScanner.GridReference(m_vWreck)));
 		return true;
 	}
 
@@ -1443,8 +1446,9 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 		}
 
 		m_vPos = m_vPilot;
-		m_sTitle = "The Last Pilot: he decides";
+		m_sTitle = QFill(gm, "The Last Pilot: {pilot} decides");
 		m_sBrief = QFill(gm, "{pilot} has been working out fuel and distances, and none of them are to anywhere inside the Zone. Go and talk to him. I want to know what he means to do.");
+		m_sObjective = QFill(gm, "Find out from {pilot} what the fuel sums are for.");
 		return true;
 	}
 
@@ -1690,11 +1694,13 @@ class RZ_QM_PilotRun : RZ_QM_PilotLZ
 		{
 			m_sTitle = "The Last Pilot: the far LZ";
 			m_sBrief = QFill(gm, "{pilot} is coming to {far} for the fuel you left in the field, and then the helicopter goes for the line. Keep the field clear of infected until it lifts off. Nobody at {stronghold} knows, and nobody should hear it from you.");
+			m_sObjective = QFill(gm, "Keep the field at {far} clear until {pilot}'s helicopter lifts off.");
 			return true;
 		}
 
 		m_sTitle = "The Last Pilot: one more run";
 		m_sBrief = QFill(gm, "{pilot} has agreed to stay, and flies one more run from the pad by {stronghold} to show the post it's meant. The rotors will pull in every infected for a kilometre. Keep the LZ clear until the helicopter is up.");
+		m_sObjective = QFill(gm, "Keep the LZ by {stronghold} clear until {pilot}'s helicopter is up.");
 		return true;
 	}
 
@@ -1771,6 +1777,7 @@ class RZ_QM_PilotWalk : RZ_QuestMission
 		m_vPos = m_vLZ;
 		m_sTitle = "The Last Pilot: grounded";
 		m_sBrief = QFill(gm, "{pilot} is grounded. Walk him from the pad to {stronghold}. He'll go quietly. Make sure he gets there.");
+		m_sObjective = QFill(gm, "Walk {pilot} from the pad to {stronghold}.");
 		return m_Him.Begin(gm, LandPointNear(m_vLZ, 4, 8));
 	}
 
@@ -1891,6 +1898,7 @@ class RZ_QM_PilotBurn : RZ_QuestMission
 		m_vPos = m_vLZ;
 		m_sTitle = "The Last Pilot: the pad";
 		m_sBrief = QFill(gm, "Bastion's helicopter sits on its pad by {stronghold}, and tonight the gate is thin. Keep watch while the boys do the rest.");
+		m_sObjective = QFill(gm, "Keep watch at the helicopter pad by {stronghold} while the crew works.");
 		return true;
 	}
 

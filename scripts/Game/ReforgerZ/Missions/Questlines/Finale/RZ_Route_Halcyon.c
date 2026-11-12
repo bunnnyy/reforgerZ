@@ -53,6 +53,20 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override protected string StageObjective(int stage)
+	{
+		switch (stage)
+		{
+			case S_ACT1: return "Find the first isolate, starting with the director's stand-in at the lab in {lab_town}.";
+			case S_DOOR: return "Get both keys to the lower store at {site}: {sergeant}'s and item 114 from Bastion.";
+			case S_PIECE: return "Carry the vials from the dewar at {site} to the lab in something cold.";
+			case S_ACT4: return "Run the comparison against the reference stock at the lab in {lab_town}.";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected string RemakeText()
 	{
 		return "The batch was lost. Half a comparison, with one vial less.";
@@ -98,6 +112,7 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 		vector lower = RZ_Mission.LandPointNear(RZ_WorldFacts.Get().CanonPos("origin.site.lower"), 3, 8);
 		scene.m_sTitle = StageTitle(stage);
 		scene.m_sBrief = run.Fill(StageKnown(stage));
+		scene.m_sObjective = run.Fill(StageObjective(stage));
 		switch (stage)
 		{
 			case S_ACT1:
@@ -152,6 +167,7 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 				{
 					// Second best: the dewar is spoiled; Wolff's one marked tube, and the long way
 					scene.m_sBrief = "The dewar is spoiled. Second best: the one tube Wolff marked, and a much longer comparison.";
+					scene.m_sObjective = "Take the tube Wolff marked from the isolation room at the lab in {lab_town}.";
 					int wolff = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "Wolff's isolation room", "Look at the room", "One tube in the fridge, marked in Wolff's hand. Not the first isolate. The best after it.");
 					scene.Choice(wolff, "Take Wolff's marked tube").Sets("do:second").Decides(OUT_PIECE).Says("Second best. The comparison will take three real days and more.", "took Wolff's marked tube");
 					return true;
@@ -245,6 +261,7 @@ class RZ_Route_Halcyon : RZ_FinaleRoute
 	{
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. Halcyon's people choose the order of the doses.";
+		scene.m_sObjective = run.Fill(ReleaseObjective());
 		scene.m_vPos = gm.GetLabPosition();
 		int form = DutyOfficer(gm, scene, "The order of the doses. Write it in. It goes on the paper.");
 		scene.Choice(form, "The authors first").Decides(OUT_TERMS + 1).Says("Halcyon's own first, and the two Bastion men at the lab since Day 5.", "chose the authors first");

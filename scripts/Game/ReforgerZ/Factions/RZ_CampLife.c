@@ -2,8 +2,10 @@
 //!
 //! While a place's bodies exist (territory holdings, Haven safehouses, road posts: a player is
 //! near), its faction's scenery stands around it: compositions from Camp life > Kits. Each kit
-//! is a plan, the camp drawn whole (tools/camp_kit/pieces.py), and the plan is laid down whole:
-//! turned to face the road on open ground; by the building in its town that suits its faction
+//! is a plan, the camp drawn whole (tools/camp_kit/pieces.py). With Solver on (docs/SITES.md) the
+//! plan is a preference: RZ_SiteSolver lays the site out in layers by its faction's doctrine (the
+//! wire, the boards, the watch, then work and life) by each piece's rules. Off, the plan is laid
+//! down whole: turned to face the road on open ground; by the building in its town that suits its faction
 //! (Bastion a school, town hall or police station; the Red Hand a garage or petrol station; the
 //! Haven a church or a big house; Halcyon the lab or a house), in its yard with the plan's front
 //! against the wall, the approach pieces at the road entries (the gate on the road in from the
@@ -111,7 +113,23 @@ class RZ_DressingPiece
 	[Attribute("", desc: "Its real footprint (docs/SITES.md): each prop's box as \"x z width depth turn\" and each seat's person as \"s x z\", separated by ;, in its own space (tools/camp_kit/build.py, from footprints.json). Empty: the box from Foot min to Foot max")]
 	string m_sFoot;
 
+	[Attribute("0", UIWidgets.Slider, "How important it is (docs/SITES.md, Importance tiers): 1 security, 2 what the site is for, 3 life, 4 character, 5 clutter. The solver places tier by tier; 0 = read from its name", "0 5 1")]
+	int m_iTier;
+
+	[Attribute("0", UIWidgets.ComboBox, "The part of the site it belongs to (docs/SITES.md, Zones): Yard (inside the wire), Wire, Gate, Kill (nothing), Court, Stores, Work, Kitchen, Sleep, Sick, Dump, Dead", "", ParamEnumArray.FromEnum(RZ_ESiteZone))]
+	RZ_ESiteZone m_eZone;
+
+	[Attribute("", desc: "Its rules (docs/SITES.md, Rule types), ; between them: near, away, door, wall, window, corner, kind, over, covers, behind, faces, guarded, high, bank, soil, jitter, noline, flat (tools/camp_kit/pieces.py)")]
+	string m_sRules;
+
+	[Attribute("0", UIWidgets.ComboBox, "On a kit's Layers list: what it is for (Wire: a run of the barrier; Window, Door: boards; Lookout; Light; Stores: the stores board). Plan on the plan's own list", "", ParamEnumArray.FromEnum(RZ_ESiteLayer))]
+	RZ_ESiteLayer m_eLayer;
+
+	[Attribute("0", desc: "Valuable or delicate: at a site with a building it goes indoors, as data (docs/SITES.md, Work and life)")]
+	bool m_bIndoors;
+
 	protected ref RZ_SiteFoot m_Foot;
+	protected ref RZ_SiteRules m_Rules;
 
 	//------------------------------------------------------------------------------------------------
 	//! The footprint as rectangles, read from m_sFoot once.
@@ -121,6 +139,16 @@ class RZ_DressingPiece
 			m_Foot = RZ_SiteFoot.Parse(m_sFoot, m_vFootMin, m_vFootMax);
 
 		return m_Foot;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its rules, read from m_sRules once.
+	RZ_SiteRules Rules()
+	{
+		if (!m_Rules)
+			m_Rules = RZ_SiteRules.Parse(m_sRules);
+
+		return m_Rules;
 	}
 }
 
@@ -137,6 +165,21 @@ class RZ_DressingKit
 
 	[Attribute(desc: "The plan, most important first: a place takes its pieces in this order until it reaches its piece count")]
 	ref array<ref RZ_DressingPiece> m_aPieces;
+
+	[Attribute("0", UIWidgets.ComboBox, "Its doctrine (docs/SITES.md, Building in layers): how much of the wire line it closes. None, Road (the road's side), Two (and the most threatened other side), All", "", ParamEnumArray.FromEnum(RZ_ESiteClose))]
+	RZ_ESiteClose m_eClose;
+
+	[Attribute("0", UIWidgets.ComboBox, "How hard its building is made: None, Doors (one entrance, the other doors blocked), Threat (and the windows on the threatened sides boarded), All (every ground-floor window)", "", ParamEnumArray.FromEnum(RZ_ESiteHarden))]
+	RZ_ESiteHarden m_eHarden;
+
+	[Attribute("8", desc: "Metres from the building (or the plan on open ground) to the wire line on each side")]
+	float m_fRing;
+
+	[Attribute("14", desc: "Metres from the building to the wire on the yard's side, at least (more where the plan's yard needs it)")]
+	float m_fYard;
+
+	[Attribute(desc: "The doctrine's own pieces: the barrier's runs (Wire), window and door boards, lookouts, lights and the stores board")]
+	ref array<ref RZ_DressingPiece> m_aLayers;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -168,7 +211,7 @@ class RZ_CampLifeSettings
 	[Attribute("4", UIWidgets.Slider, "Pieces at a road post (beside the barrier)", "0 8 1")]
 	int m_iPiecesRoadPost;
 
-	[Attribute("90", desc: "Pieces standing (or waiting to spawn) on the whole server at most. They spawn a few per tick")]
+	[Attribute("200", desc: "Pieces standing (or waiting to spawn) on the whole server at most, the layers' with them. They spawn a few per tick")]
 	int m_iPiecesMax;
 
 	[Attribute("3", UIWidgets.Slider, "Places nearest players whose people do their routine (elsewhere they stand)", "0 8 1")]
@@ -212,6 +255,24 @@ class RZ_CampLifeSettings
 
 	[Attribute("70", UIWidgets.Slider, "The audit's pass mark (docs/SITES.md, The audit): a site scoring under it is listed in the log's summary, and the runtime test's site audit fails if a stronghold is under it", "0 100 1")]
 	int m_iAuditThreshold;
+
+	[Attribute("1", desc: "Lay sites out by their pieces' rules (docs/SITES.md, The solver): zones, near and away, the ground, tier by tier. Off: the plans laid down whole as before. Needs Site grid")]
+	bool m_bSolver;
+
+	[Attribute("24", UIWidgets.Slider, "Spots scored for a piece before it's dropped", "4 64 1")]
+	int m_iCandidates;
+
+	[Attribute("1", desc: "Build in layers by each faction's doctrine (docs/SITES.md): close it off (the wire and its gates), harden the building, watch, then work and life inside. Off: no wire, boards, lookouts or lights")]
+	bool m_bLayers;
+
+	[Attribute("1", desc: "Harden: board ground-floor windows with the kit's window board (the doctrine says which). Off: only side doors are blocked")]
+	bool m_bBoardWindows;
+
+	[Attribute("1", desc: "Read and lay out every site in the background from the start (strongholds and the lab first, a little each second within Site read ms), so a camp is laid out before anyone arrives; only its pieces and people wait for a player near. Off: a site is read the first time a player comes near")]
+	bool m_bPreRead;
+
+	[Attribute("60", UIWidgets.Slider, "The layers' pieces at a site at most (the wire's runs, boards, lookouts, lights), on top of its piece count", "0 100 1")]
+	int m_iLayerPieces;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -227,6 +288,7 @@ class RZ_CampPiece
 	string m_sTag;
 	int m_iSeats;
 	int m_iUsed;
+	float m_fSlope;				// a barrier run on a slope: the ground's rise a metre along its x
 }
 
 //------------------------------------------------------------------------------------------------
@@ -312,6 +374,7 @@ class RZ_CampLayout
 	float m_fBearing;			// the way the plan's front (+Z) faces
 	bool m_bMirror;				// drawn left for right (by the seed)
 	string m_sWhere;			// for the log
+	int m_iFace = -1;			// by a building: the side the yard is on (FACE_*)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -348,6 +411,8 @@ class RZ_CampSite
 	ref array<float> m_aEntryRoad = {};	// the road's bearing there
 	ref array<int> m_aEntryRoadId = {};	// which road crosses there (two entries on one road: a through-road)
 	int m_iMain = -1;			// the entry left open (the gate); the others are closed
+	string m_sPrefab;			// the building's prefab (the log)
+	ref array<vector> m_aLookouts = {};	// the building's lookouts the solver chose: the corners that see the wire's gate
 }
 
 //------------------------------------------------------------------------------------------------
@@ -358,6 +423,10 @@ class RZ_SitePlaced
 	vector m_vPos;
 	float m_fYaw;
 	string m_sWhy;				// left out: why
+	int m_iLayer;				// RZ_ESiteLayer: the plan, or a layer's piece
+	bool m_bIndoors;			// valuables indoors: data only, nothing spawns
+	bool m_bWall;				// stands on the building's wall (a board)
+	float m_fSlope;				// a barrier run tilted to follow the ground: its rise a metre along its x
 }
 
 //------------------------------------------------------------------------------------------------
@@ -371,6 +440,19 @@ class RZ_SiteResult
 	int m_iCounters;
 	string m_sWhere;
 	int m_iSolveMs;
+	int m_iSolveSteps;			// the seconds it was solved in
+	int m_iSolveMaxMs;			// the longest of them
+	int m_iSolveMaxUnitMs;		// the longest single part (the start: the counters, the frame, the wire's trace; a piece; a side of the wire)
+	ref RZ_SiteWire m_Wire;		// the solver's wire line (null: none)
+	vector m_vGate;				// the gate in it
+	bool m_bGate;
+	int m_iIndoors;				// pieces gone indoors, as data
+	int m_iDoorsBlocked;
+	int m_iWindowsBoarded;
+	int m_iBlockedPaths;		// no way from the door to the gate when it was kept clear
+	vector m_vDoor;				// the entrance's step the solver used (a body can stand there)
+	bool m_bDoor;
+	ref array<ref RZ_DressingPiece> m_aKeepAlive = {};	// pieces made in code (the Traces board by the door)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -382,6 +464,7 @@ class RZ_SiteLayout
 	vector m_vPlace;
 	string m_sWhere;
 	ref array<ref RZ_SitePlaced> m_aPieces = {};	// counters aren't kept: they stand by the quartermaster as he is
+	ref array<ref RZ_DressingPiece> m_aKeepAlive = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -392,8 +475,12 @@ class RZ_SiteJob
 	ref RZ_CampPlace m_Place;
 	ref RZ_CampGround m_Ground;
 	ref RZ_SiteGrid m_Grid;
-	bool m_bAudit;				// the headless audit: worked out as data, nothing spawns
+	bool m_bAudit;				// as data only (the audit or the pre-read): nothing spawns
+	bool m_bDraw;				// the runtime test's audit: its drawing lines too
 	int m_iQueuedAt;
+	ref RZ_SiteSurroundings m_Around;
+	ref RZ_SiteSolver m_Solver;	// laying it out once the grid is read
+	ref RZ_SiteResult m_Result;	// the older plan's layout (Solver off)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -589,10 +676,12 @@ class RZ_CampLife
 	protected static const float RINGS_REACH = 62;		// a place on rings: its edge pieces stand up to this far out
 	protected static const float WALL_CLEAR = 0.4;			// a spot people stand or lean at keeps this far off a wall (else a lean's head is in it)
 	protected static const float GRID_POST = 16;		// a road post's grid reaches this far each way
-	protected static const float GRID_OPEN = 46;		// a camp on open ground's: its plan and the shifts tried
+	protected static const float GRID_OPEN = 56;		// a camp on open ground's: its plan, the shifts tried and the wire round it
 	protected static const float GRID_MAX = 72;			// the most any site's grid reaches
+	static const float ROLL_SIGN = -1;					// the roll's sign that raises a piece's +x (RollOf: the site audit measured AnglesToMatrix)
 
 	protected static ref array<IEntity> s_aPieces;			// every standing piece (IsDressing)
+	protected static bool s_bProbeOld;					// the pier probe: pick as before the waterside was ruled out
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_CampLifeSettings m_Settings;
@@ -607,6 +696,11 @@ class RZ_CampLife
 
 	//! The headless audit (the runtime test): a bigger budget a second, and the drawing lines
 	static int s_iAuditReadMs = 0;
+	//! The runtime test's site audit queues every site itself: no pre-reading
+	static bool s_bNoPreRead;
+	protected bool m_bPreReadQueued;
+	protected bool m_bDrawNext;			// AuditAll's sites are drawn
+	protected float m_fPreReadWait;		// seconds waited for the land grid before pre-reading
 	protected float m_fClock;
 	protected float m_fCheckTimer;
 	protected float m_fLiveTimer;
@@ -762,6 +856,11 @@ class RZ_CampLife
 		RZ_CampGround ground = new RZ_CampGround();
 		ReadGround(p, ground);
 		UseSite(p, ground, FindSite(p, ground));
+		if (!p.m_Site && kind != RZ_ECampPlace.ROAD_POST)
+		{
+			p.m_vHome = DryNear(p.m_vPos);
+			p.m_vCentre = p.m_vHome;
+		}
 		AddLeaderSeats(p);
 		if (m_Settings.m_bDressing && !IsDressedNear(p))
 			Dress(p, ground);
@@ -793,9 +892,67 @@ class RZ_CampLife
 		ReadGround(p, ground);
 		RZ_CampSite site = FindSite(p, ground);
 		if (!site || site.m_bNone)
-			return pos;
+			return DryNear(pos);
 
 		return site.m_vHome;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `pos`, or if it's over water (a holding's spot on a pier, a quay or off the shore) the nearest
+	//! dry ground of sixteen ways out to 80 m.
+	static vector DryNear(vector pos)
+	{
+		if (!WetAt(pos))
+			return pos;
+
+		for (int r = 10; r <= 80; r += 10)
+		{
+			for (int k = 0; k < 16; k++)
+			{
+				vector pt = RZ_Compass.PointAt(pos, k * 22.5, r);
+				if (!WetAt(pt))
+					return RZ_Util.GroundPos(pt);
+			}
+		}
+
+		return pos;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pier probe (the site audit, test only): for a faction's stronghold at `pos`, the building
+	//! picked now and the one picked before the waterside was ruled out ("prefab (what), wet" when
+	//! its box is over water), as "before -> now".
+	string ProbeSite(RZ_EFaction faction, vector pos)
+	{
+		RZ_CampPlace p = new RZ_CampPlace();
+		p.m_sKey = "probe";
+		InitPlace(p, faction, RZ_ECampPlace.STRONGHOLD, pos);
+		RZ_CampGround ground = new RZ_CampGround();
+		ReadGround(p, ground);
+		s_bProbeOld = true;
+		RZ_CampSite before = PickSite(p, ground, false);
+		if (before.m_bNone)
+			before = PickSite(p, ground, true);
+
+		s_bProbeOld = false;
+		RZ_CampSite now = PickSite(p, ground, false);
+		if (now.m_bNone)
+			now = PickSite(p, ground, true);
+
+		return ProbeText(before) + " -> " + ProbeText(now);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string ProbeText(RZ_CampSite site)
+	{
+		if (site.m_bNone)
+			return "open ground";
+
+		string text = site.m_sPrefab;
+		if (WetAt(site.m_vCentre))
+			text += " (over water)";
+
+		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1185,7 +1342,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! Keeps a laid-out site's pieces (not its counters) for the next visit.
-	protected void KeepLayout(RZ_CampPlace p, RZ_SiteResult result)
+	protected RZ_SiteLayout KeepLayout(RZ_CampPlace p, RZ_SiteResult result)
 	{
 		if (m_mLayouts.Count() >= MAX_SITES)
 			m_mLayouts.Clear();
@@ -1195,6 +1352,11 @@ class RZ_CampLife
 		kept.m_eKind = p.m_eKind;
 		kept.m_vPlace = p.m_vPos;
 		kept.m_sWhere = result.m_sWhere;
+		foreach (RZ_DressingPiece alive : result.m_aKeepAlive)
+		{
+			kept.m_aKeepAlive.Insert(alive);
+		}
+
 		foreach (RZ_SitePlaced placed : result.m_aPlaced)
 		{
 			if (placed.m_Entry.m_eAt != RZ_EDressAt.COUNTER)
@@ -1202,6 +1364,7 @@ class RZ_CampLife
 		}
 
 		m_mLayouts.Set(p.m_sKey, kept);
+		return kept;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1219,17 +1382,57 @@ class RZ_CampLife
 		int cap = PieceCap(p);
 		RZ_SiteResult result = new RZ_SiteResult();
 		int laid = PlaceCounters(p, fit, kit, cap, result, false);
+		int layers = 0;
 		foreach (RZ_SitePlaced again : kept.m_aPieces)
 		{
-			if (laid >= cap)
-				break;
+			if (again.m_bIndoors)
+				continue;
 
-			AddPiece(p, fit, again.m_Entry, again.m_vPos, again.m_fYaw, Spawns(false));
-			laid++;
+			if (again.m_iLayer == RZ_ESiteLayer.PLAN)
+			{
+				if (laid >= cap)
+					continue;
+
+				laid++;
+			}
+			else
+			{
+				if (layers >= m_Settings.m_iLayerPieces)
+					continue;
+
+				layers++;
+			}
+
+			AddPiece(p, fit, again.m_Entry, again.m_vPos, again.m_fYaw, Spawns(false), again.m_fSlope);
 		}
 
 		string what = string.Format("%1 %2", RZ_Factions.GetName(p.m_eFaction), typename.EnumToString(RZ_ECampPlace, p.m_eKind));
-		RZ_Log.Info(string.Format("Camp life: %1 at %2: laid out again as before (%3 pieces, %4), %5 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), laid - result.m_iCounters, kept.m_sWhere, result.m_iCounters));
+		RZ_Log.Info(string.Format("Camp life: %1 at %2: laid out again as before (%3 pieces and %4 of its layers, %5), %6 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), laid - result.m_iCounters, layers, kept.m_sWhere, result.m_iCounters));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A solved site's pieces (not its counters, already up, nor what went indoors) queued to spawn,
+	//! while the server's cap allows.
+	protected void SpawnLayout(RZ_CampPlace p, RZ_SiteResult result)
+	{
+		int layers = 0;
+		foreach (RZ_SitePlaced placed : result.m_aPlaced)
+		{
+			if (placed.m_bIndoors || placed.m_Entry.m_eAt == RZ_EDressAt.COUNTER)
+				continue;
+
+			if (placed.m_iLayer != RZ_ESiteLayer.PLAN)
+				layers++;
+
+			QueuePiece(p, placed.m_Entry, placed.m_vPos, placed.m_fYaw, placed.m_fSlope);
+		}
+
+		string what = string.Format("%1 %2", RZ_Factions.GetName(p.m_eFaction), typename.EnumToString(RZ_ECampPlace, p.m_eKind));
+		string wire = "no wire";
+		if (result.m_Wire)
+			wire = "the wire " + result.m_Wire.Share().ToString() + "% closed";
+
+		RZ_Log.Info(string.Format("Camp life: %1 at %2: solved, %3 pieces and %4 of its layers (%5), %6 indoors, %7 dropped, laid out %8; %9 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), result.m_aPlaced.Count() - layers - result.m_iCounters - result.m_iIndoors, layers, wire, result.m_iIndoors, result.m_aDropped.Count(), result.m_sWhere, result.m_iCounters));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1263,12 +1466,18 @@ class RZ_CampLife
 				queued.m_Place = p;
 				queued.m_Ground = ground;
 				queued.m_bAudit = false;
+				// Players are near: it goes first (a pre-read site already half read or solved)
+				if (m_aJobs[0] != queued)
+				{
+					m_aJobs.RemoveItemOrdered(queued);
+					m_aJobs.InsertAt(queued, 0);
+				}
 			}
 
 			return;
 		}
 
-		vector centre = p.m_vPos;
+		vector centre = p.m_vCentre;
 		if (p.m_Site)
 			centre = p.m_Site.m_vCentre;
 
@@ -1286,6 +1495,7 @@ class RZ_CampLife
 		job.m_Place = p;
 		job.m_Ground = ground;
 		job.m_bAudit = audit;
+		job.m_bDraw = audit && m_bDrawNext;
 		job.m_iQueuedAt = System.GetTickCount();
 		job.m_Grid = new RZ_SiteGrid(centre, half, buildings, ground.m_aRoad, ground.m_aRoadWidth);
 		// A place with players near goes before the audit's queue
@@ -1306,9 +1516,11 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! Every second (the game mode's one-second tick): the site being read reads on (Site read ms);
-	//! once read, it's laid out, kept and audited, and its grid freed.
+	//! once read, it's solved (the same budget a second, docs/SITES.md "The solver"), then kept,
+	//! audited and spawned, and its grid freed.
 	void SecondTick()
 	{
+		PreReadStart();
 		if (m_aJobs.IsEmpty())
 			return;
 
@@ -1317,7 +1529,15 @@ class RZ_CampLife
 		if (job.m_bAudit && s_iAuditReadMs > 0)
 			budget = s_iAuditReadMs;
 
-		if (!job.m_Grid.Step(budget))
+		if (!job.m_Grid.IsRead())
+		{
+			if (job.m_Grid.Step(budget))
+				StartSolve(job);
+
+			return;
+		}
+
+		if (job.m_Solver && !job.m_Solver.Step(budget))
 			return;
 
 		m_aJobs.RemoveOrdered(0);
@@ -1325,19 +1545,51 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The grid is read: the surroundings, then the solver (from the next second), or with Solver off
+	//! the plan laid down whole at once.
+	protected void StartSolve(RZ_SiteJob job)
+	{
+		RZ_CampPlace p = job.m_Place;
+		job.m_Around = ReadSurroundings(p, job.m_Grid);
+		RZ_DressingKit kit = FindKit(p.m_eFaction, p.m_eKind);
+		if (m_Settings.m_bSolver && kit)
+		{
+			job.m_Solver = new RZ_SiteSolver(this, p, job.m_Ground, job.m_Grid, job.m_Around, kit, job.m_bAudit || !m_aPlaces.Contains(p));
+			return;
+		}
+
+		bool live = !job.m_bAudit && m_aPlaces.Contains(p);
+		job.m_Result = new RZ_SiteResult();
+		int t0 = System.GetTickCount();
+		Lay(p, job.m_Ground, job.m_Grid, job.m_Result, !live);
+		job.m_Result.m_iSolveMs = System.GetTickCount() - t0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kept, audited and (with players near) spawned. A place that came back while it was being
+	//! solved lays the kept layout out afresh.
 	protected void FinishSurvey(RZ_SiteJob job)
 	{
 		RZ_CampPlace p = job.m_Place;
 		bool live = !job.m_bAudit && m_aPlaces.Contains(p);
-		RZ_SiteSurroundings around = ReadSurroundings(p, job.m_Grid);
-		RZ_SiteResult result = new RZ_SiteResult();
-		int t0 = System.GetTickCount();
-		Lay(p, job.m_Ground, job.m_Grid, result, !live);
-		result.m_iSolveMs = System.GetTickCount() - t0;
-		KeepLayout(p, result);
-		m_Audit.Site(this, p, job.m_Ground, job.m_Grid, around, result, job.m_bAudit);
-		if (live)
-			m_bLiveDirty = true;
+		RZ_SiteResult result = job.m_Result;
+		if (job.m_Solver)
+			result = job.m_Solver.m_Result;
+
+		if (!result)
+			return;
+
+		RZ_SiteLayout kept = KeepLayout(p, result);
+		m_Audit.Site(this, p, job.m_Ground, job.m_Grid, job.m_Around, result, job.m_bDraw);
+		if (!live)
+			return;
+
+		if (job.m_Solver && job.m_Solver.m_Place == p)
+			SpawnLayout(p, result);
+		else if (job.m_Solver)
+			LayKept(p, job.m_Ground, kept);
+
+		m_bLiveDirty = true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1376,6 +1628,26 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pre-reading (Pre-read, docs/SITES.md): once the land grid is read (its lairs are part of a
+	//! site's surroundings; at most 10 minutes after the start), every site on the map is queued to
+	//! be read and laid out as data, strongholds first; a place a player comes near goes before them.
+	protected void PreReadStart()
+	{
+		if (m_bPreReadQueued || s_bNoPreRead || !m_Settings.m_bPreRead || !m_Settings.m_bSiteGrid || !m_Settings.m_bDressing)
+			return;
+
+		RZ_Land land = m_GM.GetLand();
+		bool ready = !land || !land.IsEnabled() || land.IsReady();
+		m_fPreReadWait += 1;
+		if (!ready && m_fPreReadWait < 600)
+			return;
+
+		m_bPreReadQueued = true;
+		int queued = QueueAll(false);
+		RZ_Log.Info(string.Format("Camp life: pre-reading %1 sites in the background, strongholds first.", queued));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The headless audit (docs/SITES.md, "The audit"; the runtime test): one place read and laid out
 	//! as data, nothing spawned. False if it has no kit or a place within 60 m was already queued.
 	bool AuditPlace(string key, string title, RZ_EFaction faction, RZ_ECampPlace kind, vector pos, float yaw)
@@ -1406,6 +1678,11 @@ class RZ_CampLife
 		RZ_CampGround ground = new RZ_CampGround();
 		ReadGround(p, ground);
 		UseSite(p, ground, FindSite(p, ground));
+		if (!p.m_Site && kind != RZ_ECampPlace.ROAD_POST)
+		{
+			p.m_vHome = DryNear(p.m_vPos);
+			p.m_vCentre = p.m_vHome;
+		}
 		AddLeaderSeats(p);
 		Survey(p, ground, true);
 		return true;
@@ -1416,18 +1693,35 @@ class RZ_CampLife
 	//! and the road posts standing now. How many were queued.
 	int AuditAll()
 	{
+		int queued = QueueAll(true);
+		RZ_Log.Info(string.Format("Sites audit: %1 sites queued.", queued));
+		return queued;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every holding (strongholds and the lab first), Haven safehouse and road post standing now,
+	//! queued to be read and laid out as data; `draw`: with the audit's drawing lines.
+	protected int QueueAll(bool draw)
+	{
+		m_bDrawNext = draw;
 		int queued = 0;
 		RZ_Territory territory = m_GM.GetTerritory();
 		if (territory)
 		{
-			foreach (RZ_Holding h : territory.GetHoldings())
+			for (int pass = 0; pass < 2; pass++)
 			{
-				RZ_ECampPlace kind = RZ_ECampPlace.OUTPOST;
-				if (h.m_bStronghold)
-					kind = RZ_ECampPlace.STRONGHOLD;
+				foreach (RZ_Holding h : territory.GetHoldings())
+				{
+					if (h.m_bStronghold != (pass == 0))
+						continue;
 
-				if (AuditPlace("h" + h.m_iId.ToString(), h.GetTitle(), h.m_eFaction, kind, h.m_vPos, 0))
-					queued++;
+					RZ_ECampPlace kind = RZ_ECampPlace.OUTPOST;
+					if (h.m_bStronghold)
+						kind = RZ_ECampPlace.STRONGHOLD;
+
+					if (AuditPlace("h" + h.m_iId.ToString(), h.GetTitle(), h.m_eFaction, kind, h.m_vPos, 0))
+						queued++;
+				}
 			}
 		}
 
@@ -1455,7 +1749,7 @@ class RZ_CampLife
 			}
 		}
 
-		RZ_Log.Info(string.Format("Sites audit: %1 sites queued.", queued));
+		m_bDrawNext = false;
 		return queued;
 	}
 
@@ -1483,6 +1777,90 @@ class RZ_CampLife
 	//------------------------------------------------------------------------------------------------
 	RZ_SiteAudit GetAudit() { return m_Audit; }
 	RZ_CampLifeSettings GetSettings() { return m_Settings; }
+
+	// ================================================================ For the solver (RZ_SiteSolver)
+	//------------------------------------------------------------------------------------------------
+	RZ_CampFit ReadFitFor(RZ_CampPlace p, RZ_CampGround ground) { return ReadFit(p, ground); }
+	int PieceCapOf(RZ_CampPlace p) { return PieceCap(p); }
+	static RZ_EDressAt AtOfPiece(RZ_DressingPiece e) { return AtOf(e); }
+	static float BoxDistanceOf(RZ_CampSite site, vector at) { return BoxDistance(site, at); }
+	vector FacePointOf(RZ_CampSite site, int face, float along, float dist) { return FacePoint(site, face, along, dist); }
+
+	//------------------------------------------------------------------------------------------------
+	static void QuadOf(vector pos, float yaw, vector fmin, vector fmax, float grow, notnull array<vector> quad)
+	{
+		Quad(pos, yaw, fmin, fmax, grow, quad);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float QuadDistanceOf(vector pt, notnull array<vector> quad)
+	{
+		return QuadDistance(pt, quad, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The quartermasters' counters (the solver's first pieces); how many pieces that laid.
+	int PlaceCountersFor(RZ_CampPlace p, RZ_CampFit fit, RZ_DressingKit kit, int cap, RZ_SiteResult result, bool audit)
+	{
+		return PlaceCounters(p, fit, kit, cap, result, audit);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The plan's frame: by a building its yard (ChooseYard), else on open ground (ChooseOpen).
+	void ChooseFrame(RZ_CampPlace p, RZ_CampGround ground, RZ_CampFit fit, array<RZ_DressingPiece> plan, int cap, RZ_CampLayout lay)
+	{
+		if (p.m_Site)
+			ChooseYard(p, fit, plan, cap, lay);
+		else
+			ChooseOpen(p, ground, fit, plan, cap, lay);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A piece's spot in the plan (its preference): where Slot puts it.
+	void PlanSpot(RZ_CampPlace p, RZ_CampLayout lay, RZ_DressingPiece e, out vector pos, out float yaw)
+	{
+		Slot(p, lay, e, pos, yaw);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Nothing standing in the footprint's props' boxes (the traces), on the chosen spot.
+	bool Traced(vector pos, float yaw, RZ_DressingPiece e)
+	{
+		return !BlockedFoot(pos, yaw, e.Foot());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far a plan reaches back and forward (PlanExtent).
+	static void PlanReach(array<RZ_DressingPiece> plan, bool mirror, out float zlo, out float zhi)
+	{
+		PlanExtent(plan, mirror, zlo, zhi);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far a plan reaches left and right (its pieces' footprints, in the plan).
+	static void PlanWidth(array<RZ_DressingPiece> plan, bool mirror, out float xlo, out float xhi)
+	{
+		xlo = 0;
+		xhi = 0;
+		foreach (RZ_DressingPiece e : plan)
+		{
+			float x = e.m_vPlan[0];
+			float turn = e.m_fPlanYaw;
+			if (mirror)
+			{
+				x = -x;
+				turn = -turn;
+			}
+
+			array<vector> quad = {};
+			Quad(Vector(x, 0, e.m_vPlan[2]), turn, e.m_vFootMin, e.m_vFootMax, 0, quad);
+			foreach (vector c : quad)
+			{
+				xlo = Math.Min(xlo, c[0]);
+				xhi = Math.Max(xhi, c[0]);
+			}
+		}
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A piece that looks out from the camp: the perimeter, the gate, the closed entries.
@@ -1632,7 +2010,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! A laid-out piece, spawned later (SpawnPending) if `spawn`; its footprint is taken.
-	protected void AddPiece(RZ_CampPlace p, RZ_CampFit fit, RZ_DressingPiece entry, vector pos, float yaw, bool spawn)
+	protected void AddPiece(RZ_CampPlace p, RZ_CampFit fit, RZ_DressingPiece entry, vector pos, float yaw, bool spawn, float slope = 0)
 	{
 		Quad(pos, yaw, entry.m_vFootMin, entry.m_vFootMax, PIECE_GAP * 0.5, fit.m_aTaken);
 		if (fit.m_Grid)
@@ -1641,10 +2019,21 @@ class RZ_CampLife
 		if (!spawn)
 			return;
 
+		QueuePiece(p, entry, pos, yaw, slope);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A piece waiting to spawn (SpawnPending), if the server's piece cap allows.
+	protected void QueuePiece(RZ_CampPlace p, RZ_DressingPiece entry, vector pos, float yaw, float slope = 0)
+	{
+		if (CountPieces() >= m_Settings.m_iPiecesMax)
+			return;
+
 		RZ_CampPiece cp = new RZ_CampPiece();
 		cp.m_sPending = entry.m_sPrefab;
 		cp.m_fYaw = yaw;
 		cp.m_vPos = pos;
+		cp.m_fSlope = slope;
 		cp.m_eRole = entry.m_eRole;
 		cp.m_eUse = entry.m_eUse;
 		cp.m_iSeats = Math.Max(1, entry.m_iSeats);
@@ -1821,8 +2210,10 @@ class RZ_CampLife
 		lay.m_bMirror = rng.Chance(0.5);
 		float bearing = p.m_fApproach;
 		lay.m_sWhere = "on open ground, its front to the road";
-		// (sideways, forward, turn): pulled back from the road, sideways, turned a little
-		array<float> openMoves = {0.0, 0.0, 0.0, -4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, -4.0, 0.0, 0.0, -8.0, 0.0, 0.0, 4.0, 0.0, 0.0, 8.0, 0.0, 0.0, 0.0, 12.0, 0.0, 0.0, -12.0};
+		// (sideways, forward, turn): pulled back from the road, sideways, turned a little; further
+		// (16 m) where the ground near is too steep
+		array<float> openMoves = {0.0, 0.0, 0.0, -4.0, 0.0, 0.0, 4.0, 0.0, 0.0, 0.0, -4.0, 0.0, 0.0, -8.0, 0.0, 0.0, 4.0, 0.0, 0.0, 8.0, 0.0, 0.0, 0.0, 12.0, 0.0, 0.0, -12.0,
+			-16.0, 0.0, 0.0, 16.0, 0.0, 0.0, 0.0, -16.0, 0.0, -12.0, -12.0, 0.0, 12.0, -12.0, 0.0};
 		array<float> postMoves = {0.0, 0.0, 0.0, 0.0, 3.0, 0.0, 0.0, -3.0, 0.0};
 		array<float> moves = openMoves;
 		if (p.m_eKind == RZ_ECampPlace.ROAD_POST)
@@ -1832,13 +2223,18 @@ class RZ_CampLife
 			moves = postMoves;
 		}
 
-		lay.m_vOrigin = p.m_vPos;
+		// From dry ground: a place whose spot is over water (a pier, a quay) camps on the nearest land
+		vector base = p.m_vPos;
+		if (p.m_eKind != RZ_ECampPlace.ROAD_POST)
+			base = DryNear(p.m_vPos);
+
+		lay.m_vOrigin = base;
 		lay.m_fBearing = bearing;
 		float best = -1;
 		for (int i = 0; i + 2 < moves.Count(); i += 3)
 		{
 			float b = RZ_Compass.Normalize(bearing + moves[i + 2]);
-			vector origin = RZ_Util.GroundPos(FramePoint(p.m_vPos, bearing, moves[i], moves[i + 1]));
+			vector origin = RZ_Util.GroundPos(FramePoint(base, bearing, moves[i], moves[i + 1]));
 			float score = PlanScore(fit, plan, cap, origin, b, lay.m_bMirror);
 			if (score > best)
 			{
@@ -1909,6 +2305,7 @@ class RZ_CampLife
 					lay.m_vOrigin = origin;
 					lay.m_fBearing = planB;
 					lay.m_sWhere = YardWhere(face, forecourt, site);
+					lay.m_iFace = face;
 				}
 			}
 		}
@@ -2467,7 +2864,7 @@ class RZ_CampLife
 				cp.m_sPending = "";
 				budget--;
 				spawned = true;
-				IEntity e = RZ_Util.SpawnPrefab(prefab, cp.m_vPos, cp.m_fYaw); // VERIFY: a spawned composition (root with an RplComponent) shows on clients, and props spawned at run time block AI paths (else AI walk through tents)
+				IEntity e = SpawnTilted(prefab, cp.m_vPos, cp.m_fYaw, cp.m_fSlope); // VERIFY: a spawned composition (root with an RplComponent) shows on clients, and props spawned at run time block AI paths (else AI walk through tents)
 				if (!e || !RZ_DressingGuard.Strip(e, prefab))
 					continue;
 
@@ -2478,6 +2875,32 @@ class RZ_CampLife
 			if (spawned && !waiting && p.m_bLive)
 				p.m_iPhase = -2;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A piece spawned turned by yaw and, a barrier run on a slope, tilted about its own forward so
+	//! its x rises `slope` a metre (the ground's along it).
+	static IEntity SpawnTilted(ResourceName prefab, vector pos, float yaw, float slope)
+	{
+		if (slope == 0)
+			return RZ_Util.SpawnPrefab(prefab, pos, yaw);
+
+		Resource res = Resource.Load(prefab);
+		if (!res || !res.IsValid())
+			return null;
+
+		EntitySpawnParams params = new EntitySpawnParams();
+		params.TransformMode = ETransformMode.WORLD;
+		Math3D.AnglesToMatrix(Vector(yaw, 0, RollOf(slope)), params.Transform);
+		params.Transform[3] = pos;
+		return GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The roll (degrees, AnglesToMatrix's third angle) that raises a piece's +x by `slope` a metre.
+	static float RollOf(float slope)
+	{
+		return ROLL_SIGN * Math.Atan2(slope, 1) * Math.RAD2DEG; // VERIFY: a positive roll in Math3D.AnglesToMatrix raises the piece's +x (ROLL_SIGN; the site audit prints "RZS roll"), and a composition spawned rolled tilts its children with it
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2806,7 +3229,7 @@ class RZ_CampLife
 			{
 				int w = RZ_Util.RoundToInt(site.m_vMaxs[0] - site.m_vMins[0]);
 				int d = RZ_Util.RoundToInt(site.m_vMaxs[2] - site.m_vMins[2]);
-				RZ_Log.Info(string.Format("Camp life: %1 at %2 moves into %3 (%4 x %5 m), %6 road entries.", what, grid, site.m_sWhat, w, d, site.m_aEntries.Count()));
+				RZ_Log.Info(string.Format("Camp life: %1 at %2 moves into %3 (%4 x %5 m, %6), %7 road entries.", what, grid, site.m_sWhat, w, d, site.m_sPrefab, site.m_aEntries.Count()));
 			}
 		}
 
@@ -2868,7 +3291,14 @@ class RZ_CampLife
 
 			string name = RZ_Util.GetPrefabName(b);
 			name.ToLower();
-			if (name.Contains("ruin") || name.Contains("wreck") || name.Contains("pier") || name.Contains("jetty") || name.Contains("dock") || name.Contains("bridge") || name.Contains("pontoon") || name.Contains("wharf"))
+			if (name.Contains("ruin") || name.Contains("wreck") || name.Contains("bridge"))
+				continue;
+
+			// Never by or over the water: a pier, a quay, a harbour shed, a boathouse (docs/SITES.md)
+			if (!s_bProbeOld && (IsNaval(name) || OverWater(b, mins, maxs)))
+				continue;
+
+			if (s_bProbeOld && (name.Contains("pier") || name.Contains("jetty") || name.Contains("dock") || name.Contains("pontoon") || name.Contains("wharf")))
 				continue;
 
 			int tier = SiteTier(p.m_eFaction, p.m_eKind, name, RZ_DoorSlots.KindOf(b));
@@ -2915,6 +3345,54 @@ class RZ_CampLife
 			ReadSite(p, ground, site, best);
 
 		return site;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A prefab of the waterside: a pier, a jetty, a dock, a quay, a harbour, a breakwater, a
+	//! slipway, a pontoon, a wharf, a marina, a mooring, a boathouse or a fisherman's shed, a
+	//! lighthouse, or anything under the naval structures' folder.
+	static bool IsNaval(string name)
+	{
+		array<string> words = {"pier", "jetty", "dock", "quay", "harbo", "breakwater", "slipway", "pontoon", "wharf", "marina", "mooring", "boatshed", "boathouse", "fisherman", "lighthouse", "/naval/"};
+		foreach (string w : words)
+		{
+			if (name.Contains(w))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A building box over water: its middle, or two of its corners, over the sea, a river or a pond
+	//! (a quay shed on stilts, a building on a pier, a barn on the shore).
+	static bool OverWater(IEntity b, vector mins, vector maxs)
+	{
+		if (WetAt(RZ_DoorGeometry.ToWorld(b, (mins + maxs) * 0.5)))
+			return true;
+
+		array<vector> local = {Vector(mins[0], 0, mins[2]), Vector(maxs[0], 0, mins[2]), Vector(maxs[0], 0, maxs[2]), Vector(mins[0], 0, maxs[2])};
+		int wet = 0;
+		foreach (vector l : local)
+		{
+			if (WetAt(RZ_DoorGeometry.ToWorld(b, l)))
+				wet++;
+		}
+
+		return wet >= 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Over the sea (the ground under 0.5 m), a river or a pond.
+	static bool WetAt(vector pt)
+	{
+		vector ground = RZ_Util.GroundPos(pt);
+		if (RZ_Util.IsWater(ground))
+			return true;
+
+		float reach;
+		EWaterSurfaceType type = RZ_Land.WaterAt(ground, reach);
+		return type == EWaterSurfaceType.WST_POND || type == EWaterSurfaceType.WST_RIVER;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3022,7 +3500,19 @@ class RZ_CampLife
 		if (p.m_eFaction == RZ_EFaction.BANDITS)
 			site.m_iYardFace = FACE_FRONT;
 
+		// The yard (where the people come out) never over water: the next side that's dry
+		array<int> yardFaces = {site.m_iYardFace, FACE_LEFT, FACE_RIGHT, FACE_BACK, FACE_FRONT};
+		foreach (int yf : yardFaces)
+		{
+			if (!WetAt(FacePoint(site, yf, 0, 6)))
+			{
+				site.m_iYardFace = yf;
+				break;
+			}
+		}
+
 		site.m_vHome = FacePoint(site, site.m_iYardFace, 0, 6);
+		site.m_sPrefab = FilePath.StripPath(RZ_Util.GetPrefabName(b));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3249,6 +3739,9 @@ class RZ_CampLife
 	vector LookoutSpot(RZ_CampPlace p, int which)
 	{
 		RZ_CampSite site = p.m_Site;
+		if (!site.m_aLookouts.IsEmpty())
+			return site.m_aLookouts[which % site.m_aLookouts.Count()];
+
 		if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
 			return FacePoint(site, FACE_FRONT, site.m_fDoor, LOOKOUT_OUT);
 

@@ -24,7 +24,7 @@ class RZ_Errand_KidsInspection : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.GATE;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 15;
-		w.m_sStep = "Walk the private's post at the gate of {here} with him (20 s there) and tell him what you see.";
+		w.m_sStep = "Walk the gate post at {here} with the private (20 s there) and tell the private what you see.";
 		w.Done("Arc of fire, sandbags, the lot? I'll be standing straighter for the rest of the shift. Nobody pays you for that, and nobody needs to.",
 			"Arc of fire, check. Sandbags, check. I've written your name in the margin of my notebook. Small. Don't tell the sergeant.");
 
@@ -87,7 +87,7 @@ class RZ_Errand_StoryAtTheFire : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
-		w.m_sStep = "Sit at the fire at {here} and give them the version they want (a minute there).";
+		w.m_sStep = "Sit at the fire at {here} and tell the crew the bigger version (a minute there).";
 		w.m_iEffect = 2;
 		w.Done("Forty of them. With a spoon. Nobody believes it. Everybody will be repeating it by morning.");
 

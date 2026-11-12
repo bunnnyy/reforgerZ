@@ -126,6 +126,7 @@ class RZ_Mission_CarKeys : RZ_Mission
 			m_sTitle = "Car Keys";
 			m_sBrief = string.Format("%1: \"There's %2 in %3 that runs. I fixed it myself, then the owner locked it and dropped the keys in one of the five houses nearest it. Go quietly, the houses aren't empty. Bring it back to me here. Hotwire it if you must, but the whole town will hear, and I'll pay you less.\"",
 				m_sMechanic, hub.GetCars().GetNoun(m_iCar), s.m_sName);
+			m_sObjective = string.Format("Bring %1 from %2 back to %3.", hub.GetCars().GetNoun(m_iCar), s.m_sName, m_sMechanic);
 			return true;
 		}
 

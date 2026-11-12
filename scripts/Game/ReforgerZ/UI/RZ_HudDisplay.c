@@ -187,10 +187,11 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 	// ================================================================ Input
 	//------------------------------------------------------------------------------------------------
-	//! N: the notebook, on the tab last used (docs/UI.md, "The notebook").
+	//! N: the notebook item comes into the hand and the notebook opens, on the tab last used
+	//! (docs/UI.md, "The notebook"); without the item, it just opens.
 	protected void OpenNotebook(float value = 0, EActionTrigger reason = 0)
 	{
-		RZ_Notebook.Open(-1);
+		RZ_NotebookItem.OpenByKey();
 	}
 
 	// ================================================================ Drawing

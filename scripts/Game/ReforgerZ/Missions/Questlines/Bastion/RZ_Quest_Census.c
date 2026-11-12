@@ -805,6 +805,7 @@ class RZ_QM_CensusCount : RZ_QuestMission
 		m_Quiet.Watch(h.m_vPos, 140);
 		m_sTitle = "The Census: count a safehouse";
 		m_sBrief = QFill(gm, "Count the Haven safehouse in {town_a}: people, food, names. For the ration cards. Ask nicely. If they won't say, count them anyway.");
+		m_sObjective = QFill(gm, "Count the people, food and names at the Haven safehouse in {town_a}.");
 		return true;
 	}
 
@@ -1009,6 +1010,7 @@ class RZ_QM_CensusCards : RZ_QuestMission
 		m_vPos = m_vStore;
 		m_sTitle = "The Census: ration cards";
 		m_sBrief = QFill(gm, "Ration cards for {town_a} and {town_b}. Two crates at {store}, one each. On the books. Everything is signed for.");
+		m_sObjective = QFill(gm, "Deliver the ration-card crates from {store} to {town_a} and {town_b}.");
 		return true;
 	}
 
@@ -1319,6 +1321,7 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 		m_iTollClue = AddClue("A Red Hand toll-man", "He's leaning on the signpost as if it's his. \"Bastion's curfew, eh? Nobody on the road all night but you and me.\" He grins. \"Seems a shame to waste a road like that.\"");
 		m_sTitle = "The Census: the curfew";
 		m_sBrief = QFill(gm, "Curfew in {town_f} tonight, by order. Walk the beat, four points. How firmly is up to you, within reason.");
+		m_sObjective = QFill(gm, "Walk the four-point curfew beat in {town_f} tonight.");
 		return true;
 	}
 
@@ -1568,6 +1571,7 @@ class RZ_QM_CensusContrib : RZ_QuestMission
 		m_vPos = m_vKeeper;
 		m_sTitle = "The Census: the contribution";
 		m_sBrief = QFill(gm, "The census says {town_c} can spare four food. Collect the contribution. It's for their protection.");
+		m_sObjective = QFill(gm, "Collect a contribution of four food from {town_c}.");
 		return true;
 	}
 
@@ -1785,6 +1789,7 @@ class RZ_QM_CensusRaid : RZ_QuestMission
 		m_vPos = m_vStores;
 		m_sTitle = "The Census: the raid";
 		m_sBrief = QFill(gm, "Red Hand chatter: a crew is going for the stores in {town_r}. Somebody told them the cards mean full shelves. Get there first.");
+		m_sObjective = QFill(gm, "Reach the stores in {town_r} before the Red Hand crew does.");
 		return true;
 	}
 
@@ -2007,6 +2012,7 @@ class RZ_QM_CensusCall : RZ_QuestMission
 		m_iSheetClue = AddClue("The count", QFill(gm, string.Format("Typed, then corrected in pencil. \"Civilians sheltered: {town_a} and {town_b}, %1 in all. Rations issued. Contributions received.\" Space at the bottom for whoever reads it to Command.", RZ_BastionQuest.NumberWords(m_iNames))));
 		m_sTitle = "The Census: the nightly call";
 		m_sBrief = QFill(gm, "Stand by the radio at {stronghold} at 20:30 and give Command the count. It's the first one in weeks that's real.");
+		m_sObjective = QFill(gm, "Give Command the count from the radio at {stronghold} at 20:30.");
 		return true;
 	}
 

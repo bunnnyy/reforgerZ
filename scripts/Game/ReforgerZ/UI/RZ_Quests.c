@@ -158,7 +158,7 @@ class RZ_ObjList
 }
 
 //------------------------------------------------------------------------------------------------
-//! Text helpers for jobs: rough areas in words, the tracker's metres, short briefs, objective lines.
+//! Text helpers for jobs: rough areas in words, the tracker's metres, short briefs.
 class RZ_QuestText
 {
 	//------------------------------------------------------------------------------------------------
@@ -294,58 +294,6 @@ class RZ_QuestText
 
 		return t.Substring(0, cut + 1);
 	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The ask in a brief: the last sentence that starts with a verb telling you what to do
-	//! ("Secure it and hold the area for a minute."), else "".
-	static string AskIn(string brief)
-	{
-		string t = brief;
-		t.Replace("\"", " ");
-		t.Replace("\n", " ");
-		array<string> parts = {};
-		SplitSentences(t, parts);
-		for (int i = parts.Count() - 1; i >= 0; i--)
-		{
-			string sentence = parts[i].Trim();
-			if (sentence.Length() < 6 || sentence.Length() > 120)
-				continue;
-
-			int space = sentence.IndexOf(" ");
-			if (space <= 0)
-				continue;
-
-			string verb = sentence.Substring(0, space);
-			verb.ToLower();
-			verb.Replace(",", "");
-			if (VERBS.Contains(" " + verb + " "))
-				return sentence;
-		}
-
-		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static void SplitSentences(string text, notnull array<string> result)
-	{
-		int start = 0;
-		int n = text.Length();
-		for (int i = 0; i < n; i++)
-		{
-			string ch = text.Get(i);
-			if (ch != "." && ch != "!" && ch != "?")
-				continue;
-
-			result.Insert(text.Substring(start, i - start + 1));
-			start = i + 1;
-		}
-
-		if (start < n)
-			result.Insert(text.Substring(start, n - start));
-	}
-
-	//! Verbs that start an ask, space-separated with a space at each end.
-	protected static const string VERBS = " bring take find get secure hold kill clear walk escort deliver search reach go meet talk speak collect recover destroy burn protect defend carry return fix repair mark plant check follow lead help save rescue stop keep put leave read fetch pick gather scout watch remind tell ask pay move clean bury dig drive hand drop light set open break cut count sit stay wait listen look visit warn ring raise lower hunt track ";
 
 	//------------------------------------------------------------------------------------------------
 	static string Cap(string text)
@@ -641,7 +589,7 @@ class RZ_QuestTracker
 			return;
 		}
 
-		string back = e.Fill("Go back to {giver}.");
+		string back = e.Fill(BackLine(e));
 		if (e.m_bStepDone)
 		{
 			list.Add(step, RZ_EObjState.DONE, stepAt);
@@ -651,6 +599,23 @@ class RZ_QuestTracker
 
 		list.Add(step, RZ_EObjState.CURRENT, stepAt);
 		list.Add(back, RZ_EObjState.NEXT, backAt);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An errand's way back, naming the giver and where they are (docs/WRITING.md, "Objective
+	//! lines"): a safehouse's person at their house, a holding's at the holding, a wanderer on the road.
+	protected static string BackLine(RZ_Errand e)
+	{
+		if (e.m_iWanderer >= 0)
+			return "Find {giver} on the road again.";
+
+		if (e.GetText("here").IsEmpty())
+			return "Go back to {giver}.";
+
+		if (e.m_iHouse >= 0)
+			return "Go back to {giver} at the safehouse in {here}.";
+
+		return "Go back to {giver} at {here}.";
 	}
 
 	// ================================================================ Tracking

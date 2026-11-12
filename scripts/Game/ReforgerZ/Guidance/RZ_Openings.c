@@ -76,6 +76,7 @@ class RZ_Opening
 	ref array<int> m_aTasks = {};	// step 2's tasks still to try (the background's, or the Drifter's asks)
 	int m_iAsks;				// the Drifter's asks done
 	IEntity m_Target;			// weak: the task's building (KEYS)
+	IEntity m_Remains;			// weak: SAMPLE's remains, kept from the corpse cleanup until the opening ends
 	int m_iTargetId = -1;		// the task's wanderer (SWAP) or road post (TOLL)
 	float m_fPulseAt;			// GATE: the step's progress at its next noise
 	bool m_bTold;				// the task said once what's missing
@@ -114,6 +115,8 @@ class RZ_Openings
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
 	protected static const float SEARCH_MIN = 50;		// step 1's house: this far from the contact...
 	protected static const float SEARCH_MAX = 250;		// ...and no further
+	protected static const int SEARCH_TRIES = 6;		// buildings tried before giving up on a kind
+	protected static const float SEARCH_OUT = 3;		// the spot: this far out of the building's side facing the contact
 	protected static const float STRANGER_CHANCE = 0.25;	// a stranger instead of someone from before
 	protected static const float EARLIER_CHANCE = 0.35;	// an earlier life's wanderer, when one remembers you
 	protected static const float VETERAN_CONTACT = 0.34;	// a veteran meets someone one time in three
@@ -230,6 +233,7 @@ class RZ_Openings
 		{
 			RZ_OpeningRoll.Move(character, place);
 			m_mMoved.Set(playerId, true);
+			RZ_PlaceNeeds.Verify("opening.start", place.m_vPos, bg.m_sId + ": " + place.m_sKind, place.m_iTown);
 			if (!place.m_bFits)
 				RZ_Log.Info(string.Format("Openings: no %1 place fits for %2, a house instead", bg.m_sId, RZ_Util.PlayerName(playerId)));
 		}
@@ -239,7 +243,7 @@ class RZ_Openings
 			place = new RZ_OpeningPlace();
 			place.m_vPos = character.GetOrigin();
 			place.m_iTown = m_GM.FindNearestSettlement(place.m_vPos);
-			RZ_Log.Info(string.Format("Openings: no place for %1 (%2), the spawn point instead", RZ_Util.PlayerName(playerId), bg.m_sId));
+			RZ_Log.Info(string.Format("Openings: no place for %1 (%2), the spawn point instead: %3", RZ_Util.PlayerName(playerId), bg.m_sId, m_Roll.WhyText()));
 		}
 
 		m_mPending.Set(playerId, place);
@@ -301,6 +305,9 @@ class RZ_Openings
 			PickWho(o, profile, rng);
 			SpawnContact(o, ent.GetOrigin());
 		}
+
+		if (o.m_bHadContact && o.m_Contact)
+			RZ_PlaceNeeds.VerifyThings("opening.start", place.m_vPos, o.m_sName);
 
 		if (!o.m_bHadContact)
 		{
@@ -1047,7 +1054,15 @@ class RZ_Openings
 			if (o.m_iLevel == 1)
 				d = m_Chain.m_SearchShort;
 
-			SearchPlace(o, giverAt, place, placeText);
+			if (!SearchPlace(o, giverAt, place, placeText))
+			{
+				// Nothing over the way that the words would be true of: no step 1 here
+				RZ_Log.Info(string.Format("Openings: no house over the way for %1 at %2, step 1 skipped", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
+				o.m_iStage++;
+				StartStage(o, me, tree, beat, sayNow);
+				return;
+			}
+
 			o.m_sSearch = placeText;
 		}
 		else if (stage == RZ_EOpeningStage.TASK)
@@ -1070,6 +1085,9 @@ class RZ_Openings
 			}
 
 			SetFlag(o, FLAG_TASK, o.m_iTask);
+			string taskNeed = RZ_OpeningTasks.NeedKey(o.m_iTask, placeText);
+			if (!taskNeed.IsEmpty())
+				RZ_PlaceNeeds.Verify(taskNeed, place, placeText);
 		}
 		else if (stage == RZ_EOpeningStage.LEAD)
 		{
@@ -1146,54 +1164,19 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Step 1's building: 50-250 m from the contact, not locked, one of your background's kinds when
-	//! one is there (the chemist's for a Nurse, a garage for a Mechanic), else any; without one, a
-	//! point among the houses over the way. A Doctor's clinic has an antidote by its door (Cure >
+	//! Step 1's place for this opening (false: none), and a Doctor's antidote by its door (Cure >
 	//! Antidote prefab), for step 2's clock.
-	protected void SearchPlace(RZ_Opening o, vector from, out vector place, out string text)
+	protected bool SearchPlace(RZ_Opening o, vector from, out vector place, out string text)
 	{
-		array<IEntity> buildings = {};
-		RZ_BuildingQuery.FindBuildings(from, SEARCH_MAX, buildings, 40);
-		array<string> kinds = {};
-		RZ_OpeningText.SearchKinds(o.m_sBackground, kinds);
-		array<IEntity> fit = {};
-		array<IEntity> mine = {};
-		string mineKind = "";
-		foreach (IEntity b : buildings)
-		{
-			float d = RZ_Util.DistXZ(from, b.GetOrigin());
-			if (d < SEARCH_MIN || RZ_LockedSpots.IsLockedBuilding(b))
-				continue;
+		string kind;
+		if (!PickSearch(o.m_sBackground, from, place, text, kind))
+			return false;
 
-			fit.Insert(b);
-			string kind = RZ_OpeningRoll.KindOf(b, kinds);
-			if (!kind.IsEmpty())
-			{
-				mine.Insert(b);
-				mineKind = kind;
-			}
-		}
+		string building = kind;
+		if (building.IsEmpty())
+			building = "house";
 
-		if (fit.IsEmpty())
-		{
-			place = RZ_Mission.LandPointNear(from, 80, 200);
-			text = "the houses over the way";
-			return;
-		}
-
-		IEntity house;
-		if (!mine.IsEmpty())
-		{
-			house = mine.GetRandomElement();
-			text = RZ_OpeningText.SearchPlace(RZ_OpeningRoll.KindOf(house, kinds));
-		}
-		else
-		{
-			house = fit.GetRandomElement();
-			text = RZ_OpeningText.SearchPlace("");
-		}
-
-		place = RZ_Mission.LandPointNear(house.GetOrigin(), 2, 6);
+		RZ_PlaceNeeds.Verify("opening.search", place, text, -1, building);
 		ResourceName antidote = m_GM.GetAntidotePrefab();
 		if (o.m_sBackground == "doctor" && o.m_aPlan.Contains(RZ_EOpeningStage.TASK) && !antidote.IsEmpty())
 		{
@@ -1201,6 +1184,107 @@ class RZ_Openings
 			if (dose)
 				RZ_GameModeComponent.TrackLooseItem(dose);
 		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step 1's building (docs/PLACES.md, opening.search): a house 50-250 m from the contact, not
+	//! locked, one of your background's kinds when one is there (the chemist's for a Nurse, a garage for
+	//! a Mechanic), else a house; the spot just outside its side facing the contact, checked against
+	//! the need. False when there's none: the words "over the way" would be false, so no step 1.
+	//! `kind`: the building's kind ("" for a house). Spawns nothing (the place audit asks it too).
+	bool PickSearch(string background, vector from, out vector place, out string text, out string kind)
+	{
+		kind = "";
+		text = "";
+		place = vector.Zero;
+		array<string> kinds = {};
+		RZ_OpeningText.SearchKinds(background, kinds);
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(from, SEARCH_MAX, buildings, 400);
+		array<IEntity> mine = {};
+		array<IEntity> houses = {};
+		foreach (IEntity b : buildings)
+		{
+			if (!b)
+				continue;
+
+			float d = RZ_Util.DistXZ(from, b.GetOrigin());
+			if (d < SEARCH_MIN || d > SEARCH_MAX || RZ_LockedSpots.IsLockedBuilding(b))
+				continue;
+
+			if (!RZ_OpeningRoll.KindOf(b, kinds).IsEmpty())
+				mine.Insert(b);
+			else if (RZ_PlaceCheck.IsHouse(b))
+				houses.Insert(b);
+		}
+
+		IEntity found = TrySearch(mine, kinds, from, place);
+		if (found)
+		{
+			kind = RZ_OpeningRoll.KindOf(found, kinds);
+			text = RZ_OpeningText.SearchPlace(kind);
+			return true;
+		}
+
+		array<string> none = {};
+		if (TrySearch(houses, none, from, place))
+		{
+			text = RZ_OpeningText.SearchPlace("");
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Up to SEARCH_TRIES of `list` at random, the first whose spot meets opening.search; null if none.
+	protected IEntity TrySearch(notnull array<IEntity> list, notnull array<string> kinds, vector from, out vector place)
+	{
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("opening.search");
+		for (int i = 0; i < SEARCH_TRIES && !list.IsEmpty(); i++)
+		{
+			int pick = Math.RandomInt(0, list.Count());
+			IEntity b = list[pick];
+			list.Remove(pick);
+			string kind = RZ_OpeningRoll.KindOf(b, kinds);
+			if (kind.IsEmpty())
+				kind = "house";
+
+			vector at = RZ_Util.GroundPos(RZ_DoorGeometry.SidePoint(b, from, SEARCH_OUT));
+			string why;
+			if (RZ_PlaceCheck.Check(at, need, -1, kind, why))
+			{
+				place = at;
+				return b;
+			}
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the contact stands for a rolled place: out of its door (a spawn point: on it).
+	static vector ContactSpot(RZ_OpeningPlace p)
+	{
+		if (!p.m_bScene)
+			return p.m_vPos;
+
+		return RZ_Util.GroundPos(p.m_vPos + p.m_vOut * CONTACT_OUT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place roll and step 2's tasks (the place audit asks them, RZ_PlaceAudit).
+	RZ_OpeningRoll GetRoll()
+	{
+		return m_Roll;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_OpeningTasks GetTasks()
+	{
+		return m_Tasks;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1412,6 +1496,9 @@ class RZ_Openings
 
 		o.m_bEnded = true;
 		DropStep(o, why);
+		// A Sample's remains go back to the engine's own corpse cleanup
+		RZ_OpeningTasks.KeepBody(o.m_Remains, false);
+		o.m_Remains = null;
 		SetFlag(o, FLAG_STEP, 4);
 		SetFlag(o, FLAG_FIRST, 0);
 		RZ_Log.Info(string.Format("Openings: ended for %1: %2 (step %3, %4 min)", RZ_Util.PlayerName(o.m_iPlayer), why, o.m_iStep, RZ_Util.RoundToInt((m_fClock - o.m_fBorn) / 60)));

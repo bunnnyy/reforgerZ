@@ -6,13 +6,16 @@
 Writes Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et and Prefabs/ReforgerZ/Traces/<Name>.et
 (keeping an existing .meta, so the GUID stays; a piece no longer in pieces.py has its files deleted),
 and on RZ_GameMode.et the camp-life kits (each plan entry's piece, ring, use, seats, its place and turn
-in the plan, the piece's footprint and, from pieces.AT, where it stands by a building), the
+in the plan, the piece's footprint, its tier, zone and rules from pieces.RULES, whether it goes indoors
+and, from pieces.AT, where it stands by a building; each kit's doctrine and its layers' pieces from
+pieces.DOCTRINE: docs/SITES.md, "Building in layers"), the
 smart-action waypoint and the composition slots of World > Traces > Kit. Each piece's footprint
 (m_sFoot, and the box round it) is its props' real boxes from footprints.json (written by the
 Workbench plugin "ReforgerZ: Measure prop footprints", docs/SITES.md), up to 8, and a person round
 each seat; a prop with no measured box falls back to pieces.FP and is listed. Each composition is an
 empty root with an RplComponent and a Hierarchy, its props as children, and its seats as direct
-children with an SCR_AISmartActionSentinelComponent. A plan whose pieces overlap is refused.
+children with an SCR_AISmartActionSentinelComponent. A piece with no rules, an unknown zone, a doctrine
+naming a piece that isn't there, and a plan whose pieces overlap are refused.
 
 props.txt holds each prop's entity class, its ResourceName and "hier" when the prefab already has a
 Hierarchy component ("Class {GUID}path [hier]"). A prop that isn't in it is looked up in the resource
@@ -25,7 +28,7 @@ import glob, hashlib, math, os, re, sys, random
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, HERE)
-from pieces import AT, C, FP, KITS, OPENINGS, TRACES  # noqa: E402
+from pieces import AT, C, DOCTRINE, FP, KIT_TIER, KITS, OPENINGS, RULES, TRACES  # noqa: E402
 import footprints  # noqa: E402
 
 PROPS = os.path.join(HERE, "props.txt")
@@ -35,6 +38,11 @@ WAYPOINT = "Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et"
 ANIM = {"sit": "SIT", "lean_l": "LEAN_LEFT", "lean_r": "LEAN_RIGHT", "smoke": "SMOKING", "loiter": "LOITERING"}
 USE = {"Sit": "SIT", "Work": "WORK", "Watch": "WATCH", "Gather": "GATHER", "Lean": "LEAN", "Sleep": "SLEEP", "Cook": "COOK", "Wash": "WASH", "Chop": "CHOP", "None": "NONE"}
 ROLE = {"c": "CENTRE", "i": "INNER", "a": "APPROACH", "e": "EDGE"}
+ZONES = ["yard", "wire", "gate", "kill", "court", "stores", "work", "kitchen", "sleep", "sick", "dump", "dead"]
+CLOSE = {"none": "NONE", "road": "ROAD", "two": "TWO", "all": "ALL"}
+HARDEN = {"none": "NONE", "doors": "DOORS", "threat": "THREAT", "all": "ALL"}
+# A doctrine's layer pieces: (its key, RZ_ESiteLayer)
+LAYERS = (("wire", "WIRE"), ("window", "WINDOW"), ("door", "DOOR"), ("lookout", "LOOKOUT"), ("light", "LIGHT"), ("stores", "STORES"))
 CR, LF = chr(13), chr(10)
 SEAT_PAD = 0.45      # a seated or standing person round a seat's spot, inside the footprint (a lean's 0.6)
 PLAN_GAP = 0.3       # pieces in a plan stand at least this far apart
@@ -176,6 +184,22 @@ def separated(a, b):
     return False
 
 
+def check_rules():
+    """Every piece has its rules (tier, zone, rules), every zone is known, every doctrine's pieces exist."""
+    bad = ["%s: no rules in pieces.RULES" % n for n in C if n not in RULES]
+    bad += ["%s: unknown zone %s" % (n, r[1]) for n, r in RULES.items() if r[1] not in ZONES]
+    bad += ["%s: rules for a piece that isn't in pieces.C" % n for n in RULES if n not in C]
+    for key, d in DOCTRINE.items():
+        for k, _ in LAYERS:
+            names = d.get(k, [])
+            if isinstance(names, str):
+                names = [names]
+            bad += ["%s %s: no piece named %s" % (key[0], key[1], n) for n in names if n not in C]
+        bad += ["%s %s: indoors %s isn't a piece" % (key[0], key[1], n) for n in d.get("indoors", []) if n not in C]
+    if bad:
+        sys.exit("Rules refused:" + LF + LF.join(bad))
+
+
 def check_plans():
     """Every kit's plan: known pieces, and no two footprints closer than PLAN_GAP."""
     bad = []
@@ -214,27 +238,65 @@ def write_gm(s):
     open(GM, "w", encoding="utf-8", newline="").write(s)
 
 
+def piece_lines(name, fac, place, rel, layer=None, x=0.0, z=0.0, yaw=0.0, indoors=False, plan=True):
+    """One kit entry: the piece, its ring, use, seats, where it stands by a building, its plan spot,
+    footprint, tier, zone, rules, layer and whether it goes indoors."""
+    folder, use, role, intent, parts = C[name]
+    seats = max(1, sum(1 for p in parts if p[0] == "s"))
+    x0, z0, x1, z1 = footprint(parts)
+    tier, zone, rules = RULES[name]
+    tier = KIT_TIER.get((fac, name), tier)
+    L = ['       RZ_DressingPiece "{%s}" {' % gid(), '        m_sPrefab "%s%s"' % (guid_of(rel[name]), rel[name]), "        m_eRole %s" % ROLE[role[0].lower()],
+         "        m_eUse %s" % USE[use], "        m_iSeats %d" % seats]
+    if plan and name in AT and place != "ROAD_POST":
+        L.append("        m_eAt %s" % AT[name].upper())
+    if plan:
+        L.append("        m_vPlan %s 0 %s" % (num(x), num(z)))
+        if yaw:
+            L.append("        m_fPlanYaw %s" % num(yaw))
+    L += ["        m_vFootMin %s 0 %s" % (num(x0), num(z0)), "        m_vFootMax %s 0 %s" % (num(x1), num(z1)),
+          '        m_sFoot "%s"' % footprints.foot_text(parts, FP), "        m_iTier %d" % tier]
+    if zone != "yard":
+        L.append("        m_eZone %s" % zone.upper())
+    if rules:
+        L.append('        m_sRules "%s"' % rules)
+    if layer:
+        L.append("        m_eLayer %s" % layer)
+    if indoors:
+        L.append("        m_bIndoors 1")
+    L.append("       }")
+    return L
+
+
 def write_kits():
     seed("kits")
     s, nl = read_gm()
     rel = {name: "Prefabs/ReforgerZ/Dressing/%s/RZ_Dress_%s.et" % (C[name][0], name) for name in C}
     L = ["    m_aKits {"]
     for fac, place, _, plan in KITS:
+        d = DOCTRINE.get((fac, place), {})
+        indoors = set(d.get("indoors", []))
         L += ['     RZ_DressingKit "{%s}" {' % gid(), "      m_eFaction %s" % fac, "      m_ePlace %s" % place, "      m_aPieces {"]
         for name, x, z, yaw in plan:
-            folder, use, role, intent, parts = C[name]
-            seats = max(1, sum(1 for p in parts if p[0] == "s"))
-            x0, z0, x1, z1 = footprint(parts)
-            L += ['       RZ_DressingPiece "{%s}" {' % gid(), '        m_sPrefab "%s%s"' % (guid_of(rel[name]), rel[name]), "        m_eRole %s" % ROLE[role[0].lower()],
-                  "        m_eUse %s" % USE[use], "        m_iSeats %d" % seats]
-            if name in AT and place != "ROAD_POST":
-                L.append("        m_eAt %s" % AT[name].upper())
-            L.append("        m_vPlan %s 0 %s" % (num(x), num(z)))
-            if yaw:
-                L.append("        m_fPlanYaw %s" % num(yaw))
-            L += ["        m_vFootMin %s 0 %s" % (num(x0), num(z0)), "        m_vFootMax %s 0 %s" % (num(x1), num(z1)),
-                  '        m_sFoot "%s"' % footprints.foot_text(parts, FP), "       }"]
-        L += ["      }", "     }"]
+            L += piece_lines(name, fac, place, rel, None, x, z, yaw, name in indoors)
+        L.append("      }")
+        L += ["      m_eClose %s" % CLOSE[d.get("close", "none")], "      m_eHarden %s" % HARDEN[d.get("harden", "none")]]
+        if "ring" in d:
+            L.append("      m_fRing %s" % num(d["ring"]))
+        if "yard" in d:
+            L.append("      m_fYard %s" % num(d["yard"]))
+        layers = []
+        for key, layer in LAYERS:
+            names = d.get(key, [])
+            if isinstance(names, str):
+                names = [names]
+            layers += [(n, layer) for n in names]
+        if layers:
+            L.append("      m_aLayers {")
+            for n, layer in layers:
+                L += piece_lines(n, fac, place, rel, layer, plan=False)
+            L.append("      }")
+        L.append("     }")
     L.append("    }")
     block = nl.join(L)
     if "    m_aKits {" in s:
@@ -286,6 +348,7 @@ def write_opening_scenes(slots):
 
 
 def main():
+    check_rules()
     check_plans()
     index = []
     if "--index" in sys.argv:

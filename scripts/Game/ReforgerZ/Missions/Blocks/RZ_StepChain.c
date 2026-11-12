@@ -72,7 +72,7 @@ class RZ_StepChain
 			RZ_ObjPlace at = StepPlace(st);
 			if (i < m_iCurrent)
 			{
-				list.Add(string.Format("Reached %1.", st.m_sPlace), RZ_EObjState.DONE, at);
+				list.Add(string.Format("Went to %1.", st.m_sPlace), RZ_EObjState.DONE, at);
 				continue;
 			}
 

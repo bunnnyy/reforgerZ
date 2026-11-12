@@ -19,10 +19,11 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring him in";
 		w.m_ePlace = RZ_EErrandPlace.OUT;
+		w.m_sNeed = "errand.farmhouse";
 		w.m_fSeconds = 10;
 		w.m_fRadius = 30;
 		w.m_fBefore = 20.5;
-		w.m_sStep = "Fetch the old man from the farmhouse {place} and walk him back to {here} (10 s there).";
+		w.m_sStep = "Walk the old man from the farmhouse {place} back to {here} (10 s there).";
 		w.Later("The old man from the farmhouse says the soup's too thin. He's had three bowls. Thank you.");
 		w.m_iFavor = 5;
 		w.Done("He says he'd have been fine, and he's only here because of the soup. He's been rude to everyone at supper. We're all very glad.");
@@ -30,6 +31,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		w = Way("do");
 		w.m_sLabel = "Board his doors";
 		w.m_ePlace = RZ_EErrandPlace.OUT;
+		w.m_sNeed = "errand.farmhouse";
 		w.m_fSeconds = 25;
 		w.m_fRadius = 30;
 		w.m_fBefore = 20.5;

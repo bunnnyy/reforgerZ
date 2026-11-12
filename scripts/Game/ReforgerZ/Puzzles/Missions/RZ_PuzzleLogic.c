@@ -113,6 +113,7 @@ class RZ_Mission_TheRat : RZ_PuzzleMission
 
 		m_sTitle = "The Rat";
 		m_sBrief = string.Format("Someone in the Red Hand crew at %1 talked to Bastion. %2 wants the rat found before anyone else disappears. Hear them out. Exactly one of them is lying.", s.m_sName, boss);
+		m_sObjective = string.Format("Find the rat in the Red Hand crew at %1 for %2.", s.m_sName, boss);
 		return true;
 	}
 
@@ -259,6 +260,7 @@ class RZ_Mission_PatientZeroLedger : RZ_PuzzleMission
 
 		m_sTitle = "Patient Zero's Ledger";
 		m_sBrief = string.Format("Halcyon wants to know who brought the infection into the isolation ward in %1. The ward ledger is still there, and so are the patients. Work it out and give your answer at the lab.", s.m_sName);
+		m_sObjective = string.Format("Work out who infected the ward in %1, then answer at the lab.", s.m_sName);
 		return true;
 	}
 
@@ -415,6 +417,7 @@ class RZ_Mission_PoisonedWell : RZ_PuzzleMission
 		m_sTitle = "The Poisoned Well";
 		m_sBrief = string.Format("People who drank from one of three wells, in %1, %2 or %3, are dying, and it isn't the virus. Find out which one and seal it. Seal the wrong one and that village loses its water. The clinic in %4 kept notes.",
 			VillageName(gm, 0), VillageName(gm, 1), VillageName(gm, 2), s.m_sName);
+		m_sObjective = string.Format("Find which well, in %1, %2 or %3, is poisoned and seal it.", VillageName(gm, 0), VillageName(gm, 1), VillageName(gm, 2));
 		return true;
 	}
 
@@ -599,6 +602,7 @@ class RZ_Mission_SmugglersLedger : RZ_PuzzleMission
 
 		m_sTitle = "The Smuggler's Ledger";
 		m_sBrief = string.Format("A dead smuggler's ledger turned up in %1, near grid %2. One line is in code, and it's the line that matters. Decode it, find what he hid, and the Red Hand will make it worth your while.", a.m_sName, RZ_SettlementScanner.GridReference(m_vLedger));
+		m_sObjective = string.Format("Decode the smuggler's ledger in %1 and find the stash.", a.m_sName);
 		return true;
 	}
 

@@ -570,6 +570,10 @@ class RZ_QM_DoorEnvelope : RZ_HavenQM
 			m_sTitle = "The Price of the Door: the envelope";
 		}
 
+		m_sObjective = QFill(gm, "Carry the envelope under the board at the safehouse in {house} to the drop outside {boss_place}.");
+		if (m_bTins)
+			m_sObjective = QFill(gm, "Carry the tins under the board at the safehouse in {house} to the drop outside {boss_place}.");
+
 		if (QFlag(gm, "side") == 1)
 		{
 			VoiceBy(gm, "boss");
@@ -835,11 +839,13 @@ class RZ_QM_DoorExile : RZ_HavenQM
 		{
 			VoiceBy(gm, "boss");
 			m_sBrief = QFill(gm, "The man in the envelope sleeps in a barn outside {barn}. Walk him to our drop outside {boss_place} and save my lads the trip. He'll come quietly if you're friendly about it.");
+			m_sObjective = QFill(gm, "Walk {exile} from the barn outside {barn} to the Red Hand drop outside {boss_place}.");
 		}
 		else
 		{
 			VoiceBy(gm, "head");
 			m_sBrief = QFill(gm, "Somebody sold where {exile} sleeps: a barn outside {barn}. He was ours once. The crew will come for him. Get there first, and do what you think is right. I can't.");
+			m_sObjective = QFill(gm, "Reach {exile} at the barn outside {barn} before the crew does.");
 		}
 
 		return true;
@@ -1053,6 +1059,7 @@ class RZ_QM_DoorCollect : RZ_HavenQM
 		VoiceBy(gm, "head");
 		m_sTitle = "The Price of the Door: the crew comes to collect";
 		m_sBrief = QFill(gm, "The price wasn't paid, and {boss} is coming to {house} for it in person. We can't fight the Red Hand. Can you? Or pay them, or talk to them, or find someone who'll stand with us. Before dark.");
+		m_sObjective = QFill(gm, "Stop {boss} collecting from the safehouse in {house} before dark.");
 		return true;
 	}
 
@@ -1290,6 +1297,7 @@ class RZ_QM_DoorVote : RZ_HavenQM
 
 		m_sTitle = "The Price of the Door: the vote";
 		m_sBrief = QFill(gm, "{house} votes tonight on whether {head} keeps the chair. Everyone gets a say, even you. Say it carefully.");
+		m_sObjective = QFill(gm, "Have your say at the vote in {house} on whether {head} keeps the chair.");
 		return true;
 	}
 
@@ -1404,6 +1412,7 @@ class RZ_QM_DoorFortify : RZ_Mission_FortifySafehouse
 		m_fParticipationRadius = 80;
 		m_sTitle = "The Price of the Door: the barricades";
 		m_sBrief = run.Fill("{house} held this month. Next month it has to hold without anybody's help. Stand with the people boarding up the windows. The hammering will bring them.");
+		m_sObjective = run.Fill("Guard the safehouse in {house} until the windows are boarded up.");
 		return true;
 	}
 }
@@ -1445,6 +1454,7 @@ class RZ_QM_DoorInstalment : RZ_HavenQM
 		VoiceBy(gm, "boss");
 		m_sTitle = "The Price of the Door: the first instalment";
 		m_sBrief = QFill(gm, "You took {house}'s debt on. Very noble. First instalment's due. Come to the pit behind our place in {boss_place} and pay it, one way or the other.");
+		m_sObjective = QFill(gm, "Pay the first instalment of {house}'s debt at the pit in {boss_place}.");
 		return true;
 	}
 

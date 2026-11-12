@@ -48,10 +48,12 @@ class RZ_Mission_SampleHunt : RZ_TribeContract
 					m_eGiver = RZ_EFaction.SURVIVORS;
 					m_Req.m_eGiver = RZ_EFaction.SURVIVORS;
 					m_sBrief = string.Format("%1 walks alone now, out past %2. We knew %1. Lay %1 down, please, and tell us when it's done.", r.m_sAlphaName, r.m_sPlace);
+					m_sObjective = string.Format("Lay %1 down, out past %2, and bring the samples to the lab.", r.m_sAlphaName, r.m_sPlace);
 					return true;
 				}
 
 				m_sBrief = string.Format("We've been following an isolate out past %1: a big one, on its own, with no pack round it. Kill it and bring its samples to the lab.", r.m_sPlace);
+				m_sObjective = string.Format("Kill the isolate out past %1 and bring its samples to the lab.", r.m_sPlace);
 				return true;
 			}
 		}
@@ -64,6 +66,7 @@ class RZ_Mission_SampleHunt : RZ_TribeContract
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.8);
 		m_fParticipationRadius = s.m_fRadius + 100;
 		m_sBrief = string.Format("We've tracked a big one to %1, on its own, further along than anything round it. The furthest along we've seen. Kill it and bring its samples to the lab while they're fresh.", s.m_sName);
+		m_sObjective = string.Format("Kill the big one in %1 and bring its samples to the lab.", s.m_sName);
 
 		RZ_TrackedZombie alpha = gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId);
 		return alpha != null;
@@ -164,6 +167,7 @@ class RZ_Mission_FieldSamples : RZ_Mission
 		m_sTitle = "Field Samples";
 		m_sDeed = "brought samples back from {town}";
 		m_sBrief = string.Format("The specials get the attention, but the cure has to work on the ordinary ones too: the postman, the farmer, whoever was in %2 when it started. Put down %1 of them there. The lab takes its readings from what's left.", NEEDED, s.m_sName);
+		m_sObjective = string.Format("Put down %1 ordinary infected in %2.", NEEDED, s.m_sName);
 		return true;
 	}
 
@@ -292,6 +296,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 		m_sTitle = "Water Survey";
 		m_sDeed = "tested the water at {town}";
 		m_sBrief = string.Format("The Haven boils its water and still gets sick, and the roads say the Red Hand poisons wells. We'd like a number instead of a rumour. Take samples from the wells in %1 and two towns nearby: ten seconds at each well.", s.m_sName);
+		m_sObjective = string.Format("Sample the wells in %1 and two towns nearby.", s.m_sName);
 		return true;
 	}
 
@@ -499,10 +504,12 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		m_iBook = AddClue("His notebook", string.Format("%1's notebook. The last twenty pages are his own turning, hour by hour, in a hand that gets worse. He was bitten a day before he left. On the last page: \"Don't give them this part.\"", m_sName));
 		m_sTitle = "Lost Colleague";
 		m_sBrief = string.Format("%1 stopped answering near %2. Find him. He may not be himself any more.", m_sName, s.m_sName);
+		m_sObjective = string.Format("Find %1 and the sample case near %2.", m_sName, s.m_sName);
 		if (m_bCourier)
 		{
 			m_sTitle = "The Missing Courier";
 			m_sBrief = string.Format("One of our couriers was walking a steel case of samples between the lab and %1 and missed the last check-in. Couriers go on the list of authors, the same as researchers. Find him, or what's left of him, and the case.", s.m_sName);
+			m_sObjective = string.Format("Find the missing courier and the sample case near %1.", s.m_sName);
 		}
 
 		m_vHim = m_vPos;
@@ -1130,6 +1137,7 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 		m_fParticipationRadius = 0;
 		m_sTitle = "Research Data";
 		m_sDeed = "recovered the data at {town}";
+		m_sObjective = string.Format("Find Halcyon's hard drive in %1 and take it to the lab.", s.m_sName);
 		if (clinic)
 			m_sBrief = string.Format("There's a hard drive with Halcyon's research somewhere in %1 in %2: a padded case, on a shelf or on the floor. Find it and take it to the lab. Bastion's drop in %3 would pay for it too.", clinic.m_sName, s.m_sName, b.m_sName);
 		else
@@ -1255,6 +1263,7 @@ class RZ_Mission_HuntScreamer : RZ_TribeContract
 				m_vPos = scout.m_vPos;
 				m_fParticipationRadius = 250;
 				m_sBrief = string.Format("Something sits on the ridge above %1 all day and watches. When it sees you, it shrieks, and the rest come. Kill it before it does. Halcyon wants what's left.", t.m_sPlace);
+				m_sObjective = string.Format("Kill the screamer on the ridge above %1.", t.m_sPlace);
 				return true;
 			}
 		}
@@ -1267,6 +1276,7 @@ class RZ_Mission_HuntScreamer : RZ_TribeContract
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
 		m_fParticipationRadius = s.m_fRadius + 100;
 		m_sBrief = string.Format("Something in %1 shrieks when it sees anyone, and every infected in town comes to the sound. Kill it before it sees you. We want what's left of it: it's the only kind we've found that calls the others.", s.m_sName);
+		m_sObjective = string.Format("Kill the screamer in %1 before it sees you.", s.m_sName);
 		return gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId) != null;
 	}
 
@@ -1413,6 +1423,7 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 		m_fParticipationRadius = 100;
 		m_sTitle = "Lab Defence";
 		m_sBrief = "Something is coming for the lab: the fence sensors in the hills went off one after another, all heading this way. Get there and hold it for four minutes while we move the samples into the cold room. If the freezers go, the cure goes with them.";
+		m_sObjective = "Hold the lab in {lab_town} for four minutes.";
 		return true;
 	}
 

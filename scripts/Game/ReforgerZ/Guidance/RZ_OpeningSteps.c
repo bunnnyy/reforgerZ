@@ -50,6 +50,10 @@ class RZ_OpeningTasks
 	protected static const int SWAP_FAVOR = 3;			// Haven Favor for a tin swapped with a wanderer (small pay)
 	protected static const int DEBT_INFAMY = 1;			// the Haven hears how you asked
 	protected static const int DRIFTER_ASKS = 3;
+	protected static const float SAMPLE_MIN = 80;		// A Sample's remains: this far from the contact...
+	protected static const float SAMPLE_MAX = 250;		// ...and no further
+	protected static const string SAMPLE_ROAD = "what's left of a big one by the road";
+	protected static const string SAMPLE_YARD = "what's left of a big one in a yard over the way";
 
 	protected RZ_GameModeComponent m_GM;
 
@@ -171,7 +175,7 @@ class RZ_OpeningTasks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The nearest well or water tower within 400 m ("the well").
+	//! The nearest well or water tower within 400 m ("the well"): a dry spot by it.
 	protected bool Well(vector from, out vector place, out string text)
 	{
 		array<string> kinds = {"well", "watertower"};
@@ -179,9 +183,9 @@ class RZ_OpeningTasks
 		if (!l)
 			return false;
 
-		place = RZ_Mission.LandPointNear(l.m_vPos, 1, 3);
+		place = RZ_PlaceFind.Near(l.m_vPos, 0, 6, RZ_PlaceNeeds.Get("opening.water"));
 		text = l.m_sName;
-		return true;
+		return place != vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -193,9 +197,14 @@ class RZ_OpeningTasks
 		if (!l)
 			return false;
 
-		place = RZ_Mission.LandPointNear(l.m_vPos, 1, 4);
+		// A dry spot by the nearest; else by any other in reach (one by a river may have none)
+		RZ_PlaceNeed need = RZ_PlaceNeeds.Get("opening.pump");
+		place = RZ_PlaceFind.Near(l.m_vPos, 0, 15, need);
+		if (place == vector.Zero)
+			place = RZ_PlaceFind.Near(from, 0, PUMP_NEAR, need);
+
 		text = l.m_sName;
-		return true;
+		return place != vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -224,14 +233,15 @@ class RZ_OpeningTasks
 			vector toward = from - best.m_vLair;
 			toward[1] = 0;
 			toward.Normalize();
-			place = RZ_Mission.LandPointNear(best.m_vLair + toward * LAIR_WATCH, 0, 20);
+			place = RZ_PlaceFind.Near(best.m_vLair + toward * LAIR_WATCH, 0, 30, RZ_PlaceNeeds.Get("opening.downwind"));
 			text = best.m_sPlace;
-			return true;
+			if (place != vector.Zero)
+				return true;
 		}
 
-		place = RZ_Mission.LandPointNear(from, 150, 250);
+		place = RZ_PlaceFind.Near(from, 150, 250, RZ_PlaceNeeds.Get("opening.treeline"));
 		text = "the tree line where they cross";
-		return !RZ_Util.IsWater(place);
+		return place != vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -249,10 +259,14 @@ class RZ_OpeningTasks
 			if (!b || RZ_Util.DistXZ(from, b.GetOrigin()) < KEYS_MIN || !RZ_LockedSpots.IsLockedBuilding(b) || !hub.GetDoors().HasDoorLock(b))
 				continue;
 
+			// The tracker points at the building: never one standing in a river or a pond
+			if (!RZ_PlaceCheck.Fits(b.GetOrigin(), RZ_PlaceNeeds.Get("opening.keys")))
+				continue;
+
 			string type = hub.GetSearch().BuildingType(RZ_ItemHelper.LowerName(b));
 			o.m_Target = b;
 			place = b.GetOrigin();
-			text = "the locked " + KeyWord(type) + " over the way";
+			text = "the " + KeyWord(type);
 			return true;
 		}
 
@@ -304,23 +318,109 @@ class RZ_OpeningTasks
 		if (!h)
 			return false;
 
-		place = h.m_vPos;
+		// A dry spot by the camp (a riverside camp's middle can stand in the water)
+		place = RZ_PlaceFind.Near(h.m_vPos, 0, 40, RZ_PlaceNeeds.Get("opening.toll"));
 		text = "the Red Hand's gate at " + h.m_sName;
-		return true;
+		return place != vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What's left of a big one 80-200 m out, a sample by it (Cure > Sample prefab; not once the cure
-	//! is out).
+	//! What's left of a big one 80-250 m out: on a road's verge, else in a yard by a house (docs/PLACES.md:
+	//! never an empty field). Its things are the remains (a dead special, RemainsPrefab) and the sample
+	//! by it (Cure > Sample prefab), made when the step starts (SpawnSampleScene); without either slot,
+	//! or once the cure is out, it isn't offered.
 	protected bool Sample(vector from, out vector place, out string text)
 	{
 		RZ_WorldFacts facts = m_GM.GetFacts();
-		if (m_GM.GetSamplePrefab().IsEmpty() || (facts && facts.IsCured()))
+		if (m_GM.GetSamplePrefab().IsEmpty() || RemainsPrefab(m_GM).IsEmpty() || (facts && facts.IsCured()))
 			return false;
 
-		place = RZ_Mission.LandPointNear(from, 80, 200);
-		text = "what's left of a big one by the road";
-		return !RZ_Util.IsWater(place);
+		place = RZ_PlaceFind.Near(from, SAMPLE_MIN, SAMPLE_MAX, RZ_PlaceNeeds.Get("opening.sample"));
+		text = SAMPLE_ROAD;
+		if (place != vector.Zero)
+			return true;
+
+		place = RZ_PlaceFind.Near(from, SAMPLE_MIN, SAMPLE_MAX, RZ_PlaceNeeds.Get("opening.sample.yard"));
+		text = SAMPLE_YARD;
+		return place != vector.Zero;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place need a task's place makes (World/RZ_PlaceNeeds.c); "" for one done at the contact.
+	static string NeedKey(int task, string text)
+	{
+		switch (task)
+		{
+			case RZ_EOpeningTask.WATER: return "opening.water";
+			case RZ_EOpeningTask.BOILED: return "opening.water";
+			case RZ_EOpeningTask.PUMP: return "opening.pump";
+			case RZ_EOpeningTask.KEYS: return "opening.keys";
+			case RZ_EOpeningTask.SAMPLE: return SampleNeed(text);
+			case RZ_EOpeningTask.GATE: return "opening.gate";
+			case RZ_EOpeningTask.DEBT: return "opening.debt";
+			case RZ_EOpeningTask.SWAP: return "opening.swap";
+			case RZ_EOpeningTask.TOLL: return "opening.toll";
+			case RZ_EOpeningTask.DOWNWIND:
+			{
+				if (text.Contains("tree line"))
+					return "opening.treeline";
+
+				return "opening.downwind";
+			}
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place need A Sample's text names: by the road, or in a yard.
+	static string SampleNeed(string text)
+	{
+		if (text == SAMPLE_YARD)
+			return "opening.sample.yard";
+
+		return "opening.sample";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What's left of a big one: a special infected's body (Zombies > Special prefabs), one that
+	//! doesn't burst when it dies (no exploder, bomber, bloater, spitter or screamer); else a common
+	//! one that is a single character, not a group. "" without one: A Sample isn't offered.
+	static ResourceName RemainsPrefab(RZ_GameModeComponent gm)
+	{
+		if (!gm || !gm.GetSpawner() || !gm.GetSpawner().GetSettings())
+			return "";
+
+		RZ_ZombieSettings zs = gm.GetSpawner().GetSettings();
+		if (zs.m_aSpecialPrefabs)
+		{
+			foreach (ResourceName special : zs.m_aSpecialPrefabs)
+			{
+				if (!Bursts(special))
+					return special;
+			}
+		}
+
+		if (!zs.m_aCommonPrefabs)
+			return "";
+
+		foreach (ResourceName common : zs.m_aCommonPrefabs)
+		{
+			string name = common;
+			name.ToLower();
+			if (!name.Contains("group") && !Bursts(common))
+				return common;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool Bursts(ResourceName prefab)
+	{
+		string name = prefab;
+		name.ToLower();
+		return name.Contains("explod") || name.Contains("bomber") || name.Contains("bloater") || name.Contains("spitter") || name.Contains("scream");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -355,6 +455,10 @@ class RZ_OpeningTasks
 			if (!w || w.IsBitten() || !wanderers.GetPosition(id, at))
 				continue;
 
+			// Never one the words can't reach: in water, on an island
+			if (!RZ_PlaceCheck.Fits(at, RZ_PlaceNeeds.Get("opening.swap")))
+				continue;
+
 			float d = RZ_Util.DistXZ(at, from);
 			if (d < best)
 			{
@@ -372,28 +476,18 @@ class RZ_OpeningTasks
 	//! The gate: 15-25 m out from the contact.
 	protected bool Gate(vector from, out vector place, out string text)
 	{
-		place = RZ_Mission.LandPointNear(from, 15, 25);
+		place = RZ_PlaceFind.Near(from, 15, 25, RZ_PlaceNeeds.Get("opening.gate"));
 		text = "the gate";
-		return !RZ_Util.IsWater(place);
+		return place != vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A house 60-250 m off whose people owe the contact.
 	protected bool Debt(vector from, out vector place, out string text)
 	{
-		array<IEntity> buildings = {};
-		RZ_BuildingQuery.FindBuildings(from, 250, buildings, 40);
-		foreach (IEntity b : buildings)
-		{
-			if (b && RZ_Util.DistXZ(from, b.GetOrigin()) >= 60 && !RZ_LockedSpots.IsLockedBuilding(b))
-			{
-				place = RZ_Mission.LandPointNear(b.GetOrigin(), 2, 6);
-				text = "the house with the owing in it";
-				return true;
-			}
-		}
-
-		return false;
+		place = RZ_PlaceFind.Near(from, 60, 250, RZ_PlaceNeeds.Get("opening.debt"));
+		text = "the house with the owing in it";
+		return place != vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -407,6 +501,53 @@ class RZ_OpeningTasks
 		place = from;
 		text = o.m_sName;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A Sample's things at its place: what's left of a big one (a special made and killed where it
+	//! lies, kept from the engine's corpse cleanup until the opening lets it go, KeepBody) and the
+	//! sample beside it. The place audit makes them too (RZ_PlaceAudit). The first of `made` is the body.
+	void SpawnSampleScene(vector at, notnull array<IEntity> made)
+	{
+		vector ground = RZ_Util.GroundPos(at);
+		IEntity body = RZ_Util.SpawnPrefab(RemainsPrefab(m_GM), ground + Vector(0, 0.1, 0), Math.RandomFloat(0, 360));
+		if (body)
+		{
+			// VERIFY: a character killed the moment it's spawned on the server falls where it stands
+			RZ_Util.KillCharacter(body);
+			KeepBody(body, true);
+			made.Insert(body);
+		}
+
+		IEntity sample = RZ_Util.SpawnPrefab(m_GM.GetSamplePrefab(), RZ_Util.RandomPointInRing(ground, 0.6, 1.2) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
+		if (!sample)
+			return;
+
+		RZ_GameModeComponent.TrackLooseItem(sample);
+		made.Insert(sample);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps a body from the engine's corpse cleanup (the garbage system), or hands it back to it.
+	//! VERIFY: as RZ_TribeRest.VigilKeep, a dead character withdrawn and blacklisted stays put.
+	static void KeepBody(IEntity body, bool keep)
+	{
+		if (!body)
+			return;
+
+		SCR_GarbageSystem garbage = SCR_GarbageSystem.GetByEntityWorld(body);
+		if (!garbage)
+			return;
+
+		if (keep)
+		{
+			garbage.Withdraw(body);
+			garbage.UpdateBlacklist(body, true);
+			return;
+		}
+
+		garbage.UpdateBlacklist(body, false);
+		garbage.Insert(body);
 	}
 
 	// ================================================================ While it runs
@@ -434,10 +575,12 @@ class RZ_OpeningTasks
 
 			case RZ_EOpeningTask.SAMPLE:
 			{
-				IEntity sample = RZ_Util.SpawnPrefab(m_GM.GetSamplePrefab(), RZ_Util.GroundPos(e.m_vPlace) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
-				if (sample)
-					RZ_GameModeComponent.TrackLooseItem(sample);
+				array<IEntity> made = {};
+				SpawnSampleScene(e.m_vPlace, made);
+				if (!made.IsEmpty() && ChimeraCharacter.Cast(made[0]))
+					o.m_Remains = made[0];
 
+				RZ_PlaceNeeds.VerifyThings(SampleNeed(e.GetText("place")), e.m_vPlace, e.GetText("place"));
 				break;
 			}
 
