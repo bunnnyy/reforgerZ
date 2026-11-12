@@ -43,6 +43,14 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 3e8f53a: prop `RZ_ErrandProp_Papers.et`, slot **Missions > Errands > Props > Papers** (WBS §4).
 - 2026-11-12 3e8f53a: prop `RZ_ErrandProp_Parts.et`, slot **Missions > Errands > Props > Parts** (WBS §4).
 - 2026-11-12 3e8f53a: play-test Crash Site's recovery team (a real squad from **Missions > Contracts > Bastion squad**) and Lost Colleague's search and walk-in (WBS §8, the story jobs).
+- 2026-11-12 985b210: item `RZ_ErrandCarried.et` (a small bundle that can't be equipped, with `RZ_MissionItemComponent`), slot **Missions > Errands > Props > Carried** (WBS §4; empty = the mission item).
+- 2026-11-12 985b210: slot **Missions > Errands > Props > Pay ration**: a vanilla ration item (its name holding a food word) (WBS §4).
+- 2026-11-12 985b210: slot **Missions > Errands > Props > Pay magazine**: a vanilla rifle magazine (WBS §4).
+- 2026-11-12 985b210: slot **Missions > Errands > Props > Watch**: a vanilla wristwatch item (WBS §4).
+- 2026-11-12 985b210: the new Errands settings **Pay in kind**, **Meals as pay**, **When the truck comes** (on) and **Headlines a day** (2) appear on the game mode (WBS §5): check the defaults came through.
+- 2026-11-12 6fd2709: the new setting **Missions > Story > Numbered scenes** (off) appears (WBS §5); play a talk scene with it off, and on if the slots' labels don't show (WBS §8).
+- 2026-11-12 104e08d: the icon atlas holds `mission_errand` now (`UI/Textures/ReforgerZ/RZ_Icons.png`, 63 icons): import it again and run `py tools/icon_atlas.py imageset` (UI/LAYOUTS.md, "Importing the icons").
+- 2026-11-12 104e08d: play-test the story jobs' talk scenes, errand pay, His Effects, strangers out of sight and the new tricks (WBS §8), and check the five new VERIFY markers (WBS §6: strangers' sight, junctions, a robbed body, locals' labels, mission goods' tag).
 
 **From the cloud's finale, majors and epilogue rest (2026-11-12)**
 - 2026-11-12 a122e00: `World/RZ_EpilogueSheet.et`, slot **Director > Epilogue > Sheet on posts** (WBS §4, Epilogue; all optional, look only).
@@ -101,13 +109,9 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 - 2026-11-12 8ef0ca4 (cloud, errands, for the majors' owner): **Missions > Errands > Majors read errand memory** (`RZ_ErrandSettings.Get().m_bMajorsReadMemory`, off) is there; when it's on, a sitting may count +1 per head a season for a house whose people remember the player's errands: `gm.GetErrands().ThreadLineFor(playerId, -1, house)` is non-empty for them. The majors don't read it yet.
 - 2026-11-12 8ef0ca4 (cloud, errands, for the dialogue owner): a leader's or named person's first line can say a thread back: `gm.GetErrands().ThreadLineFor(playerId, holdingId, houseIdx)` (*"Mara Kovac says you brought something for the pot."*, "" if none).
-- 2026-11-12 8ef0ca4 (cloud, errands, for the UI owner): the `mission_errand` icon for the journal's errand row (SVG and 64/128 PNG); the row uses the unarmed icon today.
 
 - 2026-11-12 6c66be6 (cloud, missions, for the UI owner): order per player is a query: `RZ_MissionReasons.OrderScore(gm, mission, playerId, playerPos)` (higher first; near, reason-started, a leader they helped). The journal's and the quartermaster's lists can sort by it (DESIGN "Story blocks" says they don't yet).
-- 2026-11-12 6c66be6 (cloud, missions, for the majors' owner): post `major.<act>` reasons as acts open (`facts.Memory().PostReason("major.<act>", ...)`) so stage missions and margin cards can answer them (designs/MISSION_STYLE.md, Reasons). The margin cards for all four majors are now built (docs/ERRANDS.md), so that bullet is gone from designs/MAJORS.md, and Crash Site now reads `majors.pages_open` and `orders.stance` (docs/QUESTLINES.md's flag table).
 
-- 2026-11-12 8039776 (cloud, infected, for the missions owner): the packs' jobs' rest is in designs/MISSION_STYLE.md ("The tribes and the conversion"): Clear the Trail on a truck road (`RZ_Tribe.m_aRoadCross`), Bait the Crew's Zombie Bait Infamy, Track Them Home's 80 m, couriers and columns asking for an escort, and the capture case's pack following it (`RZ_Tribes.DrawTo(pack, the case's spot, night)` while it's carried). Burn the Lair's splinter is built on the packs' side.
-- 2026-11-12 8039776 (cloud, Traces, for the errands owner): cards on traces (Boarded Up on V2, Is She Gone? near L1, His Effects on L5 or V7) can find their scene with `gm.GetTraces().GetScenes().SceneNear("V2", pos, radius, at, key)`; the item is in designs/ERRANDS.md.
 
 ## Claims
 
@@ -115,6 +119,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Status
 
+- Cloud, 2026-11-12 104e08d: the mission style's and errands' designs are built in full (the twenty story jobs, talk scenes, errand pay, the dealer's rest, strangers' last rules, the packs' jobs, cards on traces) and their design files removed; their prefab slots are under "For the PC".
 - Cloud, 2026-11-12 8039776: the infected's and Traces' designs are built in full (simplified as INFECTED.md and TRACES.md say) and their design files removed; their cross-owner leftovers are in MISSION_STYLE.md and ERRANDS.md.
 - Cloud, 2026-11-12 6924ec7: the spawn screen (in place of vanilla's deploy menu) and the map key on the map are built as code and text; both need their slots set and a play (under "For the PC").
 - Cloud, 2026-11-12 17a4c83: the finale's, the majors' and the epilogue's designs are built (simplified as each doc says) and their design files removed; the epilogue deck has 20 cards.
