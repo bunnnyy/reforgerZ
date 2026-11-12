@@ -1,0 +1,7 @@
+SCR_AIGroup : "{AD57D562AAA1047D}Prefabs/ReforgerZ/Territory/RZ_Guard_Haven.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{8AEA25DDC12B9FE3}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Hunter.et" "{F7D8023C72A66D9E}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Farmhand.et"
+ }
+}

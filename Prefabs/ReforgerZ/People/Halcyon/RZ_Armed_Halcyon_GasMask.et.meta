@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{C3BD34CB43209E31}Prefabs/ReforgerZ/People/Halcyon/RZ_Armed_Halcyon_GasMask.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,26 @@
+SCR_ChimeraCharacter : "{FA6C654C92ECF556}Prefabs/ReforgerZ/Factions/RZ_QM_Bastion.et" {
+ ID "520EC961A090BBD5"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{28372136A9F0818A}Prefabs/Characters/Uniforms/Jacket_US_BDU_rolledup_dark.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{D19C474FA0F42CC4}Prefabs/Characters/Handwear/Gloves_Pilot_US_01/Gloves_Pilot_US_01.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CAAFB9235E903}" {
+     TargetStorage "Jacket/Jacket_US_BDU_rolledup_dark.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

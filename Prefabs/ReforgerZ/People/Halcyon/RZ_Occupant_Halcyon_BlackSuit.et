@@ -1,0 +1,25 @@
+SCR_ChimeraCharacter : "{A3AF19F66C7846C1}Prefabs/ReforgerZ/Territory/RZ_Occupant_Halcyon.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Face {
+     Prefab "{E99616E766686B7F}Prefabs/Characters/HeadGear/Mask_Hazmat/Mask_Hazmat_Gas_02.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{703E0F4C614C348D}Prefabs/Characters/Uniforms/Suit_Hazmat/Suit_Hazmat_v2_Black.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab ""
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{EF604A05A5998102}Prefabs/Characters/Handwear/Gloves_Pilot_US_01/Gloves_Pilot_US_Black.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

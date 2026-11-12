@@ -88,6 +88,18 @@ class RZ_LeaderSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon field lead body (optional; falls back to the Halcyon leader, then the puzzle civilian)", "et")]
 	ResourceName m_sHalcyonOutpostPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Council head looks (optional): variants in other clothes, picked by the seat (one council head per safehouse). Empty = the council head prefab", "et")]
+	ref array<ResourceName> m_aCouncilHeadLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion post commander looks (optional)", "et")]
+	ref array<ResourceName> m_aBastionOutpostLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand crew boss looks (optional)", "et")]
+	ref array<ResourceName> m_aRedHandOutpostLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon field lead looks (optional)", "et")]
+	ref array<ResourceName> m_aHalcyonOutpostLooks;
+
 	[Attribute("1", desc: "Without a leader prefab, the quartermaster at a stronghold or safehouse is the leader (give it RZ_LeaderAction). Off = a puzzle civilian stands in")]
 	bool m_bQuartermasterIsLeader;
 
@@ -2510,7 +2522,8 @@ class RZ_Leaders
 	//------------------------------------------------------------------------------------------------
 	protected void SpawnBody(RZ_Leader l, ResourceName prefab)
 	{
-		IEntity e = RZ_Util.SpawnPrefab(prefab, RZ_Mission.LandPointNear(l.m_vPos, 2, 5), Math.RandomFloat(0, 360));
+		// A council head or outpost leader: one of the slot's looks by the seat; a successor wears another
+		IEntity e = RZ_Util.SpawnPrefab(m_GM.PickLook(prefab, RZ_Looks.SeedOf(l.m_iId, l.m_iGeneration)), RZ_Mission.LandPointNear(l.m_vPos, 2, 5), Math.RandomFloat(0, 360));
 		if (!e)
 			return;
 

@@ -1,0 +1,16 @@
+SCR_ChimeraCharacter : "{9ECF9635E354CC50}Prefabs/ReforgerZ/Territory/RZ_Occupant_Bastion.et" {
+ ID "52092032B0E62200"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{1E8E0AF46736D299}Prefabs/Characters/HeadGear/Hat_Boonie_US_01/Hat_Boonie_US_dark.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{C890D96D16AD5EEF}Prefabs/Characters/Uniforms/Jacket_US_BDU_darklong.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

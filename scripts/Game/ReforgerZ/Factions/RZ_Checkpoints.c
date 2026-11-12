@@ -58,6 +58,12 @@ class RZ_CheckpointSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand roadblock crew: an AI group on BAND (optional; falls back to Territory > Red Hand guard, then Missions > Red Hand group). Without one, no roadblocks", "et")]
 	ResourceName m_sRedHandCrewPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion crew looks (optional): variant crew groups in other kit, picked by the post. Empty = the crew prefab", "et")]
+	ref array<ResourceName> m_aBastionCrewLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand crew looks (optional)", "et")]
+	ref array<ResourceName> m_aRedHandCrewLooks;
+
 	[Attribute("150", desc: "Posts call out to players within this distance (m)")]
 	float m_fWarnRadius;
 
@@ -477,7 +483,8 @@ class RZ_Checkpoints
 		if (prop)
 			post.m_aBodies.Insert(prop);
 
-		IEntity crew = RZ_Util.SpawnPrefab(CrewPrefab(post.m_eFaction), RZ_Mission.LandPointNear(post.m_vPos, 4, 10), post.m_fYaw);
+		// The post's crew wears the same looks each time (People's looks)
+		IEntity crew = RZ_Util.SpawnPrefab(m_GM.PickLook(CrewPrefab(post.m_eFaction), post.m_iId), RZ_Mission.LandPointNear(post.m_vPos, 4, 10), post.m_fYaw);
 		if (!crew)
 			return;
 
@@ -534,7 +541,7 @@ class RZ_Checkpoints
 		if (!shared.CanSpawnBody(RZ_BodyBudget.SPEAKER, at))
 			return;
 
-		IEntity e = RZ_Util.SpawnPrefab(territory.SpeakerPrefab(post.m_eFaction), at, post.m_fYaw);
+		IEntity e = RZ_Util.SpawnPrefab(m_GM.PickLook(territory.SpeakerPrefab(post.m_eFaction), post.m_iId), at, post.m_fYaw);
 		if (!e)
 			return;
 

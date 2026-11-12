@@ -358,6 +358,24 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand hunter squad (optional; falls back to the Red Hand group prefab)", "et", category: "ReforgerZ|Factions")]
 	protected ResourceName m_sRedHandHunterPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven quartermaster looks (optional): variants of the quartermaster in other clothes; each one spawned picks one by its place (docs/DESIGN.md, People's looks). Empty = the quartermaster prefab", "et", category: "ReforgerZ|Factions")]
+	protected ref array<ResourceName> m_aQuartermasterHavenLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion quartermaster looks (optional)", "et", category: "ReforgerZ|Factions")]
+	protected ref array<ResourceName> m_aQuartermasterBastionLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand quartermaster looks (optional)", "et", category: "ReforgerZ|Factions")]
+	protected ref array<ResourceName> m_aQuartermasterRedHandLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon quartermaster looks (optional)", "et", category: "ReforgerZ|Factions")]
+	protected ref array<ResourceName> m_aQuartermasterHalcyonLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion hunter squad looks (optional): variant groups whose members wear other kit", "et", category: "ReforgerZ|Factions")]
+	protected ref array<ResourceName> m_aBastionHunterLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand hunter squad looks (optional)", "et", category: "ReforgerZ|Factions")]
+	protected ref array<ResourceName> m_aRedHandHunterLooks;
+
 	[Attribute("10", desc: "Minutes between hunter squads for Hunted players. 0 = off", category: "ReforgerZ|Factions")]
 	protected float m_fHunterSquadMinutes;
 
@@ -458,6 +476,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_Hostility m_Hostility;
 	protected ref RZ_Guidance m_Guidance;
 	protected ref RZ_Territory m_Territory;
+	protected ref RZ_Looks m_Looks;
 	protected ref RZ_SupplyLines m_Supply;
 	protected ref RZ_FactionLife m_FactionLife;
 	protected ref RZ_CampLife m_CampLife;
@@ -727,6 +746,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// The shared engine (notice lanes, callbacks, marks, the season budget and calendar, the
 		// season's deeds) and the reputation names' change notice
 		m_Shared = new RZ_Shared(this, m_SharedSettings);
+		// Faction people's looks: every person slot's variants, read by every spawn of one
+		RegisterLooks();
 		m_RepWatch = new RZ_RepWatch(this);
 		m_Heat = new RZ_HeatMap();
 		m_LooseItems = new RZ_LooseItems(this, m_fLooseItemMinutes);
@@ -1085,6 +1106,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_Hostility GetHostility() { return m_Hostility; }
 	RZ_Guidance GetGuidance() { return m_Guidance; }
 	RZ_Territory GetTerritory() { return m_Territory; }
+	RZ_Looks GetLooks() { return m_Looks; }
 	RZ_SupplyLines GetSupply() { return m_Supply; }
 	RZ_FactionLife GetFactionLife() { return m_FactionLife; }
 	RZ_CampLife GetCampLife() { return m_CampLife; }
@@ -1175,6 +1197,58 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return fallback;
 
 		return preferred;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The look a faction person of this slot wears: one of the slot's variants by the seed (the same
+	//! seed, the same clothes), else the prefab itself (RZ_Looks). Use it at every spawn of one.
+	ResourceName PickLook(ResourceName prefab, int seed)
+	{
+		if (!m_Looks)
+			return prefab;
+
+		return m_Looks.Pick(prefab, seed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every faction person slot with its looks (docs/DESIGN.md, "People's looks").
+	protected void RegisterLooks()
+	{
+		m_Looks = new RZ_Looks();
+		m_Looks.Add(m_sQuartermasterHaven, m_aQuartermasterHavenLooks);
+		m_Looks.Add(m_sQuartermasterBastion, m_aQuartermasterBastionLooks);
+		m_Looks.Add(m_sQuartermasterRedHand, m_aQuartermasterRedHandLooks);
+		m_Looks.Add(m_sQuartermasterHalcyon, m_aQuartermasterHalcyonLooks);
+		m_Looks.Add(m_sBastionHunterPrefab, m_aBastionHunterLooks);
+		m_Looks.Add(m_sRedHandHunterPrefab, m_aRedHandHunterLooks);
+
+		RZ_TerritorySettings t = m_TerritorySettings;
+		m_Looks.Add(t.m_sHavenGuardPrefab, t.m_aHavenGuardLooks);
+		m_Looks.Add(t.m_sBastionGuardPrefab, t.m_aBastionGuardLooks);
+		m_Looks.Add(t.m_sRedHandGuardPrefab, t.m_aRedHandGuardLooks);
+		m_Looks.Add(t.m_sHalcyonGuardPrefab, t.m_aHalcyonGuardLooks);
+		m_Looks.Add(t.m_sHavenOccupantPrefab, t.m_aHavenOccupantLooks);
+		m_Looks.Add(t.m_sBastionOccupantPrefab, t.m_aBastionOccupantLooks);
+		m_Looks.Add(t.m_sRedHandOccupantPrefab, t.m_aRedHandOccupantLooks);
+		m_Looks.Add(t.m_sHalcyonOccupantPrefab, t.m_aHalcyonOccupantLooks);
+
+		m_Looks.Add(m_SafehouseSettings.m_sGuardPrefab, m_SafehouseSettings.m_aGuardLooks);
+
+		RZ_CheckpointSettings c = m_CheckpointSettings;
+		m_Looks.Add(c.m_sBastionCrewPrefab, c.m_aBastionCrewLooks);
+		m_Looks.Add(c.m_sRedHandCrewPrefab, c.m_aRedHandCrewLooks);
+
+		RZ_SupplySettings s = m_SupplySettings;
+		m_Looks.Add(s.m_sHavenCrew, s.m_aHavenCrewLooks);
+		m_Looks.Add(s.m_sBastionCrew, s.m_aBastionCrewLooks);
+		m_Looks.Add(s.m_sRedHandCrew, s.m_aRedHandCrewLooks);
+		m_Looks.Add(s.m_sHalcyonCrew, s.m_aHalcyonCrewLooks);
+
+		RZ_LeaderSettings l = m_LeaderSettings;
+		m_Looks.Add(l.m_sCouncilHeadPrefab, l.m_aCouncilHeadLooks);
+		m_Looks.Add(l.m_sBastionOutpostPrefab, l.m_aBastionOutpostLooks);
+		m_Looks.Add(l.m_sRedHandOutpostPrefab, l.m_aRedHandOutpostLooks);
+		m_Looks.Add(l.m_sHalcyonOutpostPrefab, l.m_aHalcyonOutpostLooks);
 	}
 
 	//------------------------------------------------------------------------------------------------

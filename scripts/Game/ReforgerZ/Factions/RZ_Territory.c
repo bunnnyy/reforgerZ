@@ -75,6 +75,30 @@ class RZ_TerritorySettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon occupant (optional; empty = Puzzles > Civilian)", "et")]
 	ResourceName m_sHalcyonOccupantPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven guard looks (optional): variant guard groups (or characters) in other clothes; each guard picks one by its holding and place in the row (docs/DESIGN.md, People's looks). Empty = the guard prefab", "et")]
+	ref array<ResourceName> m_aHavenGuardLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion guard looks (optional)", "et")]
+	ref array<ResourceName> m_aBastionGuardLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand guard looks (optional)", "et")]
+	ref array<ResourceName> m_aRedHandGuardLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon guard looks (optional)", "et")]
+	ref array<ResourceName> m_aHalcyonGuardLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Haven occupant looks (optional): variants of the occupant in other clothes; a named person always wears the same one. Empty = the occupant prefab", "et")]
+	ref array<ResourceName> m_aHavenOccupantLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Bastion occupant looks (optional)", "et")]
+	ref array<ResourceName> m_aBastionOccupantLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Red Hand occupant looks (optional)", "et")]
+	ref array<ResourceName> m_aRedHandOccupantLooks;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Halcyon occupant looks (optional)", "et")]
+	ref array<ResourceName> m_aHalcyonOccupantLooks;
+
 	[Attribute("1", desc: "Haven guard: after Proof's The Whole of It (proof.haven_gate), a Haven group (Haven guard prefab) stands at the lab's gate in the final stand (docs/QUESTLINES.md, The stand's inputs)")]
 	bool m_bHavenGuard;
 }
@@ -1713,7 +1737,7 @@ class RZ_Territory
 		ResourceName guardPrefab = GuardPrefab(h.m_eFaction);
 		for (int g = 0; g < guards && !guardPrefab.IsEmpty(); g++)
 		{
-			IEntity guard = RZ_Util.SpawnPrefab(guardPrefab, RZ_Mission.LandPointNear(home, guardMin, guardMax), Math.RandomFloat(0, 360));
+			IEntity guard = RZ_Util.SpawnPrefab(m_GM.PickLook(guardPrefab, RZ_Looks.SeedOf(h.m_iId, g)), RZ_Mission.LandPointNear(home, guardMin, guardMax), Math.RandomFloat(0, 360));
 			if (!guard)
 				continue;
 
@@ -1727,7 +1751,8 @@ class RZ_Territory
 		int shown = Math.Min(m_Settings.m_iOccupantCount, h.m_aPeople.Count());
 		for (int p = 0; p < shown && !occupantPrefab.IsEmpty(); p++)
 		{
-			IEntity person = RZ_Util.SpawnPrefab(occupantPrefab, RZ_Mission.LandPointNear(home, 4, 14), Math.RandomFloat(0, 360));
+			// The same named person wears the same clothes each time (People's looks)
+			IEntity person = RZ_Util.SpawnPrefab(m_GM.PickLook(occupantPrefab, RZ_Looks.SeedOf(h.m_iId, p)), RZ_Mission.LandPointNear(home, 4, 14), Math.RandomFloat(0, 360));
 			if (!person)
 				continue;
 
@@ -1749,7 +1774,7 @@ class RZ_Territory
 		// An outpost's own quartermaster (the stronghold already has the real one)
 		if (!h.m_bStronghold && m_Settings.m_bOutpostQuartermaster)
 		{
-			IEntity qm = RZ_Util.SpawnPrefab(m_GM.GetQuartermasterPrefab(h.m_eFaction), RZ_Mission.LandPointNear(home, 1, 4), Math.RandomFloat(0, 360));
+			IEntity qm = RZ_Util.SpawnPrefab(m_GM.PickLook(m_GM.GetQuartermasterPrefab(h.m_eFaction), h.m_iId), RZ_Mission.LandPointNear(home, 1, 4), Math.RandomFloat(0, 360));
 			if (qm)
 			{
 				h.m_aBodies.Insert(qm);

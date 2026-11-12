@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{AC0C6C5DE893D6F9}Prefabs/ReforgerZ/People/RedHand/RZ_RedHandPostCrew_2.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

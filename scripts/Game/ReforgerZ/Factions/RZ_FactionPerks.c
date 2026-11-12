@@ -177,7 +177,7 @@ class RZ_FactionPerks
 				m_aHasQm[f] = true;
 			}
 
-			IEntity qm = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(m_aQmPos[f]), Math.RandomFloat(0, 360));
+			IEntity qm = RZ_Util.SpawnPrefab(m_GM.PickLook(prefab, RZ_Looks.SeedAt(m_aQmPos[f])), RZ_Util.GroundPos(m_aQmPos[f]), Math.RandomFloat(0, 360));
 			if (qm)
 				m_aSpawnedQms.Insert(qm);
 		}
@@ -728,7 +728,7 @@ class RZ_FactionPerks
 		if (!hidden)
 			return;
 
-		IEntity squad = RZ_Util.SpawnPrefab(prefab, from);
+		IEntity squad = RZ_Util.SpawnPrefab(m_GM.PickLook(prefab, RZ_Looks.SeedAt(from)), from);
 		if (!squad)
 			return;
 

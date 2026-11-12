@@ -1,0 +1,7 @@
+SCR_AIGroup : "{3790F412BF585C32}Prefabs/ReforgerZ/Factions/RZ_RedHandPostCrew.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{6715895D00355DE0}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Beret.et" "{56E7E022BF6C0B53}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Helmet.et" "{6084D305DD046772}Prefabs/ReforgerZ/People/RedHand/RZ_Armed_RedHand_Balaclava.et"
+ }
+}

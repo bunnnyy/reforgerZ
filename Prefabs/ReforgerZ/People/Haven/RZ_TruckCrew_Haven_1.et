@@ -1,0 +1,7 @@
+SCR_AIGroup : "{737D90BDBB9E563D}Prefabs/ReforgerZ/Supply/RZ_TruckCrew_Haven.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{F7D8023C72A66D9E}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Farmhand.et" "{D92F76C8A172869E}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Winter.et"
+ }
+}

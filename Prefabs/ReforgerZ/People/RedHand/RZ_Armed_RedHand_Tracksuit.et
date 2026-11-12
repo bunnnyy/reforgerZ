@@ -1,0 +1,32 @@
+SCR_ChimeraCharacter : "{254F12535581E4C2}Prefabs/Characters/Factions/INDFOR/FIA/Special Units/Character_FIA_AC_Partisan.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{BDEC5F396E369CEA}Prefabs/Characters/HeadGear/Baseball_Cap/Baseball_Cap_Backwards.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{3A948BD491BC06DE}Prefabs/Characters/Uniforms/Jacket_Tracksuit/Jacket_Tracksuit_Navy.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{821386465B3C63AB}Prefabs/Characters/Uniforms/Pants_Tracksuit/Pants_Tracksuit_Navy.et"
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{3F155F317D83D375}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_Black.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00E}" {
+     TargetStorage "Pants/Pants_Tracksuit_Navy.et"
+    }
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Pants/Pants_Tracksuit_Navy.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

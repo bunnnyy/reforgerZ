@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6AE2C77AADACEDFF}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Scrim.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

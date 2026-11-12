@@ -1,0 +1,7 @@
+SCR_AIGroup : "{C02A0C68FB9A45BD}Prefabs/ReforgerZ/Factions/RZ_BastionPostCrew.et" {
+ ID "0000000000000001"
+ coords 0 0 0
+ m_aUnitPrefabSlots {
+  "{0B5358AAD0F02E93}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Night.et" "{91B389A10DC8FF62}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Raincoat.et" "{6AE2C77AADACEDFF}Prefabs/ReforgerZ/People/Bastion/RZ_Armed_Bastion_Scrim.et"
+ }
+}

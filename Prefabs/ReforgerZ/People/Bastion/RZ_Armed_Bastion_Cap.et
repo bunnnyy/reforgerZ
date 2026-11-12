@@ -1,0 +1,19 @@
+SCR_ChimeraCharacter : "{26A9756790131354}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_Rifleman.et" {
+ ID "52092032B0E62200"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{7891C761B31741BD}Prefabs/Characters/HeadGear/Hat_Patrol_US_01/Hat_Patrol_US_dark.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{28372136A9F0818A}Prefabs/Characters/Uniforms/Jacket_US_BDU_rolledup_dark.et"
+    }
+    LoadoutSlotInfo ArmoredVest {
+     Prefab ""
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

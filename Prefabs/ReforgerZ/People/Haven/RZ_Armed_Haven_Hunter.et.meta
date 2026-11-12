@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{8AEA25DDC12B9FE3}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Hunter.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

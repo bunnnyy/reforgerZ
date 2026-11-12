@@ -1,0 +1,26 @@
+SCR_ChimeraCharacter : "{49D699E428FAE3A3}Prefabs/ReforgerZ/Factions/RZ_QM_Haven.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{6FEB0D9130EC400E}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_lightgrey.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{CD87BF4D0F940AB3}Prefabs/Characters/Uniforms/Shirt/Shirt.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{65B7093231FBF67E}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_LightBrown.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{60DCBCECAC6C6E65}" {
+     TargetStorage "Pants/Pants_Trousers_01_LightBrown.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

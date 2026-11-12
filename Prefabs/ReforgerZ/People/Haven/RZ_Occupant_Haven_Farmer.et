@@ -1,0 +1,22 @@
+SCR_ChimeraCharacter : "{6A06892169C48E4F}Prefabs/ReforgerZ/Territory/RZ_Occupant_Haven.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{B9687B8829272E14}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_brown.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{50C997103F92E752}Prefabs/Characters/Uniforms/Overalls/Overalls1.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab ""
+    }
+    LoadoutSlotInfo HandWear {
+     Prefab "{4F71E7468E78DDD2}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

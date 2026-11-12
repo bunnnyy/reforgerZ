@@ -1,0 +1,25 @@
+SCR_ChimeraCharacter : "{EB21A65C09239EBE}Prefabs/ReforgerZ/Territory/RZ_Occupant_RedHand.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab ""
+    }
+    LoadoutSlotInfo Face {
+     Prefab "{F3DF25E70C82E9CA}Prefabs/Characters/HeadGear/Balaclava/Balaclava_Three-Hole_Olive.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{5FA71197901F8EEF}Prefabs/Characters/Uniforms/Jacket_Bandit/Jacket_Bandit_02.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{C542EA4B3ED3B61B}Prefabs/Characters/Uniforms/Pants_Cargo/Pants_Cargo_Tan.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{553F83578D29670C}Prefabs/Characters/Footwear/Sneakers/Sneakers_Black.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

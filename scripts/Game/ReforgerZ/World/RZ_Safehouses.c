@@ -49,6 +49,9 @@ class RZ_SafehouseSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Guard: a Haven AI character or group on the player faction (Community and up)", "et")]
 	ResourceName m_sGuardPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Guard looks (optional): variant guard groups in other clothes, picked by the safehouse and the guard's place in the row. Empty = the guard prefab", "et")]
+	ref array<ResourceName> m_aGuardLooks;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Medic (optional, Settlement and up): a civilian with RZ_SafehouseAction set to HEAL and DECLARE_BITE", "et")]
 	ResourceName m_sMedicPrefab;
 
@@ -1209,7 +1212,8 @@ class RZ_Safehouses
 
 		for (int i = 0; i < h.OccupantCount(); i++)
 		{
-			IEntity occupant = RZ_Util.SpawnPrefab(PickOccupantPrefab(), RZ_Mission.LandPointNear(h.m_vPos, 3, 14), Math.RandomFloat(0, 360));
+			// The same row of the same house wears the same clothes each time (People's looks)
+			IEntity occupant = RZ_Util.SpawnPrefab(PickOccupantPrefab(RZ_Looks.SeedOf(idx, i)), RZ_Mission.LandPointNear(h.m_vPos, 3, 14), Math.RandomFloat(0, 360));
 			if (occupant)
 			{
 				TagOccupant(occupant, idx);
@@ -1224,7 +1228,7 @@ class RZ_Safehouses
 
 		for (int g = 0; g < h.GuardCount(); g++)
 		{
-			IEntity guard = RZ_Util.SpawnPrefab(m_Settings.m_sGuardPrefab, RZ_Mission.LandPointNear(h.m_vPos, 15, 30), Math.RandomFloat(0, 360));
+			IEntity guard = RZ_Util.SpawnPrefab(m_GM.PickLook(m_Settings.m_sGuardPrefab, RZ_Looks.SeedOf(idx, g)), RZ_Mission.LandPointNear(h.m_vPos, 15, 30), Math.RandomFloat(0, 360));
 			if (guard)
 			{
 				h.m_aBodies.Insert(guard);
@@ -1239,7 +1243,7 @@ class RZ_Safehouses
 		// The safehouse's own quartermaster (the anchored one already has the real one)
 		if (!h.m_bAnchored)
 		{
-			IEntity qm = RZ_Util.SpawnPrefab(m_GM.GetQuartermasterPrefab(RZ_EFaction.SURVIVORS), RZ_Mission.LandPointNear(h.m_vPos, 1, 4), Math.RandomFloat(0, 360));
+			IEntity qm = RZ_Util.SpawnPrefab(m_GM.PickLook(m_GM.GetQuartermasterPrefab(RZ_EFaction.SURVIVORS), RZ_Looks.SeedAt(h.m_vPos)), RZ_Mission.LandPointNear(h.m_vPos, 1, 4), Math.RandomFloat(0, 360));
 			if (qm)
 			{
 				h.m_aBodies.Insert(qm);
@@ -1288,12 +1292,10 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected ResourceName PickOccupantPrefab()
+	//! One of the occupant prefabs by the seed (the house and the row), so the same row wears the same clothes.
+	protected ResourceName PickOccupantPrefab(int seed)
 	{
-		if (m_Settings.m_aOccupantPrefabs && !m_Settings.m_aOccupantPrefabs.IsEmpty())
-			return m_Settings.m_aOccupantPrefabs.GetRandomElement();
-
-		return m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+		return RZ_Looks.PickFrom(m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN), m_Settings.m_aOccupantPrefabs, seed);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{97790C6BB5E668B5}Prefabs/ReforgerZ/People/Haven/RZ_Occupant_Haven_Dungarees.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

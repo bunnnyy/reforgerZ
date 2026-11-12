@@ -1,0 +1,26 @@
+SCR_ChimeraCharacter : "{8F825525789BA7B8}Prefabs/ReforgerZ/Factions/RZ_QM_RedHand.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{5D7350496AEA24C8}Prefabs/Characters/HeadGear/Hat_RadiovkaBeret_01/Hat_RadiovkaBeret_01_black_Dirty.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{3DA87A330B897C58}Prefabs/Characters/Uniforms/Sweatshirt/Sweatshirt_Red.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{A858DFF9316E3075}Prefabs/Characters/Uniforms/Pants_Jeans/Pants_Jeans_02.et"
+    }
+   }
+  }
+  SCR_InventoryStorageManagerComponent "{520EA1D2DB118DE5}" {
+   InitialInventoryItems {
+    ItemsInitConfigurationItem "{5D7CC173FAA7C00C}" {
+     TargetStorage "Jacket/Sweatshirt_Red.et"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

@@ -1,0 +1,19 @@
+SCR_ChimeraCharacter : "{6A06892169C48E4F}Prefabs/ReforgerZ/Territory/RZ_Occupant_Haven.et" {
+ ID "520EC961A090B1EE"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Prefab "{554D761A11D3D7EC}Prefabs/Characters/HeadGear/Hat_TruckerCap_01/Hat_TruckerCap_01_sawmillregina.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{C717AE6CBE1C162E}Prefabs/Characters/Uniforms/Overalls/Denim_overalls2.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab ""
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

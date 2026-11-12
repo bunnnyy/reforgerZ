@@ -1575,7 +1575,13 @@ class RZ_QM_AuthorsStand : RZ_QM_HalcyonScene
 		if (prefab.IsEmpty())
 			return false;
 
-		IEntity e = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(pos), Math.RandomFloat(0, 360));
+		// A faction group gets one of its slot's looks (People's looks); anything else is itself
+		ResourceName look = prefab;
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm)
+			look = gm.PickLook(prefab, RZ_Looks.SeedAt(pos));
+
+		IEntity e = RZ_Util.SpawnPrefab(look, RZ_Util.GroundPos(pos), Math.RandomFloat(0, 360));
 		if (!e)
 			return false;
 
