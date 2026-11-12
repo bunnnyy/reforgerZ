@@ -2734,7 +2734,7 @@ when it happens)
   loudspeaker has the loudspeaker and no arrow. A wanderer with no faction has a grey name. With
   **Subtitles** off, they're cards again.
 - [ ] Radio voices: on a wind-up radio near a faction's town (or with a cracked channel), the
-  faction's chatter ("Radio: Bastion net") shows in the box at the top left under the tracker, the
+  faction's chatter ("Radio: Bastion net") shows in the box at the top centre, the
   channel's name in dim italics, never at the bottom centre and not as a card; it's in the notebook's
   Radio tab. A plain "Radio" notice (no power, nothing in range) and the government broadcast stay
   cards. With the tracker and the radio indicator both showing, nothing overlaps; on a TV every line
