@@ -172,7 +172,8 @@ road. We lost. The book says we're square."*). **Residents**: half their lines i
 the route that controls the cure (eight a route). **The radio**: the Haven channel answers the Last
 Broadcast the evening after it airs (*"Mine's in a car on the north road."*). *Simplified:* the
 topics are leader choices, not a dialogue tree; no secure-channel lines for Radio Operators; the reel
-isn't spread one a season day.
+isn't spread one a season day. With **Dialogue > Trees** on, every leader also has "Ask about the cure."
+and "Ask what they'll do now.", and the occupants a greet for the week ([DIALOGUE.md](DIALOGUE.md#the-last-week)).
 
 ### The evening calendar
 

@@ -98,6 +98,36 @@ class RZ_ReputationSettings
 	[Attribute("1", desc: "Settling up: Make amends at a quartermaster also takes 10 Fame for 5 Infamy, at most 10 Infamy a real day per faction, from the forgiveness budget")]
 	bool m_bSettling;
 
+	[Attribute("2", UIWidgets.Slider, "Parley: real hours between two hearings with one faction, by identity", "0.5 24 0.5")]
+	float m_fParleyHours;
+
+	[Attribute("1000", UIWidgets.Slider, "Parley: closed while a squad or fight of that faction has you within this distance (m)", "200 3000 50")]
+	float m_fParleySquadRadius;
+
+	[Attribute("150", UIWidgets.Slider, "Parley: only alone: no other player within this distance of the gate (m); their arrival or fire pauses it", "30 400 10")]
+	float m_fParleyAloneRadius;
+
+	[Attribute("200", UIWidgets.Slider, "Parley: the hold lasts while you're within this distance of the gate (m)", "50 500 10")]
+	float m_fParleyHoldRadius;
+
+	[Attribute("90", UIWidgets.Slider, "Parley: seconds the hold lasts walking in, and walking away", "30 300 10")]
+	float m_fParleyWalkSeconds;
+
+	[Attribute("10", UIWidgets.Slider, "Settling up: Fame it takes", "2 40 1")]
+	int m_iSettleFame;
+
+	[Attribute("5", UIWidgets.Slider, "Settling up: Infamy it works off", "1 20 1")]
+	int m_iSettleInfamy;
+
+	[Attribute("10", UIWidgets.Slider, "Settling up: at most this much Infamy a real day per faction", "1 30 1")]
+	int m_iSettleDayCap;
+
+	[Attribute("1", desc: "Gate barks: a holding's gate, a road post or a safehouse door says one line about what it makes of you within 25 m, on your first visit this life or a new name or best deed there (never in someone else's kit, never Hostile)")]
+	bool m_bGateBarks;
+
+	[Attribute("1", desc: "Others hear: at notoriety 3, in your own colours, other players within 30 m of the gate hear the bark too, once per 10 minutes per place, under the names policy")]
+	bool m_bOthersHear;
+
 	protected static ref RZ_ReputationSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -318,6 +348,7 @@ class RZ_RepNames
 //! CheckTierChange. A log line on every cell change: "Reputation: <player> <faction> <name> (<tier>)".
 class RZ_RepWatch
 {
+	protected ref RZ_RepGates m_Gates;
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<string, float> m_mPendingAt = new map<string, float>();	// "playerId:f" -> clock when the new cell appeared
 	protected ref map<string, float> m_mToldAt = new map<string, float>();		// "playerId:f" -> clock of the last name notice
@@ -327,6 +358,7 @@ class RZ_RepWatch
 	void RZ_RepWatch(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
+		m_Gates = new RZ_RepGates(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -374,6 +406,7 @@ class RZ_RepWatch
 	void Tick(float dt)
 	{
 		m_fClock += dt;
+		m_Gates.Tick(dt);
 		if (m_mPendingAt.IsEmpty())
 			return;
 
@@ -431,7 +464,17 @@ class RZ_RepWatch
 		if (!voiced.IsEmpty())
 			text = voiced;
 
-		m_GM.NotifyPlayerAs(playerId, RZ_Factions.GetName(faction), text, RZ_ENoticeTag.HIGH);
+		// Said by one of theirs when one is close (Trees on), else the faction's notice
+		RZ_Leader near;
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!voiced.IsEmpty() && me && m_GM.GetLeaders())
+			near = m_GM.GetLeaders().FindNearest(faction, me.GetOrigin(), 30);
+
+		if (near && near.m_iHeldBy < 0)
+			m_GM.Say(playerId, near.GetHeader(), faction, text);
+		else
+			m_GM.NotifyPlayerAs(playerId, RZ_Factions.GetName(faction), text, RZ_ENoticeTag.HIGH);
+
 		RZ_Guidance guide = m_GM.GetGuidance();
 		if (guide && RZ_RepNames.IsMixed(cell))
 			guide.Fire(playerId, "mixed", RZ_Factions.GetName(faction), RZ_RepNames.GetName(cell));

@@ -71,6 +71,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 **Engine checks**
 - 2026-11-12 17a4c83: check all 101 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers; and now the lab's named children, `IsUnconscious()` in the clean room, the Walk Out's land-edge fallback and the scenes' car clearance.
 - 2026-11-11 76b52d0: the epilogue's Walk Out kills and deletes the character. Check that the player lands back on the spawn screen cleanly (new VERIFY).
+- 2026-11-12 7c2f323: can the dedicated server open a file inside the addon with `FileIO` (for example `dialogue/radio/open.rzd`, read-only)? Report "yes" or "no, <the error>": it decides whether conversations are read from `.rzd` files at start (designs/DIALOGUE.md).
 - 2026-11-12 b0b0090: measure a player's real run and sprint speed in m/s (the code assumes about 4 and 5.5: VERIFY) and Bacon's run and sprint speed; the young's sprint is tuned to about 10% faster than a sprinting player (WBS §6).
 
 ## For the cloud

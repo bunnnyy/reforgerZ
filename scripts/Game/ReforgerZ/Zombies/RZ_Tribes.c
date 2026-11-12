@@ -2851,7 +2851,10 @@ class RZ_Tribes
 		{
 			int stage = t.Stage();
 			if (!silent)
+			{
 				m_People.OnLeaderKilled(t, at);
+				RZ_RepVoice.PackLeaderDown(m_GM, at);
+			}
 
 			StartVigil(t, at);
 			if (!silent && PlayerWithin(at, 150) && !Cured() && t.m_iAlphaSamples < 3 && stage > 0)

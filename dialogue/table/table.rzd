@@ -22,7 +22,7 @@ node alone
 
 node expected
   say "Then you'd best be on your way before the light goes. People worry. Come another day, with them."
-  do claim:expected
+  do claim:expected; test:expected:20.5:300
   > @thanks "Thanks for the road." -> hub
 
 node passing
@@ -55,3 +55,30 @@ node bitten
 node boy
   say "He came with the others. He's ours now. He eats what he's given."
   > @back3 "Something else." -> hub
+
+# The host on the road speaks first (docs/DIALOGUE.md, "Who opens a conversation"): at 12 m, once a
+# life, inside the unasked-contact budget. Nothing is ever described.
+conv table.road.hello
+for table:road
+when !table:crossed
+greet
+opens approach 12
+prio quest
+once
+voice table
+
+node start
+  say "Hello there. Don't mind me. Sit, sit, you look thin. Where've you come from?"
+
+# A claim the family tests (docs/DIALOGUE.md, "Lies you're told"): "They're expecting me back by
+# dark" is checked at 20:30. Still within 300 m of the road it was said on, it wasn't true.
+conv table.road.still_expected
+for table:road
+when nmem:expected.false & !table:crossed
+greet
+prio reaction
+once
+voice table
+
+node start
+  say "Still expected, are you? Never mind, love. Supper's at half six. There's always room."

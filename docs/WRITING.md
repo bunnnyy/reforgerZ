@@ -4,10 +4,8 @@ How every line of player text in ReforgerZ is written: the tone, the voices, the
 follows, and the lint that checks them. Who the factions are as people, and the setting they speak
 from, is in [LORE.md](LORE.md). The epilogue week's lines (route and terms, the lab, the queue,
 the leaders' verdicts, residents, the road, the open channels) are in
-`Director/Epilogue/RZ_EpilogueText.c` ([EPILOGUE.md](EPILOGUE.md)). The running jokes on the channels,
-the race lines and pitches on air, the radio's pools and joke memory, grief's other sources and the rest
-of the epilogue's variants are designed in
-[designs/TONE.md](../designs/TONE.md) and not built yet.
+`Director/Epilogue/RZ_EpilogueText.c` ([EPILOGUE.md](EPILOGUE.md)); a leader's opener in the week is
+built from parts here (below).
 
 ## Contents
 
@@ -21,6 +19,7 @@ of the epilogue's variants are designed in
 - [The voice bank](#the-voice-bank)
 - [Conversations](#conversations)
 - [The race and the lock](#the-race-and-the-lock)
+- [The epilogue week](#the-epilogue-week)
 - [Faction kit and disguises](#faction-kit-and-disguises)
 - [Grey choices](#grey-choices)
 - [Phrasing choices and outcomes](#phrasing-choices-and-outcomes)
@@ -173,9 +172,10 @@ so it works at any season speed, and adds no simulation. The ladder, first match
   only: a restart starts from the ladder.
 - **Temper.** Each faction's morale moves its own lines one step: bleaker below 30 (back above 38),
   lighter above 75 (back below 67). Steps run Hope/Early, Grim, Bleak; the Epilogue isn't shifted.
-- **Grief** (`RZ_ToneGuard`): after a leader's or wanderer's death, no wry or joke line is said face
-  to face within 1.5 km for 10 minutes; after a death in a safehouse, 30 minutes. The faction's
-  radio quiet is kept too, for when the radio's pools move into the bank.
+- **Grief** (`RZ_ToneGuard`): after a leader's or wanderer's death, a lost truck crew, a fallen Haven
+  Champion (Remembered) or a player who turned, no wry or joke line is said face to face within
+  1.5 km for 10 minutes; after a death in a safehouse, 30 minutes. The faction's own open channel
+  goes plain for 20 minutes too, the same for everyone (the radio's tails read it).
 - Debug: **Voice > Force mood**; the log line `Voice: season mood <mood> (was <mood>)`.
 
 ## The voice bank
@@ -218,9 +218,33 @@ optional condition in the conversation syntax (`cure>=50`), a weight and the tex
   `{crew}` (reputation's tokens).
 - **Nobody jokes with a player their leader refuses:** at a seat whose leader holds you at −2 or
   below, the bank picks only plain lines.
-- *Not built yet:* the radio's pools, rumours and chatter in the bank, the shared channels' joke
-  memory, and the running jokes on the open channels (the nightly kettle line on air)
-  ([designs/TONE.md](../designs/TONE.md)).
+- **The open channels** (`radio_tail`, `RZ_VoiceBank.PickShared`): a faction's chatter can end with
+  one short line from the bank, **picked once for everyone who hears it** (no listener, no personal
+  memory). Its joke share is the lower of the channel's (about 1 in 4) and the faction's mood after
+  temper; the Red Hand's never drops below 1 in 5, except in grief; a channel in grief is plain for
+  20 minutes. **The channel's own joke memory:** a joke it aired in the last 6 real hours isn't aired
+  again (runtime only). Feud and truce lines on the channels read `truce:` and `feud:` (*"We're friends
+  with Bastion this week. Hide the good tins."*).
+- **Running jokes on the open channels:** the Red Hand's kettle for Bastion (*"Still waiting for
+  relief? We'll keep the kettle on."*) runs while `orders.stance` is unset or 1 and is retired once
+  Bastion stops waiting; in the epilogue, if the CO closed the net, *"Bastion's net's gone quiet.
+  Nobody left to laugh at."* The toll sign is in a new hand once the book burns or its debts die, and
+  its joke stops (*"A new sign, in someone else's hand: TOLL 10. No joke under it this time."*).
+  Bastion's *"No reply."* on the nightly call is plain, always: it's a fact.
+- **The wanderers' greeting** (`wanderer`, Trees on): what they remember of you this life first
+  (saved, helped, wronged: a wronged one never jokes with you), else the manner of your Haven standing;
+  the Deserter reads Bastion's reversed (`wanderer_deserter`: who Bastion hunts, he warms to).
+- **A new life on a locked route:** a leader of your route says *"Somebody said you're with us."* (a
+  `route` line with `fresh`: this life under an hour of play).
+- **The epilogue week's opener** is built from parts so every ending has plenty of plain lines: what
+  the ending is to the speaker's faction (eight endings: each route, the Independent, the slow cure,
+  handed over, no cure), then where you stood (on the route that won, on another, on none), then, one
+  time in two, the place's own beat. Plain, never a joke; the first visit each real day
+  (`RZ_RepVoice.EpilogueOpener`).
+- **Earned colours say whose you are:** at a gate, a guard who sees a rival's colours you earned (the
+  amber ribbon, the red armband, armour bought at Trusted or Champion) makes one plain remark, once a
+  visit, saying only what their hostility already does (*"Red Hand's colours at a Bastion gate. Bold.
+  You're on the list. So are the colours."*).
 
 ## Conversations
 
@@ -289,8 +313,35 @@ anyone's route.
 | **After the cure** | The losing route's own leaders give one plain line, no blame (`route:lost & route:haven`); the winners say theirs to a loser (`flag:finale.route`): the Haven gracious, Bastion files them, the Red Hand *"No hard feelings. Some soft ones."*, Halcyon objections on page two. Never on air, never with a name |
 
 The lock ends at the cure: `route:in`, `out` and `independent` are the locked weeks only. The
-pitches, the admissions and the race lines on air are the finale's and the channels'
-([FINALE.md](FINALE.md), [designs/TONE.md](../designs/TONE.md)).
+pitches, the admissions and the race lines on air are the finale's ([FINALE.md](FINALE.md)). The
+Independent's commit on air is said without a name: *"This is nobody. The cure goes to everyone."*
+
+## The epilogue week
+
+The epilogue's places, props and closing work are [EPILOGUE.md](EPILOGUE.md)'s; these are the rules for
+their lines.
+
+- **Shared text is picked once, on the server, for everyone** (the broadcast, the channels, headlines,
+  boards, marks): two players standing together hear the same words, and it never depends on one
+  listener's route, standing, kit or jokes heard. Face-to-face text is picked per player.
+- **One line per place**, in its owner's voice, pointing at something from this season, not only at
+  the winner; at most one wry line per place. The Red Hand is still the funniest. A Long Table that
+  lasted the season unfound gets no line: its farm is just quiet.
+- **Never contradict the facts.** Until processing the barriers stay closed and nobody has gone home;
+  in processing people walk out at the north road one at a time, and nothing past the barrier is ever
+  shown or said. What the outside says after the cure is only the loudspeaker's new order, *"Leave it
+  on the table. Step back. It will be processed with you."* at the paper's table, and *"Name?"* at the
+  north road. Never a reply to anyone.
+- **Every ending has lines:** each route that controlled the cure, the slow cure (relief with an
+  edge: everyone claims a share, nobody fought for it), handed over (the slow cure's lines with that
+  faction's name), and no cure (no wry lines but the Red Hand's last; the Haven reads names).
+- **Players are named only in honour lines**, from the hall's records or the frozen record, in the
+  name as it was at the deed; a name the filter would change is "a stranger", never asterisks;
+  `/anonymous` and the admin strike are honoured.
+- **The closing work speaks in the same voices.** A rushed or bitter ending is said plainly, never as a
+  punchline; a walk-out is a goodbye.
+- **A stronghold leader never jokes about their own page.** Once a page is in the open, rivals may
+  gossip about it plainly, never as a joke.
 
 ## Faction kit and disguises
 
@@ -439,6 +490,12 @@ outcome.
 - **Ambient notices never reuse a questline clue's text.** The Census's curfew sheet stays a clue.
 - **Seeded names never collide with LORE's named people.** Halas and Tomas (the Long Table), Alena
   and Ivo (Bastion's dead and its signaller) and the like are kept out of the seed lists.
+- **The players' tokens** are filled per listener and never go on air: reputation's `{rep}`, `{word}`,
+  `{best}`, `{worst}`, `{crew}`, `{name}` and their `:<faction>` forms, and in conversations `{cover}`,
+  `{kit_owner}`, `{claim:...}`. The packs' tokens (`{tribe:N}`, `{alpha:N}`, `{young:N}`, and `{pack}` in
+  conversations) say each speaker's own word.
+- **The Walk Out is a goodbye, never a joke.** Nothing past the barrier is shown or said; *"Name?"*
+  is all the outside says.
 
 ## Names in shared text
 
@@ -463,6 +520,10 @@ call, tracks, the life cycle's lines and headlines, [INFECTED.md](INFECTED.md)).
 - **The young are someone.** Use their names gently; a player's character is described in public text
   unless the server allows the name. Leaders' names are seeded: no pronouns for them (the template
   rules), so a line uses the name again.
+- **Each speaker's word, always with the place:** the Haven names a pack's leader by who it was, or
+  "the big one" when nobody knew; Bastion says "contact" and "the heavy"; the Red Hand a crew
+  nickname for the pack and "the boss" for its leader; Halcyon a pack number and "the index"
+  (`{pack}` and `{pack_leader}` in conversations).
 - Only the Red Hand jokes about them. Halcyon never says "him" or "her". The Haven never puts "walked
   out" and "taken" in the same sentence. At the dusk meal the Haven reads its dead, and at the same
   hour the leaders call theirs: writers can use that, but never say it.

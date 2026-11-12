@@ -105,7 +105,8 @@ their own (**Reputation > Names**, on; off shows the tier words only).
 
 ### What people call you
 
-✅ Code: `Factions/RZ_RepVoice.c`. A name opens nothing: every rule still reads the tier. What's
+✅ Code: `Factions/RZ_RepVoice.c`; the gate barks, others hear and the bounty's words in
+`Factions/RZ_RepNamesGates.c`. A name opens nothing: every rule still reads the tier. What's
 said aloud (the openings, what they make of you, the picture) is said only with **Dialogue > Trees**
 on ([DIALOGUE.md](DIALOGUE.md)); the word and crew names are kept either way.
 
@@ -153,10 +154,13 @@ you; until then you're "new face" (**Reputation > Crew names**, on).
 | Had three things taken at one Bastion search | Pockets |
 | Killed one of theirs, then did a Red Hand job the same season day | Sorry |
 
-Bailiff (a pack's leader laid down) waits for the tribes, and Smoke (a signal smoke thrown) for a
-throw hook; the majors' and Name Day's names are planned
-([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)). Log line:
-`Reputation: crew name <name> for <player>`.
+| Laid a pack's leader down (the nearest player within 150 m when it falls) | Bailiff |
+
+The Name Day card's dares give theirs ([ERRANDS.md](ERRANDS.md#the-cards)). A pack's leader laid down
+is also a deed in each faction's own words, unless a bigger one stands: "laid the big one down at its
+lair" (the Haven), "put the heavy down" (Bastion), "evicted the boss up the hill" (the Red Hand),
+"brought in the index" (Halcyon). Log lines: `Reputation: crew name <name> for <player>`,
+`Reputation: <player> laid a pack's leader down`.
 
 **What they make of you.** With Trees on, a leader's **What do you make of me?** is one template
 per faction in four variants (both deeds, best only, worst only, neither), then what the leader
@@ -172,7 +176,9 @@ remembers of this life, then the rule in brackets:
 "(The Haven: Useful Trouble - counts as Known. Fame 46, Infamy 22. 30 of 30 left to forgive.)"
 
 **The opening.** With Trees on, a leader greets someone they've met with one line, the first that
-exists: at a Haven seat, once a life, kin of a fallen Champion are greeted as family; a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
+exists: the **crossing opener**, once a life per leader, at a seat of the faction a major was about
+when you were one of those who decided its ending (*"The Closed Book. That was you. The book's got a
+line about it, in red."*); at a Haven seat, once a life, kin of a fallen Champion are greeted as family; a **local deed** at this seat ("You're the one who brought medicine to Levie.", written when
 you finish that leader's personal job); this life's memory (saved: "Here's the one I owe. Sit
 down."; crossed: "You. I remember."); the **name from an earlier life**, once per leader per life
 ("There was a Lukas who crossed me once. Different face. Same name. Should I be worried?"); a
@@ -189,7 +195,30 @@ greeting.
 **The change notice in voice.** With Trees on, a new name is told in the faction's voice (the voice
 bank's `change` lines, by manner), with the rule in brackets: *"Your file's been updated. Useful
 Trouble. Initialled. (Useful Trouble - counts as Known)"*; for the Hunted, "(Hunted: their people shoot
-you. They still owe you a hearing at a gate.)" when they're owed. Without a line, the plain notice.
+you. They still owe you a hearing at a gate.)" when they're owed. With a leader of that faction within
+30 m, the leader says it (a subtitle); else it's the faction's notice. Without a line, the plain notice.
+
+**Gate barks** (**Reputation > Gate barks**, on). At a holding's gate, a road post or a safehouse door,
+within 25 m, the place says one line about you, only on a change: your first visit this life, or a new
+name or best deed with that faction since the last bark there (*"Here's the one who carried a family
+into Levie. Mind the step."*; *"Known again. Something's changed about you."*). From the place, never
+a body, so it never gives away a lookout you can't see; never while you're in someone else's kit,
+never in the Hostile manner; once per place per session (the approach lane). **Others hear**
+(**Reputation > Others hear**, on): at notoriety 3, in your own colours, other players within 30 m of
+the gate hear it too, once per 10 minutes per place for everyone (*"Someone at the gate nods at Mara.
+..."*), under the names policy ("that one" for the anonymous). Log line: `Reputation: gate bark at
+<place> for <player>`.
+
+**On the standing page** the word is what each faction calls you to your face, and for the owed the
+tier's note reads *"Hunted - they owe you a hearing"* (the feed's `F` record carries the word and the
+owed flag).
+
+**Bounty notices** carry the target's name with the Red Hand and a dry note for the owed: *"The Red
+Hand board: 40 Favor on Mara, Merciful Thug. The book says they're owed, too."*
+
+**Deed phrases** beyond the contracts' own: firing at a house (*"fired at the door in Levie"*), killing
+or robbing a wanderer (*"shot Old Marta, who walked the roads"*, *"robbed the Trader on the road"*),
+and shooting the farm's people (*"shot a farmer who'd done nobody any harm"*).
 
 **The whole picture** (`RZ_RepVoice.Picture`): the two factions that know your name best, in a
 wanderer's voice: "Word is you're the Haven's Champion and Bastion's Bad News. I'll believe the
@@ -243,9 +272,10 @@ to Bastion": the title with the faction you stood highest with), `RouteAtLock`, 
 `LockCell`, `CrewName`, `WarDeed`, `Kills`, `Jobs`, `WorkedOff`, `NameOf`, and `IsSquare` (the last
 Infamy seen with them is under 15). Log line: `Reputation: season record: <player> locked to <route>`.
 
-*Simplified:* the deeds kept are the ones standing when the best and worst cells were reached, not
-the biggest across every life; square doesn't read the Red Hand's book yet. The epilogue reads it for
-titles ([EPILOGUE.md](EPILOGUE.md#at-the-cure)).
+`SeasonDeed` is the deed that stood at the best (or worst) cell; `BiggestDeed` the biggest across
+every life this season (the season's deeds store). Square with the Red Hand also means no unpaid line
+in its book (a dose on credit, the finale's price door) until the epilogue's *Pay into the book* marks
+it paid. The epilogue reads it for titles ([EPILOGUE.md](EPILOGUE.md#at-the-cure)).
 
 
 ### Small pay and switched sides
@@ -440,8 +470,9 @@ count ×1.2, never the total), then what's left of the budget:
 | **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more | at most 15 of the 30, once every 30 minutes, never below 15 (the Watched line). Kill on Sight: refused |
 | **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy | once an hour, by identity |
 | **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a life per faction from errands, never below 15 |
-| **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame | at most 10 a real day per faction. Spent Fame is gone: it can drop your band and your tier |
+| **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame, the stronghold leader's temper counting as on amends | at most 10 a real day per faction; closed with a faction whose route is fighting yours after the 90% lock. Spent Fame is gone: it can drop your band and your tier |
 | **Parley amends** | The owed, at a gate ([below](#the-parley-and-the-knock)): one amends contract reserved for 60 minutes though they're Hunted | the contract's Fame, as Infamy off | one offer per parley |
+| **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *"What would it take?"* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this life) is cleared, once a season per leader |
 
 **When the budget is spent:**
 - An amends contract pays its Fame as ordinary Fame, rival shares and all: "Bastion has forgiven you
@@ -454,8 +485,8 @@ player and a mixed one are treated the same. Every forgiveness is logged. The ep
 *Pay into the book* at Rudi's crossroads works off 5 Red Hand Infamy through it, and **square** with
 all four (Infamy under 15 with each, no unpaid line in the book) is checked at processing and the
 wipe for the hall's line ([EPILOGUE.md](EPILOGUE.md#the-closing-work)); its dose outlets read standing,
-never clothes. The later routes (the epilogue's Come In and the finale's Hand it in) are planned and
-will draw on the same budget ([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
+never clothes. The epilogue's **Come In** (an errand card, [ERRANDS.md](ERRANDS.md)) works off 2 Infamy
+through it too. *Simplified:* the finale's "Hand it in at a checkpoint" takes no Infamy off.
 
 ## Checkpoints, roadblocks and camps
 
@@ -548,7 +579,9 @@ or Halcyon's lab or field-station gate, an owed player gets one hearing instead 
 within 1 km; another player is within 150 m of the gate; this identity parleyed with that faction in
 the last 2 real hours (server time: a reconnect or a restart resets nothing). **Breaks:** arming
 yourself, firing, coming back past the barrier, a squad closing in ("They've got friends coming. So
-have we."). **Pauses:** another player arriving within 150 m ("Back off. We're talking."). Elsewhere
+have we."). **Pauses:** another player arriving within 150 m ("Back off. We're talking."), or anyone
+else's fire within 150 m of the gate (20 s, and the shooter takes that faction's grudge). That faction's
+hunter squads skip you while it runs, and no threat is made through talk during one. Elsewhere
 that faction's AI still shoots you, and player-against-player damage is unchanged. *Simplified:* the
 engine's hold is faction-wide; it's made local only by its conditions.
 

@@ -633,8 +633,9 @@ routes' marks down at the first dusk, the outlets on `finale.terms`.
 ## Simplified, and not built yet
 
 *Simplified:* the commit node needs **Dialogue > Trees** (off by default): with Trees off the desks
-take the names; the Independent commits at the Doctor or the Courier on the road, not on the open
-channel; `CanSideWith` is the finale's own (unless Hunted, owed, or the price door); assets come from the
+take the names; the Independent commits at the Doctor or the Courier on the road, or on the open
+channel from any radio that can call ([DIALOGUE.md](DIALOGUE.md#the-finales-commit)); `CanSideWith` is the
+one rule (unless Hunted, owed, or the price door); assets come from the
 story records listed above and the jobs that tag them by hand, and an Ally doesn't open doors or carry
 items; the drain at a source is immediate (the container's is 20 s); the route's other ways are choices
 on its scenes, with no escort carries, no announced carry every 10 minutes, no Bottles, no volunteer by

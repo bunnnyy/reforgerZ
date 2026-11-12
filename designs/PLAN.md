@@ -9,7 +9,9 @@ everywhere: errands' core, the mission style's framework, the world memory's wri
 [ERRANDS.md](../docs/ERRANDS.md) and [DESIGN.md](../docs/DESIGN.md#story-blocks). Phase 2 (talk: dialogue's
 trees on the talk screen behind **Dialogue > Trees**, reputation's voice, tone's season mood and voice bank) is
 built and lives in [DIALOGUE.md](../docs/DIALOGUE.md), [REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)
-and [WRITING.md](../docs/WRITING.md#the-season-mood). Phase 1 (the shared engine and
+and [WRITING.md](../docs/WRITING.md#the-season-mood), and so are the last pieces of talk, reputation's names and
+tone; what's left of those three waits for an engine check or another session's code
+([DIALOGUE.md](DIALOGUE.md), [REPUTATION_NAMES.md](REPUTATION_NAMES.md), [TONE.md](TONE.md)). Phase 1 (the shared engine and
 reputation's names) is built and lives in [DESIGN.md](../docs/DESIGN.md#the-shared-engine) and
 [REPUTATION.md](../docs/REPUTATION.md#reputations); the one body budget lives inside the tribes' agent budget
 ([INFECTED.md](../docs/INFECTED.md#the-one-body-budget)).
@@ -179,7 +181,7 @@ and nothing in the week changes them.
 | **Take Back a Town** | Crawlers no longer refill, so a town cleared stays cleared. A candle in a window for each | INFECTED.md (no refill, no rise), EPILOGUE.md (the candles) | Each town is its own small finish. At most 8 towns get an epilogue mark |
 | **The Long Table** | If it was never exposed: the family's last week. Find it out, or watch them pack the jars and leave | EPILOGUE.md, on the built Long Table | Found, or gone by processing. Never described; no ambient line hints at it |
 | **The Walk Out** | The Perimeter stands down. Escort people to the north road barrier. Your character can walk out for good, retired with a hall-of-fame line | EPILOGUE.md | Escorts only while `PerimeterSealed()` is false; never the same hour as a coda at the barrier |
-| **Settle Accounts** | Clear bounties, pay what you owe the book, give back borrowed kit, make amends | [REPUTATION_NAMES.md](REPUTATION_NAMES.md#14-the-last-week-settling-accounts), ERRANDS.md (Come In), MAJORS.md (lines marked "Paid" at the last line) | Through `Forgive()` and its budget; open promises get a closing line |
+| **Settle Accounts** | Clear bounties, pay what you owe the book, give back borrowed kit, make amends | [docs/REPUTATION.md](../docs/REPUTATION.md#working-off-infamy), ERRANDS.md (Come In), MAJORS.md (lines marked "Paid" at the last line) | Through `Forgive()` and its budget; open promises get a closing line |
 | **The Last Broadcast** | Decide what the radio station tells the outside about the season: the names, the three weeks, the truth | EPILOGUE.md, with DIALOGUE.md (radio) and WRITING.md (one line for everyone) | A tally, closed before processing; no player names on air except honour lines |
 | **Personal Goals** | Each background's goal gets a finisher | EPILOGUE.md, on the built backgrounds | One errand-sized finisher per background |
 | **The Last Entry** | Write your own line on the memorial board | EPILOGUE.md, with the names policy | Any time in the week; filtered, and `/anonymous` is honoured |

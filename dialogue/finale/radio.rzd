@@ -1,0 +1,27 @@
+# The Independent route on the open channel (docs/FINALE.md, "The lock"; docs/DIALOGUE.md, "The
+# finale's commit"): said on air without a name, from any radio that can call. Every faction hears
+# that somebody said it (a rumour on the roads), never who. The finale decides who may commit.
+
+conv finale.route.independent
+for radio:open
+when finale:open & route:none
+topic "Speak about the cure."
+always
+prio quest
+voice plain
+
+node start
+  say Static, then a click. "...open channel. Go ahead."
+  > @all "This is nobody. It goes to everyone." -> card
+  > @off "Switch off." -> hub
+
+node card confirm
+  say Once it's on the air, every faction hears that somebody said it. Nobody hears who.
+  > @say "Say it." -> said   do commit:indep
+  > @off2 "Switch off." -> hub
+
+node said public
+  say "This is nobody. The cure goes to everyone. No crates, no lists."
+  say A long pause. Then a woman, a long way off: "Heard you. {here} heard you, anyway."
+  do rumour:"Someone on the open channel says the cure goes to everyone. No crates, no lists."@12
+  > @out "Out." -> hub

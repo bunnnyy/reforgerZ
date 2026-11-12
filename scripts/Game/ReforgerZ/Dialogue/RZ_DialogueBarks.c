@@ -7,9 +7,6 @@
 //! anyone, none from someone who refuses you; `once` barks once a life per speaker. Server only.
 class RZ_DialogueBarks
 {
-	protected static const float RADIUS = 6;
-	protected static const float PER_PLAYER = 60;
-	protected static const float PER_SPEAKER = 600;
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_DialogueTrees m_Trees;
@@ -41,7 +38,7 @@ class RZ_DialogueBarks
 		{
 			int pid = ids[i];
 			float last;
-			if (m_mLast.Find(pid, last) && m_fClock - last < PER_PLAYER)
+			if (m_mLast.Find(pid, last) && m_fClock - last < RZ_DialogueSettings.Get().m_fBarkPerPlayer)
 				continue;
 
 			if (dialogue.GetSession(pid))
@@ -67,7 +64,7 @@ class RZ_DialogueBarks
 	protected bool TryNear(int pid, IEntity me)
 	{
 		m_aFound.Clear();
-		GetGame().GetWorld().QueryEntitiesBySphere(me.GetOrigin(), RADIUS, OnEntity, null, EQueryEntitiesFlags.DYNAMIC);
+		GetGame().GetWorld().QueryEntitiesBySphere(me.GetOrigin(), RZ_DialogueSettings.Get().m_fBarkRadius, OnEntity, null, EQueryEntitiesFlags.DYNAMIC);
 		while (!m_aFound.IsEmpty())
 		{
 			int best = 0;
@@ -119,7 +116,7 @@ class RZ_DialogueBarks
 
 		string ident = m_GM.GetProfile(pid).m_sIdentity;
 		float said;
-		if (m_mSpeaker.Find(ident + "|" + ctx.m_sKey, said) && m_fClock - said < PER_SPEAKER)
+		if (m_mSpeaker.Find(ident + "|" + ctx.m_sKey, said) && m_fClock - said < RZ_DialogueSettings.Get().m_fBarkPerSpeaker)
 			return false;
 
 		array<RZ_DConv> all = {};

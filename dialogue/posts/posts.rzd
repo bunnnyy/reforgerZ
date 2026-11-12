@@ -45,7 +45,17 @@ node start
   > @pay "Pay the toll." -> paid   if tier:redhand>=known   do call:toll
   > @move "Move the car out of my way." -> moved | laughed | laughed   check threaten redhand 2
   > @rudi "Is this Rudi's road?" -> rudi
+  > @sent "Rudi sent me." -> waved | rudi_lie   check lie redhand 2   tell always
   > @walk "I'll walk round." -> hub
+
+node waved
+  say "Did he. Off you pop."
+  > @back4 "Something else." -> hub
+
+node rudi_lie
+  say "Rudi was bitten. Day 7. Everybody knows that. Nice try."
+  > @pay3 "Pay the toll." -> paid   if tier:redhand>=known   do call:toll
+  > @round2 "Walk round." -> hub
 
 node paid
   say "Pleasure doing business. Mind the potholes. Some of them are people."

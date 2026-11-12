@@ -1,0 +1,94 @@
+# The bitten (docs/DIALOGUE.md, "The bitten, the clock and what you carry"). [Bitten] topics show only
+# while the HUD shows a bite. Telling a safehouse is its own built service; nothing here reads whether
+# a cleaned bite took. Saying you're not bitten while it shows is a lie, and its tell is the symptoms.
+
+conv occupant.bitten.declare
+for occupant
+when bite_shown & !declared
+topic "[Bitten] Tell them about the bite."
+prio quest
+voice haven
+
+node start
+  say "Show me. Go on. Nobody here is going to shout."
+  > @tell "Here. It's a bite." -> told   do call:declare_bite
+  > @fine "It's nothing. A scratch off a fence." -> fine | caught   check lie haven 2   found nset:hid_bite
+  > @back "Not now." -> hub
+
+node told
+  say "Thank you for saying it out loud. Most don't. Sit by the door, where it's cooler."
+  > @back1 "Something else." -> hub
+
+node fine
+  say "A fence. Right. Keep it covered, then, and keep it clean."
+  > @back2 "Something else." -> hub
+
+node caught
+  say "That's not a fence. I've seen enough of them now. Let me write it down, at least."
+  do call:caught_bite
+  > @tell2 "All right. Write it down." -> told   do call:declare_bite
+  > @back3 "Leave it." -> hub
+
+conv occupant.bitten.found
+for occupant
+when nmem:hid_bite
+greet
+prio reaction
+once
+voice haven
+
+node start
+  say "You told us it was a fence. It wasn't. Next time, say it at the door. We'd have helped."
+
+conv halcyon.bitten.trial
+for leader:halcyon, named:halcyon
+when bite_shown
+topic "[Bitten] Ask about the trial dose."
+prio quest
+voice halcyon
+
+node start
+  say "There is a trial dose. It is a trial. We record everything, including you."
+  say "Ask at the lab gate's table. Bring the bite while it's young. Older bites are less interesting to us, and to you."
+  > @consent "What do I sign?" -> sign
+  > @back "Something else." -> hub
+
+node sign
+  say "Name, time of bite, consent. The form is short. We are told that is a kindness."
+  > @back1 "Something else." -> hub
+
+conv wanderer.doctor.symptoms
+for wanderer:doctor
+when !bite_shown & stage:fever
+topic "[Fever] Ask what this is."
+prio quest
+voice plain
+
+node start
+  say "Look at me. Eyes. Hands. ...That isn't a bite. That's a fever, and an ordinary one, probably."
+  say "Water, rest, and stop running everywhere. If it's still there tomorrow, find a house with a medic."
+  > @sure "Probably?" -> probably
+  > @back "Something else." -> hub
+
+node probably
+  say "Everything's probably now. It's the best word we've got left."
+  > @back1 "Something else." -> hub
+
+conv occupant.nurse.symptoms
+for occupant
+when house:short & bg:nurse,doctor
+topic "[Nurse] Ask who's coughing."
+prio world
+voice haven
+
+node start
+  say "The little one at the back. Coughing since the school trip."
+  say (her father) "It's her chest. It's always been her chest. I keep telling them."
+  say "People look at her like she's bitten. She isn't. Is she?"
+  > @chest "That isn't a bite. It's her chest." -> chest   if bg:nurse,doctor
+  > @back "Something else." -> hub
+
+node chest
+  say "Say it again, louder, at supper. They'll listen to you. They don't listen to him."
+  do learn:house.cough@here
+  > @back1 "Something else." -> hub

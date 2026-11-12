@@ -480,7 +480,51 @@ class RZ_RepSeason
 	bool IsSquare(string ident, int f)
 	{
 		RZ_RepSeasonEntry e = Find(ident);
-		return e && RZ_Factions.IsValid(f) && e.infamy[f] < 15;
+		if (!e || !RZ_Factions.IsValid(f) || e.infamy[f] >= 15)
+			return false;
+
+		// With the Red Hand, square also means no unpaid line in the book (a dose on credit, the
+		// finale's price door), until the epilogue's Pay into the book marks it paid
+		if (f == RZ_EFaction.BANDITS)
+			return !UnpaidLine(ident);
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line in the Red Hand's book this identity hasn't paid.
+	bool UnpaidLine(string ident)
+	{
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		bool paid = epi && epi.Data().bookPaid.Contains(ident);
+		if (paid)
+			return false;
+
+		if (epi && epi.Data().owed.Contains(ident))
+			return true;
+
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		int pid = m_GM.FindPlayerByIdentity(ident);
+		return finale && pid > 0 && finale.PaidPrice(pid, RZ_CureFinale.REDHAND);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The biggest deed with `f` across every life this season (the season's deeds store), else the one
+	//! that stood at the best (or worst) cell.
+	string BiggestDeed(string ident, int f, bool worst = false)
+	{
+		RZ_SeasonDeeds season = RZ_Deeds.Season();
+		if (season && RZ_Factions.IsValid(f))
+		{
+			RZ_SeasonDeed d = season.Find(ident, false);
+			if (d && worst && !d.worstDeed[f].IsEmpty())
+				return d.worstDeed[f];
+
+			if (d && !worst && !d.bestDeed[f].IsEmpty())
+				return d.bestDeed[f];
+		}
+
+		return SeasonDeed(ident, f, worst);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -2520,6 +2520,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		vector pos = ent.GetOrigin();
 		RZ_Util.KillCharacter(ent);
+		// Grief: nobody jokes near a player who turned, for a while (docs/WRITING.md, the season mood)
+		RZ_ToneGuard.Death(pos, -1);
 		// Turned in the open near a tribe's range: it takes them (docs/INFECTED.md, the taken)
 		m_Tribes.OnTurned(playerId, pos);
 

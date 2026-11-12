@@ -32,7 +32,6 @@ class RZ_ScreenGuard
 
 	protected static const float HURT_DROP = 0.5;
 
-	protected static const float WAITING_IDLE = 45;		// AFK while someone waits at the same person
 
 	protected static const float WAITING_RANGE = 8;
 	protected static const float CLOSING_STEP = 2;
@@ -224,7 +223,7 @@ class RZ_ScreenGuard
 		// AFK: the usual idle limit, or 45 s while someone else waits at the same person (talk only)
 		float idle = settings.m_fIdleSeconds;
 		if (talk && s.m_Speaker && SomeoneWaits(s.m_iPlayerId, s.m_Speaker.GetOrigin()))
-			idle = Math.Min(idle, WAITING_IDLE);
+			idle = Math.Min(idle, RZ_DialogueSettings.Get().m_fWaitingIdle);
 
 		if (m_fClock - s.m_fLastPickAt > idle)
 			return "idle";

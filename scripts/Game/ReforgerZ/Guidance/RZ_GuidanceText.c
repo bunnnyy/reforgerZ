@@ -158,9 +158,18 @@ class RZ_GuidanceText
 	static string RedHandChatter(RZ_Rng rng, string boss, string place)
 	{
 		array<string> lines = {
-			"\"Bastion, Bastion, come in. Still waiting for relief? We'll keep the kettle on.\" Laughter, and the channel goes dead.",
 			"\"Toll's due on every road out of %2. Tins, fuel or something worth knowing. Mostly tins.\""
 		};
+
+		// The kettle for Bastion runs while Bastion still waits for relief (the orders' stance unset
+		// or 1); once Bastion stops waiting, it's retired. In the epilogue, if the CO closed the net,
+		// one plain line instead.
+		RZ_WorldFacts facts = RZ_WorldFacts.Get();
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		if (epi && epi.IsBuilt() && epi.Data().choices.Count() > 1 && epi.Data().choices[1] == 2)
+			lines.Insert("\"Bastion's net's gone quiet. Nobody left to laugh at.\"");
+		else if (!facts || facts.Flag("orders.stance") <= 1)
+			lines.Insert("\"Bastion, Bastion, come in. Still waiting for relief? We'll keep the kettle on.\" Laughter, and the channel goes dead.");
 
 		// Nobody buys samples once the cure is out
 		if (!RZ_WorldFacts.Get().IsCured())

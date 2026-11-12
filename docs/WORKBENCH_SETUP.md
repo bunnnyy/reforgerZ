@@ -1298,10 +1298,10 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform**, head-piece and service-weapon **keywords** per faction, 2 pieces, checked every 10 s, blown 60 min of play, 3 catches a life, impersonation 3 Infamy (6 an hour), gate pass 10 min, **Confiscation** (on), the Red Hand's fine 10 and beating 0.2, **Colours** (on), claim in full kit (on), stand radius 1,500 m, **again looks** every 3 min, **roll call** (on), **word gets round** 30 min within 1,500 m, **vouching** (on, 5 Infamy), **the Rogue's price** (20), **kit marks** (on), issued grace 24 real hours), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
-| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
+| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
-| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120; 45 while another player waits at the same person); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
+| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
@@ -1386,6 +1386,8 @@ python3 tools/dialogue_pack.py --check         # lint, and fail if the packs or 
 python3 tools/dialogue_pack.py --lock          # add newly shipped conversation and choice ids to the lock
 python3 tools/dialogue_sim.py haven.leader.list --bg nurse --tier haven=trusted   # one conversation as one character sees it
 python3 tools/voice_sim.py                     # the voice bank: pool sizes and joke shares by mood
+python3 tools/voice_sim.py --season speed1     # a scripted season (speed1, speed2, slow): shares by mood, repeats per window
+python3 tools/dialogue_sim.py occupant.house.stove_bed --house short --chars "Mara:--tier haven=known" --chars "Tom:--bg nurse" --race
 ```
 
 **Conversations** are written in `dialogue/**/*.rzd` and packed into
@@ -1722,7 +1724,7 @@ quartermaster's Buy actions, **Spawn row layout** for vanilla's deploy menu, **U
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:959` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `Dialogue/RZ_Dialogue.c:650` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:700` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
@@ -2060,7 +2062,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 106 conversations, 236 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 153 conversations, 334 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2072,6 +2074,16 @@ by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> v
 `Dialogue: sway <major>.<vote>.<word> by <player> (voter N)` (a sitting), `Dialogue: session cap at <speaker>`.
 The finale's commit: `Dialogue: <player> committed to <route> at <speaker>`.
 Promises and barks: `Dialogue: promise <key> made|kept|broken by <player>`, `Dialogue: bark <conv> to <player>`.
+Talk's rest: `Dialogue: make it right <player> at <speaker>`, `Dialogue: made right <player> with <speaker>`,
+`Dialogue: <speaker> opened on <player> at N m` (a greet that opens by itself), `Dialogue: distress call
+answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<claim>.false tested false for
+<player>`, `Dialogue: <player> began <questline>`, `Dialogue: <player> saw for themselves: <key>` (a world
+predicate), `Dialogue: lie <key> found out: its found effects ran`, `Dialogue: Talk test: N conversations ...`
+(an admin's `/talkdebug test`, and the runtime test's `RZT Talk test: ...`), `Dialogue: scene <key> reset by
+an admin`. Reputation's voice: `Reputation: gate bark at <place> for <player>`, `Reputation: <player>
+laid a pack's leader down`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
+`Parley: <player>'s fire paused <player>'s parley`; the runtime test's `RZT Reputation test: ...` and `RZT
+voice <mood> faction N: radio [...] face [...]` (Voice > Force mood cycled).
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <title> record <key> (<subject>) = <value>`,
@@ -2512,7 +2524,44 @@ when it happens)
   lost Kid: each barks one line as a subtitle, at most one a minute, and the same person not again for
   10 minutes; nothing while you're talking to someone. The log has `Dialogue: bark ...`.
 - [ ] Trees on, a stranger: Talk repeats their call-out; their ways are there as before, and "Ask
-  who they are" style topics fill in their own words (the house, the town, the name).
+  who they are" style topics fill in their own words (the house, the town, the name). Walk up to a
+  new one: at 10 m the talk screen opens by itself ("Hey. You. Sorry. Have you got a minute?"), once,
+  and never twice inside 4 minutes of another unasked contact (the log's `Dialogue: ... opened on`).
+- [ ] Trees on, in Bastion kit you aren't Known in, walk toward a checkpoint: at about 35 m its
+  speaker's screen opens by itself ("You. Not on the board. Stop there."), with the claim, the word and
+  the truth as topics. Leave it and walk on: the built search or turn-back applies at the barrier. In
+  kit signed out to someone else, the greeting names them and any claim is caught at once.
+- [ ] Trees on, a seat leader at attitude -2 who doesn't hunt you: the hub shows "[Make it right]
+  "What would it take?"", which reserves their faction's amends job for an hour. Finish it: the
+  leader's "We start again." line, they deal with you again, and the reply is dim for the rest of the
+  season. Fail it or let the hour run out: nothing changes.
+- [ ] Trees on, a Radio Operator with Bastion's net cracked: the radio's "Call on the open channel"
+  also shows "Talk on Bastion's command net." Ask for the word: believed, "(The word at the wire
+  today: ...)" and a post's look counts it; caught, +2 Bastion Infamy and the listening ends. A house
+  radio's third choice calls only next to a running generator.
+- [ ] Trees on, near a Haven house with nobody at its gate: "Answer the call for help." shows on the
+  open channel about one hour in two; answering puts a stranger at that house's gate, and its named
+  person offers Who's at the Gate as built.
+- [ ] Trees on, the routes open: on the open channel, "Speak about the cure." leads to [Point of no
+  return]; saying it locks you to the Independent route, a second player within 1.5 km hears it with no
+  name, and the roads carry the rumour.
+- [ ] Trees on, the epilogue week: every leader has "Ask about the cure." (their own read of who holds
+  it, then the built season and where-to-look lines) and "Ask what they'll do now."; occupants greet
+  you with the week's line.
+- [ ] Trees on: open the notebook's Journal with a promise open: a "Promises" row shows the play left;
+  after seeing through the Scavenger's lie, a "What you know" row quotes it.
+- [ ] Trees on, the Long Table's host on the road: say they're expecting you back by dark, then stay
+  near the road past 20:30: the next meeting opens with "Still expected, are you?".
+- [ ] Walk up to a Bastion holding's gate, a Red Hand roadblock and a safehouse door: each says one
+  line about you within 25 m, only the first time this life or after your name or best deed with them
+  changed; a second player within 30 m hears it too once you're notorious with them (notoriety 3). In
+  another faction's colours you earned, the guard remarks on them once.
+- [ ] Mid-parley, have a second player fire within 150 m of the gate: the parley pauses 20 s and the
+  shooter gets that faction's grudge; no hunter squad of that faction is sent while it runs.
+- [ ] Trees on, the open channels for an hour: chatter sometimes ends with a short line; after a truck
+  is lost, that faction's channel stays plain for 20 minutes; no joke airs twice inside 6 hours.
+- [ ] Trees on, the epilogue week: each leader's first greeting each real day says the ending in
+  their voice and where you stood.
 - [ ] Trees on, the wind-up radio on the ground: "Call on the open channel" opens the talk screen.
   "Call in what you've seen" puts a rumour on the roads, and a second player within 1.5 km gets "On
   the open channel, someone: ..." with no name.

@@ -68,12 +68,13 @@ WORLD_KINDS = {"town", "owner", "flag", "canon", "canon_town", "leader", "leader
 # Tokens a conversation (.rzd) line may use (RZ_DialogueText.Fill, RZ_RepVoice.FillFor), and the voice
 # bank's context token {place} (RZ_VoiceBank.PickFor).
 DIALOGUE_TOKENS = {"npc", "npc_short", "player", "house", "resident", "word", "rep", "best", "worst", "kills",
-                   "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss"}
+                   "jobs", "picture", "name", "crew", "place", "here", "faction", "role", "toll", "seat", "boss",
+                   "kit_owner", "dead_name", "cover", "pack", "pack_leader", "distress"}
 VOICE_TOKENS = {"place"}
 # The voice bank's openers are filled for the listener too (RZ_RepVoice.Opening: reputation's FillFor)
 VOICE_LISTENER_TOKENS = {"word", "best", "worst", "crew", "rep", "kills", "jobs", "name"}
 # A conversation's tokens with an argument: a stranger's own words, the season's title with a faction
-DIALOGUE_KINDS = {"their", "title", "wire", "cover"}
+DIALOGUE_KINDS = {"their", "title", "wire", "cover", "decider", "lean", "tier", "rep", "word", "claim", "bind"}
 
 NEVER = [
     # Sexual violence is never mentioned

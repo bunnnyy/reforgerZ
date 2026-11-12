@@ -307,7 +307,9 @@ scripts/Game/ReforgerZ/
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
                  (strangers and the open channel too), what a reply needs; the trees (hubs,
                  nodes, checks, effects), conditions, memory (dialogue.json: promises, callbacks,
-                 lies told), scenes and sittings, barks; Pack/: the conversations, generated from dialogue/
+                 lies told), scenes and sittings, barks, Make it right, greets that open, the secure
+                 nets and distress calls, bindings and world predicates, the notebook's talk rows;
+                 Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
                  the car repair and shop screens, the screen guard, the notice board, the spawn screen and loadout lock, the

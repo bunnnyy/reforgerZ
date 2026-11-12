@@ -6348,7 +6348,7 @@
    "category": "Factions",
    "object": "Reputation",
    "field": "m_ReputationSettings",
-   "covers": "**Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations))"
+   "covers": "**Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations))"
   },
   {
    "category": "Voice",
@@ -6366,7 +6366,7 @@
    "category": "Dialogue",
    "object": "Dialogue",
    "field": "m_DialogueSettings",
-   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120; 45 while another player waits at the same person); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit))"
+   "covers": "The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit))"
   },
   {
    "category": "Shared",
@@ -7442,7 +7442,17 @@
     "m_bLifeMemory": "1",
     "m_bGroupRules": "1",
     "m_bParley": "1",
-    "m_bSettling": "1"
+    "m_bSettling": "1",
+    "m_fParleyHours": "2",
+    "m_fParleySquadRadius": "1000",
+    "m_fParleyAloneRadius": "150",
+    "m_fParleyHoldRadius": "200",
+    "m_fParleyWalkSeconds": "90",
+    "m_iSettleFame": "10",
+    "m_iSettleInfamy": "5",
+    "m_iSettleDayCap": "10",
+    "m_bGateBarks": "1",
+    "m_bOthersHear": "1"
    }
   },
   {
@@ -7495,7 +7505,22 @@
     "m_fDangerClosing": "30",
     "m_iMaxOpen": "32",
     "m_bTrees": "0",
-    "m_iTalkFavorPerDay": "20"
+    "m_iTalkFavorPerDay": "20",
+    "m_bMakeRight": "1",
+    "m_bOpens": "1",
+    "m_bRadioCalls": "1",
+    "m_fWaitingIdle": "45",
+    "m_iPerSpeaker": "6",
+    "m_iPerSpeakerScene": "16",
+    "m_fHear": "8",
+    "m_fRoom": "30",
+    "m_fHold": "5",
+    "m_fPromiseHours": "2",
+    "m_iPromiseDays": "3",
+    "m_fBarkRadius": "6",
+    "m_fBarkPerPlayer": "60",
+    "m_fBarkPerSpeaker": "600",
+    "m_fRumourChance": "0.15"
    }
   },
   {
