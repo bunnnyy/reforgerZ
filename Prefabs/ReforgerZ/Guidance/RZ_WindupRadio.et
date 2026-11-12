@@ -11,6 +11,14 @@ GenericEntity : "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.
       Name "Tune"
      }
     }
+    RZ_RadioCallAction "{751F47F288A72928}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7682A92BCF9AAE50}" {
+      Name "Call"
+     }
+    }
    }
   }
  }
