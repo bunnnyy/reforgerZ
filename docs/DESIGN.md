@@ -2480,8 +2480,11 @@ isn't saved and doesn't count toward the replacement timer.
 
 ### Light crafting
 
-At a workbench, up to eight built-in recipes (more can be added as data). A recipe whose output
-prefab isn't set is hidden.
+At a workbench, eight built-in recipes, and more can be added as data (sixteen in all at most). A
+recipe whose output prefab isn't set is hidden. A recipe takes its time at the bench (5 to 15 s;
+moving away stops it) and some make noise (heat). Its inputs are checked when you start and again
+when the work is done, each carried item counting for one input only; then each is taken from your
+pack, and the item is given only if every one came out.
 
 | Recipe | Takes |
 |---|---|
@@ -2494,8 +2497,16 @@ prefab isn't set is hidden.
 | Purification tablets | bleach or iodine |
 | Purify water | untreated water, a tablet |
 
+**The crafting screen.** With **UI > Craft row layout** set, **Use the workbench** opens the
+crafting screen ([UI.md](UI.md#the-crafting-screen)) and the bench's **Make:** actions hide: the
+recipes as a list, and for the picked one a picture of what it makes, what it takes against what you
+carry, how long, and Craft. Craft goes to the server, which checks the screen is open on that bench
+and you're beside it, then runs the same code as the actions; what they would say shows in the
+screen. Without the layout, or where the screen can't open, **Use the workbench** lists what each
+recipe takes as a notice, and the first eight recipes are **Make:** actions, as before.
+
 The **home remedy** (alcohol and herbs, 20 s) is brewed on a stove ("Brew a home remedy"), since
-the workbench's eight slots are full.
+the workbench's eight action slots are full.
 
 ### Barricades, traps and generators
 

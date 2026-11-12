@@ -147,12 +147,13 @@ and one way to end it: **research the cure.**
   emblems, a spawn screen in place of vanilla's deploy menu, an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance, a notebook (standing, journal, radio,
   hall of fame, the season) opened with N, the pause menu or the notebook every life carries, a talk screen
-  for everyone who talks, a repair screen for the cars and a shop screen at the quartermasters,
+  for everyone who talks, a repair screen for the cars, a shop screen at the quartermasters and a
+  crafting screen at workbenches,
   spoken lines as subtitles, notes on a paper reader, and on the map only what you know, with its key in the corner. Gamepad
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
-  repair and shop screens, reader and subtitles are written and not yet played).
+  repair, shop and crafting screens, reader and subtitles are written and not yet played).
 
 ## Status
 
@@ -243,7 +244,7 @@ scripts/Game/ReforgerZ/
                  cure finale's controller (tracks, locks, pacts, the batch, the stand's clean room)
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
   Interactions/  loose loot, searching, door locks, doorway blockers and keys, building queries (mission
-                 spots kept out of locked buildings), cars, crafting, water,
+                 spots kept out of locked buildings), cars, crafting (and its screen's server side), water,
                  traps, generators, fire, secure radio, treating others
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
@@ -254,7 +255,7 @@ scripts/Game/ReforgerZ/
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
-                 the car repair and shop screens, the screen guard, the notice board, the spawn screen and loadout lock, the
+                 the car repair, shop and crafting screens (and the item picture), the screen guard, the notice board, the spawn screen and loadout lock, the
                  map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist

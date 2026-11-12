@@ -154,8 +154,8 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 		if (comp && comp.GetSlotLabel(true, m_iOption) == RZ_Traps.BURN_LABEL)
 			return RZ_Traps.FireFuel(user) != null;
 
-		// On a fixable car, the jobs are in the repair screen
-		if (RZ_CarMenu.HidesSlotsOn(GetOwner()))
+		// On a fixable car, the jobs are in the repair screen; at a workbench, the recipes in the crafting screen
+		if (RZ_CarMenu.HidesSlotsOn(GetOwner()) || RZ_CraftMenu.HidesSlotsOn(GetOwner()))
 			return false;
 
 		// On a person, the replies are in the talk screen
@@ -214,6 +214,10 @@ class RZ_PuzzleUseAction : ScriptedUserAction
 	{
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
 		if (comp && comp.IsSlotHidden(false, m_iValue))
+			return false;
+
+		// At a workbench, the recipes are in the crafting screen
+		if (RZ_CraftMenu.HidesSlotsOn(GetOwner()))
 			return false;
 
 		return !RZ_TalkMenu.HidesSlotsOn(GetOwner());

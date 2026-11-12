@@ -5,6 +5,10 @@
 //!   noisemakers, a spear, a tin-can tripwire, a spike trap, purification tablets and
 //!   purified water. Inputs are item keywords (prefab names); outputs are prefabs on the game
 //!   mode. A recipe without an output prefab is hidden. More recipes can be added as data.
+//! - "Use the workbench" opens the crafting screen (docs/UI.md, "The crafting screen") where
+//!   UI > Craft row layout is set: every recipe, with what it takes against what you carry. A
+//!   pick comes back as an index and runs the same code as the bench's actions, which stay the
+//!   fallback (the first eight recipes) where the screen isn't used.
 //! - Water: fill an empty bottle at a well or a pump (untreated water), then boil it on a
 //!   stove or fireplace, or purify it with a tablet.
 //! - The home remedy (docs/DESIGN.md, "Treatments") is brewed on a stove from alcohol and herbs,
@@ -16,7 +20,7 @@
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sName")]
 class RZ_Recipe
 {
-	[Attribute("", desc: "Name in the action menu")]
+	[Attribute("", desc: "Name in the action menu and on the crafting screen")]
 	string m_sName;
 
 	[Attribute("", desc: "First input: item keywords, comma separated")]
@@ -45,6 +49,13 @@ class RZ_Recipe
 
 	[Attribute("2", desc: "Heat it makes (hammering)")]
 	float m_fHeat;
+
+	// Set by code for the built-in recipes (not attributes): what the crafting screen calls each
+	// input ("" = from its first keyword) and the recipe's icon in the imageset ("" = none).
+	string m_sShow1;
+	string m_sShow2;
+	string m_sShow3;
+	string m_sIcon;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -106,14 +117,22 @@ class RZ_CraftSettings
 	[Attribute("bleach,chlorine,iodine", desc: "Keywords for what makes purification tablets")]
 	string m_sBleachWords;
 
-	[Attribute(desc: "More recipes (added after the built-in ones; at most eight are shown at a workbench)")]
+	[Attribute(desc: "More recipes (added after the built-in ones; sixteen in all on the crafting screen, the first eight in the action menu)")]
 	ref array<ref RZ_Recipe> m_aRecipes;
 }
 
 //------------------------------------------------------------------------------------------------
 class RZ_Crafting
 {
-	protected static const int SLOTS = 8;
+	//! The read label on a workbench's spot. The client hides the bench's recipe slots behind it
+	//! while it uses the crafting screen (RZ_CraftMenu.HidesSlotsOn).
+	static const string BENCH_LABEL = "Use the workbench";
+	static const string BENCH_LOOK = "A vice, a hammer with a taped handle, sawdust.";
+
+	protected static const int SLOTS = 8;				// recipes in the action menu: four choice slots, four use slots
+	protected static const int SCREEN_RECIPES = 16;		// recipes on the crafting screen
+	protected static const int INPUTS = 3;
+	protected static const int PAYLOAD_ROOM = 5400;		// the screen's recipe records (RZ_UIFeed caps payloads at 6000)
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -121,6 +140,9 @@ class RZ_Crafting
 	protected RZ_InteractionSettings m_Water;
 	protected ref array<ref RZ_Recipe> m_aList = {};
 	protected ref array<string> m_aBenchWords = {};
+	protected ref map<int, int> m_mScreenSpot = new map<int, int>();		// player -> the workbench spot their screen shows
+	protected ref map<int, int> m_mScreenSerial = new map<int, int>();	// player -> that screen's serial
+	protected int m_iNextSerial = 1;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Crafting(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_CraftSettings settings, RZ_InteractionSettings water)
@@ -138,35 +160,50 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The built-in recipes whose output is set, then the extra ones; eight at most.
+	//! The built-in recipes whose output is set, then the extra ones; sixteen at most (the action
+	//! menu has the first eight).
 	void Setup()
 	{
 		RZ_ItemHelper.Words(m_Settings.m_sWorkbenchWords, m_aBenchWords);
 		m_aList.Clear();
-		AddBuiltIn("Improvised bandage", m_Settings.m_sClothWords, 1, "", 0, "", 0, m_Settings.m_sBandagePrefab, 6, 1);
-		AddBuiltIn("Molotov", m_Settings.m_sBottleWords, 1, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1, m_Settings.m_sClothWords, 1, m_Settings.m_sMolotovPrefab, 10, 1);
-		AddBuiltIn("Tin rattle (noisemaker)", m_Settings.m_sTinWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sNoisemakerPrefab, 6, 1);
-		AddBuiltIn("Spear", m_Settings.m_sBladeWords, 1, m_Settings.m_sPlankWords, 1, m_Settings.m_sWireWords, 1, m_Settings.m_sSpearPrefab, 12, 2);
-		AddBuiltIn("Tin-can tripwire", m_Settings.m_sTinWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sTripwirePrefab, 8, 1);
-		AddBuiltIn("Spike trap", m_Settings.m_sPlankWords, 2, m_Settings.m_sNailWords, 1, "", 0, m_Settings.m_sSpikeTrapPrefab, 15, 4);
-		AddBuiltIn("Purification tablets", m_Settings.m_sBleachWords, 1, "", 0, "", 0, m_Settings.m_sTabletsPrefab, 8, 0);
-		AddBuiltIn("Purify water", m_Water.m_sDirtyWaterWords, 1, m_Water.m_sTabletWords, 1, "", 0, m_Water.m_sCleanWaterPrefab, 5, 0);
+		Show(AddBuiltIn("Improvised bandage", m_Settings.m_sClothWords, 1, "", 0, "", 0, m_Settings.m_sBandagePrefab, 6, 1), "Rag or cloth", "", "", "item_bandage");
+		Show(AddBuiltIn("Molotov", m_Settings.m_sBottleWords, 1, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1, m_Settings.m_sClothWords, 1, m_Settings.m_sMolotovPrefab, 10, 1), "Empty bottle", "Fuel", "Rag or cloth", "item_molotov");
+		Show(AddBuiltIn("Tin rattle (noisemaker)", m_Settings.m_sTinWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sNoisemakerPrefab, 6, 1), "Empty tin", "Wire or string", "", "item_noisemaker");
+		Show(AddBuiltIn("Spear", m_Settings.m_sBladeWords, 1, m_Settings.m_sPlankWords, 1, m_Settings.m_sWireWords, 1, m_Settings.m_sSpearPrefab, 12, 2), "Knife", "Pole or plank", "Wire or string", "");
+		Show(AddBuiltIn("Tin-can tripwire", m_Settings.m_sTinWords, 2, m_Settings.m_sWireWords, 1, "", 0, m_Settings.m_sTripwirePrefab, 8, 1), "Empty tin", "Wire or string", "", "item_tripwire");
+		Show(AddBuiltIn("Spike trap", m_Settings.m_sPlankWords, 2, m_Settings.m_sNailWords, 1, "", 0, m_Settings.m_sSpikeTrapPrefab, 15, 4), "Plank", "Nails", "", "item_spiketrap");
+		Show(AddBuiltIn("Purification tablets", m_Settings.m_sBleachWords, 1, "", 0, "", 0, m_Settings.m_sTabletsPrefab, 8, 0), "Bleach or iodine", "", "", "item_tablets");
+		Show(AddBuiltIn("Purify water", m_Water.m_sDirtyWaterWords, 1, m_Water.m_sTabletWords, 1, "", 0, m_Water.m_sCleanWaterPrefab, 5, 0), "Untreated water", "Purification tablet", "", "item_tablets");
 
 		if (m_Settings.m_aRecipes)
 		{
 			foreach (RZ_Recipe r : m_Settings.m_aRecipes)
 			{
-				if (r && !r.m_sOutput.IsEmpty() && !r.m_sIn1.IsEmpty() && m_aList.Count() < SLOTS)
+				if (r && !r.m_sOutput.IsEmpty() && !r.m_sIn1.IsEmpty() && m_aList.Count() < SCREEN_RECIPES)
 					m_aList.Insert(r);
 			}
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void AddBuiltIn(string name, string in1, int n1, string in2, int n2, string in3, int n3, ResourceName output, float seconds, float heat)
+	//! A built-in recipe's names on the crafting screen (r is null when its output isn't set).
+	protected void Show(RZ_Recipe r, string show1, string show2, string show3, string icon)
 	{
-		if (output.IsEmpty() || m_aList.Count() >= SLOTS)
+		if (!r)
 			return;
+
+		r.m_sShow1 = show1;
+		r.m_sShow2 = show2;
+		r.m_sShow3 = show3;
+		r.m_sIcon = icon;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The new recipe, or null when its output isn't set (hidden) or the list is full.
+	protected RZ_Recipe AddBuiltIn(string name, string in1, int n1, string in2, int n2, string in3, int n3, ResourceName output, float seconds, float heat)
+	{
+		if (output.IsEmpty() || m_aList.Count() >= SCREEN_RECIPES)
+			return null;
 
 		RZ_Recipe r = RZ_Recipe.Cast(RZ_Util.NewWithDefaults("RZ_Recipe"));
 		r.m_sName = name;
@@ -180,6 +217,7 @@ class RZ_Crafting
 		r.m_fSeconds = seconds;
 		r.m_fHeat = heat;
 		m_aList.Insert(r);
+		return r;
 	}
 
 	// ================================================================ Workbench
@@ -187,7 +225,7 @@ class RZ_Crafting
 	//! Choice slots 0-3 are recipes 0-3, use slots 0-3 are recipes 4-7.
 	void WorkbenchLabels(RZ_Spot s, out string read, out string useLabels, out string choiceLabels)
 	{
-		read = "Look at the workbench";
+		read = BENCH_LABEL;
 		array<string> choice = {"", "", "", ""};
 		array<string> use = {"", "", "", ""};
 		foreach (int i, RZ_Recipe r : m_aList)
@@ -203,19 +241,29 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What each recipe takes.
+	//! "Use the workbench": the crafting screen where it's used, else what each recipe in the
+	//! action menu takes, as a notice.
+	void Look(int playerId, RZ_Spot s, IEntity user)
+	{
+		if (!OpenScreen(playerId, s))
+			DescribeBench(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What each recipe in the action menu takes.
 	void DescribeBench(int playerId)
 	{
 		if (m_aList.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, "Workbench", "A vice, a hammer with a taped handle, sawdust. Nothing set up to make anything. (No recipes are configured.)");
+			m_GM.NotifyPlayer(playerId, "Workbench", BENCH_LOOK + " Nothing set up to make anything. (No recipes are configured.)");
 			return;
 		}
 
-		string text = "A vice, a hammer with a taped handle, sawdust. You could make:";
-		foreach (RZ_Recipe r : m_aList)
+		string text = BENCH_LOOK + " You could make:";
+		foreach (int i, RZ_Recipe r : m_aList)
 		{
-			text += string.Format("\n%1: %2", r.m_sName, InputsText(r));
+			if (i < SLOTS)
+				text += string.Format("\n%1: %2", r.m_sName, InputsText(r));
 		}
 
 		m_GM.NotifyPlayer(playerId, "Workbench", text);
@@ -248,26 +296,117 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool HasInputs(IEntity user, RZ_Recipe r)
+	//! Input `i`'s keywords ("" = no such input).
+	protected string InputWords(RZ_Recipe r, int i)
 	{
-		if (CountOf(user, r.m_sIn1) < Math.Max(1, r.m_iN1))
-			return false;
+		if (i == 0)
+			return r.m_sIn1;
 
-		if (!r.m_sIn2.IsEmpty() && r.m_iN2 > 0 && CountOf(user, r.m_sIn2) < r.m_iN2)
-			return false;
+		if (i == 1 && r.m_iN2 > 0)
+			return r.m_sIn2;
 
-		if (!r.m_sIn3.IsEmpty() && r.m_iN3 > 0 && CountOf(user, r.m_sIn3) < r.m_iN3)
-			return false;
+		if (i == 2 && r.m_iN3 > 0)
+			return r.m_sIn3;
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many of input `i` the recipe takes, 0 when it has no such input.
+	protected int InputCount(RZ_Recipe r, int i)
+	{
+		if (InputWords(r, i).IsEmpty())
+			return 0;
+
+		if (i == 0)
+			return Math.Max(1, r.m_iN1);
+
+		if (i == 1)
+			return r.m_iN2;
+
+		return r.m_iN3;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the crafting screen calls input `i`: the built-in name, else its first keyword.
+	protected string InputName(RZ_Recipe r, int i)
+	{
+		string show = r.m_sShow3;
+		if (i == 0)
+			show = r.m_sShow1;
+		else if (i == 1)
+			show = r.m_sShow2;
+
+		if (!show.IsEmpty())
+			return show;
+
+		array<string> list = {};
+		RZ_ItemHelper.Words(InputWords(r, i), list);
+		string first = "something";
+		if (!list.IsEmpty())
+			first = list[0];
+
+		first.Replace("_", " ");
+		return RZ_Util.Capitalize(first);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The carried items the recipe would use, none counted for two inputs: `haves` holds how many
+	//! of each input were found (at most what it takes), `picked` the items themselves.
+	protected void Allocate(IEntity user, RZ_Recipe r, notnull array<int> haves, notnull array<IEntity> picked)
+	{
+		haves.Clear();
+		picked.Clear();
+		array<IEntity> items = {};
+		SCR_InventoryStorageManagerComponent inv;
+		if (user)
+			inv = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
+
+		if (inv)
+			inv.GetItems(items);
+
+		for (int i = 0; i < INPUTS; i++)
+		{
+			int want = InputCount(r, i);
+			int found = 0;
+			array<string> words = {};
+			RZ_ItemHelper.Words(InputWords(r, i), words);
+			foreach (IEntity item : items)
+			{
+				if (found >= want)
+					break;
+
+				if (picked.Contains(item) || !RZ_ItemHelper.Matches(item, words))
+					continue;
+
+				picked.Insert(item);
+				found++;
+			}
+
+			haves.Insert(found);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every input found in full (after Allocate).
+	protected bool AllFound(RZ_Recipe r, array<int> haves)
+	{
+		for (int i = 0; i < INPUTS; i++)
+		{
+			if (i >= haves.Count() || haves[i] < InputCount(r, i))
+				return false;
+		}
 
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected int CountOf(IEntity user, string wordList)
+	protected bool HasInputs(IEntity user, RZ_Recipe r)
 	{
-		array<string> words = {};
-		RZ_ItemHelper.Words(wordList, words);
-		return RZ_ItemHelper.Count(user, words);
+		array<int> haves = {};
+		array<IEntity> picked = {};
+		Allocate(user, r, haves, picked);
+		return AllFound(r, haves);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -288,24 +427,46 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The work is done. With the crafting screen open, what it says goes into the screen.
 	void CompleteRecipe(int playerId, RZ_Spot s, int idx, IEntity user)
 	{
-		if (idx < 0 || idx >= m_aList.Count())
+		bool captured = CaptureFor(playerId);
+		FinishRecipe(playerId, s, idx, user);
+		Release(playerId, captured);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checks the inputs again and takes each with TryDeleteItem; the output is given only when
+	//! every one came out.
+	protected void FinishRecipe(int playerId, RZ_Spot s, int idx, IEntity user)
+	{
+		if (idx < 0 || idx >= m_aList.Count() || !user)
 			return;
 
 		RZ_Recipe r = m_aList[idx];
-		if (!HasInputs(user, r))
+		array<int> haves = {};
+		array<IEntity> picked = {};
+		Allocate(user, r, haves, picked);
+		if (!AllFound(r, haves))
 		{
 			m_GM.NotifyPlayer(playerId, "Workbench", "Something you needed is gone from your pack.");
 			return;
 		}
 
-		RZ_ItemHelper.Take(user, r.m_sIn1, Math.Max(1, r.m_iN1));
-		if (!r.m_sIn2.IsEmpty() && r.m_iN2 > 0)
-			RZ_ItemHelper.Take(user, r.m_sIn2, r.m_iN2);
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
+		int taken = 0;
+		foreach (IEntity item : picked)
+		{
+			if (inv && inv.TryDeleteItem(item))
+				taken++;
+		}
 
-		if (!r.m_sIn3.IsEmpty() && r.m_iN3 > 0)
-			RZ_ItemHelper.Take(user, r.m_sIn3, r.m_iN3);
+		if (taken < picked.Count())
+		{
+			RZ_Log.Info(string.Format("Crafting: %1 for player %2 stopped, %3 of %4 inputs came out of the pack.", r.m_sName, playerId, taken, picked.Count()));
+			m_GM.NotifyPlayer(playerId, "Workbench", "Something won't come out of your pack, and the work falls apart in your hands.");
+			return;
+		}
 
 		vector at = user.GetOrigin();
 		if (s)
@@ -316,6 +477,211 @@ class RZ_Crafting
 			m_GM.GetHeat().AddHeat(at, r.m_fHeat);
 
 		m_GM.NotifyPlayer(playerId, "Workbench", string.Format("Done: %1. Not pretty, but it'll do.", r.m_sName));
+	}
+
+	// ================================================================ The crafting screen
+	//------------------------------------------------------------------------------------------------
+	//! Opens the crafting screen on this workbench for the player (docs/UI.md, "The crafting
+	//! screen"). False when it isn't used (no row layout, no UI component, no recipes): the caller
+	//! shows the notice. At the server's cap of open screens the client is told to use the actions
+	//! for a minute.
+	protected bool OpenScreen(int playerId, RZ_Spot s)
+	{
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (!ui || !guard || !s || m_aList.IsEmpty() || RZ_UISettings.Get().m_sCraftRowLayout.IsEmpty())
+			return false;
+
+		if (!guard.Open(playerId, RZ_ScreenGuard.KIND_CRAFT, s.m_Body, m_Hub.Title(s), -1))
+		{
+			ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, "F|busy");
+			return false;
+		}
+
+		m_mScreenSpot.Set(playerId, s.m_iId);
+		m_mScreenSerial.Set(playerId, m_iNextSerial);
+		m_iNextSerial++;
+		SendScreen(playerId, "");
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player has the crafting screen open (at any workbench).
+	bool HasScreen(int playerId)
+	{
+		return m_mScreenSpot.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The screen guard or the player closed it: forget it.
+	void OnScreenGone(int playerId)
+	{
+		m_mScreenSpot.Remove(playerId);
+		m_mScreenSerial.Remove(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Closes the player's screen from here (the bench went): the client and the guard.
+	protected void CloseScreen(int playerId, string reason)
+	{
+		if (!HasScreen(playerId))
+			return;
+
+		OnScreenGone(playerId);
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (guard)
+			guard.Close(playerId);
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (ui)
+			ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, "X|" + reason);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Notices for this player go into their open screen until Release.
+	protected bool CaptureFor(int playerId)
+	{
+		if (!HasScreen(playerId))
+			return false;
+
+		RZ_ScreenCapture.Begin(playerId);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stops catching and redraws the screen with what was said; a card if the screen closed meanwhile.
+	protected void Release(int playerId, bool captured)
+	{
+		if (!captured)
+			return;
+
+		string said = RZ_ScreenCapture.End();
+		if (HasScreen(playerId))
+		{
+			SendScreen(playerId, said);
+			return;
+		}
+
+		if (!said.IsEmpty())
+			m_GM.NotifyPlayer(playerId, RZ_ScreenCapture.LastTitle(), said);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The work stopped early (the player moved or was hurt): the screen shows it's over.
+	void OnTaskStopped(int playerId)
+	{
+		if (HasScreen(playerId))
+			SendScreen(playerId, "");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pick on the crafting screen (RZ_PlayerUIComponent.RpcAsk_Craft). Checked here: the screen
+	//! is open on this serial, the bench is still there and the player beside it, nothing else is
+	//! under way; then the recipe runs through the same code as the bench's actions (its inputs
+	//! checked again when the work is done), and the screen redraws with what they would have said.
+	void DoCraft(int playerId, int serial, int index)
+	{
+		int spotId;
+		int current;
+		if (!m_mScreenSpot.Find(playerId, spotId) || !m_mScreenSerial.Find(playerId, current) || serial != current)
+			return;
+
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (!guard || !guard.IsOpen(playerId, RZ_ScreenGuard.KIND_CRAFT))
+		{
+			OnScreenGone(playerId);
+			return;
+		}
+
+		guard.Touch(playerId);
+		RZ_Spot s = m_Hub.FindSpot(spotId);
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!s || !user || !RZ_Util.IsCharacterAlive(user))
+		{
+			CloseScreen(playerId, "gone");
+			return;
+		}
+
+		if (index < 0 || index >= m_aList.Count() || RZ_Util.DistXZ(user.GetOrigin(), s.m_vPos) > RZ_DialogueSettings.Get().m_fRange)
+			return;
+
+		if (m_Hub.HasTask(playerId))
+		{
+			SendScreen(playerId, "You're already at work on something. Finish it first, or step away to stop.");
+			return;
+		}
+
+		RZ_ScreenCapture.Begin(playerId);
+		HandleRecipe(playerId, s, index, user);
+		Release(playerId, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The screen's payload: B|serial|title|look|status|ready|recipes, W|recipe|seconds left|seconds
+	//! in all while one is under way at this bench, then per recipe R|index|name|prefab|icon|seconds|
+	//! heat|ready and N|index|name|have|need per input (have counts what you carry, at most need).
+	protected void SendScreen(int playerId, string status)
+	{
+		int spotId;
+		int serial;
+		if (!m_mScreenSpot.Find(playerId, spotId) || !m_mScreenSerial.Find(playerId, serial))
+			return;
+
+		RZ_Spot s = m_Hub.FindSpot(spotId);
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+		if (!s || !user || !ui)
+		{
+			CloseScreen(playerId, "gone");
+			return;
+		}
+
+		// The recipe under way at this bench, if any
+		int working = -1;
+		float left = 0;
+		float total = 0;
+		RZ_TimedTask task = m_Hub.GetTask(playerId);
+		if (task && task.m_iKind == RZ_Interactions.TASK_CRAFT && task.m_iSpot == spotId && task.m_iArg >= 0 && task.m_iArg < m_aList.Count())
+		{
+			working = task.m_iArg;
+			left = Math.Max(0, task.m_fLeft);
+			total = Math.Max(1, m_aList[working].m_fSeconds);
+		}
+
+		string rows = "";
+		int ready = 0;
+		int shown = 0;
+		array<int> haves = {};
+		array<IEntity> picked = {};
+		foreach (int i, RZ_Recipe r : m_aList)
+		{
+			Allocate(user, r, haves, picked);
+			int readyFlag = 0;
+			if (AllFound(r, haves))
+				readyFlag = 1;
+
+			string rec = string.Format("\nR|%1|%2|%3|%4|%5|%6|%7", i, RZ_UIText.Clean(r.m_sName, 60), r.m_sOutput, r.m_sIcon,
+				RZ_Util.RoundToInt(r.m_fSeconds), RZ_Util.RoundToInt(r.m_fHeat), readyFlag);
+			for (int k = 0; k < INPUTS; k++)
+			{
+				int need = InputCount(r, k);
+				if (need > 0)
+					rec += string.Format("\nN|%1|%2|%3|%4", i, RZ_UIText.Clean(InputName(r, k), 40), haves[k], need);
+			}
+
+			if (rows.Length() + rec.Length() > PAYLOAD_ROOM)
+				break;
+
+			rows += rec;
+			ready += readyFlag;
+			shown++;
+		}
+
+		string payload = string.Format("B|%1|%2|%3|%4|%5|%6", serial, RZ_UIText.Clean(m_Hub.Title(s), 40), BENCH_LOOK, RZ_UIText.Clean(status, 400), ready, shown);
+		if (working >= 0)
+			payload += string.Format("\nW|%1|%2|%3", working, left, total);
+
+		ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, payload + rows);
 	}
 
 	// ================================================================ Water

@@ -5682,6 +5682,24 @@
    "notes": ""
   },
   {
+   "id": "UICraftRowLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the CraftRow layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sCraftRowLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Craft row layout",
+   "required": false,
+   "minimum": false,
+   "use": "the crafting screen's recipe rows at a workbench (empty = no crafting screen: the workbench's Make actions and notices). Needs the RZ_CraftMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "notes": ""
+  },
+  {
    "id": "ErrandPropEffects",
    "kind": "manual",
    "system": "Missions",

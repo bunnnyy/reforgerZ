@@ -2,7 +2,7 @@
 
 The ReforgerZ layouts are in `UI/layouts/ReforgerZ/`: the HUD, the notice card, the notebook's
 frame and its five pages, the notice board, the journal and radio rows, the talk screen, the
-reader, the car repair and shop screens, the spawn screen, the map icon and the map legend. They were written as text
+reader, the car repair, shop and crafting screens, the spawn screen, the map icon and the map legend. They were written as text
 from the trees below and checked against every widget
 name and type the UI scripts look up.
 This file is their reference: the widget trees, the **names the scripts look up**, sizes, anchors,
@@ -224,6 +224,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_CarMenu` | `RZ_CarMenu` | `RZ_CarMenu.layout` |
 | `RZ_ShopMenu` | `RZ_ShopMenu` | `RZ_ShopMenu.layout` |
 | `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
+| `RZ_CraftMenu` | `RZ_CraftMenu` | `RZ_CraftMenu.layout` (not in the conf yet: added in Workbench, [WORKBENCH_SETUP.md](../docs/WORKBENCH_SETUP.md#setting-up-the-ui)) |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**, pad **View + RB**) in `IngameContext`, and
@@ -618,6 +619,73 @@ Button ItemRow (root, 4 below it)
 
 Unlike the mockup, the rows have no item icon (the picture on the right shows the item), and the
 lock is the door-lock icon from the imageset.
+
+## Crafting screen: `RZ_CraftMenu.layout` and `RZ_CraftRow.layout`
+
+The crafting screen at a workbench (`RZ_CraftMenu` preset), from `UI/Mockups/crafting.html`.
+Written as text. Positions inside `CraftPanel` are from its top left.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 60%
+└─ Frame   CraftPanel      1,600 × 880, centred
+   ├─ Image  (CraftBg)      #121416
+   ├─ Image  (CraftAccent)  full width × 5, top edge, amber
+   ├─ Text   CraftTitle     at (48, 28), condensed bold 36, bone ("Workbench")
+   ├─ Text   CraftSub       at (48, 74), regular 22, dim (what the bench looks like)
+   ├─ Text   CraftReady     right-aligned, ending at (1,472, 44), regular 24, bone ("You can make 3 of 8")
+   ├─ Button CloseButton    44 × 44 at (1,508, 30), "X" in amber
+   ├─ Image  (HeadRule)     at (48, 112), 1,504 × 2, amber
+   ├─ Text   (RecipesLabel) at (48, 132), mono bold 18, dim, "RECIPES"
+   ├─ Frame  (RecipeList)   at (48, 166), 820 × 594, #0F1113
+   │  ├─ ScrollLayout RecipeScroll  fills it (the pad's up/down keep the selected row in view)
+   │  │  └─ SizeLayout (RecipeWidth) 820 wide
+   │  │     └─ VerticalLayout Recipes   the recipe rows
+   │  └─ Text  RecipesEmpty  centred, regular 24, dim, "Nothing set up to make anything."
+   ├─ Frame  Details        at (900, 132), 652 × 628, hidden when nothing is selected
+   │  ├─ Frame  (PreviewBox)  652 × 240
+   │  │  ├─ Image  (PreviewBg)     #0F1113
+   │  │  ├─ Image  (PreviewFloor)  the bottom 50, #16191C
+   │  │  ├─ Frame  PreviewSlot     fills the box: the script makes the item preview in it
+   │  │  ├─ Panel  (PreviewLine)   border #22262A
+   │  │  └─ Text   (PreviewLabel)  at (16, 12), mono bold 18, faint, "WHAT YOU MAKE"
+   │  ├─ Text   DetailName    at (0, 252), condensed bold 32
+   │  ├─ Text   DetailDesc    at (0, 296), 652 × 102, regular 22, #D9D2BE, wraps: its description and weight
+   │  ├─ Text   (TakesLabel)  at (0, 402), mono bold 18, dim, "IT TAKES"
+   │  ├─ Frame  Input0 … Input2  652 × 40 each at (0, 432 + 42 × N), hidden when the recipe has fewer inputs
+   │  │  ├─ Image  InputNBar     5 × 28 at (0, 6), olive when you have it, red when you don't
+   │  │  ├─ Text   InputNName    at (20, 4), 360 wide, regular 24, bone ("Empty tin")
+   │  │  ├─ Text   InputNCount   right-aligned at (380, 6), 130 wide, mono 22, dim ("1 of 2")
+   │  │  └─ Text   InputNState   right-aligned at (522, 6), 130 wide, mono bold 20: HAVE (olive) or MISSING (red)
+   │  ├─ Text   DetailTime    at (0, 562), 400 wide, mono bold 22, amber ("About 8 seconds at the bench", "Working... 6 s")
+   │  ├─ ProgressBar CraftProgress  at (0, 594), 380 × 6, amber, shown while the work is under way
+   │  ├─ Text   DetailNoise   at (0, 602), 400 wide, regular 20, dim ("Some hammering. It carries a little.")
+   │  └─ Button CraftButton   240 × 60 at (412, 562)
+   │     └─ Overlay: Image CraftBg (amber when it can go; #1B1F22 otherwise) and
+   │        Text CraftText (condensed bold 26, "CRAFT": dark on amber, faint otherwise)
+   ├─ Text   CraftStatus    at (48, 772), 1,504 wide, regular 22, #F4F0E6, wraps: what the last pick said (hidden when empty)
+   ├─ HorizontalLayout Prompts  at (48, 822): the footer prompts the script makes
+   └─ Text   PromptsText    the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+```
+
+The picture is vanilla's `ItemPreviewWidget`, made by the script inside `PreviewSlot`
+(`RZ_ItemPreview`), as on the shop screen.
+
+`RZ_CraftRow.layout` (**UI > Craft row layout**), one row, created into `Recipes`. The root is a
+`Button` named `RecipeRow` (a click selects it):
+
+```
+Button RecipeRow (root, 4 below it)
+└─ SizeLayout (RecipeSize)    820 × 64
+   └─ Overlay (RecipeBox)
+      ├─ Image  RecipeBg         #1B1F22, shown on the selected row
+      ├─ Image  RecipeBar        5 × 64, left edge, amber, shown on the selected row
+      └─ HorizontalLayout (RecipeLine)  padding 22 left and right, centred vertically
+         ├─ Image  RecipeIcon    32 × 32, the recipe's item_* icon (set by code), hidden without one or without the imageset
+         ├─ Text   RecipeName    regular 26, fills the row (bright on the selected row, faint when you're short)
+         ├─ Text   RecipeState   mono bold 20, right: READY (olive), "2 MISSING" (dim) or WORKING (amber)
+         └─ Text   RecipeTime    mono bold 22, amber, right ("8 s")
+```
 
 ## Map icon: `RZ_MapIcon.layout`
 
