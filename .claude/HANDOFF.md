@@ -108,7 +108,10 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-(none)
+- PC, 2026-11-12, from the author's play-test: the talk screen (RZ_TalkMenu.c, RZ_TalkMenu/RZ_TalkReply layouts, the Dialogue engine scripts: New Vegas style, a compact box, admin replies in one sub-list, at most 5 replies, hover and click, heard replies grey) and the map icons (RZ_MapIcons.c, RZ_MapIcon/RZ_MapLegend layouts, bigger).
+- PC, 2026-11-12: camp life (RZ_CampLife.c, RZ_Util.SetGroupSmartAction, RZ_Quartermaster.c placement, tools/camp_kit, Prefabs/ReforgerZ/Dressing): pieces laid out by the drawn plans, outdoor props outside, a medical tent for Halcyon, nothing large indoors, the quartermaster behind a counter, the "Waypoint is not set properly" VM exception.
+- PC, 2026-11-12: varied people (variant prefabs per faction from the clothing mods, picked per person) and the notebook's Standing page (RZ_StandingPage.layout, its part of RZ_Notebook.c).
+Please leave these files alone until the claims are cleared.
 
 ## Status
 
