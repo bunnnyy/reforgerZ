@@ -135,7 +135,7 @@ class RZ_EpiCalendar
 				continue;
 			}
 
-			string line = RZ_Majors.LineFor(r, S().faction);
+			string line = RZ_Majors.LineFor(r, S().faction, !S().lastDay);
 			S().aired.Insert(key);
 			S().airedDay = RZ_WorldFacts.Get().Day();
 			if (line.IsEmpty())

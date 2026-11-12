@@ -613,7 +613,7 @@ class RZ_EpiRecord
 				foreach (RZ_StoryRecord r : RZ_Majors.Get().GetStories())
 				{
 					if (r.faction == f && line.IsEmpty())
-						line = RZ_Majors.LineFor(r, m_Epi.Data().faction);
+						line = RZ_Majors.LineFor(r, m_Epi.Data().faction, !m_Epi.Data().lastDay);
 				}
 			}
 
@@ -922,7 +922,7 @@ class RZ_EpiRecord
 	{
 		int score = 0;
 		RZ_EpilogueSave s = m_Epi.Data();
-		if (s.deciders.Contains(ident))
+		if (s.deciderIdents.Contains(ident))
 			score += 5;
 
 		int majors = 0;

@@ -83,7 +83,7 @@ The back page (who outside owes it) goes missing in front of every crew. Code:
 | 3. Who gets the page | After act 2 (R1 stages 3–6, as built) | 50%; 3 | As R1; its endings are the act's results (the page in the book, kept, Bastion's, burnt) | The page stays out; the thief goes in the pit | ✅ |
 | 4. Settling day | 50% (or a lead), a session after act 3; a set piece | the muster; 1; 2 offered evenings | Hold the crossroads while it's read; laugh him off (Known); name him (persuade 2, only with the page in the book); speak for him (persuade 2); stand with him (+15 Infamy); tell Bastion where the crews will be (Bastion: Known); offer his crew a Haven door (Haven: Known) | Page in the book: laughed off; else purged half the time | ✅ |
 | 5. The last page | 80% (or a lead), a session after settling day, after the reading; at the boss's seat | the gate; 1; 2 offered evenings | Stand for nothing (persuade 2); sell it by the page (whole book); send it off loud (persuade 2, 1 with a Paranoid or Pragmatist boss, a living thief or a broken book); keep the first page out (Trusted); lift the book for Bastion (unseen); hand the bill to the lab (Halcyon: Known; refused under stance 1 or 3: stand for nothing instead); warn the director | The boss's traits: Paranoid or Pragmatist send it off loud; Greedy sells a whole book; Ruthless, Greedy or a broken book: the boss takes what's owed; else the bill | ✅ |
-| 6. At the lab road | The final stand | past the gate | Sent off loud: hold the fire at the crossroads 3 min first. Then `book.stand` from the last page (1 held the road, 2 took the room, 3 beaten off, 4 nothing) | Read as data | ✅ simplified: the stand itself is the finale's, and the last page decides whether Take the Lab is offered to the Red Hand route ([FINALE.md](FINALE.md#take-the-lab-and-the-coat-run)) |
+| 6. At the lab road | The final stand | past the gate | Sent off loud: hold the fire at the crossroads 3 min first. At the cure, `book.stand` from the last page and the room (1 held the road, 2 took the room: the Red Hand route controls the cure, 3 beaten off, 4 nothing; no cure: the wipe's default) | Read as data | ✅ simplified: the stand itself is the finale's, and the last page decides whether Take the Lab is offered to the Red Hand route ([FINALE.md](FINALE.md#take-the-lab-and-the-coat-run)) |
 | 7. The last line | The epilogue, after the Paper | the wipe | Stand at the lorry for your line; ask about the first line (Trusted); hold the crossroads for the dead | The boss closes the book alone | ✅ |
 
 | Ending (`book.last`) | The world | Epilogue line | Status |
@@ -256,7 +256,7 @@ the finale's **Groups at the lab** cap, the finisher's faction first:
 | Faction | Sends a group when | Where |
 |---|---|---|
 | The Haven | Proof ended The Whole of It (`proof.haven_gate`) and **Territory > Haven guard** is on | At the gate |
-| Bastion | The stance is 1 or 2; under 3 its checkpoint; never under 4 | 1–2 at the gate; 3 on the lab's road (150–250 m out) |
+| Bastion | The stance is 1 or 2; under 3 its checkpoint; HC3's terms (`authors.terms` 1–2) or its road post (`authors.road_post`); never under 4 | 1–2 and HC3's terms at the gate; 3 and HC3's road post on the lab's road (150–250 m out) |
 | The Red Hand | The last page balanced or stood for nothing (`book.last` 1–2), unless Bastion holds the road (stance 3) | On the lab's road |
 
 Take the Lab has one decider: the finale offers it to the Red Hand route unless the last page closed
@@ -268,8 +268,9 @@ it (`book.last` 1–4). Questlines hear the stand through `OnFinalStandStart` an
 ✅ Built.
 - **Epilogue lines** by who controls the cure: each ending has a line for when its own faction
   controls it (*"Command, Bastion. Cure secured. Requesting relief. Over." A long hiss. "Bastion
-  out."*), the one it wrote for another controller, and one for no cure (*"The gates never opened.
-  The book balanced anyway."*).
+  out."*), the one it wrote for another controller or the Independent, and one for no cure at all
+  (*"The gates never opened. The book balanced anyway."*). The own lines never say how the cure is
+  handed out: the finale's terms line says that ([FINALE.md](FINALE.md#endings-and-next-season)).
 - **The hall's lines** in the season block, under the epilogue's names policy
   ([EPILOGUE.md](EPILOGUE.md#names)): "The season's stories", one line a major with its ending and up
   to four who decided it, at the epilogue's commit (with no cure, at the wipe); "At the barrier",
@@ -894,7 +895,10 @@ the stand; the endings are paid after it, so after the winner is chosen when it'
 from the design: it starts only below 90% research (later it would only fizzle), and every stage
 waits out a stand and never runs after the cure. Stage 3 is a wait, then a mission at Bastion's
 adjutant; stage 5 waits for 75% research; stage 6 waits for the stand, then lasts as long as it.
-The Bastion checkpoint on the lab's road is a Bastion group there during the stand. With the boss
+The Bastion checkpoint on the lab's road is a Bastion group there during the stand. While the cure
+finale runs, stage 6 places no groups and pays nothing: its Bastion terms go to the finale's groups
+inside the lab's cap ([The stand's inputs](#the-stands-inputs)), never under Expended, and the
+pilot's extra Halcyon guard isn't sent (Halcyon never takes sides at the stand). With the boss
 paid, Take the Lab is offered to anyone Known with the Red Hand, not only Champions; while the cure
 finale runs, the controller offers it to the Red Hand route instead ([FINALE.md](FINALE.md#take-the-lab-and-the-coat-run)). The endings
 are taken in the order the Red Hand's batch, Bastion's guard, open doors, the lab alone. The money
@@ -1077,7 +1081,7 @@ events and rumours. A flag is 1 when set, unless its row gives other values.
 | `haven.rule`, `haven.counted`, `haven.paying` | the sittings | the muster ("Answer it yourself" at Known under 3), the voice bank | 1 the pot, 2 workers first, 3 Bastion's cards, 4 the arrangement |
 | `list.truth` | Every Name, act III | the second sitting | 1 the farm and whose hand, 2 only "a farm out that way" |
 | `proof.day_one`, `proof.copy`, `proof.weeks`, `proof.pages`, `proof.first_page`, `proof.haven_gate`, `proof.coda` | Proof | the muster (`day_one` 3), the reading, the last page | Who knows the date (1–4); a copy of the margin; HC1's ending (0 nobody asked, 1 record, 2 public, 3 Bastion); where the site-log pages went (1 stove, 3 read, 4 Bastion's file); the first page (1, 2, 4); a Haven group at the gate; the paper sealed |
-| `authors.terms` | HC3 stage 3 | the reading | 1 agreed, 2 bargained, 3 refused |
+| `authors.terms`, `authors.road_post` | HC3 stages 3–4 | the reading, the finale's groups at the stand | 1 agreed, 2 bargained, 3 refused; the CO was told of the Red Hand's offer |
 | `book.bastion` | R1 | B1, Bust Out | Bastion knows which of its commanders sold rifles: B1's outpost commander is that one, if they're still in the chair (value: that commander's leader seat id + 1; 0 if nobody on the page is still in the chair). Bust Out ×1.2 |
 | `book.returned`, `book.kept`, `book.burnt` | R1 | — | What became of the page (or `book.bastion`) |
 | `book.thief` | R1 | — | The thief: 1 went in the pit, 2 someone took his place, 3 his debt was paid, 4 walked to the Haven, 5 ran |
@@ -1116,8 +1120,7 @@ The Long Table also accepts the setter's own spelling for flags the table names 
 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|
-| `finale.open`, `finale.finisher`, `finale.route`, `finale.how`, `finale.terms`, `finale.condition`, `finale.partner` | the controller | the epilogue's record and outlets ([EPILOGUE.md](EPILOGUE.md)) | The routes are open; who finished (route + 1, 0 the lab alone); who controls (0 nobody: handed over); how it was won (1 held, 2 force, 3 deal, 4 betrayal, 5 theft, 6 handed over); the terms (1–4); the condition and the pact partner (route + 1) |
-| `route.<n>.state` | the controller, at the cure | (facts; the epilogue's route lines read the controller itself, [EPILOGUE.md](EPILOGUE.md)) | Each route (n = route + 1): 0 not worked, 1 worked, 3 finished |
+| `finale.open`, `finale.finisher`, `finale.route`, `finale.how`, `finale.terms`, `finale.partner`, `finale.came` | the controller | the epilogue's record, outlets and stand board ([EPILOGUE.md](EPILOGUE.md)) | The routes are open; who finished (route + 1, 0 the lab alone); who controls (0 nobody: handed over); how it was won (1 held, 2 force, 3 deal, 4 betrayal, 5 theft, 6 handed over); the terms (1–4); the pact partner (route + 1); how many routes came for the room |
 | `cure.slow`, `finale.taken`, `finale.coat_run` | the controller | (facts) | The lab alone made the batch; the season day Take the Lab and the Coat Run passed |
 | `held.rh_knows`, `held.named`, `held.processed` | Held for Collection | (facts) | The Red Hand knows the cold store; the four ledgers named the tubes; Twice was brought home |
 | `cook.heard`, `cook.still_known`, `cook.line_paid`; `cook.lines`, `cook.paid` | The Cook; every cut dose taken | The Cook's terms | Someone heard the cook's terms; found the still; her line marked paid. The cut doses written in her book, and those that held |

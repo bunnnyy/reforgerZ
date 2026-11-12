@@ -217,6 +217,7 @@ class RZ_EpilogueSave
 	int fameLeader = -1;
 	int fameLeaderFame;
 	ref array<string> deciders = {};		// names, frozen
+	ref array<string> deciderIdents = {};	// and their identities (the notables' score)
 	ref array<string> standNames = {};
 	ref array<string> majorLines = {};
 	ref array<int> housePop = {};

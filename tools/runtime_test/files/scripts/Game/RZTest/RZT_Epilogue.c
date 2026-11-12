@@ -171,6 +171,10 @@ class RZT_Epilogue
 		}
 
 		Check("the story commits", true, "");
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (finale && RZ_CureFinale.IsOn() && finale.Controller() >= 0)
+			Check("the record has the release's terms", epi.Data().terms > 0 && epi.Data().terms == finale.Terms(), string.Format("record %1, finale %2", epi.Data().terms, finale.Terms()));
+
 		Check("the hall of fame froze", !gm.GetHall() || gm.GetHall().IsFrozen(), "not frozen");
 		Check("beats were picked", epi.GetBeats().Count() > 0, "no beats");
 		Check("phase A", epi.Phase() == 1, string.Format("phase %1", epi.Phase()));

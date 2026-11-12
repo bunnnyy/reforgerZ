@@ -1468,10 +1468,10 @@ five routes; a route asset on the lock card, dormant until the lock and played o
 dialogue's `route:` and `finale:` conditions before and after the lock; no route paused at the gate;
 the tester locked to the Haven and stand-in identities to Bastion and the Red Hand, with
 a Bastion–Red Hand pact by tally; the Haven and Bastion racing, the Haven finishing and the others
-freezing; the seal and a stand lost, the Haven's remake step making the batch again; the second stand
+freezing; the seal and a stand lost (the HUD at 90), only the Haven's remake step making the batch again; the second stand
 with a scripted take by the pact's side and the tester in the clean room running it into overtime
 (20 s), the stand's HUD line naming the holder's route; the win, the controller, the winner rule, the
-route's chunk and `finale.came`; and the release's terms
+route's chunk and `finale.came` (the holder's route counted); and the release's terms
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
 five routes are left out of the questlines' phase: they only start at the gate. The stand finds who
 stands in the clean room (and at the bay) by their character, and the fake player has no engine id,
@@ -1487,7 +1487,7 @@ to a hold, a truth kept after a restart, a reason starting a contract and a lock
 a play (§8).
 
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
-week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
+week runs scripted (`RZT_Epilogue.c`): the commit (its record holding the release's terms), the hall's freeze, beats and phase A; phase B;
 the tester bitten and dosed at the first outlet, and refused a second; two questlines begun and
 listed as loose ends, one closed live by a way and one as data; a named dead person's keepsake taken
 and handed in at a house, an epilogue deck card (Take a Name to the Board) true and writing a name
@@ -1726,9 +1726,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_TribeProps.c:68`, `:354` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
 | `Zombies/RZ_TribeRest.c:987` | a dead leader's body withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stays where it fell through the vigil, and goes when it's inserted again at dawn | The body goes with the engine's usual cleanup; the vigil, its samples and its lines are unchanged |
 | `Zombies/RZ_TribeRest.c:1069` | with **Zombies > Tribes > Rival faction** set, Bacon's infected fight bodies moved onto a faction the faction manager makes hostile to theirs, mid-fight, during a staged Border Night | Nothing is seen fighting: the Border Night is heard, then found, as before. Leave **Rival faction** empty |
-| `Cure/RZ_CureFinale.c:1483` | the cure finale's clean room and loading bay: child entities named `RZ_CleanRoom` and `RZ_LoadingBay` on the lab prefab come back by `GetName()` through `GetChildren`/`GetSibling` on the server | Without them a land point 15–25 m from the lab (the bay 25 m on the far side) stands in: check it's somewhere players can stand and fight |
-| `Cure/RZ_CureFinale.c:1513` | `CharacterControllerComponent.IsUnconscious()` is true on the server for a downed player, so a downed player doesn't count in the clean room | If it's always false, a downed player holds the room until killed: fine for a first play-test |
-| `Cure/RZ_CureFinale.c:2014` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
+| `Cure/RZ_CureFinale.c:1502` | the cure finale's clean room and loading bay: child entities named `RZ_CleanRoom` and `RZ_LoadingBay` on the lab prefab come back by `GetName()` through `GetChildren`/`GetSibling` on the server | Without them a land point 15–25 m from the lab (the bay 25 m on the far side) stands in: check it's somewhere players can stand and fight |
+| `Cure/RZ_CureFinale.c:1532` | `CharacterControllerComponent.IsUnconscious()` is true on the server for a downed player, so a downed player doesn't count in the clean room | If it's always false, a downed player holds the room until killed: fine for a first play-test |
+| `Cure/RZ_CureFinale.c:2038` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
 | `UI/RZ_DoorMarkClient.c:77`, `:106` | Traces' door marks as decals: a small sphere query on a client at a door's mark point finds the same static building the server resolved the door from, and `World.CreateDecal` with lifetime 0 projects a static decal from the door atlas (the cell by `atlasNum`, the age by the colour's alpha) onto its wall, removed again with `RemoveDecal` ([the spike](#traces-the-workbench-spike-phase-0), VERIFY 1–3) | Set **World > Traces > Door drawing** to *Boards* and fill the kit's boards, or *Text*: the words come either way |
 | `World/Traces/RZ_TraceSounds.c:46` | Traces' loops (the radio's hiss, the generator's hum): `RZ_AmbientLoopComponent` starts its looped event with `SoundComponent.SoundEvent` on each client that streams the prop in, and `Terminate` stops it when the server deletes the prop past 120 m (the spike's VERIFY 6) | Empty **World > Traces > Kit > Radio hiss** and **Generator hum**: the radio's line still comes as a subtitle |
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
@@ -2026,7 +2026,9 @@ back.`, `Finale: item N (...) of <route> spoiled on purpose.`, `Finale: <route>'
 `Mission N '...' at ...`, `Outbreak stage -> ...`, `Supply: ... truck leaves ...`, `... goes with N of N crew aboard; the rest follow on foot.` and `... lost (...)`,
 `Story arc started: ...`, `Questline started: ...`, `Questline ...: stage '...'.` and
 `... is on (mission N).`, `Questline ended: ... (ending N, branch N).` / `Questline fizzled: ...`,
-the epilogue week's (`Epilogue: the cure is out; the record is taken on the next ticks.`, `Hall of
+the epilogue week's (`Epilogue: the cure is out; the record is taken on the next ticks.`, `Epilogue:
+the record waits for the release's terms.` and `Epilogue: no terms after the wait; the controller's
+default terms.`, `Hall of
 fame: the records froze at the cure.`, `Epilogue: the record: route N, how N, terms N, faction N, N
 players, N towns with crawlers, N packs calling.`, `Epilogue: beat <key> at <place> (weight W)`,
 `Epilogue: N dose outlets (row N, terms N, condition N).`, `Epilogue: story built (N beats, N
@@ -2516,8 +2518,10 @@ when it happens)
 81 minutes, `/epilogue phase B|C` moves it on)
 - [ ] Within a minute of the cure everyone online gets *The cure* with their own line and where to
   look; a player who joins later gets it at spawn. The hall of fame stops counting (deliver a sample:
-  no record).
-- [ ] The lab gate's board, the stand board's names, the queue's sign and table at the north road, a
+  no record). Under the finale the story waits for the release's terms (`Epilogue: the record waits
+  for the release's terms.`), and `Epilogue: the record: ...` shows the chosen terms, not 0.
+- [ ] The lab gate's board, the stand board's names (won by force: *CAME FOR IT: n* with the holder
+  counted), the queue's sign and table at the north road, a
   safehouse's candles: a prop with **Board prefab** set, else the line when you pass within 40 m. A
   leader on the talk screen has **About the season** and **Where should I look?**; without the screen,
   the quartermaster's *Ask about the season* action.
@@ -2926,7 +2930,10 @@ when it happens)
   (routes, never names; gone 5 s after you leave the lab); take it; let the 15
   minutes run out with a count going (overtime). After the win the release scene at the lab takes the
   terms; the cure's notice names the route and the terms; the hall of fame shows "The cure: ...". Check
-  the groups at the lab (two at most) and that they only fire on rival-route players.
+  the groups at the lab (two at most) and that they only fire on rival-route players. Lose a stand on
+  purpose (leave the lab): the HUD shows 90, not 99, and the batch isn't ready again until the
+  finisher's remake step or the backlog brings research to 100 (`Finale: the batch is ready (the
+  remake)` or `(the lab's backlog)`, never `(the batch hold)`).
 - [ ] The List (same settings; finish the contract The List first, or let a safehouse run short; with
   **Director > Majors** off, or as Every Name's act III):
   a free council head asks; the husband's trail ends at him (bring him home: +1 person) or his
@@ -2978,6 +2985,8 @@ when it happens)
   the cold case goes warm after 20 minutes; bargaining needs Trusted with both; stage 5 waits for
   75%. At the final stand, with Territory > Bastion guard set and the terms agreed, a Bastion squad
   stands at the gate; with the boss paid, a player Known with the Red Hand is offered Take the Lab.
+  With the cure finale on, the stage spawns nothing and pays nothing: `Finale: Bastion's group stands
+  at the lab.` comes from the finale (none under Expended), and no extra Halcyon guard appears.
   The ending comes after the stand, and the season's winner in the log is chosen before it.
 - [ ] The Book (`Begin("book")`, from the season's second real day): point at the wrong suspect once
   (+5 Red Hand Infamy, the trail still opens); at the barn, talking him out armed is refused. At the

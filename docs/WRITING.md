@@ -354,7 +354,8 @@ their lines.
 - **A stronghold leader never jokes about their own page.** Once a page is in the open, rivals may
   gossip about it plainly, never as a joke.
 - **The week's jokes** (the bank's `week` lines, `Week` in the defaults): four or five a faction for
-  each ending (`cure_held:<who>`: each route, everyone, slow, nobody for handed over), and for no cure
+  each ending (`cure_held:<who>`: each route, everyone for the Independent's open terms, slow, nobody
+  for handed over, spoken as onlookers since any faction may be the one handed it), and for no cure
   (`cure_held:none`) only the Red Hand's last three. A leader says one only after the day's plain
   opener has been said, at the Epilogue's share (1 in 3), through grief and joke memory, never to a
   player they're hostile to or owe a hearing; a roll that finds no joke leaves the built greeting.

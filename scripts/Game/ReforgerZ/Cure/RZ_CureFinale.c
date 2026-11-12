@@ -126,6 +126,7 @@ class RZ_FinaleSave
 	int sealUnix;
 	int calls;
 	bool batchReady;
+	bool remaking;						// a lost stand: only a remake step or the backlog makes the batch
 	bool isSealed;
 	ref array<string> lockIdent = {};
 	ref array<int> lockRoute = {};
@@ -229,6 +230,7 @@ class RZ_CureFinale
 	protected float m_fStandHud;
 	protected int m_iLastCount;			// whole seconds of the leading count last told
 	protected ref array<IEntity> m_aGroups = {};		// the friendly groups at the stand (never saved)
+	protected ref array<int> m_aGroupFactions = {};		// and their factions
 	protected bool m_bStandPrep;						// the stand's groups and Take the Lab are due
 	protected ref array<int> m_aDesks = {-1, -1, -1, -1, -1};	// each route's desk mission
 	protected int m_iDeskTry;							// real time of the next desk and tissue hunt tries
@@ -676,11 +678,23 @@ class RZ_CureFinale
 
 	//------------------------------------------------------------------------------------------------
 	//! The cure percent shown while the finale runs: 90 plus the furthest track, at most 99 until the
-	//! seal. -1 when the finale isn't showing (the lab's own percent stands).
+	//! seal; after a lost stand, until the remake or the backlog makes the batch, the lab's own
+	//! research from 90 (the backlog's progress). -1 when the finale isn't showing (the lab's own
+	//! percent stands).
 	float ShownPercent()
 	{
 		if (!IsOpen() || m_S.isSealed)
 			return -1;
+
+		if (m_S.remaking && !m_S.batchReady)
+		{
+			RZ_CureResearch cure = m_GM.GetCure();
+			float lab = 90;
+			if (cure)
+				lab = cure.m_fProgress;
+
+			return Math.Clamp(lab, 90, 99);
+		}
 
 		float best = m_S.labTrack;
 		for (int r = 0; r < ROUTES; r++)
@@ -1292,6 +1306,10 @@ class RZ_CureFinale
 		int now = RZ_SeasonClock.Now();
 		if (!m_S.batchReady)
 		{
+			// After a lost stand the hold doesn't run again: OnRemake or OnBacklogBatch
+			if (m_S.remaking)
+				return;
+
 			bool realOver = now - m_S.finishUnix >= m_Settings.m_fBatchRealHours * HOUR * WaitScale();
 			bool playOver = m_S.batchPlay >= m_Settings.m_fBatchPlayHours * HOUR * WaitScale();
 			if (!realOver || !playOver)
@@ -1349,6 +1367,7 @@ class RZ_CureFinale
 			return;
 
 		m_S.batchReady = true;
+		m_S.remaking = false;
 		m_S.readyUnix = RZ_SeasonClock.Now();
 		m_S.sealUnix = 0;
 		RZ_Log.Info(string.Format("Finale: the batch is ready (%1). Holder %2.", how, RouteName(m_S.holder)));
@@ -1864,6 +1883,7 @@ class RZ_CureFinale
 		ClearGroups();
 		m_S.isSealed = false;
 		m_S.batchReady = false;
+		m_S.remaking = true;
 		m_S.sealUnix = 0;
 		m_S.readyUnix = 0;
 		m_S.standsLost.Insert(RZ_SeasonClock.Day());
@@ -1908,11 +1928,16 @@ class RZ_CureFinale
 		m_bStandOn = false;
 		ClearGroups();
 
-		// The stand board's "CAME FOR IT: {n}": how many routes counted toward the room (never names)
+		// The stand board's "CAME FOR IT: {n}": how many routes counted toward the room, the holder's
+		// included (never names)
+		int mask = m_S.cameMask;
+		if (m_S.holder >= 0 && m_S.holder < ROUTES)
+			mask = mask | (1 << m_S.holder);
+
 		int came = 0;
 		for (int bit = 0; bit < ROUTES; bit++)
 		{
-			if ((m_S.cameMask & (1 << bit)) != 0)
+			if ((mask & (1 << bit)) != 0)
 				came++;
 		}
 
@@ -1951,7 +1976,6 @@ class RZ_CureFinale
 
 		for (int r = 0; r < ROUTES; r++)
 		{
-			facts.SetFlag(string.Format("route.%1.state", r + 1), m_S.state[r]);
 			if (m_S.finisher == r && c != r)
 				FinishedLost(r);
 		}
@@ -2026,8 +2050,16 @@ class RZ_CureFinale
 				continue;
 
 			m_aGroups.Insert(grp);
+			m_aGroupFactions.Insert(g);
 			RZ_Log.Info(string.Format("Finale: %1's group stands at the lab.", RZ_Factions.GetName(g)));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A faction's group stands at the lab in this stand (HC3 reads it for authors.guard).
+	bool HasStandGroup(int f)
+	{
+		return m_bStandOn && m_aGroupFactions.Contains(f);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2054,16 +2086,19 @@ class RZ_CureFinale
 		}
 
 		m_aGroups.Clear();
+		m_aGroupFactions.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A finisher that lost the room: its faction's morale -3 (recovering), +10 Fame to its locked.
+	//! The finisher lost the room: its faction's morale -3, and +10 Fame with it for each identity
+	//! still actively locked to the route (docs/FINALE.md, "Fame").
 	protected void FinishedLost(int r)
 	{
 		NudgeMorale(RouteFaction(r), -3);
 		foreach (int i, string ident : m_S.lockIdent)
 		{
-			if (m_S.lockRoute[i] == r)
+			if (m_S.lockRoute[i] == r && IsActive(ident))
 				PayIdent(ident, PayFaction(r), 10, 0, 0, "finished, lost the room");
 		}
 	}
@@ -2136,7 +2171,6 @@ class RZ_CureFinale
 
 		RZ_WorldFacts facts = RZ_WorldFacts.Get();
 		facts.SetFlag("finale.terms", m_S.terms);
-		facts.SetFlag("finale.condition", m_S.condition);
 		RZ_Log.Info(string.Format("Finale: controller %1, how %2, terms %3, deciders %4.", RouteName(r), HowWord(m_S.how), m_S.terms, m_S.deciders.Count()));
 		DeciderPay(r);
 		WorldEffects(r);

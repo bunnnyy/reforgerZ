@@ -37,6 +37,8 @@ class RZ_Epilogue
 	protected ref RZ_EpiRecord m_Record;
 
 	protected int m_iBuildStep = -1;		// ticks of the build after the cure (-1: none)
+	protected int m_iTermsWaitUnix;			// when the build began waiting for the release's terms
+	static const int TERMS_WAIT = 240;		// seconds the build waits for them
 	protected float m_fCheck;
 	protected int m_iLastStep = -1;
 	protected bool m_bPlaced;				// the marks went up this run (they aren't saved)
@@ -230,6 +232,9 @@ class RZ_Epilogue
 			return;
 
 		m_S = saved;
+		if (!m_S.deciderIdents)
+			m_S.deciderIdents = new array<string>();
+
 		while (m_S.choices.Count() < 4)
 		{
 			m_S.choices.Insert(0);
@@ -265,6 +270,13 @@ class RZ_Epilogue
 		m_iBuildStep++;
 		if (m_iBuildStep == 1)
 		{
+			// The record waits for the release's terms (a live scene of up to 180 s)
+			if (WaitForTerms())
+			{
+				m_iBuildStep = 0;
+				return;
+			}
+
 			Snapshot();
 			FreezeHall();
 			return;
@@ -282,6 +294,35 @@ class RZ_Epilogue
 		m_S.built = true;
 		m_Closing.List();
 		Commit();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a controller's terms aren't in yet (its release scene runs). After TERMS_WAIT
+	//! seconds the controller's default terms are set and the build goes on.
+	protected bool WaitForTerms()
+	{
+		RZ_CureFinale finale = RZ_CureFinale.Get();
+		if (!finale || !RZ_CureFinale.IsOn() || finale.Controller() < 0 || finale.Terms() > 0)
+		{
+			m_iTermsWaitUnix = 0;
+			return false;
+		}
+
+		if (m_iTermsWaitUnix <= 0)
+		{
+			m_iTermsWaitUnix = Now();
+			RZ_Log.Info("Epilogue: the record waits for the release's terms.");
+		}
+
+		if (Now() - m_iTermsWaitUnix < TERMS_WAIT)
+			return true;
+
+		RZ_Log.Info("Epilogue: no terms after the wait; the controller's default terms.");
+		m_iTermsWaitUnix = 0;
+		if (m_GM.GetQuestlines())
+			m_GM.GetQuestlines().ReleaseDefault(RZ_CureFinale.RouteKey(finale.Controller()));
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -315,6 +356,15 @@ class RZ_Epilogue
 
 		if (m_S.lastDay)
 			m_S.faction = -1;
+
+		m_S.deciderIdents.Clear();
+		if (finale && RZ_CureFinale.IsOn() && !m_S.lastDay)
+		{
+			foreach (string di : finale.GetDeciders())
+			{
+				m_S.deciderIdents.Insert(di);
+			}
+		}
 
 		m_S.deciders.Clear();
 		RZ_SeasonRecord rec = RZ_Persistence.LoadSeason();
@@ -552,7 +602,7 @@ class RZ_Epilogue
 		m_S.step = 0;
 		m_S.told.Clear();
 		RZ_WorldFacts.Get().SetFlag("story.built", 1);
-		StoryHallLines(m_S.faction);
+		StoryHallLines(m_S.faction, !m_S.lastDay);
 		m_Outlets.Setup();
 		m_bPlaced = false;
 		RZ_Log.Info(string.Format("Epilogue: story built (%1 beats, %2 players, %3 open items)", m_S.beats.Count(), m_S.playerIdents.Count(), m_Closing.OpenCount()));
@@ -1088,7 +1138,7 @@ class RZ_Epilogue
 				AddHallLine("The cure: nobody. Nobody won.");
 
 			if (IsOn())
-				StoryHallLines(-1);
+				StoryHallLines(-1, false);
 
 			return;
 		}
@@ -1138,14 +1188,15 @@ class RZ_Epilogue
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The majors' "The season's stories" lines, by who controls the cure (-1: no cure).
-	protected void StoryHallLines(int controller)
+	//! The majors' "The season's stories" lines, by who controls the cure (-1: nobody's or none) and
+	//! whether a cure came out.
+	protected void StoryHallLines(int controller, bool cured)
 	{
 		if (!RZ_Majors.Get())
 			return;
 
 		array<string> lines = {};
-		RZ_Majors.Get().HallLines(controller, lines);
+		RZ_Majors.Get().HallLines(controller, cured, lines);
 		foreach (string line : lines)
 		{
 			AddHallLine(line);

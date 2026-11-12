@@ -50,9 +50,11 @@ the beats show.
 
 In this order, from the cure's tick ([RZ_GameModeComponent.OnCureCompleted](DESIGN.md#cure-research-and-the-seasons-end)):
 
-1. The finale reports its controller, how it was won, the terms and the deciders
-   ([FINALE.md](FINALE.md#endings-and-next-season)).
-2. **The snapshot** (the next tick): the route, how, terms and condition, the Fame leader, the
+1. The finale reports its controller and how it was won. The terms and the deciders come at the
+   release ([FINALE.md](FINALE.md#endings-and-next-season)), a live scene of up to 180 s.
+2. **The snapshot** (the next tick, or once the terms are in: while a controller's release runs,
+   the build waits up to 4 minutes, then sets the controller's default terms): the route, how,
+   terms and condition, the Fame leader, the
    deciders and the stand's names (frozen), the majors' story lines, each safehouse's people and
    tier, each holding's owner, every town with 6 or more crawlers, every pack still calling, every
    profile's name and up to three lines, and the wanted (Kill on Sight at the cure). **The hall of
@@ -106,7 +108,7 @@ W)`, `... dropped (<why>)`, `... since (<why>)`.
 
 | Slot | Beats |
 |---|---|
-| The cure | The lab gate's mark (by route and terms) and the stand board: *"HELD THE LAB, DAY 46."* and up to 8 names, or its how version |
+| The cure | The lab gate's mark (by route and terms) and the stand board: *"HELD THE LAB, DAY 46."* and up to 8 names, or its how version (by force or with two or more routes: *"CAME FOR IT: 3."*; a deal names both routes), and *"In chalk at the bottom: made from the Haven's work."* when the finisher isn't the controller |
 | Hubs | The queue (its sign by step: *"QUEUE STARTS HERE. STILL."*, the route's table, the names put down, a gap after a killing); the Names board; Bastion's roster board (*"NO REPLY"*, *"NET CLOSED"*); Rudi's crossroads (the price board under the boss's price, by step, else the lorry and the book); the Haven's supper board; one beat per safehouse (candles and the season's dead, the rota or beds in the yard, *GONE HOME* in processing, how the dose reaches the house) |
 | Places | One per outpost (its owner's board); towns from the town log, best slot first, **Epilogue > Towns** at most; packs still calling (4); the Long Table only once it's exposed |
 | People | The named dead (wanderers: a name chalked on the last door they rested at, 6); wanted posters (*"SETTLED. DAY 49."*, *"PAID"*, *"NOT PAID. THE INFECTED GOT THERE FIRST."*, *"WALKED OUT. NOT PAID."*); graves of notable players' dead characters (a life of 2 hours or more, not by their own hand; 12, 100 m apart, off safehouses) |

@@ -2927,7 +2927,10 @@ An **Independent** cure goes by its terms instead: open, half the Haven's and ha
 one side, that faction's at half; sold, only the Red Hand's black market; kept back, nothing. Then
 **at most one half rule set** goes on top: a deal partner's, else the season's Fame leader's when it
 isn't the winner (**Finale > Fame leader rule**). A half rule set moves every number half-way to
-neutral and leaves its switches off (`RZ_SeasonRuleSet.Half`). Last come the majors' **story rules**
+neutral and leaves its switches off (`RZ_SeasonRuleSet.Half`), with its own line in the welcome
+(*"Some of Bastion's season carries over, at half: a little more military kit about."*; the
+Independent's say which terms it was). The winner's line says what the faction left behind, never
+how it handed the cure out. Last come the majors' **story rules**
 (one small rule per major that ended live, **Season > Story rules**; the table is in
 [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)). Everything is combined and capped as
 below.

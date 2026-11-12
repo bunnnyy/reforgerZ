@@ -1502,7 +1502,16 @@ class RZ_Majors
 
 				return RZ_MajorHelp.World(gm, "proof.haven_gate") != 0;
 			}
-			case RZ_EFaction.MILITARY: return stance >= 1 && stance <= 3;
+			case RZ_EFaction.MILITARY:
+			{
+				// HC3 Authors: Bastion's terms (agreed or bargained), or the CO was told of the Red
+				// Hand's offer; never under Expended
+				int authors = RZ_MajorHelp.World(gm, "authors.terms");
+				if (authors == 1 || authors == 2 || RZ_MajorHelp.World(gm, "authors.road_post") == 1)
+					return stance != 4;
+
+				return stance >= 1 && stance <= 3;
+			}
 			case RZ_EFaction.BANDITS:
 			{
 				int last = RZ_MajorHelp.World(gm, "book.last");
@@ -1515,11 +1524,16 @@ class RZ_Majors
 
 	//------------------------------------------------------------------------------------------------
 	//! The group stands on the lab's road (150-250 m out) rather than at the gate: Bastion's
-	//! checkpoint under stance 3, the Red Hand's crews by the last page.
+	//! checkpoint under stance 3 or HC3's road post (without its gate terms), the Red Hand's crews
+	//! by the last page.
 	static bool OnLabRoad(RZ_GameModeComponent gm, int faction)
 	{
 		if (faction == RZ_EFaction.MILITARY)
-			return RZ_MajorHelp.World(gm, "orders.stance") == 3;
+		{
+			int terms = RZ_MajorHelp.World(gm, "authors.terms");
+			bool post = RZ_MajorHelp.World(gm, "authors.road_post") == 1 && terms != 1 && terms != 2;
+			return RZ_MajorHelp.World(gm, "orders.stance") == 3 || post;
+		}
 
 		if (faction == RZ_EFaction.BANDITS)
 			return SendsStandGroup(gm, faction);
@@ -1599,18 +1613,20 @@ class RZ_Majors
 
 	//------------------------------------------------------------------------------------------------
 	//! The epilogue line: the controlling faction's major first, then one line from each other major.
-	string EpilogueLine(int controller)
+	//! controller: the faction whose rules apply (-1 for the Independent's open, sold or kept-back
+	//! terms); cured: a cure came out at all.
+	string EpilogueLine(int controller, bool cured)
 	{
 		string text = "";
 		foreach (RZ_StoryRecord first : m_aStories)
 		{
 			if (first.faction == controller)
-				text = LineFor(first, controller);
+				text = LineFor(first, controller, cured);
 		}
 
 		foreach (RZ_StoryRecord r : m_aStories)
 		{
-			string line = LineFor(r, controller);
+			string line = LineFor(r, controller, cured);
 			if (r.faction == controller || line.IsEmpty())
 				continue;
 
@@ -1625,11 +1641,11 @@ class RZ_Majors
 
 	//------------------------------------------------------------------------------------------------
 	//! A major's epilogue line by who controls the cure: its own faction (the "own" variant), another
-	//! (the line it wrote), nobody (controller -1: the no-cure variant).
-	static string LineFor(RZ_StoryRecord r, int controller)
+	//! or nobody's (the Independent's: the line it wrote), no cure at all (the no-cure variant).
+	static string LineFor(RZ_StoryRecord r, int controller, bool cured)
 	{
 		string variant = "";
-		if (controller < 0)
+		if (!cured)
 			variant = Variant(r.major, r.ending, false);
 		else if (r.faction == controller)
 			variant = Variant(r.major, r.ending, true);
@@ -1642,7 +1658,8 @@ class RZ_Majors
 
 	//------------------------------------------------------------------------------------------------
 	//! The per-ending variants (docs/QUESTLINES.md, each ending's epilogue line). own: the major's
-	//! faction controls the cure; else no cure. "" keeps the ending's own line.
+	//! faction controls the cure; else no cure. "" keeps the ending's own line. The own variants say
+	//! nothing about how the cure is handed out: the finale's terms line says that.
 	static string Variant(string major, int ending, bool own)
 	{
 		string key = major + ":" + ending.ToString();
@@ -1650,24 +1667,24 @@ class RZ_Majors
 		{
 			switch (key)
 			{
-				case "book:10": return "The cure was sold to the highest bidder. The book said who bid first.";
-				case "book:11": return "The cure was sold to the highest bidder. Everyone already knew the price.";
-				case "book:12": return "The Red Hand handed the cure out at the crossroads and wrote nothing down.";
-				case "book:13": return "The Red Hand sold the cure at the north road. Bastion has the names of everyone who bought.";
-				case "book:14": return "The Red Hand sold the cure at the north road and still couldn't make the book balance.";
+				case "book:10": return "The Red Hand held the cure, and the book balanced the same week. The boss closed it with both hands.";
+				case "book:11": return "The Red Hand held the cure. Everyone in the Zone had already bought their own page back.";
+				case "book:12": return "The Red Hand held the cure with nothing written down. Nobody could say who owed what.";
+				case "book:13": return "The Red Hand held the cure. Bastion held the ledger with their names in it.";
+				case "book:14": return "The Red Hand held the cure, and the book still didn't balance.";
 				case "orders:10": return "\"Command, Bastion. Cure secured. Requesting relief. Over.\" A long hiss. \"Bastion out.\"";
-				case "orders:11": return "Bastion issued the cure at the north road to anyone who asked, and told them what Bastion was.";
-				case "orders:12": return "Bastion issued the cure at the north road, against name and signature, for Command.";
-				case "orders:13": return "Bastion issued the cure at the north road. Nobody on the roster expected thanks.";
-				case "every_name:10": return "The Haven took the cure house to house and read every name at every door.";
-				case "every_name:11": return "The Haven took the cure house to house. Nobody opened the book.";
-				case "every_name:12": return "The Haven took the cure to the far house last, the way it took everything.";
-				case "every_name:13": return "The Haven gave the cure out against Bastion's cards, one name at a time.";
-				case "every_name:14": return "The Haven gave the cure out at the door, and the paying houses went first.";
-				case "proof:10": return "Halcyon published the method with the paper. Its first page starts three weeks before Day 1.";
-				case "proof:11": return "Halcyon published the method under Bastion's signature.";
-				case "proof:12": return "Halcyon published the method. Its first page says Day 1.";
-				case "proof:14": return "Halcyon published the method. The Red Hand had already sold the first page, two tins a copy.";
+				case "orders:11": return "Bastion held the cure. By then everyone knew what Bastion was, because Bastion had told them.";
+				case "orders:12": return "Bastion held the cure, and signed for it as Command.";
+				case "orders:13": return "Bastion held the cure. Nobody on the roster expected thanks.";
+				case "every_name:10": return "The Haven held the cure. Every name on the List was read out, the dead ones too.";
+				case "every_name:11": return "The Haven held the cure. Nobody opened the book.";
+				case "every_name:12": return "The Haven held the cure, and the far house was still on the List.";
+				case "every_name:13": return "The Haven held the cure. Bastion's cards were still on the nail by every door.";
+				case "every_name:14": return "The Haven held the cure. Some houses had paid at the door before, and everyone remembered which.";
+				case "proof:10": return "Halcyon held the cure, and the paper with it. Its first page starts three weeks before Day 1.";
+				case "proof:11": return "Halcyon held the cure. The paper went out under Bastion's signature.";
+				case "proof:12": return "Halcyon held the cure. The paper's first page says Day 1.";
+				case "proof:14": return "Halcyon held the cure. The Red Hand had already sold the paper's first page, two tins a copy.";
 			}
 
 			return "";
@@ -1727,8 +1744,9 @@ class RZ_Majors
 
 	//------------------------------------------------------------------------------------------------
 	//! The hall's "The season's stories": one line a major, with up to four names who decided it
-	//! (under the names policy), by who controls the cure (-1: none).
-	void HallLines(int controller, notnull array<string> result)
+	//! (under the names policy), by who controls the cure (-1: nobody's or none) and whether a cure
+	//! came out at all.
+	void HallLines(int controller, bool cured, notnull array<string> result)
 	{
 		RZ_Epilogue epi = RZ_Epilogue.Get();
 		foreach (RZ_StoryRecord r : m_aStories)
@@ -1759,7 +1777,7 @@ class RZ_Majors
 			else
 				text = string.Format("The season's stories: %1, decided by %2.", ending, names);
 
-			string line = LineFor(r, controller);
+			string line = LineFor(r, controller, cured);
 			if (!line.IsEmpty())
 				text += " " + line;
 

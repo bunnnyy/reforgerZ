@@ -104,19 +104,52 @@ class RZ_EpiText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The stand board by the lab gate (how it was won), without the names.
-	static string StandBoard(int how, int day, string routeName)
+	//! The stand board by the lab gate (how it was won), without the names. came: routes that counted
+	//! toward the room (finale.came, the holder's included); partnerName: the deal partner's route
+	//! (finale.partner, "" none); finisherName: the route that finished the batch when it isn't the
+	//! holder's (finale.finisher, "" none).
+	static string StandBoard(int how, int day, string routeName, int came, string partnerName, string finisherName)
 	{
+		string board = string.Format("HELD THE LAB, DAY %1.", day);
 		switch (how)
 		{
-			case 2: return string.Format("HELD THE LAB, DAY %1. Bullet holes in the board. Underneath: CAME FOR IT.", day);
-			case 3: return string.Format("HELD THE LAB, DAY %1. Two marks side by side. BY AGREEMENT.", day);
-			case 4: return string.Format("HELD THE LAB, DAY %1. Two names scratched out at the top, written in again at the bottom.", day);
-			case 5: return string.Format("HELD THE LAB, DAY %1. In a different pen: TOOK IT: %2.", day, routeName);
+			case 2:
+			{
+				board = string.Format("HELD THE LAB, DAY %1. Bullet holes in the board. Underneath: CAME FOR IT: %2.", day, Math.MaxInt(2, came));
+				break;
+			}
+			case 3:
+			{
+				board = string.Format("HELD THE LAB, DAY %1. Two marks side by side. BY AGREEMENT.", day);
+				if (!partnerName.IsEmpty())
+					board = string.Format("HELD THE LAB, DAY %1. Two marks side by side, %2's and %3's. BY AGREEMENT.", day, routeName, partnerName);
+
+				break;
+			}
+			case 4:
+			{
+				board = string.Format("HELD THE LAB, DAY %1. Two names scratched out at the top, written in again at the bottom.", day);
+				break;
+			}
+			case 5:
+			{
+				board = string.Format("HELD THE LAB, DAY %1. In a different pen: TOOK IT: %2.", day, routeName);
+				break;
+			}
 			case 6: return "A plain board by the gate. BATCH COMPLETE. ISSUED.";
+			default:
+			{
+				if (came >= 2)
+					board = string.Format("HELD THE LAB, DAY %1. Underneath: CAME FOR IT: %2.", day, came);
+
+				break;
+			}
 		}
 
-		return string.Format("HELD THE LAB, DAY %1.", day);
+		if (!finisherName.IsEmpty())
+			board += string.Format(" In chalk at the bottom: made from %1's work.", finisherName);
+
+		return board;
 	}
 
 	//------------------------------------------------------------------------------------------------

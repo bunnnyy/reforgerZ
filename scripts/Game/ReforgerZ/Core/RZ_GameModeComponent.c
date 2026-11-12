@@ -2245,7 +2245,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (RZ_Majors.Get())
 		{
 			RZ_Majors.Get().FillRecord(record);
-			string story = RZ_Majors.Get().EpilogueLine(m_iSeasonWinner);
+			string story = RZ_Majors.Get().EpilogueLine(m_iSeasonWinner, true);
 			if (!story.IsEmpty())
 				RZ_Questline.Headline(this, story, false);
 		}
