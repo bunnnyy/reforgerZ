@@ -129,6 +129,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (PC, author play-test): the PC fixed two things in `UI/RZ_Notebook.c` (pull before editing it): the Quests tab listed every major as Offered at spawn (`BuildQuestlines` sends all visible runs; the season's story now lists only majors you took part in, as UI.md says, so the tracker can follow them), and Where the Work Is read "About 0 Fame and 0 Favor" (now "No pay. It shows you the way, that's all."). Design question from the author: at level 2 a Nurse's step 2, The Fever, is done in 15-25 s with the bandage already in the pack, then straight to Where the Work Is: "doesn't really give me a proper quest". Consider a step 2 that needs going somewhere, or the full chain until a background's chain was played once.
+
 - 2026-11-12 (PC), **handed over from the PC (all six are done: see For the PC; the cloud runs the runtime test next), all approved by the author in play-tests. Please build these.** Work in progress is pushed as branches `pc-wip/*`. Merge `claude/sleepy-volta-nwm433` into each first. None is compiled or tested unless it says so. Briefs, as the author asked:
   1. **Openings phase 1** (`designs/OPENINGS.md`; branch `pc-wip/openings-phase1`: the place roll at spawn, the contact and the chain on handed errands, the start picker removed; mid-task, at the talk adapter).
      - **Spawn:** a random place that fits the background, with the spawn screen's picker removed and no chosen starts ever. The "out of the hiding place" scene.
