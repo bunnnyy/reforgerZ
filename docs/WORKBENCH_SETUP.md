@@ -721,7 +721,7 @@ and the UI files) need none, and eight have no base:
 
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
-| `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction` | Guidance > Radio prefab | optional | given to every new life |
+| `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction` twice (the "default" context; and "knob_toggle" with In hand on, beside vanilla's Turn on/off) | Guidance > Radio prefab | optional | given to every new life |
 | `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | the back-road scenario |
 | `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | the basement scenario |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | the church scenario, safehouse flyers |
@@ -785,6 +785,7 @@ and the UI files) need none, and eight have no base:
 |---|---|---|---|---|---|
 | (existing prefab) | items from the loot pool | — | Interactions > Search > Loot tables (each table's three lists) | optional | exact loot per building type (optional; empty tables are filled from the pool by keywords) |
 | (existing prefab) | any item | — | Interactions > Crafting > Extra recipes (each output) | optional | extra workbench recipes (optional) |
+| (existing prefab) | a cooked food item, e.g. Metabolism's cooked meat (its raw one's name in the first input's keywords) | — | Interactions > Crafting > Stove recipes (each output) | optional | stove recipes: cooked at a stove, on the cooking screen or as **Cook:** actions (none by default) |
 | (existing prefab) | vanilla items or crates (never a vehicle or a car part: refused) | — | Each shop action's Item prefab | optional | quartermaster stock beyond what the plugin adds (see the suggested stock) |
 | (existing prefab) | vanilla ammo or rations the same quartermaster sells at Trusted or below | — | Each requisition action's Item prefab | optional | Bastion's Requisition (Trusted pays half, once an hour) |
 
@@ -812,6 +813,8 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | UI/Textures/ReforgerZ/RZ_CarSide.png, imported as a texture (UI/LAYOUTS.md) | — | UI > Car picture | optional | the side view of the car on the repair screen (empty = the job markers on a plain panel). Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here |
 | (existing prefab) | the ShopItem layout (UI/LAYOUTS.md) | — | UI > Shop item layout | optional | the quartermaster's shop screen's item rows (empty = no shop screen: the Buy, Requisition and service actions) |
 | (existing prefab) | the CraftRow layout (UI/LAYOUTS.md) | — | UI > Craft row layout | optional | the crafting screen's recipe rows at a workbench (empty = no crafting screen: the workbench's Make actions and notices). Needs the RZ_CraftMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
+| (existing prefab) | the CraftRow layout (UI/LAYOUTS.md) | — | UI > Cook row layout | optional | the cooking screen's rows at a stove (empty = no cooking screen: a stove's Boil, Brew and Cook actions in the object menu). Uses the RZ_CraftMenu preset |
+| `RZ_RadioChannel.layout` | the RadioChannel layout (UI/LAYOUTS.md), written as text | — | UI > Radio channel layout | optional | the radio screen's channel rows; its log uses UI > Radio row layout (empty = no radio screen: no View radio). Needs the RZ_RadioMenu preset, in Configs/System/chimeraMenus.conf |
 | (existing prefab) | the ObjectRow layout (UI/LAYOUTS.md) | — | UI > Object row layout | optional | the object menu's option rows: stoves, generators, house radios, wells, puzzle objects, safehouse services, a quartermaster's asks, the lab, the notebook item's name and season, a radio item (empty = no object menu: their world prompts). Needs the RZ_ObjectMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 
 #### Questlines
@@ -854,7 +857,7 @@ still to do:
 <!-- manifest:additions -->
 | Prefab | Add | Why | Need |
 |---|---|---|---|
-| any vanilla radio prefab you want crackable | `RZ_TuneRadioAction`, `RZ_RadioCallAction` | secure radio channels, and calling on the open channel with Dialogue > Trees on (the wind-up radio gets both already) | optional |
+| any vanilla radio prefab you want crackable | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction` (one in "default", one in "knob_toggle" with In hand on) | secure radio channels, calling on the open channel with Dialogue > Trees on, and View radio (the wind-up radio gets them all already) | optional |
 | quartermasters you placed by hand (not from the manifest) | `RZ_StandingStatusAction`, 4 × `RZ_LeaderAction` (Kind TALK, WORK, NEWS, STANDING), 2 × `RZ_FactionServiceAction` (Service AMENDS, SETTLE) | standing, the stronghold leader and amends (the plugin's quartermasters get these already; also add the faction's services: Fence and Bounty board on the Red Hand, Medic and Immunity booster on Halcyon) | optional |
 | the Bastion quartermaster | `RZ_RequisitionAction` (Favor cost 30, Display name rations) | Requisition: one action per ammo or rations item (set its Item prefab to one this quartermaster sells at Trusted or below; anything else is refused) | optional |
 | any quartermaster | `RZ_FactionShopAction` | vanilla stock (suggested stock table); the Item prefab is a vanilla item or crate, never a vehicle or a car part (refused: cars are only found) | optional |
@@ -1289,12 +1292,25 @@ in `UI/layouts/ReforgerZ/`.
       radio, well, puzzle object, safehouse service and the like keeps its world prompts; with the
       slot set and the preset missing, the first use shows what the thing is as a card, and its
       prompts come back for that player.
-   6. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
+   6. **The cooking screen** (to do). It's the crafting screen at a stove: no preset of its own.
+      Set **UI > Cook row layout** to `RZ_CraftRow.layout`. Empty, a stove keeps **Look at the
+      stove** and its Boil, Brew and Cook actions (in the object menu). For a cookable, add a
+      **Stove recipe** under **Interactions > Crafting**: first input Metabolism's raw meat by a
+      keyword of its prefab name, output its cooked meat, 20 to 40 seconds (none by default; check
+      Metabolism's prefab names in its Workshop folder).
+   7. **The radio screen** (to do). The `RZ_RadioMenu` preset is in
+      `Configs/System/chimeraMenus.conf` (layout `RZ_RadioMenu.layout`, class `RZ_RadioMenu`). Set
+      **UI > Radio channel layout** to `RZ_RadioChannel.layout` (its log uses **UI > Radio row
+      layout**, already set), and open both new layouts in the layout editor once. Open
+      `RZ_WindupRadio.et`: it has two **View radio** actions, one in the "default" context and one in
+      "knob_toggle" with **In hand** on, beside vanilla's Turn on/off. Empty the slot and no radio
+      has View radio.
+   8. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
       transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
       on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
       `node tools/render_ui.js textures` and import again.
-   7. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
+   9. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
       with the pad); after spawning, find the notebook in the inventory and take it in hand. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
@@ -1391,7 +1407,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
 | Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
-| Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
+| Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes, **stove recipes** (none) |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
 | Interactions | Secure radio | `m_RadioCrackSettings` | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
 | Survival | (top level) |  | Shot heat (3), suppressed mult (0.3), **Bite chance** (0.1; hardcore 0.15, casual 0.07), bite reach (2.5 m) |
@@ -1402,7 +1418,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
-| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
+| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **cook row layout** (the cooking screen at a stove; empty = its actions), the **radio channel layout** (the radio screen; empty = no View radio), the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
@@ -1766,17 +1782,17 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **127** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 23 are in `UI/`: 18 of [the UI's](#the-ui-19), the loadout
+There are **129** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 23 are in `UI/`: 18 of [the UI's](#the-ui-21), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
-`Dialogue/`). The Workbench plugin has none left: its real
+`Dialogue/` and two are the radio screen's in `Interactions/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
 source (its doc comments and how vanilla uses it). Each marker left is a **behaviour** only a
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-19)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-21)
 come last.
 
 ### High risk: the core loop (2)
@@ -1894,18 +1910,18 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:3589` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 | `Factions/RZ_CampLife.c:3332` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
 
-### The UI (19)
+### The UI (21)
 
-None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens and the object menu run the
+None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
 and every message goes back to the vanilla hint; empty **UI > Talk reply layout** for the old
 actions on people, **Car job layout** for a car's actions, **Shop item layout** for a
-quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions, **Object row layout** for the prompts on props and places, **Spawn row layout** for vanilla's deploy menu, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
+quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions, **Cook row layout** for a stove's actions, **Radio channel layout** to take View radio away, **Object row layout** for the prompts on props and places, **Spawn row layout** for vanilla's deploy menu, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
 [UI.md](UI.md). Check the first five in one Workbench play with a pad plugged in.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:964` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:970` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:194` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
@@ -1913,16 +1929,18 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Notebook.c:1048` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:44` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_TalkMenu.c:366` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; the wheel still works |
-| `UI/RZ_UIData.c:987` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1085` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
+| `UI/RZ_UIData.c:993` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1091` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
 | `Dialogue/RZ_Dialogue.c:892` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:182` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
-| `UI/RZ_Menus.c:307` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
+| `UI/RZ_Menus.c:308` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:19` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
+| `Interactions/RZ_RadioScreen.c:37` | a radio item carried by a player (in hand, on a vest or in a pack) has a parent entity, and one lying on the ground has none, so **View radio** shows on the ground from the default context and in hand from the knob context | View radio shows in the wrong place or not at all: the house radio's View radio still opens the screen, and the log is on the notebook's Radio tab. Check the parent in play and change the test in `RZ_ViewRadioAction.CanBeShownScript` |
+| `Interactions/RZ_RadioScreen.c:54` | the server runs `PerformAction` for an action on a carried radio in vanilla's inspection context (`knob_toggle`, beside Turn on/off), as for vanilla's own | View radio in hand does nothing: use it with the radio on the ground or at a house radio; or make the action local and ask the server through `RZ_PlayerUIComponent` |
 | `UI/RZ_MapIcons.c:315` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
 
 ## 7. Log lines to check
@@ -2199,7 +2217,8 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `... opens again past ...`, `Long Table: broken up (N).`,
 `Object menu: <title> for player N.` (a prop's or place's object menu opened), `Fuel pump: N litres
 drawn at <grid> (N left).` (a vanilla jerrycan filled at a petrol pump's station),
-`Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`, `shop`, `crafting`, `object menu`; `left`,
+`Radio screen: <title> for player N.` (View radio opened the radio screen),
+`Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`, `shop`, `crafting`, `cooking`, `radio`, `object menu`; `left`,
 `idle`, `gone`: a screen the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
 bodies N agents, hordes from towns N, hordes refused N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
@@ -2412,6 +2431,22 @@ session, tick off:
   **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
   bite and Douse the doorway are still single prompts. An infected closing in shuts it. Text reads
   from the sofa on a TV. Empty the slot: every prompt is back.
+- [ ] The cooking screen, with a pad (**UI > Cook row layout** set): at a stove only **Use the
+  stove** shows; it opens the crafting screen headed "Stove" with Boiled water, Home remedy and the
+  stove recipes. With untreated water in your pack Boiled water is READY and the button says BOIL;
+  A starts it (the row says WORKING, a bar counts down), and when it's done the bottle is clean and
+  the status line says so. Home remedy says BREW and shows what's missing; a stove recipe (with one
+  set) says COOK and gives its output. B closes it; work under way goes on while you stay. Empty
+  the slot: **Look at the stove** and the object menu with Boil water, Brew a home remedy and
+  **Cook:** are back.
+- [ ] The radio screen, with a pad (**UI > Radio channel layout** set): the wind-up radio on the
+  ground shows **View radio**; in hand, hold it up and look at it (vanilla's inspection): View radio
+  shows beside Turn on/off (VERIFY `Interactions/RZ_RadioScreen.c:37` and `:54`). It opens the radio
+  screen: Everything on the radio, the broadcast, the four open channels with what's on now, and the
+  three secure ones SCRAMBLED (as a Radio Operator with a channel cracked, CRACKED: N MIN). The
+  D-pad picks a channel and the log under it follows; LB/RB scroll the log; B closes it; an
+  infected closing in shuts it. At a house radio the object menu's View radio opens it in the
+  menu's place; without power it says the batteries are weak and two open channels are TOO FAINT.
 - [ ] A petrol pump with **Cars > Fuel pump station** set (`RZ_FuelPumpStation.et`): no prompt of
   ours at the pump; hold a vanilla jerrycan beside it and **Refuel canister** fills it; the log
   says `Fuel pump: N litres drawn`. Draw 60 litres and the next can gets nothing until the pump
@@ -2946,7 +2981,8 @@ when it happens)
   keyboard) and A pins it; B closes. As a server admin, X clears the board ("Cleared (n notes)"),
   as a player X does nothing.
 - [ ] With a gamepad, open and close every screen (the notebook from the pause menu and from the
-  notebook item, a talk, the reader, the car repair screen, the shop, the crafting screen) using only the pad: each has
+  notebook item, a talk, the reader, the car repair screen, the shop, the crafting and cooking
+  screens, the radio screen) using only the pad: each has
   a focused widget, footer prompts in pad glyphs, and B closes it.
 - [ ] As a server admin, talk to anyone (a wanderer, a safehouse occupant): the **[Admin]** replies
   read their conversations, write the infected to the server log, and read the nearest player's
@@ -3446,10 +3482,11 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 - [ ] As a Haven Champion, walk into a safehouse with a hunter squad on you: it turns away, and
   a bounty notice names only a nearby town. Die as a Haven Champion: the memorial headline goes
   out, and your next character is greeted and treated free at their first safehouse.
-- [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack.
+- [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack (on the cooking
+  screen, Home remedy).
 - [ ] The stove's prompt ("Look at the stove") shows on the stove, at about worktop height on its
   front, not on the wall beside or behind it; the same for a workbench, a generator and a house
-  radio (VERIFY `Interactions/RZ_Interactions.c:177`).
+  radio (VERIFY `Interactions/RZ_Interactions.c:183`).
 - [ ] As a Nurse or Doctor, treat a bitten player (the infection has taken) with a bandage from
   your hands, vanilla's way: both of you get a line that the bite was cleaned properly, and their
   time left grows by about 15%; a second treatment that life does nothing more. There's no

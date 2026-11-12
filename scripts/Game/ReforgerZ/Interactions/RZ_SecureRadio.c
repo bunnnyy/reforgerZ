@@ -160,9 +160,18 @@ class RZ_SecureRadio
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! 0 tune through the open channels, 1 crack a scrambled channel (Radio Operators).
+	//! 0 tune through the open channels, 1 crack a scrambled channel (Radio Operators), 2 call on
+	//! the open channel, 3 the radio screen (UI/RZ_RadioMenu.c).
 	void HandleHouseRadio(int playerId, RZ_Spot s, int option, IEntity user)
 	{
+		if (option == 3)
+		{
+			if (s.m_Comp)
+				RZ_RadioScreen.Open(m_GM, playerId, s.m_Comp.GetOwner(), m_Hub.Title(s), RZ_PowerGrid.IsPoweredAt(s.m_vPos));
+
+			return;
+		}
+
 		if (!m_Settings.m_bEnabled)
 			return;
 

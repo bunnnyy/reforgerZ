@@ -19,6 +19,23 @@ GenericEntity : "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.
       Name "Call"
      }
     }
+    RZ_ViewRadioAction "{5B2E7C1D93A4F608}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6C3F8D2EA4B50719}" {
+      Name "View radio"
+     }
+    }
+    RZ_ViewRadioAction "{7D4A9E3FB5C6182A}" {
+     ParentContextList {
+      "knob_toggle"
+     }
+     UIInfo UIInfo "{8E5BAF40C6D7293B}" {
+      Name "View radio"
+     }
+     m_bInHand 1
+    }
    }
   }
  }

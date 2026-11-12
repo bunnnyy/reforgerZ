@@ -587,7 +587,8 @@ enum RZ_ETaskKind
 	BURN,
 	FIT,
 	CLEAN,
-	BREW
+	BREW,
+	COOK
 }
 
 //------------------------------------------------------------------------------------------------
@@ -624,6 +625,7 @@ class RZ_Interactions
 	static const int TASK_FIT = 10;
 	static const int TASK_CLEAN = 11;		// cleaning a fresh bite (RZ_Infection)
 	static const int TASK_BREW = 12;		// brewing a home remedy on a stove
+	static const int TASK_COOK = 13;		// a stove recipe (RZ_Crafting): its arg is its place in the stove's list
 
 	protected static const float DESPAWN_MARGIN = 25;
 	protected static const float RESCAN_MOVE = 10;
@@ -1414,7 +1416,7 @@ class RZ_Interactions
 		Labels(s, read, useLabels, choiceLabels);
 		s.m_Comp = RZ_PuzzleObjectComponent.Tag(body, TAG, s.m_iId, useLabels, choiceLabels);
 		if (s.m_Comp)
-			s.m_Comp.SetMenu(UsesMenu(s.m_iKind));
+			s.m_Comp.SetMenu(SpotUsesMenu(s));
 
 		RZ_ClueComponent.Tag(body, TAG, s.m_iId, read);
 	}
@@ -1427,6 +1429,17 @@ class RZ_Interactions
 	static bool UsesMenu(int kind)
 	{
 		return kind == KIND_STOVE || kind == KIND_GENERATOR || kind == KIND_RADIO || kind == KIND_WELL || kind == KIND_FUELPUMP;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This spot's prompts go into the object menu: by kind, except a stove while the cooking screen
+	//! is used (its read opens that screen and its slots hide behind it, as a workbench's do).
+	protected bool SpotUsesMenu(RZ_Spot s)
+	{
+		if (s.m_iKind == KIND_STOVE && m_Crafting.StoveScreenOn())
+			return false;
+
+		return UsesMenu(s.m_iKind);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1458,7 +1471,7 @@ class RZ_Interactions
 		string choiceLabels;
 		Labels(s, read, useLabels, choiceLabels);
 		s.m_Comp.SetLabels(useLabels, choiceLabels);
-		s.m_Comp.SetMenu(UsesMenu(s.m_iKind));
+		s.m_Comp.SetMenu(SpotUsesMenu(s));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1515,6 +1528,10 @@ class RZ_Interactions
 			}
 			case RZ_ESpotKind.STOVE:
 			{
+				// With the cooking screen the read opens it, and the slots hide behind it on the client
+				if (m_Crafting.StoveScreenOn())
+					read = RZ_Crafting.STOVE_LABEL;
+
 				choiceLabels = m_Crafting.StoveLabels();
 				break;
 			}
@@ -1544,9 +1561,13 @@ class RZ_Interactions
 			case RZ_ESpotKind.RADIO:
 			{
 				read = "Listen to the radio";
-				choiceLabels = "Tune through the open channels|Work on a scrambled channel";
+				choiceLabels = "Tune through the open channels|Work on a scrambled channel|";
 				if (RZ_Dialogue.IsOn() && RZ_DialogueSettings.Get().m_bTrees)
-					choiceLabels += "|Call on the open channel";
+					choiceLabels += "Call on the open channel";
+
+				// The radio screen: every channel, its latest line and the log (option 3)
+				if (RZ_RadioScreen.Available())
+					choiceLabels += "|" + RZ_RadioScreen.VIEW_LABEL;
 				break;
 			}
 			case RZ_ESpotKind.GENERATOR:
@@ -1584,6 +1605,12 @@ class RZ_Interactions
 			case RZ_ESpotKind.DOOR: m_Doors.Describe(playerId, s); return;
 			case RZ_ESpotKind.CAR: m_Cars.Inspect(playerId, s, user); return;
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.Look(playerId, s, user); return;
+			case RZ_ESpotKind.STOVE:
+			{
+				if (m_Crafting.UseStove(playerId, s, user))
+					return;
+				break;
+			}
 			case RZ_ESpotKind.RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
 			case RZ_ESpotKind.GENERATOR: m_Traps.DescribeFoundGenerator(playerId, s); return;
 			case RZ_ESpotKind.BURN: return;
@@ -1647,7 +1674,9 @@ class RZ_Interactions
 		if (!s || !user)
 			return;
 
-		if (HasTask(playerId))
+		// A house radio's View radio only shows, so it's fine mid-task (cracking a channel)
+		bool viewing = s.m_iKind == KIND_RADIO && option == 3;
+		if (HasTask(playerId) && !viewing)
 		{
 			m_GM.NotifyPlayer(playerId, Title(s), "You're already busy with something. Finish it first, or step away to stop.");
 			return;
@@ -1892,6 +1921,7 @@ class RZ_Interactions
 			case RZ_ETaskKind.BOIL: m_Crafting.CompleteBoil(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.CRACK: m_Radio.CompleteCrack(t.m_iPlayerId, t.m_iArg, user, t.m_iSpot); return;
 			case RZ_ETaskKind.BREW: m_Crafting.CompleteBrew(t.m_iPlayerId, s, user); return;
+			case RZ_ETaskKind.COOK: m_Crafting.CompleteCook(t.m_iPlayerId, s, t.m_iArg, user); return;
 			case RZ_ETaskKind.CLEAN:
 			{
 				if (m_GM.GetInfection())

@@ -1,0 +1,127 @@
+ButtonWidgetClass "{4736423EB0C45F3E}" {
+ Name "ChannelRow"
+ Slot LayoutSlot "{D469021960BF773A}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+  Padding 0 0 0 4
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{D41F1B6943A11A3C}" {
+   Name "ChannelSize"
+   Slot ButtonWidgetSlot "{C71737D58BC7FF0F}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 1304
+   AllowHeightOverride 1
+   HeightOverride 72
+   {
+    OverlayWidgetClass "{D5A2558A06CC49F2}" {
+     Name "ChannelBox"
+     Slot AlignableSlot "{02E2D00470E5E5FC}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{74E5A726E0DEFF97}" {
+       Name "ChannelBg"
+       Slot OverlayWidgetSlot "{DE4CD058232534FD}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.106 0.122 0.133 1
+       Size 1 1
+      }
+      ImageWidgetClass "{114AB9BCB61D139F}" {
+       Name "ChannelBar"
+       Slot OverlayWidgetSlot "{ABA43A28924C3312}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Size 5 72
+      }
+      HorizontalLayoutWidgetClass "{16F5EFD152D38338}" {
+       Name "ChannelRowLine"
+       Slot OverlayWidgetSlot "{996CBB2DED775630}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 22 0 22 0
+       }
+       {
+        ImageWidgetClass "{D375D2CDB34ECDD7}" {
+         Name "ChannelIcon"
+         Slot LayoutSlot "{B7B9E278B40E9135}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 16 0
+         }
+         Color 0.639 0.62 0.565 1
+         Size 30 30
+        }
+        VerticalLayoutWidgetClass "{89E1A2B9A1A4FCCF}" {
+         Name "ChannelText"
+         Slot LayoutSlot "{420890DFACCAEA3E}" {
+          HorizontalAlign 3
+          VerticalAlign 1
+          SizeMode Fill
+          FillWeight 1
+         }
+         {
+          TextWidgetClass "{78E6DBD9F4E72FF5}" {
+           Name "ChannelName"
+           Slot LayoutSlot "{0C2473515ADBE9F6}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text "Open channel: Haven"
+           "Font Size" 24
+           "Min Font Size" 24
+           FontProperties FontProperties "{E976F6005EC71108}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+          TextWidgetClass "{FAD822A2DFAA18EF}" {
+           Name "ChannelLine"
+           Slot LayoutSlot "{4F37698270A1555F}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text "Two of ours made it back from the river. Keep the door shut after dark."
+           "Font Size" 20
+           "Min Font Size" 20
+           FontProperties FontProperties "{C376688BE3954A78}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+        TextWidgetClass "{A2A27BD9371A865C}" {
+         Name "ChannelState"
+         Slot LayoutSlot "{ADC2B97C2DD5B61F}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         Color 0.89 0.639 0.231 1
+         Text "ON AIR"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{94230C30E079BB07}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

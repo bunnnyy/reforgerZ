@@ -155,14 +155,15 @@ and one way to end it: **research the cure.**
   arrow on the map, a notebook (standing, journal, radio,
   quests, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars, a shop screen at the quartermasters, a
-  crafting screen at workbenches and one small object menu for props and places (the game's own
+  crafting screen at workbenches and a cooking screen at stoves, a radio screen with every channel and
+  the log (View radio), and one small object menu for props and places (the game's own
   inventory, looting, healing, doors and fuel first, a menu for anything with options, a single
   prompt only for what's done in a hurry),
   spoken lines as subtitles that say who is talking and from where (radio voices in their own box), notes on a paper reader, and on the map only what you know, with its key in the corner. Gamepad
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
-  repair, shop and crafting screens, the object menu, reader and subtitles are written and not yet played).
+  repair, shop, crafting, cooking and radio screens, the object menu, reader and subtitles are written and not yet played).
 
 ## Status
 
@@ -253,9 +254,10 @@ scripts/Game/ReforgerZ/
                  cure finale's controller (tracks, locks, pacts, the batch, the stand's clean room)
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
   Interactions/  loose loot, wrecks' boots, door locks, doorway blockers and keys, building queries (mission
-                 spots kept out of locked buildings), cars, petrol pumps as vanilla fuel, crafting (and its
-                 screen's server side), the object menu's server side and grouped actions, water,
-                 traps, generators, fire, secure radio, a medic slowing a bite
+                 spots kept out of locked buildings), cars, petrol pumps as vanilla fuel, crafting and
+                 the stove (and their screen's server side), the object menu's server side and grouped
+                 actions, water, traps, generators, fire, secure radio and the radio screen's server
+                 side (View radio), a medic slowing a bite
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
                  (strangers and the open channel too), what a reply needs; the trees (hubs,
@@ -265,7 +267,7 @@ scripts/Game/ReforgerZ/
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
-                 the car repair, shop and crafting screens (and the item picture), the object menu, the screen guard, the notice board, the spawn screen and loadout lock, the
+                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu, the screen guard, the notice board, the spawn screen and loadout lock, the
                  map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist

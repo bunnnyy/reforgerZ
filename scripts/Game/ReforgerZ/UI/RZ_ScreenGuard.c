@@ -1,9 +1,9 @@
 //! The screen guard (docs/UI.md, "The screen guard"). Server side.
 //!
-//! The talk screen, the reader, the car repair, shop and crafting screens and the object menu stop you moving while
+//! The talk screen, the reader, the car repair, shop, crafting, cooking and radio screens and the object menu stop you moving while
 //! the world keeps running, so the server watches every open one and closes it when the player is
 //! in danger: hurt, firing, an infected close by or closing in, dead, or (all but the reader) the
-//! person, car, quartermaster, workbench or object gone, too far away, or nothing picked for a while. Polled once a second on the game mode's SecondTick; each check is a few distance tests,
+//! person, car, quartermaster, workbench, stove, radio or object gone, too far away, or nothing picked for a while (not the radio screen). Polled once a second on the game mode's SecondTick; each check is a few distance tests,
 //! and at most Dialogue > Open at most screens are open on the server.
 
 //------------------------------------------------------------------------------------------------
@@ -31,6 +31,8 @@ class RZ_ScreenGuard
 	static const int KIND_SHOP = 4;		// the quartermaster's shop screen (Factions/RZ_ShopScreen.c)
 	static const int KIND_CRAFT = 5;	// the crafting screen at a workbench (Interactions/RZ_Crafting.c)
 	static const int KIND_OBJECT = 6;	// the object menu on a prop or a place (Interactions/RZ_ObjectScreen.c)
+	static const int KIND_COOK = 7;		// the cooking screen at a stove (Interactions/RZ_Crafting.c)
+	static const int KIND_RADIO = 8;	// the radio screen (Interactions/RZ_RadioScreen.c): read only, so never idle
 
 	protected static const float HURT_DROP = 0.5;
 
@@ -132,10 +134,12 @@ class RZ_ScreenGuard
 			m_GM.GetInteractions().GetCars().OnScreenGone(playerId);
 		else if (kind == KIND_SHOP)
 			RZ_ShopScreen.OnScreenGone(playerId);
-		else if (kind == KIND_CRAFT && m_GM.GetInteractions())
+		else if ((kind == KIND_CRAFT || kind == KIND_COOK) && m_GM.GetInteractions())
 			m_GM.GetInteractions().GetCrafting().OnScreenGone(playerId);
 		else if (kind == KIND_OBJECT)
 			RZ_ObjectScreen.OnScreenGone(playerId);
+
+		// The radio screen keeps nothing on the server
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -238,7 +242,8 @@ class RZ_ScreenGuard
 		if (talk && s.m_Speaker && SomeoneWaits(s.m_iPlayerId, s.m_Speaker.GetOrigin()))
 			idle = Math.Min(idle, RZ_DialogueSettings.Get().m_fWaitingIdle);
 
-		if (m_fClock - s.m_fLastPickAt > idle)
+		// The radio screen is only read, with nothing to pick: it never goes idle
+		if (m_fClock - s.m_fLastPickAt > idle && s.m_iKind != KIND_RADIO)
 			return "idle";
 
 		return "";
@@ -316,6 +321,12 @@ class RZ_ScreenGuard
 
 		if (kind == KIND_OBJECT)
 			return "object menu";
+
+		if (kind == KIND_COOK)
+			return "cooking";
+
+		if (kind == KIND_RADIO)
+			return "radio";
 
 		return "reader";
 	}
