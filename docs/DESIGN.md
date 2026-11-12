@@ -802,8 +802,7 @@ the group prefab it stands.
   6; the Red Hand's stronghold 10, a crew camp 4; the Haven's stronghold 8, an outpost 5, a
   safehouse 3; Halcyon's lab 6, a field station 2. They join the routine like anyone else, are the
   first pick for the courier's walk, and are removed with the place.
-- **Routine lines** are the territory's notices at the phase change (subtitles come with
-  [Subtitles and the reader](ROADMAP.md#ui), planned).
+- **Routine lines** are the territory's notices at the phase change, not subtitles yet.
 
 *Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
 despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
@@ -2190,7 +2189,7 @@ is logged (`Budget: <lane> morale <n> for <faction> clipped to <n>`) and becomes
 | Lane | Morale | Strength | Draws on it |
 |---|---|---|---|
 | Majors | ±20 per faction a season; ±15 per major; ±10 a call | ±8; ±5 per major; ±5 a call | the majors ([The majors](#the-majors)) |
-| Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (planned) |
+| Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (their morale, `RZ_Errands`) |
 | The finale | ±10 per faction, never clipped by the majors | ±5 per faction | the finale's terms ([FINALE.md](FINALE.md#the-release-terms-and-deciders)) |
 | The epilogue | ±5 per faction, inside the majors lane | — | the grey choices and the Last Broadcast ([EPILOGUE.md](EPILOGUE.md#the-grey-choices)) |
 
