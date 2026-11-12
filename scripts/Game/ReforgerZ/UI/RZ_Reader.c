@@ -12,7 +12,8 @@ class RZ_Reader
 	//! title: what it is ("Note on the dashboard"); how: one line on how it looks ("Folded twice,
 	//! in pencil"), or ""; text: what it says (paragraphs split by line breaks). With **UI > Reader**
 	//! off, no UI component on the player's controller, or the server at its cap of open screens,
-	//! it's a notice card instead, as before.
+	//! it's a notice card instead, as before; while a screen acts for the player (the object menu
+	//! reading what's on a prop), it's that screen's text.
 	static void Show(RZ_GameModeComponent gm, int playerId, string title, string how, string text)
 	{
 		if (!gm)
@@ -20,7 +21,8 @@ class RZ_Reader
 
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		RZ_ScreenGuard guard = gm.GetScreenGuard();
-		if (!ui || !guard || !RZ_UISettings.Get().m_bReader || !guard.Open(playerId, RZ_ScreenGuard.KIND_READER, null, "", -1))
+		// A screen acting for the player (the object menu reading a prop) shows it in its own text
+		if (RZ_ScreenCapture.IsCapturing(playerId) || !ui || !guard || !RZ_UISettings.Get().m_bReader || !guard.Open(playerId, RZ_ScreenGuard.KIND_READER, null, "", -1))
 		{
 			gm.NotifyPlayer(playerId, title, text);
 			return;

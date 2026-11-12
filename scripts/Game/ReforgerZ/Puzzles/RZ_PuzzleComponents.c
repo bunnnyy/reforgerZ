@@ -127,6 +127,11 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 	[RplProp()]
 	protected string m_sDisplay;	// keypad display ("4 7 _")
 
+	[RplProp()]
+	protected bool m_bMenu;			// its slots go into the object menu (Interactions/RZ_ObjectScreen.c)
+
+	protected bool m_bMenuSet;		// SetMenu decided it (else: a labelled prop that isn't a person)
+
 	protected ref array<string> m_aUse = {};
 	protected ref array<string> m_aChoice = {};
 	protected string m_sParsedUse;
@@ -141,7 +146,29 @@ class RZ_PuzzleObjectComponent : ScriptComponent
 		m_sUseLabels = useLabels;
 		m_sChoiceLabels = choiceLabels;
 		m_bLabelled = !useLabels.IsEmpty() || !choiceLabels.IsEmpty();
+		if (!m_bMenuSet)
+			m_bMenu = m_bLabelled && !ChimeraCharacter.Cast(GetOwner());
+
 		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server only. Whether its slots go into the object menu (world interaction spots, by kind).
+	void SetMenu(bool menu)
+	{
+		m_bMenuSet = true;
+		if (m_bMenu == menu)
+			return;
+
+		m_bMenu = menu;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its read, use, choice and keypad actions go into the object menu (on every machine).
+	bool WantsMenu()
+	{
+		return m_bMenu;
 	}
 
 	//------------------------------------------------------------------------------------------------

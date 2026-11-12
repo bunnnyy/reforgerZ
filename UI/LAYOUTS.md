@@ -242,6 +242,7 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_ShopMenu` | `RZ_ShopMenu` | `RZ_ShopMenu.layout` |
 | `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
 | `RZ_CraftMenu` | `RZ_CraftMenu` | `RZ_CraftMenu.layout` |
+| `RZ_ObjectMenu` | `RZ_ObjectMenu` | `RZ_ObjectMenu.layout` (not in the conf yet: the PC adds it) |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**, pad **View + RB**) in `IngameContext`, and
@@ -748,6 +749,53 @@ Button RecipeRow (root, 4 below it)
          ├─ Text   RecipeState   mono bold 20, right: READY (olive), "2 MISSING" (dim) or WORKING (amber)
          └─ Text   RecipeTime    mono bold 22, amber, right ("8 s")
 ```
+
+## Object menu: `RZ_ObjectMenu.layout` and `RZ_ObjectRow.layout`
+
+The object menu on props and places (`RZ_ObjectMenu` preset; behaviour in
+[UI.md](../docs/UI.md#the-object-menu)), in the crafting screen's style. Written as text (by a small
+generator, from the crafting screen's widgets); no mockup. Positions inside `ObjectPanel` are from
+its top left.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 60%
+└─ Frame   ObjectPanel     1,200 × 860, centred
+   ├─ Image  (ObjectBg)     #0F1113
+   ├─ Image  (ObjectAccent) full width × 5, top edge, amber
+   ├─ Text   ObjectTitle    at (48, 30), 960 wide, condensed bold 34, bone ("Stove", "Ask the quartermaster")
+   ├─ Text   ObjectSub      at (48, 76), regular 22, dim: the town (hidden when empty)
+   ├─ Button CloseButton    44 × 44 at (1,108, 30), "X" in amber
+   ├─ Image  (HeadRule)     at (48, 116), 1,104 × 2, amber
+   ├─ Text   ObjectText     at (48, 134), 1,104 × 176, regular 24, #D9D2BE, wraps: what you see (hidden when empty)
+   ├─ Text   ObjectWorking  at (48, 318), mono bold 22, amber: "Busy with the boiling... 12 s" (hidden when nothing's under way)
+   ├─ ProgressBar ObjectProgress  at (48, 352), 400 × 6, amber, shown with it
+   ├─ Text   (OptionsLabel) at (48, 372), mono bold 18, dim, "WHAT YOU CAN DO"
+   ├─ Frame  (OptionList)   at (48, 404), 1,104 × 336, #0C0E0F
+   │  ├─ ScrollLayout OptionScroll  fills it (the pad's up/down keep the selected row in view)
+   │  │  └─ SizeLayout (OptionWidth) 1,104 wide
+   │  │     └─ VerticalLayout Options   the option rows
+   │  └─ Text  OptionsEmpty  centred, regular 24, dim, "Nothing you can do here right now."
+   ├─ Text   ObjectStatus   at (48, 752), 1,104 wide, regular 22, #F4F0E6, wraps: what the last pick said (hidden when empty)
+   ├─ HorizontalLayout Prompts  at (48, 806): the footer prompts the script makes
+   └─ Text   PromptsText    the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+```
+
+`RZ_ObjectRow.layout` (**UI > Object row layout**), one option, created into `Options`. The root is
+a `Button` named `OptionRow` (a click does it):
+
+```
+Button OptionRow (root, 4 below it)
+└─ SizeLayout (OptionSize)    1,104 × 56
+   └─ Overlay (OptionBox)
+      ├─ Image  OptionBg         #1B1F22, shown on the selected row
+      ├─ Image  OptionBar        5 × 56, left edge, amber, shown on the selected row
+      └─ HorizontalLayout (OptionLine)  padding 22 left and right, centred vertically
+         ├─ Text   OptionName    regular 26, fills the row (bright on the selected row, faint when it can't be done now)
+         └─ Text   OptionNeed    mono bold 20, dim, right: why it can't be done now ("No samples"), hidden otherwise
+```
+
+Six options show at once; more scroll (a keypad's twelve keys).
 
 ## Map icon: `RZ_MapIcon.layout`
 

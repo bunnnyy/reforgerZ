@@ -4813,6 +4813,27 @@
    "notes": "Built as text (set in the game mode). Its storage holds up to 100000 volume, 200 kg and items up to 100 x 100 x 100; a loot item that doesn't fit lies beside the wreck (logged once)."
   },
   {
+   "id": "FuelPumpStation",
+   "kind": "create",
+   "system": "World interactions",
+   "path": "Prefabs/ReforgerZ/Interactions/RZ_FuelPumpStation.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "an empty GenericEntity with an RplComponent, no mesh, no collision: vanilla's fuel point, like the fuel tank pump's (SCR_FuelManagerComponent with one fuel node of 60 litres that can provide fuel, and SCR_FuelSupportStationComponent from Prefabs/Components/SupportStations/Fuel/FuelSupportStation_FuelPump.ct)",
+   "components": [
+    {"cls": "SCR_FuelManagerComponent", "values": [], "name": ""},
+    {"cls": "SCR_FuelSupportStationComponent", "values": [], "name": ""}
+   ],
+   "actions": [],
+   "slots": ["m_CarSettings.m_sPumpStationPrefab"],
+   "listSlot": false,
+   "slotLabel": "Interactions > Cars > Fuel pump station",
+   "required": false,
+   "minimum": false,
+   "use": "a petrol station's pump as a vanilla fuel point near players: vanilla's jerrycan fills there with its own Refuel canister (empty = the hand pump, in the object menu)",
+   "notes": "Copy the fuel node and support station from a vanilla fuel point (the FuelTank_02 pump); the script sets its litres. Check in play that a held vanilla jerrycan offers Refuel canister beside a petrol pump."
+  },
+  {
    "id": "Key",
    "kind": "create",
    "system": "World interactions",
@@ -5788,6 +5809,24 @@
    "notes": ""
   },
   {
+   "id": "UIObjectRowLayout",
+   "kind": "manual",
+   "system": "UI",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the ObjectRow layout (UI/LAYOUTS.md)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_UISettings.m_sObjectRowLayout"],
+   "listSlot": false,
+   "slotLabel": "UI > Object row layout",
+   "required": false,
+   "minimum": false,
+   "use": "the object menu's option rows: stoves, generators, house radios, wells, puzzle objects, safehouse services, a quartermaster's asks, the lab, the notebook item's name and season, a radio item (empty = no object menu: their world prompts). Needs the RZ_ObjectMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "notes": ""
+  },
+  {
    "id": "ErrandPropEffects",
    "kind": "manual",
    "system": "Missions",
@@ -6541,7 +6580,7 @@
    "category": "Interactions",
    "object": "Cars",
    "field": "m_CarSettings",
-   "covers": "Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), pump timings, **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open))"
+   "covers": "Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open))"
   },
   {
    "category": "Interactions",
@@ -6611,7 +6650,7 @@
    "category": "UI",
    "object": "UI",
    "field": "m_UISettings",
-   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md))"
+   "covers": "**Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md))"
   },
   {
    "category": "Dialogue",
@@ -7444,6 +7483,8 @@
     "m_fFitSeconds": "8",
     "m_fPumpSeconds": "30",
     "m_fPumpHeat": "10",
+    "m_fPumpLitres": "60",
+    "m_fCarFuelLitres": "5",
     "m_fPumpCooldownMinutes": "20",
     "m_fWreckReturnMinutes": "120",
     "m_iPartCost": "12"

@@ -124,8 +124,17 @@ class RZ_CarSettings
 	[Attribute("30", desc: "Seconds to fill a can at a petrol station's hand pump")]
 	float m_fPumpSeconds;
 
-	[Attribute("10", desc: "Heat the hand pump makes")]
+	[Attribute("10", desc: "Heat the hand pump makes (a vanilla fuel pump station: per 20 litres drawn, at most twice that)")]
 	float m_fPumpHeat;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fuel pump station: an invisible prop with vanilla's fuel point (SCR_FuelManagerComponent with one fuel node, vanilla's fuel support station from FuelSupportStation_FuelPump.ct). Stands at a petrol station's pump near players, so vanilla's jerrycan fills there (Refuel canister). Empty = the hand pump (Work the hand pump, in the object menu)", "et")]
+	ResourceName m_sPumpStationPrefab;
+
+	[Attribute("60", desc: "Litres a petrol station's pump holds when full (a vanilla fuel pump station); it's full again Pump cooldown minutes after it was emptied")]
+	float m_fPumpLitres;
+
+	[Attribute("5", desc: "Litres a fixable car's Fuel job takes from a vanilla jerrycan (the can is kept; a fresh vanilla can holds 5); an old-style full can without a fuel tank is used up")]
+	float m_fCarFuelLitres;
 
 	[Attribute("20", desc: "Real minutes before the same pump gives fuel again")]
 	float m_fPumpCooldownMinutes;
@@ -763,7 +772,7 @@ class RZ_Cars
 	protected int PartsCarried(IEntity user, int mask)
 	{
 		int found = 0;
-		if ((mask & PART_FUEL) != 0 && RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY))
+		if ((mask & PART_FUEL) != 0 && RZ_FuelPumps.FindFuel(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, m_Settings.m_fCarFuelLitres))
 			found = found | PART_FUEL;
 		if ((mask & PART_BATTERY) != 0 && RZ_ItemHelper.Has(user, m_Settings.m_sBatteryWords))
 			found = found | PART_BATTERY;
@@ -802,7 +811,8 @@ class RZ_Cars
 		}
 
 		int fitted = 0;
-		if ((mask & PART_FUEL) != 0 && RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1) > 0)
+		IEntity can = RZ_FuelPumps.FindFuel(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, m_Settings.m_fCarFuelLitres);
+		if ((mask & PART_FUEL) != 0 && RZ_FuelPumps.UseFuel(user, can, m_Settings.m_fCarFuelLitres))
 			fitted = fitted | PART_FUEL;
 		if ((mask & PART_BATTERY) != 0 && RZ_ItemHelper.Take(user, m_Settings.m_sBatteryWords, 1) > 0)
 			fitted = fitted | PART_BATTERY;

@@ -25,6 +25,7 @@ PLUGIN = os.path.join(ROOT, "scripts", "WorkbenchGame", "ReforgerZ", "RZ_CreateP
 # Classes that exist but never go on a prefab themselves.
 NOT_ON_PREFABS = {
     "RZ_SampleDeliveryActionBase",  # abstract base of the lab and dead-drop actions
+    "RZ_GroupedAction",  # base of every action that can be a row of the object menu
 }
 # Vanilla component bases (outside our scripts) that make a class a component.
 VANILLA_COMPONENT_BASES = {"SCR_GadgetComponent", "ScriptGameComponent", "SCR_UniversalInventoryStorageComponent"}

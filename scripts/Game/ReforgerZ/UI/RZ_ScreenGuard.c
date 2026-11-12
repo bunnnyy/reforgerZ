@@ -1,9 +1,9 @@
 //! The screen guard (docs/UI.md, "The screen guard"). Server side.
 //!
-//! The talk screen, the reader, the car repair, shop and crafting screens stop you moving while
+//! The talk screen, the reader, the car repair, shop and crafting screens and the object menu stop you moving while
 //! the world keeps running, so the server watches every open one and closes it when the player is
 //! in danger: hurt, firing, an infected close by or closing in, dead, or (all but the reader) the
-//! person, car, quartermaster or workbench gone, too far away, or nothing picked for a while. Polled once a second on the game mode's SecondTick; each check is a few distance tests,
+//! person, car, quartermaster, workbench or object gone, too far away, or nothing picked for a while. Polled once a second on the game mode's SecondTick; each check is a few distance tests,
 //! and at most Dialogue > Open at most screens are open on the server.
 
 //------------------------------------------------------------------------------------------------
@@ -30,6 +30,7 @@ class RZ_ScreenGuard
 	static const int KIND_CAR = 3;		// the car repair screen (Interactions/RZ_Cars.c)
 	static const int KIND_SHOP = 4;		// the quartermaster's shop screen (Factions/RZ_ShopScreen.c)
 	static const int KIND_CRAFT = 5;	// the crafting screen at a workbench (Interactions/RZ_Crafting.c)
+	static const int KIND_OBJECT = 6;	// the object menu on a prop or a place (Interactions/RZ_ObjectScreen.c)
 
 	protected static const float HURT_DROP = 0.5;
 
@@ -96,6 +97,13 @@ class RZ_ScreenGuard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Any screen is open for this player.
+	bool IsAnyOpen(int playerId)
+	{
+		return m_mOpen.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Forget a screen without telling anyone (its owner closed it).
 	void Close(int playerId)
 	{
@@ -126,6 +134,8 @@ class RZ_ScreenGuard
 			RZ_ShopScreen.OnScreenGone(playerId);
 		else if (kind == KIND_CRAFT && m_GM.GetInteractions())
 			m_GM.GetInteractions().GetCrafting().OnScreenGone(playerId);
+		else if (kind == KIND_OBJECT)
+			RZ_ObjectScreen.OnScreenGone(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -275,6 +285,8 @@ class RZ_ScreenGuard
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_SHOP, "X|" + reason);
 			else if (kind == KIND_CRAFT)
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, "X|" + reason);
+			else if (kind == KIND_OBJECT)
+				ui.SendPayload(RZ_UIFeed.PAYLOAD_OBJECT, "X|" + reason);
 			else
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_READER, "");
 		}
@@ -302,6 +314,9 @@ class RZ_ScreenGuard
 		if (kind == KIND_CRAFT)
 			return "crafting";
 
+		if (kind == KIND_OBJECT)
+			return "object menu";
+
 		return "reader";
 	}
 }
@@ -322,6 +337,13 @@ class RZ_ScreenCapture
 		s_iPlayer = playerId;
 		s_sTitle = "";
 		s_sText = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A screen is catching what this player is told (a paper goes into it, not the reader).
+	static bool IsCapturing(int playerId)
+	{
+		return s_iPlayer >= 0 && playerId == s_iPlayer;
 	}
 
 	//------------------------------------------------------------------------------------------------

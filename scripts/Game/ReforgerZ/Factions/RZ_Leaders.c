@@ -3014,21 +3014,35 @@ class RZ_Leaders
 
 //------------------------------------------------------------------------------------------------
 //! "Talk to whoever's in charge" and friends. Put these on quartermaster prefabs (and on a
-//! leader prefab without the puzzle components): they reach the leader whose seat this is.
-class RZ_LeaderAction : ScriptedUserAction
+//! leader prefab without the puzzle components): they reach the leader whose seat this is. All but
+//! Talk go into the object menu with the quartermaster's other asks (RZ_ObjectScreen.c).
+class RZ_LeaderAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "What this action does", "", ParamEnumArray.FromEnum(RZ_ELeaderAction))]
 	protected RZ_ELeaderAction m_eKind;
 
 	//------------------------------------------------------------------------------------------------
 	//! With the talk screen, work, news and standing are replies there; only Talk stays.
-	override bool CanBeShownScript(IEntity user)
+	override bool Visible(IEntity user)
 	{
 		return m_eKind == RZ_ELeaderAction.TALK || !RZ_TalkMenu.Available();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	//! Talk opens the talk screen: never a row.
+	override bool InMenu()
+	{
+		return m_eKind != RZ_ELeaderAction.TALK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string MenuTitle(IEntity owner)
+	{
+		return "Ask whoever's in charge";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Label(out string outName)
 	{
 		switch (m_eKind)
 		{
@@ -3046,17 +3060,8 @@ class RZ_LeaderAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0 || !gm.GetLeaders())

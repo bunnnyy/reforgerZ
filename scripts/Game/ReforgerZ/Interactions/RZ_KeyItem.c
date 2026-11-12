@@ -105,7 +105,8 @@ class RZ_KeyItemComponent : ScriptComponent
 }
 
 //------------------------------------------------------------------------------------------------
-//! "Read the tag": on the key prefab, for a key lying on the ground or in a container.
+//! "Read the tag": on the key prefab, for a key lying on the ground or in a container. The prompt
+//! names the tag already ("Key: blue door, Morton"); reading it opens the tag in the reader.
 class RZ_ReadKeyTagAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
@@ -143,6 +144,7 @@ class RZ_ReadKeyTagAction : ScriptedUserAction
 			return;
 		}
 
-		gm.NotifyPlayer(playerId, "A key", string.Format("A key with a cardboard tag: \"%1\".", key.GetTag()));
+		// The tag opens in the reader, like any paper (a card when the reader is off)
+		RZ_Reader.Show(gm, playerId, "A key", "A cardboard tag on the ring, in biro", string.Format("\"%1\"", key.GetTag()));
 	}
 }

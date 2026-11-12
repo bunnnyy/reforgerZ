@@ -398,6 +398,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sDetail = payload;
 			m_iDetailVersion++;
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_OBJECT)
+		{
+			RZ_ObjectMenu.OnPayload(this, payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
 		{
 			m_sTracker = payload;
@@ -697,6 +701,49 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		gm.GetInteractions().GetCrafting().DoCraft(playerId, serial, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Row `index` of the object menu with this serial.
+	void SendObjectPick(int serial, int index)
+	{
+		if (Replication.IsServer())
+			RpcAsk_ObjectPick(serial, index);
+		else
+			Rpc(RpcAsk_ObjectPick, serial, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checked on the server (RZ_ObjectScreen.Pick): the menu is open, the serial current, the thing
+	//! there and the player beside it; then that row's own action code.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_ObjectPick(int serial, int index)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !PickAllowed())
+			return;
+
+		RZ_ObjectScreen.Pick(gm, playerId, serial, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This client couldn't open the object menu (no preset or layout): world prompts from now on.
+	void SendObjectFailed()
+	{
+		if (Replication.IsServer())
+			RpcAsk_ObjectFailed();
+		else
+			Rpc(RpcAsk_ObjectFailed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_ObjectFailed()
+	{
+		int playerId = OwnerPlayerId();
+		if (playerId > 0)
+			RZ_ObjectScreen.OnClientFailed(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------

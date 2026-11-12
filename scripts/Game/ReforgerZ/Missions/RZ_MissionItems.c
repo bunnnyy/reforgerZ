@@ -90,13 +90,19 @@ class RZ_MissionItemHelper
 //! if you like, on that faction's quartermaster prefab). Set the faction in the
 //! action's attributes. Each mission decides whether it takes the item, so the
 //! same drop point serves deliveries and choice missions.
-class RZ_ChoiceDeliveryAction : ScriptedUserAction
+class RZ_ChoiceDeliveryAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "Faction that receives items handed in here", "", ParamEnumArray.FromEnum(RZ_EFaction))]
 	protected RZ_EFaction m_eFaction;
 
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override string MenuTitle(IEntity owner)
+	{
+		return "Hand something over";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Label(out string outName)
 	{
 		outName = "Hand over to " + RZ_Factions.GetName(m_eFaction);
 		return true;
@@ -117,17 +123,8 @@ class RZ_ChoiceDeliveryAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (!gm || !gm.GetMissions())
 			return;

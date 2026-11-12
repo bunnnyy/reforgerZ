@@ -12,13 +12,19 @@ enum RZ_EEpiNotebook
 
 //------------------------------------------------------------------------------------------------
 //! On the notebook item (next to RZ_DeadNameAction).
-class RZ_EpiNotebookAction : ScriptedUserAction
+class RZ_EpiNotebookAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "What this action does: the season view, or the names opt-out", "", ParamEnumArray.FromEnum(RZ_EEpiNotebook))]
 	protected RZ_EEpiNotebook m_eKind;
 
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override string MenuTitle(IEntity owner)
+	{
+		return "Your name and the season";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Label(out string outName)
 	{
 		if (m_eKind == RZ_EEpiNotebook.ANONYMOUS)
 			outName = "My name in the world: keep it out, or put it back";
@@ -29,17 +35,8 @@ class RZ_EpiNotebookAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0)
