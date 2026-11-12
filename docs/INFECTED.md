@@ -162,7 +162,8 @@ dawn.
 as before (infection).
 
 **Burn the Nest** ([MISSIONS.md](MISSIONS.md)) is where a town's crawlers lie up thickest. Its brief
-now reads *"The slow ones lie up thick in Levie, all in one place. Find it and burn it out."*
+now reads *"The slow ones lie up thick in Levie, all in one place, through the day. While they're there, nobody
+can go home to that town. Find the place and burn it out."*
 
 **Giving way, in placement.** While a pack's group is out in a town (within its radius + 50 m), half
 the crawlers spawned there stand by a building's door and the rest on the side of the town away from

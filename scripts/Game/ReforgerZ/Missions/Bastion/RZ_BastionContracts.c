@@ -12,7 +12,7 @@ class RZ_BastionContractHelp
 	{
 		vector hot;
 		float heat;
-		string text = "All quiet out there. No hordes forming.";
+		string text = "Nothing forming on those hills: no tracks, no calls at dusk, birds still in the trees. The stronghold logs it as quiet.";
 		if (gm.GetHeat().GetHottest(hot, heat))
 		{
 			RZ_Settlement s = gm.GetSettlement(gm.FindNearestSettlement(hot));
@@ -91,7 +91,7 @@ class RZ_Mission_CurfewPatrol : RZ_Mission_VisitPoints
 
 		m_sTitle = "Curfew Patrol";
 		m_sDeed = "walked the curfew in {town}";
-		m_sBrief = string.Format("Curfew in %1 tonight. Walk the beat, four points, and put down at least %2 of them inside the town. Lights low.", s.m_sName, KILLS);
+		m_sBrief = string.Format("Curfew in %1 from dusk. The people there keep it because they think relief is coming; we keep it because the infected walk at night. Walk the beat, four points, and put down at least %2 of them inside the town before dawn. Lights low.", s.m_sName, KILLS);
 		return true;
 	}
 
@@ -463,7 +463,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "Convoy Escort";
 		m_sDeed = "brought the convoy through {town}";
-		m_sBrief = string.Format("A supply truck leaves %1 for our post in %2 in two minutes. Ride with it and get it there. It will break down; they always do.", m_Watch.m_sFrom, m_Watch.m_sTo);
+		m_sBrief = string.Format("A supply truck leaves %1 for our post in %2 in two minutes: rations, rounds and diesel, signed for to the last tin. The post read 'rations low' on last night's call. Ride with it and get it there. It will break down; they always do. And the Red Hand can count trucks too.", m_Watch.m_sFrom, m_Watch.m_sTo);
 		return true;
 	}
 
@@ -619,7 +619,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Convoy Escort: the truck to %1 never made it.", m_Watch.m_sTo);
+		return string.Format("Convoy Escort: the truck to %1 never made it. Tonight the post reads 'rations, one day' on the call.", m_Watch.m_sTo);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1052,7 +1052,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 		{
 			// It reached the lab: Halcyon pays instead
 			m_eGiver = RZ_EFaction.INSTITUTE;
-			gm.GetCure().AddResearch(2, "A sample shipment reached the lab under escort.");
+			gm.GetCure().AddResearch(2, "A courier's case of samples reached the lab, walked in under escort with nobody's hand on the lid.");
 		}
 
 		m_eState = RZ_EMissionState.SUCCEEDED;
@@ -1576,7 +1576,7 @@ class RZ_Mission_FireMission : RZ_Mission
 		m_iSettlement = m_aTowns[0];
 		m_vPos = m_aTargets[0];
 		m_sTitle = "Fire Mission";
-		m_sBrief = string.Format("Three hordes are milling in %1, %2 and %3. Get eyes on each, pop smoke on them and our guns do the rest. Don't stand in the smoke.",
+		m_sBrief = string.Format("Three hordes are milling in %1, %2 and %3, and the guns have shells kept back for exactly this. Get within sight of each and throw smoke on it: the guns answer thirty seconds after. Don't stand in the smoke. The shells don't check who's there.",
 			gm.GetSettlement(m_aTowns[0]).m_sName, gm.GetSettlement(m_aTowns[1]).m_sName, gm.GetSettlement(m_aTowns[2]).m_sName);
 		return true;
 	}

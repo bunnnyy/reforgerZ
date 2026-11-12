@@ -287,7 +287,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 
 		run.SetFlag("brother", BRO_UNKNOWN);
 		run.SetFlag("ward", WARD_GONE);
-		run.Note("The field station at {lead_place} isn't {lead}'s any more, and its back room went with her. {brother} is a number on the lab's paper, and nobody was with him.");
+		run.Note("The field station at {lead_place} isn't {lead}'s any more, and its back room went with the field lead. {brother} is a number on the lab's paper, and nobody was there at the end.");
 		run.SetPlace(GetHousePos(gm, run), run.Text("town"));
 		return S_NAMES;
 	}
@@ -343,7 +343,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 			return S_LEAD;
 
 		run.SetFlag("ward", WARD_GONE);
-		run.Note("{lead} isn't at {lead_place} any more, and the back room went with her.");
+		run.Note("{lead} isn't at {lead_place} any more, and the back room went too.");
 		run.SetPlace(GetHousePos(gm, run), run.Text("town"));
 		return S_NAMES;
 	}
@@ -361,7 +361,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 			case OUT_REPORTED:
 			{
 				run.SetFlag("ward", WARD_LAB);
-				run.Note("The director knows about the back room. It moves to the lab, where she can watch it, and {lead} won't keep her station.");
+				run.Note("The director knows about the back room. It moves to the lab, under the director's eye, and {lead} loses the field station.");
 				break;
 			}
 			case OUT_KEPT:
@@ -373,7 +373,7 @@ class RZ_Quest_OtherTwo : RZ_Questline
 			case OUT_GONE:
 			{
 				run.SetFlag("ward", WARD_GONE);
-				run.Note("{lead} is gone from {lead_place}, and the back room with her.");
+				run.Note("{lead} is gone from {lead_place}, and so is the back room.");
 				break;
 			}
 			case OUTCOME_FAILED:
@@ -825,7 +825,7 @@ class RZ_QM_OtherRoom : RZ_QM_OtherTwoScene
 
 		if (TryPersuade(gm, playerId, RZ_EFaction.INSTITUTE, 2, "doctor"))
 		{
-			In(gm, playerId, QFill(gm, "{lead_short} looks at you for a long time, then takes a key off her belt. \"You'll want to have seen it, then. Don't touch the clipboards.\""), RZ_EQuestApproach.PERSUADE, "talked the field lead into it");
+			In(gm, playerId, QFill(gm, "{lead_short} looks at you for a long time, then takes a key off a belt loop. \"You'll want to have seen it, then. Don't touch the clipboards.\""), RZ_EQuestApproach.PERSUADE, "talked the field lead into it");
 			return;
 		}
 

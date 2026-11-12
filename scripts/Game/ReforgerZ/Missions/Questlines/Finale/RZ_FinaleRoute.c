@@ -1177,14 +1177,14 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 			pacts += "Pact with " + RZ_CureFinale.RouteName(r);
 		}
 
-		int between = AddClue("the go-between", "\"A pact is both routes' regulars agreeing within a day. One a route. You stand together at the stand.\"");
+		int between = AddClue("the go-between", "A pact is both routes' regulars agreeing within a day. One a route. You stand together at the stand.");
 		AddSpot(RZ_Mission.LandPointNear(at, 3, 6), RZ_EPuzzleProp.CIVILIAN, 1, between, "Talk to the go-between", pacts, "the go-between");
-		int found = AddClue("the lost-and-found", "\"Picked up something with our name on it? We'll take it back. No questions. Or we'll buy it back, and remember who sold it.\"");
+		int found = AddClue("the lost-and-found", "Picked up something with our name on it? We'll take it back. No questions. Or we'll buy it back, and remember who sold it.");
 		AddSpot(RZ_Mission.LandPointNear(at, 3, 6), RZ_EPuzzleProp.OBJECT, 2, found, "Read the note", "Give back what you found|Ransom it back [their Favor]|Spoil another route's find", "");
 		// The night man (the moves and Last Mile's contracts) and the gate sheet (the deal at the gate)
-		int night = AddClue("the night man", "\"Things change hands at night. What you know, what you carry, what somebody else carries. I just write it down.\"");
+		int night = AddClue("the night man", "Things change hands at night. What you know, what you carry, what somebody else carries. I just write it down.");
 		AddSpot(RZ_Mission.LandPointNear(at, 4, 8), RZ_EPuzzleProp.CIVILIAN, 4, night, "Talk to the night man", RZ_FinaleRest.DeskLabels(), "the night man");
-		int sheet = AddClue("the gate sheet", "\"One name from each route, on one sheet, at the lab gate, while a batch is in the hold. Then it's a deal.\"");
+		int sheet = AddClue("the gate sheet", "One name from each route, on one sheet, at the lab gate, while a batch is in the hold. Then it's a deal.");
 		AddSpot(RZ_Mission.LandPointNear(at, 4, 8), RZ_EPuzzleProp.OBJECT, 5, sheet, "Read the sheet", "Agree the deal at the gate", "");
 		if (m_iRoute == RZ_CureFinale.REDHAND || m_iRoute == RZ_CureFinale.INDEP)
 		{

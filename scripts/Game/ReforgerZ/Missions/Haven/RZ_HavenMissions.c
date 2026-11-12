@@ -58,7 +58,7 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
 		m_sTitle = "The Cache";
 		m_sDeed = "found a supply cache near {town}";
-		m_sBrief = string.Format("A Haven scout radioed about an untouched supply cache in %1. Secure it and hold the area for a minute.", s.m_sName);
+		m_sBrief = string.Format("One of our scouts radioed from %1: a cellar nobody's found yet, tins and bottled water still on the shelves. Somebody else will have heard the call. Get there, secure it, and hold the area for a minute while we send people to carry it home.", s.m_sName);
 		m_Mirror.Roll();
 		Truth(gm);
 		return true;
@@ -263,7 +263,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		m_bBitten = rng.Chance(0.25);	// a fixed fact about this family, never a gotcha
 		m_sTitle = "Survivors Trapped";
 		m_sDeed = "got people out of {town}";
-		m_sBrief = string.Format("A family is barricaded inside a house in %1 and they're running out of time. Get to them and hold until help arrives.", s.m_sName);
+		m_sBrief = string.Format("A family has been barricaded inside a house in %1 since yesterday, and the infected have found the door. They called it in on a child's walkie-talkie. Get to them and hold the house until help from the safehouse arrives.", s.m_sName);
 		return true;
 	}
 
@@ -404,7 +404,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	override protected void OnHoldStarted(RZ_GameModeComponent gm)
 	{
 		m_fTimeLeft = Math.Max(m_fTimeLeft, m_fHoldNeeded + 300);
-		NotifyParticipants(gm, "Hold the house", "They've heard the commotion. Hold on until help gets here!");
+		NotifyParticipants(gm, "Hold the house", "The infected have heard the commotion and are closing on the house. Hold it until help from the next safehouse gets here.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -510,7 +510,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		if (m_bDied)
-			return string.Format("Survivors Trapped (%1): the family didn't make it.", GetLocationName(gm));
+			return string.Format("Survivors Trapped (%1): the door gave before help came, and the family didn't make it. The walkie-talkie is still on, hissing, on the kitchen floor.", GetLocationName(gm));
 
 		return super.GetFailText(gm);
 	}
@@ -580,7 +580,7 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 		m_vPos = HighPointNear(s.m_vCenter, s.m_fRadius * 0.5, s.m_fRadius * 2);
 		m_sTitle = "Radio Relay";
 		m_sDeed = "fixed the radio relay at {town}";
-		m_sBrief = string.Format("Get to the high ground near %1 and keep the Haven relay broadcasting for 3 minutes. Every infected nearby will hear it.", s.m_sName);
+		m_sBrief = string.Format("The houses talk to each other through a relay on the high ground near %1: who's short, who has beds, which roads are open. Keep it broadcasting for 3 minutes while tonight's news goes out. The speaker hums, and every infected nearby will hear it.", s.m_sName);
 		return true;
 	}
 
@@ -679,7 +679,7 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 		m_fParticipationRadius = s.m_fRadius + 100;
 		m_sTitle = "Burn the Nest";
 		m_sDeed = "burnt the dead in {town}";
-		m_sBrief = string.Format("The slow ones lie up thick in %1, all in one place. Find it and burn it out.", s.m_sName);
+		m_sBrief = string.Format("The slow ones lie up thick in %1, all in one place, through the day. While they're there, nobody can go home to that town. Find the place and burn it out. Some of them were neighbours once. Burn it anyway.", s.m_sName);
 		return true;
 	}
 
@@ -1031,7 +1031,7 @@ class RZ_Mission_BittenFriend : RZ_Mission
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
 		m_fParticipationRadius = 60;
 		m_sTitle = "The Bitten Friend";
-		m_sBrief = string.Format("One of ours was bitten in %1. Bring him an antidote before he turns, or do what has to be done.", s.m_sName);
+		m_sBrief = string.Format("One of ours was bitten in %1 and declared it, the way every house asks. There's still time if someone gets an antidote to him before he turns. If nobody can, someone has to do what has to be done, and better you than his family.", s.m_sName);
 		return true;
 	}
 
@@ -1117,7 +1117,7 @@ class RZ_Mission_BittenFriend : RZ_Mission
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		if (m_bKilled)
-			return string.Format("The Bitten Friend (%1): something got to him before anyone could help.", GetLocationName(gm));
+			return string.Format("The Bitten Friend (%1): something got to him before anyone could help. The house will read his name at supper all the same.", GetLocationName(gm));
 
 		return super.GetFailText(gm);
 	}
@@ -1214,7 +1214,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		Truth(gm);
 		m_sTitle = "Missing Scout";
 		m_sDeed = "found the scout near {town}";
-		m_sBrief = string.Format("A Haven scout never came back from %1. Search the area, find his notes and bring them to the safehouse in %2.", s.m_sName, homeName);
+		m_sBrief = string.Format("One of our scouts never came back from %1. He was marking which houses still stood and which wells were clean. Search the area, find his notes and bring them to the safehouse in %2. If you find him, we'll read his name at supper.", s.m_sName, homeName);
 		return true;
 	}
 
@@ -1405,7 +1405,7 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
 		m_sTitle = "Trader Caravan";
-		m_sBrief = string.Format("A Haven trader stopped at the crossroads outside %1. The Red Hand knows. Get there and keep him alive.", s.m_sName);
+		m_sBrief = string.Format("One of our traders has set up at the crossroads outside %1, swapping seed potatoes and soap with whoever comes by. The Red Hand knows he's there, and they don't like trade they can't toll. Get there and keep him alive.", s.m_sName);
 		Truth(gm);
 		return true;
 	}
@@ -1569,7 +1569,7 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 			RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Raiders.m_Unit);
 			if (gm.GetHostility())
 				gm.GetHostility().MakeUnitHostileTo(m_Trader.m_Unit, RZ_EFaction.BANDITS);
-			NotifyParticipants(gm, m_sTitle, "Red Hand raiders incoming!");
+			NotifyParticipants(gm, m_sTitle, "Red Hand raiders on the road, coming for the trader and the stock. Keep them off the trader.");
 			return;
 		}
 
@@ -1660,7 +1660,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.5);
 		m_sTitle = "Rescue the Kids";
 		m_sDeed = "brought the children back from {town}";
-		m_sBrief = string.Format("Children are hiding in the school in %1. Get them out quietly. If it gets loud, everything in town will come.", s.m_sName);
+		m_sBrief = string.Format("Children are hiding in the school in %1, the ones whose parents didn't come back for them. They've been eating from the kitchen and keeping very quiet. Get them out quietly and bring them to us. If it gets loud, everything in town will come.", s.m_sName);
 		return true;
 	}
 
@@ -1685,7 +1685,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 
 		m_bHordeSent = true;
 		gm.GetSpawner().SpawnHorde(m_vPos, 250, m_iId);
-		NotifyParticipants(gm, m_sTitle, "Too loud! They're coming. Hold on and get the kids out.");
+		NotifyParticipants(gm, m_sTitle, "That was too loud: the infected are coming toward the noise. Hold the door and get the children out before they reach the house.");
 	}
 
 	//------------------------------------------------------------------------------------------------

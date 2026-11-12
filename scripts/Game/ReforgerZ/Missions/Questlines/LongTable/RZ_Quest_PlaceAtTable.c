@@ -470,7 +470,7 @@ class RZ_QM_PlaceDead : RZ_QM_PlaceBase
 		}
 
 		m_iBodyClue = AddClue("In the ditch", "A man nobody knew, on his back in the ditch with his pack still on. The infected got there first, and moved on. Nobody else has found him yet.");
-		m_iHostTalk = AddClue(QText(gm, "host"), QFill(gm, "{host} is at the gate, the way he always is. \"Well?\""));
+		m_iHostTalk = AddClue(QText(gm, "host"), QFill(gm, "{host} is at the gate, the way someone always is. \"Well?\""));
 		m_vPos = m_vDead;
 		m_iSettlement = gm.FindNearestSettlement(m_vDead);
 		m_sTitle = "The dead";
@@ -570,7 +570,7 @@ class RZ_QM_PlaceDead : RZ_QM_PlaceBase
 		if (news.IsEmpty())
 			news = t.RoadNews(source.GetOrigin());
 
-		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} listens with his head on one side. \"Before anyone else found them?\" He nods. \"Good. Nothing's wasted.\" There's a bowl kept back for you at the long table, and the road news, which is true: " + news));
+		gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{host} listens with head on one side. \"Before anyone else found them?\" A nod. \"Good. Nothing's wasted.\" There's a bowl kept back for you at the long table, and the road news, which is true: " + news));
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_PlaceAtTable.OUT_TOLD, "told the host where the dead were");
 	}
 

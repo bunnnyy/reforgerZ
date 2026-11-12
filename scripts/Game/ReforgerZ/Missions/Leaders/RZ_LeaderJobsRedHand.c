@@ -213,7 +213,7 @@ class RZ_Job_DebtCollection : RZ_LeaderPuzzle
 			m_sDebtor = RZ_NoteText.FullName(m_Rng);
 		}
 
-		m_iTalk = AddClue(m_sDebtor, "\"Forty tins. I know. I had forty tins, and then I had a daughter with a fever and a doctor who wanted forty tins. You can see how the arithmetic went.\"");
+		m_iTalk = AddClue(m_sDebtor, "Forty tins. I know. I had forty tins, and then I had a daughter with a fever and a doctor who wanted forty tins. You can see how the arithmetic went.");
 		string labels = string.Format("Talk %1 round|Threaten %1 [Threaten - +3 Infamy]|Pay what %1 owes (%2 Red Hand Favor)", m_sDebtor, PAY_FAVOR);
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", labels, m_iTalk, "Talk to " + m_sDebtor);
 

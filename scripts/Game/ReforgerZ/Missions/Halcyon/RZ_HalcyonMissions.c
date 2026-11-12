@@ -63,7 +63,7 @@ class RZ_Mission_SampleHunt : RZ_TribeContract
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.8);
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_sBrief = string.Format("Halcyon tracked a big one, on its own, to %1. Kill it and bring its samples to the lab.", s.m_sName);
+		m_sBrief = string.Format("We've tracked a big one to %1, on its own, further along than anything round it. The furthest along we've seen. Kill it and bring its samples to the lab while they're fresh.", s.m_sName);
 
 		RZ_TrackedZombie alpha = gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId);
 		return alpha != null;
@@ -163,7 +163,7 @@ class RZ_Mission_FieldSamples : RZ_Mission
 		m_fParticipationRadius = s.m_fRadius;
 		m_sTitle = "Field Samples";
 		m_sDeed = "brought samples back from {town}";
-		m_sBrief = string.Format("Halcyon needs tissue from regular infected. Kill %1 of them in %2 and the lab will take readings.", NEEDED, s.m_sName);
+		m_sBrief = string.Format("The specials get the attention, but the cure has to work on the ordinary ones too: the postman, the farmer, whoever was in %2 when it started. Put down %1 of them there. The lab takes its readings from what's left.", NEEDED, s.m_sName);
 		return true;
 	}
 
@@ -201,7 +201,7 @@ class RZ_Mission_FieldSamples : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(1.5, "Field samples from " + GetLocationName(gm) + " came in.");
+		gm.GetCure().AddResearch(1.5, "Field samples from " + GetLocationName(gm) + " came in: tissue from the ordinary infected, the ones the cure has to work on most.");
 	}
 }
 
@@ -291,7 +291,7 @@ class RZ_Mission_WaterSurvey : RZ_Mission_VisitPoints
 
 		m_sTitle = "Water Survey";
 		m_sDeed = "tested the water at {town}";
-		m_sBrief = string.Format("Halcyon wants water samples from the wells in %1 and two towns nearby. Stand at each well for 10 seconds.", s.m_sName);
+		m_sBrief = string.Format("The Haven boils its water and still gets sick, and the roads say the Red Hand poisons wells. We'd like a number instead of a rumour. Take samples from the wells in %1 and two towns nearby: ten seconds at each well.", s.m_sName);
 		return true;
 	}
 
@@ -502,7 +502,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 		if (m_bCourier)
 		{
 			m_sTitle = "The Missing Courier";
-			m_sBrief = string.Format("A Halcyon courier carrying samples between the lab and %1 stopped reporting. Find him, or what's left of him.", s.m_sName);
+			m_sBrief = string.Format("One of our couriers was walking a steel case of samples between the lab and %1 and missed the last check-in. Couriers go on the list of authors, the same as researchers. Find him, or what's left of him, and the case.", s.m_sName);
 		}
 
 		m_vHim = m_vPos;
@@ -999,7 +999,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		if (gm.GetCure() && m_iResearch > 0)
-			gm.GetCure().AddResearch(m_iResearch, "A lost researcher's notes reached the lab.");
+			gm.GetCure().AddResearch(m_iResearch, "A lost researcher's notebook reached the lab. It will be read into the record, page by page.");
 
 		RZ_StoryKit.Record(this, "fate", m_sName, m_sHow, m_aParticipants);
 	}
@@ -1191,9 +1191,9 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 	{
 		bool copied = m_Job && m_Job.m_sTruth == "copied";
 		if (faction == RZ_EFaction.INSTITUTE && copied)
-			gm.GetCure().AddResearch(1, "Recovered research data reached the lab. Bastion has a copy.");
+			gm.GetCure().AddResearch(1, "A lost drive of Halcyon's research reached the lab, and Bastion's drop paid for a copy on the way.");
 		else if (faction == RZ_EFaction.INSTITUTE)
-			gm.GetCure().AddResearch(3, "Recovered research data reached the lab.");
+			gm.GetCure().AddResearch(3, "A lost drive of Halcyon's research reached the lab, its padded case scuffed but the data whole.");
 		else
 			gm.NotifyAll("Halcyon", "Our research data was sold to Bastion. We know who did it.");
 
@@ -1256,7 +1256,7 @@ class RZ_Mission_HuntScreamer : RZ_TribeContract
 
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.7);
 		m_fParticipationRadius = s.m_fRadius + 100;
-		m_sBrief = string.Format("A Screamer is in %1. Kill it before it calls every infected in town. Halcyon wants what's left.", s.m_sName);
+		m_sBrief = string.Format("Something in %1 shrieks when it sees anyone, and every infected in town comes to the sound. Kill it before it sees you. We want what's left of it: it's the only kind we've found that calls the others.", s.m_sName);
 		return gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId) != null;
 	}
 
@@ -1402,7 +1402,7 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 		m_vPos = gm.GetLabPosition();
 		m_fParticipationRadius = 100;
 		m_sTitle = "Lab Defence";
-		m_sBrief = "Something is coming for the Halcyon lab. Get there and hold it for four minutes.";
+		m_sBrief = "Something is coming for the lab: the fence sensors in the hills went off one after another, all heading this way. Get there and hold it for four minutes while we move the samples into the cold room. If the freezers go, the cure goes with them.";
 		return true;
 	}
 
@@ -1419,7 +1419,7 @@ class RZ_Mission_LabDefence : RZ_Mission_Hold
 		RZ_Util.SendGroupTo(m_Raiders, m_vPos, gm.GetSpawner().GetMoveWaypointPrefab());
 		RZ_Hostility.MarkFight(RZ_EFaction.BANDITS, m_Raiders);
 		SetRival(RZ_EFaction.BANDITS, 10);
-		NotifyParticipants(gm, m_sTitle, "Red Hand raiders are using the infected as cover!");
+		NotifyParticipants(gm, m_sTitle, "A Red Hand crew is coming in behind the infected, using them as cover. Watch the gaps between the bodies: the ones carrying rifles are the crew.");
 	}
 
 	//------------------------------------------------------------------------------------------------

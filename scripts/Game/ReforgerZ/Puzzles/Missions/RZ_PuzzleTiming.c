@@ -216,7 +216,7 @@ class RZ_Mission_TimeLockSafe : RZ_PuzzleMission
 
 		m_fTimeLeft = Math.Max(1800, until + window + 600);
 		m_sTitle = "Time-Lock Safe";
-		m_sBrief = string.Format("The bank safe in %1 still keeps time. Its lock opens at 03:00 and not a minute before. Be there in the dark, and be ready to leave fast: it's loud.", s.m_sName);
+		m_sBrief = string.Format("The bank safe in %1 still keeps time. Whatever the manager locked in it on Day 1 is still inside, and the lock opens at 03:00 and not a minute before. Be there in the dark, and be ready to leave fast: it's loud.", s.m_sName);
 		return true;
 	}
 
@@ -525,7 +525,7 @@ class RZ_Mission_LightsInTheWindow : RZ_PuzzleMission
 		m_fTimeLeft = NightDuration(1800, 10800, 3600);
 
 		m_sTitle = "Lights in the Window";
-		m_sBrief = string.Format("A Bastion observer is signalling from a window in %1 after dark. The signal card is at the old scout post in %2. Read the light, find the meeting place, get there.", farTown.m_sName, post.m_sName);
+		m_sBrief = string.Format("A Bastion observer cut off from the post is signalling from a window in %1 after dark, in Morse, with a torch. The signal card is at the old scout post in %2. Read the light, find the meeting place, and get there before the torch batteries give out.", farTown.m_sName, post.m_sName);
 		return true;
 	}
 

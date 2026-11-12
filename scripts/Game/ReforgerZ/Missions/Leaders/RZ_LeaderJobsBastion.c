@@ -311,8 +311,8 @@ class RZ_Job_LocalLaw : RZ_LeaderPuzzle
 		if (m_sFamilyB == m_sFamilyA)
 			m_sFamilyB = "Kowal";
 
-		int a = AddClue("The " + m_sFamilyA + "s", string.Format("\"Our grandfather dug that well. The %1s moved here in the spring and now they drink first and wash their car in it. Their car! There's no petrol in the Zone!\"", m_sFamilyB));
-		int b = AddClue("The " + m_sFamilyB + "s", string.Format("\"We have a baby and the %1s have goats. Ask them who's been sleeping by the well with a shotgun. Go on, ask.\"", m_sFamilyA));
+		int a = AddClue("The " + m_sFamilyA + "s", string.Format("Our grandfather dug that well. The %1s moved here in the spring, and now they drink first and wash their car in it. Their car. There isn't a litre of petrol in the Zone to drive it.", m_sFamilyB));
+		int b = AddClue("The " + m_sFamilyB + "s", string.Format("We have a baby, and the %1s have goats. Goats. Ask them who's been sleeping by the well with a shotgun since the Zone closed. Go on, ask.", m_sFamilyA));
 		m_iJudge = AddClue("The village", "Everyone is watching to see whose side Bastion takes. Nobody has a gun out. Yet.");
 		SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vPos, 6, 10), a, "Talk to the " + m_sFamilyA + "s");
 		SpawnClue(gm, RZ_EPuzzleProp.CIVILIAN, LandPointNear(m_vPos, 6, 10), b, "Talk to the " + m_sFamilyB + "s");

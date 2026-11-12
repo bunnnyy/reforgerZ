@@ -814,11 +814,11 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 		{
 			case RZ_EFaction.SURVIVORS: return string.Format("Someone tried to get out by water last night. They didn't make it. The sea brought them back to the shore at grid %1. Please bring back whatever they were carrying, so we know who it was. Don't go out past them: the drones watch the water.", grid);
 			case RZ_EFaction.MILITARY: return string.Format("Unidentified civilian, shot attempting the line by sea. Body washed up on the shore, grid %1. Recover any papers. Do not enter the water. Kill zone is offshore.", grid);
-			case RZ_EFaction.BANDITS: return string.Format("Some genius tried to swim the line last night. Guess how that went. The tide dropped him back on the shore at grid %1, pockets still full. Go through them. Stay out of the water, yeah?", grid);
+			case RZ_EFaction.BANDITS: return string.Format("Somebody tried the line by water last night without asking us when the drones turn. We'd have charged, but less than that. The tide brought them back to the shore at grid %1, pockets still full. Go through them. Stay out of the water, yeah?", grid);
 			case RZ_EFaction.INSTITUTE: return string.Format("A body has washed up on the shore at grid %1: someone shot trying the line by water. We need to know who they were and what they were carrying. Recover their papers. Stay out of the water: the kill zone is offshore.", grid);
 		}
 
-		return string.Format("A body has washed up on the shore at grid %1, shot trying the line by water. Recover their papers without going out into the kill zone.", grid);
+		return string.Format("A body has washed up on the shore at grid %1, shot trying the line by water. Somebody inside is still waiting to hear from them. Recover their papers without going out into the kill zone.", grid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -829,11 +829,11 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 		{
 			case RZ_EFaction.SURVIVORS: return string.Format("Someone tried to cross last night. They didn't make it. Their body is still in the warning zone at grid %1. Please bring back whatever they were carrying, so we know who it was. Don't go past them: the shooting starts just beyond.", grid);
 			case RZ_EFaction.MILITARY: return string.Format("Unidentified civilian, shot at the line, grid %1. Body is inside the warning zone. Recover any papers. Do not proceed beyond the body. Kill zone starts there.", grid);
-			case RZ_EFaction.BANDITS: return string.Format("Some genius tried the line last night. Guess how that went. The body's in the warning zone at grid %1, pockets still full. Go through them. Just stop where he stopped, yeah?", grid);
+			case RZ_EFaction.BANDITS: return string.Format("Somebody tried the line last night without asking us when the drones turn. We'd have charged, but less than that. The body's in the warning zone at grid %1, pockets still full. Go through them. Just stop where they stopped, yeah?", grid);
 			case RZ_EFaction.INSTITUTE: return string.Format("A body lies in the warning zone at grid %1, shot at the line. We need to know who they were and what they were carrying. Recover their papers. Stay short of the kill zone: it begins just past the body.", grid);
 		}
 
-		return string.Format("A body lies in the warning zone at grid %1, shot at the line. Recover their papers without crossing into the kill zone.", grid);
+		return string.Format("A body lies in the warning zone at grid %1, shot at the line. Somebody inside is still waiting to hear from them. Recover their papers without crossing into the kill zone.", grid);
 	}
 
 	//------------------------------------------------------------------------------------------------

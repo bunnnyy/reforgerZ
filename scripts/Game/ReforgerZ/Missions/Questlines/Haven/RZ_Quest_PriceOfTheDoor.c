@@ -456,7 +456,7 @@ class RZ_Quest_PriceOfTheDoor : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 5, 0);
 				ChangeFood(gm, house, -4);
 				Headline(gm, run.Fill("The safehouse in {house} eats a little less every month. The Red Hand never bothers it."), false);
-				SpreadRumour(gm, run.Fill("{house} pays. Everybody knows. Nobody says."), 6);
+				SpreadRumour(gm, run.Fill("{house} pays the Red Hand to be left alone. Everybody on the road knows it, and nobody in the house will say it."), 6);
 				return;
 			}
 			case E_DEBT:

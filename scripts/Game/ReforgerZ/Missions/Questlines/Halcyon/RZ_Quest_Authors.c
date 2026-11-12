@@ -97,7 +97,7 @@ class RZ_Quest_Authors : RZ_Questline
 		letter.Visits(2);
 
 		RZ_QuestStage plan = MissionStage(S_PLAN, "The field lead's plan", "{lead} at {lead_place} wants the method at a Haven clinic first, before Bastion locks it in a crate. She has it packed cold for the clinic at the safehouse in {clinic}.");
-		plan.GiveUp(4, "{lead}'s cold case stayed on her desk until it was warm.");
+		plan.GiveUp(4, "{lead}'s cold case stayed on the field station's desk until it was warm, and the method in it was no use to anyone.");
 
 		RZ_QuestStage wait = WaitStage(S_ANSWER_WAIT, "The CO's answer", "{co} has the director's terms. Bastion takes its time.");
 		wait.Wait(120, 24);
@@ -634,7 +634,7 @@ class RZ_Quest_Authors : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.INSTITUTE, 10, 0);
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 10, 0);
 				OpenClinics(gm);
-				string who = "{lead}'s name is first on the paper, wherever she is now.";
+				string who = "{lead}'s name is first on the paper, wherever the field lead is now.";
 				if (RZ_QM_HalcyonScene.SameLeader(gm, run, "lead"))
 					who = "On the lab's paper, {lead}'s name is first.";
 
@@ -818,7 +818,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 		m_iDutySpot = AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_DUTY, duty, "Talk to the duty officer", "Take the sealed letter|Take it, and read it on the way", "the duty officer at the lab");
 		m_iLetterClue = AddClue("The director's letter", QFill(gm, "{director} to {co}. \"The method, written out, for Bastion alone. In return: Bastion's guns on the lab through the final stand, and nobody else's near it. Nobody else needs to know this letter exists.\""));
 
-		int adjutant = AddClue("The adjutant", QFill(gm, "{co}'s adjutant holds out his hand for whatever you've brought. \"The CO reads everything the lab sends. Twice.\""));
+		int adjutant = AddClue("The adjutant", QFill(gm, "{co}'s adjutant holds out a hand for whatever you've brought. \"The CO reads everything the lab sends. Twice.\""));
 		m_iCoSpot = AddSpot(NearSeat(co.m_vPos), RZ_EPuzzleProp.CIVILIAN, OBJ_CO, adjutant, "Talk to the adjutant", "Hand over the director's letter", "the commanding officer's adjutant");
 
 		RZ_Leader lead = SameLeader(gm, run, "lead");
@@ -990,7 +990,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 		gm.GetLeaders().Hold(m_iLead, m_iId);
 		m_vPos = NearSeat(l.m_vPos);
 		m_iSettlement = gm.FindNearestSettlement(l.m_vPos);
-		int talk = AddClue(l.m_sName, QFill(gm, "{lead_short} has a cold case on the desk, sealed with her own initials. \"The method, every step. If the Haven's clinics have it first, nobody can lock it in a crate. It won't stay cold long, and the lab will miss it by tonight.\""));
+		int talk = AddClue(l.m_sName, QFill(gm, "{lead_short} has a cold case on the desk, sealed with the lead's own initials. \"The method, every step. If the Haven's clinics have it first, nobody can lock it in a crate. It won't stay cold long, and the lab will miss it by tonight.\""));
 		m_iLeadSpot = AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_LEAD, talk, "Talk to " + l.m_sShort, "Take the cold case", string.Format("%1 at the field station in %2", l.m_sShort, l.m_sPlace));
 
 		int medic = AddClue("The clinic's medic", "The medic at the safehouse clinic has cleared a shelf in the cold box and is pretending she hasn't.");
@@ -1077,7 +1077,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 			}
 			case OBJ_DUTY:
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "By evening {director} has the case back in the lab's cold room, and {lead_short} has been told what the director thinks of her plan."));
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "By evening {director} has the case back in the lab's cold room, and {lead_short} has been told what the director thinks of the plan."));
 				if (gm.GetLeaders() && m_iLead >= 0)
 					gm.GetLeaders().Remember(m_iLead, playerId, RZ_Leaders.MEM_CROSSED);
 

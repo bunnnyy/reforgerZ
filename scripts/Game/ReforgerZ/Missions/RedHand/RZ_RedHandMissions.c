@@ -66,7 +66,7 @@ class RZ_Mission_BanditDeadDrop : RZ_Mission
 			return false;
 
 		m_sTitle = "Dead Drop";
-		m_sBrief = string.Format("The Red Hand is paying well for infected samples. No questions asked. There's a drop near %1.", s.m_sName);
+		m_sBrief = string.Format("We're buying infected samples, and paying better than the lab. The lab pays in hope; we pay in tins. Bring them to the drop near %1. No questions asked, and none answered.", s.m_sName);
 		Truth(gm);
 		return true;
 	}
@@ -242,7 +242,7 @@ class RZ_Mission_FenceTheGoods : RZ_Mission_Delivery
 
 		SpawnDrop(gm, RZ_EFaction.BANDITS, LandPointNear(fence.m_vCenter, fence.m_fRadius * 0.7, fence.m_fRadius + 50));
 		m_sTitle = "Fence the Goods";
-		m_sBrief = string.Format("A Red Hand crew left a crate of stolen goods in %1. Get it to the fence in %2.", s.m_sName, fence.m_sName);
+		m_sBrief = string.Format("One of our crews left a crate in %1 in a hurry: watches, rings, a radio, everything the last house had worth carrying. Get it to the fence in %2 before anyone comes looking for it. Nobody will. Walk quick anyway.", s.m_sName, fence.m_sName);
 		return true;
 	}
 
@@ -292,9 +292,9 @@ class RZ_Mission_PharmacyHeist : RZ_Mission_Hold
 		SpawnGuards(gm, m_vPos, 3, 15, 40);
 		m_sTitle = "Pharmacy Heist";
 		if (shop)
-			m_sBrief = string.Format("The Haven is sending people to %1 in %2. Get there first and clean it out.", shop.m_sName, s.m_sName);
+			m_sBrief = string.Format("The Haven is sending people to pick %1 clean in %2. They'll share it all out and go hungry anyway. Get there first and clean it out. What isn't on their shelves is on ours.", shop.m_sName, s.m_sName);
 		else
-			m_sBrief = string.Format("The Haven is sending people to pick %1 clean of medicine. Get there first, hold the middle of town and clean it out.", s.m_sName);
+			m_sBrief = string.Format("The Haven is sending people to pick %1 clean of medicine, and medicine sells better than anything in the Zone but the cure. Get there first, hold the middle of town and clean it out.", s.m_sName);
 
 		return true;
 	}
@@ -378,7 +378,7 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 			return false;
 
 		m_sTitle = "Fight Pit";
-		m_sBrief = string.Format("The Red Hand's pit is in %1. Step into the ring and survive four minutes. They're betting on you.", place);
+		m_sBrief = string.Format("Pit's on tonight in %1: a ring of infected, and the crews betting on who stays standing. Step in and last four minutes. Most of the money's against you, which is why you'll be paid well if you don't fall over.", place);
 
 		// Stock the Pit: two caged young come out in the last round (docs/MISSIONS.md)
 		RZ_Tribes tribes = gm.GetTribes();
@@ -476,7 +476,7 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 		SpawnDrop(gm, RZ_EFaction.BANDITS, m_vDrop);
 		Truth(gm, s);
 		m_sTitle = "Smuggler's Run";
-		m_sBrief = string.Format("Pick up a Red Hand package in %1 and get it to %2. Word will get out that a courier is on the road.", s.m_sName, dest.m_sName);
+		m_sBrief = string.Format("Pick up a package in %1 and get it to %2. Don't open it: it isn't tins. Word gets out fast when a courier's on the road, and every crew between here and there can count.", s.m_sName, dest.m_sName);
 		return true;
 	}
 
@@ -689,7 +689,7 @@ class RZ_Mission_ZombieBait : RZ_Mission
 				m_iSettlement = gm.FindNearestSettlement(post.m_vPos);
 
 			m_vPos = LandPointNear(post.m_vPos, 25, 50);
-			m_sBrief = string.Format("Bastion has a post at %1. Make enough noise right outside it that every infected around comes for it. Then get out.", post.m_sName);
+			m_sBrief = string.Format("Bastion has a post at %1, and it keeps a list with our names on it. Make enough noise right outside its wire that every infected around comes for it, then get out before the soldiers work out who to add to the list.", post.m_sName);
 			return true;
 		}
 
@@ -700,7 +700,7 @@ class RZ_Mission_ZombieBait : RZ_Mission
 			return false;
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius * 0.9, s.m_fRadius + 60);
-		m_sBrief = string.Format("We want %1 crawling the next time Bastion comes through. Make enough noise at the edge of town that every infected around comes for it. Then get out.", s.m_sName);
+		m_sBrief = string.Format("We want %1 full of them the next time Bastion's patrol comes through. Make enough noise at the edge of town that every infected around comes for it. Then get out, and let Bastion find out what the town's become.", s.m_sName);
 		return true;
 	}
 
@@ -796,7 +796,7 @@ class RZ_Mission_Arson : RZ_Mission_DestroyTarget
 
 		m_fParticipationRadius = 150;
 		m_sTitle = "Arson";
-		m_sBrief = string.Format("Bastion keeps a fuel depot outside %1. Burn it.", s.m_sName);
+		m_sBrief = string.Format("Bastion keeps a fuel depot outside %1, the diesel it won't sell us at any price. If we can't have it, nobody drives on it. Burn it, and be gone before the smoke tells them where to look.", s.m_sName);
 		return true;
 	}
 
@@ -851,7 +851,7 @@ class RZ_Mission_SabotageRelay : RZ_Mission_DestroyTarget
 
 		m_fParticipationRadius = 150;
 		m_sTitle = "Sabotage the Relay";
-		m_sBrief = string.Format("The Haven talks to its safehouses through a relay near %1. Take it down.", s.m_sName);
+		m_sBrief = string.Format("The Haven talks to its safehouses through a relay near %1: who's short, who has beds, where the trucks are. Take it down, and the houses go quiet and start paying for protection instead. Nothing personal. Good business.", s.m_sName);
 		return true;
 	}
 }

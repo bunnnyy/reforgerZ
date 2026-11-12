@@ -71,7 +71,7 @@ class RZ_Major_Proof : RZ_Questline
 		RZ_QuestStage weeks = WaitStage(S_WEEKS, "The Three Weeks", "\"Field antiviral. Chapter two. We'd like to thank the couriers.\" Somewhere between the clinic and the hill is what the lab did with three weeks.");
 		weeks.Wait(0);
 
-		RZ_QuestStage authors = WaitStage(S_AUTHORS, "Authors", "\"Bite treatment. The method exists now. So does the question of who owns it.\"");
+		RZ_QuestStage authors = WaitStage(S_AUTHORS, "Authors", "Bite treatment. The method exists now. So does the question of who owns it.");
 		authors.Wait(0);
 
 		RZ_QuestStage readingWait = WaitStage(S_READING_WAIT, "The reading", "The methods chapter is nearly written. The first page is read to the authors at the change of shift once it's done.");
@@ -83,7 +83,7 @@ class RZ_Major_Proof : RZ_Questline
 		RZ_QuestStage before = MissionStage(S_BEFORE, "Before the stand", "The first page is written. Until the batch is made, the director's three pages are still loose somewhere, and so is the draft in the records room.");
 		before.GiveUp(4, "");
 
-		RZ_QuestStage stand = WaitStage(S_STAND, "The final stand", "\"We're making the batch. Whoever is at the lab in the next fifteen minutes is on the paper.\"");
+		RZ_QuestStage stand = WaitStage(S_STAND, "The final stand", "We're making the batch. Whoever is at the lab in the next fifteen minutes is on the paper.");
 		stand.Wait(0);
 
 		RZ_QuestStage paperWait = WaitStage(S_PAPER_WAIT, "The paper", "The paper is finished. The director will read it on the open channel before it goes into the case.");

@@ -69,7 +69,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 		m_fParticipationRadius = 120;
 		m_sTitle = "Harvest Guard";
 		m_sDeed = "guarded the harvest at {town}";
-		m_sBrief = string.Format("Farmers from the safehouses are bringing in what's left in the fields outside %1. Ten minutes of work. Keep the infected off them.", s.m_sName);
+		m_sBrief = string.Format("Farmers from the safehouses are bringing in what's left in the fields outside %1: potatoes, mostly, and the last of the cabbages. That's a week of soup at half portions. Ten minutes of work, with their backs to the hedges. Keep the infected off them.", s.m_sName);
 		return true;
 	}
 
@@ -140,7 +140,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Harvest Guard (%1): the farmers didn't make it back.", GetLocationName(gm));
+		return string.Format("Harvest Guard (%1): the farmers didn't make it back from the fields. The sacks are lying in the rows, half full, and the house eats less this week.", GetLocationName(gm));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -225,7 +225,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		m_Escort.m_sPrefab = RZ_Escort.PrefabFor(gm, 0);
 		m_Escort.SetRoute(route);
 		m_sTitle = "Refugee Column";
-		m_sBrief = string.Format("A family group is waiting at the edge of %1 with everything they own. Walk them to %2. They won't move without someone with them.", s.m_sName, m_sDestName);
+		m_sBrief = string.Format("A family is waiting at the edge of %1 with everything they own on their backs and in a pram. They've been sleeping in a garage since the gates closed. Walk them to %2. They won't move without someone with them, and I don't blame them.", s.m_sName, m_sDestName);
 		if (!m_Escort.Begin(gm, m_vPos))
 			return false;
 
@@ -487,7 +487,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 		m_fParticipationRadius = 80;
 		m_sTitle = "Fortify the Safehouse";
 		m_sDeed = "boarded up the house at {town}";
-		m_sBrief = string.Format("The safehouse in %1 is putting boards over its windows. The hammering will bring them. Stand with the people working.", h.m_sName);
+		m_sBrief = string.Format("The safehouse in %1 is boarding up its ground-floor windows before the nights get longer. Every nail is a noise, and the hammering will bring them from all over town. Stand with the people working until the last board is up.", h.m_sName);
 		return true;
 	}
 
@@ -500,7 +500,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return string.Format("The safehouse in %1 is boarded up tight.", GetLocationName(gm));
+		return string.Format("The safehouse in %1 is boarded up tight, ground floor and back door. The children have drawn the bear on the new planks.", GetLocationName(gm));
 	}
 }
 

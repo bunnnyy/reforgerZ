@@ -60,7 +60,7 @@ class RZ_Mission_CarTheft : RZ_Mission
 		m_Zone.SetZone(shop, 25);
 		m_sTitle = "Car Theft";
 		m_sDeed = "brought in a car from {town}";
-		m_sBrief = string.Format("There's a car in %1 somebody wants. That one, not any one. Drive it to %2 and walk away from it.", s.m_sName, m_sShop);
+		m_sBrief = string.Format("There's a car in %1 somebody wants. That one, not any one: a buyer has paid in diesel, and the boss doesn't do refunds. Drive it to %2, leave the keys in it and walk away. Don't scratch it. Scratches come off your cut.", s.m_sName, m_sShop);
 		return true;
 	}
 
@@ -253,7 +253,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		m_sTruth = m_Story.Truth(HouseKey(), values, weights, this);
 
-		m_iTalk = AddClue("The storekeeper", "\"I know who sent you. We've nothing to spare. We've people to feed.\"");
+		m_iTalk = AddClue("The storekeeper", "I know who sent you. We've nothing to spare. We've people to feed.");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", Labels(), m_iTalk, "Talk to the storekeeper");
 		if (m_sTruth == "paid_twice")
 		{
@@ -276,7 +276,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		m_sTitle = "Protection Racket";
 		m_sDeed = "collected in {town}";
-		m_sBrief = string.Format("The safehouse in %1 is late. Everyone's late this week. Go and remind the storekeeper what our protection is worth.", h.m_sName);
+		m_sBrief = string.Format("The safehouse in %1 is late with its protection. Everyone's late this week, and the book doesn't care why. Go and remind the storekeeper what we're protecting them from. Tins, preferably. A promise is just a longer line in the book.", h.m_sName);
 
 		// Someone promised to speak for the house at this collection
 		m_SpokeFor = RZ_WorldFacts.Get().Memory().FindRecord("racket.speak_for", HouseKey());
@@ -672,7 +672,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		if (m_bDone)
-			return string.Format("Protection Racket (%1): nobody paid.", m_sHouse);
+			return string.Format("Protection Racket (%1): nobody paid. The book has the house down as late, and the book remembers.", m_sHouse);
 
 		return string.Format("Protection Racket (%1): the crew collected without you.", m_sHouse);
 	}
@@ -763,7 +763,7 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "Hijack the Convoy";
 		m_sDeed = "took a convoy near {town}";
-		m_sBrief = string.Format("Bastion's truck leaves %1 for %2 in a couple of minutes. Find a bend in the road. Whatever's on it is ours.", m_Watch.m_sFrom, m_Watch.m_sTo);
+		m_sBrief = string.Format("Bastion's supply truck leaves %1 for %2 in a couple of minutes, loaded and signed for. Find a bend in the road where it has to slow down. Whatever's on it is ours. Whatever's on the manifest is their problem.", m_Watch.m_sFrom, m_Watch.m_sTo);
 		return true;
 	}
 
@@ -817,7 +817,7 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Hijack the Convoy: Bastion's truck got through to %1.", m_Watch.m_sTo);
+		return string.Format("Hijack the Convoy: Bastion's truck got through to %1, every tin signed for at the gate.", m_Watch.m_sTo);
 	}
 }
 
@@ -1533,7 +1533,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 			m_sTarget = RZ_Util.PlayerName(m_iTarget);
 			m_vPos = t.GetOrigin();
 			m_iSettlement = gm.FindNearestSettlement(m_vPos);
-			m_sBrief = string.Format("There's a price on %1 and we mean to collect it. Last seen near %2. Whoever puts them down gets paid.", m_sTarget, GetLocationName(gm));
+			m_sBrief = string.Format("There's a price on %1 in the book, and the book always collects. Last seen near %2. Whoever puts them down gets paid, and nobody asks who started it.", m_sTarget, GetLocationName(gm));
 			return true;
 		}
 
@@ -1549,7 +1549,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 		m_vHide = LandPointNear(s.m_vCenter, s.m_fRadius + 80, s.m_fRadius + 300);
 		m_vPos = m_vHide;
 		m_sTarget = "the man";
-		m_sBrief = string.Format("A man who owes the wrong people is hiding outside %1. He's armed, and he knows we're coming. Make an example.", s.m_sName);
+		m_sBrief = string.Format("A man who owes the book more than he's worth is hiding outside %1, eating the tins he should have paid with. He's armed, and he knows we're coming. Make an example. The road should hear about this one.", s.m_sName);
 		return true;
 	}
 
@@ -1648,7 +1648,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Collect the Bounty: nobody collected on %1.", m_sTarget);
+		return string.Format("Collect the Bounty: nobody collected on %1. The price stays in the book.", m_sTarget);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1805,7 +1805,7 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Kill the Officer: %1 is out of reach.", m_sTarget);
+		return string.Format("Kill the Officer: %1 is out of reach, and the post runs as well as it ever did.", m_sTarget);
 	}
 }
 

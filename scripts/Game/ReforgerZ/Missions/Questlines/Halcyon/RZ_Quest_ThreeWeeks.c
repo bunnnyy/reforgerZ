@@ -72,7 +72,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		Info(KEY, "The Three Weeks", RZ_EFaction.INSTITUTE);
 
 		RZ_QuestStage driver = MissionStage(S_DRIVER, "The driver", "{lead} at the field station in {lead_place} found the clinic's copy: the first case, three weeks before the gates closed, and \"notify the Institute\" underlined twice. The only one who knows what happened at the site on Day 3 is {driver}, the driver who came back alone. He won't talk to anyone in a lab coat.");
-		driver.GiveUp(4, "{driver} never said what he saw at the site on Day 3. Nobody will hear it from him now.");
+		driver.GiveUp(4, "{driver} never said what was up at the site on Day 3, and nobody will hear it now.");
 		driver.Visits(2);
 
 		RZ_QuestStage site = MissionStage(S_SITE, "The site", "{driver} named the closed site: {site_place}, grid {site_grid}. Dr Wolff went back up on Day 3 with her team, and the store there has a keypad.");
@@ -95,7 +95,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		raid.GiveUp(4, "The Red Hand never came for the lab after all. The notebook is still all anyone talks about.");
 
 		RZ_QuestStage walkout = MissionStage(S_WALKOUT, "The field lead walks out", "{lead} heard the notebook went into the record without the pages about the director. She's leaving {lead_place}. Walk her to a safehouse, or bring her back to the lab.");
-		walkout.GiveUp(3, "{lead} left {lead_place} on her own, and the lab didn't say where she went.");
+		walkout.GiveUp(3, "{lead} left {lead_place} alone one night, and the lab hasn't said where to.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -570,7 +570,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 		int to = run.Flag("lead_to");
 		string headline = run.Fill("{lead} has left the field station in {lead_place}. Nobody at the lab says where she went.");
 		if (to == 2)
-			headline = run.Fill("{lead} has left the field station in {lead_place} for a desk at the lab, where the director can see her work.");
+			headline = run.Fill("{lead} has left the field station in {lead_place} for a desk at the lab, where the director can watch the work.");
 
 		int house = run.Flag("lead_house", -1);
 		RZ_Safehouse h = GetHouse(gm, house);
@@ -754,7 +754,7 @@ class RZ_QM_WeeksDriver : RZ_QM_HalcyonScene
 		if (!radio && Rank(gm, playerId, RZ_EFaction.INSTITUTE) >= 2)
 		{
 			Remember(gm, playerId, RZ_EQuestApproach.TALK, "asked him and got nothing");
-			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"You've got their badge in your voice.\" {driver} turns his back on you."));
+			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "\"You've got their badge in your voice.\" {driver} turns away from you, and that's the end of it."));
 			return;
 		}
 
@@ -1359,7 +1359,7 @@ class RZ_QM_WeeksReaders : RZ_QM_HalcyonScene
 				if (!SameLeader(gm, run, "lead"))
 					return;
 
-				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{lead_short} reads it at her desk with her coat on. When she gets to the one word she laughs, once, and stops. \"Tonight. On the open channel.\""));
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "{lead_short} reads it at the desk, coat still on. At the one word there's a laugh, once, and then nothing. \"Tonight. On the open channel.\""));
 				RZ_QuestApproach.SideWith(gm, playerId, -1, RZ_EFaction.INSTITUTE, 0, 10);
 				if (run)
 					run.Reward(gm, playerId, RZ_EFaction.INSTITUTE, 3, 0, QFill(gm, "{lead_short} won't forget who brought it. The director won't either. (+10 Halcyon Infamy)"));

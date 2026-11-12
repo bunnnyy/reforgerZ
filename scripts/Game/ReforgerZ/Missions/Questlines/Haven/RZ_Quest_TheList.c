@@ -573,7 +573,7 @@ class RZ_Quest_TheList : RZ_Questline
 			return pattern.LeaderTalk(gm, playerId, leaderId);
 
 		if (run.m_iStage == S_ASKING && run.PlayerTookPart(gm, playerId) && leaderId == run.Flag("chair", -1))
-			return "\"You're the one who's been asking about the List.\" A long look. \"Come and see me. Bring the copies.\"";
+			return "You're the one who's been going house to house about the List. Come and see me, and bring the copies you've made. I'd rather read them before anyone else does.";
 
 		return "";
 	}
@@ -1480,10 +1480,10 @@ class RZ_QM_ListPattern : RZ_HavenQM
 
 		AddParticipant(playerId);
 		if (!IsEligible(gm, playerId) || !RZ_Reputation.IsAtLeast(gm.GetTier(playerId, RZ_EFaction.SURVIVORS), RZ_ETier.TRUSTED))
-			return "\"Lists are the council's business.\" That's all.";
+			return "Lists are the council's business. Every house keeps one, and every house keeps it to itself. That's all I'll say.";
 
 		Resolve(gm, playerId, RZ_EQuestApproach.TALK, RZ_Quest_TheList.OUT_CHAIR_HALF, "asked the chair");
-		return QFill(gm, "The chair is quiet for a long time. \"There was a farm. Past the last village, outside {farm}. The first week, when there wasn't enough, we sent it the ones who couldn't work. It said it could feed them. Then it went quiet, and we didn't go and look.\" A breath. \"Leave it there. Please.\"");
+		return QFill(gm, "There was a farm past the last village, outside {farm}. The first week we sent it the ones who couldn't work. It said it could feed them. Then it went quiet. Leave it there. Please.");
 	}
 
 	//------------------------------------------------------------------------------------------------

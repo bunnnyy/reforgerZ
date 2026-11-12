@@ -1191,7 +1191,7 @@ class RZ_QM_WellBoss : RZ_QuestMission
 
 		m_vPos = LandPointNear(boss.m_vPos, 8, 16);
 		m_iSettlement = gm.FindNearestSettlement(boss.m_vPos);
-		m_iTalk = AddClue("The boss's second", QFill(gm, "\"The boss wants to know about {village}. The boss says the story works best untold: you don't kill the cow you milk. So. What happened?\""));
+		m_iTalk = AddClue("The boss's second", QFill(gm, "The boss wants to know about {village}. The boss says the story works best untold: you don't kill the cow you milk. So. What happened?"));
 		m_sTitle = "The Well Story: the boss hears";
 		m_sBrief = QFill(gm, "The boss has heard about {village}, and wants it from you, at {boss_place}. Not angry. Yet.");
 		return true;

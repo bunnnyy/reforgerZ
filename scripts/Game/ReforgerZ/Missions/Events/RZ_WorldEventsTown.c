@@ -303,7 +303,7 @@ class RZ_Event_PowerSurge : RZ_Event_Timed
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return "The power in " + GetLocationName(gm) + " has died again.";
+		return "The power in " + GetLocationName(gm) + " has died again. The shop alarms stop one by one, and the town goes dark.";
 	}
 }
 
