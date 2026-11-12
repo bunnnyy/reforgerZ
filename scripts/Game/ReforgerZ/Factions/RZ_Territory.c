@@ -1658,7 +1658,18 @@ class RZ_Territory
 			guardMax = 15;
 		}
 
-		// Camp life gives them jobs and dresses the place (RZ_CampLife)
+		// Camp life gives them jobs and dresses the place (RZ_CampLife). It moves the place into the
+		// building in town that suits the faction: its people come out in that building's yard
+		RZ_CampLife camp = m_GM.GetCampLife();
+		RZ_ECampPlace kind = RZ_ECampPlace.OUTPOST;
+		if (h.m_bStronghold)
+			kind = RZ_ECampPlace.STRONGHOLD;
+
+		string campKey = "h" + h.m_iId.ToString();
+		vector home = h.m_vPos;
+		if (camp)
+			home = camp.HomeFor(campKey, h.m_eFaction, kind, h.m_vPos);
+
 		array<IEntity> guardBodies = {};
 		array<IEntity> personBodies = {};
 		array<IEntity> keeperBodies = {};
@@ -1671,7 +1682,7 @@ class RZ_Territory
 		ResourceName guardPrefab = GuardPrefab(h.m_eFaction);
 		for (int g = 0; g < guards && !guardPrefab.IsEmpty(); g++)
 		{
-			IEntity guard = RZ_Util.SpawnPrefab(guardPrefab, RZ_Mission.LandPointNear(h.m_vPos, guardMin, guardMax), Math.RandomFloat(0, 360));
+			IEntity guard = RZ_Util.SpawnPrefab(guardPrefab, RZ_Mission.LandPointNear(home, guardMin, guardMax), Math.RandomFloat(0, 360));
 			if (!guard)
 				continue;
 
@@ -1685,7 +1696,7 @@ class RZ_Territory
 		int shown = Math.Min(m_Settings.m_iOccupantCount, h.m_aPeople.Count());
 		for (int p = 0; p < shown && !occupantPrefab.IsEmpty(); p++)
 		{
-			IEntity person = RZ_Util.SpawnPrefab(occupantPrefab, RZ_Mission.LandPointNear(h.m_vPos, 4, 14), Math.RandomFloat(0, 360));
+			IEntity person = RZ_Util.SpawnPrefab(occupantPrefab, RZ_Mission.LandPointNear(home, 4, 14), Math.RandomFloat(0, 360));
 			if (!person)
 				continue;
 
@@ -1707,7 +1718,7 @@ class RZ_Territory
 		// An outpost's own quartermaster (the stronghold already has the real one)
 		if (!h.m_bStronghold && m_Settings.m_bOutpostQuartermaster)
 		{
-			IEntity qm = RZ_Util.SpawnPrefab(m_GM.GetQuartermasterPrefab(h.m_eFaction), RZ_Mission.LandPointNear(h.m_vPos, 1, 4), Math.RandomFloat(0, 360));
+			IEntity qm = RZ_Util.SpawnPrefab(m_GM.GetQuartermasterPrefab(h.m_eFaction), RZ_Mission.LandPointNear(home, 1, 4), Math.RandomFloat(0, 360));
 			if (qm)
 			{
 				h.m_aBodies.Insert(qm);
@@ -1715,15 +1726,10 @@ class RZ_Territory
 			}
 		}
 
-		RZ_CampLife camp = m_GM.GetCampLife();
 		if (!camp)
 			return;
 
-		RZ_ECampPlace kind = RZ_ECampPlace.OUTPOST;
-		if (h.m_bStronghold)
-			kind = RZ_ECampPlace.STRONGHOLD;
-
-		camp.Enter("h" + h.m_iId.ToString(), h.GetTitle(), h.m_eFaction, kind, h.m_vPos, 0, guardPrefab, guardBodies, personBodies, keeperBodies);
+		camp.Enter(campKey, h.GetTitle(), h.m_eFaction, kind, h.m_vPos, 0, guardPrefab, guardBodies, personBodies, keeperBodies);
 	}
 
 	//------------------------------------------------------------------------------------------------

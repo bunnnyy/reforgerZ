@@ -4,7 +4,8 @@
     py tools/camp_kit/build.py [--index <resource index>]
 
 Writes Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et and Prefabs/ReforgerZ/Traces/<Name>.et
-(keeping an existing .meta, so the GUID stays), and on RZ_GameMode.et the camp-life kits, the
+(keeping an existing .meta, so the GUID stays), and on RZ_GameMode.et the camp-life kits (each piece's
+ring, use, count, seats and, from pieces.AT, where it stands by a building), the
 smart-action waypoint and the composition slots of World > Traces > Kit. Each composition is an
 empty root with an RplComponent and a Hierarchy, its props as children, and its seats as direct
 children with an SCR_AISmartActionSentinelComponent.
@@ -20,7 +21,7 @@ import os, re, sys, random
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, HERE)
-from pieces import C, KITS, TRACES  # noqa: E402
+from pieces import AT, C, KITS, TRACES  # noqa: E402
 
 PROPS = os.path.join(HERE, "props.txt")
 GM = os.path.join(REPO, "Prefabs/ReforgerZ/Core/RZ_GameMode.et")
@@ -127,7 +128,10 @@ def write_kits():
             name, count, ring = entry.split()
             seats = max(1, sum(1 for p in C[name][4] if p[0] == "s"))
             L += ['       RZ_DressingPiece "{%s}" {' % gid(), '        m_sPrefab "%s%s"' % (guid_of(rel[name]), rel[name]), "        m_eRole %s" % ROLE[ring],
-                  "        m_eUse %s" % USE[C[name][1]], "        m_iCount %s" % count, "        m_iSeats %d" % seats, "       }"]
+                  "        m_eUse %s" % USE[C[name][1]], "        m_iCount %s" % count, "        m_iSeats %d" % seats]
+            if name in AT and place != "ROAD_POST":
+                L.append("        m_eAt %s" % AT[name].upper())
+            L.append("       }")
         L += ["      }", "     }"]
     L.append("    }")
     block = nl.join(L)

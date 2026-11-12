@@ -49,10 +49,12 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **Camps that look lived in**: an outpost is a small compound (barricades on the approach, a
-  working area, tents at the back, a cooking corner) with tents, fires, tables, washing, firewood,
-  clutter and each faction's own things round its posts, camps, safehouses and field stations
-  (scenery only: nothing to loot or use), and people who keep their faction's routine: the sentry,
+- **Camps that look lived in**: each faction moves into the building in town that suits it
+  (Bastion the school or town hall on the road, the Red Hand the garage at the crossroads, the
+  Haven the church, Halcyon the lab or a house), works in its yard and barricades its other road
+  entries; with no such building, a small compound on rings. Fires, tables, washing, firewood,
+  clutter and each faction's own things stand round its posts, camps, safehouses and field stations
+  (scenery only: nothing to loot or use), and people keep their faction's routine: the sentry,
   the patrol, the morning wash, chopping wood, cooking before the meal, Bastion's shift change and
   the roll at 20:30, the Red Hand's toll, the Haven's supper, Halcyon's courier, and the off shift
   asleep.
@@ -246,7 +248,7 @@ are optional kit prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, dialogue, errands, the mission style, reputation names, tone, traces, faction bases) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, dialogue, errands, the mission style, reputation names, tone, traces) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 
@@ -334,7 +336,7 @@ tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
 tools/camp_kit/  pieces.py: the camp-life pieces, their kits and the Traces compositions; build.py
                  writes their prefabs and the game mode's slots; render.py draws them and the faction
-                 bases (bases.py) into designs/camp_plans.html and designs/BASES.md
+                 bases' plans (bases.py) into designs/camp_plans.html
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
                  the layout guide (LAYOUTS.md), the layouts (layouts/ReforgerZ/), the icon
                  atlas and the car picture (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)

@@ -119,7 +119,7 @@ for folder, title in FOLDERS:
     body.append('<section><h2>%s <span class="count">%d pieces</span></h2><div class="cards">%s</div></section>' % (title, len(cards.get(folder, [])), "".join(cards.get(folder, []))))
 
 
-from bases import BASES, MODS
+from bases import BASES
 import re as _re
 
 def site_svg(plan, size=300, span=130.0):
@@ -152,7 +152,7 @@ def site_svg(plan, size=300, span=130.0):
     return "".join(g)
 
 def bases_html():
-    out = ['<section class="bases"><h2>How each faction builds</h2><p class="lede">Holdings sit in real towns, so a faction moves into the buildings that suit what it does and fortifies around them. These plans are schematic: the script would pick the right building in each town (largest stone building for Bastion, the garage or petrol station for the Red Hand, the church or a big house for the Haven, the lab building for Halcyon) and dress its yard and road entries with the camp pieces.</p>']
+    out = ['<section class="bases"><h2>How each faction builds</h2><p class="lede">Holdings sit in real towns, so a faction moves into the building that suits what it does and fortifies around it. Camp life picks that building in each town by kind and size (the school, town hall or police station for Bastion, the garage or petrol station for the Red Hand, the church or a big house for the Haven, the lab or a house for Halcyon) and lays its pieces out in the yard, along the walls and at the road entries (docs/DESIGN.md, Camp life). These plans are schematic, and show more than is built: the rooms inside, the roof lookouts, the graves, the stockade, the dogs and the searchlight are not (the doc lists what is simplified).</p>']
     for b in BASES:
         out.append('<div class="faction f-%s"><h3 class="fname">%s</h3><p class="idea">%s</p><div class="sites">' % (b["key"], b["faction"], html.escape(b["idea"])))
         for st in b["sites"]:
@@ -164,36 +164,6 @@ def bases_html():
     return "\n".join(out)
 
 body.insert(0, bases_html())
-
-NL2 = chr(10)
-
-
-def bases_markdown():
-    """designs/BASES.md, written from bases.py (edit bases.py, not the .md)."""
-    L = ["# Faction bases", "",
-         "**Status: designed, not built.** Written by `tools/camp_kit/render.py` from `tools/camp_kit/bases.py`:",
-         "edit that file, not this one. The drawings are in [camp_plans.html](camp_plans.html).", "",
-         "Today camp life lays out a holding's pieces on rings round its centre "
-         "([DESIGN.md](../docs/DESIGN.md#camp-life)). This design has each faction move into the building in "
-         "the town that suits what it does, dress its yard and close its road entries, sized to how many "
-         "people live there. Building it means camp life picking that building (by size and kind) and "
-         "placing pieces relative to it and to the roads; the pieces themselves are built "
-         "(`tools/camp_kit/pieces.py`).", ""]
-    for b in BASES:
-        L += ["## " + b["faction"], "", b["idea"], ""]
-        for st in b["sites"]:
-            L += ["### " + st["title"], "", "| | |", "|---|---|", "| **People** | %s |" % st["people"], "| **Where** | %s |" % st["where"],
-                  "| **For** | %s |" % st["purpose"], "| **Defence** | %s |" % st["defence"], "", "| Building | What it's for |", "|---|---|"]
-            L += ["| %s | %s |" % (a, c) for a, c in st["buildings"]]
-            L.append("")
-    L += ["## Workshop mods to try for the look", "",
-          "Researched on 2026-11-12, none added. Adding one is a [MOD_STACK.md](../docs/MOD_STACK.md) decision, "
-          "after the compile check and a load test. Sizes are the Workshop's.", "",
-          "| Mod | Workshop ID | MB | For | Note |", "|---|---|---|---|---|"]
-    L += ["| %s | `%s` | %s | %s | %s |" % m for m in MODS]
-    return NL2.join(L) + NL2
-
-
 
 NL = chr(10)
 page = """<title>Camp Piece Plans</title>
@@ -261,6 +231,3 @@ svg{display:block;width:100%;height:auto;background:var(--paper2);border-radius:
 </main>""".replace("@@TOTAL@@", str(total)).replace("@@BODY@@", NL.join(body))
 open(OUT, "w", encoding="utf-8").write(page)
 print("written", OUT, total, "pieces")
-MD = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "designs", "BASES.md")
-open(MD, "w", encoding="utf-8", newline=chr(10)).write(bases_markdown())
-print("written", MD)

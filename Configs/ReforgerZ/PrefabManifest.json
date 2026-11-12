@@ -7033,6 +7033,7 @@
    "defaults": {
     "m_bDressing": "1",
     "m_bRoutines": "1",
+    "m_bBuildings": "1",
     "m_iPiecesStronghold": "20",
     "m_iPiecesOutpost": "13",
     "m_iPiecesSafehouse": "8",
