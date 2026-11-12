@@ -1,6 +1,6 @@
 //! The world half of new-player guidance (docs/DESIGN.md, "New-player guidance"): things
 //! you find and voices you hear.
-//! - a spawn scenario with a small clue near every new life, each nudging toward a faction;
+//! - the props and clues of an opening's scene (RZ_OpeningScenes), read and removed here;
 //! - a wind-up radio at every spawn, and the open channels it picks up;
 //! - Bastion loudspeakers and Red Hand taunts near their seats;
 //! - Halcyon flyers in Haven safehouses, wanderer gossip, and a wanderer who finds a
@@ -8,16 +8,6 @@
 //!
 //! Clue props are tagged with RZ_ClueComponent (mission id TAG) and their reads routed
 //! here by RZ_PuzzleActionHelper. Nothing physical stays: clues are removed after a while.
-
-enum RZ_EGuideScenario
-{
-	CAR,		// crashed car on a back road: a note pointing at the nearest Haven safehouse
-	BASEMENT,	// scratched door: the roads out are concrete, the line shoots
-	CHURCH,		// Halcyon flyer: samples wanted at the lab
-	FARMHOUSE,	// a wind-up radio on the table: the broadcast, then the Haven's open channel
-	ATTIC,		// a dead raider with a red hand on his jacket and a list of toll roads
-	BARRICADE	// a dead Bastion soldier: "Hold the line. Await relief."
-}
 
 //------------------------------------------------------------------------------------------------
 //! A clue prop (and the scenery next to it) spawned for a player, removed after a while.
@@ -48,9 +38,7 @@ class RZ_GuidanceWorld
 	static const int FLYER_BASE = 100000;		// clue index of a safehouse flyer: FLYER_BASE + safehouse index
 
 	protected static const float RADIO_GIVE_DELAY = 3;
-	protected static const float FARMHOUSE_DELAY = 25;
 	protected static const float CLUE_KEEP_RADIUS = 30;
-	protected static const float CHURCH_RADIUS = 300;
 	protected static const float SHOUT_MIN = 80;
 	protected static const float SHOUT_MAX = 450;
 	protected static const float NUDGE_START = 600;		// a far wanderer starts (as data) this far away
@@ -91,8 +79,8 @@ class RZ_GuidanceWorld
 
 	// ================================================================ Spawn
 	//------------------------------------------------------------------------------------------------
-	//! A new life: the wind-up radio (a moment later, once the inventory exists), a scenario,
-	//! the radio and wanderer timers.
+	//! A new life: the wind-up radio (a moment later, once the inventory exists), the radio and
+	//! wanderer timers.
 	void OnPlayerSpawned(int playerId, IEntity ent, RZ_PlayerProfile p, RZ_GuidePlayer st, int level)
 	{
 		if (!m_Settings.m_sRadioPrefab.IsEmpty())
@@ -107,10 +95,6 @@ class RZ_GuidanceWorld
 		// The first open-channel message comes about halfway through the usual interval
 		st.m_fRadioTimer = RadioInterval(level) * 0.5;
 		st.m_fNudgeAt = Math.RandomFloat(120, 420);
-
-		// An opening has its own scene and someone already there (RZ_Openings)
-		if (m_Settings.m_bScenarios && !st.m_bOpening)
-			RunScenario(playerId, ent, p, level);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -129,244 +113,6 @@ class RZ_GuidanceWorld
 		// If it doesn't fit (or the insert call doesn't work), it lies at their feet
 		if (!RZ_Util.InsertIntoInventory(ent, item))
 			m_GM.NotifyPlayer(playerId, RZ_Guidance.RADIO_TITLE, "There's a wind-up radio at your feet. Somebody's. Yours now.");
-	}
-
-	// ================================================================ Scenarios
-	//------------------------------------------------------------------------------------------------
-	protected void Offer(notnull array<int> pool, int scenario, int newWeight, int level, int last)
-	{
-		if (scenario == last)
-			return;
-
-		int weight = 2;
-		if (level == RZ_Guidance.LEVEL_NEW)
-			weight = newWeight;
-
-		for (int i = 0; i < weight; i++)
-		{
-			pool.Insert(scenario);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void FillPool(notnull array<int> pool, int level, int last)
-	{
-		RZ_Safehouses houses = m_GM.GetSafehouses();
-		bool haven = houses && houses.Count() > 0;
-		RZ_Perimeter perimeter = m_GM.GetPerimeter();
-		RZ_Leaders leaders = m_GM.GetLeaders();
-
-		// Brand-new players lean toward the Haven, whose safehouse is their first goal
-		if (haven)
-		{
-			Offer(pool, RZ_EGuideScenario.CAR, 4, level, last);
-			Offer(pool, RZ_EGuideScenario.FARMHOUSE, 3, level, last);
-		}
-
-		// The basement's "NOBODY GETS OUT" is only true while the line is sealed (not after the cure)
-		if (perimeter && perimeter.IsActive() && m_GM.GetFacts().PerimeterSealed())
-			Offer(pool, RZ_EGuideScenario.BASEMENT, 2, level, last);
-
-		// "Infected samples wanted": not once the cure is out
-		if (m_GM.HasLab() && !m_GM.GetFacts().IsCured())
-			Offer(pool, RZ_EGuideScenario.CHURCH, 2, level, last);
-
-		if (leaders && leaders.GetStronghold(RZ_EFaction.BANDITS))
-			Offer(pool, RZ_EGuideScenario.ATTIC, 1, level, last);
-
-		if (leaders && leaders.GetStronghold(RZ_EFaction.MILITARY))
-			Offer(pool, RZ_EGuideScenario.BARRICADE, 1, level, last);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Picks a scenario by experience (never the same as last life's if there's another)
-	//! and puts its clue a few metres from the player. Veterans get a one-line scene: the
-	//! clue is always there.
-	protected void RunScenario(int playerId, IEntity ent, RZ_PlayerProfile p, int level)
-	{
-		array<int> pool = {};
-		FillPool(pool, level, p.m_iGuideLastScenario);
-		if (pool.IsEmpty())
-			FillPool(pool, level, -1);
-
-		if (pool.IsEmpty())
-			return;
-
-		int scenario = pool.GetRandomElement();
-		p.m_iGuideLastScenario = scenario;
-
-		bool brief = level >= 2;
-		vector spawn = ent.GetOrigin();
-		string town = TownNear(spawn);
-		RZ_Rng rng = NewRng();
-
-		// The spawn card's one line (docs/UI.md, "Notices"); the full scene goes into the notebook
-		m_Guide.SetSpawnLine(playerId, RZ_GuidanceText.SpawnLine(scenario, town));
-
-		switch (scenario)
-		{
-			case RZ_EGuideScenario.CAR: RunCar(playerId, spawn, town, brief, rng); break;
-			case RZ_EGuideScenario.BASEMENT: RunBasement(playerId, spawn, town, brief, rng); break;
-			case RZ_EGuideScenario.CHURCH: RunChurch(playerId, spawn, town, brief); break;
-			case RZ_EGuideScenario.FARMHOUSE: RunFarmhouse(playerId, spawn, town, brief, rng); break;
-			case RZ_EGuideScenario.ATTIC: RunAttic(playerId, spawn, town, brief, rng); break;
-			case RZ_EGuideScenario.BARRICADE: RunBarricade(playerId, spawn, town, brief, rng); break;
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The scene message. If no prop could be spawned at all, the clue's text comes with it.
-	protected void Scene(int playerId, int scenario, string scene, bool placed, string clueTitle, string clueText)
-	{
-		string text = scene;
-		if (!placed && !clueText.IsEmpty())
-			text += string.Format("\n\n%1:\n%2", clueTitle, clueText);
-
-		m_GM.NotifyPlayerAs(playerId, RZ_GuidanceText.ScenarioTitle(scenario), text, RZ_ENoticeTag.QUIET);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void RunCar(int playerId, vector spawn, string town, bool brief, RZ_Rng rng)
-	{
-		RZ_Safehouses houses = m_GM.GetSafehouses();
-		RZ_Safehouse h = houses.Get(houses.FindNearest(spawn));
-		if (!h)
-			return;
-
-		vector pos = RZ_Mission.LandPointNear(spawn, 4, 8);
-		string direction = RZ_Compass.DirectionWord(RZ_Compass.Bearing(pos, h.m_vPos));
-		string text = RZ_GuidanceText.CarNote(rng, h.m_sName, direction);
-		string title = "Note on the dashboard";
-		bool placed = PlaceClue(m_Settings.m_sCarWreckPrefab, RZ_EPuzzleProp.CLUE, true, pos, "Read the note on the dashboard", title, text);
-		Scene(playerId, RZ_EGuideScenario.CAR, RZ_GuidanceText.Scene(RZ_EGuideScenario.CAR, town, "", brief), placed, title, text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void RunBasement(int playerId, vector spawn, string town, bool brief, RZ_Rng rng)
-	{
-		RZ_Perimeter perimeter = m_GM.GetPerimeter();
-		string roadDir = "";
-		string edgeDir = "";
-		vector checkpoint;
-		if (perimeter.GetNearestCheckpoint(spawn, checkpoint))
-		{
-			roadDir = RZ_Compass.DirectionWord(RZ_Compass.Bearing(spawn, checkpoint));
-			roadDir.ToUpper();
-		}
-		else
-		{
-			vector inward = perimeter.InwardAt(spawn);
-			edgeDir = RZ_Compass.DirectionWord(RZ_Compass.Bearing(spawn, spawn - inward * 100));
-			edgeDir.ToUpper();
-		}
-
-		int day = m_GM.GetBroadcast().GetDay();
-		string text = RZ_GuidanceText.DoorText(rng, day, roadDir, edgeDir);
-		string title = "Scratched into the door";
-		bool placed = PlaceClue(m_Settings.m_sDoorPrefab, RZ_EPuzzleProp.CLUE, true, RZ_Mission.LandPointNear(spawn, 2, 4), "Look at the door", title, text);
-		Scene(playerId, RZ_EGuideScenario.BASEMENT, RZ_GuidanceText.Scene(RZ_EGuideScenario.BASEMENT, town, "", brief), placed, title, text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The flyer goes on the nearest church within 300 m if the town has one.
-	protected void RunChurch(int playerId, vector spawn, string town, bool brief)
-	{
-		array<string> kinds = {"church"};
-		RZ_Landmark church = RZ_LandmarkFinder.FindNearest(spawn, CHURCH_RADIUS, kinds);
-		vector pos;
-		string where = "";
-		if (church)
-		{
-			pos = RZ_Mission.LandPointNear(church.m_vPos, 3, 8);
-			where = RZ_Util.DirectionText(spawn, pos);
-		}
-		else
-		{
-			pos = RZ_Mission.LandPointNear(spawn, 2, 5);
-		}
-
-		string text = RZ_GuidanceText.FlyerText(LabTown(), false);
-		string title = "Flyer";
-		bool placed = PlaceClue(FlyerPrefab(), RZ_EPuzzleProp.CLUE, true, pos, "Read the flyer", title, text);
-		Scene(playerId, RZ_EGuideScenario.CHURCH, RZ_GuidanceText.Scene(RZ_EGuideScenario.CHURCH, town, where, brief), placed, title, text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The radio on the table plays the broadcast now and the Haven's open channel a little later.
-	protected void RunFarmhouse(int playerId, vector spawn, string town, bool brief, RZ_Rng rng)
-	{
-		string havenTown = m_Guide.SafehouseText(spawn);
-		string channel = RZ_GuidanceText.HavenChannel(rng, havenTown);
-		ResourceName prop = m_Settings.m_sTableRadioPrefab;
-		if (prop.IsEmpty())
-			prop = m_Settings.m_sRadioPrefab;
-
-		// No note next to a radio: if the prop can't be read it's just a radio on the floor
-		PlaceClue(prop, RZ_EPuzzleProp.CLUE, false, RZ_Mission.LandPointNear(spawn, 2, 4), "Listen to the radio", RZ_Guidance.RADIO_TITLE, channel);
-
-		string broadcast = m_GM.GetBroadcast().GetText();
-		m_GM.NotifyPlayerAs(playerId, RZ_GuidanceText.ScenarioTitle(RZ_EGuideScenario.FARMHOUSE), RZ_GuidanceText.Scene(RZ_EGuideScenario.FARMHOUSE, town, broadcast, brief), RZ_ENoticeTag.QUIET);
-
-		RZ_GuidePending next = new RZ_GuidePending();
-		next.m_iPlayer = playerId;
-		next.m_fAt = m_Guide.GetClock() + FARMHOUSE_DELAY;
-		next.m_sTitle = RZ_Guidance.RADIO_TITLE;
-		next.m_sText = "The broadcast cuts out. Static, then a woman's voice, closer, tired:\n" + channel;
-		m_aPending.Insert(next);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void RunAttic(int playerId, vector spawn, string town, bool brief, RZ_Rng rng)
-	{
-		RZ_Leader boss = m_GM.GetLeaders().GetStronghold(RZ_EFaction.BANDITS);
-		if (!boss)
-			return;
-
-		// Toll roads: the Red Hand's other seats first, then any towns
-		array<string> places = {};
-		array<RZ_Leader> seats = {};
-		m_GM.GetLeaders().GetFactionLeaders(RZ_EFaction.BANDITS, seats);
-		foreach (RZ_Leader seat : seats)
-		{
-			if (seat != boss && !places.Contains(seat.m_sPlace))
-				places.Insert(seat.m_sPlace);
-		}
-
-		int guard = 0;
-		array<ref RZ_Settlement> settlements = m_GM.GetSettlements();
-		while (places.Count() < 2 && !settlements.IsEmpty() && guard < 20)
-		{
-			guard++;
-			string name = settlements[rng.Int(0, settlements.Count())].m_sName;
-			if (name != boss.m_sPlace && !places.Contains(name))
-				places.Insert(name);
-		}
-
-		while (places.Count() < 2)
-		{
-			places.Insert("the old mill");
-		}
-
-		string text = RZ_GuidanceText.RaiderText(places[0], places[1], boss.m_sPlace, boss.m_sShort);
-		string title = "The dead man";
-		bool placed = PlaceClue(m_Settings.m_sRaiderBodyPrefab, RZ_EPuzzleProp.BODY, true, RZ_Mission.LandPointNear(spawn, 2, 5), "Search the body", title, text);
-		Scene(playerId, RZ_EGuideScenario.ATTIC, RZ_GuidanceText.Scene(RZ_EGuideScenario.ATTIC, town, "", brief), placed, title, text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void RunBarricade(int playerId, vector spawn, string town, bool brief, RZ_Rng rng)
-	{
-		RZ_Leader bastion = m_GM.GetLeaders().GetStronghold(RZ_EFaction.MILITARY);
-		if (!bastion)
-			return;
-
-		vector pos = RZ_Mission.LandPointNear(spawn, 3, 6);
-		TrackScenery(RZ_Util.SpawnPrefab(m_Settings.m_sBarricadePrefab, RZ_Mission.LandPointNear(pos, 1, 2), Math.RandomFloat(0, 360)));
-
-		string text = RZ_GuidanceText.OrdersText(rng, m_GM.GetBroadcast().GetDay(), bastion.m_sPlace);
-		string title = "The soldier's orders";
-		bool placed = PlaceClue(m_Settings.m_sSoldierBodyPrefab, RZ_EPuzzleProp.BODY, true, pos, "Read his orders", title, text);
-		Scene(playerId, RZ_EGuideScenario.BARRICADE, RZ_GuidanceText.Scene(RZ_EGuideScenario.BARRICADE, town, "", brief), placed, title, text);
 	}
 
 	// ================================================================ Clue props
@@ -418,6 +164,13 @@ class RZ_GuidanceWorld
 	bool PlaceReadable(vector pos, string label, string title, string text)
 	{
 		return PlaceClue("", RZ_EPuzzleProp.CLUE, true, pos, label, title, text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An opening's clue (RZ_OpeningScenes): `prop` at pos, read with the clues' reader (PlaceClue).
+	bool PlaceSceneClue(ResourceName prop, RZ_EPuzzleProp fallback, bool noteFallback, vector pos, string label, string title, string text)
+	{
+		return PlaceClue(prop, fallback, noteFallback, pos, label, title, text);
 	}
 
 	//------------------------------------------------------------------------------------------------

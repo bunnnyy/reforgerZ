@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{C9738AD6B63C6260}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Unemployed.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

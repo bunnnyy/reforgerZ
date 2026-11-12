@@ -1,5 +1,6 @@
 //! An opening's contact as a speaker (docs/DIALOGUE.md, "Who talks"; Guidance/RZ_Openings.c):
-//! someone who knew you before the outbreak, waiting outside your hiding place. They speak first:
+//! whoever's outside the door you come out of (someone from before, a stranger, or a wanderer who
+//! met an earlier life of yours). They speak first:
 //! the opening opens the talk screen on them as each step starts, with that step's piece of the
 //! story (RZ_Openings.TalkLines). With Dialogue > Trees on, the conversations `for opening`
 //! (dialogue/openings/openings.rzd) add their greeting by your background and topics by the step
@@ -69,11 +70,7 @@ class RZ_TalkOpening : RZ_TalkGeneric
 		ctx.m_sKey = "opening:" + o.m_iId.ToString();
 		ctx.m_iFaction = -1;
 		ctx.m_sName = o.m_sName;
-		ctx.m_sShort = o.m_sName;
-		int space = o.m_sName.IndexOf(" ");
-		if (space > 0)
-			ctx.m_sShort = o.m_sName.Substring(0, space);
-
+		ctx.m_sShort = o.m_sShort;
 		ctx.m_sRole = o.m_sWho;
 		ctx.m_sPlace = o.m_sTown;
 		ctx.m_bStronghold = true;

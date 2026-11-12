@@ -1,0 +1,47 @@
+GenericEntity {
+ ID "5598EFF472AFE42E"
+ components {
+  RplComponent "{FC62CDB6A6FAC60E}" {
+  }
+  Hierarchy "{CF776E3BEBAED0F2}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "BF7C44A073BF292B"
+   components {
+    Hierarchy "{986540FAFA354964}" {
+    }
+   }
+   coords 0 0 0
+   angles 90 0 0
+  }
+  GenericEntity : "{74D1DB7828061BD7}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et" {
+   ID "85DB0AC3F2DF2972"
+   components {
+    Hierarchy "{B4CFEA76AE5637FC}" {
+    }
+   }
+   coords 1.4 0 0.4
+   angles 0 30 0
+  }
+  GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+   ID "424666A14C3FF28B"
+   components {
+    Hierarchy "{415DE1DAC0CD02D7}" {
+    }
+   }
+   coords -1.0 0 0.3
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "AA4116746C389EBC"
+   components {
+    Hierarchy "{59698EB6113E90B2}" {
+    }
+   }
+   coords 0.4 0 -0.9
+   angles 0 15 0
+  }
+ }
+}

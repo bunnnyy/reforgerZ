@@ -199,7 +199,7 @@ and choice missions, and puzzles:
 | `RZ_RewardCrate.et` | a vanilla supply box, filled with loot by hand | — | Missions > Reward crate | mission rewards |
 | `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | every puzzle and interaction fallback; missions relabel the actions |
 | `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | puzzles, unarmed missions, wanderers, leaders and occupants to talk to, the one-choice jobs' stand-in person |
-| `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | every puzzle mission, scenario clues |
+| `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | every puzzle mission, openings' clues |
 | `RZ_MissionItem.et` | a small carryable item (a box or data drive) | `RZ_MissionItemComponent` | Missions > Mission item | every delivery and choice mission; tagged when it spawns |
 | `RZ_Drop_Haven.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction SURVIVORS) | Missions > Haven drop point | the drops those missions name |
 | `RZ_Drop_Bastion.et` | a crate, table or mailbox prop | `RZ_ChoiceDeliveryAction` (Faction MILITARY) | Missions > Bastion drop point | the drops those missions name |
@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **324 prefab fields**: 46 on `RZ_GameModeComponent`, 268 in its settings objects, and 10 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **324 prefab fields**: 46 on `RZ_GameModeComponent`, 267 in its settings objects, and 11 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **304 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 88 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -426,7 +426,7 @@ and the UI files) need none, and eight have no base:
 |---|---|---|---|---|---|
 | `RZ_PuzzleObject.et` | a crate, sign or post prop | the generic set | Puzzles > Puzzle object | **minimum** | every puzzle and interaction fallback; missions relabel the actions |
 | `RZ_Civilian.et` | a civilian character without AI, or a seated figure prop | the generic set | Puzzles > Civilian | **minimum** | puzzles, unarmed missions, wanderers, leaders and occupants to talk to, the one-choice jobs' stand-in person |
-| `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | **minimum** | every puzzle mission, scenario clues |
+| `RZ_Note.et` | a paper or notebook prop | the clue set | Puzzles > Note | **minimum** | every puzzle mission, openings' clues |
 | `RZ_Keypad.et` | a keypad or wall panel prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Keypad | optional | The Last Experiment (keypad mode), Locked Bunker, the store in The Three Weeks questline (without a terminal); keys 0-9, 10 Clear, 11 Enter |
 | `RZ_Terminal.et` | a computer prop | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; 12 × `RZ_KeypadAction` (Key 0-11), `RZ_ReadClueAction` | Puzzles > Terminal | optional | The Last Experiment, the store in The Three Weeks questline (both fall back to the keypad); keys 0-9, 10 Clear, 11 Enter |
 | `RZ_PuzzleBody.et` | a body prop | the clue set | Puzzles > Body | optional | Paces, Patient Zero's Ledger, Poisoned Well, Last Experiment, The Witness, The Deserter's Map (falls back to the note) |
@@ -722,15 +722,15 @@ and the UI files) need none, and eight have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Radio prefab | optional | given to every new life. The two View radio actions: one in the "default" context, one in "knob_toggle" with In hand on (beside vanilla's Turn on/off) |
-| `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | the back-road scenario |
-| `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | the basement scenario |
-| `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | the church scenario, safehouse flyers |
-| `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | the farmhouse scenario; beside the operators in No Reply and Await Relief, and The Census's nightly call |
-| `RZ_DeadRaider.et` | a body prop with a red hand on the jacket | the clue set | Guidance > Raider body prefab | optional | the attic scenario |
-| `RZ_DeadSoldier.et` | a Bastion soldier body prop | the clue set | Guidance > Soldier body prefab | optional | the barricade scenario |
+| `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch |
+| `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | an opening's clue in the hiding place: the scratched door |
+| `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | an opening's clue when your group is gone (the flyer they went after), safehouse flyers |
+| `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | an opening's clue in the hiding place: the radio still talking; beside the operators in No Reply and Await Relief, and The Census's nightly call |
+| `RZ_DeadRaider.et` | a body prop with a red hand on the jacket | the clue set | Guidance > Raider body prefab | optional | an opening's clue when the fever broke: the dead raider |
+| `RZ_DeadSoldier.et` | a Bastion soldier body prop | the clue set | Guidance > Soldier body prefab | optional | an opening's clue when the fever broke: the dead soldier |
 | `RZ_Barricade.et` | sandbags and a car on its side | — | Guidance > Barricade prefab | optional | barricade scenery |
-| (existing prefab) | a small composition you make by hand (`RZ_Opening_HidingPlace.et` in `Prefabs/ReforgerZ/Guidance/`): an empty water bottle on its side, a rolled bedroll and a bucket, about 2 m across, nothing with physics | — | Guidance > Hiding place scene | optional | the openings' scene by the door you come out of (docs/DESIGN.md, Openings); empty = the calendar note only |
-| (existing prefab) | a person with the puzzle components, as Puzzles > Civilian is (a plainer civilian for variety) | — | Guidance > Contact | optional | the openings' someone from before; empty = Puzzles > Civilian (no body at all: no opening that life, the spawn scenario instead) |
+| (existing prefab) | the RZ_Opening_* compositions in Prefabs/ReforgerZ/Guidance/Openings/, built by tools/camp_kit/build.py from pieces.py's OPENINGS, which also fills the slots | — | Guidance > Opening scenes (each key's prefab) | optional | the openings' props by the door you come out of: three scenes per reason and each background's own things (docs/DESIGN.md, Openings); a key with none = nothing there |
+| (existing prefab) | a person with the puzzle components, as Puzzles > Civilian is (a plainer civilian for variety) | — | Guidance > Contact | optional | whoever's outside an opening's door (someone from before, a stranger, an earlier life's wanderer); empty = Puzzles > Civilian (no body at all: nobody outside, and the scene's read points at the nearest work) |
 
 #### Power grid and radio station
 
@@ -1020,7 +1020,7 @@ keywords** against your ammunition and medicine. Its two questlines' stage peopl
 object's set, like the wanderers.
 
 **New-player guidance, the power grid and the radio station** work with no prefabs: tips use the
-people and radios that exist, scenario clues fall back to the note and body, the power station's
+people and radios that exist, the openings' clues fall back to the note and body, the power station's
 control is the map's own electrical cabinet at the station (with **Interactions > Spot prefab**
 set) or falls back to the fuse box and then the puzzle object, and the console falls back to the
 puzzle prefabs. **The wind-up radio's prefab name must
@@ -1098,7 +1098,7 @@ Each kit's first entry is its faction's **counter** (`Counter_Bastion`, `Counter
 
 | Command | Does |
 |---|---|
-| `py tools/camp_kit/build.py` | Refuses a plan whose pieces overlap (with 0.3 m between them). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, and the piece's **Foot min** and **Foot max**, its footprint from its props and seats; **Smart action waypoint**) and the composition slots of **World > Traces > Kit** |
+| `py tools/camp_kit/build.py` | Refuses a plan whose pieces overlap (with 0.3 m between them). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, and the piece's **Foot min** and **Foot max**, its footprint from its props and seats; **Smart action waypoint**), the composition slots of **World > Traces > Kit**, and the openings' compositions (`pieces.OPENINGS`, into `Prefabs/ReforgerZ/Guidance/Openings/`) with their slots, **Guidance > Opening scenes** |
 | `py tools/camp_kit/render.py` | Draws [tools/camp_kit/camp_plans.html](../tools/camp_kit/camp_plans.html): every kit's plan, a top-down plan of every piece and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
 
 A new prop needs its ResourceName: pass `--index` with the resource index the Workbench plugin
@@ -1426,7 +1426,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
 | Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
-| Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs; **Openings** (on), **Hiding place scene** and **Contact** (empty: the calendar only, and Puzzles > Civilian), **Opening Fame** (10) |
+| Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
@@ -1896,7 +1896,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
-| `Guidance/RZ_OpeningPlaces.c:341` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point and the scenarios, as before) and move the character after the hand-over instead |
+| `Guidance/RZ_OpeningPlaces.c:341` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
 | `Guidance/RZ_OpeningPlaces.c:381` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 
 ### Low risk: contained or cosmetic (36)
@@ -1906,7 +1906,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_Interactions.c:183` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
-| `Guidance/RZ_Guidance.c:465` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
+| `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
@@ -2295,14 +2295,16 @@ Infamy (...)`, `Reputation read-out: ...` (an admin's `/rep`), `Checks: <player>
 records.` and `Shared: N callbacks waiting, N season records.`
 
 Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
-for <player>: <background>, <kind> in <town> (<grid>), level N, someone from before (<who>), full|one-step
-chain to <place>`, `Openings: <name> spoke first to <player> at step N (the talk screen|subtitles)`,
+for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
+<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> spoke first to <player> at step N (the talk screen|subtitles)`,
 `Errands: opening.<step> handed to <player> (<name>)`, `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
-<player>)` and `Openings: ended for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no
+<player>)`, `Openings: <name>'s bitten friend was lost (the clock ran out for <player>)` and `Openings: ended
+for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
+(<background>)`, `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
-the spawn point instead` and `Openings: no contact could stand for <player> at <grid>, the spawn
-scenario instead`.
+the spawn point instead` and `Openings: no contact could stand for <player> at <grid>, the scene's
+read instead`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
 start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
@@ -2344,7 +2346,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 213 conversations, 581 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 221 conversations, 596 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2882,16 +2884,36 @@ when it happens)
   ("A clinic, or a house near one"); left and right do nothing. Deploy as a Nurse: you stand 2 m out
   of an open door of a clinic or a house in a town nobody holds, facing out, the world already
   loaded; the card says where you hid, the town and the day. A calendar lies by the door. About 4 s
-  in, someone ("..., a patient's mother") a few metres off opens the talk screen on you: "Christ.
-  You're alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the
+  in, someone ("..., a patient's mother") a few metres off opens the talk screen on you: "Look at you.
+  Alive." (with **Dialogue > Trees** on, the greeting about your stitches), the day and the
   roads, then the ask. The tracker already shows *Across the Road*, and the Quests tab has it under
   ERRANDS, tracked. Search the house for 20 s and come back: the next step opens the talk screen again
-  (the broadcast, nobody coming) with *Water* or *The Cut*; then *To Halcyon* with the Perimeter and
+  (the broadcast, nobody coming) with *The Fever* (her own step 2); then *To Halcyon* with the Perimeter and
   the cure, the tracker pointing at Halcyon's nearest holding or the lab. Arrive: one line there and
   +10 Halcyon Fame. Time the whole chain (about 15 minutes) and note the log's minutes. Respawn: the
   next start is a different town (2 km from the last two). Try a Soldier (ends at Bastion) and a
   Mechanic (the Haven). Shoot the contact during step 1: a line from "Someone in a doorway" and the
-  walk to the nearest safehouse. Nobody waves you over for an errand while it runs.
+  walk to the nearest safehouse. Nobody waves you over for an errand while it runs. By the open door:
+  your background's own things (the nurse's blanket and drum, the soldier's sandbags and lantern).
+  Step 2 is your background's own: the Nurse treats the boy with something from her bag (*The
+  Fever*); a Soldier holds the gate a minute while the infected come to the noise; a Mechanic fills a
+  can at a petrol station's pump (empty can: the card says fill it first); a Police Officer is given a
+  key and goes into a locked building; a Hunter watches a pack's ground hidden for 30 s (seen, the
+  clock stops); a Radio Operator, with Trees on, answers on the open channel (*Call on the open
+  channel* on the wind-up radio); a Lab Technician picks up a sample by the remains; an Unemployed
+  catches a wanderer (with a tin: +3 Haven Favor); a Raider collects at a door (+1 Haven Infamy); an
+  Elder settles the two families in talk; a Doctor finds the antidote by the clinic door and has 10
+  minutes; a Drifter gets up to three asks in a row. With nothing that can run (no pump in reach),
+  water or the cut instead. Why today: over a few lives you also come out of a door because your
+  group is gone (four bedrolls, a note under a stone, a car in the ditch or Halcyon's flyer) or the
+  fever broke (chalk on the door, a dead soldier or a dead raider); the card says which. One time in
+  four the one outside is a stranger ("someone who saw them go"); after a few lives, a wanderer you
+  met before may be the one outside ("You look like someone I knew.") and is back on the road once you
+  leave. With **Guidance > Lives familiar** lowered to 1, a second life gets your background's step
+  and then *Where the Work Is* to the nearest safehouse or holding (no Fame); a veteran gets the
+  one-line read, no clue, and someone outside only one time in three (without: the read's own line
+  hands you *Where the Work Is*). Turn **Puzzles > Civilian** and **Contact** empty: nobody outside,
+  the read hands you the work, and a brand-new player's wanderer comes looking.
 - [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
   by a quartermaster (a Favor line), stay out at dusk; never two at once.
 - [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker); the mockup `UI/Previews/tracker.png`,

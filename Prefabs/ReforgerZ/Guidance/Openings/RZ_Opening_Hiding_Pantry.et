@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "EAB69513CDAFE9E5"
+ components {
+  RplComponent "{DC77BDB251E71101}" {
+  }
+  Hierarchy "{42E825DED8977A7C}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "7074B6763CE746A5"
+   components {
+    Hierarchy "{E1504102F6836207}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 5 0
+  }
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "B0C6848720AF3580"
+   coords -0.2 0.62 0
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "B0E8279652AFB85E"
+   coords 0.15 0.62 0.1
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "AAB363D4D64C908F"
+   components {
+    Hierarchy "{FCADBF3CB944B6F7}" {
+    }
+   }
+   coords 0.3 0.62 -0.1
+  }
+  GenericEntity : "{A8D8015D0E2B600A}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et" {
+   ID "7743C6D3192A9CAD"
+   components {
+    Hierarchy "{4CCF8CEC77F6C243}" {
+    }
+   }
+   coords 1.6 0 0.4
+   angles 0 85 0
+  }
+ }
+}

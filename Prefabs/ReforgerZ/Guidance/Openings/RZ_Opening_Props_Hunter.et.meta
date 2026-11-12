@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{AE2E8EC2414AEFC1}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Hunter.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

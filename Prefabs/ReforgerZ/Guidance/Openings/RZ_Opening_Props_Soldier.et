@@ -1,0 +1,47 @@
+GenericEntity {
+ ID "BD35C0698545B3C6"
+ components {
+  RplComponent "{1670DF3900806E48}" {
+  }
+  Hierarchy "{D5CC09D8C928BF27}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
+   ID "4D0800DE7AF9DCBE"
+   components {
+    Hierarchy "{A1E7D62A3B3D63DD}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 10 0
+  }
+  GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
+   ID "7A76DD5F5CF86E41"
+   components {
+    Hierarchy "{FDA4BF22CC540846}" {
+    }
+   }
+   coords 0.1 0.17 0
+   angles 0 30 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "435354EFD992EE8D"
+   components {
+    Hierarchy "{C3B44BF04F422422}" {
+    }
+   }
+   coords 1.2 0 0.4
+   angles 0 15 0
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "1EF9AA970BBE90A1"
+   components {
+    Hierarchy "{F60CA77201E2B5D3}" {
+    }
+   }
+   coords 1.2 1.0 0.4
+  }
+ }
+}

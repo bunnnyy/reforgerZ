@@ -1,0 +1,64 @@
+GenericEntity {
+ ID "B216E30C29653A0C"
+ components {
+  RplComponent "{7282CA8FF787DB13}" {
+  }
+  Hierarchy "{CD44EA0DDCF24D1F}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "79C83F4A37E75750"
+   components {
+    Hierarchy "{2EBAB311066F5607}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "17269B2F53BD3BEB"
+   components {
+    Hierarchy "{2C2D723DFE434F19}" {
+    }
+   }
+   coords 0.2 0 0.3
+   angles 0 20 0
+  }
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "E92F4F3C73EA1FF2"
+   components {
+    Hierarchy "{352342D12F0B8DA9}" {
+    }
+   }
+   coords -0.4 0 0.5
+   angles 0 70 0
+  }
+  GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
+   ID "3E2454C0764568BB"
+   components {
+    Hierarchy "{B2E49FE3D70E0406}" {
+    }
+   }
+   coords 1.2 0 0.4
+   angles 0 200 0
+  }
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "34A7391E2F3A5118"
+   components {
+    Hierarchy "{F3F269FFD7BD68B8}" {
+    }
+   }
+   coords -1.3 0.6 0.2
+   angles 0 90 80
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "778888976C6B0967"
+   components {
+    Hierarchy "{80378F9ACDB67782}" {
+    }
+   }
+   coords 0.9 0 -0.6
+  }
+ }
+}

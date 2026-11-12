@@ -1,0 +1,56 @@
+GenericEntity {
+ ID "B475B0B543E835DC"
+ components {
+  RplComponent "{FE2A35EE53C1F189}" {
+  }
+  Hierarchy "{15FAEE338E087263}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
+   ID "FBDCF57519E671D9"
+   components {
+    Hierarchy "{E74FCEDD1B8D2F82}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 10 0
+  }
+  GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
+   ID "7919C0140AF0C2A3"
+   components {
+    Hierarchy "{A012CDB5FC535FC4}" {
+    }
+   }
+   coords 0.5 0 0.4
+   angles 90 80 0
+  }
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+   ID "ABD5BE4F6BA41CBF"
+   components {
+    Hierarchy "{30EFFC75A66B8E8F}" {
+    }
+   }
+   coords -1.0 0 0.2
+   angles 0 20 0
+  }
+  GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+   ID "149756D96940ACF6"
+   components {
+    Hierarchy "{5E816AD163E0C9C7}" {
+    }
+   }
+   coords 1.5 0 -0.2
+   angles 0 30 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "9D67B813A066C9A4"
+   components {
+    Hierarchy "{D4E879018B111923}" {
+    }
+   }
+   coords 0.1 0 -0.6
+  }
+ }
+}

@@ -1,0 +1,50 @@
+GenericEntity {
+ ID "707492482648FE69"
+ components {
+  RplComponent "{1AB10007C2D638AA}" {
+  }
+  Hierarchy "{CABFF3446DC2EF91}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "1DECA05B04DE9FD6"
+   components {
+    Hierarchy "{70CFE8A8502F504C}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "3590F5539BB59FD6"
+   components {
+    Hierarchy "{BACFA105F156346E}" {
+    }
+   }
+   coords 0.8 0 0.2
+   angles 0 20 0
+  }
+  GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
+   ID "16646B54B6564146"
+   coords -0.5 0 0.3
+   angles 90 0 0
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "192391E3A62EA1A7"
+   coords -0.3 0 -0.4
+  }
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "F344D686158C3625"
+   coords 0.2 0 -0.6
+  }
+  GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+   ID "9DF672327F0BE8F9"
+   components {
+    Hierarchy "{44A0261662C81101}" {
+    }
+   }
+   coords 1.2 0 -0.3
+  }
+ }
+}

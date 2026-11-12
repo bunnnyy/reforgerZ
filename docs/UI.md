@@ -213,8 +213,8 @@ Radio tab) without a card, and the line under the cards counts it, "+3 in your n
 next open the notebook or start a new life.
 
 **At spawn: one card, then quiet.** A new life shows **one card**: who you are and where, in a line
-or two (the background's name, then where you wake: "A cold basement in Morton. Scratches on the back
-of the door.", from the spawn scenario, or "You come to east of Levie."; a locked background adds
+or two (the background's name, then where you wake: "A farmhouse cellar in Morton. Day 11. The last
+bottle is empty, so you open the door.", from the opening, or "You come to east of Levie."; a locked background adds
 "Soldier is locked. You're Survivor this life."). The rest goes into the notebook, no card each:
 
 | What | Where it goes |

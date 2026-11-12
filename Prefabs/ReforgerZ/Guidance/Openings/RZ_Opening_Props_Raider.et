@@ -1,0 +1,42 @@
+GenericEntity {
+ ID "BC86914DC5D504CB"
+ components {
+  RplComponent "{FA53DBEDC3C0D0DE}" {
+  }
+  Hierarchy "{38BD77E482357A2A}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+   ID "6B74888AF537BD6A"
+   components {
+    Hierarchy "{07638E8EB048F250}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 20 0
+  }
+  GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
+   ID "574EC0B27212C9A9"
+   components {
+    Hierarchy "{F2289AFE3D0B12FB}" {
+    }
+   }
+   coords 1.2 0 0.2
+   angles 90 70 0
+  }
+  GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+   ID "83148ACFE3A98C4E"
+   coords -0.9 0 0.3
+  }
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "A83CE88E7F1B9153"
+   components {
+    Hierarchy "{CF019EBDC283F494}" {
+    }
+   }
+   coords -1.2 0 -0.6
+  }
+ }
+}

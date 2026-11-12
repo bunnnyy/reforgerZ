@@ -1,0 +1,41 @@
+GenericEntity {
+ ID "2D9E7EC5C2EB981A"
+ components {
+  RplComponent "{8CC5AF7B161D600F}" {
+  }
+  Hierarchy "{5D5DE5737684DF42}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "0AFD53A2ADD05154"
+   components {
+    Hierarchy "{40D622F347C9B0A5}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 10 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "4598B7CF4D435984"
+   components {
+    Hierarchy "{0EA0CFE68B1F5DE8}" {
+    }
+   }
+   coords 0.7 0 0.3
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "C41190649945104E"
+   components {
+    Hierarchy "{E1511FF5303EA467}" {
+    }
+   }
+   coords -0.6 0 0.2
+  }
+  GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
+   ID "FD39425F9D423FE4"
+   coords 0.3 0 -0.4
+  }
+ }
+}

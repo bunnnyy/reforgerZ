@@ -22,7 +22,7 @@ import glob, hashlib, math, os, re, sys, random
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
 sys.path.insert(0, HERE)
-from pieces import AT, C, FP, KITS, TRACES  # noqa: E402
+from pieces import AT, C, FP, KITS, OPENINGS, TRACES  # noqa: E402
 
 PROPS = os.path.join(HERE, "props.txt")
 GM = os.path.join(REPO, "Prefabs/ReforgerZ/Core/RZ_GameMode.et")
@@ -262,6 +262,26 @@ def write_trace_kit(slots):
     write_gm(s)
 
 
+def write_opening_scenes(slots):
+    """Guidance > Opening scenes (m_aOpeningScenes on m_GuidanceSettings): one slot per key, in pieces.OPENINGS' order."""
+    seed("opening_scenes")
+    s, nl = read_gm()
+    L = ["    m_aOpeningScenes {"]
+    for key, res in slots:
+        L += ['     RZ_OpeningSceneSlot "{%s}" {' % gid(), '      m_sKey "%s"' % key, '      m_sPrefab "%s"' % res, "     }"]
+    L.append("    }")
+    block = nl.join(L)
+    head = s.index("   m_GuidanceSettings RZ_GuidanceSettings ")
+    close = s.index(nl + "   }", head)
+    if "    m_aOpeningScenes {" in s[head:close]:
+        start = s.index("    m_aOpeningScenes {", head)
+        end = s.index(nl + "    }", start) + len(nl + "    }")
+        s = s[:start] + block + s[end:]
+    else:
+        s = s[:close] + nl + block + s[close:]
+    write_gm(s)
+
+
 def main():
     check_plans()
     index = []
@@ -284,10 +304,18 @@ def main():
         write_meta(rel)
         slots[slot] = guid_of(rel) + rel
     write_trace_kit(slots)
-    lines = ["# Entity class, ResourceName and 'hier' when the prefab already has a Hierarchy component (build.py adds new props)."]
+    scenes = []
+    for key, (name, parts) in OPENINGS.items():
+        rel = "Prefabs/ReforgerZ/Guidance/Openings/%s.et" % name
+        seed(rel)
+        write_text(rel, piece_text(parts, props, index))
+        write_meta(rel)
+        scenes.append((key, guid_of(rel) + rel))
+    write_opening_scenes(scenes)
+    lines =["# Entity class, ResourceName and 'hier' when the prefab already has a Hierarchy component (build.py adds new props)."]
     lines += ["%s %s%s" % (v[0], v[1], " hier" if v[2] else "") for _, v in sorted(props.items())]
     write_text(os.path.relpath(PROPS, REPO), LF.join(lines) + LF)
-    print("built %d pieces, %d kits and %d trace compositions" % (len(C), len(KITS), len(TRACES)))
+    print("built %d pieces, %d kits, %d trace compositions and %d opening scenes" % (len(C), len(KITS), len(TRACES), len(OPENINGS)))
 
 
 if __name__ == "__main__":

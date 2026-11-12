@@ -1,0 +1,51 @@
+GenericEntity {
+ ID "BE52BF3FEB91A46E"
+ components {
+  RplComponent "{F5EC83D4D5180378}" {
+  }
+  Hierarchy "{1080A3C349968BFC}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
+   ID "92D4F73F6AD4EFF4"
+   components {
+    Hierarchy "{45C5D5F5243FC878}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 190 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "6E687C5E7EEEF30E"
+   components {
+    Hierarchy "{3AEB290708E60D56}" {
+    }
+   }
+   coords 0.8 0 0.2
+   angles 0 5 0
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "F20C0E566C77962C"
+   components {
+    Hierarchy "{2FBB4A0A34787222}" {
+    }
+   }
+   coords 0.8 0.62 0.2
+   angles 0 40 0
+  }
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "3E33B3BE13202125"
+   components {
+    Hierarchy "{01DEBD242822B56B}" {
+    }
+   }
+   coords -0.9 0 0.4
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "F046A00A49BDF9A3"
+   coords -0.9 1.3 0.48
+  }
+ }
+}

@@ -1,0 +1,56 @@
+GenericEntity {
+ ID "882B5689CD77022E"
+ components {
+  RplComponent "{8D7F6EE0335DEBD0}" {
+  }
+  Hierarchy "{85BAEBB40CBE6B7B}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "11D7997065530D49"
+   components {
+    Hierarchy "{C8A2E31EB2116323}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 5 0
+  }
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "B92E95C257F5FBC3"
+   components {
+    Hierarchy "{5F6AEBED1840CDE1}" {
+    }
+   }
+   coords 1.1 0 0.1
+   angles 0 -5 0
+  }
+  GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
+   ID "90DAA9C2740DC095"
+   components {
+    Hierarchy "{8E0818FF036224C4}" {
+    }
+   }
+   coords -1.1 0 0
+   angles 0 10 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "09DE35BA16D56B5A"
+   components {
+    Hierarchy "{C5B9D19C233F941A}" {
+    }
+   }
+   coords 2.1 0 0.6
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "D10A609ED9A07E18"
+   components {
+    Hierarchy "{1893787C341EAD74}" {
+    }
+   }
+   coords 0.5 0 1.4
+   angles 0 70 0
+  }
+ }
+}

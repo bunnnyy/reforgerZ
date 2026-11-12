@@ -1,0 +1,73 @@
+GenericEntity {
+ ID "6A413D77B9FE759E"
+ components {
+  RplComponent "{FCBA4FCEEDE18E1E}" {
+  }
+  Hierarchy "{15DF2B871BD71778}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.et" {
+   ID "39725F4D20CCDAA8"
+   components {
+    Hierarchy "{C15EEC5BCC042312}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 8 0
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "37A489B43DD6D985"
+   components {
+    Hierarchy "{0500739783A327C4}" {
+    }
+   }
+   coords -0.2 0.78 0.05
+   angles 0 30 0
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "6B48C4649424D04D"
+   components {
+    Hierarchy "{267904337E35EF21}" {
+    }
+   }
+   coords 0.4 0.78 -0.1
+  }
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+   ID "5D64E3878CE0B2DB"
+   components {
+    Hierarchy "{7FAE5814468FCFD8}" {
+    }
+   }
+   coords -0.8 0 0.1
+   angles 0 90 0
+  }
+  GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
+   ID "30CC86FDDDD2ABFE"
+   components {
+    Hierarchy "{F0675BFE8927A3DD}" {
+    }
+   }
+   coords 0.8 0 0.2
+   angles 0 -90 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "EC1BA2041A59B22B"
+   components {
+    Hierarchy "{EDC9E1094A0CFFC2}" {
+    }
+   }
+   coords 0.1 0 0.8
+   angles 0 180 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "4058C9E9CB5C9BBD"
+   components {
+    Hierarchy "{6368037138FDBFD3}" {
+    }
+   }
+   coords 0 0 -0.8
+  }
+ }
+}

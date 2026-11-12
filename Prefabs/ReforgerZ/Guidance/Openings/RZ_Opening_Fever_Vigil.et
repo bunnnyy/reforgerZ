@@ -1,0 +1,45 @@
+GenericEntity {
+ ID "B5365EBD04028761"
+ components {
+  RplComponent "{0B6EE6C2CE394F42}" {
+  }
+  Hierarchy "{818CDFA730B7DEB4}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+   ID "24F0E42FB92E4ECE"
+   components {
+    Hierarchy "{699EA9EA5F741EEA}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "8C362B59AE056082"
+   components {
+    Hierarchy "{CA4724A3953C8AB4}" {
+    }
+   }
+   coords 0 0.45 0
+  }
+  GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+   ID "C5FFDE85B7CBA11B"
+   components {
+    Hierarchy "{3276FF915163095E}" {
+    }
+   }
+   coords 0.6 0 0.2
+  }
+  GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
+   ID "777B1F900DE0C027"
+   coords 0.5 0 -0.2
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "407AB302817CA80C"
+   coords -0.6 0 0.3
+  }
+ }
+}

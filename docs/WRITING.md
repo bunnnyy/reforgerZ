@@ -83,11 +83,26 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
 - **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
   The children eat first."* When a hungry house takes from a fed one, it's *"borrowed"*, in quotes.
   The Haven's dark side is always said sideways, never announced.
-- **Someone from before** (an opening's contact, [DESIGN.md](DESIGN.md#openings-how-every-life-starts))
-  knew you through your background and talks like a neighbour on a doorstep: relieved, a little
-  embarrassed, one shared detail from before (the stitches, the van, the apple every morning). They
-  never say you're new and never explain the Zone: the story comes one piece a step, in their own
-  life (*"My brother tried the river road. The loudspeaker said his name. Then it didn't."*).
+- **Whoever's outside an opening's door** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts))
+  talks like a neighbour on a doorstep: plain, relieved, a little embarrassed, never an institution.
+  Nobody is new, so they never say you're new and never explain the Zone: the story comes one piece a
+  step, in their own life (*"My brother tried the river road. The loudspeaker said his name. Then it
+  didn't."*), and the ask comes in their own need, never as a lesson.
+  - **Someone from before** knew you through your background: one shared detail from before (the
+    stitches, the van, the apple every morning). Each background has a line for each reason: in
+    the hiding place they'd stopped knocking; with your group gone they're the one who came back
+    (*"I came back for my watch, and here you are."*); after the fever they wrote on your door.
+  - **A stranger** says what they saw and why they stayed, nothing about you they couldn't know
+    (*"That was my chalk on your door. I heard you through it for three nights."*).
+  - **A wanderer from an earlier life** opens with *"You look like someone I knew."* and reads what
+    they remember (a kindness, a wrong, only the face) without naming the old life or its deeds.
+  - **What you read by the door** is a note in someone's hand, with one domestic detail (*"Back by
+    dark. Don't eat the peaches."*); the veteran's version is its one line. The fever changes nothing
+    in the rules, so its words never promise immunity.
+  - **The step 2s** are a person's own trouble (a boy with a fever, a van with no fuel, two families
+    and one well), with no joke in a bite or a fever: the Clock lost is said plainly and nothing
+    follows it.
+  - No oaths in this voice: mild swearing stays with the Red Hand and Bastion.
 - **Players on the radio station** pick a preset, and it reads like a person: their name, one real
   place, one request. *"This is Mara. There's a horde moving around Morton. Stay clear of it."*
 - **Leaders** speak in their faction's voice, coloured by their traits. One short line before a
