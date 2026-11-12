@@ -321,7 +321,7 @@ class RZ_FactionServices
 	protected ref array<ref RZ_PendingStrike> m_aStrikes = {};
 	protected ref array<IEntity> m_aShellProps = {};
 	protected ref array<float> m_aShellExpiry = {};
-	protected ref map<string, float> m_mFenceWindow = new map<string, float>();	// identity -> start of the hour
+	protected ref map<string, int> m_mFenceWindow = new map<string, int>();	// identity -> start of the hour (real time)
 	protected ref map<string, int> m_mFenceEarned = new map<string, int>();
 	protected ref map<string, float> m_mAmendsAt = new map<string, float>();		// "identity:faction" -> clock
 	protected ref array<string> m_aFenceWords = {};
@@ -537,12 +537,13 @@ class RZ_FactionServices
 		}
 
 		string ident = Ident(playerId);
-		float window;
-		if (!m_mFenceWindow.Find(ident, window) || m_fClock - window >= 3600)
+		int window;
+		int nowUnix = RZ_SeasonClock.Now();
+		if (!m_mFenceWindow.Find(ident, window) || nowUnix - window >= 3600)
 		{
-			m_mFenceWindow.Set(ident, m_fClock);
+			m_mFenceWindow.Set(ident, nowUnix);
 			m_mFenceEarned.Set(ident, 0);
-			window = m_fClock;
+			window = nowUnix;
 		}
 
 		int earned;
@@ -552,7 +553,7 @@ class RZ_FactionServices
 		int maxItems = Math.Min(m_Settings.m_iFenceMaxItems, room / price);
 		if (maxItems <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, title, string.Format("\"I've had enough from you for one hour. Come back in %1 minutes.\"", Math.Max(1, RZ_Util.RoundToInt((3600 - (m_fClock - window)) / 60))));
+			m_GM.NotifyPlayer(playerId, title, string.Format("\"I've had enough from you for one hour. Come back in %1 minutes.\"", Math.Max(1, RZ_Util.RoundToInt((3600 - (nowUnix - window)) / 60))));
 			return;
 		}
 
@@ -581,6 +582,40 @@ class RZ_FactionServices
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The fence's hour per identity, still running, into the perks' save.
+	void Save(RZ_PerksSave data)
+	{
+		if (!data)
+			return;
+
+		int now = RZ_SeasonClock.Now();
+		foreach (string ident, int start : m_mFenceWindow)
+		{
+			if (now - start >= 3600)
+				continue;
+
+			int earned;
+			m_mFenceEarned.Find(ident, earned);
+			data.fenceIdents.Insert(ident);
+			data.fenceUnix.Insert(start);
+			data.fenceEarned.Insert(earned);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Restore(RZ_PerksSave data)
+	{
+		if (!data || !data.fenceIdents || !data.fenceUnix || !data.fenceEarned)
+			return;
+
+		for (int i = 0; i < data.fenceIdents.Count() && i < data.fenceUnix.Count() && i < data.fenceEarned.Count(); i++)
+		{
+			m_mFenceWindow.Set(data.fenceIdents[i], data.fenceUnix[i]);
+			m_mFenceEarned.Set(data.fenceIdents[i], data.fenceEarned[i]);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected int TakeFenceable(IEntity character, int maxCount)
 	{
 		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(character.FindComponent(SCR_InventoryStorageManagerComponent));
@@ -598,8 +633,8 @@ class RZ_FactionServices
 			if (!item || RZ_QuartermasterHelper.WasBought(item) || !RZ_FoodHelper.IsFood(item, m_aFenceWords))
 				continue;
 
-			inv.TryDeleteItem(item);
-			taken++;
+			if (inv.TryDeleteItem(item))
+				taken++;
 		}
 
 		return taken;

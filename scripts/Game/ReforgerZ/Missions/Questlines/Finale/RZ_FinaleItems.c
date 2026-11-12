@@ -96,7 +96,7 @@ class RZ_FinaleItems
 
 		int pid = m_GM.GetQuestlines().OnlineId(ident);
 		if (pid > 0)
-			return RZ_Util.PlayerName(pid);
+			return RZ_Names.Public(pid);
 
 		return "someone";
 	}
@@ -457,7 +457,7 @@ class RZ_FinaleItems
 		string ident = m_GM.GetProfile(playerId).m_sIdentity;
 		it.carrier = ident;
 		it.idle = 0;
-		string name = RZ_Util.PlayerName(playerId);
+		string name = RZ_Names.Public(playerId);
 		if (!it.chain.Contains(name))
 			it.chain = it.chain + " > " + name;
 

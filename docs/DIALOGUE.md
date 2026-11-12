@@ -214,7 +214,7 @@ system's caps.
 | `claim` | `claim:alone` | Something you told this speaker (kept 6 a speaker, this life) |
 | `learn` | `learn:haven.list`, `learn:bastion.word:6h` | Something you now know (`knows:` keys): for the season, or a **passing fact** for that many real hours (32 at most) |
 | `rumour` | `rumour:"..."@6` | Gossip on the roads (the world's rumours) |
-| `call` | `call:slot:2`, `call:hand_in:2`, `call:toll`, `call:post_wave`, `call:standing` | Built behaviour, unchanged: the person's own reply N; the safehouse food hand-in for N items (paid as built); the Red Hand toll at this roadblock (Known or better, as built); this post lets you through once while it stands; what they make of you, in their voice |
+| `call` | `call:slot:2`, `call:hand_in:2`, `call:toll`, `call:post_wave`, `call:standing` | Built behaviour, unchanged: the person's own reply N; the N food the same choice's `cost item:food*N` took go into this safehouse's stores, paid as a delivery (the lint pairs the two, same N; nothing more is taken); the Red Hand toll at this roadblock (Known or better, as built); this post lets you through once while it stands; what they make of you, in their voice |
 | `call` (more) | `call:season`, `call:look`, `call:declare_bite`, `call:caught_bite`, `call:distress`, `call:net_word`, `call:net_lost`, `call:brief_public` | A leader's epilogue carriers, as built (the season at this seat; where to look); the safehouse's bite service, as built; a bite lie caught at a safehouse counts as caught hiding that bite; a distress caller sent to a house's gate; the word at the wire from Bastion's net; codes changed on an intruder ([The radio](#the-radio)); a giver's lie taken public ([DESIGN.md](DESIGN.md#story-blocks)). The lint holds each to its own speaker |
 | `decide` | `decide:all_in` | In a conversation with a `scene`: the pick waits 5 s for objections ([Several players](#several-players)), then writes the scene's record (who, which), once for the world |
 | `sway` | `sway:council.workers` | In a conversation with a `scene`: one contribution per player to a count its owner reads (`tally.<name>`) |
@@ -355,8 +355,12 @@ choice ("I'll bring two tins. Two hours."):
 - **Clock:** the promiser's own play (2 hours by default), and 3 real days at most. Logging off
   doesn't break one; dying does.
 - **At most 3 open** per player ("You've three promises open already. Keep one first.").
+- **Not again so soon:** a promise kept or broken can't be made again for 3 real days ("You made
+  them that promise lately. Give it a few days."); a promise choice hides with `!kept:` and `!broke:`.
 - **Kept** by `keep:<key>` on whatever does it (the house's own hand-in keeps `house.tins@here`), or,
-  for a key ending in `.visit`, by talking to the same speaker again. Regard *kept* (+1) and a notice.
+  for a key ending in `.visit`, by talking to the same speaker again once you've played 10 minutes
+  since and been 300 m from where you made it (reopening the conversation keeps nothing). Regard
+  *kept* (+1) and a notice.
 - **Broken** when the play runs out, three real days pass or you die: regard *broke* (−1) and a notice.
 - **No double pay.** A promise pays nothing of its own: the hand-in pays as built, a visit pays
   nothing.

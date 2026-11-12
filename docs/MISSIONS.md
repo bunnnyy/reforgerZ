@@ -80,9 +80,11 @@ How the code does it:
   "Morale, needs, truces and feuds").
 - **Supply trucks aren't contracts.** Escorting, driving in or stealing one pays directly
   ([DESIGN.md](DESIGN.md), "Supply trucks"). Convoy Escort and Hijack the Convoy ask for
-  Bastion's next real truck, so those truck rewards are paid on top of the contract. If the post
-  it's going to changes hands first, the truck turns back and both are called off (no pay, no
-  penalty).
+  Bastion's next real truck; while a contract watches it, only the contract pays (the truck's
+  escort, drive-in and steal Fame aren't paid on top; stealing it still costs Bastion Infamy).
+  Convoy Escort pays nobody who shot near the truck while its crew lived, nor anyone in a shooter's
+  group. If the post it's going to changes hands first, the truck turns back and both are called
+  off (no pay, no penalty).
 - **Rescues** add population at the nearest Haven safehouse ([DESIGN.md](DESIGN.md), "Haven safehouses").
 - **Reasons start some contracts** ([DESIGN.md](DESIGN.md#story-blocks)): when the world posts a
   reason (a hungry house, a post's lost truck, a town gone bad, a dead leader, a bitten wanderer,

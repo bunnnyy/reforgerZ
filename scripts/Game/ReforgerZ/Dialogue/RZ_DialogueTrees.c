@@ -1810,8 +1810,8 @@ class RZ_DialogueTrees
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! call: built behaviour, unchanged. slot:N runs the person's own built reply N; hand_in:N hands
-	//! food in at their safehouse (as built); toll and post_wave are the road post's; standing is
+	//! call: built behaviour, unchanged. slot:N runs the person's own built reply N; hand_in:N puts the
+	//! N food the choice's cost took into their safehouse's stores (paid as a delivery); toll and post_wave are the road post's; standing is
 	//! what they make of you, in their voice.
 	protected void Call(RZ_TalkSession s, string what, IEntity user)
 	{
@@ -1830,7 +1830,7 @@ class RZ_DialogueTrees
 		{
 			int count = what.Substring(8, what.Length() - 8).ToInt();
 			if (m_GM.GetSafehouses() && ctx.m_iHouse >= 0)
-				m_GM.GetSafehouses().HandInFood(pid, ctx.m_iHouse, user, count);
+				m_GM.GetSafehouses().HandInFood(pid, ctx.m_iHouse, count);
 
 			return;
 		}

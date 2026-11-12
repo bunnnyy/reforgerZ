@@ -135,6 +135,10 @@ class RZ_SaveData
 	// Borrowed kit (Factions/RZ_DisguiseMarks.c): the nail list, Bastion's board, the season's counts.
 	// Older saves have none: they start empty
 	ref RZ_DisguiseSave disguise;
+	// Perks and services kept across a restart, by identity and real time (Factions/RZ_FactionPerks.c):
+	// the bounty board, who killed whom last, the Requisition cooldown, the fence's hour. Older saves
+	// have none: they start empty
+	ref RZ_PerksSave perks;
 	bool hasTimeOfDay;
 	float timeOfDay;
 

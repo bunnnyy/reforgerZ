@@ -645,8 +645,9 @@ class RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Standing for one identity (online or not; offline straight onto the saved profile, with no
-	//! tier message), inside a major's caps while a major pays (RZ_Majors.ClipPay).
+	//! Standing for one identity, inside a major's caps while a major pays (RZ_Majors.ClipPay).
+	//! Offline, Fame earned waits in the errands' owed pay for that life's next join (AddFame then);
+	//! Fame lost and Infamy go straight onto the saved profile.
 	static void ChangeStandingFor(RZ_GameModeComponent gm, string ident, int faction, int fame, int infamy, string deed = "")
 	{
 		if (RZ_Majors.IsNoPay() || ident.IsEmpty() || !RZ_Factions.IsValid(faction))
@@ -675,11 +676,15 @@ class RZ_Questline
 			return;
 
 		RZ_EFaction ef = faction;
-		if (fame != 0)
+		if (fame < 0)
 			profile.AddFame(ef, fame);
 
-		if (fame > 0)
-			RZ_Deeds.NoteBest(profile, faction, fame, deed);
+		if (fame > 0 && gm.GetErrands())
+		{
+			RZ_ErrandOwed o = RZ_ErrandOwed.Make(faction, fame, 0, "A long story ends", profile.m_iLives);
+			o.deed = deed;
+			gm.GetErrands().AddOwed(ident, o);
+		}
 
 		if (infamy > 0)
 			profile.AddInfamy(ef, infamy, true);

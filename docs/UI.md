@@ -212,7 +212,8 @@ to each of the 13 loadouts, so it works with any loadout.
 step's place, then back to the giver), the real minutes before it lapses, and what you said you'd
 do. Never on the map. Selecting any row asks the server for that row's **detail**
 (`RZ_PlayerUIComponent.AskDetail`, payload kind 10, `D|id|told|found|went`, at most 1,500
-characters, a few a second at most): its "What you've found" and "Who it went to" go at the top of
+characters, a few a second at most; the server answers only for a row that player's own journal
+shows, nothing for any other id): its "What you've found" and "Who it went to" go at the top of
 the clues block (`DetailClues`), so the journal's 6,000-character list is never cut for them.
 
 **The packs in the journal.** Each pack your character knows of is a row of kind PACK (the range ring

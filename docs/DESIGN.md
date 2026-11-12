@@ -860,9 +860,11 @@ Code: `Factions/RZ_SupplyLines.c`.
 - **Players and trucks.** Ride along within 150 m for 40% of the trip and see it arrive: +4
   Fame and +5 Favor with the owner. Its crew dead, drive it in yourself: +8 Fame. Neither pays
   anyone who fired within 150 m of the truck while its crew lived with no infected about, or
-  whose shot hit the crew from any range (seen by retaliation, when it's on). Or drive it
+  whose shot hit the crew from any range (seen by retaliation, when it's on), nor anyone in a
+  shooter's group. Or drive it
   into a rival's stronghold: +6 Fame with the Red Hand, who fence the cargo (with the receiver, for
-  a Red Hand truck), and +10 Infamy with the owner. Killing the crew counts as shooting the faction's people ([REPUTATION.md](REPUTATION.md), "What makes AI shoot you").
+  a Red Hand truck), and +10 Infamy with the owner. A truck a contract watches (Convoy Escort,
+  Hijack the Convoy) pays none of this Fame or Favor: the contract pays ([MISSIONS.md](MISSIONS.md)). Killing the crew counts as shooting the faction's people ([REPUTATION.md](REPUTATION.md), "What makes AI shoot you").
 - **No traces.** A finished truck stays parked while anyone is within 300 m (up to 15
   minutes), then it and its crew are removed. A robbed truck can be taken for 20 minutes.
 
@@ -1173,9 +1175,13 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   **Leave**, for you only: "Leave it to them" on a one-choice job's stand-in (its use slot) takes you
   out of the job: no pay, no blame, and you can't decide it. **Amends need clean hands**: a Press, a
   Trick, a switch or a hidden bite in a story job voids its Infamy work-off for that player (they're
-  paid Fame instead, as when the budget's spent). **Offline participants**: a story job done pays its
-  base, at their next join, to anyone who took part (a step, or 5 minutes in the area) and isn't online
-  when it ends (the errands' ledger keeps it; not for a switch or a leaver).
+  paid Fame instead, as when the budget's spent). **Offline participants**: a story job done pays
+  anyone who took part (a step, or 5 minutes in the area), isn't online when it ends and was eligible
+  for it then, at their next join, and only to the same life (the errands' ledger keeps it; not for a
+  switch, a leaver or a leader's in-person job). It pays as online pay does, without the background
+  bonus: the base x the leader's multipliers, amends through `Forgive()` with clean hands, the job's
+  own rival Infamy (then no rival table) and any Infamy the decider's choice put on those with them.
+  At the join the giver's tier is checked again: Hunted, or below the job's tier, and nothing is paid.
 - **Who benefits** (`RZ_Beneficiaries`): 2–4 parties a result can go to. The side chosen pays those
   with the decider whom it doesn't hunt; a **switch** (the result to another side than the giver)
   pays at most the base, its Fame doesn't count toward season Fame (`RZ_RepFlag.SWITCH`), the giver
@@ -1465,8 +1471,9 @@ time and the world, and how players did each stage decides where it goes and how
   rules: never a stronghold, never the owner's last, no truce, nobody watching), a headline, a
   rumour wanderers and leaders repeat for some hours, a wanderer who remembers everyone who
   took part, and standing for everyone who took part (Fame ±10, Infamy up to 15; optionally only
-  those who took one approach). Players who are offline get their standing on their saved
-  profile.
+  those who took one approach). Players who are offline lose Fame and take Infamy on their saved
+  profile; Fame they earned waits in the errands' ledger for that life's next join, paid through
+  `AddFame` then (another life: not paid).
 - **How many.** At most **Max active** questlines at once (2), never two for the same faction
   (a group that isn't one of the four factions has its own slot). Every 30 minutes or so with
   players online, half the time, a questline that can start does. One that reached an ending
@@ -3050,7 +3057,9 @@ headlines, world interactions, the crawlers' ledgers, stir and kill sites, the t
 ([The clock](#the-clock)), the world facts (the season's seed, flags, canon, gossip and world
 memory; claims aren't saved) and the shared engine (waiting callbacks, the season budget, the
 set-piece calendar, the season's deeds; notice lanes and marks aren't saved), and the epilogue week
-(its record, beats, closing work and outlet stocks). A save from another map is ignored. A profile that never spawned and holds nothing
+(its record, beats, closing work and outlet stocks), the bounty board's postings, who last killed
+whom, the Requisition cooldown and the fence's hour (by identity and real time), and errand pay
+waiting for a truck. A save from another map is ignored. A profile that never spawned and holds nothing
 lasting (no lives, Legacy, unlocks or guidance) isn't saved, and an event for a player id that
 left before the server knew them (a wound described after a disconnect) gets a blank profile
 that is never stored, so no junk `local_` profiles pile up. Player bodies, inventories and vehicles use

@@ -184,7 +184,7 @@ class RZ_RepSeason
 
 		e = new RZ_RepSeasonEntry();
 		e.ident = ident;
-		e.name = RZ_Util.PlayerName(playerId);
+		e.name = RZ_Names.Public(playerId);
 		e.life = m_GM.GetProfile(playerId).m_iLives;
 		m_mEntries.Set(ident, e);
 		m_bDirty = true;

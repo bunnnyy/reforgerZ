@@ -3,7 +3,7 @@
 //! locks a route and never hands out doses, crates, kit or keys. Server only.
 
 //------------------------------------------------------------------------------------------------
-//! Pay waiting for the next truck at a post (to the life that earned it).
+//! Pay waiting for the next truck at a post (to the life that earned it). Saved (RZ_ErrandsSave).
 class RZ_ErrandDeferred
 {
 	string ident;
@@ -11,7 +11,8 @@ class RZ_ErrandDeferred
 	int faction;
 	int favor;
 	string title;
-	vector at;
+	float atX;			// the post's giver
+	float atZ;
 	int madeUnix;
 }
 
@@ -125,7 +126,8 @@ class RZ_ErrandsPay
 		d.faction = faction;
 		d.favor = favor;
 		d.title = e.m_sGiverTitle;
-		d.at = e.m_vGiver;
+		d.atX = e.m_vGiver[0];
+		d.atZ = e.m_vGiver[2];
 		d.madeUnix = RZ_SeasonClock.Now();
 		m_aWaiting.Insert(d);
 		RZ_Log.Info(string.Format("Errands: %1's pay waits for the truck (%2 Favor)", RZ_Util.PlayerName(playerId), favor));
@@ -147,7 +149,7 @@ class RZ_ErrandsPay
 				continue;
 			}
 
-			if (d.faction != faction || RZ_Util.DistXZ(d.at, at) > TRUCK_RANGE)
+			if (d.faction != faction || RZ_Util.DistXZ(Vector(d.atX, 0, d.atZ), at) > TRUCK_RANGE)
 				continue;
 
 			int playerId = gm.FindPlayerByIdentity(d.ident);
@@ -157,6 +159,31 @@ class RZ_ErrandsPay
 
 			gm.AddFavor(playerId, faction, d.favor);
 			gm.NotifyPlayerAs(playerId, d.title, string.Format("\"The truck's in. Here's what we owed you.\" +%1 %2 Favor.", d.favor, RZ_Factions.GetName(faction)), RZ_ENoticeTag.MISSION);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pay still waiting for a truck, for the save (real time, so a restart doesn't lose it).
+	void Save(notnull array<ref RZ_ErrandDeferred> into)
+	{
+		int now = RZ_SeasonClock.Now();
+		foreach (RZ_ErrandDeferred d : m_aWaiting)
+		{
+			if (d && now - d.madeUnix <= DEFER_HOURS * 3600)
+				into.Insert(d);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Restore(array<ref RZ_ErrandDeferred> from)
+	{
+		if (!from)
+			return;
+
+		foreach (RZ_ErrandDeferred d : from)
+		{
+			if (d && !d.ident.IsEmpty())
+				m_aWaiting.Insert(d);
 		}
 	}
 

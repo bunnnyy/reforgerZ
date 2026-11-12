@@ -350,7 +350,7 @@ class RZ_QuestRun
 
 		RZ_QuestPart part = new RZ_QuestPart();
 		part.m_sIdent = ident;
-		part.m_sName = RZ_Util.PlayerName(playerId);
+		part.m_sName = RZ_Names.Public(playerId);
 		part.m_iStage = m_iStage;
 		part.m_iApproach = approach;
 		part.m_sDid = what;

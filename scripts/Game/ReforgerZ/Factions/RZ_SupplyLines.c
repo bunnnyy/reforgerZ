@@ -183,13 +183,37 @@ class RZ_SupplyTruck
 	int m_iChecks;
 	ref array<int> m_aEscortIds = {};
 	ref array<int> m_aEscortCounts = {};
-	bool m_bConvoy;			// sent by a story arc (The Last Convoy)
+	bool m_bConvoy;			// sent by a story arc (The Last Convoy) or a contract (RZ_ConvoyWatch)
+	bool m_bWatched;		// a contract watches it (Convoy Escort, Hijack): the contract pays, not the truck
 	ref array<int> m_aShooters = {};	// fired near it while the crew lived, with no infected about
+
+	//------------------------------------------------------------------------------------------------
+	//! This player, or someone in their group, shot near the truck while its crew lived.
+	bool ShotBy(int playerId)
+	{
+		return RZ_SupplyLines.AmongShooters(m_aShooters, playerId);
+	}
 }
 
 //------------------------------------------------------------------------------------------------
 class RZ_SupplyLines
 {
+	//------------------------------------------------------------------------------------------------
+	//! The player is one of the shooters, or in a group with one.
+	static bool AmongShooters(array<int> shooters, int playerId)
+	{
+		if (!shooters || playerId <= 0)
+			return false;
+
+		foreach (int shooter : shooters)
+		{
+			if (shooter == playerId || RZ_Util.SameGroup(shooter, playerId))
+				return true;
+		}
+
+		return false;
+	}
+
 	static const int KIND_OUTPOST = 0;
 	static const int KIND_SAFEHOUSE = 1;
 
@@ -1204,18 +1228,20 @@ class RZ_SupplyLines
 			life.OnTruckArrived(t.m_eFaction, t.m_sDestName);
 
 		string factionName = RZ_Factions.GetName(t.m_eFaction);
-		// Nobody earns Fame for bringing in a truck whose crew they shot
-		bool shooter = driver > 0 && t.m_aShooters.Contains(driver);
+		// Nobody earns Fame for bringing in a truck whose crew they (or their group) shot; a
+		// contract's truck is paid by the contract alone
+		bool shooter = driver > 0 && t.ShotBy(driver);
 		if (shooter)
 			m_GM.NotifyPlayer(driver, factionName, string.Format("You brought their truck in to %1. They know who was shooting near it before its crew died. Nobody thanks you.", t.m_sDestName));
 
-		if (driver > 0 && !shooter)
+		if (driver > 0 && !shooter && !t.m_bWatched)
 		{
 			m_GM.AddFame(driver, t.m_eFaction, m_Settings.m_iDriveFame);
 			m_GM.NotifyPlayer(driver, factionName, string.Format("You brought their truck in to %1 after its crew was killed. They won't forget it. (+%2 Fame)", t.m_sDestName, m_Settings.m_iDriveFame));
 		}
 
-		RewardEscorts(t, driver);
+		if (!t.m_bWatched)
+			RewardEscorts(t, driver);
 		NotifyNear(t.m_vDest, factionName, RZ_FactionVoice.TruckArrives(t.m_eFaction, t.m_sDestName, t.m_sDriver), SHORTAGE_NEWS_RADIUS);
 		m_GM.GetMissions().OnTruckEvent(t.m_eFaction, TRUCK_ARRIVED, t.m_vDest, driver);
 		if (t.m_bConvoy && m_GM.GetStoryArcs())
@@ -1230,7 +1256,7 @@ class RZ_SupplyLines
 		string factionName = RZ_Factions.GetName(t.m_eFaction);
 		foreach (int i, int playerId : t.m_aEscortIds)
 		{
-			if (playerId == driver || t.m_aEscortCounts[i] < needed || t.m_aShooters.Contains(playerId))
+			if (playerId == driver || t.m_aEscortCounts[i] < needed || t.ShotBy(playerId))
 				continue;
 
 			if (RZ_Reputation.IsHunted(m_GM.GetTier(playerId, t.m_eFaction)))
@@ -1404,10 +1430,19 @@ class RZ_SupplyLines
 		if (t.m_eFaction == RZ_EFaction.BANDITS)
 			fameWith = receiver;
 
-		m_GM.AddFame(driver, fameWith, m_Settings.m_iStealFame);
+		// A contract's truck (Hijack the Convoy) pays through the contract: only the Infamy here
 		m_GM.AddInfamy(driver, t.m_eFaction, m_Settings.m_iStealInfamy);
-		m_GM.NotifyPlayer(driver, RZ_Factions.GetName(fameWith), string.Format("You drove %1's truck into %2's yard. They're unloading it already. (+%3 Fame with %4, +%5 Infamy with %1)",
-			RZ_Factions.GetNameInText(t.m_eFaction), RZ_Factions.GetNameInText(receiver), m_Settings.m_iStealFame, RZ_Factions.GetNameInText(fameWith), m_Settings.m_iStealInfamy));
+		if (t.m_bWatched)
+		{
+			m_GM.NotifyPlayer(driver, RZ_Factions.GetName(fameWith), string.Format("You drove %1's truck into %2's yard. They're unloading it already. (+%3 Infamy with %1)",
+				RZ_Factions.GetNameInText(t.m_eFaction), RZ_Factions.GetNameInText(receiver), m_Settings.m_iStealInfamy));
+		}
+		else
+		{
+			m_GM.AddFame(driver, fameWith, m_Settings.m_iStealFame);
+			m_GM.NotifyPlayer(driver, RZ_Factions.GetName(fameWith), string.Format("You drove %1's truck into %2's yard. They're unloading it already. (+%3 Fame with %4, +%5 Infamy with %1)",
+				RZ_Factions.GetNameInText(t.m_eFaction), RZ_Factions.GetNameInText(receiver), m_Settings.m_iStealFame, RZ_Factions.GetNameInText(fameWith), m_Settings.m_iStealInfamy));
+		}
 
 		m_GM.GetTerritory().AddStrength(receiver, 1);
 		RZ_FactionLife life = m_GM.GetFactionLife();

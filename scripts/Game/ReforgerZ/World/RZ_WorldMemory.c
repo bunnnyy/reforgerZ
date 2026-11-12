@@ -338,7 +338,7 @@ class RZ_WorldMemory
 				e.idents.Insert(ident);
 				string name = "";
 				if (e.names.Count() < NAMES_PER_ENTRY && MayName(t, ident))
-					name = RZ_Util.PlayerName(playerId);
+					name = RZ_Names.Public(playerId);
 
 				e.names.Insert(name);
 			}
@@ -523,7 +523,7 @@ class RZ_WorldMemory
 					continue;
 
 				rec.idents.Insert(ident);
-				rec.names.Insert(RZ_Util.PlayerName(playerId));
+				rec.names.Insert(RZ_Names.Public(playerId));
 			}
 		}
 

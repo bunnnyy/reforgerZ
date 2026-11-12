@@ -174,7 +174,7 @@ class RZ_MajorRest
 		else if (tier == RZ_ETier.TRUSTED)
 			rank = "Corporal";
 
-		return string.Format("%1 %2", rank, RZ_Util.PlayerName(playerId));
+		return string.Format("%1 %2", rank, RZ_Names.Public(playerId));
 	}
 
 	// ================================================================ The tick

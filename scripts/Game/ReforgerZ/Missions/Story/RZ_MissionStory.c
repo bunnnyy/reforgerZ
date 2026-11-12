@@ -63,6 +63,8 @@ class RZ_MissionStory
 	ref array<string> m_aReads = {};		// "key|subject": world records it holds while it runs
 	ref array<string> m_aFound = {};		// "What you've found", for the journal
 	string m_sTold;							// "What they told you": the brief as given
+	ref array<int> m_aBlameFactions = {};	// BlameDecider's Infamy this job (for pay owed offline)
+	ref array<int> m_aBlameInfamy = {};
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_MissionStory(string key)
@@ -310,6 +312,12 @@ class RZ_Deciding
 	{
 		RZ_PlayerProfile p = gm.GetProfile(playerId);
 		return p && m_aDirty.Contains(p.m_sIdentity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsDirtyIdent(string ident)
+	{
+		return m_aDirty.Contains(ident);
 	}
 
 	//------------------------------------------------------------------------------------------------

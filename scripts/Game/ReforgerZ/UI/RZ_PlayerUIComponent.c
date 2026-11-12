@@ -337,17 +337,17 @@ class RZ_PlayerUIComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_Payload(int kind, string payload)
 	{
-		if (kind == 0)
+		if (kind == RZ_UIFeed.PAYLOAD_STANDING)
 		{
 			m_sStanding = payload;
 			m_iStandingVersion++;
 		}
-		else if (kind == 1)
+		else if (kind == RZ_UIFeed.PAYLOAD_JOURNAL)
 		{
 			m_sJournal = payload;
 			m_iJournalVersion++;
 		}
-		else if (kind == 3)
+		else if (kind == RZ_UIFeed.PAYLOAD_MAP)
 		{
 			m_sMap = payload;
 			m_iMapVersion++;
@@ -391,12 +391,14 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sDetail = payload;
 			m_iDetailVersion++;
 		}
-		else
+		else if (kind == RZ_UIFeed.PAYLOAD_BACKGROUNDS)
 		{
 			m_sBackgrounds = payload;
 			m_iBackgroundsVersion++;
 			ReadLockedLoadouts();
 		}
+
+		// Any other kind (a newer server's) is ignored
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -207,6 +207,9 @@ Through the one small-pay ledger, per identity for the season (`RZ_ErrandLedger`
 - **In kind is an effect, not loot**: +2 food at a house, a fault fixed, morale +1 through the
   contracts and errands lane of the [season budget](DESIGN.md#the-season-budget). Errands never hand
   out doses, crates, kit or keys.
+- **Bought food counts for nothing.** Food a quartermaster sold or handed out is refused by every
+  errand's food hand-in, as at a house and the fence ([REPUTATION.md](REPUTATION.md#haven-house-rules-and-exile)
+  has the house's pay). A safehouse's food Fame also goes through this ledger's ceiling and day's cap.
 - **"Most people helped"**: each errand done counts on the hall of fame's line of that name, until
   the cure. It pays nothing.
 
@@ -611,6 +614,6 @@ found by events (a visit, a road, a rumour round, the next real reading).
 people); the lines have two or three variants each, not always three; a card dealt counts toward
 the day's two even if declined; pay in kind is an effect, except a post's tagged ration or magazine
 and a carried item (errands hand out no doses, crates, kit or keys); a deferred pay waiting for its
-truck is runtime only (a restart forgets it); the goods' tag is a server-side list (VERIFY in
+truck is saved (a real day at most) and still waits after a restart; the goods' tag is a server-side list (VERIFY in
 [DESIGN.md](DESIGN.md#story-blocks)). The margin cards read the majors' waits (the run's stage), and the lock cards read
 the finale's lock (`RouteOfPlayer`). The journal's errand row uses the `mission_errand` icon.

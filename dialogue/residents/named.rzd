@@ -32,7 +32,7 @@ node start
   say "For each of the dead, the whole post answers together. It gets longer every week."
   > @hear "Can I listen tonight?" -> hear
   > @how "How long does it take now?" -> how
-  > @road "I'll check the road and come back." -> road   if !promise:sentry.road@here.visit   do promise:sentry.road@here.visit:2h
+  > @road "I'll check the road and come back." -> road   if !promise:sentry.road@here.visit & !kept:sentry.road@here.visit & !broke:sentry.road@here.visit   do promise:sentry.road@here.visit:2h
   > @other2 "Something else." -> hub
 
 node hear

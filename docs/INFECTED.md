@@ -1430,8 +1430,9 @@ the taking rules are [above](#the-taken-and-the-ones-who-ran).
 - **The name** shows on the ID card, in the dead player's own journal (*"Your last character, …, runs
   with the Quarry lot now."*) and to their group. Public text (headlines, the Haven's lines, road news,
   Bring Them Home's brief) uses the description (*"someone who'd been a hunter"*) unless the server is on
-  **Named**, the player hasn't opted out, and the name passes the **Name filter** (words; a name
-  containing one is described instead).
+  **Named** and the name is allowed in public text: not opted out here or by `/anonymous`, and past
+  the **Name filter** (words; a name containing one is described instead). The same test keeps the
+  name out of every other public text ([EPILOGUE.md](EPILOGUE.md#names)).
 - **The opt-out**, without typing: the notebook item's action *"If I die: say my name, or don't"*
   (a toggle, with a gamepad from the action menu); on PC also `/mydead hidden` or `/mydead shown`. Saved
   by identity.

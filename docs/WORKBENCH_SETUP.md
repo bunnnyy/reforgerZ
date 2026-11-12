@@ -910,8 +910,8 @@ a rougher town, Halcyon's next to the lab). Their positions are saved. The four 
 on every quartermaster are how players reach stronghold leaders and council heads.
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
-Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, spawned next to the
-quartermaster), **Display name** and **Once per life** (off; on: each player can buy it once a life). The action is always shown (or, with the shop screen on, is a
+Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, put in the buyer's
+inventory, or beside the quartermaster when it doesn't fit), **Display name** and **Once per life** (off; on: each player can buy it once a life). The action is always shown (or, with the shop screen on, is a
 row on it); the server checks tier and Favor when it's used. The four quartermaster prefabs carry
 `RZ_ShopOpenAction` (**Trade**, first in the list), which opens the shop screen while **UI > Shop
 item layout** is set; then the Buy, Requisition and service actions hide from the action menu. A
@@ -922,7 +922,9 @@ vehicle prefab): cars are only ever found, so the server refuses such an action 
 `RZ_RequisitionAction` has the same cost, item and name; the cost is the full price (a Trusted
 player pays half, once an hour). Set it up for ammo and rations only, each an item a shop action
 on the **same quartermaster** sells at Trusted or below: Requisition is a Trusted perk, so
-anything stocked only at Champion (or not stocked there) is refused and logged.
+anything stocked only at Champion (or not stocked there) is refused and logged. The code also
+refuses (and logs) an item whose prefab name holds no ammo word (`magazine`, `mag_`, `ammo`,
+`cartridge`, `rounds`, `ration`) and none of the safehouses' **Food keywords**.
 You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand-ins.
 
 - **Antidotes.** A shop action whose item is the **Cure > Antidote** prefab sells from a stock, not
@@ -933,8 +935,9 @@ You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand
 - **Stabilisers.** A Halcyon shop action whose item is the **Survival > Infection > Stabiliser**
   prefab sells from a second, smaller stock, at double its price until research reaches 50%. The
   manifest makes it Known, 40 Favor. Anywhere else it's an ordinary item.
-- **Price food above 2 Favor.** A safehouse pays 2 Haven Favor (and a little Fame) per food item
-  handed in, so food the Haven quartermaster sells for 2 or less turns Favor into free Fame.
+- **Shop food is refused for trade.** A safehouse pays 2 Haven Favor (and a little capped Fame) per
+  food item handed in, but refuses anything a quartermaster sold or handed out (its bought list, kept
+  until a restart), so a shop's tins can't be turned into Favor or Fame.
 
 Suggested starting stock for the shop actions you add by hand (from [REPUTATION.md](REPUTATION.md)):
 
@@ -960,7 +963,7 @@ Check **Hostility > Disguises**' uniform, head-piece and service-weapon keywords
 faction loadouts and loot: they decide colours (2 pieces), full kit (3, one on the head) and the
 wrong-weapon tell. Halcyon's must match the coat and the beak (a hood or mask with a respirator),
 and should not match ordinary dust masks. Keep those keywords rare in loot and on the infected's
-loadouts: kit marks make a dead man's and the turned's kit fail, but a restart forgets the marks.
+loadouts: kit marks make a dead man's and the turned's kit fail; a restart keeps the worn ones and turns the rest into kit of unknown origin (−1 at the look).
 For the one clean way in, give the Red Hand quartermaster two `RZ_FactionShopAction`s at Trusted,
 40 Favor each, **Once per life** on: a Bastion green set and a Halcyon coat and beak (a bag with the
 pieces in it); anything the Red Hand sells is bought fair. Bastion's and Halcyon's own shop kit is signed out to its buyer. Road
@@ -1666,7 +1669,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `Persistence/RZ_SaveData.c:207` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
+| `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
 ### Medium risk: big features, with a fallback (70)
@@ -1677,7 +1680,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_Checkpoints.c:542` | with **Dialogue > Trees** on, the road post's speaker (territory's occupant prefab for the faction, else the puzzle civilian) carries the puzzle components, so "Talk to the toll man" shows on it | No post speaker to talk to: the search and the toll still happen at the barrier as built. Give the occupant prefab `RZ_PuzzleObjectComponent`, `RZ_ClueComponent` and the read action, as the named people at holdings have |
 | `Core/RZ_Util.c:749` | `SetAffiliatedFaction` on the server replicates, and AI perception reads it | Same as above. Check that the spawn screen's places, chat, groups and markers stay on `SURV`, and that nothing resets the character (the tick puts it back within 5 s) |
 | `Core/RZ_Util.c:894` | `MoveInVehicle` seats an AI at once (it goes through an RPC to the character's owner, the server for AI); `PILOT` is the driver's seat | No truck leaves its yard (the log says nobody drives it). Try the vanilla "get in" waypoint, or a vehicle prefab with its crew already inside |
-| `Factions/RZ_SupplyLines.c:980` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
+| `Factions/RZ_SupplyLines.c:1004` | a seated AI group drives to a move waypoint, and members on foot follow it | As above. Test one truck end to end first |
 | `Core/RZ_Util.c:922` | `SetWorldTransform` moves a physics vehicle with its crew | Unsticking only runs with nobody within 1 km; check truck and crew arrive together |
 | `Interactions/RZ_Loot.c:178` | furniture inside buildings is found as static entities | Loose loot lies only on up to five floor points in each building's box |
 | `Interactions/RZ_Loot.c:941` | a spawned item lies still where it's put: on a table top or the floor (traced), not falling through or rolling off | Items end up under the floor or on the ground outside: lower `RZ_LootAnchors.TALL` to keep to the floor, or check the item's physics against vanilla's `MRE.et` |
@@ -1692,14 +1695,14 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1046` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1251`, `:1129` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
-| `Factions/RZ_Disguise.c:1067`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
+| `Factions/RZ_Disguise.c:1074`, `Factions/RZ_DisguiseMarks.c:779`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
 | `Factions/RZ_DisguiseWatch.c:193` | a character's world transform's forward axis (`mat[2]`) is where its body faces | If it's another axis, guards count as turned to you at the wrong angle: again looks and their noticing line come too often or never. Check by standing behind a Bastion sentry in their kit after a passed look |
 | `Factions/RZ_DisguiseWatch.c:206` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
-| `Factions/RZ_DisguiseMarks.c:341`, `:390` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
-| `Factions/RZ_Disguise.c:805` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
-| `Factions/RZ_DisguiseMarks.c:544` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
-| `Factions/RZ_DisguiseMarks.c:208` | a worn piece's root parent is the character wearing it (kit marks saved across a restart) | Marks are never saved across a restart (no `kit mark put back` lines): after a restart a dead man's kit passes as clean, as before |
-| `Factions/RZ_DisguiseMarks.c:920` | `TryDeleteItem` through the wearer's inventory manager takes a worn piece off (the last week's homecoming and handing back) | The piece stays on after "He's home. Mark him.": its mark is gone either way, so it passes as clean kit |
+| `Factions/RZ_DisguiseMarks.c:440`, `:489` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
+| `Factions/RZ_Disguise.c:812` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
+| `Factions/RZ_DisguiseMarks.c:643` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
+| `Factions/RZ_DisguiseMarks.c:225` | a worn piece's root parent is the character wearing it (kit marks saved across a restart) | Marks are never saved across a restart (no `kit mark put back` lines): after a restart a dead man's kit passes as clean, as before |
+| `Factions/RZ_DisguiseMarks.c:1019` | `TryDeleteItem` through the wearer's inventory manager takes a worn piece off (the last week's homecoming and handing back) | The piece stays on after "He's home. Mark him.": its mark is gone either way, so it passes as clean kit |
 | `Core/RZ_Util.c:1215` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1181` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
@@ -1966,6 +1969,7 @@ Warnings worth acting on:
 | `Player N spawned with locked loadout '...': default background` | A locked loadout got past the spawn check (see `UI/RZ_LoadoutLock.c:67` in the VERIFY list): they keep its gear but play as Unemployed, the default background |
 | `Shop action '...' sells a vehicle or a car part (...): refused. Cars are only found` | A quartermaster's shop action is set to a vehicle, a car part or fuel: change its Item prefab |
 | `Requisition '...' (...) isn't Trusted stock here ...: refused` | A requisition action hands out something its quartermaster doesn't sell at Trusted or below: point it at a Trusted (or lower) shop item, or add one |
+| `Requisition '...' (...) isn't ammo or rations (prefab name keywords): refused` | A requisition action's item isn't ammunition or food by its prefab name: point it at a magazine or a ration |
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
@@ -2160,7 +2164,9 @@ person (no civilian prefab)`, `Callbacks: <title> at the door for <player>`, `St
 <grid>`, `Story: <title> record <key> (<subject>) = <value>`,
 `Story: <title> read by <player> (<backgrounds>)`, `Story: distress at <town> is real|loop|bait`,
 `Story: colleague <name> is <truth>`, `Story: colleague <name> trail found by <player> (<how>)`,
-`Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join (N Fame, N Favor)`,
+`Story: <title> left by <player>`, `Story: <title> pays <identity> at their next join, life N (N Fame, N Favor)`,
+`Story: <title> owes <identity> nothing (not eligible as it ended)`, `Errands: '<title>' owed <player> on
+life N; they're on life N: not paid`,
 `Story: <player> hid a bite at house N`, every real hour `Story | per player-hour: Fame N, Favor N | by
 job: ... | picks: ... | food on trades N | fallout: started N, paid N Favor`,
 `Story: crash at <grid> is <truth>`, `Story: <title> group '<what>' at <grid> (N on the server)`,
@@ -2231,7 +2237,9 @@ session, tick off:
 - [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
 - [ ] A quartermaster sells an item at the right tier and refuses one above it. No quartermaster
   offers a vehicle, a car part or a jerrycan. A Bastion Trusted player can requisition rations and
-  a rifle magazine (once an hour, half price).
+  a rifle magazine (once an hour, half price, into the pack), but not in Red Hand colours; a requisition action
+  set to anything else (a rifle) is refused and logged. A requisitioned ration is refused at a
+  safehouse ("off a quartermaster's shelf").
 - [ ] The shop screen: **Trade** at the Haven quartermaster opens it, and the Buy actions are gone
   from the action menu. The header says whose stores they are, your standing and your Favor; LB/RB
   (Q/E) switch tabs and skip empty ones; up/down move in the list, which scrolls. A Champion item
@@ -2540,7 +2548,7 @@ when it happens)
   hall's *Walked out*; armed, you're turned back as before.
 - [ ] `/season` (or the notebook's action, or its The season tab with a pad: LB/RB to the last tab)
   lists the beats you've met, And you and Unfinished; `/anonymous` turns your name into *a survivor*
-  on boards and in the hall.
+  on boards and in the hall, and in broadcasts: deliver a sample, or turn, and everyone hears *a survivor*.
 - [ ] The evening calendar: once the Gate has run, at 18:30 the Haven's open channel reads six names;
   once the last call has run, at 20:30 Bastion's says *"Bastion listening. Nothing heard. Bastion
   out."* and the roster board's line counts the strokes; 8 real hours (× Test scale) after a coda, its
@@ -2610,7 +2618,9 @@ when it happens)
 - [ ] Trees on, a promise: at a short safehouse "I'll bring two tins. Two hours." gives "(A promise:
   2 hours of your play to keep it.)"; the next Talk there lists it with the play left; handing in two
   tins says "Kept"; letting it run out (or dying) says "Broken", and the house's next greeting says
-  so once. The Bastion sentry's "I'll check the road and come back." is kept by talking to them again.
+  so once. The Bastion sentry's "I'll check the road and come back." isn't kept by reopening the
+  talk on the spot; it is after 10 minutes of play and a walk of 300 m or more, by talking to them
+  again. Kept, the choice is gone for 3 real days.
 - [ ] Trees on, in Bastion kit you aren't Known in, at a checkpoint's speaker: "Answer as one of
   theirs." shows the look's tags and "[Look - Bastion - N of 2]" before you pick; a pass waves you
   through, a catch takes the kit (and the conversation carries on). "Give the word at the wire."
@@ -2833,7 +2843,8 @@ when it happens)
   then the look ("gave Bastion a cover detail"); a second claim line at that speaker isn't offered
   this life. Carry a mission item from a job against Bastion: "[Something of theirs on you -1]". After
   the 90% lock, a look by another route's faction: "[Sworn to another side -1]". Wear marked kit,
-  restart the server, log in: "kit mark put back", and the look still fails. The notebook's Standing
+  restart the server, log in: "kit mark put back", and the look still fails. Leave a dead man's
+  jacket in a crate instead, restart, put it on: the look shows "[Unknown origin -1]". The notebook's Standing
   page shows IN THEIR KIT above Bastion's leaders. After the cure, carry a dead man's jacket to his
   post: "He's home. Mark him.", and the four factions' lines on the open channel once.
 - [ ] The parley: Hunted by Bastion with 15+ Earned Fame and a best deed, walk to a checkpoint
@@ -2854,7 +2865,10 @@ when it happens)
   killer is paid, once, by one faction. Die to the infected (or a fall) while at Kill on Sight:
   nobody is paid. Collect the Bounty on a player pays only whoever killed them. With no player
   wanted, the hiding man (Bounty target, on SURV) shoots back at whoever comes near, and killing
-  him pays.
+  him pays. A teammate's kill pays no Kill on Sight bounty.
+- [ ] Restart with a bounty posted, a Requisition just signed out and the fence at its hourly cap:
+  after it, `Perks: restored N bounty postings, N last killers, N Requisition cooldowns`; the posting
+  is still up, the next requisition still waits, and the fence still says to come back.
 - [ ] A Bastion outpost leader dies and is replaced (Replace minutes at 1): when that outpost is
   later abandoned or taken, the new leader leaves with it.
 - [ ] A supply truck leaves, is driven by its crew, and arrives. Its whole crew gets in before it
@@ -3431,6 +3445,8 @@ on the talk screen says why something wasn't dealt)
   zone, and pays once nobody is sitting in it; Car Theft counts only its own car.
 - [ ] Convoys: Convoy Escort and Hijack the Convoy ask for Bastion's next truck within two minutes;
   the breakdown stops and restarts the crew; robbing it completes the hijack, its arrival the escort.
+  Only the contract pays: no "riding shotgun" or drive-in Fame from the truck, and an escort whose
+  teammate shot near the truck isn't paid.
 - [ ] Blood Drive takes a quarter of your health (check it shows), refuses under 70% and a second
   time in the same life.
 - [ ] Patient Zero: each town's body appears only when you're near; a Lab Tech reads a grid in it.
@@ -3466,7 +3482,8 @@ on the talk screen says why something wasn't dealt)
 - [ ] Leave: at a one-choice job's stand-in, "Leave it to them" says you're out; you aren't paid when
   it ends and can't pick its options. A Watched player who pressed or tricked in an amends job is paid
   Fame, not amends. A story job finished while one who took part (5 minutes there) is offline: at their
-  next join, "Finished while you were away" with the base pay (`Story: <title> pays ...`).
+  next join, "Finished while you were away" with the pay, and the rival's Infamy if the job has one
+  (`Story: <title> pays ...`). Die before rejoining: nothing is paid (`Errands: ... not paid`).
 - [ ] The four tips, once each: the first tagged options (an errand's ways), the first truth found, the
   first background read, the first hold someone near you starts.
 - [ ] "Hid a bite": as a Nurse, dress the hidden bite in Survivors Trapped or Distress Call; that

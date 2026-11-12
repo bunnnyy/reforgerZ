@@ -11,7 +11,7 @@ voice haven
 node start
   say "Fed, for once. Someone brought tins and someone else found a sack of potatoes in a shed. We're having both."
   say "The children are arguing about the potatoes. That's how you know it's a good week."
-  > @tin "Leave a tin for the children." -> tin   cost item:food*1   do favor:haven+2; regard:thanks
+  > @tin "Leave a tin for the children." -> tin   cost item:food*1   do call:hand_in:1; regard:thanks
   > @fine "Good to hear." -> hub
 
 node tin
@@ -30,7 +30,7 @@ node start
   say "The soup's mostly water. We've started calling it tea."
   > @give "Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks; keep:house.tins@here
   > @what "What are you short of most?" -> what
-  > @promise "I'll bring two tins. Two hours." -> promised   if !promise:house.tins@here   do promise:house.tins@here:2h
+  > @promise "I'll bring two tins. Two hours." -> promised   if !promise:house.tins@here & !kept:house.tins@here & !broke:house.tins@here   do promise:house.tins@here:2h
   > @sorry "I've nothing to give." -> nothing
 
 node given

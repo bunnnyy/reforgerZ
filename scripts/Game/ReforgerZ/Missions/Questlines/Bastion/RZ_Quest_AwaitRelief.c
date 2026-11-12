@@ -371,7 +371,7 @@ class RZ_QuestCarry
 
 		string who = "";
 		if (m_iCarrier > 0)
-			who = RZ_Util.PlayerName(m_iCarrier);
+			who = RZ_Names.Public(m_iCarrier);
 
 		if (who.IsEmpty())
 			who = "Whoever had it";

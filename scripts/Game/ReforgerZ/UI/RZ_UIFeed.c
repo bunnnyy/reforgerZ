@@ -895,6 +895,13 @@ class RZ_UIFeed
 			if (!m)
 				return "";
 
+			// Only a mission this player's journal shows (BuildJournal's test): a client-sent id
+			// never reads someone else's brief, finds or result
+			array<RZ_Mission> visible = {};
+			m_GM.GetMissions().ListFor(playerId, visible);
+			if (!visible.Contains(m))
+				return "";
+
 			told = m.GetBrief(m_GM);
 			if (m.m_Story)
 			{

@@ -198,7 +198,8 @@ class RZ_StoryKit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Infamy with `faction` for the decider and those with them.
+	//! Infamy with `faction` for the decider and those with them. Remembered on the job, so anyone
+	//! paid for it at their next join (PayOffline) carries it too.
 	static void BlameDecider(RZ_GameModeComponent gm, RZ_Mission m, int decider, int faction, int infamy, string why)
 	{
 		array<int> with = {};
@@ -206,6 +207,12 @@ class RZ_StoryKit
 		foreach (int playerId : with)
 		{
 			gm.AddInfamy(playerId, faction, infamy, why);
+		}
+
+		if (m.m_Story && infamy > 0 && RZ_Factions.IsValid(faction))
+		{
+			m.m_Story.m_aBlameFactions.Insert(faction);
+			m.m_Story.m_aBlameInfamy.Insert(infamy);
 		}
 	}
 
@@ -305,9 +312,12 @@ class RZ_StoryKit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A story job done: whoever took part (a step, or 5 minutes in the area) and isn't online now is
-	//! paid the base at their next join (RZ_Errands' pending pay), never more than an online
-	//! participant would be. Not for a switch, a leaver or a job that pays nobody.
+	//! A story job done: whoever took part (a step, or 5 minutes in the area), was eligible as the
+	//! job ended and isn't online now is paid at their next join (RZ_Errands' pending pay), to the
+	//! same life only, the way RewardPlayer pays: the base (no background bonus) x the leader's
+	//! multipliers, amends through Forgive, the explicit rival's Infamy (no rival table then) and the
+	//! job's blame. The giver's tier is checked again at the join. Not for a switch, a leaver, a
+	//! leader's in-person job or a job that pays nobody.
 	static void PayOffline(RZ_GameModeComponent gm, RZ_Mission m)
 	{
 		RZ_Errands errands = gm.GetErrands();
@@ -315,17 +325,56 @@ class RZ_StoryKit
 		if (!m.m_Story || !errands || !q || !m.m_bHasGiver || m.m_bSwitched || !RZ_Factions.IsValid(m.m_eGiver))
 			return;
 
+		if (m.m_bInPersonOnly && m.m_iLeaderId >= 0)
+			return;
+
+		float fameMult = 1;
+		float favorMult = 1;
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (leaders && m.m_iLeaderId >= 0 && !m.m_bExposed)
+		{
+			fameMult = leaders.FameMult(m.m_iLeaderId, 0, m.m_bAmends);
+			favorMult = leaders.FavorMult(m.m_iLeaderId);
+		}
+
+		int rivalInfamy = 0;
+		if (m.m_bHasRival && m.m_iRivalInfamy > 0)
+			rivalInfamy = Math.Max(1, RZ_Util.RoundToInt(m.m_iRivalInfamy * m.m_fRewardScale * gm.RivalMult(m.m_eGiver, m.m_eRival)));
+
 		array<string> idents = {};
 		m.m_Story.m_Deciding.TookPartIdents(300, idents);
-		int fame = RZ_Util.RoundToInt(m.m_iFameReward * m.m_fRewardScale);
-		int favor = RZ_Util.RoundToInt(m.m_iFavorReward * m.m_fRewardScale);
+		int fame = RZ_Util.RoundToInt(m.m_iFameReward * m.m_fRewardScale * fameMult);
+		int favor = RZ_Util.RoundToInt(m.m_iFavorReward * m.m_fRewardScale * favorMult);
 		foreach (string ident : idents)
 		{
 			if (q.OnlineId(ident) > 0)
 				continue;
 
-			errands.AddPending(ident, m.m_eGiver, fame, favor, m.m_sTitle);
-			RZ_Log.Info(string.Format("Story: %1 pays %2 at their next join (%3 Fame, %4 Favor)", m.m_sTitle, ident, fame, favor));
+			RZ_PlayerProfile p = gm.FindProfileByIdentity(ident);
+			if (!p || (!m.m_sReservedFor.IsEmpty() && m.m_sReservedFor != ident) || !m.m_Req.IsEligibleProfile(p))
+			{
+				RZ_Log.Info(string.Format("Story: %1 owes %2 nothing (not eligible as it ended)", m.m_sTitle, ident));
+				continue;
+			}
+
+			RZ_ErrandOwed o = RZ_ErrandOwed.Make(m.m_eGiver, fame, favor, m.m_sTitle, p.m_iLives);
+			o.applyRivals = !m.m_bHasRival;
+			o.deed = m.DeedPhrase(gm);
+			o.amends = m.m_bAmends && !m.m_Story.m_Deciding.IsDirtyIdent(ident);
+			o.checkTier = true;
+			o.minTier = m.m_Req.m_eMinTier;
+			o.allowWatched = m.m_Req.m_bAllowWatched;
+			o.leaderDecides = m.m_Req.m_bLeaderDecides;
+			if (rivalInfamy > 0)
+				o.AddInfamy(m.m_eRival, rivalInfamy, "mission rival", RZ_RepFlag.SHARE);
+
+			foreach (int b, int blamed : m.m_Story.m_aBlameFactions)
+			{
+				o.AddInfamy(blamed, m.m_Story.m_aBlameInfamy[b], "a job's blame", 0);
+			}
+
+			errands.AddOwed(ident, o);
+			RZ_Log.Info(string.Format("Story: %1 pays %2 at their next join, life %3 (%4 Fame, %5 Favor)", m.m_sTitle, ident, p.m_iLives, fame, favor));
 		}
 	}
 

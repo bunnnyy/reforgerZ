@@ -386,7 +386,7 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 | Tier | Shop | Perk / service |
 |---|---|---|
 | Known | Military rations, morphine, flares | **The contact board** ✅: every pack Bastion has counted ([INFECTED.md](INFECTED.md#knowing)). **Waved through** ✅: Bastion's checkpoints inside the Zone let you pass unsearched ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
-| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost, only from what the quartermaster sells at Trusted or below ✅ (never a Champion item). While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
+| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost, only from what the quartermaster sells at Trusted or below ✅ (never a Champion item); anything that isn't ammo or rations by its name is refused, and so is anyone in Red Hand colours, as at the shop. Bastion kit signed out is marked as the shop marks it ([borrowed kit](#borrowed-kit)). While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
 | Champion | Machine guns, grenades, the **signal smoke** | **Fire Mission** ✅: see below |
 | Hunted | — | Bastion AI shoots you ✅; hunter squads get your last position ✅ |
 
@@ -416,7 +416,9 @@ the same rough "last seen". It's paid the same way as any bounty: once, to the k
 player kill. The killer gets 40 Red Hand Favor, less than it cost, so a pair of friends can't farm
 it; and never the poster, anyone in the poster's or the target's group, or someone the Red Hand
 hunts. One posting per poster and per target, three on the server at once; unclaimed after 2 hours,
-it comes down and the poster gets half back. Postings aren't saved. *Simplified:* "friends" means
+it comes down and the poster gets half back. Postings, who last killed whom, the Requisition
+cooldown and the fence's hourly cap are saved by identity and real time, so a restart changes none
+of them (the 2 hours run on in real time while the server is down). *Simplified:* "friends" means
 the same vanilla player group; a poster in no group excludes only themselves.
 
 | Hunted | — | Red Hand AI shoots you ✅; hunter squads come for you ✅ |
@@ -448,7 +450,7 @@ visit the medic; calling one out isn't built.
   10 minutes with a rough location (one notice, however many factions want you). One bounty is paid per death, only to the player who killed
   you (50 Favor and a little Fame), and only for a player kill: dying to the infected, a fall or
   your own hand pays nobody. With several factions after you, the one with the most Infamy pays;
-  a faction never pays someone it hunts too. If none pays, a posting on the Red Hand's
+  a faction never pays someone it hunts too, nor a killer in the victim's own group. If none pays, a posting on the Red Hand's
   [bounty board](#the-red-hand) can. *The killer is the last attacker the body's damage manager
   recorded; if that wasn't a player, no bounty is paid.*
 - **A tagged pack's leader** ✅: killing one in its prime or older (Halcyon's tag in it) costs the
@@ -473,7 +475,11 @@ Who the Haven are, and why they keep these rules, is in [LORE.md](LORE.md), "The
 | Hunted by the Haven (**exile**) | Safehouse services and the Haven quartermaster refuse you ("the door stays shut"); Haven wanderers refuse you and warn other players near you. The guards shoot an exile only while they carry a firearm within 100 m of a safehouse (with a minute's grace after spawning at one); an unarmed exile just finds the door shut |
 | A hungry safehouse and an exile | A safehouse short on food may sell an exile's rough location to the Red Hand (25% every 10 minutes): a hunter squad that really shoots them, and a message to players the Red Hand knows |
 
-Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Fame per 3 items (at most 5).
+Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Haven Fame per 3 items (at most 2
+a hand-in) as small pay through the [errands ledger](ERRANDS.md#pay-nothing-for-free): inside its
+Fame ceiling and day's cap, left out of season Fame and records. Food a quartermaster sold or
+handed out (requisitioned rations too) counts for nothing at a house, an errand or the fence: *"That's off a
+quartermaster's shelf."*
 Wanderers' attitude is your Haven standing (Bastion, reversed, for the Deserter) plus their
 memory of you ([DESIGN.md](DESIGN.md), "Wanderers"). The Mechanic wanderer sells car parts for
 12 Haven Favor (a quarter off if they remember you helped) and gives a fixable car's keys to
@@ -492,7 +498,7 @@ count ×1.2, never the total), then what's left of the budget:
 | **Paying** | "Pay to make amends" at any quartermaster, in that faction's own Favor | 5 Infamy for 15 Favor; each payment this life costs ×1.5 more | at most 15 of the 30, once every 30 minutes, never below 15 (the Watched line). Kill on Sight: refused |
 | **Surrender** | Bastion only, at one of its checkpoints ([below](#checkpoints-roadblocks-and-camps)) | 8 Bastion Infamy | once an hour, by identity |
 | **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a life per faction from errands, never below 15 |
-| **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame, the stronghold leader's temper counting as on amends | at most 10 a real day per faction; closed with a faction whose route is fighting yours after the 90% lock. Spent Fame is gone: it can drop your band and your tier |
+| **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame, the stronghold leader's temper counting as on amends | at most 10 a real day per faction; closed with a faction whose route is fighting yours after the 90% lock. Spent Fame is gone: it can drop your band and your tier (the Fame comes off first, so the tier notice reads both) |
 | **Parley amends** | The owed, at a gate ([below](#the-parley-and-the-knock)): one amends contract reserved for 60 minutes though they're Hunted | the contract's Fame, as Infamy off | one offer per parley |
 | **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *"What would it take?"* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this life) is cleared, once a season per leader |
 
@@ -974,7 +980,11 @@ vouch bans you for 2 hours too. Without a vouch everyone is checked on their own
 restart:** the marks on pieces players wear are saved by the wearer's identity and the piece's prefab,
 and go back on a worn piece of that prefab and faction (without a mark) when that identity is next read
 wearing it (vanilla persistence brings the kit back; VERIFY a worn piece's root parent is the character).
-A piece lying in the world forgets its mark.
+A piece in storage or on the ground can't be found again on its entity, so it doesn't launder by a
+restart: each mark of that kind (a dead man's, off the turned, signed for) leaves a slot by faction and
+prefab, and the first unmarked piece of that prefab read on someone after the restart is of **unknown
+origin**: −1 at their look (*[Unknown origin -1]*), for 3 real days. Bought fair or signed for since,
+it carries its new mark instead.
 
 | Kind | How a piece gets it | At their look | Elsewhere |
 |---|---|---|---|

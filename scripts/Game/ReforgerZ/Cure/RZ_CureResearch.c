@@ -856,7 +856,7 @@ class RZ_CureResearch
 		if (!HasCapacity())
 			WorkAll();
 
-		string name = GetGame().GetPlayerManager().GetPlayerName(playerId);
+		string name = RZ_Names.Public(playerId);
 		m_GM.NotifyAll("Cure research", string.Format("%1 delivered %2 sample(s). %3", name, count, Describe()));
 		m_GM.OnCureChanged();
 	}

@@ -288,7 +288,7 @@ class RZ_NoticeBoard
 		}
 
 		RZ_Note note = new RZ_Note();
-		note.author = RZ_Util.PlayerName(playerId);
+		note.author = RZ_Names.Public(playerId);
 		note.ident = profile.m_sIdentity;
 		note.text = text;
 		note.unix = now;

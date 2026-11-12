@@ -763,6 +763,13 @@ class RZ_Disguise
 				tags += " [Signed out to someone else]";
 			}
 
+			// A mark lost to a restart: kit nobody can vouch for
+			if (!instant && m_Marks.UnknownOf(me, f) > 0)
+			{
+				score--;
+				tags += " [Unknown origin -1]";
+			}
+
 			if (f == RZ_EFaction.BANDITS && m_Marks.WearsGivenOther(me, playerId, f))
 			{
 				score--;

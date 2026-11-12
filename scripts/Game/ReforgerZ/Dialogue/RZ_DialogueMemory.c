@@ -29,6 +29,10 @@ class RZ_DMemPlayer
 	ref array<float> promLeft = {};		// seconds of the promiser's own play left
 	ref array<int> promUnix = {};		// made, or settled (kept or broken)
 	ref array<int> promState = {};		// 0 open, 1 kept, 2 broken
+	ref array<float> promPlayed = {};	// seconds of the promiser's play since it was made
+	ref array<int> promAway = {};		// 1 once they've been VISIT_AWAY from where they made it
+	ref array<float> promX = {};		// where it was made
+	ref array<float> promZ = {};
 	// Callbacks (later:<hours>h:<key>): due:<key> once that much play has passed
 	ref array<string> laterKeys = {};
 	ref array<float> laterLeft = {};
@@ -66,6 +70,8 @@ class RZ_DialogueMemory
 	static const int SEEN_MAX = 512;
 	static const int HEARD_MAX = 64;
 	static const int PROMISES_OPEN = 3;
+	static const float VISIT_PLAY = 600;		// a .visit promise counts after 10 minutes of play...
+	static const float VISIT_AWAY = 300;		// ...and once the promiser has been this far from where it was made
 	static const int KEEP_DAYS = 3;				// settled promises and callbacks are kept this long (real days)
 	static const int LATER_MAX = 10;
 	static const int OPEN = 0;
@@ -222,6 +228,8 @@ class RZ_DialogueMemory
 			p.promUnix = new array<int>();
 			p.promState = new array<int>();
 		}
+
+		PadVisits(p);
 
 		bool badLater = !p.laterKeys || !p.laterLeft || !p.laterUnix;
 		if (!badLater)
@@ -840,16 +848,21 @@ class RZ_DialogueMemory
 	// ================================================================ Promises (per player)
 	//------------------------------------------------------------------------------------------------
 	//! A promise to `speaker`: `hours` of this player's own play to keep it, and at most 3 real days.
-	//! "" if made (or already open), else why not (3 open already).
+	//! "" if made (or already open), else why not (3 open already; the same promise settled within
+	//! KEEP_DAYS real days can't be made again yet).
 	string Promise(int playerId, string key, string speaker, string text, float hours)
 	{
 		RZ_DMemPlayer p = For(playerId);
 		if (!p || key.IsEmpty())
 			return "";
 
+		PadVisits(p);
 		int i = p.promKeys.Find(key);
 		if (i >= 0 && p.promState[i] == OPEN)
 			return "";
+
+		if (i >= 0 && RZ_SeasonClock.Now() - p.promUnix[i] < KEEP_DAYS * DAY)
+			return "You made them that promise lately. Give it a few days.";
 
 		if (CountOpen(p) >= PROMISES_OPEN)
 			return "You've three promises open already. Keep one first.";
@@ -857,14 +870,81 @@ class RZ_DialogueMemory
 		if (i >= 0)
 			RemovePromise(p, i);
 
+		vector at = vector.Zero;
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (me)
+			at = me.GetOrigin();
+
 		p.promKeys.Insert(key);
 		p.promSpeaker.Insert(speaker);
 		p.promText.Insert(text);
 		p.promLeft.Insert(Math.Max(0.1, hours) * 3600);
 		p.promUnix.Insert(RZ_SeasonClock.Now());
 		p.promState.Insert(OPEN);
+		p.promPlayed.Insert(0);
+		p.promAway.Insert(0);
+		p.promX.Insert(at[0]);
+		p.promZ.Insert(at[2]);
 		m_bDirty = true;
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The visit arrays line up with promKeys (a file from before them: nothing played, not away).
+	protected void PadVisits(RZ_DMemPlayer p)
+	{
+		if (!p.promPlayed)
+			p.promPlayed = new array<float>();
+
+		if (!p.promAway)
+			p.promAway = new array<int>();
+
+		if (!p.promX)
+			p.promX = new array<float>();
+
+		if (!p.promZ)
+			p.promZ = new array<float>();
+
+		int n = p.promKeys.Count();
+		while (p.promPlayed.Count() > n)
+		{
+			p.promPlayed.Remove(p.promPlayed.Count() - 1);
+		}
+
+		while (p.promAway.Count() > n)
+		{
+			p.promAway.Remove(p.promAway.Count() - 1);
+		}
+
+		while (p.promX.Count() > n)
+		{
+			p.promX.Remove(p.promX.Count() - 1);
+		}
+
+		while (p.promZ.Count() > n)
+		{
+			p.promZ.Remove(p.promZ.Count() - 1);
+		}
+
+		while (p.promPlayed.Count() < n)
+		{
+			p.promPlayed.Insert(0);
+		}
+
+		while (p.promAway.Count() < n)
+		{
+			p.promAway.Insert(0);
+		}
+
+		while (p.promX.Count() < n)
+		{
+			p.promX.Insert(0);
+		}
+
+		while (p.promZ.Count() < n)
+		{
+			p.promZ.Insert(0);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -883,12 +963,17 @@ class RZ_DialogueMemory
 	//------------------------------------------------------------------------------------------------
 	protected void RemovePromise(RZ_DMemPlayer p, int i)
 	{
+		PadVisits(p);
 		p.promKeys.Remove(i);
 		p.promSpeaker.Remove(i);
 		p.promText.Remove(i);
 		p.promLeft.Remove(i);
 		p.promUnix.Remove(i);
 		p.promState.Remove(i);
+		p.promPlayed.Remove(i);
+		p.promAway.Remove(i);
+		p.promX.Remove(i);
+		p.promZ.Remove(i);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -923,16 +1008,22 @@ class RZ_DialogueMemory
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A visit promise (a key ending ".visit") to this speaker is kept by talking to them.
+	//! A visit promise (a key ending ".visit") to this speaker is kept by talking to them again,
+	//! once the promiser has played VISIT_PLAY seconds since and been VISIT_AWAY metres away from
+	//! where they made it (reopening the conversation on the spot keeps nothing).
 	void KeepVisits(int playerId, string speaker)
 	{
 		RZ_DMemPlayer p = For(playerId);
 		if (!p)
 			return;
 
+		PadVisits(p);
 		for (int i = p.promKeys.Count() - 1; i >= 0; i--)
 		{
-			if (p.promState[i] == OPEN && p.promSpeaker[i] == speaker && p.promKeys[i].EndsWith(".visit"))
+			if (p.promState[i] != OPEN || p.promSpeaker[i] != speaker || !p.promKeys[i].EndsWith(".visit"))
+				continue;
+
+			if (p.promPlayed[i] >= VISIT_PLAY && p.promAway[i] == 1)
 				Settle(playerId, p, i, KEPT, "");
 		}
 	}
@@ -1088,10 +1179,20 @@ class RZ_DialogueMemory
 		RZ_DMemPlayer p = For(playerId);
 		int now = RZ_SeasonClock.Now();
 		KeepByWorld(playerId, p);
+		PadVisits(p);
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		for (int i = p.promKeys.Count() - 1; i >= 0; i--)
 		{
 			if (p.promState[i] == OPEN)
 			{
+				// A visit counts after real play away from where it was promised
+				p.promPlayed[i] = p.promPlayed[i] + dt;
+				if (me && p.promAway[i] == 0 && RZ_Util.DistXZ(me.GetOrigin(), Vector(p.promX[i], 0, p.promZ[i])) >= VISIT_AWAY)
+				{
+					p.promAway[i] = 1;
+					m_bDirty = true;
+				}
+
 				p.promLeft[i] = p.promLeft[i] - dt;
 				if (p.promLeft[i] <= 0)
 					Settle(playerId, p, i, BROKEN, "Time ran out.");
