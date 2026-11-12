@@ -664,8 +664,8 @@ people what it looks like from the ground.
 - "Help him" needs a far LZ on the map: past the warning zone, at least 1.2 km from the pad.
   Nobody deciding, twice: he's grounded anyway. Nobody holding the far LZ: he's grounded.
 - Keeping watch for the Red Hand is a Red Hand contract. A dead crew can't burn anything.
-- The groundings are world flags in real time (times **Wait scale**): no Last Helicopter, Clear
-  the Airfield or Rescue the Pilot until then, and the first Last Helicopter after says who flies
+- The groundings are world flags in real time (times **Wait scale**): no Last Helicopter or
+  Rescue the Pilot until then, and the first Last Helicopter after says who flies
   it now. Last Helicopter also waits while the story has the helicopter (stages 1, 2 and 5), and
   Rescue the Pilot while the line runs. Losing Rescue the Pilot's pilot grounds it for 2 real hours.
 - "Twice as often" isn't saved across a restart.

@@ -799,7 +799,7 @@ only the toll crew and the raiders are AI. Counted houses get their food at once
 ### The Last Pilot (Task Force Bastion)
 
 Five stages, four branches, four endings ([QUESTLINES.md](QUESTLINES.md#b3-the-last-pilot), B3). It
-starts when someone finishes Last Helicopter or Clear the Airfield (at once if Bastion's questline
+starts when someone finishes Last Helicopter (at once if Bastion's questline
 slot is free). Needs Bastion still flying (stage presence 0.2 or more), its stronghold leader, the
 Perimeter with a spot for the wreck, a person to talk to and the mission item (the black box, the
 Red Hand's fuel). Not after the cure, not while a Last Helicopter is out or Rescue the Pilot runs,
@@ -817,8 +817,8 @@ the pilot, his Day 3 friend, the commanding officer, the stronghold, the far LZ.
 
 | Ending | Branch | Consequences | Status |
 |---|---|---|---|
-| **He stays** | Stays | Everyone who took part: +10 Bastion Fame. Bastion morale +5; after the extra run, Last Helicopter runs twice as often for 2 hours (as Clear the Airfield); a rumour (8 hours) | ✅ |
-| **Grounded** | Grounded, or the line unkept | Everyone: +10 Bastion Fame. No Last Helicopter, Clear the Airfield or Rescue the Pilot for 2 real hours (`pilot.down_until`); the next Last Helicopter names the new pilot | ✅ |
+| **He stays** | Stays | Everyone who took part: +10 Bastion Fame. Bastion morale +5; after the extra run, Last Helicopter runs twice as often for 2 hours; a rumour (8 hours) | ✅ |
+| **Grounded** | Grounded, or the line unkept | Everyone: +10 Bastion Fame. No Last Helicopter or Rescue the Pilot for 2 real hours (`pilot.down_until`); the next Last Helicopter names the new pilot | ✅ |
 | **He flew for the line** | The line | Nothing. No helicopter for 2 real days, until Bastion's mechanics patch up a grounded airframe; Bastion morale −10; Bastion's Crash Site starts at his wreck (with the wreck prefab) in the warning zone nearest the far LZ: the line's truth, his name in the brief. Headline: "Bastion's last pilot flew for the line [at dawn]. The line shot him down short of it, like the one before." | ✅ |
 | **Burnt for the Red Hand** | The Red Hand | Whoever sided: +10 Red Hand Fame, +15 Bastion Infamy. No helicopter for 2 real days; Bastion morale −10, Red Hand morale +5; a Bastion–Red Hand feud; a headline | ✅ |
 
