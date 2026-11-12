@@ -7,20 +7,20 @@ prio world
 voice redhand
 
 node start
-  say "The boss did. On the shutter of Rudi's garage, at the crossroads, the day the garage changed hands. Rudi had the diesel, the Janda boys had the lorry, the boss had the book."
-  say "The boss said the hand means stop. Every toll on every road has one now, painted on the barrier. Rudi was bitten."
-  > @really "Was he, though? Really bitten?" -> really
-  > @toll "How's the toll been today?" -> toll
-  > @other "Let me ask you something else." -> hub
+  say The boss did. On the shutter of Rudi's garage, at the crossroads, the day the garage changed hands. Rudi had the diesel, the Janda boys had the lorry, the boss had the book.
+  say The boss said the hand means stop. Every toll on every road has one now, painted on the barrier. Rudi was bitten.
+  > @really Was he, though? Really bitten? -> really
+  > @toll How's the toll been today? -> toll
+  > @other Let me ask you something else. -> hub
 
 node really
-  say "Rudi was bitten."
-  > @back1 "Right. Let me ask something else." -> hub
+  say Rudi was bitten.
+  > @back1 Right. Let me ask something else. -> hub
 
 node toll
-  say "Good. A tin a car on this road, more if you look like you can afford it. Tins mostly, fuel when we're lucky, the odd wedding ring. All of it goes in the book, and the boss takes a cut."
-  say "Bastion paid in bullets once. We counted that as a tip. Then we counted them, because we count everything."
-  > @back2 "Let me ask you something else." -> hub
+  say Good. A tin a car on this road, more if you look like you can afford it. Tins mostly, fuel when we're lucky, the odd wedding ring. All of it goes in the book, and the boss takes a cut.
+  say Bastion paid in bullets once. We counted that as a tip. Then we counted them, because we count everything.
+  > @back2 Let me ask you something else. -> hub
 
 conv named.bastion.sentry
 for named:bastion/sentry
@@ -29,27 +29,27 @@ prio world
 voice bastion
 
 node start
-  say "When the night watch is set, the sergeant reads the whole roster out loud. Every name on the post. The living answer for themselves: here."
-  say "For each of the dead, the whole post answers together. Here. It gets longer every week. Command never answers us. So we answer for each other."
-  > @hear "Can I listen to it tonight?" -> hear
-  > @how "How long does it take now?" -> how
-  > @road "I'll walk the road. Back in two hours." -> road   if !promise:sentry.road@here.visit & !kept:sentry.road@here.visit & !broke:sentry.road@here.visit   do promise:sentry.road@here.visit:2h
-  > @other2 "Let me ask you something else." -> hub
+  say When the night watch is set, the sergeant reads the whole roster out loud. Every name on the post. The living answer for themselves: here.
+  say For each of the dead, the whole post answers together. Here. It gets longer every week. Command never answers us. So we answer for each other.
+  > @hear Can I listen to it tonight? -> hear
+  > @how How long does it take now? -> how
+  > @road I'll walk the road. Back in two hours. -> road   if !promise:sentry.road@here.visit & !kept:sentry.road@here.visit & !broke:sentry.road@here.visit   do promise:sentry.road@here.visit:2h
+  > @other2 Let me ask you something else. -> hub
 
 node hear
-  say? night :: "You're hearing it now. Stand still, hat off, mouth shut. If the sergeant looks at you, you're furniture."
-  say "Twenty-thirty, at the wire. Stand outside it, hat off. Don't answer for anyone. You haven't earned anyone yet."
-  > @back3 "Understood. I'll be there." -> hub
+  say? night :: You're hearing it now. Stand still, hat off, mouth shut. If the sergeant looks at you, you're furniture.
+  say Twenty-thirty, at the wire. Stand outside it, hat off. Don't answer for anyone. You haven't earned anyone yet.
+  > @back3 Understood. I'll be there. -> hub
 
 node road
-  say "Nobody comes back and says. They walk off down that road and that's the last line in the log: departed, eastbound, no further contact. Prove me wrong."
-  say "Two hours. Then I log you as gone, and I don't enjoy it, and I do it anyway."
-  > @back5 "Let me ask you something else." -> hub
+  say Nobody comes back and says. They walk off down that road and that's the last line in the log: departed, eastbound, no further contact. Prove me wrong.
+  say Two hours. Then I log you as gone, and I don't enjoy it, and I do it anyway.
+  > @back5 Let me ask you something else. -> hub
 
 node how
-  say "Longer than the call to Command, which takes ten seconds and gets static. Shorter than it should be. We lost the count of the dead around Day nine."
-  say "No. That's not true. We know the count, to the man. We just don't say it out loud. The roll says it for us."
-  > @back4 "Let me ask you something else." -> hub
+  say Longer than the call to Command, which takes ten seconds and gets static. Shorter than it should be. We lost the count of the dead around Day nine.
+  say No. That's not true. We know the count, to the man. We just don't say it out loud. The roll says it for us.
+  > @back4 Let me ask you something else. -> hub
 
 conv named.bastion.sentry_back
 for named:bastion/sentry
@@ -60,7 +60,7 @@ prio reaction
 voice bastion
 
 node start
-  say? kept:sentry.road@here.visit :: "You came back. Most don't. I'll log the road as walked, with your name against it. First good line in this log all week."
+  say? kept:sentry.road@here.visit :: You came back. Most don't. I'll log the road as walked, with your name against it. First good line in this log all week.
 
 conv named.bastion.sentry_gone
 for named:bastion/sentry
@@ -71,4 +71,4 @@ prio reaction
 voice bastion
 
 node start
-  say? broke:sentry.road@here.visit :: "Logged you as gone, two hours after you said. Glad to rub it out. It's the only rubbing out we ever get to do on this post."
+  say? broke:sentry.road@here.visit :: Logged you as gone, two hours after you said. Glad to rub it out. It's the only rubbing out we ever get to do on this post.

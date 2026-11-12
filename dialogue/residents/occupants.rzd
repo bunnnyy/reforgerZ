@@ -13,8 +13,8 @@ once
 voice haven
 
 node start
-  say? !met & house:short :: "Come in off the road. This is the Haven house at {here}. Keep your gun, but don't fire it near the door, and everyone works. We're on half portions this week, but sit."
-  say? !met :: "Come in off the road. This is the Haven house at {here}. Keep your gun, but don't fire it near the door, everyone works, and if you're bitten, you say so. That's all the rules."
+  say? !met & house:short :: Come in off the road. This is the Haven house at {here}. Keep your gun, but don't fire it near the door, and everyone works. We're on half portions this week, but sit.
+  say? !met :: Come in off the road. This is the Haven house at {here}. Keep your gun, but don't fire it near the door, everyone works, and if you're bitten, you say so. That's all the rules.
 
 conv occupant.house.fed
 for occupant
@@ -24,14 +24,14 @@ prio flavour
 voice haven
 
 node start
-  say "Fed, for once. Somebody brought tins up from the road and somebody else found a sack of potatoes in a shed behind the school. We're having both, tonight, in the same pot."
-  say "The children are arguing about the potatoes. Who peels, who gets the crispy bits. That's how you know it's a good week. On a bad week they don't argue about anything."
-  > @tin "Here, take a tin for the children." -> tin   cost item:food*1   do call:hand_in:1; regard:thanks
-  > @fine "Good. I'm glad to hear it." -> hub
+  say Fed, for once. Somebody brought tins up from the road and somebody else found a sack of potatoes in a shed behind the school. We're having both, tonight, in the same pot.
+  say The children are arguing about the potatoes. Who peels, who gets the crispy bits. That's how you know it's a good week. On a bad week they don't argue about anything.
+  > @tin Here, take a tin for the children. -> tin   cost item:food*1   do call:hand_in:1; regard:thanks
+  > @fine Good. I'm glad to hear it. -> hub
 
 node tin
-  say "That'll be fought over. Thank you. Really. It goes in the stores tonight and into a bowl tomorrow, and I'll tell them it came from someone off the road who didn't have to."
-  > @back1 "Let me ask you something else." -> hub
+  say That'll be fought over. Thank you. Really. It goes in the stores tonight and into a bowl tomorrow, and I'll tell them it came from someone off the road who didn't have to.
+  > @back1 Let me ask you something else. -> hub
 
 conv occupant.house.short
 for occupant
@@ -41,29 +41,29 @@ prio ask
 voice haven
 
 node start
-  say "Half portions since the truck didn't come. The children eat first, then the ones who work the gate, then the rest of us. Don't tell the council head I said. We're meant to be cheerful."
-  say "The soup's mostly water now. We've started calling it tea. Two tins in the stores would be two more suppers for somebody here, and I wouldn't ask if it weren't true."
-  > @give "Here. Put two tins in the stores." -> given   cost item:food*2   do call:hand_in:2; regard:thanks; keep:house.tins@here
-  > @what "What are you short of most?" -> what
-  > @promise "I'll bring two tins. Two hours." -> promised   if !promise:house.tins@here & !kept:house.tins@here & !broke:house.tins@here   do promise:house.tins@here:2h
-  > @sorry "I've nothing to give you. I'm sorry." -> nothing
+  say Half portions since the truck didn't come. The children eat first, then the ones who work the gate, then the rest of us. Don't tell the council head I said. We're meant to be cheerful.
+  say The soup's mostly water now. We've started calling it tea. Two tins in the stores would be two more suppers for somebody here, and I wouldn't ask if it weren't true.
+  > @give Here. Put two tins in the stores. -> given   cost item:food*2   do call:hand_in:2; regard:thanks; keep:house.tins@here
+  > @what What are you short of most? -> what
+  > @promise I'll bring two tins. Two hours. -> promised   if !promise:house.tins@here & !kept:house.tins@here & !broke:house.tins@here   do promise:house.tins@here:2h
+  > @sorry I've nothing to give you. I'm sorry. -> nothing
 
 node given
-  say "That's two suppers for somebody. I won't say who. The storekeeper will write it down, and the cook will pretend there was always this much. Thank you."
-  > @back2 "Let me ask you something else." -> hub
+  say That's two suppers for somebody. I won't say who. The storekeeper will write it down, and the cook will pretend there was always this much. Thank you.
+  > @back2 Let me ask you something else. -> hub
 
 node what
-  say "Anything in a tin. Bread doesn't last the walk and fruit's long gone. And somebody to look at the stove, which smokes when the wind's from the north, but that's another story."
-  > @give2 "Then take these two tins. Here." -> given   cost item:food*2   do call:hand_in:2; regard:thanks; keep:house.tins@here
-  > @back3 "Let me ask you something else." -> hub
+  say Anything in a tin. Bread doesn't last the walk and fruit's long gone. And somebody to look at the stove, which smokes when the wind's from the north, but that's another story.
+  > @give2 Then take these two tins. Here. -> given   cost item:food*2   do call:hand_in:2; regard:thanks; keep:house.tins@here
+  > @back3 Let me ask you something else. -> hub
 
 node promised
-  say "I'll tell the children. No, I won't. I'll tell them when the tins are on the shelf. Two hours, then. I'll be watching the road, and so will they, whether I tell them or not."
-  > @back5 "Let me ask you something else." -> hub
+  say I'll tell the children. No, I won't. I'll tell them when the tins are on the shelf. Two hours, then. I'll be watching the road, and so will they, whether I tell them or not.
+  > @back5 Let me ask you something else. -> hub
 
 node nothing
-  say "Nobody has, this week. Come back if that changes. We'll still be here, most likely. Houses like this don't move. That's their whole point, and their whole trouble."
-  > @back4 "Let me ask you something else." -> hub
+  say Nobody has, this week. Come back if that changes. We'll still be here, most likely. Houses like this don't move. That's their whole point, and their whole trouble.
+  > @back4 Let me ask you something else. -> hub
 
 conv occupant.house.grief
 for occupant
@@ -73,19 +73,19 @@ prio reaction
 voice haven
 
 node start
-  say "We lost someone. When one of ours dies, every Haven house puts a candle in the window, and at supper the council head reads the name out loud. Then we eat."
-  say "You can stay for it, if you want. You don't have to have known them. Most of us only knew them a week. That's how long anyone knows anyone now."
-  > @stay "I'd like to stay for the name." -> stay
-  > @leave "I'll leave you to it." -> leave
+  say We lost someone. When one of ours dies, every Haven house puts a candle in the window, and at supper the council head reads the name out loud. Then we eat.
+  say You can stay for it, if you want. You don't have to have known them. Most of us only knew them a week. That's how long anyone knows anyone now.
+  > @stay I'd like to stay for the name. -> stay
+  > @leave I'll leave you to it. -> leave
 
 node stay
-  say "Sit at the end of the long table. Hat off. Nobody eats before the name, not even the children, and they know it, so they'll stare at you. Let them."
+  say Sit at the end of the long table. Hat off. Nobody eats before the name, not even the children, and they know it, so they'll stare at you. Let them.
   do later:6h:house.stayed@here
-  > @back5 "Let me ask you something else." -> hub
+  > @back5 Let me ask you something else. -> hub
 
 node leave
-  say "Thank you for asking, at least. Most people off the road walk straight past the candle. They've seen a lot of candles."
-  > @back6 "Let me ask you something else." -> hub
+  say Thank you for asking, at least. Most people off the road walk straight past the candle. They've seen a lot of candles.
+  > @back6 Let me ask you something else. -> hub
 
 conv occupant.house.bear
 for occupant
@@ -95,9 +95,9 @@ prio flavour
 voice haven
 
 node start
-  say "On Day 2 a teacher put her class trip, eleven kids, to sleep in a school gym, and somebody stencilled a teddy bear on the doors so nobody would shoot through them."
-  say "Every Haven house with children in it has the bear now. It doesn't always work. It works more often than it doesn't. The children touch it on the way out, for luck. Its nose is worn through."
-  > @back7 "Let me ask you something else." -> hub
+  say On Day 2 a teacher put her class trip, eleven kids, to sleep in a school gym, and somebody stencilled a teddy bear on the doors so nobody would shoot through them.
+  say Every Haven house with children in it has the bear now. It doesn't always work. It works more often than it doesn't. The children touch it on the way out, for luck. Its nose is worn through.
+  > @back7 Let me ask you something else. -> hub
 
 conv occupant.house.candle
 for occupant
@@ -107,7 +107,7 @@ prio reaction
 voice haven
 
 node start
-  say? house:died :: "Keep your voice down, if you would. There's a candle in the window for someone we lost, and the council reads the name at supper. People are talking quietly till then."
+  say? house:died :: Keep your voice down, if you would. There's a candle in the window for someone we lost, and the council reads the name at supper. People are talking quietly till then.
 
 # Deciding together (docs/DIALOGUE.md, "Several players"): the bed by the stove. Only someone the
 # house knows can answer for it; the others in the room hear it (public) and can Object or Stand with.
@@ -121,21 +121,21 @@ scene stove_bed speaker who tier:haven>=known
 
 node start public
   jump decided -> settled
-  say "There's one bed by the stove and three who want it. The old man who's cold all the time, the girl with the cough, and the new one who stood the gate all last night."
-  say "The council says whoever the house trusts can choose, so nobody can say the council chose wrong. That might be you. Everyone's listening, so choose kindly."
-  > @old "The old man. He's cold all the time." -> chosen   do decide:old
-  > @girl "Give it to the girl with the cough." -> chosen   do decide:girl
-  > @gate "The one who stood the gate last night." -> chosen   do decide:gate
-  > @vote "My vote's for the girl, if it counts." -> hub   do sway:stove.girl
-  > @notme "That's not mine to say." -> hub
+  say There's one bed by the stove and three who want it. The old man who's cold all the time, the girl with the cough, and the new one who stood the gate all last night.
+  say The council says whoever the house trusts can choose, so nobody can say the council chose wrong. That might be you. Everyone's listening, so choose kindly.
+  > @old The old man. He's cold all the time. -> chosen   do decide:old
+  > @girl Give it to the girl with the cough. -> chosen   do decide:girl
+  > @gate The one who stood the gate last night. -> chosen   do decide:gate
+  > @vote My vote's for the girl, if it counts. -> hub   do sway:stove.girl
+  > @notme That's not mine to say. -> hub
 
 node chosen public
-  say "Then that's settled. Nobody's happy, which is how you know it's fair. The other two get the blankets off the bed tonight, and nobody's to sulk about it at supper."
-  > @back1 "Let me ask you something else." -> hub
+  say Then that's settled. Nobody's happy, which is how you know it's fair. The other two get the blankets off the bed tonight, and nobody's to sulk about it at supper.
+  > @back1 Let me ask you something else. -> hub
 
 node settled
-  say "Somebody settled the bed by the stove already. Nobody argues about it now. Out loud. Under their breath, at night, when the stove's going, that's another matter."
-  > @back2 "Let me ask you something else." -> hub
+  say Somebody settled the bed by the stove already. Nobody argues about it now. Out loud. Under their breath, at night, when the stove's going, that's another matter.
+  > @back2 Let me ask you something else. -> hub
 
 # Promises and callbacks (docs/DIALOGUE.md, "Promises and callbacks"): a promise is kept by doing it
 # (keep:) or broken when its play runs out; the next greeting says which. Greets show once a life.
@@ -148,7 +148,7 @@ prio reaction
 voice haven
 
 node start
-  say? kept:house.tins@here :: "You're the one who brought the tins. You said two hours and you meant it. The children asked if you're coming back. I said I'd ask. So I'm asking."
+  say? kept:house.tins@here :: You're the one who brought the tins. You said two hours and you meant it. The children asked if you're coming back. I said I'd ask. So I'm asking.
 
 conv occupant.house.tins_broken
 for occupant
@@ -159,7 +159,7 @@ prio reaction
 voice haven
 
 node start
-  say? broke:house.tins@here :: "You said you'd bring tins. I told the children, and they sat at the window till dark. That part's on me, not you. I should know better than to tell them anything."
+  say? broke:house.tins@here :: You said you'd bring tins. I told the children, and they sat at the window till dark. That part's on me, not you. I should know better than to tell them anything.
 
 conv occupant.house.stayed
 for occupant
@@ -170,4 +170,4 @@ prio reaction
 voice haven
 
 node start
-  say? due:house.stayed@here :: "You stayed for the name, the other night. Sat at the end with your hat off. People noticed. Nobody here will say so, so I'm saying it. Thank you."
+  say? due:house.stayed@here :: You stayed for the name, the other night. Sat at the end with your hat off. People noticed. Nobody here will say so, so I'm saying it. Thank you.

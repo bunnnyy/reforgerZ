@@ -10,25 +10,25 @@ prio quest
 voice haven
 
 node start
-  say "Show me, then. Roll the sleeve up. Nobody here is going to shout, and nobody's going to reach for a gun. That's the rule in every Haven house: say it out loud, and we help if we can."
-  > @tell "Here. It's a bite." -> told   do call:declare_bite
-  > @fine "It's nothing. A scratch off a fence." -> fine | caught   check lie haven 2   truth !bite_shown   found nset:hid_bite
-  > @back "Not now. I'm not ready to say it." -> hub
+  say Show me, then. Roll the sleeve up. Nobody here is going to shout, and nobody's going to reach for a gun. That's the rule in every Haven house: say it out loud, and we help if we can.
+  > @tell Here. It's a bite. -> told   do call:declare_bite
+  > @fine It's nothing. A scratch off a fence. -> fine | caught   check lie haven 2   truth !bite_shown   found nset:hid_bite
+  > @back Not now. I'm not ready to say it. -> hub
 
 node told
-  say "Thank you for saying it out loud. Most don't. The medic will look at it, and it goes in the book, so nobody finds out the hard way. Sit by the door where it's cooler, and drink something."
-  say "If it's young, Halcyon's lab gives a trial dose, once, to anyone bitten. It's a long walk and a short form. We'll talk about that when you've sat down."
-  > @back1 "Thank you. Can I ask something else?" -> hub
+  say Thank you for saying it out loud. Most don't. The medic will look at it, and it goes in the book, so nobody finds out the hard way. Sit by the door where it's cooler, and drink something.
+  say If it's young, Halcyon's lab gives a trial dose, once, to anyone bitten. It's a long walk and a short form. We'll talk about that when you've sat down.
+  > @back1 Thank you. Can I ask something else? -> hub
 
 node fine
-  say "A fence. Right. Keep it covered, then, and keep it clean. And if it goes hot and you start sweating in the cold, you come back to this door and say the other word. We'll still open it."
-  > @back2 "Let me ask you something else." -> hub
+  say A fence. Right. Keep it covered, then, and keep it clean. And if it goes hot and you start sweating in the cold, you come back to this door and say the other word. We'll still open it.
+  > @back2 Let me ask you something else. -> hub
 
 node caught
-  say "That's not a fence. I've seen enough of them now to know the shape of the teeth. I'm writing it down, at least, so the medic knows what's walking round this house."
+  say That's not a fence. I've seen enough of them now to know the shape of the teeth. I'm writing it down, at least, so the medic knows what's walking round this house.
   do call:caught_bite
-  > @tell2 "All right. It's a bite. Write it down." -> told   do call:declare_bite
-  > @back3 "Leave it. Please." -> hub
+  > @tell2 All right. It's a bite. Write it down. -> told   do call:declare_bite
+  > @back3 Leave it. Please. -> hub
 
 conv occupant.bitten.found
 for occupant
@@ -39,7 +39,7 @@ once
 voice haven
 
 node start
-  say? nmem:hid_bite :: "You told us it was a fence. It wasn't. We worked it out after you'd gone. Next time say it at the door. We'd have helped. That's the whole point of having a door."
+  say? nmem:hid_bite :: You told us it was a fence. It wasn't. We worked it out after you'd gone. Next time say it at the door. We'd have helped. That's the whole point of having a door.
 
 conv halcyon.bitten.trial
 for leader:halcyon, named:halcyon
@@ -49,14 +49,14 @@ prio quest
 voice halcyon
 
 node start
-  say "There is a trial dose. Anyone bitten may volunteer for it, once, at no cost. It is a trial. We record everything about it, including you."
-  say "Eight in ten volunteers walk out. Ask at the table by the lab gate, and bring the bite while it's young. Older bites are less interesting to us, and less hopeful for you."
-  > @consent "What would I have to sign?" -> sign
-  > @back "Let me ask you something else." -> hub
+  say There is a trial dose. Anyone bitten may volunteer for it, once, at no cost. It is a trial. We record everything about it, including you.
+  say Eight in ten volunteers walk out. Ask at the table by the lab gate, and bring the bite while it's young. Older bites are less interesting to us, and less hopeful for you.
+  > @consent What would I have to sign? -> sign
+  > @back Let me ask you something else. -> hub
 
 node sign
-  say "Your name, the time of the bite, and your consent. The form is short. We are told that is a kindness. The other two in ten are written up as carefully as the eight. More carefully, if anything."
-  > @back1 "Let me ask you something else." -> hub
+  say Your name, the time of the bite, and your consent. The form is short. We are told that is a kindness. The other two in ten are written up as carefully as the eight. More carefully, if anything.
+  > @back1 Let me ask you something else. -> hub
 
 conv wanderer.doctor.symptoms
 for wanderer:doctor
@@ -66,14 +66,14 @@ prio quest
 voice plain
 
 node start
-  say "Look at me. Eyes. Now your hands, palms up. That isn't a bite. That's a fever, and an ordinary one, probably. People still get those. The world ending didn't cure the flu."
-  say "Water, rest, and stop running everywhere. If it's still on you tomorrow, find a Haven house with a medic. They'll see you for nothing. They see everyone for nothing."
-  > @sure "Only probably?" -> probably
-  > @back "Let me ask you something else." -> hub
+  say Look at me. Eyes. Now your hands, palms up. That isn't a bite. That's a fever, and an ordinary one, probably. People still get those. The world ending didn't cure the flu.
+  say Water, rest, and stop running everywhere. If it's still on you tomorrow, find a Haven house with a medic. They'll see you for nothing. They see everyone for nothing.
+  > @sure Only probably? -> probably
+  > @back Let me ask you something else. -> hub
 
 node probably
-  say "Everything's probably now. I haven't got a lab or a second opinion, I've got a bag and my eyes. Probably is the best word we've got left, and I don't use it lightly."
-  > @back1 "Let me ask you something else." -> hub
+  say Everything's probably now. I haven't got a lab or a second opinion, I've got a bag and my eyes. Probably is the best word we've got left, and I don't use it lightly.
+  > @back1 Let me ask you something else. -> hub
 
 conv occupant.nurse.symptoms
 for occupant
@@ -83,13 +83,13 @@ prio world
 voice haven
 
 node start
-  say "The little one at the back. She's been coughing since the school trip, since before all this, and now people move their bowls away from her at supper."
-  say (her father) "It's her chest. It's always been her chest. I keep telling them, and they look at me like I'd say anything."
-  say "People look at her like she's bitten. She isn't. Is she? You'd know. You've the hands for it."
-  > @chest "That isn't a bite. It's her chest." -> chest   if bg:nurse,doctor
-  > @back "Let me ask you something else." -> hub
+  say The little one at the back. She's been coughing since the school trip, since before all this, and now people move their bowls away from her at supper.
+  say (her father) It's her chest. It's always been her chest. I keep telling them, and they look at me like I'd say anything.
+  say People look at her like she's bitten. She isn't. Is she? You'd know. You've the hands for it.
+  > @chest That isn't a bite. It's her chest. -> chest   if bg:nurse,doctor
+  > @back Let me ask you something else. -> hub
 
 node chest
-  say "Say it again, louder, at supper. They'll listen to you. They don't listen to him, because he's her father, and everybody knows a father would say anything."
+  say Say it again, louder, at supper. They'll listen to you. They don't listen to him, because he's her father, and everybody knows a father would say anything.
   do learn:house.cough@here
-  > @back1 "Let me ask you something else." -> hub
+  > @back1 Let me ask you something else. -> hub

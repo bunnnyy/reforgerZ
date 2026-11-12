@@ -16,20 +16,20 @@ node start
   jump news:horde -> horde
   jump news:burned -> fire
   jump news:death -> dead
-  say? rain :: "Puddles. I counted them to stop counting other things. Forty-one. Forty-two, if you count the one in my left boot, and I've stopped being able to ignore it."
-  say? night :: "Nothing. It's dark. I passed the dark, and a lot of noises I decided weren't anything. I'm very good at deciding that now."
-  say "A dog that followed me for a mile and then thought better of it. Somebody's dog, with a collar on. That was the best part of the whole day."
-  > @back0 "Let me ask you something else." -> hub
+  say? rain :: Puddles. I counted them to stop counting other things. Forty-one. Forty-two, if you count the one in my left boot, and I've stopped being able to ignore it.
+  say? night :: Nothing. It's dark. I passed the dark, and a lot of noises I decided weren't anything. I'm very good at deciding that now.
+  say A dog that followed me for a mile and then thought better of it. Somebody's dog, with a collar on. That was the best part of the whole day.
+  > @back0 Let me ask you something else. -> hub
 
 node horde
-  say "A lot of the sick, near {bind:horde}. All walking the same way, like a parade nobody wanted. I lay in a ditch till the last of them had gone."
-  say "The ditch was nice, actually. Quiet. Nobody asked me for anything in the ditch. I might go back to the ditch."
-  > @back1 "Let me ask you something else." -> hub
+  say A lot of the sick, near {bind:horde}. All walking the same way, like a parade nobody wanted. I lay in a ditch till the last of them had gone.
+  say The ditch was nice, actually. Quiet. Nobody asked me for anything in the ditch. I might go back to the ditch.
+  > @back1 Let me ask you something else. -> hub
 
 node fire
-  say "Smoke over {bind:fire}. A whole street of it. I didn't go closer. I'm not that sort of brave. I'm the walking-away sort, and it's kept me alive this long."
-  > @back2 "Let me ask you something else." -> hub
+  say Smoke over {bind:fire}. A whole street of it. I didn't go closer. I'm not that sort of brave. I'm the walking-away sort, and it's kept me alive this long.
+  > @back2 Let me ask you something else. -> hub
 
 node dead
-  say "Somebody had died near {bind:dead}, by the road. Somebody else had covered them with a coat. A good coat, too, a warm one, in this weather. That stayed with me."
-  > @back3 "Let me ask you something else." -> hub
+  say Somebody had died near {bind:dead}, by the road. Somebody else had covered them with a coat. A good coat, too, a warm one, in this weather. That stayed with me.
+  > @back3 Let me ask you something else. -> hub

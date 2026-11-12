@@ -11,21 +11,21 @@ prio world
 voice plain
 
 node start
-  say "The chemist's in {here}. Back room, top shelf, behind the till. Nobody's touched it. Clean as a whistle, I swear on my boots." ~lie:scav.chemist
-  say "A bit of food and it's yours. The knowing, I mean. The shelf's free. Everyone's hungry out here, and I'm everyone."
-  > @buy "Here's a tin. Tell me where exactly." -> sold   cost item:food*1   do nset:sold_chemist; later:6h:scav.came_back
-  > @hunter "That door was forced. Boot marks." -> caught_out   if bg:hunter,police
-  > @catch "Picked clean on Day 3. I asked." -> caught_out   callout scav.chemist
-  > @no "No thanks. Not today." -> hub
+  say The chemist's in {here}. Back room, top shelf, behind the till. Nobody's touched it. Clean as a whistle, I swear on my boots. ~lie:scav.chemist
+  say A bit of food and it's yours. The knowing, I mean. The shelf's free. Everyone's hungry out here, and I'm everyone.
+  > @buy Here's a tin. Tell me where exactly. -> sold   cost item:food*1   do nset:sold_chemist; later:6h:scav.came_back
+  > @hunter That door was forced. Boot marks. -> caught_out   if bg:hunter,police
+  > @catch Picked clean on Day 3. I asked. -> caught_out   callout scav.chemist
+  > @no No thanks. Not today. -> hub
 
 node sold
-  say "Pleasure doing business. The door at the back sticks, so shoulder it. And mind how you go in there. I mean that part."
-  > @back1 "Let me ask you something else." -> hub
+  say Pleasure doing business. The door at the back sticks, so shoulder it. And mind how you go in there. I mean that part.
+  > @back1 Let me ask you something else. -> hub
 
 node caught_out
-  say "All right, all right. Picked clean, back room and all. But the vet's on the south road still has bandages in the cupboard under the sink. Honest. That one's free, for the cheek."
+  say All right, all right. Picked clean, back room and all. But the vet's on the south road still has bandages in the cupboard under the sink. Honest. That one's free, for the cheek.
   do nset:honest
-  > @back2 "Let me ask you something else." -> hub
+  > @back2 Let me ask you something else. -> hub
 
 conv wanderer.scavenger.came_back
 for wanderer:scavenger
@@ -35,7 +35,7 @@ greet
 voice plain
 
 node start
-  say? due:scav.came_back :: "You're back. Did you go to the chemist's? Don't tell me. I can see it on you. Still here, though. Still walking. That's the main thing, isn't it."
+  say? due:scav.came_back :: You're back. Did you go to the chemist's? Don't tell me. I can see it on you. Still here, though. Still walking. That's the main thing, isn't it.
 
 conv wanderer.doctor.chemist
 for wanderer:doctor
@@ -46,8 +46,8 @@ once
 voice plain
 
 node start
-  say "The chemist's? I cleared it myself, on Day 3. Every shelf, every drawer, the back room too. Whoever told you otherwise wanted a tin more than you did." ~truth:scav.chemist
-  > @thanks "Good to know. Thank you." -> hub
+  say The chemist's? I cleared it myself, on Day 3. Every shelf, every drawer, the back room too. Whoever told you otherwise wanted a tin more than you did. ~truth:scav.chemist
+  > @thanks Good to know. Thank you. -> hub
 
 conv wanderer.doctor.back_room
 for wanderer:doctor
@@ -58,9 +58,9 @@ once
 voice plain
 
 node start
-  say "The ones who don't walk out? There's a room at the back of the lab. A chair by every bed and someone with a clipboard in it, all night." ~truth:halcyon.back_room
-  say "They're not cruel. They write everything down, every hour, to the end. That's worse, some days."
-  > @thanks "Thank you for telling me." -> hub
+  say The ones who don't walk out? There's a room at the back of the lab. A chair by every bed and someone with a clipboard in it, all night. ~truth:halcyon.back_room
+  say They're not cruel. They write everything down, every hour, to the end. That's worse, some days.
+  > @thanks Thank you for telling me. -> hub
 
 # A lie the world tests (docs/DIALOGUE.md, "Lies you're told"): the town is picked when the topic
 # opens (bind), the lie is about that town, and the truth is learned by walking into it while it's
@@ -75,16 +75,16 @@ bind target = town:thick_within(2500)
 
 node start
   jump !bound -> nowhere
-  say "{bind:target}. Quiet as a church. I came through it this morning. Well. Near it. Past it, at a distance, with the wind behind me." ~lie:trader.quiet@target
+  say {bind:target}. Quiet as a church. I came through it this morning. Well. Near it. Past it, at a distance, with the wind behind me. ~lie:trader.quiet@target
   do watch:trader.quiet@target:60
-  > @thanks "Thanks. I'll go that way." -> hub
-  > @catch "{bind:target}? It's thick with them." -> caught   callout trader.quiet@target
-  > @no "I'll find my own way." -> hub
+  > @thanks Thanks. I'll go that way. -> hub
+  > @catch {bind:target}? It's thick with them. -> caught   callout trader.quiet@target
+  > @no I'll find my own way. -> hub
 
 node caught
-  say "Is it? Must have changed since. Everything does. I sell things, and quiet's a thing people want to buy. Here, have the truth for free: go round it, by the fields."
-  > @back1 "Let me ask you something else." -> hub
+  say Is it? Must have changed since. Everything does. I sell things, and quiet's a thing people want to buy. Here, have the truth for free: go round it, by the fields.
+  > @back1 Let me ask you something else. -> hub
 
 node nowhere
-  say "Every way's the same today. Pick one and keep your head down, and don't take any road past a town with its doors hanging open."
-  > @back2 "Let me ask you something else." -> hub
+  say Every way's the same today. Pick one and keep your head down, and don't take any road past a town with its doors hanging open.
+  > @back2 Let me ask you something else. -> hub

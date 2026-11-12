@@ -8,18 +8,18 @@ prio flavour
 voice plain
 
 node start
-  say "My mum said not to tell people my name. Then she said if I'm ever lost, tell a grown-up. I don't know which one you are yet."
-  > @mine "I'll tell you mine first, if you like." -> name
-  > @ok "That's fine. You can keep it." -> keep
+  say My mum said not to tell people my name. Then she said if I'm ever lost, tell a grown-up. I don't know which one you are yet.
+  > @mine I'll tell you mine first, if you like. -> name
+  > @ok That's fine. You can keep it. -> keep
 
 node name
-  say "Okay. That's fair. You can call me what my class called me on the trip. It's not very nice, so I won't say it. We were on a school trip when the roads shut."
-  say "Miss said stay together and hold hands at the roads. I'm hungry, but I'm not supposed to say that either."
-  > @back1 "Let me ask you something else." -> hub
+  say Okay. That's fair. You can call me what my class called me on the trip. It's not very nice, so I won't say it. We were on a school trip when the roads shut.
+  say Miss said stay together and hold hands at the roads. I'm hungry, but I'm not supposed to say that either.
+  > @back1 Let me ask you something else. -> hub
 
 node keep
-  say "Thank you. Most grown-ups keep asking until you tell them. You didn't. I'll tell you later, maybe, if you're still here."
-  > @back2 "Deal. Can I ask you something else?" -> hub
+  say Thank you. Most grown-ups keep asking until you tell them. You didn't. I'll tell you later, maybe, if you're still here.
+  > @back2 Deal. Can I ask you something else? -> hub
 
 conv wanderer.kid.home
 for wanderer:kid
@@ -29,18 +29,18 @@ prio ask
 voice plain
 
 node start
-  say "There was a gym. With a bear on the door. Miss said they'd come back for the ones outside, after they'd counted everyone inside."
-  say "I waited by the bins until it got dark, and nobody came, so I walked. I don't walk at night now. I don't know the way back to the bear."
-  > @show "I'll show you the way to a house." -> walk
-  > @promise "I'll get you home. I promise." -> walk   do promise:walk.home:3h
-  > @later "Stay here. Someone will come." -> wait
+  say There was a gym. With a bear on the door. Miss said they'd come back for the ones outside, after they'd counted everyone inside.
+  say I waited by the bins until it got dark, and nobody came, so I walked. I don't walk at night now. I don't know the way back to the bear.
+  > @show I'll show you the way to a house. -> walk
+  > @promise I'll get you home. I promise. -> walk   do promise:walk.home:3h
+  > @later Stay here. Someone will come. -> wait
 
 node walk
-  say "Is it far? I can walk far. I just can't walk at night. If I hold your sleeve, will you go slow at the corners?"
+  say Is it far? I can walk far. I just can't walk at night. If I hold your sleeve, will you go slow at the corners?
   do call:slot:0
-  > @back3 "I'll go slow. Can I ask you something?" -> hub
+  > @back3 I'll go slow. Can I ask you something? -> hub
 
 node wait
-  say "Everyone says that. Then nobody comes, and it gets dark again."
-  > @show2 "All right. I'll take you there myself." -> walk
-  > @back4 "Let me ask you something else." -> hub
+  say Everyone says that. Then nobody comes, and it gets dark again.
+  > @show2 All right. I'll take you there myself. -> walk
+  > @back4 Let me ask you something else. -> hub

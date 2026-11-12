@@ -11,7 +11,7 @@ voice bastion
 daily
 
 node start
-  say? kit:own :: "Kit suits you. Mind the collar. The sergeant notices collars, and the sergeant notices who's in Bastion green at {here} that wasn't on this morning's roster."
+  say? kit:own :: Kit suits you. Mind the collar. The sergeant notices collars, and the sergeant notices who's in Bastion green at {here} that wasn't on this morning's roster.
 
 conv named.bastion.kit_theirs
 for named:bastion
@@ -21,7 +21,7 @@ voice bastion
 daily
 
 node start
-  say? kit:in_kit :: "Where did you get that jacket? Don't answer. If you answer I have to write it down, and if I write it down somebody has to come out and ask you properly."
+  say? kit:in_kit :: Where did you get that jacket? Don't answer. If you answer I have to write it down, and if I write it down somebody has to come out and ask you properly.
 
 conv named.redhand.kit_own
 for named:redhand
@@ -31,7 +31,7 @@ voice redhand
 daily
 
 node start
-  say? kit:own :: "Wearing the red. Good. Now everyone on the road knows who to blame, and who to pay. Mostly who to pay. Blame's free, and we don't do free."
+  say? kit:own :: Wearing the red. Good. Now everyone on the road knows who to blame, and who to pay. Mostly who to pay. Blame's free, and we don't do free.
 
 conv named.redhand.kit_theirs
 for named:redhand
@@ -41,7 +41,7 @@ voice redhand
 daily
 
 node start
-  say? kit:in_kit :: "Nice armband. Whose was it before? Doesn't matter. Everything out here was somebody's before. The book usually says whose, and what they paid for it."
+  say? kit:in_kit :: Nice armband. Whose was it before? Doesn't matter. Everything out here was somebody's before. The book usually says whose, and what they paid for it.
 
 conv named.halcyon.kit_theirs
 for named:halcyon
@@ -51,4 +51,4 @@ voice halcyon
 daily
 
 node start
-  say? kit:in_kit :: "That coat has someone's initials in the collar and a notebook number on the cuff. Neither of them is yours. I am noting it, for the record. Everything here goes in a record."
+  say? kit:in_kit :: That coat has someone's initials in the collar and a notebook number on the cuff. Neither of them is yours. I am noting it, for the record. Everything here goes in a record.

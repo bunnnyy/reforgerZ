@@ -22,44 +22,44 @@ node start
   jump news:horde -> horde
   jump news:death -> death
   jump news:lost_by(redhand) -> sold
-  say? persona:1 & house:short :: "That the soup's thinner. Nobody says it out loud. Everybody says it with their spoons, scraping the bowl long after there's nothing left in it."
-  say? persona:2 & night :: "At this hour? Who snores, who's courting, who's crying under a blanket. We pretend we didn't hear that last one. Thirty people in one building, you learn to pretend."
-  say? persona:3 & rain :: "That the roof's going in the east room. There's a bucket under the worst of it, and the bucket's the most visited person in {here}. Everyone goes to look at it."
-  say? epilogue :: "That we're all leaving. The loudspeakers at the checkpoints say processing now. Nobody says where we go after, and people are already arguing over who keeps the bear off the door."
-  say "Small things. Who's coughing, who borrowed whose boots, who's sweet on the lookout. Shut thirty people in one house and the small things are the news. Big news only ever means somebody's dead."
-  > @house "How's this house really holding up?" -> hub   do call:slot:0
-  > @back0 "Let me ask you something else." -> hub
+  say? persona:1 & house:short :: That the soup's thinner. Nobody says it out loud. Everybody says it with their spoons, scraping the bowl long after there's nothing left in it.
+  say? persona:2 & night :: At this hour? Who snores, who's courting, who's crying under a blanket. We pretend we didn't hear that last one. Thirty people in one building, you learn to pretend.
+  say? persona:3 & rain :: That the roof's going in the east room. There's a bucket under the worst of it, and the bucket's the most visited person in {here}. Everyone goes to look at it.
+  say? epilogue :: That we're all leaving. The loudspeakers at the checkpoints say processing now. Nobody says where we go after, and people are already arguing over who keeps the bear off the door.
+  say Small things. Who's coughing, who borrowed whose boots, who's sweet on the lookout. Shut thirty people in one house and the small things are the news. Big news only ever means somebody's dead.
+  > @house How's this house really holding up? -> hub   do call:slot:0
+  > @back0 Let me ask you something else. -> hub
 
 node emptied
-  say "That the house at {bind:gone} is empty now. Some of them walked here in the dark with what they could carry, and we squeezed them in, two to a mattress."
-  say? persona:2 :: "Don't ask about the ones who didn't walk here. Nobody in {here} asks. That's a house rule nobody ever wrote down."
-  say "We'll paint their bear on our door, under ours. That's what you do when a house goes, so nobody forgets there were children in it."
-  > @house1 "How is the house coping with more?" -> hub   do call:slot:0
-  > @back1 "Let me ask you something else." -> hub
+  say That the house at {bind:gone} is empty now. Some of them walked here in the dark with what they could carry, and we squeezed them in, two to a mattress.
+  say? persona:2 :: Don't ask about the ones who didn't walk here. Nobody in {here} asks. That's a house rule nobody ever wrote down.
+  say We'll paint their bear on our door, under ours. That's what you do when a house goes, so nobody forgets there were children in it.
+  > @house1 How is the house coping with more? -> hub   do call:slot:0
+  > @back1 Let me ask you something else. -> hub
 
 node rescue
-  say "That somebody brought people out alive at {bind:saved}. Alive. Somebody stood up at supper and said it, and we had a little cheer, and then we all felt silly and cheered again."
-  say? helped :: "Somebody said it was you. Was it? Don't tell me. I like not knowing. It means it could be anyone, and I'd like to believe anyone would."
-  > @house2 "Good news, for once. And this house?" -> hub   do call:slot:0
-  > @back2 "Let me ask you something else." -> hub
+  say That somebody brought people out alive at {bind:saved}. Alive. Somebody stood up at supper and said it, and we had a little cheer, and then we all felt silly and cheered again.
+  say? helped :: Somebody said it was you. Was it? Don't tell me. I like not knowing. It means it could be anyone, and I'd like to believe anyone would.
+  > @house2 Good news, for once. And this house? -> hub   do call:slot:0
+  > @back2 Let me ask you something else. -> hub
 
 node horde
-  say "That a crowd of the sick went through near {bind:horde}, following some noise. Hundreds, the lookout says, though the lookout says hundreds about most things."
-  say "We kept the lamps off and the children quiet until they'd gone. Quiet's the rule now. You learn to whisper with your whole body."
-  > @house3 "Are you ready if they come here?" -> hub   do call:slot:0
-  > @back3 "Let me ask you something else." -> hub
+  say That a crowd of the sick went through near {bind:horde}, following some noise. Hundreds, the lookout says, though the lookout says hundreds about most things.
+  say We kept the lamps off and the children quiet until they'd gone. Quiet's the rule now. You learn to whisper with your whole body.
+  > @house3 Are you ready if they come here? -> hub   do call:slot:0
+  > @back3 Let me ask you something else. -> hub
 
 node death
-  say "That somebody died near {bind:dead}. One of the travelling ones, like you, who go out on the roads for the rest of us. Nobody here knew the name."
-  say "We'll light a candle in the window anyway. If it were you, you'd want a candle somewhere. Everybody does."
-  > @house4 "Thank you for that. How's the house?" -> hub   do call:slot:0
-  > @back4 "Let me ask you something else." -> hub
+  say That somebody died near {bind:dead}. One of the travelling ones, like you, who go out on the roads for the rest of us. Nobody here knew the name.
+  say We'll light a candle in the window anyway. If it were you, you'd want a candle somewhere, burning for you.
+  > @house4 Thank you for that. How's the house? -> hub   do call:slot:0
+  > @back4 Let me ask you something else. -> hub
 
 node sold
-  say "That the Red Hand lost {bind:lost}. Lost it, not sold it. They'll tell you they sold it. Somebody's cousin was there and saw them run, boots in their hands." ~truth:gossip.sold@lost
-  say "Whoever holds it now, the families in that town still need feeding. A flag on a pole never fed anybody."
-  > @house5 "And how are things here?" -> hub   do call:slot:0
-  > @back5 "Let me ask you something else." -> hub
+  say That the Red Hand lost {bind:lost}. Lost it, not sold it. They'll tell you they sold it. Somebody's cousin was there and saw them run, boots in their hands. ~truth:gossip.sold@lost
+  say Whoever holds it now, the families in that town still need feeding. A flag on a pole never fed anybody.
+  > @house5 And how are things here? -> hub   do call:slot:0
+  > @back5 Let me ask you something else. -> hub
 
 # The cook: food is the first thing a house says, and the last.
 conv resident.cook.supper
@@ -73,36 +73,36 @@ bind h = house:nearest
 
 node start
   jump house:short -> short
-  say? persona:1 :: "Potatoes. Yesterday it was potatoes, and tomorrow it'll be potatoes, but tomorrow I'm going to give them a French name and see if anybody notices."
-  say? persona:2 :: "Whatever's in the tins with no labels. The water got into the store and washed them all off. Every supper's a lottery now. Nobody wins, but everybody eats."
-  say? persona:3 :: "Soup. It's always soup. A pot this size feeds the whole of {here} if you're careful with the water. Soup is just patience with a spoon in it."
-  say "Supper, if nothing goes wrong. I feed everyone in this house twice a day out of whatever the storekeeper hands me and whatever the roads bring in. Things go wrong."
-  > @stores "How are the stores, honestly?" -> stores
-  > @help "Is there anything I can do to help?" -> ask
-  > @house "How's the house doing generally?" -> hub   do call:slot:0
-  > @no "Smells good. I'll leave you to it." -> hub
+  say? persona:1 :: Potatoes. Yesterday it was potatoes, and tomorrow it'll be potatoes, but tomorrow I'm going to give them a French name and see if anybody notices.
+  say? persona:2 :: Whatever's in the tins with no labels. The water got into the store and washed them all off. Every supper's a lottery now. Nobody wins, but everybody eats.
+  say? persona:3 :: Soup. It's always soup. A pot this size feeds the whole of {here} if you're careful with the water. Soup is just patience with a spoon in it.
+  say Supper, if nothing goes wrong. I feed everyone in this house twice a day out of whatever the storekeeper hands me and whatever the roads bring in. Things go wrong.
+  > @stores How are the stores, honestly? -> stores
+  > @help Is there anything I can do to help? -> ask
+  > @house How's the house doing generally? -> hub   do call:slot:0
+  > @no Smells good. I'll leave you to it. -> hub
 
 node short
-  say "Half portions. Whatever the storekeeper tells you, it's half portions. I can count the bowls and I can count the people, and the two numbers stopped agreeing days ago." ~truth:house.stores@h
-  say? persona:3 :: "I've started calling the soup tea. The children believe me. The old ones don't argue, which is worse. They give theirs to the children when they think I'm not looking."
-  say "The truck didn't come, and the gardens are picked bare. The children eat first. The rest of us eat what's left, and we say grace over less every night."
-  > @help2 "Then let me help. What do you need?" -> ask
-  > @house2 "How's everyone holding up on that?" -> hub   do call:slot:0
-  > @back2 "Let me ask you something else." -> hub
+  say Half portions. Whatever the storekeeper tells you, it's half portions. I can count the bowls and I can count the people, and the two numbers stopped agreeing days ago. ~truth:house.stores@h
+  say? persona:3 :: I've started calling the soup tea. The children believe me. The old ones don't argue, which is worse. They give theirs to the children when they think I'm not looking.
+  say The truck didn't come, and the gardens are picked bare. The children eat first. The rest of us eat what's left, and we say grace over less every night.
+  > @help2 Then let me help. What do you need? -> ask
+  > @house2 How's everyone holding up on that? -> hub   do call:slot:0
+  > @back2 Let me ask you something else. -> hub
 
 node stores
-  say? house:fed :: "Full, for once. Somebody brought tins and somebody found a sack of flour in a shed. I'm hiding two tins behind the pans for a bad week. Don't tell the storekeeper."
-  say "Enough for today. Today is the only day I plan for now. We had a plan for the week once, and then the truck didn't come and the week ate it."
-  > @help3 "Anything I can do to help with that?" -> ask
-  > @back3 "Let me ask you something else." -> hub
+  say? house:fed :: Full, for once. Somebody brought tins and somebody found a sack of flour in a shed. I'm hiding two tins behind the pans for a bad week. Don't tell the storekeeper.
+  say Enough for today. Today is the only day I plan for now. We had a plan for the week once, and then the truck didn't come and the week ate it.
+  > @help3 Anything I can do to help with that? -> ask
+  > @back3 Let me ask you something else. -> hub
 
 node ask
-  say? persona:1 :: "There might be. I'm better with plain, so here it is: a house this size needs food in, water in, and somebody out on the roads for both. That's where you'd come in."
-  say "Always something. Tins for the pot, gardens to search in the empty villages, a hand at the gate when it's dark. Ask me straight and I'll tell you what's real today."
-  say "We can't pay much. A little Favor with the Haven, a hot bowl, and people here remembering your face kindly. Some days that last one's worth the most."
-  > @take "Put me to work. What needs doing?" -> hub   do call:slot:1
-  > @house9 "First tell me how the house is." -> hub   do call:slot:0
-  > @later "Not right now. Maybe later." -> hub
+  say? persona:1 :: There might be. I'm better with plain, so here it is: a house this size needs food in, water in, and somebody out on the roads for both. That's where you'd come in.
+  say Always something. Tins for the pot, gardens to search in the empty villages, a hand at the gate when it's dark. Ask me straight and I'll tell you what's real today.
+  say We can't pay much. A little Favor with the Haven, a hot bowl, and people here remembering your face kindly. Some days that last one's worth the most.
+  > @take Put me to work. What needs doing? -> hub   do call:slot:1
+  > @house9 First tell me how the house is. -> hub   do call:slot:0
+  > @later Not right now. Maybe later. -> hub
 
 # The lookout: on the roof, sees the roads, says what moves.
 conv resident.lookout.roof
@@ -119,40 +119,40 @@ bind thick = town:thick_within(2500)
 node start
   jump news:horde -> horde
   jump news:burned -> fire
-  say? persona:1 & night :: "Torches on the north road. Two, then one, then none. I wrote it down with the time. Somebody was walking at night, and now nobody is. I'd like to think they got inside."
-  say? persona:2 & fog :: "Fog. I've been staring at fog for four hours. Fog's been staring back. In fog you hear them before you see them, so mostly I listen. That's the job, on a day like this."
-  say? persona:3 & bound:thick :: "{bind:thick} is thick with them. On a clear day you can see them standing in the street over there, swaying, waiting for nothing. I don't look for long."
-  say "Roads. Birds. Washing on a line two farms over, which means somebody's still living there. I sit up on this roof from dawn to dark so the people inside can sleep."
-  > @see "Anything coming this way?" -> coming
-  > @help "Need a hand with anything?" -> ask
-  > @house "How's the house holding up?" -> hub   do call:slot:0
-  > @no "Keep watching. I'll leave you to it." -> hub
+  say? persona:1 & night :: Torches on the north road. Two, then one, then none. I wrote it down with the time. Somebody was walking at night, and now nobody is. I'd like to think they got inside.
+  say? persona:2 & fog :: Fog. I've been staring at fog for four hours. Fog's been staring back. In fog you hear them before you see them, so mostly I listen. That's the job, on a day like this.
+  say? persona:3 & bound:thick :: {bind:thick} is thick with them. On a clear day you can see them standing in the street over there, swaying, waiting for nothing. I don't look for long.
+  say Roads. Birds. Washing on a line two farms over, which means somebody's still living there. I sit up on this roof from dawn to dark so the people inside can sleep.
+  > @see Anything coming this way? -> coming
+  > @help Need a hand with anything? -> ask
+  > @house How's the house holding up? -> hub   do call:slot:0
+  > @no Keep watching. I'll leave you to it. -> hub
 
 node horde
-  say "A crowd of them near {bind:horde}. Moving toward the noise, the way they do. Somebody over there was hammering. Somebody always is."
-  say "They went past us, mostly. I counted the ones that didn't. Then I stopped counting and told the gate to bolt up."
-  > @see1 "Are they heading for this house?" -> coming
-  > @help1 "Can I do something about it?" -> ask
-  > @back1 "Let me ask you something else." -> hub
+  say A crowd of them near {bind:horde}. Moving toward the noise, the way they do. Somebody over there was hammering. Somebody always is.
+  say They went past us, mostly. I counted the ones that didn't. Then I stopped counting and told the gate to bolt up.
+  > @see1 Are they heading for this house? -> coming
+  > @help1 Can I do something about it? -> ask
+  > @back1 Let me ask you something else. -> hub
 
 node fire
-  say "Smoke from {bind:fire}. Black at first, then grey, then nothing. It burned all afternoon and nobody put it out, which tells you nobody was left to."
-  say "I don't know who lit it. I only know it went out by itself. I've written that down too, for whoever reads the book after me."
-  > @help2 "Need a hand with anything here?" -> ask
-  > @back2 "Let me ask you something else." -> hub
+  say Smoke from {bind:fire}. Black at first, then grey, then nothing. It burned all afternoon and nobody put it out, which tells you nobody was left to.
+  say I don't know who lit it. I only know it went out by itself. I've written that down too, for whoever reads the book after me.
+  > @help2 Need a hand with anything here? -> ask
+  > @back2 Let me ask you something else. -> hub
 
 node coming
-  say? town:infested :: "They're already here, in the streets round us. That's why everyone whispers in {here}, and why the gate stays bolted after dusk, whoever's knocking."
-  say "Not yet. Yet is my whole job. I sit up here and wait for yet, and if it comes I ring the pan and everyone goes upstairs."
-  > @help3 "Then let me help before yet comes." -> ask
-  > @back3 "Let me ask you something else." -> hub
+  say? town:infested :: They're already here, in the streets round us. That's why everyone whispers in {here}, and why the gate stays bolted after dusk, whoever's knocking.
+  say Not yet. Yet is my whole job. I sit up here and wait for yet, and if it comes I ring the pan and everyone goes upstairs.
+  > @help3 Then let me help before yet comes. -> ask
+  > @back3 Let me ask you something else. -> hub
 
 node ask
-  say "Could be. I see what the house needs from up here before anyone else does: water running low, the gate short a pair of eyes, chalk on the wrong doors down the road."
-  say "Ask me straight and I'll tell you if any of it's true today. It's a few Favor with the Haven and our thanks. Not much, but it's honest."
-  > @take "I'll help. What needs doing?" -> hub   do call:slot:1
-  > @house9 "How's the house, really?" -> hub   do call:slot:0
-  > @later "Not right now. Later." -> hub
+  say Could be. I see what the house needs from up here before anyone else does: water running low, the gate short a pair of eyes, chalk on the wrong doors down the road.
+  say Ask me straight and I'll tell you if any of it's true today. It's a few Favor with the Haven and our thanks. Not much, but it's honest.
+  > @take I'll help. What needs doing? -> hub   do call:slot:1
+  > @house9 How's the house, really? -> hub   do call:slot:0
+  > @later Not right now. Later. -> hub
 
 # The storekeeper: keeps the count, and keeps it kindly. Lies about it, kindly, when it's short:
 # the cook tells the truth (~truth:house.stores@h).
@@ -167,32 +167,32 @@ bind h = house:nearest
 
 node start
   jump house:short -> short
-  say? persona:1 :: "Thread. Nobody thinks of thread until a coat comes apart in the rain, and then everybody's at my door with their sleeve in their hand."
-  say? persona:2 :: "Batteries. We have six torches and no batteries, which is a very fancy way of having six sticks. The lamps run on what fuel the roads bring in."
-  say? persona:3 :: "Salt. Of all things. You can live without it. You don't want to. Everything tastes of the tin it came in."
-  say "Everything, a little. Nothing, all the way. I keep the count of every tin, can and candle in {here}, and that's what a good week looks like on my list."
-  > @help "Can I help with any of it?" -> ask
-  > @house "How's the house otherwise?" -> hub   do call:slot:0
-  > @no "I'll keep an eye out on the roads." -> hub
+  say? persona:1 :: Thread. Nobody thinks of thread until a coat comes apart in the rain, and then everybody's at my door with their sleeve in their hand.
+  say? persona:2 :: Batteries. We have six torches and no batteries, which is a very fancy way of having six sticks. The lamps run on what fuel the roads bring in.
+  say? persona:3 :: Salt. Of all things. You can live without it. You don't want to. Everything tastes of the tin it came in.
+  say Everything, a little. Nothing, all the way. I keep the count of every tin, can and candle in {here}, and that's what a good week looks like on my list.
+  > @help Can I help with any of it? -> ask
+  > @house How's the house otherwise? -> hub   do call:slot:0
+  > @no I'll keep an eye out on the roads. -> hub
 
 node short
-  say "We're fine. Really. Don't you worry about us. There's plenty on the shelves for a few days yet, and the truck's bound to come." ~lie:house.stores@h
-  > @catch "The cook says it's half portions." -> caught   callout house.stores@h
-  > @help2 "Can I help anyway?" -> ask
-  > @back2 "Let me ask you something else." -> hub
+  say We're fine. Really. Don't you worry about us. There's plenty on the shelves for a few days yet, and the truck's bound to come. ~lie:house.stores@h
+  > @catch The cook says it's half portions. -> caught   callout house.stores@h
+  > @help2 Can I help anyway? -> ask
+  > @back2 Let me ask you something else. -> hub
 
 node caught
-  say "The cook talks too much. Yes. Half portions, since the truck didn't come. We didn't want to worry you. You go out on those roads for everybody, and you've enough to carry without our soup."
-  say "There. Now you know. The shelves are bare at the back and I've been turning the tins so the labels face out."
-  > @help3 "Then let me help with it." -> ask
-  > @back3 "Let me ask you something else." -> hub
+  say The cook talks too much. Yes. Half portions, since the truck didn't come. We didn't want to worry you. You go out on those roads for everybody, and you've enough to carry without our soup.
+  say There. Now you know. The shelves are bare at the back and I've been turning the tins so the labels face out.
+  > @help3 Then let me help with it. -> ask
+  > @back3 Let me ask you something else. -> hub
 
 node ask
-  say "If you mean it, I can always use somebody with legs. Fuel for the lamps before dark, parts for the pump, whatever the shelves are short of. I'll tell you if it's true today."
-  say "It pays a little Favor with the Haven. And I'll write you down in the good column, which is the only column I keep that nobody argues with."
-  > @take "Count me in. What do you need?" -> hub   do call:slot:1
-  > @house9 "How's the house, really?" -> hub   do call:slot:0
-  > @later "Not today. Maybe later." -> hub
+  say If you mean it, I can always use somebody with legs. Fuel for the lamps before dark, parts for the pump, whatever the shelves are short of. I'll tell you if it's true today.
+  say It pays a little Favor with the Haven. And I'll write you down in the good column, which is the only column I keep that nobody argues with.
+  > @take Count me in. What do you need? -> hub   do call:slot:1
+  > @house9 How's the house, really? -> hub   do call:slot:0
+  > @later Not today. Maybe later. -> hub
 
 # The clerk: keeps the house's book, the names in and out.
 conv resident.clerk.names
@@ -206,33 +206,33 @@ bind gone = news:emptied
 
 node start
   jump news:emptied -> emptied
-  say? persona:1 :: "Two this week. A man with a dog and a dog with a man. I wrote them both in the book. The dog's better company, but don't tell the man."
-  say? persona:2 :: "None. That's worse than it sounds. People stop coming when there's nowhere left to come from. The book's had a blank page for three days."
-  say? persona:3 :: "A girl who won't give her surname. So I wrote won't say. It's her surname now. Everyone calls her Wontsay and she's started answering to it."
-  say "Some in, some out. I keep the house's book: every name that comes through the door, and every name that leaves, and how. It's never the same two days running."
-  > @out "And who went out?" -> out
-  > @help "Is there anything I can do?" -> ask
-  > @house "How's the house holding up?" -> hub   do call:slot:0
-  > @no "Thanks. I'll let you get on." -> hub
+  say? persona:1 :: Two this week. A man with a dog and a dog with a man. I wrote them both in the book. The dog's better company, but don't tell the man.
+  say? persona:2 :: None. That's worse than it sounds. People stop coming when there's nowhere left to come from. The book's had a blank page for three days.
+  say? persona:3 :: A girl who won't give her surname. So I wrote won't say. It's her surname now. Everyone calls her Wontsay and she's started answering to it.
+  say Some in, some out. I keep the house's book: every name that comes through the door, and every name that leaves, and how. It's never the same two days running.
+  > @out And who went out? -> out
+  > @help Is there anything I can do? -> ask
+  > @house How's the house holding up? -> hub   do call:slot:0
+  > @no Thanks. I'll let you get on. -> hub
 
 node emptied
-  say "The people from {bind:gone}. All of them who made it. Their names came with them on a strip of wallpaper, in a child's handwriting, because the clerk there didn't make it."
-  say "I've copied them all into our book. Neatly. It felt important that it was neat."
-  > @help1 "Can I help them settle in?" -> ask
-  > @back1 "Let me ask you something else." -> hub
+  say The people from {bind:gone}. All of them who made it. Their names came with them on a strip of wallpaper, in a child's handwriting, because the clerk there didn't make it.
+  say I've copied them all into our book. Neatly. It felt important that it was neat.
+  > @help1 Can I help them settle in? -> ask
+  > @back1 Let me ask you something else. -> hub
 
 node out
-  say? house:died :: "One. The council reads the name at supper. I put a line through it, gently, so you can still read it underneath. That's how we do it here."
-  say "Moved on. That's what we write. Sometimes it's true. Sometimes moved on means walked to the edge of town at dusk, and I write it the same, because somebody has to."
-  > @help2 "Is there anything I can do?" -> ask
-  > @back2 "Let me ask you something else." -> hub
+  say? house:died :: One. The council reads the name at supper. I put a line through it, gently, so you can still read it underneath. That's how we do it here.
+  say Moved on. That's what we write. Sometimes it's true. Sometimes moved on means walked to the edge of town at dusk, and I write it the same, because somebody has to.
+  > @help2 Is there anything I can do? -> ask
+  > @back2 Let me ask you something else. -> hub
 
 node ask
-  say "There might be. The book's about people, so my asks are too: a newcomer who needs a coat, somebody to sit up with, a grave that wants digging. Ask me plainly."
-  say "It pays a few Favor with the Haven. You'd be in the book as somebody who helped. I don't cross those out."
-  > @take "I'll help. Tell me what needs doing." -> hub   do call:slot:1
-  > @house9 "How's the house, really?" -> hub   do call:slot:0
-  > @later "Not right now. Later." -> hub
+  say There might be. The book's about people, so my asks are too: a newcomer who needs a coat, somebody to sit up with, a grave that wants digging. Ask me plainly.
+  say It pays a few Favor with the Haven. You'd be in the book as somebody who helped. I don't cross those out.
+  > @take I'll help. Tell me what needs doing. -> hub   do call:slot:1
+  > @house9 How's the house, really? -> hub   do call:slot:0
+  > @later Not right now. Later. -> hub
 
 # A first meeting with one of the house's named people: who they are and what they do here, once a
 # life per person. Greet lines are conditional (the talk screen shows only a line that says something).
@@ -245,7 +245,7 @@ once
 voice haven
 
 node start
-  say? !met & role:cook :: "Mind the pot. I'm the cook here at {here}. Everything this house eats goes through my hands, twice a day, out of whatever the stores and the roads give me."
-  say? !met & role:lookout :: "I watched you all the way up the road. I'm the lookout for {here}: I sit on the roof from dawn to dark so the rest can sleep."
-  say? !met & role:storekeeper :: "Wipe your feet, it's the only floor I've got. I keep the stores for {here}: every tin, can and candle, counted in and counted out."
-  say? !met & role:clerk :: "Welcome to {here}. I'm the clerk. I keep the house's book: who comes in, who leaves, and how. Give me your name, if you like. Or don't. Plenty don't."
+  say? !met & role:cook :: Mind the pot. I'm the cook here at {here}. Everything this house eats goes through my hands, twice a day, out of whatever the stores and the roads give me.
+  say? !met & role:lookout :: I watched you all the way up the road. I'm the lookout for {here}: I sit on the roof from dawn to dark so the rest can sleep.
+  say? !met & role:storekeeper :: Wipe your feet, it's the only floor I've got. I keep the stores for {here}: every tin, can and candle, counted in and counted out.
+  say? !met & role:clerk :: Welcome to {here}. I'm the clerk. I keep the house's book: who comes in, who leaves, and how. Give me your name, if you like. Or don't. Plenty don't.
