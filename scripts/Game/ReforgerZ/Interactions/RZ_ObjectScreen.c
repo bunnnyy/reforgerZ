@@ -17,9 +17,10 @@
 //! caught for the status line. Without the slot, or when the client can't open the menu, every
 //! action is a world prompt as before.
 //!
-//! Payload (RZ_UIFeed.PAYLOAD_OBJECT): O|serial|title|sub|text|status|working|left|total, then
-//! R|index|label|enabled|reason per row; X|reason closes; F|why: the server couldn't open one.
-//! Line breaks in the text travel as ^.
+//! Payload (RZ_UIFeed.PAYLOAD_OBJECT): O|serial|title|sub|text|status|working|left|total|read label|
+//! hint, then S|label|value|state|left per status tile (RZ_ObjectStatus) and R|index|label|enabled|
+//! reason|tag per row (enabled 0: locked, with the full reason and a short tag); X|reason closes;
+//! F|why: the server couldn't open one. Line breaks in the text travel as ^.
 
 //------------------------------------------------------------------------------------------------
 //! An action that can be a row of the object menu. Subclasses implement Label, Visible and Run
@@ -72,6 +73,27 @@ class RZ_GroupedAction : ScriptedUserAction
 	string MenuTitle(IEntity owner)
 	{
 		return "Options";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Can't be done now: a locked row in the object menu, with the full reason (said in the status
+	//! line when it's picked) and a short tag in capitals (NEEDS POWER). By default the action's own
+	//! CanBePerformed and reason (RZ_ObjectStatus.TagFor). Server only.
+	bool Locked(IEntity user, out string reason, out string tag)
+	{
+		if (CanBePerformed(user))
+			return false;
+
+		reason = GetCannotPerformReason();
+		tag = RZ_ObjectStatus.TagFor(reason);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The object menu's status strip when this action opens it: tiles, hint and a label over the
+	//! read (RZ_ObjectStatus). None by default. Server only.
+	void MenuStatus(IEntity owner, IEntity user, RZ_ObjectStatus status)
+	{
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -485,11 +507,21 @@ class RZ_ObjectScreen
 		s_mText.Find(playerId, text);
 		array<string> parts = {};
 		RZ_UIText.Split(head, RZ_UIText.SEP, parts);
+
+		// The status strip: the thing's tiles, what would change them, and a label over the read
+		array<RZ_GroupedAction> members = {};
+		RZ_ActionMenus.Members(owner, user, members);
+		RZ_ObjectStatus st = new RZ_ObjectStatus();
+		RZ_ObjectStatus.Fill(owner, user, playerId, RZ_ActionMenus.Opener(members), st);
+
 		string payload = "O" + RZ_UIText.SEP + serial.ToString() + RZ_UIText.SEP + RZ_UIText.Clean(RZ_UIText.Str(parts, 0), 80)
 			+ RZ_UIText.SEP + RZ_UIText.Clean(RZ_UIText.Str(parts, 1), 80) + RZ_UIText.SEP + Flat(text, 1400)
 			+ RZ_UIText.SEP + Flat(status, 500) + RZ_UIText.SEP + RZ_UIText.Clean(working, 60)
 			+ RZ_UIText.SEP + RZ_Util.RoundToInt(left).ToString() + RZ_UIText.SEP + RZ_Util.RoundToInt(total).ToString();
+		payload += RZ_UIText.SEP + RZ_UIText.Clean(st.m_sReadLabel, 60) + RZ_UIText.SEP + RZ_UIText.Clean(st.m_sHint, 120);
+		payload += st.Records();
 
+		// The rows: one it can't do now is locked, with its full reason and a short tag
 		array<RZ_GroupedAction> rows = {};
 		Rows(owner, user, rows);
 		foreach (int i, RZ_GroupedAction ga : rows)
@@ -498,14 +530,14 @@ class RZ_ObjectScreen
 			if (!ga.Label(label))
 				label = ga.GetActionName();
 
-			int on = 0;
+			int on = 1;
 			string reason = "";
-			if (ga.CanBePerformed(user))
-				on = 1;
-			else
-				reason = ga.GetCannotPerformReason();
+			string tag = "";
+			if (ga.Locked(user, reason, tag))
+				on = 0;
 
-			payload += "\nR" + RZ_UIText.SEP + i.ToString() + RZ_UIText.SEP + RZ_UIText.Clean(label, 90) + RZ_UIText.SEP + on.ToString() + RZ_UIText.SEP + RZ_UIText.Clean(reason, 60);
+			payload += "\nR" + RZ_UIText.SEP + i.ToString() + RZ_UIText.SEP + RZ_UIText.Clean(label, 90) + RZ_UIText.SEP + on.ToString()
+				+ RZ_UIText.SEP + RZ_UIText.Clean(reason, 200) + RZ_UIText.SEP + RZ_UIText.Clean(tag, 16);
 		}
 
 		ui.SendPayload(RZ_UIFeed.PAYLOAD_OBJECT, payload);
@@ -553,10 +585,13 @@ class RZ_ObjectScreen
 		if (index < 0 || index >= rows.Count())
 			return;
 
+		// A locked row does nothing: its full reason goes to the status line
 		RZ_GroupedAction row = rows[index];
-		if (!row.CanBePerformed(user))
+		string reason;
+		string tag;
+		if (row.Locked(user, reason, tag))
 		{
-			Send(gm, playerId, row.GetCannotPerformReason());
+			Send(gm, playerId, reason);
 			return;
 		}
 

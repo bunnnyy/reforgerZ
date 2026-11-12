@@ -778,50 +778,55 @@ lock is the door-lock icon from the imageset.
 
 ## Crafting screen: `RZ_CraftMenu.layout` and `RZ_CraftRow.layout`
 
-The crafting screen at a workbench (`RZ_CraftMenu` preset), from `UI/Mockups/crafting.html`.
-Written as text. Positions inside `CraftPanel` are from its top left.
+The crafting screen at a workbench (`RZ_CraftMenu` preset), from `UI/Mockups/crafting.html`, and the
+cooking screen at a stove (its strip from the author's pick of the mockups on the design canvas).
+Written as text. Positions inside `CraftPanel` are from its top left; inside `CraftBody`, from its top left.
 
 ```
 Frame (root, full screen)
 ├─ Image   Dim             full screen, #08090A at 60%
-└─ Frame   CraftPanel      1,600 × 880, centred
-   ├─ Image  (CraftBg)      #121416
+└─ Frame   CraftPanel      1,600 × 960, centred; the script makes it 858 tall when there's no strip (a workbench)
+   ├─ Image  (CraftPanelBg) #121416
    ├─ Image  (CraftAccent)  full width × 5, top edge, amber
-   ├─ Text   CraftTitle     at (48, 28), condensed bold 36, bone ("Workbench")
-   ├─ Text   CraftSub       at (48, 74), regular 22, dim (what the bench looks like)
+   ├─ Text   CraftTitle     at (48, 28), condensed bold 36, bone ("Workbench", "Stove")
+   ├─ Text   CraftTown      at (48, 74), regular 22, dim: the town (hidden when empty)
+   ├─ Text   CraftSub       at (48, 104), regular 22, dim (what the bench or stove looks like)
    ├─ Text   CraftReady     right-aligned, ending at (1,472, 44), regular 24, bone ("You can make 3 of 8")
    ├─ Button CloseButton    44 × 44 at (1,508, 30), "X" in amber
-   ├─ Image  (HeadRule)     at (48, 112), 1,504 × 2, amber
-   ├─ Text   (RecipesLabel) at (48, 132), mono bold 18, dim, "RECIPES"
-   ├─ Frame  (RecipeList)   at (48, 166), 820 × 594, #0F1113
-   │  ├─ ScrollLayout RecipeScroll  fills it (the pad's up/down keep the selected row in view)
-   │  │  └─ SizeLayout (RecipeWidth) 820 wide
-   │  │     └─ VerticalLayout Recipes   the recipe rows
-   │  └─ Text  RecipesEmpty  centred, regular 24, dim, "Nothing set up to make anything."
-   ├─ Frame  Details        at (900, 132), 652 × 628, hidden when nothing is selected
-   │  ├─ Frame  (PreviewBox)  652 × 240
-   │  │  ├─ Image  (PreviewBg)     #0F1113
-   │  │  ├─ Image  (PreviewFloor)  the bottom 50, #16191C
-   │  │  ├─ Frame  PreviewSlot     fills the box: the script makes the item preview in it
-   │  │  ├─ Panel  (PreviewLine)   border #22262A
-   │  │  └─ Text   (PreviewLabel)  at (16, 12), mono bold 18, faint, "WHAT YOU MAKE"
-   │  ├─ Text   DetailName    at (0, 252), condensed bold 32
-   │  ├─ Text   DetailDesc    at (0, 296), 652 × 102, regular 22, #D9D2BE, wraps: its description and weight
-   │  ├─ Text   (TakesLabel)  at (0, 402), mono bold 18, dim, "IT TAKES"
-   │  ├─ Frame  Input0 … Input2  652 × 40 each at (0, 432 + 42 × N), hidden when the recipe has fewer inputs
-   │  │  ├─ Image  InputNBar     5 × 28 at (0, 6), olive when you have it, red when you don't
-   │  │  ├─ Text   InputNName    at (20, 4), 360 wide, regular 24, bone ("Empty tin")
-   │  │  ├─ Text   InputNCount   right-aligned at (380, 6), 130 wide, mono 22, dim ("1 of 2")
-   │  │  └─ Text   InputNState   right-aligned at (522, 6), 130 wide, mono bold 20: HAVE (olive) or MISSING (red)
-   │  ├─ Text   DetailTime    at (0, 562), 400 wide, mono bold 22, amber ("About 8 seconds at the bench", "Working... 6 s")
-   │  ├─ ProgressBar CraftProgress  at (0, 594), 380 × 6, amber, shown while the work is under way
-   │  ├─ Text   DetailNoise   at (0, 602), 400 wide, regular 20, dim ("Some hammering. It carries a little.")
-   │  └─ Button CraftButton   240 × 60 at (412, 562)
-   │     └─ Overlay: Image CraftBg (amber when it can go; #1B1F22 otherwise) and
-   │        Text CraftText (condensed bold 26, "CRAFT": dark on amber, faint otherwise)
-   ├─ Text   CraftStatus    at (48, 772), 1,504 wide, regular 22, #F4F0E6, wraps: what the last pick said (hidden when empty)
-   ├─ HorizontalLayout Prompts  at (48, 822): the footer prompts the script makes
-   └─ Text   PromptsText    the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+   ├─ Image  (HeadRule)     at (48, 142), 1,504 × 2, amber
+   ├─ Frame  StatusStrip    at (48, 160), 1,504 × 84, hidden: a stove's tiles, Tile0 … Tile3 364 wide at x = 380 × N (the tile: Object menu below)
+   └─ Frame  CraftBody      at (0, 262), 1,600 × 686; the script moves it to (0, 160) when there's no strip
+      ├─ Text   (RecipesLabel) at (48, 0), mono bold 18, dim, "RECIPES"
+      ├─ Frame  (RecipeList)   at (48, 34), 820 × 550, #0F1113
+      │  ├─ ScrollLayout RecipeScroll  fills it (the pad's up/down keep the selected row in view)
+      │  │  └─ SizeLayout (RecipeWidth) 820 wide
+      │  │     └─ VerticalLayout Recipes   the recipe rows
+      │  └─ Text  RecipesEmpty  centred, regular 24, dim, "Nothing set up to make anything."
+      ├─ Frame  Details        at (900, 0), 652 × 584, hidden when nothing is selected
+      │  ├─ Frame  (PreviewBox)  652 × 200
+      │  │  ├─ Image  (PreviewBg)     #0F1113
+      │  │  ├─ Image  (PreviewFloor)  the bottom 50, #16191C
+      │  │  ├─ Frame  PreviewSlot     fills the box: the script makes the item preview in it
+      │  │  ├─ Panel  (PreviewLine)   border #22262A
+      │  │  └─ Text   (PreviewLabel)  at (16, 12), mono bold 18, faint, "WHAT YOU MAKE"
+      │  ├─ Text   DetailName    at (0, 210), condensed bold 32
+      │  ├─ Text   DetailDesc    at (0, 252), 652 × 78, regular 22, #D9D2BE, wraps: its description and weight
+      │  ├─ Text   (TakesLabel)  at (0, 334), mono bold 18, dim, "IT TAKES"
+      │  ├─ Frame  Input0 … Input2  652 × 40 each at (0, 362 + 42 × N), hidden when the recipe has fewer inputs
+      │  │  ├─ Image  InputNBar     5 × 28 at (0, 6), olive when you have it, red when you don't
+      │  │  ├─ Text   InputNName    at (20, 4), 360 wide, regular 24, bone ("Empty tin")
+      │  │  ├─ Text   InputNCount   right-aligned at (380, 6), 130 wide, mono 22, dim ("1 of 2"; hidden at a stove)
+      │  │  └─ Text   InputNState   right-aligned at (522, 6), 130 wide, mono bold 20: HAVE (olive) or MISSING (red); at a stove "1 / 1" in the same colours
+      │  ├─ Text   DetailLit     at (0, 490), 400 wide, regular 22: at a stove only, "A lit stove: YES" (olive) or "...: NO, you'll light it" (dim)
+      │  ├─ Text   DetailTime    at (0, 524), 400 wide, mono bold 22, amber ("About 8 seconds at the bench", "Working... 6 s")
+      │  ├─ ProgressBar CraftProgress  at (0, 554), 380 × 4, amber, shown while the work is under way
+      │  ├─ Text   DetailNoise   at (0, 558), 400 wide, regular 20, dim ("Some hammering. It carries a little.")
+      │  └─ Button CraftButton   240 × 60 at (412, 520)
+      │     └─ Overlay: Image CraftBg (amber when it can go; #1B1F22 otherwise) and
+      │        Text CraftText (condensed bold 26, "CRAFT": dark on amber, faint otherwise)
+      ├─ Text   CraftStatus    at (48, 594), 1,504 wide, regular 22, #F4F0E6, wraps: what the last pick said (hidden when empty)
+      ├─ HorizontalLayout Prompts  at (48, 640): the footer prompts the script makes (its first, A, takes the button's verb and dims with it)
+      └─ Text   PromptsText    at (48, 646), mono bold 18, dim: the static footer, hidden once prompts are made
 ```
 
 The picture is vanilla's `ItemPreviewWidget`, made by the script inside `PreviewSlot`
@@ -839,13 +844,13 @@ Button RecipeRow (root, 4 below it)
       └─ HorizontalLayout (RecipeLine)  padding 22 left and right, centred vertically
          ├─ Image  RecipeIcon    32 × 32, the recipe's item_* icon (set by code), hidden without one or without the imageset
          ├─ Text   RecipeName    regular 26, fills the row (bright on the selected row, faint when you're short)
-         ├─ Text   RecipeState   mono bold 20, right: READY (olive), "2 MISSING" (dim) or WORKING (amber)
+         ├─ Text   RecipeState   mono bold 20, right: READY (olive), "2 MISSING" (dim) or WORKING (amber); at a stove "SHORT 1" (red) or NONE (dim) instead of MISSING
          └─ Text   RecipeTime    mono bold 22, amber, right ("8 s")
 ```
 
 The cooking screen at a stove ([UI.md](../docs/UI.md#the-cooking-screen)) is this layout too: **UI >
 Cook row layout** can name `RZ_CraftRow.layout`. The script sets `CraftText` to the picked row's verb
-(CRAFT, BOIL, BREW, COOK) and the header and detail texts; no widget is added.
+(CRAFT, BOIL, BREW, COOK), the header and detail texts, and at a stove the status strip and `DetailLit`.
 
 ## Radio screen: `RZ_RadioMenu.layout` and `RZ_RadioChannel.layout`
 
@@ -902,32 +907,46 @@ Four channel rows show at once; the rest scroll.
 
 The object menu on props and places (`RZ_ObjectMenu` preset; behaviour in
 [UI.md](../docs/UI.md#the-object-menu)), in the crafting screen's style. Written as text (by a small
-generator, from the crafting screen's widgets); no mockup. Positions inside `ObjectPanel` are from
-its top left.
+generator, from the crafting screen's widgets); the strip, the read's label and the locked rows from
+the author's pick of the mockups on the design canvas. Positions inside `ObjectPanel` are from its
+top left; inside `ObjectBody`, from its top left.
 
 ```
 Frame (root, full screen)
 ├─ Image   Dim             full screen, #08090A at 60%
-└─ Frame   ObjectPanel     1,200 × 860, centred
+└─ Frame   ObjectPanel     1,200 × 940, centred; the script makes it 810 tall when there's no strip
    ├─ Image  (ObjectBg)     #0F1113
    ├─ Image  (ObjectAccent) full width × 5, top edge, amber
    ├─ Text   ObjectTitle    at (48, 30), 960 wide, condensed bold 34, bone ("Stove", "Ask the quartermaster")
    ├─ Text   ObjectSub      at (48, 76), regular 22, dim: the town (hidden when empty)
    ├─ Button CloseButton    44 × 44 at (1,108, 30), "X" in amber
    ├─ Image  (HeadRule)     at (48, 116), 1,104 × 2, amber
-   ├─ Text   ObjectText     at (48, 134), 1,104 × 176, regular 24, #D9D2BE, wraps: what you see (hidden when empty)
-   ├─ Text   ObjectWorking  at (48, 318), mono bold 22, amber: "Busy with the boiling... 12 s" (hidden when nothing's under way)
-   ├─ ProgressBar ObjectProgress  at (48, 352), 400 × 6, amber, shown with it
-   ├─ Text   (OptionsLabel) at (48, 372), mono bold 18, dim, "WHAT YOU CAN DO"
-   ├─ Frame  (OptionList)   at (48, 404), 1,104 × 336, #0C0E0F
-   │  ├─ ScrollLayout OptionScroll  fills it (the pad's up/down keep the selected row in view)
-   │  │  └─ SizeLayout (OptionWidth) 1,104 wide
-   │  │     └─ VerticalLayout Options   the option rows
-   │  └─ Text  OptionsEmpty  centred, regular 24, dim, "Nothing you can do here right now."
-   ├─ Text   ObjectStatus   at (48, 752), 1,104 wide, regular 22, #F4F0E6, wraps: what the last pick said (hidden when empty)
-   ├─ HorizontalLayout Prompts  at (48, 806): the footer prompts the script makes
-   └─ Text   PromptsText    the same place, mono bold 18, dim: the static footer, hidden once prompts are made
+   ├─ Frame  StatusStrip    at (48, 132), 1,104 × 84, hidden when the thing has no tiles
+   │  └─ Frame  Tile0 … Tile3  264 × 84 each at (280 × N, 0), hidden past the thing's last tile
+   │     ├─ Image  (TileNBg)    fills it, #2A2D30
+   │     ├─ Text   TileNLabel   at (16, 8), mono bold 18, #B8B2A3 ("POWER")
+   │     ├─ Image  TileNLamp    12 × 12 at (16, 47), the state's colour
+   │     ├─ Text   TileNValue   at (38, 36), mono bold 24, the state's lighter colour ("OFF", "BOILED WATER · 12 S")
+   │     └─ Image  TileNBar     the bottom 4, full width, the state's colour
+   ├─ Text   StatusHint     at (48, 222), 1,104 wide, regular 20, dim: what would change it (hidden when empty)
+   └─ Frame  ObjectBody     at (0, 262), 1,200 × 664; the script moves it to (0, 132) when there's no strip
+      ├─ Text   ObjectReadLabel  at (48, 0), mono bold 18, dim: over the read ("LAST HEARD · BASTION"), hidden when empty
+      ├─ Text   ObjectText     at (48, 30), 1,104 × 150, regular 24, #D9D2BE, wraps: what you see (hidden when empty)
+      ├─ Text   ObjectWorking  at (48, 186), mono bold 22, amber: "Busy with the boiling... 12 s" (hidden when nothing's under way)
+      ├─ ProgressBar ObjectProgress  at (48, 220), 400 × 6, amber, shown with it
+      ├─ Text   (OptionsLabel) at (48, 232), mono bold 18, dim, "WHAT YOU CAN DO"
+      ├─ Frame  (OptionList)   at (48, 262), 1,104 × 300, #0C0E0F
+      │  ├─ ScrollLayout OptionScroll  fills it (the pad's up/down keep the selected row in view)
+      │  │  └─ SizeLayout (OptionWidth) 1,104 wide
+      │  │     └─ VerticalLayout Options   the option rows
+      │  └─ Text  OptionsEmpty  centred, regular 24, dim, "Nothing you can do here right now."
+      ├─ Text   ObjectStatus   at (48, 572), 1,104 wide, regular 22, #F4F0E6, wraps: what the last pick said, or a locked row's reason (hidden when empty)
+      ├─ HorizontalLayout Prompts  at (48, 622): the footer prompts the script makes (its first, A, dims on a locked row)
+      └─ Text   PromptsText    at (48, 628), mono bold 18, dim: the static footer, hidden once prompts are made
 ```
+
+The cooking screen's `StatusStrip` is the same, with tiles 364 wide (UI.md has the
+[states and colours](../docs/UI.md#the-status-strip-and-locked-rows)).
 
 `RZ_ObjectRow.layout` (**UI > Object row layout**), one option, created into `Options`. The root is
 a `Button` named `OptionRow` (a click does it):
@@ -939,11 +958,14 @@ Button OptionRow (root, 4 below it)
       ├─ Image  OptionBg         #1B1F22, shown on the selected row
       ├─ Image  OptionBar        5 × 56, left edge, amber, shown on the selected row
       └─ HorizontalLayout (OptionLine)  padding 22 left and right, centred vertically
-         ├─ Text   OptionName    regular 26, fills the row (bright on the selected row, faint when it can't be done now)
-         └─ Text   OptionNeed    mono bold 20, dim, right: why it can't be done now ("No samples"), hidden otherwise
+         ├─ Image  OptionLock    24 × 24, faint, 12 right of it: `status_door_locked` (set by code) on a locked row, hidden otherwise and without the imageset
+         ├─ Text   OptionName    regular 26, fills the row (bright on the selected row, faint when it's locked)
+         └─ Overlay OptionTag    right, 16 left of it, hidden unless the row is locked
+            ├─ Image  (OptionTagBg)  fills it, hazard #F2C230
+            └─ Text   OptionNeed     mono bold 20, #141414, padding 10 by 3: the tag ("NEEDS POWER")
 ```
 
-Six options show at once; more scroll (a keypad's twelve keys).
+Five options show at once; more scroll (a keypad's twelve keys).
 
 ## Power panel: `RZ_PowerMenu.layout` and `RZ_PowerBreaker.layout`
 

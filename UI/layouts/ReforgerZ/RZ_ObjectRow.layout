@@ -53,6 +53,17 @@ ButtonWidgetClass "{A9B42434AD9AEBFD}" {
         Padding 22 0 22 0
        }
        {
+        ImageWidgetClass "{1D3AEFE2C14728D4}" {
+         Name "OptionLock"
+         Slot LayoutSlot "{F1B4C8CFA3DA807D}" {
+          HorizontalAlign 0
+          VerticalAlign 1
+          Padding 0 0 12 0
+         }
+         "Is Visible" 0
+         Color 0.431 0.416 0.376 1
+         Size 24 24
+        }
         TextWidgetClass "{7EEEDC010852889D}" {
          Name "OptionName"
          Slot LayoutSlot "{FB681B85397DC718}" {
@@ -69,20 +80,39 @@ ButtonWidgetClass "{A9B42434AD9AEBFD}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
          }
         }
-        TextWidgetClass "{D4EF27DFF500CDE4}" {
-         Name "OptionNeed"
+        OverlayWidgetClass "{E3B307AEBECDB309}" {
+         Name "OptionTag"
          Slot LayoutSlot "{A41D36F586D63644}" {
           HorizontalAlign 2
           VerticalAlign 1
           Padding 16 0 0 0
          }
          "Is Visible" 0
-         Color 0.639 0.62 0.565 1
-         Text "No samples"
-         "Font Size" 20
-         "Min Font Size" 20
-         FontProperties FontProperties "{0B1347D1D889AD76}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         {
+          ImageWidgetClass "{70527D6B3E8F0DB1}" {
+           Name "OptionTagBg"
+           Slot OverlayWidgetSlot "{FD812A4DDFB0A568}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           Color 0.949 0.761 0.188 1
+           Size 1 1
+          }
+          TextWidgetClass "{D4EF27DFF500CDE4}" {
+           Name "OptionNeed"
+           Slot OverlayWidgetSlot "{073036D913770026}" {
+            HorizontalAlign 1
+            VerticalAlign 1
+            Padding 10 3 10 3
+           }
+           Color 0.078 0.078 0.078 1
+           Text "NEEDS POWER"
+           "Font Size" 20
+           "Min Font Size" 20
+           FontProperties FontProperties "{0B1347D1D889AD76}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
          }
         }
        }

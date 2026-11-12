@@ -1296,7 +1296,9 @@ in `UI/layouts/ReforgerZ/`.
    5. **The object menu** (to do). Add `MenuPreset RZ_ObjectMenu` to
       `Configs/System/chimeraMenus.conf` (layout `RZ_ObjectMenu.layout`, class `RZ_ObjectMenu`, as
       the `RZ_CraftMenu` entry), set **UI > Object row layout** to `RZ_ObjectRow.layout`, and open
-      both layouts in the layout editor once. Empty the slot and every stove, generator, house
+      both layouts in the layout editor once: at 1920×1080 the four status tiles sit under the
+      title, the body (`ObjectBody`) under them and the footer inside the 1,200 × 940 panel, and a
+      row's yellow tag chip (`OptionTag`) hugs its text. Empty the slot and every stove, generator, house
       radio, well, puzzle object, safehouse service and the like keeps its world prompts; with the
       slot set and the preset missing, the first use shows what the thing is as a card, and its
       prompts come back for that player.
@@ -1307,7 +1309,9 @@ in `UI/layouts/ReforgerZ/`.
       above the footer. **UI > Death brief** is on by default; there's no layout slot. Without the
       preset, a death shows the same lines as a notice card.
    7. **The cooking screen** (to do). It's the crafting screen at a stove: no preset of its own.
-      Set **UI > Cook row layout** to `RZ_CraftRow.layout`. Empty, a stove keeps **Look at the
+      Set **UI > Cook row layout** to `RZ_CraftRow.layout`, and open `RZ_CraftMenu.layout` in the
+      layout editor once: the stove's status strip (`StatusStrip`, hidden; show it to look) sits
+      under the header, and the body (`CraftBody`) and its footer fit the 1,600 × 960 panel. Empty, a stove keeps **Look at the
       stove** and its Boil, Brew and Cook actions (in the object menu). For a cookable, add a
       **Stove recipe** under **Interactions > Crafting**: first input Metabolism's raw meat by a
       keyword of its prefab name, output its cooked meat, 20 to 40 seconds (none by default; check
@@ -1806,8 +1810,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **141** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 30 are in `UI/`: 25 of [the UI's](#the-ui-28), the loadout
+There are **143** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 32 are in `UI/`: 27 of [the UI's](#the-ui-30), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/` and two are the radio screen's in `Interactions/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1816,7 +1820,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-28)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-30)
 come last.
 
 ### High risk: the core loop (2)
@@ -1939,7 +1943,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerSite.c:357` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
 | `World/RZ_PowerSite.c:371` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
 
-### The UI (28)
+### The UI (30)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -1963,7 +1967,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
 | `UI/RZ_UIData.c:1004` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `UI/RZ_UIData.c:1143` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrows (its page indicator and the ▼ at the end of their line) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
-| `Dialogue/RZ_Dialogue.c:949` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:951` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:185` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
@@ -1977,6 +1981,8 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
 | `UI/RZ_UIData.c:1084` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
+| `UI/RZ_ObjectMenu.c:275` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
+| `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
 
 ## 7. Log lines to check
 
@@ -2502,18 +2508,37 @@ session, tick off:
   (the services are its replies); with **UI > Talk reply layout** empty: **Trade**, **Talk to
   whoever's in charge** and one **Ask the quartermaster** with the leader's asks and the
   safehouse's services; at the lab, Deliver
-  infected samples dim with "No samples" when you carry none. The notebook item on the ground: one
+  infected samples locked with NO SAMPLES when you carry none. The notebook item on the ground: one
   **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
   bite and Douse the doorway are still single prompts. An infected closing in shuts it. Text reads
   from the sofa on a TV. Empty the slot: every prompt is back.
+- [ ] The status strip and locked rows, with a pad and on a TV ([UI.md](UI.md#the-status-strip-and-locked-rows)):
+  at a house radio with no generator near, as a player who isn't a Radio Operator, the object menu
+  shows four tiles under the title: POWER OFF (red bar), RECEIVE ON (olive), TRANSMIT NO (red),
+  SIGNAL WEAK or STRONG, and under them "A running generator within 40 m would power it."; the
+  read's line sits under "LAST HEARD · " and a channel. **Work on a scrambled channel** is dim with
+  a lock and OPERATOR ONLY on a yellow chip, **Call on the open channel** NEEDS POWER. The D-pad
+  still stops on them (amber bar, lighter fill), the footer's A dims there, and A puts the full
+  sentence ("No power. It'll hear the channel...") in the line under the list without anything
+  happening. Start a generator within 40 m and open the radio again: POWER ON, TRANSMIT YES and the
+  call row unlocked. At the generator: ENGINE, FUEL (~N MIN or EMPTY) and YOUR CAN; with no fuel on
+  you Refuel says NEEDS FUEL. A thing with no tiles (a puzzle object, the quartermaster's asks) has
+  no strip and the panel is shorter, still centred (VERIFY `UI/RZ_ObjectMenu.c:275`). From the sofa:
+  the tiles' labels and values read, the chip's words read, nothing sits outside the panel.
 - [ ] The cooking screen, with a pad (**UI > Cook row layout** set): at a stove only **Use the
-  stove** shows; it opens the crafting screen headed "Stove" with Boiled water, Home remedy and the
-  stove recipes. With untreated water in your pack Boiled water is READY and the button says BOIL;
-  A starts it (the row says WORKING, a bar counts down), and when it's done the bottle is clean and
-  the status line says so. Home remedy says BREW and shows what's missing; a stove recipe (with one
-  set) says COOK and gives its output. B closes it; work under way goes on while you stay. Empty
-  the slot: **Look at the stove** and the object menu with Boil water, Brew a home remedy and
-  **Cook:** are back.
+  stove** shows; it opens the crafting screen headed "Stove", the town and the stove's line, with the
+  strip under it: FIRE COLD, FUEL ENOUGH, ON THE HOB EMPTY. Boiled water, Home remedy and the stove
+  recipes are listed with READY (olive), SHORT 1 (red) or NONE (dim). With untreated water in your
+  pack Boiled water is READY, IT TAKES says "1 / 1" in olive, "A lit stove: NO, you'll light it",
+  and the button and the footer say BOIL and "A Boil"; A starts it: FIRE LIT, ON THE HOB "BOILED
+  WATER · 30 S" counting down, the row says WORKING and a bar counts down, and when it's done the
+  bottle is clean, the strip is cold and empty again and the status line says so. Home remedy says
+  BREW, its inputs in red when short, and the button and the footer's A are dimmed. A stove recipe
+  (with one set) says COOK and gives its output. B closes it; work under way goes on while you stay.
+  At a workbench there's no strip and the panel is shorter, still centred (VERIFY
+  `UI/RZ_CraftMenu.c:384`). Empty the slot: **Look at the stove** and the object menu with the same
+  three tiles and Boil water, Brew a home remedy and **Cook:** (locked with NEEDS WATER or SHORT N
+  when you're short) are back.
 - [ ] The radio screen, with a pad (**UI > Radio channel layout** set): the wind-up radio on the
   ground shows **View radio**; in hand, hold it up and look at it (vanilla's inspection): View radio
   shows beside Turn on/off (VERIFY `Interactions/RZ_RadioScreen.c:37` and `:54`). It opens the radio

@@ -90,11 +90,18 @@ class RZ_SecureRadio
 {
 	protected static const float ANCHOR_RADIUS = 30;
 
+	// Why a crack can't start (StartCrack, and the object menu's locked row: CrackLock)
+	protected static const string NOT_OPERATOR = "Under the static there's a voice, chopped into pieces. Someone who knew radios could put it back together. You can't.";
+	protected static const string LISTENING = "You're already on a cracked channel. Keep listening.";
+	protected static const string NOTHING_NEAR = "Nothing scrambled in range. Get closer to somewhere a faction holds.";
+	protected static const string TOO_LOUD = "Too loud here to hear a scrambled channel. Find somewhere quiet.";
+
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
 	protected RZ_RadioCrackSettings m_Settings;
 	protected ref array<ref RZ_Listener> m_aListeners = {};
 	protected ref array<string> m_aHouseWords = {};
+	protected ref map<int, int> m_mHeardOn = new map<int, int>();	// player -> the open channel their last Listen caught (-1: only the broadcast)
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_SecureRadio(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_RadioCrackSettings settings)
@@ -152,11 +159,131 @@ class RZ_SecureRadio
 	//! "Listen to the radio": one thing on the air right now.
 	void ListenHouseRadio(int playerId, RZ_Spot s, IEntity user)
 	{
-		string line = OpenLine(-1);
+		int heardOn = -1;
+		string line = AnyOpenLine(heardOn);
 		if (line.IsEmpty())
 			line = "Static, and under it the same government recording, over and over.";
 
+		m_mHeardOn.Set(playerId, heardOn);
 		m_GM.NotifyPlayer(playerId, "Radio", line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The object menu's status strip on a house radio (RZ_ObjectStatus): POWER, RECEIVE, TRANSMIT
+	//! and SIGNAL, what power would change, and which channel the read caught.
+	void HouseRadioStatus(int playerId, RZ_Spot s, notnull RZ_ObjectStatus st)
+	{
+		bool powered = RZ_PowerGrid.IsPoweredAt(s.m_vPos);
+		if (powered)
+			st.Add("POWER", "ON", RZ_ObjectStatus.STATE_OK);
+		else
+			st.Add("POWER", "OFF", RZ_ObjectStatus.STATE_OFF);
+
+		// Batteries hear the channels; only power carries a voice (RZ_DialogueNets.CanCall)
+		st.Add("RECEIVE", "ON", RZ_ObjectStatus.STATE_OK);
+		IEntity houseSet;
+		if (s.m_Comp)
+			houseSet = s.m_Comp.GetOwner();
+
+		bool calls = RZ_Dialogue.IsOn() && RZ_DialogueSettings.Get().m_bTrees;
+		if (calls && RZ_DialogueNets.CanCall(houseSet))
+			st.Add("TRANSMIT", "YES", RZ_ObjectStatus.STATE_OK);
+		else if (calls)
+			st.Add("TRANSMIT", "NO", RZ_ObjectStatus.STATE_OFF);
+		else
+			st.Add("TRANSMIT", "NO", RZ_ObjectStatus.STATE_DIM);
+
+		// The open channels it pulls in now: all with power, two on batteries (as Tune)
+		int onAir = 0;
+		array<int> order = {RZ_EFaction.SURVIVORS, RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, RZ_EFaction.INSTITUTE};
+		foreach (int f : order)
+		{
+			if (!OpenLine(f).IsEmpty())
+				onAir++;
+		}
+
+		int heard = onAir;
+		if (!powered)
+			heard = Math.Min(onAir, 2);
+
+		if (heard >= 3)
+			st.Add("SIGNAL", "STRONG", RZ_ObjectStatus.STATE_OK);
+		else if (heard > 0)
+			st.Add("SIGNAL", "WEAK", RZ_ObjectStatus.STATE_PART);
+		else
+			st.Add("SIGNAL", "NONE", RZ_ObjectStatus.STATE_OFF);
+
+		if (!powered)
+			st.m_sHint = string.Format("A running generator within %1 m would power it.", RZ_Util.RoundToInt(m_Hub.GetTraps().PowerRadius()));
+
+		int last;
+		if (!m_mHeardOn.Find(playerId, last))
+			return;
+
+		string channel = "THE BROADCAST";
+		if (last >= 0)
+			channel = RZ_Factions.GetShortName(last);
+
+		channel.ToUpper();
+		st.m_sReadLabel = "LAST HEARD · " + channel;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A house radio's option `option` can't be done now: what HandleHouseRadio would say instead,
+	//! and the tag (RZ_ObjectStatus.SpotLock asks after work under way).
+	bool HouseRadioLock(int playerId, RZ_Spot s, int option, IEntity user, out string reason, out string tag)
+	{
+		if (option == 1)
+			return CrackLock(playerId, user, reason, tag);
+
+		if (option != 2)
+			return false;
+
+		IEntity houseSet;
+		if (s.m_Comp)
+			houseSet = s.m_Comp.GetOwner();
+
+		if (RZ_DialogueNets.CanCall(houseSet))
+			return false;
+
+		reason = RZ_Dialogue.NO_POWER;
+		tag = "NEEDS POWER";
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Cracking a channel here can't start now: StartCrack's own refusals, in its order.
+	protected bool CrackLock(int playerId, IEntity user, out string reason, out string tag)
+	{
+		if (!RZ_Radio.IsRadioOperator(m_GM, playerId))
+		{
+			reason = NOT_OPERATOR;
+			tag = "OPERATOR ONLY";
+			return true;
+		}
+
+		if (IsListening(playerId))
+		{
+			reason = LISTENING;
+			tag = "LISTENING";
+			return true;
+		}
+
+		if (PickFaction(user.GetOrigin()) < 0)
+		{
+			reason = NOTHING_NEAR;
+			tag = "NO CHANNEL";
+			return true;
+		}
+
+		if (IsTooNoisy(user.GetOrigin()))
+		{
+			reason = TOO_LOUD;
+			tag = "TOO LOUD";
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -237,13 +364,30 @@ class RZ_SecureRadio
 		if (f >= 0)
 			return life.ChatterFor(f);
 
+		int any;
+		return AnyOpenLine(any);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line on any open channel, from a random one on; `faction` the channel it came from (-1: none).
+	protected string AnyOpenLine(out int faction)
+	{
+		faction = -1;
+		RZ_FactionLife life = m_GM.GetFactionLife();
+		if (!life || !life.IsActive())
+			return "";
+
 		array<int> order = {RZ_EFaction.SURVIVORS, RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, RZ_EFaction.INSTITUTE};
 		int start = Math.RandomInt(0, order.Count());
 		for (int i = 0; i < order.Count(); i++)
 		{
-			string line = life.ChatterFor(order[(start + i) % order.Count()]);
+			int f = order[(start + i) % order.Count()];
+			string line = life.ChatterFor(f);
 			if (!line.IsEmpty())
+			{
+				faction = f;
 				return line;
+			}
 		}
 
 		return "";
@@ -287,7 +431,7 @@ class RZ_SecureRadio
 
 		if (!RZ_Radio.IsRadioOperator(m_GM, playerId))
 		{
-			m_GM.NotifyPlayer(playerId, "Radio", "Under the static there's a voice, chopped into pieces. Someone who knew radios could put it back together. You can't.");
+			m_GM.NotifyPlayer(playerId, "Radio", NOT_OPERATOR);
 			return;
 		}
 
@@ -296,7 +440,7 @@ class RZ_SecureRadio
 
 		if (IsListening(playerId))
 		{
-			m_GM.NotifyPlayer(playerId, "Radio", "You're already on a cracked channel. Keep listening.");
+			m_GM.NotifyPlayer(playerId, "Radio", LISTENING);
 			return;
 		}
 
@@ -306,13 +450,13 @@ class RZ_SecureRadio
 		int f = PickFaction(user.GetOrigin());
 		if (f < 0)
 		{
-			m_GM.NotifyPlayer(playerId, "Radio", "Nothing scrambled in range. Get closer to somewhere a faction holds.");
+			m_GM.NotifyPlayer(playerId, "Radio", NOTHING_NEAR);
 			return;
 		}
 
 		if (IsTooNoisy(user.GetOrigin()))
 		{
-			m_GM.NotifyPlayer(playerId, "Radio", "Too loud here to hear a scrambled channel. Find somewhere quiet.");
+			m_GM.NotifyPlayer(playerId, "Radio", TOO_LOUD);
 			return;
 		}
 

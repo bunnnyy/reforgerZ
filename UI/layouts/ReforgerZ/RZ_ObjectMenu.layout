@@ -40,8 +40,8 @@ FrameWidgetClass "{10A6A8538F708533}" {
     OffsetTop 0
     SizeX 1200
     OffsetRight -1200
-    SizeY 860
-    OffsetBottom -860
+    SizeY 940
+    OffsetBottom -940
     Alignment 0.5 0.5
    }
    {
@@ -190,248 +190,777 @@ FrameWidgetClass "{10A6A8538F708533}" {
      Color 0.89 0.639 0.231 1
      Size 1 1
     }
-    TextWidgetClass "{43475B3669F6AEEA}" {
-     Name "ObjectText"
-     Slot FrameWidgetSlot "{99C566075631A3D0}" {
+    FrameWidgetClass "{B258D097E7807832}" {
+     Name "StatusStrip"
+     Slot FrameWidgetSlot "{7F5F94898D39FD17}" {
       Anchor 0 0 0 0
       PositionX 48
       OffsetLeft 48
-      PositionY 134
-      OffsetTop 134
+      PositionY 132
+      OffsetTop 132
       SizeX 1104
       OffsetRight -1152
-      SizeY 176
-      OffsetBottom -310
-      Alignment 0 0
-     }
-     Color 0.851 0.824 0.745 1
-     Text "Cold, but it would light. Boiling water takes a while and smokes a little."
-     "Font Size" 24
-     "Min Font Size" 24
-     Wrap 1
-     FontProperties FontProperties "{480AF2203ADDB680}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-     }
-    }
-    TextWidgetClass "{A68C6034E5B266F2}" {
-     Name "ObjectWorking"
-     Slot FrameWidgetSlot "{B7A03DA0385009F8}" {
-      Anchor 0 0 0 0
-      PositionX 48
-      OffsetLeft 48
-      PositionY 318
-      OffsetTop 318
-      SizeX 800
-      OffsetRight -848
-      SizeY 30
-      OffsetBottom -348
+      SizeY 84
+      OffsetBottom -216
       Alignment 0 0
      }
      "Is Visible" 0
-     Color 0.89 0.639 0.231 1
-     Text "Busy with the boiling... 12 s"
-     "Font Size" 22
-     "Min Font Size" 22
-     FontProperties FontProperties "{A268700A210E8B8C}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-     }
-    }
-    ProgressBarWidgetClass "{CB30DAAB2D07E2CE}" {
-     Name "ObjectProgress"
-     Slot FrameWidgetSlot "{8AFCE2E9796A69D3}" {
-      Anchor 0 0 0 0
-      PositionX 48
-      OffsetLeft 48
-      PositionY 352
-      OffsetTop 352
-      SizeX 400
-      OffsetRight -448
-      SizeY 6
-      OffsetBottom -358
-      Alignment 0 0
-     }
-     "Is Visible" 0
-     Color 0.89 0.639 0.231 1
-     style Simple
-     Maximum 1
-     Current 0.4
-    }
-    TextWidgetClass "{8E5571161FE4753B}" {
-     Name "OptionsLabel"
-     Slot FrameWidgetSlot "{00FE932FE8E3F71B}" {
-      Anchor 0 0 0 0
-      PositionX 48
-      OffsetLeft 48
-      PositionY 372
-      OffsetTop 372
-      SizeX 600
-      OffsetRight -648
-      SizeY 26
-      OffsetBottom -398
-      Alignment 0 0
-     }
-     Color 0.639 0.62 0.565 1
-     Text "WHAT YOU CAN DO"
-     "Font Size" 18
-     "Min Font Size" 18
-     FontProperties FontProperties "{3DF95BD1898019E2}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-     }
-    }
-    FrameWidgetClass "{DCEC557EB0120AFC}" {
-     Name "OptionList"
-     Slot FrameWidgetSlot "{3FF5EEF9DC979A26}" {
-      Anchor 0 0 0 0
-      PositionX 48
-      OffsetLeft 48
-      PositionY 404
-      OffsetTop 404
-      SizeX 1104
-      OffsetRight -1152
-      SizeY 336
-      OffsetBottom -740
-      Alignment 0 0
-     }
      {
-      ImageWidgetClass "{BAC2F24A575C9837}" {
-       Name "OptionListBg"
-       Slot FrameWidgetSlot "{1E81DE38AB9EFCF1}" {
-        Anchor 0 0 1 1
-        PositionX 0
-        OffsetLeft 0
-        PositionY 0
-        OffsetTop 0
-        SizeX 0
-        OffsetRight 0
-        SizeY 0
-        OffsetBottom 0
-        Alignment 0 0
-       }
-       Color 0.047 0.055 0.059 1
-       Size 1 1
-      }
-      ScrollLayoutWidgetClass "{F71F2F1D351FCA73}" {
-       Name "OptionScroll"
-       Slot FrameWidgetSlot "{7E60F8F33B4140C6}" {
-        Anchor 0 0 1 1
-        PositionX 0
-        OffsetLeft 0
-        PositionY 0
-        OffsetTop 0
-        SizeX 0
-        OffsetRight 0
-        SizeY 0
-        OffsetBottom 0
-        Alignment 0 0
-       }
-       Color 0.431 0.416 0.376 1
-       style Small
-       {
-        SizeLayoutWidgetClass "{6FFB2A5F6E524FD5}" {
-         Name "OptionWidth"
-         Slot AlignableSlot "{8508DE5F067CFDF8}" {
-          HorizontalAlign 3
-          VerticalAlign 0
-         }
-         AllowWidthOverride 1
-         WidthOverride 1104
-         {
-          VerticalLayoutWidgetClass "{F51A41634DF4A9E1}" {
-           Name "Options"
-           Slot AlignableSlot "{8731F50F17745600}" {
-            HorizontalAlign 3
-            VerticalAlign 0
-           }
-          }
-         }
-        }
-       }
-      }
-      TextWidgetClass "{8A796C12F0C6FE91}" {
-       Name "OptionsEmpty"
-       Slot FrameWidgetSlot "{E9127E5BD6E91BA7}" {
+      FrameWidgetClass "{00F0E1DE42A6B920}" {
+       Name "Tile0"
+       Slot FrameWidgetSlot "{6CAA2DB161D6965C}" {
         Anchor 0 0 0 0
         PositionX 0
         OffsetLeft 0
-        PositionY 148
-        OffsetTop 148
-        SizeX 1104
+        PositionY 0
+        OffsetTop 0
+        SizeX 264
+        OffsetRight -264
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{24EC4FD0B2474D75}" {
+         Name "Tile0Bg"
+         Slot FrameWidgetSlot "{CE37B9D29F995664}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.165 0.176 0.188 1
+         Size 1 1
+        }
+        TextWidgetClass "{00783A2B63269CC2}" {
+         Name "Tile0Label"
+         Slot FrameWidgetSlot "{5026A98F98FCB89F}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 8
+          OffsetTop 8
+          SizeX 232
+          OffsetRight -248
+          SizeY 24
+          OffsetBottom -32
+          Alignment 0 0
+         }
+         Color 0.722 0.698 0.639 1
+         Text "POWER"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{E619D1BE74A3846F}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{09CD99B7C72E65B0}" {
+         Name "Tile0Lamp"
+         Slot FrameWidgetSlot "{6159F97BDF19C3AA}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 47
+          OffsetTop 47
+          SizeX 12
+          OffsetRight -28
+          SizeY 12
+          OffsetBottom -59
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+        TextWidgetClass "{2EA8E0A923590FF8}" {
+         Name "Tile0Value"
+         Slot FrameWidgetSlot "{BFAAEF91C1BF4E62}" {
+          Anchor 0 0 0 0
+          PositionX 38
+          OffsetLeft 38
+          PositionY 36
+          OffsetTop 36
+          SizeX 214
+          OffsetRight -252
+          SizeY 32
+          OffsetBottom -68
+          Alignment 0 0
+         }
+         Color 0.769 0.8 0.541 1
+         Text "ON"
+         "Font Size" 24
+         "Min Font Size" 24
+         FontProperties FontProperties "{BD0784AC348E65ED}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{29F2867E1FA64A87}" {
+         Name "Tile0Bar"
+         Slot FrameWidgetSlot "{6E6E3EECC2FF0AAA}" {
+          Anchor 0 1 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY -4
+          OffsetTop -4
+          SizeX 0
+          OffsetRight 0
+          SizeY 4
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+       }
+      }
+      FrameWidgetClass "{E0929F21E5E1615F}" {
+       Name "Tile1"
+       Slot FrameWidgetSlot "{8D6F9CB431A850EB}" {
+        Anchor 0 0 0 0
+        PositionX 280
+        OffsetLeft 280
+        PositionY 0
+        OffsetTop 0
+        SizeX 264
+        OffsetRight -544
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{E7633453BEE5535A}" {
+         Name "Tile1Bg"
+         Slot FrameWidgetSlot "{8DCADA56DF341055}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.165 0.176 0.188 1
+         Size 1 1
+        }
+        TextWidgetClass "{8107F767589D78D2}" {
+         Name "Tile1Label"
+         Slot FrameWidgetSlot "{CA673E43803986B6}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 8
+          OffsetTop 8
+          SizeX 232
+          OffsetRight -248
+          SizeY 24
+          OffsetBottom -32
+          Alignment 0 0
+         }
+         Color 0.722 0.698 0.639 1
+         Text "RECEIVE"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{53EC85155CD2AC30}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{0CFD328E00AEDB64}" {
+         Name "Tile1Lamp"
+         Slot FrameWidgetSlot "{2AAA97329C2EDDA5}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 47
+          OffsetTop 47
+          SizeX 12
+          OffsetRight -28
+          SizeY 12
+          OffsetBottom -59
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+        TextWidgetClass "{83AA47117890857A}" {
+         Name "Tile1Value"
+         Slot FrameWidgetSlot "{C60EDBC8E7C76CA3}" {
+          Anchor 0 0 0 0
+          PositionX 38
+          OffsetLeft 38
+          PositionY 36
+          OffsetTop 36
+          SizeX 214
+          OffsetRight -252
+          SizeY 32
+          OffsetBottom -68
+          Alignment 0 0
+         }
+         Color 0.769 0.8 0.541 1
+         Text "ON"
+         "Font Size" 24
+         "Min Font Size" 24
+         FontProperties FontProperties "{2FE36792FBD2F0CF}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{3E71F0B2E9EB47C0}" {
+         Name "Tile1Bar"
+         Slot FrameWidgetSlot "{CC6CAB7A403E0D81}" {
+          Anchor 0 1 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY -4
+          OffsetTop -4
+          SizeX 0
+          OffsetRight 0
+          SizeY 4
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+       }
+      }
+      FrameWidgetClass "{D5E41ECF6F525DAB}" {
+       Name "Tile2"
+       Slot FrameWidgetSlot "{1B91EDB5E74BC9A7}" {
+        Anchor 0 0 0 0
+        PositionX 560
+        OffsetLeft 560
+        PositionY 0
+        OffsetTop 0
+        SizeX 264
+        OffsetRight -824
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{88D0CEB556E29180}" {
+         Name "Tile2Bg"
+         Slot FrameWidgetSlot "{71A62AC5D6269590}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.165 0.176 0.188 1
+         Size 1 1
+        }
+        TextWidgetClass "{ADDC8C4BA68B8776}" {
+         Name "Tile2Label"
+         Slot FrameWidgetSlot "{6C57CFBA26444FC3}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 8
+          OffsetTop 8
+          SizeX 232
+          OffsetRight -248
+          SizeY 24
+          OffsetBottom -32
+          Alignment 0 0
+         }
+         Color 0.722 0.698 0.639 1
+         Text "TRANSMIT"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{B46231AF73FB33F1}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{AE51FF2558FAB49F}" {
+         Name "Tile2Lamp"
+         Slot FrameWidgetSlot "{30DCB287CBFEDB05}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 47
+          OffsetTop 47
+          SizeX 12
+          OffsetRight -28
+          SizeY 12
+          OffsetBottom -59
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+        TextWidgetClass "{F153212F5E025FA6}" {
+         Name "Tile2Value"
+         Slot FrameWidgetSlot "{3DA8E34EBD425C60}" {
+          Anchor 0 0 0 0
+          PositionX 38
+          OffsetLeft 38
+          PositionY 36
+          OffsetTop 36
+          SizeX 214
+          OffsetRight -252
+          SizeY 32
+          OffsetBottom -68
+          Alignment 0 0
+         }
+         Color 0.769 0.8 0.541 1
+         Text "YES"
+         "Font Size" 24
+         "Min Font Size" 24
+         FontProperties FontProperties "{5791C5053922A9CD}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{F4238810BAD8D15E}" {
+         Name "Tile2Bar"
+         Slot FrameWidgetSlot "{0479D40E51802FC8}" {
+          Anchor 0 1 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY -4
+          OffsetTop -4
+          SizeX 0
+          OffsetRight 0
+          SizeY 4
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+       }
+      }
+      FrameWidgetClass "{C96BF9F662F09C34}" {
+       Name "Tile3"
+       Slot FrameWidgetSlot "{31E904D4B5E0DA98}" {
+        Anchor 0 0 0 0
+        PositionX 840
+        OffsetLeft 840
+        PositionY 0
+        OffsetTop 0
+        SizeX 264
         OffsetRight -1104
-        SizeY 40
-        OffsetBottom -188
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{F8250AC68C0BF331}" {
+         Name "Tile3Bg"
+         Slot FrameWidgetSlot "{E5A87C39155DB350}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.165 0.176 0.188 1
+         Size 1 1
+        }
+        TextWidgetClass "{4ED620BC13D69CA3}" {
+         Name "Tile3Label"
+         Slot FrameWidgetSlot "{EA2425D5AB747FAC}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 8
+          OffsetTop 8
+          SizeX 232
+          OffsetRight -248
+          SizeY 24
+          OffsetBottom -32
+          Alignment 0 0
+         }
+         Color 0.722 0.698 0.639 1
+         Text "SIGNAL"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{43BD1C39BE4A4350}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{B5E4A8A272F465F3}" {
+         Name "Tile3Lamp"
+         Slot FrameWidgetSlot "{C6E585C14E97674C}" {
+          Anchor 0 0 0 0
+          PositionX 16
+          OffsetLeft 16
+          PositionY 47
+          OffsetTop 47
+          SizeX 12
+          OffsetRight -28
+          SizeY 12
+          OffsetBottom -59
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+        TextWidgetClass "{8A7465031E0BE9DA}" {
+         Name "Tile3Value"
+         Slot FrameWidgetSlot "{773FC5282751F9FB}" {
+          Anchor 0 0 0 0
+          PositionX 38
+          OffsetLeft 38
+          PositionY 36
+          OffsetTop 36
+          SizeX 214
+          OffsetRight -252
+          SizeY 32
+          OffsetBottom -68
+          Alignment 0 0
+         }
+         Color 0.769 0.8 0.541 1
+         Text "STRONG"
+         "Font Size" 24
+         "Min Font Size" 24
+         FontProperties FontProperties "{76EF098B87623BA7}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        ImageWidgetClass "{344AB135FE4C6DC3}" {
+         Name "Tile3Bar"
+         Slot FrameWidgetSlot "{5CC780207A35B8B5}" {
+          Anchor 0 1 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY -4
+          OffsetTop -4
+          SizeX 0
+          OffsetRight 0
+          SizeY 4
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.604 0.639 0.369 1
+         Size 1 1
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{3A92736201A61FAA}" {
+     Name "StatusHint"
+     Slot FrameWidgetSlot "{69582094A5785FB2}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 222
+      OffsetTop 222
+      SizeX 1104
+      OffsetRight -1152
+      SizeY 28
+      OffsetBottom -250
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.639 0.62 0.565 1
+     Text "A running generator within 40 m would power it."
+     "Font Size" 20
+     "Min Font Size" 20
+     FontProperties FontProperties "{165A9E43FA67F677}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    FrameWidgetClass "{F94861E4F1521AD8}" {
+     Name "ObjectBody"
+     Slot FrameWidgetSlot "{D9ACCC2E5A101F19}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 262
+      OffsetTop 262
+      SizeX 1200
+      OffsetRight -1200
+      SizeY 664
+      OffsetBottom -926
+      Alignment 0 0
+     }
+     {
+      TextWidgetClass "{E3B4F59BB0CA6C12}" {
+       Name "ObjectReadLabel"
+       Slot FrameWidgetSlot "{D868E251A1B0AADB}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 0
+        OffsetTop 0
+        SizeX 1104
+        OffsetRight -1152
+        SizeY 26
+        OffsetBottom -26
         Alignment 0 0
        }
        "Is Visible" 0
        Color 0.639 0.62 0.565 1
-       Text "Nothing you can do here right now."
+       Text "LAST HEARD · BASTION"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{50B1A283BD0AD282}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{43475B3669F6AEEA}" {
+       Name "ObjectText"
+       Slot FrameWidgetSlot "{99C566075631A3D0}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 30
+        OffsetTop 30
+        SizeX 1104
+        OffsetRight -1152
+        SizeY 150
+        OffsetBottom -180
+        Alignment 0 0
+       }
+       Color 0.851 0.824 0.745 1
+       Text "Cold, but it would light. Boiling water takes a while and smokes a little."
        "Font Size" 24
        "Min Font Size" 24
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{1BF3C7FD04368AAE}" {
+       Wrap 1
+       FontProperties FontProperties "{480AF2203ADDB680}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
       }
-     }
-    }
-    TextWidgetClass "{7995E550757B6EBB}" {
-     Name "ObjectStatus"
-     Slot FrameWidgetSlot "{78EDA8A89AE1BF9F}" {
-      Anchor 0 0 0 0
-      PositionX 48
-      OffsetLeft 48
-      PositionY 752
-      OffsetTop 752
-      SizeX 1104
-      OffsetRight -1152
-      SizeY 48
-      OffsetBottom -800
-      Alignment 0 0
-     }
-     "Is Visible" 0
-     Color 0.957 0.941 0.902 1
-     Text ""
-     "Font Size" 22
-     "Min Font Size" 22
-     Wrap 1
-     FontProperties FontProperties "{A70C24B7E6B1B671}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-     }
-    }
-    HorizontalLayoutWidgetClass "{6DECCA650AC942EF}" {
-     Name "Prompts"
-     Slot FrameWidgetSlot "{B28E080DB1CD30EA}" {
-      Anchor 0 0 0 0
-      PositionX 48
-      OffsetLeft 48
-      PositionY 806
-      OffsetTop 806
-      SizeX 900
-      OffsetRight -948
-      SizeY 40
-      OffsetBottom -846
-      Alignment 0 0
-     }
-    }
-    TextWidgetClass "{47CC3F26CBBC90CB}" {
-     Name "PromptsText"
-     Slot FrameWidgetSlot "{DC28C464249914A8}" {
-      Anchor 0 0 0 0
-      PositionX 48
-      OffsetLeft 48
-      PositionY 812
-      OffsetTop 812
-      SizeX 1104
-      OffsetRight -1152
-      SizeY 30
-      OffsetBottom -842
-      Alignment 0 0
-     }
-     Color 0.639 0.62 0.565 1
-     Text "UP / DOWN  CHOOSE    A  DO IT    B  CLOSE"
-     "Font Size" 18
-     "Min Font Size" 18
-     FontProperties FontProperties "{1BEB0449A65FB680}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+      TextWidgetClass "{A68C6034E5B266F2}" {
+       Name "ObjectWorking"
+       Slot FrameWidgetSlot "{B7A03DA0385009F8}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 186
+        OffsetTop 186
+        SizeX 800
+        OffsetRight -848
+        SizeY 30
+        OffsetBottom -216
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Text "Busy with the boiling... 12 s"
+       "Font Size" 22
+       "Min Font Size" 22
+       FontProperties FontProperties "{A268700A210E8B8C}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ProgressBarWidgetClass "{CB30DAAB2D07E2CE}" {
+       Name "ObjectProgress"
+       Slot FrameWidgetSlot "{8AFCE2E9796A69D3}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 220
+        OffsetTop 220
+        SizeX 400
+        OffsetRight -448
+        SizeY 6
+        OffsetBottom -226
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       style Simple
+       Maximum 1
+       Current 0.4
+      }
+      TextWidgetClass "{8E5571161FE4753B}" {
+       Name "OptionsLabel"
+       Slot FrameWidgetSlot "{00FE932FE8E3F71B}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 232
+        OffsetTop 232
+        SizeX 600
+        OffsetRight -648
+        SizeY 26
+        OffsetBottom -258
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "WHAT YOU CAN DO"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{3DF95BD1898019E2}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      FrameWidgetClass "{DCEC557EB0120AFC}" {
+       Name "OptionList"
+       Slot FrameWidgetSlot "{3FF5EEF9DC979A26}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 262
+        OffsetTop 262
+        SizeX 1104
+        OffsetRight -1152
+        SizeY 300
+        OffsetBottom -562
+        Alignment 0 0
+       }
+       {
+        ImageWidgetClass "{BAC2F24A575C9837}" {
+         Name "OptionListBg"
+         Slot FrameWidgetSlot "{1E81DE38AB9EFCF1}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.047 0.055 0.059 1
+         Size 1 1
+        }
+        ScrollLayoutWidgetClass "{F71F2F1D351FCA73}" {
+         Name "OptionScroll"
+         Slot FrameWidgetSlot "{7E60F8F33B4140C6}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.431 0.416 0.376 1
+         style Small
+         {
+          SizeLayoutWidgetClass "{6FFB2A5F6E524FD5}" {
+           Name "OptionWidth"
+           Slot AlignableSlot "{8508DE5F067CFDF8}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           AllowWidthOverride 1
+           WidthOverride 1104
+           {
+            VerticalLayoutWidgetClass "{F51A41634DF4A9E1}" {
+             Name "Options"
+             Slot AlignableSlot "{8731F50F17745600}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+             }
+            }
+           }
+          }
+         }
+        }
+        TextWidgetClass "{8A796C12F0C6FE91}" {
+         Name "OptionsEmpty"
+         Slot FrameWidgetSlot "{E9127E5BD6E91BA7}" {
+          Anchor 0 0 0 0
+          PositionX 0
+          OffsetLeft 0
+          PositionY 130
+          OffsetTop 130
+          SizeX 1104
+          OffsetRight -1104
+          SizeY 40
+          OffsetBottom -170
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Text "Nothing you can do here right now."
+         "Font Size" 24
+         "Min Font Size" 24
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{1BF3C7FD04368AAE}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+       }
+      }
+      TextWidgetClass "{7995E550757B6EBB}" {
+       Name "ObjectStatus"
+       Slot FrameWidgetSlot "{78EDA8A89AE1BF9F}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 572
+        OffsetTop 572
+        SizeX 1104
+        OffsetRight -1152
+        SizeY 44
+        OffsetBottom -616
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.957 0.941 0.902 1
+       Text ""
+       "Font Size" 22
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{A70C24B7E6B1B671}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      HorizontalLayoutWidgetClass "{6DECCA650AC942EF}" {
+       Name "Prompts"
+       Slot FrameWidgetSlot "{B28E080DB1CD30EA}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 622
+        OffsetTop 622
+        SizeX 900
+        OffsetRight -948
+        SizeY 40
+        OffsetBottom -662
+        Alignment 0 0
+       }
+      }
+      TextWidgetClass "{47CC3F26CBBC90CB}" {
+       Name "PromptsText"
+       Slot FrameWidgetSlot "{DC28C464249914A8}" {
+        Anchor 0 0 0 0
+        PositionX 48
+        OffsetLeft 48
+        PositionY 628
+        OffsetTop 628
+        SizeX 1104
+        OffsetRight -1152
+        SizeY 30
+        OffsetBottom -658
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "UP / DOWN  CHOOSE    A  DO IT    B  CLOSE"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{1BEB0449A65FB680}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
      }
     }
    }

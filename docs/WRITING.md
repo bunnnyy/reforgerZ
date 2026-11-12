@@ -136,6 +136,7 @@ while, about food. The boss always jokes. The director never jokes on purpose.
 | Leader openers and closers | A named person | Faction voice and traits ([above](#the-voices)) | Set by trait | A speech |
 | Mission briefs | The giver | The giver's voice | Haven and Red Hand givers may open with one. Bastion is procedural, Halcyon clinical. **Mercy jobs never** | Telling the player what's right |
 | Choice labels | The player | Verb and object, then the cost or check in brackets | None | Judgement words. Rewards or consequences |
+| Status tiles and lock tags ([UI.md](UI.md#the-status-strip-and-locked-rows)) | The screen | Capitals, one word (two at most): the state (ON, COLD, ~25 MIN) or what's missing, in the thing's terms (NEEDS POWER, OPERATOR ONLY, SHORT 1). The full reason is the sentence the action already says | None | A judgement or a reward. A tag that says something the reason doesn't |
 | Outcomes | What happened, then one reaction | Three beats ([below](#phrasing-choices-and-outcomes)) | Only in the reaction | A verdict. Numbers inside the voiced beats |
 | Guidance | A voiced speaker, or nobody | Voiced tips: the speaker's register. Plain hints: plain | Voiced tips: the speaker's. Plain hints, veterans' short lines, standing and pay notices: none | Burying a critical instruction: it comes first and can't be misread |
 | The Long Table | The family | Homely | None, ever | Describing anything |
