@@ -472,7 +472,11 @@ Who the Haven are, and why they keep these rules, is in [LORE.md](LORE.md), "The
 | Hunted by the Haven (**exile**) | Safehouse services and the Haven quartermaster refuse you ("the door stays shut"); Haven wanderers refuse you and warn other players near you. The guards shoot an exile only while they carry a firearm within 100 m of a safehouse (with a minute's grace after spawning at one); an unarmed exile just finds the door shut |
 | A hungry safehouse and an exile | A safehouse short on food may sell an exile's rough location to the Red Hand (25% every 10 minutes): a hunter squad that really shoots them, and a message to players the Red Hand knows |
 
-Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Fame per 3 items (at most 5).
+Food delivered to a safehouse pays 2 Haven Favor per item, plus 1 Haven Fame per 3 items (at most 2
+a hand-in) as small pay through the [errands ledger](ERRANDS.md#pay-nothing-for-free): inside its
+Fame ceiling and day's cap, left out of season Fame and records. Food a quartermaster sold or
+handed out (requisitioned rations too) counts for nothing at a house, an errand or the fence: *"That's off a
+quartermaster's shelf."*
 Wanderers' attitude is your Haven standing (Bastion, reversed, for the Deserter) plus their
 memory of you ([DESIGN.md](DESIGN.md), "Wanderers"). The Mechanic wanderer sells car parts for
 12 Haven Favor (a quarter off if they remember you helped) and gives a fixable car's keys to

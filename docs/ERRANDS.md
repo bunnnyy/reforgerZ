@@ -206,6 +206,9 @@ Through the one small-pay ledger, per identity for the season (`RZ_ErrandLedger`
 - **In kind is an effect, not loot**: +2 food at a house, a fault fixed, morale +1 through the
   contracts and errands lane of the [season budget](DESIGN.md#the-season-budget). Errands never hand
   out doses, crates, kit or keys.
+- **Bought food counts for nothing.** Food a quartermaster sold or handed out is refused by every
+  errand's food hand-in, as at a house and the fence ([REPUTATION.md](REPUTATION.md#haven-house-rules-and-exile)
+  has the house's pay). A safehouse's food Fame also goes through this ledger's ceiling and day's cap.
 - **"Most people helped"**: each errand done counts on the hall of fame's line of that name, until
   the cure. It pays nothing.
 

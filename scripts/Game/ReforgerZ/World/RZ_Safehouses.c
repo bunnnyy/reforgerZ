@@ -383,6 +383,10 @@ class RZ_FoodHelper
 		if (RZ_MissionGoods.IsGoods(item))
 			return false;
 
+		// Nor does food a quartermaster sold or handed out: bought tins never turn into Fame or Favor
+		if (RZ_QuartermasterHelper.WasBought(item))
+			return false;
+
 		string name = RZ_Util.GetPrefabName(item);
 		if (name.IsEmpty())
 			return false;
@@ -419,8 +423,8 @@ class RZ_FoodHelper
 			if (!item || !IsFood(item, keywords))
 				continue;
 
-			inv.TryDeleteItem(item);
-			taken++;
+			if (inv.TryDeleteItem(item))
+				taken++;
 		}
 
 		return taken;
@@ -1419,14 +1423,14 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From an occupant's "Ask how things are".
-	//! A conversation's hand-in (Dialogue > Trees, call:hand_in:N): the built food delivery at this
-	//! house, for at most `count` items, paid as built.
-	void HandInFood(int playerId, int idx, IEntity user, int count)
+	//! A conversation's hand-in (Dialogue > Trees, call:hand_in:N): the `count` food the choice's own
+	//! `cost item:food*N` already took goes into this house's stores, paid as a delivery. Nothing is
+	//! taken here (the lint pairs the call with that cost).
+	void HandInFood(int playerId, int idx, int count)
 	{
 		RZ_Safehouse h = Get(idx);
-		if (h && user)
-			DeliverFood(playerId, h, user, Math.Max(1, count));
+		if (h && count > 0)
+			StockFood(playerId, h, count);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1549,16 +1553,59 @@ class RZ_Safehouses
 				return;
 			}
 
+			if (CarriesBoughtFood(user))
+			{
+				m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "\"That's off a quartermaster's shelf. We don't take what was bought: bring us what you found.\"");
+				return;
+			}
+
 			m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "You've nothing they can eat. Tins, rations, bread: anything helps.");
 			return;
 		}
 
+		StockFood(playerId, h, taken);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The character carries food a quartermaster sold or handed out (refused for trade).
+	protected bool CarriesBoughtFood(IEntity user)
+	{
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(user.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return false;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (!RZ_QuartermasterHelper.WasBought(item))
+				continue;
+
+			string name = RZ_Util.GetPrefabName(item);
+			name.ToLower();
+			foreach (string word : m_aFoodWords)
+			{
+				if (!word.IsEmpty() && name.Contains(word))
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Food already taken from the player goes into the stores and is paid: Favor per item, and a
+	//! little Haven Fame (one per three items) as small pay through the errands ledger: inside its
+	//! ceiling and day's cap, left out of season Fame and records.
+	protected void StockFood(int playerId, RZ_Safehouse h, int taken)
+	{
 		h.m_iFood = h.m_iFood + taken;
 		int favor = taken * m_Settings.m_iFavorPerFood;
 		m_GM.AddFavor(playerId, RZ_EFaction.SURVIVORS, favor);
-		int fame = Math.Min(5, taken / 3);
-		if (fame > 0)
-			m_GM.AddFame(playerId, RZ_EFaction.SURVIVORS, fame);
+		int fame = Math.Min(2, taken / 3);
+		RZ_Errands errands = m_GM.GetErrands();
+		if (fame > 0 && errands)
+			errands.SmallFame(playerId, RZ_EFaction.SURVIVORS, fame);
 
 		m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, string.Format("You hand over %1 bits of food. Someone writes it down in a school exercise book. +%2 Favor. The stores hold %3 now.",
 			taken, favor, h.m_iFood));

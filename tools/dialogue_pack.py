@@ -766,6 +766,9 @@ def lint(convs):
                 if ch.cost:
                     if not re.match(r"^(favor:(haven|bastion|redhand|halcyon) [0-9]+|item:food\*[0-9]+)$", ch.cost):
                         errs.append("%s: cost is 'favor:<faction> N' or 'item:food*N'" % wch)
+                hi = re.search(r"call:hand_in:([0-9]+)", ch.do)
+                if hi and ch.cost != "item:food*" + hi.group(1):
+                    errs.append("%s: call:hand_in:N stocks the food the choice's own 'cost item:food*N' took (same N)" % wch)
                 if ch.truth:
                     tkeys = lint_cond(ch.truth, wch + " truth", errs)
                     if not check or check[0] != "lie":

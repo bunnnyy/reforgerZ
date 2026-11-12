@@ -115,7 +115,7 @@ class RZ_DialoguePack_residents
 		db.Node("start");
 		db.Say("", "\"Fed, for once. Someone brought tins and someone else found a sack of potatoes in a shed. We're having both.\"");
 		db.Say("", "\"The children are arguing about the potatoes. That's how you know it's a good week.\"");
-		db.Choice("tin", "\"Leave a tin for the children.\"", "tin", "", "", "", "item:food*1", "", "favor:haven+2; regard:thanks", "", "");
+		db.Choice("tin", "\"Leave a tin for the children.\"", "tin", "", "", "", "item:food*1", "", "call:hand_in:1; regard:thanks", "", "");
 		db.Choice("fine", "\"Good to hear.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("tin");
 		db.Say("", "\"That'll be fought over. Thank you. Really.\"");

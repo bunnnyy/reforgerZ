@@ -932,8 +932,9 @@ You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand
 - **Stabilisers.** A Halcyon shop action whose item is the **Survival > Infection > Stabiliser**
   prefab sells from a second, smaller stock, at double its price until research reaches 50%. The
   manifest makes it Known, 40 Favor. Anywhere else it's an ordinary item.
-- **Price food above 2 Favor.** A safehouse pays 2 Haven Favor (and a little Fame) per food item
-  handed in, so food the Haven quartermaster sells for 2 or less turns Favor into free Fame.
+- **Shop food is refused for trade.** A safehouse pays 2 Haven Favor (and a little capped Fame) per
+  food item handed in, but refuses anything a quartermaster sold or handed out (its bought list, kept
+  until a restart), so a shop's tins can't be turned into Favor or Fame.
 
 Suggested starting stock for the shop actions you add by hand (from [REPUTATION.md](REPUTATION.md)):
 
