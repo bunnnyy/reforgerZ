@@ -266,13 +266,14 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
 | `RZ_CraftMenu` | `RZ_CraftMenu` | `RZ_CraftMenu.layout` |
 | `RZ_ObjectMenu` | `RZ_ObjectMenu` | `RZ_ObjectMenu.layout` (not in the conf yet: the PC adds it) |
+| `RZ_PowerMenu` | `RZ_PowerMenu` | `RZ_PowerMenu.layout` |
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**, pad **View + RB**) in `IngameContext`, and
 `RZ_RadioFilter` (**F**, pad **X**), `RZ_CarStart` (**T**, pad **Y**), `RZ_TurnPreview` (the pad's right
 stick) and `RZ_Reply1` to `RZ_Reply5` (**1** to **5**, pad **LT/RT + D-pad**) in `MenuContext`, and `RZ_MapLegend` (**I**, pad **Y**) in
 `MapContext`. The list with
-the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down and Enter use the
+the pad routes is in [UI.md](../docs/UI.md#controllers). Esc, Q/E, up/down, left/right and Enter use the
 vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
 ### Standing page: `RZ_StandingPage.layout`
@@ -841,6 +842,72 @@ Button OptionRow (root, 4 below it)
 ```
 
 Six options show at once; more scroll (a keypad's twelve keys).
+
+## Power panel: `RZ_PowerMenu.layout` and `RZ_PowerBreaker.layout`
+
+The power station's panel (`RZ_PowerMenu` preset; behaviour in
+[UI.md](../docs/UI.md#the-power-panel)), in the object menu's style. Written as text by a small
+generator; no mockup. Positions inside `PowerPanel` are from its top left; inside `CardPanel` and
+`BoardPanel`, from theirs.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 60%
+└─ Frame   PowerPanel      1,400 × 860, centred
+   ├─ Image  (PowerBg)      #0F1113
+   ├─ Image  (PowerAccent)  full width × 5, top edge, amber
+   ├─ Text   PowerTitle     at (48, 30), 1,200 wide, condensed bold 34, bone: the station ("The substation outside Morton")
+   ├─ Text   PowerSub       at (48, 76), regular 22, dim: the state ("Dark. The control room is open.")
+   ├─ Button CloseButton    44 × 44 at (1,308, 30), "X" in amber
+   ├─ Image  (HeadRule)     at (48, 116), 1,304 × 2, amber
+   ├─ Text   PowerText      at (48, 130), 1,304 × 96, condensed 24, #D9D2BE, wraps: what you see
+   ├─ Frame  CardPanel      at (48, 240), 560 × 440: the card inside the door
+   │  ├─ Image (CardBg)     paper, #CFC7B1
+   │  ├─ Text  (CardLabel)  at (24, 18), mono bold 18, #57524A, "THE CARD INSIDE THE DOOR"
+   │  ├─ Text  CardText     at (24, 54), 512 × 360, condensed 26, near-black, wraps: the card's lines
+   │  └─ Text  CardShut     at (24, 54), condensed 24, #57524A, "Behind a padlocked door." (shown before the door's forced)
+   ├─ Frame  BoardPanel     at (632, 240), 720 × 440: the breakers
+   │  ├─ Image (BoardBg)    #0C0E0F
+   │  ├─ Text  (BoardLabel) at (24, 18), mono bold 18, dim, "BREAKERS"
+   │  ├─ HorizontalLayout Breakers  at (12, 52), 700 × 300: the six breakers
+   │  ├─ Text  BoardShut    at (24, 160), centred, condensed 24, dim, "The board is behind the door." (shown before)
+   │  ├─ Image ReadyLamp    24 × 24 at (24, 366): green when the board is set, dark otherwise
+   │  ├─ Text  ReadyText    at (60, 364), mono bold 22, bone: READY or NOT READY
+   │  └─ Text  BoardHint    at (24, 402), mono bold 18, dim: "Close them in the card's order. A wrong one trips the lot." (while the board is worked)
+   ├─ Text   MeterText      at (48, 700), 560 wide, mono bold 20, amber: "SPINNING UP: 64 s. STAY WITHIN 60 M." or "SERVICE GAUGE: 74 PERCENT"
+   ├─ ProgressBar MeterBar  at (48, 734), 560 × 8, amber, shown with it
+   ├─ Text   PowerStatus    at (48, 752), 560 wide, condensed 22, #F4F0E6, wraps: what the last move said (hidden when empty)
+   ├─ Button Action0        344 × 60 at (632, 696); Action1 at (1,008, 696): the step's buttons
+   │  └─ Overlay (ActionBox0)
+   │     ├─ Image ActionBg0     #1B1F22
+   │     ├─ Image ActionLit0    #2A2E31, shown when selected
+   │     ├─ Image ActionBar0    5 × 60, left edge, amber, shown when selected
+   │     └─ Text  ActionText0   mono bold 24, centred: amber when it can be pressed, faint when not
+   ├─ Text   ActionNeed0    at (632, 762), 344 wide, mono bold 18, dim, centred: why not ("The breakers first"); ActionNeed1 at (1,008, 762)
+   ├─ HorizontalLayout Prompts  at (48, 812): the footer prompts the script makes
+   └─ Text   PromptsText    at (48, 818), mono bold 18, dim: the static footer, hidden once prompts are made
+```
+
+`RZ_PowerBreaker.layout` (**UI > Power breaker layout**), one breaker, created into `Breakers`. The
+root is a `Button` named `BreakerRow` (a click flips it):
+
+```
+Button BreakerRow (root, 12 right of it)
+└─ SizeLayout (BreakerSize)    104 × 290
+   └─ Overlay (BreakerBox)
+      ├─ Image  (BreakerFace)  #1B1F22
+      ├─ Image  BreakerBg      #2A2E31, shown on the selected breaker
+      ├─ Image  BreakerFocus   104 × 5, bottom edge, amber, shown on the selected breaker
+      └─ VerticalLayout (BreakerCol)  16 down from the top, centred
+         ├─ Image  BreakerLamp    22 × 22: amber when the breaker is closed, dark when open
+         ├─ SizeLayout (BreakerSlotSize)  48 × 120, 14 below the lamp
+         │  └─ Overlay (BreakerSlot)
+         │     ├─ Image (BreakerSlotBg)  #08090A
+         │     ├─ Image BreakerUp      36 × 52 at the top, bone: the handle up (closed)
+         │     └─ Image BreakerDown    36 × 52 at the bottom, #6E6A60: the handle down (open)
+         ├─ Text   BreakerNum     mono bold 22, bone, centred: 1 to 6
+         └─ Text   BreakerName    mono bold 18, dim, centred: its name ("FEED A")
+```
 
 ## Map icon: `RZ_MapIcon.layout`
 

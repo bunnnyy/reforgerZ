@@ -31,6 +31,7 @@ class RZ_ScreenGuard
 	static const int KIND_SHOP = 4;		// the quartermaster's shop screen (Factions/RZ_ShopScreen.c)
 	static const int KIND_CRAFT = 5;	// the crafting screen at a workbench (Interactions/RZ_Crafting.c)
 	static const int KIND_OBJECT = 6;	// the object menu on a prop or a place (Interactions/RZ_ObjectScreen.c)
+	static const int KIND_POWER = 20;	// the power station's panel (World/RZ_PowerPanel.c)
 
 	protected static const float HURT_DROP = 0.5;
 
@@ -136,6 +137,8 @@ class RZ_ScreenGuard
 			m_GM.GetInteractions().GetCrafting().OnScreenGone(playerId);
 		else if (kind == KIND_OBJECT)
 			RZ_ObjectScreen.OnScreenGone(playerId);
+		else if (kind == KIND_POWER && m_GM.GetPowerGrid() && m_GM.GetPowerGrid().GetPanel())
+			m_GM.GetPowerGrid().GetPanel().OnScreenGone(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -287,6 +290,8 @@ class RZ_ScreenGuard
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, "X|" + reason);
 			else if (kind == KIND_OBJECT)
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_OBJECT, "X|" + reason);
+			else if (kind == KIND_POWER)
+				ui.SendPayload(RZ_UIFeed.PAYLOAD_POWER, "X|" + reason);
 			else
 				ui.SendPayload(RZ_UIFeed.PAYLOAD_READER, "");
 		}
@@ -316,6 +321,9 @@ class RZ_ScreenGuard
 
 		if (kind == KIND_OBJECT)
 			return "object menu";
+
+		if (kind == KIND_POWER)
+			return "power panel";
 
 		return "reader";
 	}

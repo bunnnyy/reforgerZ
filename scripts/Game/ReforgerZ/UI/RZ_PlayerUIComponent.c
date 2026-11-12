@@ -425,6 +425,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_ObjectMenu.OnPayload(this, payload);
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_POWER)
+		{
+			RZ_PowerMenu.OnPayload(this, payload);
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
 		{
 			m_sTracker = payload;
@@ -748,6 +752,34 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		RZ_ObjectScreen.Pick(gm, playerId, serial, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A move on the power panel with this serial: a breaker, a button, or that it couldn't open
+	//! (RZ_PowerPanel.MOVE_*).
+	void SendPowerMove(int serial, int move)
+	{
+		if (Replication.IsServer())
+			RpcAsk_PowerMove(serial, move);
+		else
+			Rpc(RpcAsk_PowerMove, serial, move);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Checked on the server (RZ_PowerPanel.Move): the panel is open on this serial, the control there
+	//! and the player beside it. "Couldn't open" isn't rate-limited.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_PowerMove(int serial, int move)
+	{
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		int playerId = OwnerPlayerId();
+		if (!gm || playerId <= 0 || !gm.GetPowerGrid() || !gm.GetPowerGrid().GetPanel())
+			return;
+
+		if (move != RZ_PowerPanel.MOVE_FAILED && !PickAllowed())
+			return;
+
+		gm.GetPowerGrid().GetPanel().Move(playerId, serial, move);
 	}
 
 	//------------------------------------------------------------------------------------------------

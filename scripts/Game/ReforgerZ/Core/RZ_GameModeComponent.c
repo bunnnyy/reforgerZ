@@ -561,6 +561,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			m_ScreenGuard.Forget(playerId);
 
 		RZ_ObjectScreen.Forget(playerId);
+		if (m_PowerGrid && m_PowerGrid.GetPanel())
+			m_PowerGrid.GetPanel().Forget(playerId);
 
 		if (m_Dialogue)
 			m_Dialogue.Forget(playerId);

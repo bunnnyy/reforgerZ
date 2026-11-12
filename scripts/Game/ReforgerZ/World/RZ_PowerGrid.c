@@ -1,8 +1,13 @@
-//! The power grid (docs/DESIGN.md, "Time and environment"). One power station per map: a
-//! placed RZ_PowerStationMarkerEntity, else a real power or industrial building found by
-//! prefab name near a town, else the edge of the biggest town. A group restores it in a
-//! short sequence at its control object (force the door, reset the breakers and hold the
-//! area while the generator spins up, throw the main switch). Then the towns in its region:
+//! The power grid (docs/DESIGN.md, "The power grid"). One power station per map: a placed
+//! RZ_PowerStationMarkerEntity, else real power infrastructure found by prefab name near a town
+//! (a power plant, transformer station or substation), else a factory, sawmill or warehouse, else a
+//! real building on the edge of the biggest town (World/RZ_PowerSite.c). Its control is the map's
+//! own electrical cabinet there, else the control prefab against the station's wall by a door.
+//! A group restores it in a short sequence at the control (force the door, set the breakers and
+//! hold the area while the generator spins up, throw the main switch): with UI > Power breaker
+//! layout set, one prompt, Open the panel, opens the power panel screen where all of it happens
+//! (World/RZ_PowerPanel.c, UI/RZ_PowerMenu.c); without it, the old world prompts. Then the towns
+//! in its region:
 //!
 //! - are Powered (RZ_TownMemory), the hook for lights (IsPoweredAt; no lamps are switched on),
 //! - get working radios: faction chatter comes more often (ChatterMult), and the radio
@@ -24,8 +29,14 @@ class RZ_PowerSettings
 	[Attribute("1", desc: "A power station players can restore (docs/DESIGN.md, Time and environment)")]
 	bool m_bEnabled;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Control object: a generator, control panel or breaker cabinet with the generic puzzle object components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleChoiceAction). Empty = Puzzles > Fuse box, then the generic object", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Control object: a vanilla electrical cabinet that stands on the ground, with RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction and 2 RZ_PuzzleChoiceAction (options 0-1). Stood against the station's wall by a door. Empty = Puzzles > Fuse box, then the generic object", "et")]
 	ResourceName m_sControlPrefab;
+
+	[Attribute("1", desc: "The control is the map's own electrical cabinet at the station when there is one within 45 m: an invisible Interactions > Spot prefab on its face, no prop of ours. Needs the Spot prefab set")]
+	bool m_bUseCabinets;
+
+	[Attribute("0", desc: "Degrees added to the control prefab's turn, if its front doesn't face out from the wall")]
+	float m_fControlYaw;
 
 	[Attribute("2500", desc: "Towns within this distance (m) of the station get the power")]
 	float m_fRegionRadius;
@@ -130,6 +141,12 @@ class RZ_PowerGrid
 	protected static const float STALL_SECONDS = 30;
 	protected static const float MAINTAIN_COOLDOWN = 600;
 	protected static const float WARN_AT = 0.2;
+	protected static const float POWER_REACH = 500;	// power infrastructure this far (m) past a town's edge counts
+	protected static const int POWER_TOWNS = 12;		// biggest towns looked around for a station
+	protected static const float CABINET_REACH = 45;	// a vanilla cabinet this close (m) to the station carries the control
+	protected static const float ANCHOR_REACH = 60;		// a marker's or a saved site's building this close (m)
+	protected static const string READ_LABEL = "Read the panel";	// the old world prompts' read
+	protected static const string OPEN_LABEL = "Open the panel";		// the one prompt that opens the panel
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_PowerSettings m_Settings;
@@ -145,6 +162,11 @@ class RZ_PowerGrid
 	protected bool m_bWarned;
 	protected IEntity m_Body;
 	protected RZ_PuzzleObjectComponent m_Comp;
+	protected vector m_vControlPos;
+	protected float m_fControlYaw;
+	protected bool m_bControlSpot;				// on a vanilla cabinet: the interaction spot, not the control prefab
+	protected string m_sPlacedHow = "as placed";
+	protected ref RZ_PowerPanel m_Panel;
 	protected ref array<int> m_aRegion = {};
 	protected ref map<string, float> m_mMaintained = new map<string, float>();
 	protected int m_iSurgeTown = -1;			// the Power Surge event's town, -1 = none
@@ -163,6 +185,12 @@ class RZ_PowerGrid
 	bool IsPowered() { return m_bActive && m_iStep == STEP_POWERED; }
 	vector GetPosition() { return m_vPos; }
 	string GetName() { return m_sName; }
+	int GetStep() { return m_iStep; }
+	float GetSpinLeft() { return Math.Max(0, m_fSpinLeft); }
+	float GetSpinTotal() { return m_Settings.m_fSpinUpSeconds; }
+	float GetCondition() { return m_fCondition; }
+	IEntity GetBody() { return m_Body; }
+	RZ_PowerPanel GetPanel() { return m_Panel; }
 
 	//------------------------------------------------------------------------------------------------
 	protected static RZ_PowerGrid Get()
@@ -294,28 +322,50 @@ class RZ_PowerGrid
 			return;
 		}
 
+		m_Panel = new RZ_PowerPanel(m_GM, this);
 		string from = "picked";
+		IEntity anchor;
+		bool placed;
 		array<RZ_PowerStationMarkerEntity> markers = RZ_PowerStationMarkerEntity.GetAll();
+		// A station still dark when it was saved is picked again: the old pick may have been a field
+		bool keepSave = m_Restored && m_Restored.name != "" && m_Restored.step != STEP_DARK;
 		if (!markers.IsEmpty() && markers[0])
 		{
 			m_vPos = RZ_Util.GroundPos(markers[0].GetOrigin());
 			m_sName = markers[0].GetMarkerName();
 			from = "marker";
+			anchor = RZ_PowerSite.AnchorNear(m_vPos, ANCHOR_REACH);
+			if (!anchor)
+			{
+				// Placed by hand with nothing around it: the control stands at the marker, as turned
+				vector angles = markers[0].GetAngles(); // rotation around X, Y, Z in degrees: [1] is the yaw
+				m_vControlPos = m_vPos;
+				m_fControlYaw = angles[1] + m_Settings.m_fControlYaw;
+				placed = true;
+			}
 		}
-		else if (m_Restored && m_Restored.name != "")
+		else if (keepSave)
 		{
 			m_vPos = RZ_Util.GroundPos(Vector(m_Restored.x, 0, m_Restored.z));
 			m_sName = m_Restored.name;
 			from = "save";
+			anchor = RZ_PowerSite.AnchorNear(m_vPos, ANCHOR_REACH);
 		}
-		else if (!PickSite())
+		else
 		{
-			RZ_Log.Info("Power grid: no place for a power station.");
-			return;
+			anchor = PickSite();
+			if (m_sName.IsEmpty())
+			{
+				RZ_Log.Info("Power grid: no place for a power station.");
+				return;
+			}
 		}
 
 		if (m_sName.IsEmpty())
 			m_sName = "the power station outside " + NearTown(m_vPos);
+
+		if (!placed)
+			PlaceControl(anchor);
 
 		if (m_Restored)
 		{
@@ -327,45 +377,111 @@ class RZ_PowerGrid
 		m_bActive = true;
 		BuildRegion();
 		ApplyPower(m_iStep == STEP_POWERED);
-		RZ_Log.Info(string.Format("Power grid: %1 at grid %2 (%3), %4 towns in its region, %5.",
-			m_sName, RZ_SettlementScanner.GridReference(m_vPos), from, m_aRegion.Count(), StepName()));
+		RZ_Log.Info(string.Format("Power grid: %1 at grid %2 (%3), %4 towns in its region, %5. Control %6.",
+			m_sName, RZ_SettlementScanner.GridReference(m_vPos), from, m_aRegion.Count(), StepName(), m_sPlacedHow));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A real power or industrial building near a town (biggest towns first), else the edge
-	//! of the biggest town.
-	protected bool PickSite()
+	//! Where the control stands at the station anchored on `anchor` (World/RZ_PowerSite.c).
+	protected void PlaceControl(IEntity anchor)
+	{
+		vector toward = m_vPos;
+		RZ_Settlement town = m_GM.GetSettlement(m_GM.FindNearestSettlement(m_vPos));
+		if (town)
+			toward = town.m_vCenter;
+
+		RZ_PowerPlacement p = new RZ_PowerPlacement();
+		RZ_PowerSite.Place(anchor, m_vPos, toward, CanUseCabinets(), CABINET_REACH, p);
+		m_vControlPos = p.m_vPos;
+		m_fControlYaw = p.m_fYaw + m_Settings.m_fControlYaw;
+		m_bControlSpot = p.m_bSpot;
+		m_sPlacedHow = p.m_sHow;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A vanilla cabinet may carry the control: allowed, and a real (invisible) spot prefab is set.
+	protected bool CanUseCabinets()
+	{
+		RZ_Interactions hub = m_GM.GetInteractions();
+		if (!m_Settings.m_bUseCabinets || !hub)
+			return false;
+
+		ResourceName spot = hub.GetSpotPrefab();
+		return !spot.IsEmpty() && spot != m_GM.GetPuzzlePrefab(RZ_EPuzzleProp.OBJECT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real power infrastructure near a town (biggest towns first: a power plant beats a substation,
+	//! a substation a transformer yard), else a factory, sawmill or warehouse, else a real building
+	//! on the edge of the biggest town. Sets m_vPos and m_sName; returns the station's building or
+	//! prop, null for a bare point (a map with no buildings in its biggest town).
+	protected IEntity PickSite()
 	{
 		array<ref RZ_Settlement> list = m_GM.GetSettlements();
-		array<string> kinds = {"power", "industrial"};
-		RZ_Perimeter perimeter = m_GM.GetPerimeter();
-		RZ_Settlement biggest;
+		array<RZ_Settlement> ordered = {};
 		for (int size = 3; size >= 1; size--)
 		{
 			foreach (RZ_Settlement s : list)
 			{
-				if (s.m_iSize != size)
-					continue;
-
-				if (!biggest)
-					biggest = s;
-
-				RZ_Landmark l = RZ_LandmarkFinder.FindNearest(s.m_vCenter, s.m_fRadius + 200, kinds);
-				if (!l || (perimeter && perimeter.IsNearLine(l.m_vPos)))
-					continue;
-
-				m_vPos = RZ_Util.GroundPos(l.m_vPos);
-				m_sName = string.Format("%1 outside %2", l.m_sName, s.m_sName);
-				return true;
+				if (s.m_iSize == size)
+					ordered.Insert(s);
 			}
 		}
 
-		if (!biggest)
-			return false;
+		if (ordered.IsEmpty())
+			return null;
+
+		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		IEntity best;
+		int bestScore;
+		RZ_Settlement bestTown;
+		for (int mode = RZ_PowerSite.MODE_POWER; mode <= RZ_PowerSite.MODE_INDUSTRY; mode++)
+		{
+			float reach = 200;
+			if (mode == RZ_PowerSite.MODE_POWER)
+				reach = POWER_REACH;
+
+			foreach (int i, RZ_Settlement town : ordered)
+			{
+				if (i >= POWER_TOWNS)
+					break;
+
+				int score;
+				IEntity e = RZ_PowerSite.FindBest(town.m_vCenter, town.m_fRadius + reach, mode, score);
+				if (!e || (perimeter && perimeter.IsNearLine(e.GetOrigin())) || score <= bestScore)
+					continue;
+
+				best = e;
+				bestScore = score;
+				bestTown = town;
+
+				// A power plant: no need to look further
+				if (mode == RZ_PowerSite.MODE_POWER && score >= 40)
+					break;
+			}
+
+			if (best)
+			{
+				m_vPos = RZ_Util.GroundPos(best.GetOrigin());
+				bool inTown = RZ_Util.DistXZ(m_vPos, bestTown.m_vCenter) < bestTown.m_fRadius;
+				m_sName = RZ_PowerSite.NameFor(mode, bestScore, bestTown.m_sName, inTown);
+				return best;
+			}
+		}
+
+		// No station or works anywhere: a switch room in a real building on the biggest town's edge
+		RZ_Settlement biggest = ordered[0];
+		IEntity edge = RZ_PowerSite.EdgeBuilding(biggest);
+		if (edge)
+		{
+			m_vPos = RZ_Util.GroundPos(edge.GetOrigin());
+			m_sName = "the switch room on the edge of " + biggest.m_sName;
+			return edge;
+		}
 
 		m_vPos = RZ_Mission.LandPointNear(biggest.m_vCenter, biggest.m_fRadius, biggest.m_fRadius + 80);
 		m_sName = "the substation outside " + biggest.m_sName;
-		return true;
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -479,7 +595,11 @@ class RZ_PowerGrid
 	protected void SetStep(int step)
 	{
 		m_iStep = step;
+		if (step <= STEP_OPEN)
+			m_Panel.Reset();
+
 		UpdateLabels();
+		m_Panel.Refresh();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -530,7 +650,7 @@ class RZ_PowerGrid
 		foreach (int i, IEntity p : players)
 		{
 			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= VISIBLE_RADIUS)
-				m_GM.NotifyPlayer(ids[i], title, text);
+				m_Panel.Tell(ids[i], title, text);
 		}
 	}
 
@@ -563,6 +683,7 @@ class RZ_PowerGrid
 		float nearest = RZ_Util.NearestDistance(m_vPos, players);
 		if (m_Body && nearest > VISIBLE_RADIUS + DESPAWN_MARGIN)
 		{
+			m_Panel.CloseAll("gone");
 			RZ_Util.DeleteUnit(m_Body);
 			m_Body = null;
 			m_Comp = null;
@@ -572,38 +693,87 @@ class RZ_PowerGrid
 		if (m_Body || nearest > VISIBLE_RADIUS)
 			return;
 
-		m_Body = RZ_Util.SpawnPrefab(ControlPrefab(), m_vPos, Math.RandomFloat(0, 360));
+		ResourceName prefab = ControlPrefab();
+		if (m_bControlSpot)
+			prefab = m_GM.GetInteractions().GetSpotPrefab();
+
+		m_Body = RZ_Util.SpawnPrefab(prefab, m_vControlPos, m_fControlYaw);
 		if (!m_Body)
 			return;
 
-		m_Comp = RZ_PuzzleObjectComponent.Tag(m_Body, TAG, 0, "", ChoiceLabels());
-		RZ_ClueComponent.Tag(m_Body, TAG, 0, "Read the panel");
+		m_Comp = RZ_PuzzleObjectComponent.Cast(m_Body.FindComponent(RZ_PuzzleObjectComponent));
+		UpdateLabels();
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The old world prompts (no panel screen): one choice per step. "|" (every slot labelled empty)
+	//! hides them all while the generator spins up; "" would show every slot unlabelled ("Use").
 	protected string ChoiceLabels()
 	{
 		switch (m_iStep)
 		{
 			case RZ_EPowerStep.DARK: return "Force the control room door";
 			case RZ_EPowerStep.OPEN: return "Reset the breakers and start the generator";
-			case RZ_EPowerStep.SPINNING: return "";
+			case RZ_EPowerStep.SPINNING: return "|";
 			case RZ_EPowerStep.READY: return "Throw the main switch";
 			case RZ_EPowerStep.POWERED: return "|Refuel and grease the generator";
+		}
+
+		return "|";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! With the panel screen: one prompt, Open the panel, and every slot hidden. Without it: the read
+	//! and the step's choice, as before. Never the object menu (the panel is the menu).
+	protected void UpdateLabels()
+	{
+		if (!m_Body)
+			return;
+
+		string read = READ_LABEL;
+		string choices = ChoiceLabels();
+		if (m_Panel.IsUsed())
+		{
+			read = OPEN_LABEL;
+			choices = "|";
+		}
+
+		if (m_Comp)
+		{
+			m_Comp.SetMenu(false);
+			m_Comp.SetLabels("", choices);
+		}
+
+		RZ_ClueComponent.Tag(m_Body, TAG, 0, read);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A client couldn't open the panel (RZ_PowerPanel): the old prompts come back, and this player
+	//! is told what they see.
+	void OnPanelFailed(int playerId)
+	{
+		UpdateLabels();
+		m_GM.NotifyPlayer(playerId, "Power station", Description());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The panel's line under its title.
+	string StateLine()
+	{
+		switch (m_iStep)
+		{
+			case RZ_EPowerStep.DARK: return "Dark. The control room is locked.";
+			case RZ_EPowerStep.OPEN: return "Dark. The control room is open.";
+			case RZ_EPowerStep.SPINNING: return "The generator is spinning up.";
+			case RZ_EPowerStep.READY: return "Ready. The main switch is live.";
+			case RZ_EPowerStep.POWERED: return string.Format("Running. Powering %1.", RegionNames());
 		}
 
 		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void UpdateLabels()
-	{
-		if (m_Comp)
-			m_Comp.SetLabels("", ChoiceLabels());
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected string StepName()
+	string StepName()
 	{
 		switch (m_iStep)
 		{
@@ -618,24 +788,35 @@ class RZ_PowerGrid
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From RZ_ReadClueAction: the panel.
-	void HandleRead(int playerId)
+	//! From RZ_ReadClueAction on the control: Open the panel opens the panel screen; without it (or
+	//! when it can't open), what you see as a notice.
+	void HandleRead(int playerId, IEntity owner)
+	{
+		if (m_Panel.IsUsed() && m_Panel.Open(playerId, owner))
+			return;
+
+		m_GM.NotifyPlayer(playerId, "Power station", Description());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What you see at the control, by step.
+	string Description()
 	{
 		string text;
 		switch (m_iStep)
 		{
 			case RZ_EPowerStep.DARK: text = "A steel door with a padlock and a sign: DANGER - HIGH VOLTAGE. Through the louvres you can see a diesel generator and a wall of breakers. It looks like it could run, if someone made the noise to start it."; break;
-			case RZ_EPowerStep.OPEN: text = "Breakers all tripped. The generator has fuel in it. Starting it will be loud, and someone has to stay with it until it settles."; break;
+			case RZ_EPowerStep.OPEN: text = "Breakers all tripped. A card inside the door says how they go back. The generator has fuel in it. Starting it will be loud, and someone has to stay with it until it settles."; break;
 			case RZ_EPowerStep.SPINNING: text = string.Format("The generator is coming up to speed: about %1 seconds. Stay close.", RZ_Util.RoundToInt(m_fSpinLeft)); break;
 			case RZ_EPowerStep.READY: text = "Every needle in the green. The main switch is waiting."; break;
 			case RZ_EPowerStep.POWERED: text = string.Format("Running. The service gauge reads %1 percent. Powering %2.", RZ_Util.RoundToInt(m_fCondition * 100), RegionNames()); break;
 		}
 
-		m_GM.NotifyPlayer(playerId, "Power station", text);
+		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! From RZ_PuzzleChoiceAction on the control object.
+	//! From RZ_PuzzleChoiceAction on the control object: the old world prompts (no panel screen).
 	void HandleChoice(int playerId, int option, IEntity owner, IEntity user)
 	{
 		if (!user)
@@ -643,28 +824,21 @@ class RZ_PowerGrid
 
 		if (m_iStep == STEP_DARK && option == 0)
 		{
-			SetStep(STEP_OPEN);
-			m_GM.GetHeat().AddHeat(m_vPos, 10);
-			m_GM.NotifyPlayer(playerId, "Power station", "The padlock gives on the third try. It rings like a bell. Inside: the generator and a wall of tripped breakers.");
+			ForceDoor(playerId);
 			return;
 		}
 
 		if (m_iStep == STEP_OPEN && option == 0)
 		{
-			SetStep(STEP_SPINNING);
-			m_fSpinLeft = m_Settings.m_fSpinUpSeconds;
-			m_fStall = 0;
-			m_GM.GetHeat().AddHeat(m_vPos, 15);
-			// The noise draws them in
-			m_GM.GetSpawner().SpawnHorde(m_vPos, 350);
-			m_GM.NotifyHorde(m_vPos);
-			m_GM.NotifyPlayer(playerId, "Power station", string.Format("Breakers reset. The generator catches with a roar you can feel in your teeth. Stay within 60 m for about %1 seconds while it comes up to speed. They heard that.", RZ_Util.RoundToInt(m_fSpinLeft)));
+			// The prompt does the breakers in one go
+			m_Panel.SetAll();
+			StartGenerator(playerId);
 			return;
 		}
 
 		if (m_iStep == STEP_READY && option == 0)
 		{
-			Restored(playerId);
+			ThrowSwitch(playerId);
 			return;
 		}
 
@@ -673,9 +847,65 @@ class RZ_PowerGrid
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Fuel (a jerrycan) restores a lot; grease and patching a little. Once per player per 10 min.
-	protected void Maintain(int playerId, IEntity user)
+	//! Step 1: the control room door (the panel's Force the door, or the old prompt).
+	void ForceDoor(int playerId)
 	{
+		if (m_iStep != STEP_DARK)
+			return;
+
+		SetStep(STEP_OPEN);
+		m_GM.GetHeat().AddHeat(m_vPos, 10);
+		m_GM.NotifyPlayer(playerId, "Power station", "The padlock gives on the third try. It rings like a bell. Inside: the generator, a wall of tripped breakers and a card on the inside of the door.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step 2: start the generator, once the breakers are set. Loud: a horde is sent at it.
+	void StartGenerator(int playerId)
+	{
+		if (m_iStep != STEP_OPEN || !m_Panel.IsReady())
+			return;
+
+		m_fSpinLeft = m_Settings.m_fSpinUpSeconds;
+		m_fStall = 0;
+		SetStep(STEP_SPINNING);
+		m_GM.GetHeat().AddHeat(m_vPos, 15);
+		// The noise draws them in
+		m_GM.GetSpawner().SpawnHorde(m_vPos, 350);
+		m_GM.NotifyHorde(m_vPos);
+		m_GM.NotifyPlayer(playerId, "Power station", string.Format("The generator catches with a roar you can feel in your teeth. Stay within 60 m for about %1 seconds while it comes up to speed. They heard that.", RZ_Util.RoundToInt(m_fSpinLeft)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step 3: the main switch.
+	void ThrowSwitch(int playerId)
+	{
+		if (m_iStep == STEP_READY)
+			Restored(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why this player can't see to the generator now ("" if they can): it isn't running, or they
+	//! did what they could less than 10 minutes ago.
+	string MaintainBlocked(int playerId)
+	{
+		if (m_iStep != STEP_POWERED)
+			return "It isn't running";
+
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		float last;
+		if (profile && m_mMaintained.Find(profile.m_sIdentity, last) && m_fClock - last < MAINTAIN_COOLDOWN)
+			return "Done for now";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fuel (a jerrycan) restores a lot; grease and patching a little. Once per player per 10 min.
+	void Maintain(int playerId, IEntity user)
+	{
+		if (m_iStep != STEP_POWERED || !user)
+			return;
+
 		string ident = m_GM.GetProfile(playerId).m_sIdentity;
 		float last;
 		if (m_mMaintained.Find(ident, last) && m_fClock - last < MAINTAIN_COOLDOWN)

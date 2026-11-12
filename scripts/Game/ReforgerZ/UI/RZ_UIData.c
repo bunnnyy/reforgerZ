@@ -195,6 +195,9 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Object menu: the layout of one option row (UI/LAYOUTS.md, ObjectRow). Empty = no object menu: stoves, generators, house radios, puzzle objects, safehouse services and the like keep their world prompts, as before", "layout")]
 	ResourceName m_sObjectRowLayout;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Power panel: the layout of one breaker (UI/LAYOUTS.md, PowerBreaker). Set, the power station's control has one prompt, Open the panel, and the restore happens in the panel screen (RZ_PowerMenu preset). Empty = the control's old world prompts", "layout")]
+	ResourceName m_sPowerBreakerLayout;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
 	ResourceName m_sStandingPage;
 

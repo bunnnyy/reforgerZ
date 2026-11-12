@@ -1,8 +1,8 @@
 //! The ReforgerZ menus (docs/UI.md, "Screens"): the shared base, and the safehouse notice board.
 //! The notebook (Standing, Journal, Radio, Hall of fame and The season as tabs) is in RZ_Notebook.c, the
 //! talk screen in RZ_TalkMenu.c, the reader in RZ_Reader.c, the car repair screen in RZ_CarMenu.c,
-//! the shop screen in RZ_ShopMenu.c, the crafting screen in RZ_CraftMenu.c, the object menu in RZ_ObjectMenu.c and the spawn
-//! screen in RZ_SpawnMenu.c. Layouts and widget names are in
+//! the shop screen in RZ_ShopMenu.c, the crafting screen in RZ_CraftMenu.c, the object menu in RZ_ObjectMenu.c, the power
+//! panel in RZ_PowerMenu.c and the spawn screen in RZ_SpawnMenu.c. Layouts and widget names are in
 //! UI/LAYOUTS.md; the presets are registered in a chimeraMenus.conf override (WORKBENCH_SETUP.md).
 //!
 //! Each menu asks RZ_PlayerUIComponent for its data when it opens and redraws when a new copy
@@ -22,7 +22,8 @@ modded enum ChimeraMenuPreset // each entry needs a matching chimeraMenus.conf e
 	RZ_ShopMenu,
 	RZ_SpawnMenu,
 	RZ_CraftMenu,
-	RZ_ObjectMenu
+	RZ_ObjectMenu,
+	RZ_PowerMenu
 }
 
 //------------------------------------------------------------------------------------------------
