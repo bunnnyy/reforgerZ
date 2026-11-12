@@ -386,7 +386,7 @@ Settlement up to Trusted, a Town up to Champion ([DESIGN.md](DESIGN.md), "Haven 
 | Tier | Shop | Perk / service |
 |---|---|---|
 | Known | Military rations, morphine, flares | **The contact board** ✅: every pack Bastion has counted ([INFECTED.md](INFECTED.md#knowing)). **Waved through** ✅: Bastion's checkpoints inside the Zone let you pass unsearched ([Checkpoints](#checkpoints-roadblocks-and-camps)) |
-| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost, only from what the quartermaster sells at Trusted or below ✅ (never a Champion item). While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
+| Trusted | Service rifles, body armour, helmets, NVGs | **Requisition** ✅: once an hour, ammo or rations at half the Favor cost, only from what the quartermaster sells at Trusted or below ✅ (never a Champion item); anything that isn't ammo or rations by its name is refused, and so is anyone in Red Hand colours, as at the shop. Bastion kit signed out is marked as the shop marks it ([borrowed kit](#borrowed-kit)). While Bastion's trucks run, it's drawn at a Bastion outpost's quartermaster from the stock its trucks brought, and refused while that outpost is short |
 | Champion | Machine guns, grenades, the **signal smoke** | **Fire Mission** ✅: see below |
 | Hunted | — | Bastion AI shoots you ✅; hunter squads get your last position ✅ |
 

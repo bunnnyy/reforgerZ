@@ -909,8 +909,8 @@ a rougher town, Halcyon's next to the lab). Their positions are saved. The four 
 on every quartermaster are how players reach stronghold leaders and council heads.
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
-Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, spawned next to the
-quartermaster), **Display name** and **Once per life** (off; on: each player can buy it once a life). The action is always shown (or, with the shop screen on, is a
+Trusted or Champion), **Favor cost**, **Item prefab** (an item or crate, put in the buyer's
+inventory, or beside the quartermaster when it doesn't fit), **Display name** and **Once per life** (off; on: each player can buy it once a life). The action is always shown (or, with the shop screen on, is a
 row on it); the server checks tier and Favor when it's used. The four quartermaster prefabs carry
 `RZ_ShopOpenAction` (**Trade**, first in the list), which opens the shop screen while **UI > Shop
 item layout** is set; then the Buy, Requisition and service actions hide from the action menu. A
@@ -921,7 +921,9 @@ vehicle prefab): cars are only ever found, so the server refuses such an action 
 `RZ_RequisitionAction` has the same cost, item and name; the cost is the full price (a Trusted
 player pays half, once an hour). Set it up for ammo and rations only, each an item a shop action
 on the **same quartermaster** sells at Trusted or below: Requisition is a Trusted perk, so
-anything stocked only at Champion (or not stocked there) is refused and logged.
+anything stocked only at Champion (or not stocked there) is refused and logged. The code also
+refuses (and logs) an item whose prefab name holds no ammo word (`magazine`, `mag_`, `ammo`,
+`cartridge`, `rounds`, `ration`) and none of the safehouses' **Food keywords**.
 You can also put `RZ_ChoiceDeliveryAction` on a quartermaster so it accepts hand-ins.
 
 - **Antidotes.** A shop action whose item is the **Cure > Antidote** prefab sells from a stock, not
@@ -1963,6 +1965,7 @@ Warnings worth acting on:
 | `Player N spawned with locked loadout '...': default background` | A locked loadout got past the spawn check (see `UI/RZ_LoadoutLock.c:67` in the VERIFY list): they keep its gear but play as Unemployed, the default background |
 | `Shop action '...' sells a vehicle or a car part (...): refused. Cars are only found` | A quartermaster's shop action is set to a vehicle, a car part or fuel: change its Item prefab |
 | `Requisition '...' (...) isn't Trusted stock here ...: refused` | A requisition action hands out something its quartermaster doesn't sell at Trusted or below: point it at a Trusted (or lower) shop item, or add one |
+| `Requisition '...' (...) isn't ammo or rations (prefab name keywords): refused` | A requisition action's item isn't ammunition or food by its prefab name: point it at a magazine or a ration |
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
@@ -2228,7 +2231,9 @@ session, tick off:
 - [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
 - [ ] A quartermaster sells an item at the right tier and refuses one above it. No quartermaster
   offers a vehicle, a car part or a jerrycan. A Bastion Trusted player can requisition rations and
-  a rifle magazine (once an hour, half price).
+  a rifle magazine (once an hour, half price, into the pack), but not in Red Hand colours; a requisition action
+  set to anything else (a rifle) is refused and logged. A requisitioned ration is refused at a
+  safehouse ("off a quartermaster's shelf").
 - [ ] The shop screen: **Trade** at the Haven quartermaster opens it, and the Buy actions are gone
   from the action menu. The header says whose stores they are, your standing and your Favor; LB/RB
   (Q/E) switch tabs and skip empty ones; up/down move in the list, which scrolls. A Champion item

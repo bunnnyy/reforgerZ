@@ -76,8 +76,9 @@ class RZ_QuartermasterHelper
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns a prefab next to the quartermaster, a little in front of the buyer. Tracked as a loose
-	//! item (quartermasters never sell vehicles: IsForbiddenStock).
+	//! Spawns a prefab for the buyer: into their inventory if it fits, else on the ground between
+	//! the quartermaster and the buyer, tracked as a loose item (quartermasters never sell
+	//! vehicles: IsForbiddenStock).
 	static IEntity SpawnNear(ResourceName prefab, IEntity owner, IEntity user)
 	{
 		vector pos = owner.GetOrigin();
@@ -86,8 +87,13 @@ class RZ_QuartermasterHelper
 
 		pos = RZ_Util.RandomPointInRing(pos, 0.5, 1.5) + Vector(0, 0.3, 0);
 		IEntity bought = RZ_Util.SpawnPrefab(prefab, pos);
-		RZ_GameModeComponent.TrackLooseItem(bought); // left lying there, it's cleaned up in time
+		if (!bought)
+			return null;
+
 		MarkBought(bought);
+		if (!RZ_Util.InsertIntoInventory(user, bought))
+			RZ_GameModeComponent.TrackLooseItem(bought); // left lying there, it's cleaned up in time
+
 		return bought;
 	}
 
@@ -601,7 +607,7 @@ class RZ_RequisitionAction : ScriptedUserAction
 	[Attribute("30", desc: "Full Favor price. Requisition charges half of it, rounded up")]
 	protected int m_iFavorCost;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Ammo or rations to hand out, spawned next to the quartermaster. Must be an item a shop action on the same quartermaster sells at Trusted or below", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Ammo or rations to hand out (its prefab name must hold an ammo or food word). Must be an item a shop action on the same quartermaster sells at Trusted or below", "et")]
 	protected ResourceName m_sItemPrefab;
 
 	[Attribute("rations", desc: "Name shown in the action menu")]

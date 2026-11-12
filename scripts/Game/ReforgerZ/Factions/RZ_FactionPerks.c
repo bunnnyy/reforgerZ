@@ -471,6 +471,30 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What Requisition may hand out: ammunition or rations, by prefab name (lower case keywords:
+	//! the ammo words below, or the safehouses' food words).
+	static bool IsRequisitionStock(ResourceName prefab)
+	{
+		if (prefab.IsEmpty())
+			return false;
+
+		string name = prefab;
+		name.ToLower();
+		array<string> words = {"magazine", "mag_", "ammo", "cartridge", "rounds", "ration"};
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		if (gm && gm.GetSafehouses())
+			words.InsertAll(gm.GetSafehouses().GetFoodKeywords());
+
+		foreach (string word : words)
+		{
+			if (!word.IsEmpty() && name.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Bastion Trusted: once an hour per player (by identity, so it survives respawns), one
 	//! item from the quartermaster at half price. Nothing is free: it's paid in Favor.
 	bool TryRequisition(int playerId, IEntity owner, IEntity user, ResourceName prefab, string itemName, int fullCost)
@@ -496,6 +520,26 @@ class RZ_FactionPerks
 		{
 			m_GM.NotifyPlayer(playerId, bastion, "The stores are empty. Nothing to requisition.");
 			return false;
+		}
+
+		// Ammo and rations only, whatever the action is set to
+		if (!IsRequisitionStock(prefab))
+		{
+			RZ_Log.Warn(string.Format("Requisition '%1' (%2) isn't ammo or rations (prefab name keywords): refused", itemName, prefab));
+			m_GM.NotifyPlayer(playerId, bastion, string.Format("\"We sign out ammunition and rations. Not %1.\"", itemName));
+			return false;
+		}
+
+		// Not to anyone in their enemy's colours, as at the shop
+		RZ_Hostility hostility = m_GM.GetHostility();
+		if (hostility && hostility.GetDisguise().IsOn())
+		{
+			string colours = hostility.GetDisguise().ShopRefusal(playerId, RZ_EFaction.MILITARY);
+			if (!colours.IsEmpty())
+			{
+				m_GM.NotifyPlayer(playerId, bastion, colours);
+				return false;
+			}
 		}
 
 		// Supply lines: signed out at an outpost, from what its trucks brought in
@@ -528,11 +572,16 @@ class RZ_FactionPerks
 			return false;
 		}
 
-		if (!RZ_QuartermasterHelper.SpawnNear(prefab, owner, user))
+		IEntity signedOut = RZ_QuartermasterHelper.SpawnNear(prefab, owner, user);
+		if (!signedOut)
 		{
 			m_GM.AddFavor(playerId, RZ_EFaction.MILITARY, price); // refund
 			return false;
 		}
+
+		// Borrowed kit: signed out to this player, as a sale is
+		if (hostility && hostility.GetDisguise().MarksOn())
+			hostility.GetDisguise().GetMarks().OnSold(signedOut, playerId, RZ_EFaction.MILITARY);
 
 		m_mRequisitionAt.Set(ident, m_fClock);
 		string from = "Bastion stock";
