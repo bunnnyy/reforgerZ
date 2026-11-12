@@ -1830,6 +1830,10 @@ class RZ_Safehouses
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The safehouse radio, a thing you use (docs/MISSIONS.md, "Who gets offered what"): the Haven's
+	//! open contracts within 3 km that this player qualifies for are offered on it (hired, as a
+	//! leader's "Ask for work" would); anyone else's work and the world events nearby are news, the
+	//! work with who to ask for it.
 	protected void Radio(int playerId, RZ_Safehouse h, IEntity user)
 	{
 		if (!h.HasRadio())
@@ -1845,11 +1849,25 @@ class RZ_Safehouses
 			if (n >= 4 || m.m_bGlobal || m.m_bInPersonOnly || RZ_Util.DistXZ(m.m_vPos, h.m_vPos) > 3000)
 				continue;
 
-			string who = "anyone";
-			if (m.m_bContract)
-				who = RZ_Factions.GetShortName(m.m_Req.m_eGiver);
+			string where = m.GetWhereTextFor(m_GM, user.GetOrigin(), playerId);
+			if (!m.m_bContract)
+			{
+				text += string.Format("%1 (news): %2\n", m.m_sTitle, where);
+				n++;
+				continue;
+			}
 
-			text += string.Format("%1 (%2): %3\n", m.m_sTitle, who, m.GetWhereTextFor(m_GM, user.GetOrigin(), playerId));
+			string who = RZ_Factions.GetShortName(m.m_Req.m_eGiver);
+			if (m.m_Req.m_eGiver == RZ_EFaction.SURVIVORS && m.IsEligible(m_GM, playerId))
+			{
+				m.Hire(playerId);
+				text += string.Format("%1 (%2, yours if you want it): %3\n", m.m_sTitle, who, where);
+			}
+			else
+			{
+				text += string.Format("%1 (%2). %3\n", m.m_sTitle, who, m_GM.GetMissions().GiverHint(m, m.m_Req.m_eGiver));
+			}
+
 			n++;
 		}
 

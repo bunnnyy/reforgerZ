@@ -1,7 +1,8 @@
 //! Mirror offers (docs/DESIGN.md, "Story blocks"): one mission class with two givers. Rolled once
 //! when the mission is set up (Missions > Story > Mirror chance, 10% by default, off on a PvE
 //! server). The second side's eligible players hear about it 5 minutes later, with a rough area
-//! twice as wide, so they can't camp the first side's drop. Two classes use it: The Cache (the
+//! twice as wide, so they can't camp the first side's drop; it's theirs once their own side offers
+//! it in person (RZ_MissionManager.ListContractsFor: a leader's "Ask for work"). Two classes use it: The Cache (the
 //! Haven; the Red Hand for players the Haven Watches) and The Armory (Bastion, Trusted; the Red
 //! Hand, Known). The losing side gets a line, never a fallout errand. Server only.
 class RZ_Mirror
@@ -72,8 +73,8 @@ class RZ_Mirror
 		{
 			if (IsSide(gm, playerId) && !m.m_Req.IsEligible(gm, playerId))
 			{
-				gm.NotifyPlayerAs(playerId, RZ_Factions.GetName(m_iFaction), string.Format("Word is %1 has people going for %2. Get there first: somewhere within a kilometre of grid %3.",
-					RZ_Factions.GetName(m.m_Req.m_eGiver), m.m_sTitle, area), RZ_ENoticeTag.MISSION);
+				gm.NotifyPlayerAs(playerId, RZ_Factions.GetName(m_iFaction), string.Format("Word is %1 has people going for %2, somewhere within a kilometre of grid %3. %4 wants it first. %5",
+					RZ_Factions.GetName(m.m_Req.m_eGiver), m.m_sTitle, area, RZ_Factions.GetName(m_iFaction), gm.GetMissions().GiverHint(null, m_iFaction)), RZ_ENoticeTag.HEARD);
 			}
 		}
 

@@ -125,6 +125,11 @@ class RZ_PuzzleMission : RZ_Mission
 			return;
 
 		AddParticipant(playerId);
+		// Jobs only by interaction: an arc or puzzle that no faction gives is taken from its thing,
+		// the clue you just read (a contract is offered by its giver)
+		if (!m_bContract && RZ_UIFeed.MissionKind(this) != RZ_EMissionKindUI.EVENT)
+			Hire(playerId);
+
 		string clueText = GetClueText(gm, playerId, idx);
 		// Paper (a note, a letter, orders: "Read ...") opens in the reader; a plaque, a body or a
 		// person stays a notice

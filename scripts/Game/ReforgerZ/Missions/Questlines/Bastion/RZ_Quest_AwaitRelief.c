@@ -258,22 +258,23 @@ class RZ_BastionQuest
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! An in-person job: word reaches each eligible player online once, off the radio. They count
-	//! as offered it (so it's in their journal). `told` keeps who has heard.
+	//! An in-person job: word reaches each eligible player online once, off the radio, and says who
+	//! to see. It isn't theirs until that person offers it (jobs only by interaction: the leader's
+	//! "Ask for work"). `told` keeps who has heard.
 	static void Whisper(RZ_GameModeComponent gm, RZ_Mission m, string title, string text, notnull array<int> told)
 	{
 		array<int> all = {};
 		GetGame().GetPlayerManager().GetPlayers(all);
 		foreach (int playerId : all)
 		{
-			if (told.Contains(playerId) || !m.IsEligible(gm, playerId))
+			if (told.Contains(playerId) || m.IsOfferedTo(gm, playerId) || !m.IsEligible(gm, playerId))
 				continue;
 
 			told.Insert(playerId);
-			if (!m.m_aOfferedTo.Contains(playerId))
-				m.m_aOfferedTo.Insert(playerId);
+			if (!m.m_aHeardBy.Contains(playerId))
+				m.m_aHeardBy.Insert(playerId);
 
-			gm.NotifyPlayer(playerId, title, text);
+			gm.NotifyPlayerAs(playerId, title, text, RZ_ENoticeTag.HEARD);
 		}
 	}
 }

@@ -1214,9 +1214,15 @@ with what each reply needs shown before you choose and no dice), and the convers
 
 ## Missions
 
-Two kinds: **world events**, announced to everyone, and **contracts**, offered only to
-players who qualify. There's no "accept" button: eligible players who take part get paid.
-Every mission, its requirements and its status are in [MISSIONS.md](MISSIONS.md).
+Two kinds: **world events**, news on the radio for everyone and never a job, and **contracts**,
+offered in person only, to players who qualify. **Jobs only by interaction:** every job starts from
+a person you talk to or a thing you use, never from the radio, a timer, a spawn or walking past (the
+openings' steps are the one exception). The radio only says who to ask
+(`RZ_MissionManager.TellOfWork`, a Radio-tab entry); asking the giver offers the job
+(`RZ_Mission.Hire`), and only players it was offered to, and their group, are paid. How each kind
+starts, every mission, its requirements and its status are in
+[MISSIONS.md](MISSIONS.md#who-gets-offered-what). A job that ends goes into its players' past jobs
+(`Missions/RZ_JobHistory.c`, the Journal: [UI.md](UI.md#notebook-journal)).
 
 ### Mission building blocks
 
@@ -1564,8 +1570,9 @@ time and the world, and how players did each stage decides where it goes and how
 - **Time.** The questlines' clock runs only while someone is online. Real-time waits use the
   server's clock, so "12 real hours" passes overnight with the server empty. **Wait scale**
   multiplies every wait and give-up time (0.1 for a quick test).
-- **The journal.** A questline appears in the journal of everyone who took part and of anyone
-  its current stage mission was offered to: its title, the stage, the stage's text and "what you
+- **The journal.** A questline appears on the Quests tab of everyone who took part and of anyone
+  its current stage mission was offered to (every later stage is offered to those who took part
+  already; it ends as a past job in their Journal): its title, the stage, the stage's text and "what you
   know so far" (notes added as it goes). Its stage missions show the same type icon
   ([UI.md](UI.md#screens)).
 - **Saved.** The stage, flags, texts, notes, timers, branch, visits and every participant are
@@ -1575,8 +1582,8 @@ time and the world, and how players did each stage decides where it goes and how
   outside Max active and the faction slots, start at the 90% gate, never fizzle (a stage that can't
   happen waits, one that fails is offered again) and freeze at another route's finish. Their stages
   are **open** (anyone not locked to another route) or **sworn** (only the route's locked players);
-  sworn stages aren't offered on the radio, the route's players are told, and the route is in their
-  journal.
+  sworn stages are only the route's locked players' (they're told, and the stage is on their Quests
+  tab), and open stages are offered in person like any contract.
 
 *Simplified:* the "persuade" check is a fixed score, not a roll: the same player with the same
 standing always gets the same answer (once per player per mission, kept by identity, so leaving
@@ -2257,7 +2264,7 @@ that speaks unasked may speak now.
 |---|---|
 | Critical | Urgent notices: always shown |
 | Talk | Owner-only, at once: the talk screen, answers to what you asked |
-| Contact | Unasked contacts: at most one every 4 minutes for a player across radio offers, leaders' pings, wanderers, the Long Table's host and errands, with errands last (they wait a minute longer, so any other due contact wins) |
+| Contact | Unasked contacts: at most one every 4 minutes for a player across leaders' pings, wanderers, the Long Table's host and errands, with errands last (they wait a minute longer, so any other due contact wins) |
 | Bark | One a minute, one per speaker per 10 minutes |
 | Ambient | Approach and ambient lines: once per place per session |
 

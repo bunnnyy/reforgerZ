@@ -396,8 +396,8 @@ them. The farmhouse went quiet, and the council crossed the whole house off.
 **Built** ([MISSIONS.md](MISSIONS.md#the-list-the-haven)). The contract The List is one crossed-out
 name ([MISSIONS.md](MISSIONS.md#the-haven), #21); this questline asks whose pencil it was. Changes
 from the design: it also opens once that contract has been done this season, and "lost people to
-upkeep" is read as "ran short, or lost people lately"; the council head asks on the radio, in their
-voice; the asking house's own list is the first copy (fewer copies on a map without the houses);
+upkeep" is read as "ran short, or lost people lately"; the council head's ask is heard on the
+radio, in their voice, with who to ask, and the job is offered in person; the asking house's own list is the first copy (fewer copies on a map without the houses);
 the reading is held at the gate on the road in. In a season with the Long Table, stage 4's farm is
 its house (unless it moved before H1 began), and getting there is the finding: lived in, the house
 is found (`list.found_table`); gone, the table is left laid, or burnt. There's nothing to look round
@@ -975,7 +975,7 @@ Bastion burns it ([DESIGN.md](DESIGN.md#the-long-table)).
 - *Who to tell* is any leader of that faction, talked to by someone who took part (by anyone, when
   the proof came from another line); Halcyon needs the lab, Bastion its stronghold. The house is
   found out then, and the teller gets the faction's Fame then (+10, the Red Hand +4).
-- *The end of the house* the factions' way is that faction's contract on the radio, so an ending's
+- *The end of the house* the factions' way is that faction's contract, offered in person, so an ending's
   Fame is the telling's plus the contract's (10 Fame and 30 Favor; Halcyon 10 and 20; the Red Hand
   11 and 40). The Haven's walk is between 16:00 and 21:30, and the family waits for you at the edge
   of town rather than walking with you; the quiet son is talked round (persuade) or let go.

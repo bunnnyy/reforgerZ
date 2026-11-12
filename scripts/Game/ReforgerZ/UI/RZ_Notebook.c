@@ -1,12 +1,12 @@
-//! The notebook (docs/UI.md, "The notebook"): one menu with five tabs, Standing, Journal, Radio,
-//! Quests and The season (the map key is on the map itself, RZ_MapIcons.c). The menu (RZ_NotebookMenu, layout RZ_NotebookMenu.layout) holds the
+//! The notebook (docs/UI.md, "The notebook"): one menu with five tabs, Standing, Quests, Radio,
+//! Journal and The season (the map key is on the map itself, RZ_MapIcons.c). The menu (RZ_NotebookMenu, layout RZ_NotebookMenu.layout) holds the
 //! shared frame, the tabs with their unread counts and an empty `Page` frame; each tab is a page
 //! (RZ_NotebookPage) whose layout (UI > Notebook pages) is created into `Page` when the tab is
 //! shown, so switching tabs swaps the page instead of closing one menu and opening another.
 //!
 //! Opened with N (RZ_OpenNotebook), the pause menu's Notebook button (RZ_PauseNotebook.c) or the
 //! notebook item (RZ_NotebookItem.c). It opens on the tab last used this session (the first time:
-//! Journal). LB/RB or Q/E switch tabs, up/down move in the list, A or Enter selects (on Quests it
+//! Quests). LB/RB or Q/E switch tabs, up/down move in the list, A or Enter selects (on Quests it
 //! tracks the job; Y or T too), X or F cycles the Radio filter, B or Esc closes. Track is the one
 //! thing here that changes anything: which job the HUD's tracker follows.
 
@@ -15,9 +15,9 @@
 enum RZ_ENotebookTab
 {
 	STANDING,
-	JOURNAL,
-	RADIO,
 	QUESTS,
+	RADIO,
+	JOURNAL,
 	SEASON
 }
 
@@ -27,7 +27,7 @@ class RZ_Notebook
 {
 	static const int TABS = 5;
 
-	protected static int s_iLastTab = RZ_ENotebookTab.JOURNAL;
+	protected static int s_iLastTab = RZ_ENotebookTab.QUESTS;
 	protected static int s_iAskedTab = -1;
 	protected static bool s_bOpen;
 	protected static IEntity s_ItemHolder;	// opened from the notebook item: put it away on close
@@ -287,6 +287,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 			}
 
 			RZ_UIW.Tint(m_wRoot, "Tab" + n + "Bg", bg);
+			RZ_UIW.SetText(m_wRoot, "Tab" + n + "Text", RZ_Notebook.TabName(t));
 			RZ_UIW.Tint(m_wRoot, "Tab" + n + "Text", fg);
 			RZ_UIW.Show(m_wRoot, "Tab" + n + "Line", !on);
 
@@ -1064,6 +1065,7 @@ class RZ_StandingRowHandler : ScriptedWidgetEventHandler
 class RZ_JournalPage : RZ_NotebookPage
 {
 	protected int m_iSelected;
+	protected int m_iPast;				// how many of the rows are past jobs (they come first)
 	protected int m_iTracked;			// the tracked job's id (the payload's K record), 0 none
 	protected ref array<ref array<string>> m_aMissions = {};
 	protected ref array<ref array<string>> m_aClues = {};
@@ -1090,21 +1092,43 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A past job's row (Missions/RZ_JobHistory.c): the Journal's history, above what you know.
+	static bool IsPastRow(array<string> m)
+	{
+		return RZ_JobHistory.IsRow(RZ_UIText.Int(m, 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The past jobs come first on the Journal; the Quests tab has none.
+	protected bool WantsPast()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override int DataVersion()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (!ui)
 			return m_iSelected;
 
-		return ui.GetJournalVersion() * 10000 + ui.GetDetailVersion() * 100 + m_iSelected;
+		int v = ui.GetJournalVersion() * 10000 + ui.GetDetailVersion() * 100 + m_iSelected;
+		if (WantsPast())
+			v = v + ui.GetHistoryVersion() * 1000003;
+
+		return v;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnOpened()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		if (ui)
-			ui.Ask(RZ_UIFeed.PAYLOAD_JOURNAL);
+		if (!ui)
+			return;
+
+		ui.Ask(RZ_UIFeed.PAYLOAD_JOURNAL);
+		if (WantsPast())
+			ui.Ask(RZ_UIFeed.PAYLOAD_HISTORY);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1154,8 +1178,24 @@ class RZ_JournalPage : RZ_NotebookPage
 		m_aMissions.Clear();
 		m_aClues.Clear();
 		m_iTracked = 0;
+		m_iPast = 0;
 		string lab = "";
 		array<ref array<string>> rows = {};
+		if (ui && WantsPast())
+		{
+			// The past jobs first, newest first (their own payload)
+			array<ref array<string>> past = {};
+			RZ_MenuBase.Records(ui.GetHistory(), past);
+			foreach (array<string> h : past)
+			{
+				if (RZ_UIText.Str(h, 0) == "M" && IsPastRow(h))
+				{
+					rows.Insert(h);
+					m_iPast++;
+				}
+			}
+		}
+
 		if (ui)
 		{
 			array<ref array<string>> recs = {};
@@ -1206,13 +1246,56 @@ class RZ_JournalPage : RZ_NotebookPage
 	//------------------------------------------------------------------------------------------------
 	protected string HeaderText()
 	{
-		return string.Format("%1 NOTES", m_aMissions.Count());
+		return string.Format("%1 PAST JOBS · %2 NOTES", m_iPast, m_aMissions.Count() - m_iPast);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A row's sub-line, rough area and right-hand word (a job's time left, a note's level).
+	//! A past job's result (field 16, RZ_EJobResult) as its colour: done good, failed bad,
+	//! abandoned dim.
+	protected static Color ResultColor(array<string> m)
+	{
+		int result = RZ_UIText.Int(m, 16);
+		if (result == RZ_EJobResult.DONE)
+			return RZ_UIColor.Good();
+
+		if (result == RZ_EJobResult.FAILED)
+			return RZ_UIColor.Bad();
+
+		return RZ_UIColor.Dim();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A past job's "from Sergeant Hale · Morton".
+	protected static string PastSub(array<string> m)
+	{
+		string sub = "";
+		string by = RZ_UIText.Str(m, 5);
+		if (!by.IsEmpty())
+			sub = "from " + by;
+
+		string where = RZ_UIText.Str(m, 6);
+		if (!where.IsEmpty() && !sub.IsEmpty())
+			sub = sub + " · " + where;
+		else if (!where.IsEmpty())
+			sub = where;
+
+		return sub;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A row's sub-line, rough area and right-hand word (a job's time left, a note's level). A past
+	//! job: who gave it and where, its result in its colour and the season day.
 	protected void FillRow(Widget row, array<string> m, int i)
 	{
+		if (IsPastRow(m))
+		{
+			RZ_UIW.SetText(row, "RowSub", PastSub(m));
+			RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 14));
+			RZ_UIW.Tint(row, "RowDir", ResultColor(m));
+			RZ_UIW.SetText(row, "RowTime", RZ_UIText.Str(m, 15));
+			return;
+		}
+
 		int giver = RZ_UIText.Int(m, 3);
 		string sub = RZ_UIText.Str(m, 6);
 		if (giver >= 0)
@@ -1224,10 +1307,14 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A row's group heading in the list ("" none): the Quests tab's groups, the Journal has none.
+	//! A row's group heading in the list: the Journal's past jobs, then what you know (the Quests
+	//! tab has its own groups).
 	protected string GroupOf(array<string> m)
 	{
-		return "";
+		if (IsPastRow(m))
+			return "PAST JOBS";
+
+		return "WHAT YOU KNOW";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1313,6 +1400,9 @@ class RZ_JournalPage : RZ_NotebookPage
 		if (kind == RZ_EMissionKindUI.FINALE)
 			return "The lab's readout by faction, never by player. Lock counts are never shown.";
 
+		if (IsPastRow(m))
+			return RZ_UIText.Str(m, 14) + " · " + RZ_UIText.Str(m, 15);
+
 		if (RZ_UIText.Int(m, 8) < 0)
 			return "It depends on how it ends.";
 
@@ -1323,16 +1413,25 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Whether the detail shows the job's requirements.
+	//! Whether the detail shows the job's requirements (never on a past job).
 	protected bool ShowsRequirements(array<string> m)
 	{
-		return true;
+		return !IsPastRow(m);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The line under the detail's title: its kind and who gave it.
 	protected string BylineText(array<string> m)
 	{
+		if (IsPastRow(m))
+		{
+			string past = PastSub(m);
+			if (past.IsEmpty())
+				return RZ_UIText.Str(m, 15);
+
+			return past + " · " + RZ_UIText.Str(m, 15);
+		}
+
 		int giver = RZ_UIText.Int(m, 3);
 		string by = RZ_UIText.Str(m, 5);
 		if (by.IsEmpty() && giver >= 0)
@@ -1371,7 +1470,20 @@ class RZ_JournalPage : RZ_NotebookPage
 		RZ_UIW.SetText(m_wRoot, "DetailTitle", RZ_UIText.Str(m, 4));
 		RZ_UIW.SetText(m_wRoot, "DetailBy", BylineText(m));
 		RZ_UIW.SetText(m_wRoot, "DetailBrief", BriefText(m));
-		RZ_UIW.SetText(m_wRoot, "DetailWhere", string.Format("%1\n%2", RZ_UIText.Str(m, 7), RZ_UIText.Str(m, 6)));
+		string rough = RZ_UIText.Str(m, 7);
+		string place = RZ_UIText.Str(m, 6);
+		if (rough.IsEmpty())
+			RZ_UIW.SetText(m_wRoot, "DetailWhere", place);
+		else
+			RZ_UIW.SetText(m_wRoot, "DetailWhere", string.Format("%1\n%2", rough, place));
+
+		// A past job's block says how it ended; every other row's what it pays
+		bool past = IsPastRow(m);
+		string rewardsLabel = "REWARDS";
+		if (past)
+			rewardsLabel = "RESULT";
+
+		RZ_UIW.SetText(m_wRoot, "RewardsLabel", rewardsLabel);
 		string req = RZ_UIText.Str(m, 9);
 		if (req.IsEmpty())
 			req = "Open to anyone.";
@@ -1387,7 +1499,7 @@ class RZ_JournalPage : RZ_NotebookPage
 		// who it went to, and a job's objectives)
 		array<ref array<string>> detail = {};
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		if (ui)
+		if (ui && !past)
 		{
 			ui.AskDetail(RZ_UIText.Int(m, 1));
 			RZ_MenuBase.Records(ui.GetDetail(), detail);
@@ -1445,6 +1557,12 @@ class RZ_QuestsPage : RZ_JournalPage
 	override protected bool Wants(int id)
 	{
 		return IsJobRow(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool WantsPast()
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1527,7 +1645,7 @@ class RZ_QuestsPage : RZ_JournalPage
 	//------------------------------------------------------------------------------------------------
 	override protected string EmptyText()
 	{
-		return "No jobs yet. Listen to the radio, or ask at a safehouse.";
+		return "No jobs yet. Ask a leader or a quartermaster for work, or use a safehouse radio. The radio only says who's asking.";
 	}
 
 	//------------------------------------------------------------------------------------------------

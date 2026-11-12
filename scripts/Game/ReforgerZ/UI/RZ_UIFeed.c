@@ -92,7 +92,8 @@ class RZ_UIFeed
 	static const int PAYLOAD_OBJECT = 14;	// the object menu: O and R records; F falls back; X|reason closes (Interactions/RZ_ObjectScreen.c)
 	static const int PAYLOAD_COOK = 15;		// the cooking screen at a stove: the crafting screen's records (Interactions/RZ_Crafting.c)
 	static const int PAYLOAD_RADIO = 16;	// the radio screen: V and C records; F falls back; X|reason closes (Interactions/RZ_RadioScreen.c)
-	static const int PAYLOAD_NAMETAGS = 20;	// the people near you to talk to: N records; "" none (Dialogue/RZ_Nametags.c, UI/RZ_NametagClient.c)
+	static const int PAYLOAD_NAMETAGS = 20;
+	static const int PAYLOAD_HISTORY = 21;	// the Journal's past jobs, asked when it opens (Missions/RZ_JobHistory.c)	// the people near you to talk to: N records; "" none (Dialogue/RZ_Nametags.c, UI/RZ_NametagClient.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
@@ -454,6 +455,8 @@ class RZ_UIFeed
 			payload = BuildHall();
 		else if (kind == PAYLOAD_SEASON)
 			payload = BuildSeason(playerId);
+		else if (kind == PAYLOAD_HISTORY)
+			payload = RZ_JobHistory.Build(m_GM, playerId);
 		else
 			payload = BuildBackgrounds(playerId);
 

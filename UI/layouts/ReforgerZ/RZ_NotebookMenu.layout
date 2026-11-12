@@ -257,7 +257,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
         VerticalAlign 1
        }
        Color 0.639 0.62 0.565 1
-       Text "JOURNAL"
+       Text "QUESTS"
        "Font Size" 18
        "Min Font Size" 18
        "Horizontal Alignment" Center
@@ -411,7 +411,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
         VerticalAlign 1
        }
        Color 0.639 0.62 0.565 1
-       Text "QUESTS"
+       Text "JOURNAL"
        "Font Size" 18
        "Min Font Size" 18
        "Horizontal Alignment" Center

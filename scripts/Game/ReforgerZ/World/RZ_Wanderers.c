@@ -2597,7 +2597,7 @@ class RZ_Wanderers
 			return;
 
 		m_mJobAt.Set(ident, m_fClock);
-		job.m_aOfferedTo.Insert(playerId);
+		job.Hire(playerId);
 		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
 			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
 	}
@@ -2837,7 +2837,7 @@ class RZ_Wanderers
 
 		m_mJobAt.Set(ident, m_fClock);
 		w.Remember(ident, MEM_HELPED);
-		job.m_aOfferedTo.Insert(playerId);
+		job.Hire(playerId);
 		m_GM.NotifyPlayer(playerId, "Contract: " + RZ_Factions.GetName(RZ_EFaction.SURVIVORS),
 			string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(m_GM), job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId)));
 	}

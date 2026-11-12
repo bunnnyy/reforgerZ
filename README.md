@@ -93,7 +93,9 @@ and one way to end it: **research the cure.**
   out at the north road, one name at a time.
 - **164 missions** (plus about 90 questline stages): faction contracts (a few about what a faction would rather not say), world
   events, puzzle missions, unarmed stealth jobs, missions at the quarantine line, morally grey
-  Haven and Red Hand work and leaders' off-book jobs. Contracts
+  Haven and Red Hand work and leaders' off-book jobs. **Jobs only by interaction:** every job
+  starts from a person you ask or a thing you use (the radio only says who's asking, and world
+  events are news, not jobs); only the people a job was offered to, and their group, are paid. Contracts
   name a rough area until you're close, unless you're a Radio Operator or trusted by the giver.
   Some start because the world asked for them (a hungry house, a lost truck, a town gone bad), and
   the choice missions pay fairly whichever side the result goes to. Some givers leave one thing out of
@@ -156,8 +158,8 @@ and one way to end it: **research the cure.**
   ended over it at each death), an infection timer with the golden window, styled notice cards in each faction's
   colour that come a few at a time by importance (one card at spawn, the rest into the notebook),
   a small quest tracker top left with the tracked job's objectives, a you-are-here
-  arrow on the map, a notebook (standing, journal, radio,
-  quests, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
+  arrow on the map, a notebook (standing, quests, radio, a journal of
+  past jobs and what you know, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks (one Talk prompt a person, their lines typed out a box at a time, small
   nametags over the people near you), a repair screen for the cars, a shop screen at the quartermasters, a
   crafting screen at workbenches and a cooking screen at stoves, a radio screen with every channel and

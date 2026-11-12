@@ -29,8 +29,9 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 
 ## Who gets offered what
 
-**World events** are announced to everyone, and anyone who takes part shares the reward.
-**Contracts** are offered only to players who meet all of their requirements:
+**World events** are news: the radio tells everyone, they're never on the Quests tab and never
+tracked, and anyone who takes part shares the reward. **Contracts** are offered, in person, only
+to players who meet all of their requirements:
 
 1. **Tier with the giver.** Known, Trusted or Champion. Big jobs need trust.
 2. **Standing with others.** For example *not Trusted by the Red Hand*, or *at least Watched by
@@ -45,10 +46,35 @@ people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
 
 How the code does it:
 
-- **No "accept" step.** A contract is offered by radio (at most one new offer per player a
-  minute, briefed in a leader's voice) or by the faction's quartermaster when you walk up.
-  Anyone can join in, but only players who meet the requirements when it ends are paid.
-  Leader jobs are offered only in person.
+- **Jobs only by interaction.** Every job starts from a person you talk to or a thing you use,
+  never from the radio, a timer, a spawn or walking past. The one exception is the openings'
+  steps ([ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)). How each kind starts:
+
+  | Kind | Starts from |
+  |---|---|
+  | Faction contracts, the hard edges, the packs' contracts, puzzle and unarmed contracts, Perimeter and Haven house contracts, Rein In, the arcs' contracts, questline and majors' stage missions | Its faction, in person: a leader's **Ask for work** (at a quartermaster, **Ask for whoever's in charge** first) offers every open contract of that faction you qualify for. The Haven's within 3 km are also offered on a safehouse radio (**Listen to the safehouse radio**) |
+  | A leader's own job (an Independent or Rogue leader's, or a questline's in-person stage such as The operator's tape) | That leader's **Ask for work**, at their seat |
+  | The car keys job, the Courier's letters, Barter Chain | The wanderer you ask |
+  | A parley's amends job | The parley itself (reserved for you for the hour) |
+  | A puzzle or arc no faction gives (The Deserter's Map) | Its thing: reading its clue makes it yours |
+  | A questline's later stages | Already yours once you did something at an earlier stage |
+  | World events | Nothing: they're news, not jobs |
+  | Errands, strangers, the cure finale's routes, the epilogue's closing work | The person you ask, or the desk you lock at ([ERRANDS.md](ERRANDS.md), [FINALE.md](FINALE.md), [EPILOGUE.md](EPILOGUE.md)) |
+
+  **The radio only says who to ask.** An eligible player hears of an open contract they haven't
+  been offered, once per contract and at most once a minute, as a Radio-tab entry under Missions
+  that never makes a card (`RZ_ENoticeTag.HEARD`): *"Bastion wants people for Recover the Bus,
+  east of Levie, a few km north-west. Ask Sergeant Hale at Fort Kell, or at any Bastion
+  quartermaster."* The spawn's *Radio* entry lists the world events and the work going, each with
+  who to ask. Walking up to a quartermaster with work you could be offered gets one line
+  (*"There are 2 jobs going here. Ask for whoever's in charge."*), every 5 minutes at most. A
+  leader's own job is only heard of from the leader (*"catches your eye..."*) or, for a questline's
+  in-person stage, by word of mouth naming who to see.
+
+  **An offered job is yours:** it's on your Quests tab (*Offered* until you get there, then
+  taken). **Who's paid:** only players it was offered to, and anyone in their vanilla group, who
+  meet the requirements when it ends. Anyone else who turns up hears *"Nobody asked you to. Bastion
+  pays the people it hired."*
 - **Built from a few blocks:** hold an area, kill what the mission spawned, visit points, destroy
   a prop, carry an item to a drop point, or choose which drop point gets it; escort people,
   capture a special alive, drive a vehicle into a zone, pay in health, or follow a chain of
@@ -58,7 +84,7 @@ How the code does it:
   of a point 1.2 km NE". The circle holds the real spot but is centred off it (30–70% of the
   radius). Within 500 m of the spot a player learns it, and is told if it was offered to them.
   **Radio Operators** and players **Trusted** (or more) with the giver get the exact spot from the
-  start. Offers, the quartermaster's and safehouse radio's lists, leaders, wanderers, the Haven
+  start. The radio's who-to-ask lines, the safehouse radio's list, leaders, wanderers, the Haven
   neighbours perk and the notebook all use the same rule (**Contracts > Rough radius**, 0 = always
   exact); the notebook and the quest tracker say it in words, never metres ("East of Morton, a few
   km north-west": [UI.md](UI.md#the-quest-tracker)), and the map shows the tracked job's circle as a search area until the spot is known, then a diamond on it ([UI.md](UI.md#the-map)). Contracts that give their own positions keep them: puzzles (their clues and grids),
@@ -100,7 +126,7 @@ How the code does it:
 - **Mirror offers** ([DESIGN.md](DESIGN.md#story-blocks)): The Cache and The Armory are one class
   with two givers. One time in ten (**Missions > Story > Mirror chance**; off on a PvE server) the
   second side wants it too. Its eligible players hear 5 minutes later, with a rough area twice as
-  wide. The side with more holders at the end wins; a draw is half each, and neither leader counts
+  wide and who to ask: it's theirs once their own side offers it (a leader's **Ask for work**). The side with more holders at the end wins; a draw is half each, and neither leader counts
   it. The losing side gets a line, never a fallout errand.
 - **Story jobs** ([DESIGN.md](DESIGN.md#story-blocks)): Protection Racket, Lost Colleague, Crash
   Site, Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout and Smuggler's Run,
@@ -391,7 +417,8 @@ The Lone One is Halcyon's #1. **Fire Mission** and **Bastion Shelling** on a lai
 
 ## World events
 
-Announced to everyone, open to everyone. Most pay in loot found on the spot rather than Fame.
+News on the radio for everyone, open to everyone; never a job on the Quests tab, never tracked,
+never in the Journal's past jobs. Most pay in loot found on the spot rather than Fame.
 Code: `Missions/Events/`; numbers and optional prefabs in **Missions > Events**
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)). Nothing comes in from outside: every reward was
 already in the Zone, and every crate is earned on the spot.
@@ -562,12 +589,12 @@ Personal jobs that Independent and Rogue leaders give **in person**, off their s
 | 30 | Leak the Data | Halcyon, Rogue | Research data to a Haven safehouse for nothing | Haven Fame +5; infection −3 | ✅ |
 | 31 | Private Collection | Halcyon, Rogue | Capture a special alive for the field lead | Paid. Taken to the lab instead: the field lead is turned in, research +3 | ✅ |
 | 32 | Sell the Formula | Halcyon, Rogue | The antidote formula to the Red Hand | Red Hand Fame +5 | ✅ |
-| – | Rein In | The stronghold (radio, Known) | A leader turned Rogue. Read them the terms, or take their counter-offer | Terms: loyalty +25. Counter-offer: Favor, 35% the stronghold finds out (+10 Infamy) | ✅ |
+| – | Rein In | The stronghold (its leaders, in person; Known) | A leader turned Rogue. Read them the terms, or take their counter-offer | Terms: loyalty +25. Counter-offer: Favor, 35% the stronghold finds out (+10 Infamy) | ✅ |
 
 *Simplified:* "in person" means at the leader's seat. Families are one stand-in figure; people
 join or leave as numbers. The other side of a trade is a drop point at their nearest seat (within
-5 km), else outside a town. Rein In is offered a few minutes after a leader turns Rogue, then at
-most hourly.
+5 km), else outside a town. Rein In goes up a few minutes after a leader turns Rogue, then at
+most hourly, and is offered like any contract.
 
 ## Story arc missions
 
@@ -577,7 +604,7 @@ missions exist only inside arcs and are never picked at random:
 
 | Mission | Arc | Kind | What you do | Result | Status |
 |---|---|---|---|---|---|
-| The Deserter's Map | The Deserter's Map | World event | Take a map piece from a dead deserter; get the other two from the wanderers it names; reach the bunker (four infected) | The bunker's stores (a reward crate). A holder dies first: fails | ✅ |
+| The Deserter's Map | The Deserter's Map | World event; yours (on the Quests tab) once you search the deserter's jacket | Take a map piece from a dead deserter; get the other two from the wanderers it names; reach the bunker (four infected) | The bunker's stores (a reward crate). A holder dies first: fails | ✅ |
 | Fever Town: the water | Fever Town | Halcyon contract, Any, ★ Lab Tech | The Water Survey, starting at the sick safehouse's well (not research: it still runs after the cure) | Fame, Favor; the arc goes on | ✅ |
 | Fever Town: get them out | Fever Town | Haven contract, Any, ★ Nurse/Doctor: faster | Hold the safehouse gate for 2 minutes (2 waves) | Fame, Favor; two people move, the added infection goes. Fails: two die | ✅ |
 
@@ -589,8 +616,10 @@ with another faction) decides what comes next and how it ends. How the engine wo
 write one: [DESIGN.md](DESIGN.md#questlines). Code: `Missions/Questlines/<Faction>/`.
 
 - **Who gets offered what.** Each stage mission is a normal contract from the questline's
-  faction, offered like any other. Anyone who did something at a stage is part of the questline
-  from then on: it's on their Quests tab, and they hear when the next stage opens.
+  faction, offered in person like any other (the radio says who to ask). Anyone who did something
+  at a stage is part of the questline from then on: it's on their Quests tab, every later stage is
+  theirs without asking again, and they hear when it opens. When it ends, it's a past job in their
+  Journal.
 - **Pay.** A stage mission pays its Fame and Favor as usual; approaches can add personal standing
   (siding with another faction) or a small reward. The ending's world consequences are shared,
   and its standing goes to everyone who took part.
@@ -765,7 +794,7 @@ which also holds what the three Bastion lines share.
 
 | # | Stage | Kind | Approaches | Leads to | Status |
 |---|---|---|---|---|---|
-| 1 | **The operator's tape** | Bastion contract, Known, in person from the commander (word reaches Bastion's Known players: he wants a word, not on the radio), only after the nightly call (at night); ★ Radio Op; 50 min; 12 Fame, 15 Favor | At the post: *talk* to the operator and take his tape, or *sneak*: copy it onto your own set while he isn't looking (a radio on you; no shots within 60 m and not noticed; seen, you take it openly). On the hill 0.7–1.6 km away (the radio mast, else the generic object): play it into the relay and stay within 30 m for 3 min (heat; a horde after the first minute; ★ Radio Op: twice as fast). The relay's log names the runner | Stage 2. Time up: once more; then, or with the commander gone, it fizzles | ✅ |
+| 1 | **The operator's tape** | Bastion contract, Known, in person from the commander (word reaches Bastion's Known players that he wants a word, not on the radio, as a Radio-tab line; the job is theirs when he offers it: **Ask for work**), only after the nightly call (at night); ★ Radio Op; 50 min; 12 Fame, 15 Favor | At the post: *talk* to the operator and take his tape, or *sneak*: copy it onto your own set while he isn't looking (a radio on you; no shots within 60 m and not noticed; seen, you take it openly). On the hill 0.7–1.6 km away (the radio mast, else the generic object): play it into the relay and stay within 30 m for 3 min (heat; a horde after the first minute; ★ Radio Op: twice as fast). The relay's log names the runner | Stage 2. Time up: once more; then, or with the commander gone, it fizzles | ✅ |
 | 2 | **The runner** | Bastion contract, Known, in the commander's voice (nobody's once he's gone); 60 min; 15 Fame, 15 Favor | A step chain through three towns 0.7–2.5 km apart: his satchel, his fire (2 infected), his body (5 infected, one a special). Reading the page on him ends it | Stage 3. Time up: once more | ✅ |
 | 3 | **Who reads it** | Bastion contract, Known; 60 min; 10 Fame, 10 Favor | The page (the mission item) is on the body. *Talk:* to the duty officer at the stronghold (Trusted, or ★ Soldier): the stove, +8 Bastion Fame and 30 Favor on top; or to the commander, held for the stage and standing in at his post: he reads it to his men. *Side with the Red Hand:* a crew boss's radio man at the nearest Red Hand seat within 6 km (else a Red Hand meeting point; not if the Red Hand is hostile to you): +5 Red Hand Fame, 40 Red Hand Favor, +8 Bastion Infamy, no pay. *Side with the Haven:* the chair's clerk at the Haven stronghold: +5 Haven Fame, no pay | Stage 4 on that branch (`orders.stove`, `.read`, `.mocked`, `.haven`). Lost or time up: once more | ✅ |
 | 4 | **Word gets round** | Wait | 2 hours of play or 12 real hours. Read: a headline, two men walked off the post. Open channel: a headline, "expended" on the open channel every hour | Stage 5. The commander gone (read), or no copy of the tape (stove): the ending at once | ✅ |
@@ -1076,7 +1105,7 @@ rumour, found a tell, ate there, met the host) and to everyone who took part. Co
 | 2 | **Guest** | In person, Any, ★ Nurse, Elder; 60 min | Whoever keeps the road now, on the lane 160 m out. *Talk*: accept, walk up and eat at the table (`table.guest`, yours; the guest rule watches the rest of the visit). *Sneak*: decline, then lie up a minute on the rise behind the farm unseen (seen: they're wary at stage 3). *Declare a bite* (infected): blessed and sent on, past the boots. Shooting the host ends it | 3. Time up: 2 again, once | ✅ |
 | 3 | **Proof** | In person, Any, ★ Nurse, Elder; 60 min | Three of the guestbook (its last small cross is the last one taken), the boots, the letters in the drawer, the cellar (the mother's key, once the boy has said where it hangs; or a crowbar, which they hear) and the boy's one thing. *Sneak*: at supper (18:30–20:30) nobody sees you; otherwise any of them within 20 m (30 m if wary), shots, heat or the infected's notice and you're caught. *Talk*: the boy at the stream, 160–220 m out, unarmed, ★ Nurse or Elder only. *Force*: caught, they set on you; shoot at the house and you start it (+6 Haven Infamy a death until you've found something); win and the house is open | Three: 4. Caught and shut out, or time up: 3 again (three tries). The house finished in the fight: 6 | ✅ |
 | 4 | **Who to tell** | In person, Any; 2 h | *Side*: talk to any leader of the Haven, Bastion, Halcyon (needs the lab) or the Red Hand, having taken part: the house is found out; +10 Fame with that faction (the Red Hand +4; +5 more for C2's undercover guest); `table.haven`, `table.bastion`, `table.halcyon` or `table.redhand`. *Force*: "Deal with it yourself" at the farm gate | 5, that faction's way or yours. Time up: 4 again, once | ✅ |
-| 5 | **The end of the house** | The told faction's contract on the radio, Any; yours in person | *The Haven* (10 Fame, 30 Favor; 16:00–21:30): unarmed, "It's time" with the mother once the quiet son is talked round (persuade with the Haven, difficulty 2; ★ Elder or Nurse +1) or let go; the family waits at the edge of town; "Let them walk on", and the boy stays. *Bastion* (10 Fame, 30 Favor): a warning once someone is within 600 m (or after 15 min), the guns 5 min later (Missions > Explosion); get the boy out first (no infected within 25 m of him). *Halcyon* (10 Fame, 20 Favor): the mother, or one of them alive, follows you to the lab (an escort). *The Red Hand* (11 Fame, 40 Favor): 90 s within 50 m of the house, two waves of three infected. *Yourself*: fight them (the fight prefab), or tell the mother you know (persuade, as above) and she walks out, then tell the rest to go; a failed word and they set on you; get the boy out first | The ending; yours: 6. Failed: 5 again, once | ✅ |
+| 5 | **The end of the house** | The told faction's contract, offered in person by its leaders (the radio says who to ask), Any | *The Haven* (10 Fame, 30 Favor; 16:00–21:30): unarmed, "It's time" with the mother once the quiet son is talked round (persuade with the Haven, difficulty 2; ★ Elder or Nurse +1) or let go; the family waits at the edge of town; "Let them walk on", and the boy stays. *Bastion* (10 Fame, 30 Favor): a warning once someone is within 600 m (or after 15 min), the guns 5 min later (Missions > Explosion); get the boy out first (no infected within 25 m of him). *Halcyon* (10 Fame, 20 Favor): the mother, or one of them alive, follows you to the lab (an escort). *The Red Hand* (11 Fame, 40 Favor): 90 s within 50 m of the house, two waves of three infected. *Yourself*: fight them (the fight prefab), or tell the mother you know (persuade, as above) and she walks out, then tell the rest to go; a failed word and they set on you; get the boy out first | The ending; yours: 6. Failed: 5 again, once | ✅ |
 | 6 | **What you know** | Wait | Two hours of play or 12 real hours. A faction's leader hearing the proof from someone who took part: half that faction's telling Fame, once each | By your own hand | ✅ |
 
 | Ending | Branch | Consequences | Status |
@@ -1118,8 +1147,9 @@ moves as data while nobody watches); the fight is the only AI.
 ## The cure finale
 
 The last tenth of the cure ([FINALE.md](FINALE.md)): five routes open at the 90% gate, each a
-questline of four acts whose stages are scenes. Open acts are offered on the radio by the route's
-faction (anyone not locked elsewhere); sworn acts aren't, and are told to the route's locked players.
+questline of four acts whose stages are scenes. Open acts are offered in person by the route's
+faction, like any contract (anyone not locked elsewhere; the radio says who to ask); sworn acts are
+told to the route's locked players and are theirs without asking.
 Each step pays its decider at most 10 Fame and 20 Favor (the Independent: 20 Haven Favor). Code:
 `Missions/Questlines/Finale/`.
 

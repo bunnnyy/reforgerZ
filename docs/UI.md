@@ -150,9 +150,9 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on). Under the noise meter during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Top left, **the quest tracker** ([below](#the-quest-tracker), mockup `tracker.png`): only the job you track, its current objective, the known next one and a rough area; your other jobs are in the Quests tab only. Nothing to press, so it's the same on a pad (Track is in the notebook's Quests tab) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line, the look line and the tracker not seen yet |
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
 | Notebook: Standing | `standing.png` (the old four-column page; the page is now design G2) | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). One row per faction, stacked down the page with the faction's colour as a left bar, mostly icons: the emblem and name; **what they call you**, large (the reputation's name, or the tier word with Reputation > Names off; the tier icon beside it, both in the tier's colour); Favor (a coin and the number); the leaders you've met (a bust and how many, or NONE); what they need (its icon and word, or NONE); and a kit tell (a jacket, only for Bastion, the Red Hand and Halcyon with borrowed kit on: dim while they don't know you, yellow once they know your face or caught you, red while you're blown). No Fame or Infamy numbers, bars or grid. Up/down or the mouse only **highlights** a row (a bone wash and border); a click, A or Enter **opens** it (or closes it again). At most one row is open, filling the free space while the others shrink to their strip; with none open (the start) the four share the page. The open row has four blocks: *How they see you* (their word as a sentence, what the name counts as, what's left to forgive while there's Infamy, a line when they hunt you, and **Next**: the next name up with what earns it, "TRUSTED: 12 more Fame" or "KNOWN: work off 8 Infamy", none at the top), *Leaders you've met* (names and titles, then the nearest one's verdict), *What they need* (the need and its line) and *In their kit* (whether they know your face, catches, blown time, their tells, what their enemies do to their colours: the payload's `K` records). The other rows stay one line, so all four names are always on screen. Under the rows, **between the factions**: the truces and feuds on one line | `RZ_StandingPage` | Page built, not checked in play |
-| Notebook: Journal | `journal.png` (the mockup still shows the old job list) | What you know that isn't a job, as rows with a detail each: the packs you know of, Read on doors, the finale's page, and with Dialogue > Trees on a **Promises** row (each open promise with its play left) and a **What you know** row (the lies you've seen through) ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line: research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)). The jobs are on the Quests tab | `RZ_JournalPage` | Page built, not checked in play |
-| Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
-| Notebook: Quests | `tracker.png` (right) | Every job you have, in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, its rough area, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
+| Notebook: Quests | `tracker.png` (right) | Every job you have (only jobs offered to you in person: [MISSIONS.md](MISSIONS.md#who-gets-offered-what)), in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, its rough area, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
+| Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, the mission and world notices, the world events (news, never jobs) and the work you heard of with who to ask; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
+| Notebook: Journal | `journal.png` (the mockup still shows the old job list) | Two groups. **PAST JOBS**: every job you had that ended, newest first (the last 40, kept on your profile): its type icon, name, who gave it and where, DONE, FAILED or ABANDONED in its colour, the season day, and one line of how it ended. **WHAT YOU KNOW**: what you know that isn't a job, as before: the packs you know of, Read on doors, the finale's page, and with Dialogue > Trees a **Promises** row and a **What you know** row ([DIALOGUE.md](DIALOGUE.md#promises-and-callbacks)). Under the list, the lab's line ([below](#notebook-journal)) | `RZ_JournalPage` | Page built as text, not checked in play |
 | Notebook: The season | — | One page that scrolls: the four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)); then the hall of fame: this season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_SeasonPage` | Page built as text (one scroll since the hall merged in), not checked in play; no mockup |
 | The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, the kind of place you start at (never a picker), and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
 | The death brief | — | At a death, one card over the spawn screen: the name, the background and which life, the day and place, how it ended, how long you lived, and a few of the life's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
@@ -221,7 +221,7 @@ of the door.", from the spawn scenario, or "You come to east of Levie."; a locke
 | The scene where you wake, and its clue if none could be placed | The Radio tab, under the scene's title |
 | The outbreak and the lab, the government broadcast | The Radio tab, World |
 | The season: its rules, the session's news (*Word on the roads*), the hall of fame so far | **One** entry, *This season* |
-| The jobs on the radio | One entry, *Radio*; the jobs themselves are on the Quests tab |
+| What's on the radio | One entry, *Radio*: the world events (news) and the work going, each with who to ask; the jobs offered to you are on the Quests tab |
 | Pay owed while you were away (errands) | **One** entry, *While you were away*, all of it |
 | The epilogue's news | One entry, *Word on the roads* |
 | Anything else in the **quiet start** (the leaders' greets, standing, the Perimeter, disguise, traces, a mission offer) | The Radio tab (World), no card |
@@ -242,7 +242,7 @@ important first, then oldest first. Each card comes in with vanilla's own hint s
 | High | about you, now | the spawn card, your standing changed, a background unlocked, every mission notice (offered, "this is the place", done, failed, refused), the finale's lock card ("[Point of no return]") and "Written down", the batch and the seal calls |
 | Normal | radio and faction voices | open and secure channels, the broadcast, faction notices, world events, anything with an unusual title |
 | Low | news | guidance reminders for veterans; the finale's stand line within 150 m of the lab ("CLEAN ROOM: Bastion. The Haven taking: 0:35 of 0:60.") |
-| Quiet | the notebook only, never a card | the welcome's world news, the season summary, pay owed while you were away (`RZ_ENoticeTag.QUIET`) |
+| Quiet | the notebook only, never a card | the welcome's world news, the season summary, pay owed while you were away (`RZ_ENoticeTag.QUIET`); work you heard of, with who to ask (`RZ_ENoticeTag.HEARD`, listed under Missions; it doesn't count on the Quests tab) |
 
 - **Urgent** cards skip every gap and the quiet start, and when the stack is full the least
   important card on screen is cut short to make room.
@@ -252,8 +252,8 @@ important first, then oldest first. Each card comes in with vanilla's own hint s
   to the notebook only (or, if none is listed, the least important is dropped).
 - There's no separate notification log: the notebook's Radio tab keeps the last **Radio tab
   entries** (60) radio, mission, world and quiet notices of this life. Filters (X or F, or click the
-  chip): **All, Open channel, Secure, Broadcast, Missions, World.** Missions: offers, "this is the
-  place", done, failed, refused. World: world events, the quiet entries and what came in the quiet
+  chip): **All, Open channel, Secure, Broadcast, Missions, World.** Missions: work you heard of
+  and who to ask, offers made to you, "this is the place", done, failed, refused. World: world events, the quiet entries and what came in the quiet
   start.
 
 **Tips from context.** The guidance tips ([DESIGN.md](DESIGN.md#new-player-guidance)) stay, one at a
@@ -262,15 +262,15 @@ dark, you're too loud, you're near the line), at most one every **Tip gap** (90 
 isn't critical in a life's first **Tips wait after spawn** (90 s).
 
 How a notice's importance is known: the server tags about twenty call sites
-(`NotifyPlayerAs`/`NotifyAllAs` with `RZ_ENoticeTag`: MISSION, EVENT, WORLD, URGENT, HIGH, LOW, QUIET, SPAWN;
+(`NotifyPlayerAs`/`NotifyAllAs` with `RZ_ENoticeTag`: MISSION, EVENT, WORLD, URGENT, HIGH, LOW, QUIET, SPAWN, HEARD;
 mission messages through `RZ_Mission.NotifyParticipants` and `NotifyInterested`); every other
 notice is classified by its title on the client (`RZ_NoticeStyle.Classify`). Without the HUD the
 vanilla hint queue sorts the same way, with no expiry (it has nowhere else to go).
 *Simplified:* an odd title gets Normal; nothing is lost, it only waits.
 
 **Notice lanes** sit on the server, above this pacing: they decide whether something that speaks to
-a player unasked (a leader catching your eye, the Long Table's host on the road, later radio offers,
-wanderers and errands) may speak at all, at most one such contact every 4 minutes. Urgent notices
+a player unasked (a leader catching your eye, the Long Table's host on the road, wanderers and
+errands) may speak at all, at most one such contact every 4 minutes. Urgent notices
 and anything you asked for are never held. The rules are in [DESIGN.md](DESIGN.md#notice-lanes).
 
 ### The quest tracker
@@ -290,8 +290,8 @@ under the secure-radio panel while that shows), for the one job you follow. The 
   the HUD redraws it only when a new copy arrives.
 
 **What's tracked.** Nothing, until you pick a job in the Quests tab or take one. Taking a job (being
-counted on it: a contract or event you reached, a questline you took part in, an errand you agreed
-to) tracks the newest one if nothing is tracked. When the tracked job ends, the newest one still
+counted on it: a job offered to you that you reached, a questline you took part in, an errand you
+agreed to) tracks the newest one if nothing is tracked. When the tracked job ends, the newest one still
 taken is tracked. Picking the tracked job again stops tracking it, and then nothing is tracked
 until you take a new job. The choice is saved on your profile (`m_iTrackedId`, with the title to
 find it again after a restart), so it survives a relog. A job you haven't taken is tracked only if
@@ -309,7 +309,11 @@ no placeholders, nothing hidden.
 
 The one place to choose what the tracker follows, and the one place your other jobs are listed (the
 house mockup, `UI/Mockups/tracker.html`, right). Every job you have, in three groups, each under its
-heading (`RowGroup`):
+heading (`RowGroup`). A job is yours only once a person or a thing offered it to you
+([MISSIONS.md](MISSIONS.md#who-gets-offered-what)): work you only heard of is on the Radio tab with
+who to ask, world events are news there and never here, and a job that ended moves to the Journal.
+Empty, the tab says *"No jobs yet. Ask a leader or a quartermaster for work, or use a safehouse
+radio. The radio only says who's asking."*
 
 | Group | Jobs |
 |---|---|
@@ -338,9 +342,38 @@ tracked job). The server answers with the tracker and a fresh list
 track / untrack · LB/RB: tabs · B: close"*, as vanilla's input buttons (the key or the pad button by
 the device in use), or as that text where they can't be made.
 
+### Notebook: Journal
+
+What's behind you and what you know, in two groups under their headings (`RowGroup`), with the same
+row and detail as the Quests tab:
+
+| Group | Rows |
+|---|---|
+| PAST JOBS | Every job you had that ended, newest first: contracts and missions you were offered and took part in (or that a leader or a parley offered you alone), questlines you were part of, errands you held (the openings' steps among them). Never a world event (news, not a job) or work you only heard of |
+| WHAT YOU KNOW | The packs you know of, Read on doors, the finale's page, Promises and What you know (below) |
+
+A past job's row: its type icon tinted the giver's colour, its name, *"from Sergeant Hale · Morton"*,
+its result on the right in its colour (DONE green, FAILED red, ABANDONED dim) and the season day
+under it (*"Day 4"*; *"Season 2, day 9"* for an older season). Its detail: the same line with the
+day, how it ended as the brief (a contract's deed, *"Brought medicine to Morton."*; its fail or
+called-off line; *"You walked away from it."*; an errand's giver's thanks, or *"Mara stopped
+waiting."*), the place, and RESULT where a job's REWARDS go. Nothing to press but choose: a past job
+asks the server for no detail.
+
+**How it's kept** (`Missions/RZ_JobHistory.c`): per player on the server, on the profile (saved with
+it), the newest **40**, across lives. A mission adds its row when it ends (`RZ_MissionManager.Finish`:
+done, failed, or abandoned when you stepped out, it was called off, or someone else saw to a job
+offered to you alone), a questline at its end (`RZ_Questlines.EndRun`: an ending is done, going quiet
+abandoned, for everyone who took part, online or not), an errand when a held one ends
+(`RZ_Errands.End`). The rows go to the owner as their own payload (`RZ_UIFeed.PAYLOAD_HISTORY`, kind
+21, the journal's `M` records with the result word, the day and the result), asked when the Journal
+opens; the page asks the journal's payload too, for what you know. Under the list, the lab's line:
+research, what waits in its backlog and how long that takes ("Research 63 percent. Waiting: 14
+samples' worth, about 4 days of work.", [DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)).
+
 ### The notebook
 
-One menu with five tabs, in this order: **Standing, Journal, Radio, Quests, The season.** The map
+One menu with five tabs, in this order: **Standing, Quests, Radio, Journal, The season.** The map
 key isn't a tab: it's on the map ([The map](#the-map)). The hall of fame is part of The season.
 
 | Open it | Keyboard and mouse | Gamepad / console |
@@ -349,7 +382,7 @@ key isn't a tab: it's on the map ([The map](#the-map)). The hall of fame is part
 | The pause menu | Esc, then **Notebook** | Start, then **Notebook**, A |
 | The notebook item | In the inventory, take it into your hand | The same, or from a quick slot |
 
-- It opens on the tab you last used this session (the first time: Journal).
+- It opens on the tab you last used this session (the first time: Quests).
 - LB/RB or Q/E switch tabs; clicking a tab works too. Up/down (D-pad, stick, arrows) move in the
   journal's and the Quests tab's lists, highlight the next faction's row on the Standing page,
   and scroll the other tabs' lists; A or Enter selects the journal row with the focus, on the
@@ -357,20 +390,20 @@ key isn't a tab: it's on the map ([The map](#the-map)). The hall of fame is part
   the highlighted row or closes it; X or F (or a click on the chip) cycles the Radio filter; B or
   Esc closes.
 - The footer shows the open tab's prompts (`RZ_NotebookPage.Prompts`, made again on each tab
-  switch): Standing choose and open, Journal choose, Radio filter, Quests choose and track /
-  untrack, and on every tab tabs and close.
+  switch): Standing choose and open, Quests choose and track / untrack, Radio filter, Journal
+  choose, and on every tab tabs and close.
 - On the Standing page the mouse highlights the row it's over and a click opens it (a click on the
   open row closes it). Rows open only on a click, A or Enter; one at most, and with none open the
   four share the page. The highlighted and open rows are kept for the session. Hover only does
   what up/down does, so nothing needs it.
-- A tab with something new since you last looked carries a count: Quests the mission notices,
-  Radio everything it lists. Opening the notebook also clears the "+N in your notebook" line.
+- A tab with something new since you last looked carries a count: Quests the mission notices (not
+  the work you only heard of), Radio everything it lists. Opening the notebook also clears the "+N in your notebook" line.
 - Opened from the item, the item is put away again when the notebook closes.
 - You can't move while it's open (it's a menu, like vanilla's). The world keeps running.
 
 **How it works.** `RZ_NotebookMenu` holds the shared frame (heading, sub-line, tabs with their
 counts, close button, footer prompts) and an empty `Page` frame. Each tab is a page
-(`RZ_NotebookPage`: `RZ_StandingPage`, `RZ_JournalPage`, `RZ_RadioPage`, `RZ_QuestsPage`,
+(`RZ_NotebookPage`: `RZ_StandingPage`, `RZ_QuestsPage`, `RZ_RadioPage`, `RZ_JournalPage`,
 `RZ_SeasonPage`) with its own layout (**UI > Standing page** and the rest); switching tabs removes
 the old page's widgets and creates the new page's layout inside `Page`, so the menu stays open and
 the pad focus is set again (the page's first row, else the open tab). A tab whose page layout is
@@ -1248,8 +1281,8 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; twelve mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; twelve mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, radio, object menu and spawn screens', the death brief's and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting, spawn screen, death brief and radio presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
-| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the death brief; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
-| Planned | Mockups of the notice board, the object menu, the radio screen and the season page; finished jobs on the Journal tab (they aren't kept yet); the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |
+| Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the death brief; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
+| Planned | Mockups of the notice board, the object menu, the radio screen and the season page; the Journal's mockup with its past jobs; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |

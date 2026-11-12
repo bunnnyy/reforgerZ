@@ -409,10 +409,14 @@ class RZ_FactionPerks
 				if (m_mGreeted.Find(key, last) && m_fClock - last < QM_GREET_COOLDOWN)
 					continue;
 
+				// Jobs only by interaction: the greeting says there's work and who to ask, and offers
+				// nothing (the quartermaster's "Ask for whoever's in charge", then "Ask for work")
 				m_mGreeted.Set(key, m_fClock);
-				string work = m_GM.GetMissions().ListContractsFor(playerId, f, p);
-				if (!work.IsEmpty())
-					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), work);
+				int work = m_GM.GetMissions().CountContractsFor(playerId, f, p);
+				if (work == 1)
+					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), "There's a job going here. Ask for whoever's in charge.");
+				else if (work > 1)
+					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), string.Format("There are %1 jobs going here. Ask for whoever's in charge.", work));
 			}
 		}
 	}
@@ -466,15 +470,22 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Haven Trusted: the nearest job you'd be paid for.
+	//! Haven Trusted: the nearest job you could be paid for; one nobody offered you yet says who to
+	//! ask for it (jobs only by interaction).
 	protected void Neighbours(int playerId, IEntity ent)
 	{
 		if (!ent || !RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.SURVIVORS), RZ_ETier.TRUSTED))
 			return;
 
 		RZ_Mission m = m_GM.GetMissions().FindNearestFor(playerId, ent.GetOrigin());
-		if (m)
-			m_GM.NotifyPlayer(playerId, "Haven neighbours", string.Format("Nearest job: %1, %2.", m.m_sTitle, m.GetWhereTextFor(m_GM, ent.GetOrigin(), playerId)));
+		if (!m)
+			return;
+
+		string ask = "";
+		if (m.m_bContract && !m.IsHired(m_GM, playerId))
+			ask = " " + m_GM.GetMissions().GiverHint(m, m.m_Req.m_eGiver);
+
+		m_GM.NotifyPlayer(playerId, "Haven neighbours", string.Format("Nearest job: %1, %2.%3", m.m_sTitle, m.GetWhereTextFor(m_GM, ent.GetOrigin(), playerId), ask));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -46,7 +46,8 @@ enum RZ_ENoticeTag
 	HIGH,
 	LOW,
 	QUIET,		// into the notebook's Radio tab only, never a card (the welcome's world news, offline pay)
-	SPAWN		// the one card at spawn: who you are and where (docs/UI.md, "Notices")
+	SPAWN,		// the one card at spawn: who you are and where (docs/UI.md, "Notices")
+	HEARD		// work you heard of (who to ask for it): the Radio tab's Missions, never a card, not a job
 }
 
 //------------------------------------------------------------------------------------------------
@@ -595,6 +596,7 @@ class RZ_NoticeStyle
 	int m_iPriority = RZ_ENoticePriority.NORMAL;
 	bool m_bQuiet;		// the notebook only, no card: QUIET, or anything not urgent in the quiet start
 	bool m_bSpawn;		// the spawn card: the one card the quiet start lets through
+	bool m_bHeard;		// work you only heard of (HEARD): logged under Missions, but it isn't a job yet
 
 	//------------------------------------------------------------------------------------------------
 	//! The kind from the title, then the server's tag (RZ_ENoticeTag): a mission, event or world tag
@@ -603,14 +605,15 @@ class RZ_NoticeStyle
 	{
 		RZ_NoticeStyle st = FromTitle(title);
 		bool radio = st.IsRadio();
-		if (tag == RZ_ENoticeTag.MISSION && !radio)
+		if ((tag == RZ_ENoticeTag.MISSION || tag == RZ_ENoticeTag.HEARD) && !radio)
 			st.m_iKind = RZ_ENoticeKind.MISSION;
 		else if (tag == RZ_ENoticeTag.EVENT && !radio)
 			st.m_iKind = RZ_ENoticeKind.EVENT;
 		else if ((tag == RZ_ENoticeTag.WORLD || tag == RZ_ENoticeTag.QUIET) && !radio)
 			st.m_iKind = RZ_ENoticeKind.WORLD;
 
-		st.m_bQuiet = tag == RZ_ENoticeTag.QUIET;
+		st.m_bQuiet = tag == RZ_ENoticeTag.QUIET || tag == RZ_ENoticeTag.HEARD;
+		st.m_bHeard = tag == RZ_ENoticeTag.HEARD;
 		st.m_bSpawn = tag == RZ_ENoticeTag.SPAWN;
 		st.m_iPriority = PriorityFor(title, st.m_iKind, tag);
 		return st;
@@ -629,6 +632,7 @@ class RZ_NoticeStyle
 			case RZ_ENoticeTag.MISSION: return RZ_ENoticePriority.HIGH;
 			case RZ_ENoticeTag.WORLD: return RZ_ENoticePriority.LOW;
 			case RZ_ENoticeTag.QUIET: return RZ_ENoticePriority.LOW;
+			case RZ_ENoticeTag.HEARD: return RZ_ENoticePriority.LOW;
 			case RZ_ENoticeTag.SPAWN: return RZ_ENoticePriority.HIGH;
 		}
 

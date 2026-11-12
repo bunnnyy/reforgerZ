@@ -27,6 +27,18 @@ class RZ_PlayerProfile
 	string m_sTrackedTitle;				// its title, to find it again after a restart
 	bool m_bTrackOff;					// untracked on purpose: nothing is tracked until a new job is taken
 
+	// Past jobs (the notebook's Journal, Missions/RZ_JobHistory.c): finished, failed and abandoned,
+	// oldest first, at most RZ_JobHistory.MAX; one entry is the same index in every array
+	ref array<string> m_aPastTitle = {};
+	ref array<string> m_aPastBy = {};		// who gave it ("Sergeant Hale", "the Haven")
+	ref array<string> m_aPastWhere = {};	// the place's name
+	ref array<string> m_aPastLine = {};		// how it ended, one line
+	ref array<int> m_aPastKind = {};		// RZ_EMissionKindUI (the row's icon)
+	ref array<int> m_aPastGiver = {};		// the faction, -1 none
+	ref array<int> m_aPastResult = {};		// RZ_EJobResult
+	ref array<int> m_aPastDay = {};			// the season day it ended
+	ref array<int> m_aPastSeason = {};		// the season it ended in
+
 	// Remembered (Haven Champion perk): a Haven Champion died; the next character is kin
 	bool m_bFallenPending;			// set at the Champion's death, used up by the next life
 	string m_sFallenPlace;			// where they fell (for the greeting)
@@ -294,6 +306,8 @@ class RZ_PlayerProfile
 			m_aCallWeights = new array<int>();
 		if (!m_aCallDays)
 			m_aCallDays = new array<float>();
+
+		RZ_JobHistory.Ensure(this);
 
 		while (m_aCallPhrases.Count() < m_aCallKeys.Count())
 		{

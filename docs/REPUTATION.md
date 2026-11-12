@@ -364,7 +364,7 @@ before.
 | Tier | Shop | Perk / service |
 |---|---|---|
 | Known | Canned food, water, bandages, crowbars | A welcome message ✅ (safehouse services, including bite declarations and expired antibiotics for 5 Favor, are open to anyone the Haven hasn't exiled). **Ask about the roads** ✅: the three nearest packs, the Haven's names for them and their mood ([INFECTED.md](INFECTED.md#knowing)) |
-| Trusted | Hunting rifles, ammo, backpacks, radios | **Neighbours** ✅: the direction to the nearest job you'd be paid for, on spawn and every 10 min |
+| Trusted | Hunting rifles, ammo, backpacks, radios | **Neighbours** ✅: the direction to the nearest job you could be paid for, on spawn and every 10 min; one nobody offered you yet says who to ask for it |
 | Champion | Fortification kits (barricade planks), saline bags | **Safe Harbour** ✅ and **Remembered** ✅: see below |
 | Hunted | — | **Exile** ✅: see below |
 

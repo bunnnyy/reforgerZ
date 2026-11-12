@@ -1329,6 +1329,9 @@ class RZ_Questlines
 		NoteRun(run.m_sKey);
 		if (!run.m_sEndText.IsEmpty())
 			RZ_Questline.TellParticipants(m_GM, run, title, run.m_sEndText);
+
+		// Everyone who was part of it: a past job in their notebook's Journal
+		RZ_JobHistory.QuestEnded(m_GM, run);
 	}
 
 	//------------------------------------------------------------------------------------------------

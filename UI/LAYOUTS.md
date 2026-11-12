@@ -229,7 +229,8 @@ Frame (root, full screen)
 ├─ Text    Heading         at (96, 54), condensed bold 46: the tab's name (set by the script)
 ├─ Text    Header          at (96, 112), 840 wide, mono 18, dim: the sub-line (set by each page)
 ├─ Image   HeadRule        stretched from 96 to -96 at y 150, 2 high
-├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Quests, The season
+├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Quests, Radio, Journal, The season
+│                          (the layout's TabNText words in that order; the script sets them too, from RZ_Notebook.TabName)
 │  └─ Overlay TabNBox
 │     ├─ Image  TabNBg      the open tab bone, the others #1A1D20 (tinted by the script)
 │     ├─ Panel  TabNLine    border, hidden on the open tab
@@ -243,8 +244,8 @@ Frame (root, full screen)
 ```
 
 The footer is made again on every tab switch from the page's `Prompts` and `PromptLine`
-(`RZ_NotebookMenu.DrawPrompts`): Standing: choose, A open; Journal: choose; Radio: X filter;
-Quests: choose, A track / untrack; every tab: LB/RB tabs, B close.
+(`RZ_NotebookMenu.DrawPrompts`): Standing: choose, A open; Quests: choose, A track / untrack;
+Radio: X filter; Journal: choose; every tab: LB/RB tabs, B close.
 
 The pages are the old menus' layouts with the frame parts (overlay, heading, header, rule, tabs,
 close button, footer) taken out, and their content moved into the 90% safe area: every horizontal
@@ -351,7 +352,7 @@ Frame StandingPage (root)
 
 ```
 Frame JournalPage (root)
-├─ (in the frame: Header, "3 NOTES")
+├─ (in the frame: Header, "12 PAST JOBS · 3 NOTES")
 ├─ Frame  (list panel, at (72, 168), 660 × 840)
 │  ├─ VerticalLayout (list column)
 │  │  ├─ ScrollLayout (fills the column above LabStatus)
@@ -368,7 +369,7 @@ Frame JournalPage (root)
       ├─ Text   DetailBrief   italic 18, wraps, on a faint panel with a 3-unit faint bar on its left
       ├─ (WHERE and REWARDS side by side)
       │  ├─ Text (label "WHERE")   │ Text DetailWhere    mono bold 20, wraps: the rough area, then the place
-      │  └─ Text (label "REWARDS") │ Text DetailRewards  mono bold 18, wraps
+      │  └─ Text RewardsLabel ("REWARDS"; "RESULT" on a past job, set by the script) │ Text DetailRewards  mono bold 18, wraps
       ├─ Text   (label "REQUIREMENTS") │ Text DetailReq  18, wraps
       └─ VerticalLayout CluesBlock
          ├─ Text  (label "WHAT YOU KNOW": puzzle clues read, or a questline's notes)
@@ -376,8 +377,10 @@ Frame JournalPage (root)
                                (first the selected row's detail: "What you've found", "Who it went to")
 ```
 
-The Journal lists the notes (packs, doors, the finale, promises, what you know); the jobs use the
-same row on the Quests page.
+The Journal lists the past jobs under PAST JOBS, then the notes (packs, doors, the finale, promises,
+what you know) under WHAT YOU KNOW, each group under the row's `RowGroup`; the jobs use the same row
+on the Quests page. A past job's row puts its result in `RowDir` (tinted: done green, failed red,
+abandoned dim) and the season day in `RowTime`. No layout change was needed for it.
 
 Unlike the mockup, `DetailWhere` is one `Text` (the script fills both lines into it), not a big
 direction over a small area, and the brief's bar isn't tinted with the accent.
@@ -389,7 +392,8 @@ high, with no visual of its own:
 
 ```
 VerticalLayout MissionRowBox (root)
-├─ Text   RowGroup         mono bold 18, dim, padding 12 14 12 4, hidden: the Quests tab's group heading
+├─ Text   RowGroup         mono bold 18, dim, padding 12 14 12 4, hidden: the group heading (the Quests tab's
+│                          three, the Journal's PAST JOBS and WHAT YOU KNOW)
 │                          ("THE SEASON'S STORY", "QUESTLINES AND JOBS", "ERRANDS"), shown above a group's first row
 └─ Button MissionRow
    └─ (SizeLayout, 62 high, holding a Frame)

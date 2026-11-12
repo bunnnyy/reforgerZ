@@ -1182,7 +1182,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		if (job.GetWeight(gm) <= 0 || !missions.StartIfCan(job, GetGame().GetPlayerManager().GetPlayerCount()))
 			return false;
 
-		job.m_aOfferedTo.Insert(playerId);
+		job.Hire(playerId);
 		gm.NotifyPlayerAs(playerId, w.GetTitle(), string.Format("%1\n%2\n(%3)", job.m_sTitle, job.GetBrief(gm), job.GetWhereTextFor(gm, user.GetOrigin(), playerId)), RZ_ENoticeTag.MISSION);
 		return true;
 	}

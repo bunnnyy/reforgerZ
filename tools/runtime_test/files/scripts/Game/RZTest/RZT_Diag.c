@@ -53,7 +53,21 @@ modded class RZ_MissionManager
 				return true;
 			}
 			if (ok)
+			{
 				m_iRZTStarted++;
+				// Jobs only by interaction: the radio only says who to ask, so the tester takes it the
+				// way a giver offers it (RZ_Mission.Hire, what a leader's "Ask for work" calls); then
+				// it's on his Quests tab and he's paid for it
+				if (m_RZTCur.m_bContract)
+				{
+					HearOf(m_RZTCur, RZT_Fake.ID, RZT_Fake.s_Ent);
+					m_RZTCur.Hire(RZT_Fake.ID);
+				}
+				array<RZ_Mission> mine = {};
+				ListFor(RZT_Fake.ID, mine);
+				if (!mine.Contains(m_RZTCur) && m_RZTCur.m_bContract)
+					Print(string.Format("RZT mission %1 offered but not on the tester's Quests tab", t.ToString()));
+			}
 			Print(string.Format("RZT mission %1 '%2' contract=%3 started=%4 tries=%5", t.ToString(), m_RZTCur.m_sTitle, m_RZTCur.m_bContract, ok, tries));
 			if (!ok)
 			{
@@ -161,7 +175,15 @@ modded class RZ_MissionManager
 			m.Type().ToString(), held, active, runs, heldTowns, busy, openTowns, packs, m.GetWeight(m_GM)));
 	}
 
-	string RZT_Summary() { return string.Format("%1 of %2 started, %3 marked won", m_iRZTStarted, m_aTypes.Count(), m_iRZTWon); }
+	string RZT_Summary()
+	{
+		int past = 0;
+		RZ_PlayerProfile tester = m_GM.FindProfile(RZT_Fake.ID);
+		if (tester && tester.m_aPastTitle)
+			past = tester.m_aPastTitle.Count();
+
+		return string.Format("%1 of %2 started, %3 marked won, %4 past jobs in the tester's Journal", m_iRZTStarted, m_aTypes.Count(), m_iRZTWon, past);
+	}
 	int RZT_TypeCount() { return m_aTypes.Count(); }
 	int RZT_Active() { return m_aActive.Count(); }
 }
@@ -422,6 +444,8 @@ modded class RZ_GameModeComponent
 			m_iRZTQuestMission = m.m_iId;
 			m_iRZTQuestMissionSec = 0;
 			Print(string.Format("RZT quest %1 stage %2 mission '%3'", qkey, run.m_iStage, m.m_sTitle));
+			// The stage is offered in person (its giver, or the story he's part of already)
+			m.Hire(RZT_Fake.ID);
 		}
 		m_iRZTQuestMissionSec++;
 		if (!m.m_bGlobal && m.m_vPos != vector.Zero)

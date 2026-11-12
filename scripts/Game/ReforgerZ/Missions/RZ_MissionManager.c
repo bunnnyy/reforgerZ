@@ -1,10 +1,11 @@
 //! Keeps world events and faction contracts running.
 //!
-//! - World events: announced to everyone; anyone who takes part shares the reward.
-//! - Contracts: offered only to eligible players (RZ_MissionRequirements), one
-//!   offer per player at a time so the hint queue isn't flooded. There's no
-//!   explicit "accept" step: eligible players who take part get paid, and
-//!   ineligible players who turn up get nothing.
+//! - World events: news on the radio for everyone, not jobs; anyone who takes part shares the reward.
+//! - Contracts: offered only in person (docs/MISSIONS.md, "Who gets offered what"). The radio tells
+//!   eligible players who to ask (TellOfWork: a Radio-tab entry, never a card, at most one a player
+//!   a minute); asking the giver (a quartermaster, a leader, a safehouse radio) hires them
+//!   (ListContractsFor, RZ_Mission.Hire). Hired players who meet the requirements and take part
+//!   get paid, and so does their group; anyone else who turns up gets nothing.
 //!
 //! Counts scale with the stage and the player count. Types are chosen by
 //! weight, and each type's weight depends on the world state.
@@ -27,7 +28,7 @@ class RZ_MissionManager
 
 	protected static const float EVENT_COOLDOWN = 150;
 	protected static const float CONTRACT_COOLDOWN = 75;
-	protected static const float OFFER_GAP = 60;			// min seconds between two contract offers to one player
+	protected static const float OFFER_GAP = 60;			// min seconds between two "who to ask" lines to one player
 	protected static const int MAX_CONTRACTS = 10;
 
 	//------------------------------------------------------------------------------------------------
@@ -267,7 +268,7 @@ class RZ_MissionManager
 		}
 
 		ReasonLane(ids);
-		OfferContracts(ids, players);
+		TellOfWork(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -479,17 +480,11 @@ class RZ_MissionManager
 
 	// ================================================================ Contract offers
 	//------------------------------------------------------------------------------------------------
-	//! A contract was offered to this player by radio in the last `seconds` (an errand's radio ask
-	//! waits behind it).
-	bool OfferedWithin(int playerId, float seconds)
-	{
-		float last;
-		return m_mLastOffer.Find(playerId, last) && m_fClock - last < seconds;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Each player gets at most one new offer per OFFER_GAP seconds.
-	protected void OfferContracts(array<int> ids, array<IEntity> players)
+	//! Jobs only by interaction (docs/MISSIONS.md, "Who gets offered what"): the radio never offers
+	//! a job. It tells each eligible player who to ask for one they haven't been offered, as a Radio-tab
+	//! entry (RZ_ENoticeTag.HEARD: under Missions, never a card, not a job), at most one a player per
+	//! OFFER_GAP and once a contract. Leaders' own jobs are heard of only from them.
+	protected void TellOfWork(array<int> ids, array<IEntity> players)
 	{
 		foreach (int i, int playerId : ids)
 		{
@@ -499,10 +494,13 @@ class RZ_MissionManager
 
 			foreach (RZ_Mission m : m_aActive)
 			{
-				if (!m.m_bContract || m.m_bInPersonOnly || m.m_aOfferedTo.Contains(playerId) || !m.IsEligible(m_GM, playerId))
+				if (!m.m_bContract || m.m_bInPersonOnly || m.m_eState != RZ_EMissionState.ACTIVE)
 					continue;
 
-				Offer(m, playerId, players[i]);
+				if (m.m_aHeardBy.Contains(playerId) || m.IsOfferedTo(m_GM, playerId) || !m.IsEligible(m_GM, playerId))
+					continue;
+
+				HearOf(m, playerId, players[i]);
 				m_mLastOffer.Set(playerId, m_fClock);
 				break;
 			}
@@ -510,41 +508,91 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Offer(RZ_Mission m, int playerId, IEntity player)
+	//! "Bastion wants people for Recover the Bus, east of Levie, a few km north-west. Ask Sergeant
+	//! Hale at Fort Kell, or at any Bastion quartermaster." Once per player and contract.
+	void HearOf(RZ_Mission m, int playerId, IEntity player)
 	{
-		m.m_aOfferedTo.Insert(playerId);
+		if (!m || m.m_aHeardBy.Contains(playerId))
+			return;
+
+		m.m_aHeardBy.Insert(playerId);
 		vector from = vector.Zero;
 		if (player)
 			from = player.GetOrigin();
 
-		string where = m.GetWhereTextFor(m_GM, from, playerId);
+		string area = m.GetLocationName(m_GM);
+		if (player && !m.m_bGlobal)
+			area = RZ_QuestText.RoughArea(m_GM, from, m.GetAreaFor(m_GM, playerId, from));
 
-		string bonus = "";
-		if (m.HasBonus(m_GM, playerId))
-			bonus = "\nYour background gives you an edge on this one.";
-
-		// In the voice of the leader who gives it (intro and outro by trait)
-		string brief = m.GetBrief(m_GM);
-		if (m_GM.GetLeaders())
-			brief = m_GM.GetLeaders().VoiceBrief(m, playerId);
-
-		m_GM.NotifyPlayerAs(playerId, "Contract: " + RZ_Factions.GetName(m.m_Req.m_eGiver),
-			string.Format("%1\n%2\n(%3)%4", m.m_sTitle, brief, where, bonus), RZ_ENoticeTag.MISSION);
+		string text = string.Format("%1 wants people for %2, %3. %4", RZ_Factions.GetName(m.m_Req.m_eGiver), m.m_sTitle, area, GiverHint(m, m.m_Req.m_eGiver));
+		m_GM.NotifyPlayerAs(playerId, "Heard on the radio", text, RZ_ENoticeTag.HEARD);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Eligible open contracts from one faction, for its quartermaster. Marks them as offered.
+	//! Who to ask for a contract from `faction`, as a sentence: its leader in person, then the
+	//! faction's quartermaster, and a Haven safehouse's radio for the Haven's work.
+	string GiverHint(RZ_Mission m, int faction)
+	{
+		string leader = "";
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (leaders && m && m.m_iLeaderId >= 0 && m.m_eGiver == faction)
+		{
+			RZ_Leader l = leaders.Get(m.m_iLeaderId);
+			if (l && l.IsPresent())
+				leader = string.Format("%1 at %2", l.m_sName, l.m_sPlace);
+		}
+
+		string qm = string.Format("any %1 quartermaster", RZ_Factions.GetShortName(faction));
+		if (faction == RZ_EFaction.SURVIVORS)
+			qm = qm + " or a safehouse radio";
+
+		if (leader.IsEmpty())
+			return string.Format("Ask at %1.", qm);
+
+		return string.Format("Ask %1, or at %2.", leader, qm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Open contracts `faction` could offer this player here and hasn't yet (the quartermaster's
+	//! greeting). Offers nothing.
+	int CountContractsFor(int playerId, RZ_EFaction faction, IEntity player)
+	{
+		int n = 0;
+		foreach (RZ_Mission c : m_aActive)
+		{
+			if (OffersAt(c, playerId, faction, player) && !c.IsOfferedTo(m_GM, playerId))
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A contract `faction` may offer this player here: its own (a leader's personal job only at
+	//! their seat), or a mirror's second side once it has heard.
+	protected bool OffersAt(RZ_Mission c, int playerId, RZ_EFaction faction, IEntity player)
+	{
+		if (!c.m_bContract || c.m_eState != RZ_EMissionState.ACTIVE || !c.IsEligible(m_GM, playerId))
+			return false;
+
+		bool ours = c.m_Req.m_eGiver == faction;
+		if (!ours && c.m_Mirror && c.m_Mirror.m_iFaction == faction)
+			ours = c.m_Mirror.IsSide(m_GM, playerId);
+
+		return ours && c.CanOfferAt(m_GM, player.GetOrigin());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The giver offers its open contracts in person (a quartermaster's "Check standing and work", a
+	//! leader's "Ask for work"): every one this player qualifies for is offered to them (hired), and
+	//! the list comes back as text, each with where it is.
 	string ListContractsFor(int playerId, RZ_EFaction faction, IEntity player)
 	{
 		string text = "";
 		array<RZ_Mission> offers = {};
 		foreach (RZ_Mission c : m_aActive)
 		{
-			if (!c.m_bContract || c.m_Req.m_eGiver != faction || !c.IsEligible(m_GM, playerId))
-				continue;
-
-			// A leader's personal job is only mentioned at their own seat
-			if (c.CanOfferAt(m_GM, player.GetOrigin()))
+			if (OffersAt(c, playerId, faction, player))
 				offers.Insert(c);
 		}
 
@@ -552,8 +600,8 @@ class RZ_MissionManager
 		RZ_MissionReasons.SortFor(m_GM, offers, playerId, player.GetOrigin());
 		foreach (RZ_Mission m : offers)
 		{
-			if (!m.m_aOfferedTo.Contains(playerId))
-				m.m_aOfferedTo.Insert(playerId);
+			if (m.Hire(playerId))
+				RZ_Log.Info(string.Format("Mission %1 '%2' offered to %3 by %4", m.m_iId, m.m_sTitle, RZ_Util.PlayerName(playerId), RZ_Factions.GetShortName(faction)));
 
 			text += string.Format("%1: %2\n", m.m_sTitle, m.GetWhereTextFor(m_GM, player.GetOrigin(), playerId));
 		}
@@ -584,34 +632,27 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Text for a newly spawned player: world events, plus contracts they qualify for.
-	//! What goes in a player's journal: world events, contracts they could take (as on the radio),
-	//! personal jobs offered to them, and anything they're taking part in. Marks nothing as offered.
+	//! What goes in a player's Quests tab: the jobs that are theirs (RZ_Mission.IsOfferedTo: offered
+	//! in person, reserved, a stage of a questline they're part of, an arc or puzzle taken by its
+	//! clue). Never a plain world event (news, not a job), never one only heard of. Marks nothing.
 	void ListFor(int playerId, notnull array<RZ_Mission> result)
 	{
 		foreach (RZ_Mission m : m_aActive)
 		{
-			if (m.m_eState != RZ_EMissionState.ACTIVE)
-				continue;
-
-			bool show = !m.m_bContract || m.m_aParticipants.Contains(playerId);
-			if (!show && m.m_bInPersonOnly)
-				show = m.m_aOfferedTo.Contains(playerId);
-			else if (!show)
-				show = m.IsEligible(m_GM, playerId);
-
-			if (show)
+			if (m.m_eState == RZ_EMissionState.ACTIVE && m.IsOfferedTo(m_GM, playerId))
 				result.Insert(m);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The spawn's Radio entry: the world events going on (news), then the work going that this
+	//! player could ask for, each with who to ask. Offers nothing: a job is only ever offered in person.
 	string DescribeActiveFor(IEntity player, int playerId)
 	{
 		string text = "";
 		foreach (RZ_Mission m : m_aActive)
 		{
-			if (m.m_bContract)
+			if (m.m_bContract || m.m_eState != RZ_EMissionState.ACTIVE)
 				continue;
 
 			text += string.Format("%1: %2\n", m.m_sTitle, m.GetWhereTextFor(m_GM, player.GetOrigin(), playerId));
@@ -620,17 +661,17 @@ class RZ_MissionManager
 		string contracts = "";
 		foreach (RZ_Mission c : m_aActive)
 		{
-			if (!c.m_bContract || c.m_bInPersonOnly || !c.IsEligible(m_GM, playerId))
+			if (!c.m_bContract || c.m_bInPersonOnly || c.m_eState != RZ_EMissionState.ACTIVE || !c.IsEligible(m_GM, playerId) || c.IsOfferedTo(m_GM, playerId))
 				continue;
 
-			if (!c.m_aOfferedTo.Contains(playerId))
-				c.m_aOfferedTo.Insert(playerId);
+			if (!c.m_aHeardBy.Contains(playerId))
+				c.m_aHeardBy.Insert(playerId);
 
-			contracts += string.Format("%1 (%2): %3\n", c.m_sTitle, RZ_Factions.GetShortName(c.m_Req.m_eGiver), c.GetWhereTextFor(m_GM, player.GetOrigin(), playerId));
+			contracts += string.Format("%1 (%2). %3\n", c.m_sTitle, RZ_Factions.GetShortName(c.m_Req.m_eGiver), GiverHint(c, c.m_Req.m_eGiver));
 		}
 
 		if (!contracts.IsEmpty())
-			text += "\nWork for you:\n" + contracts;
+			text += "\nWork going, if you ask:\n" + contracts;
 
 		if (text.IsEmpty())
 			return "The radio is quiet.";
@@ -806,8 +847,13 @@ class RZ_MissionManager
 
 		array<int> paid = {};
 		bool success = m.m_eState == RZ_EMissionState.SUCCEEDED;
+		// Who was on it before anyone who stepped out is dropped: the notebook's past jobs
+		array<int> before = {};
+		before.InsertAll(m.m_aParticipants);
+		before.InsertAll(m.m_aOfferedTo);
 		if (m.m_bWithdrawn)
 		{
+			RZ_JobHistory.MissionEnded(m_GM, m, false, before);
 			// Called off by the world: no pay, no blame, no strength or morale change, no leader
 			// memory. Only the story that started it hears that it's over
 			m.NotifyInterested(m_GM, m.m_sTitle, m.m_sWithdrawText);
@@ -831,6 +877,8 @@ class RZ_MissionManager
 		if (m.m_Story)
 			m.m_Story.m_Deciding.DropLeft(m_GM, m.m_aParticipants);
 
+		RZ_JobHistory.MissionEnded(m_GM, m, success, before);
+
 		if (success)
 		{
 			m.OnSuccess(m_GM);
@@ -840,6 +888,13 @@ class RZ_MissionManager
 				if (!m.IsEligible(m_GM, playerId))
 				{
 					m_GM.NotifyPlayerAs(playerId, m.m_sTitle, string.Format("%1 didn't hire you for this. You get nothing from them.", RZ_Factions.GetName(m.m_Req.m_eGiver)), RZ_ENoticeTag.MISSION);
+					continue;
+				}
+
+				// Jobs only by interaction: nobody offered it to you or your group
+				if (!m.IsHired(m_GM, playerId))
+				{
+					m_GM.NotifyPlayerAs(playerId, m.m_sTitle, string.Format("Nobody asked you to. %1 pays the people it hired.", RZ_Factions.GetName(m.m_Req.m_eGiver)), RZ_ENoticeTag.MISSION);
 					continue;
 				}
 

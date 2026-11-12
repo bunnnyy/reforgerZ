@@ -1028,6 +1028,10 @@ class RZ_Errands
 		if (e.m_eState == RZ_EErrandState.DONE)
 			return;
 
+		// A held errand that ends any other way than done goes into its holder's past jobs
+		if (e.m_eState == RZ_EErrandState.HELD && why != "done")
+			RememberEnd(e, why);
+
 		e.m_eState = RZ_EErrandState.DONE;
 		RemoveProp(e);
 		if (e.m_Carried)
@@ -1043,6 +1047,58 @@ class RZ_Errands
 		ReleaseTalk(e.m_sGiver);
 		if (m_Settings.m_bDebugLog)
 			RZ_Log.Info(string.Format("Errands: %1 (%2) for %3 ended: %4", e.m_Def.m_sKey, e.m_iId, RZ_Util.PlayerName(e.m_iAsker), why));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The notebook's past jobs (Missions/RZ_JobHistory.c): a held errand that ended.
+	protected void Remember(RZ_Errand e, int result, string line)
+	{
+		if (!e || !e.m_Def)
+			return;
+
+		string by = e.m_sGiverName;
+		if (by.IsEmpty())
+			by = e.m_sGiverTitle;
+
+		RZ_JobHistory.AddFor(m_GM, e.m_iAsker, RZ_EMissionKindUI.ERRAND, e.m_iFaction, e.Fill(e.m_Def.m_sTitle), by, e.GetText("here"), result, line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why a held errand ended, as its past job: failed when it was yours to lose (late, lapsed, the
+	//! thing you carried gone, you died), abandoned when you left it or the world moved on.
+	protected void RememberEnd(RZ_Errand e, string why)
+	{
+		int result = RZ_EJobResult.ABANDONED;
+		string line = RZ_Util.Capitalize(why) + ".";
+		if (why == "late" || why == "lapsed")
+		{
+			result = RZ_EJobResult.FAILED;
+			line = e.Fill("{giver} stopped waiting.");
+		}
+		else if (why == "died")
+		{
+			result = RZ_EJobResult.FAILED;
+			line = "You died before it was done.";
+		}
+		else if (why == "carried item taken" || why == "carried item lost")
+		{
+			result = RZ_EJobResult.FAILED;
+			line = "What you were carrying never got there.";
+		}
+		else if (why == "overtaken")
+		{
+			line = "It stopped being true before you got to it.";
+		}
+		else if (why == "left")
+		{
+			line = "You left before it was done.";
+		}
+		else if (why == "sold at the fence" || why == "refused at the fence")
+		{
+			line = "You took it to the fence instead.";
+		}
+
+		Remember(e, result, line);
 	}
 
 	// ================================================================ Talking to a giver
@@ -2474,7 +2530,8 @@ class RZ_Errands
 
 		array<string> said = {};
 		e.m_Def.Resolve(this, e, w, e.m_iAsker, said);
-		Say(e, Pick(w.m_aDone), false);
+		string doneLine = Pick(w.m_aDone);
+		Say(e, doneLine, false);
 		foreach (string line : said)
 		{
 			Say(e, line, false);
@@ -2542,6 +2599,7 @@ class RZ_Errands
 
 		Count(e.m_Def.m_sFamily).done++;
 		RZ_Log.Info(string.Format("Errands: %1 done by %2, way %3 (%4), with %5 helper(s)", e.m_Def.m_sKey, RZ_Util.PlayerName(e.m_iAsker), w.m_iIndex, w.m_sWay, e.m_aHelpers.Count()));
+		Remember(e, RZ_EJobResult.DONE, e.Fill(doneLine));
 		End(e, "done");
 	}
 
@@ -2803,9 +2861,10 @@ class RZ_Errands
 				continue;
 			}
 
+			// Jobs only by interaction: they wave you over and the errand waits as their open offer;
+			// they say what it is only when you ask ("Anything need doing?", Ask)
 			m_mLastUnasked.Set(m_GM.GetProfile(playerId).m_sIdentity, m_fClock);
 			m_GM.Say(playerId, caller.m_sTitle, caller.m_iFaction, e.Fill("{giver} waves you over."));
-			ShowOffer(e, m_People.BodyOf(caller.m_sKey));
 		}
 	}
 
@@ -2881,10 +2940,6 @@ class RZ_Errands
 		string ident = m_GM.GetProfile(playerId).m_sIdentity;
 		float last;
 		if (m_mLastRadio.Find(ident, last) && m_fClock - last < m_Settings.m_fRadioAskMinutes * 60)
-			return;
-
-		// A contract offered on the radio lately goes first: the ask waits behind it
-		if (m_GM.GetMissions() && m_GM.GetMissions().OfferedWithin(playerId, 300))
 			return;
 
 		RZ_Safehouses houses = m_GM.GetSafehouses();

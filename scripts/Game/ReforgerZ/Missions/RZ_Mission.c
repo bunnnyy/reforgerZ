@@ -7,10 +7,14 @@ enum RZ_EMissionState
 
 //! Base for every mission. There are two kinds (docs/MISSIONS.md):
 //!
-//! - World events (m_bContract = false) are announced to everyone, and anyone
-//!   who takes part shares the reward.
-//! - Faction contracts (m_bContract = true) are offered only to players who meet
-//!   m_Req. Anyone can turn up, but only eligible players get paid.
+//! - World events (m_bContract = false) are news on the radio, not jobs: anyone who
+//!   takes part shares the reward. A puzzle or arc event becomes a job only for a player
+//!   who used its thing (read its clue: RZ_PuzzleMission.HandleRead).
+//! - Faction contracts (m_bContract = true) are offered in person only (docs/MISSIONS.md, "Who
+//!   gets offered what"): a player who meets m_Req asks its giver (a quartermaster, a leader, a
+//!   safehouse radio, a wanderer) and is hired (Hire). The radio only says who to ask
+//!   (RZ_MissionManager.TellOfWork). Anyone can turn up, but only players who were hired (or are in
+//!   a hired player's group) and are eligible get paid.
 //!
 //! A mission picks a settlement on the current map, so every type works on any
 //! terrain. Anyone who comes within m_fParticipationRadius while it runs counts
@@ -45,7 +49,8 @@ class RZ_Mission
 	float m_fParticipationRadius = 150;
 	RZ_EMissionState m_eState = RZ_EMissionState.ACTIVE;
 	ref array<int> m_aParticipants = {};
-	ref array<int> m_aOfferedTo = {};
+	ref array<int> m_aOfferedTo = {};	// hired: offered in person by its giver or a thing of its (Hire)
+	ref array<int> m_aHeardBy = {};		// told on the radio who to ask for it (not hired)
 	int m_iMarkerId = -1;			// map marker handle (RZ_MapMarkers), -1 = none
 
 	// Faction leaders (Factions/RZ_Leaders.c, Missions/Leaders/)
@@ -346,6 +351,7 @@ class RZ_Mission
 	void Reserve(RZ_GameModeComponent gm, int playerId, float seconds)
 	{
 		m_sReservedFor = gm.GetProfile(playerId).m_sIdentity;
+		Hire(playerId);
 		m_bAmends = true;
 		m_fTimeLeft = Math.Min(m_fTimeLeft, seconds);
 	}
@@ -368,6 +374,64 @@ class RZ_Mission
 			return !RZ_StoryKit.Sulks(gm, m_iLeaderId, playerId) && gm.GetLeaders().CanWorkFor(m_iLeaderId, playerId);
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Offered to this player in person (docs/MISSIONS.md, "Who gets offered what"): by its giver or
+	//! a thing of its. The one way a job becomes a player's. False for no player.
+	bool Hire(int playerId)
+	{
+		if (playerId <= 0 || m_aOfferedTo.Contains(playerId))
+			return false;
+
+		m_aOfferedTo.Insert(playerId);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Is this job this player's (their Quests tab): hired for it, reserved for them, or a stage of a
+	//! questline they took part in (the story they took on goes on).
+	bool IsOfferedTo(RZ_GameModeComponent gm, int playerId)
+	{
+		if (playerId <= 0)
+			return false;
+
+		if (m_aOfferedTo.Contains(playerId))
+			return true;
+
+		if (!m_sReservedFor.IsEmpty())
+			return gm.GetProfile(playerId).m_sIdentity == m_sReservedFor;
+
+		if (m_iQuestRun >= 0 && gm.GetQuestlines())
+		{
+			RZ_QuestRun run = gm.GetQuestlines().FindRun(m_iQuestRun);
+			if (run && run.PlayerTookPart(gm, playerId))
+				return true;
+
+			// A finale route's stage: the players locked to that route (their desk was the asking)
+			RZ_CureFinale finale = RZ_CureFinale.Get();
+			if (run && finale && run.m_Line && run.m_Line.IsCureFinale() && finale.RouteOfPlayer(playerId) == RZ_CureFinale.RouteOfKey(run.m_sKey))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! May this player be paid for it (with IsEligible)? A world event: anyone. A contract: whoever
+	//! it was offered to, and anyone in a hired player's vanilla group.
+	bool IsHired(RZ_GameModeComponent gm, int playerId)
+	{
+		if (!m_bContract || IsOfferedTo(gm, playerId))
+			return true;
+
+		foreach (int other : m_aOfferedTo)
+		{
+			if (other != playerId && RZ_Util.SameGroup(other, playerId))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1935,21 +1935,21 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:974` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:978` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:194` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:1048` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
+| `UI/RZ_Notebook.c:1049` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:48` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_TalkMenu.c:59`, `:363` | `OnMouseWheel` reaches a reply row's `Button` and the reply box's frame (`ReplyPanel`), with `wheel` positive rolled up, so the wheel moves the selection and past the ends turns the page | The wheel does nothing or runs the wrong way (flip the sign in `RZ_TalkMenu.Wheel`); the arrow keys, Q/E and the arrows' clicks still move and turn the page |
 | `UI/RZ_TalkMenu.c:615` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls a box that overflows toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; boxes are cut to fit, so it's rarely needed |
 | `UI/RZ_TalkMenu.c:655` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
 | `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
-| `UI/RZ_UIData.c:997` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1136` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrows (its page indicator and the ▼ at the end of their line) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
+| `UI/RZ_UIData.c:1001` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1140` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrows (its page indicator and the ▼ at the end of their line) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
 | `Dialogue/RZ_Dialogue.c:949` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
-| `UI/RZ_PlayerUIComponent.c:182` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
+| `UI/RZ_PlayerUIComponent.c:185` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
@@ -1961,7 +1961,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
-| `UI/RZ_UIData.c:1077` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
+| `UI/RZ_UIData.c:1081` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 
 ## 7. Log lines to check
 
@@ -2425,7 +2425,25 @@ session, tick off:
   broadcast speaks of "reports of research".
 - [ ] The status line's **pace by play** is 100 percent for the season's first two real days, then
   follows the player-hours played (e.g. about 250 percent for two people playing 2–3 hours a day).
-- [ ] A contract is offered by radio, completes, and pays Fame and Favor; a tier change is announced.
+- [ ] Jobs only by interaction: with a contract up, the radio gives only a Radio-tab line under
+  Missions, no card (*"Bastion wants people for ... Ask ... or at any Bastion quartermaster."*), and
+  the Quests tab stays empty and its count doesn't move. Walking up to a quartermaster gives *"There
+  are N jobs going here. Ask for whoever's in charge."*; **Ask for whoever's in charge**, then
+  **Ask for work**, lists the work and puts each job on the Quests tab as Offered. Done, it pays
+  Fame and Favor; a tier change is announced. A second player who never asked (not in your group)
+  turns up and hears *"Nobody asked you to."*; one in your vanilla group is paid.
+- [ ] A Haven safehouse's radio (**Listen to the safehouse radio**) puts the Haven's contracts within
+  3 km on your Quests tab ("yours if you want it"); another faction's work there says who to ask;
+  world events are "(news)".
+- [ ] A world event shows as news on the Radio tab and never on the Quests tab, the tracker or the
+  map. The Deserter's Map is on the Quests tab only after you search the jacket.
+- [ ] A named person waves you over (*"Mara waves you over."*) and says nothing else; **Anything need
+  doing?** then shows the errand's offer.
+- [ ] The notebook's tabs read Standing, Quests, Radio, Journal, The season, in that order with LB/RB
+  and with the mouse; it opens on Quests the first time. The Journal shows PAST JOBS (a contract you
+  finished as DONE in green with its deed, one that timed out as FAILED in red, an errand you let
+  lapse as FAILED with "... stopped waiting.") above WHAT YOU KNOW; the detail says RESULT. After a
+  relog and after a server restart the past jobs are still there.
 - [ ] A quartermaster sells an item at the right tier and refuses one above it. No quartermaster
   offers a vehicle, a car part or a jerrycan. A Bastion Trusted player can requisition rations and
   a rifle magazine (once an hour, half price, into the pack), but not in Red Hand colours; a requisition action
@@ -3042,9 +3060,9 @@ when it happens)
 - [ ] A bite shows the golden window counting down, then Fever with the track filling; a
   stabiliser shows PAUSED and the clock stops; the timer matches the stage messages within seconds.
 - [ ] Cracking a secure channel shows the indicator until the codes change.
-- [ ] N opens the notebook on Journal the first time, then on the tab last used; Q/E and LB/RB go
-  through Standing, Journal, Radio, Quests and The season with real data (the Journal has only
-  notes: packs, doors, the finale, promises; The season scrolls down to the hall of fame); up/down
+- [ ] N opens the notebook on Quests the first time, then on the tab last used; Q/E and LB/RB go
+  through Standing, Quests, Radio, Journal and The season with real data (the Journal has the past
+  jobs, then the notes: packs, doors, the finale, promises; The season scrolls down to the hall of fame); up/down
   move the Journal's and the Quests tab's selection and scroll the other lists; X or F cycles the Radio filter through six
   names; B or Esc closes. With a pad only: Start, Notebook, A opens it; the notebook item taken in
   hand (inventory or quick slot) opens it and is put away when it closes.
@@ -3988,7 +4006,7 @@ on the talk screen says why something wasn't dealt)
   the next time you come back from beyond 300 m.
 - [ ] The Book's send-off at Rudi's crossroads: the lorry is a look-only wreck (no driving it) and the
   bonfire has no interactions.
-- [ ] The Missing Courier's radio offer is titled "The Missing Courier", not "Lost Colleague".
+- [ ] The Missing Courier's radio line (who to ask) names "The Missing Courier", not "Lost Colleague".
 - [ ] Ring bells, sirens and read clues repeatedly: one bell or siren per 15 minutes, no extra
   spawns or rewards from rereading.
 - [ ] 1 player and a full server: spot cap (70) and escort (3) and capture (2) caps hold; with

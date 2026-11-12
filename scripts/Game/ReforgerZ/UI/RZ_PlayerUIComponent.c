@@ -56,6 +56,9 @@ class RZ_PlayerUIComponent : ScriptComponent
 	protected string m_sSeason;
 	protected int m_iSeasonVersion;
 	protected float m_fSeasonAsk = -100;
+	protected string m_sHistory;			// the Journal's past jobs (RZ_UIFeed.PAYLOAD_HISTORY)
+	protected int m_iHistoryVersion;
+	protected float m_fHistoryAsk = -100;
 	protected int m_iBoardVersion;
 	protected int m_iHallVersion;
 	protected int m_iMapVersion;
@@ -396,6 +399,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 			m_sSeason = payload;
 			m_iSeasonVersion++;
 		}
+		else if (kind == RZ_UIFeed.PAYLOAD_HISTORY)
+		{
+			m_sHistory = payload;
+			m_iHistoryVersion++;
+		}
 		else if (kind == RZ_UIFeed.PAYLOAD_READER)
 		{
 			OnReader(payload);
@@ -606,6 +614,20 @@ class RZ_PlayerUIComponent : ScriptComponent
 			int asker = OwnerPlayerId();
 			if (asker > 0)
 				SendPayload(kind, gm.GetUIFeed().BuildPayload(asker, kind));
+
+			return;
+		}
+
+		// The Journal's past jobs, the same way
+		if (kind == RZ_UIFeed.PAYLOAD_HISTORY)
+		{
+			if (now - m_fHistoryAsk < ASK_GAP)
+				return;
+
+			m_fHistoryAsk = now;
+			int historyAsker = OwnerPlayerId();
+			if (historyAsker > 0)
+				SendPayload(kind, gm.GetUIFeed().BuildPayload(historyAsker, kind));
 
 			return;
 		}
@@ -944,7 +966,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 		e.m_sText = text;
 		m_aRadio.InsertAt(e, 0);
 		m_iLogged++;
-		if (style.m_iKind == RZ_ENoticeKind.MISSION)
+		// Work you only heard of isn't a job yet: it doesn't count on the Quests tab
+		if (style.m_iKind == RZ_ENoticeKind.MISSION && !style.m_bHeard)
 			m_iMissions++;
 
 		int cap = Math.Max(5, RZ_UISettings.Get().m_iRadioLogSize);
@@ -1004,6 +1027,8 @@ class RZ_PlayerUIComponent : ScriptComponent
 	string GetBoard() { return m_sBoard; }
 	string GetHall() { return m_sHall; }
 	string GetSeason() { return m_sSeason; }
+	string GetHistory() { return m_sHistory; }
+	int GetHistoryVersion() { return m_iHistoryVersion; }
 	int GetSeasonVersion() { return m_iSeasonVersion; }
 	string GetReader() { return m_sReader; }
 	int GetReaderVersion() { return m_iReaderVersion; }

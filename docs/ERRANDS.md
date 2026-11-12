@@ -1,8 +1,8 @@
 # Errands
 
 The small, personal jobs one named person asks of one player, each true because something in the
-world is true right now, and over the moment it stops being true. Contracts are the factions' work
-on the radio ([MISSIONS.md](MISSIONS.md)); questlines are the long stories
+world is true right now, and over the moment it stops being true. Contracts are the factions' work,
+offered in person by their leaders ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)); questlines are the long stories
 ([QUESTLINES.md](QUESTLINES.md)); errands are everything in between. Their design is built in full (simplified as the last section
 says). In the epilogue week a few of the epilogue
 deck's asks stand at the week's places instead of on the dealer: *Bring a cup* at the queue, *Read
@@ -43,7 +43,7 @@ Server only, except the journal row.
 
 | | Contract | Errand |
 |---|---|---|
-| Offered by | the faction, by radio or quartermaster | one named person, in person (never a leader) |
+| Offered by | the faction's leaders, in person (the radio only says who to ask) | one named person, in person (never a leader) |
 | Offered to | everyone who qualifies | one player, and their helpers |
 | Size | 10–40 min | a few minutes, one step, within 1.5 km |
 | Exists because | weights, needs, reasons | one live fact |
@@ -93,7 +93,9 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   the person's own topic (the cook's supper, a sentry's shift, the Courier's late letters), not as a
   reply of their own ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)); the deal is the same.
 - **Waved over.** A safehouse's or holding's shown named person may call a passing player within
-  30 m: *"Mara waves you over."* That's an unasked contact: it asks the notice lanes'
+  30 m: *"Mara waves you over."* Nothing more: the errand waits as their open offer (10 minutes),
+  and they say what it is only when you ask **Anything need doing?** (jobs only by interaction,
+  [MISSIONS.md](MISSIONS.md#who-gets-offered-what)). That's an unasked contact: it asks the notice lanes'
   [interruption budget](DESIGN.md#notice-lanes) (`TryContact`, errands last), and every rule of the
   dealer must hold.
 - **The offer.** The giver says what they need, in their own voice, and their replies become the
@@ -108,6 +110,10 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   board for you. Check back after the shift change."*
 - **Every line is personal**: the giver's lines are spoken (subtitles, or the talk screen under the
   giver's name), the step and the pay are notices to that player only.
+- **When it ends**, a held errand is a past job in the holder's Journal
+  ([UI.md](UI.md#notebook-journal)): done (the giver's thanks as its line), failed (late, lapsed,
+  what you carried gone, you died) or abandoned (the world moved on, the fence instead, an opening's
+  step dropped). An offer that ran out isn't a job, so it isn't there.
 
 ## The dealer
 
@@ -579,8 +585,8 @@ found by events (a visit, a road, a rumour round, the next real reading).
   1.5 km) where a routine is true for them, inside every rule of an unasked offer and the interruption
   budget, one personal line on the Haven's channel: *"If you're near Levie, Mara the cook could use a
   hand. Only if you're passing."* Never broadcast, so it can't bait an ambush. At most one a player
-  every 60 real minutes (**Radio ask minutes**), and never within 5 minutes of a contract offered to
-  them on the radio (the contract goes first).
+  every 60 real minutes (**Radio ask minutes**). Like the board's, it only says who to ask; the
+  errand is still dealt at **Anything need doing?**
 
 ## Handed errands: the openings' chain
 

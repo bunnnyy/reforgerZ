@@ -1845,8 +1845,7 @@ class RZ_Leaders
 
 		if (job && job.IsEligible(m_GM, playerId))
 		{
-			if (!job.m_aOfferedTo.Contains(playerId))
-				job.m_aOfferedTo.Insert(playerId);
+			job.Hire(playerId);
 
 			string where = job.GetLocationName(m_GM);
 			if (user)
