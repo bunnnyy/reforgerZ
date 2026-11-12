@@ -157,6 +157,38 @@ class RZ_NamedPeople
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A holding's named people killed since the last call (their body is there, and dead): their keys
+	//! and where they fell. A body that was only cleared away is forgotten quietly. Safehouse people
+	//! are left alone: the house counts its own dead (RZ_Safehouses).
+	void TakeDeadAtHoldings(notnull array<string> keys, notnull array<vector> at)
+	{
+		array<string> drop = {};
+		foreach (string k, IEntity body : m_mBodies)
+		{
+			if (k.IndexOf("named:") != 0)
+				continue;
+
+			if (!body)
+			{
+				drop.Insert(k);
+				continue;
+			}
+
+			if (RZ_Util.IsCharacterAlive(body))
+				continue;
+
+			keys.Insert(k);
+			at.Insert(body.GetOrigin());
+			drop.Insert(k);
+		}
+
+		foreach (string d : drop)
+		{
+			m_mBodies.Remove(d);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The body wearing this person now, or null (nobody near, or never shown).
 	IEntity BodyOf(string key)
 	{

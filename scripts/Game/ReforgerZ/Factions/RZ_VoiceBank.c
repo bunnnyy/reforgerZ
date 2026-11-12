@@ -178,8 +178,8 @@ class RZ_VoiceBank
 	//------------------------------------------------------------------------------------------------
 	//! A line of `kind` for `faction` (and `manner`, "" any) said to `playerId` (0: nobody in
 	//! particular, no joke memory) by someone at `pos` (`leader` for trait lines). "" if no line fits:
-	//! the caller keeps its built line.
-	static string PickFor(RZ_GameModeComponent gm, string kind, int faction, string manner, RZ_Leader leader, int playerId, vector pos, string place = "")
+	//! the caller keeps its built line. `jokeMult` scales the mood's joke share (a short house: 2).
+	static string PickFor(RZ_GameModeComponent gm, string kind, int faction, string manner, RZ_Leader leader, int playerId, vector pos, string place = "", float jokeMult = 1)
 	{
 		RZ_WorldFacts facts = gm.GetFacts();
 		if (!facts)
@@ -228,7 +228,7 @@ class RZ_VoiceBank
 
 		// Nobody at a seat whose leader refuses a player jokes with them
 		bool refused = leader && playerId > 0 && gm.GetLeaders() && gm.GetLeaders().Attitude(leader, playerId) <= -2;
-		bool joke = !refused && !jokes.IsEmpty() && RZ_ToneGuard.AllowsJoke(pos) && Math.RandomFloat01() < 1.0 / RZ_SeasonMood.JokeOneIn(mood);
+		bool joke = !refused && !jokes.IsEmpty() && RZ_ToneGuard.AllowsJoke(pos) && Math.RandomFloat01() < Math.Max(0, jokeMult) / RZ_SeasonMood.JokeOneIn(mood);
 		RZ_VoiceLine picked;
 		if (joke || plain.IsEmpty())
 		{

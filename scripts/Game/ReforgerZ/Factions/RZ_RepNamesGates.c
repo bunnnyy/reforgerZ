@@ -39,6 +39,8 @@ class RZ_RepGates
 			return;
 
 		m_fNext = m_fClock + EVERY;
+		// Grief for a holding's named people (RZ_ToneGuard), on the same 5 s check
+		RZ_ToneGuard.NamedDeaths(m_GM);
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);

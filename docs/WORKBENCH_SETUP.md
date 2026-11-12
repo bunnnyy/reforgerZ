@@ -1601,7 +1601,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **102** lines with the tag, all in the game scripts (one is the comment in
+There are **103** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1645,8 +1645,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1046` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1251`, `:1129` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
-| `Factions/RZ_Disguise.c:1033`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
-| `Factions/RZ_DisguiseWatch.c:185` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
+| `Factions/RZ_Disguise.c:1067`, `Factions/RZ_DisguiseMarks.c:680`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
+| `Factions/RZ_DisguiseWatch.c:193` | a character's world transform's forward axis (`mat[2]`) is where its body faces | If it's another axis, guards count as turned to you at the wrong angle: again looks and their noticing line come too often or never. Check by standing behind a Bastion sentry in their kit after a passed look |
+| `Factions/RZ_DisguiseWatch.c:206` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
 | `Factions/RZ_DisguiseMarks.c:341`, `:390` | a dead character's worn clothing stays in its loadout slots long enough to be read when retaliation sees one of their people die, and when the spawner counts an infected's kill | No piece is ever marked a dead man's or off the turned (the log's `marked` lines never appear): killed men's and the turned's kit passes as clean. Turn **Hostility > Kit marks** off to make that explicit, and keep faction keywords rare in loot |
 | `Factions/RZ_Disguise.c:805` | the server knows a player's sprint (`IsSprinting`) and raised weapon (`IsWeaponRaised`) | The look's "[Running -1]" and "[A gun in your hands -1]" never show (or always do): check the tags in the look's log line |
 | `Factions/RZ_DisguiseMarks.c:544` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
@@ -2658,6 +2659,17 @@ when it happens)
 - [ ] One per approach: walk up to a Bastion post's gate with a name change pending and a tip due: the
   gate's bark first (with a rival-colours remark in the same line, in another faction's armband), the
   change notice 30 s later, then the tip 30 s after that.
+- [ ] In Bastion kit while Bastion's AI would shoot you by standing (Watched with **Hostility** set so),
+  fail a look at a road post: one urgent line ("Nobody asks you to stand still.") and they open fire;
+  no search, kit still on. At a post that wouldn't shoot you, a failed look holds and searches as
+  before. After a passed look, stand behind a sentry when the again look is due: no "turns your way"
+  line until he faces you.
+- [ ] A holding's named person killed: the log has `Voice: grief for ...`, the leader there says no
+  joke for 10 minutes, and the next time the holding is shown the role has a new name.
+- [ ] A short safehouse (let an upkeep run short): Ask how things are sometimes ends with a soup or
+  potato joke; none for 30 minutes after a death in that house.
+- [ ] The epilogue week (Trees on): visit a stronghold leader twice in one real day: the second visit
+  sometimes opens with a joke for the ending (none with no cure, except the Red Hand's).
 - [ ] Quiet success: Cargo's driver, Threaten him, with 40+ Red Hand Infamy this life: he talks and the
   next stage's camp isn't on guard; with none, the built line ("you can guess who he's running to
   tell").

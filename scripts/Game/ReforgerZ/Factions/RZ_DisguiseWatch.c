@@ -40,6 +40,7 @@ class RZ_DisguiseWatch
 {
 	static const float AGAIN_RADIUS = 15;
 	static const float AGAIN_NOTICE = 10;
+	static const float WATCH_ANGLE = 60;	// a watcher is turned to you within this many degrees of their facing
 	static const float OWED_SECONDS = 1800;
 	static const float SEEN_RADIUS = 30;
 	static const float SEEN_LOOK_RADIUS = 150;
@@ -182,6 +183,26 @@ class RZ_DisguiseWatch
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Is `viewer` turned toward `target`, within `halfAngle` degrees of where they face?
+	static bool Facing(IEntity viewer, IEntity target, float halfAngle)
+	{
+		if (!viewer || !target)
+			return false;
+
+		vector mat[4];
+		viewer.GetWorldTransform(mat); // VERIFY: a character's transform's forward axis (mat[2]) is where its body faces
+		vector fwd = mat[2];
+		fwd[1] = 0;
+		vector to = target.GetOrigin() - viewer.GetOrigin();
+		to[1] = 0;
+		if (to.Length() < 2 || fwd.Length() < 0.01)
+			return true;
+
+		float cosA = vector.Dot(fwd.Normalized(), to.Normalized());
+		return cosA >= Math.Cos(halfAngle * Math.DEG2RAD);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A sight trace from a person's eyes to a character's chest. VERIFY: TraceMove with ENTS | WORLD
 	//! from one character's head stops on walls and vehicles between them, and reports the target
 	//! when it reaches them.
@@ -271,7 +292,11 @@ class RZ_DisguiseWatch
 
 		string place;
 		m_mPlace.Find(key, place);
+		// The look, and its noticing line, only while one of theirs is turned to watch you
 		IEntity watcher = SeenBy(f, me, AGAIN_RADIUS);
+		if (watcher && !Facing(watcher, me, WATCH_ANGLE))
+			watcher = null;
+
 		if (!watcher)
 		{
 			// Nobody of theirs sees you when it's due: the look is owed for 30 minutes
@@ -290,7 +315,11 @@ class RZ_DisguiseWatch
 		if (warned == 0)
 		{
 			m_mAgainWarned.Set(key, 1);
-			m_Disguise.ShowComingNow(playerId, f, 2, place, "", RZ_Factions.GetName(f), "Someone's looking at you again.");
+			string notice = RZ_VoiceBank.PickFor(m_GM, "look_notice", f, "", null, playerId, me.GetOrigin());
+			if (notice.IsEmpty())
+				notice = "Someone's looking at you again.";
+
+			m_Disguise.ShowComingNow(playerId, f, 2, place, "", RZ_Factions.GetName(f), notice);
 			if (m_fClock < due)
 				return;
 		}

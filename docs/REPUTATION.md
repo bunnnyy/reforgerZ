@@ -940,6 +940,10 @@ toll for liars (10 Favor, else a beating: 20% of your health, never below the fl
 near, +2 Infamy instead), and Halcyon walks you off the gate politely. With a mixed name they say
 it to your face ("Hang on. You're that Merciful Thug."). **Walking off while held** at a Bastion
 barrier (30 m before the hold ends) is running the checkpoint: its Infamy and the post's fire.
+**At a post that would shoot you anyway** (their AI wants you by standing; only the kit held them),
+a failed look goes **straight to the guns**: no hold, no search, no kit taken, one urgent line and
+their grudge, with the catch's Infamy as usual ([WRITING.md](WRITING.md#faction-kit-and-disguises)).
+Log line: `Disguise: <player> caught by <faction> at a hostile post: straight to the guns`.
 **Exposed** at range (firing within 150 m of their people with no infected within 40 m of you, or
 a hit on them): blown, nothing else. Surrender comes first: a player who qualifies for surrender at a
 Bastion barrier is never caught there.

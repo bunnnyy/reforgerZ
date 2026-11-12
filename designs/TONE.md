@@ -2,31 +2,10 @@
 
 **Status: designed, not built.** Approved by the author on 2026-11-11. The text standard, the season mood,
 the voice bank with its open-channel tails and joke memories, grief, the running jokes, the race and the lock,
-the wanderers' and the epilogue week's lines, earned colours and the rules for every channel are built and
-live in [docs/WRITING.md](../docs/WRITING.md). This file keeps only what needs another session's code, with
-the reason. The section numbers other designs cite are kept.
-
-## 3.3 Grief and other local overrides
-
-- **A holding's named people.** Grief after one of them dies, like a leader's. *Why it waits:* a holding's
-  named people are the holding's guards and occupants, respawned as data; nothing records one of them dying
-  as a person (Territory would need to).
-- **A short house jokes about the soup more**, never about who eats, and not at all in the 30 minutes after a
-  death there. *Why it waits:* the bank's `person` lines are said by holdings' people, which don't know a
-  safehouse's state; the safehouse's own residents' lines are `Director/Epilogue` and `World/RZ_Safehouses.c`
-  text, outside the bank.
-
-## 3.9 Look lines outside a conversation
-
-A failed look at a hostile post goes straight to the guns, and a noticing line plays only while the guard
-turns to watch you. *Why it waits:* the barrier's look is borrowed kit's (`Factions/RZ_Disguise*.c`, the
-disguise session's), not a line the bank picks.
-
-## 3.12 The epilogue week's jokes
-
-Each stronghold and seat leader's plain lines for every ending are built from parts (docs/WRITING.md); the
-**jokes** for the week (about five per faction per ending) are still to write, with the epilogue's own lines
-in `Director/Epilogue/RZ_EpilogueText.c` (the epilogue session's).
+the wanderers' and the epilogue week's lines and jokes, grief for a holding's named people, a short house's
+soup jokes, the look lines outside a conversation, earned colours and the rules for every channel are built and
+live in [docs/WRITING.md](../docs/WRITING.md). This file keeps only the grey-choice mechanics in missions. The
+section numbers other designs cite are kept.
 
 ## 4. Grey choices in missions
 

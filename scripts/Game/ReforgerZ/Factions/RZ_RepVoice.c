@@ -713,6 +713,15 @@ class RZ_RepVoice
 			return FillFor(gm, playerId, l.m_eFaction, route);
 
 		string manner = VoiceManner(gm, playerId, l.m_eFaction, l);
+		// The epilogue week, after the day's plain opener: now and then a joke for the ending in the
+		// faction's voice (the bank's `week` lines; mood, grief and joke memory apply)
+		if (manner != "hostile" && manner != "owed" && gm.GetFacts() && gm.GetFacts().IsEpilogue())
+		{
+			string weekJoke = RZ_VoiceBank.PickFor(gm, "week", l.m_eFaction, "", l, playerId, l.m_vPos);
+			if (!weekJoke.IsEmpty())
+				return weekJoke;
+		}
+
 		if (manner != "hostile" && manner != "owed")
 		{
 			// Kin of a fallen Haven Champion, at the Haven's seats, once a life per leader
