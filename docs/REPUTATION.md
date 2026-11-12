@@ -105,7 +105,8 @@ their own (**Reputation > Names**, on; off shows the tier words only).
 
 ### What people call you
 
-✅ Code: `Factions/RZ_RepVoice.c`. A name opens nothing: every rule still reads the tier. What's
+✅ Code: `Factions/RZ_RepVoice.c`; the gate barks, others hear and the bounty's words in
+`Factions/RZ_RepNamesGates.c`. A name opens nothing: every rule still reads the tier. What's
 said aloud (the openings, what they make of you, the picture) is said only with **Dialogue > Trees**
 on ([DIALOGUE.md](DIALOGUE.md)); the word and crew names are kept either way.
 

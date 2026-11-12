@@ -17,8 +17,10 @@ players), `Dialogue/RZ_DialogueVotes.c` (the majors' sittings), `Dialogue/RZ_Dia
 `Dialogue/RZ_DialogueWire.c` (Bastion's word at the wire), `Dialogue/RZ_DialogueWorld.c` (conditions and
 tokens that read the season's story, the infected, the radio and kit marks), `Dialogue/RZ_DialogueMakeRight.c`
 (Make it right), `Dialogue/RZ_DialogueOpens.c` (greets that open by themselves), `Dialogue/RZ_DialogueNets.c`
-(the secure nets, distress calls, a house radio's power), `Dialogue/Pack/` (generated). Server only, except
-the screen.
+(the secure nets, distress calls, a house radio's power), `Dialogue/RZ_DialogueStory.c` (scene and
+questline flags, notes, approaches, TryBegin, claims the world tests), `Dialogue/RZ_DialogueBinds.c`
+(bindings, `{claim:...}`, world predicates), `Dialogue/RZ_DialogueJournal.c` (the notebook's Promises and
+What you know rows), `Dialogue/Pack/` (generated). Server only, except the screen.
 
 ## Contents
 

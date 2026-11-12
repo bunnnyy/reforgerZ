@@ -14,7 +14,9 @@ everywhere: errands' core, the mission style's framework, the world memory's wri
 [ERRANDS.md](../docs/ERRANDS.md) and [DESIGN.md](../docs/DESIGN.md#story-blocks). Phase 2 (talk: dialogue's
 trees on the talk screen behind **Dialogue > Trees**, reputation's voice, tone's season mood and voice bank) is
 built and lives in [DIALOGUE.md](../docs/DIALOGUE.md), [REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)
-and [WRITING.md](../docs/WRITING.md#the-season-mood). Phase 1 (the shared engine and
+and [WRITING.md](../docs/WRITING.md#the-season-mood), and so are the last pieces of talk, reputation's names and
+tone; what's left of those three waits for an engine check or another session's code
+([DIALOGUE.md](DIALOGUE.md), [REPUTATION_NAMES.md](REPUTATION_NAMES.md), [TONE.md](TONE.md)). Phase 1 (the shared engine and
 reputation's names) is built and lives in [DESIGN.md](../docs/DESIGN.md#the-shared-engine) and
 [REPUTATION.md](../docs/REPUTATION.md#reputations); the one body budget lives inside the tribes' agent budget
 ([INFECTED.md](../docs/INFECTED.md#the-one-body-budget)).

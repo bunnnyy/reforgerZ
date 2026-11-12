@@ -1747,7 +1747,7 @@ pick it. Tags show costs and requirements, never outcomes.
 |---|---|
 | Your access rank with the listener's faction (mixed tiers one lower, as built) | Stranger, Uneasy 0 · Known, Tolerated, Wildcard 1 · Trusted, Respected 2 · Champion 3 |
 | A background the option lists | +1 |
-| From dialogue (remembered help, or a vouch) | at most +1: dialogue's trees pass regard 2 or more, or the built helped or saved memory of this life ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)); a vouch is planned |
+| From dialogue (remembered help, or a vouch) | at most +1: dialogue's trees pass regard 2 or more, or the built helped or saved memory of this life ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)), or a vouch from someone they trust standing by ([DIALOGUE.md](DIALOGUE.md#several-players)) |
 | A lie found out, or a questline you worked against them (the life records `lied.<f>`, `crossed.<f>`) | −1 each (nothing writes them yet) |
 
 Hunted or worse: they won't be persuaded. People with no faction read your score with the Haven, at

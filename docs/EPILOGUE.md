@@ -118,8 +118,9 @@ say it), no route marks (the finale's are planned), no Since beats for a house t
 | **Readables** | 3 in 10 found in the week are dated in it (*"Gone to the queue at the north road. Took the dog."*), never naming the farm's town |
 | **The journal** | The notebook's **The season** tab ([UI.md](UI.md#the-notebook)), `/season` or the notebook item's action: *As the Zone tells it* (the cure line, every beat you've met, all of them in processing), **And you**, **Unfinished** (open closing work, last calls, what you carry, your last goal); the tab also shows the four majors |
 
-*Simplified:* no secure-channel lines, no Haven channel echo of the broadcast, leaders' topics as one
-notice, not a dialogue tree.
+*Simplified:* no secure-channel lines, no Haven channel echo of the broadcast; leaders' topics are one
+notice (with **Dialogue > Trees** on, every leader also has "Ask about the cure." and "Ask what they'll do
+now.", and the occupants a greet for the week: [DIALOGUE.md](DIALOGUE.md#the-last-week)).
 
 ### The evening calendar
 

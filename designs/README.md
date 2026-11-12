@@ -9,7 +9,8 @@ errands' core, the mission style's framework, the world memory's writers; the mi
 grid in use, the agent budget, which is also the one body budget; the tribes and the behaviour layer; their life cycle;
 the people's side: words, knowing, the packs' contracts and events, the cure's hooks, the last week; the great one, signs and
 sounds; the behaviour layer's rest and the close moves on the player's machine) are in code; they
-live in `docs/`.
+live in `docs/`. So are the last pieces of talk, reputation's names and tone: their three files keep only
+what waits for an engine check or another session's code.
 
 - **Designs are not docs.** Built behaviour is always described in `docs/` ([the Doc map](../CLAUDE.md#doc-map)).
   A design file only says what's designed, and never describes built behaviour.
