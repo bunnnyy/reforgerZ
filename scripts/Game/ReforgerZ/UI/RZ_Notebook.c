@@ -328,6 +328,16 @@ class RZ_NotebookMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Mouse: the open page's rows are the page's; the tabs and its buttons get the hover look.
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (m_Page && m_wPage)
+			return m_Page.OnHoverRow(w, name, tag, on);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void OnTabLeft(float value = 0, EActionTrigger reason = 0)
 	{
 		ShowTab(m_iTab - 1);
@@ -429,6 +439,14 @@ class RZ_NotebookPage
 	//------------------------------------------------------------------------------------------------
 	void OnClick(Widget w, string name)
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse (RZ_MenuBase.OnWidgetHover): a row of this page's came under the cursor (on) or left it;
+	//! true if it's one (drawn here), false for a button (it gets the hover look).
+	bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1050,7 +1068,7 @@ class RZ_StandingRowHandler : ScriptedWidgetEventHandler
 	//! the highlight follows the mouse; a click still opens).
 	override bool OnMouseEnter(Widget w, int x, int y)
 	{
-		if (m_Page && w)
+		if (m_Page && w && RZ_UIW.ByMouse())
 			m_Page.HoverRow(RZ_UIW.GetTag(w));
 
 		return false;
@@ -1374,6 +1392,20 @@ class RZ_JournalPage : RZ_NotebookPage
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRows.Insert(row);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the row under the cursor is lit like the selected one until the cursor leaves (a click
+	//! selects it and shows its detail).
+	override bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (name != "MissionRow")
+			return false;
+
+		bool lit = on || tag == m_iSelected;
+		RZ_UIW.Show(w, "RowSelected", lit);
+		RZ_UIW.Show(w, "RowSelLine", lit);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

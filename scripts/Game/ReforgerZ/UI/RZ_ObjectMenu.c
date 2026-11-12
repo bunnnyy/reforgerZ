@@ -258,29 +258,13 @@ class RZ_ObjectMenu : RZ_MenuBase
 		m_aRowWidgets.Clear();
 		RZ_UIW.Show(m_wRoot, "OptionsEmpty", m_aRows.IsEmpty());
 		ResourceName rowLayout = RZ_UISettings.Get().m_sObjectRowLayout;
-		Color amber = RZ_UIColor.Faction(RZ_EFaction.SURVIVORS);
-		foreach (int i, array<string> f : m_aRows)
+		for (int i = 0; i < m_aRows.Count(); i++)
 		{
 			Widget row = RZ_UIW.Create(rowLayout, list);
 			if (!row)
 				return;
 
-			bool on = i == m_iSelected;
-			bool can = RZ_UIText.Int(f, 3) == 1;
-			string reason = RZ_UIText.Str(f, 4);
-			Color fg = RZ_UIColor.Bone();
-			if (!can)
-				fg = RZ_UIW.Rgb(110, 106, 96);
-			else if (on)
-				fg = RZ_UIW.Rgb(244, 240, 230);
-
-			RZ_UIW.SetText(row, "OptionName", RZ_UIText.Str(f, 2));
-			RZ_UIW.Tint(row, "OptionName", fg);
-			RZ_UIW.SetText(row, "OptionNeed", reason);
-			RZ_UIW.Show(row, "OptionNeed", !can && !reason.IsEmpty());
-			RZ_UIW.Show(row, "OptionBg", on);
-			RZ_UIW.Show(row, "OptionBar", on);
-			RZ_UIW.Tint(row, "OptionBar", amber);
+			FillRow(row, i);
 			RZ_UIW.SetTag(row, i);
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRowWidgets.Insert(row);
@@ -290,8 +274,52 @@ class RZ_ObjectMenu : RZ_MenuBase
 		if (m_iSelected >= 0 && m_iSelected < m_aRowWidgets.Count())
 			RZ_UIW.FocusWidget(m_aRowWidgets[m_iSelected]);
 
-		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "OptionScroll"));
-		if (sc && m_aRowWidgets.Count() > 1)
-			sc.SetSliderPos(0, m_iSelected / (m_aRowWidgets.Count() - 1.0));
+		RZ_UIW.KeepInView(m_wRoot, "OptionScroll", m_iSelected, m_aRowWidgets.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Option `i` in its row: lit (a lighter fill, the amber bar, bright text) when it's selected.
+	protected void FillRow(Widget row, int i)
+	{
+		array<string> f = m_aRows[i];
+		bool on = i == m_iSelected;
+		bool can = RZ_UIText.Int(f, 3) == 1;
+		string reason = RZ_UIText.Str(f, 4);
+		Color fg = RZ_UIColor.Bone();
+		if (!can)
+			fg = RZ_UIW.Rgb(110, 106, 96);
+		else if (on)
+			fg = RZ_UIW.Rgb(244, 240, 230);
+
+		RZ_UIW.SetText(row, "OptionName", RZ_UIText.Str(f, 2));
+		RZ_UIW.Tint(row, "OptionName", fg);
+		RZ_UIW.SetText(row, "OptionNeed", reason);
+		RZ_UIW.Show(row, "OptionNeed", !can && !reason.IsEmpty());
+		RZ_UIW.Show(row, "OptionBg", on);
+		RZ_UIW.Show(row, "OptionBar", on);
+		RZ_UIW.Tint(row, "OptionBar", RZ_UIColor.Faction(RZ_EFaction.SURVIVORS));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the option under the cursor becomes the selected one (a click does it, and A or Enter
+	//! then does the same), drawn in place.
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (name != "OptionRow")
+			return false;
+
+		if (!on || tag < 0 || tag >= m_aRows.Count() || tag == m_iSelected)
+			return true;
+
+		m_iSelected = tag;
+		foreach (Widget row : m_aRowWidgets)
+		{
+			int idx = RZ_UIW.GetTag(row);
+			if (idx >= 0 && idx < m_aRows.Count())
+				FillRow(row, idx);
+		}
+
+		RZ_UIW.FocusWidget(w);
+		return true;
 	}
 }

@@ -29,6 +29,11 @@ mockup, its section says so.
   into a `ProgressBar`, the note into an `EditBox`, and clicks come from a `Button`. The layouts
   also use `Frame`, `Overlay`, `VerticalLayout`, `HorizontalLayout`, `ScrollLayout` (the wheel
   scrolls it), `SizeLayout` (a fixed width or height) and `Panel` (borders).
+- **Hover.** A list row's selected look (its `…Bg` and `…Bar`, its text brighter) is also what the
+  mouse over it shows. A button that isn't a row gets its hover look from the script: two images,
+  `RZ_HoverFill` and `RZ_HoverBar`, made in the button's first child when that is an `Overlay` (as
+  every button below has: `CloseBox`, `TabNBox`, `BuyBox`...). A button whose first child is
+  something else shows no hover ([UI.md](../docs/UI.md#controllers), "Hover").
 - **Panels** are an `Image` with no texture, colour `#121416` at 90% alpha, behind the content.
   Borders are a `Panel` with the `outline_2px` style. Accent bars are an `Image` 4–5 units thick;
   the scripts tint them (`SetColor`). A bar's background is an `Image` under its `ProgressBar`.

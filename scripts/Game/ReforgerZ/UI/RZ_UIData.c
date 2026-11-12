@@ -997,6 +997,112 @@ class RZ_UIW
 			ws.SetFocusedWidget(w);
 	}
 
+	// ================================================================ Hover (docs/UI.md, "Controllers")
+	static const string HOVER_FILL = "RZ_HoverFill";
+	static const string HOVER_BAR = "RZ_HoverBar";
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the mouse was the last thing used, so hover never acts for a pad or the keys (as
+	//! vanilla's buttons do before they follow the mouse).
+	static bool ByMouse()
+	{
+		InputManager input = GetGame().GetInputManager();
+		if (!input)
+			return false;
+
+		return input.GetLastUsedInputDevice() == EInputDeviceType.MOUSE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True if `w` is `parent` or inside it (the cursor going onto a button's own text isn't leaving it).
+	static bool IsInside(Widget w, Widget parent)
+	{
+		Widget p = w;
+		while (p)
+		{
+			if (p == parent)
+				return true;
+
+			p = p.GetParent();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pad and keys: scroll the named list so row `index` of `count` is in view. Not while the mouse
+	//! is in use: the list stays where it is under the cursor (hover lights a row, a click picks it).
+	static void KeepInView(Widget root, string scrollName, int index, int count)
+	{
+		if (count < 2 || ByMouse())
+			return;
+
+		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(Find(root, scrollName));
+		if (sc)
+			sc.SetSliderPos(0, Math.Max(0, index) / (count - 1.0));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: a button that isn't a row (a tab, CLOSE, CRAFT, BUY, DEPLOY...) shows the selected
+	//! row's look while the cursor is on it: a lighter fill and an amber bar on its left edge, made in
+	//! the button's Overlay (its first child) the first time. A button whose first child isn't an
+	//! Overlay (a picture, the death brief's full-screen DismissArea) gets nothing.
+	//! VERIFY: ImageWidgets made in script in a button's Overlay, aligned with OverlaySlot (the fill
+	//! stretched at white 8%, the bar 5 wide on the left), draw over the button, and IGNORE_CURSOR
+	//! keeps them from taking the cursor or the click. True if the button can show it.
+	static bool HoverMark(Widget button, bool on)
+	{
+		if (!button)
+			return false;
+
+		OverlayWidget box = OverlayWidget.Cast(button.GetChildren());
+		if (!box)
+			return false;
+
+		Widget fill = box.FindAnyWidget(HOVER_FILL);
+		Widget bar = box.FindAnyWidget(HOVER_BAR);
+		if (!fill && on)
+		{
+			fill = MakeHoverImage(box, HOVER_FILL, Color.FromRGBA(255, 255, 255, 20), false);
+			bar = MakeHoverImage(box, HOVER_BAR, RZ_UIColor.Faction(RZ_EFaction.SURVIVORS), true);
+		}
+
+		if (fill)
+			fill.SetVisible(on);
+
+		if (bar)
+			bar.SetVisible(on);
+
+		return fill != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static Widget MakeHoverImage(Widget box, string name, Color c, bool edge)
+	{
+		WorkspaceWidget ws = GetGame().GetWorkspace();
+		if (!ws)
+			return null;
+
+		Widget w = ws.CreateWidget(WidgetType.ImageWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.BLEND | WidgetFlags.STRETCH | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, c, 0, box);
+		if (!w)
+			return null;
+
+		w.SetName(name);
+		OverlaySlot.SetVerticalAlign(w, LayoutVerticalAlign.Stretch);
+		if (!edge)
+		{
+			OverlaySlot.SetHorizontalAlign(w, LayoutHorizontalAlign.Stretch);
+			return w;
+		}
+
+		OverlaySlot.SetHorizontalAlign(w, LayoutHorizontalAlign.Left);
+		ImageWidget img = ImageWidget.Cast(w);
+		if (img)
+			img.SetSize(5, 5);
+
+		return w;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Footer prompts: vanilla's input button (WLib_InputNavigationButton), which shows the key or
 	//! the pad button for the action by the device in use. Created into the HorizontalLayout

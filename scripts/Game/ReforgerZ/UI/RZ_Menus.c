@@ -9,8 +9,9 @@
 //! arrives. They only read; nothing here changes the game.
 //!
 //! Mouse: the buttons in the layouts (tabs, CloseButton, rows, the filter chip, PostButton) report
-//! their clicks through RZ_MenuClick. Gamepad: every menu closes with B (MenuBack) and gives a
-//! widget the focus when it opens.
+//! their clicks through RZ_MenuClick, which also hears the cursor coming onto them: a row is lit as
+//! the pad's selection is, a button shows the same look (RZ_MenuBase.OnWidgetHover). Gamepad: every
+//! menu closes with B (MenuBack) and gives a widget the focus when it opens.
 
 modded enum ChimeraMenuPreset // each entry needs a matching chimeraMenus.conf entry
 {
@@ -48,6 +49,28 @@ class RZ_MenuClick : ScriptedWidgetEventHandler
 		m_Menu.OnWidgetClick(w);
 		return true;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the cursor came onto a row or button (RZ_MenuBase.OnWidgetHover).
+	//! VERIFY: OnMouseEnter / OnMouseLeave reach a Button's handler when the cursor comes onto it or
+	//! leaves it (the talk screen's replies rely on the first), in a ChimeraMenuBase.
+	override bool OnMouseEnter(Widget w, int x, int y)
+	{
+		if (m_Menu && w)
+			m_Menu.OnWidgetHover(w, true);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Off it: not when it's only onto the button's own text or picture.
+	override bool OnMouseLeave(Widget w, Widget enterW, int x, int y)
+	{
+		if (m_Menu && w && !RZ_UIW.IsInside(enterW, w))
+			m_Menu.OnWidgetHover(w, false);
+
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -60,6 +83,9 @@ class RZ_MenuBase : ChimeraMenuBase
 	protected int m_iSeen = -1;
 	protected float m_fPoll;
 	protected ref RZ_MenuClick m_Click;
+	protected Widget m_wHoverMark;			// the button showing the hover look, if any
+	protected string m_sHoverName;			// the row or button under the mouse: its name and tag
+	protected int m_iHoverTag = -1;
 
 	//------------------------------------------------------------------------------------------------
 	//! Changes when there is something new to draw.
@@ -107,6 +133,69 @@ class RZ_MenuBase : ChimeraMenuBase
 	//------------------------------------------------------------------------------------------------
 	protected void OnClickOther(Widget w, string name)
 	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse (RZ_MenuClick): the cursor came onto `w` (on) or left it. A row of this screen's is the
+	//! screen's own (OnHoverRow: on the screens where a click does it, the row becomes the selected one;
+	//! where a click only picks it, it's lit like the selected row until the cursor leaves). Any other
+	//! button shows the hover look (RZ_UIW.HoverMark). Never from a pad or the keys: only when the
+	//! mouse was the last thing used.
+	void OnWidgetHover(Widget w, bool on)
+	{
+		if (!w || (on && !RZ_UIW.ByMouse()))
+			return;
+
+		// A button around another (the death brief's DismissArea) doesn't take the look off the inner one
+		if (on && m_wHoverMark && !RZ_UIW.IsInside(m_wHoverMark, w))
+		{
+			RZ_UIW.HoverMark(m_wHoverMark, false);
+			m_wHoverMark = null;
+		}
+
+		string name = w.GetName();
+		int tag = RZ_UIW.GetTag(w);
+		if (on)
+		{
+			m_sHoverName = name;
+			m_iHoverTag = tag;
+		}
+		else if (name == m_sHoverName && tag == m_iHoverTag)
+		{
+			m_sHoverName = "";
+			m_iHoverTag = -1;
+		}
+
+		bool current = m_iSeen == DataVersion();
+		if (OnHoverRow(w, name, tag, on))
+		{
+			// Drawn in place, so no rebuild for it: the list stays put under the cursor
+			if (current)
+				m_iSeen = DataVersion();
+
+			return;
+		}
+
+		bool marked = RZ_UIW.HoverMark(w, on);
+		if (on && marked)
+			m_wHoverMark = w;
+		else if (m_wHoverMark == w)
+			m_wHoverMark = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A row of this screen's (`name`, its tag) came under the mouse (on) or left it: draw it, and
+	//! return true. False if it isn't one of its rows.
+	protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The row named `name` with tag `tag` is under the mouse: a rebuild draws it lit.
+	protected bool Hovered(string name, int tag)
+	{
+		return tag == m_iHoverTag && name == m_sHoverName && RZ_UIW.ByMouse();
 	}
 
 	//------------------------------------------------------------------------------------------------

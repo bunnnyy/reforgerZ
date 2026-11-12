@@ -405,48 +405,13 @@ class RZ_ShopMenu : RZ_MenuBase
 		m_iSelected = Math.Clamp(m_iSelected, 0, Math.Max(0, m_aTabRows.Count() - 1));
 		RZ_UIW.Show(m_wRoot, "ItemsEmpty", m_aTabRows.IsEmpty());
 		ResourceName rowLayout = RZ_UISettings.Get().m_sShopItemLayout;
-		foreach (int pos, int idx : m_aTabRows)
+		for (int pos = 0; pos < m_aTabRows.Count(); pos++)
 		{
-			array<string> item = m_aItems[idx];
 			Widget row = RZ_UIW.Create(rowLayout, list);
 			if (!row)
 				return;
 
-			bool on = pos == m_iSelected;
-			int state = RZ_UIText.Int(item, 5);
-			int price = RZ_UIText.Int(item, 4);
-			bool open = state == RZ_FactionShopAction.STATE_OPEN;
-			string priceText = "";
-			if (price >= 0)
-				priceText = string.Format("%1 Favor", price);
-
-			string need = "";
-			if (!open)
-				need = RZ_UIText.Str(item, 6);
-
-			RZ_UIW.SetText(row, "ItemName", RZ_UIText.Str(item, 3));
-			RZ_UIW.SetText(row, "ItemPrice", priceText);
-			RZ_UIW.SetText(row, "ItemNeed", need);
-			RZ_UIW.Show(row, "ItemNeed", !need.IsEmpty());
-			RZ_UIW.Show(row, "ItemLock", state == RZ_FactionShopAction.STATE_LOCKED);
-			RZ_UIW.Icon(row, "ItemLock", "status_door_locked");
-			RZ_UIW.Show(row, "ItemBg", on);
-			RZ_UIW.Show(row, "ItemBar", on);
-			RZ_UIW.Tint(row, "ItemBar", accent);
-			Color priceColour = accent;
-			Color fg = RZ_UIColor.Bone();
-			if (!open)
-			{
-				fg = RZ_UIW.Rgb(110, 106, 96);
-				priceColour = fg;
-			}
-			else if (on)
-			{
-				fg = RZ_UIW.Rgb(244, 240, 230);
-			}
-
-			RZ_UIW.Tint(row, "ItemName", fg);
-			RZ_UIW.Tint(row, "ItemPrice", priceColour);
+			FillRow(row, pos, pos == m_iSelected || Hovered("ItemRow", pos), accent);
 			RZ_UIW.SetTag(row, pos);
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRows.Insert(row);
@@ -456,9 +421,66 @@ class RZ_ShopMenu : RZ_MenuBase
 			RZ_UIW.FocusWidget(m_aRows[m_iSelected]);
 
 		// Keep the selected row in view on a pad
-		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "ItemScroll"));
-		if (sc && m_aRows.Count() > 1)
-			sc.SetSliderPos(0, m_iSelected / (m_aRows.Count() - 1.0));
+		RZ_UIW.KeepInView(m_wRoot, "ItemScroll", m_iSelected, m_aRows.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The open tab's item `pos` in its row; `on`: lit (a lighter fill, the bar in the faction colour,
+	//! bright text), as the selected row and the row under the mouse are.
+	protected void FillRow(Widget row, int pos, bool on, Color accent)
+	{
+		array<string> item = m_aItems[m_aTabRows[pos]];
+		int state = RZ_UIText.Int(item, 5);
+		int price = RZ_UIText.Int(item, 4);
+		bool open = state == RZ_FactionShopAction.STATE_OPEN;
+		string priceText = "";
+		if (price >= 0)
+			priceText = string.Format("%1 Favor", price);
+
+		string need = "";
+		if (!open)
+			need = RZ_UIText.Str(item, 6);
+
+		RZ_UIW.SetText(row, "ItemName", RZ_UIText.Str(item, 3));
+		RZ_UIW.SetText(row, "ItemPrice", priceText);
+		RZ_UIW.SetText(row, "ItemNeed", need);
+		RZ_UIW.Show(row, "ItemNeed", !need.IsEmpty());
+		RZ_UIW.Show(row, "ItemLock", state == RZ_FactionShopAction.STATE_LOCKED);
+		RZ_UIW.Icon(row, "ItemLock", "status_door_locked");
+		RZ_UIW.Show(row, "ItemBg", on);
+		RZ_UIW.Show(row, "ItemBar", on);
+		RZ_UIW.Tint(row, "ItemBar", accent);
+		Color priceColour = accent;
+		Color fg = RZ_UIColor.Bone();
+		if (!open)
+		{
+			fg = RZ_UIW.Rgb(110, 106, 96);
+			priceColour = fg;
+		}
+		else if (on)
+		{
+			fg = RZ_UIW.Rgb(244, 240, 230);
+		}
+
+		RZ_UIW.Tint(row, "ItemName", fg);
+		RZ_UIW.Tint(row, "ItemPrice", priceColour);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the item under the cursor is lit like the selected one until the cursor leaves (a click
+	//! picks it; moving over others on the way to BUY doesn't). The preview has no hover look.
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (name == "PreviewButton")
+			return true;
+
+		if (name != "ItemRow")
+			return false;
+
+		if (tag >= 0 && tag < m_aTabRows.Count())
+			FillRow(w, tag, on || tag == m_iSelected, RZ_UIColor.Faction(m_iFaction));
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

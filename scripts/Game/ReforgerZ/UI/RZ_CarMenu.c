@@ -331,21 +331,13 @@ class RZ_CarMenu : RZ_MenuBase
 			RZ_UIW.SetText(row, "JobNeed", need);
 			RZ_UIW.SetText(row, "JobButton", button);
 			RZ_UIW.Show(row, "JobButtonBox", !button.IsEmpty());
-			RZ_UIW.Show(row, "JobBg", on);
-			RZ_UIW.Show(row, "JobBar", on);
 			RZ_UIW.Tint(row, "JobBar", RZ_UIColor.Faction(RZ_EFaction.SURVIVORS));
 			bool working = state == RZ_Cars.STATE_WORKING && m_fTotal > 0;
 			RZ_UIW.Show(row, "JobProgress", working);
 			if (working)
 				RZ_UIW.Progress(row, "JobProgress", 1 - left / m_fTotal);
 
-			Color fg = RZ_UIColor.Bone();
-			if (state == RZ_Cars.STATE_NEED)
-				fg = RZ_UIW.Rgb(163, 158, 144);
-			else if (on)
-				fg = RZ_UIW.Rgb(244, 240, 230);
-
-			RZ_UIW.Tint(row, "JobName", fg);
+			LightRow(row, i);
 			RZ_UIW.SetTag(row, i);
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRows.Insert(row);
@@ -354,5 +346,49 @@ class RZ_CarMenu : RZ_MenuBase
 		// Pad focus on the selected job, so the D-pad and A act on what's lit
 		if (m_iSelected >= 0 && m_iSelected < m_aRows.Count())
 			RZ_UIW.FocusWidget(m_aRows[m_iSelected]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Job `i`'s row lit when it's selected (a lighter fill, the amber bar, bright text), and the
+	//! ring on its marker on the car.
+	protected void LightRow(Widget row, int i)
+	{
+		array<string> f = m_aJobs[i];
+		bool on = i == m_iSelected;
+		int state = RZ_UIText.Int(f, 2);
+		int job = RZ_UIText.Int(f, 1);
+		RZ_UIW.Show(m_wRoot, "MarkerRing" + job.ToString(), on);
+		RZ_UIW.Show(row, "JobBg", on);
+		RZ_UIW.Show(row, "JobBar", on);
+		Color fg = RZ_UIColor.Bone();
+		if (state == RZ_Cars.STATE_NEED)
+			fg = RZ_UIW.Rgb(163, 158, 144);
+		else if (on)
+			fg = RZ_UIW.Rgb(244, 240, 230);
+
+		RZ_UIW.Tint(row, "JobName", fg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the job under the cursor becomes the selected one (a click does it, and A or Enter
+	//! then does the same), drawn in place.
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (name != "JobRow")
+			return false;
+
+		if (!on || tag < 0 || tag >= m_aJobs.Count() || tag == m_iSelected)
+			return true;
+
+		m_iSelected = tag;
+		foreach (Widget row : m_aRows)
+		{
+			int idx = RZ_UIW.GetTag(row);
+			if (idx >= 0 && idx < m_aJobs.Count())
+				LightRow(row, idx);
+		}
+
+		RZ_UIW.FocusWidget(w);
+		return true;
 	}
 }

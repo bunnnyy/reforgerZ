@@ -49,7 +49,7 @@ class RZ_TalkRowEvents : ScriptedWidgetEventHandler
 	//! cursor comes onto it, in a ChimeraMenuBase.
 	override bool OnMouseEnter(Widget w, int x, int y)
 	{
-		if (m_Menu && w)
+		if (m_Menu && w && RZ_UIW.ByMouse())
 			m_Menu.HoverRow(RZ_UIW.GetTag(w));
 
 		return false;

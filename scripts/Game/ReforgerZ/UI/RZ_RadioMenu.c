@@ -314,7 +314,6 @@ class RZ_RadioMenu : RZ_MenuBase
 			if (!row)
 				return;
 
-			bool on = i == s_iChannel;
 			string state = StateOf(ch);
 			Color accent = RZ_UIColor.Bone();
 			string icon = "glyph_radio";
@@ -325,24 +324,15 @@ class RZ_RadioMenu : RZ_MenuBase
 				icon = st.Icon();
 			}
 
-			// Dim when nothing comes through: scrambled, too faint or quiet
-			Color fg = RZ_UIColor.Bone();
-			if (state == "SCRAMBLED" || state == "TOO FAINT" || state == "QUIET")
-				fg = RZ_UIW.Rgb(110, 106, 96);
-			else if (on)
-				fg = RZ_UIW.Rgb(244, 240, 230);
-
 			RZ_UIW.SetText(row, "ChannelName", RZ_UIText.Str(ch, 3));
-			RZ_UIW.Tint(row, "ChannelName", fg);
 			RZ_UIW.SetText(row, "ChannelState", state);
 			RZ_UIW.Tint(row, "ChannelState", accent);
 			RZ_UIW.SetText(row, "ChannelLine", RZ_UIText.Clean(LatestOf(ch), 110));
 			RZ_UIW.Show(row, "ChannelIcon", !RZ_UISettings.Get().m_sIconImageset.IsEmpty());
 			RZ_UIW.Icon(row, "ChannelIcon", icon);
 			RZ_UIW.Tint(row, "ChannelIcon", accent);
-			RZ_UIW.Show(row, "ChannelBg", on);
-			RZ_UIW.Show(row, "ChannelBar", on);
 			RZ_UIW.Tint(row, "ChannelBar", accent);
+			LightRow(row, state, i == s_iChannel || Hovered("ChannelRow", i));
 			RZ_UIW.SetTag(row, i);
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRows.Insert(row);
@@ -352,9 +342,37 @@ class RZ_RadioMenu : RZ_MenuBase
 		if (s_iChannel >= 0 && s_iChannel < m_aRows.Count())
 			RZ_UIW.FocusWidget(m_aRows[s_iChannel]);
 
-		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "ChannelScroll"));
-		if (sc && m_aRows.Count() > 1)
-			sc.SetSliderPos(0, s_iChannel / (m_aRows.Count() - 1.0));
+		RZ_UIW.KeepInView(m_wRoot, "ChannelScroll", s_iChannel, m_aRows.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A channel row (its state now) lit or not: the picked row and the row under the mouse have a
+	//! lighter fill, the bar and bright text; dim when nothing comes through (scrambled, too faint, quiet).
+	protected void LightRow(Widget row, string state, bool on)
+	{
+		Color fg = RZ_UIColor.Bone();
+		if (state == "SCRAMBLED" || state == "TOO FAINT" || state == "QUIET")
+			fg = RZ_UIW.Rgb(110, 106, 96);
+		else if (on)
+			fg = RZ_UIW.Rgb(244, 240, 230);
+
+		RZ_UIW.Tint(row, "ChannelName", fg);
+		RZ_UIW.Show(row, "ChannelBg", on);
+		RZ_UIW.Show(row, "ChannelBar", on);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the channel under the cursor is lit like the picked one until the cursor leaves; a click
+	//! picks it (the log changes only then).
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (name != "ChannelRow")
+			return false;
+
+		if (tag >= 0 && tag < m_aChannels.Count())
+			LightRow(w, StateOf(m_aChannels[tag]), on || tag == s_iChannel);
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

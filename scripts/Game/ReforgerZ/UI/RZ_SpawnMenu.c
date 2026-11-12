@@ -547,31 +547,13 @@ class RZ_SpawnMenu : RZ_MenuBase
 		RZ_UIW.ClearChildren(list);
 		m_aRows.Clear();
 		ResourceName rowLayout = RZ_UISettings.Get().m_sSpawnRowLayout;
-		foreach (int i, array<string> f : m_aBackgrounds)
+		for (int i = 0; i < m_aBackgrounds.Count(); i++)
 		{
 			Widget row = RZ_UIW.Create(rowLayout, list);
 			if (!row)
 				return;
 
-			bool on = i == m_iSelected;
-			bool locked = RZ_UIText.Int(f, 6) == 1;
-			RZ_UIW.SetText(row, "RowName", RZ_UIText.Str(f, 2));
-			RZ_UIW.Show(row, "RowBg", on);
-			RZ_UIW.Show(row, "RowBar", on);
-			RZ_UIW.Show(row, "RowLock", locked);
-			RZ_UIW.Icon(row, "RowLock", "status_door_locked");
-			string state = "";
-			if (locked)
-				state = "LOCKED";
-
-			RZ_UIW.SetText(row, "RowState", state);
-			Color fg = RZ_UIColor.Bone();
-			if (locked)
-				fg = RZ_UIW.Rgb(110, 106, 96);
-			else if (on)
-				fg = RZ_UIW.Rgb(244, 240, 230);
-
-			RZ_UIW.Tint(row, "RowName", fg);
+			FillRow(row, i, i == m_iSelected || Hovered("SpawnRow", i));
 			RZ_UIW.SetTag(row, i);
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRows.Insert(row);
@@ -581,9 +563,47 @@ class RZ_SpawnMenu : RZ_MenuBase
 			RZ_UIW.FocusWidget(m_aRows[m_iSelected]);
 
 		// Keep the picked row in view on a pad
-		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "RowScroll"));
-		if (sc && m_aRows.Count() > 1)
-			sc.SetSliderPos(0, Math.Max(0, m_iSelected) / (m_aRows.Count() - 1.0));
+		RZ_UIW.KeepInView(m_wRoot, "RowScroll", m_iSelected, m_aRows.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Background `i` in its row; `on`: lit (a lighter fill, the bar, bright text), as the picked
+	//! row and the row under the mouse are.
+	protected void FillRow(Widget row, int i, bool on)
+	{
+		array<string> f = m_aBackgrounds[i];
+		bool locked = RZ_UIText.Int(f, 6) == 1;
+		RZ_UIW.SetText(row, "RowName", RZ_UIText.Str(f, 2));
+		RZ_UIW.Show(row, "RowBg", on);
+		RZ_UIW.Show(row, "RowBar", on);
+		RZ_UIW.Show(row, "RowLock", locked);
+		RZ_UIW.Icon(row, "RowLock", "status_door_locked");
+		string state = "";
+		if (locked)
+			state = "LOCKED";
+
+		RZ_UIW.SetText(row, "RowState", state);
+		Color fg = RZ_UIColor.Bone();
+		if (locked)
+			fg = RZ_UIW.Rgb(110, 106, 96);
+		else if (on)
+			fg = RZ_UIW.Rgb(244, 240, 230);
+
+		RZ_UIW.Tint(row, "RowName", fg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the background under the cursor is lit like the picked one until the cursor leaves (a
+	//! click picks it; moving over others on the way to DEPLOY doesn't).
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (name != "SpawnRow")
+			return false;
+
+		if (tag >= 0 && tag < m_aBackgrounds.Count())
+			FillRow(w, tag, on || tag == m_iSelected);
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
