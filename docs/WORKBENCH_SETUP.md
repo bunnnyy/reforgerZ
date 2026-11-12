@@ -715,7 +715,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | vanilla AIWaypoint_ObservationPost.et | — | Territory > Camp life > Observation waypoint | optional | a sentry with no nest (empty = the loiter waypoint) |
 | (existing prefab) | vanilla Group_Base.et (an AI group with no members) | — | Territory > Camp life > Group prefab | optional | lone characters (occupants, single guards) join one so they can take jobs (empty = they stand) |
 | (existing prefab) | a new prefab of class SCR_SmartActionWaypoint, saved as Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et (vanilla ships the class, not a prefab) | — | Territory > Camp life > Smart action waypoint | optional | people use a piece's sit, lean, work and watch points (empty = they loiter beside it) |
-| (existing prefab) | the 54 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
+| (existing prefab) | the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
 
 #### New-player guidance
 
