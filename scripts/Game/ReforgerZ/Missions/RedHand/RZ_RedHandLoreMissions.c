@@ -844,6 +844,22 @@ class RZ_CargoVan
 	static const float CUT_SECONDS = 12;
 	static const float DOOR_REACH = 4;
 
+	protected static int s_iNextKey;
+	protected int m_iKey = -1;
+
+	//------------------------------------------------------------------------------------------------
+	//! The padlock's work site key (Cut the padlock, with work sites on).
+	protected string WorkKey()
+	{
+		if (m_iKey < 0)
+		{
+			s_iNextKey++;
+			m_iKey = s_iNextKey;
+		}
+
+		return "cargovan." + m_iKey.ToString();
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Supply > Red Hand truck. "" = no van (the missions that need one never run).
 	static ResourceName VanPrefab(RZ_GameModeComponent gm)
@@ -940,12 +956,30 @@ class RZ_CargoVan
 		if (m_bOpen || m_iCutter <= 0)
 			return false;
 
+		RZ_WorkSites sites = RZ_WorkSites.Get();
 		IEntity cutter = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iCutter);
 		if (!cutter || RZ_Util.DistXZ(cutter.GetOrigin(), m_vDoor) > DOOR_REACH)
 		{
 			m_iCutter = -1;
 			m_fCut = 0;
+			if (sites)
+				sites.Close(WorkKey());
+
 			return false;
+		}
+
+		// With work sites: Cut the padlock, a hold at the van's door for whoever started it
+		if (RZ_WorkSites.Available() && sites)
+		{
+			if (!sites.Has(WorkKey()))
+				sites.Open(WorkKey(), RZ_EWork.HANDS, "Cut the padlock", CUT_SECONDS, RZ_Mission.LandPointNear(m_vDoor, 1, 1.5), m_iCutter);
+
+			if (!sites.IsDone(WorkKey()))
+				return false;
+
+			sites.Close(WorkKey());
+			m_bOpen = true;
+			return true;
 		}
 
 		m_fCut += dt;
@@ -973,6 +1007,9 @@ class RZ_CargoVan
 	//! The guards go; the van stays only if someone sits in it.
 	void Cleanup()
 	{
+		if (RZ_WorkSites.Get() && m_iKey >= 0)
+			RZ_WorkSites.Get().Close(WorkKey());
+
 		RZ_Util.DeleteUnit(m_Guards);
 		m_Guards = null;
 		array<int> ids = {};

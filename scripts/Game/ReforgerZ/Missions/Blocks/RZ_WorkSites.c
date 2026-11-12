@@ -77,7 +77,7 @@ class RZ_WorkSiteSettings
 	[Attribute("1", UIWidgets.Slider, "Time scale: every hold takes its time x this (each step sets its own, 5-20 s)", "0.25 3 0.05")]
 	float m_fTimeScale;
 
-	[Attribute("40", UIWidgets.Slider, "Sites at once, server-wide (open and done). A new one past this drops the oldest closed one first", "8 200 1")]
+	[Attribute("40", UIWidgets.Slider, "Sites at once, server-wide. A new one past this drops the oldest whose step is over (its result still standing); one whose step is under way is never dropped", "8 200 1")]
 	int m_iMaxSites;
 
 	//------------------------------------------------------------------------------------------------
@@ -162,6 +162,7 @@ class RZ_WorkSites
 	protected float m_fClock;
 	protected float m_fSpawnTimer;
 	protected bool m_bWarnedComponent;
+	protected bool m_bWarnedCap;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_WorkSites(RZ_SharedSettings shared)
@@ -415,6 +416,22 @@ class RZ_WorkSites
 		}
 
 		s.m_bClosed = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds the server has counted `playerId` at it without a break (0 when they aren't there):
+	//! for an owner that times something mid-way (a guard's second look).
+	float WorkedFor(string key, int playerId)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s)
+			return 0;
+
+		int idx = s.m_aNear.Find(playerId);
+		if (idx < 0)
+			return 0;
+
+		return m_fClock - s.m_aSince[idx];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -724,13 +741,11 @@ class RZ_WorkSites
 			}
 		}
 
-		foreach (RZ_WorkSite d : m_aSites)
+		// None closed: every one is a step still under way, so the cap gives (logged once)
+		if (!m_bWarnedCap)
 		{
-			if (d.m_bDone)
-			{
-				Drop(d);
-				return;
-			}
+			m_bWarnedCap = true;
+			RZ_Log.Info(string.Format("Work sites: %1 open at once, past Sites at once; none dropped (each is a step under way).", m_aSites.Count()));
 		}
 	}
 

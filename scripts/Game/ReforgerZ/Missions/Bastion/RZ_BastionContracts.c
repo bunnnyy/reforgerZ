@@ -1348,7 +1348,10 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 				SpawnObject(gm, RZ_EPuzzleProp.OBJECT, spot, n + 1, "Check the charge", "");
 			}
 
-			RZ_ContractHelp.NotifyNear(gm, m_vChoke, 300, m_sTitle, string.Format("The charges are stacked at the narrow point (grid %1). Stand by each for %2 seconds to wire it, then blow them from the detonator.", ChargeGrids(), RZ_Util.RoundToInt(CHARGE_SECONDS)));
+			if (RZ_WorkSites.Available())
+				RZ_ContractHelp.NotifyNear(gm, m_vChoke, 300, m_sTitle, string.Format("The charges are stacked at the narrow point (grid %1). Wire each one where it lies, about %2 seconds a charge, then blow them from the detonator.", ChargeGrids(), RZ_Util.RoundToInt(CHARGE_SECONDS)));
+			else
+				RZ_ContractHelp.NotifyNear(gm, m_vChoke, 300, m_sTitle, string.Format("The charges are stacked at the narrow point (grid %1). Stand by each for %2 seconds to wire it, then blow them from the detonator.", ChargeGrids(), RZ_Util.RoundToInt(CHARGE_SECONDS)));
 		}
 
 		if (!m_bBonusChecked && AnyBonusNear(gm, ids, players, m_vChoke, 40))
@@ -1358,17 +1361,40 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			RZ_ContractHelp.NotifyNear(gm, m_vChoke, 60, m_sTitle, "You know where to put them: two charges will do the work of three.");
 		}
 
+		// With work sites: Wire the charge, a hold at each (shown with the detonator)
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		bool held = RZ_WorkSites.Available() && sites && m_bDetonatorShown;
 		foreach (int i, vector c : m_aCharges)
 		{
+			string key = string.Format("mission.%1.charge.%2", m_iId, i);
 			if (m_aPlanted[i] >= CHARGE_SECONDS || m_iPlanted >= m_iNeeded)
-				continue;
+			{
+				if (sites)
+					sites.Close(key);
 
-			if (!ReachedBy(ids, players, c, 3, true))	// wiring a charge: at it
 				continue;
+			}
 
-			m_aPlanted[i] = m_aPlanted[i] + dt;
-			if (m_aPlanted[i] < CHARGE_SECONDS)
-				continue;
+			if (held)
+			{
+				if (!sites.Has(key))
+					sites.Open(key, RZ_EWork.HANDS, "Wire the charge", CHARGE_SECONDS, LandPointNear(c, 1, 1.5));
+
+				if (!sites.IsDone(key))
+					continue;
+
+				sites.Close(key);
+				m_aPlanted[i] = CHARGE_SECONDS;
+			}
+			else
+			{
+				if (!ReachedBy(ids, players, c, 3, true))	// wiring a charge: at it
+					continue;
+
+				m_aPlanted[i] = m_aPlanted[i] + dt;
+				if (m_aPlanted[i] < CHARGE_SECONDS)
+					continue;
+			}
 
 			m_iPlanted++;
 			RZ_ContractHelp.NotifyNear(gm, m_vChoke, 60, m_sTitle, string.Format("Charge %1 of %2 set. Get clear before you blow them.", m_iPlanted, m_iNeeded));
@@ -1549,6 +1575,20 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			return string.Format("Blow the Bridge: the horde reached %1.", GetLocationName(gm));
 
 		return string.Format("Blow the Bridge: nobody blew the narrow point, and the horde is still on the road to %1.", GetLocationName(gm));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void Cleanup(RZ_GameModeComponent gm)
+	{
+		super.Cleanup(gm);
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!sites)
+			return;
+
+		foreach (int i, vector c : m_aCharges)
+		{
+			sites.Close(string.Format("mission.%1.charge.%2", m_iId, i));
+		}
 	}
 }
 
