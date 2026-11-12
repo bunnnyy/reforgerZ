@@ -37,8 +37,8 @@ Nobody is new. Everyone has been trapped since the seal: the opening is about wh
 - **Not twice in a row.** Not within 2 km of the player's last two starts.
 - **Fallback.** No fitting place within the rules: any unheld town's house, with the background's
   scene props; then a vanilla spawn point with only the contact (no scene).
-- **A safehouse start** stays possible as a respawn choice only after the player's first counted
-  life, and only from the pause menu's "Start at a safehouse" (no opening then).
+- **No chosen starts.** Never a safehouse or any other place the player picks (the author's call,
+  2026-11-12).
 
 ## Why today: the reasons
 
@@ -97,15 +97,14 @@ a speech ([WRITING.md](../docs/WRITING.md)):
 | The factions | The last step's place: who holds it, in a sentence ("The soldiers count you at the door. Let them.") |
 | The cure | Halcyon's flyer in the pharmacy, or the contact: "The lab people say there's a way out. A cure. Proof." |
 
-**Where the chain ends**, by background lean (brand-new players lean to the Haven, as today):
+**Where the chain ends** fits who you were (the author's call, 2026-11-12):
 
-| Background | Ends at |
-|---|---|
-| Nurse, Radio Operator, Elder, Unemployed, Mechanic | a Haven safehouse |
-| Police Officer, Soldier | a Bastion outpost |
-| Ex-Con, Raider | a Red Hand camp (the contact may not come in) |
-| Lab Technician, Doctor | Halcyon's field station or the lab |
-| Hunter, Drifter | the nearest of the four that would have them |
+| Who | Backgrounds | Ends at |
+|---|---|---|
+| Medical people | Nurse, Doctor, Lab Technician | Halcyon's field station or the lab |
+| Trouble | Ex-Con, Raider | a Red Hand camp (the contact may not come in) |
+| Military and the law | Soldier, Police Officer | a Bastion outpost |
+| Everyone else | Mechanic, Hunter, Radio Operator, Unemployed, Elder, Drifter | a Haven safehouse |
 
 ## Per background: places and the chain's step 2
 
@@ -139,7 +138,7 @@ a speech ([WRITING.md](../docs/WRITING.md)):
 
 | Level | Opening |
 |---|---|
-| 0, brand new | The full opening and all three steps; brand-new players lean to the hiding place and the Haven ending |
+| 0, brand new | The full opening and all three steps; brand-new players lean to the hiding place; the ending still follows the background |
 | 1, learning | The full opening; step 1 may be shorter |
 | 2, familiar | The scene and the contact; one step, then the tracker picks the nearest job |
 | 3, veteran | The scene as a one-line read and a tracked nearby job; a contact only one time in three |
@@ -173,10 +172,8 @@ a speech ([WRITING.md](../docs/WRITING.md)):
 3. Group gone and fever broke, the earlier-life contact, and the experience levels.
 4. Lines for every background × reason, and the voice pass.
 
-## Questions for the author
+## Decided
 
-- Should a player ever be able to pick a safehouse start (from the pause menu, after the first life),
-  or is it random every time without exception?
-- Should the Raider's and Ex-Con's chain really end at the Red Hand, or at the Haven with a
-  choice on the way?
-- Is about 15 minutes for the chain right, or shorter (10)?
+- No chosen starts, ever (2026-11-12).
+- The chain ends where the background belongs (the table above, 2026-11-12).
+- About 15 minutes for the chain, to be checked in play (2026-11-12).
