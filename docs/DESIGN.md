@@ -708,7 +708,7 @@ drawn whole, of compositions built from vanilla outdoor props
 | Bastion post | a sandbag nest and sandbag runs at the approach, tents, the roster board, a flagless pole, a fire pit, a table, a cook pot and a woodpile, a shaving stand, ammo-crate seats |
 | Red Hand camp | the toll barrier, a scrappy nest, a scrap barricade and the red hand painted on corrugated iron at the approach, an oil-drum fire, a card table, a stolen sofa, a cook pot and a woodpile, tents and a scrap shelter, bags and bottles |
 | Haven safehouse and outpost | a table outside, a cook pot and a woodpile, a water barrel and a wash stand, a washing line, a garden bed, the bear stencil on a door board; an outpost adds a candle memorial with names, a tent, a children's corner, a fence and a vegetable stall |
-| Halcyon field station | a field table, the medical tent, a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab grounds too, when Halcyon's stronghold sits at the lab: a sorting table under a net, two generators, the radio table) |
+| Halcyon field station | a field table, the ward tent (the plain FIA tent: the medical one carries a heal station), a decon shower screened with tin sheets, a cold store on a pallet, a generator, an antenna, a bench of notebooks, the plague-doctor stencil board (the lab grounds too, when Halcyon's stronghold sits at the lab: a sorting table under a net, two generators, the radio table) |
 | Strongholds | the faction's set, more of it (20 pieces against an outpost's 13): more tents, bags and bottles, a drying line, a latrine screen, and each faction's extras (Bastion's duty board, the Red Hand's trophy wall and kennel, the Haven's fire pit and chairs round a crate, Halcyon's sorting table and radio table) |
 | Road posts | 4 pieces on the verges either side of the barrier: a fire barrel, a nest or a card table, a tarp, a barricade |
 | Every place with a quartermaster | his **counter**: a table between him and his customers (Bastion's stores window, the Red Hand fence's table, the Haven's stores table, Halcyon's issue table) |
@@ -739,7 +739,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   stronghold, a middling one elsewhere) and distance are then scored by the roads: Bastion and
   Halcyon's lab want a road within 25 m of the building, the Red Hand roads meeting (each further
   road within 45 m counts). Any building on the shortlist will do when none of the faction's kind
-  is there; with none at all, open ground (below). It's read once a run and kept; the log says which
+  is there; with none of the size in reach, any building of 25 m² up to half as far again (a camp by
+  a house beats a camp in a field); with none at all, open ground (below). It's read once a run and kept; the log says which
   (`Camp life: ... moves into ...`).
 - **Its shape.** The **front** is the wall with the outside door nearest the way in (the
   building's door children), else the side facing it. The **road entries** are where roads cross
@@ -778,9 +779,15 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   fits wins, its first pieces counting most. If under 60% fits behind the building, its sides
   (then its front) are tried too. With no road entries, the gate and closed pieces stand 9 m out
   in front.
-- **On open ground** (no building fits, or buildings are off): the plan's middle at the place, its
-  front to the nearest road (else the next town), then pulled back 4 or 8 m, shifted 4 m sideways
-  or turned 12°, whichever fits most. **At a road post** the plan's front runs along the road and
+- **The front faces land.** The camp's front (its approach) is the way to the nearest road, else
+  the next town, but never toward water or a drop: if sea level or ground 8 m lower lies within
+  80 m that way (or 25° either side), the front turns to the nearest way that has neither (a coast
+  road can run between the camp and the sea). A nest, a barrier, a barricade or a sign is left out
+  if it would look at water or a drop within 50 m, wherever it stands; with no road entries by a
+  building they stand off its first side that faces land.
+- **On open ground** (no building near, or buildings are off): the plan's middle at the place, its
+  front landward, then pulled back 4 or 8 m, pushed on 4 or 8 m, shifted 4 m sideways or turned
+  12°, whichever fits most. **At a road post** the plan's front runs along the road and
   its pieces stand on the verges either side of the barrier (shifted 3 m along it if that fits better).
 - **Every piece fits, its whole footprint.** Each kit entry carries its piece's footprint (its
   props' boxes and a person round each seat, from `pieces.py`). A piece stands only where all of it
@@ -793,7 +800,8 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   across both diagonals at knee and chest height must meet no wall, fence, tree, car or prop.
   One that doesn't fit is **nudged** up to 1.6 m (3 m by the road or the front wall) and checked
   again, else **left out**: it is never moved somewhere else. The log says how much of each plan
-  fit and where (`Camp life: ... of ... planned pieces fit, laid out ...`). A place within 60 m of
+  fit, where, and how many were left out facing water (`Camp life: ... of ... planned pieces fit,
+  laid out ...`). A place within 60 m of
   one already dressed (the Haven's safehouse at its own stronghold) isn't dressed twice.
 - **The quartermaster's counter.** Every quartermaster at the place (an outpost's or a safehouse's,
   and the faction's own when its stronghold is here) turns to serve: of sixteen ways, the most open
@@ -858,8 +866,15 @@ the group prefab it stands.
 | Halcyon | a guard pair at the door, researchers at the tables, work at the cold box and the racks | one through the decon shower in the morning; the **courier** walks out to the edge and back every 20 minutes | one guard, one at the cold box; the rest asleep |
 | Road posts | the crew leaning at the barrier | — | the same |
 
+- **Nobody just stands.** Whoever finds no free seat or work point **walks the camp**: a loop of
+  three pieces (named people's near home), standing a while at each (loiter waypoints in a cycle).
+  Only with fewer than two pieces up do they stand about near home.
 - **Every few minutes** (Shuffle minutes, 3) anyone idle goes back to work (back from an errand,
-  a fight, or a talk) and one person moves to another seat or job.
+  a fight, or a talk) and a third of the seated and working (at least one) move on: from a seat to
+  work, from work to a seat, or round the camp when nothing is free.
+- **The jobs log.** At each phase (and once a place's pieces are all up) one line says who is on
+  which job and how: at a seat, walking the camp, standing at a spot, on the move, or standing
+  still with no AI or group (`Camp life jobs: ...`).
 - **Combat** is the AI's own danger behaviour; hostility is unchanged.
 - **Talking** to a named person or an occupant makes the nearest one stop their job for 45 s.
 - **Named people** stay within 20 m of the centre (they may cook, wash and chop) and never patrol, keep watch, run errands or
@@ -882,7 +897,8 @@ quartermaster at his counter, its mess the meal at the yard's table, its barrack
 piece that doesn't fit leaves a gap in the plan rather than moving; the yard is laid against one
 side of the building's box, so a building of odd shape (an L, a courtyard) gets a plainer yard;
 the quartermaster is turned, not walked to a serving window, and a window's glass may read as a
-wall; there are no
+wall; the grass isn't cut under a camp (no vanilla prefab clears clutter at run time: the resource
+index has none), so the only ground cover is Bastion's duckboards; there are no
 graves, stockade or dogs; and no searchlight (no vanilla light prop is checked as safe yet, and
 nothing sweeps one). The people in play stay within the guard, occupant and extras caps, so a
 stronghold seldom reaches its count. Kinds are read from prefab names, so a map whose buildings

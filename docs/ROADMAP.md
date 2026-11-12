@@ -110,7 +110,7 @@ waits is play, engine checks and the author's calls.
   smart-action waypoint and the eleven kits' plans are built on vanilla outdoor props
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)); see them at an
   outpost of each faction in Workbench play. The faction bases (each faction in the building that
-  suits it) are built as code: check the medical tent's class, box and door in Workbench
+  suits it) are built as code: check Halcyon's tent and the clothesline frame (class, box, door) in Workbench
   ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)), then each
   faction's base on Everon: the plan's shape, the quartermaster at his counter, no script
   exception from the smart actions (the play-test checklist, *Camp life* and *Faction bases on Everon*).

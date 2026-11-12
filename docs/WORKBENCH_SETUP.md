@@ -714,7 +714,7 @@ and the UI files) need none, and six have no base:
 | (existing prefab) | vanilla AIWaypoint_ObservationPost.et | — | Territory > Camp life > Observation waypoint | optional | a sentry with no nest (empty = the loiter waypoint) |
 | (existing prefab) | vanilla Group_Base.et (an AI group with no members) | — | Territory > Camp life > Group prefab | optional | lone characters (occupants, single guards) join one so they can take jobs (empty = they stand) |
 | (existing prefab) | a new prefab of class SCR_SmartActionWaypoint, saved as Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et (vanilla ships the class, not a prefab) | — | Territory > Camp life > Smart action waypoint | optional | people use a piece's sit, lean, work and watch points (empty = they loiter beside it) |
-| (existing prefab) | the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
+| (existing prefab) | the 54 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
 
 #### New-player guidance
 
@@ -1061,7 +1061,7 @@ kits every place stays bare, and with no waypoint slots its people walk to their
 **Zombies > Move waypoint** and stand there. The plugin fills the four vanilla waypoint slots and
 the group prefab (section 4, *Camp life*). Everything else is built from one file.
 
-**The source: `tools/camp_kit/pieces.py`.** It holds the 53 camp-life pieces (each piece's props
+**The source: `tools/camp_kit/pieces.py`.** It holds the 54 camp-life pieces (each piece's props
 with their position, turn, height and tilt, and its seats; outdoor props only, see its header), the
 eleven kits, where a piece stands by a building (`AT`, written as each kit piece's **At**; the rest
 are Auto) and the Traces compositions (section 4, *Traces*). Each kit is a **plan**: its pieces in
@@ -1070,7 +1070,7 @@ road in). Every kit's plan is drawn, so no place is ever dressed by chance:
 
 | Kit | Pieces |
 |---|---|
-| Bastion stronghold, outpost, road post | 20, 13, 4 |
+| Bastion stronghold, outpost, road post | 21, 14, 4 (each with its duckboards last) |
 | Red Hand stronghold, outpost, road post | 20, 13, 4 |
 | Haven stronghold, outpost, safehouse | 20, 13, 8 |
 | Halcyon stronghold, field station | 19, 9 |
@@ -1115,12 +1115,13 @@ lab). Not the crafting `Props/Industrial/Workbench_01.et` as a bench either. The
 station, supplies, fuel, a vehicle or vehicle spawner, a spawn point or a ReforgerZ component or
 action, and logs `Dressing: removed ...`. A generator or crate whose **root** has one is refused
 whole. Check `GeneratorPortable_US_01_Off.et` and the crate: if the log names them, use a plain
-mesh copy. **Check the medical tent** (`TentFIA_01_medical.et`, in `props.txt` as a
-`StaticModelEntity` without its own `Hierarchy`, its footprint drawn as 4.2 × 5 m with its flap
-at +Z): with **ReforgerZ: Dump prefabs and classes** correct its class and `hier` in `props.txt`,
-measure its box and correct `FP` if it's another size, and check its door faces +Z (else turn it
-in `Tent_Halcyon`); then re-run `build.py`. If the log says `Dressing: removed TentFIA_01 medical`
-(a heal station), use `TentUSSRMedical_01.et` (`{CBE5E0D2DC08E178}`) the same way.
+mesh copy. **Check Halcyon's tent and the clothesline.** `Tent_Halcyon` is the plain
+`TentFIA_01.et` (the medical one carries a heal station, so the guard strips it), in `props.txt`
+as `SCR_DestructibleBuildingEntity ... hier` like its medical twin, drawn 4.2 × 5 m with its flap
+at +Z. `ClotheslineFrame_01.et` (the washing and drying lines) is in it as a `GenericEntity`,
+drawn 3.2 × 0.4 m. With **ReforgerZ: Dump prefabs and classes** correct either line in
+`props.txt`, measure their boxes and correct `FP` if they're another size, check the tent's door
+faces +Z (else turn it in `Tent_Halcyon`), and re-run `build.py`.
 
 **Test it.** Show the pieces in Workbench with the plugin **ReforgerZ: Show the next composition group** ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or place each once in a test world, and check the log is silent (no
 `Dressing: removed` lines); then walk up to an outpost of each faction in Workbench play (the
@@ -1717,7 +1718,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **117** lines with the tag, all in the game scripts (one is the comment in
+There are **118** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 21 are in `UI/`: 16 of [the UI's](#the-ui-17), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
@@ -1787,7 +1788,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:1849` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:1892` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
 | `Missions/Errands/RZ_Strangers.c:1188` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
@@ -1805,7 +1806,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (28)
+### Low risk: contained or cosmetic (29)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1831,11 +1832,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:47` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
-| `Factions/RZ_CampLife.c:3155` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:3252` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
-| `Factions/RZ_CampLife.c:1718` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) along a piece's footprint's sides and diagonals at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
+| `Factions/RZ_CampLife.c:3411` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:3514` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
+| `Factions/RZ_CampLife.c:1761` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) along a piece's footprint's sides and diagonals at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
-| `Factions/RZ_CampLife.c:3323` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:3589` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:3332` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
 
 ### The UI (17)
 
@@ -2046,7 +2048,9 @@ Warnings worth acting on:
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
-| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). Rings where the town has no building of the faction's kind and none big enough; 0 road entries means the gate and barricades stand in front of the building |
+| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
+| `Camp life: <Faction> <KIND> at <grid>: <n> of <m> planned pieces fit, laid out <where>; <c> counter(s), <s> left out facing water or a drop.` | Each time a place is dressed: how much of its plan fit and where. Few fitting everywhere: the footprint traces may be catching grass or bushes (the VERIFY) |
+| `Camp life jobs: <place> (phase <n>), <p> people: <job counts>; ... at a seat, ... walking the camp, ... standing at a spot, ... on the move, ... standing still (no AI or group).` | At each phase at a live place: who does what. Many standing still: those people have no AI (a prefab without an AI control component) or no group prefab |
 | `Camp life: ... smart actions off, lone characters stand.` | Set **Camp life > Smart action waypoint** (people loiter beside the pieces until then) and **Group prefab** (lone occupants and guards don't move until then) |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
@@ -3160,7 +3164,12 @@ editor's time of day)
   line out at the far side. Nothing indoor stands on the grass (no cabinet, shelf or sink).
 - [ ] The quartermaster stands behind his counter facing the open side (the yard, a door, a
   kiosk's window), never into a wall or a corner; the counter isn't in a wall or on a road.
-- [ ] Halcyon's tent is the medical tent, its flap toward the yard and the field table.
+- [ ] Halcyon's tent stands (no `Dressing: removed` line for it), its flap toward the yard and the field table.
+- [ ] By the sea (a Haven place on the coast): the front, the nest, the barriers and the signs face
+  the land or the road in, never the water; no piece stands on the shore side looking out to sea.
+- [ ] Nobody stands still for long: the log's `Camp life jobs:` line has most people at a seat or
+  walking the camp, and few or none `standing still (no AI or group)`; watch someone with nothing
+  to sit at walk from piece to piece. Report the line for each place.
 - [ ] Sit, lean and watch jobs run for an hour with no script exception in the log (no
   `Waypoint is not set properly` from `SCR_AIGetSmartActionsState`), also while walking off and
   back so the place despawns and spawns again.
