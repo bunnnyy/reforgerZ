@@ -82,7 +82,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 **Manual entries (WBS §4)**
 - 2026-11-11 76b52d0: optional lists: loot tables, extra recipes, shop items, Requisition items (WBS §4, "Hand-set list entries").
-- 2026-11-11 76b52d0: stand-in bases still left: `RZ_Explosion.et` (a real HE round) and `RZ_Nest.et` (spawns its own) — both need a design call from the cloud (is shelling meant to hurt? should the nest spawn?).
+- 2026-11-12 3112937: rebuild `RZ_Explosion.et` as look and sound only, no damage, on `Warhead_Base.et` like `RZ_WarningShot.et`; and `RZ_Nest.et` without the hive's infected spawner child or its blast warhead (WBS §4, "Stand-in bases": the exact components and the two checks in play).
 
 **Engine checks**
 - 2026-11-12 2990171: check all 97 VERIFY markers (WBS §6, in risk order) and report each as "confirmed" or "wrong, the real API is …". New since the last count: Traces' decals, loops and lit windows, the client effects, the disguise phases, the epilogue's and the majors' leftovers.
