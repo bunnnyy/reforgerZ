@@ -410,13 +410,13 @@ class RZ_FactionPerks
 					continue;
 
 				// Jobs only by interaction: the greeting says there's work and who to ask, and offers
-				// nothing (the quartermaster's "Ask for whoever's in charge", then "Ask for work")
+				// nothing (the quartermaster has them on their first replies: RZ_TalkJobs)
 				m_mGreeted.Set(key, m_fClock);
 				int work = m_GM.GetMissions().CountContractsFor(playerId, f, p);
 				if (work == 1)
-					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), "There's a job going here. Ask for whoever's in charge.");
+					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), "There's a job going here. Talk to the quartermaster.");
 				else if (work > 1)
-					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), string.Format("There are %1 jobs going here. Ask for whoever's in charge.", work));
+					m_GM.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(f), string.Format("There are %1 jobs going here. Talk to the quartermaster.", work));
 			}
 		}
 	}

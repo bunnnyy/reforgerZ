@@ -290,12 +290,16 @@ it (`book.last` 1–4). Questlines hear the stand through `OnFinalStandStart` an
 - **Needs:** tier with the giver, other standing, ★ backgrounds that get an easier or better
   approach, 🔒 locks.
 - **Stages:** each one offers one mission, or waits for time or a world condition. Waits count
-  real time with players online. Nothing is ever skipped or slept through.
+  real time with players online. Nothing is ever skipped or slept through. A stage's mission is
+  taken in talk from its giver's first replies (*[Quest] The Other Two: his number*, locked with its
+  start check when you can't take it yet: [DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)); it's
+  already yours once you took part in an earlier stage, and each new stage sends you its start card
+  (*Quest started: ...*, [UI.md](UI.md#notices)).
 - **Approaches** in each stage:
 
   | Approach | What it means |
   |---|---|
-  | **Talk** | Speak to a leader, a wanderer or a named person. Some lines need a standing check (a tier with someone) or a background ★ |
+  | **Talk** | Speak to a leader, a wanderer or a named person. Some lines need a standing check (a tier with someone) or a background ★; on the talk screen those show locked with what they need until you have it (*Needs Known with Halcyon*), never refused after you pick them |
   | **Sneak** | Do it unseen: lookouts, a heat limit, the night shift |
   | **Fight** | Kill what the stage spawned. Usually costs Infamy with someone |
   | **Bribe** | Pay in a faction's Favor |

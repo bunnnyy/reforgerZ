@@ -559,6 +559,22 @@ class RZ_QM_OtherTwoScene : RZ_QM_HalcyonScene
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override string LockReason(RZ_GameModeComponent gm, int playerId)
+	{
+		if (IsEligible(gm, playerId))
+			return "";
+
+		if (RZ_Reputation.IsHunted(gm.GetTier(playerId, RZ_EFaction.INSTITUTE)))
+			return "Not while Hunted by Halcyon";
+
+		string need = super.LockReason(gm, playerId);
+		if (need != "Not for you now")
+			return need;
+
+		return "Needs Known with Haven or Halcyon";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The field lead's stand-in at her station, held while the stage runs (-1 if she's gone).
 	protected int HoldLead(RZ_GameModeComponent gm)
 	{
@@ -668,6 +684,29 @@ class RZ_QM_OtherNumber : RZ_QM_OtherTwoScene
 
 		if (objIdx == OBJ_COURIER && TryBribe(gm, playerId, RZ_EFaction.INSTITUTE, COURIER_FAVOR))
 			Learned(gm, playerId, "He comes back with it written on his cigarette packet. \"{number}, {day}. And F2. Don't say where you got it.\"", RZ_EQuestApproach.BRIBE, "paid a courier");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick (docs/DIALOGUE.md, "Jobs on the first replies"): the clerk talks to staff
+	//! and friends of the lab (with H3's lab road, the Haven's people too); the ledger is read only
+	//! on the night shift. The courier's price is in his label.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty())
+			return need;
+
+		if (choice && objIdx == OBJ_CLERK && slot == 0)
+		{
+			bool road = gm.GetQuestlines() && gm.GetQuestlines().WorldFlag(RZ_Quest_OtherTwo.FLAG_H3_LAB_ROAD) == 1 && Rank(gm, playerId, RZ_EFaction.SURVIVORS) >= 1;
+			if (!road)
+				return RankNeed(gm, playerId, RZ_EFaction.INSTITUTE, 1);
+		}
+
+		if (!choice && objIdx == OBJ_LEDGER && !RZ_GameTime.IsNight())
+			return "After dark";
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1186,6 +1225,17 @@ class RZ_QM_OtherBrother : RZ_QM_OtherTwoScene
 //! or sell one of the other two to the Red Hand (Trusted with them). She's gone: the room is too.
 class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: selling one of the other two takes a crew that trusts you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && choice && objIdx == OBJ_LEAD && slot == 2)
+			need = RankNeed(gm, playerId, RZ_EFaction.BANDITS, 2);
+
+		return need;
+	}
+
 	protected static const int OBJ_LEAD = 0;
 	protected static const int OBJ_DUTY = 1;
 	protected static const int KEEP_FAVOR = 25;
@@ -1307,6 +1357,23 @@ class RZ_QM_OtherLead : RZ_QM_OtherTwoScene
 //! came home), the Haven's council clerk, or let them stay numbers.
 class RZ_QM_OtherNames : RZ_QM_OtherTwoScene
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: the director sees someone the lab trusts, or someone it knows with the
+	//! family beside them (he came home).
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || !choice || objIdx != OBJ_DUTY || slot != 0)
+			return need;
+
+		RZ_QuestRun run = Run(gm);
+		bool home = run && run.Flag("brother") == RZ_Quest_OtherTwo.BRO_HOME;
+		if (home)
+			return RankNeed(gm, playerId, RZ_EFaction.INSTITUTE, 1);
+
+		return RankNeed(gm, playerId, RZ_EFaction.INSTITUTE, 2);
+	}
+
 	protected string m_sAnswer;
 	protected int m_iOther;
 	protected ref array<string> m_aOptions = {};

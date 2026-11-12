@@ -357,6 +357,83 @@ class RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Why this player can't take it, said short for a locked reply on the talk screen ("Needs
+	//! Known with Halcyon"); "" when they can (docs/DIALOGUE.md, "Jobs on the first replies"). A
+	//! mission with its own rule in IsEligible says it here too.
+	string LockReason(RZ_GameModeComponent gm, int playerId)
+	{
+		if (IsEligible(gm, playerId))
+			return "";
+
+		if (!m_sReservedFor.IsEmpty())
+			return "Kept for someone else";
+
+		string need = m_Req.NeedFor(gm.GetProfile(playerId));
+		if (!need.IsEmpty())
+			return need;
+
+		if (m_bInPersonOnly && m_iLeaderId >= 0)
+			return "They won't give it to you";
+
+		return "Not for you now";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What one of this mission's people's choices (`choice`) or uses needs that this player hasn't
+	//! got, short, for its locked reply on the talk screen ("Needs Known with Halcyon", "After dark");
+	//! "" when they can take it (docs/DIALOGUE.md, "Jobs on the first replies"). The mission's own
+	//! handler still checks it when picked (the object menu shows no lock).
+	string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Needs Known with Halcyon" for an access rank (0 not Hunted, 1 Known, 2 Trusted, 3 Champion)
+	//! this player is below with `faction`; "" when they have it.
+	static string RankNeed(RZ_GameModeComponent gm, int playerId, int faction, int rank)
+	{
+		if (!RZ_Factions.IsValid(faction))
+			return "";
+
+		return ScoreNeed(RZ_Reputation.GetAccessRank(gm.GetTier(playerId, faction)), rank, faction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! RankNeed for a score a mission works out itself (a rank with its background bonus): "" when
+	//! `have` reaches `rank`.
+	static string ScoreNeed(int have, int rank, int faction)
+	{
+		if (have >= rank)
+			return "";
+
+		if (rank <= 0)
+			return "Not while Hunted by " + RZ_Factions.GetShortName(faction);
+
+		string word = "Known";
+		if (rank == 2)
+			word = "Trusted";
+		else if (rank >= 3)
+			word = "Champion";
+
+		return string.Format("Needs %1 with %2", word, RZ_Factions.GetShortName(faction));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The word a reply that starts it, and its start and end cards, put in front (docs/WRITING.md,
+	//! "Tag words"): Quest for a questline's or a major's stage, Event for a world event, else Job.
+	string KindWord()
+	{
+		if (m_iQuestRun >= 0)
+			return "Quest";
+
+		if (!m_bContract)
+			return "Event";
+
+		return "Job";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Contracts: does this player meet the requirements? World events are open to everyone.
 	bool IsEligible(RZ_GameModeComponent gm, int playerId)
 	{

@@ -1833,9 +1833,9 @@ class RZ_Safehouses
 
 	//------------------------------------------------------------------------------------------------
 	//! The safehouse radio, a thing you use (docs/MISSIONS.md, "Who gets offered what"): the Haven's
-	//! open contracts within 3 km that this player qualifies for are offered on it (hired, as a
-	//! leader's "Ask for work" would); anyone else's work and the world events nearby are news, the
-	//! work with who to ask for it.
+	//! open contracts within 3 km that this player qualifies for are named on it, to take from the
+	//! house's quartermaster (their first replies, RZ_TalkJobs); anyone else's work and the world
+	//! events nearby are news, the work with who to ask for it.
 	protected void Radio(int playerId, RZ_Safehouse h, IEntity user)
 	{
 		if (!h.HasRadio())
@@ -1860,10 +1860,11 @@ class RZ_Safehouses
 			}
 
 			string who = RZ_Factions.GetShortName(m.m_Req.m_eGiver);
+			// The Haven's own: the quartermaster beside the set has it on their first replies (RZ_TalkJobs);
+			// nothing is taken on by listening
 			if (m.m_Req.m_eGiver == RZ_EFaction.SURVIVORS && m.IsEligible(m_GM, playerId))
 			{
-				m.Hire(playerId);
-				text += string.Format("%1 (%2, yours if you want it): %3\n", m.m_sTitle, who, where);
+				text += string.Format("%1 (%2, yours if you want it: ask the quartermaster here): %3\n", m.m_sTitle, who, where);
 			}
 			else
 			{

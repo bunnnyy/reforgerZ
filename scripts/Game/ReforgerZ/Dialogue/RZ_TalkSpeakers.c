@@ -111,6 +111,38 @@ class RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! They wait on your answer to something they just put to you (a job's pitch, an errand's ways):
+	//! with Trees, the hub shows only that answer's replies, no topics.
+	bool Asking(RZ_GameModeComponent gm, RZ_TalkSession s)
+	{
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Built slots a conversation may run (call:slot:N) that aren't replies of their own on the hub
+	//! (a leader's job slot: their jobs are listed one by one instead). With Trees, a topic carrying
+	//! one still shows.
+	void Carryable(notnull array<int> slots)
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The kind of job a slot starts or opens ("Job", "Errand"), "" when it isn't one: a
+	//! conversation's choice that runs it is tagged with it (docs/DIALOGUE.md, "Checks and tags").
+	string SlotJob(RZ_GameModeComponent gm, int slot)
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why that job slot has nothing for this player now ("Nothing today. Ask again later"), "" when
+	//! it has: a conversation's choice that runs it shows locked with it.
+	string SlotLock(RZ_GameModeComponent gm, RZ_TalkSession s, int slot, IEntity user)
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static RZ_TalkReply Reply(int id, string label)
 	{
 		RZ_TalkReply r = new RZ_TalkReply();
@@ -439,8 +471,18 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 		if (!comp)
 			return;
 
-		// An errand on offer: its ways are what you'd agree to do ("I'll fetch the cleaning kits.")
-		bool ways = gm.GetErrands() && gm.GetErrands().OffersOn(m_Owner);
+		// An errand on offer: its ways are what you'd agree to do ("I'll fetch the cleaning kits."),
+		// each tagged [Errand], locked with what it needs when you can't take it
+		RZ_Errands errands = gm.GetErrands();
+		bool ways = errands && errands.OffersTo(m_Owner, playerId);
+		int errandSlot = -1;
+		string giver = "";
+		if (!ways)
+			giver = ErrandGiver(gm, errandSlot);
+
+		// A mission's or questline stage's person: their choices move the job you're on, locked with
+		// what each needs (RZ_Mission.ChoiceLock)
+		RZ_Mission mission = MissionOf(gm, comp);
 		for (int slot = 0; slot < 8; slot++)
 		{
 			string choice = comp.GetSlotLabel(true, slot);
@@ -449,14 +491,27 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 			RZ_TalkReply said = Reply(slot, choice);
 			said.m_bWay = ways;
+			if (ways)
+				Way(errands, playerId, user, said);
+			else if (slot == errandSlot)
+				ErrandRow(gm, playerId, giver, user, said);
+			else if (mission)
+				Step(gm, mission, playerId, comp.GetObjectIndex(), true, slot, said);
+
 			replies.Insert(said);
 		}
 
 		for (int u = 0; u < 8; u++)
 		{
 			string use = comp.GetSlotLabel(false, u);
-			if (!use.IsEmpty())
-				replies.Insert(Reply(10 + u, use));
+			if (use.IsEmpty())
+				continue;
+
+			RZ_TalkReply used = Reply(10 + u, use);
+			if (mission)
+				Step(gm, mission, playerId, comp.GetObjectIndex(), false, u, used);
+
+			replies.Insert(used);
 		}
 
 		// Server admins: the errands' view for this place, without typing (docs/ERRANDS.md, Telemetry)
@@ -482,6 +537,180 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (gm.GetTraces() && gm.GetTraces().IsOn())
 			replies.Insert(AdminReply(ADMIN_TRACES, "[Admin] Door marks near here, to the log"));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An errand giver's key and the slot their errand is asked in (a safehouse's or a holding's
+	//! named person: slot 1, "Anything need doing?"; a wanderer: slot 2 while it's "Need a hand?");
+	//! "" for anyone else.
+	protected string ErrandGiver(RZ_GameModeComponent gm, out int slot)
+	{
+		slot = -1;
+		RZ_Errands errands = gm.GetErrands();
+		if (!m_Owner || !errands || !errands.IsOn())
+			return "";
+
+		RZ_ClueComponent clue = RZ_ClueComponent.Cast(m_Owner.FindComponent(RZ_ClueComponent));
+		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(m_Owner.FindComponent(RZ_PuzzleObjectComponent));
+		if (!clue || !comp)
+			return "";
+
+		int tag = clue.GetMissionId();
+		int idx = clue.GetClueIndex();
+		if (tag == RZ_NamedPeople.TAG_HOUSE)
+		{
+			slot = 1;
+			return RZ_NamedPeople.HouseKey(idx / 10, idx % 10);
+		}
+
+		if (tag == RZ_Territory.TAG && comp.GetSlotLabel(true, 1) == "Anything need doing?")
+		{
+			slot = 1;
+			return RZ_NamedPeople.HoldingKey(idx / 10, idx % 10);
+		}
+
+		if (tag == RZ_Wanderers.TAG && errands.AsksOn() && comp.GetSlotLabel(true, 2) == "Need a hand?")
+		{
+			RZ_NamedPerson p = errands.GetPeople().FromWanderer(idx);
+			if (!p)
+				return "";
+
+			slot = 2;
+			return p.m_sKey;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The mission (a contract's or a questline stage's) whose person this is, while it runs; null.
+	protected RZ_Mission MissionOf(RZ_GameModeComponent gm, RZ_PuzzleObjectComponent comp)
+	{
+		if (!comp || comp.GetMissionId() <= 0 || !gm.GetMissions())
+			return null;
+
+		RZ_Mission m = gm.GetMissions().FindById(comp.GetMissionId());
+		if (!m || m.m_eState != RZ_EMissionState.ACTIVE)
+			return null;
+
+		return m;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One of an errand's ways on offer: [Errand] in front, locked with what it needs.
+	protected void Way(RZ_Errands errands, int playerId, IEntity user, RZ_TalkReply r)
+	{
+		if (r.m_sLabel == "Not now")
+			return;
+
+		r.m_bJob = true;
+		r.m_iRank = RZ_TalkReply.RANK_NEW;
+		r.m_sTag = RZ_TalkJobs.Tag("Errand");
+		string need = errands.WayLock(m_Owner, playerId, r.m_iId, user);
+		if (need.IsEmpty())
+			return;
+
+		r.m_bEnabled = false;
+		r.m_sNeed = need;
+		r.m_iRank = RZ_TalkReply.RANK_LOCKED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand reply on a giver, on their first replies (docs/DIALOGUE.md, "Jobs on the first
+	//! replies"): "[Errand] Water for Morton" when they have one for you, "[Errand] It's done: ..."
+	//! when yours is ready to hand in, else "Anything need doing?" locked with why. A wanderer with
+	//! no errand keeps "Need a hand?" open while Barter Chain could start from them.
+	protected void ErrandRow(RZ_GameModeComponent gm, int playerId, string giver, IEntity user, RZ_TalkReply r)
+	{
+		RZ_Errands errands = gm.GetErrands();
+		string title;
+		bool held;
+		string why;
+		r.m_bJob = true;
+		r.m_sTag = RZ_TalkJobs.Tag("Errand");
+		if (errands.TalkErrand(playerId, giver, user, title, held, why))
+		{
+			r.m_bOwn = true;	// written here, not a built label
+			r.m_iRank = RZ_TalkReply.RANK_NEW;
+			r.m_sLabel = title;
+			if (held)
+			{
+				r.m_iRank = RZ_TalkReply.RANK_ON;
+				r.m_sLabel = "About " + title + ".";
+				if (errands.ReadyToHandIn(playerId, giver))
+					r.m_sLabel = "It's done: " + title + ".";
+			}
+
+			return;
+		}
+
+		if (r.m_sLabel == "Need a hand?" && RZ_ErrandRoutine.CanBarterChain(gm))
+		{
+			r.m_sTag = RZ_TalkJobs.Tag("Job");
+			r.m_iRank = RZ_TalkReply.RANK_NEW;
+			return;
+		}
+
+		r.m_bEnabled = false;
+		r.m_sNeed = why;
+		r.m_iRank = RZ_TalkReply.RANK_LOCKED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A mission person's choice or use: it moves the job you're on (first in the list), locked with
+	//! what it needs when you can't do it (RZ_Mission.ChoiceLock: "Needs Known with Halcyon").
+	protected void Step(RZ_GameModeComponent gm, RZ_Mission m, int playerId, int objIdx, bool choice, int slot, RZ_TalkReply r)
+	{
+		r.m_iRank = RZ_TalkReply.RANK_ON;
+		// A hand-over for the job ("Hand over Bastion's rations", "Give the page to ...") is tagged by
+		// the job's kind, like any turn-in
+		string l = r.m_sLabel;
+		l.ToLower();
+		if (l.StartsWith("hand ") || l.StartsWith("give ") || l.StartsWith("deliver "))
+			r.m_sTag = RZ_TalkJobs.Tag(m.KindWord());
+
+		string need = m.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty())
+			return;
+
+		r.m_bEnabled = false;
+		r.m_sNeed = need;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Asking(RZ_GameModeComponent gm, RZ_TalkSession s)
+	{
+		return gm.GetErrands() && gm.GetErrands().OffersTo(m_Owner, s.m_iPlayer);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string SlotJob(RZ_GameModeComponent gm, int slot)
+	{
+		int errandSlot;
+		if (!ErrandGiver(gm, errandSlot).IsEmpty() && slot == errandSlot)
+			return "Errand";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string SlotLock(RZ_GameModeComponent gm, RZ_TalkSession s, int slot, IEntity user)
+	{
+		int errandSlot;
+		string giver = ErrandGiver(gm, errandSlot);
+		if (giver.IsEmpty() || slot != errandSlot)
+			return "";
+
+		RZ_TalkReply probe = Reply(slot, "");
+		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(m_Owner.FindComponent(RZ_PuzzleObjectComponent));
+		if (comp)
+			probe.m_sLabel = comp.GetSlotLabel(true, slot);
+
+		ErrandRow(gm, s.m_iPlayer, giver, user, probe);
+		if (probe.m_bEnabled)
+			return "";
+
+		return probe.m_sNeed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -580,6 +809,7 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	protected RZ_Leader m_Leader;
 	protected IEntity m_Seat;
 	protected int m_iPitch = -1;		// the job they've just explained and wait on your answer for, -1 none
+	protected ref array<int> m_aJobs = {};	// what RZ_TalkJobs.BASE + i is (mission ids), as last listed
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_TalkLeader(RZ_Leader l)
@@ -643,6 +873,51 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override bool Asking(RZ_GameModeComponent gm, RZ_TalkSession s)
+	{
+		return m_iPitch >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Slot 0, the job: listed one by one (RZ_TalkJobs), so the work topics that run it still show.
+	override void Carryable(notnull array<int> slots)
+	{
+		slots.Insert(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override string SlotJob(RZ_GameModeComponent gm, int slot)
+	{
+		if (slot == 0)
+			return "Job";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Slot 0 with nothing you can take: the reason the locked "Got any work for me?" gives.
+	override string SlotLock(RZ_GameModeComponent gm, RZ_TalkSession s, int slot, IEntity user)
+	{
+		if (slot != 0 || !m_Leader || !user)
+			return "";
+
+		array<int> ids = {};
+		array<ref RZ_TalkReply> rows = {};
+		RZ_TalkJobs.Build(gm, s.m_iPlayer, user, m_Leader.m_eFaction, m_Leader, ids, rows);
+		string why = "Nothing you can take yet";
+		foreach (RZ_TalkReply r : rows)
+		{
+			if (r.m_bEnabled)
+				return "";
+
+			if (r.m_iId == RZ_TalkJobs.NOTHING)
+				why = r.m_sNeed;
+		}
+
+		return why;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static string SeatKind(RZ_EFaction f)
 	{
 		switch (f)
@@ -661,12 +936,23 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 		// A job just explained: yes or no first (docs/WRITING.md, "Talk")
 		if (m_iPitch >= 0)
 		{
-			replies.Insert(Reply(TAKE_JOB, "I'll do it."));
+			RZ_TalkReply yes = Reply(TAKE_JOB, "I'll do it.");
+			yes.m_bJob = true;
+			yes.m_iRank = RZ_TalkReply.RANK_NEW;
+			RZ_Mission pitched = gm.GetMissions().FindById(m_iPitch);
+			if (pitched)
+				yes.m_sTag = RZ_TalkJobs.Tag(pitched.KindWord());
+
+			replies.Insert(yes);
 			replies.Insert(Reply(LEAVE_JOB, "Not today."));
 			return;
 		}
 
-		replies.Insert(Reply(0, "Ask for work"));
+		// Their jobs first, plainly: one reply a job, locked with what it needs (RZ_TalkJobs)
+		m_aJobs.Clear();
+		if (m_Leader && user)
+			RZ_TalkJobs.Build(gm, playerId, user, m_Leader.m_eFaction, m_Leader, m_aJobs, replies);
+
 		replies.Insert(Reply(1, "Heard anything?"));
 		replies.Insert(Reply(2, "What do you make of me?"));
 
@@ -696,12 +982,21 @@ class RZ_TalkLeader : RZ_TalkSpeaker
 			return;
 		}
 
-		// Ask for work said to them: their own job is explained first, then you say yes or no. From
-		// a conversation's call:slot:0 (Trees) the talk already led there: it's yours as built
-		bool fromTree = s.m_Tree && s.m_Tree.m_bInNode;
-		if (replyId == 0 && !fromTree && m_Leader && gm.GetLeaders())
+		// A job on the list: they explain it, then you say yes or no (one conversation is enough)
+		int job = replyId - RZ_TalkJobs.BASE;
+		if (job >= 0 && job < RZ_TalkJobs.MAX && m_Leader && gm.GetLeaders())
 		{
-			m_iPitch = gm.GetLeaders().PitchWork(playerId, m_Leader.m_iId, user);
+			if (job < m_aJobs.Count() && m_aJobs[job] >= 0)
+				m_iPitch = gm.GetLeaders().PitchJob(playerId, m_Leader.m_iId, m_aJobs[job], user);
+
+			return;
+		}
+
+		// The job slot run by a conversation (call:slot:0, Trees): the first job they have for you
+		// is explained, or they say there's nothing today
+		if (replyId == 0 && m_Leader && gm.GetLeaders())
+		{
+			m_iPitch = gm.GetLeaders().PitchFirst(playerId, m_Leader.m_iId, user);
 			return;
 		}
 

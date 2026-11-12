@@ -47,7 +47,8 @@ enum RZ_ENoticeTag
 	LOW,
 	QUIET,		// into the notebook's Radio tab only, never a card (the welcome's world news, offline pay)
 	SPAWN,		// the one card at spawn: who you are and where (docs/UI.md, "Notices")
-	HEARD		// work you heard of (who to ask for it): the Radio tab's Missions, never a card, not a job
+	HEARD,		// work you heard of (who to ask for it): the Radio tab's Missions, never a card, not a job
+	START		// a job of yours started ("Quest started: The Other Two"): high, and through the quiet start (RZ_JobCards)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -600,6 +601,8 @@ class RZ_NoticeStyle
 	bool m_bQuiet;		// the notebook only, no card: QUIET, or anything not urgent in the quiet start
 	bool m_bSpawn;		// the spawn card: the one card the quiet start lets through
 	bool m_bHeard;		// work you only heard of (HEARD): logged under Missions, but it isn't a job yet
+	bool m_bStart;		// a job of yours started (START): a card even in the quiet start and the first minutes' gap
+	string m_sIcon;		// a job's start or end card: its type's icon, from the title's kind word (RZ_JobCards)
 
 	//------------------------------------------------------------------------------------------------
 	//! The kind from the title, then the server's tag (RZ_ENoticeTag): a mission, event or world tag
@@ -608,7 +611,7 @@ class RZ_NoticeStyle
 	{
 		RZ_NoticeStyle st = FromTitle(title);
 		bool radio = st.IsRadio();
-		if ((tag == RZ_ENoticeTag.MISSION || tag == RZ_ENoticeTag.HEARD) && !radio)
+		if ((tag == RZ_ENoticeTag.MISSION || tag == RZ_ENoticeTag.HEARD || tag == RZ_ENoticeTag.START) && !radio)
 			st.m_iKind = RZ_ENoticeKind.MISSION;
 		else if (tag == RZ_ENoticeTag.EVENT && !radio)
 			st.m_iKind = RZ_ENoticeKind.EVENT;
@@ -618,8 +621,34 @@ class RZ_NoticeStyle
 		st.m_bQuiet = tag == RZ_ENoticeTag.QUIET || tag == RZ_ENoticeTag.HEARD;
 		st.m_bHeard = tag == RZ_ENoticeTag.HEARD;
 		st.m_bSpawn = tag == RZ_ENoticeTag.SPAWN;
+		st.m_bStart = tag == RZ_ENoticeTag.START;
 		st.m_iPriority = PriorityFor(title, st.m_iKind, tag);
+		if (st.m_iKind == RZ_ENoticeKind.MISSION)
+			st.m_sIcon = JobIcon(title);
+
 		return st;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A job's start or end card by its title's kind word (RZ_JobCards: "Quest started: ...",
+	//! "Errand done: ...", "Job failed: ..."): the type's icon; "" for any other title.
+	static string JobIcon(string title)
+	{
+		string t = title;
+		t.ToLower();
+		if (Starts(t, "quest "))
+			return "mission_arc";
+
+		if (Starts(t, "errand "))
+			return "mission_errand";
+
+		if (Starts(t, "job "))
+			return "mission_contract";
+
+		if (Starts(t, "event "))
+			return "mission_event";
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -637,6 +666,7 @@ class RZ_NoticeStyle
 			case RZ_ENoticeTag.QUIET: return RZ_ENoticePriority.LOW;
 			case RZ_ENoticeTag.HEARD: return RZ_ENoticePriority.LOW;
 			case RZ_ENoticeTag.SPAWN: return RZ_ENoticePriority.HIGH;
+			case RZ_ENoticeTag.START: return RZ_ENoticePriority.HIGH;
 		}
 
 		if (kind == RZ_ENoticeKind.INFECTION)
@@ -768,6 +798,9 @@ class RZ_NoticeStyle
 	//------------------------------------------------------------------------------------------------
 	string Icon()
 	{
+		if (!m_sIcon.IsEmpty())
+			return m_sIcon;
+
 		switch (m_iKind)
 		{
 			case RZ_ENoticeKind.BROADCAST: return "status_broadcast";

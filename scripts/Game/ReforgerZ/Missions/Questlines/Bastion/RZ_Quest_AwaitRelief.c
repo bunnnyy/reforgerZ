@@ -406,6 +406,18 @@ class RZ_QuestCarry
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! In this user's inventory now (TakeFrom would take it): a hand-over's locked reply reads it.
+	bool IsWith(IEntity user)
+	{
+		if (m_bDelivered || !user || !m_Item)
+			return false;
+
+		array<IEntity> items = {};
+		RZ_MissionItemHelper.FindItems(user, items);
+		return items.Contains(m_Item);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	void Cleanup()
 	{
 		if (m_Item && !m_bDelivered)
@@ -1771,6 +1783,30 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Handing the page (or the copy) over is a reply in each person's talk: locked without it on
+	//! you, and where they won't take it from you (docs/DIALOGUE.md, "Jobs on the first replies").
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || choice)
+			return need;
+
+		if (objIdx == OBJ_CREW)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 0, RZ_EFaction.BANDITS);
+		else if (objIdx == OBJ_CHAIR)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.SURVIVORS), 0, RZ_EFaction.SURVIVORS);
+
+		if (!need.IsEmpty())
+			return need;
+
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!m_bCopy && !m_Page.IsWith(user))
+			return "Needs the page on you";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! It's this player's to give: the page in their pack, or (stage 5) the copy they made.
 	protected bool Hand(RZ_GameModeComponent gm, int playerId, IEntity user)
 	{
@@ -2358,6 +2394,17 @@ class RZ_QM_OrdersOperator : RZ_QuestMission
 class RZ_QM_OrdersPrice : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_Crate = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing the crate to the chair's clerk: locked without it on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && !choice && objIdx == OBJ_CLERK && !m_Crate.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs Bastion's crate on you";
+
+		return need;
+	}
 	protected vector m_vCrate;
 	protected vector m_vClerk;
 	protected int m_iHouse = -1;

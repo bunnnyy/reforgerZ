@@ -1151,8 +1151,16 @@ class RZ_Questlines
 		run.m_fReadyAt = m_fClock;	// a restart while it runs gives the stage a fresh give-up window
 		RZ_Log.Info(string.Format("Questline %1: stage '%2' is on (mission %3).", run.m_Line.m_sTitle, run.Fill(st.m_sTitle), m.m_iId));
 
-		// Whoever was part of the story hears it goes on
-		RZ_Questline.TellParticipants(m_GM, run, run.m_Line.m_sTitle, run.Fill(st.m_sTitle) + ": " + run.m_Line.JournalText(m_GM, run));
+		// Whoever was part of the story hears it goes on: the stage's start card, theirs already
+		// (RZ_JobCards: "Quest started: The Other Two: the back room", with its first objective)
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, int pid : ids)
+		{
+			if (run.PlayerTookPart(m_GM, pid))
+				RZ_JobCards.MissionStarted(m_GM, pid, m, RZ_JobCards.FactionGiver(m), players[i]);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

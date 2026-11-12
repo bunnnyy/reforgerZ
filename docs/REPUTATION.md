@@ -702,12 +702,14 @@ line. You can also turn a rogue leader in: most rogue deliveries have a drop at 
 
 Talk to a leader (their body, or **Ask for whoever's in charge** in the quartermaster's talk) and the
 talk screen opens ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)), on your replies unless they have
-something to say first (a first contact, a job waiting): **Ask for work** (their personal job,
-explained first with where, pay and danger, then *I'll do it.* or *Not today.*; else the
-stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
-safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen these are
-actions on the leader; with **Dialogue > Trees** they come out of the leader's own topics instead of a
-menu ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)). Radio
+something to say first (a first contact, a job waiting): first **their jobs**, one reply each (their
+personal job, then the faction's contracts, those you can't take yet locked with what they need;
+explained with where, pay and danger, then *I'll do it.* or *Not today.*:
+[DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)), then **Heard anything?** (other leaders'
+loyalties, hungry safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen
+these are actions on the leader (**Ask for work** offers every job you qualify for at once); with
+**Dialogue > Trees** the news and the verdict come out of the leader's own topics instead of a menu
+([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)). Radio
 contracts are briefed in the voice of the nearest Loyal leader of the giver, whose traits set
 the pay.
 

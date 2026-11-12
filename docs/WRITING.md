@@ -207,12 +207,14 @@ they called you over. How the engine does it: [DIALOGUE.md](DIALOGUE.md#no-fille
 | Their line | The Haven: "We're managing." | We're managing, just about. Morton's had soup three nights running and nobody's complained yet, which worries me. |
 | Their line | He holds up an empty sack. "Got a tin?" | Got a tin? Just the one. {house} is on half portions and I've a girl there. Look, the sack's empty. |
 | Radio | "Bastion to Command. Over." A long hiss. | Bastion to Command. Requesting status of relief. Over. ... Bastion out. |
-| Reply | Ask for work | Got any work for me? (Bastion), Is there anything the house needs doing? (the Haven) |
+| Reply | Ask for work | [Job] Recover the Bus (each job a reply, its title with its kind in front); with none, *Got any work for me? (Nothing today. Ask again later)* locked |
 | Reply | Trade | Show me what you've got. (the Red Hand), I need to draw from stores. (Bastion) |
 | Reply | Something else. / Leave. | Let me ask you something else. / I'll let you get on. |
 | Reply | Check standing | (gone: the notebook's Standing tab says it) |
 | Reply | Give them your antidote | Here. Take my antidote. Quickly. |
-| Job offer | "Nothing for you today." / the job as a card | The leader's intro, the brief and their sign-off, then *It's at Morton, 1.2 km north-east. Pay is 15 Favor on completion, and 10 Fame on the roster.* and the danger; then *I'll do it.* / *Not today.* |
+| Job offer | "Nothing for you today." / the job as a card | The leader's intro, the brief and their sign-off, then *It's at Morton, 1.2 km north-east. Pay is 15 Favor on completion, and 10 Fame on the roster.* and the danger; then *[Job] I'll do it.* / *Not today.* |
+| Locked reply | the job missing, or "You can't do that." after you pick it | *[Quest] The Other Two: his number (Needs Known with Haven or Halcyon)* |
+| Start card | "Errand: The Pump" | *Errand started: The Pump* / From Mara, the cook at Morton. / Fetch the pump's spare valve. Out past the church, north-east. |
 
 **Built replies.** A reply the scripts build from an action's name ("Ask for work", "Trade", "Share
 some food", a stranger's "Give him a tin") keeps that name for the world prompt and the object menu;
@@ -221,6 +223,14 @@ built reply gets an entry there (the text lint holds every one to it). An errand
 said as what you agree to: "Fetch the cleaning kits" is *I'll fetch the cleaning kits.*, its "Not now"
 *Not now. Ask me again another time.* The way out varies by who you're talking to (*I'll let you get
 on.* at the Haven, *That's all for now.* to Bastion).
+
+**Tag words.** A reply that starts a job, or opens its pitch, has its kind in front, in brackets:
+**[Quest]** (a questline's or a major's stage), **[Job]** (a contract, a leader's own job, a wanderer's
+job), **[Errand]**. The same word starts its cards: *Quest started: ...*, *Job done: ...*, *Errand
+abandoned: ...*. A locked reply's need is short and plain, a fact, not a voice: *Needs Known with
+Halcyon*, *Needs a Lab Technician*, *Needs 2 food*, *Needs the page on you*, *After dark*, *Not
+while Hunted with Bastion*, *Nothing today. Ask again later*; a giver's refusal may be its own line
+(*You've your hands full already. Finish what you've got.*). No "heard" tag on anything.
 
 ## The government broadcast
 

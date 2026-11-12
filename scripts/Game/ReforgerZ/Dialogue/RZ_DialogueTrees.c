@@ -294,6 +294,13 @@ class RZ_DialogueTrees
 	void HubReplies(RZ_TalkSession s, notnull array<ref RZ_TalkReply> replies)
 	{
 		RZ_DTalk t = s.m_Tree;
+		// They wait on your answer (a job's pitch, an errand's ways): only that answer's replies
+		if (s.m_Adapter && s.m_Adapter.Asking(m_GM, s))
+		{
+			t.m_aTopics.Clear();
+			return;
+		}
+
 		RZ_DialogueScenes scenes = Scenes();
 		if (scenes)
 			scenes.HubVerbs(s, replies);
@@ -301,18 +308,30 @@ class RZ_DialogueTrees
 		RZ_DialogueMakeRight.Verb(s, replies);
 
 		CollectTopics(t);
-		CarryVerbs(t, replies);
+		CarryVerbs(s, replies);
 		foreach (int i, RZ_DConv c : t.m_aTopics)
 		{
 			RZ_TalkReply r = new RZ_TalkReply();
 			r.m_iId = TOPIC_BASE + i;
 			r.m_sLabel = RZ_DialogueText.Fill(t.m_Ctx, c.m_sLabel);
 			r.m_bOwn = true;
-			if (m_Memory.Has(s.m_iPlayer, RZ_DialogueMemory.SEEN, c.m_sId + "/start"))
-				r.m_sTag = "heard";
-
+			r.m_iRank = TopicRank(c);
 			replies.Insert(r);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a topic goes in the hub (docs/DIALOGUE.md, "The order of the replies"): a questline's
+	//! (prio quest) with the jobs you're on; the rest are information, flavour small talk.
+	protected static int TopicRank(RZ_DConv c)
+	{
+		if (c.m_iPrio == 0)
+			return RZ_TalkReply.RANK_ON;
+
+		if (c.m_iPrio >= 4)
+			return RZ_TalkReply.RANK_TALK;
+
+		return RZ_TalkReply.RANK_INFO;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -320,14 +339,20 @@ class RZ_DialogueTrees
 	//! built reply (call:slot:N) carries it, so while the topic shows, that reply hides from the hub
 	//! and is reached through the talk. A topic that carries a reply this person doesn't have now
 	//! (no errands, a bitten wanderer's antidote in the slot) doesn't show, and the built reply stays.
-	protected void CarryVerbs(RZ_DTalk t, notnull array<ref RZ_TalkReply> replies)
+	//! A job is never carried (docs/DIALOGUE.md, "Jobs on the first replies"): a reply that starts a
+	//! job or opens its pitch, and an errand's ways, stay on the hub, and the topic shows beside them.
+	protected void CarryVerbs(RZ_TalkSession s, notnull array<ref RZ_TalkReply> replies)
 	{
+		RZ_DTalk t = s.m_Tree;
 		array<int> have = {};
 		foreach (RZ_TalkReply v : replies)
 		{
 			if (!v.m_bAdmin && !IsOurs(v.m_iId))
 				have.Insert(v.m_iId);
 		}
+
+		if (s.m_Adapter)
+			s.m_Adapter.Carryable(have);
 
 		array<int> carried = {};
 		for (int k = t.m_aTopics.Count() - 1; k >= 0; k--)
@@ -356,7 +381,7 @@ class RZ_DialogueTrees
 		for (int r = replies.Count() - 1; r >= 0; r--)
 		{
 			RZ_TalkReply verb = replies[r];
-			if (!verb.m_bAdmin && !IsOurs(verb.m_iId) && carried.Find(verb.m_iId) >= 0)
+			if (!verb.m_bAdmin && !verb.m_bJob && !verb.m_bWay && !IsOurs(verb.m_iId) && carried.Find(verb.m_iId) >= 0)
 				replies.RemoveOrdered(r);
 		}
 	}
@@ -564,9 +589,58 @@ class RZ_DialogueTrees
 			r.m_sLabel = RZ_DialogueText.Fill(t.m_Ctx, c.m_sLabel);
 			r.m_bOwn = true;
 			Tag(t, c, r);
+			JobTag(s, c, r);
 			replies.Insert(r);
 			if (replies.Count() >= MAX_REPLIES)
 				break;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A choice that starts a job or opens its pitch is tagged by its kind in front, like any reply
+	//! that does (docs/DIALOGUE.md, "Jobs on the first replies"): one that runs the speaker's job slot
+	//! (call:slot:N, the adapter's SlotJob), a leader's own job (offer:), a questline (begin:). With
+	//! nothing behind the slot for this player now, it shows locked with why ("Nothing today").
+	protected void JobTag(RZ_TalkSession s, RZ_DChoice c, RZ_TalkReply r)
+	{
+		string kind = "";
+		int slot = -1;
+		foreach (RZ_DEffect e : c.m_aDo)
+		{
+			if (e.m_sName == "call" && e.m_sArg.StartsWith("slot:") && s.m_Adapter)
+			{
+				int n = e.m_sArg.Substring(5, e.m_sArg.Length() - 5).ToInt();
+				string slotKind = s.m_Adapter.SlotJob(m_GM, n);
+				if (!slotKind.IsEmpty())
+				{
+					kind = slotKind;
+					slot = n;
+				}
+			}
+			else if (e.m_sName == "offer")
+			{
+				kind = "Job";
+			}
+			else if (e.m_sName == "begin")
+			{
+				kind = "Quest";
+			}
+		}
+
+		if (kind.IsEmpty())
+			return;
+
+		r.m_bJob = true;
+		r.m_sTag = Join(RZ_TalkJobs.Tag(kind), r.m_sTag);
+		if (slot < 0 || !r.m_bEnabled)
+			return;
+
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(s.m_iPlayer);
+		string why = s.m_Adapter.SlotLock(m_GM, s, slot, user);
+		if (!why.IsEmpty())
+		{
+			r.m_bEnabled = false;
+			r.m_sNeed = why;
 		}
 	}
 
@@ -1121,13 +1195,15 @@ class RZ_DialogueTrees
 		s.m_aNew.Clear();
 
 		string target = c.TargetFor(result);
-		if (target == "end")
+		if (target == "end" && !(s.m_Adapter && s.m_Adapter.Asking(m_GM, s)))
 		{
 			s.m_aNew.InsertAll(extra);
 			return false;
 		}
 
-		if (target == "hub")
+		// A job was just put to you (its pitch, an errand's ways): the hub shows your answer to it,
+		// wherever the choice was going
+		if (target == "hub" || (s.m_Adapter && s.m_Adapter.Asking(m_GM, s)))
 		{
 			GoHub(s, extra);
 			return true;
@@ -1568,6 +1644,9 @@ class RZ_DialogueTrees
 		if (a.IsEmpty())
 			return b;
 
+		if (b.IsEmpty())
+			return a;
+
 		return a + " " + b;
 	}
 
@@ -1807,7 +1886,10 @@ class RZ_DialogueTrees
 						break;
 					}
 
-					if (ctx.m_Leader && m_GM.GetLeaders())
+					// The leader's job slot: their first job for you explained, then your yes or no
+					if (ctx.m_Leader && RZ_TalkLeader.Cast(s.m_Adapter))
+						s.m_Adapter.Pick(m_GM, s, pid, 0, user);
+					else if (ctx.m_Leader && m_GM.GetLeaders())
 						m_GM.GetLeaders().HandleChoice(pid, ctx.m_Leader.m_iId, 0, ctx.m_Body, user);
 
 					break;

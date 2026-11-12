@@ -247,7 +247,7 @@ important first, then oldest first. Each card comes in with vanilla's own hint s
 | Priority | Means | Examples |
 |---|---|---|
 | Urgent | danger to you, now | Bitten, Fever, Weakness, The end of it, Horde, THE FINAL STAND, the clean room changing hands and overtime ([FINALE.md](FINALE.md)) |
-| High | about you, now | the spawn card, your standing changed, a background unlocked, every mission notice (offered, "this is the place", done, failed, refused), the finale's lock card ("[Point of no return]") and "Written down", the batch and the seal calls |
+| High | about you, now | the spawn card, a job of yours starting or ending (below), your standing changed, a background unlocked, every mission notice (offered, "this is the place", done, failed, refused), the finale's lock card ("[Point of no return]") and "Written down", the batch and the seal calls |
 | Normal | radio and faction voices | open and secure channels, the broadcast, faction notices, world events, anything with an unusual title |
 | Low | news | guidance reminders for veterans; the finale's stand line within 150 m of the lab ("CLEAN ROOM: Bastion. The Haven taking: 0:35 of 0:60.") |
 | Quiet | the notebook only, never a card | the welcome's world news, the season summary, pay owed while you were away (`RZ_ENoticeTag.QUIET`); work you heard of, with who to ask (`RZ_ENoticeTag.HEARD`, listed under Missions; it doesn't count on the Quests tab) |
@@ -264,13 +264,28 @@ important first, then oldest first. Each card comes in with vanilla's own hint s
   and who to ask, offers made to you, "this is the place", done, failed, refused. World: world events, the quiet entries and what came in the quiet
   start.
 
+**A job's start and end cards** (`Missions/RZ_JobCards.c`). Whenever a job becomes yours, one card
+to you only: its kind and title ("Quest started: The Other Two: his number", "Job started: Recover the
+Bus", "Errand started: Water for Morton"), then "From" its giver ("From Sergeant Hale at Fort Kell.",
+"From Mara, the cook at Morton.", "From the Haven." for a questline's next stage), then its first
+objective (an errand's step with its direction). It comes when you take a job in talk, when a
+questline you're part of starts its next stage, when an opening hands you its step, and on the old
+paths without the talk screen. Tagged START: high, and a card even in the quiet start and the first
+minutes' gap; never said into the talk screen. When it ends, one card too: "Job done: ..." with the
+pay, "Quest failed: ...", "Job called off: ...", "Errand done: ..." with the pay or the giver's
+thanks, "Errand failed: ..." (late, lapsed, what you carried gone, you died) or "Errand abandoned:
+..." with why (MISSION, high). The card's icon is the job's type by the title's first word: Quest
+`mission_arc`, Job `mission_contract`, Errand `mission_errand`, Event `mission_event`
+(`RZ_NoticeStyle.JobIcon`). They replace the old "Errand: ..." step card, "Off the books: ...",
+"Mission complete" and "Mission failed". Both go into the notebook's Radio tab under Missions.
+
 **Tips from context.** The guidance tips ([DESIGN.md](DESIGN.md#new-player-guidance)) stay, one at a
 time: each fires when its moment comes (you're bleeding, a quartermaster is close, it's getting
 dark, you're too loud, you're near the line), at most one every **Tip gap** (90 s), and none that
 isn't critical in a life's first **Tips wait after spawn** (90 s).
 
 How a notice's importance is known: the server tags about twenty call sites
-(`NotifyPlayerAs`/`NotifyAllAs` with `RZ_ENoticeTag`: MISSION, EVENT, WORLD, URGENT, HIGH, LOW, QUIET, SPAWN, HEARD;
+(`NotifyPlayerAs`/`NotifyAllAs` with `RZ_ENoticeTag`: MISSION, EVENT, WORLD, URGENT, HIGH, LOW, QUIET, SPAWN, HEARD, START;
 mission messages through `RZ_Mission.NotifyParticipants` and `NotifyInterested`); every other
 notice is classified by its title on the client (`RZ_NoticeStyle.Classify`). Without the HUD the
 vanilla hint queue sorts the same way, with no expiry (it has nowhere else to go).
@@ -534,9 +549,14 @@ screen **opens straight on step 2**, your replies, with no line.
 2. **Then your replies on their own.** The band becomes the reply box (1,440 wide, the same panel
    with a 2 px outline in the faction colour), holding only your choices (regular 28), **at most
    five**: the selected one with a fill and an outline in the faction colour; a reply's tag before
-   it in the faction colour, in brackets ("[a job]", "[news]", "[trade]", "[Speech - Bastion 2/3]");
-   a reply you can't take faint, its tag too, with what it needs after it ("(you have 1)"); a reply
-   with nothing new behind it **grey** (it still works). Every reply is what you say, word for word
+   it in the faction colour, in brackets ("[Job]", "[Quest]", "[Errand]" in front of a reply that starts
+   a job, "[news]", "[trade]", "[Speech - Bastion 2/3]"); a reply you can't take **locked**: faint, its
+   tag too, the object menu's lock (`ReplyLock`: `status_door_locked`, 24, faint; only with the icon imageset)
+   before it and what it needs after it ("(Needs Known with Halcyon)", "(you have 1)"), and A on it
+   does nothing; a reply with nothing new behind it **grey** (it still works). No reply has a
+   "heard" tag. The replies come most pertinent first: what moves a job you're on, new jobs,
+   locked jobs, trade and services, information, small talk
+   ([DIALOGUE.md](DIALOGUE.md#the-order-of-the-replies)). Every reply is what you say, word for word
    (*Show me what you've got.*, not "Trade": [WRITING.md](WRITING.md#talk)), without quotation marks.
    The last is always the way out, said to this person (*I'll let you get on.*, *That's all for
    now.*, *I'll be going.*). Under the box, the footer: "D-pad: choose · A: say it · LB/RB: page · B: leave" (the
@@ -585,7 +605,8 @@ everything else they offer is a reply on their hub (vanilla's own actions on the
 people with the puzzle components that's their read; for a quartermaster and a safehouse's medic,
 who have none, it's **Talk to the quartermaster** / **Talk to the medic** (`RZ_TalkAction`), and
 their old prompts are replies, said as speech (*Show me what you've got.*, *Who's in charge here?
-I'd like a word.*): **Trade** opens [the shop screen](#the-shop-screen), **Ask for
+I'd like a word.*), after a quartermaster's jobs, which come first, one reply each
+([DIALOGUE.md](DIALOGUE.md#jobs-on-the-first-replies)): **Trade** opens [the shop screen](#the-shop-screen), **Ask for
 whoever's in charge** hands the conversation to the seat's leader, **Ask for the trial dose** on
 Halcyon's shows only greyed with what it needs until it applies, and the Haven's house services
 (hand over food, get patched up, tell them you're bitten, the radio, the board...) are rows, greyed
@@ -596,15 +617,14 @@ back, as before.
 
 **With Dialogue > Trees on** ([DIALOGUE.md](DIALOGUE.md#trees-hubs-topics-and-nodes)) the same
 screen and payload carry the trees, with no new widgets: the person's built replies, then their
-topics (a "heard" tag on one you've opened that still has more in it, grey once there's nothing
-new); in a node, its choices with the tag the check or price writes ("[Persuade - Haven - 1 of 2]",
+topics (grey once there's nothing new; no "heard" tag); in a node, its choices with the tag the check or price writes ("[Persuade - Haven - 1 of 2]",
 "[Fear 1 of 2 - +3 Infamy]", "[2 food]", "[Doctor]"), faint with what it needs when you can't take
 one ("you have 1 food", "you've tried that"), grey when you've seen where it leads. What they say
 after a check opens with the result ("[Persuaded]"). Tags are cut at 40 characters.
 
 How it works is in [DIALOGUE.md](DIALOGUE.md#the-talk-screen). The screen reads `PAYLOAD_TALK`:
 `T|serial|faction|name|sub|said|page|pages` (line breaks as `^`, the page from 0), then
-`R|id|label|tag|need|enabled|heard` per reply (five at most); `X|reason` closes it. The line and the replies come
+`R|id|label|tag|need|enabled|heard` per reply (five at most; `heard` is 1 when it's grey); `X|reason` closes it. The line and the replies come
 together; the two steps, the boxes and the typing are the client's (`RZ_TalkMenu`): a node after a reply you said, or with a
 new line, starts at step 1, and one with the same line (a page turn, the [Admin] list) stays on the
 replies (a page asked for by moving selects its first or last reply). A pick goes back as `RpcAsk_TalkPick(serial, id)`, and a page turn as the same call with `RZ_Dialogue.MORE` or

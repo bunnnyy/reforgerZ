@@ -953,6 +953,21 @@ class RZ_QM_CensusCount : RZ_QuestMission
 class RZ_QM_CensusCards : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_CrateA = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing a ration crate to a house: locked without one on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || choice || (objIdx != OBJ_A && objIdx != OBJ_B))
+			return need;
+
+		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!m_CrateA.IsWith(me) && !m_CrateB.IsWith(me))
+			return "Needs a ration crate on you";
+
+		return "";
+	}
 	protected ref RZ_QuestCarry m_CrateB = new RZ_QuestCarry();
 	protected int m_iHouseA = -1;
 	protected int m_iHouseB = -1;
@@ -1245,6 +1260,24 @@ class RZ_QM_CensusCards : RZ_QuestMission
 //! it's real, and it fights strangers).
 class RZ_QM_CensusCurfew : RZ_QuestMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: the gentle knock needs a Police past or Known with the Haven; letting the
+	//! toll in needs Known with the Red Hand.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (!need.IsEmpty() || !choice)
+			return need;
+
+		if (objIdx == OBJ_BOARD && slot == 1 && !RZ_QuestApproach.HasBackground(gm, playerId, "police"))
+			return ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.SURVIVORS), 1, RZ_EFaction.SURVIVORS);
+
+		if (objIdx == OBJ_TOLL && slot == 0)
+			return ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 1, RZ_EFaction.BANDITS);
+
+		return "";
+	}
+
 	protected ref array<vector> m_aPoints = {};
 	protected ref array<float> m_aDwell = {};
 	protected ref array<bool> m_aDone = {};
@@ -1482,6 +1515,17 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 class RZ_QM_CensusContrib : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_Sack = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing the contribution in: locked without it on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && !choice && (objIdx == OBJ_CLERK || objIdx == OBJ_OTHER) && !m_Sack.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs the contribution on you";
+
+		return need;
+	}
 	protected int m_iHouse = -1;
 	protected int m_iOther = -1;
 	protected vector m_vKeeper;
@@ -1717,6 +1761,17 @@ class RZ_QM_CensusContrib : RZ_QuestMission
 //! and 30 Favor; Bastion pays nothing); or let them load up 90 s. Raided: the house -3 food.
 class RZ_QM_CensusRaid : RZ_QuestMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: standing at the stores' door with the crew needs Known with them.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && choice && objIdx == OBJ_STORES && slot == 0)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 1, RZ_EFaction.BANDITS);
+
+		return need;
+	}
+
 	protected ref RZ_UnitWatch m_Crew = new RZ_UnitWatch();
 	protected int m_iHouse = -1;
 	protected vector m_vStores;

@@ -123,6 +123,8 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 	protected IEntity m_Owner;						// weak
 	protected RZ_TalkAction m_Talk;
 	protected ref array<BaseUserAction> m_aShown = {};	// what ACTION_BASE + i runs
+	protected ref array<int> m_aJobs = {};			// what RZ_TalkJobs.BASE + i is (mission ids), as last listed
+	protected int m_iPitch = -1;					// the job just explained, waiting on your answer; -1 none
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_TalkStaff(IEntity owner, RZ_TalkAction talk)
@@ -150,6 +152,50 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override bool Asking(RZ_GameModeComponent gm, RZ_TalkSession s)
+	{
+		return m_iPitch >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A faction's quartermaster (not a safehouse's medic): they give its work.
+	protected bool IsQuartermaster()
+	{
+		return m_Owner && m_Talk && m_Owner.FindComponent(RZ_QuartermasterComponent) != null && RZ_Factions.IsValid(m_Talk.GetFaction());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The leader whose seat this is, while they're in the chair and not held; else null.
+	protected RZ_Leader SeatLeader(RZ_GameModeComponent gm)
+	{
+		if (!gm.GetLeaders() || !m_Owner)
+			return null;
+
+		RZ_Leader l = gm.GetLeaders().FindSeat(m_Owner);
+		if (!l || !l.IsPresent() || l.m_iHeldBy >= 0)
+			return null;
+
+		return l;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who a job taken here is from, for its start card: the seat's leader, else "the Bastion
+	//! quartermaster in Levie".
+	protected string GiverName(RZ_GameModeComponent gm)
+	{
+		RZ_Leader l = SeatLeader(gm);
+		if (l)
+			return RZ_JobCards.LeaderGiver(l);
+
+		string text = string.Format("the %1 %2", RZ_Factions.GetShortName(m_Talk.GetFaction()), m_Talk.GetRole());
+		RZ_Settlement town = gm.GetSettlement(gm.FindNearestSettlement(m_Owner.GetOrigin()));
+		if (town)
+			text += " in " + town.m_sName;
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! No greeting: a quartermaster or the medic has nothing to say until you do, so the screen opens
 	//! on your replies (docs/DIALOGUE.md, "No filler greeting").
 	override void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
@@ -162,6 +208,28 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 		m_aShown.Clear();
 		if (!m_Owner)
 			return;
+
+		// A job just explained: your yes or no first
+		if (m_iPitch >= 0)
+		{
+			RZ_TalkReply yes = Reply(RZ_TalkJobs.TAKE, "I'll do it.");
+			yes.m_bJob = true;
+			yes.m_iRank = RZ_TalkReply.RANK_NEW;
+			RZ_Mission pitched = gm.GetMissions().FindById(m_iPitch);
+			if (pitched)
+				yes.m_sTag = RZ_TalkJobs.Tag(pitched.KindWord());
+
+			replies.Insert(yes);
+			replies.Insert(Reply(RZ_TalkJobs.LEAVE, "Not today."));
+			return;
+		}
+
+		// A quartermaster gives the faction's work plainly, first (docs/DIALOGUE.md, "Jobs on the
+		// first replies"): every job here one by one, locked with what it needs; the seat's leader's
+		// own job too, while they're in the chair
+		m_aJobs.Clear();
+		if (IsQuartermaster() && user)
+			RZ_TalkJobs.Build(gm, playerId, user, m_Talk.GetFaction(), SeatLeader(gm), m_aJobs, replies);
 
 		ActionsManagerComponent actions = ActionsManagerComponent.Cast(m_Owner.FindComponent(ActionsManagerComponent));
 		if (!actions)
@@ -225,6 +293,25 @@ class RZ_TalkStaff : RZ_TalkSpeaker
 	{
 		if (!m_Owner)
 			return;
+
+		// Your answer to the job they've just explained
+		int pitched = m_iPitch;
+		m_iPitch = -1;
+		if ((replyId == RZ_TalkJobs.TAKE || replyId == RZ_TalkJobs.LEAVE) && pitched >= 0)
+		{
+			RZ_TalkJobs.Take(gm, playerId, pitched, replyId == RZ_TalkJobs.TAKE, s.m_sHeader, m_Talk.GetFaction(), GiverName(gm), user);
+			return;
+		}
+
+		// A job on the list: explained in the seat leader's words (or the faction's), then yes or no
+		int job = replyId - RZ_TalkJobs.BASE;
+		if (job >= 0 && job < RZ_TalkJobs.MAX)
+		{
+			if (job < m_aJobs.Count() && m_aJobs[job] >= 0 && RZ_TalkJobs.Pitch(gm, playerId, m_aJobs[job], SeatLeader(gm), s.m_sHeader, m_Talk.GetFaction(), user))
+				m_iPitch = m_aJobs[job];
+
+			return;
+		}
 
 		if (replyId == TRADE)
 		{

@@ -626,6 +626,21 @@ class RZ_Quest_LastPilot : RZ_Questline
 //! drops it at the pad, and the boss hears Bastion is buying).
 class RZ_QM_PilotFuel : RZ_QuestMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: the fence won't deal with anyone the Red Hand hunts.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && choice && objIdx == OBJ_FENCE && slot == 0)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 0, RZ_EFaction.BANDITS);
+
+		// Handing the fuel over: locked without it on you
+		if (need.IsEmpty() && !choice && objIdx == OBJ_POINT && slot == 1 && !m_Fuel.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs the fuel on you";
+
+		return need;
+	}
+
 	protected ref RZ_QuestCarry m_Fuel = new RZ_QuestCarry();
 	protected vector m_vLZ;
 	protected vector m_vPilot;
@@ -1127,6 +1142,17 @@ class RZ_QM_PilotFlight : RZ_QM_PilotLZ
 class RZ_QM_PilotWreck : RZ_QuestMission
 {
 	protected ref RZ_QuestCarry m_Box = new RZ_QuestCarry();
+
+	//------------------------------------------------------------------------------------------------
+	//! Handing the black box to the pilot: locked without it on you.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && !choice && objIdx == OBJ_PILOT && !m_Box.IsWith(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId)))
+			need = "Needs the black box on you";
+
+		return need;
+	}
 	protected vector m_vWreck;
 	protected vector m_vLZ;
 	protected vector m_vPilot;
@@ -1348,6 +1374,17 @@ class RZ_QM_PilotWreck : RZ_QuestMission
 //! with the Red Hand: +5 Red Hand Fame, 40 Red Hand Favor, +10 Bastion Infamy; no pay).
 class RZ_QM_PilotDecide : RZ_QuestMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: selling to the fixer needs Trusted with the Red Hand.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && choice && objIdx == OBJ_FIXER && slot == 0)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 2, RZ_EFaction.BANDITS);
+
+		return need;
+	}
+
 	protected vector m_vLZ;
 	protected vector m_vPilot;
 	protected vector m_vOfficer;
@@ -1844,6 +1881,17 @@ class RZ_QM_PilotWalk : RZ_QuestMission
 //! from 200-300 m and spares Red Hand friends). They can't fly it, so they burn it.
 class RZ_QM_PilotBurn : RZ_QuestMission
 {
+	//------------------------------------------------------------------------------------------------
+	//! Shown before you pick: standing at the pad with the crew needs Known with them.
+	override string ChoiceLock(RZ_GameModeComponent gm, int playerId, int objIdx, bool choice, int slot)
+	{
+		string need = super.ChoiceLock(gm, playerId, objIdx, choice, slot);
+		if (need.IsEmpty() && choice && objIdx == OBJ_PAD && slot == 0)
+			need = ScoreNeed(RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS), 1, RZ_EFaction.BANDITS);
+
+		return need;
+	}
+
 	protected ref RZ_UnitWatch m_Crew = new RZ_UnitWatch();
 	protected vector m_vLZ;
 	protected bool m_bShown;

@@ -1634,6 +1634,11 @@ class RZ_Leaders
 	//! why (the brief, in their voice), where, what it pays, and the danger in it.
 	string Pitch(RZ_Leader l, RZ_Mission m, int playerId, IEntity user)
 	{
+		// Without a leader (a quartermaster's job list): the giver faction's voice
+		int f = m.m_Req.m_eGiver;
+		if (l)
+			f = l.m_eFaction;
+
 		string text = VoiceBrief(m, playerId);
 		vector from = vector.Zero;
 		if (user)
@@ -1646,24 +1651,24 @@ class RZ_Leaders
 		else if (!where.IsEmpty())
 			text += "\n" + string.Format("It's at %1.", where);
 
-		text += "\n" + RZ_LeaderVoice.PayLine(l.m_eFaction, m.m_iFavorReward, m.m_iFameReward);
+		text += "\n" + RZ_LeaderVoice.PayLine(f, m.m_iFavorReward, m.m_iFameReward);
 		if (m.m_bRogueJob)
-			text += "\n" + RZ_LeaderVoice.RogueWarning(l.m_eFaction);
+			text += "\n" + RZ_LeaderVoice.RogueWarning(f);
 
 		if (m.m_bHasRival && RZ_Factions.IsValid(m.m_eRival))
-			text += "\n" + string.Format(RZ_LeaderVoice.RivalWarning(l.m_eFaction), RZ_Factions.GetName(m.m_eRival));
+			text += "\n" + string.Format(RZ_LeaderVoice.RivalWarning(f), RZ_Factions.GetName(m.m_eRival));
 
 		if (m.HasBonus(m_GM, playerId))
-			text += "\n" + RZ_LeaderVoice.BonusLine(l.m_eFaction);
+			text += "\n" + RZ_LeaderVoice.BonusLine(f);
 
 		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The talk screen's "Ask for work" said straight to the leader (RZ_TalkLeader): their own job is
-	//! explained first and you say yes or no (TakeWork). Returns that job's id; -1 when they have none
-	//! for you (the stronghold's contracts, or nothing today, are said as OfferWork does).
-	int PitchWork(int playerId, int id, IEntity user)
+	//! A job pitched on the talk screen (RZ_TalkJobs, docs/DIALOGUE.md, "Jobs on the first replies"):
+	//! `jobId` explained in this leader's voice, then you say yes or no (TakeWork). -1 (nothing
+	//! pitched) when they refuse you, or that job is gone or no longer one you can take: they say so.
+	int PitchJob(int playerId, int id, int jobId, IEntity user)
 	{
 		RZ_Leader l = Get(id);
 		if (!l || !l.IsPresent() || !user)
@@ -1675,13 +1680,10 @@ class RZ_Leaders
 			return -1;
 		}
 
-		RZ_Mission job = FindJob(l);
-		if (!job)
-			job = TryCreateJob(l);
-
-		if (!job || !job.IsEligible(m_GM, playerId) || job.m_aOfferedTo.Contains(playerId))
+		RZ_Mission job = m_GM.GetMissions().FindById(jobId);
+		if (!job || job.m_eState != RZ_EMissionState.ACTIVE || !job.IsEligible(m_GM, playerId) || job.IsOfferedTo(m_GM, playerId))
 		{
-			OfferWork(l, playerId, user);
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Gone(l.m_eFaction));
 			return -1;
 		}
 
@@ -1690,7 +1692,34 @@ class RZ_Leaders
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Your answer to a pitched job: yes hires you for it (your Quests tab), no leaves it with them.
+	//! A conversation's choice that runs the job slot (call:slot:0 with Dialogue > Trees): the first
+	//! job this leader has for you is pitched (RZ_TalkJobs' order), or they say there's nothing today.
+	int PitchFirst(int playerId, int id, IEntity user)
+	{
+		RZ_Leader l = Get(id);
+		if (!l || !l.IsPresent() || !user)
+			return -1;
+
+		array<int> ids = {};
+		array<ref RZ_TalkReply> rows = {};
+		RZ_TalkJobs.Build(m_GM, playerId, user, l.m_eFaction, l, ids, rows);
+		foreach (int i, RZ_TalkReply r : rows)
+		{
+			if (r.m_bEnabled && i < ids.Count() && ids[i] >= 0)
+				return PitchJob(playerId, id, ids[i], user);
+		}
+
+		if (Attitude(l, playerId) <= -2)
+			m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, RZ_LeaderVoice.Refuse(l.m_eFaction));
+		else
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.NoWork(l.m_eFaction));
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Your answer to a pitched job: yes hires you for it at once (your Quests tab, and the start
+	//! card), no leaves it with them.
 	void TakeWork(int playerId, int id, int jobId, bool yes, IEntity user)
 	{
 		RZ_Leader l = Get(id);
@@ -1710,13 +1739,15 @@ class RZ_Leaders
 			return;
 		}
 
-		job.Hire(playerId);
-		m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Agreed(l.m_eFaction));
-		string where = job.GetLocationName(m_GM);
-		if (user)
-			where = job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId);
+		if (job.Hire(playerId))
+			RZ_Log.Info(string.Format("Mission %1 '%2' taken by %3 from %4", job.m_iId, job.m_sTitle, RZ_Util.PlayerName(playerId), l.m_sName));
 
-		m_GM.NotifyPlayer(playerId, "Off the books: " + job.m_sTitle, string.Format("Taken. %1", where));
+		m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Agreed(l.m_eFaction));
+		string giver = RZ_JobCards.LeaderGiver(l);
+		if (job.m_bRogueJob)
+			giver += ", off the books";
+
+		RZ_JobCards.MissionStarted(m_GM, playerId, job, giver, user);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1959,6 +1990,7 @@ class RZ_Leaders
 				bonus = "\nYour background gives you an edge on this one.";
 
 			m_GM.NotifyPlayer(playerId, "Off the books: " + job.m_sTitle, string.Format("%1\nWhere: %2.%3", VoiceBrief(job, playerId), where, bonus));
+			RZ_JobCards.MissionStarted(m_GM, playerId, job, RZ_JobCards.LeaderGiver(l) + ", off the books", user);
 			return;
 		}
 

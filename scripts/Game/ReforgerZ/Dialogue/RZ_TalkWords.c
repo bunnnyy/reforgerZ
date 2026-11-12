@@ -24,7 +24,10 @@ class RZ_TalkWords
 		{
 			string tags = label.Substring(open + 1, label.Length() - open - 1);
 			label = label.Substring(0, open).Trim();
-			if (!r.m_sTag.IsEmpty() && !r.m_sTag.StartsWith("["))
+			// A kind tag already set ([Errand]) stays in front of the label's own
+			if (r.m_sTag.StartsWith("["))
+				tags = r.m_sTag + " " + tags;
+			else if (!r.m_sTag.IsEmpty())
 				tags += " [" + r.m_sTag + "]";
 
 			r.m_sTag = tags;

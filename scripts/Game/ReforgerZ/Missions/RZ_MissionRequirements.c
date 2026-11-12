@@ -346,6 +346,87 @@ class RZ_MissionRequirements
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What this player is missing to take it, said short for a locked reply on the talk screen
+	//! (docs/DIALOGUE.md, "Jobs on the first replies"): "Needs Known with Halcyon", "Needs a Lab
+	//! Technician", "Not while Hunted by the Haven", "Only for the bitten". The first rule that fails,
+	//! in IsEligibleProfile's order; "" when nothing does.
+	string NeedFor(RZ_PlayerProfile profile)
+	{
+		if (!profile)
+			return "";
+
+		RZ_ETier giverTier = profile.GetTier(m_eGiver);
+		if (RZ_Reputation.IsHunted(giverTier))
+			return "Not while " + RZ_Reputation.GetTierName(giverTier) + " with " + RZ_Factions.GetShortName(m_eGiver);
+
+		if (!m_bLeaderDecides && !GiverTierOk(giverTier, m_eMinTier, m_bAllowWatched, false))
+			return string.Format("Needs %1 with %2", RZ_Reputation.GetTierName(m_eMinTier), RZ_Factions.GetShortName(m_eGiver));
+
+		foreach (RZ_StandingRequirement r : m_aChecks)
+		{
+			if (RZ_Reputation.Check(profile.GetTier(r.m_eFaction), r.m_eCheck))
+				continue;
+
+			string check = RZ_Reputation.GetCheckText(r.m_eCheck, r.m_eFaction);
+			if (r.m_eCheck == RZ_EStandingCheck.NOT_HUNTED || r.m_eCheck == RZ_EStandingCheck.NOT_AT_LEAST_TRUSTED)
+				return RZ_Util.Capitalize(check);
+
+			return "Needs " + check;
+		}
+
+		string bgId = profile.m_sBackgroundId;
+		if (!m_aAllowedBackgrounds.IsEmpty() && !m_aAllowedBackgrounds.Contains(bgId))
+			return "Needs " + BackgroundsText(m_aAllowedBackgrounds);
+
+		if (m_aDeniedBackgrounds.Contains(bgId) && (!m_bDeniedUnlessChampion || giverTier != RZ_ETier.CHAMPION))
+		{
+			if (m_bDeniedUnlessChampion)
+				return string.Format("Not for %1 below Champion", WithArticle(RZ_DialogueTrees.BackgroundName(bgId)));
+
+			return "Not for " + WithArticle(RZ_DialogueTrees.BackgroundName(bgId));
+		}
+
+		if (m_iInfection > 0 && !profile.IsInfected())
+			return "Only for the bitten";
+
+		if (m_iInfection < 0 && profile.IsInfected())
+			return "Not while you're bitten";
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "a Doctor or a Nurse"
+	static string BackgroundsText(array<string> ids)
+	{
+		string text = "";
+		foreach (int i, string id : ids)
+		{
+			if (i > 0)
+				text += " or ";
+
+			text += WithArticle(RZ_DialogueTrees.BackgroundName(id));
+		}
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "a Doctor", "an Elder", "an Ex-Con"
+	static string WithArticle(string name)
+	{
+		if (name.IsEmpty())
+			return name;
+
+		string first = name.Substring(0, 1);
+		first.ToLower();
+		if (first == "a" || first == "e" || first == "i" || first == "o" || first == "u")
+			return "an " + name;
+
+		return "a " + name;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! "Trusted with Task Force Bastion, not Trusted by The Red Hand"
 	string Describe()
 	{

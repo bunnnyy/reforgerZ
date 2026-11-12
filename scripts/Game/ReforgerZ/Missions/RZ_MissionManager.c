@@ -571,6 +571,39 @@ class RZ_MissionManager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The talk screen's jobs at a giver of `faction` here (RZ_TalkJobs, docs/DIALOGUE.md, "Jobs on
+	//! the first replies"): `open` the contracts it may offer this player that aren't theirs yet, in
+	//! this player's order; `locked` the ones it gives here that this player can't take yet for a
+	//! reason they can meet (a tier, a background, standing elsewhere), never another's reserved job.
+	//! A leader's personal job isn't here (RZ_Leaders.FindJob). Offers nothing.
+	void JobsAt(int playerId, RZ_EFaction faction, IEntity player, notnull array<RZ_Mission> open, notnull array<RZ_Mission> locked)
+	{
+		if (!player)
+			return;
+
+		foreach (RZ_Mission c : m_aActive)
+		{
+			if (!c.m_bContract || c.m_bInPersonOnly || c.m_eState != RZ_EMissionState.ACTIVE || c.IsOfferedTo(m_GM, playerId))
+				continue;
+
+			if (OffersAt(c, playerId, faction, player))
+			{
+				open.Insert(c);
+				continue;
+			}
+
+			if (c.m_Req.m_eGiver != faction || !c.m_sReservedFor.IsEmpty() || !c.CanOfferAt(m_GM, player.GetOrigin()))
+				continue;
+
+			string need = c.LockReason(m_GM, playerId);
+			if (!need.IsEmpty() && need != "Not for you now")
+				locked.Insert(c);
+		}
+
+		RZ_MissionReasons.SortFor(m_GM, open, playerId, player.GetOrigin());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A contract `faction` may offer this player here: its own (a leader's personal job only at
 	//! their seat), or a mirror's second side once it has heard.
 	protected bool OffersAt(RZ_Mission c, int playerId, RZ_EFaction faction, IEntity player)
@@ -604,7 +637,10 @@ class RZ_MissionManager
 		foreach (RZ_Mission m : offers)
 		{
 			if (m.Hire(playerId))
+			{
 				RZ_Log.Info(string.Format("Mission %1 '%2' offered to %3 by %4", m.m_iId, m.m_sTitle, RZ_Util.PlayerName(playerId), RZ_Factions.GetShortName(faction)));
+				RZ_JobCards.MissionStarted(m_GM, playerId, m, RZ_Factions.GetName(faction), player);
+			}
 
 			text += string.Format("%1: %2\n", m.m_sTitle, m.GetWhereTextFor(m_GM, player.GetOrigin(), playerId));
 		}
@@ -910,7 +946,12 @@ class RZ_MissionManager
 		else
 		{
 			m.OnFailed(m_GM);
-			m.NotifyInterested(m_GM, "Mission failed", m.GetFailText(m_GM));
+			// The end card: "Job failed: Recover the Bus", "Quest called off: ..." (RZ_JobCards)
+			string how = "failed";
+			if (m.m_bWithdrawn)
+				how = "called off";
+
+			m.NotifyInterested(m_GM, string.Format("%1 %2: %3", m.KindWord(), how, m.m_sTitle), m.GetFailText(m_GM));
 			string fallout = RZ_MissionReasons.FalloutLine(m.Type());
 			if (!fallout.IsEmpty() && !m.m_bWithdrawn)
 				m.NotifyInterested(m_GM, m.m_sTitle, fallout);
@@ -1065,6 +1106,6 @@ class RZ_MissionManager
 		}
 
 		m.OnRewardPlayer(m_GM, playerId);
-		m_GM.NotifyPlayerAs(playerId, "Mission complete", text, m.NoticeTag());
+		m_GM.NotifyPlayerAs(playerId, string.Format("%1 done: %2", m.KindWord(), m.m_sTitle), text, m.NoticeTag());
 	}
 }

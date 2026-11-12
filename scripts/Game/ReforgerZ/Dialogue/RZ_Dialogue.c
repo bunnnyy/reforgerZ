@@ -130,9 +130,21 @@ class RZ_DialogueSettings
 //! One reply in the talk screen.
 class RZ_TalkReply
 {
+	// The order replies show in (docs/DIALOGUE.md, "The order of the replies"): lowest first, the way
+	// out always last
+	static const int RANK_ON = 0;		// advances or hands in a job you're on
+	static const int RANK_NEW = 1;		// a new job on offer you can take
+	static const int RANK_LOCKED = 2;	// a job on offer you can't take yet (locked, with its need)
+	static const int RANK_GOODS = 3;	// trade, services, items, favours (a built reply's default)
+	static const int RANK_INFO = 4;		// information: news, what they make of you, a topic about the world
+	static const int RANK_TALK = 5;		// small talk (a flavour topic)
+	static const int RANK_ADMIN = 9;	// [Admin]
+
 	int m_iId;
 	string m_sLabel;
-	string m_sTag;		// a dim tag on the right ("a job", "trade", "20 Haven Favor")
+	int m_iRank = -1;	// RANK_*; -1: from the reply (RZ_TalkRank.For)
+	bool m_bJob;		// starts a job or opens its pitch: never carried by a topic, never grey
+	string m_sTag;		// the tag in front ("[Job]", "[Persuade - Haven - 1 of 2]", "[20 Haven Favor]")
 	string m_sNeed;		// what it needs, shown when it can't be picked
 	bool m_bEnabled = true;
 	bool m_bOwn;		// a tree's topic or choice: tagged by the trees, not by RZ_TalkNeeds
@@ -669,7 +681,8 @@ class RZ_Dialogue
 	//! events and the world at spawn, and the tips ("Remember").
 	protected static bool StaysCard(string title, int tag)
 	{
-		if (title == RZ_Guidance.PLAIN_TITLE)
+		// A job's start card (RZ_JobCards) is a card, not something they say
+		if (title == RZ_Guidance.PLAIN_TITLE || tag == RZ_ENoticeTag.START)
 			return true;
 
 		RZ_NoticeStyle st = RZ_NoticeStyle.Classify(title, tag);
@@ -891,8 +904,12 @@ class RZ_Dialogue
 		// A server admin's replies go under one reply, [Admin], which opens them as their own list
 		array<ref RZ_TalkReply> rows = {};
 		array<ref RZ_TalkReply> admin = {};
+		bool inNode = s.m_Tree && s.m_Tree.m_bInNode;
 		foreach (RZ_TalkReply r : all)
 		{
+			if (r.m_iRank < 0)
+				r.m_iRank = RZ_TalkNeeds.RankFor(r.m_sLabel);
+
 			if (!r.m_bOwn)
 			{
 				RZ_TalkNeeds.Apply(m_GM, s.m_iPlayer, user, r);
@@ -904,6 +921,11 @@ class RZ_Dialogue
 			else
 				rows.Insert(r);
 		}
+
+		// The most pertinent first (docs/DIALOGUE.md, "The order of the replies"): a hub's replies by
+		// rank, keeping their order within a rank; a node's choices stay as written
+		if (!inNode)
+			ByRank(rows);
 
 		if (admin.IsEmpty())
 			s.m_bAdmin = false;
@@ -961,8 +983,6 @@ class RZ_Dialogue
 		foreach (RZ_TalkReply shown : s.m_aReplies)
 		{
 			shown.m_bHeard = Heard(s, shown);
-			if (shown.m_bHeard && shown.m_sTag == "heard")
-				shown.m_sTag = "";		// the grey says it
 		}
 
 		string said = "";
@@ -1000,6 +1020,22 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Stable sort by rank (RZ_TalkReply.RANK_*): jobs you're on, new jobs, locked jobs, trade and
+	//! services, information, small talk. Insertion sort: a hub has a few dozen replies at most.
+	protected static void ByRank(notnull array<ref RZ_TalkReply> rows)
+	{
+		for (int i = 1; i < rows.Count(); i++)
+		{
+			int j = i - 1;
+			while (j >= 0 && rows[j].m_iRank > rows[j + 1].m_iRank)
+			{
+				rows.SwapItems(j, j + 1);
+				j--;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One of the screen's own rows (the way out, [Admin], Back.).
 	protected static RZ_TalkReply OwnRow(int id, string label)
 	{
@@ -1016,7 +1052,8 @@ class RZ_Dialogue
 	//! the admins' never are.
 	protected bool Heard(RZ_TalkSession s, RZ_TalkReply r)
 	{
-		if (r.m_bAdmin || r.m_iId == LEAVE || r.m_iId == ADMIN || r.m_iId == ADMIN_BACK)
+		// A job on offer is never grey: it's always something new to take
+		if (r.m_bAdmin || r.m_bJob || r.m_iId == LEAVE || r.m_iId == ADMIN || r.m_iId == ADMIN_BACK)
 			return false;
 
 		if (RZ_DialogueTrees.IsOurs(r.m_iId))
@@ -1087,13 +1124,34 @@ class RZ_TalkNeeds
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A dim tag on what a reply is.
+	//! Where a built reply goes in the list when its adapter didn't say (docs/DIALOGUE.md, "The order
+	//! of the replies"): asking for news or what they think is information; everything else a built
+	//! reply does (trade, a service, food, an antidote, a ride) is a service.
+	static int RankFor(string label)
+	{
+		string l = label;
+		l.ToLower();
+		// A wanderer's job asked in one step (the Courier's letters, the Mechanic's car keys)
+		if (l == "ask for work" || l == "ask about cars")
+			return RZ_TalkReply.RANK_NEW;
+
+		if (l == "heard anything?" || l == "what do you make of me?" || l.StartsWith("ask how things are") || l.StartsWith("ask about ")
+			|| l == "read the notice board" || l == "about the season" || l == "where should i look?" || l == "the dead"
+			|| l == "what you didn't tell me" || l == "the cure" || l == "this place" || l == "me")
+			return RZ_TalkReply.RANK_INFO;
+
+		return RZ_TalkReply.RANK_GOODS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A dim tag on what a reply is. A reply that starts a job is tagged by its kind ([Job]) by
+	//! whoever builds it (RZ_TalkJobs); the Courier's "Ask for work" by its label here.
 	static string TagFor(string label)
 	{
 		string l = label;
 		l.ToLower();
-		if (l.Contains("work"))
-			return "a job";
+		if (l.Contains("work") || l == "ask about cars")
+			return "[Job]";
 		if (l.Contains("news") || l.Contains("heard anything") || l.Contains("how things are") || l.Contains("rumour"))
 			return "news";
 		if (l.StartsWith("rob "))

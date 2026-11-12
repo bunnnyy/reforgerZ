@@ -589,8 +589,10 @@ Button ReplyRow (root, 4 below it)
       ├─ Image  ReplyBg       tinted with the faction colour, shown at 16% on the selected row
       ├─ Panel  ReplyEdge     outline_2px, tinted with the faction colour, shown on the selected row
       └─ HorizontalLayout (ReplyLine)  padding 14 left and right, centred vertically
+         ├─ Image  ReplyLock     24 x 24, faint (#6E6A60), 12 before the tag, hidden unless the reply can't be
+         │                       picked (and the icon imageset is set): `status_door_locked`, as the object menu's
          ├─ Text   ReplyTag      regular 28, tinted (the faction colour, faint when it can't be picked),
-         │                       10 before the text, hidden when there's no tag: "[Speech - Bastion 2/3]"
+         │                       10 before the text, hidden when there's no tag: "[Job]", "[Speech - Bastion 2/3]"
          ├─ Text   ReplyText     regular 28 (bright on the selected row, grey when there's nothing new
          │                       behind it, faint when it can't be picked)
          └─ Text   ReplyNeed     regular 24, faint, 12 after the text, hidden unless the reply can't be

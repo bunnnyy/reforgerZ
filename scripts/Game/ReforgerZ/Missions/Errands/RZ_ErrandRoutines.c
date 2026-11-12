@@ -1221,6 +1221,21 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 
 		job.Hire(playerId);
 		gm.NotifyPlayerAs(playerId, w.GetTitle(), string.Format("Job: %1. Three people on the road, each wants what the next one has.\n%2\nThe first of them: %3.", job.m_sTitle, job.GetBrief(gm), job.GetWhereTextFor(gm, user.GetOrigin(), playerId)), RZ_ENoticeTag.MISSION);
+		RZ_JobCards.MissionStarted(gm, playerId, job, w.GetShortName(), user);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Barter Chain could start from a wanderer now (StartBarterChain's own checks, without starting
+	//! it): the talk screen keeps "Need a hand?" open for it when they've no errand.
+	static bool CanBarterChain(RZ_GameModeComponent gm)
+	{
+		RZ_MissionManager missions = gm.GetMissions();
+		if (!missions || missions.IsTypeRunning(RZ_Mission_BarterChain))
+			return false;
+
+		RZ_Mission_BarterChain job = new RZ_Mission_BarterChain();
+		job.Configure(gm);
+		return job.GetWeight(gm) > 0;
 	}
 }

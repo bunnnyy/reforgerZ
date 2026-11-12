@@ -2103,7 +2103,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:981` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:1014` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:207` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:31` | with **Gadget anim variable** MX991 the character takes the notebook item into the left hand as it does the MX991 flashlight (with none, the take never finishes: the old bug), and its `IN_HAND` mode switch, or the HUD's watch, opens the notebook | N says in the log "not in the hand 1.5 s after N" and opens the notebook anyway; the pause menu and **Read the notebook** still work. Try the map's hold instead (**Gadget anim variable** MAP, the paper map's `paper_map.agr`/`player_map.asi`) |
@@ -2115,14 +2115,14 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Notebook.c:1080` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:51` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_Menus.c:55` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
-| `UI/RZ_UIData.c:1050` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
+| `UI/RZ_UIData.c:1083` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
 | `UI/RZ_TalkMenu.c:62`, `:400` | `OnMouseWheel` reaches a reply row's `Button` and the reply box's frame (`ReplyPanel`), with `wheel` positive rolled up, so the wheel moves the selection and past the ends turns the page | The wheel does nothing or runs the wrong way (flip the sign in `RZ_TalkMenu.Wheel`); the arrow keys, Q/E and the arrows' clicks still move and turn the page |
 | `UI/RZ_TalkMenu.c:652` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls a box that overflows toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; boxes are cut to fit, so it's rarely needed |
 | `UI/RZ_TalkMenu.c:692` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
 | `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
-| `UI/RZ_UIData.c:1110` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1249` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
-| `Dialogue/RZ_Dialogue.c:999` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `UI/RZ_UIData.c:1143` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1282` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
+| `Dialogue/RZ_Dialogue.c:1019` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:185` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:563` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
@@ -2135,7 +2135,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
-| `UI/RZ_UIData.c:1190` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
+| `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:275` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
 
@@ -2544,7 +2544,9 @@ answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<c
 <player>`, `Dialogue: <player> began <questline>`, `Dialogue: <player> saw for themselves: <key>` (a world
 predicate), `Dialogue: lie <key> found out: its found effects ran`, `Dialogue: Talk test: N conversations ...`
 (an admin's `/talkdebug test`, and the runtime test's `RZT Talk test: ...`), `Dialogue: scene <key> reset by
-an admin`. Reputation's voice: `Reputation: gate bark at <place> for <player>`, `Reputation: <player>
+an admin`. Jobs taken in talk: `Mission N '<title>' taken by <player> from <giver>` and `Job card: <Kind>
+started '<title>' for <player>`; the runtime test's `RZT talk offer <type> '<title>': [Job] listed and taken
+in one conversation=true` (or `locked [Quest] (Needs ...)`; `NOT LISTED` is a bug). Reputation's voice: `Reputation: gate bark at <place> for <player>`, `Reputation: <player>
 laid a pack's leader down`, `Reputation: <player> threw a smoke`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
 `Parley: <player>'s fire paused <player>'s parley`; the runtime test's `RZT Reputation test: ...` and `RZT
 voice <mood> faction N: radio [...] face [...]` (Voice > Force mood cycled).
@@ -2630,17 +2632,33 @@ session, tick off:
 - [ ] Jobs only by interaction: with a contract up, the radio gives only a Radio-tab line under
   Missions, no card (*"Bastion wants people for ... Ask ... or at any Bastion quartermaster."*), and
   the Quests tab stays empty and its count doesn't move. Walking up to a quartermaster gives *"There
-  are N jobs going here. Ask for whoever's in charge."*; **Ask for whoever's in charge**, then
-  **Ask for work**, lists the work and puts each job on the Quests tab as Offered. Done, it pays
-  Fame and Favor; a tier change is announced. A second player who never asked (not in your group)
+  are N jobs going here. Talk to the quartermaster."*; **Talk to the quartermaster** opens on the
+  jobs first, one reply each with [Job] or [Quest] in front; picking one explains it (where, pay,
+  danger) and *[Job] I'll do it.* puts it on the Quests tab at once with the start card (*Job started:
+  ...*, its icon, "From ..." and the first objective), in the same conversation. A job you can't take
+  yet is there, dim, with the lock and its need (*Needs Trusted with Bastion*); a giver with nothing
+  shows *Got any work for me?* locked with *Nothing today. Ask again later*. Done, it pays Fame and
+  Favor (*Job done: ...*); a tier change is announced. A second player who never asked (not in your group)
   turns up and hears *"Nobody asked you to."*; one in your vanilla group is paid.
-- [ ] A Haven safehouse's radio (**Listen to the safehouse radio**) puts the Haven's contracts within
-  3 km on your Quests tab ("yours if you want it"); another faction's work there says who to ask;
-  world events are "(news)".
+- [ ] A Haven safehouse's radio (**Listen to the safehouse radio**) names the Haven's contracts within
+  3 km ("yours if you want it: ask the quartermaster here") without putting them on your Quests tab;
+  another faction's work there says who to ask; world events are "(news)".
 - [ ] A world event shows as news on the Radio tab and never on the Quests tab, the tracker or the
   map. The Deserter's Map is on the Quests tab only after you search the jacket.
-- [ ] A named person waves you over (*"You there. Have you got a minute?..."*) and says nothing else; **Anything need
-  doing?** then shows the errand's offer.
+- [ ] A named person waves you over (*"You there. Have you got a minute?..."*) and says nothing else;
+  talk to them and their first reply names the errand (*[Errand] Water for Morton*); picked, they say
+  what they need and the ways are *[Errand] I'll ...*, one you can't take locked (*Needs 2 food*);
+  picking one starts it at once (*Errand started: ...* card). Do the step, come back, and *[Errand]
+  It's done: ...* (first on their list) hands it in (*Errand done: ...* with the pay); standing next to
+  them doesn't. A giver with nothing shows *Anything need doing?* locked with why.
+- [ ] Jobs on the first replies, with Trees on: at a leader the jobs are the first replies, above
+  their topics, and never hide while a topic about the work shows; the topic's *I'll do it. Give me the
+  task.* is tagged [Job] and leads to the same pitch (or is locked with *Nothing today...*). At The
+  Other Two's trial clerk as someone not Known with Halcyon, *Ask for ...'s number* is locked with
+  *Needs Known with Halcyon*. At Await Relief's people, the hand-over is *[Quest] ...* and locked
+  without the page on you. No reply anywhere has a "heard" tag. A hub's replies run: what moves a
+  job you're on, new jobs, locked jobs, trade and services, news and questions, small talk, the way
+  out.
 - [ ] The notebook's tabs read Standing, Quests, Radio, Journal, The season, in that order with LB/RB
   and with the mouse; it opens on Quests the first time. The Journal shows PAST JOBS (a contract you
   finished as DONE in green with its deed, one that timed out as FAILED in red, an errand you let
