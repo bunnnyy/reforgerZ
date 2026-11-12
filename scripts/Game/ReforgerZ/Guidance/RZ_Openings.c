@@ -1055,7 +1055,7 @@ class RZ_Openings
 				// Nothing over the way that the words would be true of: no step 1 here
 				RZ_Log.Info(string.Format("Openings: no house over the way for %1 at %2, step 1 skipped", RZ_Util.PlayerName(o.m_iPlayer), RZ_SettlementScanner.GridReference(giverAt)));
 				o.m_iStage++;
-				StartStage(o, me);
+				StartStage(o, me, tree, beat, sayNow);
 				return;
 			}
 
