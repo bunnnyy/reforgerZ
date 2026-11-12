@@ -57,7 +57,8 @@ and one way to end it: **research the cure.**
   (scenery only: nothing to loot or use), and people keep their faction's routine: the sentry,
   the patrol, the morning wash, chopping wood, cooking before the meal, Bastion's shift change and
   the roll at 20:30, the Red Hand's toll, the Haven's supper, Halcyon's courier, and the off shift
-  asleep.
+  asleep. Nobody looks the same: each faction's people wear their own kind of clothes in several
+  looks, and the same person always wears the same one.
 - **Questlines** that run over many sessions: each stage is a contract or a wait, you can talk,
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
   the ending, the rewards and the world. Fifteen: three per faction, two for the Long Table and
@@ -280,6 +281,8 @@ tools/prefab_manifest.py
 tools/camp_kit/  pieces.py: the camp-life pieces, their kits and the Traces compositions; build.py
                  writes their prefabs and the game mode's slots; render.py draws them and the faction
                  bases' plans (bases.py) into tools/camp_kit/camp_plans.html
+tools/people_looks.py
+                 writes the faction people's look prefabs (Prefabs/ReforgerZ/People/) and checks their GUIDs
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
                  the layout guide (LAYOUTS.md), the layouts (layouts/ReforgerZ/), the icon
                  atlas and the car picture (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)

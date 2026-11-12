@@ -71,8 +71,8 @@ server's time acceleration fixed.
 ## The camps' look
 
 Dependencies in `addon.gproj` since 2026-11-12, for how the faction bases and their people look
-([DESIGN.md](DESIGN.md#camp-life)). Each passed the compile check with ReforgerZ on 1.9. Sizes are the
-Workshop's; the server downloads their own dependencies (Functional Knives, IH_Better_GM_Props) by itself.
+([DESIGN.md](DESIGN.md#camp-life), [People's looks](DESIGN.md#peoples-looks)). Each passed the compile check with ReforgerZ on 1.9. Sizes are the
+Workshop's; the server downloads their own dependencies (Functional Knives, IH_Better_GM_Props, and Zelik's Character, whose Face and Head slots the people's masks and balaclavas use) by itself.
 
 | Mod | Workshop ID | MB | For | Note |
 |---|---|---|---|---|
