@@ -1,6 +1,6 @@
 """Helpers for the runtime test's site audit (tools/runtime_test/run.sh; docs/SITES.md, "The audit").
 
-    python3 sites.py prepare <addon dir> <world .ent> ...   # camp life's kits into the test worlds, the props list
+    python3 sites.py prepare <addon dir> <world .ent> ...   # camp life's kits and Traces' kit into the test worlds, the props list
     python3 sites.py footprints <console.log> <out.json>    # the measured prop boxes as footprints.json
     python3 sites.py summary <console.log>                  # the audit's lines, for run.sh to print
 
@@ -14,10 +14,11 @@ GM = os.path.join(REPO, "Prefabs/ReforgerZ/Core/RZ_GameMode.et")
 PROPS = os.path.join(REPO, "tools/camp_kit/props.txt")
 
 
-def camp_block():
-    """Territory > Camp life as RZ_GameMode.et has it (the kits, the waypoints)."""
+def camp_block(field="m_CampLifeSettings RZ_CampLifeSettings"):
+    """Territory > Camp life as RZ_GameMode.et has it (the kits, the waypoints); with `field`, another
+    settings block (World > Traces: its kit, the prefabs a site's story names)."""
     text = open(GM, encoding="utf-8", newline="").read().replace("\r\n", "\n")
-    start = text.index("   m_CampLifeSettings RZ_CampLifeSettings ")
+    start = text.index("   " + field + " ")
     depth = 0
     i = text.index('" {', start) + 2
     while True:
@@ -32,7 +33,7 @@ def camp_block():
 
 
 def prepare(addon, worlds):
-    block = camp_block()
+    block = camp_block() + "\n" + camp_block("m_TraceSettings RZ_TraceSettings")
     for world in worlds:
         path = os.path.join(addon, world)
         text = open(path, encoding="utf-8").read()
@@ -75,7 +76,7 @@ def footprints(log, out):
 
 
 def summary(log):
-    keep = ("[ReforgerZ] Sites audit", "[ReforgerZ] Sites:", "RZS done", "RZS footprint missing", "RZS footprint failed", "RZS land ready", "RZS audit:", "RZS roll")
+    keep = ("[ReforgerZ] Sites audit", "[ReforgerZ] Sites:", "[ReforgerZ] Sites people:", "[ReforgerZ] Sites story:", "RZS done", "RZS footprint missing", "RZS footprint failed", "RZS land ready", "RZS audit:", "RZS roll")
     for line in open(log, encoding="utf-8", errors="replace"):
         if any(k in line for k in keep):
             i = line.find("Sites")

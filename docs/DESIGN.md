@@ -754,7 +754,7 @@ convicts and the sniper are nobody's people and keep vanilla kit too.
 
 ### Camp life
 
-Code: `Factions/RZ_CampLife.c` (the ground, the rules, the layers and the audit: `RZ_SiteGrid.c`, `RZ_SiteSurroundings.c`, `RZ_SiteRules.c`, `RZ_SiteSolver.c`, `RZ_SiteWire.c`, `RZ_SiteAudit.c`, [SITES.md](SITES.md)); settings: **Territory > Camp life**. Holdings, Haven safehouses,
+Code: `Factions/RZ_CampLife.c` (the ground, the rules, the layers, the people, the story and the audit: `RZ_SiteGrid.c`, `RZ_SiteSurroundings.c`, `RZ_SiteRules.c`, `RZ_SiteSolver.c`, `RZ_SiteWire.c`, `RZ_SitePeople.c`, `RZ_SiteStory.c`, `RZ_SiteAudit.c`, [SITES.md](SITES.md)); settings: **Territory > Camp life**. Holdings, Haven safehouses,
 Halcyon's field stations and road posts look lived in, and their people do things. It's
 scenery and behaviour only: nobody new decides who is there, and nothing is saved. Each faction
 moves into the building in its town that suits what it does, closes it off, hardens it and sets a
@@ -921,15 +921,15 @@ nearest players** (Live places); elsewhere they stand.
 
 | Job | How (vanilla AI) |
 |---|---|
-| Sentry | the nest's watch point (a smart action), else a spot toward the approach (vanilla's observation post waypoint where an observation-post smart action stands within 6 m, otherwise the loiter waypoint: a smart-action waypoint is never given to a group without its seat); by a building, the **lookout** beside it where it sees the wire's gate ([SITES.md](SITES.md#watch); a second watcher at the next such spot; a safehouse's one), else at a front corner (the one nearer the gate first) or a safehouse's door |
-| Patrol | a loop of four points 40–80 m out (patrol waypoints in a cycle) |
+| Sentry | a **post** of the site's ([SITES.md](SITES.md#posts)): the gate's, the nest over it, a lookout toward a threatened side, the door, filled by importance; at a post with a watch piece its watch point (a smart action), else standing at the post (vanilla's observation post waypoint where an observation-post smart action stands within 6 m, otherwise the loiter waypoint: a smart-action waypoint is never given to a group without its seat). Laid out without the solver: the nest, else the building's lookout, else a spot toward the approach |
+| Patrol | a **route** of the site's ([SITES.md](SITES.md#patrols)): round the inside of the wire in a cycle, or out of the gate and back along the road in or toward the threat (without the solver: a loop of four points 40–80 m out) |
 | Sit | a free seat at the fire or a table (a sit smart action) |
 | Work, lean | a free loiter or lean point at the line, the garden, the cold box, the barrel, the barrier |
 | Gather | the roster board, else the centre's table or fire: everyone stands or sits there |
 | Wash (mornings, 05:30–07:00) | the wash stand, the shaving stand or the decon shower |
 | Chop (by day) | the chopping block at the woodpile |
 | Cook (17:30–18:30, before the meal) | the cook pot |
-| Stroll, courier | a walk out and back: to the road (by a building, the gate), or 60–90 m to the edge |
+| Stroll, courier | a walk out and back along a route: the Red Hand's out along the road in, Halcyon's courier toward the friendly side, the road post run; now and then one to the latrine or to the stores door and back ([SITES.md](SITES.md#everyday-movement)); without the solver, to the road (by a building, the gate) or 60–90 m to the edge |
 | Off shift | to the tents (by a building, in at the front door); with nobody within 150 m of the place and nobody who could see them they **sleep**: despawned as data, back in the morning (with nobody that near or in sight of the yard), out of the same tent or door |
 
 A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`,
@@ -946,19 +946,22 @@ the group prefab it stands.
 
 | Faction | By day | Moments | Night |
 |---|---|---|---|
-| Bastion | the nest, two on the loop (by a building, the lookout between them), one at the board, one chopping wood, one at the fire, the rest at work | **05:30 and 17:30**: the watch changes hands (someone else takes the nest and the loop); one shaves in the morning, one cooks from 17:30. **20:30, the roll**: everyone at the board for 3 minutes, the routine line read out | the nest and one at the fire; under the season's **curfew**, the nest and the lookout, nobody at the fire; the rest asleep |
-| Red Hand | two at the barrier taking the toll (at a stronghold's building, then the lookout), one strolling to the road and back, one chopping wood, the rest at the fire, the table or the sofa | one cooks from 17:30 (nobody washes) | one lookout, the rest drinking at the fire |
-| Haven | the lookout at the door, one chopping wood, chores (the line, the garden, the barrel, the stall) | one washes in the morning; one cooks from 17:30; **18:30, the dusk meal**: everyone at the table but the lookout; a name is read (the routine line) | the lookout; the rest inside (asleep) |
-| Halcyon | a guard pair at the door, researchers at the tables, work at the cold box and the racks | one through the decon shower in the morning; the **courier** walks out to the edge and back every 20 minutes | one guard, one at the cold box; the rest asleep |
+| Bastion | the gate (two at a stronghold: the nest and the barrier), by a building a lookout; one on the wire's walk, one out along the road in or, by turns, toward the threat; one at the board, one chopping wood, one at the fire, the rest at work; once a day one walks to the nearest road post and back | **05:30 and 17:30**: the watch changes hands (the watch walks off to the fire, the relief takes the posts and the walks); one shaves in the morning, one cooks from 17:30. **20:30, the roll**: everyone at the board for 3 minutes but the gate, the routine line read out | the gate and a lookout on the covered side, one at the fire; under the season's **curfew** the second gate watch too and nobody at the fire; the rest asleep |
+| Red Hand | two at the barrier taking the toll, at a stronghold's building the nest, one strolling out along the road in and back, one chopping wood, the rest at the fire, the table or the sofa; once a day one walks to the nearest roadblock and back | one cooks from 17:30 (nobody washes) | one on the gate, the rest drinking at the fire |
+| Haven | the lookout (the chair at the gate, else the door), one chopping wood, one at the water, chores (the line, the garden, the stall) | one washes in the morning; one cooks from 17:30; **18:30, the dusk meal**: everyone at the table but the lookout; a name is read (the routine line) | the lookout; the rest inside (asleep) |
+| Halcyon | the gate's guard post and the guard pair at the door (the field station: the gate and the door), researchers at the tables, work at the cold box and the racks | one through the decon shower in the morning; the **courier** walks out toward the friendly side and back every 20 minutes | one guard (the lab: both gate posts, the lights being on, and one on the wire's walk), one at the cold box; the rest asleep |
 | Road posts | the crew leaning at the barrier | — | the same |
 
+- **When the site is threatened** its posts and walks change ([SITES.md](SITES.md#when-the-site-is-threatened)):
+  wary, every post manned and nobody outside the wire; under attack, everyone with a weapon on the
+  wire facing the threat and the named people indoors; recently hit, the gate doubled.
 - **Nobody just stands.** Whoever finds no free seat or work point **walks the camp**: a loop of
   three pieces (named people's near home), standing a while at each (loiter waypoints in a cycle).
   Only with fewer than two pieces up do they stand about near home.
 - **Every few minutes** (Shuffle minutes, 3) anyone idle goes back to work (back from an errand,
   a fight, or a talk) and a third of the seated and working (at least one) move on: from a seat to
   work, from work to a seat, or round the camp when nothing is free.
-- **The jobs log.** At each phase (and once a place's pieces are all up) one line says who is on
+- **The jobs log.** At each phase (and once a place's pieces are all up, or its alert changes) one line says who is on
   which job and how: at a seat, walking the camp, standing at a spot, on the move, or standing
   still with no AI or group (`Camp life jobs: ...`).
 - **Combat** is the AI's own danger behaviour; hostility is unchanged.
@@ -972,7 +975,9 @@ the group prefab it stands.
   6; the Red Hand's stronghold 10, a crew camp 4; the Haven's stronghold 8, an outpost 5, a
   safehouse 3; Halcyon's lab 6, a field station 2. They join the routine like anyone else, are the
   first pick for the courier's walk, and are removed with the place.
-- **Routine lines** are the territory's notices at the phase change, not subtitles yet.
+- **Routine lines** are the territory's notices at the phase change, not subtitles yet. Coming in on
+  foot, one of its people says one line in its state (calm, hit, mourning, short) as a subtitle,
+  once a season day; and each site shows what happened to it ([SITES.md](SITES.md#the-story-of-each-site)).
 
 *Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
 despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
@@ -986,7 +991,7 @@ a plainer yard;
 the quartermaster is turned, not walked to a serving window, and a window's glass may read as a
 wall; the grass isn't cut under a camp (no vanilla prefab clears clutter at run time: the resource
 index has none), so the only ground cover is Bastion's duckboards; there are no
-graves or dogs; and the only lights are Halcyon's floodlights, which don't sweep. The people in play stay within the guard, occupant and extras caps, so a
+dogs, and graves only through a site's story; and the only lights are Halcyon's floodlights, which don't sweep. The people in play stay within the guard, occupant and extras caps, so a
 stronghold seldom reaches its count. Kinds are read from prefab names, so a map whose buildings
 are named otherwise gets the largest building that fits.
 

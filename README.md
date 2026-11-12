@@ -64,10 +64,13 @@ and one way to end it: **research the cure.**
   clutter and each faction's own things stand round its posts, camps, safehouses and field stations
   (scenery only: nothing to loot or use; each piece at its props' real size, fitted on the site's
   ground read on a half-metre grid, or left out rather than squeezed in, and every site scored by an
-  audit), and people keep their faction's routine: the sentry,
-  the patrol, the morning wash, chopping wood, cooking before the meal, Bastion's shift change and
+  audit), and people keep their faction's routine at the site's own posts and on its own rounds: the
+  sentry at the gate and the lookouts, the walk round the inside of the wire and out along the road,
+  a wary or alerted camp manning every post or lining the wire, the morning wash, chopping wood, cooking before the meal, Bastion's shift change and
   the roll at 20:30, the Red Hand's toll, the Haven's supper, Halcyon's courier, and the off shift
-  asleep. Nobody looks the same: each faction's people wear their own kind of clothes in several
+  asleep. Each site tells what happened to it: a pyre at the wire after the infected came close, new
+  graves by the church, the old owner's mark beside the new one at a taken gate, and a line from its
+  people when you walk in. Nobody looks the same: each faction's people wear their own kind of clothes in several
   looks, and the same person always wears the same one.
 - **Questlines** that run over many sessions: each stage is a contract or a wait, you can talk,
   persuade, sneak, fight, bribe, betray or side with another faction, and what you chose changes
@@ -186,7 +189,7 @@ and one way to end it: **research the cure.**
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
 server's runtime test and in Workbench play on Everon and Arland; every approved design is built
-but the sites design's last two phases (`designs/SITES.md`: the camps' people at their posts and each site's story; its first four, each site's ground read on a grid with real footprints and its surroundings, the site audit, the placement rules and the solver, and building in layers by each faction's doctrine, are built), simplified as each doc says. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; none waits in `designs/`. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
@@ -201,7 +204,7 @@ What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start 
 | [WRITING.md](docs/WRITING.md) | How player text is written: tone, the voices, the season mood and the voice bank, conversations, grey choices, the humour line, the text lint's rules |
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
 | [PLACES.md](docs/PLACES.md) | Task places and things: every task's place and the things its words name checked as data, live in play and by the place audit on a map |
-| [SITES.md](docs/SITES.md) | Camp sites: each site's ground read on a grid, the props' real footprints, the surroundings and threat, the rules and the solver, building in layers by doctrine (the wire and its gates, the boards, the watch, valuables indoors), the site audit and its drawing |
+| [SITES.md](docs/SITES.md) | Camp sites: each site's ground read on a grid, the props' real footprints, the surroundings and threat, the rules and the solver, building in layers by doctrine (the wire and its gates, the boards, the watch, valuables indoors), the people (posts, shifts, patrol routes, everyday movement, alert states), each site's story, the site audit and its drawing |
 | [DIALOGUE.md](docs/DIALOGUE.md) | Talking to people: the talk screen, conversation trees, checks, memory, the `.rzd` format and its tools |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
 | [REPUTATION.md](docs/REPUTATION.md) | Factions, Fame/Infamy/Favor, shops, perks, leaders, AI hostility |
@@ -260,7 +263,8 @@ scripts/Game/ReforgerZ/
                  side, perks, services, hunter squads, bounties,
                  road posts and camps, leaders, AI hostility, disguises and retaliation,
                  territory, supply trucks, faction life, camp life (scenery and routines; each site's
-                 ground on a grid, its surroundings and its audit),
+                 ground on a grid, its surroundings, its people's posts and routes,
+                 its story and its audit),
                  reputation's voice (the word for you, crew names, the picture), the voice bank
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
                  capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/

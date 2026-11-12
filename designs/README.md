@@ -6,6 +6,5 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 ## Order of work
 
-| # | Design | What it is |
-|---|---|---|
-| 1 | [SITES.md](SITES.md) | Camps that read as real places, phases 5 and 6 (the ground, the surroundings, the audit, the rules and the solver and building in layers by doctrine are built: [docs/SITES.md](../docs/SITES.md)): the people's posts, shifts, patrols and movement by the site's zones, and each site's story |
+None waits today: the last, the sites design, is built ([docs/SITES.md](../docs/SITES.md)). A new
+approved design goes here with its place in the order.

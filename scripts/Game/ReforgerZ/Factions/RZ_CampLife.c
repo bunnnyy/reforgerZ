@@ -273,6 +273,15 @@ class RZ_CampLifeSettings
 
 	[Attribute("60", UIWidgets.Slider, "The layers' pieces at a site at most (the wire's runs, boards, lookouts, lights), on top of its piece count", "0 100 1")]
 	int m_iLayerPieces;
+
+	[Attribute("1", desc: "Story (docs/SITES.md, The story of each site): each site shows what happened to it through Traces' scene props (the kit's pyre, graves, boards, wrecks...), aged as scenes are, and its people say a line in its state when you come in. Off: no story elements or lines")]
+	bool m_bStory;
+
+	[Attribute("1", desc: "Alert states (docs/SITES.md, The people): a site's posts and movement change with a threat (wary, alert, recently hit). Off: always calm")]
+	bool m_bAlertStates;
+
+	[Attribute("1", desc: "Road post run: Bastion and the Red Hand walk to their nearest road post (within 1.5 km) and back once a day, one at a time on the server, within the extras' cap")]
+	bool m_bRoadPostRun;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -289,6 +298,8 @@ class RZ_CampPiece
 	int m_iSeats;
 	int m_iUsed;
 	float m_fSlope;				// a barrier run on a slope: the ground's rise a metre along its x
+	bool m_bStory;				// a story element (RZ_SiteStory): it goes when the story is worked out again
+	string m_sName;				// its kit name ("WaterBarrel", "Latrine"): the water and the latrine walks
 }
 
 //------------------------------------------------------------------------------------------------
@@ -306,6 +317,9 @@ class RZ_CampWorker
 	int m_iPiece = -1;
 	int m_iSeat = -1;			// which of the piece's sentinels with its tag (0 = the first)
 	int m_iHow;					// how the job is done (RZ_CampLife.HOW_*): for the jobs log
+	int m_iArg = -1;			// the job's post (a watch: RZ_SitePost index, ARG_LINE + n the threat line) or route (RZ_SiteRoute kind, ARG_*)
+	int m_iAfterArg = -1;
+	bool m_bWasOnWatch;			// at the handover: off the post to the fire, not straight back onto one
 	float m_fHoldUntil;
 	ref array<IEntity> m_aWaypoints = {};
 }
@@ -346,6 +360,14 @@ class RZ_CampPlace
 	int m_iGateNext;			// pieces at the gate so far (they take turns at each side of the road)
 	int m_iDoorNext;			// pieces by the front door so far
 	int m_iFrontNext;			// pieces along the front wall so far
+	ref RZ_SitePeople m_People;	// its posts and routes (docs/SITES.md, "The people"), from the kept layout
+	int m_iAlert;				// RZ_SitePeople.ALERT_*
+	float m_fLossAt = -1000;	// when one of its people last died (contact)
+	ref RZ_SiteFacts m_Facts;	// its story's state (docs/SITES.md, "The story of each site")
+	int m_iStory = -1;
+	int m_iStoryDay = -1;		// the season day the story was worked out
+	int m_iRunDay = -1;			// the season day of its last road post run
+	ref set<string> m_aGreeted = new set<string>();	// "player|day": the line when you come in
 }
 
 //------------------------------------------------------------------------------------------------
@@ -424,6 +446,8 @@ class RZ_SitePlaced
 	float m_fYaw;
 	string m_sWhy;				// left out: why
 	int m_iLayer;				// RZ_ESiteLayer: the plan, or a layer's piece
+	int m_iStory = -1;			// a story element's spot (RZ_SiteStory.E_*)
+	int m_iStoryRows = 1;		// the graves' row: how many it has room for
 	bool m_bIndoors;			// valuables indoors: data only, nothing spawns
 	bool m_bWall;				// stands on the building's wall (a board)
 	float m_fSlope;				// a barrier run tilted to follow the ground: its rise a metre along its x
@@ -452,7 +476,12 @@ class RZ_SiteResult
 	int m_iBlockedPaths;		// no way from the door to the gate when it was kept clear
 	vector m_vDoor;				// the entrance's step the solver used (a body can stand there)
 	bool m_bDoor;
-	ref array<ref RZ_DressingPiece> m_aKeepAlive = {};	// pieces made in code (the Traces board by the door)
+	vector m_vGatePost;			// the gate's post: just inside the gate, seeing it
+	bool m_bGatePost;
+	ref array<vector> m_aSidePosts = {};	// a lookout's post toward each threatened side nothing faced
+	ref array<float> m_aSideFacing = {};
+	ref RZ_SitePeople m_People;	// its posts and routes
+	ref array<ref RZ_DressingPiece> m_aKeepAlive = {};	// pieces made in code (the Traces board by the door, the story's spots)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -465,6 +494,7 @@ class RZ_SiteLayout
 	string m_sWhere;
 	ref array<ref RZ_SitePlaced> m_aPieces = {};	// counters aren't kept: they stand by the quartermaster as he is
 	ref array<ref RZ_DressingPiece> m_aKeepAlive = {};
+	ref RZ_SitePeople m_People;		// its posts and routes (null: Solver off)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -627,10 +657,23 @@ class RZ_CampLife
 	static const int HOW_SPOT = 2;		// standing about at one spot (a loiter or observation waypoint)
 	static const int HOW_WALK = 3;		// walking round the camp, piece to piece
 	static const int HOW_MOVE = 4;		// on the move: the patrol, an errand, off to bed
+
+	// A job's argument (RZ_CampWorker.m_iArg): a watch's post is its index (0 up), a route its
+	// RZ_SiteRoute kind; these are the rest
+	static const int ARG_LINE = 100;		// a watch on the wire facing the threat (the alert): ARG_LINE + n
+	static const int ARG_LATRINE = 50;		// a short walk to the latrine and back
+	static const int ARG_STORES = 51;		// the quartermaster's runner: to the stores door and back
+	static const int ARG_WATER = 52;		// work at the water (the barrel)
 	protected static const int POTTER_STOPS = 3;		// pieces someone with nothing free walks between
 
 	protected static const int SPAWN_PER_TICK = 4;			// pieces spawned per server tick, all places together
 	protected static const float CHECK_INTERVAL = 10;
+	protected static const float CONTACT_SECONDS = 180;		// one of its people died this recently: alert
+	protected static const float HEAT_WARY = 40;			// heat in its square this high: wary (half a horde's)
+	protected static const float HEAT_ALERT = 80;			// and this high: alert (a horde can come)
+	protected static const float HOSTILE_WARY = 300;		// a hostile base this near: wary
+	protected static const float GREET_REACH = 40;			// the line when you come in, within this of the yard or the gate
+	protected static const int SMALL_WALK_EVERY = 3;		// a latrine or stores walk at a live place one shuffle in this many
 	protected static const float LIVE_INTERVAL = 30;
 	protected static const float ROLL_SECONDS = 180;		// the roll at 20:30, before the night watch
 	protected static const float COURIER_SECONDS = 1200;	// Halcyon's courier walks out and back
@@ -705,6 +748,9 @@ class RZ_CampLife
 	protected float m_fCheckTimer;
 	protected float m_fLiveTimer;
 	protected float m_fShuffleTimer;
+	protected float m_fStoryTimer;
+	protected int m_iStoryDayAll = -1;
+	protected ref set<string> m_aMentioned = new set<string>();	// "key|day": a site's quiet headline
 	protected bool m_bLiveDirty;
 
 	//------------------------------------------------------------------------------------------------
@@ -1352,6 +1398,7 @@ class RZ_CampLife
 		kept.m_eKind = p.m_eKind;
 		kept.m_vPlace = p.m_vPos;
 		kept.m_sWhere = result.m_sWhere;
+		kept.m_People = result.m_People;
 		foreach (RZ_DressingPiece alive : result.m_aKeepAlive)
 		{
 			kept.m_aKeepAlive.Insert(alive);
@@ -1385,7 +1432,7 @@ class RZ_CampLife
 		int layers = 0;
 		foreach (RZ_SitePlaced again : kept.m_aPieces)
 		{
-			if (again.m_bIndoors)
+			if (again.m_bIndoors || again.m_iLayer == RZ_ESiteLayer.STORY)
 				continue;
 
 			if (again.m_iLayer == RZ_ESiteLayer.PLAN)
@@ -1408,6 +1455,8 @@ class RZ_CampLife
 
 		string what = string.Format("%1 %2", RZ_Factions.GetName(p.m_eFaction), typename.EnumToString(RZ_ECampPlace, p.m_eKind));
 		RZ_Log.Info(string.Format("Camp life: %1 at %2: laid out again as before (%3 pieces and %4 of its layers, %5), %6 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), laid - result.m_iCounters, layers, kept.m_sWhere, result.m_iCounters));
+		p.m_People = kept.m_People;
+		SpawnStory(p, kept);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1418,7 +1467,7 @@ class RZ_CampLife
 		int layers = 0;
 		foreach (RZ_SitePlaced placed : result.m_aPlaced)
 		{
-			if (placed.m_bIndoors || placed.m_Entry.m_eAt == RZ_EDressAt.COUNTER)
+			if (placed.m_bIndoors || placed.m_Entry.m_eAt == RZ_EDressAt.COUNTER || placed.m_iLayer == RZ_ESiteLayer.STORY)
 				continue;
 
 			if (placed.m_iLayer != RZ_ESiteLayer.PLAN)
@@ -1432,7 +1481,22 @@ class RZ_CampLife
 		if (result.m_Wire)
 			wire = "the wire " + result.m_Wire.Share().ToString() + "% closed";
 
-		RZ_Log.Info(string.Format("Camp life: %1 at %2: solved, %3 pieces and %4 of its layers (%5), %6 indoors, %7 dropped, laid out %8; %9 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), result.m_aPlaced.Count() - layers - result.m_iCounters - result.m_iIndoors, layers, wire, result.m_iIndoors, result.m_aDropped.Count(), result.m_sWhere, result.m_iCounters));
+		RZ_Log.Info(string.Format("Camp life: %1 at %2: solved, %3 pieces and %4 of its layers (%5), %6 indoors, %7 dropped, laid out %8; %9 counter(s).", what, RZ_SettlementScanner.GridReference(p.m_vPos), result.m_aPlaced.Count() - layers - result.m_iCounters - result.m_iIndoors - StorySpotCount(result), layers, wire, result.m_iIndoors, result.m_aDropped.Count(), result.m_sWhere, result.m_iCounters));
+		p.m_People = result.m_People;
+		SpawnStory(p, KeptLayout(p));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int StorySpotCount(RZ_SiteResult result)
+	{
+		int n = 0;
+		foreach (RZ_SitePlaced placed : result.m_aPlaced)
+		{
+			if (placed.m_iLayer == RZ_ESiteLayer.STORY)
+				n++;
+		}
+
+		return n;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2037,6 +2101,7 @@ class RZ_CampLife
 		cp.m_eRole = entry.m_eRole;
 		cp.m_eUse = entry.m_eUse;
 		cp.m_iSeats = Math.Max(1, entry.m_iSeats);
+		cp.m_sName = RZ_SiteAudit.PieceName(entry);
 		cp.m_sTag = entry.m_sTag;
 		if (cp.m_sTag.IsEmpty())
 			cp.m_sTag = UseTag(entry.m_eUse);
@@ -3774,6 +3839,13 @@ class RZ_CampLife
 			return;
 
 		SpawnPending();
+		m_fStoryTimer += dt;
+		if (m_fStoryTimer >= CHECK_INTERVAL)
+		{
+			m_fStoryTimer = 0;
+			StoryDay();
+		}
+
 		if (!m_Settings.m_bRoutines)
 			return;
 
@@ -3803,7 +3875,7 @@ class RZ_CampLife
 		foreach (RZ_CampPlace p : m_aPlaces)
 		{
 			if (p.m_bLive)
-				Live(p, phase, step, shuffle, players);
+				Live(p, phase, step, shuffle, ids, players);
 		}
 	}
 
@@ -3846,10 +3918,16 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Live(RZ_CampPlace p, int phase, float step, bool shuffle, array<IEntity> players)
+	protected void Live(RZ_CampPlace p, int phase, float step, bool shuffle, array<int> ids, array<IEntity> players)
 	{
 		Prune(p);
 		float nearest = RZ_Util.NearestDistance(p.m_vPos, players);
+		Greet(p, ids, players);
+		if (p.m_iPhase == phase && UpdateAlert(p))
+		{
+			AssignAll(p, phase);
+			LogJobs(p, phase);
+		}
 
 		if (p.m_iPhase != phase)
 		{
@@ -3886,6 +3964,9 @@ class RZ_CampLife
 			}
 		}
 
+		if (!night && phase == RZ_Territory.PHASE_DAY)
+			RoadPostRun(p, phase);
+
 		if (shuffle)
 			Shuffle(p, phase);
 	}
@@ -3904,6 +3985,10 @@ class RZ_CampLife
 
 			if (w.m_Unit && RZ_Util.CountAlive(w.m_Unit) > 0)
 				continue;
+
+			// One of its people died here: contact (the alert)
+			if (w.m_Unit && w.m_iRole != ROLE_KEEPER)
+				p.m_fLossAt = m_fClock;
 
 			ClearJob(p, w);
 			if (w.m_bWrapped)
@@ -3928,7 +4013,16 @@ class RZ_CampLife
 	protected void OnPhase(RZ_CampPlace p, int phase, bool first)
 	{
 		if (!first && (phase == RZ_Territory.PHASE_MORNING || phase == RZ_Territory.PHASE_EVENING))
+		{
 			p.m_iShift++;
+			// The handover: the watch walks off its posts to the fire; the relief comes from the rest
+			foreach (RZ_CampWorker was : p.m_aWorkers)
+			{
+				was.m_bWasOnWatch = was.m_iJob == JOB_WATCH || was.m_iJob == JOB_PATROL;
+			}
+		}
+
+		UpdateAlert(p);
 
 		// Bastion's roll: when the night watch is set, everyone stands at the board for a few minutes
 		if (!first && phase == RZ_Territory.PHASE_NIGHT && p.m_eFaction == RZ_EFaction.MILITARY && p.m_eKind != RZ_ECampPlace.ROAD_POST)
@@ -3939,9 +4033,10 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One line per place at each phase (and when its pieces are all up): who is on which job and
-	//! how (at a seat, walking the camp, standing at a spot, on the move, or standing still with no
-	//! AI or group), so a play-test can see the place is alive.
+	//! One line per place at each phase (and when its pieces are all up, or its alert changes): who
+	//! is on which job and how (at a seat, walking the camp, standing at a spot, on the move, or
+	//! standing still with no AI or group), then its posts filled, the routes walked and its alert
+	//! (docs/SITES.md, "The people"), so a play-test can see the place is alive.
 	protected void LogJobs(RZ_CampPlace p, int phase)
 	{
 		array<int> jobs = {};
@@ -3983,8 +4078,97 @@ class RZ_CampLife
 		if (list.IsEmpty())
 			list = "none";
 
-		RZ_Log.Info(string.Format("Camp life jobs: %1 (phase %2), %3 people: %4; %5 at a seat, %6 walking the camp, %7 standing at a spot, %8 on the move, %9 standing still (no AI or group).",
-			p.m_sTitle, phase, people, list, how[HOW_SEAT], how[HOW_WALK], how[HOW_SPOT], how[HOW_MOVE], how[HOW_NONE]));
+		array<int> postJobs = {};
+		array<int> postArgs = {};
+		foreach (RZ_CampWorker o : p.m_aWorkers)
+		{
+			if (IsWorking(o))
+			{
+				postJobs.Insert(o.m_iJob);
+				postArgs.Insert(o.m_iArg);
+			}
+		}
+
+		RZ_Log.Info(string.Format("Camp life jobs: %1 (phase %2), %3 people: %4; %5 at a seat, %6 walking the camp, %7 standing at a spot, %8 on the move, %9 standing still (no AI or group)",
+			p.m_sTitle, phase, people, list, how[HOW_SEAT], how[HOW_WALK], how[HOW_SPOT], how[HOW_MOVE], how[HOW_NONE]) + "; " + PlanText(p, postJobs, postArgs) + ".");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "posts gate 2 of 1, nest 1 of 1, lookout 1 of 2, door 0 of 1; 0 on the wire facing the threat;
+	//! walked: the wire 1, the approach 1; alert calm" for jobs and their arguments.
+	protected string PlanText(RZ_CampPlace p, array<int> jobs, array<int> args)
+	{
+		RZ_SitePeople people = p.m_People;
+		if (!people)
+			return "no posts (laid out without the solver)";
+
+		array<int> kinds = {RZ_SitePost.GATE, RZ_SitePost.NEST, RZ_SitePost.LOOKOUT, RZ_SitePost.DOOR};
+		string posts = "";
+		foreach (int kind : kinds)
+		{
+			int have = people.CountPosts(kind);
+			if (have == 0)
+				continue;
+
+			int manned = 0;
+			foreach (int i, int job : jobs)
+			{
+				int arg = args[i];
+				if (job == JOB_WATCH && arg >= 0 && arg < people.m_aPosts.Count() && people.m_aPosts[arg].m_iKind == kind)
+					manned++;
+			}
+
+			if (!posts.IsEmpty())
+				posts += ", ";
+
+			posts += string.Format("%1 %2 of %3", RZ_SitePost.KindName(kind), manned, have);
+		}
+
+		if (posts.IsEmpty())
+			posts = "none";
+
+		int line = 0;
+		array<int> walked = {0, 0, 0, 0, 0};
+		int small = 0;
+		foreach (int n, int what : jobs)
+		{
+			int on = args[n];
+			if (what == JOB_WATCH && on >= ARG_LINE)
+				line++;
+
+			if (what != JOB_PATROL && what != JOB_STROLL && what != JOB_COURIER)
+				continue;
+
+			if (on >= 0 && on < RZ_SiteRoute.KINDS)
+				walked[on] = walked[on] + 1;
+			else if (on == ARG_LATRINE || on == ARG_STORES)
+				small++;
+		}
+
+		string routes = "";
+		for (int r = 0; r < RZ_SiteRoute.KINDS; r++)
+		{
+			if (walked[r] == 0)
+				continue;
+
+			if (!routes.IsEmpty())
+				routes += ", ";
+
+			routes += string.Format("%1 %2", RZ_SiteRoute.KindName(r), walked[r]);
+		}
+
+		if (small > 0)
+		{
+			if (!routes.IsEmpty())
+				routes += ", ";
+
+			routes += string.Format("the latrine or the stores %1", small);
+		}
+
+		if (routes.IsEmpty())
+			routes = "none";
+
+		return string.Format("posts %1; %2 on the wire facing the threat; walked: %3; alert %4", posts, line, routes, RZ_SitePeople.AlertName(p.m_iAlert));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -4010,115 +4194,224 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The routine: jobs in order for this faction and phase, and the job for everyone after them.
-	protected int Slots(RZ_CampPlace p, int phase, notnull array<int> slots)
+	//! The routine (docs/SITES.md, "The people"): the jobs in order for this faction, phase and alert,
+	//! with their posts and routes in `args`, and the job for everyone after them. The watches come
+	//! first and fill the site's posts by importance (RZ_SitePeople.Order); without posts (Solver off)
+	//! they keep today's spots.
+	protected int Slots(RZ_CampPlace p, int phase, notnull array<int> slots, notnull array<int> args)
 	{
 		bool night = phase == RZ_Territory.PHASE_NIGHT;
 		if (p.m_eKind == RZ_ECampPlace.ROAD_POST)
 		{
-			slots.Insert(JOB_LEAN);
+			AddSlot(slots, args, JOB_LEAN, -1);
 			return JOB_SIT;
 		}
 
+		// Alert: everyone with a weapon to the wire on the threat side (named people indoors: RestJob)
+		if (p.m_iAlert == RZ_SitePeople.ALERT_ALERT && p.m_People)
+			return JOB_WATCH;
+
+		bool wary = p.m_iAlert == RZ_SitePeople.ALERT_WARY;
+		bool hit = p.m_iAlert == RZ_SitePeople.ALERT_HIT;
+		bool stronghold = p.m_eKind == RZ_ECampPlace.STRONGHOLD;
+		bool byDay = !night && phase != RZ_Territory.PHASE_MEAL;
+		int watch = 0;
+		array<int> after = {};
+		array<int> afterArgs = {};
+		int rest = JOB_SIT;
+		bool threatWalk = false;
 		if (p.m_eFaction == RZ_EFaction.MILITARY)
 		{
-			// The roll, then the night watch: the nest and one at the fire; the rest asleep
 			if (p.m_fGatherUntil > m_fClock)
 			{
-				slots.Insert(JOB_WATCH);
-				return JOB_GATHER;
+				// The roll: one on the gate, everyone else at the board
+				watch = 1;
+				rest = JOB_GATHER;
 			}
-
-			// Under the season's curfew: the gate and the lookout, nobody at the fire
-			if (night)
+			else if (night)
 			{
-				slots.Insert(JOB_WATCH);
+				// The gate and a lookout on the covered side; the curfew adds the second gate watch,
+				// else one sits up at the fire
+				watch = 1;
+				if (HasLookout(p))
+					watch++;
+
 				if (IsCurfew())
-					slots.Insert(JOB_WATCH);
+					watch++;
 				else
-					slots.Insert(JOB_SIT);
+					AddSlot(after, afterArgs, JOB_SIT, -1);
 
-				return JOB_OFF;
+				rest = JOB_OFF;
 			}
-
-			if (phase == RZ_Territory.PHASE_MEAL)
+			else if (phase == RZ_Territory.PHASE_MEAL)
 			{
-				slots.Insert(JOB_WATCH);
-				slots.Insert(JOB_PATROL);
-				slots.Insert(JOB_SIT);
-				slots.Insert(JOB_SIT);
-				return JOB_SIT;
+				watch = 1;
+				AddSlot(after, afterArgs, JOB_PATROL, RZ_SiteRoute.WIRE);
+				AddSlot(after, afterArgs, JOB_SIT, -1);
+				AddSlot(after, afterArgs, JOB_SIT, -1);
+				rest = JOB_SIT;
 			}
+			else
+			{
+				// The gate (two at a stronghold: the barrier and the nest), the lookout by a building;
+				// the wire's walk and, by turns, the approach or the threat side; the board, the chore,
+				// the fire, the rest at work
+				watch = 1;
+				if (stronghold)
+					watch++;
 
-			// The nest, two on the loop (in a building, the lookout between them), one at the
-			// board, the phase's chore, one at the fire
-			slots.Insert(JOB_WATCH);
-			slots.Insert(JOB_PATROL);
-			if (p.m_Site)
-				slots.Insert(JOB_WATCH);
+				if (p.m_Site)
+					watch++;
 
-			slots.Insert(JOB_PATROL);
-			slots.Insert(JOB_GATHER);
-			AddChore(slots, phase, true, true, true);
-			slots.Insert(JOB_SIT);
-			return JOB_WORK;
+				AddSlot(after, afterArgs, JOB_PATROL, RZ_SiteRoute.WIRE);
+				int second = RZ_SiteRoute.APPROACH;
+				if (p.m_iShift % 2 == 1 || hit)
+					second = RZ_SiteRoute.THREAT;
+
+				AddSlot(after, afterArgs, JOB_PATROL, second);
+				threatWalk = second == RZ_SiteRoute.THREAT;
+				AddSlot(after, afterArgs, JOB_GATHER, -1);
+				AddChore(after, afterArgs, phase, true, true, true);
+				AddSlot(after, afterArgs, JOB_SIT, -1);
+				rest = JOB_WORK;
+			}
 		}
-
-		if (p.m_eFaction == RZ_EFaction.BANDITS)
+		else if (p.m_eFaction == RZ_EFaction.BANDITS)
 		{
-			// Night: one lookout, the rest drinking at the fire
 			if (night)
 			{
-				slots.Insert(JOB_WATCH);
-				return JOB_SIT;
+				// One lookout, the rest drinking at the fire
+				watch = 1;
+				rest = JOB_SIT;
+			}
+			else
+			{
+				// Two at the barrier taking the toll, the nest at a stronghold, one strolling out along
+				// the road in; wood by day, the pot before the meal (nobody washes)
+				AddSlot(after, afterArgs, JOB_LEAN, -1);
+				AddSlot(after, afterArgs, JOB_LEAN, -1);
+				if (p.m_Site && stronghold)
+					watch = 1;
+
+				AddSlot(after, afterArgs, JOB_STROLL, RZ_SiteRoute.APPROACH);
+				AddChore(after, afterArgs, phase, false, true, true);
+				AddSlot(after, afterArgs, JOB_SIT, -1);
+				rest = JOB_SIT;
+			}
+		}
+		else if (p.m_eFaction == RZ_EFaction.SURVIVORS)
+		{
+			// The lookout always (the chair at the gate, else the door); the dusk meal at the table;
+			// at night the rest inside
+			watch = 1;
+			if (night)
+				rest = JOB_OFF;
+			else if (phase == RZ_Territory.PHASE_MEAL)
+				rest = JOB_GATHER;
+			else
+			{
+				// The phase's chore, the water, then the rest
+				AddChore(after, afterArgs, phase, true, true, true);
+				AddSlot(after, afterArgs, JOB_WORK, ARG_WATER);
+				AddSlot(after, afterArgs, JOB_WORK, -1);
+				AddSlot(after, afterArgs, JOB_WORK, -1);
+				rest = JOB_SIT;
+			}
+		}
+		else
+		{
+			// Halcyon: the gate's guard post and the guard pair at the door; at the lab the lit posts
+			// keep their watch at night and a guard walks the wire; one at the cold box
+			if (night)
+			{
+				watch = 1;
+				if (stronghold)
+				{
+					watch = 2;
+					AddSlot(after, afterArgs, JOB_PATROL, RZ_SiteRoute.WIRE);
+				}
+
+				AddSlot(after, afterArgs, JOB_WORK, -1);
+				rest = JOB_OFF;
+			}
+			else
+			{
+				watch = 2;
+				if (stronghold)
+					watch = 3;
+
+				AddChore(after, afterArgs, phase, true, false, false);
+				AddSlot(after, afterArgs, JOB_SIT, -1);
+				AddSlot(after, afterArgs, JOB_SIT, -1);
+				AddSlot(after, afterArgs, JOB_WORK, -1);
+				rest = JOB_WORK;
+			}
+		}
+
+		array<int> order = {};
+		if (p.m_People)
+			p.m_People.Order(p.m_eFaction, night, order);
+
+		// Wary: every post manned and a second at the gate. Recently hit: the gate doubled
+		if (wary && !order.IsEmpty())
+		{
+			watch = Math.Max(watch, order.Count());
+			if (p.m_People.CountPosts(RZ_SitePost.GATE) + p.m_People.CountPosts(RZ_SitePost.NEST) < 2)
+				watch++;
+		}
+
+		if (hit)
+			watch++;
+
+		for (int i = 0; i < watch; i++)
+		{
+			int post = -1;
+			if (!order.IsEmpty())
+				post = order[i % order.Count()];
+
+			AddSlot(slots, args, JOB_WATCH, post);
+		}
+
+		// Recently hit: the threat-side walk every shift by day
+		if (hit && byDay && !threatWalk && p.m_People && p.m_People.Route(RZ_SiteRoute.THREAT))
+			AddSlot(slots, args, JOB_PATROL, RZ_SiteRoute.THREAT);
+
+		foreach (int k, int job : after)
+		{
+			int arg = afterArgs[k];
+			if (wary)
+			{
+				// Nobody outside the wire; no chores from dusk
+				if (job == JOB_STROLL || job == JOB_COURIER)
+				{
+					job = JOB_SIT;
+					arg = -1;
+				}
+
+				if (job == JOB_PATROL)
+					arg = RZ_SiteRoute.WIRE;
+
+				if (job == JOB_COOK)
+					continue;
 			}
 
-			// Two at the barrier taking the toll, one strolling to the road and back; wood by day,
-			// the pot before the meal (nobody washes)
-			slots.Insert(JOB_LEAN);
-			slots.Insert(JOB_LEAN);
-			if (p.m_Site && p.m_eKind == RZ_ECampPlace.STRONGHOLD)
-				slots.Insert(JOB_WATCH);
-
-			slots.Insert(JOB_STROLL);
-			AddChore(slots, phase, false, true, true);
-			slots.Insert(JOB_SIT);
-			return JOB_SIT;
+			AddSlot(slots, args, job, arg);
 		}
 
-		if (p.m_eFaction == RZ_EFaction.SURVIVORS)
-		{
-			// The lookout at the door always; the dusk meal at the table; at night the rest inside
-			slots.Insert(JOB_WATCH);
-			if (night)
-				return JOB_OFF;
+		return rest;
+	}
 
-			if (phase == RZ_Territory.PHASE_MEAL)
-				return JOB_GATHER;
+	//------------------------------------------------------------------------------------------------
+	protected static void AddSlot(notnull array<int> slots, notnull array<int> args, int job, int arg)
+	{
+		slots.Insert(job);
+		args.Insert(arg);
+	}
 
-			// The phase's chore first (the wash, the wood, the cooking for the meal), then the rest
-			AddChore(slots, phase, true, true, true);
-			slots.Insert(JOB_WORK);
-			slots.Insert(JOB_WORK);
-			slots.Insert(JOB_WORK);
-			return JOB_SIT;
-		}
-
-		// Halcyon: a guard pair at the door, researchers at the tables, the decon shower in the
-		// morning; at night one guard and one at the cold box
-		slots.Insert(JOB_WATCH);
-		if (night)
-		{
-			slots.Insert(JOB_WORK);
-			return JOB_OFF;
-		}
-
-		slots.Insert(JOB_WATCH);
-		AddChore(slots, phase, true, false, false);
-		slots.Insert(JOB_SIT);
-		slots.Insert(JOB_SIT);
-		slots.Insert(JOB_WORK);
-		return JOB_WORK;
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasLookout(RZ_CampPlace p)
+	{
+		return p.m_People && p.m_People.CountPosts(RZ_SitePost.LOOKOUT) > 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -4131,20 +4424,24 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! The phase's one chore: a wash in the morning, wood by day, the pot before the meal.
-	protected static void AddChore(notnull array<int> slots, int phase, bool wash, bool chop, bool cook)
+	protected static void AddChore(notnull array<int> slots, notnull array<int> args, int phase, bool wash, bool chop, bool cook)
 	{
 		if (wash && phase == RZ_Territory.PHASE_MORNING)
-			slots.Insert(JOB_WASH);
+			AddSlot(slots, args, JOB_WASH, -1);
 		else if (chop && phase == RZ_Territory.PHASE_DAY)
-			slots.Insert(JOB_CHOP);
+			AddSlot(slots, args, JOB_CHOP, -1);
 		else if (cook && phase == RZ_Territory.PHASE_EVENING)
-			slots.Insert(JOB_COOK);
+			AddSlot(slots, args, JOB_COOK, -1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Named people never walk away: no watch, patrol, stroll, errand or bed.
-	protected static bool PersonMay(int job)
+	//! Named people never walk away: no watch, patrol, stroll, errand or bed (but under attack they
+	//! go indoors).
+	protected static bool PersonMay(RZ_CampPlace p, int job)
 	{
+		if (job == JOB_OFF && p.m_iAlert == RZ_SitePeople.ALERT_ALERT)
+			return true;
+
 		return job == JOB_SIT || job == JOB_WORK || job == JOB_GATHER || job == JOB_LEAN || job == JOB_COOK || job == JOB_WASH || job == JOB_CHOP;
 	}
 
@@ -4156,8 +4453,8 @@ class RZ_CampLife
 			ClearJob(p, w);
 		}
 
-		// Guards and extras in shift order (each shift change, someone else takes the watch),
-		// then the named people
+		// Guards and extras in shift order (each shift change, someone else takes the watch; at the
+		// handover the watch going off comes last), then the named people
 		array<RZ_CampWorker> crew = {};
 		array<RZ_CampWorker> people = {};
 		foreach (RZ_CampWorker c : p.m_aWorkers)
@@ -4172,42 +4469,112 @@ class RZ_CampLife
 		}
 
 		array<RZ_CampWorker> order = {};
+		array<RZ_CampWorker> going = {};
 		int n = crew.Count();
 		for (int i = 0; i < n; i++)
 		{
-			order.Insert(crew[(i + p.m_iShift) % n]);
+			RZ_CampWorker next = crew[(i + p.m_iShift) % n];
+			if (next.m_bWasOnWatch)
+				going.Insert(next);
+			else
+				order.Insert(next);
 		}
 
+		order.InsertAll(going);
 		order.InsertAll(people);
-
-		array<int> slots = {};
-		int rest = Slots(p, phase, slots);
-		foreach (int job : slots)
+		array<int> roles = {};
+		foreach (RZ_CampWorker o : order)
 		{
-			foreach (int k, RZ_CampWorker cand : order)
-			{
-				if (cand.m_iRole == ROLE_PERSON && !PersonMay(job))
-					continue;
-
-				Give(p, cand, job);
-				order.Remove(k);
-				break;
-			}
+			roles.Insert(o.m_iRole);
 		}
 
-		foreach (int r, RZ_CampWorker left : order)
+		array<int> jobs = {};
+		array<int> args = {};
+		FillPlan(p, phase, roles, jobs, args);
+		foreach (int k, RZ_CampWorker who : order)
 		{
-			Give(p, left, RestJob(left, rest, r));
+			// The handover: off the post to the fire
+			int job = jobs[k];
+			if (who.m_bWasOnWatch && job == JOB_WORK)
+				job = JOB_SIT;
+
+			who.m_bWasOnWatch = false;
+			Give(p, who, job, args[k]);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The job for everyone after the routine's list: sitting and working by turns; a named
-	//! person who would go to bed stays at work near the centre.
-	protected int RestJob(RZ_CampWorker w, int rest, int index)
+	//! The routine's jobs for people by role, in the order they get them (the crew by shift, then
+	//! the named people): each slot to the first who may take it, then the job for the rest by turns.
+	//! Data only: AssignAll gives them, the audit's dry run counts them. How many slots were filled.
+	int FillPlan(RZ_CampPlace p, int phase, notnull array<int> roles, notnull array<int> jobs, notnull array<int> args)
 	{
-		if (w.m_iRole == ROLE_PERSON && !PersonMay(rest))
+		array<int> slots = {};
+		array<int> slotArgs = {};
+		int rest = Slots(p, phase, slots, slotArgs);
+		array<bool> taken = {};
+		foreach (int role : roles)
+		{
+			jobs.Insert(JOB_NONE);
+			args.Insert(-1);
+			taken.Insert(false);
+		}
+
+		int filled = 0;
+		foreach (int k, int job : slots)
+		{
+			foreach (int i, int r : roles)
+			{
+				if (taken[i])
+					continue;
+
+				if (r == ROLE_PERSON && !PersonMay(p, job))
+					continue;
+
+				jobs[i] = job;
+				args[i] = slotArgs[k];
+				taken[i] = true;
+				filled++;
+				break;
+			}
+		}
+
+		int index = 0;
+		foreach (int j, int who : roles)
+		{
+			if (taken[j])
+				continue;
+
+			jobs[j] = RestJob(p, who, rest, index);
+			args[j] = -1;
+			if (jobs[j] == JOB_WATCH)
+				args[j] = ARG_LINE + index;
+
+			index++;
+		}
+
+		return filled;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job for everyone after the routine's list: sitting and working by turns (recently hit,
+	//! fewer at the fire); a named person who would go to bed or to the wire stays at work, or under
+	//! attack goes indoors.
+	protected int RestJob(RZ_CampPlace p, int role, int rest, int index)
+	{
+		if (rest == JOB_WATCH && role == ROLE_PERSON)
+			return JOB_OFF;
+
+		if (role == ROLE_PERSON && !PersonMay(p, rest))
 			return JOB_WORK;
+
+		if (p.m_iAlert == RZ_SitePeople.ALERT_HIT && rest == JOB_SIT)
+		{
+			if (index % 3 == 2)
+				return JOB_SIT;
+
+			return JOB_WORK;
+		}
 
 		if (rest == JOB_SIT && index % 2 == 1)
 			return JOB_WORK;
@@ -4245,23 +4612,27 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void Give(RZ_CampPlace p, RZ_CampWorker w, int job)
+	protected void Give(RZ_CampPlace p, RZ_CampWorker w, int job, int arg = -1)
 	{
 		ClearJob(p, w);
 		w.m_iJob = job;
+		w.m_iArg = arg;
 		IEntity group = GroupFor(w);
 		if (!group)
 			return;
 
 		bool person = w.m_iRole == ROLE_PERSON;
 		if (job == JOB_WATCH)
-			Watch(p, w, group);
+			Watch(p, w, group, arg);
 		else if (job == JOB_PATROL)
-			Patrol(p, w, group);
+			Patrol(p, w, group, arg);
 		else if (job == JOB_SIT)
 			AtPiece(p, w, group, RZ_EDressUse.SIT, person);
 		else if (job == JOB_WORK)
-			AtPiece(p, w, group, RZ_EDressUse.WORK, person);
+		{
+			if (arg != ARG_WATER || !AtNamed(p, w, group, "water", person))
+				AtPiece(p, w, group, RZ_EDressUse.WORK, person);
+		}
 		else if (job == JOB_LEAN)
 			AtPiece(p, w, group, RZ_EDressUse.LEAN, person);
 		else if (job == JOB_COOK)
@@ -4273,9 +4644,9 @@ class RZ_CampLife
 		else if (job == JOB_GATHER)
 			Gather(p, w, group);
 		else if (job == JOB_STROLL)
-			Errand(p, w, group, false);
+			Errand(p, w, group, false, arg);
 		else if (job == JOB_COURIER)
-			Errand(p, w, group, true);
+			Errand(p, w, group, true, arg);
 		else if (job == JOB_OFF)
 			ToBed(p, w, group);
 	}
@@ -4299,12 +4670,15 @@ class RZ_CampLife
 		w.m_iSeat = -1;
 		w.m_iHow = HOW_NONE;
 		w.m_iJob = JOB_NONE;
+		w.m_iArg = -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A free piece of this use (named people: only near the centre), or -1.
+	//! A free piece of this use (named people: only near the centre), or -1. A seat beside someone
+	//! already sitting comes first, so two off duty sit together.
 	protected int FreePiece(RZ_CampPlace p, RZ_EDressUse use, bool person)
 	{
+		int first = -1;
 		foreach (int i, RZ_CampPiece piece : p.m_aPieces)
 		{
 			if (!piece.m_Entity || piece.m_eUse != use || piece.m_iUsed >= piece.m_iSeats)
@@ -4313,10 +4687,40 @@ class RZ_CampLife
 			if (person && RZ_Util.DistXZ(piece.m_vPos, p.m_vHome) > p.m_fPersonRadius)
 				continue;
 
-			return i;
+			if (use == RZ_EDressUse.SIT && piece.m_iUsed == 1 && piece.m_iSeats >= 2)
+				return i;
+
+			if (first < 0)
+				first = i;
 		}
 
-		return -1;
+		return first;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Work at a piece whose name has `word` in it (the water barrel): its seat if free, else beside
+	//! it. False if there's none.
+	protected bool AtNamed(RZ_CampPlace p, RZ_CampWorker w, IEntity group, string word, bool person)
+	{
+		foreach (int i, RZ_CampPiece piece : p.m_aPieces)
+		{
+			if (!piece.m_Entity || !piece.m_sName.Contains(word))
+				continue;
+
+			if (person && RZ_Util.DistXZ(piece.m_vPos, p.m_vHome) > p.m_fPersonRadius)
+				continue;
+
+			if (piece.m_eUse != RZ_EDressUse.NONE && piece.m_iUsed < piece.m_iSeats)
+			{
+				UsePiece(p, w, group, i);
+				return true;
+			}
+
+			Loiter(p, w, group, RZ_Util.RandomPointInRing(piece.m_vPos, 1.2, 2));
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -4342,18 +4746,22 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Nothing free to sit or work at: they walk round the camp instead, piece to piece, standing a
-	//! while at each (loiter waypoints in a cycle; a named person only round the pieces near home).
-	//! With fewer than two pieces standing, they stand about near home.
+	//! Nothing free to sit or work at: they walk round the camp instead, between the places people
+	//! idle (the fire, the bench, the table, a work point: never a wire run, a board or the gate's
+	//! lane), standing a while at each (loiter waypoints in a cycle; a named person only round the
+	//! pieces near home). With fewer than two such pieces standing, they stand about near home.
 	protected void Potter(RZ_CampPlace p, RZ_CampWorker w, IEntity group, bool person)
 	{
 		array<int> near = {};
 		foreach (int i, RZ_CampPiece piece : p.m_aPieces)
 		{
-			if (!piece.m_Entity)
+			if (!piece.m_Entity || piece.m_bStory || piece.m_eUse == RZ_EDressUse.NONE || piece.m_eUse == RZ_EDressUse.WATCH || piece.m_eUse == RZ_EDressUse.SLEEP)
 				continue;
 
 			if (person && RZ_Util.DistXZ(piece.m_vPos, p.m_vHome) > p.m_fPersonRadius)
+				continue;
+
+			if (p.m_People && RZ_Util.DistXZ(piece.m_vPos, p.m_People.m_vGate) < 8)
 				continue;
 
 			near.Insert(i);
@@ -4589,10 +4997,46 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sentry: the nest's watch point, else an observation post: in a building the lookout at
-	//! a front corner (a second watcher takes the other), else at the approach.
-	protected void Watch(RZ_CampPlace p, RZ_CampWorker w, IEntity group)
+	//! The sentry at a post (docs/SITES.md, "Posts"): its watch piece's own watch point if one stands
+	//! there, else standing at the post (vanilla's observation post waypoint where it may, else the
+	//! loiter waypoint). Under attack (ARG_LINE) on the wire facing the threat. Without posts (Solver
+	//! off) the nest's watch point, else the building's lookout at a front corner, else the approach.
+	protected void Watch(RZ_CampPlace p, RZ_CampWorker w, IEntity group, int arg = -1)
 	{
+		RZ_SitePeople people = p.m_People;
+		if (people && arg >= ARG_LINE)
+		{
+			int n = arg - ARG_LINE;
+			if (!people.m_aThreatLine.IsEmpty())
+			{
+				Loiter(p, w, group, people.m_aThreatLine[n % people.m_aThreatLine.Count()]);
+				return;
+			}
+
+			if (!people.m_aPosts.IsEmpty())
+			{
+				StandWatch(p, w, group, people.m_aPosts[n % people.m_aPosts.Count()].m_vPos);
+				return;
+			}
+		}
+
+		if (people && arg >= 0 && arg < people.m_aPosts.Count())
+		{
+			RZ_SitePost post = people.m_aPosts[arg];
+			if (post.m_bPiece)
+			{
+				int at = WatchPieceAt(p, post.m_vPos);
+				if (at >= 0)
+				{
+					UsePiece(p, w, group, at);
+					return;
+				}
+			}
+
+			StandWatch(p, w, group, post.m_vPos);
+			return;
+		}
+
 		int idx = FreePiece(p, RZ_EDressUse.WATCH, false);
 		if (idx >= 0)
 		{
@@ -4604,7 +5048,7 @@ class RZ_CampLife
 		if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
 			reach = 8;
 
-		vector at = RZ_Compass.PointAt(p.m_vPos, p.m_fApproach - 20 + Math.RandomFloat(0, 40), reach);
+		vector spot = RZ_Compass.PointAt(p.m_vPos, p.m_fApproach - 20 + Math.RandomFloat(0, 40), reach);
 		if (p.m_Site)
 		{
 			int others = 0;
@@ -4614,9 +5058,30 @@ class RZ_CampLife
 					others++;
 			}
 
-			at = LookoutSpot(p, others);
+			spot = LookoutSpot(p, others);
 		}
 
+		StandWatch(p, w, group, spot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A free watch piece standing at a post (within 2.5 m), or -1.
+	protected int WatchPieceAt(RZ_CampPlace p, vector at)
+	{
+		foreach (int i, RZ_CampPiece piece : p.m_aPieces)
+		{
+			if (piece.m_Entity && piece.m_eUse == RZ_EDressUse.WATCH && piece.m_iUsed < piece.m_iSeats && RZ_Util.DistXZ(piece.m_vPos, at) < 2.5)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Standing watch at a spot: vanilla's observation post waypoint (it needs an observation-post
+	//! smart action near the spot: AddGroupWaypoint refuses it otherwise), else the loiter waypoint.
+	protected void StandWatch(RZ_CampPlace p, RZ_CampWorker w, IEntity group, vector at)
+	{
 		ResourceName prefab = m_Settings.m_sObservationWaypoint;
 		if (prefab.IsEmpty())
 		{
@@ -4624,8 +5089,6 @@ class RZ_CampLife
 			return;
 		}
 
-		// Vanilla's observation post waypoint needs an observation-post smart action near the
-		// spot (AddGroupWaypoint refuses it otherwise); without one the sentry loiters there
 		vector spot = StandClear(p, at);
 		IEntity wp = RZ_Util.AddGroupWaypoint(group, spot, prefab, 3);
 		if (!wp)
@@ -4639,9 +5102,61 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Two walk a loop of four points 40-80 m out. Without a cycle waypoint they walk it once and
-	//! the next shuffle sends them round again.
-	protected void Patrol(RZ_CampPlace p, RZ_CampWorker w, IEntity group)
+	//! A patrol (docs/SITES.md, "Patrols"): the site's route of that kind: round the inside of the
+	//! wire in a cycle (its corners stand a while), or out and back (the approach, the threat side).
+	//! Without the route, the wire's; without posts (Solver off), a loop of four points 40-80 m out.
+	//! Without a cycle waypoint they walk it once and the next shuffle sends them round again.
+	protected void Patrol(RZ_CampPlace p, RZ_CampWorker w, IEntity group, int arg = -1)
+	{
+		RZ_SiteRoute route;
+		if (p.m_People && arg >= 0 && arg < RZ_SiteRoute.KINDS)
+		{
+			route = p.m_People.Route(arg);
+			if (!route)
+				route = p.m_People.Route(RZ_SiteRoute.WIRE);
+		}
+
+		if (route && route.m_iKind == RZ_SiteRoute.WIRE)
+		{
+			WalkLoop(p, w, group, route);
+			return;
+		}
+
+		if (route)
+		{
+			WalkOut(p, w, group, route);
+			return;
+		}
+
+		array<vector> points = {};
+		PatrolPoints(p, p.m_iShift, points);
+		array<bool> stops = {false, false, false, false};
+		LoopThrough(p, w, group, points, stops);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The wire's walk in a cycle: at most 16 of its points (evenly), its corners as loiter points.
+	protected void WalkLoop(RZ_CampPlace p, RZ_CampWorker w, IEntity group, RZ_SiteRoute route)
+	{
+		array<vector> points = {};
+		array<bool> stops = {};
+		int count = route.m_aPoints.Count();
+		int every = Math.Max(1, Math.Ceil(count / 16.0));
+		for (int i = 0; i < count; i++)
+		{
+			if (i % every != 0 && !route.m_aStop[i])
+				continue;
+
+			points.Insert(route.m_aPoints[i]);
+			stops.Insert(route.m_aStop[i]);
+		}
+
+		LoopThrough(p, w, group, points, stops);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Patrol waypoints (loiter waypoints at the stops) in a cycle.
+	protected void LoopThrough(RZ_CampPlace p, RZ_CampWorker w, IEntity group, array<vector> points, array<bool> stops)
 	{
 		ResourceName prefab = m_Settings.m_sPatrolWaypoint;
 		if (prefab.IsEmpty())
@@ -4650,12 +5165,18 @@ class RZ_CampLife
 		if (prefab.IsEmpty())
 			return;
 
-		array<vector> points = {};
-		PatrolPoints(p, p.m_iShift, points);
+		ResourceName stopPrefab = m_Settings.m_sLoiterWaypoint;
+		if (stopPrefab.IsEmpty())
+			stopPrefab = prefab;
+
 		array<IEntity> loop = {};
-		foreach (vector at : points)
+		foreach (int i, vector at : points)
 		{
-			IEntity wp = RZ_Util.SpawnPrefab(prefab, at);
+			ResourceName use = prefab;
+			if (stops[i])
+				use = stopPrefab;
+
+			IEntity wp = RZ_Util.SpawnPrefab(use, at);
 			if (wp)
 				loop.Insert(wp);
 		}
@@ -4679,6 +5200,32 @@ class RZ_CampLife
 			if (g && a)
 				g.AddWaypoint(a);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A walk out and back along a route (at most 6 points out, evenly), then home.
+	protected void WalkOut(RZ_CampPlace p, RZ_CampWorker w, IEntity group, RZ_SiteRoute route)
+	{
+		array<vector> legs = {};
+		int count = route.m_aPoints.Count();
+		int every = Math.Max(1, Math.Ceil(count / 6.0));
+		for (int i = 0; i < count; i++)
+		{
+			if (i % every == 0 || i == count - 1)
+				legs.Insert(route.m_aPoints[i]);
+		}
+
+		foreach (vector there : legs)
+		{
+			MoveTo(w, group, there);
+		}
+
+		for (int k = legs.Count() - 2; k >= 0; k--)
+		{
+			MoveTo(w, group, legs[k]);
+		}
+
+		MoveTo(w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -4730,9 +5277,43 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A walk out and back: the Red Hand's stroll to the road, Halcyon's courier to the edge.
-	protected void Errand(RZ_CampPlace p, RZ_CampWorker w, IEntity group, bool courier)
+	//! A walk out and back (docs/SITES.md, "Patrols" and "Everyday movement"): the site's route of
+	//! that kind (the Red Hand's stroll out along the road in, Halcyon's courier toward the friendly
+	//! side, the road post run), the latrine or the stores door and back; without them, as before:
+	//! the stroll to the gate or the road, the courier 60-90 m out to the edge.
+	protected void Errand(RZ_CampPlace p, RZ_CampWorker w, IEntity group, bool courier, int arg = -1)
 	{
+		RZ_SitePeople people = p.m_People;
+		if (people && arg >= 0 && arg < RZ_SiteRoute.KINDS)
+		{
+			RZ_SiteRoute route = people.Route(arg);
+			if (route)
+			{
+				WalkOut(p, w, group, route);
+				return;
+			}
+		}
+
+		if (arg == ARG_LATRINE)
+		{
+			foreach (RZ_CampPiece piece : p.m_aPieces)
+			{
+				if (piece.m_Entity && piece.m_sName.Contains("Latrine"))
+				{
+					MoveTo(w, group, StandClear(p, RZ_Util.RandomPointInRing(piece.m_vPos, 2, 3)));
+					MoveTo(w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
+					return;
+				}
+			}
+		}
+
+		if (arg == ARG_STORES && people)
+		{
+			MoveTo(w, group, StandClear(p, RZ_Util.RandomPointInRing(people.m_vDoor, 1, 2)));
+			MoveTo(w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
+			return;
+		}
+
 		vector away;
 		if (courier)
 			away = RZ_Compass.PointAt(p.m_vCentre, Math.RandomFloat(0, 360), Math.RandomFloat(60, 90));
@@ -4959,9 +5540,12 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! Halcyon's courier: the extra if there is one, else a guard (off the door if one is free)
-	//! walks out to the edge and back, then goes back to the job it had.
+	//! walks out toward the friendly side and back, then goes back to the job it had.
 	protected void SendCourier(RZ_CampPlace p)
 	{
+		if (p.m_iAlert == RZ_SitePeople.ALERT_WARY || p.m_iAlert == RZ_SitePeople.ALERT_ALERT)
+			return;
+
 		RZ_CampWorker pick;
 		foreach (RZ_CampWorker w : p.m_aWorkers)
 		{
@@ -4975,18 +5559,29 @@ class RZ_CampLife
 		if (!pick)
 			return;
 
-		int after = pick.m_iJob;
-		Give(p, pick, JOB_COURIER);
-		pick.m_iAfterErrand = after;
+		SendOff(p, pick, JOB_COURIER, RZ_SiteRoute.FRIENDLY);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Every few minutes: anyone idle (back from an errand, done talking, out of a fight) goes back
-	//! to work, and one person moves to another seat or job.
+	//! Someone off on a walk, back to the job they had once it's walked.
+	protected void SendOff(RZ_CampPlace p, RZ_CampWorker w, int job, int arg)
+	{
+		int after = w.m_iJob;
+		int afterArg = w.m_iArg;
+		Give(p, w, job, arg);
+		w.m_iAfterErrand = after;
+		w.m_iAfterArg = afterArg;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every few minutes: anyone idle (back from a walk, done talking, out of a fight) goes back to
+	//! work, now and then one goes to the latrine or the stores and back, and a third of the seated
+	//! and working move on.
 	protected void Shuffle(RZ_CampPlace p, int phase)
 	{
 		array<int> unused = {};
-		int rest = Slots(p, phase, unused);
+		array<int> unusedArgs = {};
+		int rest = Slots(p, phase, unused, unusedArgs);
 		array<RZ_CampWorker> movers = {};
 		foreach (int i, RZ_CampWorker w : p.m_aWorkers)
 		{
@@ -4996,21 +5591,33 @@ class RZ_CampLife
 			bool idle = w.m_iJob == JOB_NONE || (w.m_Group && RZ_Util.CountGroupWaypoints(w.m_Group) == 0 && w.m_iJob != JOB_OFF);
 			if (idle)
 			{
-				// A patrol without a cycle goes round again; the courier goes back to its job
+				// A walk out and back goes round again; a walk sent off goes back to the job before it
 				int again = w.m_iJob;
-				if (again == JOB_COURIER)
+				int againArg = w.m_iArg;
+				if (again == JOB_COURIER || (again == JOB_STROLL && w.m_iAfterErrand != JOB_NONE))
+				{
 					again = w.m_iAfterErrand;
+					againArg = w.m_iAfterArg;
+					w.m_iAfterErrand = JOB_NONE;
+				}
 
 				if (again == JOB_NONE || again == JOB_COURIER)
-					again = RestJob(w, rest, i);
+				{
+					again = RestJob(p, w.m_iRole, rest, i);
+					againArg = -1;
+					if (again == JOB_WATCH)
+						againArg = ARG_LINE + i;
+				}
 
-				Give(p, w, again);
+				Give(p, w, again, againArg);
 				continue;
 			}
 
 			if (p.m_fGatherUntil == 0 && (w.m_iJob == JOB_SIT || w.m_iJob == JOB_WORK || w.m_iJob == JOB_LEAN))
 				movers.Insert(w);
 		}
+
+		SmallWalk(p, phase, movers);
 
 		// A third of the seated and working move on (at least one): sitting to work, work to a seat,
 		// and anyone without a free piece walks the camp
@@ -5026,6 +5633,428 @@ class RZ_CampLife
 
 			Give(p, mover, next);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Now and then (one shuffle in three, calm, not at night) one of the crew off a seat or work
+	//! goes to the latrine and back, or at a building to the stores door and back.
+	protected void SmallWalk(RZ_CampPlace p, int phase, array<RZ_CampWorker> movers)
+	{
+		if (movers.IsEmpty() || p.m_iAlert != RZ_SitePeople.ALERT_CALM || phase == RZ_Territory.PHASE_NIGHT || Math.RandomInt(0, SMALL_WALK_EVERY) != 0)
+			return;
+
+		bool latrine = false;
+		foreach (RZ_CampPiece piece : p.m_aPieces)
+		{
+			if (piece.m_Entity && piece.m_sName.Contains("Latrine"))
+				latrine = true;
+		}
+
+		bool stores = p.m_Site != null && p.m_People != null;
+		if (!latrine && !stores)
+			return;
+
+		int arg = ARG_LATRINE;
+		if (!latrine || (stores && Math.RandomInt(0, 2) == 0))
+			arg = ARG_STORES;
+
+		foreach (int i, RZ_CampWorker w : movers)
+		{
+			if (w.m_iRole == ROLE_PERSON)
+				continue;
+
+			movers.Remove(i);
+			SendOff(p, w, JOB_STROLL, arg);
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The road post run (docs/SITES.md, "Patrols"): Bastion and the Red Hand, once a season day by
+	//! day, calm, one of the crew off the posts (an extra first) walks to the faction's nearest road
+	//! post and back; one at a time on the server, and it counts toward the extras' cap.
+	protected void RoadPostRun(RZ_CampPlace p, int phase)
+	{
+		if (!m_Settings.m_bRoadPostRun || !p.m_People || p.m_iAlert != RZ_SitePeople.ALERT_CALM)
+			return;
+
+		if (p.m_eFaction != RZ_EFaction.MILITARY && p.m_eFaction != RZ_EFaction.BANDITS)
+			return;
+
+		int today = RZ_SeasonClock.Day();
+		RZ_SiteRoute route = p.m_People.Route(RZ_SiteRoute.ROAD_POST);
+		if (p.m_iRunDay == today || !route)
+			return;
+
+		int running = 0;
+		foreach (RZ_CampPlace q : m_aPlaces)
+		{
+			foreach (RZ_CampWorker r : q.m_aWorkers)
+			{
+				if (r.m_iJob == JOB_COURIER && r.m_iArg == RZ_SiteRoute.ROAD_POST)
+					running++;
+			}
+		}
+
+		if (running > 0 || CountExtras() + 1 > m_Settings.m_iExtrasMax)
+			return;
+
+		RZ_CampWorker pick;
+		foreach (RZ_CampWorker w : p.m_aWorkers)
+		{
+			if (!IsWorking(w) || w.m_iRole == ROLE_PERSON || w.m_iJob == JOB_WATCH || w.m_iJob == JOB_PATROL || w.m_iJob == JOB_COURIER)
+				continue;
+
+			if (!pick || w.m_iRole == ROLE_EXTRA)
+				pick = w;
+		}
+
+		if (!pick)
+			return;
+
+		p.m_iRunDay = today;
+		SendOff(p, pick, JOB_COURIER, RZ_SiteRoute.ROAD_POST);
+		RZ_Log.Info(string.Format("Camp life: %1 sends one on the road post run to %2 (%3 m, %4 points).", p.m_sTitle, route.m_sTo, RZ_Util.RoundToInt(route.m_fOut), route.m_aPoints.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The site's alert now (docs/SITES.md, "When the site is threatened"): alert on contact (one of
+	//! its people died in the last 3 minutes) or heat enough for a horde in its square; wary with half
+	//! that heat, a hostile base within 300 m or its faction under pressure; recently hit while its
+	//! story says it was attacked or burned in the last two days; else calm. True if it changed.
+	protected bool UpdateAlert(RZ_CampPlace p)
+	{
+		int now = RZ_SitePeople.ALERT_CALM;
+		if (m_Settings.m_bAlertStates && p.m_People && p.m_eKind != RZ_ECampPlace.ROAD_POST)
+		{
+			float heat = 0;
+			if (m_GM.GetHeat())
+				heat = m_GM.GetHeat().GetHeat(p.m_vPos);
+
+			RZ_Territory territory = m_GM.GetTerritory();
+			bool pressure = false;
+			if (territory)
+				pressure = territory.IsUnderPressure(p.m_eFaction);
+
+			bool hostile = p.m_People.m_fHostileDist >= 0 && p.m_People.m_fHostileDist < HOSTILE_WARY;
+			if (m_fClock - p.m_fLossAt < CONTACT_SECONDS || heat >= HEAT_ALERT)
+				now = RZ_SitePeople.ALERT_ALERT;
+			else if (heat >= HEAT_WARY || hostile || pressure)
+				now = RZ_SitePeople.ALERT_WARY;
+			else if (p.m_Facts && RecentlyHit(p.m_Facts))
+				now = RZ_SitePeople.ALERT_HIT;
+		}
+
+		if (now == p.m_iAlert)
+			return false;
+
+		RZ_Log.Info(string.Format("Camp life: %1 is %2 (was %3).", p.m_sTitle, RZ_SitePeople.AlertName(now), RZ_SitePeople.AlertName(p.m_iAlert)));
+		p.m_iAlert = now;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Attacked or burned in the last two days (the gate doubled for two season days).
+	protected static bool RecentlyHit(RZ_SiteFacts f)
+	{
+		if (f.m_iLately != RZ_SiteFacts.HIT && f.m_iLately != RZ_SiteFacts.BURNED)
+			return false;
+
+		return RZ_SiteStory.Recent(f.m_iLatelyDay, 2);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line its people say when you come in on foot (within 40 m of the gate or the yard), by
+	//! its state, once a season day a player and state.
+	protected void Greet(RZ_CampPlace p, array<int> ids, array<IEntity> players)
+	{
+		if (!m_Settings.m_bStory || !p.m_Facts || !ids || p.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return;
+
+		vector gate = p.m_vHome;
+		if (p.m_People)
+			gate = p.m_People.m_vGate;
+
+		int day = RZ_SeasonClock.Day();
+		foreach (int i, IEntity pl : players)
+		{
+			if (!pl || i >= ids.Count() || RZ_Util.IsInVehicle(pl))
+				continue;
+
+			vector at = pl.GetOrigin();
+			if (RZ_Util.DistXZ(at, gate) > GREET_REACH && RZ_Util.DistXZ(at, p.m_vHome) > GREET_REACH)
+				continue;
+
+			string key = string.Format("%1|%2|%3", ids[i], day, p.m_Facts.m_iLately);
+			if (p.m_aGreeted.Contains(key))
+				continue;
+
+			p.m_aGreeted.Insert(key);
+			string line = RZ_SiteStory.Line(p.m_eFaction, p.m_Facts);
+			if (!line.IsEmpty())
+				m_GM.Say(ids[i], RZ_SiteStory.Speaker(p.m_eFaction), p.m_eFaction, line);
+		}
+	}
+
+	// ================================================================ The story
+
+	//------------------------------------------------------------------------------------------------
+	//! The site's story (docs/SITES.md, "The story of each site"): its state read now, the story it
+	//! picks and that story's elements queued on the spots the solver kept (Traces' prefabs, aged as
+	//! scenes are), after its pieces (the first left out at the cap). The story it showed before goes.
+	protected void SpawnStory(RZ_CampPlace p, RZ_SiteLayout kept)
+	{
+		RetireStory(p);
+		p.m_iStoryDay = RZ_SeasonClock.Day();
+		if (!m_Settings.m_bStory || !kept || p.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return;
+
+		RZ_SiteFacts facts = RZ_SiteStory.Read(m_GM, p);
+		p.m_Facts = facts;
+		int story = RZ_SiteStory.Pick(p.m_eFaction, facts, p.m_iSeed);
+		p.m_iStory = story;
+		array<int> kinds = {};
+		array<int> counts = {};
+		RZ_SiteStory.Elements(story, facts, kinds, counts);
+		string up = "";
+		string textOnly = "";
+		foreach (int k, int kind : kinds)
+		{
+			RZ_SitePlaced spot = StorySpotOf(kept.m_aPieces, kind);
+			int count = RZ_SiteStory.Count(kind, facts, counts[k]);
+			if (spot && kind == RZ_SiteStory.E_GRAVES)
+				count = Math.Min(count, spot.m_iStoryRows);
+
+			int stood = 0;
+			int age = 0;
+			for (int c = 0; c < count && spot != null; c++)
+			{
+				ResourceName own = RZ_SiteStory.Prefab(kind, p.m_eFaction, facts, c);
+				if (own.IsEmpty())
+					continue;
+
+				ResourceName prefab = RZ_SiteStory.Aged(kind, own, RZ_SiteStory.MadeDay(kind, facts), age);
+				if (QueueStory(p, prefab, StoryPos(spot, kind, c, count), spot.m_fYaw))
+					stood++;
+			}
+
+			string name = RZ_SiteStory.ElementName(kind);
+			if (count > 1)
+				name += string.Format(" (%1)", count);
+
+			if (stood > 0)
+			{
+				array<string> ages = {"fresh", "weathered", "old"};
+				up = AddText(up, string.Format("%1, %2", name, ages[Math.ClampInt(age, 0, 2)]));
+			}
+			else if (!spot)
+				textOnly = AddText(textOnly, name + ": no spot");
+			else
+				textOnly = AddText(textOnly, name + ": no prefab or the cap");
+		}
+
+		if (up.IsEmpty())
+			up = "none";
+
+		if (textOnly.IsEmpty())
+			textOnly = "none";
+
+		RZ_Log.Info(string.Format("Camp life story: %1 at %2: %3 (%4); up: %5; text only: %6.", p.m_sTitle, RZ_SettlementScanner.GridReference(p.m_vPos), RZ_SiteStory.Name(story), facts.Describe(), up, textOnly));
+		Mention(p, facts);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string AddText(string list, string item)
+	{
+		if (list.IsEmpty())
+			return item;
+
+		return list + "; " + item;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The kept spot for an element (null: none was found when the site was solved).
+	static RZ_SitePlaced StorySpotOf(array<ref RZ_SitePlaced> pieces, int kind)
+	{
+		foreach (RZ_SitePlaced placed : pieces)
+		{
+			if (placed.m_iLayer == RZ_ESiteLayer.STORY && placed.m_iStory == kind)
+				return placed;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the c-th of an element stands on its spot: graves in a row 1.6 m apart, the gate's two
+	//! boards side by side, the rest in its middle.
+	protected static vector StoryPos(RZ_SitePlaced spot, int kind, int c, int count)
+	{
+		float apart = 0;
+		if (kind == RZ_SiteStory.E_GRAVES)
+			apart = 1.6;
+		else if (kind == RZ_SiteStory.E_GATEMARK)
+			apart = 1.3;
+
+		if (apart == 0 || count <= 1)
+			return spot.m_vPos;
+
+		float along = (c - (count - 1) * 0.5) * apart;
+		return RZ_Util.GroundPos(RZ_Compass.PointAt(spot.m_vPos, spot.m_fYaw + 90, along));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A story element waiting to spawn with the place's pieces (scenery only: the dressing guard
+	//! strips it as it spawns), if the server's piece cap allows.
+	protected bool QueueStory(RZ_CampPlace p, ResourceName prefab, vector at, float yaw)
+	{
+		if (prefab.IsEmpty() || CountPieces() >= m_Settings.m_iPiecesMax)
+			return false;
+
+		RZ_CampPiece cp = new RZ_CampPiece();
+		cp.m_sPending = prefab;
+		cp.m_vPos = at;
+		cp.m_fYaw = yaw;
+		cp.m_eUse = RZ_EDressUse.NONE;
+		cp.m_iSeats = 1;
+		cp.m_bStory = true;
+		cp.m_sName = "Story";
+		p.m_aPieces.Insert(cp);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The story shown before goes (its entries stay in the list as nothing, so no one's piece
+	//! index moves).
+	protected void RetireStory(RZ_CampPlace p)
+	{
+		foreach (RZ_CampPiece piece : p.m_aPieces)
+		{
+			if (!piece.m_bStory)
+				continue;
+
+			if (piece.m_Entity)
+			{
+				s_aPieces.RemoveItem(piece.m_Entity);
+				SCR_EntityHelper.DeleteEntityAndChildren(piece.m_Entity);
+			}
+
+			piece.m_Entity = null;
+			piece.m_sPending = "";
+			piece.m_bStory = false;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Each season day the story of every place standing is worked out again (the same seed, the new
+	//! state), and every holding that was hit or is mourning gets its one quiet headline.
+	protected void StoryDay()
+	{
+		int today = RZ_SeasonClock.Day();
+		if (today == m_iStoryDayAll)
+			return;
+
+		m_iStoryDayAll = today;
+		foreach (RZ_CampPlace p : m_aPlaces)
+		{
+			if (p.m_iStoryDay >= 0 && p.m_iStoryDay != today)
+				SpawnStory(p, KeptLayout(p));
+		}
+
+		if (!m_Settings.m_bStory)
+			return;
+
+		RZ_Territory territory = m_GM.GetTerritory();
+		if (!territory)
+			return;
+
+		foreach (RZ_Holding h : territory.GetHoldings())
+		{
+			RZ_ECampPlace kind = RZ_ECampPlace.OUTPOST;
+			if (h.m_bStronghold)
+				kind = RZ_ECampPlace.STRONGHOLD;
+
+			RZ_CampPlace q = new RZ_CampPlace();
+			q.m_sKey = "h" + h.m_iId.ToString();
+			q.m_sTitle = h.GetTitle();
+			InitPlace(q, h.m_eFaction, kind, h.m_vPos);
+			RZ_CampSite site;
+			if (m_mSites.Find(q.m_sKey, site) && site && !site.m_bNone)
+				q.m_Site = site;
+
+			RZ_SiteLayout kept = KeptLayout(q);
+			if (kept)
+				q.m_People = kept.m_People;
+
+			Mention(q, RZ_SiteStory.Read(m_GM, q));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A site hit or mourning: one quiet headline (stored with the news, never broadcast), once for
+	//! what happened.
+	protected void Mention(RZ_CampPlace p, RZ_SiteFacts facts)
+	{
+		if (!m_Settings.m_bStory || !facts)
+			return;
+
+		string text = RZ_SiteStory.Mention(p.m_eFaction, facts);
+		if (text.IsEmpty())
+			return;
+
+		string key = string.Format("%1|%2|%3", p.m_sKey, facts.m_iLately, facts.m_iLatelyDay);
+		if (m_aMentioned.Contains(key))
+			return;
+
+		m_aMentioned.Insert(key);
+		RZ_Log.Info("Camp life story: " + text);
+		if (m_GM.GetLeaders())
+			m_GM.GetLeaders().AddHeadline(text, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The audit's dry run (headless, docs/SITES.md "The audit"): the routine's jobs, as data, for the
+	//! people the place has in play (its named people too), by day and at night, wary, under attack
+	//! and recently hit: the posts filled and the routes walked.
+	string PeopleDryRun(RZ_CampPlace p)
+	{
+		if (!p.m_People)
+			return "no posts";
+
+		int total = PeopleInPlay(p.m_eFaction, p.m_eKind);
+		int persons = 1;
+		if (p.m_eKind == RZ_ECampPlace.STRONGHOLD)
+			persons = 2;
+
+		persons = Math.Min(persons, total - 1);
+		array<int> roles = {};
+		for (int i = 0; i < total; i++)
+		{
+			if (i < total - persons)
+				roles.Insert(ROLE_GUARD);
+			else
+				roles.Insert(ROLE_PERSON);
+		}
+
+		array<int> phases = {RZ_Territory.PHASE_DAY, RZ_Territory.PHASE_NIGHT, RZ_Territory.PHASE_DAY, RZ_Territory.PHASE_DAY, RZ_Territory.PHASE_DAY};
+		array<int> alerts = {RZ_SitePeople.ALERT_CALM, RZ_SitePeople.ALERT_CALM, RZ_SitePeople.ALERT_WARY, RZ_SitePeople.ALERT_ALERT, RZ_SitePeople.ALERT_HIT};
+		array<string> names = {"by day", "at night", "wary", "under attack", "recently hit"};
+		int was = p.m_iAlert;
+		string text = "";
+		foreach (int k, int phase : phases)
+		{
+			p.m_iAlert = alerts[k];
+			array<int> jobs = {};
+			array<int> args = {};
+			FillPlan(p, phase, roles, jobs, args);
+			if (!text.IsEmpty())
+				text += " | ";
+
+			text += names[k] + ": " + PlanText(p, jobs, args);
+		}
+
+		p.m_iAlert = was;
+		return string.Format("%1 people (%2 named): %3", total, persons, text);
 	}
 
 	// ================================================================ Talking

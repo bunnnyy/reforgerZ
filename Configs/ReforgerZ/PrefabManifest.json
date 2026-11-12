@@ -7479,7 +7479,10 @@
     "m_bLayers": "1",
     "m_bBoardWindows": "1",
     "m_bPreRead": "1",
-    "m_iLayerPieces": "60"
+    "m_iLayerPieces": "60",
+    "m_bStory": "1",
+    "m_bAlertStates": "1",
+    "m_bRoadPostRun": "1"
    }
   },
   {
