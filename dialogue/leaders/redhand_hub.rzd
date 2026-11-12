@@ -1,0 +1,255 @@
+# The Red Hand's leaders, the hub (docs/DIALOGUE.md, "Hubs: work comes out of talk"): 0 the job,
+# 1 the built news, 2 what they make of you, each carried by a topic. Voice: mocking, casual,
+# always counting. The Red Hand lies with a joke.
+
+conv redhand.leader.work_owed
+for stronghold:redhand, seat:redhand/crew_boss
+when need:revenge
+topic "Ask who owes the book."
+prio ask
+voice redhand
+
+bind took = news:lost_by(redhand)
+
+node start
+  jump route:out -> other_route
+  jump epilogue -> after
+  say? stronghold :: "Somebody's been taking from us and not writing it down. That's the one thing you don't do."
+  say? trait:greedy :: "Pay first, then the job. No, wait. Job first. I'm in a mood."
+  say "Somebody owes. The book says so. The book is never wrong. People are wrong about the book."
+  say? bound:took :: "They took {bind:took} off us. Took it. Like a coat off a hook."
+  say "So now there's a line in red, and red lines get settled."
+  > @who "Who's in red?" -> who
+  > @why "Why not let it go?" -> letgo
+  > @cut "What's my cut?" -> cut
+  > @excon "Settle it, or kill for it? Say which." -> straight   if bg:excon,raider
+  > @help "I could help settle it." -> offer
+  > @no "Not today." -> hub
+
+node who
+  say? feud:bastion :: "Bastion. Always Bastion. They think a uniform is a receipt."
+  say? feud:haven :: "The Haven. Sweet people. They'd steal your boots and leave a thank-you note in them."
+  say "Whoever it is, they've got a page. Pages get read out."
+  > @help2 "Then let me read it to them." -> offer
+  > @back1 "Something else." -> hub
+
+node letgo
+  say "Let it go? A road where you let things go is a road where everybody stops paying."
+  say? stronghold :: "He let people pay later. You can't run a road like that."
+  > @help3 "Fine. What do you need?" -> offer
+  > @back2 "Something else." -> hub
+
+node cut
+  say? trait:greedy :: "Your cut is what I say it is, and I'm generous on Tuesdays. Is it Tuesday? Nobody knows anymore."
+  say "Favor. Fuel. A line in the book that says you're useful. Useful people don't get pages."
+  > @help4 "Done. What's the job?" -> offer
+  > @dry4 "I'll take Tuesday's rate." -> offer   dry
+  > @back3 "Something else." -> hub
+
+node straight
+  say "Settling is getting it back. Killing is what happens when people won't give it back. Most give it back."
+  say "You've done time. You know the difference. Good. Fewer mess-ups."
+  > @help5 "Then I'll settle it." -> offer
+  > @back4 "Something else." -> hub
+
+node offer
+  say "Right. Here's what's on the page. Read it before you sign it. Nobody reads it before they sign it."
+  > @take "Show me." -> hub   do call:slot:0
+  > @later "Let me think about it." -> hub
+
+node other_route
+  say "You picked another crew for the cure. Bold. The book noticed. The book also likes a freelancer."
+  > @take2 "Still got work?" -> hub   do call:slot:0
+  > @back5 "Something else." -> hub
+
+node after
+  say? cure_held:redhand :: "We've got the cure. Everybody wants a dose. Everybody's suddenly very polite."
+  say "The cure's out. People still owe. The book doesn't care about medicine."
+  > @take3 "Then I'll still collect." -> hub   do call:slot:0
+  > @back6 "Something else." -> hub
+
+conv redhand.leader.work
+for stronghold:redhand, seat:redhand/crew_boss
+when !need:revenge
+topic "Ask what's worth the fuel."
+prio ask
+voice redhand
+
+bind truck = supply:truck
+
+node start
+  jump route:out -> other_route
+  jump epilogue -> after
+  say? need:food :: "Food. The lads are eating the paint off the trucks. Not really. Mostly not really."
+  say? need:supplies :: "Fuel, parts, anything with a battery in it. A road runs on things that break."
+  say? need:people :: "Hands. We've more trucks than drivers. The drivers had opinions about the road."
+  say "Everything's worth the fuel if you sell it after."
+  say? supply:road & bound:truck :: "There's a truck on its way to {bind:truck}. Our truck. Nobody touch our truck."
+  say? night :: "It's night. Night's for counting. Day's for collecting. You've caught me counting."
+  say "So. What's your question, and how much is it worth to you?"
+  > @toll "How's the toll today?" -> toll
+  > @bastion "What's your problem with Bastion?" -> bastion
+  > @press "What aren't you telling me?" -> told | joke | joke   check persuade redhand 2 harder:paranoid bg:excon,raider
+  > @help "Got work for me?" -> offer
+  > @no "Not today." -> hub
+
+node toll
+  say? holds:redhand>=4 :: "Lovely. We've got roads everywhere now. Everybody pays, a bit. A bit adds up."
+  say "Good. Tins, fuel, the odd watch. Bastion paid in bullets once. We counted that as a tip."
+  > @help2 "I could help it add up." -> offer
+  > @back1 "Something else." -> hub
+
+node bastion
+  say? truce:bastion :: "We've a truce. A truce is when we both agree to steal from other people for a while."
+  say "They think the road belongs to whoever has the flag. We think it belongs to whoever has the road."
+  > @help3 "Then let me help you keep it." -> offer
+  > @back2 "Something else." -> hub
+
+node told
+  say? supply:lost :: "We lost a truck yesterday. Not robbed. Lost. That's worse. Robbed, you know who to visit."
+  say "The book's short this week. Short books make the boss nervous, and the boss nervous makes everyone nervous."
+  do learn:redhand.book_short:6h
+  > @help4 "Then let me fill a line." -> offer
+  > @back3 "Something else." -> hub
+
+node joke
+  say "I'm not telling you that I've a secret. That's the secret. Now you know nothing, efficiently."
+  > @help5 "Then give me work instead." -> offer
+  > @back4 "Something else." -> hub
+
+node offer
+  say "Got a few things. Some honest, some honest-ish. Pick one before I change my mind."
+  > @take "Show me." -> hub   do call:slot:0
+  > @later "Let me think about it." -> hub
+
+node other_route
+  say "You picked another crew for the cure. The book noticed. The book also likes a freelancer."
+  > @take2 "Still got work?" -> hub   do call:slot:0
+  > @back5 "Something else." -> hub
+
+node after
+  say "The cure's out. The road's still a road. Somebody still has to stand on it with a hand out."
+  > @take3 "Then I'll still work." -> hub   do call:slot:0
+  > @back6 "Something else." -> hub
+
+# The Red Hand on a holding it lost: it was sold, ha (a joke lie). The truth is said by people who
+# watched it go (~truth:gossip.sold@lost). And on a burning: the Red Hand didn't burn it, that's waste
+# (~truth:gossip.burned@burned, the truth to a Haven house's rumour).
+conv redhand.leader.news
+for stronghold:redhand, seat:redhand/crew_boss
+topic "Ask what's going round."
+prio world
+voice redhand
+
+bind lost = news:lost_by(redhand)
+bind burned = news:burned
+bind took = news:taken
+bind who = news:taken_by
+bind from = news:taken_from
+bind dead = news:leader_dead
+bind truck = news:truck
+
+node start
+  jump news:lost_by(redhand) -> lost
+  jump news:burned -> burned
+  jump news:leader_dead -> dead
+  jump news:taken -> taken
+  jump news:truck -> truck
+  say? epilogue :: "Everybody's leaving. Lovely time for the book. People settle up when they're leaving."
+  say? major:book :: "The book's getting balanced. Settling day's coming. Everybody's suddenly very honest."
+  say? cure>=75 :: "The beaks are close. Close is when people start offering me things."
+  say "Nothing much. Somebody's dog got married. Somebody's cousin got bitten. The usual."
+  > @mine "What's going round about me?" -> me
+  > @more "Anything else on the road?" -> hub   do call:slot:1
+  > @back0 "Something else." -> hub
+
+node lost
+  say "{bind:lost}? We sold it. Good price. Bastion paid in apologies. We've got loads of those now." ~lie:gossip.sold@lost
+  > @catch "Sold it? You were thrown out." -> caught   callout gossip.sold@lost
+  > @more1 "What else is on the road?" -> hub   do call:slot:1
+  > @back1 "Something else." -> hub
+
+node caught
+  say "Thrown out is a strong word. We were... encouraged to leave. With guns. Fine. It's on a page. Somebody's."
+  > @more2 "What else is on the road?" -> hub   do call:slot:1
+  > @back2 "Something else." -> hub
+
+node burned
+  say "{bind:burned} burned. Not us. Burning's waste. You can't toll a pile of ash." ~truth:gossip.burned@burned
+  say "Whoever lit it didn't do the sums. Ask the Haven. They'll say it was us. They say everything was us."
+  > @more3 "What else is on the road?" -> hub   do call:slot:1
+  > @back3 "Something else." -> hub
+
+node dead
+  say "{bind:dead} is dead. Shame. Owed us two drums of diesel. Death's a terrible way to settle up."
+  say? trait:ruthless :: "Next one in the chair inherits the debt. The book's very clear on that."
+  > @more4 "What else is on the road?" -> hub   do call:slot:1
+  > @back4 "Something else." -> hub
+
+node taken
+  say "{bind:who} took {bind:took} off {bind:from}. Good for them. Worse for whoever's paying them a toll now."
+  > @more5 "What else is on the road?" -> hub   do call:slot:1
+  > @back5 "Something else." -> hub
+
+node truck
+  say "A truck didn't make it. {bind:truck}. Wasn't us. If it was us, it'd have made it. To us."
+  > @more6 "What else is on the road?" -> hub   do call:slot:1
+  > @back6 "Something else." -> hub
+
+node me
+  jump kit:other -> me_colours
+  say? crew :: "They call you {crew}. Cheerfully. In front of people. That's how you know they mean it."
+  say? best:redhand :: "That you {best}. The lads tell it at the fire. It gets bigger every time."
+  say "Nothing yet. Nothing is a price, too. It's cheap."
+  > @back7 "Something else." -> hub
+
+node me_colours
+  say "That you walk round in other people's colours. The lads have a bet on whose you'll wear next."
+  > @back8 "Something else." -> hub
+
+conv redhand.leader.me
+for stronghold:redhand, seat:redhand/crew_boss
+topic "Ask what the crew calls you."
+prio reaction
+voice redhand
+
+node start
+  jump kit:other -> colours
+  jump bite_shown -> bitten
+  jump kills:redhand>=2 -> killer
+  jump crew -> named
+  jump tier:redhand>=known -> known
+  say? fresh :: "Fresh. Like a loaf. We don't toll loaves. Give us time."
+  say "Nothing. You haven't done anything worth a name. Give it a week."
+  > @more "What's on my page, then?" -> hub   do call:slot:2
+  > @fair "Fair." -> hub
+
+node colours
+  say? kit:own :: "Our colours, on you. Brave or stupid. The lads haven't decided. They're taking bets."
+  say "Someone else's colours on my road. You either robbed them or you're one of them. Both cost."
+  > @more1 "And my page?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+node bitten
+  say "Got a bite on you. I can count, love. That's my whole job."
+  say "Get to a house before you get interesting. Interesting is bad for business."
+  > @more2 "Am I still good for business?" -> hub   do call:slot:2
+  > @back2 "Something else." -> hub
+
+node killer
+  say "{kills} of ours. Each one's a line. You've got more lines than some of the lads."
+  say "I'm talking because talking's cheaper than shooting. Today."
+  > @more3 "Then read me my page." -> hub   do call:slot:2
+  > @back3 "Something else." -> hub
+
+node named
+  say "{crew}. They say it like it's a joke. It is. It's also a receipt."
+  say? best:redhand :: "You {best}. The lads tell it at the fire."
+  > @more4 "And the rest of the page?" -> hub   do call:slot:2
+  > @back4 "Something else." -> hub
+
+node known
+  say? jobs:redhand>=3 :: "Three jobs. Four? The book knows. I'd have to look. I don't have to look."
+  say "Known. Useful, maybe. The lads nod at you. A nod's not a name, but it's not a toll either."
+  > @more5 "And the rest?" -> hub   do call:slot:2
+  > @back5 "Something else." -> hub

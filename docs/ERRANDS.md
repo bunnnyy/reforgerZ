@@ -88,7 +88,9 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
 - **"Anything need doing?"** is the second reply on a named person (beside **Ask how things are**),
   in the action menu or on the [talk screen](DIALOGUE.md#the-talk-screen). A wanderer's is **Need a
   hand?**, in their free third slot (not on the Kid, the Mechanic, whose slot is Ask about cars, or
-  a bitten wanderer, whose slot is the antidote).
+  a bitten wanderer, whose slot is the antidote). With **Dialogue > Trees** both are reached inside
+  the person's own topic (the cook's supper, a sentry's shift, the Courier's late letters), not as a
+  reply of their own ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)); the deal is the same.
 - **Waved over.** A safehouse's or holding's shown named person may call a passing player within
   30 m: *"Mara waves you over."* That's an unasked contact: it asks the notice lanes'
   [interruption budget](DESIGN.md#notice-lanes) (`TryContact`, errands last), and every rule of the

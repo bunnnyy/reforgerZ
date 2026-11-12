@@ -272,7 +272,7 @@ class RZ_DialogueTrees
 
 	//------------------------------------------------------------------------------------------------
 	//! The hub: the built replies (verbs) are already in `replies`; the scenes' verbs and the topics
-	//! follow. The talk screen pages them (RZ_Dialogue.SendNode, Something else.).
+	//! follow. The talk screen pages them (RZ_Dialogue.SendNode: 4 a page, "1/2", LB/RB).
 	void HubReplies(RZ_TalkSession s, notnull array<ref RZ_TalkReply> replies)
 	{
 		RZ_DTalk t = s.m_Tree;
@@ -283,6 +283,7 @@ class RZ_DialogueTrees
 		RZ_DialogueMakeRight.Verb(s, replies);
 
 		CollectTopics(t);
+		CarryVerbs(t, replies);
 		foreach (int i, RZ_DConv c : t.m_aTopics)
 		{
 			RZ_TalkReply r = new RZ_TalkReply();
@@ -293,6 +294,52 @@ class RZ_DialogueTrees
 				r.m_sTag = "heard";
 
 			replies.Insert(r);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Work comes out of talk (docs/DIALOGUE.md, "Hubs: work comes out of talk"): a topic that runs a
+	//! built reply (call:slot:N) carries it, so while the topic shows, that reply hides from the hub
+	//! and is reached through the talk. A topic that carries a reply this person doesn't have now
+	//! (no errands, a bitten wanderer's antidote in the slot) doesn't show, and the built reply stays.
+	protected void CarryVerbs(RZ_DTalk t, notnull array<ref RZ_TalkReply> replies)
+	{
+		array<int> have = {};
+		foreach (RZ_TalkReply v : replies)
+		{
+			if (!v.m_bAdmin && !IsOurs(v.m_iId))
+				have.Insert(v.m_iId);
+		}
+
+		array<int> carried = {};
+		for (int k = t.m_aTopics.Count() - 1; k >= 0; k--)
+		{
+			RZ_DConv tc = t.m_aTopics[k];
+			bool all = true;
+			foreach (int slot : tc.m_aCarries)
+			{
+				if (have.Find(slot) < 0)
+					all = false;
+			}
+
+			if (!all)
+			{
+				t.m_aTopics.RemoveOrdered(k);
+				continue;
+			}
+
+			foreach (int kept : tc.m_aCarries)
+			{
+				if (carried.Find(kept) < 0)
+					carried.Insert(kept);
+			}
+		}
+
+		for (int r = replies.Count() - 1; r >= 0; r--)
+		{
+			RZ_TalkReply verb = replies[r];
+			if (!verb.m_bAdmin && !IsOurs(verb.m_iId) && carried.Find(verb.m_iId) >= 0)
+				replies.RemoveOrdered(r);
 		}
 	}
 

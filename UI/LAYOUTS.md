@@ -465,13 +465,19 @@ Frame (root, full screen; no dim, the world shows as it is)
    ├─ HorizontalLayout (TalkWho)  at (28, 14), 1,134 × 34
    │  ├─ Text  TalkName      condensed bold 28, tinted with the faction colour
    │  └─ Text  TalkSub       regular 20, dim, 16 after the name
-   ├─ ScrollLayout SaidScroll  at (28, 52), 1,134 × 94: three lines (LB/RB and the wheel scroll it)
+   ├─ HorizontalLayout TalkPage  at (902, 14), 260 × 34, hidden: shown when the list has more than one page
+   │  ├─ Button PagePrev     blank, 12 before the count; shown while there's a page before; a click turns back
+   │  │  └─ Text PagePrevText  mono bold 22, dim: "<"
+   │  ├─ Text   PageText     mono bold 20, bone: "1/2", 12 before MORE
+   │  └─ Button PageNext     blank; shown while there's a page after; a click turns on
+   │     └─ Text PageNextText  mono bold 20, tinted with the faction colour: "MORE >"
+   ├─ ScrollLayout SaidScroll  at (28, 52), 1,134 × 94: three lines (the right stick and the wheel scroll it)
    │  └─ SizeLayout (SaidWidth)  1,104 wide
    │     └─ Text TalkSaid    regular 26, #F4F0E6, wraps
    ├─ VerticalLayout Replies   at (28, 152), 1,134 × 180: the reply rows, five at most
    ├─ HorizontalLayout Prompts at (28, 336), 760 × 34: the footer prompts the script makes, one line
    ├─ Text   PromptsText     at (28, 340), mono bold 18, dim: the static prompts, hidden once made
-   └─ Text   (KeysHint)      right-aligned, ending at (1162, 340), mono 18, faint: "1-5 OR D-PAD AND A: A REPLY"
+   └─ Text   (KeysHint)      right-aligned, ending at (1162, 340), mono 18, faint: "1-5: A REPLY    Q / E: PAGE"
 ```
 
 `RZ_TalkReply.layout` (**UI > Talk reply layout**), one row, created into `Replies`. The root

@@ -1,0 +1,37 @@
+# The Long Table on the season (docs/DIALOGUE.md, "Hubs"): what's going on, the way a farm hears it.
+# Homely, attentive, a little too interested in you. Nothing is ever described.
+
+conv table.host.season
+for table:host, table:mother
+when !table:crossed
+topic "Ask what news reaches the farm."
+prio world
+voice table
+
+bind horde = news:horde
+bind took = news:taken
+bind who = news:taken_by
+
+node start
+  jump news:horde -> horde
+  jump news:taken -> taken
+  say? epilogue :: "That people are leaving. We aren't. The farm was here before the roads. It'll be here after."
+  say? cure>=75 :: "That the lab's nearly there. Good for them. We've never needed much medicine out here."
+  say? rain :: "The rain, mostly. It's good for the garden. Sit by the stove, you're dripping."
+  say "Not much reaches us. We like it that way. Tell us yours, though. Where have you been today?"
+  > @about "Here and there." -> asked
+  > @back0 "Something else." -> hub
+
+node horde
+  say "A crowd of them went past near {bind:horde}. They never come up the lane. They never have. Lucky, we say."
+  say "Are you walking that way tonight? On your own?"
+  > @no1 "Not tonight." -> hub
+  > @back1 "Something else." -> hub
+
+node taken
+  say "{bind:who} has {bind:took}, we hear. Flags, flags. Nobody out here salutes. We wave."
+  > @back2 "Something else." -> hub
+
+node asked
+  say "Here and there. That's the best sort of place. Nobody knows to look for you in here and there."
+  > @back3 "Something else." -> hub

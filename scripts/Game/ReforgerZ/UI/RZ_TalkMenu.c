@@ -7,9 +7,11 @@
 //! closes the panel.
 //!
 //! Keys: up/down or 1-5, Enter; mouse: hover lights a reply, a click says it; Esc leaves. Pad: D-pad
-//! or left stick, A says it, B leaves; LB/RB (Q/E) scroll what they say when it's long. The server
-//! pages longer lists (Something else.) and keeps a server admin's replies under [Admin]. You can't
-//! move while it's open; the world keeps running and danger closes it (the server's screen guard).
+//! or left stick, A says it, B leaves. A list longer than the screen comes a page at a time (4 and
+//! the way out): the page shows as "1/2" with "MORE >" while there are more, and LB/RB (Q/E, or a
+//! click on the arrows) turn it. The right stick (or the mouse wheel) scrolls what they say when it's
+//! long. The server keeps a server admin's replies under [Admin]. You can't move while it's open; the
+//! world keeps running and danger closes it (the server's screen guard).
 
 //------------------------------------------------------------------------------------------------
 //! Mouse on a reply row: the cursor coming onto it selects it, a click says it.
@@ -46,9 +48,37 @@ class RZ_TalkRowEvents : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
+//! Mouse on the page arrows: a click turns the page.
+class RZ_TalkPageEvents : ScriptedWidgetEventHandler
+{
+	protected RZ_TalkMenu m_Menu;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_TalkPageEvents(RZ_TalkMenu menu)
+	{
+		m_Menu = menu;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool OnClick(Widget w, int x, int y, int button)
+	{
+		if (!m_Menu || !w)
+			return false;
+
+		if (w.GetName() == "PagePrev")
+			m_Menu.TurnPage(-1);
+		else
+			m_Menu.TurnPage(1);
+
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 class RZ_TalkMenu : RZ_MenuBase
 {
 	protected static const int ROWS = 5;	// replies on the screen at once (RZ_Dialogue.ROWS)
+	protected static const float SCROLL_SPEED = 1.5;	// what they say: share of the text a second at full stick
 
 	protected static RZ_TalkMenu s_Open;
 	protected static string s_sNode;
@@ -61,6 +91,9 @@ class RZ_TalkMenu : RZ_MenuBase
 	protected bool m_bDone;					// left, or closed by the server: nothing more to send
 	protected ref Color m_Accent;
 	protected ref RZ_TalkRowEvents m_RowEvents;
+	protected ref RZ_TalkPageEvents m_PageEvents;
+	protected int m_iPage;					// this list's page, from 0 (the server's)
+	protected int m_iPages = 1;
 	protected ref array<int> m_aIds = {};
 	protected ref array<bool> m_aEnabled = {};
 	protected ref array<bool> m_aHeard = {};
@@ -136,12 +169,15 @@ class RZ_TalkMenu : RZ_MenuBase
 	{
 		s_Open = this;
 		m_RowEvents = new RZ_TalkRowEvents(this);
+		m_PageEvents = new RZ_TalkPageEvents(this);
+		RZ_UIW.OnClick(m_wRoot, "PagePrev", m_PageEvents);
+		RZ_UIW.OnClick(m_wRoot, "PageNext", m_PageEvents);
 		InputManager input = GetGame().GetInputManager();
 		input.AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
-		input.AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnScrollUp);
-		input.AddActionListener("MenuTabRight", EActionTrigger.DOWN, OnScrollDown);
+		input.AddActionListener("MenuTabLeft", EActionTrigger.DOWN, OnPageBack);
+		input.AddActionListener("MenuTabRight", EActionTrigger.DOWN, OnPageOn);
 		input.AddActionListener("RZ_Reply1", EActionTrigger.DOWN, OnReply1);
 		input.AddActionListener("RZ_Reply2", EActionTrigger.DOWN, OnReply2);
 		input.AddActionListener("RZ_Reply3", EActionTrigger.DOWN, OnReply3);
@@ -149,7 +185,7 @@ class RZ_TalkMenu : RZ_MenuBase
 		input.AddActionListener("RZ_Reply5", EActionTrigger.DOWN, OnReply5);
 		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Say it");
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Leave") && prompts;
-		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Scroll") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Page") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
 	}
 
@@ -160,8 +196,8 @@ class RZ_TalkMenu : RZ_MenuBase
 		input.RemoveActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.RemoveActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
-		input.RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnScrollUp);
-		input.RemoveActionListener("MenuTabRight", EActionTrigger.DOWN, OnScrollDown);
+		input.RemoveActionListener("MenuTabLeft", EActionTrigger.DOWN, OnPageBack);
+		input.RemoveActionListener("MenuTabRight", EActionTrigger.DOWN, OnPageOn);
 		input.RemoveActionListener("RZ_Reply1", EActionTrigger.DOWN, OnReply1);
 		input.RemoveActionListener("RZ_Reply2", EActionTrigger.DOWN, OnReply2);
 		input.RemoveActionListener("RZ_Reply3", EActionTrigger.DOWN, OnReply3);
@@ -205,15 +241,51 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnScrollUp(float value = 0, EActionTrigger reason = 0)
+	protected void OnPageBack(float value = 0, EActionTrigger reason = 0)
 	{
-		RZ_UIW.Scroll(m_wRoot, "SaidScroll", -1);
+		TurnPage(-1);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void OnScrollDown(float value = 0, EActionTrigger reason = 0)
+	protected void OnPageOn(float value = 0, EActionTrigger reason = 0)
 	{
-		RZ_UIW.Scroll(m_wRoot, "SaidScroll", 1);
+		TurnPage(1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! LB/RB, Q/E or a click on the arrows: the page on (dir 1) or back (-1), round to the other end.
+	//! The server sends the new page; with one page nothing happens.
+	void TurnPage(int dir)
+	{
+		if (m_bDone || m_iPages <= 1)
+			return;
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (!ui)
+			return;
+
+		if (dir < 0)
+			ui.SendTalkPick(m_iSerial, RZ_Dialogue.PAGE_BACK);
+		else
+			ui.SendTalkPick(m_iSerial, RZ_Dialogue.MORE);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The right stick scrolls what they say when it's long (RZ_TalkScroll), every frame it's held.
+	override void OnMenuUpdate(float tDelta)
+	{
+		super.OnMenuUpdate(tDelta);
+		float stick = GetGame().GetInputManager().GetActionValue("RZ_TalkScroll");
+		if (Math.AbsFloat(stick) < 0.2)
+			return;
+
+		ScrollLayoutWidget said = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "SaidScroll"));
+		if (!said)
+			return;
+
+		float x, y;
+		said.GetSliderPos(x, y);
+		said.SetSliderPos(x, Math.Clamp(y - stick * tDelta * SCROLL_SPEED, 0, 1)); // VERIFY: the stick reads + when pushed up, so up scrolls toward the top
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -279,7 +351,7 @@ class RZ_TalkMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! T|serial|faction|name|sub|said, then R|id|label|tag|need|enabled|heard.
+	//! T|serial|faction|name|sub|said|page|pages, then R|id|label|tag|need|enabled|heard.
 	override protected void Redraw()
 	{
 		if (m_iParsed == s_iVersion)
@@ -300,8 +372,28 @@ class RZ_TalkMenu : RZ_MenuBase
 		RZ_UIW.Tint(m_wRoot, "TalkName", m_Accent);
 		RZ_UIW.SetText(m_wRoot, "TalkSub", RZ_UIText.Str(m_aHead, 4));
 		RZ_UIW.SetText(m_wRoot, "TalkSaid", Unbreak(RZ_UIText.Str(m_aHead, 5)));
+		ShowPage();
 		BuildRows();
 		Style();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "1/2" and the arrows when the list has more than one page: "<" while there's a page before,
+	//! "MORE >" while there's one after (LB/RB still turn round from either end).
+	protected void ShowPage()
+	{
+		m_iPage = Math.Max(0, RZ_UIText.Int(m_aHead, 6));
+		m_iPages = Math.Max(1, RZ_UIText.Int(m_aHead, 7));
+		bool paged = m_iPages > 1;
+		RZ_UIW.Show(m_wRoot, "TalkPage", paged);
+		if (!paged)
+			return;
+
+		int shown = m_iPage + 1;
+		RZ_UIW.SetText(m_wRoot, "PageText", string.Format("%1/%2", shown, m_iPages));
+		RZ_UIW.Show(m_wRoot, "PagePrev", m_iPage > 0);
+		RZ_UIW.Show(m_wRoot, "PageNext", m_iPage < m_iPages - 1);
+		RZ_UIW.Tint(m_wRoot, "PageNextText", m_Accent);
 	}
 
 	//------------------------------------------------------------------------------------------------

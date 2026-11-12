@@ -119,7 +119,9 @@ and one way to end it: **research the cure.**
 - **People who talk back** ([DIALOGUE.md](docs/DIALOGUE.md)): with **Dialogue > Trees** on (off
   by default until it's play-tested), the people you talk to have topics in their own voices, with
   what each answer needs shown before you choose (persuade, a threat that always costs, a price, your
-  background) and no dice; they remember how you spoke to them this life. Each faction has its own
+  background) and no dice; they remember how you spoke to them this life. Nobody has a menu of "any
+  work?": work comes out of what's on their mind, and what they've heard is what's really going on
+  (a town that fell, a truck that didn't come), told their way, and not always truly. Each faction has its own
   word for you, the Red Hand's crews give you a name you'd rather they hadn't, and leaders tell you
   what they make of you. People lie to you (and the truth is out there to catch them with), you
   can make promises they'll hold you to, people say a line as you pass, strangers tell you who they

@@ -99,6 +99,25 @@ class RZ_DialoguePack_posts
 		db.Say("kit:dead_mans", "\"Stop there. That's {dead_name}'s kit. His name's on the nail behind the radio.\"");
 		db.Say("kit:off_turned", "\"Stop there. That's off one of ours. Where is he?\"");
 		db.Say("", "\"You. Not on the board. Stop there.\"");
+		db.Conv("post.bastion.road", "post:bastion", "!hunted:bastion", "Ask what's moving on the road.", 2, 0, "bastion");
+		db.Bind("horde", "news:horde");
+		db.Bind("lost", "news:lost_by(redhand)");
+		db.Bind("truck", "supply:truck");
+		db.Node("start");
+		db.Jump("news:horde", "horde");
+		db.Jump("news:lost_by(redhand)", "sold");
+		db.Say("supply:road & bound:truck", "\"Our truck, outbound to {bind:truck}. Don't wave at it. Don't stand near it.\"");
+		db.Say("night", "\"At night? Lights we can't explain and engines we can. Mostly the second.\"");
+		db.Say("fog", "\"Fog. The road could be full of anything. We assume it is.\"");
+		db.Say("", "\"Carts, bikes, people on foot carrying everything they own. Same as every day.\"");
+		db.Choice("back0", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("horde");
+		db.Say("", "\"Contact moving near {bind:horde}. Large. Following noise. If you're going that way, don't make any.\"");
+		db.Choice("back1", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("sold");
+		db.Say("", "\"Red Hand lost {bind:lost}. We watched them leave it. Fast. Selling is not what that was.\"");
+		db.Mark("truth", "gossip.sold@lost");
+		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("post.bastion.search", "post:bastion", "!hunted:bastion", "Ask about the search.", 2, 0, "bastion");
 		db.Node("start");
 		db.Say("", "\"Hands on the barrier, pockets out. We take suppressors and explosives. Everything else you keep.\"");
@@ -140,6 +159,10 @@ class RZ_DialoguePack_posts
 		db.Say("", "\"Go on. Keep the word to yourself. It changes at half five.\"");
 		db.Do("call:post_wave");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Node("refused");
 		db.Say("", "\"No. Hands on the barrier. That kit goes back where it came from.\"");
 		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
@@ -159,10 +182,6 @@ class RZ_DialoguePack_posts
 		db.Node("caught");
 		db.Say("", "\"Lads! Dress-up day. Armband off, if you please.\"");
 		db.Choice("back2", "\"Fair enough.\"", "hub", "", "", "", "", "", "", "", "");
-	}
-
-	protected static void Add1(RZ_DialogueDB db)
-	{
 		db.Node("honest");
 		db.Say("", "\"It might, too. Not here. Here we count the armbands.\"");
 		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
@@ -206,6 +225,23 @@ class RZ_DialoguePack_posts
 		db.Say("kit:dead_mans", "\"Oi. That's {dead_name}'s. We put {dead_name} in the book last week. Paid.\"");
 		db.Say("kit:off_turned", "\"Oi. You took that off one of them. Off one of ours, before that.\"");
 		db.Say("", "\"Oi! New face, our colours. Come here and tell me a story.\"");
+		db.Conv("post.redhand.road", "post:redhand", "!hunted:redhand", "Ask what's moving on the road.", 2, 0, "redhand");
+		db.Bind("lost", "news:lost_by(bastion)");
+		db.Bind("truck", "news:truck");
+		db.Node("start");
+		db.Jump("news:lost_by(bastion)", "withdrew");
+		db.Jump("news:truck", "truck");
+		db.Say("rain", "\"Rain. People walk faster in rain. They pay faster too.\"");
+		db.Say("night", "\"Nothing that pays. Things that bite. Different line in the book.\"");
+		db.Say("", "\"Business. Two carts, a bike, a man with a goat. The goat paid. The man's still thinking about it.\"");
+		db.Choice("back0", "\"Lovely.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("withdrew");
+		db.Say("", "\"Bastion left {bind:lost}. At a run. Watched them. Withdrew, they'll call it. Withdrew at a sprint.\"");
+		db.Mark("truth", "gossip.withdrew@lost");
+		db.Choice("back1", "\"Lovely.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("truck");
+		db.Say("", "\"A truck didn't get there. {bind:truck}. Wasn't us. Ours get there. That's the whole point of ours.\"");
+		db.Choice("back2", "\"Lovely.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("post.redhand.toll", "post:redhand", "!hunted:redhand", "Ask about the toll.", 2, 0, "redhand");
 		db.Node("start");
 		db.Say("", "\"Red hand means stop. Stop means pay. {toll} Favor, or walk round. It's only a few kilometres. Mostly dead people.\"");

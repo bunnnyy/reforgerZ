@@ -1,7 +1,7 @@
 //! The world memory's writers (docs/DESIGN.md, "World memory"): one small static helper per kind of
 //! fact, so the system that owns the fact writes it with one line and no system keeps its own rules.
 //! - Signals (the ring): bites and deaths (where and how, never who), trucks lost, shells, burned
-//!   buildings, trial doses. A player's own bites and deaths add at most one signal per 10 minutes.
+//!   buildings, trial doses, heat hordes. A player's own bites and deaths add at most one signal per 10 minutes.
 //! - Reasons: a house short of food, dark or dry; a truck lost on the way to a post or a house; a
 //!   town gone bad; a leader dead; a wanderer bitten; a cure milestone.
 //! - The town log: what was done in a town (a contract finished or failed there, people brought in,
@@ -322,11 +322,28 @@ class RZ_WorldWriters
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! An outpost changed hands (RZ_Territory): the worst slot for the town it was taken in.
-	static void HoldingTaken(int town, string taker, string loser, string name)
+	//! An outpost changed hands (RZ_Territory): the worst slot for the town it was taken in, and two
+	//! reasons for talk's news (holding.taken for the taker, holding.lost for the loser, a season day).
+	static void HoldingTaken(int town, int takerFaction, int loserFaction, string name, vector pos)
+	{
+		RZ_WorldMemory mem = Memory();
+		if (!mem)
+			return;
+
+		string taker = RZ_Factions.GetName(takerFaction);
+		string loser = RZ_Factions.GetNameInText(loserFaction);
+		mem.LogTown(town, false, "taken", 3, string.Format("Day %1: %2 took %3 from %4.", RZ_SeasonClock.Day(), taker, name, loser));
+		string text = string.Format("%1 took %2 from %3.", taker, name, loser);
+		mem.PostReason("holding.taken", RZ_WorldFacts.Town(town), text, pos, takerFaction);
+		mem.PostReason("holding.lost", RZ_WorldFacts.Town(town), text, pos, loserFaction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A heat horde was sent at pos (RZ_ZombieSpawner): a signal, for talk's news. Never who drew it.
+	static void Horde(vector pos)
 	{
 		RZ_WorldMemory mem = Memory();
 		if (mem)
-			mem.LogTown(town, false, "taken", 3, string.Format("Day %1: %2 took %3 from %4.", RZ_SeasonClock.Day(), taker, name, loser));
+			mem.Signal("horde", pos, "a horde near " + Where(pos));
 	}
 }

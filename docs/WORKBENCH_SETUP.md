@@ -1744,8 +1744,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **124** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 22 are in `UI/`: 17 of [the UI's](#the-ui-18), the loadout
+There are **125** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 23 are in `UI/`: 18 of [the UI's](#the-ui-19), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1754,7 +1754,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-18)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-19)
 come last.
 
 ### High risk: the core loop (2)
@@ -1870,7 +1870,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:3589` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 | `Factions/RZ_CampLife.c:3332` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
 
-### The UI (18)
+### The UI (19)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -1887,10 +1887,11 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_Notebook.c:961` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
-| `UI/RZ_TalkMenu.c:37` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
+| `UI/RZ_TalkMenu.c:39` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
+| `UI/RZ_TalkMenu.c:288` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.OnMenuUpdate`; the wheel still works |
 | `UI/RZ_UIData.c:970` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `UI/RZ_UIData.c:1068` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the HUD tracker's arrow | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
-| `Dialogue/RZ_Dialogue.c:893` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:888` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
@@ -2244,7 +2245,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 157 conversations, 346 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 197 conversations, 562 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2713,9 +2714,27 @@ when it happens)
 - [ ] With **UI > Talk reply layout** empty, Talk and the slots are actions with notices again.
 - [ ] **Dialogue > Trees** off (the default): the talk screen is exactly as above, no topics, no
   speaker at road posts, leaders greet as before.
-- [ ] **Trees** on ([DIALOGUE.md](DIALOGUE.md)): a council head's list shows the built replies, then
-  "Ask about the bear on the door." and the other topics; "Something else." pages when they don't
-  fit. In "Ask about the names on the list.", the persuade choice shows "[Persuade - Haven - N of 2]"
+- [ ] **Trees** on ([DIALOGUE.md](DIALOGUE.md)): a council head's list has no "Ask for work",
+  "Heard anything?" or "What do you make of me?": it shows "Ask why the bowls are half full." (or "Ask
+  what's keeping them up."), "Ask what the houses are saying.", "Ask if you're welcome here.", "Ask
+  about the bear on the door." and the other topics. Talk your way in ("Is there something I can
+  do?", then "Show me."): the job comes as built; "Anything else going round?" gives the built news;
+  "Where do I stand with you, honestly?" the verdict. Do the same at a Bastion outpost, a Red Hand
+  crew boss and a Halcyon field lead (each its own labels and lines), a quartermaster's "Talk to
+  whoever's in charge", a safehouse's named cook (the errand from "Ask what's for supper."), a
+  holding's named person and a wanderer ("Need a hand?" inside their trouble; a bitten one keeps the
+  antidote reply). With errands off, the named people's built replies come back.
+- [ ] **Pages:** when the list doesn't fit (a council head with Trees on), "1/2" and MORE > show on
+  the right of the name line, at 18 px or more on a TV; LB/RB with a pad, Q/E on the keyboard and a
+  click on "<" or "MORE >" turn the page and go round from either end, and none of them says a reply;
+  1–5 and LT/RT + D-pad still say the reply in that row; the right stick and the wheel scroll a long
+  line. A list that fits shows no page indicator; a node starts on page 1.
+- [ ] **What's going on:** take or lose an outpost, burn a town, empty a house or bring people in
+  (or wait for a heat horde): within a season day the news topics name it ("They're saying the Red
+  Hand took ..."); Bastion's report says it "withdrew" from a post it lost, and the Red Hand's post
+  or a Haven named person tells you otherwise, after which "Withdrew? I heard you were thrown out."
+  shows [Evidence] at Bastion's leader. Two named people of one job at one holding open differently
+  (persona). In "Ask about the names on the list.", the persuade choice shows "[Persuade - Haven - N of 2]"
   before you pick, and the reply opens with [Persuaded], [Short] or [Not persuaded]; a failed one is
   dim ("you've tried that") next time. `/talkdebug` (admin) lists that speaker's conversations and
   why each shows or not. As a Nurse, the line only Nurses see shows "[Nurse]"; as an Unemployed it

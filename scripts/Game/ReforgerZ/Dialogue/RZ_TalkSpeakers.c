@@ -133,8 +133,8 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Wanderers, safehouse occupants, named people at holdings, road post speakers and the Long
-	//! Table's people, by the tag their body carries. Mission and questline people have no trees yet.
+	//! Wanderers, safehouse occupants and named residents, named people at holdings, road post
+	//! speakers, the Long Table's people and the people missions spawn, by the tag their body carries.
 	override bool Describe(RZ_GameModeComponent gm, RZ_TalkSession s, RZ_DCtx ctx)
 	{
 		if (!m_Owner)
@@ -151,6 +151,9 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (tag == RZ_Safehouses.TAG_OCCUPANT && gm.GetSafehouses())
 			return DescribeOccupant(gm, idx, ctx);
+
+		if (tag == RZ_NamedPeople.TAG_HOUSE && gm.GetErrands() && gm.GetSafehouses())
+			return DescribeResident(gm, idx, ctx);
 
 		if (tag == RZ_Territory.TAG && gm.GetTerritory())
 			return DescribeNamed(gm, idx, ctx);
@@ -242,6 +245,29 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 		ctx.m_sRole = "occupant";
 		ctx.m_sPlace = h.m_sName;
 		ctx.m_bStronghold = true;	// nobody fires near a house, and nobody threatens in one
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A safehouse's named person (errands' givers): resident:<role> (cook, lookout, storekeeper,
+	//! clerk) and resident. The memory key is errands' own (house:<index>:<i>).
+	protected bool DescribeResident(RZ_GameModeComponent gm, int code, RZ_DCtx ctx)
+	{
+		int house = code / 10;
+		RZ_NamedPerson p = gm.GetErrands().GetPeople().FromHouse(house, code % 10);
+		if (!p || !gm.GetSafehouses().Get(house))
+			return false;
+
+		ctx.m_aKinds.Insert("resident:" + p.m_sRole);
+		ctx.m_aKinds.Insert("resident");
+		ctx.m_sKey = RZ_NamedPeople.HouseKey(house, code % 10);
+		ctx.m_iHouse = house;
+		ctx.m_iFaction = RZ_EFaction.SURVIVORS;
+		ctx.m_sName = p.m_sName;
+		ctx.m_sShort = p.m_sName;
+		ctx.m_sRole = p.m_sRole;
+		ctx.m_sPlace = p.m_sPlace;
+		ctx.m_bStronghold = true;	// nobody threatens in a house
 		return true;
 	}
 

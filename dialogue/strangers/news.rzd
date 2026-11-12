@@ -1,0 +1,35 @@
+# Strangers: what they passed on the way here (docs/DIALOGUE.md, "Hubs"), one small thing, in their
+# own words. Their ask stays theirs, as built.
+
+conv stranger.any.passed
+for stranger
+topic "Ask what they passed on the way."
+prio flavour
+once
+voice plain
+
+bind horde = news:horde
+bind fire = news:burned
+bind dead = news:death
+
+node start
+  jump news:horde -> horde
+  jump news:burned -> fire
+  jump news:death -> dead
+  say? rain :: "Puddles. I counted them to stop counting other things. Forty-one."
+  say? night :: "Nothing. It's dark. I passed the dark."
+  say "A dog that followed me for a mile and then thought better of it. That was the best part."
+  > @back0 "Something else." -> hub
+
+node horde
+  say "A lot of them, near {bind:horde}. Walking the same way, like a parade nobody wanted. I hid in a ditch."
+  say "The ditch was nice, actually. Quiet. I might go back to the ditch."
+  > @back1 "Something else." -> hub
+
+node fire
+  say "Smoke over {bind:fire}. I didn't go closer. I'm not that sort of brave. I'm the walking-away sort."
+  > @back2 "Something else." -> hub
+
+node dead
+  say "Somebody had died near {bind:dead}. Somebody covered them with a coat. A good coat. That stayed with me."
+  > @back3 "Something else." -> hub

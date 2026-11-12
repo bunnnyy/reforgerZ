@@ -371,7 +371,13 @@ class RZ_DialogueCond
 		// The season's story, the infected, the radio, kit marks (RZ_DialogueWorld)
 		bool known;
 		bool v = RZ_DialogueWorld.Term(ctx, t, known);
-		return known && v;
+		if (known)
+			return v;
+
+		// What's going on: the news, the trucks, the weather, the majors' acts (RZ_DialogueNews)
+		bool news;
+		bool w = RZ_DialogueNews.Term(ctx, t, news);
+		return news && w;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -529,6 +535,20 @@ class RZ_DialogueCond
 		{
 			RZ_Settlement s = ctx.m_GM.GetSettlement(ctx.m_iTown);
 			return s && Cmp(RZ_Util.RoundToInt(s.m_fInfection), t.m_sOp, t.m_iVal);
+		}
+
+		// The town's state (town:safe, infested, overrun) and its town memory (looted, burned, barricaded, powered)
+		RZ_Settlement here = ctx.m_GM.GetSettlement(ctx.m_iTown);
+		RZ_TownMemory towns = ctx.m_GM.GetTownMemory();
+		switch (t.m_sArg)
+		{
+			case "safe": return here && here.GetState() == RZ_ESettlementState.SAFE;
+			case "infested": return here && here.GetState() >= RZ_ESettlementState.INFESTED;
+			case "overrun": return here && here.GetState() == RZ_ESettlementState.OVERRUN;
+			case "looted": return towns && towns.IsEnabled() && towns.HasFlag(ctx.m_iTown, RZ_TownMemory.FLAG_LOOTED);
+			case "burned": return towns && towns.IsEnabled() && towns.HasFlag(ctx.m_iTown, RZ_TownMemory.FLAG_BURNED);
+			case "barricaded": return towns && towns.IsEnabled() && towns.HasFlag(ctx.m_iTown, RZ_TownMemory.FLAG_BARRICADED);
+			case "powered": return towns && towns.IsEnabled() && towns.HasFlag(ctx.m_iTown, RZ_TownMemory.FLAG_POWERED);
 		}
 
 		return false;

@@ -5,6 +5,7 @@ class RZ_DialoguePack_wanderers
 	{
 		Add0(db);
 		Add1(db);
+		Add2(db);
 	}
 
 	protected static void Add0(RZ_DialogueDB db)
@@ -37,6 +38,35 @@ class RZ_DialoguePack_wanderers
 		db.Node("read");
 		db.Say("", "\"Never. The day I start reading them is the day I start choosing which ones to lose.\"");
 		db.Choice("back10", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.courier.trouble", "wanderer:courier", "!wbitten", "Ask whose letters are late.", 1, 0, "plain");
+		db.Node("start");
+		db.Say("outbreak:overrun", "\"Everyone's. The roads are theirs now. I go round. Round takes days.\"");
+		db.Say("edge", "\"There's a letter for someone outside the line. I carry it anyway. One day there'll be an outside again.\"");
+		db.Say("", "\"A mother in one town for a son in another. Neither knows the other's alive. I'm the only one who knows both.\"");
+		db.Choice("why", "\"Why not deliver them?\"", "why", "", "", "", "", "", "", "", "");
+		db.Choice("hand", "\"Need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("no", "\"Safe roads.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("why");
+		db.Say("", "\"Because one of the towns is a bad town now. I'd go. I'm a coward, not an idiot. Mostly a coward.\"");
+		db.Choice("hand1", "\"Need a hand with it?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.deserter.trouble", "wanderer:deserter", "!wbitten", "Ask if they're being followed.", 1, 0, "plain");
+		db.Node("start");
+		db.Say("kit:other", "\"Maybe. You're wearing colours. Whose? Never mind. Don't stand so close.\"");
+		db.Say("feud:bastion", "\"By Bastion? They've got enough to do. They'd still make time for me.\"");
+		db.Say("", "\"Always. Or I think so, which is the same for sleeping.\"");
+		db.Choice("why", "\"Who'd follow you?\"", "who", "", "", "", "", "", "", "", "");
+		db.Choice("soldier", "\"You left your post. That counts.\"", "post", "", "", "", "", "bg:soldier,police", "", "", "");
+		db.Choice("hand", "\"Need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("no", "\"Keep moving.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("who");
+		db.Say("", "\"People I used to stand next to. They'd say they're looking for me. They'd mean it kindly. That's worse.\"");
+		db.Choice("hand1", "\"Need a hand with anything?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("post");
+		db.Say("", "\"It isn't. I know. I still hear the roll some nights. My name's on the board as missing. That's the kind word.\"");
+		db.Choice("hand2", "\"Need a hand anyway?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.deserter.why", "wanderer:deserter", "", "Ask why they left Bastion.", 2, 0, "plain");
 		db.Node("start");
 		db.Say("", "\"I didn't leave. On paper I'm dead. KIA, body not recovered. My name's still on their board.\"");
@@ -66,6 +96,25 @@ class RZ_DialoguePack_wanderers
 		db.Say("", "\"The chemist's? I cleared it myself, Day 3. Every shelf. Whoever told you otherwise wanted a tin more than you did.\"");
 		db.Mark("truth", "scav.chemist");
 		db.Choice("thanks", "\"Good to know.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.doctor.trouble", "wanderer:doctor", "!wbitten", "Ask who they're worried about.", 1, 0, "plain");
+		db.Node("start");
+		db.Say("dusk", "\"Whoever's still out after dark. It's nearly dark. So, everyone.\"");
+		db.Say("outbreak:collapse", "\"Everybody with a scratch who's telling themselves it's a fence.\"");
+		db.Say("symptoms", "\"You, mostly. Sit down. No, really. Sit.\"");
+		db.Say("", "\"The ones who won't come to me. They're always the ones who should.\"");
+		db.Choice("who", "\"Anyone in particular?\"", "who", "", "", "", "", "", "", "", "");
+		db.Choice("nurse", "\"Let me sort your bag for you.\"", "kit", "", "", "", "", "bg:nurse,doctor", "", "", "");
+		db.Choice("hand", "\"Need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("no", "\"Take care of yourself.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("who");
+		db.Say("", "\"A family on the farm road with a child who coughs. A man who won't let anyone see his leg. Ordinary things.\"");
+		db.Say("", "\"Ordinary things kill more people than the dead do. They're just slower about it.\"");
+		db.Choice("hand1", "\"Need a hand with them?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("kit");
+		db.Say("", "\"You know what you're looking at. Good. Half of this is expired. The other half I'm pretending isn't.\"");
+		db.Choice("hand2", "\"Then need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.doctor.work", "wanderer:doctor", "", "Ask how the work's going.", 4, 0, "plain");
 		db.Node("start");
 		db.Say("", "\"Same as the old job. People come in hurt, I fix what I can, and I write down what I can't.\"");
@@ -111,6 +160,10 @@ class RZ_DialoguePack_wanderers
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.mechanic.cars", "wanderer:mechanic", "", "Ask what still runs.", 4, 0, "plain");
 		db.Node("start");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Say("", "\"Anything with a carburettor and an owner who's dead. Fuel's the problem, not the cars.\"");
 		db.Say("", "\"The Red Hand has most of the diesel. Ask them nicely and then check your pockets.\"");
 		db.Choice("fix", "\"Can you teach me a trick?\"", "fix", "", "", "", "", "bg:mechanic", "", "", "");
@@ -128,6 +181,65 @@ class RZ_DialoguePack_wanderers
 		db.Node("danger");
 		db.Say("", "\"They do. That's why I ring and walk on. You can ask me to stop for a while. I'll listen.\"");
 		db.Choice("back9", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.preacher.trouble", "wanderer:preacher", "!wbitten", "Ask what they're praying for.", 1, 0, "plain");
+		db.Node("start");
+		db.Say("epilogue", "\"That the road out is a road out. I've stopped praying for big things. I'm saving my breath.\"");
+		db.Say("cure>=75", "\"For the lab. Don't tell anyone. I'd lose my reputation for not trusting anything.\"");
+		db.Say("outbreak:overrun", "\"For quiet. The bells were for company. They brought the wrong company.\"");
+		db.Say("", "\"For whoever needs it. You can have one if you like. Free. It's the only free thing left.\"");
+		db.Choice("bells", "\"Why the bells?\"", "bells", "", "", "", "", "", "", "", "");
+		db.Choice("hand", "\"Need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("no", "\"Pray for me, then.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("bells");
+		db.Say("", "\"So the lonely ones know someone's here. The dead hear it too. Everything has a cost now. Even comfort.\"");
+		db.Choice("hand1", "\"Need a hand with anything?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.road.news", "wanderer:trader,wanderer:scavenger,wanderer:deserter,wanderer:preacher,wanderer:courier,wanderer:doctor", "", "Ask what they passed on the road.", 2, 0, "plain");
+		db.Bind("burned", "news:burned");
+		db.Bind("took", "news:taken");
+		db.Bind("who", "news:taken_by");
+		db.Bind("from", "news:taken_from");
+		db.Bind("dead", "news:leader_dead");
+		db.Bind("at", "news:leader_dead_at");
+		db.Bind("horde", "news:horde");
+		db.Bind("truck", "news:truck");
+		db.Bind("bit", "news:bite");
+		db.Node("start");
+		db.Jump("news:burned", "burned");
+		db.Jump("news:leader_dead", "dead");
+		db.Jump("news:taken", "taken");
+		db.Jump("news:horde", "horde");
+		db.Jump("news:truck", "truck");
+		db.Jump("news:bite", "bite");
+		db.Say("epilogue", "\"Queues at the road checkpoints. People in their good coats. Processing, they call it.\"");
+		db.Say("edge", "\"Drones. Close to the line, there's always one. It hums like it's thinking about you.\"");
+		db.Say("stage:fever", "\"You, looking like that. Sit down a minute before you fall down.\"");
+		db.Say("", "\"Nothing. Empty cars. A shoe in the road. There's always a shoe in the road.\"");
+		db.Choice("back0", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("burned");
+		db.Say("", "\"{bind:burned}, burning. The Red Hand's work. I saw their truck on the road after.\"");
+		db.Mark("lie", "gossip.burned@burned");
+		db.Choice("catch", "\"The Red Hand say burning is waste.\"", "caught", "", "", "", "", "", "", "", "");
+		db.ChoiceExtra("", "gossip.burned@burned");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught");
+		db.Say("", "\"Do they. Well. It was a truck. On a road. I might have filled in the rest. People like a story with someone in it.\"");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("dead");
+		db.Say("", "\"{bind:dead} is dead. In {bind:at}. I heard it three ways. Two of them were sad about it.\"");
+		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("taken");
+		db.Say("", "\"{bind:who} put their flag up at {bind:took}. {bind:from} took theirs down. Nobody's flag stopped the dead.\"");
+		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("horde");
+		db.Say("", "\"A crowd near {bind:horde}, following some noise. I went round. Round is my favourite direction.\"");
+		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("truck");
+		db.Say("", "\"A truck that didn't get there. {bind:truck}. Doors open, nobody in it. I didn't look in the back.\"");
+		db.Choice("back6", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("bite");
+		db.Say("", "\"Somebody got bitten near {bind:bit}. Saw the blood on the road. Saw the person walk on. Brave, or not thinking yet.\"");
+		db.Choice("back7", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.scavenger.came_back", "wanderer:scavenger", "due:scav.came_back & !nmem:honest", "", 4, 5, "plain");
 		db.Node("start");
 		db.Say("", "\"You're back. Did you go to the chemist's? Don't tell me. I can see it on you. Still here, though. That's the main thing.\"");
@@ -148,6 +260,18 @@ class RZ_DialoguePack_wanderers
 		db.Say("", "\"All right, all right. Picked clean. But the vet's on the south road still has bandages. Honest. That one's free, for the cheek.\"");
 		db.Do("nset:honest");
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.scavenger.trouble", "wanderer:scavenger", "!wbitten", "Ask what they're after.", 1, 0, "plain");
+		db.Node("start");
+		db.Say("town:looted", "\"Anything nobody's taken. Round here that's a short list. This town's been picked to the bone.\"");
+		db.Say("night", "\"Sleep. But since you're asking, batteries.\"");
+		db.Say("", "\"Whatever's left. Whatever's worth a tin. Same thing, these days.\"");
+		db.Choice("where", "\"Where's worth looking?\"", "where", "", "", "", "", "", "", "", "");
+		db.Choice("hand", "\"Need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("no", "\"Happy hunting.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("where");
+		db.Say("", "\"If I told you, it'd be worth less. Help me with something and I'll think about telling you.\"");
+		db.Choice("hand1", "\"Need a hand, then?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.scavenger.where", "wanderer:scavenger", "", "Ask where they've been.", 4, 0, "plain");
 		db.Node("start");
 		db.Say("", "\"Everywhere twice and nowhere I'd go a third time. {here} has a chemist with the shutters down.\"");
@@ -159,10 +283,6 @@ class RZ_DialoguePack_wanderers
 		db.Do("learn:scav.chemist");
 		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("shrug");
-	}
-
-	protected static void Add1(RZ_DialogueDB db)
-	{
 		db.Say("", "\"True enough to sell. That's the only kind of true I can afford.\"");
 		db.Choice("back5", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("wanderer.trader.prices", "wanderer:trader", "", "Ask what sells these days.", 4, 0, "plain");
@@ -190,6 +310,28 @@ class RZ_DialoguePack_wanderers
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("nowhere");
 		db.Say("", "\"Every way's the same today. Pick one and keep your head down.\"");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("wanderer.trader.trouble", "wanderer:trader", "!wbitten", "Ask how trade's been.", 1, 0, "plain");
+		db.Node("start");
+		db.Say("outbreak:overrun", "\"Slow. Nobody walks to market when the market might eat them.\"");
+	}
+
+	protected static void Add2(RZ_DialogueDB db)
+	{
+		db.Say("need:food", "\"Everybody wants food and nobody's got anything to swap for it but stories. I don't eat stories.\"");
+		db.Say("rain", "\"Wet. Wet stock is cheap stock. I'm selling damp bandages at a very fair price.\"");
+		db.Say("", "\"Up and down. Mostly down. I'm an optimist about the up.\"");
+		db.Choice("why", "\"What's the hold-up?\"", "hold", "", "", "", "", "", "", "", "");
+		db.Choice("cut", "\"And if I helped? What's my cut?\"", "cut", "", "", "", "", "", "", "", "");
+		db.Choice("hand", "\"Need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("no", "\"Good luck with it.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("hold");
+		db.Say("", "\"Roads. Tolls. People. Mostly people. Somebody always wants the thing you're carrying more than you do.\"");
+		db.Choice("hand1", "\"Need a hand, then?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("cut");
+		db.Say("", "\"Your cut is my gratitude and a better price next time. My gratitude is very sincere. My prices are less so.\"");
+		db.Choice("hand2", "\"Fair. Need a hand?\"", "hub", "", "", "", "", "", "call:slot:2", "", "");
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 }

@@ -134,6 +134,7 @@ class RZ_DConv
 	ref array<string> m_aBindPickers = {};
 	ref RZ_DCond m_SceneWho;	// who may decide (`scene <id> <scope> who <conditions>`); null: whoever may take the choice
 	float m_fOpens;			// a greet that opens the talk screen by itself within this many metres (0 never)
+	ref array<int> m_aCarries = {};	// the built replies its choices run (call:slot:N): while it shows, they hide from the hub
 	ref array<ref RZ_DNode> m_aNodes = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -497,6 +498,17 @@ class RZ_DialogueDB
 		ReadCheck(c, check);
 		ReadCost(c, cost);
 		m_Node.m_aChoices.Insert(c);
+
+		// A built reply this conversation carries (docs/DIALOGUE.md, "Hubs: work comes out of talk")
+		foreach (RZ_DEffect e : c.m_aDo)
+		{
+			if (e.m_sName != "call" || !e.m_sArg.StartsWith("slot:") || !m_Conv)
+				continue;
+
+			int slot = e.m_sArg.Substring(5, e.m_sArg.Length() - 5).ToInt();
+			if (m_Conv.m_aCarries.Find(slot) < 0)
+				m_Conv.m_aCarries.Insert(slot);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -8,6 +8,30 @@ class RZ_DialoguePack_table
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
+		db.Conv("table.host.season", "table:host,table:mother", "!table:crossed", "Ask what news reaches the farm.", 2, 0, "table");
+		db.Bind("horde", "news:horde");
+		db.Bind("took", "news:taken");
+		db.Bind("who", "news:taken_by");
+		db.Node("start");
+		db.Jump("news:horde", "horde");
+		db.Jump("news:taken", "taken");
+		db.Say("epilogue", "\"That people are leaving. We aren't. The farm was here before the roads. It'll be here after.\"");
+		db.Say("cure>=75", "\"That the lab's nearly there. Good for them. We've never needed much medicine out here.\"");
+		db.Say("rain", "\"The rain, mostly. It's good for the garden. Sit by the stove, you're dripping.\"");
+		db.Say("", "\"Not much reaches us. We like it that way. Tell us yours, though. Where have you been today?\"");
+		db.Choice("about", "\"Here and there.\"", "asked", "", "", "", "", "", "", "", "");
+		db.Choice("back0", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("horde");
+		db.Say("", "\"A crowd of them went past near {bind:horde}. They never come up the lane. They never have. Lucky, we say.\"");
+		db.Say("", "\"Are you walking that way tonight? On your own?\"");
+		db.Choice("no1", "\"Not tonight.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("taken");
+		db.Say("", "\"{bind:who} has {bind:took}, we hear. Flags, flags. Nobody out here salutes. We wave.\"");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("asked");
+		db.Say("", "\"Here and there. That's the best sort of place. Nobody knows to look for you in here and there.\"");
+		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("table.mother.house", "table:mother", "!table:crossed", "Ask about the farm.", 4, 0, "table");
 		db.Node("start");
 		db.Say("", "\"It was my husband's people's. Always a big house, always a long table. Sit, sit. You're thin.\"");
