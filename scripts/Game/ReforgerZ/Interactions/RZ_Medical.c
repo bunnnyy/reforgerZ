@@ -1,45 +1,22 @@
-//! Medical help between players (docs/DESIGN.md, "World interactions"). "Treat" on another
-//! player's character: a first-aid kit and 20 seconds next to them, and they're patched up.
-//! Nurses and Doctors are much faster and can do it with just a bandage, and slow a bitten
-//! player's infection a little (once per life). Blood and saline are the vanilla items, given
-//! the vanilla way; carrying the wounded is whatever the game version offers (ReforgerZ adds none).
+//! Medical help between players (docs/DESIGN.md, "Treating each other"). Treating someone else is
+//! vanilla's own: hold a bandage, tourniquet, morphine or saline and use it on them (vanilla's heal
+//! action on another character). ReforgerZ adds one thing on top: a Nurse or Doctor who treats a
+//! bitten player that way slows the infection a little (x the time left, once per life). Nothing
+//! else is ours: no prompt, no timer, no items of our own.
 
 //------------------------------------------------------------------------------------------------
-//! "Treat <name>": on the player character prefab's ActionsManagerComponent.
-class RZ_TreatOtherAction : ScriptedUserAction
+//! vanilla's consumables: the one place a medical item's effect lands on its target, whoever used
+//! it. Self-treatment and anything that isn't a health item pass straight through.
+modded class SCR_ConsumableItemComponent
 {
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override void ApplyItemEffect(IEntity target, IEntity user, ItemUseParameters animParams, IEntity item, bool deleteItem = true)
 	{
-		outName = "Treat their wounds";
-		return true;
-	}
+		// VERIFY: ApplyItemEffect runs on the server when a medic finishes vanilla's heal on another character (SCR_HealingUserAction, then the item-use event)
+		if (Replication.IsServer() && target && user && target != user && SCR_ConsumableEffectHealthItems.Cast(GetConsumableEffect()))
+			RZ_Medical.OnHealedOther(user, target);
 
-	//------------------------------------------------------------------------------------------------
-	override bool CanBeShownScript(IEntity user)
-	{
-		IEntity owner = GetOwner();
-		return owner && user && owner != user && RZ_Util.IsCharacterAlive(owner);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
-	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer() || pOwnerEntity == pUserEntity)
-			return;
-
-		RZ_Interactions hub = RZ_Interactions.Get();
-		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
-		if (!hub || playerId <= 0)
-			return;
-
-		hub.GetMedical().StartTreat(playerId, pUserEntity, pOwnerEntity);
+		super.ApplyItemEffect(target, user, animParams, item, deleteItem);
 	}
 }
 
@@ -49,7 +26,6 @@ class RZ_Medical
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
 	protected RZ_InteractionSettings m_Settings;
-	protected ref map<string, float> m_mTreatedAt = new map<string, float>();
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Medical(RZ_GameModeComponent gm, RZ_Interactions hub, RZ_InteractionSettings settings)
@@ -60,12 +36,20 @@ class RZ_Medical
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A new life for the patient: the once-per-life slowing is a profile flag (m_bMedicSlowed),
-	//! cleared by StartNewLife and saved, so a restart can't grant it twice. Only the treatment
-	//! cooldown (a few minutes) is kept here.
-	void OnPlayerSpawned(int playerId)
+	//! From vanilla's consumables, on the server: `user` treated `target` with a health item.
+	static void OnHealedOther(IEntity user, IEntity target)
 	{
-		m_mTreatedAt.Remove(m_GM.GetProfile(playerId).m_sIdentity);
+		RZ_Interactions hub = RZ_Interactions.Get();
+		if (!hub || !hub.GetMedical())
+			return;
+
+		PlayerManager pm = GetGame().GetPlayerManager();
+		int helper = pm.GetPlayerIdFromControlledEntity(user);
+		int patient = pm.GetPlayerIdFromControlledEntity(target);
+		if (helper <= 0 || patient <= 0 || helper == patient)
+			return;
+
+		hub.GetMedical().SlowBite(helper, patient);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -75,97 +59,21 @@ class RZ_Medical
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected float SecondsFor(int playerId)
+	//! A Nurse or Doctor treated a player whose infection has taken: the time left x Medic slows a
+	//! bite, once per life (a profile flag, m_bMedicSlowed, cleared by StartNewLife and saved, so a
+	//! restart can't grant it twice).
+	void SlowBite(int helper, int patient)
 	{
-		float seconds = m_Settings.m_fTreatSeconds;
-		if (RZ_Interactions.IsBackground(m_GM, playerId, "doctor"))
-			return seconds * m_Settings.m_fDoctorMult;
-
-		if (RZ_Interactions.IsBackground(m_GM, playerId, "nurse"))
-			return seconds * m_Settings.m_fNurseMult;
-
-		return seconds;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool HasSupplies(int playerId, IEntity user)
-	{
-		if (RZ_ItemHelper.Has(user, m_Settings.m_sMedkitWords))
-			return true;
-
-		return IsMedic(playerId) && RZ_ItemHelper.Has(user, m_Settings.m_sBandageWords);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void StartTreat(int playerId, IEntity user, IEntity target)
-	{
-		if (!m_Settings.m_bTreatOthers || !target || m_Hub.HasTask(playerId))
+		if (m_Settings.m_fTreatSlowsInfection <= 1 || !IsMedic(helper))
 			return;
 
-		int patient = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(target);
-		if (patient <= 0)
-			return;
-
-		string ident = m_GM.GetProfile(patient).m_sIdentity;
-		float last;
-		if (m_mTreatedAt.Find(ident, last) && m_Hub.GetClock() - last < m_Settings.m_fTreatCooldownMinutes * 60)
-		{
-			m_GM.NotifyPlayer(playerId, "Treat", "They've just been seen to. More won't help yet.");
-			return;
-		}
-
-		if (!HasSupplies(playerId, user))
-		{
-			string need = "You need a first-aid kit.";
-			if (IsMedic(playerId))
-				need = "You need a first-aid kit or at least a bandage.";
-
-			m_GM.NotifyPlayer(playerId, "Treat", need);
-			return;
-		}
-
-		float seconds = SecondsFor(playerId);
-		RZ_TimedTask t = m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_TREAT, -1, patient, seconds, "the treatment", false);
-		t.m_Target = target;
-		m_GM.NotifyPlayer(playerId, "Treat", string.Format("You kneel and get to work. About %1 seconds; stay with them.", RZ_Util.RoundToInt(seconds)));
-		m_GM.NotifyPlayer(patient, "Treat", string.Format("%1 is patching you up. Hold still.", RZ_Util.PlayerName(playerId)));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void CompleteTreat(int playerId, IEntity user, IEntity target, int patient)
-	{
-		if (!target || !RZ_Util.IsCharacterAlive(target))
-			return;
-
-		bool medic = IsMedic(playerId);
-		bool used = RZ_ItemHelper.Take(user, m_Settings.m_sMedkitWords, 1) > 0;
-		if (!used && medic)
-			used = RZ_ItemHelper.Take(user, m_Settings.m_sBandageWords, 1) > 0;
-
-		if (!used)
-		{
-			m_GM.NotifyPlayer(playerId, "Treat", "You reach for the kit and it's not there.");
-			return;
-		}
-
-		RZ_Util.HealCharacter(target);
 		RZ_PlayerProfile profile = m_GM.GetProfile(patient);
-		m_mTreatedAt.Set(profile.m_sIdentity, m_Hub.GetClock());
-
-		// A fresh bite (the golden window) is cleaned properly: it may never take
-		RZ_Infection infection = m_GM.GetInfection();
-		if (infection && infection.CleanByTreatment(patient, playerId))
+		if (!profile || !profile.HasInfectionTaken() || profile.m_bMedicSlowed)
 			return;
 
-		string extra = "";
-		if (medic && profile.HasInfectionTaken() && !profile.m_bMedicSlowed)
-		{
-			profile.m_bMedicSlowed = true;
-			profile.m_fInfectionLeft = profile.m_fInfectionLeft * m_Settings.m_fTreatSlowsInfection;
-			extra = string.Format(" You clean the bite properly. It buys them a little time: about %1 minutes. Not a cure.", RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60));
-		}
-
-		m_GM.NotifyPlayer(playerId, "Treat", "Cleaned, dressed, done." + extra);
-		m_GM.NotifyPlayer(patient, "Treat", string.Format("%1 has patched you up.", RZ_Util.PlayerName(playerId)));
+		profile.m_bMedicSlowed = true;
+		profile.m_fInfectionLeft = profile.m_fInfectionLeft * m_Settings.m_fTreatSlowsInfection;
+		m_GM.NotifyPlayer(helper, "The bite", string.Format("You clean the bite properly while you're at it. It buys them a little time: about %1 minutes. Not a cure.", RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60)));
+		m_GM.NotifyPlayer(patient, "The bite", string.Format("%1 cleaned the bite properly. It burns less. It's still there.", RZ_Util.PlayerName(helper)));
 	}
 }

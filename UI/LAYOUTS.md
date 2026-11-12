@@ -68,8 +68,8 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (72) from `UI/Icons/png/128/` into
-   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1152, eight 128-pixel cells to a row, in name
+1. `py tools/icon_atlas.py` packs the white icons (74) from `UI/Icons/png/128/` into
+   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1280, eight 128-pixel cells to a row, in name
    order.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
    becomes `RZ_Icons.edds`.
@@ -81,10 +81,9 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 4. **UI > Icon imageset** on `RZ_GameMode.et` points at the imageset (already set).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
-steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for the Standing page's nine icons
-(`standing_*` and `need_*`, 72 in all), so import the PNG again (step 2). Until then the imported
-`.edds` is the 63-icon atlas while the imageset lists 72 in a taller atlas, so icons show the wrong
-cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
+steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for you-are-here (`marker_self` and
+`marker_self_back`, 74 in all), so import the PNG again (step 2). Until then the imported `.edds` is
+the 72-icon atlas while the imageset lists 74 in a taller atlas, so icons show the wrong cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -224,10 +223,10 @@ root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `Ra
 `QuestsPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
 **Mouse.** The tabs, `CloseButton`, the journal and quest row's root (`MissionRow`), the Quests tab's `TrackButton`, the radio filter chip
-(`FilterButton`), the Standing page's rows (`Row0` to `Row3`, which also open under the mouse) and
+(`FilterButton`), the Standing page's rows (`Row0` to `Row3`, highlighted under the mouse) and
 the notice board's `PostButton` are `Button`s. Long text sits in a `ScrollLayout` so the wheel
 scrolls it, and on a pad up and down do: `ListScroll` (the journal), `LogScroll` (the radio),
-`NotesScroll` and `PastScroll`. On the Standing page up and down open the next row instead.
+`NotesScroll` and `PastScroll`. On the Standing page up and down highlight the next row instead.
 Menus show the cursor while open; if one doesn't, check its entry in `chimeraMenus.conf`.
 
 **Menu presets.** `Configs/System/chimeraMenus.conf` is an override of the vanilla file (same
@@ -254,7 +253,7 @@ vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
 ### Standing page: `RZ_StandingPage.layout`
 
-Design G2: one row per faction, mostly icons, one row open at a time (behaviour in
+Design G2: one row per faction, mostly icons, at most one row open (behaviour in
 [UI.md](../docs/UI.md#the-notebook)). Positions are at 1920×1080, in the 90% safe area. Every icon
 has its image set in the layout (the `RZ_Icons` imageset and a name, so none draws as a flat
 square); the script swaps the ones that change. The layout is written by a script, so it has no
@@ -269,12 +268,15 @@ Frame StandingPage (root)
 │                              (status_shortage), KIT (standing_kit)
 ├─ Frame  Rows                 at (96, 206), 1728 × 720
 │  └─ Button RowN ×4 (style blank; N is the faction: 0 the Haven, 1 Task Force Bastion, 2 the Red
-│     │  Hand, 3 Halcyon). The script places them: the open row 444 high, the others 84, 8 apart
+│     │  Hand, 3 Halcyon). The script places them, 8 apart: none open, 174 high each (the layout's
+│     │  own); one open, it 444 and the others 84
 │     └─ Frame RowFrameN (fills the button)
 │        ├─ Image  RowBgN        panel, full size
-│        ├─ Image  RowOpenN      bone 6%, full size, shown on the open row
-│        ├─ Panel  RowLineN      border; bone on a pinned row, #2A2E31 otherwise (tinted)
+│        ├─ Image  RowSelectedN  bone 6%, full size, shown on the highlighted row
+│        ├─ Panel  RowLineN      border; bone on the highlighted row, #2A2E31 otherwise (tinted)
 │        ├─ Image  AccentN       8 wide, full height, left edge         faction colour
+│        ├─ Frame  StripN        1728 × 84, the row's one line: at the row's top while a row is open,
+│        │                       centred in it otherwise (the script moves it); positions below are in it
 │        ├─ Image  EmblemN       52 × 52 at (28, 16)                    faction_* icon, faction colour
 │        ├─ Text   FactionNameN  at (96, 25), 320 × 34, condensed bold 28 ("TASK FORCE BASTION")
 │        ├─ Image  TierIconN     48 × 48 at (440, 18)                   tier_* icon, tier colour
@@ -330,7 +332,7 @@ Frame JournalPage (root)
    └─ VerticalLayout (detail body, at (34, 112), 1030 × 712)
       ├─ Text   DetailBrief   italic 18, wraps, on a faint panel with a 3-unit faint bar on its left
       ├─ (WHERE and REWARDS side by side)
-      │  ├─ Text (label "WHERE")   │ Text DetailWhere    mono bold 20, wraps: the direction, then the area
+      │  ├─ Text (label "WHERE")   │ Text DetailWhere    mono bold 20, wraps: the rough area, then the place
       │  └─ Text (label "REWARDS") │ Text DetailRewards  mono bold 18, wraps
       ├─ Text   (label "REQUIREMENTS") │ Text DetailReq  18, wraps
       └─ VerticalLayout CluesBlock
@@ -755,6 +757,11 @@ Frame (root, 48 × 48, top-left anchor, ignores the cursor)
 ├─ Image  Icon       48 × 48, a marker_* icon (white; the script sets the image and tints it)
 └─ Text   Label      under the icon, offset (-116, 50), 280 × 130 (up to four lines), centred, condensed bold 26, bone, a dark shadow offset by 1
 ```
+
+**You are here** is two more of these, made after the others so they're drawn above them, 60 × 60
+(the script sets the root's and **Icon**'s size): `marker_self_back` tinted dark under `marker_self`
+in hazard yellow, whose **Icon** the script turns to the player's heading every frame. Their labels
+are empty.
 
 Markers within 40 m of an earlier one share its label, one line each (`RZ_MapIconsUI.MergeLabels`); their
 own labels are empty, so a stronghold, its quartermaster and a job at the same house never draw their

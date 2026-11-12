@@ -2613,7 +2613,7 @@ class RZ_Wanderers
 
 		if (part.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Nothing in the bag today. Strip a wreck, it's what I do.\"");
+			m_GM.NotifyPlayer(playerId, w.GetTitle(), "\"Nothing in the bag today. Try the boots of the wrecks; that's where mine come from.\"");
 			return;
 		}
 

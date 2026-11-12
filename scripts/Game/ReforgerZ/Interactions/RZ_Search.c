@@ -1,14 +1,16 @@
-//! Loot rules, locks and keys, readable things, the one search that's left (car boots, RZ_Cars)
-//! and what the bodies of infected killed near players carry (docs/DESIGN.md, "World
-//! interactions"). Loot in houses lies loose (RZ_Loot.c) and is rolled here (PickHouseLoot);
-//! bodies are looted with vanilla's inventory (OnZombiesKilled).
+//! Loot rules, locks and keys, readable things, and what the bodies of infected killed near
+//! players carry (docs/DESIGN.md, "World interactions"). Loot in houses lies loose (RZ_Loot.c)
+//! and is rolled here (PickHouseLoot), as is what's in a wreck's boot (PickBootLoot, for
+//! RZ_WreckBoots.c); bodies are looted with vanilla's inventory (OnZombiesKilled). There are no
+//! search prompts left.
 //!
 //! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab
 //!   name of the building. Tables are configurable per type; anything left empty is filled from
 //!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
-//!   garages...). Scaled by the town's loot level (RZ_TownMemory.GetLootLevel); electronics get
+//!   garages...), and a list still thin after that gets the built-in vanilla items for its type
+//!   (RZ_LootDefaults), so no building type is bare when the pool is short or empty. Scaled by the town's loot level (RZ_TownMemory.GetLootLevel); electronics get
 //!   the power grid's multiplier (RZ_PowerGrid.LootMult).
-//! - A car boot is searched (a few seconds), rolled then, and remembered as searched for an hour.
+//! - A wreck's boot is a container (RZ_WreckBoots.c), rolled when it's first put out near a player.
 //!   A body is rolled when it dies and its things go into its inventory (or beside it).
 //! - Locks: some pharmacies, garages, police stations, shops and houses are locked (seeded
 //!   from the building's position, so the same ones stay locked). The lock is on the building's
@@ -25,7 +27,7 @@
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sType")]
 class RZ_LootTable
 {
-	[Attribute("house", desc: "Building type: pharmacy, garage, farm, police, shop, house, body (infected bodies) or car (car boots)")]
+	[Attribute("house", desc: "Building type: pharmacy, garage, farm, police, shop, house, body (infected bodies) or car (wrecks' boots)")]
 	string m_sType;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Everyday finds", "et")]
@@ -43,16 +45,16 @@ class RZ_LootTable
 [BaseContainerProps()]
 class RZ_SearchSettings
 {
-	[Attribute("1", desc: "Searching car boots, what infected bodies carry, locks and keys, readable things (loot in houses: Interactions > Loot)")]
+	[Attribute("1", desc: "What wrecks' boots and infected bodies hold, locks and keys, readable things (loot in houses: Interactions > Loot)")]
 	bool m_bEnabled;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item that can lie in a house or turn up in a car boot or on a body. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md). Each must be a real item with vanilla's pick-up action", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item that can lie in a house or turn up in a wreck's boot or on a body. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md); a list still thin after that gets the built-in vanilla items for its building type. Each must be a real item with vanilla's pick-up action", "et")]
 	ref array<ResourceName> m_aLootPool;
 
 	[Attribute(desc: "Loot tables per building type (optional; empty lists use the pool)")]
 	ref array<ref RZ_LootTable> m_aTables;
 
-	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a car boot search finds anything; on a body, the chance it carries anything")]
+	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a wreck's boot holds anything; on a body, the chance it carries anything")]
 	float m_fFindChance;
 
 	[Attribute("0.1", desc: "Chance a find is rare (doubled behind a lock)")]
@@ -60,15 +62,6 @@ class RZ_SearchSettings
 
 	[Attribute("0.1", desc: "Chance a find is electronics (x the power grid's electronics multiplier)")]
 	float m_fElectronicsChance;
-
-	[Attribute("60", desc: "Real minutes before a searched car boot has anything again")]
-	float m_fSpotReturnMinutes;
-
-	[Attribute("4", desc: "Seconds a car boot search takes (stay close)")]
-	float m_fSearchSeconds;
-
-	[Attribute("1", desc: "Heat a car boot search makes")]
-	float m_fSearchHeat;
 
 	// ---------------------------------------------------------------- Locks and keys
 	[Attribute("1", desc: "Some buildings are locked (seeded from their position): their outside doors (the vanilla door action refuses; Unlock, Lock and Force at the door)")]
@@ -130,7 +123,7 @@ class RZ_SearchSettings
 	float m_fDoorBangSeconds;
 
 	// ---------------------------------------------------------------- Readable things and bodies
-	[Attribute("0.12", desc: "Chance a building's loot (or a car boot) has something readable (ID card, letter, receipt, photo)")]
+	[Attribute("0.12", desc: "Chance a building's loot (or a wreck's boot) has something readable (ID card, letter, receipt, photo)")]
 	float m_fReadableChance;
 
 	[Attribute("0.3", desc: "Chance an infected body has something readable on it")]
@@ -156,7 +149,7 @@ class RZ_Readable
 }
 
 //------------------------------------------------------------------------------------------------
-//! A stash someone wrote about: the building or car boot nearest it holds it.
+//! A stash someone wrote about: the building or wreck's boot nearest it holds it.
 class RZ_Stash
 {
 	vector m_vPos;
@@ -180,7 +173,6 @@ class RZ_Search
 	protected RZ_Interactions m_Hub;
 	protected RZ_SearchSettings m_Settings;
 	protected ref map<string, ref RZ_LootTable> m_mTables = new map<string, ref RZ_LootTable>();
-	protected ref map<string, float> m_mSearched = new map<string, float>();	// car boots
 	protected ref map<string, float> m_mOpened = new map<string, float>();
 	protected ref map<string, float> m_mForced = new map<string, float>();	// opened by force: broken until the reset
 	protected ref array<ref RZ_Readable> m_aNotes = {};
@@ -210,16 +202,6 @@ class RZ_Search
 	void SaveInto(RZ_InteractionSave data)
 	{
 		float now = m_Hub.GetClock();
-		float keep = m_Settings.m_fSpotReturnMinutes * 60;
-		foreach (string key, float at : m_mSearched)
-		{
-			if (now - at < keep)
-			{
-				data.searchedKey.Insert(key);
-				data.searchedAt.Insert(at);
-			}
-		}
-
 		float relock = m_Settings.m_fRelockMinutes * 60;
 		foreach (string okey, float oat : m_mOpened)
 		{
@@ -236,11 +218,6 @@ class RZ_Search
 	//------------------------------------------------------------------------------------------------
 	void RestoreFrom(RZ_InteractionSave data)
 	{
-		for (int i = 0; i < data.searchedKey.Count() && i < data.searchedAt.Count(); i++)
-		{
-			m_mSearched.Set(data.searchedKey[i], data.searchedAt[i]);
-		}
-
 		for (int j = 0; j < data.openKey.Count() && j < data.openAt.Count(); j++)
 		{
 			m_mOpened.Set(data.openKey[j], data.openAt[j]);
@@ -273,7 +250,8 @@ class RZ_Search
 		if (m_Settings.m_aLootPool)
 			pool = m_Settings.m_aLootPool.Count();
 
-		RZ_Log.Info(string.Format("Search: %1 items in the loot pool, %2 tables set by hand.", pool, CountConfigured()));
+		RZ_Log.Info(string.Format("Search: %1 items in the loot pool, %2 tables set by hand. Tables (common/rare/electronics): %3, %4, %5, %6, %7, %8, %9.",
+			pool, CountConfigured(), TableSizes("house"), TableSizes("shop"), TableSizes("farm"), TableSizes("pharmacy"), TableSizes("garage"), TableSizes("police"), TableSizes("body")));
 
 		string where = "off";
 		if (m_Settings.m_bLocks)
@@ -340,6 +318,20 @@ class RZ_Search
 		if (t.m_aElectronics.IsEmpty())
 			FromPool(m_aElectronicsWords, t.m_aElectronics);
 
+		// Still thin (a short or empty pool): the built-in vanilla items for this type
+		array<ResourceName> builtCommon = {};
+		array<ResourceName> builtRare = {};
+		array<ResourceName> builtElectronics = {};
+		RZ_LootDefaults.For(type, builtCommon, builtRare, builtElectronics);
+		if (t.m_aCommon.Count() < RZ_LootDefaults.THIN_COMMON)
+			AppendNew(builtCommon, t.m_aCommon);
+
+		if (t.m_aRare.Count() < RZ_LootDefaults.THIN_RARE)
+			AppendNew(builtRare, t.m_aRare);
+
+		if (t.m_aElectronics.IsEmpty())
+			AppendNew(builtElectronics, t.m_aElectronics);
+
 		m_mTables.Set(type, t);
 	}
 
@@ -354,6 +346,28 @@ class RZ_Search
 			if (!r.IsEmpty())
 				into.Insert(r);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The ones not in `into` yet.
+	protected void AppendNew(array<ResourceName> from, notnull array<ResourceName> into)
+	{
+		foreach (ResourceName r : from)
+		{
+			if (!r.IsEmpty() && into.Find(r) < 0)
+				into.Insert(r);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The table's sizes for the log: "house 14/4/2".
+	protected string TableSizes(string type)
+	{
+		RZ_LootTable t;
+		if (!m_mTables.Find(type, t))
+			return type + " 0";
+
+		return string.Format("%1 %2/%3/%4", type, t.m_aCommon.Count(), t.m_aRare.Count(), t.m_aElectronics.Count());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -857,27 +871,7 @@ class RZ_Search
 		}
 	}
 
-	// ================================================================ Searching car boots
-	//------------------------------------------------------------------------------------------------
-	protected bool WasSearched(string key)
-	{
-		float at;
-		return m_mSearched.Find(key, at) && m_Hub.GetClock() - at < m_Settings.m_fSpotReturnMinutes * 60;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A search of a car boot: a few seconds, then the roll.
-	void StartSearch(int playerId, RZ_Spot s, IEntity user)
-	{
-		if (WasSearched(s.m_sKey))
-		{
-			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "You've been through it, or someone has. Nothing new. Give it time, or try somewhere else.");
-			return;
-		}
-
-		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_SEARCH, s.m_iId, 0, m_Settings.m_fSearchSeconds, "the search", false);
-	}
-
+	// ================================================================ Forcing a door
 	//------------------------------------------------------------------------------------------------
 	//! A forced door: open, loud, and broken until the reset.
 	void CompleteForce(int playerId, RZ_Spot s, IEntity user)
@@ -888,90 +882,6 @@ class RZ_Search
 		OpenBuilding(s.m_sBuildingKey, true);
 		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fForceHeat);
 		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The frame splinters and the lock tears out of it. The door's open, and it won't lock again for hours. Everything for a mile heard that.");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void CompleteSearch(int playerId, RZ_Spot s, IEntity user)
-	{
-		if (!s)
-			return;
-
-		string title = m_Hub.Title(s);
-		m_mSearched.Set(s.m_sKey, m_Hub.GetClock());
-		PruneSearched();
-		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fSearchHeat);
-
-		array<string> found = {};
-		int items = RollLoot(s.m_sType, s.m_vPos, false, user, s.m_vPos, found);
-
-		// A stash someone wrote about
-		if (TakeStashNear(s.m_vPos))
-		{
-			for (int i = 0; i < 2; i++)
-			{
-				items += RollLoot(s.m_sType, s.m_vPos, true, user, s.m_vPos, found);
-			}
-
-			found.Insert("the stash from the note, wrapped in a bin bag");
-		}
-
-		if (items > 0)
-			RZ_TownMemory.ReportSearched(s.m_vPos, m_Hub.GetLoot().GetTownLootPerItem() * items);
-
-		// Treatments (docs/DESIGN.md, "Treatments"): one roll
-		RZ_Infection infection = m_GM.GetInfection();
-		if (infection)
-		{
-			string med = infection.RollMedFind(s.m_sType, false, user, s.m_vPos);
-			if (!med.IsEmpty())
-				found.Insert(med);
-		}
-
-		string text = "";
-		if (found.IsEmpty())
-			text = EmptyText(RZ_TownMemory.GetLootLevel(s.m_vPos));
-		else
-			text = "You find " + ListText(found) + ".";
-
-		if (Math.RandomFloat01() < m_Settings.m_fReadableChance)
-		{
-			string keyId;
-			string keyTag;
-			string line;
-			int note = CreateReadable(s.m_vPos, false, false, keyId, keyTag, line);
-			if (note >= 0)
-			{
-				// A search leaves the readable thing where it was, for others to read too
-				SpawnNote(note, RZ_Util.RandomPointInRing(s.m_vPos, 0.4, 1) + Vector(0, 0.2, 0), Math.RandomFloat(0, 360));
-				if (!keyId.IsEmpty())
-					GiveKey(playerId, keyId, keyTag);
-
-				text += "\n" + line;
-			}
-		}
-
-		m_GM.NotifyPlayer(playerId, title, text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void PruneSearched()
-	{
-		if (m_mSearched.Count() < 800)
-			return;
-
-		float now = m_Hub.GetClock();
-		float keep = m_Settings.m_fSpotReturnMinutes * 60;
-		array<string> old = {};
-		foreach (string key, float at : m_mSearched)
-		{
-			if (now - at >= keep)
-				old.Insert(key);
-		}
-
-		foreach (string k : old)
-		{
-			m_mSearched.Remove(k);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1001,25 +911,38 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Loose loot (RZ_Loot): what lies in a building of this type, as prefabs. Up to `slots`
-	//! items, each there with Find chance x the town's loot level (+0.25 behind a lock); `sure`:
-	//! every slot holds something (a stash).
+	//! What lies in a building of this type, as prefabs: up to `slots` items, each there with Find
+	//! chance x the town's loot level (+0.25 behind a lock); `sure`: every slot holds something.
+	//! For a one-off find (a body's kit, a stranger's gift); loose loot uses PickHouseLootAt.
 	void PickHouseLoot(string type, vector pos, bool locked, int slots, bool sure, notnull array<ResourceName> picks)
+	{
+		int sureSlots = 0;
+		if (sure)
+			sureSlots = slots;
+
+		PickHouseLootAt(type, pos, locked, slots, sureSlots, m_Settings.m_fFindChance, picks);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loose loot (RZ_Loot): up to `slots` items of this type's table. The first `sure` always hold
+	//! something; each other one holds something `chance` x the town's loot level of the time (+0.25
+	//! behind a lock, at most 0.95).
+	void PickHouseLootAt(string type, vector pos, bool locked, int slots, int sure, float chance, notnull array<ResourceName> picks)
 	{
 		RZ_LootTable t = TableFor(type);
 		if (!t || slots <= 0)
 			return;
 
-		float chance = m_Settings.m_fFindChance * RZ_TownMemory.GetLootLevel(pos);
+		float odds = chance * RZ_TownMemory.GetLootLevel(pos);
 		if (locked)
-			chance += 0.25;
+			odds += 0.25;
 
 		float rare;
 		float electronics;
 		Odds(type, pos, locked, false, rare, electronics);
 		for (int i = 0; i < slots; i++)
 		{
-			if (!sure && Math.RandomFloat01() >= Math.Clamp(chance, 0, 0.95))
+			if (i >= sure && Math.RandomFloat01() >= Math.Clamp(odds, 0, 0.95))
 				continue;
 
 			ResourceName pick = PickFrom(t, rare, electronics);
@@ -1029,25 +952,26 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Rolls what a car boot search finds and gives it. Returns how many items. Names go into `found`.
-	protected int RollLoot(string type, vector pos, bool locked, IEntity user, vector at, notnull array<string> found)
+	//! What a wreck's boot holds (RZ_WreckBoots), as prefabs: something Find chance x the town's
+	//! loot level of the time, sometimes two. `stash` (a stash someone wrote about): +0.25, two
+	//! half the time, and twice the rare chance.
+	void PickBootLoot(vector pos, bool stash, notnull array<ResourceName> picks)
 	{
-		RZ_LootTable t = TableFor(type);
+		RZ_LootTable t = TableFor("car");
 		if (!t)
-			return 0;
+			return;
 
 		float level = RZ_TownMemory.GetLootLevel(pos);
-
 		float chance = m_Settings.m_fFindChance * level;
-		if (locked)
+		if (stash)
 			chance += 0.25;
 
 		if (Math.RandomFloat01() >= Math.Clamp(chance, 0, 0.95))
-			return 0;
+			return;
 
 		int count = 1;
 		float twoChance = 0.2 * level;
-		if (locked)
+		if (stash)
 			twoChance = 0.5;
 
 		if (Math.RandomFloat01() < twoChance)
@@ -1055,22 +979,13 @@ class RZ_Search
 
 		float rare;
 		float electronics;
-		Odds(type, pos, locked, false, rare, electronics);
-		int given = 0;
+		Odds("car", pos, stash, false, rare, electronics);
 		for (int i = 0; i < count; i++)
 		{
 			ResourceName pick = PickFrom(t, rare, electronics);
-			if (pick.IsEmpty())
-				continue;
-
-			if (RZ_ItemHelper.Give(pick, user, at))
-			{
-				found.Insert(RZ_ItemHelper.DisplayName(pick));
-				given++;
-			}
+			if (!pick.IsEmpty())
+				picks.Insert(pick);
 		}
-
-		return given;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1090,32 +1005,6 @@ class RZ_Search
 			return m_Settings.m_aLootPool.GetRandomElement();
 
 		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static string ListText(array<string> parts)
-	{
-		string text = "";
-		foreach (int i, string p : parts)
-		{
-			if (i > 0 && i == parts.Count() - 1)
-				text += " and ";
-			else if (i > 0)
-				text += ", ";
-
-			text += p;
-		}
-
-		return text;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static string EmptyText(float level)
-	{
-		if (level < 0.4)
-			return "Empty. Somebody beat you to it, and somebody beat them.";
-
-		return "A spare wheel with no air in it and an empty oil can.";
 	}
 
 	// ================================================================ Readable things
@@ -1252,7 +1141,7 @@ class RZ_Search
 
 	//------------------------------------------------------------------------------------------------
 	//! A stash someone wrote about lies within reach of pos: it's used up and true (the building
-	//! placed there, or the car boot searched there, holds it).
+	//! placed there, or a wreck's boot filled there, holds it).
 	bool TakeStashNear(vector pos)
 	{
 		float now = m_Hub.GetClock();
@@ -1455,5 +1344,150 @@ class RZ_CorpseQuery
 			m_aFound.Insert(e);
 
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The built-in vanilla items per building type: what a table gets when the loot pool (and the
+//! tables set by hand) leave it thin, so a pharmacy has medicine and a garage tools even with an
+//! empty pool. Base-game items only; one that doesn't spawn is skipped where it's rolled.
+class RZ_LootDefaults
+{
+	static const int THIN_COMMON = 8;	// fewer everyday finds than this: the built-in ones are added
+	static const int THIN_RARE = 3;
+
+	// Food and water
+	protected static const string MRE = "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et";
+	protected static const string CRACKERS = "{50A68300B537EDFA}Prefabs/Items/Food/ArmyCrackers_Soviet_01.et";
+	protected static const string MEAT = "{C22A2F123CD609FC}Prefabs/Items/Food/Meat_01_Dry.et";
+	protected static const string CANTEEN_SU = "{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et";
+	protected static const string CANTEEN_US = "{630FB4AD4A735264}Prefabs/Items/Equipment/Canteens/Canteen_US_01.et";
+	// Medicine
+	protected static const string DRESSING_US = "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et";
+	protected static const string DRESSING_SU = "{C3F1FA1E2EC2B345}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_USSR_01.et";
+	protected static const string GAUZE_1 = "{CDCC313B2FB76FE7}Prefabs/Items/Medicine/FieldDressing_01/Gauze_01.et";
+	protected static const string GAUZE_2 = "{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et";
+	protected static const string ASPIRIN = "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et";
+	protected static const string TOURNIQUET_US = "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et";
+	protected static const string TOURNIQUET_SU = "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et";
+	protected static const string SALINE_US = "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et";
+	protected static const string SALINE_SU = "{527D7C5D2E476BDC}Prefabs/Items/Medicine/SalineBag_01/SalineBag_USSR_01.et";
+	protected static const string MORPHINE = "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et";
+	protected static const string GLOVES_MED = "{D90A181625AD1F9A}Prefabs/Characters/Handwear/Gloves_White/Medical_Gloves_White_Base.et";
+	protected static const string MED_BAG = "{79015191C0E77E48}Prefabs/Items/Equipment/Backpacks/Backpack_Medical_Soviet_02.et";
+	// Tools and kit
+	protected static const string JERRYCAN = "{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et";
+	protected static const string WRENCH = "{33B2DFDCD0EBA3DB}Prefabs/Items/Equipment/Kits/RepairKit_01/RepairKit_01_wrench.et";
+	protected static const string TORCH_SU = "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et";
+	protected static const string TORCH_US = "{3A421547BC29F679}Prefabs/Items/Equipment/Flashlights/Flashlight_MX991/Flashlight_MX991.et";
+	protected static const string COMPASS = "{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et";
+	protected static const string COMPASS_US = "{61D4F80E49BF9B12}Prefabs/Items/Equipment/Compass/Compass_SY183.et";
+	protected static const string BINOCULARS = "{243948B23D90BECB}Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et";
+	protected static const string WATCH = "{61A705D76908160C}Prefabs/Items/Equipment/Watches/Watch_Orlik38/Watch_Orlik38.et";
+	protected static const string WATCH_2 = "{6FD6C96121905202}Prefabs/Items/Equipment/Watches/Watch_Vostok.et";
+	protected static const string MAP = "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et";
+	protected static const string RADIO = "{73950FBA2D7DB5C5}Prefabs/Items/Equipment/Radios/Radio_ANPRC68.et";
+	protected static const string BAG = "{41A9C55B61F375F0}Prefabs/Items/Equipment/Backpacks/Backpack_Kolobok.et";
+	// Ammunition and police kit
+	protected static const string MAG_PM = "{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et";
+	protected static const string MAG_M9 = "{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et";
+	protected static const string MAG_AK = "{BBB50A815A2F916B}Prefabs/Weapons/Magazines/Magazine_545x39_AK_30rnd_Ball.et";
+	protected static const string PISTOL = "{C0F7DD85A86B2900}Prefabs/Weapons/Handguns/PM/Handgun_PM.et";
+	protected static const string VEST = "{4B57C11AA5161760}Prefabs/Characters/Vests/Vest_PASGT/Vest_PASGT.et";
+	protected static const string HELMET = "{E503F84CD6E31B21}Prefabs/Characters/HeadGear/Helmet_PASGT_01/Helmet_PASGT_Black.et";
+	protected static const string PATROL_CAP = "{7891C761B31741BD}Prefabs/Characters/HeadGear/Hat_Patrol_US_01/Hat_Patrol_US_dark.et";
+	// Clothes
+	protected static const string HAT_KNIT = "{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et";
+	protected static const string HAT_FLAT = "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et";
+	protected static const string HAT_HARD = "{8F5261C6B57B95C8}Prefabs/Characters/HeadGear/Hat_Hard_01/Hat_Hard_01_yellow.et";
+	protected static const string GLOVES_WOOL = "{8266820FFDE17477}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_01.et";
+	protected static const string GLOVES_LEATHER = "{4F71E7468E78DDD2}Prefabs/Characters/Handwear/Gloves_Leather_01/Gloves_Leather_01.et";
+	protected static const string SWEATSHIRT = "{3DA87A330B897C58}Prefabs/Characters/Uniforms/Sweatshirt/Sweatshirt_Red.et";
+	protected static const string JEANS = "{C40CEB198DAABF5B}Prefabs/Characters/Uniforms/Pants_Jeans/Pants_Jeans_01.et";
+	protected static const string SHIRT = "{CD87BF4D0F940AB3}Prefabs/Characters/Uniforms/Shirt/Shirt.et";
+	protected static const string RAINCOAT = "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et";
+	protected static const string FISHER_PANTS = "{0B1F0174869E0351}Prefabs/Characters/Uniforms/Pants_Fisherman_01/Pants_Fisherman_01_green.et";
+	protected static const string OVERALLS = "{DFE230A386D20BFB}Prefabs/Characters/Uniforms/Overalls/Mechanic_uniform.et";
+	protected static const string SNEAKERS = "{553F83578D29670C}Prefabs/Characters/Footwear/Sneakers/Sneakers_Black.et";
+
+	//------------------------------------------------------------------------------------------------
+	static void For(string type, notnull array<ResourceName> common, notnull array<ResourceName> rare, notnull array<ResourceName> electronics)
+	{
+		electronics.Insert(TORCH_SU);
+		electronics.Insert(TORCH_US);
+		switch (type)
+		{
+			case "pharmacy":
+			{
+				array<string> common1 = {DRESSING_US, DRESSING_SU, GAUZE_1, GAUZE_2, ASPIRIN, ASPIRIN, TOURNIQUET_US, TOURNIQUET_SU, SALINE_SU, GLOVES_MED};
+				Add(common, common1);
+				array<string> rare2 = {MORPHINE, SALINE_US, MED_BAG};
+				Add(rare, rare2);
+				return;
+			}
+			case "garage":
+			{
+				array<string> common3 = {JERRYCAN, WRENCH, TORCH_SU, GLOVES_LEATHER, HAT_HARD, OVERALLS, CANTEEN_US, MAP};
+				Add(common, common3);
+				array<string> rare4 = {WRENCH, JERRYCAN, BAG};
+				Add(rare, rare4);
+				return;
+			}
+			case "farm":
+			{
+				array<string> common5 = {MEAT, CRACKERS, MRE, CANTEEN_SU, GLOVES_WOOL, HAT_KNIT, RAINCOAT, FISHER_PANTS, JERRYCAN};
+				Add(common, common5);
+				array<string> rare6 = {BINOCULARS, COMPASS_US, BAG};
+				Add(rare, rare6);
+				return;
+			}
+			case "police":
+			{
+				array<string> common7 = {MAG_PM, MAG_M9, TORCH_US, DRESSING_US, TOURNIQUET_US, PATROL_CAP, GLOVES_LEATHER, MAP};
+				Add(common, common7);
+				array<string> rare8 = {PISTOL, VEST, HELMET, RADIO};
+				Add(rare, rare8);
+				return;
+			}
+			case "shop":
+			{
+				array<string> common9 = {MRE, CRACKERS, MEAT, CANTEEN_US, CANTEEN_SU, TORCH_SU, WATCH, MAP, GLOVES_WOOL, HAT_KNIT};
+				Add(common, common9);
+				array<string> rare10 = {BINOCULARS, WATCH_2, COMPASS};
+				Add(rare, rare10);
+				return;
+			}
+			case "body":
+			{
+				array<string> common11 = {DRESSING_SU, GAUZE_2, CRACKERS, MAG_PM, MAG_AK, CANTEEN_SU, WATCH_2};
+				Add(common, common11);
+				array<string> rare12 = {MORPHINE, BINOCULARS, MAG_M9};
+				Add(rare, rare12);
+				return;
+			}
+			case "car":
+			{
+				array<string> common13 = {JERRYCAN, WRENCH, CANTEEN_US, MAP, TORCH_SU, CRACKERS};
+				Add(common, common13);
+				array<string> rare14 = {BINOCULARS, WRENCH};
+				Add(rare, rare14);
+				return;
+			}
+		}
+
+		// A house: a bit of everything a family would leave
+		array<string> common15 = {MRE, CRACKERS, MEAT, CANTEEN_SU, DRESSING_SU, GAUZE_1, ASPIRIN, TORCH_SU, WATCH_2, MAP, HAT_KNIT, HAT_FLAT, GLOVES_WOOL, SWEATSHIRT, JEANS, SHIRT, SNEAKERS};
+		Add(common, common15);
+		array<string> rare16 = {BINOCULARS, COMPASS, MAG_PM, BAG};
+		Add(rare, rare16);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Add(notnull array<ResourceName> into, array<string> items)
+	{
+		foreach (string r : items)
+		{
+			into.Insert(r);
+		}
 	}
 }

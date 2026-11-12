@@ -145,7 +145,7 @@ caps at 200 per square.
 | A player being somewhere | 0.5 a tick |
 | In a vehicle | +4 a tick |
 | A shot | 3 × the background's noise multiplier; ×0.3 with a suppressor (detected by attachment name) |
-| Noisemakers, bells, sirens, generators, car boot searches, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
+| Noisemakers, bells, sirens, generators, forcing locks, infected at barricades and locked doors, fire | see [World interactions](#world-interactions) |
 
 - **What the infected do with it:** heat draws extra infected to a town, 80 heat near a player
   sends a horde (from the nearest town, with Tribes on), and a burst of 8+ heat at once is
@@ -322,7 +322,6 @@ stop it, once per bite:
 |---|---|
 | "Clean the bite" with alcohol or antiseptic (prefab-name keywords) | 70% |
 | "Disinfect and bandage it" (disinfectant or antiseptic and a bandage, or a first-aid kit) | 90% |
-| Another player's **Treat their wounds** | 90% |
 | Declaring the bite at a safehouse | 90% |
 
 The "Clean the bite" spot (an interaction spot) follows the bitten player's feet and is never
@@ -360,7 +359,7 @@ and odds**; the world-level breakthroughs (spread, timers, the final stand) are 
 | **Trial dose** | Halcyon's quartermaster, "Volunteer for the trial dose": anyone bitten, free, once per life | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
 | **Stabiliser** | Halcyon's quartermaster (Known), from a small stock; rare in pharmacies and hospitals | Pauses the infection for 20 minutes, once per life |
 | **Declaring the bite** | Any safehouse | Once per life: time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement), ×1.5 (Town). A fresh bite is cleaned instead; one cleaned already uses nothing ([details](REPUTATION.md)) |
-| Doctor wanderer, Nurse or Doctor player | On the roads; "Treat their wounds" | ×1.25 / ×1.15 of the time left, once per life each |
+| Doctor wanderer, Nurse or Doctor player | On the roads (the wanderer); a Nurse or Doctor treating you with vanilla's medical items ([Treating each other](#treating-each-other)) | ×1.25 / ×1.15 of the time left, once per life each |
 
 **Supply by research:**
 
@@ -2321,7 +2320,7 @@ Code: `World/RZ_TownMemory.c`.
 - **Town flags:** Looted, Barricaded, Powered, Burned. Plain values per settlement, saved except
   Barricaded and Powered.
   - **Looted:** each town has a loot level (0–1). Every item taken from a house (and every find
-    in a car boot) takes a little, and the town counts as Looted under 0.5. It never drops under
+    taken from a wreck's boot) takes a little, and the town counts as Looted under 0.5. It never drops under
     0.2 and comes back over about 2 hours.
   - **Barricaded:** while a player's barricade stands in it, or once Fortify the Safehouse has
     succeeded there. Not kept across a restart (barricades aren't saved).
@@ -2339,61 +2338,80 @@ Code: `World/RZ_TownMemory.c`.
 
 Code: `Interactions/`.
 
-Loot lying in houses and on bodies, car boots to search, locked doors and keys, cars, crafting,
-water, barricades and traps, generators, fire, bells, radios and treating each other. Data until a
+Loot lying in houses and on bodies, wrecks' boots to open, locked doors and keys, cars, crafting,
+water, barricades and traps, generators, fire, bells, radios and a medic slowing a bite. Data until a
 player is near, capped and decaying, nothing left behind.
 
 **How it works on any map.**
 
 - **Things are recognised by name.** Every 10 s the server looks at static map objects within
-  30 m of each player and sorts them by prefab or mesh name: buildings by type, car wrecks,
-  workbenches, wells and pumps, fuel pumps, stoves, bells (every church gets one), sirens, house
-  radios and generators. Furniture is where loot lies.
-- **Interaction spots, only near players:** an invisible prop with labelled actions ("Search the
-  boot"), at most 10 per player and 70 on the server. Buildings and furniture get none.
-- **Decided on the server.** Loot lies in houses only while a player is near and is data
-  otherwise; a car boot is rolled when it's searched, a body when it dies. What was searched, opened, stripped
-  or burned is remembered as positions and times, and saved.
+  30 m of each player (buildings within the loot's 45 m) and sorts them by prefab or mesh name:
+  buildings by type, car wrecks, workbenches, wells and pumps, fuel pumps, stoves, bells (every
+  church gets one), sirens, house radios and generators. Furniture is where loot lies.
+- **Interaction spots, only near players:** an invisible prop with labelled actions ("Ring the
+  bell"), at most 10 per player and 70 on the server. Buildings, furniture and bodies get none.
+  A thing's spot stands at the middle of its bounds (many props have their origin at a back
+  corner), at about counter height (its own height, 0.6 to 1 m), pulled up to 0.35 m toward its
+  open side, the side with the most free room beyond it, so a stove's prompt is on the stove, not
+  on the wall behind it. A wreck's spot is its boot instead, a storage you open with vanilla's
+  inventory ([Car wrecks](#car-wrecks-one-boot-to-open)).
+- **Decided on the server.** Loot lies in houses and wrecks' boots only while a player is near and
+  is data otherwise; a boot is rolled when it's first put out, a body when it dies. What was
+  emptied, opened or burned is remembered as positions and times, and saved.
 - **Timed actions** run on the 5 s tick: move more than 3.5 m away and they stop.
 
 ### Loot in houses
 
-Walk into a building and a few things lie on its worktops, desks and low cupboards, or on the floor
-beside them. Pick them up with vanilla's **Pick up** (or from the inventory's "nearby" list). There
-are no search prompts in buildings and no timers.
+Walk into a building and several things lie on its worktops, desks and low cupboards and on its
+floors. Pick them up with vanilla's **Pick up** (or from the inventory's "nearby" list). There are
+no search prompts in buildings and no timers. A fresh town looks lived-in and left in a hurry; a
+picked-over one is thin.
 
-| Building type (from the prefab name) | What it tends to have | Items at most |
+| Building type (from the prefab name) | What it tends to have | Items (slots) |
 |---|---|---|
-| Pharmacy (pharmacy, hospital, clinic) | Bandages, medicine, saline, purification tablets; rare: morphine, antibiotics | 4 |
-| Garage (garage, workshop, repair) | Jerrycans, tools, batteries, tyres, spark plugs, crowbars, planks, wire | 4 |
-| Farm (farm, barn, stable, shed, vet clinic) | Food, water, axes, rope, planks, matches; rare: hunting guns | 3 |
-| Police (police, gendarmerie) | Ammo, batons, torches, radios; rare: pistols, vests | 4 |
-| Shop (shop, store, market, kiosk) | Food, water, batteries, torches, bleach | 3 |
-| House (anything else) | Food, water, cloth, bandages, knives, torches | 2 |
+| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves; rare: morphine, a medical bag | 6 |
+| Garage (garage, workshop, repair) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, overalls, maps | 6 |
+| Farm (farm, barn, stable, shed, vet clinic) | Food, canteens, wool gloves and hats, raincoats, jerrycans; rare: binoculars, a compass, a backpack | 5 |
+| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves; rare: a pistol, a vest, a helmet, a radio | 6 |
+| Shop (shop, store, market, kiosk) | Food, canteens, torches, watches, maps, gloves and hats | 5 |
+| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, clothes | 4 |
 
-- **Rolled once, then data.** The first time a player comes near, each of the building's item
-  slots holds something 60% of the time at full town loot (scaled by the town's loot level). 10%
-  of finds are rare (20% behind a lock), 10% electronics (×1.5 in powered towns). A locked place
-  (a seeded lock on outside doors that were found) has one more slot, +25% per slot, and better
-  finds. There's also one roll for a treatment (expired antibiotics, suppressant, vet antiviral,
-  stabiliser, antidote, from a configurable list: [Treatments](#treatments)), sometimes the town's
-  fixable car's keys ([Cars](#cars-found-rare-and-hard-to-fix)), and 12% of the time something to
-  read ([Readable things](#readable-things)). Burned buildings and protected places (the same as
-  for locks) have none.
-- **Where it lies.** On the top of a piece of furniture inside the building, recognised by name
-  (cupboards, desks, worktops, counters, shelves no taller than 1.6 m; a trace down at its middle),
-  else on the floor beside it toward the middle of the building, always inside the building's
-  bounding box. A building with no furniture found gets up to five floor points in its box (traced
-  down from 1.4 m above its origin). One item per spot, at most eight spots; items beyond the
-  building's spots aren't placed.
-- **Only near players.** A building's loot is put out when a player is within 35 m and the
-  look-around has seen it, three buildings a tick, the nearest first. With nobody within 60 m for
-  a minute, untaken items are deleted and kept as data: they're there again next time. At most
-  220 items lie on the server; when it's full, the building farthest from players is put away
-  for a nearer one.
+- **What it's rolled from.** Each type's table is the hand-set loot table for it, else the
+  **Loot pool** items whose prefab names hold the type's keywords. A list still thin after that
+  (fewer than 8 everyday finds, or 3 rare ones) gets the **built-in vanilla items** for the type
+  (the table above; `RZ_LootDefaults` in `Interactions/RZ_Search.c`), so no type is bare when the
+  pool is short or empty. The log's `Search:` line gives each table's size.
+- **Rolled once, then data.** The first time a player comes near, each of the building's slots
+  holds something **70%** of the time (**Loot > Slot chance**) × the town's loot level, and the
+  first slot (**Sure items**, 1) always does while the town's loot level is 0.5 or more: so a
+  house in a fresh town has 1 to 4 things, about 3, and one in a picked-over town about one or
+  none. 10% of finds are rare (20% behind a lock), 10% electronics (×1.5 in powered towns). A
+  locked place (a seeded lock on outside doors that were found) has one more slot, +25% per slot,
+  and better finds. There's also one roll for a treatment (expired antibiotics, suppressant, vet
+  antiviral, stabiliser, antidote, from a configurable list: [Treatments](#treatments)), sometimes
+  the town's fixable car's keys ([Cars](#cars-found-rare-and-hard-to-fix)), and 12% of the time
+  something to read ([Readable things](#readable-things)). Burned buildings and protected places
+  (strongholds, outposts, safehouses, quartermasters and the lab: the same as for locks) have none,
+  so a faction's own buildings are never free loot.
+- **Where it lies.** Up to 16 spots per building, found once and kept: the tops of furniture
+  inside it, recognised by name (cupboards, desks, tables, worktops, counters, shelves, crates no
+  taller than 1.6 m; a trace down at its middle) or the floor beside it toward the middle of the
+  building, at most half of the spots; then floor points on a 1.6 m grid over the building's box, on
+  the ground floor and, in a building tall enough, the storey above. Every spot is traced down to a
+  surface inside the building's box, has a ceiling within 5 m over it (indoors: not on the roof or
+  in a yard), is 0.3 m clear of walls, and is 0.5 m from the next. A trace that starts inside a
+  wall or a piece of furniture finds nothing. One item per spot, in a shuffled order.
+- **Only near players.** A building's loot is put out when a player is within **45 m** (the
+  look-around reaches that far for buildings, 30 m for everything else), four buildings a tick,
+  the nearest first. With nobody within **70 m** for a minute, untaken items are deleted and kept
+  as data: they're there again next time. At most **350** items lie on the server; when it's
+  full, the building farthest from players is put away for a nearer one.
+- **Never in front of you.** A building is only rolled fresh (refilled) with nobody within
+  **20 m** (**Fresh roll distance**); until then what was left there is put out as it was.
 - **Taken.** An item that goes into an inventory (or is carried more than 1.5 m off) is taken:
-  it leaves the building's list, the town's loot level drops by 0.015, and from then on it's an
-  ordinary item (dropped and forgotten, it's cleaned up like any [loose item](#loose-items)).
+  it leaves the building's list, the town's loot level drops by **0.01**
+  ([Town memory](#town-memory)), and from then on it's an ordinary item (dropped and forgotten,
+  it's cleaned up like any [loose item](#loose-items)). Taking things is silent: no heat.
 - **Refill.** An emptied building has loot again after an hour, divided by the town's loot level
   (up to four hours in a picked-over town). One with leftovers keeps them, and rolls fresh after
   three times that.
@@ -2403,15 +2421,15 @@ are no search prompts in buildings and no timers.
   the building nearest it, the first time it's put out.
 
 *Simplified:* the furniture names are guesses, and spots are traced once per building, so an item
-can float on a high shelf or sit in a corner. Car boots are still searched; bodies carry their
-things (below).
+can sit on a low shelf or in a corner. Only two storeys are looked at. Wrecks' boots and bodies
+hold their things (below).
 
-### Bodies and car boots
+### Bodies and car wrecks
 
 | What | What it tends to have |
 |---|---|
 | Body (an infected killed within 60 m of a player) | Bandages, ammo, small things; sometimes a key or something to read |
-| Car boot (a wreck) | Jerrycans, tools, rope, batteries, tyres |
+| A wreck's boot | Jerrycans, tools, rope, batteries, tyres; sometimes a car part |
 
 **Bodies are looted with the vanilla inventory.** There's no prompt: when an infected dies within
 60 m of a player, what it carries is rolled at once: something 60% of the time, sometimes two
@@ -2423,9 +2441,34 @@ key taped inside lies next to it. A special's sample drops where it fell, as bef
 ground. Loose, the things are cleaned up like any [loose item](#loose-items); in the body, they go
 with it. Bodies don't use up the town's loot.
 
-**Search the boot** (4 s, 1 heat) finds something 60% of the time (scaled by the town's loot
-level), sometimes two things, plus the treatment roll; the things go into your pack. A searched
-boot has nothing new for an hour. Its finds take 0.015 each off the town's loot level.
+#### Car wrecks: one boot to open
+
+A wreck is a burnt-out shell: there's no fuel in it and nothing to strip. It's one container, its
+boot. **Open the boot** (vanilla's open-storage action, on the wreck's rear) opens the vanilla
+inventory with the boot's things in it, as for any storage box or vehicle trunk, and you drag out
+what you want. There's no other prompt and no timer.
+
+- **Data until a player is near.** While the wreck's spot is out (a player within 30 m of it, kept
+  until everyone is 55 m off), an invisible storage (**Cars > Wreck boot prefab**) stands just
+  behind the middle of the wreck's rear at boot height, filled from the wreck's record. When
+  everyone has gone, what's left is kept as data and the storage is deleted with it.
+- **Rolled the first time it's put out:** something 60% of the time (scaled by the town's loot
+  level) from the car boot table, sometimes two things; two good finds more for a stash someone
+  wrote about; the treatment roll; a car part (a battery, a tyre or spark plugs) 30% of the time
+  (**Wreck part chance**); and 12% of the time something to read, left beside the boot (a key taped
+  inside goes in the boot).
+- **Taken.** On the 5 s tick a thing no longer in the boot was taken: a loot find takes 0.015 off
+  the town's loot level (the part, the treatment and keys don't), and from then on it's an
+  ordinary item ([loose items](#loose-items)).
+- **Refill.** An emptied boot has things again after **Wreck return minutes** (2 hours). One with
+  leftovers keeps them and rolls fresh after three times that. Only the time is saved: after a
+  restart a boot counts as emptied then.
+- **Take only.** Nothing from your own inventory goes into a boot, so a wreck is never a stash
+  (something dragged in from the ground is kept as data like the rest).
+
+*Simplified:* the boot's point comes from the wreck's bounding box, taking its rear as the box's
+back (local −Z, as for vehicles); a wreck modelled the other way round has its boot at the bonnet.
+A thing kept as data comes back as a fresh copy of its prefab (a magazine full, a bag empty).
 
 ### Locks and keys
 
@@ -2450,9 +2493,14 @@ one exception is a lock that is part of the mission (the Locked Bunker's keypad)
   the building's outline (its bounding box). Interior doors never lock. Doors are data: they're
   looked at only when a player comes within 150 m of a locked place (one look per player every
   30 s, after moving 40 m), or tries one.
-- **At the door.** Each outside door of a locked place gets an interaction spot just outside it,
-  with Unlock, Lock and Force (at most three per building; a double door shares one). Looking at
-  it, or trying the locked door, tells you what the key's tag says.
+- **At the door.** Each outside door of a locked place gets an interaction spot on the door
+  itself, with Unlock, Lock and Force (at most three per building; a double door shares one, on
+  its first leaf). It sits on the shut leaf at handle height (the height of vanilla's own door
+  action point when the door has one, else 1.05 m), on the leaf's middle line, 8 cm out from its
+  outside face, so the prompts are on the door beside vanilla's Open door at the handle. The
+  **door spot prefab** is the spot with a tiny interaction box and a 0.35 m action radius, so it
+  doesn't cover the handle. A spot placed while its door stood open (on the open leaf) moves onto
+  the shut leaf at the next look-around (after you've moved 10 m). Looking at it, or trying the locked door, tells you what the key's tag says.
 - **Inside always opens.** Inside means anywhere in the building's bounding box, at least 0.5 m
   in from its sides, or past the door toward the middle of the building and within its width.
   The first covers a shallow closet behind a door near the outline. Shutting a door is never
@@ -2513,14 +2561,14 @@ survive a restart.
 
 ### Readable things
 
-12% of buildings' loot (and of car boot searches, 30% of bodies) includes an ID card, letter,
+12% of buildings' loot (and of wrecks' boots, 30% of bodies) includes an ID card, letter,
 receipt or photo in the Zone's voice ([WRITING.md](WRITING.md#the-voices)). In a building it lies
 like the rest of the loot, as a note prop read where it lies, and goes with the building's loot;
-one a search turns up is left beside the boot for half an hour, and a body's lies beside the body
-as long. One in five had a key taped inside: in a building or by a body the key lies next to it,
-from a boot search it goes into your pack. About
-one in seven has a stash grid on the back (two good finds in the building nearest it, or a car
-boot searched there, within 90 minutes), one in ten a puzzle mission circled on a map.
+a boot's is left beside the boot for half an hour, and a body's lies beside the body as long. One
+in five had a key taped inside: in a building or by a body the key lies next to it, from a wreck
+it's in the boot. About one in seven has a stash grid on the back (two good finds in the building
+nearest it, or a wreck's boot filled there, within 90 minutes), one in ten a puzzle mission circled
+on a map.
 Reading one opens it in the reader, a sheet of paper you page through, as do puzzle notes, letters
 and orders, guidance notes and safehouse flyers ([UI.md](UI.md#subtitles-and-the-reader)).
 
@@ -2534,8 +2582,8 @@ and locked so nobody can get in, with its prompts in front of its grille.
 | Step | How | Settings (defaults) |
 |---|---|---|
 | **Look over the car** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different (on the repair screen, below, where it's used) | **Min parts** 2, **Max parts** 3 |
-| **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, come from car boots, **stripping** wrecks (one part each) and the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
-| **Fuel it** | A full can, from siphoning a wreck (60% have some) or a petrol station's hand pump (10 heat). No tool needed | |
+| **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, are sometimes in a wreck's boot (30%) and come from the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
+| **Fuel it** | A full can: found as loot (garages, wrecks' boots), or filled at a petrol station's hand pump (an empty can, 30 s, 10 heat). Wrecks have no fuel in them. No tool needed | |
 | **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
@@ -2630,12 +2678,17 @@ drinking does belongs to the hunger and thirst mod ([MOD_STACK.md](MOD_STACK.md)
 
 ### Treating each other
 
-**Treat their wounds**: a first-aid kit and 20 s next to another player for a full heal. Nurses
-(8 s) and Doctors (6 s) can do it with a bandage, and also slow a bite (×1.15 of the time left,
-once per life, kept with the profile, so a restart doesn't grant it again). Every 5 minutes per
-patient (a new life starts fresh). On a fresh bite (the golden window) a treatment is a
-proper clean instead: 90% that it never takes. Anyone can also use the bitten player's **Clean
-the bite** spot ([The golden window](#the-golden-window)).
+Treating another player is the game's own: hold a bandage, tourniquet, morphine or saline and use
+it on them with vanilla's heal action. ReforgerZ adds no prompt and no timer of its own. One thing
+is ours on top: a **Nurse or Doctor** who treats a bitten player that way (any vanilla health item
+used on them, once the infection has taken) also slows the bite: **×1.15 of the time left**, once
+per life, kept with the profile so a restart doesn't grant it again (**Interactions > Medic slows a
+bite**; 1 = off). Both are told. A fresh bite (the golden window) is cleaned with the bitten
+player's **Clean the bite** spot, or at a safehouse ([The golden window](#the-golden-window)).
+
+*Simplified:* the hook is vanilla's consumable item component, where a health item's effect lands
+on its target; that it runs on the server for a heal on someone else is a VERIFY
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#the-markers)).
 
 ### Bells, sirens and alarms
 
@@ -2651,7 +2704,7 @@ horde somewhere else. Players within 1.2 km hear it.
   nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short
   places, samples needed.
 
-*Simplified:* spots stand on the object's origin (door spots just outside the door). Carrying
+*Simplified:* spots stand on the object's origin (door spots on the door leaf, a wreck's boot at its rear). Carrying
 the wounded isn't added. Item names are matched by keyword. Fuel cans are full or empty by name:
 nothing with "empty" in its name counts as fuel (cars, generators, fires, the power station, the
 molotov recipe).
@@ -2749,6 +2802,9 @@ wherever the spawn point put you.
 
 ### The wind-up radio and faction voices
 
+- Every new life gets a **compass** (vanilla's Adrianov, **UI > Compass prefab**) and a **paper map**
+  (vanilla's folded map, **UI > Map prefab**) a few seconds after spawn, unless its loadout already
+  has one; one that doesn't fit lies at your feet.
 - Every new life gets a **wind-up radio** (unless they carry one). It picks up the **open
   channels**: the Haven ("If you can hear this, *town* is open. Bring water if you can. Bring
   yourself either way."), Bastion's net and the Red Hand's taunts. About every 12 minutes for a

@@ -210,6 +210,12 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every new life is given (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
 	ResourceName m_sNotebookPrefab;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The compass every new life is given (vanilla Compass_Adrianov.et), unless the loadout already has one. Empty = none", "et")]
+	ResourceName m_sCompassPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The paper map every new life is given (vanilla PaperMap_01_folded.et), unless the loadout already has one. Empty = none", "et")]
+	ResourceName m_sMapPrefab;
+
 	protected static ref RZ_UISettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -1069,5 +1075,54 @@ class RZ_UIW
 	{
 		if (w)
 			FrameSlot.SetSize(w, width, height);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Turns the named image, degrees clockwise from up (the map's you-are-here, the tracker's arrow).
+	//! VERIFY: ImageWidget.SetRotation turns the image about its centre, clockwise in degrees.
+	static void Rotate(Widget root, string name, float degrees)
+	{
+		ImageWidget img = ImageWidget.Cast(Find(root, name));
+		if (img)
+			img.SetRotation(degrees);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The entity this machine's player controls, null when there's none (dead, spectating).
+	static IEntity LocalEntity()
+	{
+		PlayerController pc = GetGame().GetPlayerController();
+		if (!pc)
+			return null;
+
+		return pc.GetControlledEntity();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where an entity faces, degrees clockwise from north (its forward axis on the ground).
+	static float Heading(IEntity ent)
+	{
+		if (!ent)
+			return 0;
+
+		vector mat[4];
+		ent.GetWorldTransform(mat);
+		vector fwd = mat[2];
+		float deg = Math.Atan2(fwd[0], fwd[2]) * Math.RAD2DEG;
+		if (deg < 0)
+			deg += 360;
+
+		return deg;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bearing from one spot to another, degrees clockwise from north.
+	static float Bearing(vector from, vector to)
+	{
+		float deg = Math.Atan2(to[0] - from[0], to[2] - from[2]) * Math.RAD2DEG;
+		if (deg < 0)
+			deg += 360;
+
+		return deg;
 	}
 }

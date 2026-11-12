@@ -895,7 +895,7 @@ class RZ_PrefabBuilder
 	}
 
 	//------------------------------------------------------------------------------------------
-	//! Step 2: the loadout characters, each with RZ_TreatOtherAction.
+	//! Step 2: the loadout characters (vanilla civilians on SURV; any actions the manifest lists).
 	void Loadouts()
 	{
 		foreach (RZ_MfLoadout l : m_Manifest.loadouts)
@@ -1502,7 +1502,7 @@ class RZ_PrefabBuilder
 			string lTick = "- [ ] ";
 			if (RZ_WB.Exists(ModPath(l.path)))
 				lTick = "- [x] ";
-			lines.Insert(string.Format("%1\"%2\": %3 (a civilian character with RZ_TreatOtherAction); gear: %4", lTick, l.name, l.path, l.gear));
+			lines.Insert(string.Format("%1\"%2\": %3 (a civilian character); gear: %4", lTick, l.name, l.path, l.gear));
 		}
 		lines.Insert("");
 		lines.Insert("## Factions");

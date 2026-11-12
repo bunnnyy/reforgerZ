@@ -192,6 +192,18 @@
   "plate": false
  },
  {
+  "name": "marker_self",
+  "category": "Map markers",
+  "use": "You are here: a heading arrow, turned to where you face. The map's own marker (over marker_self_back) and the HUD tracker's direction arrow",
+  "plate": false
+ },
+ {
+  "name": "marker_self_back",
+  "category": "Map markers",
+  "use": "The disc behind you-are-here on the map, tinted dark so the arrow reads on any ground",
+  "plate": false
+ },
+ {
   "name": "item_key",
   "category": "Items",
   "use": "A key for a real lock (tagged keys)",
