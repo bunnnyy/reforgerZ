@@ -619,27 +619,18 @@ class RZ_FactionShopAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 //! "Check standing": tells the player their tier, Fame, Infamy and Favor with
 //! every faction, plus this quartermaster's open contracts they qualify for.
-class RZ_StandingStatusAction : ScriptedUserAction
+class RZ_StandingStatusAction : RZ_GroupedAction
 {
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override bool Label(out string outName)
 	{
 		outName = "Check standing and work";
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0)

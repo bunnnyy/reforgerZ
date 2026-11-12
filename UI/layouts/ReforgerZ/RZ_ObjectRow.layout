@@ -1,0 +1,95 @@
+ButtonWidgetClass "{A9B42434AD9AEBFD}" {
+ Name "OptionRow"
+ Slot LayoutSlot "{B9C2FCFA7A08478C}" {
+  HorizontalAlign 3
+  VerticalAlign 0
+  Padding 0 0 0 4
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{E270A63F2C3BEA41}" {
+   Name "OptionSize"
+   Slot ButtonWidgetSlot "{24A3EEFA877D6211}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 1104
+   AllowHeightOverride 1
+   HeightOverride 56
+   {
+    OverlayWidgetClass "{19B91E1DB608A2E2}" {
+     Name "OptionBox"
+     Slot AlignableSlot "{8B3492F213E6D36A}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{252C1FF9AC9017DC}" {
+       Name "OptionBg"
+       Slot OverlayWidgetSlot "{062F73D5DC744C22}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.106 0.122 0.133 1
+       Size 1 1
+      }
+      ImageWidgetClass "{56A337203FA9A01E}" {
+       Name "OptionBar"
+       Slot OverlayWidgetSlot "{4F3AA81CC1E9CD46}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Size 5 56
+      }
+      HorizontalLayoutWidgetClass "{5A5695AD73846E66}" {
+       Name "OptionLine"
+       Slot OverlayWidgetSlot "{6B97FE45249FAB34}" {
+        HorizontalAlign 3
+        VerticalAlign 1
+        Padding 22 0 22 0
+       }
+       {
+        TextWidgetClass "{7EEEDC010852889D}" {
+         Name "OptionName"
+         Slot LayoutSlot "{FB681B85397DC718}" {
+          HorizontalAlign 3
+          VerticalAlign 1
+          SizeMode Fill
+          FillWeight 1
+         }
+         Color 0.91 0.886 0.816 1
+         Text "Boil water"
+         "Font Size" 26
+         "Min Font Size" 26
+         FontProperties FontProperties "{3BA3783DE0F0935A}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{D4EF27DFF500CDE4}" {
+         Name "OptionNeed"
+         Slot LayoutSlot "{A41D36F586D63644}" {
+          HorizontalAlign 2
+          VerticalAlign 1
+          Padding 16 0 0 0
+         }
+         "Is Visible" 0
+         Color 0.639 0.62 0.565 1
+         Text "No samples"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{0B1347D1D889AD76}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

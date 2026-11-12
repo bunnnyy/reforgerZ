@@ -125,6 +125,10 @@ Write conservatively:
   adaptation is light, nobody gets free loot or free Fame.
 - **Performance first:** simulate as data; only spawn bodies near players; no persistent physical traces.
 - Most of the map is abandoned. Factions hold only a few towns that make sense for them.
+- **Default first, then menus:** use as much of the game's own stuff as possible (vanilla's inventory,
+  looting, healing, doors, fuel, vehicles, radios), and menus as much as possible, even ones we have to
+  make; a single world prompt only for what's done quickly in a rush. The rule and the audit: `docs/UI.md`,
+  "Default first, then menus".
 - **Console and controller, for the whole mod:** everything works on console (Xbox, PlayStation)
   and with a gamepad, not only with keyboard and mouse. Every input action has a gamepad binding;
   every screen opens, moves and closes without a mouse; nothing needs hover, typing or a chat

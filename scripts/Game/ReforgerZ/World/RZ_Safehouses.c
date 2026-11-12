@@ -1870,14 +1870,21 @@ class RZ_Safehouses
 //! A safehouse service. Put one per kind on the Haven quartermaster prefab (STATUS,
 //! DELIVER_FOOD, RADIO, HEAL, DECLARE_BITE, MEDS, BOARD_READ, BOARD_WRITE) and HEAL +
 //! DECLARE_BITE on the medic prefab.
-//! It works at whichever safehouse it stands in; elsewhere it says there's none.
-class RZ_SafehouseAction : ScriptedUserAction
+//! It works at whichever safehouse it stands in; elsewhere it says there's none. With the object
+//! menu they're one prompt, "Ask the quartermaster" or "Ask about the safehouse" (RZ_ObjectScreen.c).
+class RZ_SafehouseAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "What this action does", "", ParamEnumArray.FromEnum(RZ_ESafehouseAction))]
 	protected RZ_ESafehouseAction m_eKind;
 
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override string MenuTitle(IEntity owner)
+	{
+		return "Ask about the safehouse";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Label(out string outName)
 	{
 		switch (m_eKind)
 		{
@@ -1895,17 +1902,8 @@ class RZ_SafehouseAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0 || !gm.GetSafehouses())

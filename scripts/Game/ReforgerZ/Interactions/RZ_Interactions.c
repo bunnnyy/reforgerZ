@@ -139,6 +139,7 @@ class RZ_TimedTask
 	int m_iArg;
 	vector m_vStart;
 	float m_fLeft;
+	float m_fTotal;			// how long it takes (the object menu's countdown bar)
 	float m_fHealth = -1;
 	bool m_bStill;			// moving at all (2 m) stops it; noise and damage too (cracking a channel)
 	string m_sLabel;		// "the search"
@@ -635,6 +636,7 @@ class RZ_Interactions
 	protected ref RZ_DoorLocks m_Doors;
 	protected ref RZ_Cars m_Cars;
 	protected ref RZ_WreckBoots m_Boots;
+	protected ref RZ_FuelPumps m_Pumps;
 	protected ref RZ_Crafting m_Crafting;
 	protected ref RZ_Traps m_Traps;
 	protected ref RZ_SecureRadio m_Radio;
@@ -670,6 +672,7 @@ class RZ_Interactions
 		m_Doors = new RZ_DoorLocks(gm, this, m_Search, search);
 		m_Cars = new RZ_Cars(gm, this, cars);
 		m_Boots = new RZ_WreckBoots(gm, this, cars);
+		m_Pumps = new RZ_FuelPumps(gm, this, cars);
 		m_Crafting = new RZ_Crafting(gm, this, craft, settings);
 		m_Traps = new RZ_Traps(gm, this, traps);
 		m_Radio = new RZ_SecureRadio(gm, this, radio);
@@ -686,6 +689,7 @@ class RZ_Interactions
 	RZ_DoorLocks GetDoors() { return m_Doors; }
 	RZ_Cars GetCars() { return m_Cars; }
 	RZ_WreckBoots GetBoots() { return m_Boots; }
+	RZ_FuelPumps GetPumps() { return m_Pumps; }
 	RZ_Crafting GetCrafting() { return m_Crafting; }
 	RZ_Traps GetTraps() { return m_Traps; }
 	RZ_SecureRadio GetRadio() { return m_Radio; }
@@ -795,6 +799,7 @@ class RZ_Interactions
 		m_Radio.Tick(dt, ids, players);
 		m_Search.Tick(dt);
 		m_Boots.Tick();
+		m_Pumps.Tick();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1380,6 +1385,13 @@ class RZ_Interactions
 			return;
 		}
 
+		// A petrol station's pump with Cars > Fuel pump station: vanilla's fuel point (no prompts of ours)
+		if (s.m_iKind == KIND_FUELPUMP && m_Pumps.IsOn())
+		{
+			s.m_Body = m_Pumps.PutOut(s);
+			return;
+		}
+
 		ResourceName prefab = SpotPrefab();
 		if (s.m_iKind == KIND_DOOR)
 			prefab = DoorSpotPrefab();
@@ -1401,7 +1413,20 @@ class RZ_Interactions
 		string choiceLabels;
 		Labels(s, read, useLabels, choiceLabels);
 		s.m_Comp = RZ_PuzzleObjectComponent.Tag(body, TAG, s.m_iId, useLabels, choiceLabels);
+		if (s.m_Comp)
+			s.m_Comp.SetMenu(UsesMenu(s.m_iKind));
+
 		RZ_ClueComponent.Tag(body, TAG, s.m_iId, read);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kinds whose prompts go into the object menu (docs/UI.md, "Every interaction, by kind"): a
+	//! stove, a generator, a house radio, a well and a fuel pump have several options or something
+	//! to read. Bells, sirens, doors, a bite and a doorway to burn stay quick prompts; a car and a
+	//! workbench have screens of their own.
+	static bool UsesMenu(int kind)
+	{
+		return kind == KIND_STOVE || kind == KIND_GENERATOR || kind == KIND_RADIO || kind == KIND_WELL || kind == KIND_FUELPUMP;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1410,6 +1435,9 @@ class RZ_Interactions
 		// A wreck's boot: what's left in it is kept as data, then it goes
 		if (s.m_iKind == KIND_WRECK)
 			m_Boots.PutAway(s);
+
+		if (s.m_iKind == KIND_FUELPUMP && m_Pumps.IsOn())
+			m_Pumps.PutAway(s);
 
 		if (s.m_Body)
 			RZ_Util.DeleteUnit(s.m_Body);
@@ -1430,6 +1458,7 @@ class RZ_Interactions
 		string choiceLabels;
 		Labels(s, read, useLabels, choiceLabels);
 		s.m_Comp.SetLabels(useLabels, choiceLabels);
+		s.m_Comp.SetMenu(UsesMenu(s.m_iKind));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1600,6 +1629,17 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A spot's title by its id (the object menu's header), "Here" when it's gone.
+	string TitleOf(int spotId)
+	{
+		RZ_Spot s = FindSpot(spotId);
+		if (!s)
+			return "Here";
+
+		return Title(s);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! RZ_PuzzleChoiceAction on a spot.
 	void HandleChoice(int playerId, int id, int option, IEntity owner, IEntity user)
 	{
@@ -1743,6 +1783,7 @@ class RZ_Interactions
 		t.m_iArg = arg;
 		t.m_vStart = user.GetOrigin();
 		t.m_fLeft = Math.Max(1, seconds);
+		t.m_fTotal = t.m_fLeft;
 		t.m_bStill = still;
 		t.m_sLabel = label;
 		t.m_fHealth = RZ_Util.GetCharacterHealth(user);
@@ -1785,10 +1826,13 @@ class RZ_Interactions
 			string why = Interrupted(t, user);
 			if (!why.IsEmpty())
 			{
-				m_GM.NotifyPlayer(t.m_iPlayerId, "Stopped", string.Format("%1 You leave %2 unfinished.", why, t.m_sLabel));
+				int stopped = t.m_iPlayerId;
+				RZ_ObjectScreen.WrapBegin(stopped);
+				m_GM.NotifyPlayer(stopped, "Stopped", string.Format("%1 You leave %2 unfinished.", why, t.m_sLabel));
 				m_aTasks.Remove(i);
-				m_Cars.OnTaskStopped(t.m_iPlayerId);
-				m_Crafting.OnTaskStopped(t.m_iPlayerId);
+				m_Cars.OnTaskStopped(stopped);
+				m_Crafting.OnTaskStopped(stopped);
+				RZ_ObjectScreen.WrapEnd(stopped);
 				continue;
 			}
 
@@ -1796,8 +1840,12 @@ class RZ_Interactions
 			if (t.m_fLeft > 0)
 				continue;
 
+			// Done: what it says goes into the player's object menu if one is open
+			int done = t.m_iPlayerId;
 			m_aTasks.Remove(i);
+			RZ_ObjectScreen.WrapBegin(done);
 			Complete(t, user);
+			RZ_ObjectScreen.WrapEnd(done);
 		}
 	}
 

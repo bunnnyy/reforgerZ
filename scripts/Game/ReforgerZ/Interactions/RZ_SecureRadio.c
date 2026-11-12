@@ -46,27 +46,24 @@ class RZ_RadioCrackSettings
 //------------------------------------------------------------------------------------------------
 //! "Work on a scrambled channel": on a radio item's ActionsManagerComponent (the wind-up radio,
 //! any radio you want crackable). Used from the ground.
-class RZ_TuneRadioAction : ScriptedUserAction
+class RZ_TuneRadioAction : RZ_GroupedAction
 {
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override string MenuTitle(IEntity owner)
+	{
+		return "Use the radio";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Label(out string outName)
 	{
 		outName = "Work on a scrambled channel";
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_Interactions hub = RZ_Interactions.Get();
 		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
 		if (!hub || playerId <= 0)

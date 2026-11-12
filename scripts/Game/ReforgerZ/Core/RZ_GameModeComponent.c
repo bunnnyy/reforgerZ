@@ -560,6 +560,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (m_ScreenGuard)
 			m_ScreenGuard.Forget(playerId);
 
+		RZ_ObjectScreen.Forget(playerId);
+
 		if (m_Dialogue)
 			m_Dialogue.Forget(playerId);
 

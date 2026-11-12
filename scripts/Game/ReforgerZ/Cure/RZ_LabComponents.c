@@ -119,8 +119,14 @@ class RZ_LabHelper
 //------------------------------------------------------------------------------------------------
 //! Shared logic for handing in the samples a player is carrying. Subclasses
 //! decide who receives them: the lab (research) or bandits (loot, no research).
-class RZ_SampleDeliveryActionBase : ScriptedUserAction
+class RZ_SampleDeliveryActionBase : RZ_GroupedAction
 {
+	//------------------------------------------------------------------------------------------------
+	override string MenuTitle(IEntity owner)
+	{
+		return "The lab";
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -143,17 +149,8 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (!gm)
 			return;
@@ -228,7 +225,7 @@ class RZ_SampleDeliveryActionBase : ScriptedUserAction
 class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 {
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override bool Label(out string outName)
 	{
 		outName = "Deliver infected samples";
 		return true;
@@ -309,7 +306,7 @@ class RZ_DepositSamplesAction : RZ_SampleDeliveryActionBase
 class RZ_SellSamplesToBanditsAction : RZ_SampleDeliveryActionBase
 {
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override bool Label(out string outName)
 	{
 		outName = "Leave samples for the Red Hand";
 		return true;
@@ -339,33 +336,35 @@ class RZ_SellSamplesToBanditsAction : RZ_SampleDeliveryActionBase
 }
 
 //------------------------------------------------------------------------------------------------
-//! "Check research progress": a local-only readout from replicated values.
-class RZ_LabStatusAction : ScriptedUserAction
+//! "Check research progress": a readout of the lab's progress and the outbreak stage, from the
+//! server (a card, or the object menu's status line beside the lab's other actions).
+class RZ_LabStatusAction : RZ_GroupedAction
 {
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override string MenuTitle(IEntity owner)
+	{
+		return "The lab";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Label(out string outName)
 	{
 		outName = "Check research progress";
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
-	{
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
-		if (!gm)
+		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
+		if (!gm || playerId <= 0)
 			return;
 
 		// "Research 63 percent. Waiting: 14 samples' worth, about 4 days of work."
 		string text = string.Format("%1\nOutbreak stage: %2", gm.DescribeLabReplicated(),
 			RZ_StageSettings.GetStageName(gm.GetReplicatedStage()));
 
-		SCR_HintManagerComponent.ShowCustomHint(text, "Halcyon lab", 8);
+		gm.NotifyPlayer(playerId, "Halcyon lab", text);
 	}
 }

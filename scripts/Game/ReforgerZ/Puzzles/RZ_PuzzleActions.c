@@ -1,15 +1,18 @@
 //! Player actions for puzzles. All of them only report to the server, which
 //! routes to the owning mission (RZ_PuzzleMission). Nothing is decided on the client.
+//! On a prop that wants it (RZ_PuzzleObjectComponent.WantsMenu) they're one object menu: the read
+//! opens it and its text is the description, the use, choice and keypad slots are the rows
+//! (Interactions/RZ_ObjectScreen.c).
 
 //------------------------------------------------------------------------------------------------
 //! "Read": on any entity with RZ_ClueComponent (note, plaque, dog tags, wreck, civilian).
-class RZ_ReadClueAction : ScriptedUserAction
+class RZ_ReadClueAction : RZ_GroupedAction
 {
 	[Attribute("Read", desc: "Label when the mission didn't set one (e.g. Read the note, Look at the plaque, Listen)")]
 	protected string m_sLabel;
 
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override bool Label(out string outName)
 	{
 		outName = m_sLabel;
 		RZ_ClueComponent comp = RZ_ClueComponent.Cast(GetOwner().FindComponent(RZ_ClueComponent));
@@ -21,24 +24,32 @@ class RZ_ReadClueAction : ScriptedUserAction
 
 	//------------------------------------------------------------------------------------------------
 	//! Hidden when the read label is RZ_ClueComponent.NO_READ (a burn spot has only its choice).
-	override bool CanBeShownScript(IEntity user)
+	override bool Visible(IEntity user)
 	{
 		RZ_ClueComponent comp = RZ_ClueComponent.Cast(GetOwner().FindComponent(RZ_ClueComponent));
 		return !comp || comp.GetReadLabel() != RZ_ClueComponent.NO_READ;
 	}
 
+	override bool IsSlot() { return true; }
+	override bool Describes() { return true; }
+
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	//! A world interaction spot's own name ("Stove"); else the read without its verb ("The plaque").
+	override string MenuTitle(IEntity owner)
 	{
-		return false;
+		RZ_Interactions hub = RZ_Interactions.Get();
+		RZ_ClueComponent comp = RZ_ClueComponent.Cast(owner.FindComponent(RZ_ClueComponent));
+		if (hub && comp && comp.GetMissionId() == RZ_Interactions.TAG)
+			return hub.TitleOf(comp.GetClueIndex());
+
+		string label;
+		Label(label);
+		return RZ_ActionMenus.TitleFromRead(label);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0)
@@ -55,13 +66,15 @@ class RZ_ReadClueAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 //! One key of a keypad: digits 0-9, 10 = Clear, 11 = Enter. Add twelve of these
 //! to the keypad prefab. The Enter label shows what has been typed so far.
-class RZ_KeypadAction : ScriptedUserAction
+class RZ_KeypadAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.Slider, "Key: 0-9 digit, 10 = Clear, 11 = Enter", "0 11 1")]
 	protected int m_iKey;
 
+	override bool IsSlot() { return true; }
+
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override bool Label(out string outName)
 	{
 		if (m_iKey == 10)
 		{
@@ -89,17 +102,8 @@ class RZ_KeypadAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0)
@@ -120,7 +124,7 @@ class RZ_KeypadAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 //! Choose / accuse / decide. Option index 0-3. The mission can relabel each option
 //! ("Accuse Mirek", "Burn it"); options it leaves unlabelled are hidden.
-class RZ_PuzzleChoiceAction : ScriptedUserAction
+class RZ_PuzzleChoiceAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.Slider, "Option index", "0 7 1")]
 	protected int m_iOption;
@@ -128,8 +132,10 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 	[Attribute("Choose", desc: "Label when the mission didn't set one")]
 	protected string m_sLabel;
 
+	override bool IsSlot() { return true; }
+
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override bool Label(out string outName)
 	{
 		outName = m_sLabel;
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
@@ -144,7 +150,7 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool CanBeShownScript(IEntity user)
+	override bool Visible(IEntity user)
 	{
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
 		if (comp && comp.IsSlotHidden(true, m_iOption))
@@ -154,26 +160,23 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 		if (comp && comp.GetSlotLabel(true, m_iOption) == RZ_Traps.BURN_LABEL)
 			return RZ_Traps.FireFuel(user) != null;
 
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool HiddenByScreens()
+	{
 		// On a fixable car, the jobs are in the repair screen; at a workbench, the recipes in the crafting screen
 		if (RZ_CarMenu.HidesSlotsOn(GetOwner()) || RZ_CraftMenu.HidesSlotsOn(GetOwner()))
-			return false;
+			return true;
 
 		// On a person, the replies are in the talk screen
-		return !RZ_TalkMenu.HidesSlotsOn(GetOwner());
+		return RZ_TalkMenu.HidesSlotsOn(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0)
@@ -186,7 +189,7 @@ class RZ_PuzzleChoiceAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 //! Use: pull a lever, flip a switch, ring a bell, tune a radio, switch on a beacon,
 //! seal a well. The value tells the mission which (e.g. switch 0 or 1 on a fuse box).
-class RZ_PuzzleUseAction : ScriptedUserAction
+class RZ_PuzzleUseAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.Slider, "Value passed to the mission (which switch, lever...)", "0 7 1")]
 	protected int m_iValue;
@@ -194,8 +197,10 @@ class RZ_PuzzleUseAction : ScriptedUserAction
 	[Attribute("Use", desc: "Label when the mission didn't set one")]
 	protected string m_sLabel;
 
+	override bool IsSlot() { return true; }
+
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override bool Label(out string outName)
 	{
 		outName = m_sLabel;
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
@@ -210,31 +215,25 @@ class RZ_PuzzleUseAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool CanBeShownScript(IEntity user)
+	override bool Visible(IEntity user)
 	{
 		RZ_PuzzleObjectComponent comp = RZ_PuzzleObjectComponent.Cast(GetOwner().FindComponent(RZ_PuzzleObjectComponent));
-		if (comp && comp.IsSlotHidden(false, m_iValue))
-			return false;
+		return !comp || !comp.IsSlotHidden(false, m_iValue);
+	}
 
+	//------------------------------------------------------------------------------------------------
+	override protected bool HiddenByScreens()
+	{
 		// At a workbench, the recipes are in the crafting screen
 		if (RZ_CraftMenu.HidesSlotsOn(GetOwner()))
-			return false;
+			return true;
 
-		return !RZ_TalkMenu.HidesSlotsOn(GetOwner());
+		return RZ_TalkMenu.HidesSlotsOn(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		int playerId = RZ_PuzzleActionHelper.GetPlayerId(pUserEntity);
 		if (!gm || playerId <= 0)

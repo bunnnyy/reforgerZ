@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **316 prefab fields**: 46 on `RZ_GameModeComponent`, 261 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **296 entries**: 181 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 81 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **318 prefab fields**: 46 on `RZ_GameModeComponent`, 263 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **298 entries**: 182 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 82 list entries set by hand; plus the game mode prefab, 13 loadout characters, 6 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -744,6 +744,7 @@ and the UI files) need none, and eight have no base:
 | `RZ_InteractionSpot.et` | an empty GenericEntity with a small invisible collision box, off the character layer | the generic set | Interactions > General > Spot prefab | optional | every world interaction prompt (wells, pumps, stoves, bells, radios, generators, workbenches), the Clean the bite spot, and the Unlock/Lock/Force spot when Door spot is empty (falls back to the puzzle object, which is visible). Add the small collision box by hand; keep it off the character collision layer |
 | `RZ_DoorSpot.et` | the interaction spot with a tiny interaction box (0.12 m) and a 0.35 m action radius | the generic set | Interactions > General > Door spot prefab | optional | a locked door's Unlock, Lock and Force, on the door leaf at handle height (empty = the Spot prefab, whose bigger box can cover vanilla's Open door). Built as text (set in the game mode). Keep its box tiny and its action context small, so vanilla's Open door at the handle stays reachable |
 | `RZ_WreckBoot.et` | an empty GenericEntity with a small interaction box (no mesh, no collision) and vanilla's open-storage action | `RZ_WreckBootStorageComponent`, `SCR_InventoryStorageManagerComponent`; `SCR_OpenStorageAction` | Interactions > Cars > Wreck boot prefab | optional | a car wreck's boot: one Open the boot prompt at its rear opens the vanilla inventory with what's in it (empty = wrecks hold nothing). Built as text (set in the game mode). Its storage holds up to 100000 volume, 200 kg and items up to 100 x 100 x 100; a loot item that doesn't fit lies beside the wreck (logged once) |
+| `RZ_FuelPumpStation.et` | an empty GenericEntity with an RplComponent, no mesh, no collision: vanilla's fuel point, like the fuel tank pump's (SCR_FuelManagerComponent with one fuel node of 60 litres that can provide fuel, and SCR_FuelSupportStationComponent from Prefabs/Components/SupportStations/Fuel/FuelSupportStation_FuelPump.ct) | `SCR_FuelManagerComponent`, `SCR_FuelSupportStationComponent` | Interactions > Cars > Fuel pump station | optional | a petrol station's pump as a vanilla fuel point near players: vanilla's jerrycan fills there with its own Refuel canister (empty = the hand pump, in the object menu). Copy the fuel node and support station from a vanilla fuel point (the FuelTank_02 pump); the script sets its litres. Check in play that a held vanilla jerrycan offers Refuel canister beside a petrol pump |
 | `RZ_Key.et` | a small item (a key or key ring) | `RZ_KeyItemComponent`; `RZ_ReadKeyTagAction` | Interactions > Search > Key prefab | optional | keys: they lie in houses next to letters, car keys in their car's town, and come off bodies and from the Mechanic (empty = no keys). It must be a real item that can be picked up: an InventoryItemComponent and vanilla's pick-up action. The notebook base may be a prop; if the key shows no pick-up prompt on the ground, rebase it on a small vanilla item |
 | `RZ_DoorBlocker.et` | an empty GenericEntity; add the collision-only box by hand (recipe below) | — | Interactions > Search > Doorway blocker | optional | keeps AI out of locked doorways near players. Needs only RplComponent, a collision-only MeshObject and a static RigidBody: see the doorway blocker recipe |
 | (existing prefab) | every item that can lie in a house or turn up in a wreck's boot or on a body (vanilla and mod items) | — | Interactions > Search > Loot pool (list) | optional | what lies in houses and turns up in boots and on bodies (empty or short = the built-in vanilla items per building type); each must be a real item with vanilla's pick-up action |
@@ -811,6 +812,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | UI/Textures/ReforgerZ/RZ_CarSide.png, imported as a texture (UI/LAYOUTS.md) | — | UI > Car picture | optional | the side view of the car on the repair screen (empty = the job markers on a plain panel). Import the PNG in the Resource Browser (it becomes RZ_CarSide.edds), then pick it here |
 | (existing prefab) | the ShopItem layout (UI/LAYOUTS.md) | — | UI > Shop item layout | optional | the quartermaster's shop screen's item rows (empty = no shop screen: the Buy, Requisition and service actions) |
 | (existing prefab) | the CraftRow layout (UI/LAYOUTS.md) | — | UI > Craft row layout | optional | the crafting screen's recipe rows at a workbench (empty = no crafting screen: the workbench's Make actions and notices). Needs the RZ_CraftMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
+| (existing prefab) | the ObjectRow layout (UI/LAYOUTS.md) | — | UI > Object row layout | optional | the object menu's option rows: stoves, generators, house radios, wells, puzzle objects, safehouse services, a quartermaster's asks, the lab, the notebook item's name and season, a radio item (empty = no object menu: their world prompts). Needs the RZ_ObjectMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 
 #### Questlines
 
@@ -1267,7 +1269,10 @@ in `UI/layouts/ReforgerZ/`.
       weight 0.1 kg. **UI > Notebook prefab** points at it.
    3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
       (its `SubtitlePanel` with the head row `SubtitleHead`, and `RadioLinePanel`, both hidden) the same way. **UI > Talk reply layout** is set, so the
-      talk screen is on (**Dialogue > Talk screen**). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
+      talk screen is on (**Dialogue > Talk screen**). The talk screen's layout holds its two steps,
+      `LinePanel` (their line and its `LineBar`) and `ReplyPanel` (hidden; the replies, the arrows
+      and the footer), and the arrows' static `marker_self` icons need the icon atlas imported
+      (UI/LAYOUTS.md, "Importing the icons"). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
       Open `RZ_CarMenu.layout` and `RZ_CarJob.layout` too: **UI > Car job layout** is set, so the
       car repair screen is on. The same for `RZ_ShopMenu.layout` and `RZ_ShopItem.layout` (**UI >
       Shop item layout** is set, so the shop screen is on), and open one quartermaster prefab to
@@ -1277,12 +1282,19 @@ in `UI/layouts/ReforgerZ/`.
       the `RZ_ShopMenu` entry) and **UI > Craft row layout** is `RZ_CraftRow.layout`. Empty the slot
       and a workbench keeps its **Make:** actions; with the slot set and the preset missing, the
       first **Use the workbench** says the recipes are in the action menu and they come back.
-   5. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
+   5. **The object menu** (to do). Add `MenuPreset RZ_ObjectMenu` to
+      `Configs/System/chimeraMenus.conf` (layout `RZ_ObjectMenu.layout`, class `RZ_ObjectMenu`, as
+      the `RZ_CraftMenu` entry), set **UI > Object row layout** to `RZ_ObjectRow.layout`, and open
+      both layouts in the layout editor once. Empty the slot and every stove, generator, house
+      radio, well, puzzle object, safehouse service and the like keeps its world prompts; with the
+      slot set and the preset missing, the first use shows what the thing is as a card, and its
+      prompts come back for that player.
+   6. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
       transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
       on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
       `node tools/render_ui.js textures` and import again.
-   6. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
+   7. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
       with the pad); after spawning, find the notebook in the inventory and take it in hand. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
@@ -1378,7 +1390,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
 | Interactions | Loot | `m_LootSettings` | **Loose loot** (on; off = nothing lies in houses), put out within 35 m, put away past 60 m (after a minute), **refill** (60 min ÷ the town's loot level), at most 220 items lying on the server, items at most per building (house 2, shop and farm 3, pharmacy, police and garage 4; locked +1), town loot per item taken (0.015) ([DESIGN.md](DESIGN.md#loot-in-houses)) |
-| Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), pump timings, **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
+| Interactions | Cars | `m_CarSettings` | Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), **Fuel pump station** (empty = the hand pump: its timings, heat and cooldown), pump litres (60, full again after the cooldown), a car's fuel from a vanilla jerrycan (5 litres; the can is kept), **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Fuel](DESIGN.md#fuel), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open)) |
 | Interactions | Crafting | `m_CraftSettings` | Workbench keywords, the eight recipes' outputs and inputs, extra recipes |
 | Interactions | Traps | `m_TrapSettings` | Barricade, tripwire, spike trap limits and props, generators, fire and molotovs, **Fuel in your hands** (on; off = a full can anywhere on you), seconds to set it going (5) ([DESIGN.md](DESIGN.md#fire)) |
 | Interactions | Secure radio | `m_RadioCrackSettings` | Crack seconds (60), listen minutes (20), line minutes (4), range (3 km), interrupts, house radio keywords |
@@ -1390,7 +1402,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
 | Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
-| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
+| UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout**, the **object row layout** (the object menu; empty = world prompts) ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
@@ -1748,7 +1760,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **126** lines with the tag, all in the game scripts (one is the comment in
+There are **127** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 23 are in `UI/`: 18 of [the UI's](#the-ui-19), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`). The Workbench plugin has none left: its real
@@ -1770,7 +1782,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1078` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (72)
+### Medium risk: big features, with a fallback (73)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1790,8 +1802,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_DoorHooks.c:28` | the door action's `PerformAction` also runs on the server | The server can't refuse, so a client that skips its check opens the door: try a locked door from outside on a dedicated server |
 | `Interactions/RZ_DoorLocks.c:67` | `SetControlValue(0, ...)` on the server shuts the door for every client | Locked doors aren't pulled shut |
 | `Interactions/RZ_DoorLocks.c:79`, `:106` | doors are child entities of the building prefab, found with `GetParent()` and `GetChildren()`/`GetSibling()` | No door belongs to a building: nothing is locked and no keys are cut |
-| `Interactions/RZ_Interactions.c:413` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
+| `Interactions/RZ_Interactions.c:414` | a full fuel can held in the hands is seen on the server: as the right-hand item, the held gadget or the item in hands (`RZ_ItemHelper.HeldItem`); the same call on the client hides the prompt | No **Douse the doorway** prompt with the can in your hands: set **Traps > Fuel in your hands** off (a full can anywhere on you will do) |
 | `Interactions/RZ_WreckBoots.c:30` | a wreck's boot (`RZ_WreckBoot.et`): the server's fill (`TryInsertItem` through the box's `SCR_InventoryStorageManagerComponent`) shows its things in vanilla's inventory on every client when **Open the boot** is used, and `RZ_WreckBootStorageComponent.CanStoreItem` refuses only what's dragged in from a character's inventory | Open a wreck's boot on a dedicated server with a second client: both see the same things, and dragging one of your own items in is refused. If the boot shows empty, delete the `CanStoreItem` override (the boot then takes anything, and what's put in comes back as a fresh copy of its prefab); with **Cars > Wreck boot prefab** empty, wrecks hold nothing |
+| `Interactions/RZ_FuelPumps.c:172` | a fuel pump station (`RZ_FuelPumpStation.et`): `SetTotalFuelPercentage` on the server replicates its litres, and a held vanilla jerrycan beside a petrol pump offers **Refuel canister**, drawing from it until it's empty | At a petrol pump with a vanilla jerrycan in hand: no Refuel canister, or it never runs dry. Empty **Cars > Fuel pump station**: the pump is the hand pump again, in the object menu |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
 | `Core/RZ_Util.c:1106` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
 | `Core/RZ_Util.c:1311`, `:1189` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
@@ -1842,7 +1855,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
-| `Interactions/RZ_Interactions.c:182` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
+| `Interactions/RZ_Interactions.c:183` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Guidance/RZ_Guidance.c:439` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
@@ -1877,31 +1890,31 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 
 ### The UI (19)
 
-None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens run the
+None of these affect the game: the UI only reads, and the talk, repair, shop and crafting screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
 and every message goes back to the vanilla hint; empty **UI > Talk reply layout** for the old
 actions on people, **Car job layout** for a car's actions, **Shop item layout** for a
-quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions, **Spawn row layout** for vanilla's deploy menu, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
+quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions, **Object row layout** for the prompts on props and places, **Spawn row layout** for vanilla's deploy menu, **UI > Reader** and **Subtitles** off for cards. How the UI is put together is in
 [UI.md](UI.md). Check the first five in one Workbench play with a pad plugged in.
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:961` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:964` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:201` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_Notebook.c:977` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
-| `UI/RZ_TalkMenu.c:39` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
-| `UI/RZ_TalkMenu.c:288` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.OnMenuUpdate`; the wheel still works |
-| `UI/RZ_UIData.c:984` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1082` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
-| `Dialogue/RZ_Dialogue.c:888` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `UI/RZ_TalkMenu.c:44` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
+| `UI/RZ_TalkMenu.c:366` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls what they say toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; the wheel still works |
+| `UI/RZ_UIData.c:987` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1085` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrow (its page indicator) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
+| `Dialogue/RZ_Dialogue.c:892` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:182` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
-| `UI/RZ_Menus.c:306` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
+| `UI/RZ_Menus.c:307` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:19` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
 | `UI/RZ_MapIcons.c:315` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
@@ -2095,6 +2108,7 @@ Warnings worth acting on:
 | `Mission item prefab has no RZ_MissionItemComponent ...` | The mission item is missing its component |
 | `Key prefab is empty, has no RZ_KeyItemComponent or didn't spawn: no keys ...` | Set **Search > Key prefab** to an item with `RZ_KeyItemComponent`; until then no keys are given or placed |
 | `Loose loot: off.` | Expected only if you turned **Loot > Loose loot** off: nothing lies in houses |
+| `Fuel pump station: no SCR_FuelManagerComponent on ...` | **Cars > Fuel pump station** names a prefab without vanilla's fuel manager: build `RZ_FuelPumpStation.et` with it ([§4](#4-the-prefab-manifest)), or empty the slot for the hand pump |
 | `Wreck boots: off (...). Wrecks hold nothing.` | **Cars > Wreck boot prefab** is empty (or **Cars > Enabled** is off): set it to `RZ_WreckBoot.et` |
 | `Wreck boot: ... doesn't fit in the boot (...)` | Printed once: a loot item is too big or heavy for the boot's storage and lies beside the wreck instead. Raise the volume, item size or weight on `RZ_WreckBoot.et`'s storage |
 | `Supply: ... truck at ... has nobody to drive it after 90 s (...)` | Printed once per truck, while it waits in the stronghold's yard. Its crew didn't spawn, wasn't within 30 m of the truck, or couldn't take the driver's seat: check the crew prefab (an AI group on the faction) and that the truck has a driver's seat. The truck is lost as late at its deadline |
@@ -2177,7 +2191,9 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `Long Table: suspicion N (...).`, `Long Table: a fight at the farm (...)` and `... the fight is over (...)`,
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
 `... opens again past ...`, `Long Table: broken up (N).`,
-`Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`, `shop`, `crafting`; `left`,
+`Object menu: <title> for player N.` (a prop's or place's object menu opened), `Fuel pump: N litres
+drawn at <grid> (N left).` (a vanilla jerrycan filled at a petrol pump's station),
+`Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`, `shop`, `crafting`, `object menu`; `left`,
 `idle`, `gone`: a screen the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
 bodies N agents, hordes from towns N, hordes refused N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
@@ -2377,6 +2393,24 @@ session, tick off:
   is in it and the status line says "Done: ...". B closes it; work under way goes on while you
   stay. The mouse: click a recipe, then Craft. Text reads from the sofa on a TV. With **UI > Craft
   row layout** empty, the Make actions and "Use the workbench" as a notice are back.
+- [ ] The object menu, with a pad (**UI > Object row layout** set, the `RZ_ObjectMenu` preset added):
+  at a stove only **Look at the stove** shows; it opens the menu with "Stove", the town, what you
+  see and the options (Boil water, Brew a home remedy). The D-pad moves, A on Boil water starts it
+  ("Busy with the boiling... 30 s" and a bar), and when it's done the status line says so; B closes
+  it and work under way goes on while you stay. The same at a generator, a house radio (Call on
+  the open channel opens the talk screen instead) and a puzzle object (its read is the text, a
+  note's too, not the reader). A keypad lists Press 0 to 9, Clear and Enter [4 7 _]; the list
+  scrolls. At the Haven quartermaster: **Trade**, **Talk to whoever's in charge** and one **Ask the
+  quartermaster** with Check standing and work and the safehouse's services; at the lab, Deliver
+  infected samples dim with "No samples" when you carry none. The notebook item on the ground: one
+  **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
+  bite and Douse the doorway are still single prompts. An infected closing in shuts it. Text reads
+  from the sofa on a TV. Empty the slot: every prompt is back.
+- [ ] A petrol pump with **Cars > Fuel pump station** set (`RZ_FuelPumpStation.et`): no prompt of
+  ours at the pump; hold a vanilla jerrycan beside it and **Refuel canister** fills it; the log
+  says `Fuel pump: N litres drawn`. Draw 60 litres and the next can gets nothing until the pump
+  fills back. A fixable car's Fuel job with that can in your pack takes 5 litres and leaves you the
+  can. Empty the slot: the pump's **Look at** opens the object menu with Work the hand pump.
 - [ ] Purification tablets: carry `RZ_Tablets.et` and untreated water; **Purify water** at a
   workbench uses one tablet and gives safe water.
 - [ ] Stop and restart the server: stage, infection, research and your standing are back.
@@ -2739,12 +2773,18 @@ when it happens)
   Radio tab. A plain "Radio" notice (no power, nothing in range) and the government broadcast stay
   cards. With the tracker and the radio indicator both showing, nothing overlaps; on a TV every line
   reads.
-- [ ] Talk to a Trader wanderer: the talk screen opens with their name, what they say and the
-  replies; "Buy supplies" shows its price and is dim with what it needs if you're short; pick a
-  reply with the D-pad and A, with 1–5, with LT/RT + D-pad, and with a click; B leaves. Their choice actions don't show
-  in the action menu while the screen is on. Walk off 6 m, or let an infected come close: it
-  closes ("Not now!"). Do the same with a leader's "Talk to whoever's in charge" (Ask for work
-  gives the job as a card, the leader's line in the screen) and a safehouse occupant.
+- [ ] Talk to a Trader wanderer: the talk screen opens with their name and sub-line at the top right
+  in their colour and **only their line** in the band in the lower middle, its thin bar filling;
+  after the bar (2.5 s for a short line, 9 s at most) the band becomes the reply box with **only
+  your replies**, without pressing anything. Talk again and skip the line with A, with Space and
+  with a click: the replies come at once, and the click doesn't also say a reply. "Buy supplies"
+  shows its price and is faint with what it needs if you're short; pick a reply with the D-pad and
+  A, with 1–5, with LT/RT + D-pad, and with a click: it fades and their answer takes the band. B
+  leaves from the line and from the replies. Their choice actions don't show in the action menu
+  while the screen is on. Walk off 6 m, or let an infected come close: it closes ("Not now!"). Do
+  the same with a leader's "Talk to whoever's in charge" (Ask for work gives the job as a card, the
+  leader's line in the band) and a safehouse occupant. All of it on a TV with a pad: the line, the
+  tags and the footer readable from the sofa.
 - [ ] With **UI > Talk reply layout** empty, Talk and the slots are actions with notices again.
 - [ ] **Dialogue > Trees** off (the default): the talk screen is exactly as above, no topics, no
   speaker at road posts, leaders greet as before.
@@ -2758,11 +2798,14 @@ when it happens)
   whoever's in charge", a safehouse's named cook (the errand from "Ask what's for supper."), a
   holding's named person and a wanderer ("Need a hand?" inside their trouble; a bitten one keeps the
   antidote reply). With errands off, the named people's built replies come back.
-- [ ] **Pages:** when the list doesn't fit (a council head with Trees on), "1/2" and MORE > show on
-  the right of the name line, at 18 px or more on a TV; LB/RB with a pad, Q/E on the keyboard and a
-  click on "<" or "MORE >" turn the page and go round from either end, and none of them says a reply;
-  1–5 and LT/RT + D-pad still say the reply in that row; the right stick and the wheel scroll a long
-  line. A list that fits shows no page indicator; a node starts on page 1.
+- [ ] **Pages:** when the list doesn't fit (a council head with Trees on), "1/2" shows bottom right
+  of the reply box and the arrows at its left (up while there's a page before, down while there's
+  one after, both in the faction colour and pointing the right way); LB/RB with a pad, Q/E on the
+  keyboard and a click on an arrow turn the page and go round from either end, stay on the replies
+  (no line again) and none of them says a reply; 1–5 and LT/RT + D-pad still say the reply in that
+  row; the right stick and the wheel scroll a long line in the band, and the stick holds its bar. A
+  list that fits shows no page indicator; a node starts on page 1. The [Admin] list and its Back.
+  stay on the replies too.
 - [ ] **What's going on:** take or lose an outpost, burn a town, empty a house or bring people in
   (or wait for a heat horde): within a season day the news topics name it ("They're saying the Red
   Hand took ..."); Bastion's report says it "withdrew" from a post it lost, and the Red Hand's post
@@ -3456,7 +3499,7 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   boot. Walk 60 m off and back: what you left is still there. Empty it: it stays empty for two
   hours. No siphon or strip prompt anywhere on a wreck.
 - [ ] A key item can be dropped, picked up by someone else and opens the door for them;
-  "Read the tag" shows its label on the ground.
+  "Read the tag" shows its label on the ground and opens the tag in the reader.
 - [ ] With **Relock minutes** at 5: the door is locked and pulled shut again once you step away.
 - [ ] From a closet or small room behind a door near the outline, the door opens for you.
 - [ ] Doorway blockers: with the navmesh debug view on, a locked door near you shows a gap a few

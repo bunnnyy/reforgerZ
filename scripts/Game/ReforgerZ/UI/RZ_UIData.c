@@ -192,6 +192,9 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Crafting screen: the layout of one recipe row (UI/LAYOUTS.md, CraftRow). Empty = no crafting screen: the workbench's Make actions and notices, as before", "layout")]
 	ResourceName m_sCraftRowLayout;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Object menu: the layout of one option row (UI/LAYOUTS.md, ObjectRow). Empty = no object menu: stoves, generators, house radios, puzzle objects, safehouse services and the like keep their world prompts, as before", "layout")]
+	ResourceName m_sObjectRowLayout;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Standing page layout (UI/LAYOUTS.md). Empty = the tab says Nothing here yet", "layout")]
 	ResourceName m_sStandingPage;
 

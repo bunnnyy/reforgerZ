@@ -2354,7 +2354,14 @@ player is near, capped and decaying, nothing left behind.
   corner), at about counter height (its own height, 0.6 to 1 m), pulled up to 0.35 m toward its
   open side, the side with the most free room beyond it, so a stove's prompt is on the stove, not
   on the wall behind it. A wreck's spot is its boot instead, a storage you open with vanilla's
-  inventory ([Car wrecks](#car-wrecks-one-boot-to-open)).
+  inventory ([Car wrecks](#car-wrecks-one-boot-to-open)), and with **Cars > Fuel pump station**
+  set a petrol pump's is a vanilla fuel point ([Fuel](#fuel)).
+- **Default first, then menus** ([UI.md](UI.md#default-first-then-menus)). A stove, a generator, a
+  house radio, a well and a petrol pump without the station have one prompt, their look ("Look at
+  the stove"), which opens the [object menu](UI.md#the-object-menu): what you see and the options
+  as a list. Bells, sirens, a locked door, a fresh bite and a doorway to burn keep their single
+  prompts (they're used in a hurry); a fixable car and a workbench open their own screens. With
+  **UI > Object row layout** empty, every option is a prompt again.
 - **Decided on the server.** Loot lies in houses and wrecks' boots only while a player is near and
   is data otherwise; a boot is rolled when it's first put out, a body when it dies. What was
   emptied, opened or burned is remembered as positions and times, and saved.
@@ -2570,7 +2577,8 @@ it's in the boot. About one in seven has a stash grid on the back (two good find
 nearest it, or a wreck's boot filled there, within 90 minutes), one in ten a puzzle mission circled
 on a map.
 Reading one opens it in the reader, a sheet of paper you page through, as do puzzle notes, letters
-and orders, guidance notes and safehouse flyers ([UI.md](UI.md#subtitles-and-the-reader)).
+and orders, guidance notes, safehouse flyers and a key's tag ([UI.md](UI.md#subtitles-and-the-reader)).
+A paper read on a prop whose object menu opens (a note on a puzzle object) is that menu's text.
 
 ### Cars: found, rare and hard to fix
 
@@ -2583,7 +2591,7 @@ and locked so nobody can get in, with its prompts in front of its grille.
 |---|---|---|
 | **Look over the car** | Says what's missing: two or three of fuel, a battery, a tyre, spark plugs, all different (on the repair screen, below, where it's used) | **Min parts** 2, **Max parts** 3 |
 | **Fit parts** | Battery, tyre and spark plugs (carryable items) lie in garages, are sometimes in a wreck's boot (30%) and come from the Mechanic wanderer. Fitting one needs a tool in your pack (a wrench, spanner, toolkit or toolbox), which isn't used up. Without one, the look and Fit parts say so | **Tool keywords** (empty = no tool needed); 8 s |
-| **Fuel it** | A full can: found as loot (garages, wrecks' boots), or filled at a petrol station's hand pump (an empty can, 30 s, 10 heat). Wrecks have no fuel in them. No tool needed | |
+| **Fuel it** | Fuel from a can: a vanilla jerrycan gives 5 litres and is kept (filled at a petrol pump, [Fuel](#fuel)); an old-style full can found as loot is used up. Wrecks have no fuel in them. No tool needed | **Car fuel litres** 5 |
 | **Hotwire** | Long and loud: 45 s, half its heat when you start and all of it at the end. It fails about one time in three: the starter grinds, the heat is made all the same, and you try again. A Mechanic does it in 15 s and fails one time in ten | 45 s, Mechanic 15 s, 20 heat, fail 0.35, Mechanic 0.1 |
 | **Or its keys** | Only a fifth of cars have keys in a house in their town: each building rolled there holds them one time in ten, lying with its loot (picking them up is finding them). A Mechanic wanderer who likes you may hand them over | keys 0.2, find 0.1 |
 | **Start the engine** | 15 heat. The parked copy becomes the drivable car with a quarter tank, and from then on it's vanilla | |
@@ -2600,6 +2608,24 @@ above (the same tool, part, key and timer rules); what they would say shows in t
 fits one part (the **Fit parts** action fits every part you carry at once). A job under way goes
 on if danger closes the screen. Without the layout, or where the screen can't open, the actions
 work as before.
+
+### Fuel
+
+Fuel is vanilla's: a jerrycan with its own litres. A running car (a fixed one, or any vanilla
+vehicle) is fuelled from a held jerrycan with vanilla's action; a fixable car's **Fuel it** job
+drains 5 litres from one (what a fresh vanilla can holds), and the can is kept.
+
+**Petrol pumps.** With **Cars > Fuel pump station** set, a petrol station's pump has no prompt of
+ours: while a player is near, an invisible vanilla fuel point stands at it (`RZ_FuelPumpStation.et`),
+and a held jerrycan fills there with vanilla's **Refuel canister**, as at any vanilla fuel point.
+Each pump holds **Pump litres** (60) and is full again **Pump cooldown minutes** (20) after it was
+emptied, filling back steadily; what's left is kept as data while nobody is near. Every 20 litres
+drawn make **Pump heat** (10): the pump is loud. Without the slot the pump is the old hand pump, in
+the object menu: an empty can (by its name), 30 s, half the heat at the start and all of it at the
+end, a full can (**Fuel prefab**) given, once per pump every 20 minutes.
+
+*Simplified:* a pump's litres aren't saved (after a restart every pump is full). Siphoning a car
+isn't added: vanilla's jerrycan can be emptied with its own drain action, nothing more.
 
 The Car Keys job ([MISSIONS.md](MISSIONS.md#unarmed-missions)) adds one more car for as long as it
 runs: it already runs, needs only its keys (always lying in the one house the job names) or hotwiring,
@@ -2704,7 +2730,7 @@ horde somewhere else. Players within 1.2 km hear it.
   nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short
   places, samples needed.
 
-*Simplified:* spots stand on the object's origin (door spots on the door leaf, a wreck's boot at its rear). Carrying
+*Simplified:* spots stand at the middle of the thing's bounds (door spots on the door leaf, a wreck's boot at its rear). Carrying
 the wounded isn't added. Item names are matched by keyword. Fuel cans are full or empty by name:
 nothing with "empty" in its name counts as fuel (cars, generators, fires, the power station, the
 molotov recipe).
@@ -2874,7 +2900,8 @@ research missions (data, readings, live specimens) ─────────�
   work** (1.5% at the defaults) counts **+25%** (**Empty lab bonus**), so the lab's idle days
   aren't wasted. It's continuous: waiting for the lab to empty and then handing everything in at
   once gains nothing.
-- **What players see.** The lab's **Check research progress**, the journal and the first-spawn
+- **What players see.** The lab's **Check research progress** (a card, or the lab's object menu
+  with **Deliver infected samples**), the journal and the first-spawn
   news give the lab's line: "Research 63 percent. Waiting: 14 samples' worth, about 4 days of
   work." (and "The cold store is full" while it is). Every delivery's line to everyone ends with it.
   Halcyon's secure chatter about the samples still needed says when the cold store is full or the

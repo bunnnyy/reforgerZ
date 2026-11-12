@@ -3,148 +3,99 @@ ButtonWidgetClass "{1B03E97B54B5C5B4}" {
  Slot LayoutSlot "{8AE52052846D4CD9}" {
   HorizontalAlign 3
   VerticalAlign 0
-  Padding 0 0 0 2
+  Padding 0 0 0 4
  }
  style blank
  {
   SizeLayoutWidgetClass "{4A71224B93F49505}" {
    Name "ReplySize"
-   Slot ButtonWidgetSlot "{7877C1D5CC1179F3}" {
+   Slot ButtonWidgetSlot "{E08A86BB5E86C42B}" {
     HorizontalAlign 3
     VerticalAlign 3
    }
    AllowWidthOverride 1
-   WidthOverride 1134
+   WidthOverride 1330
    AllowHeightOverride 1
-   HeightOverride 34
+   HeightOverride 48
    {
     OverlayWidgetClass "{C5BE7FB729794989}" {
      Name "ReplyBox"
-     Slot AlignableSlot "{5A678581D40F3618}" {
+     Slot AlignableSlot "{4049EB323248DFA9}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
      {
       ImageWidgetClass "{BD91AE5F0577D808}" {
        Name "ReplyBg"
-       Slot OverlayWidgetSlot "{B159E1F4DA183952}" {
+       Slot OverlayWidgetSlot "{06749F13DD989110}" {
         HorizontalAlign 3
-        VerticalAlign 3
-       }
-       "Is Visible" 0
-       Color 0.106 0.122 0.133 1
-       Size 1 1
-      }
-      ImageWidgetClass "{6A40133F67B085A3}" {
-       Name "ReplyBar"
-       Slot OverlayWidgetSlot "{606956ABA80D9E16}" {
-        HorizontalAlign 0
         VerticalAlign 3
        }
        "Is Visible" 0
        Color 0.89 0.639 0.231 1
-       Size 4 34
+       Size 1 1
+      }
+      PanelWidgetClass "{ADE9E7E14EED558C}" {
+       Name "ReplyEdge"
+       Slot OverlayWidgetSlot "{94B940B4472C9E94}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       style outline_2px
       }
       HorizontalLayoutWidgetClass "{0D170C864B5B1A66}" {
        Name "ReplyLine"
-       Slot OverlayWidgetSlot "{05F355B1F2BBA982}" {
+       Slot OverlayWidgetSlot "{AD6A958A052537B0}" {
         HorizontalAlign 3
         VerticalAlign 1
-        Padding 16 0 16 0
+        Padding 14 0 14 0
        }
        {
-        SizeLayoutWidgetClass "{A08EE94A00A2AD5E}" {
-         Name "ReplyNumBox"
-         Slot LayoutSlot "{0B27060A4E2A66CB}" {
+        TextWidgetClass "{097E88B38DC2FF5C}" {
+         Name "ReplyTag"
+         Slot LayoutSlot "{DD39195E95263683}" {
           HorizontalAlign 0
           VerticalAlign 1
-          Padding 0 0 16 0
+          Padding 0 0 10 0
          }
-         AllowWidthOverride 1
-         WidthOverride 28
-         AllowHeightOverride 1
-         HeightOverride 28
-         {
-          OverlayWidgetClass "{CCADBDDA0F5AC7BE}" {
-           Name "ReplyNumRing"
-           Slot AlignableSlot "{66D043FF373387B5}" {
-            HorizontalAlign 3
-            VerticalAlign 3
-           }
-           {
-            PanelWidgetClass "{0BAE5773845443A2}" {
-             Name "ReplyNumLine"
-             Slot OverlayWidgetSlot "{188F3915CF976496}" {
-              HorizontalAlign 3
-              VerticalAlign 3
-             }
-             Color 0.42 0.322 0.133 1
-             style outline_2px
-            }
-            TextWidgetClass "{ABB1C7C090F49D47}" {
-             Name "ReplyNum"
-             Slot OverlayWidgetSlot "{6628D363D9AAD6ED}" {
-              HorizontalAlign 1
-              VerticalAlign 1
-             }
-             Color 0.89 0.639 0.231 1
-             Text "1"
-             "Font Size" 18
-             "Min Font Size" 18
-             "Horizontal Alignment" Center
-             FontProperties FontProperties "{FB0B36AD0DC2D0D6}" {
-              Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-             }
-            }
-           }
-          }
+         Color 0.89 0.639 0.231 1
+         Text "[Speech - Bastion 2/3]"
+         "Font Size" 28
+         "Min Font Size" 28
+         FontProperties FontProperties "{C8AE30D99544B4F0}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
          }
         }
         TextWidgetClass "{D47CF89DB4BB63B3}" {
          Name "ReplyText"
-         Slot LayoutSlot "{C5ED46F9F9345FF8}" {
-          HorizontalAlign 3
+         Slot LayoutSlot "{7E4510A9B55513B6}" {
+          HorizontalAlign 0
           VerticalAlign 1
-          SizeMode Fill
-          FillWeight 1
          }
          Color 0.91 0.886 0.816 1
-         Text "What's wrong with the well?"
-         "Font Size" 25
-         "Min Font Size" 25
-         FontProperties FontProperties "{C70DA91AD84C2297}" {
+         Text "Withdrew? I heard you were thrown out."
+         "Font Size" 28
+         "Min Font Size" 28
+         FontProperties FontProperties "{7A64E7C448B23C3B}" {
           Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-         }
-        }
-        TextWidgetClass "{097E88B38DC2FF5C}" {
-         Name "ReplyTag"
-         Slot LayoutSlot "{BEF7AD0DD531BBC6}" {
-          HorizontalAlign 2
-          VerticalAlign 1
-          Padding 16 0 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Text "a job"
-         "Font Size" 18
-         "Min Font Size" 18
-         FontProperties FontProperties "{23CA3B4B194D0001}" {
-          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
          }
         }
         TextWidgetClass "{5A175F9C5F10BCD1}" {
          Name "ReplyNeed"
-         Slot LayoutSlot "{C9A450FBEF133910}" {
-          HorizontalAlign 2
+         Slot LayoutSlot "{4DB3F1CBAC573D92}" {
+          HorizontalAlign 0
           VerticalAlign 1
-          Padding 16 0 0 0
+          Padding 12 0 0 0
          }
          "Is Visible" 0
-         Color 0.639 0.62 0.565 1
-         Text "(needs 20 Haven Favor, you have 12)"
-         "Font Size" 18
-         "Min Font Size" 18
-         FontProperties FontProperties "{5B3266B44AD5C5C4}" {
-          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         Color 0.431 0.416 0.376 1
+         Text "(you have 1)"
+         "Font Size" 24
+         "Min Font Size" 24
+         FontProperties FontProperties "{8B3F0E4B32BE7B50}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
          }
         }
        }

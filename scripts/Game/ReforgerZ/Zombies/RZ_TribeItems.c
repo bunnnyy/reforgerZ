@@ -127,27 +127,24 @@ class RZ_CallBoxAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 //! On the notebook item: "Your dead: keep my name out of it" / "let them say it" (the opt-out,
 //! reachable with a pad; on PC also /mydead hidden or /mydead shown).
-class RZ_DeadNameAction : ScriptedUserAction
+class RZ_DeadNameAction : RZ_GroupedAction
 {
 	//------------------------------------------------------------------------------------------------
-	override bool GetActionNameScript(out string outName)
+	override string MenuTitle(IEntity owner)
+	{
+		return "Your name and the season";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Label(out string outName)
 	{
 		outName = "If I die: say my name, or don't";
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	override bool HasLocalEffectOnlyScript()
+	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		if (!Replication.IsServer())
-			return;
-
 		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
 		RZ_TribePeople people = RZ_TribeItemHelp.People();
 		if (playerId > 0 && people)

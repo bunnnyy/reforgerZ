@@ -1434,7 +1434,7 @@ the taking rules are [above](#the-taken-and-the-ones-who-ran).
   the **Name filter** (words; a name containing one is described instead). The same test keeps the
   name out of every other public text ([EPILOGUE.md](EPILOGUE.md#names)).
 - **The opt-out**, without typing: the notebook item's action *"If I die: say my name, or don't"*
-  (a toggle, with a gamepad from the action menu); on PC also `/mydead hidden` or `/mydead shown`. Saved
+  (a toggle, with a gamepad; with the object menu it's a row of the item's **Your name and the season**); on PC also `/mydead hidden` or `/mydead shown`. Saved
   by identity.
 - **Put down.** When one of a pack's young is killed with a player within 100 m, it's a named one about
   as often as they are a share of its young (always the one a running Bring Them Home wants): the ID card
