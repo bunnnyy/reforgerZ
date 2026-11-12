@@ -145,21 +145,21 @@ class RZ_NoteText
 	static string PersonalLine(RZ_Rng rng, string place)
 	{
 		array<string> lines = {
-			"Tell my sister I'm sorry about the car.",
-			"If you find the dog, his name is Bruno. He doesn't bite.",
-			"The radio still says aid is coming. I stopped listening on Day 4.",
-			"We had soup today. Real soup.",
-			"I keep counting the bullets. The number doesn't change.",
-			"I left the key under the blue pot, for whoever comes after.",
-			"My hands won't stop shaking. Must be the cold.",
-			"Nobody answers at the school any more.",
-			"If this reaches the Haven: we tried.",
-			"Don't drink from the stream past the bridge."
+			"Tell my sister I'm sorry about the car. I left it at the north road barrier on Day 2, keys in.",
+			"If you find a brown dog, his name is Bruno. He doesn't bite, and he comes to a whistle. Take him to whoever's feeding people.",
+			"The radio still says aid is on its way. I stopped listening on Day 4. The batteries are for the torch now.",
+			"We had soup at the safehouse today. Real soup, potatoes in it, and nobody counted the bowls.",
+			"I keep counting the bullets. The number doesn't change, and neither does the scratching at the back door.",
+			"I left the key under the blue pot, for whoever comes after. The tins in the cellar are yours. Leave one jar of the jam: it was my mother's.",
+			"My hands won't stop shaking since the scratch on Day 6. Must be the cold.",
+			"Nobody answers at the school any more. Last week someone still waved a torch from the gym window at nine.",
+			"If this reaches the Haven: we tried to bring the children to you. The bridge was down, and we went back.",
+			"Don't drink from the stream past the bridge. Something has been lying in it upstream since Day 3."
 		};
 
 		string line = rng.Pick(lines);
 		if (!place.IsEmpty() && rng.Chance(0.4))
-			line = string.Format("%1 is quiet tonight. Too quiet. %2", place, line);
+			line = string.Format("No calls from the hills round %1 tonight, the first time in a week. %2", place, line);
 
 		return line;
 	}
