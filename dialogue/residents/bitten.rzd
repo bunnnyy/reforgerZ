@@ -12,7 +12,7 @@ voice haven
 node start
   say "Show me. Go on. Nobody here is going to shout."
   > @tell "Here. It's a bite." -> told   do call:declare_bite
-  > @fine "It's nothing. A scratch off a fence." -> fine | caught   check lie haven 2   found nset:hid_bite
+  > @fine "It's nothing. A scratch off a fence." -> fine | caught   check lie haven 2   truth !bite_shown   found nset:hid_bite
   > @back "Not now." -> hub
 
 node told

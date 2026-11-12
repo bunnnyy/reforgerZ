@@ -12,6 +12,7 @@ class RZ_DialoguePack_radio
 		db.Node("start");
 		db.Say("", "\"Bastion, all stations. Roll at the shift change. Nothing heard from Command. Over.\"");
 		db.Choice("word", "\"Post four. Say again the word. Over.\"", "word", "lost", "", "lie bastion 3", "", "", "", "", "");
+		db.ChoiceExtra("tier:bastion>=trusted", "");
 		db.Choice("listen", "\"Just listen.\"", "listen", "", "", "", "", "", "", "", "");
 		db.Choice("off", "\"Switch off.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("word");
@@ -31,6 +32,7 @@ class RZ_DialoguePack_radio
 		db.Node("start");
 		db.Say("", "\"Lab, all field stations. Sample intake is below target. The director requests patience.\"");
 		db.Choice("count", "\"Station two. Say again the count.\"", "count", "lost", "", "lie halcyon 2", "", "", "", "", "");
+		db.ChoiceExtra("tier:halcyon>=trusted", "");
 		db.Choice("listen", "\"Just listen.\"", "listen", "", "", "", "", "", "", "", "");
 		db.Choice("off", "\"Switch off.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("count");
