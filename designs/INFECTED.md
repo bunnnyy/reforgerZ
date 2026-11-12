@@ -14,7 +14,6 @@ build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
 - [The model's rest](#the-models-rest)
 - [Tribes](#tribes)
 - [Day parties](#day-parties)
-- [Towns and the land](#towns-and-the-land)
 - [Bodies](#bodies)
 - [People](#people)
 - [The behaviour layer's rest](#the-behaviour-layers-rest)
@@ -31,7 +30,7 @@ build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
 | Trails (rule 9) | Trail scoring by prey (wear is built) |
 | Borders (rules 10–18) | Bastion's *"Papa-four: no contact"*; the border's offset moving the ranges |
 | Fed by people (rule 19) | The moat rule stopping for a pack whose leader a finale route took alive, until its succession (with the finale) |
-| Memory (rules 20–23) | An abandoned lair's finds as items from the search table (a line today); tracks always fresh in snow |
+| Memory (rules 20–23) | An abandoned lair's finds as items from the search table (a line today) |
 | Clans | The relay players hear pass along the ridges; all of a clan hunting toward one ground on frenzy nights |
 | The great one | Caught alive it counts +3 on a finale route's track instead of +2 (with the finale) |
 | Next season | After a Halcyon win, seeds could start in Prime too (an option) |
@@ -53,17 +52,10 @@ build. Approved by the author on 2026-11-11. The finale's live tissue's rest is
 
 A Furious pack's day parties walking the capture road.
 
-## Towns and the land
-
-- **Giving way, in placement:** while a pack's part is in a town, the crawlers' placement shifts half
-  indoors and to the side away from the trail (crawler life's night herds already step aside).
-- **Chain reactions:** Siren Test's other packs keeping away from that town that night.
-
 ## Bodies
 
-- Scouts moving to posts above tonight's trails at dusk, and sitting lower in fog; a marked player seen
-  from 1.5 times as far; the building query (a player inside is never seen; the code uses its sight
-  trace within 80 m).
+- Scouts moving to posts above tonight's trails at dusk, and sitting lower in fog; the building query
+  (a player inside is never seen; the code uses its sight trace within 80 m).
 - The corpse kept from the engine's cleanup (VERIFY 15), and the samples kept from the loose-item
   cleanup during the vigil.
 - A second infected faction hostile to the first, so fights could be seen (behind a setting).
@@ -93,10 +85,9 @@ What's left waits on a test; the levers the lab disproved are in the roadmap's D
 ## After the cure: the last week
 
 The last week is built ([docs/INFECTED.md](../docs/INFECTED.md#the-last-week)) with its beats kept for
-the epilogue. Still designed: the epilogue reading them, and one more beat, **Walking with it** (up to 3
-named young still running with each pack, players' characters among them by the name setting). The
-closing work that touches the infected (Quiet the Ridges, Bring Them Home as closing work, Take Back a
-Town) is [EPILOGUE.md](EPILOGUE.md)'s.
+the epilogue, Walking with it among them. Still designed: the epilogue reading them. The closing work
+that touches the infected (Quiet the Ridges, Bring Them Home as closing work, Take Back a Town) is
+[EPILOGUE.md](EPILOGUE.md)'s.
 
 ## From Grounds to tribes: the rename table
 

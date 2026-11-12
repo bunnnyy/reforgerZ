@@ -958,7 +958,7 @@ more than 35 m from its people, without a claim, until they come closer.
 
 #### The look on the HUD and the standing page
 
-✅ (`RZ_Hud_Look`, [UI.md](UI.md#the-screens)). While a look is coming (the 150 m notice, an again
+✅ (`RZ_Hud_Look`, [UI.md](UI.md#screens)). While a look is coming (the 150 m notice, an again
 look's 10 s warning), the HUD shows the Watched eye and **"PASS AS BASTION: 2 OF 2"** (or "SEEN
 THROUGH"), owner-only, sent only when it changes; it goes once the look is done, the kit comes off or
 you're 200 m on. The notices still carry the tags. The notebook's Standing page has, above the

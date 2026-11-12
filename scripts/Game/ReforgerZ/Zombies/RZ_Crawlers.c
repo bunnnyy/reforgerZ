@@ -437,6 +437,27 @@ class RZ_Crawlers
 	vector PickSpot(int idx, RZ_Settlement s, bool reinforce, out RZ_ECrawlerSpot kind)
 	{
 		kind = RollSpot(s, reinforce);
+		// Giving way (docs/INFECTED.md, Towns): with a pack's group out in the town, half go indoors
+		// (by a door) and the rest stand on the side away from it
+		vector pack;
+		if (!reinforce && PackIn(s, pack))
+		{
+			if (Math.RandomFloat01() < 0.5)
+			{
+				kind = RZ_ECrawlerSpot.REST;
+				return RestPoint(s);
+			}
+
+			kind = RZ_ECrawlerSpot.STREET;
+			vector away = s.m_vCenter - pack;
+			away[1] = 0;
+			if (away.Length() > 1)
+			{
+				away.Normalize();
+				return RZ_Util.GroundPos(RZ_Util.RandomPointInRing(s.m_vCenter + away * s.m_fRadius * 0.5, 0, s.m_fRadius * 0.4));
+			}
+		}
+
 		switch (kind)
 		{
 			case RZ_ECrawlerSpot.REST: return RestPoint(s);
@@ -445,6 +466,32 @@ class RZ_Crawlers
 		}
 
 		return RZ_Util.GroundPos(RZ_Util.RandomPointInRing(s.m_vCenter, 0, s.m_fRadius));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pack's group out (as data or with bodies) inside the town's radius + 50 m: where it is.
+	protected bool PackIn(RZ_Settlement s, out vector at)
+	{
+		RZ_Tribes tribes = m_GM.GetTribes();
+		if (!tribes || !tribes.IsEnabled())
+			return false;
+
+		foreach (RZ_Tribe t : tribes.GetTribeList())
+		{
+			if (RZ_Util.DistXZ(t.RangeCentre(), s.m_vCenter) > t.m_fRadius * 2 + s.m_fRadius)
+				continue;
+
+			foreach (RZ_TribePart p : t.m_aParts)
+			{
+				if (p.m_bOut && RZ_Util.DistXZ(p.m_vPos, s.m_vCenter) <= s.m_fRadius + 50)
+				{
+					at = p.m_vPos;
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

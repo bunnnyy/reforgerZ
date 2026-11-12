@@ -159,9 +159,11 @@ as before (infection).
 **Burn the Nest** ([MISSIONS.md](MISSIONS.md)) is where a town's crawlers lie up thickest. Its brief
 now reads *"The slow ones lie up thick in Levie, all in one place. Find it and burn it out."*
 
-How their bodies behave (lying up, waking, herds, giving way to a pack) is the
-[crawlers' life](#crawler-life). *Simplified:* placement doesn't shift indoors when a pack passes
-(planned), and bloated crawlers are whatever the prefab is: the code doesn't make them burst.
+**Giving way, in placement.** While a pack's group is out in a town (within its radius + 50 m), half
+the crawlers spawned there stand by a building's door and the rest on the side of the town away from
+it. How their bodies behave (lying up, waking, herds, giving way to a pack) is the
+[crawlers' life](#crawler-life). *Simplified:* bloated crawlers are whatever the prefab is: the code
+doesn't make them burst.
 
 ## The countryside: loose ones
 
@@ -640,6 +642,8 @@ one with them. Young ones all over the place. They come this way most nights."* 
 one, the way, how fresh, the alpha, the young, and how worn the trail is: [Worn trails](#memory)).
 Within 60 m of a lair by day: *"No birds in this wood, and the ground's laid flat under the trees.
 Something lies up here by day."* At a fear place, the Hunter reads that instead ([Memory](#memory)).
+**In snow** (the Winter rule set) a track keeps twice as long and always reads fresh: *"... Sharp as
+the day they were made, in this snow."*
 
 ### Tribe bodies
 
@@ -1390,6 +1394,9 @@ The packs' thirteen contracts, The Lone One, the changed missions and the events
   dawn) and borders: a border with a frenzied side always has a cause to fight, twice as likely, still
   2 Border Nights staged a night at most. The great one's clan gathers on a frenzy night ([The great
   one](#the-great-one)).
+- **Siren Test's chain reaction:** a pack with the bells habit within 3 km comes to the sirens; every
+  other pack within 3 km keeps away from that town tonight (a fear place there until the next counted
+  night, its trails worked out round it; `keeps away from the siren` in the log).
 - **A pack on the move** (Lead Them Away, with **Life cycle** on): a free pack of 8 or more whose ground
   is within 3 km of the safehouse (always a nomad, else half the time) is the crowd itself, moving
   house, held for the job. Every body killed comes off the pack (hunters first, then young). Led to the
@@ -1444,8 +1451,9 @@ server's ridges go quiet too:
   at its lair and is gone.
 - **Towns stay cleared.** The kill ledger stops halving (built before), and nothing raises a town's
   infection in the epilogue.
-- **Beats for the epilogue:** still calling (each leader alive at the cure), brought home, taken alive
-  for the lab, culled, burned out, the great one risen and fallen: kept in `state.json` (40 at most) and shown by `/tribes`.
+- **Beats for the epilogue:** still calling (each leader alive at the cure), walking with it (up to 3
+  named young still running with each pack at the cure, players' characters among them by the name
+  setting), brought home, taken alive for the lab, culled, burned out, the great one risen and fallen: kept in `state.json` (40 at most) and shown by `/tribes`.
   The epilogue reads the packs calling at the cure for its beats and Quiet the Ridges, and "taken alive"
   for the director's grey choice ([EPILOGUE.md](EPILOGUE.md#the-closing-work)).
 
@@ -1505,9 +1513,8 @@ always told.
 ## Planned
 
 What's left is in [designs/INFECTED.md](../designs/INFECTED.md): the model's small rules (prey-scored
-trails, the border moving the ranges, snow tracks, the clans' relay), the call's and the hunt's rest
-(stragglers, two callers, a cunning pack on your back trail), crawlers giving way in their placement,
-scouts' posts over the night's trails, the jobs' rest, the epilogue's beats from the other tribe beats
+trails, the border moving the ranges, the clans' relay), the call's and the hunt's rest (stragglers,
+two callers, a cunning pack on your back trail), scouts' posts over the night's trails, the jobs' rest, the epilogue's beats from the other tribe beats
 (brought home, culled, burned out) and the factions' jobs on the ridges; and the behaviour layer's
 notice-rate calibration and untested levers. The finale's live
 tissue's rest is [designs/FINALE.md](../designs/FINALE.md#live-tissues-remaining-rules)'s.

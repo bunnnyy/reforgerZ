@@ -3009,9 +3009,14 @@ class RZ_Tribes
 	//------------------------------------------------------------------------------------------------
 	protected void PruneTracks(RZ_Tribe t)
 	{
+		// In snow (the Winter rule set) a track keeps twice as long, and always reads fresh
+		float keep = TRACK_KEEP;
+		if (RZ_TribeLife.IsWinter())
+			keep = TRACK_KEEP * 2;
+
 		for (int i = t.m_aTracks.Count() - 1; i >= 0; i--)
 		{
-			if (m_fClock - t.m_aTracks[i].m_fAt > TRACK_KEEP)
+			if (m_fClock - t.m_aTracks[i].m_fAt > keep)
 				t.m_aTracks.Remove(i);
 		}
 	}
@@ -3085,6 +3090,8 @@ class RZ_Tribes
 			when = "a few hours ago";
 
 		string line = string.Format("%1, heading %2, %3.", count, CompassWord(vector.Zero, best.m_vHeading), when);
+		if (RZ_TribeLife.IsWinter())
+			line += " Sharp as the day they were made, in this snow.";
 		if (best.m_bBig)
 			line += " A big one with them.";
 

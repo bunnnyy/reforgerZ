@@ -2379,6 +2379,10 @@ when it happens)
   Tribe Moves** when a lair moves out of its range ("On the Move", two groups near you); **Red Dusk** at a
   clear dusk. The towns inside the frenzy hold twice their crawlers until dawn, not just its first 20
   minutes.
+- [ ] **Siren Test** near two packs, one with the bells habit: it comes, the other keeps away from
+  that town tonight (`keeps away from the siren`). With a pack's group in a town, the crawlers that
+  spawn stand by doors or on the far side. In a Winter season a Hunter's track line ends *"Sharp as
+  the day they were made, in this snow."* At the cure, `/tribes` lists "Walking with it" beats.
 - [ ] **The packs' hordes:** make 80 heat inside a pack's range by day: its day party walks over (`Pack
   horde:`), no town's crawlers come; at night, its hunters on their trails. Stay put an hour at night
   in a range: a young group comes to look (`Pack lookers:`).
