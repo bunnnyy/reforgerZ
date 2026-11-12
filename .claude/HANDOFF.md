@@ -109,7 +109,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-(none)
+- Cloud, 2026-11-12: `Configs/System/chimeraInputCommon.conf`, one new action (RZ_TalkScroll, the right stick on the talk screen).
 
 ## Status
 
