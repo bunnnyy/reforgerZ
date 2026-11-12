@@ -204,6 +204,66 @@
   "plate": false
  },
  {
+  "name": "marker_disc",
+  "category": "Map markers",
+  "use": "A solid disc: a map marker's middle, tinted in the faction's colour (or hazard yellow, or steel grey for the stations), and the dark chip under a place badge",
+  "plate": false
+ },
+ {
+  "name": "marker_ring",
+  "category": "Map markers",
+  "use": "A thin hollow ring: drawn round a map marker's disc with a small gap, tinted near-black",
+  "plate": false
+ },
+ {
+  "name": "glyph_power",
+  "category": "Map markers",
+  "use": "The power station's bolt, no plate: drawn in bone on its map disc",
+  "plate": false
+ },
+ {
+  "name": "glyph_radio",
+  "category": "Map markers",
+  "use": "The radio station's mast, no plate: drawn in bone on its map disc",
+  "plate": false
+ },
+ {
+  "name": "glyph_event",
+  "category": "Map markers",
+  "use": "A world event's exclamation mark, no plate: drawn dark on its hazard-yellow map disc",
+  "plate": false
+ },
+ {
+  "name": "glyph_checkpoint",
+  "category": "Map markers",
+  "use": "A sealed checkpoint's striped barrier, no plate: drawn dark on its hazard-yellow map disc",
+  "plate": false
+ },
+ {
+  "name": "badge_stronghold",
+  "category": "Map badges",
+  "use": "Stronghold: a small keep in a ring. The badge at a faction marker's bottom right, and the map key",
+  "plate": false
+ },
+ {
+  "name": "badge_outpost",
+  "category": "Map badges",
+  "use": "Outpost: a flag in a ring. The badge at a faction marker's bottom right, and the map key",
+  "plate": false
+ },
+ {
+  "name": "badge_safehouse",
+  "category": "Map badges",
+  "use": "Safehouse: a house in a ring. The badge at a faction marker's bottom right, and the map key",
+  "plate": false
+ },
+ {
+  "name": "badge_lab",
+  "category": "Map badges",
+  "use": "The lab: a flask in a ring. The badge at a faction marker's bottom right, and the map key",
+  "plate": false
+ },
+ {
   "name": "item_key",
   "category": "Items",
   "use": "A key for a real lock (tagged keys)",

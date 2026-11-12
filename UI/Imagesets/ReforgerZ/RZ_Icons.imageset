@@ -1,5 +1,5 @@
 ImageSetClass {
- RefSize 1024 1280
+ RefSize 1024 1408
  Textures {
   ImageSetTextureClass {
    mpix 1
@@ -472,6 +472,66 @@ ImageSetClass {
   ImageSetDefClass voice_note {
    Name "voice_note"
    Pos 640 1152
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass badge_lab {
+   Name "badge_lab"
+   Pos 768 1152
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass badge_outpost {
+   Name "badge_outpost"
+   Pos 896 1152
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass badge_safehouse {
+   Name "badge_safehouse"
+   Pos 0 1280
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass badge_stronghold {
+   Name "badge_stronghold"
+   Pos 128 1280
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass glyph_checkpoint {
+   Name "glyph_checkpoint"
+   Pos 256 1280
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass glyph_event {
+   Name "glyph_event"
+   Pos 384 1280
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass glyph_power {
+   Name "glyph_power"
+   Pos 512 1280
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass glyph_radio {
+   Name "glyph_radio"
+   Pos 640 1280
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_disc {
+   Name "marker_disc"
+   Pos 768 1280
+   Size 128 128
+   Flags 0
+  }
+  ImageSetDefClass marker_ring {
+   Name "marker_ring"
+   Pos 896 1280
    Size 128 128
    Flags 0
   }
