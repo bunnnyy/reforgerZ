@@ -680,8 +680,8 @@ place), `{claim:<key>}` (what you told this speaker for that claim, in your own 
 Script, `scripts/Game/ReforgerZ/Dialogue/Pack/RZ_DialoguePack_<area>.c` (functions of at most 150
 calls) and `RZ_DialoguePacks.c`. The server compiles them once at start into typed records indexed
 by speaker kind. The packs are committed; never edit them by hand. They're the one text source, so a
-text fix needs a mod update (reading `.rzd` files from the addon waits for an engine check,
-[designs/DIALOGUE.md](../designs/DIALOGUE.md)). A lie's mark and a choice's `truth` and `callout` go into
+text fix needs a mod update (see [Simplified](#simplified-and-not-built-yet) for reading `.rzd` files
+from the addon). A lie's mark and a choice's `truth` and `callout` go into
 the packs as `Mark` and `ChoiceExtra` calls, `tell always` and `found` as `ChoiceMore`, bindings as
 `Bind`.
 
@@ -781,5 +781,9 @@ always` (an ordinary lie, believable and never true).
 - *Simplified:* a claim the world tests isn't saved: a restart forgets a test still waiting.
 - *Simplified:* a binding lasts the session (it's picked again when the topic opens next), and a world
   predicate waits 3 real hours and isn't saved.
-- **Waits for an engine check** ([designs/DIALOGUE.md](../designs/DIALOGUE.md)): the text source read
-  from the addon, with server-only `$profile` overrides.
+- *Simplified (waits for an engine check):* the generated packs are the one text source. Reading the
+  `.rzd` files from the addon at start, with server-only `$profile:ReforgerZ/dialogue/*.rzd` overrides by
+  conversation id (a text fix with no mod update, and twists kept off clients' disks), needs `FileIO` to
+  open files inside the addon on the dedicated server (VERIFY, on the PC's list in `.claude/HANDOFF.md`).
+  If it can, the reader is the packer's parser ported, with the overrides on top; if it can't, only the
+  `$profile` overrides would be worth a runtime reader.
