@@ -305,6 +305,26 @@ Conversation lines ([DIALOGUE.md](DIALOGUE.md)) follow everything on this page, 
 - **Strangers** speak with one personal detail (a marrow, a pram of pans, a husband across the
   line), in their own words. Small means small: a pinch, not a tragedy. Nobody leans on them.
 - **On the open channel** nobody is named, ever: no `{player}`, `{word}` or crew name on air.
+- **Hubs** ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)) are conversations, not menus:
+  - **Each person's own way in.** A topic label is something you'd say to *this* person ("Ask why
+    the bowls are half full.", "Ask what's worth the fuel.", "Ask what's for supper."), never a
+    generic "Any work?" or "Heard anything?". The same job or news from two factions gets two labels.
+  - **Work comes out of talk.** They bring up what's wrong first, in their voice; you can ask about
+    it, dig (who, why, what's in it for them), push back, bargain or take a check; only then comes the
+    choice that offers the job ("Show me.", "Anything need doing?"). The talk sets up what's on their
+    mind, never the job's details: the built reply says what the job is, and it may be something else
+    or nothing today.
+  - **What's going on.** Openings change with the stage, the cure, the lock and the epilogue, the
+    town, the faction's need, the news near them, the time and the weather; and with you (your kit,
+    a bite, your record, your route). Each speaker type has several openings per state (traits for
+    leaders, `persona:1`–`3` for everyone else), so two of one job don't sound alike.
+  - **Gossip is specific and sourced.** A real place or person from the news (`{bind:...}`), who
+    said it ("Someone's cousin saw the flag change."), and the speaker's own take, worst about
+    rivals: Haven gossip stays about food. Some of it is wrong in the faction's own way (Bastion leaves
+    things out, the Red Hand jokes, the Haven is kind about it), and someone else knows better.
+  - **"What do you make of me"** is a reaction, not a readout: what they can see first (colours, a
+    bite), then what you did with them (`{best}`, `{worst}`, `{kills}`, a crew name, a title), then
+    your standing. The built verdict is one choice inside it.
 - The lint for conversations is `tools/dialogue_pack.py` ([DIALOGUE.md](DIALOGUE.md#tools)); the
   checks below also read every `.rzd` line.
 

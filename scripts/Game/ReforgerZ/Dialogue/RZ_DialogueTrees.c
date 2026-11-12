@@ -272,7 +272,7 @@ class RZ_DialogueTrees
 
 	//------------------------------------------------------------------------------------------------
 	//! The hub: the built replies (verbs) are already in `replies`; the scenes' verbs and the topics
-	//! follow. The talk screen pages them (RZ_Dialogue.SendNode, Something else.).
+	//! follow. The talk screen pages them (RZ_Dialogue.SendNode: 4 a page, "1/2", LB/RB).
 	void HubReplies(RZ_TalkSession s, notnull array<ref RZ_TalkReply> replies)
 	{
 		RZ_DTalk t = s.m_Tree;

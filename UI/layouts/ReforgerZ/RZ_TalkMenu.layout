@@ -126,6 +126,88 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       }
      }
     }
+    HorizontalLayoutWidgetClass "{77468C7FF8EC8FB7}" {
+     Name "TalkPage"
+     Slot FrameWidgetSlot "{24EE8C8BD918CB96}" {
+      Anchor 0 0 0 0
+      PositionX 902
+      OffsetLeft 902
+      PositionY 14
+      OffsetTop 14
+      SizeX 260
+      OffsetRight -1162
+      SizeY 34
+      OffsetBottom -48
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     {
+      ButtonWidgetClass "{B46C678593784683}" {
+       Name "PagePrev"
+       Slot LayoutSlot "{57861FF81AFEA119}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+        Padding 0 0 12 0
+       }
+       style blank
+       {
+        TextWidgetClass "{3E185990878C3D7A}" {
+         Name "PagePrevText"
+         Slot ButtonWidgetSlot "{CF3A67085D5AA67F}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.639 0.62 0.565 1
+         Text "<"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{66857797E0CD0FED}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+      TextWidgetClass "{DEE158505A593FB9}" {
+       Name "PageText"
+       Slot LayoutSlot "{A8AAAA1A8B61DDAC}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+        Padding 0 0 12 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text "1/2"
+       "Font Size" 20
+       "Min Font Size" 20
+       FontProperties FontProperties "{2341A81E97C89DAA}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ButtonWidgetClass "{0988E05C66DD5E22}" {
+       Name "PageNext"
+       Slot LayoutSlot "{625D391B22F49CB2}" {
+        HorizontalAlign 0
+        VerticalAlign 1
+       }
+       style blank
+       {
+        TextWidgetClass "{F1A6C2D0B3E84711}" {
+         Name "PageNextText"
+         Slot ButtonWidgetSlot "{8C2E5D17A4B39F02}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "MORE >"
+         "Font Size" 20
+         "Min Font Size" 20
+         FontProperties FontProperties "{5D0B9E3A71C64F28}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
     ScrollLayoutWidgetClass "{046E489EB41A8BBF}" {
      Name "SaidScroll"
      Slot FrameWidgetSlot "{05C87DC59D744501}" {
@@ -216,7 +298,7 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "D-PAD  CHOOSE    A  SAY IT    B  LEAVE    LB / RB  SCROLL"
+     Text "D-PAD  CHOOSE    A  SAY IT    B  LEAVE    LB / RB  PAGE"
      "Font Size" 18
      "Min Font Size" 18
      FontProperties FontProperties "{3CE328AFCAE189CF}" {
@@ -238,7 +320,7 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       Alignment 0 0
      }
      Color 0.427 0.416 0.384 1
-     Text "1-5 OR D-PAD AND A: A REPLY"
+     Text "1-5: A REPLY    Q / E: PAGE"
      "Font Size" 18
      "Min Font Size" 18
      "Horizontal Alignment" Right

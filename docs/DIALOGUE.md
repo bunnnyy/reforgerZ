@@ -71,12 +71,15 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
   change) still comes as a card. A line from the speaker that arrives later (a treatment
   finishing) also goes into the screen while it's open.
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
-  **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me?
+  **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me? (with
+  Trees on, talk carries them: [Hubs](#hubs-work-comes-out-of-talk)).
 - **A pick** runs that slot's handler, capturing again. If it said nothing new (the answer was a
   card), what they said stays. Then come their answer and the replies after it, New Vegas style.
 - **Five at most on the screen.** The server sends a page of the list: up to four replies and the
-  way out, or, when there are more, three, **Something else.** (the next page, round to the first)
-  and the way out. A new list (another node, back to the hub) starts on its first page.
+  way out, with the page and the count. When there's more than one page the screen shows which one
+  you're on ("1/2", MORE >) and LB/RB or Q/E turn it, round from either end ([UI.md](UI.md#the-talk-screen));
+  a turn is a pick of `MORE` or `PAGE_BACK`, taken only while there are pages to turn. A new list
+  (another node, back to the hub) starts on its first page.
 - **[Admin].** A server admin's replies (the admins' chat commands without typing, [Tools](#tools))
   sit under one reply, **[Admin]**, at the end of the list; it opens them as their own list, with
   **Back.** as its way out (B and Esc too). Only at the hub, never in a node.
@@ -118,8 +121,9 @@ With Trees on, Talk opens a **hub**:
   lines first ("There's a candle in the window, and people are talking more quietly than usual.").
   A leader's greeting line for someone they've met is their **opening** in reputation's voice
   ([REPUTATION.md](REPUTATION.md#what-people-call-you)).
-- **Verbs:** the person's built replies, unchanged (Ask for work, Share some food, Rob...). A
-  leader's **What do you make of me?** is said in their faction's voice.
+- **Verbs:** the person's built replies, unchanged (Share some food, Rob, a shop, a service...),
+  less the ones a topic carries ([Hubs](#hubs-work-comes-out-of-talk)): the work, the news and what
+  they make of you come out of talk.
 - **Topics:** every conversation for that kind of speaker whose `when` holds, in priority order
   (quest, ask, world, reaction, flavour; flavour rotates on the speaker and the day). They fill the
   list after the verbs, a page at a time on the screen ([above](#the-talk-screen)). A topic you've
@@ -144,6 +148,49 @@ wanderer's conversation heard is heard at the next).
 
 **Leaders never give errands** in a tree; a leader's line names who to see.
 
+### Hubs: work comes out of talk
+
+New Vegas style, nobody has a menu of "Ask for work / Heard anything? / What do you make of me?".
+A topic that runs a built reply (`call:slot:N` on one of its choices) **carries** it: while the topic
+shows, that reply hides from the hub (`RZ_DialogueTrees.CarryVerbs`) and is reached through the talk.
+The person brings up what's wrong in their own voice; you ask about it, dig (who, why, what's in it
+for them), push back, bargain or take a check; only then comes the choice that runs the built reply,
+so the job is the built mission or errand, dealt as built. A topic that carries a reply this person
+doesn't have now (errands off, a bitten wanderer's antidote in the slot) doesn't show, and the built
+reply stays in the hub as before. The lint holds a carrying topic to two rules: every way through it,
+whatever its jumps do, reaches the call with a choice that needs nothing (no `if`, check, cost or
+callout), and a wanderer's slot 2 topic reads `wbitten`.
+
+| Speaker | What's carried, and by what |
+|---|---|
+| Every leader (4 factions, stronghold and seat) | **The job** (slot 0): two asks a faction, by its need (the Haven: the bowls half full, or what keeps them up; Bastion: the map table, or what needs doing at the wire; the Red Hand: who owes the book, or what's worth the fuel; Halcyon: what the count is short of, or what the lab needs). **The news** (slot 1): what the houses are saying, the morning report, what's going round, what the radio logs say. **What they make of you** (slot 2): if you're welcome, how you'd be logged, what the crew calls you, how they'd file you |
+| Occupants | "Ask how things are" (slot 0), from what people are saying |
+| A safehouse's named residents (`resident:<role>`) | The errand (slot 1) and the house's news (slot 0), from their own work: the cook's supper, the lookout's roof, the storekeeper's count, the clerk's names |
+| Named people at holdings | The errand (slot 1) from their day or shift, by role and persona; "Ask how things are" (slot 0) from what's going round, with the patrol's or the lookouts' report |
+| Wanderers (all but the Kid and the Mechanic) | "Need a hand?" (slot 2) from their own trouble: the Trader's trade, the Doctor's worries, what the Scavenger is after, whether the Deserter is followed, the Preacher's prayers, the Courier's late letters |
+
+Lines change with what's going on (the stage, the cure and the lock, the majors' acts, the epilogue,
+the town, the faction's need and its trucks, truces and feuds, the news near the speaker, the time
+and the weather), with you (your standing, title, kit, deeds, a bite, your route at the lock), and
+with the speaker (traits, and for people without them `persona:1`–`3`, so two quartermasters or two
+lookouts don't sound alike). A leader whose route you left still has work: "You're with another lot
+now."
+
+**The news** names real places and events through bindings ([Conditions](#conditions), the pickers
+`news:<kind>`), in the speaker's take, and some of it is wrong, each faction its own way: Bastion's
+"We withdrew from {lost}. Orderly." (a lie by leaving out; the Red Hand's post and people, and Haven
+people, saw it taken), the Red Hand's "{lost}? We sold it." (a joke; Bastion's people and the houses
+know better), a wanderer's "the Red Hand burned {burned}" (the Red Hand: "Burning's waste"), a Bastion
+sentry's "Patrol saw nothing" in a town thick with them and a Red Hand lookout's "Dead quiet" (walk in
+and see), and a house storekeeper's "We're fine" on half portions (the cook says otherwise). Each
+truth opens an [Evidence] answer ([Lies you're told](#lies-youre-told)).
+
+**What they make of you** reacts first to what they can see (another faction's colours, a bite),
+then your record with them (theirs you put down, your best or worst deed, your crew name, your
+season's title, jobs done), then your standing, then a new face; the built verdict in their voice
+(`call:slot:2`, [REPUTATION.md](REPUTATION.md#what-people-call-you)) is one choice inside, "Where do I
+stand with you, honestly?".
+
 ## Who talks
 
 Each speaker is described by its adapter (`RZ_TalkSpeaker.Describe`): its kinds (what a
@@ -156,7 +203,7 @@ behind it.
 | Seat leaders | `seat:haven/council_head`, `seat:bastion/outpost_lead`, `seat:redhand/crew_boss`, `seat:halcyon/field_lead`, `leader:<faction>`, `leader` | as above | as above (no grey choice) |
 | Wanderers | `wanderer:<role>` (trader, doctor, scavenger, deserter, preacher, courier, kid, mechanic), `wanderer` | `wanderer:<id>:<generation>` | the role's special, Share some food, the antidote while bitten (else Need a hand?, [errands](ERRANDS.md#the-wanderers-asks); the Mechanic: Ask about cars), Rob |
 | Safehouse occupants | `occupant` | `house:<index>` | Ask how things are |
-| A safehouse's named people (the first two occupants, [ERRANDS.md](ERRANDS.md#givers)) | none yet (no trees) | `house:<index>:<i>` (errands' regard) | Ask how things are, Anything need doing? |
+| A safehouse's named people (the first two occupants, [ERRANDS.md](ERRANDS.md#givers)) | `resident:<role>` (cook, lookout, storekeeper, clerk), `resident` | `house:<index>:<i>` (errands' regard) | Ask how things are, Anything need doing? |
 | Named people at holdings | `named:<faction>/<role>` (`named:redhand/toll_man`), `named:<faction>`, `named` | `named:<holding>:<index>` | Ask how things are, Anything need doing? (errands) |
 | A road post's speaker | `post:bastion`, `post:redhand`, `post` | `post:<faction>:<town>` | none |
 | The Long Table | `table:host`, `table:mother`, `table:son`, `table:boy`, `table:road` (the host out on the road), `table` | `table:<role>` (no regard: its memory stays its three words) | eat, trade a jar, declare a bite; on the road, accept or decline |
@@ -634,6 +681,12 @@ is off.
 | The radio | `secure`, `secure:bastion`, `power`, `distress` | you're listening to a cracked net (that one); the radio has power; a distress call is on air for you |
 | Kit and cover | `kit:issued`, `kit:signed_other`, `kit:dead_mans`, `kit:off_turned`, `cover:name` (`dead`, `crew`, `notebook`, `paper`), `claimed` | what the kit itself says; you have that cover detail to give the speaker's faction; you've spoken a claim line to this speaker this life |
 | The speaker | `busy`, `made_right` | a quest topic of theirs shows now (a story holds them: nothing else offers work through them, *"Not now. I've got enough on."*); you made it right with this leader this season |
+| What's going on (`RZ_DialogueNews`) | `news:taken`, `news:lost_by(bastion)`, `news:horde`... | the picker of the same name finds something ([below](#the-text-format-rzd)): an outpost changed hands (`taken`; the speaker faction's `won` and `lost`; `won_by(<faction>)`, `lost_by(<faction>)`), a town `burned`, a house `emptied`, people brought in (`rescue`; these three from the town log, two season days), the nearest town gone to them (`overrun`), shells (`shelled`), the nearest house on half portions (`hungry`), a truck that didn't arrive (`truck`), a leader dead (`leader_dead`), a death, a bite or a heat horde near the speaker (`death`, `bite`, `horde`, a season day) |
+| The speaker's trucks | `supply:running`, `supply:road`, `supply:short`, `supply:lost` | its faction's supply trucks run; one is on the road; one of its places is short; one of its trucks was lost in the last season day |
+| The place and the weather | `town:safe`, `town:infested`, `town:overrun`, `town:looted`, `town:burned`, `town:barricaded`, `town:powered`, `rain`, `fog`, `edge` | the nearest town's state and its town memory; rain, fog; the speaker is within 1,500 m of the Perimeter's line |
+| The season | `major:book`, `major:orders>=2`, `holds:redhand>=4` | that major runs (at that act or later); the holdings a faction has |
+| Your record with a faction | `best:haven`, `worst:bastion`, `jobs:halcyon>=3`, `kills:redhand>=2` | a best or worst deed to name (`{best}`, `{worst}`); jobs done; theirs you put down (`{kills}`) |
+| Who this is | `persona:1`, `2`, `3` | which of three ways this one person talks (fixed by their memory key) |
 
 **Only what the player knows** goes into a tag: background, standing, items, the HUD, their own
 memory. Nothing reads whether a cleaned bite took.
@@ -658,7 +711,10 @@ voice haven|bastion|redhand|halcyon|table|plain
 scene <id> speaker|season|house|run [who <conditions>]   deciding together (Several players): one record per speaker,
                                 for the season, per safehouse, or per mission run; who may decide
 bind <name> = <picker>          a place picked once when the topic opens: town:nearest, town:thick_within(<m>),
-                                house:nearest, house:nearest_short
+                                town:quiet_within(<m>), town:held_by(<faction>), house:nearest, house:nearest_short;
+                                what's going on: news:<kind> (the kinds under Conditions; taken_by, taken_from,
+                                leader_dead, leader_dead_at and truck name a faction, a person or a place),
+                                supply:short, supply:truck (the speaker faction's short place, its truck's way)
 use <conv id>                   that conversation's nodes (but its start) are this one's too, copied at pack time
 node <id> [public|shared|confirm]   the first node is "start"; public (or shared, a scene's node the room
                                 sees): others within 8 m overhear it; confirm: [Point of no return]
@@ -735,7 +791,9 @@ a pronoun after `{npc}`; `!` outside the Red Hand and Bastion (a warning for Bas
 choices, effects or `public`, or on the radio; a `callout` for a lie no line tells; `truth` off a
 [Lie]; a look for the Haven, or a reward behind a look (Favor, `offer`, `learn`, `errand`, `reveal`,
 `begin`); a threat at a stranger or on air; personal tokens on air; `{their:...}` outside a stranger;
-a `dry` choice with no plain twin; a lie's `truth` that reads what the player can't know (another
+a `dry` choice with no plain twin; a topic carrying a built reply (`call:slot:N`) that some way
+through can't reach with a choice that needs nothing, a greet or bark that carries one, a wanderer's
+slot 2 topic that doesn't read `wbitten`; a lie's `truth` that reads what the player can't know (another
 system's flags, a house, a town); `tell always` or `found` off a [Lie], and a `found` effect on
 something that may be over; a scene-only effect (`set`, `qset`, `begin`, `decide`, `sway`) outside a
 scene; `set` without `@here` or a binding in a conversation for many speakers, or outside the
@@ -746,19 +804,24 @@ always` (an ordinary lie, believable and never true).
 
 ## The conversations
 
-✅ 157 conversations, 346 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
+✅ 197 conversations, 562 nodes (`python3 tools/dialogue_pack.py --list`), 17 of them barks.
 
 | Speaker | Conversations |
 |---|---|
+| Every leader's hub ([Hubs](#hubs-work-comes-out-of-talk), `leaders/*_hub.rzd`) | Two asks for work by the faction's need, the news, and what they make of you, for each faction: the Haven's bowls and what keeps them up, the houses' gossip, if you're welcome; Bastion's map table and the wire, the morning report ("We withdrew", a lie), how you'd be logged; the Red Hand's book of who owes and what's worth the fuel, what's going round ("We sold it", a lie), what the crew calls you; Halcyon's short count and the lab's needs, the radio logs, how they'd file you |
 | Haven leaders | The bear on the door; the names on the list (persuade: who crosses them out; [Elder], [Nurse] +1); who they read out at supper |
 | Bastion leaders | The board on the wall (the roster: nobody is coming, they're all they have; [Soldier], [Police]; being signed on); whether Command ever answers |
 | Red Hand leaders | The book (the first line, Rudi, persuade to see your own page, which reads it out in the book's voice); why the hand is red |
 | Halcyon leaders | Why they're called the beaks ([Lab Technician], [Doctor], [Nurse]: the notebooks); how close the cure is (the other two); a field lead on the volunteers ("They're comfortable": a lie, with [Lab Technician], [Doctor], a persuade and an [Evidence] call-out to the room at the back) |
 | Every leader | The name, not the face (a new life greeted by the season's title, once); a lie found out, said at the next greeting, once; what a brief left out, told or kept (a giver's lie you found, at any leader of that faction for a week: `leaders/briefs.rzd`, [DESIGN.md](DESIGN.md#story-blocks)) |
 | Haven leaders at a sitting | Every Name's first and second sittings: a persuade to sway the speaker's vote to an option on the table (one sway a sitting) |
+| The wanderers' hub (`wanderers/hubs.rzd`) | Six roles' own trouble, carrying Need a hand?; what they passed on the road (the news, with the Red Hand blamed for a fire: a lie) |
 | The 8 wanderer roles | The Trader's prices; the Doctor's work ([Doctor], [Nurse]); where the Scavenger has been (persuade: is it true); why the Deserter left ([Soldier], [Police]); the Preacher's bells; the Courier's letters; what still runs ([Mechanic]); the Kid's name; the Scavenger's clean chemist's (a lie for a tin, [Hunter] or [Police] see through it, [Evidence] once the Doctor tells you, and a callback greet 6 hours on); the Doctor on the chemist's and on Halcyon's back room (the truths); what Bastion makes of you, as the Deserter reads it |
+| Safehouse people's hub (`residents/hubs.rzd`) | Occupants: what people are saying (carries Ask how things are). Named residents: the cook's supper (the truth about the stores), the lookout's roof, the storekeeper's count ("We're fine", a kind lie, and [Evidence]), the clerk's new names |
+| Named people's hub (`residents/named_hubs.rzd`) | Each faction: the day, the shift, business or the work (carries the errand), by role and persona; and what's going round (carries Ask how things are): Bastion's patrol report (a lie in a thick town, walk in and see), the Red Hand's lookouts ("Dead quiet", the same), the truths about lost outposts and a burned town, Halcyon's board |
 | Occupants | A fed house (leave a tin: 2 Haven Favor); the candle in the window after a death (a greet, and a topic: staying for the name is remembered 6 hours on); the bear on the door; who gets the bed by the stove (a short house: a public scene per house that someone Known with the Haven decides, with a sway for the room); a short house's promise of two tins (kept by the hand-in, with greets for kept and broken) |
 | Named people | The Red Hand toll man (who painted the hand; Rudi, said flatly); the Bastion sentry (the roll; a promise to walk the road and come back, kept by coming back); kit greets at Bastion, Red Hand and Halcyon holdings (own colours, their kit on a stranger, issued kit worn after your standing slipped, and at Bastion's what the kit remembers: a dead man's, off the turned, signed out to someone else); Halcyon's "Say you're with the lab." (a look, a notebook number, or the truth) |
+| Post speakers, strangers, the Long Table (`posts/news.rzd`, `strangers/news.rzd`, `table/season.rzd`) | What's moving on the road (hordes, the truck, the truths about lost outposts); what a stranger passed on the way; what news reaches the farm |
 | Post speakers | Bastion's search (persuade with [Soldier], [Police]: the pole goes up); the Red Hand's toll (pay it, or threaten: Fear, +3 Red Hand Infamy); "Which unit?" and "Say you're crew." in their kit (a look, or the truth); "Word?" at Bastion's (three words, one right); the greet at 35 m that reads the kit's marks; a name who'll stand for you at Bastion's and what the crew calls you at the Red Hand's (a cover detail, then a look), your own crew name at the Red Hand's, and a notebook number to Halcyon's people (`posts/cover.rzd`, `posts/opens.rzd`) |
 | The Long Table | The host on the road (speaking first at 12 m; where you're headed, and is anyone expecting you; "Put out, were you?" to an exile); the mother at the farm (is the boy hers; [Bitten]: declare it, as built) |
 | Strangers | Calling out at 10 m; where any stranger's headed; and for 15 routines, who they are: the girl at the tin man's house, the wife who drove to market, the pram of pans, the one shut in since Tuesday, the kids in the back seat, who the grave is for, the sleeve rolled down ([Doctor], [Nurse]), the farm, the sister in a barn, the husband across the line, the debt in the book, the one who hid, the one who got there first, the scratch off a fence |

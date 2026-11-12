@@ -13,8 +13,9 @@
 //!   RZ_PuzzleObjectComponent), with what each needs shown before you choose, plus Leave;
 //! - a pick runs that slot's handler, capturing again.
 //!
-//! The screen shows at most 5 replies: a page of them, Something else. for the next page, and the
-//! way out. A server admin's replies sit under one [Admin] reply that opens them as their own list.
+//! The screen shows at most 5 replies: a page of up to 4 and the way out, with the page and the count
+//! sent along ("1/2"); the client turns pages (LB/RB, Q/E, the arrows) by sending MORE or PAGE_BACK.
+//! A server admin's replies sit under one [Admin] reply that opens them as their own list.
 //! A reply with nothing new behind it is sent as heard (grey, still picked as any other).
 //!
 //! So every rule that's built (a Trader's price, a leader's refusal, an exile's shut door) works
@@ -148,7 +149,8 @@ class RZ_TalkSession
 	float m_fLastPick = -100;
 	ref RZ_DTalk m_Tree;				// Dialogue > Trees: the topics and the node (null when off)
 	bool m_bAdmin;						// the [Admin] list is open in place of the replies
-	int m_iPage;						// the page of replies shown (Something else. turns it)
+	int m_iPage;						// the page of replies shown (MORE and PAGE_BACK turn it)
+	int m_iPages = 1;					// pages in the list now
 	string m_sList;						// the list the page belongs to (the hub, a node, the admin list)
 	ref array<string> m_aPicked = {};	// built replies picked in this conversation (shown grey after)
 }
@@ -168,7 +170,8 @@ class RZ_TalkResume
 class RZ_Dialogue
 {
 	static const int LEAVE = 99;
-	static const int MORE = 98;			// Something else.: the next page of replies
+	static const int MORE = 98;			// the next page of replies (LB/RB, Q/E, the arrows; not a row)
+	static const int PAGE_BACK = 95;	// the page before
 	static const int ADMIN_BACK = 97;	// Back.: from the [Admin] list to the replies
 	static const int ADMIN = 96;		// [Admin]: a server admin's replies, as their own list
 	static const int ROWS = 5;			// replies on the screen at once, the way out included
@@ -541,8 +544,10 @@ class RZ_Dialogue
 				reply = r;
 		}
 
+		// Turning a page needs no row: only more than one page
+		bool paging = (replyId == MORE || replyId == PAGE_BACK) && s.m_iPages > 1;
 		float now = RZ_UIW.Now();
-		if (!reply || !reply.m_bEnabled || now - s.m_fLastPick < PICK_GAP)
+		if ((!paging && (!reply || !reply.m_bEnabled)) || now - s.m_fLastPick < PICK_GAP)
 			return;
 
 		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -572,11 +577,13 @@ class RZ_Dialogue
 		s.m_fLastPick = now;
 		guard.Touch(playerId);
 
-		// The screen's own rows: the next page, the [Admin] list and back from it (nothing is said)
-		if (replyId == MORE || replyId == ADMIN || replyId == ADMIN_BACK)
+		// The screen's own: a page on or back (round to the other end), the [Admin] list and back from it (nothing is said)
+		if (paging || replyId == ADMIN || replyId == ADMIN_BACK)
 		{
 			if (replyId == MORE)
-				s.m_iPage++;
+				s.m_iPage = (s.m_iPage + 1) % s.m_iPages;
+			else if (replyId == PAGE_BACK)
+				s.m_iPage = (s.m_iPage + s.m_iPages - 1) % s.m_iPages;
 			else
 				s.m_bAdmin = replyId == ADMIN;
 
@@ -663,9 +670,9 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! T|serial|faction|name|sub|said, then R|id|label|tag|need|enabled|heard per reply (the last is
-	//! the way out). Line breaks in what they said travel as ^. At most ROWS replies go: a page of
-	//! them, Something else. when there are more, and I'll be going. (Back. in the [Admin] list).
+	//! T|serial|faction|name|sub|said|page|pages, then R|id|label|tag|need|enabled|heard per reply (the
+	//! last is the way out). Line breaks in what they said travel as ^. At most ROWS replies go: a page
+	//! of up to 4, and I'll be going. (Back. in the [Admin] list); page is from 0.
 	protected void SendNode(RZ_TalkSession s, IEntity user)
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(s.m_iPlayer);
@@ -734,28 +741,15 @@ class RZ_Dialogue
 		}
 
 		s.m_aReplies.Clear();
-		int room = ROWS - 1;
-		if (rows.Count() <= room)
-		{
-			foreach (RZ_TalkReply each : rows)
-			{
-				s.m_aReplies.Insert(each);
-			}
-		}
-		else
-		{
-			int per = room - 1;
-			int pages = (rows.Count() + per - 1) / per;
-			if (s.m_iPage >= pages || s.m_iPage < 0)
-				s.m_iPage = 0;
+		int per = ROWS - 1;
+		s.m_iPages = Math.Max(1, (rows.Count() + per - 1) / per);
+		if (s.m_iPage >= s.m_iPages || s.m_iPage < 0)
+			s.m_iPage = 0;
 
-			int from = s.m_iPage * per;
-			for (int k = from; k < from + per && k < rows.Count(); k++)
-			{
-				s.m_aReplies.Insert(rows[k]);
-			}
-
-			s.m_aReplies.Insert(OwnRow(MORE, "Something else."));
+		int from = s.m_iPage * per;
+		for (int k = from; k < from + per && k < rows.Count(); k++)
+		{
+			s.m_aReplies.Insert(rows[k]);
 		}
 
 		s.m_aReplies.Insert(way);
@@ -781,7 +775,8 @@ class RZ_Dialogue
 		s.m_iSerial = m_iSerial;
 		string sep = RZ_UIText.SEP;
 		string payload = "T" + sep + s.m_iSerial.ToString() + sep + s.m_iFaction.ToString() + sep + RZ_UIText.Clean(s.m_sName, 80)
-			+ sep + RZ_UIText.Clean(s.m_sSub, 120) + sep + RZ_UIText.Clean(said, MAX_SAID);
+			+ sep + RZ_UIText.Clean(s.m_sSub, 120) + sep + RZ_UIText.Clean(said, MAX_SAID)
+			+ sep + s.m_iPage.ToString() + sep + s.m_iPages.ToString();
 		foreach (RZ_TalkReply rep : s.m_aReplies)
 		{
 			int on = 0;
@@ -800,7 +795,7 @@ class RZ_Dialogue
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One of the screen's own rows (the way out, Something else., [Admin], Back.).
+	//! One of the screen's own rows (the way out, [Admin], Back.).
 	protected static RZ_TalkReply OwnRow(int id, string label)
 	{
 		RZ_TalkReply r = new RZ_TalkReply();
@@ -816,7 +811,7 @@ class RZ_Dialogue
 	//! the admins' never are.
 	protected bool Heard(RZ_TalkSession s, RZ_TalkReply r)
 	{
-		if (r.m_bAdmin || r.m_iId == LEAVE || r.m_iId == MORE || r.m_iId == ADMIN || r.m_iId == ADMIN_BACK)
+		if (r.m_bAdmin || r.m_iId == LEAVE || r.m_iId == ADMIN || r.m_iId == ADMIN_BACK)
 			return false;
 
 		if (RZ_DialogueTrees.IsOurs(r.m_iId))

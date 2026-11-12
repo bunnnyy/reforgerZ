@@ -168,7 +168,8 @@ lair" (the Haven), "put the heavy down" (Bastion), "evicted the boss up the hill
 "brought in the index" (Halcyon). Log lines: `Reputation: crew name <name> for <player>`,
 `Reputation: <player> laid a pack's leader down`.
 
-**What they make of you.** With Trees on, a leader's **What do you make of me?** is one template
+**What they make of you.** With Trees on, a leader's **What do you make of me?** (reached inside
+their own topic, "Ask if you're welcome here." and the like: [DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)) is one template
 per faction in four variants (both deeds, best only, worst only, neither), then what the leader
 remembers of this life, then the rule in brackets:
 
@@ -703,7 +704,8 @@ Talk to a leader (their body, or "Talk to whoever's in charge" on the quartermas
 talk screen opens ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)): **Ask for work** (their personal
 job, else the stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
 safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen these are
-actions on the leader. Radio
+actions on the leader; with **Dialogue > Trees** they come out of the leader's own topics instead of a
+menu ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)). Radio
 contracts are briefed in the voice of the nearest Loyal leader of the giver, whose traits set
 the pay.
 
