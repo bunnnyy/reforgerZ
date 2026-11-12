@@ -986,7 +986,7 @@ class RZ_Land
 	//! The water at a point on the ground: WST_NONE (dry), WST_OCEAN, WST_POND or WST_RIVER; `reach`
 	//! is the water body's larger horizontal extent (metres). Measured on Arland, Everon and Cain:
 	//! rivers read WST_RIVER, Everon's reservoir WST_POND with an extent of 442 (tools/land_survey).
-	protected static EWaterSurfaceType WaterAt(vector ground, out float reach)
+	static EWaterSurfaceType WaterAt(vector ground, out float reach)
 	{
 		reach = 0;
 		vector probe = Vector(ground[0], ground[1] + 0.2, ground[2]);

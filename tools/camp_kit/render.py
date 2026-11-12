@@ -1,9 +1,25 @@
 """Draws pieces.py and bases.py as a page you can open in a browser: the faction base plans, every
 kit's plan and a top-down plan of every piece.  Usage: py tools/camp_kit/render.py [out.html]
-(default tools/camp_kit/camp_plans.html)."""
+(default tools/camp_kit/camp_plans.html). Props are drawn at their measured size (footprints.json)
+where they have one.
+
+    py tools/camp_kit/render.py --placed <console.log> [out.html]
+
+draws the sites a site audit actually laid out instead (placed.py; docs/SITES.md, "Seeing it")."""
 import math, os, sys, html
 sys.path.insert(0, os.path.dirname(__file__))
-from pieces import FP, C, KITS, AT
+if len(sys.argv) > 2 and sys.argv[1] == "--placed":
+    import placed
+    placed.write(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else None)
+    sys.exit(0)
+from pieces import FP as HAND_FP, C, KITS, AT
+import footprints
+
+# The drawings' sizes: measured where they are, the hand-typed ones (and their shapes and fills) otherwise
+FP = {}
+for _name, _fp in HAND_FP.items():
+    _m = footprints.MEASURED.get(_name)
+    FP[_name] = (_m["w"], _m["d"], _fp[2], _fp[3]) if _m else _fp
 
 OUT = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), 'camp_plans.html')
 
@@ -23,6 +39,10 @@ def rot(x, z, yaw):
 
 def shape_svg(name, x, z, yaw, scale, ox, oz, extra=""):
     w, d, kind, fill = FP.get(name, (0.5, 0.5, "r", "misc"))
+    _m = footprints.MEASURED.get(name)
+    if _m:  # the measured box's middle isn't always at the prop's origin (a tin wall's is at one end)
+        dx, dz = rot(_m.get("ox", 0.0), _m.get("oz", 0.0), yaw)
+        x, z = x + dx, z + dz
     cx, cy = ox + x * scale, oz - z * scale
     t = "<title>%s</title>" % html.escape(short(name))
     if kind == "c":

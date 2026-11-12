@@ -1880,6 +1880,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		// The land grid's first reading, a few squares a second (nothing once it's read)
 		m_Land.Step();
+		// Camp life's site grids: the site being read reads on (docs/SITES.md)
+		m_CampLife.SecondTick();
 
 		// Open talk screens and readers close when danger comes
 		m_ScreenGuard.Tick();

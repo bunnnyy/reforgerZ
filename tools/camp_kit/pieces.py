@@ -2,8 +2,9 @@
 Edit a piece here, then run build.py (prefabs) and render.py (the plans page). Units: metres. x right, z forward; +Z is the piece's front
 (toward the camp centre for inner pieces, outward for perimeter pieces). Yaw in degrees.
 
-FP: prop footprints (w, d, shape, fill-kind) for the top-down drawings and each piece's footprint
-(build.py writes it on the kits: the game checks the whole footprint fits, not only its middle).
+FP: hand-typed prop sizes (w, d, shape, fill-kind): the drawings' shapes and fills, and the
+fallback size of a prop footprints.json hasn't measured (each piece's footprint is its props'
+measured boxes: footprints.py, docs/SITES.md).
 P(name, x, z, yaw, y=0, pitch=0, roll=0) places a prop; S(tag, x, z, anim, look_x, look_z) a seat.
 
 Every piece stands outdoors (camp life never puts a piece inside a building; only a quartermaster's
@@ -287,38 +288,38 @@ AT.update({name: "counter" for name in C if name.startswith("Counter_")})
 KITS = [
     ("MILITARY", "STRONGHOLD", "Military order gone a little ragged: tents in a loose row behind a sandbag line with a gap for the road, the board and the flag at the heart, the stores' window to one side.", [
         ("Counter_Bastion", -10, 9, 0), ("SentryNest_Bastion", 0, 26, 0), ("RosterBoard", -3, 5, 8), ("FlagPole", 2, 3, 0), ("FirePit", 5, -3, 0),
-        ("Barricade_Sandbag", -6.5, 25, 4), ("Barricade_Sandbag", 7, 24.5, -6), ("Table", -4, -4, 12), ("Tent_Small_Bastion", -14, -10, 4), ("Tent_Small_Bastion", -9, -12.5, -3),
-        ("Tent_Large_Bastion", 1, -16, 2), ("CookPot", 15, -3, 30), ("Firewood", 17, -9, 60), ("ShavingStand", -16, -3, 90), ("CrateSeats", 10, 3, 20),
-        ("DutyBoard", -8, 4, 10), ("Tarp", 15, 8, 25), ("Tent_Small_Bastion", 10, -13, -8), ("DryingLine", 21, -16, 35), ("Latrine", -22, -18, 140), ("Duckboards", -5, -8.5, 0)]),
+        ("Barricade_Sandbag", -7, 24.5, 4), ("Barricade_Sandbag", 7, 24.5, -6), ("Table", -4, -4, 12), ("Tent_Small_Bastion", -14, -10, 4), ("Tent_Small_Bastion", -9, -12.5, -3),
+        ("Tent_Large_Bastion", 1, -16, 2), ("CookPot", 15, -3, 30), ("Firewood", 18.5, -10.5, 60), ("ShavingStand", -16, -3, 90), ("CrateSeats", 10, 3, 20),
+        ("DutyBoard", -8, 4, 10), ("Tarp", 15, 8, 25), ("Tent_Small_Bastion", 10, -13, -8), ("DryingLine", 21.5, -16.5, 35), ("Latrine", -22, -18, 140), ("Duckboards", -5, -8.5, 0)]),
     ("MILITARY", "OUTPOST", "A section at a farm on the junction: a nest and a sandbag run on the road, two tents squared to it, the fire, the table and the roll board in the yard.", [
-        ("Counter_Bastion", -10, 7, 0), ("SentryNest_Bastion", 0, 20, 0), ("FirePit", 4, 0, 0), ("Barricade_Sandbag", -6.5, 19, 6), ("Tent_Small_Bastion", -8, -8, 6),
-        ("Tent_Small_Bastion", -3, -10.5, -4), ("RosterBoard", -4, 4, 6), ("Table", -5, -2, 10), ("CookPot", 11, -3, 30), ("Firewood", 13, -9, 60),
-        ("ShavingStand", -12, -2, 90), ("FlagPole", 2, 6, 0), ("Barricade_Sandbag", 6.5, 19, -6), ("Duckboards", -4.5, -6, 0)]),
+        ("Counter_Bastion", -10, 7, 0), ("SentryNest_Bastion", 0, 20, 0), ("FirePit", 4, 0, 0), ("Barricade_Sandbag", -7, 18.5, 6), ("Tent_Small_Bastion", -8, -8, 6),
+        ("Tent_Small_Bastion", -3, -10.5, -4), ("RosterBoard", -4, 4, 6), ("Table", -5, -2, 10), ("CookPot", 14, -3, 30), ("Firewood", 13, -11, 60),
+        ("ShavingStand", -12, -2, 90), ("FlagPole", 2, 6, 0), ("Barricade_Sandbag", 7, 19.5, -6), ("Duckboards", -4.5, -6, 0)]),
     ("MILITARY", "ROAD_POST", "The checkpoint: a nest beside the barrier facing down the road, a sandbag run on the other verge, a fire barrel and a net to wait under.", [
         ("SentryNest_Bastion", 7.5, 2, 0), ("Barricade_Sandbag", -7.5, 2.5, 0), ("FireBarrel", 7.5, -4.5, 0), ("Tarp", -8.5, -4.5, 10)]),
     ("BANDITS", "STRONGHOLD", "A squat, not a camp: things where they were dropped, but round the fire. The toll on the road, the sofa round the barrel, tents tucked behind scrap, the fence's table by the way in.", [
         ("Counter_RedHand", -9, 4, 20), ("TollBarrier", -2, 25, 6), ("FireBarrel", 1, 2, 0), ("Sofa", -4, -2.5, 160), ("SentryNest_RedHand", 9, 22, -20),
         ("CardTable", 6, 6, 35), ("RedHandSheet", -10, 21, 25), ("Barricade_Scrap", 15, 16, -40), ("Tent_Small_Civilian", -12, -9, 30), ("Tent_Small_Civilian", -6, -13, -15),
-        ("ScrapShelter", 4, -14, 10), ("CookPot", 13, -5, 60), ("Firewood", 17, -11, 80), ("TrophyWall", -19, 4, 95), ("Clutter", 8, -1, 0),
-        ("Kennel", -16, 12, 40), ("FirePit", -6, 10, 0), ("Tent_Large_Civilian", 10, -17, -20), ("Latrine", 22, -19, 200), ("Barricade_Scrap", -17, 17, 30)]),
+        ("ScrapShelter", 4, -14, 10), ("CookPot", 13, -5, 60), ("Firewood", 17.5, -12, 80), ("TrophyWall", -19, 4, 95), ("Clutter", 8, -1, 0),
+        ("Kennel", -16, 12, 40), ("FirePit", -6, 10, 0), ("Tent_Large_Civilian", 10, -17, -20), ("Latrine", 22.5, -20.5, 200), ("Barricade_Scrap", -17, 17, 30)]),
     ("BANDITS", "OUTPOST", "A crew camp on the road: the toll barrier and a lookout behind tyres, the fire barrel and the sofa, the card table, two tents at the back.", [
         ("Counter_RedHand", -7, 3, 20), ("TollBarrier", 0, 20, 0), ("FireBarrel", 1, 2, 0), ("Sofa", -3.5, -2.5, 160), ("SentryNest_RedHand", 8, 17, -20),
-        ("CardTable", 6, 5, 35), ("Tent_Small_Civilian", -9, -9, 30), ("Tent_Small_Civilian", -3, -11, -15), ("CookPot", 10.5, -4, 60), ("Firewood", 13, -10, 80),
-        ("RedHandSheet", -8, 17, 25), ("Clutter", 5, -1.5, 0), ("ScrapShelter", 3, -12, 10)]),
+        ("CardTable", 6, 5, 35), ("Tent_Small_Civilian", -9, -9, 30), ("Tent_Small_Civilian", -3, -11, -15), ("CookPot", 10.5, -4, 60), ("Firewood", 14.5, -11.5, 80),
+        ("RedHandSheet", -8, 17, 25), ("Clutter", 4.5, -2, 0), ("ScrapShelter", 3, -12, 10)]),
     ("BANDITS", "ROAD_POST", "A roadblock for the toll: the fire barrel and the card table on one verge, scrap and a net on the other.", [
         ("FireBarrel", 7, -2, 0), ("CardTable", 8, 4, 90), ("Barricade_Scrap", -8, 4, 0), ("Tarp", -8.5, -3, 15)]),
     ("SURVIVORS", "STRONGHOLD", "A village kept going: the long table and the memorial in the yard, the cook pot and the water by the kitchen side, the washing and the garden behind, the bear at the gate.", [
         ("Counter_Haven", 5, 11, -10), ("BearDoor", 0, 24, 0), ("Table", 2, 3, 6), ("CookPot", 9, -2, 40), ("Memorial", -6, 6, 20),
         ("WaterBarrel", 6, -9, 0), ("WashStand", 3, -11, 10), ("WashingLine", -9, -14, 12), ("Garden", -16, -6, 80), ("Barricade_Fence", -8, 23, 8),
-        ("VegStall", 14, 9, -30), ("ChildrensCorner", -10, 2, 35), ("Firewood", 13, -9, 70), ("FirePit", -2, -4, 0), ("Tent_Small_Civilian", 15, -15, -25),
+        ("VegStall", 14, 9, -30), ("ChildrensCorner", -10, 2, 35), ("Firewood", 13.5, -9, 70), ("FirePit", -2, -4, 0), ("Tent_Small_Civilian", 15.5, -16, -25),
         ("CrateChairs", -3, -10, 10), ("Barricade_Fence", 8, 23, -6), ("Tent_Large_Civilian", 8, -17, 10), ("Kennel", -14, 12, 30), ("Latrine", -20, -18, 130)]),
     ("SURVIVORS", "OUTPOST", "A farmyard: the table and the memorial, the cook pot and the water, the washing and the garden at the back, a tent for whoever came last.", [
         ("Counter_Haven", 5, 9, -10), ("BearDoor", 0, 20, 0), ("Table", 2, 2, 6), ("CookPot", 9, -3, 40), ("WaterBarrel", 5, -9, 0),
-        ("WashStand", 2, -11, 10), ("WashingLine", -8, -13, 12), ("Garden", -13, -4, 80), ("Memorial", -6, 5, 20), ("Firewood", 12, -9, 70),
-        ("Barricade_Fence", -7, 19, 8), ("Tent_Small_Civilian", 13, -15, -25), ("ChildrensCorner", -7.5, 0.5, 35)]),
+        ("WashStand", 2, -11, 10), ("WashingLine", -8, -13, 12), ("Garden", -13, -4, 80), ("Memorial", -6, 5, 20), ("Firewood", 12.5, -10.5, 70),
+        ("Barricade_Fence", -7, 19, 8), ("Tent_Small_Civilian", 14.5, -17.5, -25), ("ChildrensCorner", -7.5, 0.5, 35)]),
     ("SURVIVORS", "SAFEHOUSE", "A house that kept its door open: the bear at the gate, the table outside, the pot and the barrel by the kitchen, the line and the bed of vegetables in the garden.", [
         ("Counter_Haven", -4, 6, 10), ("BearDoor", 0, 14, 0), ("Table", 2, 2, 6), ("CookPot", 8, -2, 40), ("WaterBarrel", 5, -8, 0),
-        ("WashingLine", -7, -9, 12), ("Garden", -11, -2, 80), ("Firewood", 10, -8, 70)]),
+        ("WashingLine", -7, -9, 12), ("Garden", -11, -2, 80), ("Firewood", 11.5, -9.5, 70)]),
     ("INSTITUTE", "STRONGHOLD", "The lab grounds: tidy and compact, everything within reach of the generators; the tables in front, the ward tent and the decon shower behind, the plague board where the track comes in.", [
         ("Counter_Halcyon", -10, 12, 10), ("PlagueBoard", 0, 22, 0), ("FieldTable", -2, 4, 3), ("Tent_Halcyon", 0, -11, 0), ("FieldTable", 3.5, 3, -8),
         ("DeconShower", -8, -9, 10), ("Generator", 14, -10, 20), ("ColdBox", 10, -1, -30), ("SampleTable", 7, -7, -15), ("Antenna", 16, 3, 0),
@@ -326,7 +327,7 @@ KITS = [
         ("Latrine", -18, -16, 120), ("CrateChairs", -3, -2, 0), ("DryingLine", -16, -9, 70), ("Generator", 17, -14, 10)]),
     ("INSTITUTE", "OUTPOST", "A field station at a house: a table for the notes, the ward tent and the decon shower in the yard, the cold store on the generator, the antenna, the plague board at the gate.", [
         ("Counter_Halcyon", -6, 8, 10), ("PlagueBoard", 0, 16, 0), ("FieldTable", -2, 3, 3), ("Tent_Halcyon", 1, -9, 0), ("Generator", 10, -6, 20),
-        ("Antenna", 11, 2, 0), ("DeconShower", -7, -6, 10), ("ColdBox", 6, 1, -30), ("NotebookBench", -7, 2, 15)]),
+        ("Antenna", 11, 2, 0), ("DeconShower", -7, -6, 10), ("ColdBox", 5, 0.5, -30), ("NotebookBench", -7, 2, 15)]),
 ]
 
 # The Traces kit (World > Traces > Kit on RZ_GameMode.et): kit field -> (composition name, parts).

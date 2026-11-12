@@ -13,6 +13,7 @@ class RZ_DressGround
 	ref array<IEntity> m_aBuildings = {};
 	ref array<vector> m_aRoad = {};		// road segments, two points each
 	ref array<int> m_aRoadId = {};		// which road each segment belongs to
+	ref array<float> m_aRoadWidth = {};	// its road's width (metres; 0 if the road doesn't say)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -52,11 +53,13 @@ class RZ_DressPlacer
 
 			array<vector> points = {};
 			road.GetPoints(points);
+			float width = road.GetWidth(); // the whole carriageway, as the land grid reads it (RZ_Land)
 			for (int i = 1; i < points.Count(); i++)
 			{
 				ground.m_aRoad.Insert(points[i - 1]);
 				ground.m_aRoad.Insert(points[i]);
 				ground.m_aRoadId.Insert(id);
+				ground.m_aRoadWidth.Insert(width);
 			}
 		}
 	}
