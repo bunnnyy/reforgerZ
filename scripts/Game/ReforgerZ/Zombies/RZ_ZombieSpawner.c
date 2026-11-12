@@ -153,6 +153,9 @@ class RZ_ZombieSpawner
 	protected static const float HORDE_TOWN_RANGE = 1500;	// a heat horde comes from a town this close
 	protected static const float SIEGE_GAP = 60;			// banging stopped this long: the siege is over
 	protected static const float MEMBER_WAIT = 30;			// a group prefab may take this long to fill
+	protected static const int HORDE_MIN_ROOM = 4;			// a horde waits for this much room rather than come thin
+	protected static const int SET_PIECE_RESERVE = 20;		// a set piece's hordes may go this far past the server's budget
+	protected int m_iHordesRefused;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_ZombieSpawner(RZ_GameModeComponent gm, RZ_ZombieSettings settings, RZ_CrawlerSettings crawlers = null, RZ_TribeSettings tribes = null)
@@ -427,15 +430,82 @@ class RZ_ZombieSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawn a horde `distance` metres from target and send it there. False if nothing spawned.
-	bool SpawnHorde(vector target, float distance, int missionId = -1)
+	//! Agents a horde may bring at pos (docs/INFECTED.md, "The agent budget"). Both switches off: no
+	//! agent budget, as before. A set piece (a mission's horde, the final stand's waves) takes what's
+	//! left of the server's budget plus the set-piece reserve, past the cluster's share; any other
+	//! horde (heat, the world's, arcs, the generator) needs room in its cluster and a quiet tick.
+	int HordeRoom(vector pos, bool setPiece)
 	{
+		if (!IsPlumbingOn())
+			return 1000;
+
+		if (setPiece)
+			return Math.Max(0, m_Budget.GetBudget() + SET_PIECE_RESERVE - m_Budget.GetTotal());
+
+		if (m_aTracked.Count() >= m_Settings.m_iGlobalCap || TickRoom() < HORDE_MIN_ROOM)
+			return 0;
+
+		return m_Budget.RoomAt(pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A horde may spawn at pos: dry land, no closer to a player than the minimum, and out of every
+	//! player's sight within 300 m (terrain).
+	protected bool HordeSpotOk(vector pos, array<IEntity> players)
+	{
+		if (RZ_Util.IsWater(pos) || RZ_Util.NearestDistance(pos, players) < MinSpawnDistance(pos))
+			return false;
+
+		if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+			return false;
+
+		return !RZ_InfectedBodies.InSight(pos, players, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a horde asked for at pos may spawn: pos itself, else a spot 20-80 m round it, else just
+	//! beyond the sight rule from every player, round the target. False if nowhere would do.
+	protected bool FindHordeSpot(vector pos, vector target, array<IEntity> players, out vector spot)
+	{
+		spot = pos;
+		if (HordeSpotOk(spot, players))
+			return true;
+
+		for (int i = 0; i < 6; i++)
+		{
+			spot = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(pos, 20, 80));
+			if (HordeSpotOk(spot, players))
+				return true;
+		}
+
+		float far = Math.Max(RZ_Util.DistXZ(pos, target), RZ_InfectedBodies.SIGHT_SPAWN) + 5;
+		for (int j = 0; j < 4; j++)
+		{
+			spot = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(target, far, far + 60));
+			if (!RZ_Util.IsWater(spot) && RZ_Util.NearestDistance(spot, players) > RZ_InfectedBodies.SIGHT_SPAWN)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawn a horde about `distance` metres from target and send it there, out of sight and inside
+	//! the budget (HordeRoom). stand: the final stand's wave (a set piece). False if nothing spawned.
+	bool SpawnHorde(vector target, float distance, int missionId = -1, bool stand = false)
+	{
+		if (HordeRoom(target, missionId >= 0 || stand) < HORDE_MIN_ROOM)
+			return false;
+
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
 		vector pos;
 		bool found = false;
 		for (int i = 0; i < 8; i++)
 		{
-			pos = RZ_Util.RandomPointInRing(target, distance * 0.8, distance * 1.2);
-			if (!RZ_Util.IsWater(pos))
+			pos = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(target, distance * 0.8, distance * 1.2));
+			if (HordeSpotOk(pos, players))
 			{
 				found = true;
 				break;
@@ -445,7 +515,7 @@ class RZ_ZombieSpawner
 		if (!found)
 			return false;
 
-		return SpawnHordeAt(pos, target, missionId);
+		return SpawnHordeAt(pos, target, missionId, null, true, null, stand);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -453,32 +523,56 @@ class RZ_ZombieSpawner
 	//! A mission's horde must keep coming: stealth never lowers its senses (docs/DESIGN.md, "Stealth").
 	//! keepComing false: a horde where staying unseen is the point (Lead Them Away, The Clockwork
 	//! Horde, The Tribe Moves). prefabs: a pack's own bodies (RZ_TribePeople.PackHordePrefabs), four of
-	//! them, instead of the horde prefabs.
-	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null, bool keepComing = true, array<ResourceName> prefabs = null)
+	//! them, instead of the horde prefabs. pos in a player's sight or too close moves out of it
+	//! (FindHordeSpot); the horde comes only with room (HordeRoom), each unit counted as it spawns.
+	bool SpawnHordeAt(vector pos, vector target, int missionId = -1, array<IEntity> spawnedOut = null, bool keepComing = true, array<ResourceName> prefabs = null, bool stand = false)
 	{
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		vector at;
+		if (!FindHordeSpot(pos, target, players, at))
+			return false;
+
+		int room = HordeRoom(at, missionId >= 0 || stand);
+		if (room < HORDE_MIN_ROOM)
+		{
+			m_iHordesRefused++;
+			return false;
+		}
+
 		array<RZ_TrackedZombie> spawned = {};
 		if (prefabs && !prefabs.IsEmpty())
 		{
-			for (int k = 0; k < 4; k++)
+			for (int k = 0; k < 4 && room > 0; k++)
 			{
-				RZ_TrackedZombie zp = SpawnZombie(RZ_Util.RandomPointInRing(pos, 0, 20), false, -1, missionId, prefabs.GetRandomElement());
+				RZ_TrackedZombie zp = SpawnZombie(RZ_Util.RandomPointInRing(at, 0, 20), false, -1, missionId, prefabs.GetRandomElement());
 				if (zp)
+				{
 					spawned.Insert(zp);
+					room -= CountHordeUnit(zp);
+				}
 			}
 		}
 		else if (!m_Settings.m_aHordePrefabs.IsEmpty())
 		{
-			RZ_TrackedZombie z = SpawnZombie(pos, false, -1, missionId, m_Settings.m_aHordePrefabs.GetRandomElement());
+			RZ_TrackedZombie z = SpawnZombie(at, false, -1, missionId, m_Settings.m_aHordePrefabs.GetRandomElement());
 			if (z)
+			{
 				spawned.Insert(z);
+				CountHordeUnit(z);
+			}
 		}
 		else
 		{
-			for (int j = 0; j < 4; j++)
+			for (int j = 0; j < 4 && room > 0; j++)
 			{
-				RZ_TrackedZombie z2 = SpawnZombie(RZ_Util.RandomPointInRing(pos, 0, 20), false, -1, missionId);
+				RZ_TrackedZombie z2 = SpawnZombie(RZ_Util.RandomPointInRing(at, 0, 20), false, -1, missionId);
 				if (z2)
+				{
 					spawned.Insert(z2);
+					room -= CountHordeUnit(z2);
+				}
 			}
 		}
 
@@ -494,6 +588,18 @@ class RZ_ZombieSpawner
 		}
 
 		return !spawned.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A horde's unit takes its agents in the budget at once (not at the next recount). Its agents.
+	protected int CountHordeUnit(RZ_TrackedZombie z)
+	{
+		if (!IsPlumbingOn())
+			return 0;
+
+		m_Budget.Add(z.m_vLastPos, z.Agents());
+		m_iTickAgents += z.Agents();
+		return z.Agents();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1145,7 +1251,8 @@ class RZ_ZombieSpawner
 		{
 			foreach (RZ_TrackedZombie z : m_aTracked)
 			{
-				if (z.m_Entity && z.m_eRole == RZ_EInfectedRole.CRAWLER && z.m_iMissionId == -1)
+				// A horde or lookers with a goal walk to it: no drifting back home
+				if (z.m_Entity && z.m_eRole == RZ_EInfectedRole.CRAWLER && z.m_iMissionId == -1 && !z.m_bHorde && !z.m_bHasGoal)
 					m_Crawlers.UpdateDrift(z, players, m_Settings.m_sMoveWaypointPrefab);
 			}
 		}
@@ -2109,7 +2216,7 @@ class RZ_ZombieSpawner
 
 		string text = string.Format("infected %1/%2 agents (%3 entries; crawlers %4, loose %5), clusters %6 share %7 [%8]",
 			agents, m_Budget.GetBudget(), m_aTracked.Count(), crawlers, loose, m_Budget.GetClusterCount(), m_Budget.GetShare(), m_Budget.DescribeClusters());
-		text += string.Format(", other bodies %1 agents, hordes from towns %2, loose ones arrived %3", m_Bodies.Count(""), m_iHordesFromTowns, m_iLooseArrived);
+		text += string.Format(", other bodies %1 agents, hordes from towns %2, hordes refused %3, loose ones arrived %4", m_Bodies.Count(""), m_iHordesFromTowns, m_iHordesRefused, m_iLooseArrived);
 		if (m_Crawlers)
 			text += " | " + m_Crawlers.StatusText();
 

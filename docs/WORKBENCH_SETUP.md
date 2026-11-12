@@ -2052,7 +2052,7 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `... opens again past ...`, `Long Table: broken up (N).`,
 `Screen guard: closed talk for player N (danger).` (or `reader`, `car repair`, `shop`; `left`,
 `idle`, `gone`: a screen the screen guard shut), `Status | infected N/100 agents (N entries; crawlers N, loose N), clusters N share N [N/N, ...], other
-bodies N agents, hordes from towns N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
+bodies N agents, hordes from towns N, hordes refused N, loose ones arrived N | crawlers: ledger N, stirred towns N, out N, kill sites N, held
 doors N | active AI N/160 | land: ... | clock ..., day N min` (with Crawlers or Tribes on: agents near the
 budget all the time, or the active AI at its limit, means the budget is too high for the server),
 `Heat horde: N units out of <town>, from its side of <grid>.`, `Pack horde: N groups of the pack at
@@ -2289,7 +2289,10 @@ session, tick off:
 - [ ] In the countryside, the two infected near you walk somewhere (by day toward a town, at night
   toward the woods); follow one into town. None appears in the open within 300 m of you.
 - [ ] Make 80 heat near a town (a long firefight): the horde comes from the town's side, and the
-  log names the town. Far from any town, it comes from anywhere, as before.
+  log names the town. Far from any town, it comes from anywhere, as before. By day the horde's
+  crawlers keep walking to the heat (none lies down out in the field); no horde appears in sight.
+- [ ] The final stand with many players: the status line's agents never pass 120, and `hordes
+  refused` rises once the budget is full.
 - [ ] The status line's agents stay at or under 100 with two groups of players far apart (28 each
   at most), and the active AI stays under its limit with trucks and patrols out.
 - [ ] A special killed in a group drops its sample where it fell. Burn the Nest's brief reads "The

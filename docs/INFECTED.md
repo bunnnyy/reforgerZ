@@ -203,6 +203,12 @@ are warned; Radio Operators hear it anywhere.
   weakened, already hunting, or deaf to that spot after a hunt lost someone there sends nobody (and the
   horde's wait still runs). The log says `Pack horde:`.
 - **With no town that near, or Tribes off,** as before: a Horde prefab 360–540 m out in any direction.
+- **Every horde spawns out of sight** (`SpawnHorde`, `SpawnHordeAt`): no closer to a player than the
+  minimum spawn distance (120 m) and not where a player within 300 m could see it over the terrain.
+  A spot that fails moves 20–80 m, else just beyond 300 m from every player; with nowhere, no horde.
+- **Inside the budget** ([The agent budget](#the-agent-budget)): a heat horde waits, keeping its heat,
+  until its cluster has room for 4 agents. A horde's crawlers on their way (and a town's lookers) are
+  never put to sleep, herded or drifted home by [crawler life](#crawler-life).
 
 Remembered noises (8+ heat at once, the last 16) also lead infected that a mission controls: they walk
 to a nearby noise and stay about 90 s. The unarmed missions are built on that
@@ -342,7 +348,15 @@ Settings under **Zombies > Tribes**; they apply with either switch on.
 | The engine's active-AI limit | It covers **all** AI (faction AI, wanderers and trucks share it). 128 by default; raised to **160** at start with Tribes on |
 
 Mission infected count toward the budget but are never removed for it. Nothing is trimmed to fit: the
-budget only stops new spawns. Group prefabs count the members they had the last time one spawned (4
+budget only stops new spawns.
+
+**Hordes** take their agents in the budget as each unit spawns, and a horde with less than 4 agents
+of room doesn't come (the status line counts `hordes refused`):
+
+| Horde | Room |
+|---|---|
+| Heat hordes, and the world's without a mission (the generator, the arcs) | Its cluster's share, and only in a tick that has spawned at most 4 agents |
+| **Set pieces:** a mission's hordes (missions, events, questlines, Red Hand) and the final stand's waves | The server's 100 agents **plus a reserve of 20**, ignoring the cluster share: at most 120 living infected, however many waves come. A wave with no room is thinner, never pushed past 120 | Group prefabs count the members they had the last time one spawned (4
 until then).
 
 ### The one body budget
@@ -1272,7 +1286,8 @@ client has seen them ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)
 Code: `Zombies/Behaviour/RZ_CrawlerLife.c`, with **Zombies > Behaviour > Crawler life** (on) and the
 built placement ([Towns](#towns-the-crawlers)). Only their walking slots, their sleep and an optional
 cap: their senses and their fight stay Bacon's, and a group that's drifting to a noise, walking
-somewhere, in a stirred town or with a player within 150 m is left alone.
+somewhere, in a horde or sent to look somewhere, in a stirred town or with a player within 150 m is
+left alone.
 
 | When | The town's crawlers |
 |---|---|
@@ -1508,7 +1523,7 @@ The finale routes' live tissue and The Lower Store's site pack are [FINALE.md](F
 | 50% | **The call box** (Halcyon's quartermaster, Trusted; 2 a real day on the server, one per player a real day; **Call box prefab**): put down and played, 90 s of a recorded dusk call, +25 heat, and the nearest pack within 1.5 km sends its hunters and young to it at dusk and night (as data, so it works with no bodies near; never its leader or guard), its walkers by day (within 1.5 km). Never in no man's land, or within 150 m of another player who isn't in your group. Lab Technicians read samples |
 | 75% | Each person taken comes back as a young only half the time; the ones who ran are halved (built before) |
 | 90% | The finale's live tissue: each route's Act III is a hunt for a leader taken alive (Capture the Index's rules, +2 on the route's track at once) or one of its guard or young (Live Capture's, +2 after 12 real hours) ([FINALE.md](FINALE.md#live-tissue)) |
-| 100%, the final stand | Each wave's hordes come from the crawler towns within 3 km of the lab and the nearest pack within 3 km (its hunters drawn too), alternating, 350–450 m out on the line they come from. Their number is the built waves' × 0.7–1.3 by the neighbours' average infection (carried over between waves, at least one), so clearing them helps but never trivialises it. The last wave adds the most recently Furious pack. With neither near: the built waves |
+| 100%, the final stand | Each wave's hordes come from the crawler towns within 3 km of the lab and the nearest pack within 3 km (its hunters drawn too), alternating, 350–450 m out on the line they come from. Their number is the built waves' × 0.7–1.3 by the neighbours' average infection (carried over between waves, at least one), so clearing them helps but never trivialises it. The last wave adds the most recently Furious pack. With neither near: the built waves. Every wave is a set piece inside the budget's 120 ([The agent budget](#the-agent-budget)) |
 | Lost | The packs that came go home, and the lab's nearest pack is kept Hungry (hunger 60 or more) for a season day |
 
 ### The last week

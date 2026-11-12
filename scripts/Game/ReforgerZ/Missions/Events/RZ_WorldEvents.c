@@ -411,7 +411,7 @@ class RZ_Event_MassGrave : RZ_Mission
 			return;
 
 		SpawnGuards(gm, m_vPos, 4, 5, 15);
-		gm.GetSpawner().SpawnHorde(m_vPos, 150);
+		gm.GetSpawner().SpawnHorde(m_vPos, 150, m_iId);
 
 		// The nearest pack has eaten here (docs/INFECTED.md, the changed missions)
 		if (gm.GetTribes())

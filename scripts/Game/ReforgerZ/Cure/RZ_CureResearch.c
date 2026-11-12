@@ -1148,7 +1148,7 @@ class RZ_CureResearch
 
 			for (int h = 0; h < hordes && sent == 0; h++)
 			{
-				m_GM.GetSpawner().SpawnHorde(lab, 350 + 50 * h);
+				m_GM.GetSpawner().SpawnHorde(lab, 350 + 50 * h, -1, true);
 			}
 		}
 
