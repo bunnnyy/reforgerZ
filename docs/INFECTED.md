@@ -1128,11 +1128,12 @@ jitter, so a group strings out and no two move alike.
 **The young are a little faster than you.** A player runs at about 4 m/s and sprints at about 5.5 m/s
 (the base game's soldier; VERIFY in play); Bacon's bodies run at about 3.7 m/s, and a sprint set every
 0.25 s gives about 6 m/s (lab B7). So with **Young sprint** on, an engaged young within its reach (35 m)
-of its target chases at a sprint for **Young sprint seconds** (7, ±1), then runs for **Young rest
+of its target, and with it in its line of sight, chases at a sprint for **Young sprint seconds** (7, ±1), then runs for **Young rest
 seconds** (5, ±1): it catches a sprinting player in the open within about 10 s, and a door, a fence
 over 1.4 m, a car or a broken line of sight still loses it. Never in the gentle start. Its speed factor
 scales the sprint's length rather than its speed (a cap above 0.7 doesn't slow a body, B7), so a group
-strings out. Off: bursts of 2–4 s every 8–15 s. Hunters, guards and scouts run at Bacon's run or their
+strings out. A lunge or leap during a sprint never cuts it short. Off: bursts of 2–4 s every 8–15 s,
+on the same conditions (reach, sight, not in the gentle start). Hunters, guards and scouts run at Bacon's run or their
 caps, the alpha's only sprint is its charge, and crawlers are unchanged.
 
 **Senses** (steered groups with a player within 250 m, once a second, the leader's eye): a notice meter
