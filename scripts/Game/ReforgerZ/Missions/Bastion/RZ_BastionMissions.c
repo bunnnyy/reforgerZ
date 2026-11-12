@@ -581,7 +581,7 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius + 200, s.m_fRadius + 600);
 		array<string> calls = {"Two-Six", "Four-One", "Three-Three", "One-Nine", "Five-Two"};
-		m_sCall = "Patrol " + calls[Math.AbsInt(RZ_WorldFacts.Get().GetSeed() + m_iSettlement * 7) % calls.Count()];
+		m_sCall = "Patrol " + calls[RZ_Util.PickIndex(RZ_WorldFacts.Get().GetSeed() + m_iSettlement * 7, calls.Count())];
 		Truth(gm, s);
 		m_sTitle = "Missing Patrol";
 		m_sDeed = "found the patrol near {town}";
