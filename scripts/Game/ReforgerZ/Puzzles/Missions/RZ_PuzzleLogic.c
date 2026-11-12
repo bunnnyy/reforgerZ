@@ -101,7 +101,7 @@ class RZ_Mission_TheRat : RZ_PuzzleMission
 			return false;
 
 		string boss = RZ_NoteText.FirstName(m_Rng);
-		int intro = AddClue(boss, "\"One of these three sold our route to Bastion. The truck's gone and so is Teo. I asked them each where they were. One of them lied to my face. Only one. Listen to them, then point at the rat and I'll do the rest.\"");
+		int intro = AddClue(boss, "One of these three sold our route to Bastion. The truck's gone and so is Teo. I asked them each where they were. One of them lied to my face. Only one. Listen to them, then point at the rat and I'll do the rest.");
 		string choices = string.Format("Point at %1|Point at %2|Point at %3", m_aNames[0], m_aNames[1], m_aNames[2]);
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", choices, intro, "Talk to " + boss);
 
@@ -253,7 +253,7 @@ class RZ_Mission_PatientZeroLedger : RZ_PuzzleMission
 		}
 
 		vector lab = gm.GetLabPosition();
-		int ask = AddClue("Halcyon", "\"Three patients, one ward, one of them brought it in. Which one was bitten first? Be sure. We only get to write the report once.\"");
+		int ask = AddClue("Halcyon", "Three patients, one ward, one of them brought it in. Which one was bitten first? Be sure. We only get to write the report once.");
 		string choices = string.Format("%1 was first|%2 was first|%3 was first", m_aNames[0], m_aNames[1], m_aNames[2]);
 		SpawnObject(gm, RZ_EPuzzleProp.OBJECT, RZ_Util.RandomPointInRing(lab, 3, 6), 0, "", choices, ask, "Read Halcyon's question");
 
@@ -326,7 +326,7 @@ class RZ_Mission_PatientZeroLedger : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(3, "Patient zero of the " + GetLocationName(gm) + " ward was identified.");
+		gm.GetCure().AddResearch(3, "Patient zero of the " + GetLocationName(gm) + " ward was identified from the ledger: the first bite, and who carried it in.");
 
 		// The ward's first case is known: The Three Weeks can begin
 		RZ_Quest_ThreeWeeks.NoteClinicRecords(gm);
@@ -482,7 +482,7 @@ class RZ_Mission_PoisonedWell : RZ_PuzzleMission
 		if (v)
 			v.AddInfection(-10);
 
-		gm.GetCure().AddResearch(1, "A water sample from a poisoned well reached the lab.");
+		gm.GetCure().AddResearch(1, "A water sample from a poisoned well reached the lab. It wasn't the virus killing the village. It was something in the water.");
 	}
 }
 

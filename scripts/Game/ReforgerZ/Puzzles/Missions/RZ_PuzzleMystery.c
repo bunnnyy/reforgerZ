@@ -172,7 +172,7 @@ class RZ_Mission_SilentVillage : RZ_PuzzleMission
 		if (option == CHOICE_STUDY)
 		{
 			m_eGiver = RZ_EFaction.INSTITUTE;
-			gm.GetCure().AddResearch(6, "Halcyon is studying something found under a village church.");
+			gm.GetCure().AddResearch(6, "Halcyon is studying what was found under a village church, in a town where nobody had seen an infected for days.");
 			NotifyParticipants(gm, m_sTitle, "Halcyon's people arrive at dusk in masks, very quiet, very interested. They thank you and ask you to leave.");
 			if (m_Rng.Chance(0.5))
 			{

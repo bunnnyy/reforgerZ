@@ -510,7 +510,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		if (m_bDied)
-			return string.Format("Survivors Trapped (%1): the family didn't make it.", GetLocationName(gm));
+			return string.Format("Survivors Trapped (%1): the door gave before help came, and the family didn't make it. The walkie-talkie is still on, hissing, on the kitchen floor.", GetLocationName(gm));
 
 		return super.GetFailText(gm);
 	}
@@ -1117,7 +1117,7 @@ class RZ_Mission_BittenFriend : RZ_Mission
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		if (m_bKilled)
-			return string.Format("The Bitten Friend (%1): something got to him before anyone could help.", GetLocationName(gm));
+			return string.Format("The Bitten Friend (%1): something got to him before anyone could help. The house will read his name at supper all the same.", GetLocationName(gm));
 
 		return super.GetFailText(gm);
 	}

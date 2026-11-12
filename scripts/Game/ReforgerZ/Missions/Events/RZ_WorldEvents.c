@@ -118,7 +118,7 @@ class RZ_Event_Storm : RZ_Event_Timed
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return "The storm has passed. Sound carries again.";
+		return "The storm has passed. Sound carries again, and so does every footstep.";
 	}
 }
 
@@ -272,7 +272,7 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return "The trader has packed up and moved on.";
+		return "The trader has packed up the wagon and moved on down the road, to a town that hasn't heard of the prices yet.";
 	}
 }
 

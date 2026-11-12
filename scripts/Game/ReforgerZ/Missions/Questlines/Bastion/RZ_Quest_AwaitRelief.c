@@ -1761,7 +1761,7 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 		if (m_bHasChair && !m_bChairShown && RZ_ContractHelp.AnyNear(players, m_vChair, 300))
 		{
 			m_bChairShown = true;
-			int chairClue = AddClue(RZ_Util.Capitalize(m_sChair), "\"The chair reads everything that comes to this door. Bastion walked us to the line on Day 2. She'd like to know what they were told.\"");
+			int chairClue = AddClue(RZ_Util.Capitalize(m_sChair), "The chair reads everything that comes to this door. Bastion walked us to the line on Day 2. She'd like to know what they were told.");
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vChair, OBJ_CHAIR, GiveLabel(m_sChair), "", chairClue, "Talk to " + m_sChair);
 		}
 	}

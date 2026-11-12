@@ -294,7 +294,7 @@ class RZ_Mission_BloodDrive : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(0.5, "A blood donation gave the lab a clean control sample.");
+		gm.GetCure().AddResearch(0.5, "Somebody gave blood at the lab today. Every trial dose is measured against clean blood, and the lab had only a few tubes of it left.");
 	}
 }
 
@@ -502,7 +502,7 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return "Cold Chain: the batch spoiled on the way.";
+		return "Cold Chain: the batch warmed up on the road and spoiled. The bitten at the clinic waited for nothing, and the lab has to make it again from the same thin stock.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -778,7 +778,7 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		if (m_iResearch > 0)
-			gm.GetCure().AddResearch(m_iResearch, "A researcher came back from the field with her readings.");
+			gm.GetCure().AddResearch(m_iResearch, "A field researcher came back to the lab on foot, with three sites' readings in a numbered notebook.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -883,7 +883,7 @@ class RZ_Mission_SpecimenFromTheNest : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override protected void OnDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
 	{
-		gm.GetCure().AddResearch(4, "Living tissue from a hive reached the lab.");
+		gm.GetCure().AddResearch(4, "Living tissue from a hive reached the lab in a sealed jar. The night shift has it under the microscope.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -982,7 +982,7 @@ class RZ_Mission_MedicalDrone : RZ_Mission_Delivery
 	//------------------------------------------------------------------------------------------------
 	override protected void OnDelivered(RZ_GameModeComponent gm, int playerId, RZ_EFaction faction)
 	{
-		gm.GetCure().AddResearch(1, "A drone's flight data reached the lab.");
+		gm.GetCure().AddResearch(1, "The core of Halcyon's lost drone reached the lab, with every flight it made over the packs still on it.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1175,7 +1175,7 @@ class RZ_Mission_PatientZero : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(6, "Halcyon has found the first case. Knowing where it started changes everything.");
+		gm.GetCure().AddResearch(6, "Halcyon has traced the outbreak back to its first case, a hospital bracelet at a time. Knowing where it started tells the lab what it started as.");
 
 		// The clinic records are out, "notify the Institute" and all: The Three Weeks can begin
 		RZ_Quest_ThreeWeeks.NoteClinicRecords(gm);
@@ -1350,7 +1350,7 @@ class RZ_Mission_LiveCapture : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(5, "A live special is in the lab's isolation room. Halcyon can watch the infection work.");
+		gm.GetCure().AddResearch(5, "A live special is in the lab's isolation room, sedated and caged. For the first time Halcyon can watch the infection work, hour by hour, instead of reading it off the dead.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1411,7 +1411,7 @@ class RZ_Mission_SerumTrial : RZ_PuzzleMission
 	{
 		m_vPos = LandPointNear(gm.GetLabPosition(), 5, 10);
 		m_iSettlement = gm.GetLabSettlement();
-		m_iTalk = AddClue("The trial lead", "\"It's not ready. It might never be. But you're dying anyway, and we're out of time. Your choice.\"");
+		m_iTalk = AddClue("The trial lead", "It's not ready. It might never be. But you're dying anyway, and we're out of time. Your choice.");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", "Take the serum", m_iTalk, "Talk to the trial lead");
 		m_sTitle = "Serum Trial";
 		m_sBrief = "You're bitten. We have a trial dose: eight in ten walk out, and we write down what happens to the other two. Anyone bitten may volunteer once, for nothing. Come to the lab if you want it, and come before the fever does.";
@@ -1451,7 +1451,7 @@ class RZ_Mission_SerumTrial : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(2, "A volunteer took the experimental serum. Whatever happened, the lab learned from it.");
+		gm.GetCure().AddResearch(2, "A bitten volunteer took the experimental serum at the lab. Whatever happened next is in a numbered notebook now, and the lab learned from it.");
 	}
 }
 

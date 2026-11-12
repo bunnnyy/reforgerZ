@@ -60,7 +60,7 @@ class RZ_Job_SecondOpinion : RZ_LeaderDelivery
 	//------------------------------------------------------------------------------------------------
 	override protected void OnJobDelivered(RZ_GameModeComponent gm, int playerId, int dropIndex)
 	{
-		gm.GetCure().AddResearch(1, "A Haven medic's second opinion reached a Halcyon field lead.");
+		gm.GetCure().AddResearch(1, "A Haven medic looked at the lab's slides and said what Halcyon had been getting wrong. A field lead wrote it all down.");
 		gm.NotifyPlayer(playerId, m_sTitle, "The medic reads for an hour without a word, then writes two lines in the margin. \"Tell your doctor they're measuring the wrong thing.\"");
 	}
 
@@ -126,7 +126,7 @@ class RZ_Job_PatientsNotSamples : RZ_LeaderPuzzle
 
 		if (option == 1)
 		{
-			gm.GetCure().AddResearch(1, "A tissue sample taken at the moment of turning reached Halcyon.");
+			gm.GetCure().AddResearch(1, "A tissue sample taken at the moment of turning reached Halcyon, as the protocol asks. Somebody had to be there with the kit.");
 			m_fRewardScale = 0.5;
 			m_bNoLeaderCredit = true;
 			if (gm.GetLeaders())
@@ -207,12 +207,12 @@ class RZ_Job_TheNotebook : RZ_LeaderDelivery
 		RZ_Leader l = GetLeader(gm);
 		if (dropIndex == 0)
 		{
-			gm.GetCure().AddResearch(1, m_sAuthor + "'s notebook reached a Halcyon field lead.");
+			gm.GetCure().AddResearch(1, m_sAuthor + "'s notebook reached a Halcyon field lead, the pages about the director included.");
 			gm.NotifyPlayer(playerId, m_sTitle, "Some of the pages come out and go into the stove. The rest go into the research. Nobody at the lab will ever read what she thought.");
 			return;
 		}
 
-		gm.GetCure().AddResearch(2, m_sAuthor + "'s notebook reached the lab.");
+		gm.GetCure().AddResearch(2, m_sAuthor + "'s notebook reached the lab, to be read into the record page by page.");
 		m_iFameReward = 10;
 		m_bNoLeaderCredit = true;
 		if (l)
@@ -279,13 +279,13 @@ class RZ_Job_UnsanctionedTrial : RZ_LeaderPuzzle
 
 		if (Math.RandomFloat01() < 0.5)
 		{
-			gm.GetCure().AddResearch(2, "Someone survived an unsanctioned serum trial.");
+			gm.GetCure().AddResearch(2, "A bitten man took an untested serum the director had refused, and lived. The notes are on a field lead's desk.");
 			gm.NotifyPlayer(playerId, m_sTitle, string.Format("Six hours of fever. Then %1 sits up and asks for water. You write down everything, like you were told.", m_sVolunteer));
 			m_eState = RZ_EMissionState.SUCCEEDED;
 			return;
 		}
 
-		gm.GetCure().AddResearch(1, "An unsanctioned serum trial failed. The notes survived.");
+		gm.GetCure().AddResearch(1, "A bitten man took an untested serum the director had refused, and it didn't take. The notes survived him.");
 		array<int> ids = {};
 		array<IEntity> players = {};
 		RZ_Util.GetAlivePlayers(ids, players);
@@ -519,7 +519,7 @@ class RZ_Job_PrivateCollection : RZ_PuzzleMission
 			m_bRogueJob = false;
 			m_iFameReward = EXPOSE_FAME;
 			m_iFavorReward = EXPOSE_FAVOR;
-			gm.GetCure().AddResearch(3, "A live special was handed to the lab instead of a private collection.");
+			gm.GetCure().AddResearch(3, "A live special meant for a field lead's own notebook was handed to the lab instead, with an account of who had asked for it.");
 			gm.NotifyPlayer(playerId, m_sTitle, "The lab takes the case, and your account of who asked for it.");
 		}
 		else

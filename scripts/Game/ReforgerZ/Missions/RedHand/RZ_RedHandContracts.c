@@ -253,7 +253,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		m_sTruth = m_Story.Truth(HouseKey(), values, weights, this);
 
-		m_iTalk = AddClue("The storekeeper", "\"I know who sent you. We've nothing to spare. We've people to feed.\"");
+		m_iTalk = AddClue("The storekeeper", "I know who sent you. We've nothing to spare. We've people to feed.");
 		SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vPos, 0, "", Labels(), m_iTalk, "Talk to the storekeeper");
 		if (m_sTruth == "paid_twice")
 		{
@@ -672,7 +672,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
 		if (m_bDone)
-			return string.Format("Protection Racket (%1): nobody paid.", m_sHouse);
+			return string.Format("Protection Racket (%1): nobody paid. The book has the house down as late, and the book remembers.", m_sHouse);
 
 		return string.Format("Protection Racket (%1): the crew collected without you.", m_sHouse);
 	}
@@ -817,7 +817,7 @@ class RZ_Mission_HijackTheConvoy : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Hijack the Convoy: Bastion's truck got through to %1.", m_Watch.m_sTo);
+		return string.Format("Hijack the Convoy: Bastion's truck got through to %1, every tin signed for at the gate.", m_Watch.m_sTo);
 	}
 }
 
@@ -1648,7 +1648,7 @@ class RZ_Mission_CollectTheBounty : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Collect the Bounty: nobody collected on %1.", m_sTarget);
+		return string.Format("Collect the Bounty: nobody collected on %1. The price stays in the book.", m_sTarget);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1805,7 +1805,7 @@ class RZ_Mission_KillTheOfficer : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Kill the Officer: %1 is out of reach.", m_sTarget);
+		return string.Format("Kill the Officer: %1 is out of reach, and the post runs as well as it ever did.", m_sTarget);
 	}
 }
 

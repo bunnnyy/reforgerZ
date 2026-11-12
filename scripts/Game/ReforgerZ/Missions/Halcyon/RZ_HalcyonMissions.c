@@ -201,7 +201,7 @@ class RZ_Mission_FieldSamples : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(1.5, "Field samples from " + GetLocationName(gm) + " came in.");
+		gm.GetCure().AddResearch(1.5, "Field samples from " + GetLocationName(gm) + " came in: tissue from the ordinary infected, the ones the cure has to work on most.");
 	}
 }
 
@@ -999,7 +999,7 @@ class RZ_Mission_LostColleague : RZ_PuzzleMission
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
 		if (gm.GetCure() && m_iResearch > 0)
-			gm.GetCure().AddResearch(m_iResearch, "A lost researcher's notes reached the lab.");
+			gm.GetCure().AddResearch(m_iResearch, "A lost researcher's notebook reached the lab. It will be read into the record, page by page.");
 
 		RZ_StoryKit.Record(this, "fate", m_sName, m_sHow, m_aParticipants);
 	}
@@ -1191,9 +1191,9 @@ class RZ_Mission_ResearchData : RZ_Mission_Choice
 	{
 		bool copied = m_Job && m_Job.m_sTruth == "copied";
 		if (faction == RZ_EFaction.INSTITUTE && copied)
-			gm.GetCure().AddResearch(1, "Recovered research data reached the lab. Bastion has a copy.");
+			gm.GetCure().AddResearch(1, "A lost drive of Halcyon's research reached the lab, and Bastion's drop paid for a copy on the way.");
 		else if (faction == RZ_EFaction.INSTITUTE)
-			gm.GetCure().AddResearch(3, "Recovered research data reached the lab.");
+			gm.GetCure().AddResearch(3, "A lost drive of Halcyon's research reached the lab, its padded case scuffed but the data whole.");
 		else
 			gm.NotifyAll("Halcyon", "Our research data was sold to Bastion. We know who did it.");
 

@@ -1488,7 +1488,7 @@ class RZ_QM_PilotDecide : RZ_QuestMission
 		if (!m_bOfficerShown && RZ_ContractHelp.AnyNear(players, m_vOfficer, 300))
 		{
 			m_bOfficerShown = true;
-			int officerClue = AddClue("The duty officer", QFill(gm, "\"If it's about {pilot}, {co} wants to hear it. Today.\""));
+			int officerClue = AddClue("The duty officer", QFill(gm, "If it's about {pilot}, {co} wants to hear it. Today."));
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vOfficer, OBJ_OFFICER, "", "Report the pilot's plan", officerClue, "Talk to the duty officer");
 		}
 

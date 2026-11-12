@@ -94,7 +94,7 @@ class RZ_Mission_ClearSettlement : RZ_Mission
 			return;
 
 		s.AddInfection(-35);
-		gm.NotifyAll("Town reclaimed", string.Format("%1 has been pushed back to %2.", s.m_sName, s.GetStateName()));
+		gm.NotifyAll("Town reclaimed", string.Format("%1 has been pushed back to %2: fewer infected in its streets tonight, and less of it spreading to the roads round it.", s.m_sName, s.GetStateName()));
 	}
 }
 

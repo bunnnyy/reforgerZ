@@ -939,7 +939,7 @@ class RZ_Mission_ContactReport : RZ_TribeContract
 		RZ_Tribe t = GetTribe(gm);
 		RZ_TribePeople people = People(gm);
 		if (!t || !people)
-			return "Contact Report: logged.";
+			return "Contact Report: count logged at the post, and read to the stronghold on tonight's call.";
 
 		return "Contact Report: " + people.ContactLine(t) + " Logged.";
 	}
@@ -1824,7 +1824,7 @@ class RZ_Mission_TrackThemHome : RZ_TribeContract
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return "Track Them Home: lost them in the trees, or they saw you first.";
+		return "Track Them Home: lost them in the trees, or they saw you first. Nobody knows yet where they lie up.";
 	}
 }
 

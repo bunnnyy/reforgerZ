@@ -140,7 +140,7 @@ class RZ_Mission_HarvestGuard : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Harvest Guard (%1): the farmers didn't make it back.", GetLocationName(gm));
+		return string.Format("Harvest Guard (%1): the farmers didn't make it back from the fields. The sacks are lying in the rows, half full, and the house eats less this week.", GetLocationName(gm));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -500,7 +500,7 @@ class RZ_Mission_FortifySafehouse : RZ_Mission_Hold
 	//------------------------------------------------------------------------------------------------
 	override string GetSuccessText(RZ_GameModeComponent gm)
 	{
-		return string.Format("The safehouse in %1 is boarded up tight.", GetLocationName(gm));
+		return string.Format("The safehouse in %1 is boarded up tight, ground floor and back door. The children have drawn the bear on the new planks.", GetLocationName(gm));
 	}
 }
 

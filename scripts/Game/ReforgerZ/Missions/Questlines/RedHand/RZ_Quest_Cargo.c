@@ -1460,7 +1460,7 @@ class RZ_QM_CargoTell : RZ_RedHandQuestMission
 		bool farm = RZ_Quest_Cargo.IsFarm(run);
 		if (spot == m_iBossSpot)
 		{
-			int second = AddClue("The boss's second", "\"The boss is busy. Whatever it is, tell me, and I'll decide if it's worth the boss's time.\"");
+			int second = AddClue("The boss's second", "The boss is busy. Whatever it is, tell me, and I'll decide if it's worth the boss's time.");
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_aSpots[spot], OBJ_BOSS, "", run.Fill("Tell the boss what {crew_short} sells"), second, "Talk to the boss's second");
 			return;
 		}

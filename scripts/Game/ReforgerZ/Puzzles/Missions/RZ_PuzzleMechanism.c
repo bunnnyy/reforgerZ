@@ -643,6 +643,6 @@ class RZ_Mission_LastExperiment : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(5, "A lost Halcyon team's final results were recovered.");
+		gm.GetCure().AddResearch(5, "The terminal of a Halcyon team that never came back from the field is open. Their final results are in the lab's record, under all their names.");
 	}
 }

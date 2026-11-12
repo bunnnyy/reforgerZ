@@ -12,7 +12,7 @@ class RZ_BastionContractHelp
 	{
 		vector hot;
 		float heat;
-		string text = "All quiet out there. No hordes forming.";
+		string text = "Nothing forming on those hills: no tracks, no calls at dusk, birds still in the trees. The stronghold logs it as quiet.";
 		if (gm.GetHeat().GetHottest(hot, heat))
 		{
 			RZ_Settlement s = gm.GetSettlement(gm.FindNearestSettlement(hot));
@@ -619,7 +619,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override string GetFailText(RZ_GameModeComponent gm)
 	{
-		return string.Format("Convoy Escort: the truck to %1 never made it.", m_Watch.m_sTo);
+		return string.Format("Convoy Escort: the truck to %1 never made it. Tonight the post reads 'rations, one day' on the call.", m_Watch.m_sTo);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1052,7 +1052,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 		{
 			// It reached the lab: Halcyon pays instead
 			m_eGiver = RZ_EFaction.INSTITUTE;
-			gm.GetCure().AddResearch(2, "A sample shipment reached the lab under escort.");
+			gm.GetCure().AddResearch(2, "A courier's case of samples reached the lab, walked in under escort with nobody's hand on the lid.");
 		}
 
 		m_eState = RZ_EMissionState.SUCCEEDED;

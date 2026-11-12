@@ -1074,7 +1074,7 @@ class RZ_Mission_QuietCount : RZ_PuzzleMission
 	//------------------------------------------------------------------------------------------------
 	override void OnSuccess(RZ_GameModeComponent gm)
 	{
-		gm.GetCure().AddResearch(1, "A careful count from the field.");
+		gm.GetCure().AddResearch(1, "A careful count of the changed ones came in from an observation post, written in the notebook from fifty metres off.");
 	}
 
 	//------------------------------------------------------------------------------------------------
