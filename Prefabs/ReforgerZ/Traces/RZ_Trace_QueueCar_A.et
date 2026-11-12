@@ -1,25 +1,25 @@
 GenericEntity {
- ID "3CE298F31797468E"
+ ID "73FF83B08A4505CA"
  components {
-  RplComponent "{0391135FC2E69402}" {
+  RplComponent "{4A62765F7EAA6BCB}" {
   }
-  Hierarchy "{E5D1C9D160770710}" {
+  Hierarchy "{A06E457BBDEC64A5}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et" {
-   ID "90D3E06E3781F5A8"
+   ID "7554B43F165FD899"
    components {
-    Hierarchy "{5AFEE21FA7156015}" {
+    Hierarchy "{E01893FF5A1753A9}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
-   ID "5A3D0238DAE1AA40"
+   ID "E28DDA0D71C6B713"
    components {
-    Hierarchy "{06F5F514DA83A716}" {
+    Hierarchy "{7EB904B10E12F899}" {
     }
    }
    coords 0 1.35 -0.2

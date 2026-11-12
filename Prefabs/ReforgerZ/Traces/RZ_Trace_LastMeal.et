@@ -1,72 +1,72 @@
 GenericEntity {
- ID "2EA3F3CCD9FBAF0E"
+ ID "B17CB8330FE43A3B"
  components {
-  RplComponent "{DC3BC5BB11FC5CFF}" {
+  RplComponent "{C1B85E6A7EA673E4}" {
   }
-  Hierarchy "{E6471B975D129FB6}" {
+  Hierarchy "{041FE8AC28370B7C}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{C8A5C92E74ABB5EA}Prefabs/Props/Civilian/PicnicTable/PicnicTable_01.et" {
-   ID "66B23F228B6400D0"
+   ID "C29C7DEFDE7A9A96"
    components {
-    Hierarchy "{2FF6CE2BCEE07DF8}" {
+    Hierarchy "{D6F5230AF3B7CD70}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "08901D99D42151CD"
+   ID "D899138947228265"
    components {
-    Hierarchy "{54C9CCA3049118C9}" {
+    Hierarchy "{DF8E731ECE94AB9A}" {
     }
    }
    coords -0.5 0 1.1
    angles 0 180 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "24D05EF46ED9152C"
+   ID "8A765465973E7C31"
    components {
-    Hierarchy "{18A59E75DABB4F49}" {
+    Hierarchy "{DFD66152244F7692}" {
     }
    }
    coords 0.5 0 1.1
    angles 0 180 0
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "CD46C7AE07A06C13"
+   ID "8A970635FB921A38"
    components {
-    Hierarchy "{1630AD271528DCC2}" {
+    Hierarchy "{60C7E3F3C93D08C8}" {
     }
    }
    coords -0.5 0 -1.1
   }
   GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
-   ID "DF69F70990E26612"
+   ID "7BE9BE528C19C8D3"
    components {
-    Hierarchy "{FD62315D7DB955D6}" {
+    Hierarchy "{723D50EEFB465423}" {
     }
    }
    coords 0.6 0 -1.2
    angles 0 30 0
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
-   ID "597125BB4D1648E6"
+   ID "F8D3B3EE5A6CC109"
    coords -0.3 0.78 0.2
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
-   ID "C1AA3CEAB530418D"
+   ID "231E81E3D6858291"
    coords 0.3 0.78 -0.2
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
-   ID "C9B85132D902D82E"
+   ID "8576FF7C8CF205BB"
    coords 0 0.78 0
   }
   GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "B839F14A2C6F33C9"
+   ID "E0417E03E1F9EC9A"
    components {
-    Hierarchy "{CE6F1E1680B11343}" {
+    Hierarchy "{B0E5492A50A2DC39}" {
     }
    }
    coords 0.8 0.78 0

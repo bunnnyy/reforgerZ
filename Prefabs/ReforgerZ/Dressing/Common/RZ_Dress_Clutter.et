@@ -1,74 +1,74 @@
 GenericEntity {
- ID "7D55FCB7F55C7B96"
+ ID "54EE128DE1E58FAE"
  components {
-  RplComponent "{A0344D3F4B92643C}" {
+  RplComponent "{D02696AFD4925E56}" {
   }
-  Hierarchy "{6AB6605B1D39314C}" {
+  Hierarchy "{6FBE8A623C648F7A}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "400DBBE6A1358AAD"
+   ID "C5C5E31CF52DE987"
    components {
-    Hierarchy "{B48F4B456CCF20DC}" {
+    Hierarchy "{B3F85EC9299F084E}" {
     }
    }
    coords 0 0 0
    angles 0 30 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "7C45B867453005B9"
+   ID "9E7CBB0BCBC4E148"
    components {
-    Hierarchy "{08FA72CE5648D321}" {
+    Hierarchy "{CEAB10C5950A27F4}" {
     }
    }
    coords 0.5 0 0.4
    angles 0 70 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "30D0F7043426A25F"
+   ID "4712D314B6B3691B"
    components {
-    Hierarchy "{AF2E9AD62E9DA86D}" {
+    Hierarchy "{A70028B909E5AB41}" {
     }
    }
    coords 1.1 0 -0.3
    angles 0 10 0
   }
   GenericEntity : "{1BE2B6FF4806EB3E}Prefabs/Props/Civilian/Guitar_01/Guitar_01.et" {
-   ID "5A7572AF1DF4566B"
+   ID "35D070AF89DD50BC"
    components {
-    Hierarchy "{115FAA149501BC8C}" {
+    Hierarchy "{A8C85AD0863AE94D}" {
     }
    }
    coords 0.3 0.25 0.2
    angles 30 55 0
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "AE69DF59C12EFFB5"
+   ID "C6C120059BF2DEF3"
    coords -0.6 0 0.5
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "041E81C6C4ABF71C"
+   ID "1F04556A7E473FB6"
    coords -0.75 0 0.3
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "6D5452ADB575ACFD"
+   ID "7AA1E665AC3B880C"
    coords -0.4 0 -0.5
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "8B329DF9E7F27765"
+   ID "748593D46AE4D1FF"
    components {
-    Hierarchy "{E79C289932CF69C1}" {
+    Hierarchy "{1A43219B0ED368E5}" {
     }
    }
    coords 1.9 0 -1.0
    angles 0 40 0
   }
   GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
-   ID "46A048BEACCA57CF"
+   ID "360408CA56139F9E"
    components {
-    Hierarchy "{617E6EF6AE66F1ED}" {
+    Hierarchy "{640EB5093BF39474}" {
     }
    }
    coords 1.6 0 -0.2

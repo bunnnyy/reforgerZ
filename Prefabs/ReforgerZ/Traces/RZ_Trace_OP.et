@@ -1,29 +1,29 @@
 GenericEntity {
- ID "235FEADFAE74EB4D"
+ ID "2E90385CA49CDDD7"
  components {
-  RplComponent "{5AD9CCD8E617D2E6}" {
+  RplComponent "{505C96CB8033E57D}" {
   }
-  Hierarchy "{3F719F84B6120F45}" {
+  Hierarchy "{A9E269915BFA1701}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
-   ID "50198FAC7F9334A2"
+   ID "62511CDC63A4708B"
    components {
-    Hierarchy "{96B02833370A1F0B}" {
+    Hierarchy "{49038057C4FA304C}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
-   ID "B1D51BFF7868FB19"
+   ID "EC7274A09FC232FA"
    coords 0.6 0 0.4
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "C321D109C02A3580"
+   ID "862A59150D7531CD"
    components {
-    Hierarchy "{C1B89861BEC2CE0A}" {
+    Hierarchy "{CAC3DFB2E864BB1D}" {
     }
    }
    coords -1.0 0 0.8

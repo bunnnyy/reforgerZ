@@ -1,52 +1,52 @@
 GenericEntity {
- ID "B2DE957EC73620F9"
+ ID "0A874798D2840514"
  components {
-  RplComponent "{6F5E824B0E07D7F1}" {
+  RplComponent "{B076730534587101}" {
   }
-  Hierarchy "{BE1C040123823D90}" {
+  Hierarchy "{1133D651B51FF77A}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
-   ID "195E0C7ACA6624F4"
+   ID "BB0C1690620D1B1C"
    components {
-    Hierarchy "{58776145C3784C25}" {
+    Hierarchy "{FFE666D2AA24434E}" {
     }
    }
    coords -0.8 0 0
    angles 0 6 0
   }
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
-   ID "E0B83D3A34954116"
+   ID "393A1CB4EB916299"
    components {
-    Hierarchy "{53D4FD99FCC6874D}" {
+    Hierarchy "{CA2097DA096F8938}" {
     }
    }
    coords 1.4 0 0.4
    angles 0 -18 0
   }
   GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
-   ID "EAAF64515BF98CA4"
+   ID "8DE46234019924B2"
    components {
-    Hierarchy "{C0772A561A38F2FF}" {
+    Hierarchy "{DE2B765A4050FBBA}" {
     }
    }
    coords 3.2 0 0.9
   }
   GenericEntity : "{74D1DB7828061BD7}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et" {
-   ID "CD151C7B53471FB2"
+   ID "BCAD14D8AEE4CE85"
    components {
-    Hierarchy "{1AFADF59444790C6}" {
+    Hierarchy "{EFA341551A322FCB}" {
     }
    }
    coords -2.9 0 0.5
    angles 0 30 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "F0E7E2A057B91D78"
+   ID "1DB8AD8CCF860B37"
    components {
-    Hierarchy "{6CDE18B5007528BA}" {
+    Hierarchy "{412D544CCBFDE9CA}" {
     }
    }
    coords 0.4 0.6 -0.3

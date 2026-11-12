@@ -1,25 +1,25 @@
 GenericEntity {
- ID "E632C81FB6A22E6F"
+ ID "D81C0AEFE85237CE"
  components {
-  RplComponent "{9B64C56407F196B8}" {
+  RplComponent "{1246E75AC874D998}" {
   }
-  Hierarchy "{7E22E5EFA144F301}" {
+  Hierarchy "{012CC23A0CF93506}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{56FFF0C990358ED2}Prefabs/Props/Wrecks/UAZ452_wreck/UAZ452_wreck_static.et" {
-   ID "DA89EBD6CA996B29"
+   ID "B52967B8DAA981C9"
    components {
-    Hierarchy "{C3D2B91F1C9DBE46}" {
+    Hierarchy "{D3EA0DA70E66AF7C}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
-   ID "B1CF94BF1FC8B878"
+   ID "E39193C1B618E491"
    components {
-    Hierarchy "{24B455FCA4552652}" {
+    Hierarchy "{7D6201F2EAE0382E}" {
     }
    }
    coords 1.8 0 -0.8

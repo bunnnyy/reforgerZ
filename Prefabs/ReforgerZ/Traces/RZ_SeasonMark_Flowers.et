@@ -1,25 +1,25 @@
 GenericEntity {
- ID "AB3C599562465F96"
+ ID "1B4DEB6ADAE30C62"
  components {
-  RplComponent "{BC6C4503DEEA3015}" {
+  RplComponent "{00426D347D6BAB28}" {
   }
-  Hierarchy "{EF504602EAD2A955}" {
+  Hierarchy "{46B5850425AC7168}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "737D113B218BE60E"
+   ID "D6602C8992C0CA37"
    components {
-    Hierarchy "{72657A5C2694B5C1}" {
+    Hierarchy "{63FE73EC626A5972}" {
     }
    }
    coords 0 0 0
   }
   SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
-   ID "E378CFB603B33B20"
+   ID "DBEA96A460F7424B"
    components {
-    Hierarchy "{2D124DF959B7FE81}" {
+    Hierarchy "{8909289365652D9B}" {
     }
    }
    coords 0.2 0 0.2

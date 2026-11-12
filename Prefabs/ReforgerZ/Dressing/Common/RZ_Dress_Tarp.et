@@ -1,96 +1,96 @@
 GenericEntity {
- ID "ACB8E08142717384"
+ ID "5DD280AD7859FC01"
  components {
-  RplComponent "{92EDCB5638D3A7A3}" {
+  RplComponent "{F4C414F05F011599}" {
   }
-  Hierarchy "{2DCC3C978590119A}" {
+  Hierarchy "{A1C558D841D0CC6D}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{70F4AEC6D6641173}Prefabs/Structures/Military/CamoNets/US/CamoNet_Small_US.et" {
-   ID "FA1228ACFF4DC369"
+   ID "3D46A089F09F1E2C"
    coords 0 0 0
    angles 0 12 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "B8A8D86C25C7A45F"
+   ID "E376D41EB93B9220"
    components {
-    Hierarchy "{B8F0FFEF488EF823}" {
+    Hierarchy "{15464E92458FE414}" {
     }
    }
    coords -0.5 0 -0.3
    angles 0 8 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "4EFC2FBA01128E76"
+   ID "DCA782238389E4C3"
    components {
-    Hierarchy "{0C50767BAE1B3A83}" {
+    Hierarchy "{604EE79F7218A476}" {
     }
    }
    coords 0.9 0 0.6
    angles 0 20 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "B6C9CD64BAB4D5F1"
+   ID "E9760E9E600FDD13"
    components {
-    Hierarchy "{279D1D92B8C97335}" {
+    Hierarchy "{62C5E59B8B863FB6}" {
     }
    }
    coords 1.0 0.62 0.5
    angles 0 35 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
-   ID "4421866EB90AC45A"
+   ID "18FBBF69593D8324"
    components {
-    Hierarchy "{E451C92C2994E1C1}" {
+    Hierarchy "{942F14B8D1E7ACF4}" {
     }
    }
    coords -1.3 0 1.1
    angles 0 -10 0
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
-   ID "99702D1F92624BC9"
+   ID "5AF9F11BD7EEB62C"
    components {
-    Hierarchy "{6BE5D4BAF1692F76}" {
+    Hierarchy "{8A5359A354CA7E2F}" {
     }
    }
    coords 0.1 0 0.9
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "D0608B06F7CB3E17"
+   ID "BC8E2762DC61F69D"
    components {
-    Hierarchy "{EC09ED6876D381A7}" {
+    Hierarchy "{F012FAF1C40D6685}" {
     }
    }
    coords -1.4 0 -1.3
   }
   GenericEntity {
-   ID "C9718B43A5EFEB2C"
+   ID "28247615E3D4670E"
    components {
-    SCR_AISmartActionSentinelComponent "{B36A09F1D3D83E56}" {
+    SCR_AISmartActionSentinelComponent "{A14B362FD022D64A}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0.9 1.6 0.6
      m_eLoiterAnimation SMOKING
     }
-    Hierarchy "{3AFA30D49EAA2BB1}" {
+    Hierarchy "{4D0D0EBE1BCE08A4}" {
     }
    }
    coords -0.6 0 0.4
   }
   GenericEntity {
-   ID "81B4BBC43F61A8F6"
+   ID "EDC3644C517AB8BA"
    components {
-    SCR_AISmartActionSentinelComponent "{D7B83B898DCD4C0C}" {
+    SCR_AISmartActionSentinelComponent "{793B7EA4425297E9}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0.9 1.6 0.6
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{45C4F6AE608A6B46}" {
+    Hierarchy "{A211E30B4B003D6F}" {
     }
    }
    coords 0.2 0 -0.9

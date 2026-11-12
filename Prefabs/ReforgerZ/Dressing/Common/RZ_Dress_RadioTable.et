@@ -1,77 +1,77 @@
 GenericEntity {
- ID "0986AC1047A6232F"
+ ID "8B028DDA3716C564"
  components {
-  RplComponent "{0C8B871001630A9C}" {
+  RplComponent "{30DED6928195004F}" {
   }
-  Hierarchy "{141E88A6D45B0FDD}" {
+  Hierarchy "{4E596BA2EA5D4AA7}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{2DB729170DBCE7BE}Prefabs/Props/Furniture/TableOld_01/TableOld_01.et" {
-   ID "223813DF397B918D"
+   ID "D50210F47EFEC694"
    components {
-    Hierarchy "{3CC68AF757A123AE}" {
+    Hierarchy "{3E17EFB95B66B064}" {
     }
    }
    coords 0 0 0
    angles 0 -4 0
   }
   GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "8B0B1C5394C0E9D8"
+   ID "A43162B57A4BC6AA"
    components {
-    Hierarchy "{F361E475502A5CDA}" {
+    Hierarchy "{7D7A5D3A0E0DF099}" {
     }
    }
    coords 0 0.78 -0.1
    angles 0 180 0
   }
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
-   ID "7E5A7A9607932FC5"
+   ID "AB96117E4FE4C8BF"
    components {
-    Hierarchy "{16D89FB73F35EC73}" {
+    Hierarchy "{5ED9BF529000A618}" {
     }
    }
    coords 0.45 0.78 0.1
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
-   ID "7D7EC0589BCAF13C"
+   ID "E8FFF69D25A96024"
    components {
-    Hierarchy "{52A2D6A1445415F8}" {
+    Hierarchy "{C745144C53D5DE6D}" {
     }
    }
    coords -0.35 0.78 0.05
    angles 0 20 0
   }
   GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
-   ID "15054AF7494F9014"
+   ID "66E3B8AEDB6787C8"
    components {
-    Hierarchy "{9087D195E193101F}" {
+    Hierarchy "{A949B0CC196D38A3}" {
     }
    }
    coords 0.05 0 0.85
    angles 0 172 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "217B443304AE0829"
+   ID "7E4C29AA143BE92E"
    components {
-    Hierarchy "{A61C8BFC3691E683}" {
+    Hierarchy "{C52B49B54E84767C}" {
     }
    }
    coords -1.2 0 -0.4
    angles 0 80 0
   }
   GenericEntity {
-   ID "34FB7C89CA8430A7"
+   ID "C8DAE94F79E1C874"
    components {
-    SCR_AISmartActionSentinelComponent "{8C89933033C4D0E0}" {
+    SCR_AISmartActionSentinelComponent "{E6D1D8310DF88B32}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0 1.6 -0.8
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{89F6437C5C249983}" {
+    Hierarchy "{D54354F43647119F}" {
     }
    }
    coords 0.05 0 0.85

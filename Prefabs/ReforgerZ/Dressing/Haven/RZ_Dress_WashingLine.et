@@ -1,83 +1,83 @@
 GenericEntity {
- ID "FD1A2C489F04B50C"
+ ID "1CDC2530CDAF6B85"
  components {
-  RplComponent "{F76AADC399C1CA3B}" {
+  RplComponent "{BCC5C0E11F3A89FF}" {
   }
-  Hierarchy "{ABF21895889CE7FB}" {
+  Hierarchy "{A4AD381E07A129E7}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
-   ID "616D054570391172"
+   ID "BAEA15F49AA5E495"
    components {
-    Hierarchy "{75C4E3EFEFD57E12}" {
+    Hierarchy "{82AC410B0AF0A48D}" {
     }
    }
    coords -2.8 0 -0.2
   }
   GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
-   ID "5F3CC4689C0A7F0C"
+   ID "ADA301B10AAC101D"
    components {
-    Hierarchy "{70E0328E01E46C92}" {
+    Hierarchy "{B0360833E23F8136}" {
     }
    }
    coords 0.1 0 0.3
   }
   GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
-   ID "0FF5A0EA086470A1"
+   ID "CDE6D7743020CB51"
    components {
-    Hierarchy "{732C7698EA82A78E}" {
+    Hierarchy "{E0F90E2E550D2D05}" {
     }
    }
    coords 2.9 0 -0.1
   }
   GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
-   ID "757B3F3189166799"
+   ID "623B267A94DDD665"
    components {
-    Hierarchy "{1331CB2DA9383981}" {
+    Hierarchy "{BF9D821AFCC71794}" {
     }
    }
    coords -1.4 0 0.05
    angles 0 80 0
   }
   GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
-   ID "7F50DDBEF7E1FEF3"
+   ID "5C94F6C36535D5FD"
    components {
-    Hierarchy "{66637A038D81FD02}" {
+    Hierarchy "{25EF56F5769ED473}" {
     }
    }
    coords 1.5 0 0.1
    angles 0 95 0
   }
   GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
-   ID "51C291D955324E27"
+   ID "3CF1FE98B9639BA0"
    components {
-    Hierarchy "{504E7D48EBE041FA}" {
+    Hierarchy "{F3B5095B8066E09A}" {
     }
    }
    coords -0.7 0 0.9
    angles 0 15 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "3D5DE0E4D281F238"
+   ID "A51AE14E2A1F2575"
    components {
-    Hierarchy "{1B37356F8F909B6F}" {
+    Hierarchy "{33C6D90079B5E4D7}" {
     }
    }
    coords 0.5 0 1.0
   }
   GenericEntity {
-   ID "C404CEB09DA4FA00"
+   ID "DD538ACB80073E63"
    components {
-    SCR_AISmartActionSentinelComponent "{C7DE890B54FFF383}" {
+    SCR_AISmartActionSentinelComponent "{298960E15740622F}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{477C687DB1ED161A}" {
+    Hierarchy "{F1216DCE3DD1D13C}" {
     }
    }
    coords -0.2 0 1.0

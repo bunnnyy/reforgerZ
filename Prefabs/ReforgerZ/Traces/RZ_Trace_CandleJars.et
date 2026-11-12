@@ -1,41 +1,41 @@
 GenericEntity {
- ID "2655ABD6D66B90A5"
+ ID "9FF228B0228D57CE"
  components {
-  RplComponent "{152411D3EA84F224}" {
+  RplComponent "{64A5F2F203202E77}" {
   }
-  Hierarchy "{4C90B9FF2E3EF806}" {
+  Hierarchy "{B1EFE352857C795A}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "A4E226D73E851732"
+   ID "FC0731515182C447"
    components {
-    Hierarchy "{303A623C735298A8}" {
+    Hierarchy "{0E03AF62F087411D}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "69E8DDA0BC0BF789"
+   ID "61DC1FE789BFDF45"
    components {
-    Hierarchy "{5269D302BDD22ED1}" {
+    Hierarchy "{0276ED078F9EC5CF}" {
     }
    }
    coords 0.25 0 0.1
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "51E3C4BE2DECF016"
+   ID "227D29B4071849E5"
    components {
-    Hierarchy "{4F2535D5EE00EF13}" {
+    Hierarchy "{8D4B272B161E11D2}" {
     }
    }
    coords -0.22 0 0.12
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "D4604C936BE40240"
+   ID "7CCD001A13984F4C"
    components {
-    Hierarchy "{673D3158DCDE1E7A}" {
+    Hierarchy "{DE39E1AB2C1B4269}" {
     }
    }
    coords 0.05 0 0.3

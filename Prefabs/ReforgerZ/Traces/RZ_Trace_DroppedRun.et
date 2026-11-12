@@ -1,35 +1,35 @@
 GenericEntity {
- ID "B08EE6E74C1A3657"
+ ID "3AA34B8E429C5E07"
  components {
-  RplComponent "{BE3775D08589A6DC}" {
+  RplComponent "{532377E7D6099E7F}" {
   }
-  Hierarchy "{76FBB6F75C81F4CA}" {
+  Hierarchy "{C60AAFA4B69297DD}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
-   ID "6F00FD2448A78223"
+   ID "D08DC94EDE8FED4E"
    components {
-    Hierarchy "{5841D467210D995D}" {
+    Hierarchy "{799A5B347ED2636D}" {
     }
    }
    coords 0 0 0
    angles 90 30 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
-   ID "619DBB753C7361DD"
+   ID "E82DFF0756D0442E"
    components {
-    Hierarchy "{4CAE54AE615D9B8D}" {
+    Hierarchy "{3BBB7E2661186D33}" {
     }
    }
    coords 0.6 0 0.4
    angles 0 50 0
   }
   GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
-   ID "DF49CA9CB03BCE04"
+   ID "8CBF6830CD4CD5A2"
    components {
-    Hierarchy "{6B94EAFEEC6A1EEA}" {
+    Hierarchy "{61EC9BC396023AAF}" {
     }
    }
    coords -1.2 0 0.3

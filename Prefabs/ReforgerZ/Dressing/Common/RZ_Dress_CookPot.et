@@ -1,111 +1,111 @@
 GenericEntity {
- ID "6FBC91CE658B4F40"
+ ID "206AC8FF70DC6824"
  components {
-  RplComponent "{25A1A7EB673505AD}" {
+  RplComponent "{FDC3012F66DDA20F}" {
   }
-  Hierarchy "{945BC8FF5C70D688}" {
+  Hierarchy "{7733232E22902F58}" {
   }
  }
  coords 0 0 0
  {
   GameEntity : "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et" {
-   ID "B685370DB20041C2"
+   ID "CEF7C48786E8120F"
    components {
-    Hierarchy "{15624F4ED579A427}" {
+    Hierarchy "{32B77F5CFFFE9154}" {
     }
    }
    coords 0 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "33F72126EDEA2DA3"
+   ID "0D1BEDED964E526D"
    components {
-    Hierarchy "{7952D2B35E0204F3}" {
+    Hierarchy "{19664064F2014478}" {
     }
    }
    coords 0.5 0 0
    angles 0 0 -20
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "52F7220E80B2B5C8"
+   ID "F975405C6FC35C87"
    components {
-    Hierarchy "{7FB795657F31E91C}" {
+    Hierarchy "{51516F3290F3493C}" {
     }
    }
    coords -0.25 0 0.43
    angles 18 0 10
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "305ADF349758A12C"
+   ID "84E4350A930A6C96"
    components {
-    Hierarchy "{0663CD79E39ABB56}" {
+    Hierarchy "{92E13C5F214CDBC0}" {
     }
    }
    coords -0.25 0 -0.43
    angles -18 0 10
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "22D6DB4DF5042F1E"
+   ID "81562AAA4E3D3754"
    components {
-    Hierarchy "{7EB595BB0B3CDAD4}" {
+    Hierarchy "{DBD48E16F1721132}" {
     }
    }
    coords 0 0.5 0
   }
   GenericEntity : "{C9FF63225FD6B69D}Prefabs/Props/Furniture/SkewerGrill_01/SkewerGrill_01.et" {
-   ID "03BEED37E8003453"
+   ID "DC54EA7AD79292B5"
    components {
-    Hierarchy "{B2ADB3ECFA2F3F11}" {
+    Hierarchy "{79044B099C5D5110}" {
     }
    }
    coords 1.4 0 0.6
    angles 0 28 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "5B69E5647F565496"
+   ID "9519708EF6AFCBDC"
    components {
-    Hierarchy "{ECA7736CBDB5E395}" {
+    Hierarchy "{DEA5D30454756815}" {
     }
    }
    coords -1.6 0 0.4
    angles 0 82 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "F6D03FE5B9FE034F"
+   ID "6F3DEC54458E4DC9"
    components {
-    Hierarchy "{28B39A495EE5F65D}" {
+    Hierarchy "{6B597BC8B36451DE}" {
     }
    }
    coords -1.7 0 -0.6
    angles 0 95 0
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
-   ID "7757A80CD1D221BA"
+   ID "C3B8625A0ABE1CC8"
    coords -1.6 0.62 0.3
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
-   ID "A60785CF9B346FB1"
+   ID "1A1C2F1E95CE1109"
    coords -1.7 0.62 -0.5
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "51BF02B06FD6A941"
+   ID "43E79BF3D48FC523"
    components {
-    Hierarchy "{5AD022EF2C865550}" {
+    Hierarchy "{87DDA8C03B931EC9}" {
     }
    }
    coords 1.1 0 -1.4
    angles 0 40 0
   }
   GenericEntity {
-   ID "BA20A896E8ED5550"
+   ID "1E1F6E6458BF28BA"
    components {
-    SCR_AISmartActionSentinelComponent "{998E0E287076E56E}" {
+    SCR_AISmartActionSentinelComponent "{580B4290705F7663}" {
      Tags {
       "RZ_Cook"
      }
      m_vLookPosition 0 1.6 -1.3
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{93FA3B0B296635CD}" {
+    Hierarchy "{8D2B9EAC5258B612}" {
     }
    }
    coords 0.1 0 1.3

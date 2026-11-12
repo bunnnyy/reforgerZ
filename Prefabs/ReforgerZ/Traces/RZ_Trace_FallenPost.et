@@ -1,46 +1,46 @@
 GenericEntity {
- ID "7AA0FACDFB45C615"
+ ID "F68F4DB675F4C817"
  components {
-  RplComponent "{68C77FA0A7AC90C2}" {
+  RplComponent "{6A5CF6CA5FB1624E}" {
   }
-  Hierarchy "{8D06783EA21252F4}" {
+  Hierarchy "{143E5426F95BA2A4}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
-   ID "789DA898F94FE5BD"
+   ID "C8E3D691BB3C21D7"
    components {
-    Hierarchy "{75A8B2EFD975D34D}" {
+    Hierarchy "{781A07666B845DDB}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "0321D260D61D4B35"
+   ID "4FCAC86F8E736EC6"
    coords 0.3 1.3 -0.04
    angles 0 180 0
   }
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
-   ID "C6AFD013E62EC35D"
+   ID "9CCEA05F6AEC14AE"
    components {
-    Hierarchy "{BA0CA028F804CEDF}" {
+    Hierarchy "{FE6C697BDD1637F8}" {
     }
    }
    coords 1.6 0 -0.8
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
-   ID "C25D1D3ABF8A195D"
+   ID "AD89CEE98F5F721E"
    components {
-    Hierarchy "{AE7E4584FB3C78ED}" {
+    Hierarchy "{26CBF69A992F35D8}" {
     }
    }
    coords -1.4 0 -0.6
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
-   ID "D6CDAF4B167813A6"
+   ID "39267E65A27EC966"
    components {
-    Hierarchy "{ADB6CD13C4EE65F1}" {
+    Hierarchy "{1FD39A9DA9F7A323}" {
     }
    }
    coords -1.0 0 -0.9

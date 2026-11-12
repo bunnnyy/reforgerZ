@@ -1,30 +1,30 @@
 GenericEntity {
- ID "066A3355818804B0"
+ ID "82EDE6489422BB64"
  components {
-  RplComponent "{202EBD2F3BD5C63F}" {
+  RplComponent "{EF06397AC2CEA02D}" {
   }
-  Hierarchy "{558CA516999953E7}" {
+  Hierarchy "{240E7BF93E70FDD5}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{89CF04517B5283CB}Prefabs/Props/Garbage/Generic/LitterInterior_01/Piles/LitterInterior_USSR_01_pile_V1.et" {
-   ID "CBA83CD414972F30"
+   ID "CDA8B2C7B0BCCFF4"
    coords 0 0 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "FB9CF02732CF9B54"
+   ID "B1C30361EA14AF21"
    components {
-    Hierarchy "{11DF405418AE5301}" {
+    Hierarchy "{639E1DB1C2EA7867}" {
     }
    }
    coords 0.6 0 0.3
    angles 0 70 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "B1B31BB045F90826"
+   ID "FC5F0EEFF0CE69EA"
    components {
-    Hierarchy "{4DC236D37863A14E}" {
+    Hierarchy "{046C8436DB4FB995}" {
     }
    }
    coords -0.5 0 -0.2

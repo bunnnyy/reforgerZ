@@ -1,77 +1,77 @@
 GenericEntity {
- ID "DA16D9363EB6FCE4"
+ ID "B6C9C111941784D8"
  components {
-  RplComponent "{935B30D2AB10E8AE}" {
+  RplComponent "{615D98E7D5C01B46}" {
   }
-  Hierarchy "{BE909B3AD9F2BBBB}" {
+  Hierarchy "{2E65E67B498564AF}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
-   ID "C23F2BED438C4718"
+   ID "34DDA821DA6A9A3E"
    components {
-    Hierarchy "{414E8CF41AEB4BB0}" {
+    Hierarchy "{E7A9FB703ADE7E86}" {
     }
    }
    coords -1.6 0 0.2
    angles 0 86 0
   }
   GenericEntity : "{6105032F794BA64B}Prefabs/Props/Civilian/LogChopping_01.et" {
-   ID "F49E17057CF5DABB"
+   ID "87B555471D688D49"
    components {
-    Hierarchy "{ED1C8459B8CE90DE}" {
+    Hierarchy "{8225DFACE9D4774E}" {
     }
    }
    coords 0.7 0 0.3
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "1C83ECF8CAB4AD65"
+   ID "3B177FF4756CA7E6"
    components {
-    Hierarchy "{CD7C2782D02EA7C7}" {
+    Hierarchy "{D473BB3AE01BD189}" {
     }
    }
    coords 1.6 0 -0.5
    angles 0 31 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "EBD6AB7F8C3EB6F0"
+   ID "1C62581E40F77F9B"
    components {
-    Hierarchy "{57A0BDD7DEF6AF27}" {
+    Hierarchy "{C725FF41E1F338CD}" {
     }
    }
    coords 1.4 0 0.9
    angles 0 77 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "C01ADBFA520F8CE7"
+   ID "AD0DB1837FB516FD"
    components {
-    Hierarchy "{AC75D533888DC023}" {
+    Hierarchy "{485BC98926A82344}" {
     }
    }
    coords 0.2 0 -1.2
    angles 0 120 0
   }
   GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
-   ID "DB2F8E64C6D7F934"
+   ID "94705885192F6925"
    components {
-    Hierarchy "{EC76B79D20FE3DF8}" {
+    Hierarchy "{2D9A3D8BA734E97D}" {
     }
    }
    coords -0.4 0 1.8
    angles 0 150 0
   }
   GenericEntity {
-   ID "50AB4CCA1ECD7A34"
+   ID "80C768EB94EC2047"
    components {
-    SCR_AISmartActionSentinelComponent "{16C9839B3A442F95}" {
+    SCR_AISmartActionSentinelComponent "{7A0501C283EC46BF}" {
      Tags {
       "RZ_Chop"
      }
      m_vLookPosition 0 1.6 -0.8
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{03BCEBCA90797512}" {
+    Hierarchy "{9E9D6FD6F1AFE6FA}" {
     }
    }
    coords 0.7 0 1.1

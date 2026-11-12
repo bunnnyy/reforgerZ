@@ -1,76 +1,76 @@
 GenericEntity {
- ID "903344877DAF02AC"
+ ID "99D40A3CB39E66F1"
  components {
-  RplComponent "{5F534E134387C078}" {
+  RplComponent "{3CFFB439D101519D}" {
   }
-  Hierarchy "{FC209A2C8E5DE483}" {
+  Hierarchy "{0633FF37FC364D19}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
-   ID "738723152D746B5E"
+   ID "C8396E4E96607B83"
    components {
-    Hierarchy "{FF729295B6D0DBA4}" {
+    Hierarchy "{C59F442DBFEB94E0}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "E4E409982BF9B565"
+   ID "DE47B77F28AE2B81"
    components {
-    Hierarchy "{62FCBB53C19830F7}" {
+    Hierarchy "{0FE4B2D724514726}" {
     }
    }
    coords -0.6 0 -0.2
    angles 0 6 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "0D7A572FDC8F3ACA"
+   ID "7E8962CEB3D6D518"
    components {
-    Hierarchy "{4AB0B7A6174F564E}" {
+    Hierarchy "{0FC91AE0273D5C91}" {
     }
    }
    coords 0.6 0 -0.2
    angles 0 -4 0
   }
   GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
-   ID "DEDD2A19758ACB37"
+   ID "9A6207FE7BCB6A80"
    components {
-    Hierarchy "{A9C3FA48794A3BD7}" {
+    Hierarchy "{88B8E28A23405799}" {
     }
    }
    coords 1.8 0 0.5
    angles 0 20 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "3371341E6843FB35"
+   ID "EEF98955B2813222"
    components {
-    Hierarchy "{EB01884C00687223}" {
+    Hierarchy "{B8C33238BB30BF5A}" {
     }
    }
    coords -1.5 0 0.3
   }
   GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
-   ID "FAF29FF3CEB1E61A"
+   ID "E863A63DFDC81E98"
    components {
-    Hierarchy "{516D7326DF6F1ED6}" {
+    Hierarchy "{E02C60A1D06F5092}" {
     }
    }
    coords 0.3 0 -1.1
    angles 0 10 0
   }
   GenericEntity {
-   ID "189381D26C457995"
+   ID "CD72FECAB9B877E9"
    components {
-    SCR_AISmartActionSentinelComponent "{756B3226BF8DB0D4}" {
+    SCR_AISmartActionSentinelComponent "{E74F580BF6B54F0F}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{9E686162BC60514E}" {
+    Hierarchy "{0B89975FA8D63E04}" {
     }
    }
    coords 0 0 -1.0

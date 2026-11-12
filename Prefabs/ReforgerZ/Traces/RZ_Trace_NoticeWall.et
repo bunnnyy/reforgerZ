@@ -1,57 +1,57 @@
 GenericEntity {
- ID "2248AC88ED938024"
+ ID "27FFD4B5C34470BB"
  components {
-  RplComponent "{0E7701F72EE05488}" {
+  RplComponent "{86870596010FA70A}" {
   }
-  Hierarchy "{E967C9827F3A9800}" {
+  Hierarchy "{2CAC8A01D9645DC8}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "06010B9A9398C8C7"
+   ID "07EAA6F1FBDFC2B7"
    components {
-    Hierarchy "{0508393BA8754334}" {
+    Hierarchy "{33B00962B70EF23C}" {
     }
    }
    coords -0.8 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "7A1A7C556AED66AF"
+   ID "4274452EFFD5A57D"
    components {
-    Hierarchy "{C88BDC837AC4D693}" {
+    Hierarchy "{BA787F736AF6CD34}" {
     }
    }
    coords 0.8 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "DCE748280A1248BB"
+   ID "1C5769BF97E46DB3"
    components {
-    Hierarchy "{9B3994D5DFFCB2B0}" {
+    Hierarchy "{DB906488264C57B0}" {
     }
    }
    coords 0 1.3 0.06
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "366FDC5C84135EF3"
+   ID "7B8239B237842EA0"
    coords -0.5 1.35 0.1
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "EFC22B33C0D9F9DC"
+   ID "B373DBB6F8820E1A"
    coords -0.2 1.4 0.11
    angles 0 0 6
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "F0DB79BDB82C2FAB"
+   ID "6022A2BA95A44495"
    coords 0.1 1.33 0.12
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "B0556603A32E1959"
+   ID "F934E5A3C7F16AB1"
    coords 0.35 1.42 0.13
    angles 0 0 -4
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "85F92487BDC75550"
+   ID "7A45506B72470A92"
    coords 0.6 1.36 0.14
   }
  }

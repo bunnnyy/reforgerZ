@@ -1,33 +1,33 @@
 GenericEntity {
- ID "772464D8A548DF1A"
+ ID "DCEA4641B230A1C4"
  components {
-  RplComponent "{EB040D38602FCC79}" {
+  RplComponent "{47BEB4EE7AC23F8C}" {
   }
-  Hierarchy "{76B32A932B2C6AF1}" {
+  Hierarchy "{4C1664A4620BBE56}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "E4A68DDDC7DFE2D5"
+   ID "F45E742261D47ECB"
    components {
-    Hierarchy "{B79C5927E423BD45}" {
+    Hierarchy "{61E1BDC0178D906D}" {
     }
    }
    coords -1.5 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "848BDF6A1555FFC1"
+   ID "2FE230409D1CD046"
    components {
-    Hierarchy "{BDD18DCFB932DBF2}" {
+    Hierarchy "{BE04122C97FA445B}" {
     }
    }
    coords 1.5 0 0
   }
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
-   ID "1B6EBCC97BEB34CE"
+   ID "1C1D58C58664E6BA"
    components {
-    Hierarchy "{E04C3D908F93D87B}" {
+    Hierarchy "{9D23B63A57C113BF}" {
     }
    }
    coords 0 0 0.05

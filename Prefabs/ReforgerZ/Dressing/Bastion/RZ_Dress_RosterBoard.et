@@ -1,105 +1,105 @@
 GenericEntity {
- ID "F53933786229D3F1"
+ ID "BCE9D7A1E88536B8"
  components {
-  RplComponent "{C536F957E539BD17}" {
+  RplComponent "{B6783762266D0EFC}" {
   }
-  Hierarchy "{449D9EB4AA556040}" {
+  Hierarchy "{0D10534656F60B1C}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
-   ID "193B348F78401C7E"
+   ID "E65AB9CB333AEAF1"
    components {
-    Hierarchy "{72DEBD17174B1A79}" {
+    Hierarchy "{AFF5B41A2174F178}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "497E8C072BAA0C2A"
+   ID "358D423EC6FD555A"
    coords 0.3 1.3 -0.04
    angles 0 180 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "682E4AE2E9D69722"
+   ID "47A2B73F011FB71C"
    coords -0.25 1.25 -0.04
    angles 0 176 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "C0C9564DA64CB7F3"
+   ID "35E7B0DCCF276ABD"
    components {
-    Hierarchy "{0E8D1CD3DAAD5F0A}" {
+    Hierarchy "{D9ECACC0E985EF25}" {
     }
    }
    coords 1.2 0 -0.6
    angles 0 25 0
   }
   GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
-   ID "AAF158AE6CA6B8DA"
+   ID "2E97E5BDC18355C8"
    components {
-    Hierarchy "{A03DB09AAC5BD754}" {
+    Hierarchy "{07B7C2A0CE6AAB33}" {
     }
    }
    coords 1.2 0.62 -0.6
    angles 0 10 0
   }
   GenericEntity {
-   ID "6F7A7D29ECB5EFB8"
+   ID "97EE7AC99CBAFD25"
    components {
-    SCR_AISmartActionSentinelComponent "{90C25A0126EC329E}" {
+    SCR_AISmartActionSentinelComponent "{480E0144D5323976}" {
      Tags {
       "RZ_Gather"
      }
      m_vLookPosition 1.3 1.6 1.7
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{BD67014D2B07EE5B}" {
+    Hierarchy "{75AA6629E47F7660}" {
     }
    }
    coords -1.3 0 -1.7
   }
   GenericEntity {
-   ID "51438835CE0DBCA7"
+   ID "FD0255E46BD2A596"
    components {
-    SCR_AISmartActionSentinelComponent "{A579064A87F605E7}" {
+    SCR_AISmartActionSentinelComponent "{557A7E9A6B350491}" {
      Tags {
       "RZ_Gather"
      }
      m_vLookPosition 0.4 1.6 2.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{54A08700D719BACF}" {
+    Hierarchy "{16D751A8208ABF1F}" {
     }
    }
    coords -0.4 0 -2.0
   }
   GenericEntity {
-   ID "07A1082E366F0CC5"
+   ID "4328E5F9FF7EFE9A"
    components {
-    SCR_AISmartActionSentinelComponent "{8BDA3AF5D1BA421D}" {
+    SCR_AISmartActionSentinelComponent "{83FD0A03771020A5}" {
      Tags {
       "RZ_Gather"
      }
      m_vLookPosition -0.6 1.6 1.9
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{066BB153A95B78C1}" {
+    Hierarchy "{0E1922436ADE4039}" {
     }
    }
    coords 0.6 0 -1.9
   }
   GenericEntity {
-   ID "CC183FEA170CA73B"
+   ID "73F84FB0BD5950D2"
    components {
-    SCR_AISmartActionSentinelComponent "{217BA4BEF5ED5FCE}" {
+    SCR_AISmartActionSentinelComponent "{803C6713D0029847}" {
      Tags {
       "RZ_Gather"
      }
      m_vLookPosition -1.5 1.6 1.5
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{44F4D9C5D99F7CBB}" {
+    Hierarchy "{AFC1F86F4CEDF1C7}" {
     }
    }
    coords 1.5 0 -1.5

@@ -1,81 +1,81 @@
 GenericEntity {
- ID "453ECFDC5E6AB388"
+ ID "6CE7F00996208B77"
  components {
-  RplComponent "{04BFC3F73A9056B0}" {
+  RplComponent "{2491AA76E2779F36}" {
   }
-  Hierarchy "{9F396180A32DFDD3}" {
+  Hierarchy "{A924BA5FE106A985}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
-   ID "97E5C0E42E821C93"
+   ID "7174801F8746734C"
    components {
-    Hierarchy "{1AAADA92517C9702}" {
+    Hierarchy "{716B9A5003F76488}" {
     }
    }
    coords 0 0 0
   }
   ParticleEffectEntity : "{899360C930DA3EE3}Prefabs/Particles/Campfire_burning.et" {
-   ID "B0A563E2854BBAEC"
+   ID "0DB772D0D2E47A3B"
    components {
-    Hierarchy "{53161F4F644E27A5}" {
+    Hierarchy "{3C83C8F29A653215}" {
     }
    }
    coords 0 0.9 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "BFA847F7A44EC27E"
+   ID "9D3C81D7AAB49494"
    components {
-    Hierarchy "{176940138EC06DF8}" {
+    Hierarchy "{71AD2C0CB2E3DA7A}" {
     }
    }
    coords 1.3 0.55 0.4
    angles 0 70 80
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "D5BF0136510891AC"
+   ID "3F75BBA3E7D1C270"
    components {
-    Hierarchy "{B707B8C8126594A0}" {
+    Hierarchy "{C3FBDBAAD366D9E2}" {
     }
    }
    coords -1.1 0 -0.6
    angles 0 -25 0
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "77C3997F97BA456D"
+   ID "A0A131F469A91D46"
    coords -1.0 0.62 -0.6
   }
   GenericEntity : "{18982CB5D0D29247}Prefabs/Props/Civilian/BeerBottle_01_empty_brown.et" {
-   ID "B7063CED637FD313"
+   ID "6814F75F00AEBF28"
    coords 0.6 0 -0.9
   }
   GenericEntity {
-   ID "2A015653E177735A"
+   ID "0CBBDB2E5311BC27"
    components {
-    SCR_AISmartActionSentinelComponent "{24641265853EF36C}" {
+    SCR_AISmartActionSentinelComponent "{1EF9F397D96597F1}" {
      Tags {
       "RZ_Lean"
      }
      m_vLookPosition -0.9 1.6 -0.3
      m_eLoiterAnimation LEAN_LEFT
     }
-    Hierarchy "{D9F7B0038CFB2D12}" {
+    Hierarchy "{556E9F959BBF472E}" {
     }
    }
    coords 0.9 0 0.3
   }
   GenericEntity {
-   ID "91C705EC0F2CC618"
+   ID "247408CC47839996"
    components {
-    SCR_AISmartActionSentinelComponent "{AECAF4B6B938C060}" {
+    SCR_AISmartActionSentinelComponent "{0A93AB27DA9C6BDA}" {
      Tags {
       "RZ_Lean"
      }
      m_vLookPosition 0.8 1.6 -0.5
      m_eLoiterAnimation LEAN_RIGHT
     }
-    Hierarchy "{426FF802F8C91C92}" {
+    Hierarchy "{22209AD212B6D2C5}" {
     }
    }
    coords -0.8 0 0.5

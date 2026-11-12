@@ -16,7 +16,7 @@ index (the Workbench plugin "ReforgerZ: Write resource index" writes $profile:RZ
 and added as GenericEntity: check it with "ReforgerZ: Dump prefabs and classes" and correct
 props.txt (docs/PC_SETUP.md).
 """
-import os, re, sys, random
+import hashlib, os, re, sys, random
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.normpath(os.path.join(HERE, "..", ".."))
@@ -33,8 +33,16 @@ ROLE = {"c": "CENTRE", "i": "INNER", "a": "APPROACH", "e": "EDGE"}
 CR, LF = chr(13), chr(10)
 
 
+RNG = random.Random()
+
+
 def gid():
-    return "%016X" % random.getrandbits(64)
+    """IDs come from RNG, seeded per file (seed()), so a rebuild of an unchanged piece is unchanged."""
+    return "%016X" % RNG.getrandbits(64)
+
+
+def seed(key):
+    RNG.seed(int(hashlib.sha1(key.encode("utf-8")).hexdigest()[:16], 16))
 
 
 def load_props():
@@ -75,6 +83,7 @@ def write_text(rel, text):
 def write_meta(rel):
     if os.path.exists(os.path.join(REPO, rel + ".meta")):
         return
+    seed("meta " + rel)
     t = open(META_TEMPLATE, encoding="utf-8").read()
     old = t.split('Name "')[1].split('"')[0]
     write_text(rel + ".meta", t.replace(old, "{%s}%s" % (gid(), rel)))
@@ -119,6 +128,7 @@ def write_gm(s):
 
 
 def write_kits():
+    seed("kits")
     s, nl = read_gm()
     rel = {name: "Prefabs/ReforgerZ/Dressing/%s/RZ_Dress_%s.et" % (C[name][0], name) for name in C}
     L = ["    m_aKits {"]
@@ -171,12 +181,14 @@ def main():
     props = load_props()
     for name, (folder, use, role, intent, parts) in C.items():
         rel = "Prefabs/ReforgerZ/Dressing/%s/RZ_Dress_%s.et" % (folder, name)
+        seed(rel)
         write_text(rel, piece_text(parts, props, index))
         write_meta(rel)
     write_kits()
     slots = {}
     for slot, (name, parts) in TRACES.items():
         rel = "Prefabs/ReforgerZ/Traces/%s.et" % name
+        seed(rel)
         write_text(rel, piece_text(parts, props, index))
         write_meta(rel)
         slots[slot] = guid_of(rel) + rel

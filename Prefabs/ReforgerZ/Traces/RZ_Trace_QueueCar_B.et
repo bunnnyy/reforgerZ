@@ -1,17 +1,17 @@
 GenericEntity {
- ID "B57BE7651AC615A7"
+ ID "5B86479FE9542E24"
  components {
-  RplComponent "{14504AA7396BA076}" {
+  RplComponent "{A8E8C1D4B48FC494}" {
   }
-  Hierarchy "{C7E1E21E4F880644}" {
+  Hierarchy "{E7E6D53935A43462}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{002B8C09F0E7E371}Prefabs/Props/Wrecks/S1203_wreck/S1203_wreck_static.et" {
-   ID "5B97BDF52328A35C"
+   ID "F50242F8D293B73D"
    components {
-    Hierarchy "{E5CC6B726EC68C5C}" {
+    Hierarchy "{1C60BB108CC3EA04}" {
     }
    }
    coords 0 0 0

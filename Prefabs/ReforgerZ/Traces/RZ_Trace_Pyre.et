@@ -1,52 +1,52 @@
 GenericEntity {
- ID "DB1B72AF5C43C582"
+ ID "E74DC039BAB827E9"
  components {
-  RplComponent "{32D9CB638DE9FEAB}" {
+  RplComponent "{21784AA697F8E999}" {
   }
-  Hierarchy "{8105945ADC455A31}" {
+  Hierarchy "{2E8D319A60372E3D}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "BD47F5B5010BEE40"
+   ID "0C458634B9B5E7A3"
    components {
-    Hierarchy "{FA2155173D7AC9C6}" {
+    Hierarchy "{F0AA8B34C4055C61}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
-   ID "52FDC3026956103F"
+   ID "E3C7CA7FECA039A1"
    components {
-    Hierarchy "{FE9BCA12D0F061A1}" {
+    Hierarchy "{1631A3828D334E1C}" {
     }
    }
    coords 0.8 0 0.6
    angles 90 0 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "6FCB747161DA3345"
+   ID "6F9FBCAC5BD6FE8E"
    components {
-    Hierarchy "{A599926F2D0B15DD}" {
+    Hierarchy "{FF2BCB26444DD2CF}" {
     }
    }
    coords -0.6 0 0.3
    angles 0 40 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "6481C390A14D005C"
+   ID "8AF592B59ADBEC9C"
    components {
-    Hierarchy "{6500A76FBFAB8AF2}" {
+    Hierarchy "{51B13B81C9ED5DCF}" {
     }
    }
    coords 0.2 0 -0.7
    angles 0 110 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "3060094D46ACF747"
+   ID "DDEAC3B7DCA9EFF0"
    components {
-    Hierarchy "{883F98EB69FDB43B}" {
+    Hierarchy "{C2E7159662180ABA}" {
     }
    }
    coords -1.4 0 0

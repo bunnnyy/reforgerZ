@@ -1,33 +1,33 @@
 GenericEntity {
- ID "58136614E28E55AF"
+ ID "C9EEFBFDC7FD08FF"
  components {
-  RplComponent "{DF02FB342DC3A1DE}" {
+  RplComponent "{DA155C347D195E7B}" {
   }
-  Hierarchy "{EF25EBED951D8A81}" {
+  Hierarchy "{01E0C59875B0515D}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
-   ID "A0D693E0C5CAFECE"
+   ID "AE0721D9FC3B2F88"
    components {
-    Hierarchy "{886BEAB64D85DC12}" {
+    Hierarchy "{788C08E7A6AED2CE}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "4783ACB5DF5871D5"
+   ID "EE6F3AA0C68AECC1"
    components {
-    Hierarchy "{446563BC89DF3F02}" {
+    Hierarchy "{69D8B7DC3402390B}" {
     }
    }
    coords 0 0.45 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "418E9A2AD4DCED6B"
+   ID "181D4A64385F2F19"
    components {
-    Hierarchy "{E540A82F5BBFF9C1}" {
+    Hierarchy "{0A819731A1C57F80}" {
     }
    }
    coords 0.5 0 0.3

@@ -1,52 +1,52 @@
 GenericEntity {
- ID "4C4907F54E59EB2C"
+ ID "703B877A5204E880"
  components {
-  RplComponent "{C64A7155B8AA3A9C}" {
+  RplComponent "{992F716A615ADECE}" {
   }
-  Hierarchy "{EE69B8F63DC7A145}" {
+  Hierarchy "{38AAB10B88B338F0}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
-   ID "45C162B535B91EDD"
+   ID "A7B878A7E1F893CA"
    components {
-    Hierarchy "{FE03C0D67CF3C3D1}" {
+    Hierarchy "{00B0DED03BC7EA11}" {
     }
    }
    coords 0 0 1.5
    angles 0 3 0
   }
   SCR_DestructibleEntity : "{DF3905E54137495D}Prefabs/Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et" {
-   ID "8EEECAADBDC2A63D"
+   ID "27404AE93B91BA68"
    components {
-    Hierarchy "{78B9F8D6BCF2CD32}" {
+    Hierarchy "{5149060C18AA162B}" {
     }
    }
    coords -1.5 0 0
    angles 0 88 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "0BDF75F2EBFFB48A"
+   ID "BFEA62F958AD80E9"
    components {
-    Hierarchy "{3107C20A0F623543}" {
+    Hierarchy "{64BB687D20F895CD}" {
     }
    }
    coords -0.6 0 0.8
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "1522C2EB83A10B3A"
+   ID "0294EA3F5DBCDDD7"
    components {
-    Hierarchy "{94FC60B8C0F8CD61}" {
+    Hierarchy "{F4543BC52ADEF56B}" {
     }
    }
    coords -0.6 0.35 0.8
    angles 0 5 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "D859F815BB9BC448"
+   ID "F7B5C572CBF917EC"
    components {
-    Hierarchy "{10DFF9951B994D3A}" {
+    Hierarchy "{8C54924A7783D30D}" {
     }
    }
    coords 0.6 0 0.9

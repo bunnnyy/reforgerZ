@@ -1,56 +1,56 @@
 GenericEntity {
- ID "483F282160360E48"
+ ID "33146FD56E34EE4F"
  components {
-  RplComponent "{63440FFFBDF18464}" {
+  RplComponent "{393D4988B31BE444}" {
   }
-  Hierarchy "{426B0ED10AD6CB90}" {
+  Hierarchy "{E1A714E17096DFF7}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
-   ID "E3AA13303A24245A"
+   ID "7B032FCE5A77A792"
    components {
-    Hierarchy "{07479642E564A3F9}" {
+    Hierarchy "{6EC1FD5A63442484}" {
     }
    }
    coords -0.9 0 1.0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "0A07ABE58D8E04A8"
+   ID "7AB2D84E624A92F5"
    components {
-    Hierarchy "{AA75FD8590297584}" {
+    Hierarchy "{AA2388ED1E390A2C}" {
     }
    }
    coords 0.6 0.6 1.3
    angles 0 -8 85
   }
   GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
-   ID "30355DAE00145F1F"
+   ID "CD757BD254F91E66"
    components {
-    Hierarchy "{4103834D11718257}" {
+    Hierarchy "{9D2B8E8C7FB6B3C2}" {
     }
    }
    coords 1.7 0 0.6
    angles 0 -60 0
   }
   GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
-   ID "E930E76E1FDEEDCE"
+   ID "E769751862CC2448"
    components {
-    Hierarchy "{DD0D060EF11100E5}" {
+    Hierarchy "{DFCB9DC3DB98DBE6}" {
     }
    }
    coords 0 0 0
    angles 0 175 0
   }
   GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
-   ID "89A45FAD424724D0"
+   ID "9166E823B723891E"
    coords 0.9 0 -0.4
   }
   GenericEntity {
-   ID "72F3CBDC3AA10260"
+   ID "EF80C59DBF6639C0"
    components {
-    SCR_AISmartActionSentinelComponent "{2954DD528611FC38}" {
+    SCR_AISmartActionSentinelComponent "{0FDCA9BBDAF07BD7}" {
      Tags {
       "RZ_Watch"
      }
@@ -58,7 +58,7 @@ GenericEntity {
      m_fLookDirectionRange 120
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{80FA222C729551A7}" {
+    Hierarchy "{BB3FE7610763DD92}" {
     }
    }
    coords 0 0 0.1

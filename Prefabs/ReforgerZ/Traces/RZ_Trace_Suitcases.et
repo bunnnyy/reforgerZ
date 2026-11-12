@@ -1,51 +1,51 @@
 GenericEntity {
- ID "2E0B40AD75007BFA"
+ ID "830FEB676AA58E67"
  components {
-  RplComponent "{BF64E388DBB96273}" {
+  RplComponent "{60BD81AD23F0CD78}" {
   }
-  Hierarchy "{96B3838D1AA9B58E}" {
+  Hierarchy "{8951C33FFD28A4A8}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
-   ID "7224CB52EF15D8FD"
+   ID "A89254900F577777"
    components {
-    Hierarchy "{01C7F3DBA5C6D66C}" {
+    Hierarchy "{1E5BAF35D8EE99D4}" {
     }
    }
    coords 0 0 0
    angles 0 20 0
   }
   GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
-   ID "302C108C88BD4325"
+   ID "997F50BACBD09399"
    components {
-    Hierarchy "{313755AC8967641A}" {
+    Hierarchy "{CEB2C1C8263239F1}" {
     }
    }
    coords 0.6 0 0.3
    angles 90 70 0
   }
   GenericEntity : "{EA8D922E189837C2}Prefabs/Props/Civilian/Suitcase_04_open.et" {
-   ID "ACB90376CB7C4CFE"
+   ID "3348BDAE87C99678"
    components {
-    Hierarchy "{10E0231050D57967}" {
+    Hierarchy "{43674890D5161E80}" {
     }
    }
    coords -0.7 0 0.2
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "26AE95F1C4D7211C"
+   ID "085AC25B11CCB0B1"
    components {
-    Hierarchy "{6DCF2A42167999C0}" {
+    Hierarchy "{4282BA48AACBE555}" {
     }
    }
    coords 0.2 0 0.9
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "2FED1061D19FC40A"
+   ID "093A5D9CE89C9D32"
    components {
-    Hierarchy "{FB1D07C5B1ECD93E}" {
+    Hierarchy "{2B1806E416320C79}" {
     }
    }
    coords -0.3 0 -0.7

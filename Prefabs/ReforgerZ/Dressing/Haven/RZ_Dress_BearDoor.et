@@ -1,43 +1,43 @@
 GenericEntity {
- ID "E5CC793183B79F79"
+ ID "F5A5778A546D8894"
  components {
-  RplComponent "{66A3431FEBEDF5B3}" {
+  RplComponent "{BC21EB1D9A8E686B}" {
   }
-  Hierarchy "{FD02097823CE0CF6}" {
+  Hierarchy "{6BB7BBFE4A86A508}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "6A7BF6EEE2FE6229"
+   ID "0024FDB6147B8DFC"
    components {
-    Hierarchy "{82DC2D18245CB6FF}" {
+    Hierarchy "{0A480BACA652D38A}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "5484B1FBE08CFD9E"
+   ID "413912A13758AD48"
    components {
-    Hierarchy "{BE06DE31AAC03400}" {
+    Hierarchy "{873CF1EAB1620378}" {
     }
    }
    coords 0 0.9 0.3
    angles 0 2 80
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "428336EE3C336807"
+   ID "F68B686544724EAA"
    components {
-    Hierarchy "{6584E862E6B50DAA}" {
+    Hierarchy "{00378A4743729350}" {
     }
    }
    coords 0.3 0.9 0.3
    angles 0 4 82
   }
   SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
-   ID "ED42B5E1DD7E42DA"
+   ID "1D09CD724CD76080"
    components {
-    Hierarchy "{5BC7A795C7CD178E}" {
+    Hierarchy "{6216A8A168495000}" {
     }
    }
    coords 0.9 0 0.6

@@ -1,138 +1,138 @@
 GenericEntity {
- ID "1BE4AC780DF4EC41"
+ ID "EC23EAEDBB6A4CED"
  components {
-  RplComponent "{6394C8D61D6704B7}" {
+  RplComponent "{477F2798A43C8D73}" {
   }
-  Hierarchy "{9E8F4A12F8241DD9}" {
+  Hierarchy "{F64C55A7634AF3E6}" {
   }
  }
  coords 0 0 0
  {
   GameEntity : "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et" {
-   ID "CC80F657D0C98564"
+   ID "E1B9F689587397BA"
    components {
-    Hierarchy "{D691E4D29BB52BAA}" {
+    Hierarchy "{1BDA052E44A8E491}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "3151071F550F327D"
+   ID "EB8816DD1D9058C3"
    components {
-    Hierarchy "{76D887E801861B94}" {
+    Hierarchy "{B16CCC19F3030CA3}" {
     }
    }
    coords 1.7 0 0.3
    angles 0 74 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "0BB0442440D47087"
+   ID "0A9984634FB4E251"
    components {
-    Hierarchy "{91FE0F207EEEE1FF}" {
+    Hierarchy "{1E24F78DCAEF5774}" {
     }
    }
    coords -1.5 0 -0.7
    angles 0 18 0
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "D0C72A8BFF9C43BA"
+   ID "AF77935AC0E0EEE2"
    components {
-    Hierarchy "{272D432616339B30}" {
+    Hierarchy "{29EC8083C03D9330}" {
     }
    }
    coords 0.4 0 -1.8
    angles 0 8 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "1C2EA82174BF7D48"
+   ID "95D04DF47D960218"
    components {
-    Hierarchy "{A10B63BCCEC4512D}" {
+    Hierarchy "{42DBDC3DC0EEF7EF}" {
     }
    }
    coords -0.6 0 1.8
    angles 0 140 0
   }
   GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
-   ID "EC807F48B4A2F88E"
+   ID "68C96FAC8D445792"
    components {
-    Hierarchy "{1731779E3AD7705E}" {
+    Hierarchy "{FFC54FEE65D7502B}" {
     }
    }
    coords 3.1 0 -1.2
    angles 0 102 0
   }
   GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
-   ID "7D924934844BE65C"
+   ID "4FDE74AE51402EB1"
    components {
-    Hierarchy "{10E835A959A10901}" {
+    Hierarchy "{EE0CA23C78E19976}" {
     }
    }
    coords 0.9 0 0.9
   }
   GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
-   ID "05CFC5429B7E07E5"
+   ID "A76ED659B560B925"
    coords -1.1 0 0.6
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "A3CBEF5FAE3596C5"
+   ID "A95ABD9E5FDAAF87"
    coords 1.2 0 -1.1
   }
   GenericEntity {
-   ID "63CCDD73F2318AF4"
+   ID "6D065E3BD16C43E5"
    components {
-    SCR_AISmartActionSentinelComponent "{72A920419857D974}" {
+    SCR_AISmartActionSentinelComponent "{6AE411CAED2E7B25}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition -1.7 1.6 -0.4
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{734F44E949BD6C37}" {
+    Hierarchy "{6B17F5D0DB85A0E2}" {
     }
    }
    coords 1.7 0 0.4
   }
   GenericEntity {
-   ID "A1CEE09ACD862CEE"
+   ID "7E3CE2C3A19D8096"
    components {
-    SCR_AISmartActionSentinelComponent "{781CA5687CC2ED06}" {
+    SCR_AISmartActionSentinelComponent "{25DC19B170AB1241}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 1.5 1.6 0.6
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{471A2CF6A9126477}" {
+    Hierarchy "{F97DE46FC7490CF7}" {
     }
    }
    coords -1.5 0 -0.6
   }
   GenericEntity {
-   ID "CB16C6423E626D8A"
+   ID "2FF5A1FB3CE3E637"
    components {
-    SCR_AISmartActionSentinelComponent "{33D2BCAD24FA4E55}" {
+    SCR_AISmartActionSentinelComponent "{4D7A709D7F270BD1}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition -0.4 1.6 1.8
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{5042427BD4685E9E}" {
+    Hierarchy "{7A13E97EB96E77E9}" {
     }
    }
    coords 0.4 0 -1.8
   }
   GenericEntity {
-   ID "8D155D7DF472C9BC"
+   ID "BC9913E1FA7F2D1A"
    components {
-    SCR_AISmartActionSentinelComponent "{28F2BDA4A9A1916E}" {
+    SCR_AISmartActionSentinelComponent "{F50106DD09B8D7B7}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0.6 1.6 -1.7
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{0262517145239930}" {
+    Hierarchy "{9E0919362151951F}" {
     }
    }
    coords -0.6 0 1.7

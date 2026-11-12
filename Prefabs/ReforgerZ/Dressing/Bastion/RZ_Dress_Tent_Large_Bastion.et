@@ -1,53 +1,53 @@
 GenericEntity {
- ID "1B6B50F7DD00EA64"
+ ID "C374E8060C35C63B"
  components {
-  RplComponent "{56DE41A26F7B0DE1}" {
+  RplComponent "{584851C3B0B2461E}" {
   }
-  Hierarchy "{B723A5CCF472597E}" {
+  Hierarchy "{273E14DC82AC7815}" {
   }
  }
  coords 0 0 0
  {
   StaticModelEntity : "{095874B519DCF161}Prefabs/Structures/Military/Camps/TentUS_01/TentUS_01_Assembled.et" {
-   ID "580569D951D355C2"
+   ID "1EF84BE7FBE89C39"
    coords 0 0 0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "B6DD3A307713DB02"
+   ID "0465E623C78EB2C5"
    components {
-    Hierarchy "{025893097AA46293}" {
+    Hierarchy "{E1C4643D83DA5FAF}" {
     }
    }
    coords 0 0 3.9
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "9B5C074F0372CB21"
+   ID "CE17F0B255A8CE94"
    components {
-    Hierarchy "{BB92820FCAA5FE81}" {
+    Hierarchy "{E6074C6AC6424BE7}" {
     }
    }
    coords 0 0 4.7
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
-   ID "51029B519E8017EE"
+   ID "6C5FD43315EA960E"
    components {
-    Hierarchy "{5FA39598BC071FE3}" {
+    Hierarchy "{24684BB3A23B522F}" {
     }
    }
    coords 3.0 0 1.5
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
-   ID "D24D471302D8E8AB"
+   ID "54F34981DB3B25B9"
    components {
-    Hierarchy "{452DB0E705B89581}" {
+    Hierarchy "{81F7178AE0A3AEA2}" {
     }
    }
    coords 3.0 0 0.4
   }
   GenericEntity : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
-   ID "D20D13019CE86FD9"
+   ID "9DD082E3AD9E0868"
    components {
-    Hierarchy "{C37E50D19BEAFE9E}" {
+    Hierarchy "{544FA831A467672B}" {
     }
    }
    coords -3.0 0 2.6

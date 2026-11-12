@@ -1,17 +1,17 @@
 GenericEntity {
- ID "4C241B0A45B88D5A"
+ ID "1BF4FB36249F3AA5"
  components {
-  RplComponent "{82FEBBE5ED33BE0F}" {
+  RplComponent "{DA76E9220C187A77}" {
   }
-  Hierarchy "{DC26E9EA4B9EFEEC}" {
+  Hierarchy "{38DC6068C4013380}" {
   }
  }
  coords 0 0 0
  {
   GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
-   ID "15BD63A95CEBDC77"
+   ID "F0040D63AD49737A"
    components {
-    Hierarchy "{3E2EDC28E896F1DC}" {
+    Hierarchy "{7025AAD9B1E0C24B}" {
     }
    }
    coords 0 0 0

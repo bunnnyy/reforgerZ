@@ -1,95 +1,95 @@
 GenericEntity {
- ID "DADB09C9689C7723"
+ ID "F4906902B3FC10BD"
  components {
-  RplComponent "{63CD81FBEDA2AB79}" {
+  RplComponent "{352F002A040F4BA7}" {
   }
-  Hierarchy "{C40FC3087F48899B}" {
+  Hierarchy "{7020FCDE8E99A88E}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{8FB2845D48F4E02A}Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et" {
-   ID "EF47E8A86AE352B7"
+   ID "F547FA180E61F60D"
    components {
-    Hierarchy "{4D08BFF76B3D766F}" {
+    Hierarchy "{807281114A1B802F}" {
     }
    }
    coords 0 0 0
    angles 0 -3 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "C85673A74027BF0F"
+   ID "856DA77C79899BEB"
    components {
-    Hierarchy "{97429E9B1E65B318}" {
+    Hierarchy "{E7EB96C333343A67}" {
     }
    }
    coords -0.4 0.78 0
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "47D9281603480087"
+   ID "D16847407F09E1B9"
    components {
-    Hierarchy "{712C6B767FF20378}" {
+    Hierarchy "{0AED7C6016C8F5D9}" {
     }
    }
    coords 0 0.78 0.12
   }
   GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
-   ID "EC22BC656926FB3A"
+   ID "C6B6377412C28638"
    components {
-    Hierarchy "{59F500B59A3A4F3D}" {
+    Hierarchy "{2DFB5246540909AA}" {
     }
    }
    coords 0.4 0.78 -0.05
   }
   GenericEntity : "{D8EF213A192382E0}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et" {
-   ID "7067002A54161B6F"
+   ID "BE92B5BBB58506A4"
    components {
-    Hierarchy "{35432745286663B7}" {
+    Hierarchy "{3E17DCC74CE1D2B7}" {
     }
    }
    coords 0.2 0.78 -0.2
    angles 0 180 0
   }
   GenericEntity : "{2AEAA31471171A50}Prefabs/Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et" {
-   ID "B2595789FFB12F1A"
+   ID "170DF68E7FFFBA51"
    components {
-    Hierarchy "{48135A4B9C01BD43}" {
+    Hierarchy "{5FB1AE4592663382}" {
     }
    }
    coords -0.2 0.79 -0.2
    angles 0 10 0
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "BF90D4A4C643A5B8"
+   ID "FD23681B63DD1009"
    coords 0 0.79 0.25
   }
   SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
-   ID "8EAE992CEE7FD45F"
+   ID "7622925348FDB705"
    components {
-    Hierarchy "{85AEEE7B3D432566}" {
+    Hierarchy "{21870B07208DB492}" {
     }
    }
    coords 0.8 0 0.7
   }
   SCR_DestructibleEntity : "{9E939BD958DD48D1}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et" {
-   ID "F32889BCD6FF3ABE"
+   ID "ED7FD287DB0BF7C5"
    components {
-    Hierarchy "{C179B97B6A48B44C}" {
+    Hierarchy "{27D26044C1FFC176}" {
     }
    }
    coords -0.7 0 0.8
   }
   GenericEntity {
-   ID "3E72ED6AD98B6B56"
+   ID "A63C2B0DE9FABE8D"
    components {
-    SCR_AISmartActionSentinelComponent "{0AF7F436165D9CDE}" {
+    SCR_AISmartActionSentinelComponent "{0A88F010A4B82D1E}" {
      Tags {
       "RZ_Work"
      }
      m_vLookPosition 0 1.6 -1.1
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{7AB25F9D1FA50C9D}" {
+    Hierarchy "{AD75DB1E20857346}" {
     }
    }
    coords 0 0 1.1

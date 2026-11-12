@@ -1,42 +1,42 @@
 GenericEntity {
- ID "FBB0876FEDFE5EE1"
+ ID "0C96DAFD6A4E201B"
  components {
-  RplComponent "{4E46958DC485EA48}" {
+  RplComponent "{56738285A29E11F0}" {
   }
-  Hierarchy "{672B525EE5B1776C}" {
+  Hierarchy "{46A63CCFCC86750A}" {
   }
  }
  coords 0 0 0
  {
   StaticModelEntity : "{01AE5FD77A9A4C21}Prefabs/Structures/Military/Camps/TentSmallUS_01/TentSmallUS_01.et" {
-   ID "BCCFB28171D2ECB6"
+   ID "5E5092D34C00BA87"
    components {
-    Hierarchy "{D6D50D6199920772}" {
+    Hierarchy "{E2461929CE2BE79A}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
-   ID "D4D4F4A226536ACD"
+   ID "FD875804AA8CA31A"
    components {
-    Hierarchy "{9AD2A97BE9EC2A70}" {
+    Hierarchy "{08FB55BA27DA1170}" {
     }
    }
    coords 1.4 0 0.9
   }
   GenericEntity : "{C7A49C5B54C86903}Prefabs/Props/Military/Sandbags/Sandbag_01_single_burlap.et" {
-   ID "E6E9F22A7A480ED4"
+   ID "AB78DA25FBAB5019"
    components {
-    Hierarchy "{34164F9C1B5F128F}" {
+    Hierarchy "{8505250B11C62DCB}" {
     }
    }
    coords -1.1 0 -1.3
    angles 0 90 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "CAC0BECC046FD595"
+   ID "A50548DB67CCDB4B"
    components {
-    Hierarchy "{72738C256817EFA4}" {
+    Hierarchy "{30B5F6FFD65E2F51}" {
     }
    }
    coords 1.4 1.0 0.9

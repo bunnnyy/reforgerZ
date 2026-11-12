@@ -1,31 +1,31 @@
 GenericEntity {
- ID "8F48716CB6ECAF87"
+ ID "20700FA74BD2B785"
  components {
-  RplComponent "{5EC0214421632C48}" {
+  RplComponent "{AD3AC99CE5733343}" {
   }
-  Hierarchy "{0395260FF0330614}" {
+  Hierarchy "{899DD61B9F1BC6BD}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "3825C04CB105AA69"
+   ID "356C59ECDDA3268C"
    components {
-    Hierarchy "{8E80FA33C03341C6}" {
+    Hierarchy "{81CD4245BA3015CF}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
-   ID "C98317456DF62A9E"
+   ID "91D6DCF24FA55BCF"
    components {
-    Hierarchy "{631AE40909B48754}" {
+    Hierarchy "{0FADB705D4CF0474}" {
     }
    }
    coords 0 1.4 0.06
   }
   GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
-   ID "3D0CEC79077C3DAB"
+   ID "57962DFD11F83448"
    coords 0 1.45 0.1
   }
  }
