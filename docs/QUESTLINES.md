@@ -1117,11 +1117,11 @@ The Long Table also accepts the setter's own spelling for flags the table names 
 | Flag | Set in | Read in | What it does there |
 |---|---|---|---|
 | `finale.open`, `finale.finisher`, `finale.route`, `finale.how`, `finale.terms`, `finale.condition`, `finale.partner` | the controller | the epilogue's record and outlets ([EPILOGUE.md](EPILOGUE.md)) | The routes are open; who finished (route + 1, 0 the lab alone); who controls (0 nobody: handed over); how it was won (1 held, 2 force, 3 deal, 4 betrayal, 5 theft, 6 handed over); the terms (1–4); the condition and the pact partner (route + 1) |
-| `route.<n>.state` | the controller, at the cure | (facts; the epilogue's route lines are planned) | Each route (n = route + 1): 0 not worked, 1 worked, 3 finished |
+| `route.<n>.state` | the controller, at the cure | (facts; the epilogue's route lines read the controller itself, [EPILOGUE.md](EPILOGUE.md)) | Each route (n = route + 1): 0 not worked, 1 worked, 3 finished |
 | `cure.slow`, `finale.taken`, `finale.coat_run` | the controller | (facts) | The lab alone made the batch; the season day Take the Lab and the Coat Run passed |
 | `held.rh_knows`, `held.named`, `held.processed` | Held for Collection | (facts) | The Red Hand knows the cold store; the four ledgers named the tubes; Twice was brought home |
 | `cook.heard`, `cook.still_known`, `cook.line_paid`; `cook.lines`, `cook.paid` | The Cook; every cut dose taken | The Cook's terms | Someone heard the cook's terms; found the still; her line marked paid. The cut doses written in her book, and those that held |
-| `finale.plan_sold` | (planned: Sell the Plan) | Take the Lab | The bay hold is 150 s |
+| `finale.plan_sold` | Sell the Plan (`Questlines/Finale/RZ_FinaleRoute.c`) | Take the Lab | The bay hold is 150 s |
 
 ## Loose Ends
 
