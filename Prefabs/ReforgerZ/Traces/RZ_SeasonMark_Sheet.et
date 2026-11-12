@@ -1,0 +1,37 @@
+GenericEntity {
+ ID "9ECAE73074ED206E"
+ components {
+  RplComponent "{FDB09514DB0D89B7}" {
+  }
+  Hierarchy "{2428080E431115A5}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "5BC9FC5FF9E23BF3"
+   components {
+    Hierarchy "{F2706D86FE5D186C}" {
+    }
+   }
+   coords -1.2 0 0
+  }
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "3E8A684BF526ABB6"
+   components {
+    Hierarchy "{C84BA6D5D56F1D66}" {
+    }
+   }
+   coords 1.2 0 0
+  }
+  GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
+   ID "1E4D9BF18417FC57"
+   components {
+    Hierarchy "{E099F57CDA854EEE}" {
+    }
+   }
+   coords 0 1.0 0
+   angles 90 0 0
+  }
+ }
+}

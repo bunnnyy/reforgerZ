@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "7A661C9267D905C6"
+ components {
+  RplComponent "{4B6BCF7474D409AC}" {
+  }
+  Hierarchy "{483C6920236FAB5A}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{002B8C09F0E7E371}Prefabs/Props/Wrecks/S1203_wreck/S1203_wreck_static.et" {
+   ID "43E064ECFD67E4AB"
+   components {
+    Hierarchy "{998A4AE3B06750C6}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

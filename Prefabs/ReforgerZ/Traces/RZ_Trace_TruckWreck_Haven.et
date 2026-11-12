@@ -1,0 +1,28 @@
+GenericEntity {
+ ID "5B3FB256A5518CF6"
+ components {
+  RplComponent "{2E445A5A8C1D9BAB}" {
+  }
+  Hierarchy "{8593210C447D0EDC}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et" {
+   ID "6337263B110E6B19"
+   components {
+    Hierarchy "{A8CB0D623B7DF934}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+   ID "EB5E0D781EBD6EA3"
+   components {
+    Hierarchy "{C7A456FC5C44ED00}" {
+    }
+   }
+   coords 2.0 0 -1.0
+  }
+ }
+}

@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "117EA7B36637999B"
+ components {
+  RplComponent "{7318F113CC5DBADB}" {
+  }
+  Hierarchy "{B373D6E6DC4213DE}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{6BE5C753730DBFED}Prefabs/Props/Wrecks/M923A1_wreck/M923A1_wreck_static.et" {
+   ID "4BB9A0E683475E7E"
+   components {
+    Hierarchy "{1333F41EA7CDC8BE}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "2B759FC217DB7717"
+   components {
+    Hierarchy "{D11236B628944DD1}" {
+    }
+   }
+   coords 2.2 0 -1.5
+   angles 0 20 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "9B30DE748B6FA701"
+   components {
+    Hierarchy "{0BB4DBE68EE2A91F}" {
+    }
+   }
+   coords 2.6 0 0.2
+   angles 0 70 0
+  }
+ }
+}

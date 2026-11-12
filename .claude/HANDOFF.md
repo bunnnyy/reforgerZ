@@ -18,34 +18,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 94217f5: `Zombies/RZ_CallSound.et`, `Zombies/RZ_GreatCallSound.et`.
 
 **Traces' kit, all optional (WBS §4, Traces; do the spike first, WBS "Traces: the Workbench spike")**
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_QueueCar_A.et`, slot **World > Traces > Kit > Column car A** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_QueueCar_B.et`, slot **World > Traces > Kit > Column car B** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_QueueCar_C.et`, slot **World > Traces > Kit > Column car C** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Suitcases.et`, slot **World > Traces > Kit > Suitcases** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_GymDoor.et`, slot **World > Traces > Kit > Gym door** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Bus.et`, slot **World > Traces > Kit > Bus** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_ChurchDoor.et`, slot **World > Traces > Kit > Church door** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Roadblock_D1.et`, slot **World > Traces > Kit > Day 1 roadblock** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_NoticeWall.et`, slot **World > Traces > Kit > Notice wall** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Shutter.et`, slot **World > Traces > Kit > Rudi's shutter** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_OP.et`, slot **World > Traces > Kit > The hill** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_LastMeal.et`, slot **World > Traces > Kit > The last meal** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_HeldOut.et`, slot **World > Traces > Kit > Held out** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_EdgeChair.et`, slot **World > Traces > Kit > The chair at the edge** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_IOUs.et`, slot **World > Traces > Kit > The honest shop** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_DroppedRun.et`, slot **World > Traces > Kit > The dropped run** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_WaitingRoom.et`, slot **World > Traces > Kit > The waiting room** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_FallenPost.et`, slot **World > Traces > Kit > The fallen post** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_WaterQueue.et`, slot **World > Traces > Kit > The water queue** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Scorch.et`, slot **World > Traces > Kit > Scorch** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_Bastion.et`, slot **World > Traces > Kit > Truck wreck, Bastion** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_RedHand.et`, slot **World > Traces > Kit > Truck wreck, the Red Hand** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_Haven.et`, slot **World > Traces > Kit > Truck wreck, the Haven** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_TruckWreck_Halcyon.et`, slot **World > Traces > Kit > Truck wreck, Halcyon** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_RoadPostRelic.et`, slot **World > Traces > Kit > Road post relic** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Crosses.et`, slot **World > Traces > Kit > Cross** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Sheets.et`, slot **World > Traces > Kit > Day 1 sheets** (WBS §4, Traces)
-- 2026-11-12 ee5f1f6: composition `Traces/RZ_Trace_Lantern_Lit.et`, slot **World > Traces > Kit > Lantern, lit** (WBS §4, Traces)
 - 2026-11-12 ee5f1f6: create `RZ_Sound_RadioHiss.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Radio hiss** (WBS §4, Traces)
 - 2026-11-12 ee5f1f6: create `RZ_Sound_GeneratorHum.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Generator hum** (WBS §4, Traces)
 - 2026-11-12 ee5f1f6: create `RZ_Sound_Dogs.et` (the plugin makes it; add the sound), slot **World > Traces > Kit > Dogs** (WBS §4, Traces)
@@ -54,8 +26,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 **From the cloud's merges of 2026-11-12**
 - 2026-11-12 2990171: open the notebook's sixth tab, `UI/layouts/ReforgerZ/RZ_SeasonPage.layout` (written as text), in Workbench, fix what it reports and set **UI > Season page** (WBS §4, UI; "Setting up the UI").
-- 2026-11-12 2990171: **Season > Story rules** (on by default) on the game mode's season settings (WBS §5).
-- 2026-11-12 34ab931: the settings object **World > Traces** (`m_TraceSettings`) on the game mode (WBS §5).
 - 2026-11-12 34ab931: Traces' Workbench spike, phase 0: the test atlas, decals on a door, the boards' fallback, the lit jars (WBS §4, "Traces: the Workbench spike (phase 0)"). Do it before the kit below.
 - 2026-11-12 34ab931: **World > Traces > Kit > Door marks atlas** (WBS §4, Traces).
 - 2026-11-12 34ab931: **World > Traces > Kit > Door marks overlays** (WBS §4, Traces).
@@ -64,14 +34,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 34ab931: **World > Traces > Kit > Door board, the Red Hand** (WBS §4, Traces).
 - 2026-11-12 34ab931: **World > Traces > Kit > Door board, Halcyon** (WBS §4, Traces).
 - 2026-11-12 34ab931: **World > Traces > Kit > Door board, residents** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Grave** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Pyre** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Candle jars** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, rescue** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, burned and other jobs** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, taken** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, sealed** (WBS §4, Traces).
-- 2026-11-12 34ab931: **World > Traces > Kit > Season mark, emptied** (WBS §4, Traces).
 
 **From the cloud's spawn screen and map key (2026-11-12)**
 
@@ -86,6 +48,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (PC): **Traces kit built as text** (36 compositions in `Prefabs/ReforgerZ/Traces/`, camp life's rules: empty root + RplComponent + Hierarchy, vanilla props as children; all load in Workbench) and **World > Traces > Kit** filled for every composition slot on `RZ_GameMode.et` (`m_TraceSettings` with `m_Kit`; Story rules and the rest left at their defaults). Stand-ins: the column cars are the S105, S1203 and blue UAZ static wrecks; the bus is the UAZ452 van wreck (vanilla has no bus); the trucks are the M923A1 (Bastion), Ural (Red Hand, Haven) and UAZ452 (Halcyon) wrecks; crosses and grave are a fence pole with a plank; the season marks are poles, planks, a blanket, notices and a flowerpot; no decals or plain mesh copies (scorch is a litter pile and logs; no casings, gas mask or bicycle). Not done: the door marks atlas and overlays and the five boards (the spike), and the five sound prefabs (they need recorded sounds). Please note in WBS (Traces).
 - 2026-11-12 (PC): **spawn screen works in Workbench play on Everon** (keyboard only: Down to pick, Enter to deploy): "Who you were" with the 13 backgrounds (5 locked), the panel, the start town picker and Deploy; deploying as the Mechanic spawned at the back-road car wreck. 0 script exceptions. **UI > Spawn row layout**, **Map legend layout** and **Season page** set; `m_sMapKeyPage` removed (`m_UISettings` was there all along). `RZ_RadioCallAction` added to the wind-up radio; `RZ_PlayerEffectsComponent` was already on the controller.
 - 2026-11-12 (PC): **map legend works**: bottom-left, fades when zoomed in, I hides it, and the map's ReforgerZ icons show. **It overlaps vanilla's bottom-left widgets** (the map's key hints column and the scale bar at about x 0-330, y the bottom 120 px): please move it up or right of them.
 - 2026-11-12 (PC): Everon checkpoints confirmed in play: `Perimeter: 6 road checkpoints (from roads).` with six `Perimeter checkpoint at grid ...` lines (101-13, 114-109, 39-107, 74-95, 95-53, 46-113). Barriers not looked at yet.

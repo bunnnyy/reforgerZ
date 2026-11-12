@@ -1,0 +1,87 @@
+GenericEntity {
+ ID "0C9FA2AD458879BB"
+ components {
+  RplComponent "{BCDB6EA7952A4578}" {
+  }
+  Hierarchy "{2C3B56F000439A33}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{C8A5C92E74ABB5EA}Prefabs/Props/Civilian/PicnicTable/PicnicTable_01.et" {
+   ID "EE36A729628BEBB8"
+   components {
+    Hierarchy "{C7AD67912CEBF824}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "412BB1CBF6DCADF7"
+   components {
+    Hierarchy "{208C4F17B933388C}" {
+    }
+   }
+   coords -0.5 0 1.1
+   angles 0 180 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "F36C4C2571298FE1"
+   components {
+    Hierarchy "{0BD2B9857BF1E7F1}" {
+    }
+   }
+   coords 0.5 0 1.1
+   angles 0 180 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "08A1C8B68005D3D5"
+   components {
+    Hierarchy "{D6C143CA99DEDF80}" {
+    }
+   }
+   coords -0.5 0 -1.1
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "91C86A2E7A9F1330"
+   components {
+    Hierarchy "{AEC4BE42275DD263}" {
+    }
+   }
+   coords 0.6 0 -1.2
+   angles 0 30 0
+  }
+  GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
+   ID "D5EBF0F148B33710"
+   components {
+    Hierarchy "{51DF5AC3FE243D36}" {
+    }
+   }
+   coords -0.3 0.78 0.2
+  }
+  GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
+   ID "2621AD1CE8A6F5F8"
+   components {
+    Hierarchy "{8AA482994BC83495}" {
+    }
+   }
+   coords 0.3 0.78 -0.2
+  }
+  GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
+   ID "FD454AE401DC44BC"
+   components {
+    Hierarchy "{74184BD9FFBD2C1B}" {
+    }
+   }
+   coords 0 0.78 0
+  }
+  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+   ID "7BB15F0456128376"
+   components {
+    Hierarchy "{61DADFF34A1794C3}" {
+    }
+   }
+   coords 0.8 0.78 0
+  }
+ }
+}

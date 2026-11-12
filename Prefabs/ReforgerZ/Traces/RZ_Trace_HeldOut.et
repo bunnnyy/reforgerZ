@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "922BE0387338AF31"
+ components {
+  RplComponent "{E3D0EE77346082E6}" {
+  }
+  Hierarchy "{C23050F5283A176A}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "502FAED18A2BD70B"
+   components {
+    Hierarchy "{8B48D97779D1B22F}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 0 70
+  }
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "10636CF9D5E9D571"
+   components {
+    Hierarchy "{9208F0E40E257D55}" {
+    }
+   }
+   coords 0.8 0 0.1
+   angles 0 10 65
+  }
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "73F205B7CCD77F69"
+   components {
+    Hierarchy "{D32B45EB0BD5CB8D}" {
+    }
+   }
+   coords -0.9 0 0.3
+  }
+ }
+}

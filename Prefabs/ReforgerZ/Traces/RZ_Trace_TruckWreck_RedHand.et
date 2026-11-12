@@ -1,0 +1,29 @@
+GenericEntity {
+ ID "23BC66751EB95351"
+ components {
+  RplComponent "{B165E7D7A2317E44}" {
+  }
+  Hierarchy "{6EA22176822E37F0}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et" {
+   ID "6B2B6186E942C606"
+   components {
+    Hierarchy "{85F12BD7B16EAB39}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{E4416C4C6938BEEE}Prefabs/Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et" {
+   ID "5EAD48D88C9E2A8D"
+   components {
+    Hierarchy "{09DC49B7886BAE92}" {
+    }
+   }
+   coords 2.3 0 -1.2
+   angles 0 35 0
+  }
+ }
+}

@@ -1,0 +1,52 @@
+GenericEntity {
+ ID "26A77A43C5FAE71D"
+ components {
+  RplComponent "{C9166F8A7F71A187}" {
+  }
+  Hierarchy "{B7E22C6B16756614}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "381B453E6D0B5871"
+   components {
+    Hierarchy "{F4A98EBEAA31CD99}" {
+    }
+   }
+   coords 0.0 0 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "C6D9E19F7A7ADAF0"
+   components {
+    Hierarchy "{2A3E349CAC61736D}" {
+    }
+   }
+   coords 0.7 0 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "9CA131C8C9E05AB0"
+   components {
+    Hierarchy "{646D33438CEB60B3}" {
+    }
+   }
+   coords 1.4 0 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "0302CAF31BAB57D4"
+   components {
+    Hierarchy "{18B00FD3C70CB014}" {
+    }
+   }
+   coords 2.1 0 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "7B4DA3EF7DC3E74F"
+   components {
+    Hierarchy "{F86B8D40753834F3}" {
+    }
+   }
+   coords 2.8 0 0
+  }
+ }
+}

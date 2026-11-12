@@ -1,0 +1,75 @@
+GenericEntity {
+ ID "F1090A804DBF3196"
+ components {
+  RplComponent "{F8C101E791A0DF82}" {
+  }
+  Hierarchy "{55766DCE3A778018}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "34F0BBFEC3DF3F47"
+   components {
+    Hierarchy "{FE48DFC61E11EFAD}" {
+    }
+   }
+   coords -1.5 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "4B2280843B1526D8"
+   components {
+    Hierarchy "{C768C68868FE2B69}" {
+    }
+   }
+   coords -0.9 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "727AB62F1DDF2611"
+   components {
+    Hierarchy "{46A1E33BE78BB2DA}" {
+    }
+   }
+   coords -0.3 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "2145E44A5E40C8AA"
+   components {
+    Hierarchy "{E82CF11C10C0A962}" {
+    }
+   }
+   coords 0.3 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "2D48EE7FFA10D109"
+   components {
+    Hierarchy "{28654A5DC007F1AB}" {
+    }
+   }
+   coords 0.9 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "F13B0248383A3D39"
+   components {
+    Hierarchy "{FB093D3779AE0C51}" {
+    }
+   }
+   coords 1.5 0 0
+   angles 0 180 0
+  }
+  GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
+   ID "3FDFD6B70FBED683"
+   components {
+    Hierarchy "{68F7195363474184}" {
+    }
+   }
+   coords 2.4 0 0.5
+   angles 0 -30 0
+  }
+ }
+}

@@ -1,0 +1,47 @@
+GenericEntity {
+ ID "02B41DFB6DFF7991"
+ components {
+  RplComponent "{1D63678B3066F18D}" {
+  }
+  Hierarchy "{401C6185C1628820}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "1AD22F168E47E84F"
+   components {
+    Hierarchy "{6F53E358BAF9100E}" {
+    }
+   }
+   coords 0 0 1.2
+  }
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "BD8B65D920250D41"
+   components {
+    Hierarchy "{578D18F26CC0F4F3}" {
+    }
+   }
+   coords -1.1 0 0.6
+   angles 0 55 0
+  }
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "2FE48BDF4041BC92"
+   components {
+    Hierarchy "{1B7B7F3D8E3267BC}" {
+    }
+   }
+   coords 1.1 0 0.6
+   angles 0 -55 0
+  }
+  GenericEntity : "{1BC300CA46DEDA79}Prefabs/Structures/Signs/Warnings/SignNoEntryBothDir_01_pole.et" {
+   ID "9A2A453E852F594E"
+   components {
+    Hierarchy "{38702C0430089BC4}" {
+    }
+   }
+   coords 1.8 0.2 -0.5
+   angles 0 30 88
+  }
+ }
+}

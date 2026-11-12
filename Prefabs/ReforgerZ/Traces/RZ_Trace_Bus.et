@@ -1,0 +1,20 @@
+GenericEntity {
+ ID "B4C2D5F8F926142D"
+ components {
+  RplComponent "{A0BA3B670F929784}" {
+  }
+  Hierarchy "{A5B483C43E95C3FB}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{56FFF0C990358ED2}Prefabs/Props/Wrecks/UAZ452_wreck/UAZ452_wreck_static.et" {
+   ID "1F3518218C05832C"
+   components {
+    Hierarchy "{BF3A8FB8CCE78F1D}" {
+    }
+   }
+   coords 0 0 0
+  }
+ }
+}

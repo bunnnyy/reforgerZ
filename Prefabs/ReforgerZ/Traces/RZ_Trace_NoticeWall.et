@@ -1,0 +1,78 @@
+GenericEntity {
+ ID "35819C784BA9B74F"
+ components {
+  RplComponent "{0F8F79C883E0BC11}" {
+  }
+  Hierarchy "{82B4CAE12D875D24}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "19B956D11702A696"
+   components {
+    Hierarchy "{266FF17A514137AE}" {
+    }
+   }
+   coords -0.8 0 0
+  }
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "B4473293C446F747"
+   components {
+    Hierarchy "{50F9A9806E36E7F2}" {
+    }
+   }
+   coords 0.8 0 0
+  }
+  GenericEntity : "{986F38072A8DD563}Prefabs/Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et" {
+   ID "01A3DCB56B218751"
+   components {
+    Hierarchy "{A56BFAA9F400E458}" {
+    }
+   }
+   coords 0 1.3 0.06
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "3301365A0E0F7C13"
+   components {
+    Hierarchy "{921421E15431C7C5}" {
+    }
+   }
+   coords -0.5 1.35 0.1
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "5C1D69570058F077"
+   components {
+    Hierarchy "{A4D089D72E728920}" {
+    }
+   }
+   coords -0.2 1.4 0.11
+   angles 0 0 6
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "57D321DDCEC780C8"
+   components {
+    Hierarchy "{EF6A164A69F64049}" {
+    }
+   }
+   coords 0.1 1.33 0.12
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "97FBE69A78D65939"
+   components {
+    Hierarchy "{59D32E82267E648B}" {
+    }
+   }
+   coords 0.35 1.42 0.13
+   angles 0 0 -4
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "53C1F5AB4D76DD13"
+   components {
+    Hierarchy "{F83C6FBEA5601A09}" {
+    }
+   }
+   coords 0.6 1.36 0.14
+  }
+ }
+}

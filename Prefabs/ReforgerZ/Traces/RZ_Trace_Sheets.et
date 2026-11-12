@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "8920DB6E9783E763"
+ components {
+  RplComponent "{D38FA07B47CBB9CA}" {
+  }
+  Hierarchy "{E9ADDA77055BEC74}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "7B1A6F7DB27ADB27"
+   components {
+    Hierarchy "{BFF2A247422A0257}" {
+    }
+   }
+   coords 0 0.01 0
+   angles -90 20 0
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "696871A4B075CA4D"
+   components {
+    Hierarchy "{43E72ABAE4FDC254}" {
+    }
+   }
+   coords 0.35 0.01 0.2
+   angles -90 75 0
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "F89DE7013E22C3CC"
+   components {
+    Hierarchy "{9BE9CBAB4652407A}" {
+    }
+   }
+   coords -0.3 0.01 0.4
+   angles -90 140 0
+  }
+ }
+}
