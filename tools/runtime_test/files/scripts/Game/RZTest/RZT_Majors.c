@@ -1,5 +1,5 @@
-// Test-only (not part of the mod): the majors' phase of the runtime test (designs/PLAN.md, "The
-// runtime test grows with the phases"). The majors are off through the mission and questline phases
+// Test-only (not part of the mod): the majors' phase of the runtime test (docs/WORKBENCH_SETUP.md,
+// the runtime test). The majors are off through the mission and questline phases
 // (so The Book and Await Relief run there as their built questlines, and nothing starts by itself),
 // then this phase switches them on and:
 // 1. starts each major and walks every act through its default (data), printing each act and the

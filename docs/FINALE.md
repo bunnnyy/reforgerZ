@@ -617,7 +617,7 @@ as Force, until then as Tally. Under Bastion, Command (and for the Red Hand's ca
 the book, `book.last` 5) **Bastion's checkpoint** stands on the lab's main road 200 m out: a rival
 route's carrier within 30 m is searched (passing as Bastion: waved through; else a 90 s wait while
 the cold clock runs; leaving early: +10 Bastion Infamy). Questlines hear **the room changing holder**
-(`RZ_Questline.OnStandHolder`). The journal's finale page is the desk's *How do things stand?*; the
+(`RZ_Questline.OnStandHolder`). The journal's finale page is a row of its own while the routes are open, *The finale*, its detail the desk's *How do things stand?*; the
 lock card is a screen when **Dialogue > Trees** is on (the commit node), a notice when it's off.
 
 **The majors' remaining inputs** are read where each check is made: the page ease (above); the Haven's

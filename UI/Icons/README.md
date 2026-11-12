@@ -19,7 +19,7 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/faction_redhand.svg" width="32"> | `faction_redhand` | The Red Hand: a red handprint slapped on at an angle, still running. Standing screen, notice cards |
 | <img src="src/faction_halcyon.svg" width="32"> | `faction_halcyon` | Halcyon: the plague doctor ("the beaks"), hat, goggle and long beak. Standing screen, notice cards, the journal |
 | <img src="src/faction_infected.svg" width="32"> | `faction_infected` | The infected and the outbreak: a virion with a bite taken out of it. Outbreak stage, infected markers, hazard signage |
-| <img src="src/faction_longtable.svg" width="32"> | `faction_longtable` | The Long Table (not a faction, and a secret): a preserving jar labelled only "9". The journal and the hall of fame once a player has found the family out, and scratched at the farm (planned). Never on the map or the standing screen |
+| <img src="src/faction_longtable.svg" width="32"> | `faction_longtable` | The Long Table (not a faction, and a secret): a preserving jar labelled only "9". Its emblem in the set only: no screen shows it, as the Long Table is told by absence. Never on the map or the standing screen |
 
 ## Standing tiers (8)
 

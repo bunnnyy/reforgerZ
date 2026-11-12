@@ -10,8 +10,8 @@ every line of text are in [WRITING.md](WRITING.md).
 menu and input config overrides are built. In Workbench play the HUD works: the styled notice
 cards, the stealth visibility bars and the noise meter show. The notebook, the talk screen, the
 reader, the car repair screen, the shop screen, the subtitles and notice pacing are written (their
-layouts as text) and compile, but haven't been played; neither has the spawn screen, and the map
-icons and the map key aren't seen in play yet ([Built and planned](#built-and-planned)).
+layouts as text) and compile, but haven't been played. The spawn screen, the map key and the map's
+icons are seen in Workbench play with the keyboard; pad not yet ([Built and planned](#built-and-planned)).
 
 ## Art direction
 
@@ -39,7 +39,7 @@ trefoil:
 | The Red Hand | A red handprint slapped on at an angle, fingers splayed, the paint still running: the hand the boss painted over Rudi's marks on the shutter ([LORE.md](LORE.md#the-red-hand)). Deliberately not an upright heraldic hand |
 | Halcyon | The plague doctor: a hooded head with a brimmed hat, one goggle and a long beak, bowed politely. The Zone calls Halcyon's people "the beaks" ([LORE.md](LORE.md#halcyon)) |
 | The infected | A virion, slightly out of round, its spikes ending in knobs, with a bite taken out of it |
-| The Long Table | A preserving jar with a cloth tied over it, labelled only "9". The family labels its jars by the day, not by what's in them, and Day 9 was the first soup ([LORE.md](LORE.md#the-long-table)). It isn't a faction and it's a secret, so the mark is never on the map or the standing screen: it's for the journal and the hall of fame once a player has found the family out, and scratched somewhere at the farm (planned: no script uses it yet) |
+| The Long Table | A preserving jar with a cloth tied over it, labelled only "9". The family labels its jars by the day, not by what's in them, and Day 9 was the first soup ([LORE.md](LORE.md#the-long-table)). It isn't a faction and it's a secret, so no screen shows the mark: the Long Table is told by absence ([TRACES.md](TRACES.md#the-long-table-absence)). It's the family's emblem in the set and on the icon sheet only |
 
 **Type.** Headings in a condensed bold, upper case with wide spacing (stencil-like); timers,
 distances and channel names in a mono face; body text in a plain sans. In the game the layouts
@@ -84,14 +84,14 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Notebook: Radio | `radio_log.png` | What you heard and were told this life, newest first: the broadcast, open channels and cracked secure channels, each in its voice, and the mission and world notices; six filters (All, Open channel, Secure, Broadcast, Missions, World) | `RZ_RadioPage` | Page built, not checked in play; the channel list is static |
 | Notebook: Hall of fame | — | This season's records and names, all time, and the last seasons in a few lines ([DESIGN.md](DESIGN.md#seasons)) | `RZ_HallPage` | Page built, not checked in play; no mockup |
 | Notebook: The season | — | The four majors as they stand (act, rule or stance, leans, any last call) and each ending told; in the epilogue, *As the Zone tells it* (the cure line and the beats you've met, all of them in processing) and *And you* with what's unfinished ([QUESTLINES.md](QUESTLINES.md#the-seasons-lines-and-the-season-tab), [EPILOGUE.md](EPILOGUE.md#carriers)) | `RZ_SeasonPage` | Page built, not checked in play; no mockup |
-| The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, where you start, and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too), compiles, not checked in play; **UI > Spawn row layout** not set yet, so vanilla's deploy menu still opens |
+| The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, where you start, and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
 | Talk | `talk.png` | A person's name and who they are, what they say in large type, your replies with what each needs ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
 | Subtitles | `hud.png` | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | Car repair | `car_repair.png` | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
-| The map | `map_legend.png` | The marker icons on the vanilla map, per player, and the map key: a compact legend in the bottom-left, shown zoomed out and fading as you zoom in ([below](#the-map)) | `RZ_MapIconsUI` | Icon layout set, not seen on the map in play yet; the legend's layout built as text, not set yet |
+| The map | `map_legend.png` | The marker icons on the vanilla map, per player, and the map key: a compact legend in the bottom-left, shown zoomed out and fading as you zoom in ([below](#the-map)) | `RZ_MapIconsUI` | Icon layout and **UI > Map legend layout** set; the icons and the legend seen in Workbench play with the keyboard (it fades as you zoom in, I hides it); pad not yet |
 
 The notice board isn't a notebook tab: it opens when you read a safehouse board, and Esc, B or
 the close button close it. Left and right put a ready-made note in its box and A pins it up, so
@@ -129,7 +129,8 @@ questline icon of its own.
 
 Notice cards come **a few at a time, by importance**: at most **UI > Notice cards at once** (2) on
 screen, a new one at most every **Gap** (2 s). Waiting ones queue most important first, then
-oldest first.
+oldest first. Each card comes in with vanilla's own hint sound (`SCR_SoundEvent.HINT`), the one the
+vanilla hint it replaces plays.
 
 | Priority | Means | Examples |
 |---|---|---|
@@ -171,7 +172,7 @@ map key isn't a tab: it's on the map ([The map](#the-map)).
 
 | Open it | Keyboard and mouse | Gamepad / console |
 |---|---|---|
-| A key | **N** (`RZ_OpenNotebook`) | — |
+| A key | **N** (`RZ_OpenNotebook`) | **View + RB** |
 | The pause menu | Esc, then **Notebook** | Start, then **Notebook**, A |
 | The notebook item | In the inventory, take it into your hand | The same, or from a quick slot |
 
@@ -226,6 +227,17 @@ journal has one row of kind DOORS (the puzzle icon, `mission_puzzle`; its id `-3
 "Read on doors", "N read" where a job's time left goes, the newest line as its brief; its detail lists
 the last 12 lines, newest first, each with the town and the day. It goes with the life.
 
+**The finale page.** While the cure's routes are open ([FINALE.md](FINALE.md#the-gate)), the journal
+has one row of kind FINALE (the lab icon, `marker_lab`; its id `-400000`): the title "The finale",
+"How things stand" where a job's time left goes, the lab's readout as its brief; its detail is the
+page a desk's *How do things stand?* gives (`RZ_CureFinale.PageFor`: the readout by faction, the
+route's worth, your route, its pact and things, or what you'd bring, and the seal). Lock counts are
+never shown.
+
+**The journal's order.** The server sends the jobs in each player's own order
+(`RZ_MissionReasons.OrderScore`, [DESIGN.md](DESIGN.md#story-blocks)): near first, then started by a
+reason, then from a leader they helped; the rows after them keep their place.
+
 **Door marks as decals.** With **World > Traces > Door drawing** on *Decals* and the kit's atlas set,
 the HUD's update (`RZ_HudDisplay`) also draws the marked doors near you as decals on their walls
 (`RZ_DoorMarkClient`, every 2 s, within 70 m), from a short list the game mode replicates. Nothing to
@@ -246,7 +258,7 @@ to the right of the replies.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
-| Choose | up/down, or **1–7** (`RZ_Reply1`–`7`) to say one at once | D-pad or left stick |
+| Choose | up/down, or **1–7** (`RZ_Reply1`–`7`) to say one at once | D-pad or left stick, or LT/RT + D-pad to say one at once ([Controllers](#controllers)) |
 | Say it | Enter, or click | A |
 | Leave | Esc | B |
 | Read more of a long line | Q/E, or the wheel | LB/RB |
@@ -475,7 +487,9 @@ contracts are never on it. With **UI > Map icon layout** set, the vanilla text m
 events and the lab are off; without it, the layer does nothing and those markers stay.
 
 **The map key** sits on the map, not in the notebook: a compact legend in the bottom-left corner,
-inside the safe area (`RZ_MapLegend.layout`, **UI > Map legend layout**; it needs the icon layer).
+inside the safe area and 190 px up, above vanilla's own bottom-left widgets (the map's key hints and
+the scale bar, about the first 330 px across and the bottom 120 px) (`RZ_MapLegend.layout`, **UI > Map
+legend layout**; it needs the icon layer).
 It names what the icons mean in two columns, *Who holds what* (stronghold, outpost, Haven
 safehouse, Halcyon's lab) and *The world* (world event, sealed checkpoint, power station, radio
 station, a pack's ground), each with its icon in the colour the map draws it, and says the colour
@@ -503,10 +517,10 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 
 | Action | Keyboard | Gamepad | Context |
 |---|---|---|---|
-| `RZ_OpenNotebook` | N | none: the pause menu's **Notebook** button, or the notebook item | `IngameContext` |
+| `RZ_OpenNotebook` | N | View + RB (also the pause menu's **Notebook** button, or the notebook item) | `IngameContext` |
 | `RZ_RadioFilter` | F | X | `MenuContext` |
 | `RZ_BoardClear` | Delete | X | `MenuContext`: the notice board's Clear, server admins only |
-| `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | none: the D-pad and A pick a reply | `MenuContext` |
+| `RZ_Reply1` … `RZ_Reply7` | 1 … 7 | LT + D-pad up, right, down, left for 1–4; RT + D-pad up, right, down for 5–7 (the D-pad and A also pick the focused reply) | `MenuContext` |
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
 | `RZ_MapLegend` | I | Y | `MapContext`: show or hide the map key on the full-screen map |
@@ -520,8 +534,13 @@ pad and a console. The prompt is the base game's hint with its timer ("Something
 ours. The stagger and the knockdown have no prompt, only a line.
 
 N is free in play (vanilla uses it only in the group menu and the map's pencil tool, other
-contexts). The pad has no free button in play, so Start (the pause menu) and the notebook item are
-its way into the notebook. X is free in the board menu, so the radio filter and the board's Clear
+contexts). The pad has no free single button in play, so the notebook is a combo, View + RB (Start's
+pause menu and the notebook item reach it too). The combos are chosen to miss vanilla's: vanilla
+pairs View (the map on its own) with the D-pad (weapon groups), X (the group menu), Y (the editor), A
+(hints), B (tasks) and Menu (the scoreboard), never with RB; and the triggers in a menu only move
+between pages (`MenuNavLeft`, `MenuNavRight`), which the talk screen doesn't use, so LT and RT with
+the D-pad say a reply at once there (the D-pad also moves the focus, harmlessly: the reply is picked
+by its number). Not yet checked with a pad. X is free in the board menu, so the radio filter and the board's Clear
 share it, each only in its own screen.
 
 **The check** (done in the files; not yet played with a pad, the VERIFY list's UI part):
@@ -629,9 +648,9 @@ reputation grid is filled in by code (`RepCell_<fame band>_<infamy band>`).
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and the shop). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer and the map key on the map, styled notices with the vanilla fallback |
-| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop and spawn screens' and the map key's written as text; the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop and spawn screen presets; N, 1–7, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, all but the map icon layout. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
-| Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter |
-| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the map icon layer (the map config override and **UI > Map icon layout** are set) and the map key (its layout is written, **UI > Map legend layout** not set yet); the subtitles; mouse clicks and the pad; the notice board menu and its ready-made notes; the chat commands; the spawn screen, its place picker and its side of locked backgrounds (**UI > Spawn row layout** not set yet; [above](#the-spawn-screen)) |
+| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and the shop). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the journal's errand rows and per-row detail), the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop and spawn screens' and the map key's written as text; the icon atlas and the `RZ_Icons` imageset; the car picture's PNG (to import: **UI > Car picture** is empty); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop and spawn screen presets; N, 1–7, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
+| Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons |
+| Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing; the notebook, its pages, the pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
 | Not done | Images for the icons the scripts never swap (the radio channel list, the HUD's radio, noise and paused icons): they draw as flat squares in their colour |
-| Planned | A sound on new notices; mockups of the notice board and the hall of fame; the Long Table's mark in the journal and the hall of fame once a player has found the family out, and at the farm; the cure finale's own screens: the journal's finale page and the lock card as a screen (today they're a desk's "How do things stand?" and the readout under each route's journal entry, and the lock card as a notice or the [Point of no return] node: [FINALE.md](FINALE.md#simplified-and-not-built-yet)) |
+| Planned | Mockups of the notice board and the hall of fame; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |

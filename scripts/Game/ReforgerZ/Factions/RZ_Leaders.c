@@ -498,6 +498,7 @@ class RZ_Leaders
 	protected static const float DESPAWN_MARGIN = 50;
 	protected static const float GREET_RADIUS = 15;
 	protected static const float GREET_COOLDOWN = 600;
+	protected static const float THREAD_RADIUS = 300;	// a leader's holding for errands' threads: the nearest of theirs this close
 	protected static const float DANGER_INTERVAL = 1800;
 	protected static const float DRIFT_INTERVAL = 3600;
 	protected static const float DRIFT_WINDOW = 3600;
@@ -2740,6 +2741,11 @@ class RZ_Leaders
 			text = RZ_LeaderVoice.Greeting(rng, l.m_eFaction) + "\n" + News(l, player.GetOrigin());
 		}
 
+		// The first line: what this player did for the people here, said back once (errands' threads)
+		string doneHere = ErrandThread(l, playerId);
+		if (!doneHere.IsEmpty())
+			text = doneHere + "\n" + text;
+
 		// What the faction needs right now, and now and then a big moment they remember
 		if (m_GM.GetFactionLife())
 		{
@@ -2761,6 +2767,27 @@ class RZ_Leaders
 			text += string.Format("\n%1 lowers their voice. \"I might have something for you. Ask.\"", l.m_sShort);
 
 		m_GM.NotifyPlayer(playerId, l.GetHeader(), text);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The newest errand this player did for the people at the leader's house or holding, as a line
+	//! (RZ_Errands.ThreadLineFor, each thread said back once); "" if none.
+	protected string ErrandThread(RZ_Leader l, int playerId)
+	{
+		if (!m_GM.GetErrands())
+			return "";
+
+		if (l.m_iSafehouse >= 0)
+			return m_GM.GetErrands().ThreadLineFor(playerId, -1, l.m_iSafehouse, true);
+
+		RZ_Holding h;
+		if (m_GM.GetTerritory())
+			h = m_GM.GetTerritory().FindHolding(l.m_eFaction, l.m_vPos, THREAD_RADIUS);
+
+		if (!h)
+			return "";
+
+		return m_GM.GetErrands().ThreadLineFor(playerId, h.m_iId, -1, true);
 	}
 
 	//------------------------------------------------------------------------------------------------

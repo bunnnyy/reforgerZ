@@ -207,8 +207,8 @@ class RZ_MajorAct
 
 //------------------------------------------------------------------------------------------------
 //! A tally kept in a run's flags (docs/DESIGN.md, "Votes"): voters with a lean each, options
-//! tabled, one sway per player (by identity) per vote, the tally with a tie-break. Votes stay
-//! tallies: errands and their memory never move one.
+//! tabled, one sway per player (by identity) per vote, the tally with a tie-break. Errand memory
+//! moves one voter more only with Majors read errand memory on (RememberedErrands).
 //!   RZ_QuestVote v = new RZ_QuestVote(run, "first");
 //!   int i = v.AddVoter("{head0}", RULE_POT, leaderId);
 //!   v.Sway(gm, playerId, i, RULE_POT);
@@ -354,7 +354,29 @@ class RZ_QuestVote
 
 		m_Run.SetFlag(m_sKey + "s." + ident, 1);
 		SetLean(i, option);
+		RememberedErrands(gm, playerId, ident, i, option);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Missions > Errands > Majors read errand memory (off by default): a head whose house remembers
+	//! this player's errands (a thread there, RZ_Errands.ThreadLineFor) brings one more voter round
+	//! to the same option, once per head per season (the run's flags last the season).
+	protected void RememberedErrands(RZ_GameModeComponent gm, int playerId, string ident, int i, int option)
+	{
+		if (!RZ_ErrandSettings.Get().m_bMajorsReadMemory || !gm.GetErrands() || !gm.GetLeaders())
+			return;
+
+		RZ_Leader head = gm.GetLeaders().Get(VoterLeader(i));
+		if (!head || head.m_iSafehouse < 0)
+			return;
+
+		string key = string.Format("errmem.%1.%2", ident, head.m_iId);
+		if (m_Run.Flag(key) == 1 || gm.GetErrands().ThreadLineFor(playerId, -1, head.m_iSafehouse).IsEmpty())
+			return;
+
+		m_Run.SetFlag(key, 1);
+		Swing(-1, option, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------

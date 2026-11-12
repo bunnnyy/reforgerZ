@@ -15,8 +15,8 @@ A first pass is done, in Workbench 1.9 on Arland and Everon: the repo holds the 
 (the quartermasters' and the notebook's actions among them), camp life's 49 compositions, its
 smart-action waypoint and six kits, the faction and loadout managers, the worlds (Everon, the main
 one, and Arland) and their scenarios, and most of the UI. Many prefabs are built on stand-ins
-([what that means](#stand-in-bases)), and the spawn screen and the map key aren't set up yet
-([the UI](#setting-up-the-ui)); the map's icons and the car picture are. This doc says how it was done, what's left, and
+([what that means](#stand-in-bases)). The UI is set up ([the UI](#setting-up-the-ui)): the spawn
+screen, the map key and the map's icons are seen in Workbench play with the keyboard; pad not yet. This doc says how it was done, what's left, and
 how to do it again on another map.
 
 Work through the sections in order:
@@ -830,6 +830,7 @@ still to do:
 | `RZ_Lab.et` | A vanilla US tent | It can be destroyed (1000 HP) |
 | The packs' signs | Kill sites: suitcases, a UAZ tyre, a folded blanket; the old lair: a bunk-bed mattress; the marks: a stone verge post (the Haven), the minefield sign (Bastion), the FIA graffiti decal (the Red Hand), a no-entry sign (Halcyon) | Close enough to read; swap in better props when there are any |
 | Camp life's compositions | Vanilla props only: the barrel fire is `Particles/Campfire_burning.et`, the cooler a small crate and an autoclave drum, Halcyon's tent `TentSmall_03_white` with a medical table, the civilian tents `TentSmall_02_red` and `TentBig_01_orange` | No new meshes or decals (the red hand, the bear, the plague doctor, chalk, the ball, vegetables, boots, the axe, tubes): those spots are left out or are a plank |
+| Traces' kit: the 36 compositions in `Prefabs/ReforgerZ/Traces/` (built as text, all load in Workbench; **World > Traces > Kit** filled for every composition slot) | Vanilla props under an empty root with an `RplComponent`, camp life's rules. The column's cars are the S105, S1203 and blue UAZ static wrecks; the bus is the UAZ452 van wreck (vanilla has no bus); the trucks are the M923A1 (Bastion), Ural (the Red Hand, the Haven) and UAZ452 (Halcyon) wrecks; crosses and the grave are a fence pole with a plank; the season marks are poles, planks, a blanket, notices and a flowerpot | No decals or plain mesh copies: the scorch is a litter pile and logs, and there are no casings, gas mask or bicycle. A bus and real crosses are the fix. Not done: the door marks atlas and overlays and the five boards (the spike, [below](#traces-the-workbench-spike-phase-0)), and the five sound prefabs (they need recorded sounds) |
 | Halcyon's shop | A clean dressing (Known), a saline bag and a tourniquet (Trusted) stand in for the antiseptic and the stim kit | Vanilla has no gas mask or stim |
 | Looks only | Five items share the aspirin bottle (sample, vet antiviral, fever suppressant, home remedy, tablets); six are food packets (antibiotics, car battery, spark plugs, the tripwire and spike trap kits, firecracker); the fog is white smoke; the Red Hand armband and Haven ribbon are knitted hats; the bus is a UAZ van | Real models, from a mod or your own. The manifest's `basePrefab` says what every other one is |
 
@@ -1058,7 +1059,7 @@ edit it there and run:
 | Command | Does |
 |---|---|
 | `py tools/camp_kit/build.py` | Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**, **Smart action waypoint**) and the composition slots of **World > Traces > Kit** |
-| `py tools/camp_kit/render.py` | Draws [designs/camp_plans.html](../designs/camp_plans.html): a top-down plan of every piece, a camp concept per faction and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
+| `py tools/camp_kit/render.py` | Draws [tools/camp_kit/camp_plans.html](../tools/camp_kit/camp_plans.html): a top-down plan of every piece, a camp concept per faction and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
 
 A new prop needs its ResourceName: pass `--index` with the resource index the Workbench plugin
 **ReforgerZ: Write resource index** writes ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)).
@@ -1156,9 +1157,9 @@ wells, pumps or radios with actions).
 ### Setting up the UI
 
 Optional: without it every message is a vanilla hint, as before. How the UI works is in
-[UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 4
-and 6 are done in the repo (step 4's menus written as text: check them in Workbench, 4a); 5 and
-6's map key aren't. The layouts are in `UI/layouts/ReforgerZ/`.
+[UI.md](UI.md); the widget trees and names are in [UI/LAYOUTS.md](../UI/LAYOUTS.md). Steps 1 to 6
+are done in the repo (step 4's menus written as text: check them in Workbench, 4a). The layouts are
+in `UI/layouts/ReforgerZ/`.
 
 1. **The feed** (done). `Prefabs/Characters/Core/RZ_PlayerController.et` inherits vanilla
    `DefaultPlayerControllerMP.et` and adds `RZ_PlayerUIComponent` (vanilla controllers already
@@ -1172,11 +1173,11 @@ and 6 are done in the repo (step 4's menus written as text: check them in Workbe
 4. **The menus** (done as text; not checked in play yet). The notebook's frame
    (`RZ_NotebookMenu.layout`), its five page layouts, the notice board's layout and the two row
    layouts are built, with Buttons for the mouse; **UI > Mission row layout**, **Radio row
-   layout** and the five **page** layouts are set on `RZ_GameMode.et`. Two overrides of vanilla
-   configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf` the presets,
-   `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)). **UI > Board
-   menus** is still off (the board is a notice and notes are written with `/note`): turn it on
-   once the notice board's menu works.
+   layout** and the five **page** layouts (the season page too) are set on `RZ_GameMode.et`. Two
+   overrides of vanilla configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf`
+   the presets, `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)).
+   **UI > Board menus** is on by default, so reading a safehouse board opens its menu; turn it off
+   only if the menu fails in play (the board is then a notice and notes are written with `/note`).
 
    **4a. Check the notebook in Workbench** (the author's steps; nothing here needs the editor
    unless a check fails):
@@ -1205,22 +1206,23 @@ and 6 are done in the repo (step 4's menus written as text: check them in Workbe
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
       it's there.
-5. **The spawn screen** (to do: written as text). Our own screen replaces vanilla's deploy menu
-   ([UI.md](UI.md#the-spawn-screen)). `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout` are written,
-   and `Configs/System/chimeraMenus.conf` has the `RZ_SpawnMenu` preset. Open both layouts in the
-   layout editor once (so Workbench registers their GUIDs), then set **UI > Spawn row layout** to
-   `RZ_SpawnRow.layout`: from then on the screen opens instead of vanilla's deploy menu. Nothing
+5. **The spawn screen** (done; seen in Workbench play on Everon with the keyboard, pad not yet).
+   Our own screen replaces vanilla's deploy menu ([UI.md](UI.md#the-spawn-screen)).
+   `RZ_SpawnMenu.layout` and `RZ_SpawnRow.layout` are written, `Configs/System/chimeraMenus.conf`
+   has the `RZ_SpawnMenu` preset, and **UI > Spawn row layout** is set to `RZ_SpawnRow.layout`, so
+   the screen opens instead of vanilla's deploy menu. Nothing
    else changes: keep `RZ_GameMode.et`'s `SCR_MenuSpawnLogic` with **Forced faction** `SURV` (its
    deploy-menu handler is what opens the screen; there's no faction or group step), and locked
    loadouts are refused by the server (`UI/RZ_LoadoutLock.c`, **UI > Lock loadouts**). Empty, or
    with the preset missing, vanilla's deploy menu opens as before.
-6. **The map** (done; not seen in play yet). `Configs/Map/MapFullscreen.conf` overrides vanilla's
-   full-screen map config (same GUID, `{1B8AC767E06A0ACD}`) with `RZ_MapIconsUI` added to its
-   `m_aUIComponents`, and **UI > Map icon layout** is set to `RZ_MapIcon.layout`, which turns the
-   vanilla text markers for world events and the lab off. **The map key** (to do): open
-   `RZ_MapLegend.layout` (written as text) in the layout editor once, then set **UI > Map legend
-   layout** to it. It needs no config of its own: `RZ_MapIconsUI` makes it in the map's bottom-left,
-   and the `RZ_MapLegend` input (**I**, pad **Y**) is in `chimeraInputCommon.conf`'s `MapContext`.
+6. **The map** (done; the icons and the map key seen in Workbench play on Everon with the keyboard,
+   pad not yet). `Configs/Map/MapFullscreen.conf` overrides vanilla's full-screen map config (same
+   GUID, `{1B8AC767E06A0ACD}`) with `RZ_MapIconsUI` added to its `m_aUIComponents`, and **UI > Map
+   icon layout** is set to `RZ_MapIcon.layout`, which turns the vanilla text markers for world
+   events and the lab off. **The map key**: **UI > Map legend layout** is set to
+   `RZ_MapLegend.layout`. It needs no config of its own: `RZ_MapIconsUI` makes it in the map's
+   bottom-left, and the `RZ_MapLegend` input (**I**, pad **Y**) is in `chimeraInputCommon.conf`'s
+   `MapContext`.
 
 Also to do: default images for the icons the scripts never swap (the legend icons and the like).
 Set each such `Image` from the imageset in the layout editor.
@@ -1278,7 +1280,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Backgrounds | Backgrounds (list) |  | Overrides; empty = the built-in 13. **Bite minutes** (60, once the bite takes; hardcore 40, casual 90) |
 | Cure | (top level) |  | Lab, sample, antidote prefabs; research per sample (1%), mission research (×0.75), **Cure pace** (0.3: about 45 days), **Pace by play** (12.5 player-hours a day: research ×(12.5 ÷ the last week's player-hours a day), ×0.25–×2.5, so 2 to 20 regulars all take about 45 days; 0 = off), **Lab research per day** (3%, real time; 0 = no limit), **Lab backlog days** (4, a backstop; full: samples refused, mission research lost; 0 = no cap), **Empty lab bonus** (0.25, on what fills the backlog to half a day of work), **Finale fallback** (1% a real day after a week at 90%, only with a finale questline) ([DESIGN.md](DESIGN.md#cure-research-and-the-seasons-end)) |
 | Missions | (top level) |  | Reward crate, mission item, drop points and the optional mission prefabs |
-| Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
+| Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
 | Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the "Most people helped" line (on), telemetry (30 min), debug log (off) |
 | Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3) |
 | Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
@@ -1645,9 +1647,10 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **110** lines with the tag, all in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
-lock). The Workbench plugin has none left: its real
+There are **111** lines with the tag, all in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 18 are in `UI/`: 13 of [the UI's](#the-ui-14), the loadout
+lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
+`Dialogue/`). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
 settled: the game scripts compile on 1.9, and each call was checked against the base game's script
 source (its doc comments and how vanilla uses it). Each marker left is a **behaviour** only a
@@ -1732,7 +1735,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (24)
+### Low risk: contained or cosmetic (25)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1753,6 +1756,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:952` | `GetBounds` is the model's box in the entity's own space and a vehicle's front is its local +Z | A fixable car's prompts float behind its boot instead of in front of its grille: use `boxMin[2] + inset` in `RZ_Util.FrontOf` |
 | `Core/RZ_Util.c:939` | `SCR_Global.TeleportPlayer` on the dedicated server moves the player (or their vehicle) for every client | Only after the cure: a player who walks into the kill zone isn't turned back, so the stood-down line can be walked through until the wipe. Check by walking to the edge in the epilogue |
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
+| `Zombies/RZ_Stealth.c:352` | a player runs at about 4 m/s and sprints at about 5.5 (measure both, and Bacon's run and sprint), so 2.6 and 5 m/s split walking, running and sprinting for visibility; the young's sprint is tuned about 10% faster than a sprinting player | Change `SPEED_WALK` and `SPEED_RUN` to the measured speeds, and the young's **Young sprint seconds** if they can't catch a sprinting player |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:47` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
@@ -2569,7 +2573,7 @@ when it happens)
   not a card; a Perimeter loudspeaker too. With **Subtitles** off, they're cards again.
 - [ ] Talk to a Trader wanderer: the talk screen opens with their name, what they say and the
   replies; "Buy supplies" shows its price and is dim with what it needs if you're short; pick a
-  reply with the D-pad and A, with 1–7, and with a click; B leaves. Their choice actions don't show
+  reply with the D-pad and A, with 1–7, with LT/RT + D-pad, and with a click; B leaves. Their choice actions don't show
   in the action menu while the screen is on. Walk off 6 m, or let an infected come close: it
   closes ("Not now!"). Do the same with a leader's "Talk to whoever's in charge" (Ask for work
   gives the job as a card, the leader's line in the screen) and a safehouse occupant.

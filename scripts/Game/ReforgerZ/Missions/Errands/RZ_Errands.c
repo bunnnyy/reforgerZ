@@ -2214,8 +2214,10 @@ class RZ_Errands
 
 	//------------------------------------------------------------------------------------------------
 	//! For a leader or a talk line at a holding or house (holdingId or houseIdx, the other -1): the
-	//! newest thing this player did for the people there, as a line; "" if nothing.
-	string ThreadLineFor(int playerId, int holdingId, int houseIdx)
+	//! newest thing this player did for the people there, as a line; "" if nothing. With `once`
+	//! (a leader's greeting), each thread is said back once, as errand givers say it; without (the
+	//! majors' sittings), it only reads.
+	string ThreadLineFor(int playerId, int holdingId, int houseIdx, bool once = false)
 	{
 		string place = "";
 		if (holdingId >= 0)
@@ -2223,7 +2225,7 @@ class RZ_Errands
 		else if (houseIdx >= 0)
 			place = RZ_Faults.HousePlace(houseIdx);
 
-		return ThreadLine(playerId, place, "", false);
+		return ThreadLine(playerId, place, "", once);
 	}
 
 	//------------------------------------------------------------------------------------------------

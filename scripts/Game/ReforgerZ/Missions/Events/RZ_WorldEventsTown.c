@@ -1,5 +1,5 @@
 //! World events that change a town or a region for a while: Fog Bank, Power Surge, Gas Station
-//! Fire, Burning Town, Tunnel Rats (docs/MISSIONS.md, "World events"). They reuse the systems
+//! Fire, Tunnel Rats (docs/MISSIONS.md, "World events"). They reuse the systems
 //! that own each effect: the environment (fog), the power grid and town memory (power), the
 //! fire system (one building at a time, never a whole town) and the zombie spawner.
 

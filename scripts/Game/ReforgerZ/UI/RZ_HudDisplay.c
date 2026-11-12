@@ -467,6 +467,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 			m_aCardStart.Insert(now);
 			m_aCardPriority.Insert(qp);
 			m_fLastCardAt = now;
+			CardSound();
 		}
 
 		RZ_UIW.Show(m_wRoot, "NoticeQueued", m_iToNotebook > 0);
@@ -552,6 +553,14 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_UIW.Show(m_wRoot, "SubtitlePanel", true);
 		float seconds = q.m_sText.Length() / Math.Max(1, settings.m_fSubtitleCps);
 		m_fSubUntil = now + Math.Clamp(seconds, settings.m_fSubtitleMin, Math.Max(settings.m_fSubtitleMin, settings.m_fSubtitleMax));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A new card's sound: vanilla's own hint sound (SCR_HintUIComponent plays the same event), so a
+	//! card sounds like the hint it replaces. Cards are paced, so this never stacks.
+	protected void CardSound()
+	{
+		SCR_UISoundEntity.SoundEvent(SCR_SoundEvent.HINT);
 	}
 
 	//------------------------------------------------------------------------------------------------

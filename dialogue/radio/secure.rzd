@@ -11,7 +11,7 @@ voice bastion
 
 node start
   say "Bastion, all stations. Roll at the shift change. Nothing heard from Command. Over."
-  > @word "Post four. Say again the word. Over." -> word | lost   check lie bastion 3
+  > @word "Post four. Say again the word. Over." -> word | lost   check lie bastion 3   truth tier:bastion>=trusted
   > @listen "Just listen." -> listen
   > @off "Switch off." -> hub
 
@@ -66,7 +66,7 @@ voice halcyon
 
 node start
   say "Lab, all field stations. Sample intake is below target. The director requests patience."
-  > @count "Station two. Say again the count." -> count | lost   check lie halcyon 2
+  > @count "Station two. Say again the count." -> count | lost   check lie halcyon 2   truth tier:halcyon>=trusted
   > @listen "Just listen." -> listen
   > @off "Switch off." -> hub
 

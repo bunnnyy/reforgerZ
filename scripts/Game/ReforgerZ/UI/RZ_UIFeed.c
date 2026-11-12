@@ -90,6 +90,7 @@ class RZ_UIFeed
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
 	static const int DOORS_ID = 300000;			// the one Read on doors row: -DOORS_ID (docs/TRACES.md)
+	static const int FINALE_ID = 400000;		// the one finale page row: -FINALE_ID (docs/FINALE.md)
 
 	protected static const int MAX_PAYLOAD = 6000;
 	protected static const int MAX_CLUES = 30;
@@ -656,6 +657,7 @@ class RZ_UIFeed
 
 		array<RZ_Mission> list = {};
 		mm.ListFor(playerId, list);
+		RZ_MissionReasons.SortFor(m_GM, list, playerId, from);	// near, reason-started, a leader they helped first
 		string s = lab;
 		array<int> shown = {};
 		foreach (RZ_Mission m : list)
@@ -701,6 +703,7 @@ class RZ_UIFeed
 		s += BuildQuestlines(playerId, ent, from);
 		s += BuildErrands(playerId, ent, from);
 		s += BuildInfected(playerId, ent, from);
+		s += BuildFinale(playerId);
 		s += BuildDoors(playerId);
 		s += RZ_DialogueJournal.Rows(playerId);
 
@@ -804,6 +807,31 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The finale page (docs/FINALE.md): one row while the routes are open, the readout's first line
+	//! as its brief; the detail is the whole page (RZ_CureFinale.PageFor), the desk's *How do things
+	//! stand?* without the walk.
+	protected string BuildFinale(int playerId)
+	{
+		RZ_CureFinale finale = m_GM.GetFinale();
+		if (!finale)
+			return "";
+
+		string page = finale.PageFor(playerId);
+		if (page.IsEmpty())
+			return "";
+
+		array<string> pageLines = {};
+		page.Split("\n", pageLines, true);
+		if (pageLines.IsEmpty())
+			return "";
+
+		RZ_UILine ln = new RZ_UILine("M");
+		ln.AddInt(-FINALE_ID).AddInt(RZ_EMissionKindUI.FINALE).AddInt(-1).Add("The finale").Add("How things stand").Add("").Add("");
+		ln.AddInt(-1).Add("").AddInt(0).AddInt(0).Add(pageLines[0]).Add("0");
+		return ln.End();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One journal row's detail, sent when the row is selected (at most 1,500 characters, so the
 	//! list's 6,000 is never cut for it): D|id|what they told you|what you've found|who it went to.
 	string BuildDetail(int playerId, int id)
@@ -828,6 +856,13 @@ class RZ_UIFeed
 			}
 
 			told = told.Trim();
+		}
+		else if (id == -FINALE_ID)
+		{
+			if (!m_GM.GetFinale())
+				return "";
+
+			told = m_GM.GetFinale().PageFor(playerId);
 		}
 		else if (id <= -TRIBE_ID_BASE)
 		{

@@ -4,12 +4,12 @@ FrameWidgetClass "{C5D5D8D6C99B7F2E}" {
   Anchor 0 1 0 1
   PositionX 96
   OffsetLeft 96
-  PositionY -54
-  OffsetTop -54
+  PositionY -190
+  OffsetTop -190
   SizeX 540
   OffsetRight -636
   SizeY 316
-  OffsetBottom -262
+  OffsetBottom -126
   Alignment 0 1
  }
  {

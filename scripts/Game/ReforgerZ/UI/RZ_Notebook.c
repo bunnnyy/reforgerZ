@@ -776,7 +776,7 @@ class RZ_JournalPage : RZ_NotebookPage
 			RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
 			// A questline has no clock (minutes -1); a pack shows what you know of it
 			string rowTime = RZ_UIText.Str(m, 8) + " min left";
-			if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.PACK || RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.DOORS)
+			if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.PACK || RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.DOORS || RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.FINALE)
 				rowTime = RZ_UIText.Str(m, 5);
 			else if (RZ_UIText.Int(m, 8) < 0)
 				rowTime = "Questline";
@@ -831,6 +831,8 @@ class RZ_JournalPage : RZ_NotebookPage
 			rewards = "Heard of: a rough area. Read: its ground. Mapped: where it lies up. Read and Mapped are rings on the map.";
 		else if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.DOORS)
 			rewards = "What people wrote on doors, as you read it. It goes with this life.";
+		else if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.FINALE)
+			rewards = "The lab's readout by faction, never by player. Lock counts are never shown.";
 		else if (RZ_UIText.Int(m, 8) < 0)
 			rewards = "It depends on how it ends.";
 		else if (giver >= 0)

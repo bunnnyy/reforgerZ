@@ -6297,7 +6297,7 @@
    "category": "Missions",
    "object": "Events",
    "field": "m_EventSettings",
-   "covers": "Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Burning Town max buildings (8) and drop per building (3); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords**"
+   "covers": "Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords**"
   },
   {
    "category": "Missions",

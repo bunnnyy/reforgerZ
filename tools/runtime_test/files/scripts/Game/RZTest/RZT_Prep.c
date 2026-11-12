@@ -1,7 +1,7 @@
 // Test-only (not part of the mod): the world state the runtime test forces so that every built
 // questline starts and ends once, and so that every mission type can start in a fresh test world:
 // stand-ins for the optional prefabs a mission needs, a spread of town infection before each one,
-// trucks for the convoys and Mobile Lab (designs/PLAN.md, step 0.4). Each forced change is logged
+// trucks for the convoys and Mobile Lab (docs/WORKBENCH_SETUP.md, the runtime test). Each forced change is logged
 // as "RZT forced: ...".
 
 modded class RZ_Questlines

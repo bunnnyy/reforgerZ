@@ -349,7 +349,7 @@ class RZ_Stealth
 
 	protected static const float SPEED_STILL = 0.4;
 	protected static const float SPEED_WALK = 2.6;
-	protected static const float SPEED_RUN = 5;
+	protected static const float SPEED_RUN = 5;			// VERIFY: a player runs at about 4 m/s and sprints at about 5.5, so 2.6 and 5 split walk, run and sprint (measure both in play)
 	protected static const float SPEED_JUMP = 15;		// more than this between updates is a teleport or a fall: counted as running
 	protected static const float GROUP_SPREAD = 90;		// a group's members are never this far beyond its last known position
 	protected static const float AREA_NOISE_RADIUS = 15;	// a loud noise this close counts as the player's own

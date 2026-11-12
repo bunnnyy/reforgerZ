@@ -87,6 +87,7 @@ class RZ_DialoguePack_residents
 		db.Say("", "\"Show me. Go on. Nobody here is going to shout.\"");
 		db.Choice("tell", "\"Here. It's a bite.\"", "told", "", "", "", "", "", "call:declare_bite", "", "");
 		db.Choice("fine", "\"It's nothing. A scratch off a fence.\"", "fine", "caught", "", "lie haven 2", "", "", "", "", "");
+		db.ChoiceExtra("!bite_shown", "");
 		db.ChoiceMore(false, "nset:hid_bite");
 		db.Choice("back", "\"Not now.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("told");
@@ -158,11 +159,11 @@ class RZ_DialoguePack_residents
 		db.Node("start");
 		db.Say("", "\"You stayed for the name, the other night. People noticed. Nobody will say so, so I'm saying it.\"");
 		db.Conv("occupant.house.stove_bed", "occupant", "house:short & !house:died", "Ask who gets the bed by the stove.", 2, 0, "haven");
-		db.Scene("stove_bed", "speaker", "tier:haven>=known");
 	}
 
 	protected static void Add1(RZ_DialogueDB db)
 	{
+		db.Scene("stove_bed", "speaker", "tier:haven>=known");
 		db.Node("start");
 		db.Public();
 		db.Jump("decided", "settled");

@@ -813,8 +813,7 @@ the group prefab it stands.
   6; the Red Hand's stronghold 10, a crew camp 4; the Haven's stronghold 8, an outpost 5, a
   safehouse 3; Halcyon's lab 6, a field station 2. They join the routine like anyone else, are the
   first pick for the courier's walk, and are removed with the place.
-- **Routine lines** are the territory's notices at the phase change (subtitles come with
-  [Subtitles and the reader](ROADMAP.md#ui), planned).
+- **Routine lines** are the territory's notices at the phase change, not subtitles yet.
 
 *Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
 despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
@@ -1125,7 +1124,7 @@ Code: `Dialogue/`; the screen is `UI/RZ_TalkMenu.c`. Owned by [DIALOGUE.md](DIAL
 talk screen and its engine (one engine that wraps every person's built Talk handler and replies,
 with what each reply needs shown before you choose and no dice), and the conversation trees on top
 (**Dialogue > Trees**, off by default: topics, checks shown before you pick, regard and memory, the
-`.rzd` text format and its tools, 30 conversations). How the screen looks is in
+`.rzd` text format and its tools, [the conversations](DIALOGUE.md#the-conversations)). How the screen looks is in
 [UI.md](UI.md#the-talk-screen).
 
 ## Missions
@@ -1320,8 +1319,8 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   Its brief opens with the reason's line (*"Levie's on half portions."*). Random picks stay.
 - **Order per player** (`RZ_MissionReasons.OrderScore`): how far up a list a job goes for one
   player: near them (+2 within 1.5 km, +1 within 4 km), started by a reason (+1), from a leader who
-  remembers they helped (+1). Only the order changes, never the odds. The journal and the
-  quartermaster's list don't sort by it yet (planned, with the UI).
+  remembers they helped (+1). Only the order changes, never the odds. The journal and a
+  quartermaster's list of contracts sort by it, highest first.
 - **One weight clamp.** A contract's leader traits (±20%), its faction's needs (×0.85–1.2) and the
   majors' season weights multiply, and the product is clamped once to ×0.75–1.3.
 - **Mirror offers** (`RZ_Mirror`): one class with two givers, rolled once when the job is set up
@@ -1629,7 +1628,10 @@ climax before it) and has a **default** (`ActDefault`): what happens when nobody
 (two from the start, offers only when carried), one sway per player per vote (by identity), and
 the tally with a tie-break (the chair's lean). A conversation's `sway:<major key>.<vote>.<word>`
 ([DIALOGUE.md](DIALOGUE.md#several-players)) swings one voter to that option per contribution at the
-tally. Errands and their memory never move a vote. Used by the Haven's two sittings.
+tally. Errands move a vote only with **Missions > Errands > Majors read errand memory** on (off by
+default): a sway on a head whose house remembers this player's errands (a thread there,
+[ERRANDS.md](ERRANDS.md#threads-and-callbacks)) brings one more voter round to the same option, once
+per head a season. Used by the Haven's two sittings.
 
 #### Dynamic fallbacks (decision 10)
 
@@ -1936,8 +1938,7 @@ Code: `Core/RZ_Shared.c` (`gm.GetShared()`, **Shared** settings), and the files 
 only.
 
 The pieces every later system stands on (errands, the mission style, dialogue's trees, the majors,
-the finale, the epilogue week: [designs/PLAN.md](../designs/PLAN.md#the-shared-engine)), built once
-so no system keeps its own copy. Each is built and has its limits and save; most of their writers
+the finale, the epilogue week), built once so no system keeps its own copy. Each is built and has its limits and save; most of their writers
 and readers come with the phases that use them, and each part says which are wired today.
 
 **The one body budget** is the infected's agent budget: a body that isn't an infected asks
@@ -2206,7 +2207,7 @@ is logged (`Budget: <lane> morale <n> for <faction> clipped to <n>`) and becomes
 | Lane | Morale | Strength | Draws on it |
 |---|---|---|---|
 | Majors | ±20 per faction a season; ±15 per major; ±10 a call | ±8; ±5 per major; ±5 a call | the majors ([The majors](#the-majors)) |
-| Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (planned) |
+| Contracts and errands | ±10 per faction a season day | ±4 per faction a season day | every contract's morale and strength today; errands (their morale, `RZ_Errands`) |
 | The finale | ±10 per faction, never clipped by the majors | ±5 per faction | the finale's terms ([FINALE.md](FINALE.md#the-release-terms-and-deciders)) |
 | The epilogue | ±5 per faction, inside the majors lane | — | the grey choices and the Last Broadcast ([EPILOGUE.md](EPILOGUE.md#the-grey-choices)) |
 

@@ -19,6 +19,8 @@ behaviour, design, content or setup is complete until the docs match it.**
    - New **prefab, component, action or attribute** the user must set up → `docs/WORKBENCH_SETUP.md`
    - New or changed **screen, icon or widget name** a script looks up → `docs/UI.md` and `UI/LAYOUTS.md`
    - New, changed or removed **conversation** (`dialogue/**/*.rzd`) → `docs/DIALOGUE.md`'s list of conversations
+   - New, changed or removed **door mark, scene, trace sound or light** → `docs/TRACES.md`
+   - Change to **the week after the cure** (its phases, beats, carriers, closing work) → `docs/EPILOGUE.md`
    - New, changed or removed **Workshop dependency** → `docs/MOD_STACK.md`
    - Change to **setting or factions** → `docs/LORE.md` / `docs/REPUTATION.md`; to **tone or how text is written** → `docs/WRITING.md`
    - New or changed **tool, test script, Steam app, install step, folder or anything else the
@@ -31,8 +33,9 @@ behaviour, design, content or setup is complete until the docs match it.**
    Link to the doc that owns the topic instead.
 
 ### Designs (`designs/`)
-Approved designs that aren't built yet live in `designs/` (index and build steps: `designs/README.md`,
-order of work: `designs/PLAN.md`). They are not docs:
+Approved designs that aren't built yet live in `designs/`, with an index in `designs/README.md` that also
+gives the order of work. Every approved design is built today, so the folder is empty for now; these rules
+are for the next one. Designs are not docs:
 - A design file says "designed, not built" and never describes built behaviour.
 - When a design (or part of one) is built, its content moves into the `docs/` file that owns the topic
   (Doc map below) or a new doc, and the design file is trimmed or deleted, **in the same commit as the code**.
