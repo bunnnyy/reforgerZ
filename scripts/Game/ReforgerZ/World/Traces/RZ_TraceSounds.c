@@ -550,8 +550,9 @@ class RZ_TraceAmbience
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! S4: 5 real minutes before a pack's hunt sets out, the dogs at the town nearest its lair
-	//! (within 1.5 km) bark and stop. A Hunter within 800 m hears them stop.
+	//! S4: 5 real minutes before a pack's hunt sets out (one that will: not weakened, holding a vigil
+	//! or sleeping off a feed), the dogs at the town on the night's first trail (else the town nearest
+	//! its lair, within 1.5 km) bark and stop. A Hunter within 800 m hears them stop.
 	protected void Dogs(array<int> ids, array<IEntity> players)
 	{
 		RZ_Tribes tribes = m_GM.GetTribes();
@@ -564,10 +565,13 @@ class RZ_TraceAmbience
 				continue;
 
 			float until = RZ_GameTime.RealMinutesUntil(t.m_fSetOutHour);
-			if (until < 0 || until > 5)
+			if (until < 0 || until > 5 || t.IsWeakened() || t.m_bVigil || t.m_bFed)
 				continue;
 
-			int town = m_GM.FindNearestSettlement(t.m_vLair);
+			int town = FirstTrailTown(t);
+			if (town < 0)
+				town = m_GM.FindNearestSettlement(t.m_vLair);
+
 			RZ_Settlement s = m_GM.GetSettlement(town);
 			if (!s || RZ_Util.DistXZ(s.m_vCenter, t.m_vLair) > s.m_fRadius + 1500 || RZ_WorldFacts.Get().IsLivedIn(town))
 				continue;
@@ -585,6 +589,40 @@ class RZ_TraceAmbience
 					m_GM.NotifyPlayerAs(ids[i], "Dogs", RZ_SceneText.Dogs(s.m_sName), RZ_ENoticeTag.LOW);
 			}
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The town the night's first trail passes nearest (a trail point within its radius + 400 m), -1.
+	protected int FirstTrailTown(RZ_Tribe t)
+	{
+		if (!t.m_aTrails || t.m_aTrails.IsEmpty())
+			return -1;
+
+		int trail = 0;
+		if (t.m_aTrailsTonight && !t.m_aTrailsTonight.IsEmpty())
+			trail = t.m_aTrailsTonight[0];
+
+		if (trail < 0 || trail >= t.m_aTrails.Count() || !t.m_aTrails[trail])
+			return -1;
+
+		int best = -1;
+		float bestD = float.MAX;
+		foreach (vector pt : t.m_aTrails[trail])
+		{
+			int idx = m_GM.FindNearestSettlement(pt);
+			RZ_Settlement s = m_GM.GetSettlement(idx);
+			if (!s)
+				continue;
+
+			float d = RZ_Util.DistXZ(s.m_vCenter, pt) - s.m_fRadius;
+			if (d <= 400 && d < bestD)
+			{
+				best = idx;
+				bestD = d;
+			}
+		}
+
+		return best;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -285,7 +285,8 @@ class RZ_Marks
 
 			float closest = RZ_Util.NearestDistance(m.m_vPos, players);
 			int cluster = ClusterCap(m.m_ePool);
-			if (!m.m_Entity && closest <= SpawnRadius(m.m_ePool) && (cluster <= 0 || SpawnedNear(m.m_ePool, m.m_vPos) < cluster))
+			bool clear = m.m_ePool != RZ_EMarkPool.TRACES || m.m_Entity || closest > SpawnRadius(m.m_ePool) || RZ_TraceSpotClear.IsClear(m.m_vPos, closest);
+			if (!m.m_Entity && clear && closest <= SpawnRadius(m.m_ePool) && (cluster <= 0 || SpawnedNear(m.m_ePool, m.m_vPos) < cluster))
 			{
 				m.m_Entity = RZ_Util.SpawnPrefab(m.m_sPrefab, RZ_Util.GroundPos(m.m_vPos), m.m_fYaw);
 				m.m_fUpAt = m_fClock;

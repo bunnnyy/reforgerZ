@@ -647,6 +647,11 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
 	{
 		s.GetGM().GetHeat().AddHeat(v.m_vPos, 4);
+		// Traces' P3: the grave stays by the road (World/Traces/RZ_PlayerTraces.c)
+		RZ_Traces traces = RZ_Traces.Get();
+		if (traces && traces.IsOn())
+			traces.GetPlayers().DiggerGrave(v.m_vPos, v.m_mText.Get("who"));
+
 		string end = "\"There. That's someone's.\" She knocks the soil off the shovel.";
 		if (Bg(s, playerId, "elder"))
 			end = "You say the words. She mouths them with you, a beat behind, the way people do at funerals they didn't plan to go to.";

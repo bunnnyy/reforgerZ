@@ -185,6 +185,23 @@ class RZ_PlayerTraces
 	//------------------------------------------------------------------------------------------------
 	//! P3: at the place of death if it's 100 m from another grave and 150 m from a safehouse; else
 	//! on the verge of the nearest road 150-300 m on; one per identity, 8 on the server.
+	//------------------------------------------------------------------------------------------------
+	//! P3 from the Digger stranger (Missions/Errands/RZ_StrangerKinds.c): the grave she finished with
+	//! you by the road, for whoever she was told it was ("" someone), with the town's history.
+	void DiggerGrave(vector pos, string who)
+	{
+		string named = who;
+		if (named.IsEmpty())
+			named = "SOMEONE";
+
+		named.ToUpper();
+		Grave("", pos, RZ_TraceText.Grave(named, false, RZ_WorldFacts.Get().Day()));
+		int town = RZ_TraceWriters.TownAt(pos);
+		if (town >= 0)
+			m_Traces.History().Add(town, "death", -1, 1, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Grave(string ident, vector pos, string text)
 	{
 		for (int i = m_aTraces.Count() - 1; i >= 0; i--)

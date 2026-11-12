@@ -475,16 +475,16 @@ The author approved all 16 as recommended (2026-11-11).
 |---|---|
 | Who sees a town's summary and a door line | A character on foot within the town's radius (+30 m); standing 2 s means two one-second checks within 5 m, not a speed test |
 | The first days' sweep | "Within 3 km of the roads into `origin.site`" is within 3 km of the line from the site to the roadblock; at most 12 towns nearest first |
-| P3's notable death | A life of 2 hours or more, or dying at a running job's site; the stand and a pack's kill aren't told apart. The Digger stranger doesn't dig graves yet |
-| The thumbprint | Exiles are players Hunted by the Haven; their minutes in a town are kept in memory only (a restart starts them again). The Long Table's exile isn't one |
-| Scene placement | Traces' own ground test (dry, flat, off the line, out of footprints); camp life's placer isn't shared. Most scenes are one composition at one point (the column's cars, the crosses, the sheets and the gym's bus aside), so old scenes age in their words, not by dropping pieces. Nothing checks for a player or car on the spot, or an active clue 1 km away |
-| The column (F1) | 4–8 cars 9 m apart back from the queue's point, not spread to 1.2 km |
+| P3's notable death | A life of 2 hours or more, or dying at a running job's site; the stand and a pack's kill aren't told apart. The Digger stranger's grave, once you've dug it with her, stays by the road with whoever she was told it was (or SOMEONE) |
+| The thumbprint | Exiles are players Hunted by the Haven; their minutes in a town, and a thumbprint that's due, are saved across a restart. The Long Table's exile isn't one |
+| Scene placement | Traces' own ground test (dry, flat, off the line, out of footprints); camp life's placer isn't shared. Most scenes are one composition at one point (the column's cars, the crosses, the sheets and the gym's bus aside), so old scenes age in their words, not by dropping pieces. A prop never comes up while a player or a vehicle is within 8 m of its spot; nothing checks for an active clue 1 km away |
+| The column (F1) | 4–8 cars along the road from the queue's point (400 m back from the barrier) to 1.2 km back, never within 25 m of a junction (three road ends meeting); where the road can't be followed, the rest 9 m apart back from the queue's point |
 | The gym, the church, the shutter (F3, F4, F7) | Beside the canon spot, not on the building's own door; F7's red hand isn't a door layer on a garage. F4's jars are only the lit ones (S8) |
 | The square's notices (F6) | One town in five nobody lives in, near its centre (no square looked for) |
-| Vignettes' triggers | V3 on any walk-out (not only *walk on*); V5 from failed Halcyon jobs and trucks, not a pack taking a runner; V4 tried once a town a run; "not the same player's trigger twice a day" is one a town |
-| L1 after a kill site | Its chalk is a scene on the verge by the site, not on the nearest door; Bastion's stencil when a Bastion holding is within 3 km |
+| Vignettes' triggers | V3 on any walk-out (not only *walk on*); V5 from failed Halcyon jobs and trucks, and a pack taking a runner as data within 3 km of the lab or a Halcyon field station; V4 tried once a town a run; "not the same player's trigger twice a day" is one a town |
+| L1 after a kill site | In a town (within 60 m of it), the Haven's candle goes on the nearest door; elsewhere its chalk is a scene on the verge by the site; Bastion's stencil when a Bastion holding is within 3 km, not for a pack on Bastion's board |
 | L3, L8 | The door writes built in phase 1 (overpaint on a take, beaks from sample jobs); no beaks at a nest under study |
 | L6 | From the road posts that go between two looks (30 s), not a saved list of the last six |
 | S1, S5, S7 | The lantern and the hum stand near the place's middle, not on camp life's pieces (its table lamp isn't swapped, the hum isn't quieter at night); no loudspeaker pole: the chime comes from the holding's middle |
-| S4 | Before the pack's set-out hour each night, whether or not it hunts; the town nearest the lair, not one on the night's first trail; the Hunter's line comes with the barking |
+| S4 | Before the pack's set-out hour on a night it will set out (not weakened, holding a vigil or sleeping off a feed), at the town the night's first trail passes (else the town nearest the lair); the Hunter's line comes with the barking |
 | The handover | Fallen posts (V7) finish their days rather than passing to the epilogue's outpost boards; the epilogue's props are its own slots, not Traces' kit |

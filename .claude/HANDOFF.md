@@ -11,6 +11,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 76b52d0: play the minimum subset on `Missions/RZ_Arland.conf`. Check the log lines in WBS §7, report every script exception and missing log line here, and run the play-test checklist in WBS §8.
 
 **UI (WBS §4, "Setting up the UI")**
+- 2026-11-12 91fcf47: open `UI/layouts/ReforgerZ/RZ_Hud.layout` (its new `LookPanel` with `LookIcon` and `LookText`, `RZ_Hud_Look`, written as text) in Workbench, fix what it reports, and see the look line in play in Bastion kit at a road post, with a pad and on a TV (UI.md, the HUD; UI/LAYOUTS.md).
 - 2026-11-11 98c9c51: see the map's icon layer in play (step 6), and turn **UI > Board menus** on once the board's menu works.
 
 **Prefabs missing from `Prefabs/` (run "ReforgerZ: Create prefabs", then finish by hand; WBS §4)**

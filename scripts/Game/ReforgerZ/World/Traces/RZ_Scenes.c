@@ -919,7 +919,22 @@ class RZ_Scenes
 		if (faction < 0)
 			return;
 
-		RZ_Scene s = Live("L1", RZ_TraceWriters.TownAt(pos), RZ_Marks.Verge(pos, 3, 6), 2, false, false);
+		// The Haven's candle goes on the nearest door when the site was in a town (within 60 m of it)
+		int town = RZ_TraceWriters.TownAt(pos);
+		RZ_Settlement here = m_GM.GetSettlement(town);
+		if (faction == RZ_EFaction.SURVIVORS && here && RZ_Util.DistXZ(here.m_vCenter, pos) <= here.m_fRadius + 60)
+		{
+			RZ_DoorMark candle = RZ_DoorMark.Make(RZ_EDoorSymbol.CANDLE, RZ_WorldFacts.Get().Day(), 1, 0, 0, RZ_DoorMark.F_SHOWN);
+			candle.m_sText = "someone";
+			if (who.StartsWith("someone who"))
+				candle.m_sText = who;
+
+			RZ_Traces traces = RZ_Traces.Get();
+			if (traces && traces.GetDoors().Write(town, RZ_EDoorWant.NEAR, pos, candle, "a kill site ended"))
+				return;
+		}
+
+		RZ_Scene s = Live("L1", town, RZ_Marks.Verge(pos, 3, 6), 2, false, false);
 		if (!s)
 			return;
 
@@ -1269,18 +1284,33 @@ class RZ_Scenes
 		{
 			case "F1":
 			{
-				// Nose to tail on the verge, back from the queue's point, all facing the barrier
+				// The column in full: spread along the road from the queue's point (400 m back from the
+				// barrier) to 1.2 km back, never within 25 m of a junction; nose to tail 9 m apart from the
+				// queue's point where the road can't be followed
 				array<ResourceName> cars = {kit.m_sQueueCarA, kit.m_sQueueCarB, kit.m_sQueueCarC};
 				vector back = Vector(-Math.Sin(yaw * Math.DEG2RAD), 0, -Math.Cos(yaw * Math.DEG2RAD));
-				for (int c = 0; c < Math.Min(s.a, PIECES); c++)
+				int count = Math.Min(s.a, PIECES);
+				array<vector> along = {};
+				RZ_TraceColumn.Spread(RZ_WorldFacts.Get().CanonPos("day2.checkpoint"), at, back, count, along);
+				for (int c = 0; c < count; c++)
 				{
 					ResourceName car = cars[c % 3];
 					if (car.IsEmpty())
 						car = FirstOf(cars);
 
+					vector carAt = at + back * (c * 9);
+					float carYaw = yaw;
+					if (c < along.Count())
+					{
+						carAt = along[c];
+						carYaw = RZ_Compass.Bearing(carAt, at);
+						if (c == 0)
+							carYaw = yaw;
+					}
+
 					prefabs.Insert(car);
-					spots.Insert(RZ_Marks.Verge(at + back * (c * 9), 6, 9));
-					yaws.Insert(yaw);
+					spots.Insert(RZ_Marks.Verge(carAt, 6, 9));
+					yaws.Insert(carYaw);
 				}
 
 				return;
@@ -1567,5 +1597,141 @@ class RZ_Scenes
 		}
 
 		return n;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Placement's last check (docs/TRACES.md, "Where scenes stand"): a scene's prop never comes up while
+//! a player or a vehicle is within 8 m of its spot (RZ_Marks asks before it spawns a Traces prop).
+class RZ_TraceSpotClear
+{
+	static const float CLEAR = 8;
+
+	protected bool m_bBlocked;
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsClear(vector at, float closestPlayer)
+	{
+		if (closestPlayer <= CLEAR)
+			return false;
+
+		RZ_TraceSpotClear q = new RZ_TraceSpotClear();
+		GetGame().GetWorld().QueryEntitiesBySphere(at, CLEAR, q.OnEntity, null, EQueryEntitiesFlags.DYNAMIC);
+		return !q.m_bBlocked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool OnEntity(IEntity e)
+	{
+		if (Vehicle.Cast(e))
+		{
+			m_bBlocked = true;
+			return false;
+		}
+
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The column in full (F1, docs/TRACES.md, "The first days and the line"): where its cars stand on
+//! the road back from the barrier, 400 m to 1.2 km, at least 25 m from a junction (a place three road
+//! ends meet). Read once from the road network when the scene's props are placed.
+class RZ_TraceColumn
+{
+	static const float NEAR = 400;
+	static const float FAR = 1200;
+	static const float JUNCTION = 25;
+
+	//------------------------------------------------------------------------------------------------
+	//! count road points, the first at the queue's point, the rest spread to 1.2 km back from the
+	//! barrier `cp`; fewer (or none) where the road can't be followed: the caller packs the rest.
+	static void Spread(vector cp, vector queue, vector back, int count, notnull array<vector> result)
+	{
+		RoadNetworkManager roads = RZ_Perimeter.GetRoadNetwork();
+		if (!roads || cp == vector.Zero || count <= 1)
+			return;
+
+		vector mid = queue + back * ((FAR - NEAR) * 0.5);
+		float reach = FAR - NEAR;
+		vector mins = Vector(mid[0] - reach, -1000, mid[2] - reach);
+		vector maxs = Vector(mid[0] + reach, 10000, mid[2] + reach);
+		array<BaseRoad> found = {};
+		roads.GetRoadsInAABB(mins, maxs, found);
+		array<vector> points = {};
+		array<vector> ends = {};
+		foreach (BaseRoad road : found)
+		{
+			if (!road)
+				continue;
+
+			array<vector> pts = {};
+			road.GetPoints(pts);
+			if (pts.IsEmpty())
+				continue;
+
+			ends.Insert(pts[0]);
+			ends.Insert(pts[pts.Count() - 1]);
+			foreach (vector pt : pts)
+			{
+				points.Insert(pt);
+			}
+		}
+
+		result.Insert(queue);
+		for (int c = 1; c < count; c++)
+		{
+			float want = NEAR + (FAR - NEAR) * c / (count - 1);
+			vector line = cp + Dir(cp, queue) * want;
+			vector best = vector.Zero;
+			float bestScore = 200;
+			foreach (vector p : points)
+			{
+				float d = RZ_Util.DistXZ(p, cp);
+				if (d < NEAR || d > FAR + 50 || AtJunction(p, ends))
+					continue;
+
+				float score = Math.AbsFloat(d - want) + RZ_Util.DistXZ(p, line) * 0.5;
+				if (score < bestScore)
+				{
+					bestScore = score;
+					best = p;
+				}
+			}
+
+			if (best == vector.Zero)
+				return;
+
+			result.Insert(RZ_Util.GroundPos(best));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Three road ends within 25 m of p (two only join one road's pieces): a junction.
+	protected static bool AtJunction(vector p, array<vector> ends)
+	{
+		int near = 0;
+		foreach (vector e : ends)
+		{
+			if (RZ_Util.DistXZ(e, p) <= JUNCTION)
+				near++;
+
+			if (near >= 3)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static vector Dir(vector from, vector to)
+	{
+		vector d = to - from;
+		d[1] = 0;
+		if (d.Length() < 0.01)
+			return Vector(0, 0, 1);
+
+		d.Normalize();
+		return d;
 	}
 }

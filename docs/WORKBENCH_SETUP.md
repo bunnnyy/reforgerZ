@@ -2898,8 +2898,10 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
 - [ ] Errands' old mark: its line reads at your level and is in the journal; no old mark in the
   Long Table's ground (no marks at all within 2 km of its farm but residents' Day 1–3 words).
 - [ ] The first days' scenes: the log names each `f1`-`f8` it placed. Drive in from the north barrier:
-  the column's cars on the verge (or their line once, **On the verge**), the suitcases nearer the
-  barrier, then the crosses; nothing blocks the road. As a Police Officer the column's line adds the
+  the column's cars on the verge (or their line once, **On the verge**), spread along the road from
+  about 400 m to 1.2 km back from the barrier and clear of junctions, the suitcases nearer the
+  barrier, then the crosses; nothing blocks the road. Park on a scene's spot: its prop doesn't come up
+  until you've moved off (8 m). As a Police Officer the column's line adds the
   ticket numbers. Stand 2 s by a car on foot: the dashboard sheet opens in the reader (B closes it).
 - [ ] The gym, the church, the roadblock (its radio says the broadcast's line as a subtitle within
   12 m), Rudi's shutter, the hill and a square's notices (`/traces` near each lists the scene): one
@@ -2908,11 +2910,14 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   safehouse): `Traces: scene v1.N` in the log, its line once within 40 m; no more than 3 dealt a
   season day, never two in a town, none within 300 m of a running job.
 - [ ] Live traces: lose a supply truck (its wreck on the verge with the destination's stencil), burn a
-  building (scorch at its doorway), let a Bastion road post go (sandbags and the HALT sign). Die in
+  building (scorch at its doorway), let a Bastion road post go (sandbags and the HALT sign). A kill
+  site in a town near a Haven house ends: a candle on the nearest door. Help the Digger stranger dig:
+  a grave by the road. As a Haven exile, spend 20 minutes in a town, restart: the thumbprint still
+  comes 2 hours later. Die in
   the kill zone near a barrier: one more cross outside the warning zone.
 - [ ] After dark at a lived-in place: a lit lantern (with the kit's lantern); at 05:30 and 17:30 near a
-  Bastion holding the loudspeaker's line; as a Hunter near a pack's town before its hunt, *"The dogs
-  in ... have stopped."*; after a Haven Champion's death, one bell at 18:30 and the church's jars.
+  Bastion holding the loudspeaker's line; as a Hunter near the town on a pack's first trail before
+  its hunt, *"The dogs in ... have stopped."* (not on a night it doesn't set out); after a Haven Champion's death, one bell at 18:30 and the church's jars.
 - [ ] Status line: lights and loops count up and down as you come and go; nothing stays up after you
   leave. With **Sound and light** off, nothing at all.
 - [ ] The cure: `Traces: handed over to the epilogue`; the graves come down; no new scene or mark but

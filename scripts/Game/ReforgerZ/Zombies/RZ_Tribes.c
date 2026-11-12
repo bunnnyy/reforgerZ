@@ -2464,6 +2464,16 @@ class RZ_Tribes
 			return;
 
 		m_iLastWandererNight = m_iCountedNights;
+		// Traces' V5: a runner taken within 3 km of the lab or a Halcyon field station leaves his case
+		// in the ditch (World/Traces/RZ_Scenes.c)
+		RZ_Traces traces = m_GM.GetTraces();
+		RZ_Territory territory = m_GM.GetTerritory();
+		bool nearLab = m_GM.HasLab() && RZ_Util.DistXZ(p.m_vPos, m_GM.GetLabPosition()) <= 3000;
+		if (!nearLab && territory)
+			nearLab = territory.FindHolding(RZ_EFaction.INSTITUTE, p.m_vPos, 3000) != null;
+
+		if (traces && traces.IsOn() && nearLab)
+			traces.GetScenes().DroppedRun(p.m_vPos, "a pack took a runner");
 	}
 
 	//------------------------------------------------------------------------------------------------
