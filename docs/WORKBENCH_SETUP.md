@@ -1045,13 +1045,14 @@ the group prefab (section 4, *Camp life*). Everything else is built from one fil
 
 **The source: `tools/camp_kit/pieces.py`.** It holds the 49 camp-life pieces (each piece's props
 with their position, turn, height and tilt, and its seats), the six kits (faction, place, pieces in
-order with count and ring) and the Traces compositions (section 4, *Traces*). To change a piece,
+order with count and ring), where a piece stands by a building (`AT`, written as each kit piece's
+**At**; the rest are Auto) and the Traces compositions (section 4, *Traces*). To change a piece,
 edit it there and run:
 
 | Command | Does |
 |---|---|
 | `py tools/camp_kit/build.py` | Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**, **Smart action waypoint**) and the composition slots of **World > Traces > Kit** |
-| `py tools/camp_kit/render.py` | Draws [designs/camp_plans.html](../designs/camp_plans.html): a top-down plan of every piece, a camp concept per faction and the faction bases ([designs/BASES.md](../designs/BASES.md), written from `tools/camp_kit/bases.py`) |
+| `py tools/camp_kit/render.py` | Draws [designs/camp_plans.html](../designs/camp_plans.html): a top-down plan of every piece, a camp concept per faction and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
 
 A new prop needs its ResourceName: pass `--index` with the resource index the Workbench plugin
 **ReforgerZ: Write resource index** writes ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)).
@@ -1283,7 +1284,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
-| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
+| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), **Buildings** (on: each place moves into the building that suits its faction; off = rings), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), scenarios, clue minutes (20), flyers, shout minutes (30), wanderer finds, the scenario prefabs |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, and a car boot or body search; rare 0.1, electronics 0.1), car boot and body searches (4 s, 1 heat, a boot empty for 60 min), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
@@ -1739,7 +1740,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 ```
 [ReforgerZ] No common zombie prefabs configured. Set them on RZ_GameModeComponent > Zombies.
 [ReforgerZ] Stealth: on. Infected within 60 m see the most visible player near them (perception x0.3 to x1.2); losing them after 8 s hidden, searching 45 s: off (no move waypoint).
-[ReforgerZ] Camp life: dressing on, routines on, 0 kits, smart actions off, lone characters stand.
+[ReforgerZ] Camp life: dressing on, routines on, buildings on, 0 kits, smart actions off, lone characters stand.
 [ReforgerZ] No lab prefab set. Samples can't be delivered until one is configured or placed.
 [ReforgerZ] Hostility: bitmask mode, only 0 of 15 variant factions (SURV_H1 to SURV_H15) in the FactionManager. ...
 [ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 168 h after the cure.
@@ -1903,6 +1904,7 @@ Warnings worth acting on:
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
+| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). Rings where the town has no building of the faction's kind and none big enough; 0 road entries means the gate and barricades stand in front of the building |
 | `Camp life: ... smart actions off, lone characters stand.` | Set **Camp life > Smart action waypoint** (people loiter beside the pieces until then) and **Group prefab** (lone occupants and guards don't move until then) |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
@@ -2878,6 +2880,23 @@ editor's time of day)
   the cook pot until the meal.
 - [ ] Named people stay within 20 m of the centre; talk to one: they stop, and go back to work a
   minute later. Quartermasters and leaders never move.
+
+**Faction bases on Everon** ([DESIGN.md](DESIGN.md#camp-life); after `build.py` has rewritten the kits)
+- [ ] Walk up to each faction's stronghold and one outpost: the log's `Camp life: ... moves into ...`
+  line names the building (Bastion a school, town hall or police station on a road; the Red Hand a
+  garage or petrol station where roads meet; the Haven the church; Halcyon the lab or a clinic, a
+  house for the field station). Note any that fell back to rings or picked an odd building.
+- [ ] The people come out in the yard behind it (the Red Hand: its forecourt); the fire, tables
+  and boards are there, the cook pot and woodpile together on one side, the line, garden and
+  latrine along the walls, no tents. The bear board, the memorial and the decon shower stand by
+  the front door.
+- [ ] The gate is on the road in from the next town: the nest or the toll barrier, the red hand
+  sheet or the plague board beside the road; the other road entries have a barricade beside the
+  road. Every road stays drivable (a supply truck and a car get through).
+- [ ] Bastion by day: a lookout at a front corner as well as the nest. Under a curfew season, two on
+  watch at night. Off shift they walk in at the front door, and come out of it after 05:30.
+- [ ] A Haven safehouse dresses its own house; a field station has the researcher and one other,
+  and no extra comes out.
 - [ ] Shoot near a camp (when Hunted): they fight as before, then go back to their jobs.
 - [ ] Do AI walk through the tents (the navmesh VERIFY)? Is one more person per camp and the server
   frame time fine with 3 live places and a stronghold's 20 pieces?

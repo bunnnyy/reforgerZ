@@ -241,13 +241,25 @@ piece("NotebookBench", "Halcyon", "Sit", "Centre", "A bench with notebooks and f
     P("CrateWooden_01_plain.et", -1.3, 0.8, 25), P("ToolsSurgical_01_autoclavedrum.et", -1.3, 0.8, 0, 0.62),
     S("RZ_Sit", -0.35, 0.3, "sit", 0, 2.0), S("RZ_Sit", 0.35, 0.3, "sit", 0, 2.0)])
 
+# Where a piece stands when its place has moved into a building (docs/DESIGN.md, "Camp life":
+# RZ_EDressAt, written as each kit piece's m_eAt). A piece not listed is placed by its ring and use:
+# centre the yard, inner the back (cook and chop pieces the cooking side), approach the gate (a watch
+# or lean piece) or the closed road entries, edge the walls. Spots: yard, front, back, side, walls,
+# door, gate, closed.
+AT = {
+    "RedHandSheet": "gate", "PlagueBoard": "gate",
+    "BearDoor": "door", "Memorial": "door", "DeconShower": "door",
+    "TrophyWall": "front", "VegStall": "front",
+}
+
 # The kits on RZ_GameMode.et (Territory > Camp life > Kits): faction, place, pieces in order as
 # "Name count ring" (ring: c centre, i inner, a approach, e edge). A place takes pieces in this
-# order until its piece count (stronghold 20, outpost 13, safehouse 8, field station 9, road post 4).
+# order until its piece count (stronghold 20, outpost 13, safehouse 8, field station 9, road post 4);
+# in a building it skips the tents (they sleep indoors).
 KITS = [
-    ("MILITARY", "ANY", "SentryNest_Bastion 1 a, RosterBoard 1 c, FirePit 1 c, Tent_Small_Bastion 2 i, CookPot 1 i, Barricade_Sandbag 2 a, Table 1 c, Firewood 1 i, ShavingStand 1 i, FlagPole 1 c, CrateSeats 1 c, Tent_Large_Bastion 1 i, DutyBoard 1 c, Tarp 1 i, DryingLine 1 e, Latrine 1 e, Clutter 1 i, Tent_Small_Bastion 1 i"),
-    ("BANDITS", "ANY", "TollBarrier 1 a, FireBarrel 1 c, CardTable 1 c, Tent_Small_Civilian 2 i, SentryNest_RedHand 1 a, CookPot 1 i, Sofa 1 c, RedHandSheet 1 a, Barricade_Scrap 1 a, Firewood 1 i, Clutter 1 i, ScrapShelter 1 i, TrophyWall 1 e, Kennel 1 e, FirePit 1 c, Tarp 1 i, Tent_Large_Civilian 1 i, Latrine 1 e, DryingLine 1 e"),
-    ("SURVIVORS", "ANY", "Table 1 c, CookPot 1 i, WaterBarrel 1 i, WashStand 1 i, WashingLine 1 e, Garden 1 e, BearDoor 1 a, Firewood 1 i, Memorial 1 c, Tent_Small_Civilian 1 i, ChildrensCorner 1 i, Barricade_Fence 1 a, VegStall 1 e, FirePit 1 c, CrateChairs 1 c, Tent_Large_Civilian 1 i, Kennel 1 e, Latrine 1 e, Clutter 1 i, Tarp 1 i"),
+    ("MILITARY", "ANY", "SentryNest_Bastion 1 a, RosterBoard 1 c, FirePit 1 c, Tent_Small_Bastion 2 i, CookPot 1 i, Barricade_Sandbag 3 a, Table 1 c, Firewood 1 i, ShavingStand 1 i, FlagPole 1 c, CrateSeats 1 c, Tent_Large_Bastion 1 i, DutyBoard 1 c, Tarp 1 i, DryingLine 1 e, Latrine 1 e, Clutter 1 i, Tent_Small_Bastion 1 i"),
+    ("BANDITS", "ANY", "TollBarrier 1 a, FireBarrel 1 c, CardTable 1 c, Tent_Small_Civilian 2 i, SentryNest_RedHand 1 a, CookPot 1 i, Sofa 1 c, RedHandSheet 1 a, Barricade_Scrap 2 a, Firewood 1 i, Clutter 1 i, ScrapShelter 1 i, TrophyWall 1 e, Kennel 1 e, FirePit 1 c, Tarp 1 i, Tent_Large_Civilian 1 i, Latrine 1 e, DryingLine 1 e"),
+    ("SURVIVORS", "ANY", "Table 1 c, CookPot 1 i, WaterBarrel 1 i, WashStand 1 i, WashingLine 1 e, Garden 1 e, BearDoor 1 a, Firewood 1 i, Memorial 1 c, Tent_Small_Civilian 1 i, ChildrensCorner 1 i, Barricade_Fence 2 a, VegStall 1 e, FirePit 1 c, CrateChairs 1 c, Tent_Large_Civilian 1 i, Kennel 1 e, Latrine 1 e, Clutter 1 i, Tarp 1 i"),
     ("INSTITUTE", "ANY", "FieldTable 2 c, ColdBox 1 i, Tent_Halcyon 1 i, DeconShower 1 i, Generator 1 e, SampleRack 1 i, PlagueBoard 1 a, Antenna 1 e, NotebookBench 1 c, Barricade_Fence 2 a, Tarp 1 i, Tent_Large_Civilian 1 i, RadioTable 1 c, Latrine 1 e, DryingLine 1 e, Clutter 1 i, CrateChairs 1 c, Tent_Halcyon 1 i"),
     ("MILITARY", "ROAD_POST", "FireBarrel 1 a, SentryNest_Bastion 1 a, Tarp 1 a, Barricade_Sandbag 1 a"),
     ("BANDITS", "ROAD_POST", "FireBarrel 1 a, CardTable 1 a, Tarp 1 a, Barricade_Scrap 1 a"),

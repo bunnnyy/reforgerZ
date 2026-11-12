@@ -1,5 +1,12 @@
-"""Faction base designs (designed, not built: designs/BASES.md is generated from this file by render.py): what a holding is for, who lives there, which buildings it takes over and why,
-how it's defended. Each site plan is schematic (metres, x right, z up = toward the main road in)."""
+"""The faction bases as the plans page draws them (render.py, designs/camp_plans.html): what each
+holding is for, who lives there, which buildings it takes over and why, how it's defended. Each
+site plan is schematic (metres, x right, z up = toward the main road in).
+
+Status: built, simplified. How camp life picks the building and lays the pieces out by it and its
+road entries, the people in play and what is left out (the rooms inside, the roof lookouts, the
+graves, the stockade, the dogs, the searchlight) is in docs/DESIGN.md, "Camp life"; the counts in
+play are RZ_CampLife.PeopleInPlay. The Workshop mods researched for the look are in
+docs/MOD_STACK.md. Nothing here is game data: the game reads pieces.py's kits (build.py)."""
 
 # kinds: bld (an existing building taken over), yard (open ground in use), def (defence), post (watch),
 # road, gate, piece (a camp-life piece by name), note
@@ -99,21 +106,4 @@ BASES = [
     "buildings": [("House", "The front room is the lab bench; the notebooks are on the kitchen table."), ("Yard", "The generator, the antenna, the decon shower, the cold box.")],
     "defence": "Almost none: the plague-doctor board at the gate and the hope that nobody wants what's inside.",
     "plan": [("road", "M -60 -10 L 60 -8"), ("bld", 0, 10, 12, 9, "House"), ("yard", 14, 20, 12, 8, "Generator + antenna"), ("def", -2, 0, 6, 2, "Board")]}]},
-]
-
-# Workshop mods worth trying for the look (researched 2026-11-12; none added yet: adding one is a
-# MOD_STACK.md decision, after a compile check and a load test). (name, id, MB, for, note)
-MODS = [
-    ("SBBG - Wrecks", "6529635700E0B228", 3.0, "all", "Vanilla wrecks made placeable (UAZ-452, Ural, M923, BTR, helicopters): blocked roads, the column, ambush sites. Current game version, no dependencies"),
-    ("Lamas vanilla plus gear pack", "64FD478E9982027A", 4.2, "Bastion", "Worn, era-correct US kit: M65, raincoat, overcoat, medic helmet. Old build: test it"),
-    ("BanditGear", "66B523AD189F3233", 101.9, "Red Hand", "Dirty scavenged clothing, balaclavas, gloves, Molotovs, spray-painted cars. Already downloaded; maintained"),
-    ("BasicHazmatSuit", "68AB4B626C8AB069", 49.3, "Halcyon", "Hooded hazmat suit with a gas mask in three colours. Already downloaded; APL-ND"),
-    ("MedicalAccessories", "66052DD2B655BF72", 12.0, "Halcyon, Haven", "Medical face mask and nitrile gloves. Already downloaded"),
-    ("Clothing_pack_v2", "666D2C5F02F88A56", 68.1, "Haven", "Farmers, carpenters, overalls, a mechanic's uniform, prisoner uniforms (the convicts). Already downloaded; not updated for a year"),
-    ("Domins Civilian Expansion", "630B3E95B52F31DF", 63.1, "Haven, Halcyon", "Paramedic and fireman uniforms, gas mask, oxygen tank. Needs Functional Knives; old build"),
-    ("Timmmmmbs Garbage Composition", "62E8BD33444EA5A4", 4.7, "Red Hand, Haven", "Junk and scrap barricades. Needs IH_Better_GM_Props; old"),
-    ("Placeable Posters", "62B40182B1190ACF", 12.7, "all", "Posters with your own textures: quarantine notices, missing posters, the red hand, the bear"),
-    ("Borkeds Props", "670895D328DC3AA9", 141.5, "Halcyon", "1980s computers, tapes and a reel-to-reel recorder for the lab. CC BY-NC: credit, no commercial use"),
-    ("SecurityFences", "6AB0C0CC87D6EAB1", 20.2, "Bastion, Halcyon", "Mesh fence, razor coil, gates. Already downloaded; its keypad gates are a system, and its licence forbids changes: ask the author"),
-    ("MoreGMProps", "66A920DA264A9F98", 122.7, "Bastion", "Hesco and T-walls, burn piles; also turn-ins to ignore. Already downloaded"),
 ]
