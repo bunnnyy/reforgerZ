@@ -58,6 +58,10 @@ cp "$ROOT/addon.gproj" "$ADDONS/ReforgerZ/"
 # Game module never finds our lowercase "scripts/" and compiles nothing of ReforgerZ, without an error.
 # The check drops it from the throwaway copy (ReforgerZ never references it by name).
 sed -i 's/ *"69BD721866937F85"//' "$ADDONS/ReforgerZ/addon.gproj"
+# On Linux, any other dependency that isn't in EXTRA_ADDONS_DIR is left out too (with a line for each),
+# so the check still compiles ReforgerZ; Bacon Zombies must be there (tools/strip_missing_deps.sh).
+. "$ROOT/tools/strip_missing_deps.sh"
+rz_strip_missing_deps "$ADDONS/ReforgerZ/addon.gproj" "$SERVER" "${EXTRA_ADDONS_DIR:-}" || exit 1
 for d in scripts Configs UI Prefabs Worlds Missions Layouts; do
 	[ -d "$ROOT/$d" ] && cp -r "$ROOT/$d" "$ADDONS/ReforgerZ/"
 done
@@ -92,7 +96,7 @@ if grep -q "Module: Game;" "$LOG" && ! grep -q "Can't compile" "$LOG"; then
 		echo "FAILED: ReforgerZ's scripts were not compiled at all (the sentinel's warning is missing). See $LOG"
 		exit 1
 	fi
-	echo "OK: the Game module compiled ($(grep -E '\(W\).*scripts/Game/ReforgerZ/' "$LOG" | grep -vc "RZ_CompileSentinel.c") ReforgerZ warnings). Log: $LOG"
+	echo "OK: the Game module compiled ($(grep -E '\(W\).*scripts/Game/ReforgerZ/' "$LOG" | grep -vc "RZ_CompileSentinel.c") ReforgerZ warnings${RZ_STRIP_NOTE}). Log: $LOG"
 	exit 0
 fi
 echo "FAILED: see $LOG"

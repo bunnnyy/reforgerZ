@@ -57,6 +57,8 @@ fi
 rm -rf "$ADDON" "$PROFILE/profile/ReforgerZ" && mkdir -p "$ADDON"
 cp "$ROOT/addon.gproj" "$ADDON/"
 sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"	# Special Zombies' "Scripts/" hides ours on Linux (see compile_check.sh)
+. "$ROOT/tools/strip_missing_deps.sh"	# on Linux, other dependencies missing from EXTRA_ADDONS_DIR too
+rz_strip_missing_deps "$ADDON/addon.gproj" "$SERVER" "${EXTRA_ADDONS_DIR:-}" || exit 2
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 cp -r "$HERE/files/." "$ADDON/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
@@ -71,6 +73,7 @@ timeout "${1:-5400}" "$BIN" -addonsDir "$DIRS" -addons "$GUID" -profile "$PROFIL
 LOG="$(ls -td "$PROFILE"/logs/logs_* | head -1)/console.log"
 
 echo "Log: $LOG"
+[ -n "$RZ_STRIP_NOTE" ] && echo "Ran${RZ_STRIP_NOTE#;}"
 echo "Script exceptions: $(grep -c 'Virtual Machine Exception' "$LOG")"
 grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -20
 grep -E 'RZT all mission types tried' "$LOG" | sed 's/.*RZT //'

@@ -1435,9 +1435,19 @@ runtime test and the zombie lab drop Special Zombies the same way.
 tools/compile_check.sh
 ```
 
-Once `addon.gproj` lists Workshop dependencies (step 3 of [1.1](#11-before-you-start-project-and-dependencies)),
-set `EXTRA_ADDONS_DIR` to a folder holding them; the check warns when one is missing. On Windows it
-runs in Git Bash with `SERVER_DIR` pointing at the Steam server
+Set `EXTRA_ADDONS_DIR` to a folder holding the Workshop dependencies in `addon.gproj`
+(step 3 of [1.1](#11-before-you-start-project-and-dependencies)). **On Linux**, a dependency that
+isn't there is left out of the throwaway copy too, with a line for each (`Left out: dependency <id>
+isn't in EXTRA_ADDONS_DIR ...`), and the OK line ends `without N dependencies: <ids>`: the check then
+ran without those mods. That's safe because no ReforgerZ script references their classes (they only
+fill prefab slots); Bacon Zombies is the exception (the behaviour layer mods its classes), so without
+it the check fails. Without this the server refuses the whole addon (`dependency '<id>' can't be
+added`) and compiles none of it. The rule lives in `tools/strip_missing_deps.sh`, which the runtime
+test and the zombie lab use too. To fetch the dependencies on Linux, start the dedicated server
+once with a config whose `game.mods` lists them (it downloads each, with its own dependencies, into
+`-addonsDir`; about 1.1 GB for the whole stack) and stop it once the log says
+`Required addons are ready to use.` On Windows nothing is left out: the check runs in Git Bash with
+`SERVER_DIR` pointing at the Steam server and warns when a dependency is missing
 ([PC_SETUP.md](PC_SETUP.md#4-compile-check-and-runtime-test)).
 
 What it can't do:
@@ -1590,8 +1600,12 @@ questline was following (A Place at the Table fizzles when its guest's life ends
 anyway, it says where and respawns him.
 
 ```bash
-SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding the Workshop dependencies> tools/runtime_test/run.sh
 ```
+
+On Linux, dependencies missing from `EXTRA_ADDONS_DIR` are left out as in the
+[compile check](#compile-check-without-workbench) (a `Left out: ...` line each, and `Ran without N
+dependencies: <ids>` under the log's path); the test world uses none of their prefabs.
 
 | What it shows | What it can't |
 |---|---|
@@ -1649,7 +1663,8 @@ listens on UDP 2001 (it ignores `-bindPort`), so on Linux the lab runs it in its
 None of this is part of the mod: the lab's files are copied into a throwaway addon folder whose
 `addon.gproj` gains Bacon Zombies as a dependency. The lab drops Special Zombies from that copy: with
 it among the dependencies, the 1.9 server compiles none of the addon's scripts, without an error
-(the lab tests Bacon only).
+(the lab tests Bacon only). On Linux it also drops any other dependency missing from
+`EXTRA_ADDONS_DIR`, as the [compile check](#compile-check-without-workbench) does.
 
 **Behaviour tests (B1-B20).** `ONLY=behaviour` runs, instead of the experiments above, the lab tests
 for the infected behaviour layer (our code driving the infected beyond attack range; built on their
