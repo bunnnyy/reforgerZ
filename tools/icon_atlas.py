@@ -22,7 +22,24 @@ PLATFORMS = ["XBOX_ONE", "XBOX_SERIES", "PS4", "PS5", "HEADLESS"]
 
 
 def icons():
-    return sorted(f[:-4] for f in os.listdir(SRC) if f.endswith(".png"))
+    """The icons in atlas order: the cells the current imageset already has keep their place, and
+    new icons go at the end (in name order), so adding one never moves the others."""
+    have = set(f[:-4] for f in os.listdir(SRC) if f.endswith(".png"))
+    order = []
+    path = os.path.join(ROOT, IMAGESET)
+    if os.path.exists(path):
+        cells = []
+        name = None
+        for line in open(path, encoding="utf-8"):
+            line = line.strip()
+            if line.startswith("Name "):
+                name = line.split('"')[1]
+            elif line.startswith("Pos ") and name:
+                x, y = (int(v) for v in line.split()[1:3])
+                cells.append((y // CELL * COLUMNS + x // CELL, name))
+                name = None
+        order = [n for _, n in sorted(cells) if n in have]
+    return order + sorted(have - set(order))
 
 
 def size(count):

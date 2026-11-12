@@ -68,9 +68,10 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (78) from `UI/Icons/png/128/` into
-   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1280, eight 128-pixel cells to a row, in name
-   order.
+1. `py tools/icon_atlas.py` packs the white icons (88) from `UI/Icons/png/128/` into
+   `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1408, eight 128-pixel cells to a row. Icons the
+   imageset already lists keep their cells; new ones go at the end, in name order, so adding an
+   icon never moves the others.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
    becomes `RZ_Icons.edds`.
 3. `py tools/icon_atlas.py imageset` writes `UI/Imagesets/ReforgerZ/RZ_Icons.imageset`: one image
@@ -81,11 +82,11 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 4. **UI > Icon imageset** on `RZ_GameMode.et` points at the imageset (already set).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
-steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for you-are-here (`marker_self` and
-`marker_self_back`), the subtitles' note (`voice_note`) and the three objective marks (`track_current`,
-`track_next`, `track_done`), 78 in all, so import the PNG again (step 2). Until then the imported
-`.edds` is the 72-icon atlas while the imageset lists 78 in a taller atlas, so icons show the wrong
-cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
+steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for the map's disc, ring, glyphs and
+badges (88 in all, the ten new ones in the last cells), so import the PNG again (step 2). Until then
+the imported `.edds` is an older, shorter atlas while the imageset lists 88, so icons show the wrong
+cells (the 78 before these were re-packed in name order, so the old `.edds` doesn't match them either).
+The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`

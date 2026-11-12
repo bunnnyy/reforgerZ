@@ -111,7 +111,7 @@ make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-78 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+88 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
@@ -120,7 +120,8 @@ transparent background, so the game can tint them. Every icon with its intended 
 | Faction emblems | 6 | the Haven, Bastion, the Red Hand, Halcyon, the infected, the Long Table |
 | Standing tiers | 8 | Stranger, Known, Trusted, Champion (dog tags with 0–3 marks), Watched (an eye), Hunted (a crosshair), Kill on Sight (a crossed-out target), and one mixed mark for Uneasy, Tolerated, Respected and Wildcard |
 | Mission types | 8 | contract, world event, puzzle, leader job, unarmed, errand, Perimeter, story arc |
-| Map markers | 12 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, the range ring, and you-are-here (an arrow, with a disc to sit it on). Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
+| Map markers | 18 | lab, safehouse, stronghold, outpost, world event, quartermaster and leader, power station, radio station, checkpoint, the range ring, and you-are-here (an arrow, with a disc to sit it on). Each but the ring sits on a plate whose shape says what it is: square for places factions hold, hexagon for the lab, diamond for events, circle for infrastructure, octagon for the sealed checkpoints. These name the places in the map's feed and serve the journal; the map draws a place from the parts: a solid disc (`marker_disc`), a thin ring to go round it (`marker_ring`), and the stations', events' and checkpoints' glyphs without their plates (`glyph_power`, `glyph_radio`, `glyph_event`, `glyph_checkpoint`) ([The map](#the-map)). The range ring (a broken ring with three claw marks, no plate) is a pack's ground: the map scales it to the ground, and the journal's pack rows use it |
+| Map badges | 4 | what a faction's place is, a tiny glyph in a ring: stronghold (a keep), outpost (a flag), safehouse (a house), the lab (a flask). On a dark chip at a map marker's bottom right, and in the map key |
 | Items | 18 | key, sample, antidote, stabiliser, low-grade med, noisemaker, battery, tyre, spark plugs, fuel can, wind-up radio, molotov, bandage, tin-can tripwire, spike trap, purification tablets, planks, jewellery |
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
 | Standing and needs | 9 | the Standing page's Favor (a coin), leader met, their kit, the next name and how they see you; four of a faction's needs (food, people, security, revenge; supplies and samples use `status_shortage` and `item_sample`) |
@@ -134,11 +135,10 @@ cut-out glyphs, and one per faction for strongholds, outposts and quartermasters
 Chromium, nothing else). The game reads the white icons from one atlas,
 `UI/Textures/ReforgerZ/RZ_Icons.edds`, through the `RZ_Icons` imageset: after re-rendering, pack
 them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). The atlas
-PNG and the imageset hold all 78; the imported `.edds` is still the 72 before `marker_self`,
-`marker_self_back`, `voice_note` and the three objective marks until the PNG is imported again (step 2
-there). The Standing page's nine and the two you-are-here icons were rendered with headless Chrome
-the way `render_ui.js` does (no Playwright on the author's PC); the contact sheet doesn't show
-`voice_note` yet.
+PNG and the imageset hold all 88; the imported `.edds` is older until the PNG is imported again (step 2
+there). The Standing page's nine, the two you-are-here icons and the ten map parts and badges were
+rendered with headless Chrome the way `render_ui.js` does (no Playwright on the author's PC); the
+contact sheet doesn't show `voice_note` or the map parts and badges yet.
 
 ## Screens
 
