@@ -1249,7 +1249,7 @@ in `UI/layouts/ReforgerZ/`.
    layout** and the five **page** layouts are set on `RZ_GameMode.et`: Standing, Journal, Radio,
    **Quests** (`RZ_QuestsPage.layout`, the old hall page's slot and GUID, `{FCD5A2E4F7512EFF}`) and
    the Season page (with the hall of fame now). `chimeraInputCommon.conf` has `RZ_TrackJob` (T, pad
-   Y) in `MenuContext` for the Quests tab's Track. Two
+   Y) in `MenuContext` for the Quests tab's Track (A, `MenuSelect`, tracks there too). Two
    overrides of vanilla configs (same GUIDs) in `Configs/System/` add the rest: `chimeraMenus.conf`
    the presets, `chimeraInputCommon.conf` the input actions ([both](../UI/LAYOUTS.md#menus)).
    **UI > Board menus** is on by default, so reading a safehouse board opens its menu; turn it off
@@ -2712,18 +2712,32 @@ when it happens)
   once. Owed errand pay at a join is one *While you were away* entry, no card.
 - [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
   by a quartermaster (a Favor line), stay out at dusk; never two at once.
-- [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker)): with no job taken there's no box top
-  left. Take a contract (reach it): the box appears small in the top-left corner with its type icon
-  (a real icon, no flat square), the name and CONTRACT, the current objective with a rough area
-  ("Morton, a few km north-west", never metres) and, if known, "Then: ...". Take a second job: the
-  first stays tracked and the second is one dim line under it; with six jobs, four lines and
-  "+2 more in your notebook". A major you haven't taken part in never shows. Crack a secure channel:
-  the box moves down under the radio panel. The map shows the tracked job as a ring, not a pin.
-- [ ] **Quests tab**: every job, taken ones first, each with its objective and rough area and TRACKED,
-  the time left or Offered. Select one: a short brief, who gave it, roughly where, the reward as far
-  as you know, the objectives (current bright, next dim, "Done: ..."). Press Y (pad), T or the TRACK
-  button: the HUD follows it; again on the same job (the button says UNTRACK): the box goes and
-  stays gone until you take a new job. Relog: the same job is still tracked.
+- [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker); the mockup `UI/Previews/tracker.png`,
+  left): with no job taken there's nothing top left. Take a contract (reach it): the tracker appears
+  small in the top-left corner, no box, the text readable on the world (on a TV too): its type icon
+  (a real icon, no flat square, in the giver's colour) and the name; the current objective after a
+  filled yellow diamond; if known, the next one dimmer after an open diamond; the rough area on its
+  own line in yellow ("Morton, a few km north-west", never metres). No kind tag, no "Then:".
+- [ ] **Only the tracked job on the HUD**: take a second and a third job. The first stays tracked
+  and the tracker still shows that one job alone: no dim lines under it and no "+N more". The others
+  are in the Quests tab only. A major you haven't taken part in never shows. Crack a secure channel:
+  the tracker moves down under the radio panel. The map shows the tracked job as a ring, not a pin.
+- [ ] **Quests tab** (the mockup's right half): the jobs under three headings, THE SEASON'S STORY,
+  QUESTLINES AND JOBS and ERRANDS (a heading only where its group has a job), taken ones first in
+  each; each row its icon, name and rough area (a major's act first), TRACKED in yellow on the
+  tracked one, the time left or Offered under it. The D-pad (or a click) chooses a row, outlined in
+  yellow; its detail: one line with the faction, "from" the giver and the area; the brief in italics;
+  OBJECTIVES (a done one faint with a tick and struck through, the current one bright after a
+  yellow diamond, the next dim after an open one, "(Optional) ..."); REWARD, AS FAR AS YOU KNOW;
+  REQUIREMENTS only on an offered job. Every text 18 px or more.
+- [ ] **Track on the Quests tab**: with a pad, **A** on a row tracks it and the HUD follows within
+  2 s; A on the tracked row stops tracking (the button says UNTRACK) and the tracker goes and stays
+  gone until you take a new job. Y, T, Enter and the TRACK button do the same; A on the TRACK button
+  toggles once, not twice. The footer reads "D-pad: choose · A: track / untrack · LB/RB: tabs ·
+  B: close" (as pad buttons with a pad, keys with the keyboard), and changes with the tab (Radio
+  shows its filter, Standing "open"). Relog: the same job is still tracked.
+- [ ] The three objective marks (`track_current`, `track_next`, `track_done`) show after the atlas
+  is imported again (UI/LAYOUTS.md, "Importing the icons"); before that they're blank, never another icon.
 - [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
   other's log (owner-only notices).
 - [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre in olive,

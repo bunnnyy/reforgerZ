@@ -442,5 +442,23 @@
   "category": "Standing and needs",
   "use": "A faction wants revenge: a dagger. The Standing page's need column",
   "plate": false
+ },
+ {
+  "name": "track_current",
+  "category": "Objectives",
+  "use": "A job's current objective: a filled diamond. The quest tracker and the Quests tab",
+  "plate": false
+ },
+ {
+  "name": "track_next",
+  "category": "Objectives",
+  "use": "The next objective you know of, or an optional one: an open diamond. The quest tracker and the Quests tab",
+  "plate": false
+ },
+ {
+  "name": "track_done",
+  "category": "Objectives",
+  "use": "An objective done: a tick, beside the struck-through line. The Quests tab",
+  "plate": false
  }
 ]

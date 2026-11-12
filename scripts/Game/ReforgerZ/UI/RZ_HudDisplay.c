@@ -48,7 +48,6 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected ref array<ref RZ_QueuedSubtitle> m_aSubs = {};
 	protected float m_fSubUntil = -1;		// the line showing stays until then; -1 none showing
 	protected static const int SUB_WAITING = 4;
-	protected static const int TRACK_OTHERS = 4;	// collapsed lines under the tracked job, then "+N more"
 	protected static const float TRACK_X = 24;		// the tracker's place, tucked into the top-left corner
 	protected static const float TRACK_Y = 24;
 	protected static const float TRACK_Y_RADIO = 126;	// below the secure-radio panel while it shows
@@ -285,11 +284,11 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The quest tracker (docs/UI.md, "The quest tracker"), top left, owner-only: the tracked job's
-	//! type icon, name and kind, its current objective with the rough area, the known next one, then
-	//! every other job taken as one dim line each (at most TRACK_OTHERS, then "+N more"). Hidden
-	//! while nothing is tracked. Redrawn only when the server sends a new copy; a layout without
-	//! TrackerPanel shows nothing.
+	//! The quest tracker (docs/UI.md, "The quest tracker"), top left, small, owner-only: the tracked
+	//! job alone, its type icon and name, its current objective (a filled diamond), the known next
+	//! one (an open diamond, dim) and the rough area in the accent colour. The other jobs taken are
+	//! the Quests tab's, never here. Hidden while nothing is tracked. Redrawn only when the server
+	//! sends a new copy; a layout without TrackerPanel shows nothing.
 	protected void DrawTracker(RZ_PlayerUIComponent ui)
 	{
 		Widget panel = RZ_UIW.Find(m_wRoot, "TrackerPanel");
@@ -313,14 +312,11 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		array<string> head = null;
 		string now = "";
 		string next = "";
-		array<ref array<string>> others = {};
 		foreach (array<string> f : recs)
 		{
 			string tag = RZ_UIText.Str(f, 0);
 			if (tag == "T")
 				head = f;
-			else if (tag == "A")
-				others.Insert(f);
 			else if (tag == "O" && RZ_UIText.Int(f, 1) == RZ_EObjState.CURRENT && now.IsEmpty())
 				now = RZ_UIText.Str(f, 2);
 			else if (tag == "O" && RZ_UIText.Int(f, 1) == RZ_EObjState.NEXT && next.IsEmpty())
@@ -336,45 +332,17 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		if (giver >= 0)
 			accent = RZ_UIColor.Faction(giver);
 
-		string kind = RZ_UIText.Str(head, 5);
-		kind.ToUpper();
 		RZ_UIW.Icon(m_wRoot, "TrackerIcon", RZ_UIText.MissionIcon(RZ_UIText.Int(head, 2)));
 		RZ_UIW.Tint(m_wRoot, "TrackerIcon", accent);
-		RZ_UIW.Tint(m_wRoot, "TrackerAccent", accent);
 		RZ_UIW.SetText(m_wRoot, "TrackerTitle", RZ_UIText.Str(head, 4));
-		RZ_UIW.SetText(m_wRoot, "TrackerKind", kind);
-
-		// The rough area goes with the current objective only: never metres
-		string area = RZ_UIText.Str(head, 6);
-		if (!area.IsEmpty())
-			now = string.Format("%1 (%2)", now, area);
-
 		RZ_UIW.SetText(m_wRoot, "TrackerNow", now);
-		RZ_UIW.Show(m_wRoot, "TrackerNext", !next.IsEmpty());
-		RZ_UIW.SetText(m_wRoot, "TrackerNext", "Then: " + next);
+		RZ_UIW.Show(m_wRoot, "TrackerNextRow", !next.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "TrackerNext", next);
 
-		RZ_UIW.Show(m_wRoot, "TrackerOthers", !others.IsEmpty());
-		for (int i = 1; i <= TRACK_OTHERS + 1; i++)
-		{
-			string n = i.ToString();
-			bool shown = i <= TRACK_OTHERS && i <= others.Count();
-			RZ_UIW.Show(m_wRoot, "TrackerOther" + n, shown);
-			if (!shown)
-				continue;
-
-			array<string> o = others[i - 1];
-			RZ_UIW.Icon(m_wRoot, "TrackerOtherIcon" + n, RZ_UIText.MissionIcon(RZ_UIText.Int(o, 2)));
-			string line = RZ_UIText.Str(o, 4);
-			int minutes = RZ_UIText.Int(o, 5);
-			if (minutes >= 0 && minutes < 10)
-				line += string.Format(" (%1 min left)", minutes);
-
-			RZ_UIW.SetText(m_wRoot, "TrackerOtherText" + n, line);
-		}
-
-		int more = others.Count() - TRACK_OTHERS;
-		RZ_UIW.Show(m_wRoot, "TrackerMore", more > 0);
-		RZ_UIW.SetText(m_wRoot, "TrackerMore", string.Format("+%1 more in your notebook", more));
+		// The rough area on its own line, in the accent colour; never metres
+		string area = RZ_UIText.Str(head, 6);
+		RZ_UIW.Show(m_wRoot, "TrackerArea", !area.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "TrackerArea", RZ_QuestText.Cap(area));
 	}
 
 	//------------------------------------------------------------------------------------------------
