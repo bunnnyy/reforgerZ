@@ -236,6 +236,7 @@ class RZ_Major_Proof : RZ_Questline
 
 		scene.m_sTitle = "Day One";
 		scene.m_sBrief = run.Fill("The clinic in {clinic} kept a file on its first case. \"Notify the Institute\" is underlined twice. The date on it is three weeks before the gates closed. Bring it to the lab, or to whoever you think should read it.");
+		scene.m_sObjective = run.Fill("Take the first case's file from the clinic in {clinic} to a reader you choose.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 10;
 		scene.m_iFavor = 15;
@@ -270,6 +271,7 @@ class RZ_Major_Proof : RZ_Questline
 	{
 		scene.m_sTitle = "The reading";
 		scene.m_sBrief = run.Fill("{director} reads the first page to the authors around a table at the change of shift: \"A paper that starts with that word won't be believed, and then nothing we did in here counts.\"");
+		scene.m_sObjective = run.Fill("Help {director} settle the paper's first page at the lab in {lab_town}.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 10;
 		scene.m_iFavor = 20;
@@ -363,6 +365,7 @@ class RZ_Major_Proof : RZ_Questline
 
 		scene.m_sTitle = "The paper";
 		scene.m_sBrief = run.Fill("{director} reads the paper on the open channel for two minutes, the way the lab speaks for its dead, then seals it in a steel case. The case goes to a table on the north road, just outside the line.");
+		scene.m_sObjective = run.Fill("Walk the paper's steel case from the lab to the table on the north road.");
 		scene.m_bLate = true;
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iFame = 0;
@@ -385,6 +388,7 @@ class RZ_Major_Proof : RZ_Questline
 	{
 		scene.m_sTitle = "Before the stand";
 		scene.m_sBrief = run.Fill("The first page is written, and the batch is close. {director}'s three pages from the site log are still loose, and so is the draft in the records room. Whatever happens to them happens before the stand.");
+		scene.m_sObjective = run.Fill("Settle {director}'s loose pages and the draft in the lab's records room before the stand.");
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iFame = 0;
 		scene.m_iFavor = 0;

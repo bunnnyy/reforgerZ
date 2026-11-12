@@ -201,6 +201,10 @@ in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)).
 asking them again. **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
 step was done, three at most.
 
+A way's **step** is the line the tracker shows: it names who and where with the card's tokens
+(`{giver}`, `{place}`, `{here}`...), and the way back names the giver's place
+([MISSIONS.md](MISSIONS.md#objectives); how it's written: [WRITING.md](WRITING.md#objective-lines)).
+
 ## Pay: nothing for free
 
 Through the one small-pay ledger, per identity for the season (`RZ_ErrandLedger`):

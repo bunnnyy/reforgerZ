@@ -255,6 +255,7 @@ class RZ_QM_TableGone : RZ_QM_TableBase
 	{
 		m_sTitle = "The farm";
 		m_sBrief = "There's nobody at the farm any more.";
+		m_sObjective = QFill(gm, "Look over the empty {family} farm past {town}.");
 		RZ_LongTable t = Table(gm);
 		if (t)
 			m_vPos = t.GetHousePos();

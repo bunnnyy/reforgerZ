@@ -764,6 +764,7 @@ class RZ_QM_CargoDriver : RZ_QuestMission
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_iTalk = AddClue(QText(gm, "driver"), QFill(gm, "{driver_short} keeps his eyes on the road while he talks, and his hands in his pockets. \"Not here. Not where they can see. Walk with me a bit.\""));
 		m_sTitle = "Cargo: the driver";
+		m_sObjective = QFill(gm, "Meet {driver_short} at the crossroads outside {crew_place} at dusk.");
 		if (RZ_Quest_Cargo.IsHaven(run))
 			m_sBrief = QFill(gm, "{witness} passed us a message from a Red Hand driver, {driver_short}. He drives one of the vans with the canvas tied down, and he says he wants out. He'll be at the crossroads outside {crew_place} at dusk. Hear him out. Be careful.");
 		else
@@ -943,6 +944,7 @@ class RZ_QM_CargoLoad : RZ_QuestMission
 		m_vPos = m_vVan;
 		m_iSettlement = gm.FindNearestSettlement(camp);
 		m_sTitle = "Cargo: the load";
+		m_sObjective = QFill(gm, "Reach the van with three people in it at {crew_short}'s camp outside {crew_place}.");
 		if (RZ_Quest_Cargo.IsHaven(run))
 			m_sBrief = QFill(gm, "The van is at {crew_short}'s camp outside {crew_place}, padlocked, with three people in the back. Get them out and bring them to us. Please don't let them see you coming.");
 		else
@@ -1254,6 +1256,7 @@ class RZ_QM_CargoBuys : RZ_RedHandQuestMission
 		m_iSettlement = gm.FindNearestSettlement(m_vDrop);
 		m_sTitle = "Cargo: who buys";
 		m_sBrief = QFill(gm, "Somebody buys what's in those vans. Watch the drop at {drop} after dark without being seen, ask the Red Hand's fence, or pay {driver_short} to say who.");
+		m_sObjective = QFill(gm, "Find out who buys the vans' cargo at the drop at {drop}.");
 		return true;
 	}
 
@@ -1447,6 +1450,7 @@ class RZ_QM_CargoTell : RZ_RedHandQuestMission
 		m_iSettlement = gm.FindNearestSettlement(crew.m_vPos);
 		m_sTitle = "Cargo: tell someone";
 		m_sBrief = QFill(gm, "{buyer_line} Somebody has to hear it. The boss, if you can get a hearing. {crew_short}, if you want paying to forget it. Bastion. Or the Haven's chair.");
+		m_sObjective = QFill(gm, "Tell someone who buys the cargo: the boss, {crew_short}, Bastion or the Haven's chair.");
 		return true;
 	}
 
@@ -1628,6 +1632,7 @@ class RZ_QM_CargoFate : RZ_QuestMission
 			m_vDriver = LandPointNear(RZ_RedHandQuest.PosOf(run, "camp"), 20, 40);
 			m_sTitle = "Cargo: the raid";
 			m_sBrief = QFill(gm, "Bastion goes into {crew_short}'s camp outside {crew_place} at dawn, and wants it quiet when it gets there. Go in first. Everyone in that crew who's holding a gun is a problem.");
+			m_sObjective = QFill(gm, "Clear the guns out of {crew_short}'s camp outside {crew_place} before Bastion's dawn raid.");
 		}
 		else if (m_iBranch == RZ_Quest_Cargo.OUT_PURGE)
 		{
@@ -1639,12 +1644,14 @@ class RZ_QM_CargoFate : RZ_QuestMission
 			run.SetText("drop_pit", string.Format("the garages behind %1's camp in %2", boss.m_sShort, boss.m_sPlace));
 			m_sTitle = "Cargo: the driver";
 			m_sBrief = QFill(gm, "The boss is tidying up, and {driver_short} is part of the mess. He goes in the pit at {drop_pit} tonight. Take his place, get him out, or let it be.");
+			m_sObjective = QFill(gm, "Get {driver_short} out of the pit at {drop_pit} tonight, or take the driver's place.");
 		}
 		else
 		{
 			m_vDriver = RZ_RedHandQuest.PosOf(run, "cross");
 			m_sTitle = "Cargo: the driver";
 			m_sBrief = QFill(gm, "{driver_short} is at the crossroads outside {crew_place}, waiting to hear what happens to him now. Get him out to the Haven, or tell him to keep driving.");
+			m_sObjective = QFill(gm, "Get {driver_short} from the crossroads outside {crew_place} to the Haven, or send the driver on.");
 		}
 
 		if (m_vDriver == vector.Zero)

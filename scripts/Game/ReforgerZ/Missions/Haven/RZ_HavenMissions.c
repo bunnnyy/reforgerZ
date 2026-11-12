@@ -59,6 +59,7 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 		m_sTitle = "The Cache";
 		m_sDeed = "found a supply cache near {town}";
 		m_sBrief = string.Format("One of our scouts radioed from %1: a cellar nobody's found yet, tins and bottled water still on the shelves. Somebody else will have heard the call. Get there, secure it, and hold the area for a minute while we send people to carry it home.", s.m_sName);
+		m_sObjective = string.Format("Hold the cellar cache in %1 for a minute.", s.m_sName);
 		m_Mirror.Roll();
 		Truth(gm);
 		return true;
@@ -264,6 +265,7 @@ class RZ_Mission_SurvivorHoldout : RZ_Mission_Hold
 		m_sTitle = "Survivors Trapped";
 		m_sDeed = "got people out of {town}";
 		m_sBrief = string.Format("A family has been barricaded inside a house in %1 since yesterday, and the infected have found the door. They called it in on a child's walkie-talkie. Get to them and hold the house until help from the safehouse arrives.", s.m_sName);
+		m_sObjective = string.Format("Hold the family's house in %1 until help comes from the safehouse.", s.m_sName);
 		return true;
 	}
 
@@ -581,6 +583,7 @@ class RZ_Mission_RadioRelay : RZ_Mission_Hold
 		m_sTitle = "Radio Relay";
 		m_sDeed = "fixed the radio relay at {town}";
 		m_sBrief = string.Format("The houses talk to each other through a relay on the high ground near %1: who's short, who has beds, which roads are open. Keep it broadcasting for 3 minutes while tonight's news goes out. The speaker hums, and every infected nearby will hear it.", s.m_sName);
+		m_sObjective = string.Format("Keep the Haven relay near %1 broadcasting for 3 minutes.", s.m_sName);
 		return true;
 	}
 
@@ -680,6 +683,7 @@ class RZ_Mission_BurnTheNest : RZ_Mission_DestroyTarget
 		m_sTitle = "Burn the Nest";
 		m_sDeed = "burnt the dead in {town}";
 		m_sBrief = string.Format("The slow ones lie up thick in %1, all in one place, through the day. While they're there, nobody can go home to that town. Find the place and burn it out. Some of them were neighbours once. Burn it anyway.", s.m_sName);
+		m_sObjective = string.Format("Find the nest in %1 and burn it out.", s.m_sName);
 		return true;
 	}
 
@@ -888,6 +892,7 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		m_sTitle = "Medicine Run";
 		m_sDeed = "brought medicine to {town}";
 		m_sBrief = string.Format("The Haven safehouse in %1 is out of medicine. There's a stocked pharmacy in %2: the supplies are on its shelves, and something stands in the aisles. Fight it, or throw something loud well away from the door and walk in while it looks. Bring them back.", homeName, pharmacy.m_sName);
+		m_sObjective = string.Format("Bring the medicine from the pharmacy in %1 to the safehouse in %2.", pharmacy.m_sName, homeName);
 		m_sHomeName = homeName;
 		Truth(gm);
 		return true;
@@ -1032,6 +1037,7 @@ class RZ_Mission_BittenFriend : RZ_Mission
 		m_fParticipationRadius = 60;
 		m_sTitle = "The Bitten Friend";
 		m_sBrief = string.Format("One of ours was bitten in %1 and declared it, the way every house asks. There's still time if someone gets an antidote to him before he turns. If nobody can, someone has to do what has to be done, and better you than his family.", s.m_sName);
+		m_sObjective = string.Format("Get an antidote to the bitten Haven man in %1 before the turn.", s.m_sName);
 		return true;
 	}
 
@@ -1215,6 +1221,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 		m_sTitle = "Missing Scout";
 		m_sDeed = "found the scout near {town}";
 		m_sBrief = string.Format("One of our scouts never came back from %1. He was marking which houses still stood and which wells were clean. Search the area, find his notes and bring them to the safehouse in %2. If you find him, we'll read his name at supper.", s.m_sName, homeName);
+		m_sObjective = string.Format("Find the missing scout's notes in %1 and take the notes to the safehouse in %2.", s.m_sName, homeName);
 		return true;
 	}
 
@@ -1406,6 +1413,7 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 		m_vPos = LandPointNear(s.m_vCenter, s.m_fRadius, s.m_fRadius + 150);
 		m_sTitle = "Trader Caravan";
 		m_sBrief = string.Format("One of our traders has set up at the crossroads outside %1, swapping seed potatoes and soap with whoever comes by. The Red Hand knows he's there, and they don't like trade they can't toll. Get there and keep him alive.", s.m_sName);
+		m_sObjective = string.Format("Keep the Haven trader at the crossroads outside %1 alive.", s.m_sName);
 		Truth(gm);
 		return true;
 	}
@@ -1661,6 +1669,7 @@ class RZ_Mission_RescueTheKids : RZ_Mission_Hold
 		m_sTitle = "Rescue the Kids";
 		m_sDeed = "brought the children back from {town}";
 		m_sBrief = string.Format("Children are hiding in the school in %1, the ones whose parents didn't come back for them. They've been eating from the kitchen and keeping very quiet. Get them out quietly and bring them to us. If it gets loud, everything in town will come.", s.m_sName);
+		m_sObjective = string.Format("Hold the school in %1 for 90 seconds, quietly, while the children get out.", s.m_sName);
 		return true;
 	}
 

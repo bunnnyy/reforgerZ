@@ -33,6 +33,7 @@ class RZ_Job_OurCrossroads : RZ_LeaderHold
 		m_sTitle = "Our Crossroads";
 		m_sBrief = string.Format("The crossroads outside %1 is ours. Not the boss's. Ours. Somebody's been parking on it. Stand there for five minutes and let the dead and the living both see who owns it.",
 			s.m_sName);
+		m_sObjective = string.Format("Stand on the crossroads outside %1 for five minutes.", s.m_sName);
 		return true;
 	}
 }
@@ -72,6 +73,7 @@ class RZ_Job_HonourAmongThieves : RZ_LeaderPuzzle
 
 		m_sTitle = "Honour Among Thieves";
 		m_sBrief = string.Format("%1 was one of mine. Took the boss's watch and my good boots, and walked. He's in %2. I don't need him dead. I need the boots.", m_sThief, s.m_sName);
+		m_sObjective = string.Format("Get the boots back from %1 in %2.", m_sThief, s.m_sName);
 		return true;
 	}
 
@@ -155,6 +157,7 @@ class RZ_Job_HouseRules : RZ_LeaderHold
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "House Rules";
 		m_sBrief = "The boss runs the big pit. This one's ours: our rules, our bets, our cut. Get in the ring behind the garages and stay standing. Win and I'll pay out of the pot.";
+		m_sObjective = string.Format("Stay standing in the ring behind the garages in {leader_place:%1}.", m_iLeaderId);
 		return true;
 	}
 
@@ -219,6 +222,7 @@ class RZ_Job_DebtCollection : RZ_LeaderPuzzle
 
 		m_sTitle = "Debt Collection";
 		m_sBrief = string.Format("%1 owes us forty tins and a favour. They're in %2. Talk, threaten, pay it off yourself. I don't care which, as long as the book balances.", m_sDebtor, s.m_sName);
+		m_sObjective = string.Format("Collect what %1 in %2 owes the crew.", m_sDebtor, s.m_sName);
 		return true;
 	}
 
@@ -334,6 +338,7 @@ class RZ_Job_SoftTouch : RZ_LeaderDelivery
 		m_sTitle = "The Soft Touch";
 		m_sBrief = string.Format("Don't laugh. There's a safehouse in %1 with sick kids and no medicine, and I've got medicine. The boss would call it charity. The boss would call it a lot of things. Get it there, and keep your mouth shut.",
 			h.m_sName);
+		m_sObjective = string.Format("Take the medicine to the safehouse in %1.", h.m_sName);
 		return true;
 	}
 
@@ -411,6 +416,7 @@ class RZ_Job_CoupTalk : RZ_LeaderVisit
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "Coup Talk";
 		m_sBrief = string.Format("The boss is old and slow, and the other crews know it. Carry a word to the crews outside %1 and %2. Just a word. Stay long enough to see who listens.", names[0], names[1]);
+		m_sObjective = string.Format("Carry the word to the crews outside %1 and %2.", names[0], names[1]);
 		return true;
 	}
 
@@ -494,6 +500,7 @@ class RZ_Job_SellOutRivalCrew : RZ_LeaderDelivery
 		m_sTitle = "Sell Out a Rival Crew";
 		m_sBrief = string.Format("The crew in %1 has been taking from my roads. Bastion would love to know where they sleep. Here's a map. Walk it to %2. Nobody ever has to know who drew it.",
 			m_sRivalPlace, meetName);
+		m_sObjective = string.Format("Take the map of the crew in %1 to Bastion at %2.", m_sRivalPlace, meetName);
 		return true;
 	}
 
@@ -552,6 +559,7 @@ class RZ_Job_SkimTheToll : RZ_LeaderHold
 		m_sTitle = "Skim the Toll";
 		m_sBrief = string.Format("The boss takes the toll on the road to %1. Today the boss is short-handed and I'm not. Stand on the road for five minutes and collect. What the boss doesn't count, the boss doesn't miss.",
 			s.m_sName);
+		m_sObjective = string.Format("Take the toll on the road to %1 for five minutes.", s.m_sName);
 		return true;
 	}
 }

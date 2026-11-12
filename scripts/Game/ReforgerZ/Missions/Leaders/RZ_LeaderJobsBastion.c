@@ -40,6 +40,7 @@ class RZ_Job_HeartsAndMinds : RZ_LeaderDelivery
 		m_sTitle = "Hearts and Minds";
 		m_sBrief = string.Format("Rations stay in Bastion hands. That's the order. Command also hasn't called in {days_since_command_words} days. There's a Haven safehouse in %1 with children in it. Take them a crate. Don't sign for it.",
 			h.m_sName);
+		m_sObjective = string.Format("Take a ration crate to the Haven safehouse in %1.", h.m_sName);
 		return true;
 	}
 
@@ -129,6 +130,7 @@ class RZ_Job_RealOrders : RZ_LeaderDelivery
 		m_sTitle = "The Real Orders";
 		m_sBrief = string.Format("The courier carrying command's last orders never reached us. His satchel is somewhere in %1. I want to read them before anyone tells me what they say. Bring them to me. The stronghold will want them too.",
 			s.m_sName);
+		m_sObjective = string.Format("Bring the courier's satchel from %1 to {leader:%2}.", s.m_sName, m_iLeaderId);
 		return true;
 	}
 
@@ -213,6 +215,7 @@ class RZ_Job_TrainingDay : RZ_LeaderHold
 		m_sTitle = "Training Day";
 		m_sBrief = string.Format("Six recruits. Last week they were students. Today they do their first patrol, at the edge of %1, and they are going to panic. Stand with them for four minutes. Bring them all back.",
 			s.m_sName);
+		m_sObjective = string.Format("Stand with the recruits at the edge of %1 for four minutes.", s.m_sName);
 		return true;
 	}
 
@@ -322,6 +325,7 @@ class RZ_Job_LocalLaw : RZ_LeaderPuzzle
 		m_sTitle = "Local Law";
 		m_sBrief = string.Format("Two families in %1 are about to kill each other over a well. If Bastion settles it with rifles, we're the Red Hand with better boots. Settle it with words. No shots. Not one.",
 			s.m_sName);
+		m_sObjective = string.Format("Settle the well dispute in %1 without a shot.", s.m_sName);
 		return true;
 	}
 
@@ -398,6 +402,7 @@ class RZ_Job_RiflesForSale : RZ_LeaderDelivery
 		m_sTitle = "Rifles for Sale";
 		m_sBrief = string.Format("Twelve rifles fell off the inventory. Inventory is a state of mind. A Red Hand buyer has fuel and fresh food, and we have neither. Deliver the crate to %1. Don't open it, don't count it, don't ask.",
 			meetName);
+		m_sObjective = string.Format("Deliver the rifle crate to the Red Hand buyer at %1.", meetName);
 		return true;
 	}
 
@@ -461,6 +466,7 @@ class RZ_Job_OffBookRequisition : RZ_LeaderPuzzle
 
 		m_sTitle = "Off-Book Requisition";
 		m_sBrief = string.Format("%1 has been eating well while my people eat paste. Collect a contribution for our stores. Don't call it a tax. Don't put it in writing.", s.m_sName);
+		m_sObjective = string.Format("Collect a contribution in %1 for the stores of {leader:%2}.", s.m_sName, m_iLeaderId);
 		return true;
 	}
 
@@ -551,6 +557,7 @@ class RZ_Job_BurnTheLedger : RZ_LeaderPuzzle
 
 		m_sTitle = "Burn the Ledger";
 		m_sBrief = string.Format("There's an audit coming from %1. The supply ledger is in a crate behind the post. It needs to not exist in fifteen minutes. You understand.", auditor);
+		m_sObjective = string.Format("Burn the supply ledger behind the post in {leader_place:%1}.", m_iLeaderId);
 		return true;
 	}
 
@@ -645,6 +652,7 @@ class RZ_Job_DesertionRoute : RZ_PuzzleMission
 		m_Escort.SetTalk(m_iId, 0, "Walk them to the safehouse|March them to the stronghold instead", m_iTalk, "Talk to the soldiers");
 		m_sTitle = "Desertion Route";
 		m_sBrief = string.Format("Two of my people are done. I'm not going to make them stay, and I'm not going to report it. Walk them to the safehouse in %1. The Haven takes anyone.", h.m_sName);
+		m_sObjective = string.Format("Walk the two deserters to the safehouse in %1.", h.m_sName);
 		return m_Escort.Begin(gm, m_vPos);
 	}
 

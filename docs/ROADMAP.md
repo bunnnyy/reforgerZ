@@ -180,9 +180,10 @@ the rest that waits is play, engine checks and the author's calls.
   they miss the old radio offers? Does a leader's Ask for work handing over every open contract at
   once crowd the Quests tab (if so, offer the nearest few)? Does the Journal's past jobs read well
   after an evening ([MISSIONS.md](MISSIONS.md#who-gets-offered-what), [UI.md](UI.md#notebook-journal)).
-- **Objectives of their own:** missions use the default (get there, then the ask from the brief) or
-  their step chain; give the story jobs their own steps with `ObjSteps` where the default reads
-  badly ([MISSIONS.md](MISSIONS.md#objectives)).
+- **Objectives of their own:** every mission names its ask in one line (who, what, where), then
+  get there and the ask, or its step chain. Do the lines read well on the tracker with a pad, a day
+  after the brief? Give the story jobs steps of their own with `ObjSteps` where one line isn't
+  enough ([MISSIONS.md](MISSIONS.md#objectives), [WRITING.md](WRITING.md#objective-lines)).
 
 ### World interactions (from play-testing)
 - **The spawn screen and the map with a pad:** both are seen in Workbench play with the keyboard;

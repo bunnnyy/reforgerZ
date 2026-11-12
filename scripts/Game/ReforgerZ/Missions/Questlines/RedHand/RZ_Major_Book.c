@@ -4,7 +4,7 @@
 //! (AfterInnerEnding). The new acts are scenes (RZ_QM_MajorScene) at Rudi's crossroads and the
 //! boss's seat:
 //!
-//! 1. Send him off (Collapse's second evening, a set piece): the crews send Rudi off loud at his
+//! 1. Send Rudi off (Collapse's second evening, a set piece): the crews send Rudi off loud at his
 //!    shutter, and the back page is gone in front of every crew. Ask a crew boss to come, pay a greedy
 //!    one, or hold the crossroads through the send-off.
 //! 2-3. The torn page and who gets it (R1, as built).
@@ -79,7 +79,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		Info("book", "The Book Has to Balance", RZ_EFaction.BANDITS);
 		Major();
 
-		RZ_QuestStage send = MissionStage(S_SEND, "Send him off", "{boss} calls every crew to Rudi's shutter at {crossroads} to send him off loud: horns, music, shots in the air. Then the book is read over him. Bring the crew bosses. Hold the road if the noise brings company.");
+		RZ_QuestStage send = MissionStage(S_SEND, "Send Rudi off", "{boss} calls every crew to Rudi's shutter at {crossroads} to send him off loud: horns, music, shots in the air. Then the book is read over him. Bring the crew bosses. Hold the road if the noise brings company.");
 		send.GiveUp(4, "");
 
 		RZ_QuestStage settleWait = WaitStage(S_SETTLE_WAIT, "Settling day", "The page is settled, one way or another. {boss} says the whole book gets read out before the cure, at {crossroads}, and it has to balance.");
@@ -106,7 +106,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		RZ_QuestStage coda = MissionStage(S_CODA, "The last line", "At {crossroads} at dusk {boss} closes the book: the last line, then every line still open, read out with its name.");
 		coda.GiveUp(4, "");
 
-		Act(A_SEND, "Send him off").Stage(S_SEND).AnchorCure(50).Need(1).PatienceEvenings(2).SetPiece(16, 21);
+		Act(A_SEND, "Send Rudi off").Stage(S_SEND).AnchorCure(50).Need(1).PatienceEvenings(2).SetPiece(16, 21);
 		Act(A_TORN, "The torn page").Stage(S_WHO).Stage(S_FIND).AnchorCure(50).Need(1).LastCall("Somebody's selling a page at a barn. Not for long.");
 		Act(A_PAGE, "Who gets the page").Stage(S_READ).Stage(S_PAGE).Stage(S_THIEF).Stage(S_HEARS).AnchorCure(50).Need(3).LastCall("The boss's men are going to the pit tonight, page or no page.");
 		Act(A_SETTLE, "Settling day").Stage(S_SETTLE_WAIT).Stage(S_SETTLE).Opens(50).AnchorCure(60).Need(1).PatienceEvenings(2).SetPiece(16, 21).Climax().CostsMorale().LastCall("{boss} reads the book at dusk tomorrow, with or without anyone standing up for it.");
@@ -296,8 +296,9 @@ class RZ_Major_Book : RZ_Quest_TheBook
 	//------------------------------------------------------------------------------------------------
 	protected bool SendScene(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_QM_MajorScene scene, vector cross)
 	{
-		scene.m_sTitle = "Send him off";
+		scene.m_sTitle = "Send Rudi off";
 		scene.m_sBrief = run.Fill("Rudi was never sent off. Tonight he is, at his shutter at {crossroads}: horns, music, shots in the air, and the book read over him. Bring the crew bosses. The noise will bring company.");
+		scene.m_sObjective = run.Fill("Hold Rudi's shutter at {crossroads} while the crews send Rudi off.");
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iTimeout = OUT_SENT;
 		scene.SetHold(cross, 240, OUT_SENT, OUT_SENT_LOST);
@@ -313,6 +314,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 	{
 		scene.m_sTitle = "Settling day";
 		scene.m_sBrief = run.Fill("The whole book read out at {crossroads} before the cure, loud on purpose. {rival} will use the reading to ask who should hold it. It fails either way. How it fails is up to whoever is standing there.");
+		scene.m_sObjective = run.Fill("Stand at {crossroads} while the whole book is read and {rival} makes a play.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 8;
 		scene.m_iFavor = 15;
@@ -367,6 +369,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 	{
 		scene.m_sTitle = "The last page";
 		scene.m_sBrief = run.Fill("{boss} opens the book at Rudi's tally. \"When the gates open, a toll is a lorry parked across a road. So what are we owed?\"");
+		scene.m_sObjective = run.Fill("Help {boss} write the book's last page at {boss_place}.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 10;
 		scene.m_iFavor = 20;
@@ -404,6 +407,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 	{
 		scene.m_sTitle = "Sent off loud";
 		scene.m_sBrief = run.Fill("The book goes on a fire at {crossroads} at dusk, the way the Red Hand sends off its dead. Hold the road while it burns.");
+		scene.m_sObjective = run.Fill("Hold the road at {crossroads} while the book burns.");
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iTimeout = OUT_FIRE;
 		scene.SetHold(cross, 180, OUT_FIRE, OUT_FIRE);
@@ -417,6 +421,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 	{
 		scene.m_sTitle = "The last line";
 		scene.m_sBrief = run.Fill("At {crossroads} {boss} closes the book: the last line, then every line still open, paid or not. Nobody is ever out of the book, and tonight everyone hears it.");
+		scene.m_sObjective = run.Fill("Stand with {boss} at {crossroads} while the book is closed.");
 		scene.m_bLate = true;
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iFame = 0;

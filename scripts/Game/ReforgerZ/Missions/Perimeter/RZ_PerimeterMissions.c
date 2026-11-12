@@ -238,6 +238,7 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 		m_sTitle = "The Blind Spot";
 		m_sBrief = string.Format("Drones run a rotation, same as everyone. In %1 minutes the stretch of the line at grid %2 goes blind for ten. %3 Meet him, take the package, and get it to our drop at grid %4 before the drones come back. Late, or still standing there when they do? Then you were never ours.",
 			RZ_Util.RoundToInt(OPEN_IN / 60), RZ_SettlementScanner.GridReference(m_vMeet), runner, RZ_SettlementScanner.GridReference(m_vDrop));
+		m_sObjective = string.Format("Take the runner's package from grid %1 to the drop at grid %2.", RZ_SettlementScanner.GridReference(m_vMeet), RZ_SettlementScanner.GridReference(m_vDrop));
 		return true;
 	}
 
@@ -492,6 +493,7 @@ class RZ_Mission_TheCrossing : RZ_Mission_Delivery
 
 		m_sBrief = string.Format("One of our runners was carrying medicine along the line tonight, the only road the Red Hand doesn't toll. A drone found her. She dropped the package at the %1 at grid %2, %3, and ran. She made it. The medicine didn't. Take it and get out of the warning zone quickly: if you carry it too long under a drone, it locks on. Please bring it to %4. And be careful.",
 			m_sSpotKind, RZ_SettlementScanner.GridReference(spot), under, destination);
+		m_sObjective = string.Format("Take the medicine from the %1 at grid %2 to %3.", m_sSpotKind, RZ_SettlementScanner.GridReference(spot), destination);
 		Truth(gm, spot, dropAt);
 		return true;
 	}
@@ -798,6 +800,7 @@ class RZ_Mission_ShotAtTheLine : RZ_PuzzleMission
 			return false;
 
 		m_sTitle = "Shot at the Line";
+		m_sObjective = string.Format("Search the body at the line, grid %1.", RZ_SettlementScanner.GridReference(m_vBody));
 		if (m_bShore)
 			m_sBrief = GetShoreBriefFor(m_eGiver, RZ_SettlementScanner.GridReference(m_vBody));
 		else

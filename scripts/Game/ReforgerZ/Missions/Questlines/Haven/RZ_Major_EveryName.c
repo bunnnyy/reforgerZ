@@ -531,6 +531,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 
 		scene.m_sTitle = "The ones who can't work";
 		scene.m_sBrief = run.Fill("A family at the edge of {family_town}: two who can work, a grandfather in a wheelchair, a girl of eight with a cough. {family_head}: \"We can take two. The two who can work. Not with that cough.\"");
+		scene.m_sObjective = run.Fill("Talk to {family_head} about the family at the edge of {family_town}.");
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iFame = 5;
 		scene.m_iFavor = 10;
@@ -557,10 +558,12 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		bool second = voteName != "first";
 		scene.m_sTitle = "The first sitting";
 		scene.m_sBrief = run.Fill("Supper at {chair_place}. On the table, in the Haven's own words: everyone eats, or workers first. Bastion's cards and the crossroads' tins only if somebody carries the offer.");
+		scene.m_sObjective = run.Fill("Sway the council's vote at supper at {chair_place}.");
 		if (second)
 		{
 			scene.m_sTitle = "The second sitting";
 			scene.m_sBrief = run.Fill("The council sits again at {chair_place}, to keep the rule or change it. If the List's truth came out, the copies are on the table too.");
+			scene.m_sObjective = run.Fill("Sway the council's second vote at {chair_place}.");
 		}
 
 		scene.m_eTier = RZ_ETier.STRANGER;
@@ -651,6 +654,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 
 		scene.m_sTitle = "The hungry week";
 		scene.m_sBrief = run.Fill("The house in {hungry_house} can't feed its mouths this week. Under {rule}, somebody already has an answer. Every answer is open, whatever the rule says.");
+		scene.m_sObjective = run.Fill("Help {hungry_head} feed the safehouse in {hungry_house} this week.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 6;
 		scene.m_iFavor = 15;
@@ -678,6 +682,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		int rule = RZ_MajorHelp.World(gm, "haven.rule", 1);
 		scene.m_sTitle = "A week on";
 		scene.m_sBrief = WeekBrief(rule);
+		scene.m_sObjective = run.Fill("Talk to the council head at the safehouse in {week_house}.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 5;
 		scene.m_iFavor = 10;
@@ -716,6 +721,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 
 		scene.m_sTitle = "The gate";
 		scene.m_sBrief = run.Fill("{chair} walks the Haven to the north road, where the Day 2 column was turned back. At the last bend, 150 metres short of the barrier, the List is read. Nobody behind the concrete answers.");
+		scene.m_sObjective = run.Fill("Stand with {chair} at the last bend on the north road.");
 		scene.m_bLate = true;
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iFame = 0;

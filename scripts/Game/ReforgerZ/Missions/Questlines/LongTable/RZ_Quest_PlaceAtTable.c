@@ -475,6 +475,7 @@ class RZ_QM_PlaceDead : RZ_QM_PlaceBase
 		m_iSettlement = gm.FindNearestSettlement(m_vDead);
 		m_sTitle = "The dead";
 		m_sBrief = QFill(gm, string.Format("{host} says the dead don't need what they have. Someone died to the infected near %1 not long ago. Stand where they fell, before anyone else finds them. Then go back to the farm gate and tell him.", PlaceName(gm, m_vDead)));
+		m_sObjective = QFill(gm, string.Format("Stand where someone fell near %1, then tell {host} at the farm gate.", PlaceName(gm, m_vDead)));
 		return true;
 	}
 
@@ -649,6 +650,7 @@ class RZ_QM_PlaceDying : RZ_QM_PlaceBase
 		m_iSettlement = gm.FindNearestSettlement(m_vRoad);
 		m_sTitle = "The dying";
 		m_sBrief = QFill(gm, string.Format("{host} says %1 is on the road and won't make it. Bitten. \"Tell them where we are. We'll look after them.\"", m_sDying));
+		m_sObjective = QFill(gm, string.Format("Find %1, bitten, on the road, and decide whether to send %1 to {host}.", m_sDying));
 		return true;
 	}
 
@@ -828,6 +830,7 @@ class RZ_QM_PlaceStray : RZ_QM_PlaceBase
 		m_iSettlement = gm.FindNearestSettlement(m_vBarn);
 		m_sTitle = "A stray";
 		m_sBrief = QFill(gm, "{host} wants a living one: {stray}, an exile the Red Hand keeps track of, sleeping rough near {stray_town}. \"Bring him to supper.\" Bring him, walk him somewhere safe instead, or tell {host} no at the gate.");
+		m_sObjective = QFill(gm, "Find {stray} sleeping rough near {stray_town} and decide where to take {stray}.");
 		return true;
 	}
 
@@ -1018,6 +1021,7 @@ class RZ_QM_PlaceGrace : RZ_QM_PlaceBase
 		m_iSettlement = t.GetSettlement();
 		m_sTitle = "Grace";
 		m_sBrief = QFill(gm, "{mother} has set a place for you at the long table, at the head of it. \"Grace tonight is yours. Say a name.\"");
+		m_sObjective = QFill(gm, "Say grace at {mother}'s long table at the farm past {town}.");
 		return true;
 	}
 

@@ -342,7 +342,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 300;
 		w.m_fRadius = 20;
 		w.m_bQuiet = true;
-		w.m_sStep = "Keep the children in the yard at {house} (5 real minutes there). No shooting near them.";
+		w.m_sStep = "Keep the children in the yard at {house} for 5 real minutes, without a shot fired.";
 		w.m_iFavor = 4;
 		w.Done("Count them in, count them out. Same number, ideally. Same number. Thank you.");
 	}

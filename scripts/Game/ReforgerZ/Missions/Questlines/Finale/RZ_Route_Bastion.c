@@ -54,6 +54,20 @@ class RZ_Route_Bastion : RZ_FinaleRoute
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override protected string StageObjective(int stage)
+	{
+		switch (stage)
+		{
+			case S_ACT1: return "Find where Bastion's detached store is, starting with Sedlak at the roster board.";
+			case S_DOOR: return "Get the tube slips {captain} wants from the bus driver's clipboard at a Haven house.";
+			case S_PIECE: return "Bring {captain}'s box out cold from the store near {store}.";
+			case S_ACT4: return "Sign {captain}'s box in at the lab in {lab_town}, against a tray.";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected string RemakeText()
 	{
 		return "The batch was lost. One session of the lab's work on what it kept.";
@@ -132,6 +146,7 @@ class RZ_Route_Bastion : RZ_FinaleRoute
 		RZ_FinalePeople people = Finale().GetPeople();
 		scene.m_sTitle = StageTitle(stage);
 		scene.m_sBrief = run.Fill(StageKnown(stage));
+		scene.m_sObjective = run.Fill(StageObjective(stage));
 		switch (stage)
 		{
 			case S_ACT1:
@@ -209,6 +224,7 @@ class RZ_Route_Bastion : RZ_FinaleRoute
 	protected bool AgainScene(RZ_GameModeComponent gm, RZ_QuestRun run, RZ_QM_MajorScene scene, vector seat)
 	{
 		scene.m_sBrief = "The freezers are gone. Processing again, from the living: whoever was in the column, and whoever gives.";
+		scene.m_sObjective = "Gather tubes from the living with the medic at Bastion's stronghold.";
 		scene.m_vPos = seat;
 		int post = scene.Person(seat, "the medic at the post", "Talk to the medic", "Processing again. Names, a tube each, the same as Day 2. This time we keep the slips.");
 		scene.Choice(post, "Give blood").Sets("do:donor").Says("A tube with your name on it, in a rack marked D.", "gave blood for the column");
@@ -321,6 +337,7 @@ class RZ_Route_Bastion : RZ_FinaleRoute
 	{
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. Bastion's people choose the order.";
+		scene.m_sObjective = run.Fill(ReleaseObjective());
 		scene.m_vPos = gm.GetLabPosition();
 		int form = DutyOfficer(gm, scene, "Who goes first? Write it in. I'll read it out.");
 		if (run.Flag("dirty") == 0)

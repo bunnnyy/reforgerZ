@@ -487,6 +487,7 @@ class RZ_Mission_ReinIn : RZ_PuzzleMission
 		// The seat's tokens: the name is whoever sits there when the brief is read
 		m_sBrief = string.Format("{leader:%1} in {leader_place:%1} has stopped answering to us. Go there and read them our terms: they keep their place, they stop the side deals, and they answer when we call. They'll try to buy you. Don't let them.",
 			m_iTarget);
+		m_sObjective = string.Format("Read the terms to {leader:%1} in {leader_place:%1}.", m_iTarget);
 		return true;
 	}
 

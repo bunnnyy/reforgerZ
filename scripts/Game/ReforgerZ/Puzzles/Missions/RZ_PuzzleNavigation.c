@@ -129,6 +129,7 @@ class RZ_Mission_NumbersStation : RZ_PuzzleMission
 
 		m_sTitle = "The Numbers Station";
 		m_sBrief = string.Format("A Haven radio man heard numbers on the air before he went quiet. His log is somewhere in %1. Find the frequency, find the mast that carries it, and work out where the numbers point.", s.m_sName);
+		m_sObjective = string.Format("Find the radio man's log in %1 and where the numbers point.", s.m_sName);
 		return true;
 	}
 
@@ -260,6 +261,7 @@ class RZ_Mission_TwoBearings : RZ_PuzzleMission
 
 		m_sTitle = "Two Bearings";
 		m_sBrief = string.Format("A Bastion helicopter came down in pieces near %1. The pilot walked away from it. Two pieces of the wreck have bearings scratched on them. Draw both lines on your map: he's where they cross.", s.m_sName);
+		m_sObjective = string.Format("Find the pilot from the wreck near %1 where the two bearings cross.", s.m_sName);
 		return true;
 	}
 

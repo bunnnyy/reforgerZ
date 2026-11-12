@@ -56,7 +56,9 @@ CHANNELS = {
     "trace":       "a trace's line: a town's doors, a scene, a grave (World/Traces)",
     "door":        "a door mark's line by level (World/Traces/RZ_TraceText.c)",
     "setting":     "an attribute's default text",
-    "text":        "prose whose channel couldn't be guessed",
+    "objective":   "an objective or step line: the quest tracker, the Quests tab, the map (m_sObjective, "
+                   "ObjSteps, an errand's or an opening's step, a job's objective list)",
+    "text":       "prose whose channel couldn't be guessed",
 }
 
 FACTION_ENUM = {
@@ -120,6 +122,10 @@ CALL_CHANNELS = {
     "NotifyKnown": {1: "title", 2: "notice"},
     "NotifyPlayerAs": {1: "title", 2: "notice"},
     "WaitStage": {1: "title", 2: "journal"},
+    "MissionStage": {1: "title", 2: "journal"},
+    "ObjSteps": {"*": "objective"},
+    "ObjOptional": {"*": "objective"},
+    "Task": {7: "objective"},       # an opening's step 2 (Guidance/RZ_OpeningChain.c)
     "Note": {"*": "journal"},
     "GiveUp": {1: "journal"},
     "Reward": {"*": "outcome"},
@@ -131,6 +137,8 @@ ASSIGN_CHANNELS = {
     "m_sName": "title",
     "m_sLabel": "label",
     "m_sChoices": "choice",
+    "m_sObjective": "objective",
+    "m_sStep": "objective",
     "m_sHaven": "hint", "m_sBastion": "hint", "m_sRedHand": "hint", "m_sHalcyon": "hint",
     "m_sWanderer": "hint", "m_sRadio": "hint", "m_sPlain": "hint", "m_sShort": "hint",
 }
@@ -140,6 +148,8 @@ ASSIGN_FACTIONS = {"m_sHaven": "Haven", "m_sBastion": "Bastion", "m_sRedHand": "
 
 # By function name, in the voice files (first match wins).
 FUNCTION_CHANNELS = [
+    (r"(RZ_Quests|RZ_Mission|RZ_Questline|RZ_StepChain)\.c$", r"^((Get|Add|Errand)?Objectives|BackLine)$", "objective"),
+    (r"/Finale/", r"^(StageObjective|ReleaseObjective)$", "objective"),
     (r"VoiceDefaults\.c$", r".", "ambient"),
     (r"/Traces/RZ_TraceText\.c$", r"Door|Words|Know|Read|Glance|Age|Scratch", "door"),
     (r"/Traces/", r".", "trace"),

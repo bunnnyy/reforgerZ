@@ -64,7 +64,7 @@ class RZ_Quest_WellStory : RZ_Questline
 		collect.GiveUp(4, "Nobody went to collect from {village}. {crew_short} has stopped asking, which is worse.");
 		collect.Visits(2);
 
-		RZ_QuestStage why = MissionStage(S_WHY, "Why they stopped", "The keeper in {village} won't pay. Find out why from the council head, or pay their dues yourself and let the story end there.");
+		RZ_QuestStage why = MissionStage(S_WHY, "Why {village} stopped", "The keeper in {village} won't pay. Find out why from the council head, or pay their dues yourself and let the story end there.");
 		why.GiveUp(4, "Nobody asked {village} why it stopped paying. The story will be told anyway.");
 
 		RZ_QuestStage story = MissionStage(S_STORY, "Tell the story", "Tell the story about the well, at the well in {village}, at dusk, to whoever's there. Or warn them instead.");
@@ -559,6 +559,7 @@ class RZ_QM_WellCollect : RZ_QuestMission
 		m_iTalk = AddClue(QText(gm, "keeper"), QFill(gm, "{keeper} doesn't get up from the step. \"I know who sent you, and I know what he wants. We haven't got it. Tell him that.\""));
 		m_sTitle = "The Well Story: collect";
 		m_sBrief = QFill(gm, "{village} hasn't paid this month. Go and remind {keeper} what my protection is worth. Politely, the first time.");
+		m_sObjective = QFill(gm, "Remind {keeper} in {village} what the protection is worth.");
 		// The quiet threat (Reputation > Quiet success): Fear first, before the house comes out
 		m_Ways.m_iMenaceDifficulty = RZ_ReputationSettings.QuietDifficulty();
 		return true;
@@ -689,8 +690,9 @@ class RZ_QM_WellWhy : RZ_RedHandQuestMission
 		m_iTalk = AddClue(m_sWho, QFill(gm, "\"The keeper told you no, and the keeper was right.\" They don't sit down, and they don't ask you to."));
 		m_vPos = m_aSpots[0];
 		m_iSettlement = run.Flag("town", -1);
-		m_sTitle = "The Well Story: why they stopped";
+		m_sTitle = QFill(gm, "The Well Story: why {village} stopped");
 		m_sBrief = QFill(gm, "{village} says no. Nobody says no to me without a reason. Find out what it is. Or pay what they owe yourself, if you're feeling soft. I don't care who pays.");
+		m_sObjective = QFill(gm, "Find out why {village} has stopped paying.");
 		return true;
 	}
 
@@ -786,6 +788,7 @@ class RZ_QM_WellTell : RZ_QuestMission
 		m_iTalk = AddClue(woman, QFill(gm, "{drawer} is hauling up a bucket, and doesn't stop. \"You're the Red Hand's. Go on, then. Say it.\""));
 		m_sTitle = "The Well Story: tell the story";
 		m_sBrief = QFill(gm, "Go to the well in {village} at dusk, when they come for water. Tell them the story. You know the one. Let them finish it themselves.");
+		m_sObjective = QFill(gm, "Tell the story at the well in {village} at dusk.");
 		return true;
 	}
 
@@ -911,6 +914,7 @@ class RZ_QM_WellOrder : RZ_RedHandQuestMission
 		m_iSettlement = run.Flag("town", -1);
 		m_sTitle = "The Well Story: the order";
 		m_sBrief = QFill(gm, "{village} still hasn't paid. So now it stops being a story. Put something in their well, after dark, and don't let anyone see you do it.");
+		m_sObjective = QFill(gm, "Put something in the well in {village} after dark, unseen.");
 		return true;
 	}
 
@@ -1194,6 +1198,7 @@ class RZ_QM_WellBoss : RZ_QuestMission
 		m_iTalk = AddClue("The boss's second", QFill(gm, "The boss wants to know about {village}. The boss says the story works best untold: you don't kill the cow you milk. So. What happened?"));
 		m_sTitle = "The Well Story: the boss hears";
 		m_sBrief = QFill(gm, "The boss has heard about {village}, and wants it from you, at {boss_place}. Not angry. Yet.");
+		m_sObjective = QFill(gm, "Tell {boss} at {boss_place} what happened in {village}.");
 		return true;
 	}
 

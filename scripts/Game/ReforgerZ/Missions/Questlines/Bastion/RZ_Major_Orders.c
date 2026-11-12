@@ -196,6 +196,7 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 	{
 		scene.m_sTitle = "Effective Strength";
 		scene.m_sBrief = run.Fill("{co} at the radio, before the call: \"That wasn't the first copy to reach my stove. They could carry 'nobody is coming'. Tell them nobody ever meant to come, and they'll stop asking anyone for anything.\" Then the ask: the true count, from the posts.");
+		scene.m_sObjective = run.Fill("Bring {co} the true count from the posts' duty boards.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 6;
 		scene.m_iFavor = 15;
@@ -258,6 +259,7 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 	{
 		scene.m_sTitle = "The muster";
 		scene.m_sBrief = run.Fill("Every post on the secure net at the nightly call. {co}: \"Tonight I read the numbers to Command, or I read them something else. Tell me which.\" Command never answers, in any version.");
+		scene.m_sObjective = run.Fill("Help {co} decide what to read to Command at the nightly call.");
 		scene.m_eTier = RZ_ETier.KNOWN;
 		scene.m_iFame = 10;
 		scene.m_iFavor = 20;
@@ -350,6 +352,7 @@ class RZ_Major_Orders : RZ_Quest_AwaitRelief
 	{
 		scene.m_sTitle = "The last call";
 		scene.m_sBrief = run.Fill("The last nightly call of the season from {stronghold}, then the walk. Lieutenant Sedlak keeps the roster board, and leads the walk with the box of tags. The CO stays at the radio: \"Somebody has to be on the net.\"");
+		scene.m_sObjective = run.Fill("Stand at the last nightly call at {stronghold}, then walk with Lieutenant Sedlak.");
 		scene.m_bLate = true;
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iFame = 0;

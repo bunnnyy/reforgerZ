@@ -38,6 +38,11 @@ docs/WRITING.md:
     clue-echo    an ambient line never repeats a clue's text
     seed-name    seeded name lists never use a name LORE.md gives a person
     punchline    a short last sentence ("Habit.") is used by one line only
+    objective    an objective or step line (the tracker, the Quests tab, the map) stands on its own:
+                 no he/she/his/her/him/they/them/their without a person named in the same line (a
+                 capitalised name, a person's {token} or a %1), and three words or more;
+                 a stage title is never only a pronoun and a noun ("His number"); every mission
+                 that sets a brief names its objective (m_sObjective) in the same class
 
 The baseline (tools/voice_lint_baseline.txt) holds today's findings as check, file and a hash of
 the literal, so the lint fails only on new or changed text. Fixing a line drops it from the
@@ -147,6 +152,25 @@ NOT_PERSON_TOKEN = re.compile(r"(place|town|house|grid|village|post|farm|barn|st
 # Functions whose lines carry information: their information clause must keep a token.
 INFO_FUNCTIONS = re.compile(r"^(ChatterTruck|ChatterTruckOnRoad|ChatterShift|ChatterToll|ChatterSamples|"
                             r"SecureTruck|SecureDeparture|SecurePatrol|SecureSamples|SecureShort)$")
+
+# Objective lines (docs/WRITING.md, "Objective lines"): a pronoun needs a name before it in the same line
+OBJ_PRONOUN_RE = re.compile(r"\b(he|she|him|her|his|hers|himself|herself|they|them|their|theirs|themselves|"
+                            r"he's|she's|he'd|she'd|he'll|she'll|they're|they've|they'll|they'd)\b", re.I)
+# What a pronoun can point back to: a {token}, a %1, or a capitalised word that doesn't start a sentence
+OBJ_ANTECEDENT_RE = re.compile(r"\{[a-z_]+(?::[^{}\s]+)?\}|%[1-9]|(?<=[^.!?]\s)[A-Z][a-z]+")
+# Capitalised words that are never a person
+OBJ_NOT_NAMES = {"Haven", "Bastion", "Red", "Hand", "Halcyon", "Long", "Table", "Zone", "Day", "Command",
+                 "Volunteer", "Institute", "Optional", "Failed", "Search", "Reached", "Go", "Get", "Wait",
+                 "The", "A", "An", "Grid", "North", "South", "East", "West", "Morse", "Final", "Twice"}
+OBJ_MIN_WORDS = 3
+STAGE_CALLS = ("WaitStage", "MissionStage")
+# A stage title made of a pronoun and a noun or two ("His number", "Find him")
+STAGE_PRONOUN_RE = re.compile(r"\b(he|she|him|her|his|they|them|their)\b", re.I)
+# A brief assigned to a mission (self-modifying ones, `x = f(x)`, decorate a brief and are skipped)
+OBJ_PLACE_TOKEN = re.compile(r"(place|town|house|grid|village|post|farm|barn|store|lab|clinic|pit|drop|"
+                             r"stronghold|site|crossroads|road|camp|where|lies|here|from|to|far)$")
+BRIEF_ASSIGN_RE = re.compile(r"^\s*(?:(\w+)\.)?m_sBrief\s*=\s*(.*)$")
+CLASS_RE = re.compile(r"^class\s+(\w+)")
 
 TOKEN_RE = re.compile(r"\{([a-z_]+)(?::([^{}\s]+))?\}")
 SENTENCE_RE = re.compile(r"[^.?!…]+[.?!…]+[\"']?")
@@ -280,6 +304,103 @@ def last_sentence(text):
     return sentences[-1].strip().strip("\"'").strip()
 
 
+def obj_names(text):
+    """What a pronoun in an objective line can point back to: person-like {tokens}, %1s and
+    capitalised names (not the line's first word, not a faction or a place word)."""
+    names = []
+    for m in OBJ_ANTECEDENT_RE.finditer(text):
+        a = m.group(0)
+        if a.startswith("{"):
+            name = TOKEN_RE.match(a).group(1)
+            if name in WORLD_TOKENS or OBJ_PLACE_TOKEN.search(name) or name in ("leader_place", "lab_town"):
+                continue
+        elif a in OBJ_NOT_NAMES:
+            continue
+        names.append(a)
+    return names
+
+
+def objective_problem(text):
+    """Why an objective line doesn't stand on its own (docs/WRITING.md, "Objective lines"), or None."""
+    t = text
+    if not t.strip():
+        return None
+    m = OBJ_PRONOUN_RE.search(t)
+    if m and not obj_names(t):
+        return "'%s' with no named person in the line: say who" % m.group(0)
+    # A piece of a built line ("Get to " + place) isn't counted
+    if t == t.strip():
+        words = re.findall(r"\{[^}]*\}|%[1-9]|[A-Za-z0-9'’-]+", t)
+        if len(words) < OBJ_MIN_WORDS:
+            return "objective of %d word(s): say who, what and where" % len(words)
+    return None
+
+
+def stage_title_problem(lit):
+    """A stage title that leans on a pronoun ("His number", "Find him"): it shows as a done objective."""
+    eff = si.effective_call(lit.calls) if lit.calls else None
+    if not eff or eff[0] not in STAGE_CALLS or eff[1] != 1:
+        return None
+    m = STAGE_PRONOUN_RE.search(lit.text)
+    if m and not obj_names(lit.text[:m.start()]):
+        return "stage title '%s' leans on '%s': name the person" % (lit.text, m.group(0))
+    return None
+
+
+def missing_objectives(root=si.ROOT):
+    """Every class that sets a mission's brief (m_sBrief = ..., or scene.m_sBrief = ...) also names its
+    objective (the same receiver's m_sObjective) in that class. A brief that decorates another
+    (`m_sBrief = x + m_sBrief`) is skipped."""
+    findings = []
+    base = os.path.join(root, si.SCRIPTS)
+    for dirpath, _, files in os.walk(base):
+        if os.path.relpath(dirpath, root) == si.PACK_DIR:
+            continue
+        for name in sorted(files):
+            if not name.endswith(".c"):
+                continue
+            path = os.path.join(dirpath, name)
+            rel = os.path.relpath(path, root).replace(os.sep, "/")
+            with open(path, encoding="utf-8", errors="replace") as f:
+                lines = f.read().split("\n")
+            cls, cls_line = "", 0
+            briefs = {}      # receiver -> first line
+            objectives = set()
+
+            def flush():
+                for recv, line in briefs.items():
+                    if recv not in objectives:
+                        lit = si.Literal()
+                        lit.file, lit.line, lit.text = rel, line, cls + ":" + (recv or "this")
+                        lit.calls, lit.target, lit.returned, lit.function = [], "", False, ""
+                        lit.faction, lit.channel = "-", "objective"
+                        who = (recv + ".") if recv else ""
+                        findings.append(Finding("objective", lit, "%s sets %sm_sBrief but no %sm_sObjective: name the "
+                                                "objective in one line (who, what, where)" % (cls, who, who)))
+
+            for i, line in enumerate(lines):
+                m = CLASS_RE.match(line)
+                if m:
+                    flush()
+                    cls, cls_line = m.group(1), i + 1
+                    briefs, objectives = {}, set()
+                    continue
+                if line.lstrip().startswith("//"):
+                    continue
+                m = BRIEF_ASSIGN_RE.match(line)
+                if m:
+                    recv = m.group(1) or ""
+                    rhs = m.group(2)
+                    if "m_sBrief" not in rhs:
+                        briefs.setdefault(recv, i + 1)
+                    continue
+                m = re.match(r"^\s*(?:(\w+)\.)?m_sObjective\s*=", line)
+                if m:
+                    objectives.add(m.group(1) or "")
+            flush()
+    return findings
+
+
 def check(lits, all_lits):
     findings = []
     known_keys = questline_keys(all_lits)
@@ -389,6 +510,16 @@ def check(lits, all_lits):
                 findings.append(Finding("pronoun", lit, "a pronoun after {%s}" % person.group(0)[1:-1]))
                 break
 
+        # objective: a tracker line stands on its own; a stage title never leans on a pronoun
+        if ch == "objective":
+            why = objective_problem(t)
+            if why:
+                findings.append(Finding("objective", lit, why))
+        else:
+            why = stage_title_problem(lit)
+            if why:
+                findings.append(Finding("objective", lit, why))
+
         # info-token
         if INFO_FUNCTIONS.match(lit.function) and si.is_prose(t):
             if not re.search(r"%[1-9]", t) and not TOKEN_RE.search(t):
@@ -476,6 +607,9 @@ SELF_TEST = [
     ("reply", "reply", "-", "", "Something else."),
     ("split", "speech", "-", "", "We buried him by the wall. " * 16),
     ("ellipsis", "speech", "-", "", "..."),
+    ("objective", "objective", "Halcyon", "", "Find out his number."),
+    ("objective", "objective", "Haven", "", "Go back to her."),
+    ("objective", "objective", "-", "", "Burn it."),
 ]
 
 
@@ -510,7 +644,7 @@ def main():
     if args.self_test:
         sys.exit(self_test(all_lits))
 
-    findings = check(lits, all_lits)
+    findings = check(lits, all_lits) + missing_objectives()
     if args.update_baseline:
         n = write_baseline(findings)
         print("voice_lint: wrote %d findings to %s" % (n, os.path.relpath(BASELINE, si.ROOT)))

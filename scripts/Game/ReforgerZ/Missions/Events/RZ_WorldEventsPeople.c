@@ -126,6 +126,7 @@ class RZ_Event_DistressBase : RZ_PuzzleMission
 		m_sCaller = RZ_NoteText.FirstName(m_Rng);
 		m_sTitle = "Distress Call";
 		m_sBrief = string.Format("A voice on the open band, from just outside %1: \"This is %2. There's two of us, one's hurt, and they're all round the house. Please. Anyone.\" It comes again every few minutes.", s.m_sName, m_sCaller);
+		m_sObjective = string.Format("Get %1 and the injured friend out of the house outside %2.", m_sCaller, s.m_sName);
 		return true;
 	}
 
@@ -929,6 +930,7 @@ class RZ_Event_PrisonBreak : RZ_Mission
 		m_vLast = start;
 		m_sTitle = "Prison Break";
 		m_sBrief = string.Format("The holding cells in %1 didn't hold. A dozen convicts are out and armed with whatever they found, walking toward %2. The Red Hand will take in anyone who gets there. Stop them on the road, or stay out of their way.", s.m_sName, m_sTarget);
+		m_sObjective = string.Format("Stop the convicts on the road from %1 to %2.", s.m_sName, m_sTarget);
 		Truth(gm, start);
 		return true;
 	}
@@ -1191,6 +1193,7 @@ class RZ_Event_TheSniper : RZ_Mission
 		m_Sniper = new RZ_EventGroup(Prefab(gm), m_vPos);
 		m_sTitle = "The Sniper";
 		m_sBrief = string.Format("Someone's been shooting from the high ground above %1 since dawn. Not infected, not any faction's. Whoever it is has a stash up there and nothing left to lose. Come at him from cover.", s.m_sName);
+		m_sObjective = string.Format("Take out the sniper on the high ground above %1.", s.m_sName);
 		return true;
 	}
 
@@ -1330,6 +1333,7 @@ class RZ_Event_RivalSurvivors : RZ_PuzzleMission
 		m_Group = new RZ_EventGroup(Prefab(gm), m_vCamp);
 		m_sTitle = "Rival Survivors";
 		m_sBrief = string.Format("A group nobody's heard from has made camp outside %1. They answer to no faction. They'll trade with people they've heard good things about. The others, they shoot.", s.m_sName);
+		m_sObjective = string.Format("Trade with the camp outside %1, or deal with the camp.", s.m_sName);
 		return true;
 	}
 
@@ -1612,6 +1616,7 @@ class RZ_Event_CollapseShelter : RZ_PuzzleMission
 		m_vPos = m_vShelter;
 		m_sTitle = "Collapse Shelter";
 		m_sBrief = string.Format("The shelter in %1 (%2) was overrun in the night. Four people got out and scattered round the town. They're hiding, and some of them are bitten. Find them before they turn and point them to a safehouse.", s.m_sName, shelter);
+		m_sObjective = string.Format("Find the four who fled the shelter in %1 and send each to a safehouse.", s.m_sName);
 		Truth(gm);
 		return true;
 	}
