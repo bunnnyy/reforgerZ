@@ -17,7 +17,9 @@ and one way to end it: **research the cure.**
   outside calls you over: someone who knew you before, a stranger, or a wanderer who met an earlier
   life of yours. Your first objective is to talk to them (nobody opens the talk screen on you). Their small asks (the second your background's own: a fever to treat, a pump, a
   gate to hold, a locked door) teach the Zone, tell its story and walk you to the Haven or the
-  faction your background belongs with; experienced players get less of it.
+  faction your background belongs with; experienced players get less of it. Every place a task
+  sends you is true to its words (a house over the way, the remains by the road, the well in the
+  town it names), never on an island, checked live and by a place audit on the map.
 - **The Director** moves the server through four outbreak stages over a season of about 45
   real days, spreads infection from town to town and sends hordes toward noise. The infected adapt
   a little as the cure advances. Research is scaled to how much the server really plays over the
@@ -198,6 +200,7 @@ What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start 
 | [LORE.md](docs/LORE.md) | The sealed Zone, the factions as people, endings |
 | [WRITING.md](docs/WRITING.md) | How player text is written: tone, the voices, the season mood and the voice bank, conversations, grey choices, the humour line, the text lint's rules |
 | [DESIGN.md](docs/DESIGN.md) | How every system works, by system |
+| [PLACES.md](docs/PLACES.md) | Task places and things: every task's place and the things its words name checked as data, live in play and by the place audit on a map |
 | [SITES.md](docs/SITES.md) | Camp sites: each site's ground read on a grid, the props' real footprints, the surroundings and threat, the rules and the solver, building in layers by doctrine (the wire and its gates, the boards, the watch, valuables indoors), the site audit and its drawing |
 | [DIALOGUE.md](docs/DIALOGUE.md) | Talking to people: the talk screen, conversation trees, checks, memory, the `.rzd` format and its tools |
 | [ROADMAP.md](docs/ROADMAP.md) | Built, next, play-test priorities, dropped ideas |
@@ -229,7 +232,8 @@ scripts/Game/ReforgerZ/
                  memory (reasons, signals, the town log, world records, the truth deck) with its
                  writers, the marks spawner, the Long Table, the land grid (water, height, trees,
                  roads, bridges and wild land), named people, the finale's people and the faults
-                 table
+                 table; task places (every task's place need and the things its words name, the
+                 checks, the finder and the place audit)
     Traces/      Traces: the door-mark grammar, the first days, doors on the map, the writers
                  and the watch, reading, decals' list and boards, player traces, the scenes,
                  sound and light, the placer camp life shares, the clue registry
@@ -343,8 +347,9 @@ tools/compile_check.sh
                  compiles the scripts on the dedicated server, no Workbench needed (Linux,
                  or Windows in Git Bash)
 tools/runtime_test/
-                 runs the game mode on that server with a fake player, and (run.sh sites) the site
-                 audit on Arland, Everon or Cain (test only, not the mod)
+                 runs the game mode on that server with a fake player, (run.sh sites) the site
+                 audit and (run.sh tasks) the task place audit on Arland, Everon or Cain;
+                 places.py draws the task places (test only, not the mod)
 tools/zombie_lab/
                  measures Bacon Zombies' own AI on that server, on Everon: groups, waypoints,
                  sight, sharing, speeds, health, the clock, frame time (test only, not the mod)

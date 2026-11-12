@@ -722,7 +722,7 @@ and the UI files) need none, and eight have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_WindupRadio.et` | a small radio item; keep "radio" in its name | `RZ_TuneRadioAction`, `RZ_RadioCallAction`, `RZ_ViewRadioAction`; `RZ_ViewRadioAction` (In hand on) | Guidance > Radio prefab | optional | given to every new life. The two View radio actions: one in the "default" context, one in "knob_toggle" with In hand on (beside vanilla's Turn on/off) |
-| `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch |
+| `RZ_CarWreck.et` | a wrecked car prop | — | Guidance > Car wreck prefab | optional | an opening's clue when your group is gone: their car in the ditch; also Shift Change's car at the verge (an errand prop, up while a player is within 150 m) |
 | `RZ_ScratchedDoor.et` | a door or wall panel prop | the clue set | Guidance > Door prefab | optional | an opening's clue in the hiding place: the scratched door |
 | `RZ_Flyer.et` | a poster prop | the clue set | Guidance > Flyer prefab | optional | an opening's clue when your group is gone (the flyer they went after), safehouse flyers |
 | `RZ_TableRadio.et` | a radio prop | `RZ_ClueComponent`; `RZ_ReadClueAction` (Label Listen) | Guidance > Table radio prefab | optional | an opening's clue in the hiding place: the radio still talking; beside the operators in No Reply and Await Relief, and The Census's nightly call |
@@ -1806,6 +1806,22 @@ the summary, the props measured and the `render.py --placed` command for the log
 script exception, an audit that didn't finish, or a stronghold under **Audit threshold** (today
 every map's strongholds are: the plans are fixed drawings until the solver).
 
+**The task places.** Every task that names its place or a thing at it is checked against its need
+([PLACES.md](PLACES.md)): live in play (`Place check: ...` warnings; the full test prints how many),
+and on its own on a map's own world by the place audit:
+
+```bash
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder> tools/runtime_test/run.sh tasks [arland] [everon] [cain]
+python3 tools/runtime_test/places.py draw <the log it names>      # run.sh writes task_places_<map>.html itself
+```
+
+Each map boots once with the mod's own game mode settings (Arland about 1.5 minutes, Everon about 6,
+most of it the land grid; vanilla stand-ins for the slots its spawn tests make), asks the game's
+own pickers for places (the openings' roll and every step it leads to, every errand way from a few
+givers each, the spawn points), prints `Places: ...` per need and the summary, and draws them in
+`task_places_<map>.html` in the work folder. It fails on a script exception, an audit that didn't
+finish, or a need scoring under 95 (`RZ_PlaceAudit.s_iThreshold`).
+
 | What it shows | What it can't |
 |---|---|
 | Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; questline stages, branches and endings (by success and failure only, not every approach); the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
@@ -1934,7 +1950,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **155** lines with the tag, all but one in the game scripts (one is the comment in
+There are **157** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 34 are in `UI/`: 29 of [the UI's](#the-ui-32), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/` and two are the radio screen's in `Interactions/`), but one: the sites plugin's in
@@ -2027,16 +2043,18 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
-| `Guidance/RZ_OpeningPlaces.c:341` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
-| `Guidance/RZ_OpeningPlaces.c:381` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
+| `Guidance/RZ_OpeningPlaces.c:447` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
+| `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 
-### Low risk: contained or cosmetic (40)
+### Low risk: contained or cosmetic (42)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
+| `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
+| `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
@@ -2070,7 +2088,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
 | `Factions/RZ_CampLife.c:4668` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 | `Factions/RZ_CampLife.c:4405` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
-| `Guidance/RZ_OpeningPlaces.c:351` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
+| `Guidance/RZ_OpeningPlaces.c:457` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
 | `World/RZ_PowerSite.c:357` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
 | `World/RZ_PowerSite.c:371` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
 
@@ -2135,6 +2153,9 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 168 h after the cure.
 [ReforgerZ] World facts: season seed S, 0 canon facts, 0 season flags.
 [ReforgerZ] Settlement scan: 2 named, 12 building clusters, took 83 ms.
+[ReforgerZ] Mainland: mainland N km2 (100 m squares, N ms); K islands: 0.8 km2 (<town on it>), 0.1 km2, ...
+[ReforgerZ] Mainland: <town> at <grid> is on an island: not a settlement
+[ReforgerZ] Settlements: <town>'s middle was in the water: moved N m to <grid>
 [ReforgerZ] Perimeter: x 70 to 3913, z 488 to 3788. Warning zone 300 m, kill zone 100 m.
 [ReforgerZ] Perimeter checkpoints: 4 roads come within 350 m of the edge; 0 crossings of the checkpoint line (60 m inside the edge): 0 used, 0 closer than 800 m to another.
 [ReforgerZ] Perimeter checkpoints: 148 roads, 10 road ends with the sea within 40 m past them: 0 usable, 7 at a junction, 0 with the barrier in the sea or outside the line, 3 with another road within 75 m of the barrier.
@@ -2454,8 +2475,16 @@ step N`, `Openings: <name> went on talking with <player> into step N`,
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
 (<background>)`, `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
-the spawn point instead` and `Openings: no contact could stand for <player> at <grid>, the scene's
+the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house over
+the way for <player> at <grid>, step 1 skipped` and `Openings: no contact could stand for <player> at <grid>, the scene's
 read instead`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
+
+Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
+`Place check: <need> at <grid> ("<text>") fails: <why>` (a warning) when a placed task's place, or a
+thing its words name, isn't (`<need> things` once a step's things should stand there: `missing the
+remains (none within 4 m)`; an empty slot: `missing the sample (Cure > Sample prefab is empty)`).
+Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`, `Places audit: ...`)
+are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
 start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
@@ -3106,6 +3135,16 @@ when it happens)
   one-line read, no clue, and someone outside only one time in three (without: the read's own line
   hands you *Where the Work Is*). Turn **Puzzles > Civilian** and **Contact** empty: nobody outside,
   the read hands you the work, and a brand-new player's wanderer comes looking.
+- [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
+  words say: *Across the Road* sends you to a real house (or the chemist's, the garage...) 50–250 m
+  off, never into woods; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
+  find a dead infected there with the sample beside it; *Downwind*'s tree line has trees; the well
+  has a well. On Everon and Arland take a few errands that name a place (*Water for* a house: the
+  well in the town it names; *Filter Parts*: a pump house; *Shift Change*: a car by a road; *Not Past
+  the Chapel*: a farmhouse): each is there. The log has no `Place check:` warning; report any.
+  Before the session, `run.sh tasks everon` should print `0 kinds under the threshold`. On a fresh
+  season the start's `Mainland:` line names the islands and their towns; open the map and check no
+  holding, safehouse, the lab or a job's marker is on one, and no life starts there.
 - [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
   by a quartermaster (a Favor line), stay out at dusk; never two at once.
 - [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker); the mockup `UI/Previews/tracker.png`,

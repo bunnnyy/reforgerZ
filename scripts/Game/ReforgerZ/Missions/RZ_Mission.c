@@ -1049,7 +1049,7 @@ class RZ_Mission
 		array<int> candidates = {};
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
-			if (s.m_fInfection >= minInf && s.m_fInfection <= maxInf && !gm.GetMissions().IsSettlementBusy(i, asker))
+			if (s.m_fInfection >= minInf && s.m_fInfection <= maxInf && !s.m_bIsland && !gm.GetMissions().IsSettlementBusy(i, asker))
 				candidates.Insert(i);
 		}
 

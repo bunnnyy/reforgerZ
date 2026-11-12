@@ -19,6 +19,7 @@ class RZ_Errand_LastApples : RZ_ErrandCard
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Pick the last of them";
 		w.m_ePlace = RZ_EErrandPlace.EMPTY_VILLAGE;
+		w.m_sNeed = "errand.orchard";
 		w.m_fSeconds = 30;
 		w.m_fRadius = 80;
 		w.m_bQuiet = true;

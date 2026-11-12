@@ -504,6 +504,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref map<string, ref RZ_PlayerProfile> m_mProfiles = new map<string, ref RZ_PlayerProfile>();
 	protected ref map<int, string> m_mIdentities = new map<int, string>();
 	protected ref array<IEntity> m_aSpawnPoints = {};
+	protected ref RZ_Mainland m_Mainland;
 	protected ref set<int> m_aWelcomed = new set<int>();
 
 	protected IEntity m_Lab;
@@ -820,10 +821,31 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Conversation trees and their memory (dialogue.json, dropped when the season changes)
 		m_Dialogue.GetTrees().Load();
 
+		// The mainland (docs/PLACES.md): islands are close to impossible to reach, so a fresh scan keeps
+		// no town on one, and every place need checks it
+		m_Mainland = new RZ_Mainland();
+		m_Mainland.Build();
 		if (m_aSettlements.IsEmpty())
 		{
 			RZ_SettlementScanner scanner = new RZ_SettlementScanner();
 			scanner.Scan(m_fScanCellSize, m_iScanMinBuildings, m_aSettlements);
+			RZ_Log.Info("Mainland: " + m_Mainland.Describe(m_aSettlements));
+			DropIslandTowns();
+			DryTownMiddles();
+		}
+		else
+		{
+			RZ_Log.Info("Mainland: " + m_Mainland.Describe(m_aSettlements));
+			int saved = 0;
+			foreach (RZ_Settlement st : m_aSettlements)
+			{
+				st.m_bIsland = !RZ_Mainland.OnMainland(st.m_vCenter);
+				if (st.m_bIsland)
+					saved++;
+			}
+
+			if (saved > 0)
+				RZ_Log.Warn(string.Format("Mainland: %1 of the saved season's towns are on an island; the pickers skip them until the next fresh season", saved));
 		}
 
 		if (m_aSettlements.IsEmpty())
@@ -1010,6 +1032,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_CureFinale GetFinale() { return m_Finale; }
 	RZ_Epilogue GetEpilogue() { return m_Epilogue; }
 	ResourceName GetSamplePrefab() { return m_sSamplePrefab; }
+	ResourceName GetSpawnPointPrefab() { return m_sSpawnPointPrefab; }
+	RZ_Mainland GetMainland() { return m_Mainland; }
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
@@ -2857,7 +2881,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		array<int> candidates = {};
 		foreach (int idx, RZ_Settlement s : m_aSettlements)
 		{
-			if (s.m_fInfection < 70)
+			if (s.m_fInfection < 70 && !s.m_bIsland)
 				candidates.Insert(idx);
 		}
 
@@ -2874,12 +2898,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		{
 			guard++;
 			RZ_Settlement town = m_aSettlements[candidates.GetRandomElement()];
-			vector pos = RZ_Util.RandomPointInRing(town.m_vCenter, 0, town.m_fRadius * 0.8);
-			if (RZ_Util.IsWater(pos) || m_Perimeter.IsNearLine(pos))
-				continue;
-
-			// Never within 1 km of a pack's lair (docs/INFECTED.md, People)
-			if (m_Tribes && m_Tribes.GetPeople().IsOn() && m_Tribes.GetPeople().NearLair(pos, 1000))
+			vector pos = SpawnPointSpot(town);
+			if (pos == vector.Zero)
 				continue;
 
 			IEntity ent = SpawnNamedSpawnPoint(pos, town.m_sName);
@@ -2888,6 +2908,75 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 			m_aSpawnPoints.Insert(ent);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A fresh scan keeps no town on an island: nothing is ever put there.
+	protected void DropIslandTowns()
+	{
+		for (int i = m_aSettlements.Count() - 1; i >= 0; i--)
+		{
+			RZ_Settlement s = m_aSettlements[i];
+			if (RZ_Mainland.OnMainland(s.m_vCenter))
+				continue;
+
+			RZ_Log.Info(string.Format("Mainland: %1 at %2 is on an island: not a settlement", s.m_sName, RZ_SettlementScanner.GridReference(s.m_vCenter)));
+			m_aSettlements.Remove(i);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A town whose middle came out in the water (a cluster on a shore, its buildings' average) has it
+	//! moved to its nearest dry house, or building: what walks to a town's middle (wanderers, the
+	//! errands' towns) never walks into the sea.
+	protected void DryTownMiddles()
+	{
+		foreach (RZ_Settlement s : m_aSettlements)
+		{
+			if (!RZ_PlaceCheck.IsWet(s.m_vCenter))
+				continue;
+
+			array<IEntity> buildings = {};
+			RZ_PlaceCheck.Houses(s.m_vCenter, 0, s.m_fRadius, buildings);
+			if (buildings.IsEmpty())
+				RZ_BuildingQuery.FindBuildings(s.m_vCenter, s.m_fRadius, buildings, 200);
+
+			vector best = vector.Zero;
+			float bestDist = float.MAX;
+			foreach (IEntity b : buildings)
+			{
+				vector at = RZ_Util.GroundPos(b.GetOrigin());
+				float d = RZ_Util.DistXZ(at, s.m_vCenter);
+				if (d < bestDist && !RZ_PlaceCheck.IsWet(at))
+				{
+					bestDist = d;
+					best = at;
+				}
+			}
+
+			if (best == vector.Zero)
+				continue;
+
+			RZ_Log.Info(string.Format("Settlements: %1's middle was in the water: moved %2 m to %3", s.m_sName, RZ_Util.RoundToInt(bestDist), RZ_SettlementScanner.GridReference(best)));
+			s.m_vCenter = best;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a spawn point in this town stands: just outside a house in it (docs/PLACES.md, spawn.point:
+	//! a point anywhere in the town's ring stood in woods or fields as often as not); zero if the try
+	//! missed (the place audit asks it too).
+	vector SpawnPointSpot(RZ_Settlement town)
+	{
+		vector pos = RZ_PlaceFind.Near(town.m_vCenter, 0, town.m_fRadius * 0.8, RZ_PlaceNeeds.Get("spawn.point"), m_aSettlements.Find(town));
+		if (pos == vector.Zero || RZ_Util.IsWater(pos) || m_Perimeter.IsNearLine(pos))
+			return vector.Zero;
+
+		// Never within 1 km of a pack's lair (docs/INFECTED.md, People)
+		if (m_Tribes && m_Tribes.GetPeople().IsOn() && m_Tribes.GetPeople().NearLair(pos, 1000))
+			return vector.Zero;
+
+		return pos;
 	}
 
 	//------------------------------------------------------------------------------------------------

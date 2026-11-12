@@ -5,7 +5,9 @@ behind them work is in [DESIGN.md](DESIGN.md); standing, Fame and Infamy are in
 [REPUTATION.md](REPUTATION.md); the prefabs each mission needs are in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md), "The prefab manifest". The long questlines that reuse
 these missions as stages are in [QUESTLINES.md](QUESTLINES.md). The small, personal jobs named
-people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md).
+people ask in person are errands, not missions: [ERRANDS.md](ERRANDS.md). Every mission's place is
+checked as it starts (dry, off the line, near the town its brief names; a warning in the log if
+not): [PLACES.md](PLACES.md#the-live-check).
 
 ## Counts
 

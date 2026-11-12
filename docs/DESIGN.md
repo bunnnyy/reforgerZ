@@ -84,8 +84,13 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
   place label within 400 m (a hamlet or a point), or "<name> outskirts" if that's taken, or a
   grid reference ("Outskirts 13-29"). Label names are string-table keys, translated on the
   server. Each has a centre, a size class and an infection level (0–100). Placing any `RZ_SettlementMarkerEntity` turns detection off and uses the markers.
-- **Spawn points:** 6 at a time in random towns, and one is moved to a new town every
-  20 minutes. Nobody picks one: the spawn screen asks for one at random, and with openings on the
+- **Only the mainland:** a fresh scan keeps no town on an island (close to impossible to reach on
+  foot), so nothing a town anchors (holdings, safehouses, the lab, missions, spawn points, the
+  Long Table, the infected's towns) is ever there; a saved season's island town is skipped by the
+  pickers until the next fresh season ([PLACES.md](PLACES.md#the-mainland)). A town whose middle
+  came out in the water is moved to its nearest dry house.
+- **Spawn points:** 6 at a time in random towns, each just outside a house, and one is moved to a
+  new town every 20 minutes. Nobody picks one: the spawn screen asks for one at random, and with openings on the
   new character is moved on to a place rolled for its background
   ([Openings](#openings-how-every-life-starts)). No safehouse is a spawn point.
 - **Missions are announced** with distance and direction ("1.2 km NE"). Messages arrive a few at
@@ -2946,9 +2951,14 @@ it's handed over, and the world streams in there.
   checkpoint, off the line, no player within 300 m, no running mission within 500 m, 1 km from a
   pack's lair, outside the errands' quiet places, and 2 km from this player's last two starts.
 - **Near where it ends:** towns within 3 km of where the chain will end are tried first, so the walk
-  stays short; up to 8 towns are tried.
+  stays short; up to 12 towns are tried.
+- **Houses over the way:** a building with another house 50–250 m from it comes first, so step 1
+  has somewhere to send you; a lone one only when no town tried has better
+  ([PLACES.md](PLACES.md#how-a-picker-uses-a-need)).
 - **Fallback:** no fitting building, any house in one of those towns (the scene still comes);
-  nothing at all, the spawn point the screen asked for, with whoever's outside but no scene.
+  nothing by those rules anywhere, a second pass at half the distances without the last starts;
+  nothing at all, the spawn point the screen asked for (just outside a house in its town), with
+  whoever's outside but no scene. The log line says why doors were refused.
 
 **Why today.** Rolled with the place: why you come out of the door now.
 
@@ -3049,7 +3059,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Across the Road | Search a building 50–250 m from them for 20 s (10 s for a learning player, level 1), within 15 m of it ([arriving](#mission-building-blocks)), and come back. One of your background's kinds when one is there (below), else any house | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 1. Across the Road | Search a building 50–250 m from them for 20 s (10 s for a learning player, level 1), within 15 m ([arriving](#mission-building-blocks)) of the spot outside its side facing them, and come back. One of your background's kinds when one is there (below), else a house; no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
 | 2. Your background's own | Its own system (below); else water (15 s at the nearest well or water tower within 400 m, and back), else The Cut (dress their hand with anything medical you carry, once you've chosen **Look at the hand.** on the talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
@@ -3062,7 +3072,8 @@ today opens the first step, when you first talk to them.
 **Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
 errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's
 own system say whether its clock runs. The first that can run here is yours; else water, else The
-Cut. Step 1's building is of your background's kind when one is 50–250 m off.
+Cut. Step 1's building is of your background's kind when one is 50–250 m off. Each step's place
+meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
@@ -3071,14 +3082,14 @@ Cut. Step 1's building is of your background's kind when one is 50–250 m off.
 | Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | **Give him the antidote.** on the talk screen (`opening.tend_clock`), then the antidote handed over at the contact |
 | | | else **The Clock** with a dressing | something medical | **Keep him going.** on the talk screen (`opening.tend_clock_med`), then one medical item handed over |
 | Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can, and back |
-| Hunter | a farm | **Downwind**: watch a pack's ground, unseen | always: 150 m short of the nearest pack's lair within 1.6 km, else the tree line 150–250 m out | 30 s within 25 m, hidden (built stealth), quiet; back |
+| Hunter | a farm | **Downwind**: watch a pack's ground, unseen | 150 m short of the nearest pack's lair within 1.6 km, else a tree line 150–250 m out (four trees within 40 m) | 30 s within 25 m, hidden (built stealth), quiet; back |
 | Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building, and back |
 | Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute, and back |
-| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–200 m out (a sample lies there: **Cure > Sample prefab**) | the sample prefab; not after the cure | at the remains with a sample in your pack, and back |
+| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–250 m out, on a road's verge, else in a yard by a house: a special that doesn't burst (**Zombies > Special prefabs**) is made and killed there when the step starts, the sample (**Cure > Sample prefab**) beside it; the body is kept from the corpse cleanup until the opening ends | the sample prefab and such a special; not after the cure | at the remains with a sample in your pack, and back |
 | Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered, and back |
 | Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them), and back: a tin you carry is swapped for 3 Haven Favor (small pay) |
-| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | always | 60 s within 15 m, and back |
-| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | always | 10 s at the door, and back: +1 Infamy with the Haven (the word getting round, small) |
+| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | ground there that isn't steep | 60 s within 15 m, and back |
+| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | a house that far off | 10 s at the door, and back: +1 Infamy with the Haven (the word getting round, small) |
 | Elder | — | **Two Families**: hear them out with the contact, persuade 1 (factionless, [Elder] +1: `opening.settle`) | Dialogue > Trees on | the talk settled it (a Short settles it by half, said) |
 | Drifter | — | **Three asks**: up to three in a row of the gate, downwind, the swap, the debt, the two families, water and the cut, shuffled, each that can run here | — | each as above; the second and third come "from" the street's other people |
 
