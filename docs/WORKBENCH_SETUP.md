@@ -3173,11 +3173,11 @@ when it happens)
   has one marker, the lab's, and the Haven's stronghold town one, the stronghold's, not a safehouse
   stacked on it. No job is on it but the one you track, and no other player sees yours.
 - [ ] Your objective on the map: track an errand (a known spot) and an amber diamond with a dark
-  outline and a dark dot in the middle sits on its place, labelled with the current objective, above
-  the other icons; a stronghold at the same spot puts its name under the objective's line. Track a
+  outline and a dark dot in the middle sits on its place, labelled with the job's name only (not the objective's words), above
+  the other icons; a stronghold at the same spot puts its name under the job's. Track a
   contract you know only roughly (not Trusted with its giver, far off): no diamond, a soft amber
   disc with a thin solid amber edge round the rough area instead, its edge as thin zoomed in as
-  zoomed out, the objective under it ("Search ..."). Come within 500 m of the spot: within
+  zoomed out, the job's name under it. Come within 500 m of the spot: within
   20 s of the map open it turns into the diamond. Track nothing: neither shows. A filled area missing
   or off its spot is the canvas VERIFY.
 - [ ] You are here: open the map and a yellow arrow on a dark disc sits where you stand, above the

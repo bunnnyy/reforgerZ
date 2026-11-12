@@ -680,9 +680,10 @@ class RZ_QuestTracker
 
 	//------------------------------------------------------------------------------------------------
 	//! The map's mark for the tracked job's current objective (docs/UI.md, "The map"), for this
-	//! player alone; "" if nothing is tracked or it has no place. A known spot is a diamond on it:
-	//! P|objective_spot|-1|x|z|objective. A search only is the rough circle, never the spot:
-	//! P|objective_area|-1|x|z|objective|radius. Every other job stays off the map.
+	//! player alone; "" if nothing is tracked or it has no place. Labelled with the job's name only
+	//! (the objective's words stay on the tracker). A known spot is a diamond on it:
+	//! P|objective_spot|-1|x|z|name. A search only is the rough circle, never the spot:
+	//! P|objective_area|-1|x|z|name|radius. Every other job stays off the map.
 	string MapObjective(int playerId)
 	{
 		int id = TrackedFor(playerId);
@@ -700,11 +701,13 @@ class RZ_QuestTracker
 		if (ent)
 			from = ent.GetOrigin();
 
-		RZ_ObjList list = new RZ_ObjList();
-		Objectives(playerId, id, from, list);
-		string now = list.First(RZ_EObjState.CURRENT);
+		string now = j.m_sTitle;
 		if (now.IsEmpty())
-			now = j.m_sTitle;
+		{
+			RZ_ObjList list = new RZ_ObjList();
+			Objectives(playerId, id, from, list);
+			now = list.First(RZ_EObjState.CURRENT);
+		}
 
 		int x = RZ_Util.RoundToInt(j.m_vPlace[0]);
 		int z = RZ_Util.RoundToInt(j.m_vPlace[2]);
