@@ -158,7 +158,7 @@ class RZ_ErrandsPay
 				continue;
 
 			gm.AddFavor(playerId, faction, d.favor);
-			gm.NotifyPlayerAs(playerId, d.title, string.Format("\"The truck's in. Here's what we owed you.\" +%1 %2 Favor.", d.favor, RZ_Factions.GetName(faction)), RZ_ENoticeTag.MISSION);
+			gm.NotifyPlayerAs(playerId, d.title, string.Format("The truck's in, so here's what the post owed you. +%1 %2 Favor.", d.favor, RZ_Factions.GetName(faction)), RZ_ENoticeTag.MISSION);
 		}
 	}
 

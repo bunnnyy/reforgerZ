@@ -476,7 +476,7 @@ class RZ_Strangers
 				continue;
 
 			ToHouse(l.house);
-			m_GM.NotifyPlayer(l.playerId, "A stranger", string.Format("The door opens before you knock. \"You came.\" They walk to %1 in the grey light without stopping once.", HouseName(l.house)));
+			m_GM.NotifyPlayer(l.playerId, "A stranger", string.Format("You came. You actually came. I'll walk to %1 now, in the grey light, and I won't stop once.", HouseName(l.house)));
 			m_Errands.SmallFavor(l.playerId, RZ_EFaction.SURVIVORS, 3);
 			m_aLater.Remove(i);
 		}

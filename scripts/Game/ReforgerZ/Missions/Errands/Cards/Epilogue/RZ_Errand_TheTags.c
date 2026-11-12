@@ -11,8 +11,8 @@ class RZ_Errand_TheTags : RZ_EpiCard
 		m_sTitle = "The Tags";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("{dead} is still out {lies}. The tags belong on the nail before the gates open. Nobody here can leave the gate.",
-			"We never brought {dead} in. The tags, at least. The roll's read with or without him.");
+		Offer("{dead} is still out {lies}. We never brought {dead} in. One tag stays with the body, the other belongs on the nail behind the radio, and the roll is read at the barrier before the gates open. Nobody here can leave the gate.",
+			"We never brought {dead} in. Bring the tags, at least. The roll's read with or without them, and the whole post answers for the dead.");
 		Over("Never mind. Somebody brought {dead}'s tags in this morning.");
 
 		RZ_ErrandWay w = Way("do");
@@ -20,11 +20,11 @@ class RZ_Errand_TheTags : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find {dead} {lies} and take the tags (15 s there), then bring them to {giver} for the nail.";
+		w.m_sStep = "Find the body of {dead} {lies} and take the tags (15 s there), then bring them to {giver} for the nail.";
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
 		w.Done("On the nail. That name gets answered at the roll now, one way or the other.",
-			"Thank you. I'll tell the lieutenant who brought them.");
+			"Thank you. I'll tell the lieutenant who brought them in.");
 
 		w = Way("press");
 		w.m_sLabel = "Sell the photo frame to the fence";
@@ -33,8 +33,8 @@ class RZ_Errand_TheTags : RZ_EpiCard
 		w.m_fRadius = 30;
 		w.m_iFavor = 6;
 		w.m_iPayFaction = RZ_EFaction.BANDITS;
-		w.m_sStep = "Find {dead} {lies} (15 s there). The fence pays for silver frames.";
-		w.Done("\"No tags?\" The sergeant looks at your hands, then away. \"Then he's still out there.\"");
+		w.m_sStep = "Find the body of {dead} {lies} and take the silver photo frame for the fence (15 s there), then go back to {giver}.";
+		w.Done("No tags? You came back with empty hands? Then {dead} is still out there.");
 	}
 
 	//------------------------------------------------------------------------------------------------

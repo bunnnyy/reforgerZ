@@ -12,29 +12,29 @@ class RZ_Errand_DebtGoneQuiet : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("{name} at {subject_place} stopped paying. Stopped answering. That's not like him. Find out why before the lads go and find out their way.",
-			"A line in the book went quiet. {name}. Go and ask him nicely. You're good at nicely, people say. Or the other thing.");
-		Over("Never mind {name}. The lads went up there themselves, and it's sorted now.");
+		Offer("{name} at {subject_place} has a line in the book, and has paid every week since the spring. Now nothing, and no answer at the door. Find out why before the lads go up there and find out their way.",
+			"A line in the book went quiet: {name}, at {subject_place}. Paid on time for weeks, then stopped. Go and ask nicely. You're good at nicely, people say. Or the other thing.");
+		Over("Never mind {name}. The lads went up there themselves, and the line's moving again.");
 
 		RZ_ErrandWay w = Way("press");
 		w.m_sLabel = "Find him, and lean on him";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find {name} at {subject_place} and make him pay (15 s there), then come back to {giver}.";
+		w.m_sStep = "Find {name} at {subject_place} and get the money owed (15 s there), then come back to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("Paid. Good. I don't want to know what you said. I want it in the book.");
+		w.Done("Paid. Good. I don't want to know what you said to get it. I want it in the book.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay what he owes yourself";
 		w.m_iFavorCost = 10;
 		w.m_iFame = 1;
-		w.Done("Your money, his line. The book doesn't care whose. I do, a bit.");
+		w.Done("Your money, against that line. The book doesn't care whose money it is. I do, a bit. Nobody pays somebody else's line for nothing.");
 
 		w = Way("lie");
 		w.m_sLabel = "Say he's dead";
 		w.m_iFavor = 3;
-		w.Done("Dead. Shame. I'll draw a line through him.");
+		w.Done("Dead? Shame. I'll draw a line through the name. Somebody else will owe it now.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@ class RZ_Errand_DebtGoneQuiet : RZ_ErrandCard
 		if (w.m_iIndex == 0)
 		{
 			gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 3, "leaned on a sick man's family", 0, "leaned on a man paying for medicine");
-			said.Insert(e.Fill("He paid. He'd been buying medicine for his wife with the toll money. You know that now. So does {subject_place}."));
+			said.Insert(e.Fill("Paid. Turns out the money had been going on medicine for a sick wife. You know that now. So does all of {subject_place}, after you were at the door."));
 			return;
 		}
 

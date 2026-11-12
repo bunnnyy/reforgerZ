@@ -13,25 +13,25 @@ class RZ_Errand_OffTheReport : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_sRoles = "sentry,mechanic";
-		Offer("There's a duty report on the sergeant's desk with my name on it. Asleep on watch. It's true. I'd still rather it wasn't there. You've bent a rule or two. Bend this one.",
-			"One line on a report. Mine. It's accurate, which is the problem. Could it go missing?");
-		Over("The report's gone up to the stronghold. Out of reach. Out of everyone's.");
+		Offer("There's a duty report on the sergeant's desk with my name on it: asleep on watch, the night before last. It's true. Asleep on watch means the stockade and the extra watches, and my mother's at the house down the road. You've bent a rule or two. Bend this one.",
+			"One line on a duty report. Mine. Asleep on watch. It's accurate, which is the problem. It goes up to the stronghold tomorrow. Could it go missing first?");
+		Over("The report's gone up to the stronghold. Out of reach now. Out of everyone's.");
 
 		RZ_ErrandWay w = Way("lie");
 		w.m_sLabel = "Lose the report for him";
 		w.m_iFavor = 4;
-		w.Done("Gone? Gone. I owe you. Don't tell anyone I owe you.");
+		w.Done("Gone? Gone. I owe you. Don't tell anyone I owe you, and don't tell the sergeant anything.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell him to own it";
-		w.Done("\"Own it. Right. Easy for you.\" He goes to see the sergeant anyway.");
+		w.Done("Own it. Right. Easy for you to say. I'll go and see the sergeant now, before I talk myself out of it.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell him how to answer for it";
 		w.m_sBackground = "soldier";
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
-		w.Done("\"Stand up straight, say it first, ask for the extra watch yourself. That works?\" It works. It always worked.");
+		w.Done("Stand up straight, say it before he does, ask for the extra watch myself. That works? You've seen it work? All right. I'm going now.");
 	}
 
 	//------------------------------------------------------------------------------------------------

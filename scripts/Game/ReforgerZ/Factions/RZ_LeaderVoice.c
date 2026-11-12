@@ -252,27 +252,27 @@ class RZ_LeaderVoice
 		{
 			case RZ_EFaction.SURVIVORS:
 			{
-				lines.Insert("Ran the bakery in %1 until the flour ran out. Now runs everything else.");
-				lines.Insert("A primary school teacher. Still takes the register every morning, and still counts the gaps.");
-				lines.Insert("Drove the bus between the villages. Knows every family on the route, and which ones stopped answering.");
+				lines.Insert("Ran the bakery in %1 until the flour ran out. Since then, everything else.");
+				lines.Insert("A primary school teacher, before. The register still gets taken every morning, and the gaps still get counted.");
+				lines.Insert("Drove the bus between the villages. Every family on the route, by name, and every one that stopped answering.");
 				lines.Insert("A retired nurse who came back to work on Day 2 and never went home.");
-				lines.Insert("Kept the parish books in %1. Now keeps the food ledger, and is stricter about it.");
+				lines.Insert("Kept the parish books in %1. Now it's the food ledger, kept stricter than the parish's ever was.");
 				break;
 			}
 			case RZ_EFaction.MILITARY:
 			{
-				lines.Insert("Logistics, before. Signed for every crate in the Zone. Still does, and signs it correct.");
+				lines.Insert("Logistics, before. Signed for every crate in the Zone, and still signing, every one of them correct.");
 				lines.Insert("Came in with the first cordon detail. Was told it was a two-week posting.");
-				lines.Insert("Reservist. Was a surveyor in civilian life and still measures everything twice.");
-				lines.Insert("Twenty years in. Has buried more of the platoon than the outbreak has.");
-				lines.Insert("Was on leave in %1 when the gates closed, and reported for duty anyway.");
+				lines.Insert("Reservist. A surveyor in civilian life, and everything still gets measured twice.");
+				lines.Insert("Twenty years in. Buried more of the platoon than anyone else at the post, and read every name at the roll.");
+				lines.Insert("On leave in %1 when the gates closed, and reported for duty anyway.");
 				break;
 			}
 			case RZ_EFaction.BANDITS:
 			{
-				lines.Insert("Sold used cars in %1. Says the trade hasn't changed much.");
+				lines.Insert("Sold used cars in %1. The trade hasn't changed much, apparently.");
 				lines.Insert("Did four years for something nobody mentions. Got out on Day 1, when the guards left.");
-				lines.Insert("Ran the card games behind the bowling alley. Still runs them, with higher stakes.");
+				lines.Insert("Ran the card games behind the bowling alley. Same games now, higher stakes.");
 				lines.Insert("A bailiff, before. Repossessing things is still the job; the paperwork is simpler.");
 				lines.Insert("Nobody knows. Ask and you get a different story every time.");
 				break;
@@ -281,7 +281,7 @@ class RZ_LeaderVoice
 			{
 				lines.Insert("Wrote the site's original safety assessment. Signed it, too.");
 				lines.Insert("A virologist on a six-month contract. The contract ended on Day 9.");
-				lines.Insert("Ran the sample freezers. Knows exactly what was in them before the lockdown.");
+				lines.Insert("Ran the sample freezers, and knew exactly what was in them before the lockdown.");
 				lines.Insert("A field epidemiologist who has seen two outbreaks before this one, and none like it.");
 				lines.Insert("Was the junior on the team. Most of the senior staff are gone.");
 				break;
@@ -355,16 +355,16 @@ class RZ_LeaderVoice
 	{
 		switch (faction)
 		{
-			case RZ_EFaction.SURVIVORS: return "We're the Haven. Just people who were here when the gates closed. We feed who we can, and nobody shoots in the house.";
-			case RZ_EFaction.MILITARY: return "Task Force Bastion. What's left of it. Nobody's coming for us, so we look after our own. Stay on the right side of that.";
-			case RZ_EFaction.BANDITS: return "The Red Hand. We're the ones who noticed the rules stopped. Don't look so worried. Yet.";
+			case RZ_EFaction.SURVIVORS: return "We're the Haven: just people who were here when the gates closed. Every house keeps the same rules: everybody works, you declare a bite, and nobody fires a gun near the house.";
+			case RZ_EFaction.MILITARY: return "Task Force Bastion, what's left of it. We call Command every night, and every night the log says no reply. So we feed our own and bring our own home. Stay on the right side of that.";
+			case RZ_EFaction.BANDITS: return "The Red Hand. We noticed first that nobody was coming, and nothing taken would ever be given back. Tolls, a market, and a book with everyone's debts in it. Don't look so worried. Yet.";
 			case RZ_EFaction.INSTITUTE:
 			{
 				// After the cure the proof is out: the gates wait on the outside now
 				if (RZ_WorldFacts.Get().IsCured())
-					return "Halcyon. We were studying the site before the lockdown. The proof went out with the cure. Now we wait for the gates, like everyone else.";
+					return "Halcyon. We were studying the site in the hills before the lockdown, and we ran the only lab. The proof went out with the cure. Now we wait for the gates, like everyone else.";
 
-				return "Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.";
+				return "Halcyon. We were studying the site in the hills before the lockdown, and we run the only lab. Nobody opens the gates without proof the Zone is clean. We're the only ones who can make it.";
 			}
 		}
 

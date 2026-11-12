@@ -70,7 +70,7 @@ How the code does it:
   quartermaster."* The spawn's *Radio* entry lists the world events and the work going, each with
   who to ask. Walking up to a quartermaster with work you could be offered gets one line
   (*"There are 2 jobs going here. Ask for whoever's in charge."*), every 5 minutes at most. A
-  leader's own job is only heard of from the leader (*"catches your eye..."*) or, for a questline's
+  leader's own job is only heard of from the leader (*"A word, somewhere quieter..."*) or, for a questline's
   in-person stage, by word of mouth naming who to see.
 
   **An offered job is yours:** it's on your Quests tab (*Offered* until you get there, then

@@ -12,29 +12,29 @@ class RZ_Errand_NameDay : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("You've no name with us yet. Names are earned, and they're earned stupid. Pick a dare. Whatever goes wrong, that's what we'll call you.",
-			"Name day. Everybody gets one. Fetch a church clock or go a round in the pit. Don't worry about doing it well. Nobody does.");
-		Over("Never mind. The lads have found something to call you already. You won't like it.");
+		Offer("You've no name with the crews yet, and a red hand isn't a name. Names are earned, and they're earned stupid. Pick a dare: the church clock in a town the infected hold, or a round in the pit. Whatever goes wrong, that's what we'll call you.",
+			"It's your name day. Everybody in the crews gets one. Fetch the clock down from a church tower, or go one round in the pit. Don't worry about doing it well. Nobody does, and nobody's named for doing it well.");
+		Over("Never mind the dare. The lads have found something to call you already. You won't like it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Belfry: fetch the church clock";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 40;
-		w.m_sStep = "Get up the church tower in {subject_place} and bring the clock down (20 s there). It's theirs now, the town. Mind the stairs.";
+		w.m_sStep = "Climb the church tower in {subject_place} and bring the clock down (20 s there). The infected hold the town, so mind the stairs. Then bring it to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("A clock. It's the wrong clock, but it's a clock. Legs, we'll call you. You should've seen yourself on those stairs.");
+		w.Done("A clock. It's the wrong clock, but it's a clock. Legs, we'll call you. The lads watched you on those stairs through the glasses.");
 
 		w = Way("do");
 		w.m_sLabel = "Ringside: one round in the pit";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 30;
-		w.m_sStep = "Go one round in the pit at {pit} (a minute in the ring).";
+		w.m_sStep = "Go one round in the pit at {pit} (a minute in the ring), then see {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("You said sorry every time you hit him. Every time. Sorry, then. That's your name.");
+		w.Done("You said sorry every time you hit him. Every single time. Sorry, then. That's your name now.");
 	}
 
 	//------------------------------------------------------------------------------------------------

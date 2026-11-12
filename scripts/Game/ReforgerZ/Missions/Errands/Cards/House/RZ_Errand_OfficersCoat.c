@@ -13,17 +13,17 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("You're army. You'll know. My son's in your stockade, they said, three weeks now. Can you find out? I've a tin for whoever does the paperwork.",
-			"Excuse me. Sir. My boy's with your lot, in the stockade. Is he eating? Is there a form? I'll fill in any form.");
+		Offer("You're army. You'll know. My son's in your stockade, they told me, three weeks now, for something on the hill road. Nobody at the post will tell me anything. Can you find out? I've a tin for whoever does the paperwork.",
+			"Excuse me. You're with Bastion? My boy's with your lot, in the stockade, since the fight on the hill road. Is he eating? Is there a form? I'll fill in any form.");
 		Over("Never mind. Someone from the post came by. I know now, and I wish I didn't.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Tell her you're not Bastion";
-		w.Done("\"Oh.\" She looks at the jacket, then at you. \"Well. Thank you for saying.\"");
+		w.Done("Oh. Not Bastion. Just the jacket, then. Well. Thank you for saying so. Most wouldn't.");
 
 		w = Way("lie");
-		w.m_sLabel = "Take the tin \"for the paperwork\"";
-		w.Done("Thank you. Thank you. I'll wait to hear.");
+		w.m_sLabel = "Take the tin 'for the paperwork'";
+		w.Done("Thank you. Thank you. I'll wait to hear. I'll be right here.");
 
 		w = Way("do");
 		w.m_sLabel = "Ask at the post yourself";
@@ -34,7 +34,7 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 		w.m_fRadius = 25;
 		w.m_sStep = "Go to the Bastion post {subject_place} out of uniform and ask after her son (10 s there), then come back to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("\"He's on the roster as KIA, or struck off,\" you tell her. She sits down where she is. \"Which?\" Nobody at the post would say.");
+		w.Done("On the roster as killed, or struck off? Which? They wouldn't say which? Then I'll sit down. I'll just sit down here a minute.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -94,6 +94,6 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 			gm.GetSafehouses().AddFood(e.m_iHouse, -1);
 
 		gm.GetFacts().Memory().Lies().Tell(gm, playerId, "errand.officers_coat", e.m_sSubject, RZ_EFaction.SURVIVORS, e.m_sGiver, e.m_vSubject, RZ_ELieTest.RUMOUR, 3,
-			"She asked at the post herself. There was no paperwork. {house} knows who took the tin.");
+			"She asked at the post herself, and there was no paperwork. {house} knows who took the tin.");
 	}
 }

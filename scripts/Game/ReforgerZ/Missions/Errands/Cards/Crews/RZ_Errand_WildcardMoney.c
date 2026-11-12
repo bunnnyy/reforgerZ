@@ -12,8 +12,8 @@ class RZ_Errand_WildcardMoney : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("The boss says nobody robs a lunatic. Carry the cut to the crew at {crew_place}. Don't look at me like that, it's a compliment.");
-		Over("Never mind. They came for it themselves. Impatient lot.");
+		Offer("This week's cut is due to the crew at {crew_place}: tins, diesel coupons and a watch or two. Every runner we send gets robbed on the way. The boss says nobody robs a lunatic, so you carry it. Don't look at me like that. It's a compliment.");
+		Over("Never mind. The crew came for their cut themselves. Impatient lot.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry the cut to {crew_place}";
@@ -22,7 +22,7 @@ class RZ_Errand_WildcardMoney : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry the cut to the Red Hand crew at {crew_place} (at their fire), then come back to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("All of it? Huh. The boss owes me a tin.");
+		w.Done("All of it, to the last tin? Huh. The boss bet me you'd skim. The boss owes me a tin.");
 
 		w = Way("do");
 		w.m_sLabel = "Carry it and skim a little";
@@ -31,7 +31,7 @@ class RZ_Errand_WildcardMoney : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry the cut to the Red Hand crew at {crew_place} (at their fire), lighter by a bit, then come back to {giver}.";
 		w.m_iFavor = 8;
-		w.Done("Light. About as light as we guessed. You're predictable. That's worth something.");
+		w.Done("Light. About as light as we guessed. You're predictable, and in the book that's worth something.");
 
 		w = Way("do");
 		w.m_sLabel = "Give it to the house at {house_place}";
@@ -41,7 +41,7 @@ class RZ_Errand_WildcardMoney : RZ_ErrandCard
 		w.m_iPayFaction = RZ_EFaction.SURVIVORS;
 		w.m_sStep = "Take the cut to the hungry safehouse at {house_place} (at its gate) and leave it there.";
 		w.m_iFame = 2;
-		w.Done("You what? The whole cut, to the Haven? The boss will laugh. Then the boss will remember.");
+		w.Done("You what? The whole cut, to a Haven house? The boss will laugh. Then the boss will remember, and so will the book.");
 	}
 
 	//------------------------------------------------------------------------------------------------

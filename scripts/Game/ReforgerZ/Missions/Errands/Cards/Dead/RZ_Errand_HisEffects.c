@@ -14,22 +14,22 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
 		m_iPerLife = 3;
-		Offer("The truck that went over {where_place}. The crew's things are still in the cab. Somebody should bring them home.",
-			"There's a wreck {where_place}, and a man's papers in it. I'd like his name said properly.");
-		Over("Someone brought his things in this morning. Thank you all the same.");
+		Offer("One of our trucks went over {where_place} yesterday. The crew didn't make it. Their things are still in the cab: tags, papers, a jacket, whatever they carried. Somebody should bring them home before the fence's lads get there.",
+			"There's a wreck of ours {where_place}, with the driver's papers still in it. We lost the truck and the man in one afternoon. I'd like his name said properly, and his things kept for when the gates open.");
+		Over("Someone brought the crew's things in this morning. Thank you all the same.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring his things back";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Go to the wreck {where_place} and gather what the crew left (15 s there), then bring it to {giver}.";
+		w.m_sStep = "Go to the wrecked truck {where_place} and gather the crew's things (15 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_bCarry = true;
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("I'll read his name tonight. The rest goes in the box, for when the gates open.",
-			"His papers. He had a good hand. You'd never know from the driving.");
+		w.Done("I'll read the name tonight. The rest goes in a box with a tag on the lid, for when the gates open and somebody comes asking.",
+			"These are the driver's papers. Lovely handwriting. You'd never know it from the driving.");
 
 		w = Way("do");
 		w.m_sLabel = "Sell them to the fence";
@@ -39,11 +39,11 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Go to the wreck {where_place}, take what the crew left (15 s there), and sell it at the fence: the jacket and the photo frame.";
+		w.m_sStep = "Go to the wrecked truck {where_place}, take the crew's things (15 s there), and sell the jacket and the photo frame at the fence. Then go back to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_bCarry = true;
 		w.m_iFavor = 0;
-		w.Done("Gone? Somebody got there first. Listed as kit lost. That's how it goes.");
+		w.Done("Gone? Somebody got there first. I'll list it as kit lost. That's how it goes this season.");
 	}
 
 	//------------------------------------------------------------------------------------------------

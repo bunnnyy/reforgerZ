@@ -11,18 +11,18 @@ class RZ_Errand_DressUniform : RZ_ErrandCard
 		m_sFamily = "background";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("Sergeant wants a dress uniform folded for a locker. A lad's. None of us know the fold. You were in, weren't you? You've got the walk.",
-			"Dress uniform, for the locker, properly. The sergeant said find someone who knows. I'm told that's you.");
-		Over("Never mind. The sergeant did it himself. Took him an hour. He wouldn't let anyone help.");
+		Offer("The sergeant wants a dress uniform folded for a dead lad's locker, the regulation way, so it's ready if his family ever comes for it. None of us know the fold. You were in, weren't you? You've got the walk.",
+			"We lost a private this week. His dress uniform goes in his locker, folded properly, and the sergeant said find someone who knows how. I'm told that's you.");
+		Over("Never mind. The sergeant did it himself. It took him an hour, and he wouldn't let anyone help.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fold it the regulation way";
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 30;
 		w.m_fRadius = 15;
-		w.m_sStep = "Fold the dress uniform at {here} while the private watches (30 s).";
+		w.m_sStep = "Fold the dead man's dress uniform at {here} the regulation way while the private watches (30 s).";
 		w.m_iFavor = 4;
-		w.Done("\"Regulation fold. Regulation nothing else.\" The private does the next one himself, nearly right.");
+		w.Done("Regulation fold. Regulation nothing else, these days. I'll do the next one myself. Nearly right, probably.");
 	}
 
 	//------------------------------------------------------------------------------------------------

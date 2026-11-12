@@ -15,22 +15,22 @@ class RZ_Errand_Vouch : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
 		m_bTwists = true;
-		Offer("There's someone at the door who needs someone we know to speak for them. That's you, if you'll do it. If they turn out wrong, it's on you too.",
-			"New face, {name}. Nobody here knows them. Somebody has to say they're all right, and mean it.");
-		Over("Never mind. {name} went on. Or someone else spoke up. Either way.");
+		Offer("There's a new face at the door, {name}, who wants in. Nobody here knows them, and the rule is someone we know speaks for a stranger. That's you, if you'll do it. If they turn out wrong, it's on you too.",
+			"New face at the gate: {name}. Nobody here knows them. Somebody has to say they're all right and mean it, or they sleep outside the wire tonight.");
+		Over("Never mind. {name} went on down the road. Or someone else spoke up. Either way.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Speak for {name}";
-		w.Done("Right. Your word, then. In you come, {name}.");
+		w.Done("Right. Your word, then. In you come, {name}. Shoes off, weapons slung.");
 
 		w = Way("talk");
 		w.m_sLabel = "Ask about inside first";
 		w.m_sBackground = "excon";
-		w.Done("Well? You'd know better than me.");
+		w.Done("Well? You were inside. You'd know better than me.");
 
 		w = Way("leave");
 		w.m_sLabel = "Don't vouch";
-		w.Done("Fair. Most don't. I wouldn't.");
+		w.Done("Fair. Most don't. I wouldn't either.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -88,9 +88,9 @@ class RZ_Errand_Vouch : RZ_ErrandCard
 		{
 			mem.FoundTruth(m_sKey, e.m_sSubject, "excon");
 			if (e.m_iValue == 1)
-				said.Insert("Two questions about the landings at the county jail and he's sweating. He was inside with a man who sang for the guards. You know the tune. You don't vouch, and nobody asks you to.");
+				said.Insert("Two questions about the landings at the county jail and he's sweating, I saw. You knew the man he was inside with, the one who sang for the guards. You don't have to vouch, and nobody will ask you to.");
 			else
-				said.Insert("He knows the landings, the screws' names and the price of tobacco on B wing. He's what he says. You can speak for him if you want to.");
+				said.Insert("He knew the landings, the screws' names and the price of tobacco on B wing. He's what he says, then. You can speak for him if you want to.");
 
 			return;
 		}

@@ -11,22 +11,22 @@ class RZ_Errand_CharacterReference : RZ_ErrandCard
 		m_sTitle = "Character Reference";
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("You go to {other}. What are they actually like? Not the radio. You.",
-			"Off the record. {other}. You've been in with them. Are they people we could deal with, or not?");
-		Over("Never mind. We've made our minds up. Probably wrongly.");
+		Offer("You've been inside with {other}. Not what the radio says about them: what you saw. Are they people we could deal with, or not? Whatever you tell me goes round this place by supper, so say it carefully.",
+			"Off the record. You've eaten with {other}, walked their wire, heard them talk. We're deciding whether we can deal with them, and nobody here has been closer than the gate. What are they actually like?");
+		Over("Never mind. We've made our minds up without you. Probably wrongly.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Say what you've seen";
 		w.m_iFavor = 3;
-		w.Done("Huh. That's not what I expected. That's probably why it's true.");
+		w.Done("Huh. That's not what I expected, which is probably why it's true. I'll tell the others the way you told me.");
 
 		w = Way("talk");
 		w.m_sLabel = "Speak well of them";
-		w.Done("Really? Well. If you say so.");
+		w.Done("Decent, you say? Really? Well. If you say so, I'll say so too.");
 
 		w = Way("talk");
 		w.m_sLabel = "Speak ill of them";
-		w.Done("I knew it. I always knew it.");
+		w.Done("I knew it. I always knew it. Wait till I tell the others.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -12,8 +12,8 @@ class RZ_Errand_JarRun : RZ_ErrandCard
 		m_sFamily = "table";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("Run up to the farm at {subject_place} and get us a jar. The boss likes a jar. Don't ask what's in it.",
-			"A jar from the farm at {subject_place}. Pay what they ask. Don't stay for supper.");
+		Offer("Run up to the farm {subject_place} and get us a jar. The boss likes a jar with supper. Pay what they ask at the door, and come straight back.",
+			"A jar from the farm {subject_place}. Pay what they ask at the door. Don't stay for supper.");
 		Over("Never mind the jar. Nobody's going up there today.");
 
 		RZ_ErrandWay w = Way("do");
@@ -23,16 +23,16 @@ class RZ_Errand_JarRun : RZ_ErrandCard
 		w.m_fRadius = 30;
 		w.m_sStep = "Buy a jar at the farm door {subject_place} (10 s there), then bring it to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("He takes the jar and doesn't look at it. Nobody says anything at all.");
+		w.Done("That's it. On the shelf.");
 
 		w = Way("lie");
 		w.m_sLabel = "Say nobody was home";
 		w.m_iFavor = 3;
-		w.Done("\"Nobody home. Right.\" He looks at you a moment too long.");
+		w.Done("Nobody home. Right. Right.");
 
 		w = Way("talk");
 		w.m_sLabel = "Ask where the farmer gets his meat";
-		w.Done("\"Don't.\" That's all. He goes himself.");
+		w.Done("Don't. I'll go up myself.");
 	}
 
 	//------------------------------------------------------------------------------------------------

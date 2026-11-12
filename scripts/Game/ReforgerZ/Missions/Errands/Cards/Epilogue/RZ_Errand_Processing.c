@@ -11,8 +11,8 @@ class RZ_Errand_Processing : RZ_EpiCard
 		m_sTitle = "Processing";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("{local} wants walking to the queue. Processing. I've been processed since Day 2, {local} says. Not past the queue. Never to the barrier.",
-			"{local} has a bag packed and the Day 2 slip in a pocket. Walk them up to the queue? Just the queue.");
+		Offer("{local} wants walking up to the processing queue on the north road. I've been processed since Day 2, {local} says: that was the day the column was turned back from the same barrier. Walk {local} to the queue. Not past it. Never to the barrier.",
+			"{local} has a bag packed and the Day 2 slip from the column in a pocket, the one with the sample number on it. Walk {local} up to the queue? Just the queue. The barrier does the rest.");
 		Over("Never mind. {local} went up with the morning lot.");
 
 		RZ_ErrandWay w = Way("do");
@@ -23,11 +23,11 @@ class RZ_Errand_Processing : RZ_EpiCard
 		w.m_sStep = "Walk {local} up to the queue on the north road (20 s there, nothing in your hands), then tell {giver}.";
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
-		w.Done("Sitting in the queue, with the slip out. Thank you. That's where they wanted to be.");
+		w.Done("Sitting in the queue, with the slip out ready. Thank you. That's where {local} wanted to be.");
 
 		w = Way("talk");
 		w.m_sLabel = "Talk {local} into supper";
-		w.Done("\"Supper first, then. Tomorrow's queue is the same queue.\" They put the bag down by the door.");
+		w.Done("Supper first, then, you said, and tomorrow's queue is the same queue. {local}'s bag is by the door. It'll keep a night.");
 	}
 
 	//------------------------------------------------------------------------------------------------

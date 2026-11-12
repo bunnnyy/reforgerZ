@@ -12,8 +12,8 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_bTimed = true;
-		Offer("Old man in the farmhouse out past the chapel won't come in. Says nothing comes past the chapel. Something's been coming past the chapel all week. Before dark, please.",
-			"He's stubborn and he's on his own and {lot} are hungry. Bring him in, or at least board him in.");
+		Offer("There's an old man in the farmhouse out past the chapel who won't come in. Says nothing comes past the chapel. Something's been coming past the chapel all week: {lot}, and they're hungry. Before dark, please.",
+			"The old man past the chapel is stubborn, and on his own, and {lot} are hungry and moving at dusk. Bring him in to us, or at least board him in.");
 		Over("Never mind. He came in on his own. Complaining. But in.");
 
 		RZ_ErrandWay w = Way("do");
@@ -25,7 +25,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		w.m_sStep = "Fetch the old man from the farmhouse {place} and walk him back to {here} (10 s there).";
 		w.Later("The old man from the farmhouse says the soup's too thin. He's had three bowls. Thank you.");
 		w.m_iFavor = 5;
-		w.Done("\"I'd have been fine. I'm only here because of the soup.\" He's rude to everyone at supper. They're glad.");
+		w.Done("He says he'd have been fine, and he's only here because of the soup. He's been rude to everyone at supper. We're all very glad.");
 
 		w = Way("do");
 		w.m_sLabel = "Board his doors";
@@ -35,7 +35,7 @@ class RZ_Errand_NotPastChapel : RZ_ErrandCard
 		w.m_fBefore = 20.5;
 		w.m_sStep = "Board the old man's doors at the farmhouse {place}, two planks each (25 s there), then tell {giver}.";
 		w.m_iFavor = 4;
-		w.Done("\"Boarded. He shouted the whole time, I expect.\" He did.");
+		w.Done("Boarded? He shouted the whole time, I expect. Yes, I thought so.");
 
 		w = Way("leave");
 		w.m_sLabel = "Leave him to it";

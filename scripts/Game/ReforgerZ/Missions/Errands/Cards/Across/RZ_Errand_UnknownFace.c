@@ -11,9 +11,9 @@ class RZ_Errand_UnknownFace : RZ_ErrandCard
 		m_sTitle = "Unknown Face";
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("Nobody at {subject_place} knows your face. Nobody here does either, much. Carry a letter in. Don't read it. You'll read it.",
-			"A letter for {subject_place}. They'd shoot any of us. They won't shoot a stranger, probably.");
-		Over("Never mind the letter. It's out of date. Everything's out of date.");
+		Offer("Nobody at {subject_place} knows your face, and nobody here does much either. That's useful. I've a letter for someone in there: the price of diesel, mostly, and something I should have said a month ago. Carry it in. Don't read it. You'll read it.",
+			"I need a letter carried into {subject_place}. They'd shoot any of us on sight, after the last month. They won't shoot a stranger, probably.");
+		Over("Never mind the letter. It's out of date. Everything's out of date this week.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Deliver it";
@@ -22,24 +22,24 @@ class RZ_Errand_UnknownFace : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry the letter into {subject_place} and hand it over (5 s there). It says the price of diesel is going up, and that someone's sorry. Then come back to {giver}.";
 		w.m_iFavor = 5;
-		w.Done("Delivered. Good. Did they say anything? No, they wouldn't.");
+		w.Done("Delivered. Good. Did they say anything? No. They wouldn't, would they.");
 
 		w = Way("lie");
 		w.m_sLabel = "Swap it for one you wrote";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 40;
-		w.m_sStep = "Carry your own letter into {subject_place} instead (5 s there), then come back to {giver}.";
+		w.m_sStep = "Write your own letter and carry it into {subject_place} instead (5 s there), then come back to {giver}.";
 		w.m_iFavor = 3;
-		w.Done("Delivered? Good. Good.");
+		w.Done("Delivered? Good. Good. You look like you've something to say. No? All right.");
 
 		w = Way("betray");
 		w.m_sLabel = "Sell it to the camp";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 40;
-		w.m_sStep = "Sell the letter to whoever runs {subject_place} (5 s there).";
-		w.Done("\"Back already? Was it all right?\" You say it was.");
+		w.m_sStep = "Sell the letter to whoever runs {subject_place} (5 s there), then go back to {giver}.";
+		w.Done("Back already? And it was all right? Good. I'll sleep tonight, then.");
 	}
 
 	//------------------------------------------------------------------------------------------------

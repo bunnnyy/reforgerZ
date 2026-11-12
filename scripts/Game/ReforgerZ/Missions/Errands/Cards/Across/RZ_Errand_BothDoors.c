@@ -13,32 +13,32 @@ class RZ_Errand_BothDoors : RZ_ErrandCard
 		m_sFamily = "background";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("You go in at {subject_place} and nobody shoots. Remarkable. We'd like their shift times. They'd like ours. You'd be the man in the middle. Again.",
-			"The crews at {subject_place} want our shift times and we want theirs. You're the only one either side lets through both doors.");
-		Over("Never mind. They changed their shifts. So did we. Everyone's guessing again.");
+		Offer("You walk into the crews' camp at {subject_place} and nobody shoots. That's rare. We'd like to know when their shifts change, and they'd like to know when ours do. Nobody trusts a radio for it. You'd be the one in the middle, carrying both ways. Again.",
+			"The crews at {subject_place} want our shift times, and we want theirs, so neither side gets caught napping at the change. You're the only one either side lets through both doors.");
+		Over("Never mind. They changed their shifts this morning, and so did we. Everyone's guessing again.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry true times both ways";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take Bastion's shift times to the crews at {subject_place} and bring theirs back (5 s there).";
+		w.m_sStep = "Take Bastion's shift times to the crews at {subject_place} and bring theirs back (5 s there), then report to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("Nobody trusts a man everyone trusts. Except everyone, apparently.");
+		w.Done("Their times, and ours delivered true. Nobody trusts someone everyone trusts. Except everyone, apparently.");
 
 		w = Way("lie");
 		w.m_sLabel = "Give the crews a false time";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take the crews at {subject_place} a shift time that's wrong, and bring theirs back (5 s there).";
+		w.m_sStep = "Give the crews at {subject_place} a shift time that's wrong, and bring theirs back (5 s there), then report to {giver}.";
 		w.m_iFavor = 3;
-		w.Done("Their times. Lovely. And ours? You gave them ours. Good.");
+		w.Done("Their times, and a wrong one for them. Lovely. They'll stand to for a change of shift that never comes.");
 
 		w = Way("talk");
 		w.m_sLabel = "Carry nothing, and say so";
-		w.Done("Neither side, then. Fair. Infuriating, but fair.");
+		w.Done("You'll carry nothing for either side, and you said so to my face. Fair. Infuriating, but fair.");
 	}
 
 	//------------------------------------------------------------------------------------------------

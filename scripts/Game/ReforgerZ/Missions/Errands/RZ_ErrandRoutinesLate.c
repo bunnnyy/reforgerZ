@@ -17,24 +17,24 @@ class RZ_Routine_HisLighter : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "crewman,cook";
-		Offer("One of ours didn't come back {subject_place}. His kit's sold already. That's how it is. This is the last of it. His lighter. Somebody take it off my hands.",
-			"His lighter. Everything else went to the fence before the horns stopped. I can't sell this one. You can.");
+		Offer("One of our crew didn't come back {subject_place}. We sent him off loud, and his kit was on the market before the horns stopped. That's how it is. This is the last of it: his lighter. Somebody take it off my hands.",
+			"This was his lighter, a lad from our crew who died {subject_place}. Everything else went to the fence before the horns stopped. I can't sell this one. You can. Or you know someone who'd want it.");
 		Over("Never mind the lighter. Somebody bought it. It's in the book.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Sell it to the fence";
 		w.m_iFavor = 6;
-		w.Done("\"Bought fair. It's in the book.\" That's all anyone says about him.");
+		w.Done("Bought fair. It's in the book. That's all anyone will say about him now.");
 
 		w = Way("give");
 		w.m_sLabel = "Take it to his mother";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Take his lighter to his mother at {house} (5 s at the door), then tell {giver}.";
+		w.m_sStep = "Take the dead lad's lighter to his mother at {house} (5 s at the door), then tell {giver}.";
 		w.m_iFame = 1;
 		w.m_iPayFaction = RZ_EFaction.SURVIVORS;
-		w.Done("\"You didn't rat. Fair enough.\" Nobody in the crew says anything else about it.");
+		w.Done("To his mother. You didn't sell it, and you didn't rat. Fair enough. Nobody in the crew will say anything else about it.");
 
 		w = Way("lie");
 		w.m_sLabel = "Sell it to Bastion as proof of one less";
@@ -44,9 +44,9 @@ class RZ_Routine_HisLighter : RZ_ErrandDef
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Take the lighter to Bastion's post {subject_place} and let them count one less, then tell {giver} it went to the fence.";
+		w.m_sStep = "Take the lighter to Bastion's post {subject_place} as proof of one less crewman, then tell {giver} it went to the fence.";
 		w.m_iFavor = 5;
-		w.Done("\"Gone? To the fence. Right.\" He doesn't ask which fence.");
+		w.Done("Gone? To the fence. Right. I won't ask which fence.");
 	}
 
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
@@ -83,7 +83,7 @@ class RZ_Routine_HisLighter : RZ_ErrandDef
 		if (w.m_iIndex == 1 && dealer.GetLocals() && e.m_iValue >= 0)
 		{
 			dealer.GetLocals().Make(playerId, "whose son ran with the crews", "You brought me his lighter. Nobody else brought me anything.", e.m_iValue, "stove", false, "helped");
-			said.Insert(e.Fill("At {house} his mother takes it in both hands. What he owed is in the crews' book against her now, and the lighter won't pay it. She knows."));
+			said.Insert(e.Fill("His mother at {house} took it in both hands, I hear. What he owed is in the book against her now, and a lighter won't pay it. She knows."));
 			return;
 		}
 
@@ -108,8 +108,8 @@ class RZ_Routine_Market : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_sRoles = "fence,toll man";
-		Offer("There's a ring loose {subject_place}. Wedding lot. Find it before the rain does and I'll give you a fair price. Fairish.",
-			"A wedding party broke up {subject_place}. Somewhere in the grass there's a ring with a date in it. I want it. So does somebody's mother, I hear. I want it more.");
+		Offer("There's a ring loose {subject_place}. A wedding party got broken up there, the infected came through the middle of it, and the ring's somewhere in the grass. Find it before the rain does and I'll give you a fair price. Fairish.",
+			"A wedding party broke up {subject_place}, badly. Somewhere in the grass there's a ring with a date in it. I want it. So does the groom's mother, I hear. I want it more.");
 		Over("The ring's gone. Somebody's mother got there first. Mothers do.");
 
 		RZ_ErrandWay w = Way("do");
@@ -117,26 +117,26 @@ class RZ_Routine_Market : RZ_ErrandDef
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 40;
-		w.m_sStep = "Search the grass where the wedding party was {subject_place} (20 s), then bring the ring to {giver}.";
+		w.m_sStep = "Search the grass where the wedding party was {subject_place} (20 s there), then bring the ring to {giver}.";
 		w.m_iFavor = 8;
-		w.Done("He reads the inside of it out loud. \"For ever.\" He laughs. Nobody else does.");
+		w.Done("For ever, it says inside. For ever. Ha. That's worth a tin on its own.");
 
 		w = Way("give");
 		w.m_sLabel = "Give it to the groom's mother";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find the ring {subject_place}, then take it to the groom's mother at {house} (5 s at the door), and tell {giver}.";
+		w.m_sStep = "Find the ring {subject_place}, give it to the groom's mother at {house} (5 s at the door), then tell {giver}.";
 		w.m_iFame = 2;
 		w.m_iPayFaction = RZ_EFaction.SURVIVORS;
-		w.Done("Soft. You're soft. I'll remember that, and so will the price of everything.");
+		w.Done("To the mother? Soft. You're soft. I'll remember that, and so will the price of everything.");
 
 		w = Way("do");
 		w.m_sLabel = "Sell it to her for two tins";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT2;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find the ring {subject_place}, sell it to the groom's mother at {house} for two tins (5 s at the door), and tell {giver}.";
+		w.m_sStep = "Find the ring {subject_place}, sell it to the groom's mother at {house} for two tins (5 s at the door), then tell {giver}.";
 		w.m_iFavor = 4;
 		w.Done("Two tins from a mother. That's business. Ugly business, but business.");
 	}
@@ -174,7 +174,7 @@ class RZ_Routine_Market : RZ_ErrandDef
 		}
 
 		if (w.m_iIndex == 1)
-			said.Insert(e.Fill("At {house} she puts it on her own finger, because it's the only safe place. Inside: a date, and \"for ever\"."));
+			said.Insert(e.Fill("The groom's mother at {house} wears it on her own finger now, I hear, because it's the only safe place. A date inside, and 'for ever'."));
 	}
 }
 
@@ -191,8 +191,8 @@ class RZ_Routine_Receiver : RZ_ErrandDef
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
 		m_sRoles = "technician";
-		Offer("The tag on {lair}'s leader is still talking. We aren't listening: the receiver's down, {subject_place}. A small request.",
-			"We put a tag in one of them at great expense and the receiver's dead. A cable, probably. Or a crow. {subject_place}.");
+		Offer("We tagged the one that leads the infected at {lair}, so we know where the group moves at night. The tag is still talking. We aren't listening: the receiver's down, {subject_place}. A small request: get it working.",
+			"We put a radio tag in the leader at {lair} at great expense, and now the receiver's dead, {subject_place}. A cable, probably. Or a crow. Without it, we don't know which way they're walking.");
 		Over("The receiver's back. Someone kicked it. Science.");
 
 		RZ_ErrandWay w = Way("give");
@@ -205,7 +205,7 @@ class RZ_Routine_Receiver : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Fit a battery to the receiver's mast {place} (10 s there), then tell {giver}.";
 		w.m_iFavor = 5;
-		w.Done("There he is. Walking in circles, as usual. Thank you.");
+		w.Done("There he is on the screen. Walking in circles, as usual. Thank you.");
 
 		w = Way("do");
 		w.m_sLabel = "Re-seat the cable";

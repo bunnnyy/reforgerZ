@@ -12,20 +12,20 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("{who}. Notebook thirty-one is still with him, {subject_place}. And his coat. The coat is numbered. A small request: bring both.",
-			"We'd like {who}'s notebook back. And him on the authors' list, where he belongs. He's {subject_place}.");
-		Over("Someone returned the notebook. His name goes on the list at the change of shift.");
+		Offer("We lost a colleague: {who}, {subject_place}. Hid there and didn't come out. Notebook thirty-one is still with the body, and the numbered coat. The notebook belongs to the lab, and the name belongs on the authors' list. A small request: bring both back.",
+			"We'd like {who}'s notebook back, and the name on the authors' list, where it belongs. The body is {subject_place}. Every notebook is read into the record. This one is the only copy.");
+		Over("Someone returned the notebook. The name goes on the authors' list at the change of shift.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring back the coat and the notebook";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Find {who} {subject_place} and take the coat and the notebook (15 s there), then bring them to {giver}.";
+		w.m_sStep = "Find the body {subject_place} and take the coat and notebook thirty-one (15 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 5;
 		w.m_iFame = 2;
-		w.Done("Thirty-one. The handwriting gets worse towards the end. They always do. Thank you.");
+		w.Done("Thirty-one. The handwriting gets worse towards the end. They always do. Thank you. It goes into the record tonight.");
 
 		w = Way("lie");
 		w.m_sLabel = "Sell the notebook to the fence";
@@ -35,19 +35,19 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take the notebook off {who} {subject_place} (15 s), sell it at the fence, and tell {giver} it wasn't there.";
+		w.m_sStep = "Take the notebook from the body {subject_place} (15 s), sell it at the fence, and tell {giver} it wasn't there.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 6;
-		w.Done("Not there. I see. I'll put him down as 'notes lost'.");
+		w.Done("Not there. I see. I'll write 'notes lost' in the record.");
 
 		w = Way("do");
 		w.m_sLabel = "Keep the notebook";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take the notebook off {who} {subject_place} (15 s) and keep it. Tell {giver} what you like.";
+		w.m_sStep = "Take the notebook from the body {subject_place} (15 s) and keep it. Tell {giver} what you like.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
-		w.Done("You've kept it. Of course you have. It has a number. Numbers open doors here.");
+		w.Done("You've kept it. Of course you have. It has a number on the cover, and numbers open doors at our gate.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -85,6 +85,6 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		}
 
 		RZ_Deeds.AddLifeRecord(gm.GetProfile(playerId), "notebook31", false);
-		said.Insert("Its number is on the cover. At Halcyon's gate, a number like that is something to say.");
+		said.Insert("The number's on the cover. At a Halcyon gate, a number like that is something to say.");
 	}
 }

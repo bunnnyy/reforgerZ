@@ -14,8 +14,8 @@ class RZ_Errand_BuyItBack : RZ_ErrandCard
 		m_sFamily = "aftermath";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("The box from that wreck {where_place}. A fence's lad is sitting on it, waiting for a price. Buy it back. Don't tell me how.");
-		Over("Forget the box. It's gone where boxes go.");
+		Offer("The black box from the helicopter wreck {where_place} never came in. A Red Hand fence's runner is sitting on it at the wreck, waiting for someone to name a price. Command will want to know what that box heard. Buy it back for us. Don't tell me how.");
+		Over("Forget the box. It's gone where boxes go, and the log will say weather.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Pay the runner in tins";
@@ -25,20 +25,20 @@ class RZ_Errand_BuyItBack : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Take five tins to the runner at the wreck {where_place}, then bring the box to {giver}.";
+		w.m_sStep = "Take five tins to the fence's runner at the wreck {where_place}, then bring the black box to {giver}.";
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 6;
-		w.Done("That's the box. I won't ask what it cost. Weather, then. Write it down.");
+		w.Done("That's the box. I won't ask what it cost you. In the log it'll say recovered, weather permitting.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay the runner in crew money [25 Red Hand Favor]";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
-		w.m_sStep = "Settle with the runner at the wreck {where_place} on the crew's account (25 Red Hand Favor), then bring the box to {giver}.";
+		w.m_sStep = "Settle with the fence's runner at the wreck {where_place} on the crew's account (25 Red Hand Favor), then bring the black box to {giver}.";
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 6;
-		w.Done("I don't want to know whose account. The box is back. That's all I asked.");
+		w.Done("I don't want to know whose account it went on. The box is back. That's all I asked.");
 	}
 
 	//------------------------------------------------------------------------------------------------

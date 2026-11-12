@@ -11,8 +11,8 @@ class RZ_Errand_PackForTheQueue : RZ_EpiCard
 		m_sTitle = "Pack for the Queue";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("We're going to the queue. Before we do: the wedding photo and my mother's coat, from the house we left. Nobody's lived there since.",
-			"I'm not walking up to that barrier without my father's watch and the good scissors. They're still in the old house.");
+		Offer("We're going up to the processing queue, the whole family. Before we do, I need two things from the house we left on Day 2: the wedding photo, and my mother's coat. Nobody's lived there since. I can't go back in.",
+			"I'm not walking up to that barrier without my father's watch and the good scissors. They're still in the old house, where we left everything on Day 2. Bring them, and I'll go.");
 		Over("Leave it. We're going as we are.");
 
 		RZ_ErrandWay w = Way("do");
@@ -20,21 +20,21 @@ class RZ_Errand_PackForTheQueue : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.EMPTY_VILLAGE;
 		w.m_fSeconds = 30;
 		w.m_fRadius = 40;
-		w.m_sStep = "Search the old house in {place} for both things (30 s there), then bring them to {giver}.";
+		w.m_sStep = "Search the family's old house in {place} for both things (30 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
-		w.Done("\"Both. You found both.\" A long look at the photo. \"Thank you.\"");
+		w.Done("Both. You found both. Look at us in that photo. Thank you.");
 
 		w = Way("leave");
 		w.m_sLabel = "Bring one, say the other was gone";
 		w.m_ePlace = RZ_EErrandPlace.EMPTY_VILLAGE;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Pick up one of the two in {place}, then go back to {giver}.";
+		w.m_sStep = "Take one of the two things from the old house in {place}, then go back to {giver}.";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 2;
-		w.Done("Only the one? People took things. It's all right. It's more than I had.");
+		w.Done("Only the one? People took things. It's all right. It's more than I had this morning.");
 	}
 
 	//------------------------------------------------------------------------------------------------

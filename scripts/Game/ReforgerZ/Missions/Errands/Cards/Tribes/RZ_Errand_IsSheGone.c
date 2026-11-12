@@ -12,8 +12,8 @@ class RZ_Errand_IsSheGone : RZ_ErrandCard
 		m_sFamily = "tribes";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("{alpha} ran the bakery. They're saying the calling at {lair} stopped. Is it true? Go and look. From a long way off.",
-			"The calling stopped at {lair}. If that means {alpha}'s gone, I want to know. I'd like to stop listening for her.");
+		Offer("{alpha} ran the bakery here, before. After she turned, she led the ones at {lair}, and we heard the calling every night. They're saying the calling's stopped. Is it true? Go and look. From a long way off.",
+			"The calling stopped at {lair} two nights ago. If that means {alpha}'s gone at last, I want to know. I'd like to stop listening for her.");
 		Over("Never mind. Somebody went. It's true.");
 
 		RZ_ErrandWay w = Way("sneak");
@@ -22,9 +22,9 @@ class RZ_Errand_IsSheGone : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
 		w.m_bUnseen = true;
-		w.m_sStep = "Watch {lair} from its edge {subject_place}, unseen (15 s hidden there), then tell {giver}.";
+		w.m_sStep = "Watch {lair} from its edge {subject_place} without being seen (15 s hidden there), then tell {giver}.";
 		w.m_iFavor = 4;
-		w.Done("They're standing round where she lay. Just standing. Then it's true.");
+		w.Done("They're standing round where she lay? Just standing? Then it's true.");
 
 		w = Way("talk");
 		w.m_sLabel = "Sit at supper while they say her name";
@@ -34,7 +34,7 @@ class RZ_Errand_IsSheGone : RZ_ErrandCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit at the house's supper (a minute at the table) while they say {alpha}'s name.";
 		w.m_iFavor = 3;
-		w.Done("Thank you for sitting. You knew how. Most people don't.");
+		w.Done("Thank you for sitting with us. You knew how. Most people don't.");
 	}
 
 	//------------------------------------------------------------------------------------------------

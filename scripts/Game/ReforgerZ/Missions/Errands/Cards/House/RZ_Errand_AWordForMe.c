@@ -11,7 +11,7 @@ class RZ_Errand_AWordForMe : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("Two families want the one room. {head} listens to you. Say a word for the Novaks? They've the little one.");
+		Offer("Two families want the last room in the house, the one with the window that shuts. The council decides, and {head} listens to you. Say a word for the Novaks? They've the little one, and she coughs at night.");
 		Over("It's settled. The room went to the Novaks without you.");
 
 		RZ_ErrandWay w = Way("talk");
@@ -19,12 +19,12 @@ class RZ_Errand_AWordForMe : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 15;
-		w.m_sStep = "Find {head} at {house} and say a word for the family (10 s beside them), then come back to {giver}.";
-		w.Done("{head} said yes because it was you. Don't let it go to your head. It's a small room.");
+		w.m_sStep = "Find {head} at {house} and say a word for the Novaks (10 s beside them), then come back to {giver}.";
+		w.Done("{head} said yes because it was you asking. Don't let it go to your head. It's a small room.");
 
 		w = Way("talk");
 		w.m_sLabel = "Say you're no one to ask";
-		w.Done("That's what the last one said. Fine. We'll draw lots, like animals.");
+		w.Done("That's what the last one said. Fine. We'll draw lots for it, like animals.");
 	}
 
 	//------------------------------------------------------------------------------------------------

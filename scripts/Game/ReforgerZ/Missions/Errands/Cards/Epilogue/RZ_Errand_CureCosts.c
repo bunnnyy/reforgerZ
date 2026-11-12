@@ -23,8 +23,8 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		m_sTitle = "What the Cure Costs Here";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("{local} has the fever, and the cure's going out by somebody else's rules. Nobody's coming to this house with it. What does it cost here?",
-			"{local} is sick, and the nearest dose isn't ours to give. Find out what it costs, and whether we can pay it.");
+		Offer("{local} has the fever, and the cure's going out by somebody else's rules: Bastion's roster, the Red Hand's book, the lab's list. Nobody's coming to this house with a dose. Go and find out what it costs, here, for {local}.",
+			"{local} is sick, and the nearest dose isn't ours to give. Whoever holds it has terms. Find out what they cost, and whether any of us can pay them.");
 		Over("Never mind. A dose came for {local} this morning.");
 
 		RZ_ErrandWay w = Way("do");
@@ -32,25 +32,25 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 30;
-		w.m_sStep = "Put {local}'s name on the roster at {subject_place} (20 s there), then tell {giver}.";
+		w.m_sStep = "Put {local}'s name on Bastion's roster at {subject_place} (20 s there), then tell {giver}.";
 		w.m_iFavor = 3;
-		w.Done("\"On the roster. They'll come down the list. It's a long list.\" A pause. \"They'll come.\"");
+		w.Done("On the roster. They'll come down the list to {local}. It's a long list. They'll come.");
 
 		w = Way("talk");
 		w.m_sLabel = "Vouch for {local}";
 		w.m_iMinTier = RZ_ETier.TRUSTED;
 		w.m_iTierFaction = RZ_EFaction.MILITARY;
-		w.Done("Your word on the list? Then the medic comes tonight.");
+		w.Done("Your word on the list? Then the army medic comes tonight. Thank you.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay for {local}'s dose";
 		w.m_iFavorCost = 15;
 		w.m_iPayFaction = RZ_EFaction.BANDITS;
-		w.Done("\"Paid? In full?\" They hold your hand a moment too long. \"We won't forget who.\"");
+		w.Done("Paid? In full? I'm holding your hand too long, I know. We won't forget who paid.");
 
 		w = Way("talk");
 		w.m_sLabel = "Put it on {local}'s line in the book";
-		w.Done("\"A line in the book. For a dose.\" They nod. \"It's a fair trade. It's still a line.\"");
+		w.Done("A line in the Red Hand's book, for a dose. It's a fair trade. It's still a line, and {local} will be paying it after the gates open.");
 
 		w = Way("pay");
 		w.m_sLabel = "Haggle for {local}'s dose";
@@ -58,7 +58,7 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		w.m_iPayFaction = RZ_EFaction.BANDITS;
 		w.m_iMinTier = RZ_ETier.TRUSTED;
 		w.m_iTierFaction = RZ_EFaction.BANDITS;
-		w.Done("\"Eight? You got it for eight?\" Somebody laughs for the first time this week.");
+		w.Done("Eight? You got it for eight? That's the first laugh this house has had all week.");
 
 		w = Way("do");
 		w.m_sLabel = "Sit with {local}";
@@ -67,7 +67,7 @@ class RZ_Errand_CureCosts : RZ_EpiCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit with {local} at the house a while (a minute), then tell {giver}.";
 		w.m_iFavor = 2;
-		w.Done("Nobody had a dose for them. You had an hour. They'll remember the hour.");
+		w.Done("Nobody had a dose for {local}. You had an hour, and you gave it. That'll be remembered here.");
 	}
 
 	//------------------------------------------------------------------------------------------------

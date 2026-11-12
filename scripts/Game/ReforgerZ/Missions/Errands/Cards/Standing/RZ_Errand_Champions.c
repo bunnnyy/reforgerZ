@@ -15,8 +15,8 @@ class RZ_Errand_KidsInspection : RZ_ErrandCard
 		m_sFamily = "champion";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("You're the one from the board, aren't you. Would you look over my post? Before the sergeant does. If you say it's right, it's right.",
-			"Private on the gate's been asking for you by what the board calls you. He wants his post looked over. By you, he says.");
+		Offer("You're the one from the board, aren't you. The one they talk about at the roll. I've the gate post on my own tonight, first time, and the sergeant inspects it at the change. Would you look it over first? If you say it's right, it's right.",
+			"The private on the gate has been asking for you by what the board calls you. First post of his own, and the sergeant inspects at the change of shift. He wants it looked over by you first, he says. Nobody else will do.");
 		Over("The sergeant got there first. The private's doing press-ups. He's fine.");
 
 		RZ_ErrandWay w = Way("do");
@@ -24,13 +24,13 @@ class RZ_Errand_KidsInspection : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.GATE;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 15;
-		w.m_sStep = "Walk the private's post at the gate of {here} with him (20 s) and say what you see.";
-		w.Done("He stands straighter for the rest of the shift. Nobody pays you for that, and nobody needs to.",
-			"\"Arc of fire, check. Sandbags, check.\" He writes your name in the margin of his notebook, small.");
+		w.m_sStep = "Walk the private's post at the gate of {here} with him (20 s there) and tell him what you see.";
+		w.Done("Arc of fire, sandbags, the lot? I'll be standing straighter for the rest of the shift. Nobody pays you for that, and nobody needs to.",
+			"Arc of fire, check. Sandbags, check. I've written your name in the margin of my notebook. Small. Don't tell the sergeant.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell him you're nobody's sergeant";
-		w.Done("That's what the good ones say.");
+		w.Done("Nobody's sergeant, you say. That's what the good ones say.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -69,31 +69,31 @@ class RZ_Errand_StoryAtTheFire : RZ_ErrandCard
 		m_sFamily = "champion";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("The lads have a bet on whether what they say about you is true. Sit at the fire and settle it. Loser buys. Nobody's buying.",
-			"You're the one they talk about. Come and tell it yourself, so we can stop telling it wrong.");
-		Over("Fire's out. They told it without you. You were taller in it.");
+		Offer("The lads have a bet on whether what they say about you is true. Half of them say you did it, half say nobody could. Sit at the fire and settle it. Loser buys. Nobody's buying.",
+			"You're the one they talk about round every fire on this road. Come and tell it yourself, so we can stop telling it wrong.");
+		Over("The fire's out. They told it without you. You were taller in it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Tell it straight";
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
-		w.m_sStep = "Sit at the fire at {here} and tell it the way it happened (a minute).";
+		w.m_sStep = "Sit at the fire at {here} and tell it the way it happened (a minute there).";
 		w.m_iEffect = 1;
-		w.Done("\"That's worse than what we had. Better, I mean.\" Somebody owes somebody a tin.");
+		w.Done("That's worse than what we had. Better, I mean. Somebody owes somebody a tin now.");
 
 		w = Way("do");
 		w.m_sLabel = "Tell it bigger";
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
-		w.m_sStep = "Sit at the fire at {here} and give them the version they want (a minute).";
+		w.m_sStep = "Sit at the fire at {here} and give them the version they want (a minute there).";
 		w.m_iEffect = 2;
-		w.Done("\"Forty of them. With a spoon.\" Nobody believes it. Everybody repeats it.");
+		w.Done("Forty of them. With a spoon. Nobody believes it. Everybody will be repeating it by morning.");
 
 		w = Way("talk");
 		w.m_sLabel = "Say there's nothing to tell";
-		w.Done("Modest. That's new. We'll put that in too.");
+		w.Done("Nothing to tell? Modest. That's new. We'll put that in the story too.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -136,8 +136,8 @@ class RZ_Errand_VisitorsLog : RZ_ErrandCard
 		m_sFamily = "champion";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("The visitors' log. Would you sign it? For the record. Records outlive everyone in them. That's rather the point of them.",
-			"A small request: your name in the station's log, in your own hand. My brother saw it on the list at the lab. I'd like it here as well.");
+		Offer("The station keeps a visitors' log, and your name is on the list at the lab already. Would you sign ours? For the record. Records outlive everyone in them. That's rather the point of them.",
+			"I've a small request. Your name in the station's log, in your own hand. My brother saw it on the list at the lab. I'd like it here as well, for when someone outside reads all this.");
 		Over("The log's gone to the lab for binding. Another time.");
 
 		RZ_ErrandWay w = Way("do");
@@ -145,9 +145,9 @@ class RZ_Errand_VisitorsLog : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 15;
-		w.m_sStep = "Sign the visitors' log at {here} (10 s).";
+		w.m_sStep = "Sign the visitors' log at {here} (10 s there).";
 		w.m_iEffect = 1;
-		w.Done("She blots it. \"Entry four hundred and twelve. The first one we've had to underline.\"");
+		w.Done("Entry four hundred and twelve. Let me blot it. It's the first one we've had to underline.");
 
 		w = Way("talk");
 		w.m_sLabel = "Ask to be put down as anonymous";

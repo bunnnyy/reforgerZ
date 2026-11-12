@@ -11,24 +11,24 @@ class RZ_Errand_OldHabits : RZ_ErrandCard
 		m_sFamily = "backgrounds";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("You've done time, they tell me. Good. Walk my wire and tell me where you'd come in. The crews {subject_place} already know.",
-			"I need someone who thinks like a thief. No offence. Walk the wire with me.");
-		Over("Never mind the wire. We found the hole ourselves. The hard way.");
+		Offer("You've done time, they tell me. Good. Walk my wire and tell me where you'd come in. The crews {subject_place} have been in twice this month and taken diesel both times, and I still can't find the hole.",
+			"I need someone who thinks like a thief. No offence. Somebody's been through my wire at night, twice, and the crews {subject_place} are the ones with full cans. Walk it and tell me where.");
+		Over("Never mind the wire. We found the hole ourselves. The hard way, at three in the morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk the wire, and tell him";
 		w.m_ePlace = RZ_EErrandPlace.GATE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 30;
-		w.m_sStep = "Walk the post's wire at {place} (a minute there), then tell {giver} where you'd come in.";
+		w.m_sStep = "Walk the post's wire at {place} (a minute there), then tell {giver} where you'd get in.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("There? Under the water butt? Christ. Thank you. I think.");
+		w.Done("There? Under the water butt? I've walked past that a hundred times. Thank you. I think.");
 
 		w = Way("lie");
 		w.m_sLabel = "Tell him the wrong place";
 		w.m_iFavor = 3;
-		w.Done("The front gate? Bold. Right. We'll watch the front gate.");
+		w.Done("The front gate? Bold. Right. I'll put two on the front gate tonight.");
 	}
 
 	//------------------------------------------------------------------------------------------------

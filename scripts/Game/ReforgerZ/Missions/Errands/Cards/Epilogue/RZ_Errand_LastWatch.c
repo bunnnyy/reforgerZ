@@ -9,9 +9,9 @@ class RZ_Errand_LastWatch : RZ_EpiCard
 		m_sKey = "epi_last_watch";
 		m_sTitle = "The Last Watch";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("We held this gate all season. Somebody should stand the last proper watch on it. Ten minutes. I'd like it to be someone we know.",
-			"One more watch on the gate, before it doesn't matter. Ten minutes. Then I'll write it down as kept.");
-		Over("Never mind. The lads are taking it themselves.");
+		Offer("We held this gate all season, every night, with whoever we had. The gates open at the end of the week and then it's nobody's. Somebody should stand the last proper watch on it. Ten minutes. I'd like it to be someone we know.",
+			"One more watch on our gate, before it stops mattering. Ten minutes. Then I'll write it in the book as kept, the last line on the last page.");
+		Over("Never mind. The regulars are standing it themselves.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Stand the gate for ten minutes";
@@ -19,10 +19,10 @@ class RZ_Errand_LastWatch : RZ_EpiCard
 		w.m_fSeconds = 600;
 		w.m_fRadius = 30;
 		w.m_fBefore = 21.5;
-		w.m_sStep = "Stand at {here}'s gate for ten minutes, then report to {giver}.";
+		w.m_sStep = "Stand watch at the gate of {here} for ten minutes, then report to {giver}.";
 		w.m_iFavor = 8;
 		w.m_iFame = 2;
-		w.Done("\"Watch kept. Last one in the book.\" The pen stops. \"Thank you.\"");
+		w.Done("Watch kept. That's the last one in the book. I'm putting the pen down now. Thank you.");
 	}
 
 	//------------------------------------------------------------------------------------------------

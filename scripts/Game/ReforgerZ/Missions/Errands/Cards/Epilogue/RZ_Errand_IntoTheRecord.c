@@ -9,20 +9,20 @@ class RZ_Errand_IntoTheRecord : RZ_EpiCard
 		m_sTitle = "Into the Record";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("{dead} went out {lies} and didn't come back. The notebook should be with them. It belongs in the record.",
-			"There's a notebook {lies}, with {dead}. Whatever's in it goes in the appendix. Every page.");
-		Over("Somebody brought the notebook in. It's in the box already.");
+		Offer("{dead} went out {lies} and didn't come back. The notebook should still be with the body. The record goes outside with the cure, every notebook in it, and this one is missing.",
+			"There's a notebook {lies}, with {dead}. The record of the cure goes out through the gates at the end of the week. Whatever's in that notebook goes in the appendix, every page.");
+		Over("Somebody brought the notebook in. It's in the appendix box already.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch {dead}'s notebook";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
-		w.m_sStep = "Find {dead} {lies} and take the notebook (15 s there), then bring it to {giver}.";
+		w.m_sStep = "Find the body of {dead} {lies} and take the notebook (15 s there), then bring it to {giver}.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"{dead}'s handwriting. Dated to the last day.\" The notebook goes in a box marked APPENDIX.");
+		w.Done("That's {dead}'s handwriting, dated to the last day. It goes in the box marked APPENDIX, and the name goes in the front.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -598,8 +598,8 @@ or Halcyon's lab or field-station gate, an owed player gets one hearing instead 
    charge (`RZ_Util.IsEmptyHanded`, every tick). They hold fire only while you're closing, 90 s at
    most, a few seconds at a time (`StandDown`, never forgiving).
 3. **At the barrier** (35 m), 10 s searched. Nobody walks out to meet you. The nearest leader of that
-   faction speaks over the radio from inside: one deed callback ("You {best}. You also {worst}. Both
-   go in the log. Talk.") and one **amends offer**: the Haven's Medicine Run (else Survivors Trapped),
+   faction speaks over the radio from inside: one deed callback ("Halt. Hands where we can see them. I
+   know who you are. You {best}. You also {worst}. Both go in the log. Now talk.") and one **amends offer**: the Haven's Medicine Run (else Survivors Trapped),
    Bastion's Burn the Bodies (else Recon), the Red Hand's Fence the Goods or Halcyon's Field Samples,
    reserved for you for 60 minutes though you're Hunted. It finishes by its own rules where it says;
    nothing is handed in at the gate. If none can be placed: "Come back later", and the 2 hours aren't used.
@@ -712,8 +712,9 @@ contracts are briefed in the voice of the nearest Loyal leader of the giver, who
 the pay.
 
 **First contact.** The first time you talk to a leader they say who their faction is, who
-they are, and what they think of one other faction (two for a Talker), with where its nearest
-leader sits. Hooks: `RZ_Leaders.GetFirstContactLine(faction, leaderId, playerId)` and
+they are (*"I'm"* their name, and their line from before the gates closed, written so it reads in
+their voice and in a headline), and what they think of one other faction (two for a Talker), with
+where its nearest leader sits (*"The nearest Bastion place is Morton, 1.2 km NE from here."*). Hooks: `RZ_Leaders.GetFirstContactLine(faction, leaderId, playerId)` and
 `RZ_Leaders.DescribeStronghold(faction, fromPos)`.
 
 **Deaths.** Off-screen, every half hour, an outpost or safehouse leader can be bitten (1–4%) or

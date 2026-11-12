@@ -14,8 +14,8 @@ class RZ_Errand_SomebodyTell : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("She lost her husband on the road last week. People say he goes out with {lot} now. Somebody should find out, and tell her properly.",
-			"There's a woman here who keeps asking which ones he's with now. Nobody will answer her. Somebody should.");
+		Offer("There's a woman here who lost her husband on the road last week. People say he's one of them now, walking with {lot}. Somebody should find out for sure, and tell her properly.",
+			"There's a woman here whose husband turned on the road. She keeps asking which of the infected he walks with now. Nobody will answer her. Somebody should.");
 		Over("Never mind. She knows now. Someone told her. Badly, but they told her.");
 
 		RZ_ErrandWay w = Way("sneak");
@@ -24,7 +24,7 @@ class RZ_Errand_SomebodyTell : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
 		w.m_bUnseen = true;
-		w.m_sStep = "Read the marks where the road enters the ground of {lot}, {subject_place}, unseen (15 s), then tell {giver}.";
+		w.m_sStep = "Read the marks where the road enters the ground of {lot}, {subject_place}, without being seen (15 s there), then tell {giver}.";
 		w.Done("So it's them. Thank you. I'll tell her. No. You tell her. She'll want to hear it from whoever looked.");
 
 		w = Way("talk");
@@ -37,8 +37,8 @@ class RZ_Errand_SomebodyTell : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 15;
-		w.m_sStep = "Go through the house's book of names at {here} with the clerk (20 s).";
-		w.Done("His name, the day, and a note in the margin about which way he walked. That's enough.");
+		w.m_sStep = "Go through the house's book of names at {here} with the clerk (20 s there), then tell {giver}.";
+		w.Done("His name, the day, and a note in the margin about which way he walked. That's enough to tell her.");
 	}
 
 	//------------------------------------------------------------------------------------------------

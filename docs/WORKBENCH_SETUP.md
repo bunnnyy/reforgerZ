@@ -2523,7 +2523,7 @@ session, tick off:
   world events are "(news)".
 - [ ] A world event shows as news on the Radio tab and never on the Quests tab, the tracker or the
   map. The Deserter's Map is on the Quests tab only after you search the jacket.
-- [ ] A named person waves you over (*"Mara waves you over."*) and says nothing else; **Anything need
+- [ ] A named person waves you over (*"You there. Have you got a minute?..."*) and says nothing else; **Anything need
   doing?** then shows the errand's offer.
 - [ ] The notebook's tabs read Standing, Quests, Radio, Journal, The season, in that order with LB/RB
   and with the mouse; it opens on Quests the first time. The Journal shows PAST JOBS (a contract you
@@ -3952,7 +3952,7 @@ Hand camp and a Halcyon station near each other help; the admin reply **[Admin] 
 on the talk screen says why something wasn't dealt)
 - [ ] A safehouse's first two occupants have names and roles ("Talk to Mara Kovac"); **Anything need
   doing?** on one offers a true errand, its ways become their replies with tags, and a second player
-  picking one hears "Give us a minute."
+  picking one hears "Give us a minute. I'm in the middle of something..."
 - [ ] The Pot: with the house short of food, hand over two tins; the house's food goes up by 2 and
   the pay is a few Favor and 1 Fame. Ask again at once: it's cooling down.
 - [ ] A Bastion post with its relief missing shows one guard fewer; Shift Change's "Stand the post

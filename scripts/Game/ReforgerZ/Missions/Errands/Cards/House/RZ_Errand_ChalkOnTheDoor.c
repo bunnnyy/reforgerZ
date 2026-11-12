@@ -12,8 +12,8 @@ class RZ_Errand_ChalkOnTheDoor : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("There are {count} marks on the wall at {subject_place}. The last one says it's clear. Is it still? Go and look before anyone believes it.",
-			"Somebody chalked {subject_place} as done. Chalk lies, after a while. Go and read it for the book.");
+		Offer("Everyone who clears a job in {subject_place} chalks a mark on the wall, and there are {count} of them now. The last one says the town's clear. Is it still? People here are deciding whether to go there for water. Go and look before anyone believes it.",
+			"Somebody chalked {subject_place} as done, and I wrote it in the house's book. Chalk lies, after a while. Go and read the wall, and look around, so the book's true.");
 		Over("Never mind. Somebody's been and looked.");
 
 		RZ_ErrandWay w = Way("do");
@@ -23,12 +23,12 @@ class RZ_Errand_ChalkOnTheDoor : RZ_ErrandCard
 		w.m_fRadius = 60;
 		w.m_sStep = "Read the marks on the wall in {subject_place} and look around (15 s there), then tell {giver}.";
 		w.m_iFavor = 3;
-		w.Done("Written. With today's date. The book's only as good as the last person who looked.");
+		w.Done("Written, with today's date. The book's only as good as the last person who looked.");
 
 		w = Way("lie");
 		w.m_sLabel = "Say it's still true";
 		w.m_iFavor = 2;
-		w.Done("Still true. Good. I'll write that.");
+		w.Done("Still true? Good. I'll write that, and people will go.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -56,6 +56,6 @@ class RZ_Errand_ChalkOnTheDoor : RZ_ErrandCard
 		RZ_GameModeComponent gm = dealer.GetGM();
 		if (w.m_iIndex == 1)
 			gm.GetFacts().Memory().Lies().Tell(gm, playerId, "errand.chalk", e.m_sSubject, RZ_EFaction.SURVIVORS, e.m_sGiver, e.m_vSubject, RZ_ELieTest.RUMOUR, 2,
-				e.Fill("Someone walked into {subject_place} on the book's word and came back running. The clerk crossed out your 'still true'."));
+				e.Fill("Someone walked into {subject_place} on the book's word and came back running. The clerk has crossed out your 'still true'."));
 	}
 }
