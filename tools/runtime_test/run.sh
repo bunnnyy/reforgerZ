@@ -23,8 +23,13 @@
 #     ("RZT Talk test: ..."), and walks it through reputation's cells, the credit rule and the
 #     forgiveness budget ("RZT Reputation test: ..."); from minute 2 it cycles Voice > Force mood
 #     through the five moods, 5 minutes each, and prints each one's picks ("RZT voice <mood> ...");
-#   - starts every registered mission type one at a time, moves the player there, then ends it
-#     (alternately won and failed) so Setup, Update, rewards and cleanup all run;
+#   - starts every registered mission type one at a time, moves the player where the quest tracker
+#     points, then ends it (alternately won and failed) so Setup, Update, rewards and cleanup all run;
+#   - checks every objective's place on the way (RZT_ObjPlace.c): for each mission and questline
+#     stage, the place the tracker reports for the current objective must be within the step's
+#     arrival radius of where the step is really done (a delivery's thing, then, carried, its drop; a
+#     visit's points, walked one by one where the tracker sends him; a chain's step; the job's own
+#     place or props); "RZT objplace FAIL ..." lines, summed as "RZT objective places (...)";
 #   - forces what missions need (a spread of town infection before each, a few goes at a Setup
 #     that misses, stand-ins for the optional prefabs, trucks for the convoys and Mobile Lab;
 #     RZT_Prep.c);
@@ -135,8 +140,11 @@ grep -E 'RZT all mission types tried' "$LOG" | sed 's/.*RZT //'
 grep -E 'RZT mission .* why: ' "$LOG" | sed -E 's/.*RZT mission ([A-Za-z_]+) why: /  did not start: \1: /'
 grep -E 'RZT (fake player already dead|killing|fake player died|perimeter: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did not start|why: ))' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT objective places \(' "$LOG" | tail -1 | sed 's/.*RZT /  /'
+grep -E 'RZT objplace FAIL' "$LOG" | sed 's/.*RZT objplace FAIL /  objective place wrong: /' | head -40
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
+grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewhere else than where its step is done"; exit 1; }
 exit 0
