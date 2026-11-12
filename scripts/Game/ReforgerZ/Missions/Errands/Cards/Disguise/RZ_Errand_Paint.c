@@ -25,6 +25,7 @@ class RZ_Errand_Paint : RZ_ErrandCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 20;
 		w.m_sStep = "Walk up to the Bastion post {where_place} in Bastion kit, pass their look, ask for a light and paint the hand on the barrier while they smoke (20 s there). Then come back to {giver}.";
+		w.Work(RZ_EWork.PAINT, "Paint the hand", 12);
 		w.m_iFame = 2;
 		w.Done("In their own green, with their own match? That's going round every fire tonight.");
 
@@ -35,6 +36,7 @@ class RZ_Errand_Paint : RZ_ErrandCard
 		w.m_fRadius = 25;
 		w.m_bUnseen = true;
 		w.m_sStep = "Get to the back of the Bastion post {where_place} without being seen and paint the hand on the barrier (20 s there, unseen). Then come back to {giver}.";
+		w.Work(RZ_EWork.PAINT, "Paint the hand", 12);
 		w.m_iFame = 2;
 		w.Done("They'll find it at the shift change. I'd pay to see the sergeant's face.");
 
@@ -44,6 +46,7 @@ class RZ_Errand_Paint : RZ_ErrandCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 25;
 		w.m_sStep = "Walk up to the Bastion post {where_place} and paint the hand on the barrier in front of them (20 s there). They won't like it. Then come back to {giver}.";
+		w.Work(RZ_EWork.PAINT, "Paint the hand", 12);
 		w.m_iFame = 2;
 		w.Done("In front of them, under fire? You're mad. Sit down, have a drink, and keep your head down near that post for a while.");
 	}

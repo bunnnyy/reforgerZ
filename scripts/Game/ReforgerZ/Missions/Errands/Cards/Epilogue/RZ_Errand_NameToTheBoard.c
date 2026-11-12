@@ -20,6 +20,7 @@ class RZ_Errand_NameToTheBoard : RZ_EpiCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 25;
 		w.m_sStep = "Go to the Names board on the north road and write {dead} up (10 s there), then tell {giver}.";
+		w.Work(RZ_EWork.WRITE, "Write the name up", 8);
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
 		w.Done("On the board. Good. Everyone in the queue walks past it every day until the gates open.");

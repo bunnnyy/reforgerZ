@@ -520,7 +520,7 @@ class RZ_QuestTracker
 		RZ_ErrandWay w = e.GetWay();
 		string step = "";
 		if (w)
-			step = e.Fill(w.m_sStep);
+			step = e.Fill(w.StepText());
 
 		// An opening's last step ends where it's done: nobody to go back to
 		if (w && w.m_bEndsThere)

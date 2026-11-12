@@ -118,6 +118,7 @@ class RZ_Routine_Market : RZ_ErrandDef
 		w.m_fSeconds = 20;
 		w.m_fRadius = 40;
 		w.m_sStep = "Search the grass where the wedding party was {subject_place} (20 s there), then bring the ring to {giver}.";
+		w.Work(RZ_EWork.TAKE, "Search the grass");
 		w.m_iFavor = 8;
 		w.Done("For ever, it says inside. For ever. Ha. That's worth a tin on its own.");
 
@@ -204,6 +205,7 @@ class RZ_Routine_Receiver : RZ_ErrandDef
 		w.m_fSeconds = 10;
 		w.m_fRadius = 25;
 		w.m_sStep = "Fit a battery to the receiver's mast {place} (10 s there), then tell {giver}.";
+		w.Work(RZ_EWork.REPAIR, "Fit the battery");
 		w.m_iFavor = 5;
 		w.Done("There he is on the screen. Walking in circles, as usual. Thank you.");
 
@@ -214,6 +216,7 @@ class RZ_Routine_Receiver : RZ_ErrandDef
 		w.m_fSeconds = 15;
 		w.m_fRadius = 25;
 		w.m_sStep = "Re-seat the receiver's cable at the mast {place} (15 s there), then tell {giver}.";
+		w.Work(RZ_EWork.REPAIR, "Re-seat the cable");
 		w.m_iFavor = 5;
 		w.Done("Just the cable? I'll be writing that down as a fault in the equipment, not in us.");
 	}

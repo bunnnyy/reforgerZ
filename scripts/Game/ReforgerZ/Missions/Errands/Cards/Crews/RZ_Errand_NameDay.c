@@ -22,6 +22,7 @@ class RZ_Errand_NameDay : RZ_ErrandCard
 		w.m_fSeconds = 20;
 		w.m_fRadius = 40;
 		w.m_sStep = "Climb the church tower in {subject_place} and bring the clock down (20 s there). The infected hold the town, so mind the stairs. Then bring it to {giver}.";
+		w.Work(RZ_EWork.REPAIR, "Take the clock down");
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
 		w.Done("A clock. It's the wrong clock, but it's a clock. Legs, we'll call you. The lads watched you on those stairs through the glasses.");

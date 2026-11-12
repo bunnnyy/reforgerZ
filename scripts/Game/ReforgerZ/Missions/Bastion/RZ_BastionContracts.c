@@ -336,9 +336,29 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		if (m_fAtWell == 0)
 			gm.NotifyPlayer(m_iCarrier, m_sTitle, "The well. Ten seconds, and nobody gets these rifles. Nobody.");
 
-		m_fAtWell += dt;
-		if (m_fAtWell < WELL_SECONDS)
-			return;
+		// With work sites: Drop the rifles down the well, a hold by its wall, for whoever carries the case
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		string key = string.Format("mission.%1.well", m_iId);
+		if (RZ_WorkSites.Available() && sites)
+		{
+			m_fAtWell += dt;
+			if (sites.Has(key) && sites.IsDone(key) && sites.DoneBy(key) != m_iCarrier)
+				sites.Close(key);
+
+			if (!sites.Has(key))
+				sites.Open(key, RZ_EWork.HANDS, "Drop the rifles down the well", 8, LandPointNear(m_vWell, 1.5, 2.5), m_iCarrier);
+
+			if (!sites.IsDone(key) || sites.DoneBy(key) != m_iCarrier)
+				return;
+
+			sites.Close(key);
+		}
+		else
+		{
+			m_fAtWell += dt;
+			if (m_fAtWell < WELL_SECONDS)
+				return;
+		}
 
 		// Nobody: both sides are angry, nobody pays, the world remembers
 		RZ_Beneficiaries parties = m_Story.m_Parties;
@@ -371,6 +391,8 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 	{
 		super.Cleanup(gm);
 		RZ_Util.DeleteUnit(m_Well);
+		if (RZ_WorkSites.Get())
+			RZ_WorkSites.Get().Close(string.Format("mission.%1.well", m_iId));
 	}
 }
 
@@ -550,6 +572,30 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 		if (m_bFixed)
 			return;
 
+		// With work sites: Fix the engine, a hold at the truck's bonnet (a Mechanic's three times faster)
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		string key = string.Format("mission.%1.truck", m_iId);
+		if (RZ_WorkSites.Available() && sites)
+		{
+			if (!sites.Has(key))
+				sites.Open(key, RZ_EWork.REPAIR, "Fix the engine", 15, RZ_Mission.LandPointNear(at, 2.5, 3.5));
+
+			foreach (int j, IEntity q : players)
+			{
+				if (RZ_Util.DistXZ(q.GetOrigin(), at) <= 8 && HasBonus(gm, ids[j]))
+					sites.SetFast(key, ids[j], REPAIR_SECONDS / MECHANIC_SECONDS);
+			}
+
+			if (!sites.IsDone(key))
+				return;
+
+			sites.Close(key);
+			m_bFixed = true;
+			RZ_Util.RedirectGroup(t.m_Crew, t.m_vDest, wp);
+			RZ_ContractHelp.NotifyNear(gm, at, NEAR + 50, m_sTitle, "It coughs back to life. The driver slaps the door twice and pulls away.");
+			return;
+		}
+
 		// Someone by the truck gets it going; a Mechanic in a third of the time
 		float rate = 0;
 		foreach (int i, IEntity p : players)
@@ -626,6 +672,8 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 	override void Cleanup(RZ_GameModeComponent gm)
 	{
 		RZ_Util.DeleteUnit(m_Raiders);
+		if (RZ_WorkSites.Get())
+			RZ_WorkSites.Get().Close(string.Format("mission.%1.truck", m_iId));
 	}
 }
 

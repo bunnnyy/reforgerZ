@@ -365,7 +365,7 @@ class RZ_Stranger_Funeral : RZ_StrangerKind
 			return;
 		}
 
-		s.StartStep(v, 0, v.m_vSubject, 10, 10, false, "Put your shoulder to the car with him and push it off the road (10 s at the car).");
+		s.StartWork(v, 0, v.m_vSubject, 10, 10, false, "Put your shoulder to the car with him and push it off the road (10 s at the car).", RZ_EWork.HANDS, "Push the car", 10);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -568,7 +568,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 				return;
 			}
 
-			s.StartStep(v, 0, v.m_vSubject, 60, 10, false, "Fix the car (a minute at the bonnet).");
+			s.StartWork(v, 0, v.m_vSubject, 60, 10, false, "Fix the car (a minute at the bonnet).", RZ_EWork.REPAIR, "Fix the car", 15);
 			return;
 		}
 
@@ -584,7 +584,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 			return;
 		}
 
-		s.StartStep(v, 2, v.m_vSubject, 30, 10, false, "Push the car downhill while he lets the clutch out (30 s at the car).");
+		s.StartWork(v, 2, v.m_vSubject, 30, 10, false, "Push the car downhill while he lets the clutch out (30 s at the car).", RZ_EWork.HANDS, "Push the car", 10);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -635,7 +635,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 		RZ_GameModeComponent gm = s.GetGM();
 		if (option == 0)
 		{
-			s.StartStep(v, 0, v.m_vPos, 30, 10, false, "Dig the grave with her (30 s).");
+			s.StartWork(v, 0, RZ_Mission.LandPointNear(v.m_vPos, 3, 5), 30, 10, false, "Dig the grave with her (30 s).", RZ_EWork.GRAVE, "Dig the grave", 15);
 			return;
 		}
 
@@ -912,7 +912,7 @@ class RZ_Stranger_SeedPotatoes : RZ_StrangerKind
 			return;
 		}
 
-		s.StartStep(v, 0, v.m_vSubject, 10, 15, false, "Dig along the field edge where he says (10 s there).");
+		s.StartWork(v, 0, v.m_vSubject, 10, 15, false, "Dig along the field edge where he says (10 s there).", RZ_EWork.DIG, "Dig along the field edge", 10);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)
@@ -1338,11 +1338,11 @@ class RZ_Stranger_Notice : RZ_StrangerKind
 
 		if (option == 0)
 		{
-			s.StartStep(v, 0, v.m_vSubject, 20, 25, true, "Get into the crew hut at {hut} without being seen and take the book (20 s hidden there).");
+			s.StartWork(v, 0, v.m_vSubject, 20, 25, true, "Get into the crew hut at {hut} without being seen and take the book (20 s hidden there).", RZ_EWork.TAKE, "Take the book", 10);
 			return;
 		}
 
-		s.StartStep(v, 1, v.m_vSubject, 15, 25, false, "Burn the books in the crew hut at {hut} (15 s there).");
+		s.StartWork(v, 1, v.m_vSubject, 15, 25, false, "Burn the books in the crew hut at {hut} (15 s there).", RZ_EWork.BURN, "Burn the books", 10);
 	}
 
 	override void StepDone(RZ_Strangers s, RZ_StrangerVisit v, int option, int playerId, IEntity user)

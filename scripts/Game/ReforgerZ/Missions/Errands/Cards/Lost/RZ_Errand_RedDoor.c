@@ -22,6 +22,7 @@ class RZ_Errand_RedDoor : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the house with the red door in {place} and search what's left inside (15 s there), then go back to the boy at {here}.";
+		w.Work(RZ_EWork.SEARCH, "Search what's left");
 		w.Later("The boy sat on the step all evening after you told him. Then he came in for supper. That's something.");
 		w.m_iFavor = 4;
 		w.Done("You told him she went to another house. True, nearly. He nodded like a grown-up, which is worse.");
@@ -32,6 +33,7 @@ class RZ_Errand_RedDoor : RZ_ErrandCard
 		w.m_fSeconds = 25;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the house with the red door in {place} and bring something from the boy's room (25 s there), then go back to him at {here}.";
+		w.Work(RZ_EWork.SEARCH, "Search the boy's room");
 		w.m_iFavor = 4;
 		w.Done("A stuffed rabbit with one ear. He didn't say thank you. He hasn't let go of it either.");
 

@@ -283,6 +283,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 		m_fVisitSeconds = 10;
 		m_bHandsOn = true;	// burning a pile you can see: at it, not near it
 		m_sPointName = "Pile";
+		PointWork(RZ_EWork.BURN, "Burn the pile", 10);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -326,10 +327,15 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 	//------------------------------------------------------------------------------------------------
 	protected void PlacePiles(RZ_GameModeComponent gm, vector center, float minR, float maxR, int count)
 	{
+		m_sWorkBefore = RZ_ContractHelp.CorpsePilePrefab(gm);
 		for (int i = 0; i < count; i++)
 		{
 			vector p = LandPointNear(center, minR, maxR);
 			AddPoint(p);
+			// With work sites the pile is the site's before look, up only near players
+			if (RZ_WorkSites.Available())
+				continue;
+
 			m_aPiles.Insert(RZ_Util.SpawnPrefab(RZ_ContractHelp.CorpsePilePrefab(gm), RZ_Util.GroundPos(p), Math.RandomFloat(0, 360)));
 		}
 	}
@@ -357,6 +363,8 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 		{
 			RZ_Util.DeleteUnit(pile);
 		}
+
+		super.Cleanup(gm);
 	}
 }
 

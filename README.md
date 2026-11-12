@@ -111,6 +111,9 @@ and one way to end it: **research the cure.**
   stations, the wanderers' asks, 18 strangers met only where one makes sense (a road people use, a
   campfire, a stopped car, a town edge at dusk), locals who remember what you did, board and radio
   asks, and 70 hand-written cards, each true only while its reason is; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
+- **Hands-on work**: a step that says dig, build, board up, fix, search, fill, paint or burn is a thing
+  at its place with one prompt you hold (*Dig the latrine*), and the world shows the result: the
+  latrine screen, a grave, the boarded door ([work sites](docs/DESIGN.md#work-site)).
 - **Seasons**: the faction that got the cure shapes the next season's start, admins can add rule
   sets (Winter, Fog, Military Collapse, No Vehicles, or their own), the server wipes itself only
   after the cure's epilogue week (the line stands down, the gates open with the wipe; a timed wipe is
@@ -259,7 +262,7 @@ scripts/Game/ReforgerZ/
                  ground on a grid, its surroundings and its audit),
                  reputation's voice (the word for you, crew names, the picture), the voice bank
   Missions/      framework, requirements, bases, building blocks (Blocks/: escorts, live
-                 capture, vehicle zones and convoys, health cost, step chains); Haven/ Bastion/ RedHand/ Halcyon/
+                 capture, vehicle zones and convoys, health cost, step chains, work sites); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
                  Errands/ (the dealer, the routines, Cards/ with the epilogue deck); Questlines/ (the author's base class,

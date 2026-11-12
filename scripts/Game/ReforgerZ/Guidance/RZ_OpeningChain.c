@@ -121,6 +121,7 @@ class RZ_OpeningChain
 
 		RZ_ErrandWay w = Task(RZ_EOpeningTask.WATER, "opening.water", "Water", "do", RZ_EErrandPlace.SUBJECT, 15, 8,
 			"Fill what you can carry at {place}.");
+		w.Work(RZ_EWork.FILL, "Fill what you can carry", 8);
 		w.Take("We're down to the last cup. There's {place}. Fill whatever you can carry.",
 			"I haven't had a proper drink since Tuesday. It's not far to {place}. I'd go myself, but you're quicker.");
 		w.Done("Clean enough. Boil it if you can. I can't, so I won't.",
@@ -144,6 +145,7 @@ class RZ_OpeningChain
 
 		w = Task(RZ_EOpeningTask.BOILED, "opening.boiled", "Water for the Fever", "do", RZ_EErrandPlace.SUBJECT, 15, 8,
 			"Fill what you can carry at {place}. It's for the fever: it'll be boiled.");
+		w.Work(RZ_EWork.FILL, "Fill what you can carry", 8);
 		w.Take("No medicine left anywhere, then. Water's the next best thing for a fever. There's {place}. I'll get a fire going.",
 			"If there's nothing in the bag, there's still water. Bring what you can from {place}. I'll boil it.");
 		w.Done("It's on the fire. Cool cloths till then. You taught me that, once, in a waiting room.",
@@ -274,6 +276,7 @@ class RZ_OpeningChain
 		w.m_fRadius = 10;
 		w.m_bQuiet = true;
 		w.m_sStep = "Search {place}, quietly.";
+		w.Work(RZ_EWork.SEARCH, "Search it, quietly");
 		w.Take("I haven't dared go into {place}. Go and look. Walk, don't run: they hear running.",
 			"I need eyes on {place}. Two days I've watched it. Nothing moves. That's what worries me.");
 		w.Done("You came back. Most don't, from that side of the road.",

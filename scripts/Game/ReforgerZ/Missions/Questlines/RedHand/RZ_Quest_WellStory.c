@@ -1009,7 +1009,10 @@ class RZ_QM_WellOrder : RZ_RedHandQuestMission
 
 			m_iSampler = playerId;
 			m_fSample = 0;
-			gm.NotifyPlayer(playerId, m_sTitle, "You fill a bottle slowly, the way Halcyon's people do it, and keep it out of the light. Stay at the well.");
+			if (RZ_WorkSites.Available())
+				gm.NotifyPlayer(playerId, m_sTitle, "A clean bottle by the well's wall. Fill it slowly, the way Halcyon's people do it, and keep it out of the light.");
+			else
+				gm.NotifyPlayer(playerId, m_sTitle, "You fill a bottle slowly, the way Halcyon's people do it, and keep it out of the light. Stay at the well.");
 			return;
 		}
 
@@ -1072,11 +1075,30 @@ class RZ_QM_WellOrder : RZ_RedHandQuestMission
 		if (m_bSample || m_iSampler <= 0)
 			return;
 
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		string key = string.Format("mission.%1.sample", m_iId);
 		IEntity sampler = GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iSampler);
 		if (!sampler || RZ_Util.DistXZ(sampler.GetOrigin(), m_vWell) > 6)
 		{
 			m_iSampler = -1;
 			m_fSample = 0;
+			if (sites)
+				sites.Close(key);
+
+			return;
+		}
+
+		// With work sites: Fill a sample bottle, a hold by the well's wall
+		if (RZ_WorkSites.Available() && sites)
+		{
+			if (!sites.Has(key))
+				sites.Open(key, RZ_EWork.FILL, "Fill a sample bottle", 8, LandPointNear(m_vWell, 1.5, 2.5), m_iSampler);
+
+			if (!sites.IsDone(key))
+				return;
+
+			sites.Close(key);
+			Sampled(gm);
 			return;
 		}
 

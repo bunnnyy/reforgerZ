@@ -22,6 +22,7 @@ class RZ_Errand_CleanSlate : RZ_ErrandCard
 		w.m_fRadius = 30;
 		w.m_bAmends = true;
 		w.m_sStep = "Work a shift at the burial pit behind {here} (a minute there), then come back to {giver}.";
+		w.Work(RZ_EWork.GRAVE, "Dig at the burial pit", 15);
 		w.Done("Done? Wash first, properly, with the carbolic. Then we'll see about your name.");
 	}
 

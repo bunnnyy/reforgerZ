@@ -24,6 +24,7 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry the satchel to where they fell, {where_place}, and build a small cairn over it (10 s there), then tell {giver}.";
+		w.Work(RZ_EWork.GRAVE, "Raise the cairn", 12);
 		w.m_iFavor = 4;
 		w.Done("A cairn. That's more than most get. It'll stand a long time out there.");
 
@@ -34,6 +35,7 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find the body {where_place} and take the ID (10 s there), then carry it to {giver} yourself.";
+		w.Work(RZ_EWork.TAKE, "Take the ID");
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_bCarry = true;
 		w.m_iFavor = 0;

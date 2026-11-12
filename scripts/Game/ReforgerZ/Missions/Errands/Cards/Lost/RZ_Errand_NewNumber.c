@@ -21,6 +21,7 @@ class RZ_Errand_NewNumber : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 20;
 		w.m_sStep = "Paint the new number on the board at the station's gate, {place} (10 s there), then tell {giver}.";
+		w.Work(RZ_EWork.PAINT, "Paint the new number", 10);
 		w.m_iFavor = 3;
 		w.Done("It looks smaller on the board than it felt in the notebook. Numbers always do.");
 	}

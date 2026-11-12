@@ -95,6 +95,9 @@ class RZ_ErrandWay
 	RZ_EErrandProp m_eProp = RZ_EErrandProp.NONE;	// a prop at the place while the step is open
 	bool m_bCarry;				// the step gives a carried item: only the asker or a helper hands it in (RZ_ErrandsPay)
 	bool m_bEndsThere;			// done at the place: no going back to the giver (an opening's last step, Guidance/RZ_Openings.c)
+	RZ_EWork m_eWork = RZ_EWork.NONE;	// done with your hands: a work site at the place, held, not stood at (Work())
+	string m_sWorkLabel;		// its prompt ("Dig the latrine")
+	float m_fWorkSeconds;		// its hold (0: from m_fSeconds, RZ_WorkSites.HoldFor)
 
 	// What it pays (docs/ERRANDS.md, "Pay: nothing for free")
 	int m_iFavor;
@@ -121,6 +124,35 @@ class RZ_ErrandWay
 	bool HasStep()
 	{
 		return m_ePlace != RZ_EErrandPlace.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The step is work you do at a visible thing (docs/DESIGN.md, Work site): with work sites on, a
+	//! hold prompt at its place (`label`, held `hold` s, else RZ_WorkSites.HoldFor(m_fSeconds)), and the world shows the
+	//! result; off, it's done by staying there, as before.
+	void Work(RZ_EWork kind, string label, float hold = 0)
+	{
+		m_eWork = kind;
+		m_sWorkLabel = label;
+		m_fWorkSeconds = hold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Done at a work site now (work sites on, and it has work).
+	bool IsWork()
+	{
+		return m_eWork != RZ_EWork.NONE && HasStep() && RZ_WorkSites.Available();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The step's line for the player. Done at a work site, its time there ("(30 s there)", "(a minute,
+	//! nothing in your hands)") goes: the hold's bar is the time.
+	string StepText()
+	{
+		if (!IsWork())
+			return m_sStep;
+
+		return RZ_WorkSites.WithoutTime(m_sStep);
 	}
 
 	//------------------------------------------------------------------------------------------------

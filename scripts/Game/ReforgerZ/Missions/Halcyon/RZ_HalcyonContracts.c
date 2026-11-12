@@ -178,6 +178,7 @@ class RZ_Mission_InstallSensors : RZ_Mission_VisitPoints
 		m_fVisitRadius = 6;
 		m_fVisitSeconds = 15;
 		m_sPointName = "Sensor";
+		PointWork(RZ_EWork.INSTALL, "Set up the sensor", 15);
 		m_fTimeLeft = 3600;
 	}
 
@@ -871,6 +872,26 @@ class RZ_Mission_SpecimenFromTheNest : RZ_Mission_Delivery
 			return;
 		}
 
+		// With work sites: Cut the tissue, a hold at the hive's edge; the hive hears it all the while
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		string key = string.Format("mission.%1.tissue", m_iId);
+		if (RZ_WorkSites.Available() && sites)
+		{
+			if (!sites.Has(key))
+				sites.Open(key, RZ_EWork.HANDS, "Cut the tissue", 15, LandPointNear(m_vPos, 1.5, 2.5));
+
+			if (CountPlayersNear(players, m_vPos, 6) > 0)
+				gm.GetHeat().AddHeat(m_vPos, 1 * dt);
+
+			if (sites.IsDone(key) && SpawnItem(gm, m_vPos))
+			{
+				sites.Close(key);
+				RZ_ContractHelp.NotifyNear(gm, m_vPos, 40, m_sTitle, "The tissue comes away wet and still twitching. Into the jar. The hive shudders; something inside heard you.");
+			}
+
+			return;
+		}
+
 		if (CountPlayersNear(players, m_vPos, 4) == 0)
 			return;
 
@@ -891,6 +912,8 @@ class RZ_Mission_SpecimenFromTheNest : RZ_Mission_Delivery
 	{
 		super.Cleanup(gm);
 		RZ_Util.DeleteUnit(m_Nest);
+		if (RZ_WorkSites.Get())
+			RZ_WorkSites.Get().Close(string.Format("mission.%1.tissue", m_iId));
 	}
 }
 

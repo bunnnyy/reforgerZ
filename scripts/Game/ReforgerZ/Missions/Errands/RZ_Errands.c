@@ -730,22 +730,8 @@ class RZ_Errands
 				if (!e.m_Def.StepCounts(this, e, me))
 					continue;
 
-				if (!w.IsAtPlace(me, e.m_vPlace))
-					continue;
-
-				if (w.m_bUnseen && !RZ_Stealth.IsHidden(e.m_iAsker))
-				{
-					if (!e.m_bTold)
-					{
-						e.m_bTold = true;
-						m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), "They'd see you like that. Get low, and keep out of the light.");
-					}
-
-					continue;
-				}
-
-				e.m_fProgress += dt;
-				if (e.m_fProgress < w.m_fSeconds)
+				// Work at a visible thing: done when its hold is done (RZ_WorkSites); else stay there
+				if (!StepWorked(e, w, me, dt))
 					continue;
 
 				if (w.m_bGiveThere && w.m_iItems > 0)
@@ -995,10 +981,85 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The step's own rule, on the 5 s tick: work at a work site is done when its hold is done (the
+	//! server counted the asker at it); otherwise, being at the place long enough (unseen, for an
+	//! unseen way).
+	protected bool StepWorked(RZ_Errand e, RZ_ErrandWay w, IEntity me, float dt)
+	{
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (sites && sites.Has(WorkKey(e)))
+			return sites.IsDone(WorkKey(e)) && (!w.m_bGiveThere || w.IsAtPlace(me, e.m_vPlace));
+
+		if (!w.IsAtPlace(me, e.m_vPlace))
+			return false;
+
+		if (w.m_bUnseen && !RZ_Stealth.IsHidden(e.m_iAsker))
+		{
+			if (!e.m_bTold)
+			{
+				e.m_bTold = true;
+				m_GM.NotifyPlayer(e.m_iAsker, "Errand: " + e.Fill(e.m_Def.m_sTitle), "They'd see you like that. Get low, and keep out of the light.");
+			}
+
+			return false;
+		}
+
+		e.m_fProgress += dt;
+		return e.m_fProgress >= w.m_fSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand's work site key (one step at a time).
+	static string WorkKey(RZ_Errand e)
+	{
+		return "errand." + e.m_iId.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A way done with your hands (RZ_ErrandWay.Work): its work site at the place, for the asker
+	//! only, with the way's prop as its before look when it has one. False: work sites are off, and
+	//! the step keeps the old rule.
+	protected bool OpenWork(RZ_Errand e, RZ_ErrandWay w)
+	{
+		if (!w.IsWork() || e.m_vPlace == vector.Zero)
+			return false;
+
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		vector at = e.m_vPlace;
+		// At the giver's place or its gate: beside it, not on whoever stands there
+		if (w.m_ePlace == RZ_EErrandPlace.HERE || w.m_ePlace == RZ_EErrandPlace.GATE)
+			at = RZ_Mission.LandPointNear(e.m_vPlace, 3, 6);
+		else if (w.m_eWork == RZ_EWork.FILL)
+			at = RZ_Mission.LandPointNear(e.m_vPlace, 1.5, 3);
+
+		ResourceName before;
+		if (w.m_eProp != RZ_EErrandProp.NONE)
+			before = m_Settings.Props().For(w.m_eProp);
+
+		string key = WorkKey(e);
+		float hold = w.m_fWorkSeconds;
+		if (hold <= 0)
+			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
+
+		if (sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, at, e.m_iAsker, before) < 0)
+			return false;
+
+		if (w.m_bUnseen)
+			sites.SetUnseen(key);
+
+		e.m_vPlace = at;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The way's prop (Missions > Errands > Props) at its place while the step is open: a marks-pool
 	//! prop, up only while a player is near (RZ_Marks), gone when the step is done or the errand ends.
+	//! A way done with your hands gets its work site instead (OpenWork).
 	protected void PlaceProp(RZ_Errand e, RZ_ErrandWay w)
 	{
+		if (OpenWork(e, w))
+			return;
+
 		if (w.m_eProp == RZ_EErrandProp.NONE || w.m_ePlace == RZ_EErrandPlace.NONE || w.m_ePlace == RZ_EErrandPlace.HERE)
 			return;
 
@@ -1037,6 +1098,9 @@ class RZ_Errands
 
 		e.m_eState = RZ_EErrandState.DONE;
 		RemoveProp(e);
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (sites)
+			sites.Close(WorkKey(e));
 		if (e.m_Carried)
 		{
 			RZ_Util.DeleteUnit(e.m_Carried);
@@ -1307,7 +1371,7 @@ class RZ_Errands
 			if (mine.m_bStepDone && w)
 				Resolve(mine, w);
 			else if (w)
-				m_GM.NotifyPlayer(playerId, "Errand: " + mine.Fill(mine.m_Def.m_sTitle), mine.Fill(w.m_sStep));
+				m_GM.NotifyPlayer(playerId, "Errand: " + mine.Fill(mine.m_Def.m_sTitle), mine.Fill(w.StepText()));
 
 			return;
 		}
@@ -1369,7 +1433,7 @@ class RZ_Errands
 			if (mine.m_bStepDone && held)
 				Resolve(mine, held);
 			else if (held)
-				m_GM.NotifyPlayer(playerId, "Errand: " + mine.Fill(mine.m_Def.m_sTitle), mine.Fill(held.m_sStep));
+				m_GM.NotifyPlayer(playerId, "Errand: " + mine.Fill(mine.m_Def.m_sTitle), mine.Fill(held.StepText()));
 
 			return true;
 		}
@@ -1828,7 +1892,7 @@ class RZ_Errands
 
 		PlaceProp(e, w);
 		Say(e, Pick(w.m_aTake), false);
-		string step = e.Fill(w.m_sStep);
+		string step = e.Fill(w.StepText());
 		if (w.m_fBefore >= 0)
 			step += string.Format(" Before %1 (about %2 real minutes).", RZ_GameTime.Clock(w.m_fBefore), RZ_Util.RoundToInt(RZ_GameTime.RealMinutesUntil(w.m_fBefore)));
 
@@ -3285,7 +3349,7 @@ class RZ_Errands
 
 		Say(e, Pick(w.m_aTake), false);
 		if (w.HasStep())
-			m_GM.NotifyPlayerAs(playerId, "Errand: " + e.Fill(d.m_sTitle), e.Fill(w.m_sStep) + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), place)) + ".", RZ_ENoticeTag.MISSION);
+			m_GM.NotifyPlayerAs(playerId, "Errand: " + e.Fill(d.m_sTitle), e.Fill(w.StepText()) + "\n" + RZ_Util.Capitalize(RZ_Util.DirectionText(user.GetOrigin(), place)) + ".", RZ_ENoticeTag.MISSION);
 
 		RZ_Log.Info(string.Format("Errands: %1 handed to %2 (%3)", d.m_sKey, RZ_Util.PlayerName(playerId), giverName));
 		return e;
@@ -3340,7 +3404,7 @@ class RZ_Errands
 		if (e.m_bStepDone && !w.m_bEndsThere)
 			return e.Fill("Done. Go back to {giver} at {here}.");
 
-		return e.Fill(w.m_sStep);
+		return e.Fill(w.StepText());
 	}
 
 	// ================================================================ Telemetry and the admin view
