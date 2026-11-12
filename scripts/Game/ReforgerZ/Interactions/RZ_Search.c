@@ -7,9 +7,11 @@
 //! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab
 //!   name of the building. Tables are configurable per type; anything left empty is filled from
 //!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
-//!   garages...), and a list still thin after that gets the built-in vanilla items for its type
-//!   (RZ_LootDefaults), so no building type is bare when the pool is short or empty. Scaled by the town's loot level (RZ_TownMemory.GetLootLevel); electronics get
-//!   the power grid's multiplier (RZ_PowerGrid.LootMult).
+//!   garages...) plus the built-in vanilla items for its type (RZ_LootDefaults), so a table is wide
+//!   and no type is bare when the pool is short or empty; a list set by hand gets them only while
+//!   it's thin. No prefab twice in one roll unless it stacks (PickFresh). Scaled by the town's loot
+//!   level (RZ_TownMemory.GetLootLevel); electronics get the power grid's multiplier
+//!   (RZ_PowerGrid.LootMult).
 //! - A wreck's boot is a container (RZ_WreckBoots.c), rolled when it's first put out near a player.
 //!   A body is rolled when it dies and its things go into its inventory (or beside it).
 //! - Locks: some pharmacies, garages, police stations, shops and houses are locked (seeded

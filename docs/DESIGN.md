@@ -2345,7 +2345,7 @@ player is near, capped and decaying, nothing left behind.
 **How it works on any map.**
 
 - **Things are recognised by name.** Every 10 s the server looks at static map objects within
-  30 m of each player (buildings within the loot's 45 m) and sorts them by prefab or mesh name:
+  30 m of each player (buildings within the loot's 55 m) and sorts them by prefab or mesh name:
   buildings by type, car wrecks, workbenches, wells and pumps, fuel pumps, stoves, bells (every
   church gets one), sirens, house radios and generators. Furniture is where loot lies.
 - **Interaction spots, only near players:** an invisible prop with labelled actions ("Ring the
@@ -2376,60 +2376,88 @@ picked-over one is thin.
 
 | Building type (from the prefab name) | What it tends to have | Items (slots) |
 |---|---|---|
-| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves; rare: morphine, a medical bag | 6 |
-| Garage (garage, workshop, repair) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, overalls, maps | 6 |
-| Farm (farm, barn, stable, shed, vet clinic) | Food, canteens, wool gloves and hats, raincoats, jerrycans; rare: binoculars, a compass, a backpack | 5 |
-| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves; rare: a pistol, a vest, a helmet, a radio | 6 |
-| Shop (shop, store, market, kiosk) | Food, canteens, torches, watches, maps, gloves and hats | 5 |
-| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, clothes | 4 |
+| Pharmacy (pharmacy, hospital, clinic) | Field dressings, gauze, aspirin, tourniquets, saline, medical gloves; rare: morphine, a medical bag | 8 |
+| Garage (garage, workshop, repair, fire station) | Jerrycans, the wrench kit, torches, work gloves, a hard hat, overalls, maps | 8 |
+| Farm (farm, barn, stable, shed, vet clinic) | Food, canteens, wool gloves and hats, raincoats, jerrycans; rare: binoculars, a compass, a backpack | 7 |
+| Police (police, gendarmerie) | Pistol and rifle magazines, torches, dressings, tourniquets, caps, gloves; rare: a pistol, a vest, a helmet, a radio | 8 |
+| Shop (shop, store, market, kiosk, petrol station, pub) | Food, canteens, torches, watches, maps, gloves and hats | 7 |
+| House (anything else) | Food, water, dressings, aspirin, a torch, a watch, a map, clothes | 5 |
+
+Every destructible building has loot, whatever else its name makes it (a petrol station's
+building is a shop).
 
 - **What it's rolled from.** Each type's table is the hand-set loot table for it, else the
-  **Loot pool** items whose prefab names hold the type's keywords. A list still thin after that
-  (fewer than 8 everyday finds, or 3 rare ones) gets the **built-in vanilla items** for the type
-  (the table above; `RZ_LootDefaults` in `Interactions/RZ_Search.c`), so no type is bare when the
-  pool is short or empty. The log's `Search:` line gives each table's size.
+  **Loot pool** items whose prefab names hold the type's keywords, always with the **built-in
+  vanilla items** for the type added (the table above; `RZ_LootDefaults` in
+  `Interactions/RZ_Search.c`), so a type's table is wide and no type is bare when the pool is
+  short or empty. A list set by hand is kept as it is, topped up with the built-in items only
+  while it's thin (fewer than 8 everyday finds, or 3 rare ones). The log's `Search:` line gives
+  each table's size.
 - **Rolled once, then data.** The first time a player comes near, each of the building's slots
-  holds something **70%** of the time (**Loot > Slot chance**) × the town's loot level, and the
-  first slot (**Sure items**, 1) always does while the town's loot level is 0.5 or more: so a
-  house in a fresh town has 1 to 4 things, about 3, and one in a picked-over town about one or
-  none. 10% of finds are rare (20% behind a lock), 10% electronics (×1.5 in powered towns). A
-  locked place (a seeded lock on outside doors that were found) has one more slot, +25% per slot,
-  and better finds. There's also one roll for a treatment (expired antibiotics, suppressant, vet
-  antiviral, stabiliser, antidote, from a configurable list: [Treatments](#treatments)), sometimes
-  the town's fixable car's keys ([Cars](#cars-found-rare-and-hard-to-fix)), and 12% of the time
-  something to read ([Readable things](#readable-things)). Burned buildings and protected places
-  (strongholds, outposts, safehouses, quartermasters and the lab: the same as for locks) have none,
-  so a faction's own buildings are never free loot.
-- **Where it lies.** Up to 16 spots per building, found once and kept: the tops of furniture
-  inside it, recognised by name (cupboards, desks, tables, worktops, counters, shelves, crates no
-  taller than 1.6 m; a trace down at its middle) or the floor beside it toward the middle of the
-  building, at most half of the spots; then floor points on a 1.6 m grid over the building's box, on
-  the ground floor and, in a building tall enough, the storey above. Every spot is traced down to a
-  surface inside the building's box, has a ceiling within 5 m over it (indoors: not on the roof or
-  in a yard), is 0.3 m clear of walls, and is 0.5 m from the next. A trace that starts inside a
-  wall or a piece of furniture finds nothing. One item per spot, in a shuffled order.
-- **Only near players.** A building's loot is put out when a player is within **45 m** (the
-  look-around reaches that far for buildings, 30 m for everything else), four buildings a tick,
-  the nearest first. With nobody within **70 m** for a minute, untaken items are deleted and kept
-  as data: they're there again next time. At most **350** items lie on the server; when it's
-  full, the building farthest from players is put away for a nearer one.
+  holds something **75%** of the time (**Loot > Slot chance**) × the town's loot level, half that
+  in a faction's town (a holding within 150 m). The first two slots (**Sure items**) always do
+  while the town's loot level is 0.5 or more, one in a picked-over town. So a house in a fresh
+  town has 2 to 5 things, about 4, and one in a picked-over town one or two. No prefab is rolled
+  twice in one building unless it comes in twos (food, magazines, dressings, gauze, tablets): a
+  slot that keeps drawing one already there stays empty. 10% of finds are rare (20% behind a
+  lock), 10% electronics (×1.5 in powered towns). A locked place (a seeded lock on outside doors
+  that were found) has one more slot, +25% per slot, and better finds. There's also one roll for
+  a treatment (expired antibiotics, suppressant, vet antiviral, stabiliser, antidote, from a
+  configurable list: [Treatments](#treatments)), sometimes the town's fixable car's keys
+  ([Cars](#cars-found-rare-and-hard-to-fix)), and 12% of the time something to read
+  ([Readable things](#readable-things)).
+- **One building, one roll.** The look-around also sees a building's parts whose names say
+  "house": its doors, its light probe and its furniture prefab. A part counts as the building it
+  hangs from, a part with no mesh (the probe, the furniture prefab: vanilla doesn't attach them to
+  the building) counts as nothing, and a plain house mesh standing inside a destructible
+  building's box is a part of it. So no building is rolled twice into its own rooms.
+- **Kept clear.** Burned buildings have none. Nor does a faction's own place: a holding's camp as
+  far as its building, yard and pieces reach, a Haven safehouse, a road post and the lab
+  (`RZ_WorldFacts.IsNearLivedIn`, the same ground shelling and fire keep away from), nor anything
+  within **20 m** past it (**Kept clear**) or within 40 m of a quartermaster. So a faction's own
+  buildings are never free loot, and the rest of its town has loot at half the chance.
+- **Where it lies.** Up to 20 spots per building, found once and kept. First vanilla's own item
+  spots (the few furniture sets that carry them) and the furniture: vanilla's furniture stands in
+  the building as props (some of the building's children, the rest found by a query over every
+  entity in its box), recognised by name (cupboards, desks, tables, worktops, counters, shelves,
+  beds, sofas, crates). On a piece no taller than 1.6 m a spot is its top (a trace down at its
+  middle), else the floor beside it toward the middle of the building; furniture takes at most
+  two thirds of the spots, picked in a random order. Then floor points on a 1.6 m grid over the
+  building's box, on every storey: the ground floor, each height where two or more pieces of
+  furniture stand (up to four storeys), or without furniture upstairs a guess at the floor above
+  (2.6 to 4.6 m up). Each storey gets its share of what's left. Every spot is traced down to a
+  surface inside the building's box, has a ceiling within 5 m over it (indoors: not on the roof
+  or in a yard), is 0.3 m clear of walls, and is 0.5 m from the next. A spot inside a smaller
+  building's box (an add-on, a garage against the wall) is that building's, so two buildings
+  never put their loot in one room. A trace that starts inside a wall or a piece of furniture
+  finds nothing. One item per spot, in a shuffled order. Vanilla's furniture has no inventory of
+  its own, so nothing is put inside it.
+- **Only near players.** A building's loot is put out when a player is within **55 m** of it
+  (the look-around reaches that far for buildings, 30 m for everything else), so it's there before
+  you walk in: **6** buildings a tick, the nearest first. With nobody within **80 m** for a
+  minute, untaken items are deleted and kept as data: they're there again next time. At most
+  **500** items lie on the server; when it's full, the building farthest from players is put away
+  for a nearer one.
 - **Never in front of you.** A building is only rolled fresh (refilled) with nobody within
   **20 m** (**Fresh roll distance**); until then what was left there is put out as it was.
 - **Taken.** An item that goes into an inventory (or is carried more than 1.5 m off) is taken:
   it leaves the building's list, the town's loot level drops by **0.01**
   ([Town memory](#town-memory)), and from then on it's an ordinary item (dropped and forgotten,
   it's cleaned up like any [loose item](#loose-items)). Taking things is silent: no heat.
-- **Refill.** An emptied building has loot again after an hour, divided by the town's loot level
-  (up to four hours in a picked-over town). One with leftovers keeps them, and rolls fresh after
-  three times that.
+- **Refill.** An emptied building has loot again after **45 minutes**, divided by the town's loot
+  level (up to three hours in a picked-over town). One with leftovers keeps them, and rolls fresh
+  after three times that.
 - **Saves.** Only each building's rolled and emptied times are saved, never the items: after a
   restart a building rolls again once its refill time has passed.
 - **A stash someone wrote about** ([Readable things](#readable-things)) adds two good finds to
-  the building nearest it, the first time it's put out.
+  the building nearest it, the first time it's put out (none already lying there).
+- **The loot log** (**Loot log**, on): a `Loot: put out` line for each building put out (its
+  key, type, building, spots and what lies there) and a `Loot:` summary every 2 minutes, for
+  checking loot in play ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)).
 
-*Simplified:* the furniture names are guesses, and spots are traced once per building, so an item
-can sit on a low shelf or in a corner. Only two storeys are looked at. Wrecks' boots and bodies
-hold their things (below).
+*Simplified:* the furniture names are guesses, a storey is read from where the furniture stands
+(the props' origins at their feet), and spots are traced once per building, so an item can sit on
+a low shelf or in a corner. Wrecks' boots and bodies hold their things (below).
 
 ### Bodies and car wrecks
 
@@ -2459,9 +2487,10 @@ what you want. There's no other prompt and no timer.
   until everyone is 55 m off), an invisible storage (**Cars > Wreck boot prefab**) stands just
   behind the middle of the wreck's rear at boot height, filled from the wreck's record. When
   everyone has gone, what's left is kept as data and the storage is deleted with it.
-- **Rolled the first time it's put out:** something 60% of the time (scaled by the town's loot
-  level) from the car boot table, sometimes two things; two good finds more for a stash someone
-  wrote about; the treatment roll; a car part (a battery, a tyre or spark plugs) 30% of the time
+- **Rolled the first time it's put out:** something 80% of the time (**Search > Boot chance**,
+  scaled by the town's loot level) from the car boot table, and then a second thing 40% of the
+  time (**Boot two chance**, scaled the same way), never the same prefab twice unless it comes in
+  twos; two good finds more for a stash someone wrote about; the treatment roll; a car part (a battery, a tyre or spark plugs) 30% of the time
   (**Wreck part chance**); and 12% of the time something to read, left beside the boot (a key taped
   inside goes in the boot).
 - **Taken.** On the 5 s tick a thing no longer in the boot was taken: a loot find takes 0.015 off

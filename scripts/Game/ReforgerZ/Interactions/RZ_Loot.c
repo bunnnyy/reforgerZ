@@ -13,18 +13,20 @@
 //!   outside doors) gets one more item and better finds. A stash someone wrote about adds two.
 //!   A building emptied of items rolls again after Refill minutes (longer in a picked-over town);
 //!   leftovers stay until three times that, then it rolls again.
-//! - One record per building: a part the look-around sees (the building's furniture prefab, light
-//!   probe or add-on, named under Prefabs/Structures/Houses/) counts as its building (MainBuilding).
+//! - One record per building: a part the look-around sees (its doors, its furniture prefab or light
+//!   probe, named under Prefabs/Structures/Houses/) counts as its building or as nothing
+//!   (MainBuilding), and a plain house mesh inside a destructible building's box is a part of it
+//!   (IsPart). So a building is rolled and put out once.
 //! - Placed at anchors (RZ_LootAnchors): vanilla's own item spots, the tops of the building's
-//!   furniture (found among its children) and the floor beside it, and floor points on a grid
-//!   inside the building's box on each storey, each traced to the floor, under a ceiling and clear
-//!   of walls. At most Place per tick buildings a tick, and at most Lying items on the server (the
-//!   buildings nearest players win). A building is never rolled fresh with a player inside it
-//!   (Fresh roll distance).
-//! - Kept clear: none within Clear radius of a faction holding, quartermaster, safehouse or the
-//!   lab; the rest of a faction's town has loot at half the slot chance.
-//! - The log (Loot log): a line per building put out (key, type, anchors, items) and a summary
-//!   every 2 minutes.
+//!   furniture and the floor beside it, and floor points on a grid inside the building's box on
+//!   each storey, each traced to the floor, under a ceiling and clear of walls; never in a smaller
+//!   building's rooms. At most Place per tick buildings a tick, and at most Lying items on the
+//!   server (the buildings nearest players win). A building is never rolled fresh with a player
+//!   inside it (Fresh roll distance).
+//! - Kept clear: none in a faction's own place (RZ_WorldFacts.IsNearLivedIn) or Clear radius past
+//!   it, or near a quartermaster; the rest of a faction's town has loot at half the slot chance.
+//! - The log (Loot log): a line per building put out (key, type, building, anchors, items) and a
+//!   summary every 2 minutes.
 //! - Taken: on the 5 s tick an item that went into an inventory (or was carried off) leaves the
 //!   record and the town's loot drops (RZ_TownMemory.ReportSearched). From then on it's an
 //!   ordinary item.
@@ -40,10 +42,10 @@ class RZ_LootSettings
 	[Attribute("1", desc: "Loose loot: things lie in houses (on furniture and the floor) and are picked up with vanilla's Pick up. Uses Search > Loot pool and tables, and built-in vanilla items where they are thin. Off = nothing lies in houses (a Car Keys job's keys still do)")]
 	bool m_bEnabled;
 
-	[Attribute("45", desc: "A building's loot is put out when a player is this close (m) to it (the look-around reaches this far for buildings)")]
+	[Attribute("55", desc: "A building's loot is put out when a player is this close (m) to it (the look-around reaches this far for buildings), so it's there before you walk in")]
 	float m_fSpawnRadius;
 
-	[Attribute("70", desc: "Untaken loot is put away (deleted, kept as data) once no player is this close (m) for a minute")]
+	[Attribute("80", desc: "Untaken loot is put away (deleted, kept as data) once no player is this close (m) for a minute")]
 	float m_fDespawnRadius;
 
 	[Attribute("20", desc: "Fresh roll distance: a building is never rolled fresh (refilled) while a player is this close (m); it waits until they've gone")]
@@ -76,7 +78,7 @@ class RZ_LootSettings
 	[Attribute("0.01", desc: "Town loot each item taken uses up (RZ_TownMemory.ReportSearched; it comes back over about two hours)")]
 	float m_fTownLootPerItem;
 
-	[Attribute("40", desc: "Kept clear (m): no loose loot within this of a faction holding's middle, a quartermaster, a Haven safehouse or the lab (a stronghold: 1.5 times this). The rest of a faction's town has loot, at half the slot chance")]
+	[Attribute("20", desc: "Kept clear (m): no loose loot in a faction's own place (a holding's camp as far as its building, yard and pieces reach, a Haven safehouse, a road post, the lab) or within this past it, nor within this + 20 m of a quartermaster. The rest of a faction's town has loot, at half the slot chance")]
 	float m_fClearRadius;
 
 	[Attribute("1", desc: "Loot log: a line per building put out (its key, type, anchors and items) and a summary every 2 minutes, for checking loot in play")]
@@ -112,28 +114,43 @@ class RZ_LootHouse
 	bool m_bOut;			// its items are spawned
 	bool m_bAnchored;		// its anchors were looked for
 	int m_iFurniture;		// of its anchors, how many are vanilla item spots or on or by furniture
+	bool m_bPlain;			// not a destructible building (a plain house mesh): it may be part of one
+	int m_iPart = -1;		// a plain one: -1 not checked yet, 1 inside a destructible building's box (no loot of its own), 0 its own
+	float m_fClearAt = -1000;	// when Kept clear was last checked
+	bool m_bClear;			// kept clear of loose loot (by a faction's place)
 	ref array<vector> m_aAnchors = {};
 	ref array<ref RZ_LootItem> m_aItems = {};
 }
 
 //------------------------------------------------------------------------------------------------
 //! Where things can lie in a building: furniture tops and the floor beside furniture, and floor
-//! points on a grid inside the building's box, on the ground floor and the one above. Every point
-//! is traced down to a surface, has a ceiling over it (so it's indoors, not on the roof or in a
-//! yard) and is clear of walls. Found once per building (the map doesn't change).
+//! points on a grid inside the building's box, on every storey. Every point is traced down to a
+//! surface, has a ceiling over it (so it's indoors, not on the roof or in a yard) and is clear of
+//! walls. Found once per building (the map doesn't change).
 //!
-//! Vanilla's buildings carry their furniture as a child "furniture" prefab (House_..._furniture_01,
+//! Vanilla's buildings list their furniture as a child "furniture" prefab (House_..._furniture_01,
 //! a mesh-less GenericEntity at the building's origin) whose children are the props (Table_02,
-//! Cupboard_01_A, Dresser_01...). So the furniture is found by walking the building's children,
-//! a few levels down, and a sphere query over every entity adds furniture placed on its own in the
-//! world. A few vanilla furniture prefabs also hold SCR_PrefabSpawnPoint entities (the game's own
-//! item spots, on worktops and shelves): those are anchors as they are.
+//! Cupboard_01_A, Dresser_01...). None of them has a Hierarchy component, so in the game they may
+//! stand on their own rather than as the building's children: the children are walked a few
+//! levels down, and a sphere query over every entity (props aren't flagged static) finds the rest.
+//! One vanilla furniture prefab also holds SCR_PrefabSpawnPoint entities (the game's own item
+//! spots): those are anchors as they are. Vanilla's furniture has no inventory storage, so nothing
+//! is put inside it.
+//!
+//! Storeys: the furniture's own floors (two or more pieces standing at one height), else a guess at
+//! the floor above. A point inside a smaller building's box (an add-on, a shed against the wall)
+//! belongs to that building, so two buildings never put their loot in one room.
 class RZ_LootAnchors
 {
 	static const int MAX_ANCHORS = 20;
 	protected static const float TALL = 1.6;		// furniture taller than this (m): the floor beside it
 	protected static const float FLOOR_START = 1.4;	// floor traces start this high above the storey's floor
-	protected static const float STOREY = 3;		// the next storey's floor is about this far up
+	protected static const float FLOOR_BELOW = 0.8;	// and reach this far below it
+	protected static const float FLOOR_ABOVE = 1.2;	// a point higher than this over the storey's floor is on a shelf
+	protected static const float STOREY_GUESS = 3.4;	// no furniture upstairs: the floor above is about here (catches 2.6 to 4.6 m)
+	protected static const float STOREY_MIN = 2.2;	// storeys at least this far apart (m)
+	protected static const float STOREY_BAND = 0.4;	// furniture within this height of each other stands on one floor
+	protected static const int STOREYS_MAX = 4;
 	protected static const float GRID = 1.6;		// floor points this far apart (m)
 	protected static const float CEILING = 5;		// a ceiling within this (m) over a point: it's indoors
 	protected static const float CLEAR = 0.3;		// no wall within this (m) of a point
@@ -148,6 +165,7 @@ class RZ_LootAnchors
 	protected vector m_vMiddle;
 	protected ref array<IEntity> m_aFound = {};
 	protected ref array<vector> m_aSpawnPoints = {};
+	protected ref array<IEntity> m_aSmaller = {};	// smaller buildings overlapping this one: their rooms are theirs
 	protected int m_iChildren;
 	protected int m_iFurniture;
 
@@ -232,20 +250,30 @@ class RZ_LootAnchors
 			radius = Math.Max(4, size.Length() * 0.5 + 1);
 		}
 
-		// The building's own furniture (its children), then any placed on its own nearby
+		// Smaller buildings overlapping this one (before the furniture: their rooms are theirs)
+		if (box)
+			FindSmaller(mins, maxs, radius);
+
+		// The building's own furniture (its children), then any standing on its own in it. Every
+		// entity, not only static ones: vanilla's props aren't flagged static
 		WalkChildren(building, 1);
 		GetGame().GetWorld().QueryEntitiesBySphere(m_vMiddle, radius, OnEntity, null, EQueryEntitiesFlags.ALL);
 
 		// Vanilla's item spots and furniture fill at most two thirds: the rest lies on the floors,
-		// so a room isn't all on one desk
+		// so a room isn't all on one desk. The furniture in a random order, so every storey has some
 		int furnitureMax = Math.Max(1, (max * 2) / 3);
+		for (int k = m_aFound.Count() - 1; k > 0; k--)
+		{
+			m_aFound.SwapItems(k, Math.RandomInt(0, k + 1));
+		}
+
 		foreach (vector sp : m_aSpawnPoints)
 		{
 			if (result.Count() >= furnitureMax)
 				break;
 
 			vector spAt;
-			if (TraceDown(sp + Vector(0, 0.3, 0), 0.8, null, spAt) && Inside(spAt) && Fits(spAt, result))
+			if (TraceDown(sp + Vector(0, 0.3, 0), 0.8, null, spAt) && Inside(spAt) && Keep(spAt, result))
 				result.Insert(spAt);
 		}
 
@@ -255,7 +283,7 @@ class RZ_LootAnchors
 				break;
 
 			vector at;
-			if (FurnitureAnchor(f, at) && Fits(at, result))
+			if (FurnitureAnchor(f, at) && Keep(at, result))
 				result.Insert(at);
 		}
 
@@ -263,10 +291,94 @@ class RZ_LootAnchors
 		if (!box)
 			return;
 
-		// The ground floor (about the building's origin), then the storey above if it's tall enough
-		FloorGrid(mins, maxs, 0, result, max);
-		if (maxs[1] > STOREY + 2.2)
-			FloorGrid(mins, maxs, STOREY, result, max);
+		// The floors, each storey its share of what's left (one that finds fewer leaves the rest to
+		// the storeys above)
+		array<float> storeys = {};
+		Storeys(maxs, storeys);
+		foreach (int i, float floorY : storeys)
+		{
+			if (result.Count() >= max)
+				break;
+
+			int share = (max - result.Count()) / (storeys.Count() - i);
+			if (share < 1)
+				share = 1;
+
+			FloorGrid(mins, maxs, floorY, result, result.Count() + share);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The storeys' floors (heights over the building's origin): the ground floor, then each height
+	//! where two or more pieces of furniture stand (the props' origins are at their feet), else one
+	//! guess at the floor above in a building tall enough.
+	protected void Storeys(vector maxs, notnull array<float> floors)
+	{
+		floors.Insert(0);
+		array<float> heights = {};
+		foreach (IEntity f : m_aFound)
+		{
+			heights.Insert(RZ_DoorGeometry.ToLocal(m_Building, f.GetOrigin())[1]);
+		}
+
+		heights.Sort();
+		for (int i = 0; i < heights.Count() && floors.Count() < STOREYS_MAX; i++)
+		{
+			float y = heights[i];
+			if (y < floors[floors.Count() - 1] + STOREY_MIN || y > maxs[1] - STOREY_MIN)
+				continue;
+
+			int standing = 0;
+			for (int j = i; j < heights.Count() && heights[j] <= y + STOREY_BAND; j++)
+			{
+				standing++;
+			}
+
+			if (standing >= 2)
+				floors.Insert(y);
+		}
+
+		if (floors.Count() == 1 && maxs[1] > STOREY_GUESS + STOREY_MIN)
+			floors.Insert(STOREY_GUESS);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Destructible buildings near this one whose box is smaller and overlaps it.
+	protected void FindSmaller(vector mins, vector maxs, float radius)
+	{
+		float area = (maxs[0] - mins[0]) * (maxs[2] - mins[2]);
+		array<IEntity> near = {};
+		RZ_BuildingQuery.FindBuildings(m_vMiddle, radius + 10, near, 16);
+		foreach (IEntity b : near)
+		{
+			if (b == m_Building || !SCR_DestructibleBuildingEntity.Cast(b))
+				continue;
+
+			vector bMins;
+			vector bMaxs;
+			if (!RZ_DoorGeometry.LocalBox(b, bMins, bMaxs))
+				continue;
+
+			float bArea = (bMaxs[0] - bMins[0]) * (bMaxs[2] - bMins[2]);
+			if (bArea < area && RZ_LockedSpots.InFootprint(m_Building, b.GetOrigin(), Math.Max(bMaxs[0] - bMins[0], bMaxs[2] - bMins[2])))
+				m_aSmaller.Insert(b);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A point to keep: far enough from the others, and not in a smaller building's rooms.
+	protected bool Keep(vector at, array<vector> found)
+	{
+		if (!Fits(at, found))
+			return false;
+
+		foreach (IEntity b : m_aSmaller)
+		{
+			if (b && RZ_DoorGeometry.InBuilding(b, at))
+				return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -276,7 +388,7 @@ class RZ_LootAnchors
 		if (!e || depth > CHILD_DEPTH)
 			return;
 
-		IEntity child = e.GetChildren(); // VERIFY: a building's furniture prefab (and its props) are child entities of the building (GetChildren/GetSibling), as its doors are
+		IEntity child = e.GetChildren(); // VERIFY: a building's furniture props are found, as its children (GetChildren/GetSibling) or by the sphere query over every entity in its box
 		while (child && m_iChildren < CHILDREN_MAX)
 		{
 			m_iChildren++;
@@ -293,8 +405,18 @@ class RZ_LootAnchors
 	//------------------------------------------------------------------------------------------------
 	protected bool OnEntity(IEntity e)
 	{
-		if (!e || e == m_Building || m_aFound.Count() >= FURNITURE_MAX || ChimeraCharacter.Cast(e))
+		if (!e || e == m_Building || ChimeraCharacter.Cast(e))
 			return true;
+
+		// Vanilla's own item spot, standing on its own in the building
+		if (SCR_PrefabSpawnPoint.Cast(e))
+		{
+			vector sp = e.GetOrigin();
+			if (m_aSpawnPoints.Find(sp) < 0 && RZ_LockedSpots.InFootprint(m_Building, sp, 0))
+				m_aSpawnPoints.Insert(sp);
+
+			return true;
+		}
 
 		TakeFurniture(e, true);
 		return true;
@@ -414,15 +536,15 @@ class RZ_LootAnchors
 
 			vector start = RZ_DoorGeometry.ToWorld(m_Building, Vector(x, floorY + FLOOR_START, z));
 			vector at;
-			if (!TraceDown(start, FLOOR_START + 0.8, null, at))
+			if (!TraceDown(start, FLOOR_START + FLOOR_BELOW, null, at))
 				continue;
 
 			// It has to land on this storey (not on a high shelf; a raised floor or a low table is fine)
 			float localY = RZ_DoorGeometry.ToLocal(m_Building, at)[1];
-			if (localY > floorY + 1.2)
+			if (localY > floorY + FLOOR_ABOVE)
 				continue;
 
-			if (Inside(at) && Indoors(at) && Clear(at) && Fits(at, result))
+			if (Inside(at) && Keep(at, result) && Indoors(at) && Clear(at))
 				result.Insert(at);
 		}
 	}
@@ -511,7 +633,9 @@ class RZ_Loot
 	protected static const float AWAY_SECONDS = 60;
 	protected static const float SUMMARY_SECONDS = 120;
 	protected static const float FACTION_TOWN = 150;	// a holding this close (m): a faction's town, half the slot chance
-	protected static const float STRONGHOLD_CLEAR = 1.5;	// a stronghold keeps this many Clear radii free of loot
+	protected static const float QM_REACH = 20;		// a quartermaster keeps Clear radius and this much more free of loot
+	protected static const float CLEAR_RECHECK = 60;	// seconds between checks of a building's Kept clear
+	protected static const float PART_REACH = 40;	// a plain house's origin within this of a destructible building's: maybe its part
 	protected static const int RECORDS_KEPT = 500;
 	protected static const int TIMES_KEPT = 2000;
 	protected static const float STALE_MULT = 3;	// leftovers roll again after this many refill times
@@ -608,21 +732,28 @@ class RZ_Loot
 		RZ_Log.Info(string.Format("Loose loot: on. Put out within %1 m (%2 buildings a tick), put away past %3 m, at most %4 items lying, refill %5 min; %6/%7/%8 slots per house/shop/pharmacy, slot chance %9.",
 			RZ_Util.RoundToInt(m_Settings.m_fSpawnRadius), m_Settings.m_iPlacePerTick, RZ_Util.RoundToInt(m_Settings.m_fDespawnRadius), m_Settings.m_iMaxLying, RZ_Util.RoundToInt(m_Settings.m_fRefillMinutes),
 			m_Settings.m_iMaxHouse, m_Settings.m_iMaxShop, m_Settings.m_iMaxSpecial, m_Settings.m_fSlotChance));
-		RZ_Log.Info(string.Format("Loose loot: %1 sure items a building, kept clear within %2 m of faction places (strongholds %3 m).",
-			m_Settings.m_iSureItems, RZ_Util.RoundToInt(m_Settings.m_fClearRadius), RZ_Util.RoundToInt(m_Settings.m_fClearRadius * STRONGHOLD_CLEAR)));
+		string logOn = "off";
+		if (m_Settings.m_bLog)
+			logOn = "on";
+
+		RZ_Log.Info(string.Format("Loose loot: %1 sure items a building (one in a picked-over town), kept clear %2 m past faction places, loot log %3.",
+			m_Settings.m_iSureItems, RZ_Util.RoundToInt(m_Settings.m_fClearRadius), logOn));
 	}
 
 	// ================================================================ From the look-around
 	//------------------------------------------------------------------------------------------------
 	//! A building near a player: its record, made now if it has none. The look-around also sees a
 	//! building's parts whose prefab names say "house" (its furniture prefab, its light probe, its
-	//! add-ons, all under Prefabs/Structures/Houses/...): each counts as the building it belongs to,
-	//! so one building is one record and its loot is put out once.
+	//! doors, all under Prefabs/Structures/Houses/...): each counts as the building it belongs to, or
+	//! as nothing, so one building is one record and its loot is put out once (MainBuilding).
 	void OnBuildingSeen(IEntity seen, string lowerName)
 	{
 		IEntity building = MainBuilding(seen);
 		if (!building)
+		{
+			m_iParts++;
 			return;
+		}
 
 		if (building != seen)
 		{
@@ -630,15 +761,18 @@ class RZ_Loot
 			lowerName = RZ_ItemHelper.LowerName(building);
 		}
 
+		bool plain = !SCR_DestructibleBuildingEntity.Cast(building);
 		vector pos = building.GetOrigin();
 		string key = RZ_Interactions.PosKey(pos, 4);
 		RZ_LootHouse h;
 		if (m_mHouses.Find(key, h))
 		{
 			// The building itself wins over anything else that landed on its key
-			if (!h.m_Building || (h.m_Building != building && SCR_DestructibleBuildingEntity.Cast(building) && !SCR_DestructibleBuildingEntity.Cast(h.m_Building)))
+			if (!h.m_Building || (h.m_Building != building && !plain && h.m_bPlain))
 			{
 				h.m_Building = building;
+				h.m_bPlain = plain;
+				h.m_iPart = -1;
 				h.m_sType = m_Hub.GetSearch().BuildingType(lowerName);
 				if (!h.m_bOut && h.m_aItems.IsEmpty())
 				{
@@ -656,6 +790,7 @@ class RZ_Loot
 		h.m_vPos = pos;
 		h.m_sType = m_Hub.GetSearch().BuildingType(lowerName);
 		h.m_Building = building;
+		h.m_bPlain = plain;
 		h.m_fSeen = m_Hub.GetClock();
 		vector times;
 		if (m_mTimes.Find(key, times))
@@ -671,61 +806,75 @@ class RZ_Loot
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The building an entity the look-around saw belongs to: itself or the nearest destructible
-	//! building above it, else its top parent. null if that has no usable box (a mesh-less part
-	//! on its own: nothing could be placed in it).
+	//! The building an entity the look-around saw belongs to: itself if it's a destructible
+	//! building, else the nearest destructible building above it. Without one, itself only if it
+	//! has a mesh and a box a room fits in (a plain house); never a mesh-less part (a building's
+	//! light probe or its furniture prefab, which vanilla doesn't attach to the building: they'd
+	//! give the building a second roll in its own rooms). null for those.
 	static IEntity MainBuilding(IEntity e)
 	{
 		if (!e)
 			return null;
 
-		IEntity b = e;
-		if (!SCR_DestructibleBuildingEntity.Cast(e))
-		{
-			IEntity p = e.GetParent();
-			while (p)
-			{
-				b = p;
-				if (SCR_DestructibleBuildingEntity.Cast(p))
-					break;
+		if (SCR_DestructibleBuildingEntity.Cast(e))
+			return e;
 
-				p = p.GetParent();
-			}
+		IEntity p = e.GetParent();
+		while (p)
+		{
+			if (SCR_DestructibleBuildingEntity.Cast(p))
+				return p;
+
+			p = p.GetParent();
 		}
 
 		vector mins;
 		vector maxs;
-		if (!SCR_DestructibleBuildingEntity.Cast(b) && !RZ_DoorGeometry.LocalBox(b, mins, maxs))
+		if (!e.GetVObject() || !RZ_DoorGeometry.LocalBox(e, mins, maxs))
 			return null;
 
-		return b;
+		return e;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Kept clear of loose loot: within Clear radius of a faction holding's middle (a stronghold:
-	//! 1.5 times), a quartermaster, a Haven safehouse or the lab. Narrower than
-	//! RZ_Interactions.IsProtected (what can't burn or be locked), so a faction's town still has
-	//! loot in its empty houses.
-	protected bool IsKeptClear(vector pos)
+	//! A plain house (not a destructible building) that stands inside a destructible building's box
+	//! is a part of it (an add-on mesh, a porch): it has no loot of its own. Checked once.
+	protected bool IsPart(RZ_LootHouse h)
 	{
-		float clear = m_Settings.m_fClearRadius;
-		if (clear <= 0)
+		if (!h.m_bPlain)
 			return false;
 
-		RZ_Safehouses houses = m_GM.GetSafehouses();
-		if (houses && houses.FindNearest(pos, clear) >= 0)
-			return true;
+		if (h.m_iPart >= 0)
+			return h.m_iPart == 1;
 
-		if (m_GM.HasLab() && RZ_Util.DistXZ(pos, m_GM.GetLabPosition()) <= clear)
-			return true;
-
-		RZ_Territory territory = m_GM.GetTerritory();
-		if (territory && territory.IsActive())
+		h.m_iPart = 0;
+		foreach (string key, RZ_LootHouse o : m_mHouses)
 		{
-			RZ_Holding h = territory.FindHolding(-1, pos, clear * STRONGHOLD_CLEAR);
-			if (h && (h.m_bStronghold || RZ_Util.DistXZ(h.m_vPos, pos) <= clear))
-				return true;
+			if (o == h || o.m_bPlain || !o.m_Building || RZ_Util.DistXZ(o.m_vPos, h.m_vPos) > PART_REACH)
+				continue;
+
+			if (RZ_LockedSpots.InFootprint(o.m_Building, h.m_vPos, 0.5))
+			{
+				h.m_iPart = 1;
+				break;
+			}
 		}
+
+		return h.m_iPart == 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Kept clear of loose loot: a faction's own place (RZ_WorldFacts.IsNearLivedIn: a holding's
+	//! camp as far as its building, yard and pieces reach, a Haven safehouse, a road post, the lab)
+	//! or a quartermaster, within Clear radius. Narrower than RZ_Interactions.IsProtected (what
+	//! can't burn or be locked), so the rest of a faction's town has loot in its empty houses.
+	protected bool IsKeptClear(vector pos)
+	{
+		float clear = Math.Max(0, m_Settings.m_fClearRadius);
+
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		if (facts && facts.IsNearLivedIn(pos, clear))
+			return true;
 
 		RZ_FactionPerks perks = m_GM.GetPerks();
 		if (perks)
@@ -733,7 +882,7 @@ class RZ_Loot
 			for (int f = 0; f < RZ_Factions.COUNT; f++)
 			{
 				vector qm;
-				if (perks.GetQuartermasterPos(f, qm) && RZ_Util.DistXZ(qm, pos) <= clear)
+				if (perks.GetQuartermasterPos(f, qm) && RZ_Util.DistXZ(qm, pos) <= clear + QM_REACH)
 					return true;
 			}
 		}
@@ -800,10 +949,18 @@ class RZ_Loot
 	//------------------------------------------------------------------------------------------------
 	protected bool CanHaveLoot(RZ_LootHouse h)
 	{
-		if (!h.m_Building)
+		if (!h.m_Building || IsPart(h) || m_Hub.GetTraps().IsBurned(h.m_vPos))
 			return false;
 
-		return !m_Hub.GetTraps().IsBurned(h.m_vPos) && !IsKeptClear(h.m_vPos);
+		// Faction places move rarely: checked again once a minute
+		float now = m_Hub.GetClock();
+		if (now - h.m_fClearAt >= CLEAR_RECHECK)
+		{
+			h.m_fClearAt = now;
+			h.m_bClear = IsKeptClear(h.m_vPos);
+		}
+
+		return !h.m_bClear;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -816,16 +973,26 @@ class RZ_Loot
 
 		m_fSummaryAt = now;
 		int outCount = 0;
+		int clearCount = 0;
+		int partCount = 0;
 		foreach (string key, RZ_LootHouse h : m_mHouses)
 		{
 			if (h.m_bOut)
 				outCount++;
+
+			if (h.m_bClear)
+				clearCount++;
+
+			if (h.m_iPart == 1)
+				partCount++;
 		}
 
 		if (m_Settings.m_bLog && (outCount > 0 || m_iPutOut > 0))
 		{
-			RZ_Log.Info(string.Format("Loot: %1 items lying in %2 buildings out (%3 known). Last 2 min: %4 buildings put out, %5 items placed, %6 taken, %7 with no anchors, %8 part sightings counted as their building.",
-				m_iLying, outCount, m_mHouses.Count(), m_iPutOut, m_iPlaced, m_iTaken, m_iNoAnchors, m_iParts));
+			string known = string.Format("Loot: %1 items lying in %2 buildings out; %3 known, %4 kept clear by faction places, %5 parts of another building.",
+				m_iLying, outCount, m_mHouses.Count(), clearCount, partCount);
+			RZ_Log.Info(known + string.Format(" Last 2 min: %1 buildings put out, %2 items placed, %3 taken, %4 with no anchors, %5 sightings of a building's parts.",
+				m_iPutOut, m_iPlaced, m_iTaken, m_iNoAnchors, m_iParts));
 		}
 
 		m_iPutOut = 0;
