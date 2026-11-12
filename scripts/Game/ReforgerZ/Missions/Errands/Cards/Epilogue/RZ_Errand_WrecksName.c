@@ -9,8 +9,8 @@ class RZ_Errand_WrecksName : RZ_EpiCard
 		m_sKey = "epi_wreck";
 		m_sTitle = "The Wreck's Name";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("The truck for {dest} is still on its side {lies}. The driver's papers are in the cab. I'd like the name for the roll.",
-			"Nobody went back for the truck to {dest}. The driver had papers. Somebody should know who drove it.");
+		Offer("The truck for {dest} is still on its side {lies}, from the bad week. The driver's papers should be in the cab. Nobody went back for the name, and the names go out with us when the gates open. I'd like it for the roll.",
+			"Nobody went back for the truck to {dest}. It's lying {lies}. The driver had papers. Somebody should know who drove it before we all leave.");
 		Over("Never mind. A patrol stripped the wreck this morning.");
 
 		RZ_ErrandWay w = Way("do");
@@ -18,10 +18,10 @@ class RZ_Errand_WrecksName : RZ_EpiCard
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 30;
-		w.m_sStep = "Search the wreck {lies} for the driver's papers (20 s there), then bring them to {giver}.";
+		w.m_sStep = "Search the wrecked truck {lies} for the driver's papers (20 s there), then bring them to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("That's the name. I'd forgotten it. That's worse than anything.");
+		w.Done("That's the name. I'd forgotten it. That's worse than anything that happened to the truck.");
 
 		w = Way("press");
 		w.m_sLabel = "Sell the photo frame to the fence";
@@ -30,8 +30,8 @@ class RZ_Errand_WrecksName : RZ_EpiCard
 		w.m_fRadius = 30;
 		w.m_iFavor = 5;
 		w.m_iPayFaction = RZ_EFaction.BANDITS;
-		w.m_sStep = "Search the wreck {lies} (20 s there). The fence pays for anything in a frame.";
-		w.Done("\"No papers.\" A shrug that isn't one. \"Then the truck drove itself.\"");
+		w.m_sStep = "Search the wrecked truck {lies} for a photo frame the fence will pay for (20 s there), then go back to {giver}.";
+		w.Done("No papers. Then the truck drove itself, I suppose. I'll write that on the roll.");
 	}
 
 	//------------------------------------------------------------------------------------------------

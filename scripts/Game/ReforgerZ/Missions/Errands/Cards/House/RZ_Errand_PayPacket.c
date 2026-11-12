@@ -12,19 +12,19 @@ class RZ_Errand_PayPacket : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("I've a job going, if you want one. Hand out the tins to the six on the rota. It's payroll. Sort of.",
-			"Six names, six tins, and a signature for each. Someone has to do it who won't eat the seventh.");
-		Over("Never mind. The rota's done. Someone else signed for it.");
+		Offer("I've a job going, if you want one. Everyone in this house works, and the six on this week's rota get a tin each for it: watch, water, burying. Hand them out and get a signature for each. It's payroll. Sort of.",
+			"Six names on the rota, six tins, and a signature for each. Someone has to do it who won't eat the seventh. I'm told you were out of work before all this. Well, now you're not.");
+		Over("Never mind. The rota's paid. Someone else signed for it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Hand out the payroll";
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 180;
 		w.m_fRadius = 20;
-		w.m_sStep = "Hand out the tins to the six on the rota at {here}, a signature each (3 minutes).";
+		w.m_sStep = "Hand a tin to each of the six on the rota at {here} and get a signature for each (3 minutes).";
 		w.m_iFavor = 4;
 		w.m_iFame = 1;
-		w.Done("First pay packet in nine weeks, is it? Don't spend it all at once. There's nothing to spend it on.");
+		w.Done("First pay packet since before the gates closed, is it? Don't spend it all at once. There's nothing to spend it on.");
 	}
 
 	//------------------------------------------------------------------------------------------------

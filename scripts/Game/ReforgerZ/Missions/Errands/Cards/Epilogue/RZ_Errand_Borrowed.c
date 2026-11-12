@@ -11,22 +11,22 @@ class RZ_Errand_Borrowed : RZ_EpiCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "storekeeper,cook";
-		Offer("{other_house} borrowed three sacks from us in the bad week. They're eating better than we are now. Ask them for it back. Nicely.",
-			"We lent {other_house} food when they had none. It's the last week. Debts ought to be square by the end of it.");
-		Over("{other_house} sent it over themselves. Nobody had to ask.");
+		Offer("In the bad week {other_house} 'borrowed' three sacks of flour from our stores, and we let it go, because they had children on water. Now the cure's out and they're eating better than we are. Go and ask them for it back. Nicely.",
+			"We lent {other_house} food when they had none, and never saw it again. It's the last week before the gates open. Debts between houses ought to be square by the end of it, or they'll follow us out.");
+		Over("{other_house} sent the flour over themselves. Nobody had to ask.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Ask {other_house} for it back";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "Go to {other_house} and ask for the food back (at the gate, 10 s), then carry it to {giver}.";
+		w.m_sStep = "Go to the gate at {other_house} and ask for the borrowed food back (10 s there), then carry it to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("They gave it back? Without an argument? Then it really is the last week.");
+		w.Done("They gave it back? Without an argument? Then it really is the last week. I'll make bread tonight.");
 
 		w = Way("leave");
 		w.m_sLabel = "Say you couldn't find them";
-		w.Done("\"Couldn't find a whole house. Right.\" A shrug. \"Maybe they need it more.\"");
+		w.Done("You couldn't find a whole house. Right. Well. Maybe they need it more than we do. Maybe that's what I'll tell myself.");
 	}
 
 	//------------------------------------------------------------------------------------------------

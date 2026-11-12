@@ -12,26 +12,26 @@ class RZ_Errand_NothingGoesOut : RZ_ErrandCard
 		m_sFamily = "line";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("Letter for my sister. She's outside. Leave it at the warning point, under a stone, where someone coming in would see it. Nobody's coming in. Leave it anyway.");
-		Over("Forget it. I burned it. It was badly spelled.");
+		Offer("I've a letter for my sister. She's outside the line, in the city, if she's anywhere. Leave it at the warning point short of the checkpoint, under a stone, where someone coming in would see it. Nobody's coming in. Leave it anyway.");
+		Over("Forget it. I burned the letter. It was badly spelled.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Leave it under a stone at the line";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 25;
-		w.m_sStep = "Take the letter to the warning point, {where_place}, 150 m short of the checkpoint, and leave it under a stone (5 s there). Don't go further. Then report to {giver}.";
+		w.m_sStep = "Take the letter to the warning point {where_place}, 150 m short of the sealed checkpoint, and leave it under a stone (5 s there). Don't go any closer. Then report to {giver}.";
 		w.m_iFavor = 3;
-		w.Done("Under a stone. Good. Now it's somewhere.");
+		w.Done("Under a stone at the warning point. Good. Now it's somewhere, at least.");
 
 		w = Way("do");
 		w.m_sLabel = "Read it on the way, then leave it";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 25;
-		w.m_sStep = "Take the letter to the warning point, {where_place}, and leave it under a stone (5 s there). Then report to {giver}.";
+		w.m_sStep = "Take the letter to the warning point {where_place}, read it on the way, and leave it under a stone (5 s there). Then report to {giver}.";
 		w.m_iFavor = 3;
-		w.Done("You read it. I can tell. It says she should eat properly. She won't.");
+		w.Done("You read it. I can tell by your face. It says she should eat properly. She won't.");
 	}
 
 	//------------------------------------------------------------------------------------------------

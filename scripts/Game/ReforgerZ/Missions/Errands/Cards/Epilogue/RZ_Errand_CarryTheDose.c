@@ -10,24 +10,24 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 		m_sKey = "epi_carry_dose";
 		m_sTitle = "Carry the Dose";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("There's one in a cold box with {holdout}'s name on it. {holdout} won't come in. Somebody has to go out.",
-			"Sealed, labelled, one dose. {holdout} is holding out in a village nobody lives in. Take it to the door.");
-		Over("Never mind. {holdout} walked in this morning.");
+		Offer("The cure's going out, and there's one dose in a cold box here with {holdout}'s name on it. {holdout} won't come in, not for the queue, not for us, not for anybody. So somebody has to go out with it, and it can't be me.",
+			"One dose, sealed and labelled for {holdout}, who is holding out in a village nobody else lives in. Take the cold box to the door and see it signed for. Don't open it.");
+		Over("Never mind. {holdout} walked in this morning, and took the dose here.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry the box to {holdout}";
 		w.m_ePlace = RZ_EErrandPlace.EMPTY_VILLAGE;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 40;
-		w.m_sStep = "Take the cold box to {holdout} in {place} (at the door, 15 s), then come back to {giver}.";
+		w.m_sStep = "Take the cold box to {holdout}'s door in {place} and see it signed for (15 s there), then come back to {giver}.";
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
-		w.Done("Signed for? In that handwriting? Then it's done.",
-			"Good. One less name on the list of people we couldn't reach.");
+		w.Done("Signed for? In that handwriting? Then it's done, and that's one we didn't lose.",
+			"Good. One less name on the list of people we couldn't reach. It's a long list.");
 
 		w = Way("sneak");
 		w.m_sLabel = "Open the box yourself";
-		w.Done("The seal's broken. Don't tell me why. We'll find out anyway.");
+		w.Done("The seal's broken. Don't tell me why. We'll find out anyway, and so will {holdout}.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -64,13 +64,13 @@ class RZ_Errand_CarryTheDose : RZ_EpiCard
 		string lifeKey = string.Format("%1|%2", p.m_sIdentity, p.m_iLives);
 		if (!epi || !gm.GetInfection().SeemsInfected(playerId) || epi.Data().dosed.Contains(lifeKey))
 		{
-			said.Insert("Inside: one dose, a label with somebody else's name, and nothing you need today.");
+			said.Insert("One dose, a label with somebody else's name on it, and nothing you needed today. You opened it for nothing.");
 			return;
 		}
 
 		epi.Data().dosed.Insert(lifeKey);
 		gm.GetInfection().UseAntidote(playerId);
-		said.Insert("You use it there and then. Somewhere out past the last village, somebody is still waiting.");
+		said.Insert("You used it yourself, didn't you. Out past the last village, somebody is still waiting for that box.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -12,17 +12,17 @@ class RZ_Errand_TradersDetour : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.WANDERER;
 		m_iWandererRole = RZ_EWandererRole.TRADER;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("I was for {town}, and I hear {town} isn't for anyone now. Walk my road a bit ahead of me? I'll make it worth your while. Slightly.");
-		Over("Changed my mind. Going back the way I came.");
+		Offer("I was for {town} with the cart, and I hear {town} isn't for anyone now: infected in the streets, or somebody's fighting over it. Walk my road a bit ahead of me and tell me if it's clear to go round? I'll make it worth your while. Slightly.");
+		Over("Changed my mind. I'm going back the way I came.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Scout the road ahead";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 20;
 		w.m_fRadius = 50;
-		w.m_sStep = "Scout the road {where_place} (20 s there, keep your eyes open), then find {giver} again.";
+		w.m_sStep = "Scout the Trader's road {where_place} (20 s there), then find {giver} again.";
 		w.m_iFavor = 4;
-		w.Done("Clear? Then I'll go round. You'll find my prices friendlier. Not friendly. Friendlier.");
+		w.Done("Clear? Then I'll go round. You'll find my prices friendlier from now on. Not friendly. Friendlier.");
 	}
 
 	//------------------------------------------------------------------------------------------------

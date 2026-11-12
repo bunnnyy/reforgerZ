@@ -13,8 +13,8 @@ class RZ_Errand_AWordTo : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"{other_house} \"borrowed\" from our stores, and they're eating better than we are. Someone should tell them so. Politely, or not.\"",
-			"Carry a word to {other_house} for me? About the tins that walked over there. I'd go, but I'd say it badly.");
+		Offer("{other_house} 'borrowed' from our stores last week, a whole shelf of tins, and now they're eating better than we are. Someone should tell them so, at their gate. Politely, or not.",
+			"Carry a word to {other_house} for me? About the tins that walked over there from our stores. I keep the house's book, and the book is short. I'd go myself, but I'd say it badly.");
 		Over("Leave it. {other_house} sent something back. Pride's cheaper on a full stomach.");
 
 		RZ_ErrandWay w = Way("do");
@@ -25,7 +25,7 @@ class RZ_Errand_AWordTo : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry the clerk's words to the safehouse at {other_house} (at its gate), then come back to {giver}.";
 		w.m_iFavor = 5;
-		w.Done("Straight? Good. Now they know we know. That's the whole point.");
+		w.Done("You said it straight? Good. Now they know we know. That's the whole point.");
 
 		w = Way("talk");
 		w.m_sLabel = "Soften it on the way";
@@ -35,7 +35,7 @@ class RZ_Errand_AWordTo : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry a kinder version to the safehouse at {other_house} (at its gate), then come back to {giver}.";
 		w.m_iFavor = 5;
-		w.Done("You softened it, didn't you. I can tell. They sent a jar of pickles. Pickles.");
+		w.Done("You softened it, didn't you. I can tell, because they sent a jar of pickles. Pickles.");
 
 		w = Way("press");
 		w.m_sLabel = "Add a threat of your own";
@@ -45,7 +45,7 @@ class RZ_Errand_AWordTo : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Say it at the gate of the safehouse at {other_house}, your way, then come back to {giver}.";
 		w.m_iFavor = 5;
-		w.Done("You said what? No, don't repeat it. They'll remember it. So will we.");
+		w.Done("You said what at their gate? No, don't repeat it. They'll remember it. So will we.");
 	}
 
 	//------------------------------------------------------------------------------------------------

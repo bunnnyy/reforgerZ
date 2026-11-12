@@ -14,8 +14,8 @@ class RZ_Errand_CountForTheSitting : RZ_ErrandCard
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
 		m_bTimed = true;
-		Offer("The council sits soon. Our head stays on watch, and I can't leave the book. Take our count to {subject_place} before supper. It's sealed. Ish.",
-			"Our count, for the sitting. {subject_place}, before supper. Don't read it. Everybody reads it.");
+		Offer("The council of the houses sits soon, and every house sends its count: people, mouths, food. Our head stays home on watch, and I can't leave the book. Take our count to {subject_place} before supper. It's sealed. Ish.",
+			"Our count for the council's sitting, how many we are and what we eat. It has to be at {subject_place} before supper. Don't read it. Everybody reads it.");
 		Over("Never mind. Somebody carried it. I hope they didn't read it.");
 
 		RZ_ErrandWay w = Way("do");
@@ -26,7 +26,7 @@ class RZ_Errand_CountForTheSitting : RZ_ErrandCard
 		w.m_fBefore = 18.5;
 		w.m_sStep = "Carry the count to the clerk at {subject_place} before half past six (5 s at the door), then come back to {giver}.";
 		w.m_iFavor = 3;
-		w.Done("Delivered. As written. Thank you.");
+		w.Done("Delivered, as written. Thank you.");
 
 		w = Way("talk");
 		w.m_sLabel = "Carry it, and say what it doesn't";
@@ -34,9 +34,9 @@ class RZ_Errand_CountForTheSitting : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_fBefore = 18.5;
-		w.m_sStep = "Carry the count to {subject_place} before half past six, and tell their clerk the house is hungrier than it says (5 s at the door).";
+		w.m_sStep = "Carry the count to the clerk at {subject_place} before half past six, and tell them the house is hungrier than the count says (5 s at the door).";
 		w.m_iFavor = 3;
-		w.Done("You told them. I'd have told them myself, if I'd been allowed to leave the book.");
+		w.Done("You told them we're hungrier than it says. I'd have told them myself, if I'd been allowed to leave the book.");
 	}
 
 	//------------------------------------------------------------------------------------------------

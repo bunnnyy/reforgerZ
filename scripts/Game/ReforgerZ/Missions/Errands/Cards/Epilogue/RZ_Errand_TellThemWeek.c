@@ -12,8 +12,8 @@ class RZ_Errand_TellThemWeek : RZ_EpiCard
 		m_sTitle = "Somebody Should Tell Them";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("There's a family at this house still waiting for {name}. People say {name} was seen with the lot from {pack}. Somebody should tell them. I can't.",
-			"{name}'s mother sets a place every night. Somebody's seen {name} with the ones from {pack}. Go and look. Then tell her, one way or another.");
+		Offer("There's a family at this house still waiting for {name}, who went out in the spring and didn't come back. People say {name} has been seen with the infected from {pack}. Somebody should find out and tell the family. I can't.",
+			"{name}'s mother still sets a place every night. Somebody's seen {name} walking with the infected from {pack}. Go and look. Then tell her, one way or another, before the gates open.");
 		Over("Never mind. She knows. Somebody told her this morning.");
 
 		RZ_ErrandWay w = Way("do");
@@ -22,14 +22,14 @@ class RZ_Errand_TellThemWeek : RZ_EpiCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 60;
 		w.m_bUnseen = true;
-		w.m_sStep = "Go below {pack} and read the ground for {name} (30 s unseen), then come back to {giver}.";
+		w.m_sStep = "Go below where the infected from {pack} gather and search the ground for any sign of {name} (30 s unseen), then come back to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"An ID card. In the mud. Then it's true.\" A long breath. \"Thank you for bringing something.\"");
+		w.Done("An ID card. In the mud. Then it's true. Thank you for bringing something back. She'll want to hold it.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell them plainly";
-		w.Done("\"Plainly. Yes.\" They stand a while. \"We'll dig one by the fence. There's nothing to put in it. We'll dig it anyway.\"");
+		w.Done("Plainly. Yes. That's the only way. We'll dig a grave by the fence. There's nothing to put in it. We'll dig it anyway.");
 	}
 
 	//------------------------------------------------------------------------------------------------

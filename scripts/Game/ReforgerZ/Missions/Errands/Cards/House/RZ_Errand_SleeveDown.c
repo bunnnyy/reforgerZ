@@ -12,8 +12,8 @@ class RZ_Errand_SleeveDown : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("Something for the fever. Don't make a fuss. It's only a fever.",
-			"Have you anything for a temperature? It's for me. It's nothing. Keep your voice down.");
+		Offer("Have you got anything for a fever? Pills, anything. Don't make a fuss. It's only a fever. Everyone gets one this time of year.",
+			"Have you anything for a temperature? It's for me. It's nothing. Keep your voice down, the clerk's just there.");
 		Over("Never mind. It's passed. Forget I asked.");
 
 		RZ_ErrandWay w = Way("give");
@@ -63,7 +63,7 @@ class RZ_Errand_SleeveDown : RZ_ErrandCard
 		{
 			case 0:
 			{
-				said.Insert("Thank you. I'll be better by morning.");
+				said.Insert("Thank you. I'll be better by morning. You'll see.");
 				if (bite && h && h.m_iPopulation > 2)
 				{
 					// Kept quiet: the house loses someone in the night
@@ -79,13 +79,13 @@ class RZ_Errand_SleeveDown : RZ_ErrandCard
 				mem.FoundTruth(m_sKey, e.m_sSubject, "nurse");
 				if (bite)
 				{
-					said.Insert("They roll the sleeve up without a word. The marks are a day old. \"I'll tell the clerk myself. Will you stand with me?\"");
+					said.Insert("There. The marks are a day old. I knew. I'll tell the clerk myself, the way the house asks. Will you stand with me when I do?");
 					dealer.SmallFame(playerId, RZ_EFaction.SURVIVORS, 2);
 					mem.Record("errand.sleeve_down", e.m_sSubject, "declared", RZ_WorldMemory.SOURCE_ERRAND, false);
 				}
 				else
 				{
-					said.Insert("A rash, a cough, a temperature. \"It's flu,\" you say, and they laugh for the first time in a week.");
+					said.Insert("A rash, a cough and a temperature, and you say it's flu? Just flu? That's the first time I've laughed in a week.");
 				}
 
 				break;
@@ -96,12 +96,12 @@ class RZ_Errand_SleeveDown : RZ_ErrandCard
 				if (bite && h && h.m_iPopulation > 2)
 				{
 					houses.RemoveDead(e.m_iHouse, 1);
-					said.Insert("The clerk takes the arm, and then takes the person outside. At dusk, two of them walk out. One comes back.");
+					said.Insert("You told the clerk. The clerk's seen my arm. We're walking out at dusk, the clerk and me. Only the clerk comes back. Don't watch.");
 					mem.Record("errand.sleeve_down", e.m_sSubject, "walked out", RZ_WorldMemory.SOURCE_ERRAND, false);
 				}
 				else
 				{
-					said.Insert("The clerk looks, and finds a rash. Nobody at {house} looks at you at supper.");
+					said.Insert("The clerk looked, and found a rash. A rash. Nobody at {house} will look at you at supper tonight, and I won't either.");
 					RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
 					if (trees)
 						trees.GetMemory().AddRegard(playerId, e.m_sGiver, "slander");

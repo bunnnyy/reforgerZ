@@ -12,8 +12,8 @@ class RZ_Errand_LastApples : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "cook";
-		Offer("There's an orchard at {place} nobody's picked. The last apples of the year. Bring a bag. Don't bring anything else back.",
-			"Apples, at {place}. Bruised, wormy, the last of them. I'll make them into something. Do us a turn.");
+		Offer("We're two weeks short on the stores, and there's an orchard in an empty village near here that nobody's picked. The last apples of the year, before the frost and the infected have them. Bring a bag. Don't bring anything else back.",
+			"There are apples in an orchard nobody's picked, out in the empty village. Bruised, wormy, the last of them. The pot's thin, and I'll make them into something. Do us a turn.");
 		Over("Never mind the apples. The frost had them.");
 
 		RZ_ErrandWay w = Way("do");
@@ -25,7 +25,7 @@ class RZ_Errand_LastApples : RZ_ErrandCard
 		w.m_sStep = "Pick what's left in the orchard at {place} (30 s there), then bring it to {giver}.";
 		w.Later("The apples went in a pie. Two pies. One for the house, and one we're not talking about.");
 		w.m_iFavor = 4;
-		w.Done("Wormy. Perfect. Nobody look in the pot.");
+		w.Done("Wormy. Perfect. That's pudding for the whole house tonight. Nobody look in the pot.");
 	}
 
 	//------------------------------------------------------------------------------------------------

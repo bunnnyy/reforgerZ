@@ -11,20 +11,20 @@ class RZ_Errand_KeyWhereItWas : RZ_EpiCard
 		m_sTitle = "The Key Where It Was";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("You read Petr's note? That was his kitchen. He's in the queue now, and the key's still under the step where he leaves it.",
-			"Petr went up the north road without his key. If it's still under the step, he'd want it. Photos in that house.");
-		Over("Never mind. Petr's neighbour took it up to him.");
+		Offer("You read Petr's note on the door? That was his kitchen. He's gone up to the processing queue on the north road without his key, and it's still under the step where he always leaves it. There are photos in that house he'll want.",
+			"Petr went up the north road to the queue without his key. If it's still under the step, he'd want it. His wife's photos are in that house, and the gates don't open twice.");
+		Over("Never mind. Petr's neighbour took the key up to him.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take the key up to Petr";
 		w.m_ePlace = RZ_EErrandPlace.SUBJECT;
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
-		w.m_sStep = "The key's under the step. Take it up to Petr in the queue on the north road (10 s), then come back to {giver}.";
+		w.m_sStep = "Take Petr's key from under the step and carry it up to him in the queue on the north road (10 s there), then come back to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("He took it? He'll hold onto it the whole way. That's Petr.",
-			"Good. A man should have his own key, even in a queue.");
+		w.Done("He took it? He'll hold onto it the whole way out. That's Petr.",
+			"Good. A man should have his own key, even in a queue, even leaving.");
 
 		w = Way("sneak");
 		w.m_sLabel = "Use the key yourself";
@@ -32,7 +32,7 @@ class RZ_Errand_KeyWhereItWas : RZ_EpiCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 40;
 		w.m_sStep = "Let yourself into Petr's house in {place} with his key (30 s inside), then come back to {giver}.";
-		w.Done("\"You went in. With his key.\" A long look. \"He'd have shared, probably. That's not the point.\"");
+		w.Done("You went in. With his key. Petr would have shared, probably. That's not the point.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -61,6 +61,6 @@ class RZ_Errand_KeyWhereItWas : RZ_EpiCard
 
 		RZ_GameModeComponent gm = dealer.GetGM();
 		gm.AddInfamy(playerId, RZ_EFaction.SURVIVORS, 5, "let themselves into a queued man's house", 0, "used Petr's key");
-		said.Insert("Two tins, a jar of plum jam and the photos, face down. You leave the photos.");
+		said.Insert("His two tins and his plum jam, I expect. At least tell me you left the photos.");
 	}
 }

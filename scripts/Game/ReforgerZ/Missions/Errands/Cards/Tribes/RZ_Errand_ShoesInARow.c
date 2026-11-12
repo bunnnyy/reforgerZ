@@ -13,8 +13,8 @@ class RZ_Errand_ShoesInARow : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("They leave their shoes in a row by {lair}. Nobody knows why. Count them for the book. From a distance. A long distance.",
-			"The book has a page for {lair}. It wants a number. Count the shoes, unseen, and come back with it.");
+		Offer("The infected at {lair} leave their shoes in a row. Nobody knows why. Some of us knew them, and the book has a page for them. Count the shoes for the book. From a distance. A long distance.",
+			"The house's book has a page for {lair}, where people we knew gather now. It wants a number. Count the shoes they leave in a row, unseen, and come back with it.");
 		Over("Never mind. The count's been done. Somebody braver. Or stupider.");
 
 		RZ_ErrandWay w = Way("sneak");
@@ -23,7 +23,7 @@ class RZ_Errand_ShoesInARow : RZ_ErrandCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 30;
 		w.m_bUnseen = true;
-		w.m_sStep = "Count the shoes by {lair} from {subject_place}, unseen (30 s hidden there), then tell {giver}.";
+		w.m_sStep = "Count the shoes by {lair} from {subject_place} without being seen (30 s hidden there), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.Done("{count}. Written. In ink, even. Thank you.");
 
@@ -34,14 +34,14 @@ class RZ_Errand_ShoesInARow : RZ_ErrandCard
 		w.m_fSeconds = 30;
 		w.m_fRadius = 40;
 		w.m_bUnseen = true;
-		w.m_sStep = "Count the shoes by {lair} from 150 m out, unseen (30 s hidden there), then tell {giver}.";
+		w.m_sStep = "Count the shoes by {lair} from 150 m out without being seen (30 s hidden there), then tell {giver}.";
 		w.m_iFavor = 5;
 		w.Done("{count}, from that far? I'll put a note: counted by someone who knew how.");
 
 		w = Way("lie");
 		w.m_sLabel = "Make a number up";
 		w.m_iFavor = 3;
-		w.Done("About that many. I'll write 'about'.");
+		w.Done("About that many? I'll write 'about'.");
 	}
 
 	//------------------------------------------------------------------------------------------------

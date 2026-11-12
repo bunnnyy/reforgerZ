@@ -18,19 +18,19 @@ class RZ_Errand_WithSide : RZ_ErrandCard
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Talk it through";
-		w.Done("I don't like it. I understand it. Those aren't the same thing.");
+		w.Done("I don't like it. I understand it. Those aren't the same thing, and I'll be thinking about the difference all week.");
 
 		w = Way("do");
 		w.m_sLabel = "Walk them out of the stand's way";
 		w.m_ePlace = RZ_EErrandPlace.NEXT_TOWN;
 		w.m_fSeconds = 5;
 		w.m_fRadius = 80;
-		w.m_sStep = "Walk {local} to {place}, well away from the lab road (5 s there), then come back to {giver}.";
-		w.Done("Out of the way. As if there's an out of the way. Thank you.");
+		w.m_sStep = "Walk {local} to {place}, well away from the lab road and the fighting (5 s there), then come back to {giver}.";
+		w.Done("Out of the way. As if there's an out of the way, this week. Thank you.");
 
 		w = Way("talk");
 		w.m_sLabel = "Carry one true word to your side";
-		w.Done("Tell them we're still here. That's the true word. We're still here.");
+		w.Done("Tell your side we're still here, in this house, whatever they decide. That's the true word. We're still here.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -75,12 +75,12 @@ class RZ_Errand_WithSide : RZ_ErrandCard
 	{
 		switch (route)
 		{
-			case RZ_EFaction.MILITARY: return "They say you're with the soldiers now. For the cure. Are you?";
-			case RZ_EFaction.BANDITS: return "They say you're with the crews. That they'll sell it, and you'll help. Tell me that's wrong.";
-			case RZ_EFaction.INSTITUTE: return "They say you're with the lab. The ones who made it in the first place. Is that true?";
+			case RZ_EFaction.MILITARY: return "They say you're with the soldiers now, for the cure. That Bastion means to lock it in a crate and dose its own first. Are you?";
+			case RZ_EFaction.BANDITS: return "They say you're with the crews. That they'll sell the cure by the dose, and you'll help them do it. Tell me that's wrong.";
+			case RZ_EFaction.INSTITUTE: return "They say you're with the lab. The ones who were up at the site before any of this started. Is that true?";
 		}
 
-		return "You're doing it yourself? Then do it properly.";
+		return "You're doing it yourself, they say? Not with any of them? Then do it properly.";
 	}
 
 	//------------------------------------------------------------------------------------------------

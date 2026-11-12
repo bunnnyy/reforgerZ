@@ -42,23 +42,23 @@ class RZ_Errand_WeatherWriteItDown : RZ_ErrandCard
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_sRoles = "radio operator,operator";
 		m_bTimed = true;
-		Offer("Log wants a weather reading from the ridge. Wind, cloud, visibility. The CO writes 'weather' against anything that went wrong, so it may as well be accurate.",
-			"I need eyes on the weather from up {place}. For the log. Everything in the log is weather, lately.");
-		Over("Never mind the reading. The CO's written 'weather' already. He usually does.");
+		Offer("The log wants a weather reading from the ridge before the call: wind, cloud, visibility. The CO writes 'weather' against anything that went wrong this season, the helicopter included, so it may as well be accurate.",
+			"I need someone up on the ridge to read the weather for the log. I can't leave the radio before the call. Everything in the log is weather, lately.");
+		Over("Never mind the reading. The CO's written 'weather' in the log already. The CO usually does.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take the reading on the ridge";
 		w.m_ePlace = RZ_EErrandPlace.OUT;
 		w.m_fSeconds = 15;
 		w.m_fRadius = 30;
-		w.m_sStep = "Go up {place} and take the wind, the cloud and how far you can see (15 s there), then report to {giver}.";
+		w.m_sStep = "Climb the ridge {place} and note the wind, the cloud and how far you can see (15 s there), then report to {giver}.";
 		w.m_iFavor = 4;
-		w.Done("\"Wind westerly, cloud broken, visibility good.\" He writes it down. \"So nothing that happens today is the weather. Interesting.\"",
-			"He logs it word for word. \"Weather. Written down.\"");
+		w.Done("Wind westerly, cloud broken, visibility good. I've written it down. So nothing that goes wrong today is the weather. Interesting.",
+			"Logged, word for word. Weather. Written down. The CO will be pleased, or the CO will be something.");
 
 		w = Way("talk");
-		w.m_sLabel = "Tell him to write \"weather\" and skip it";
-		w.Done("\"Ha. Weather. Write it down.\" He does. Nobody pays you for a joke the CO already made.");
+		w.m_sLabel = "Tell him to just write 'weather'";
+		w.Done("Ha. Weather. Write it down. All right, I have. Nobody pays for a joke the CO already made, mind.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -86,9 +86,9 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_bTimed = true;
-		Offer("Rifles clean for the call, the CO says. We've the rifles. We've no kits. The police station in {place} had a cupboard of them, once.",
-			"Cleaning kits. The station in {place}. The CO wants us looking like a unit at the call, and we'd like to oblige him while he can still tell.");
-		Over("Kits came up with the truck. Somebody's thinking of us after all.");
+		Offer("The CO wants rifles clean for the nightly call, a unit that looks like a unit. We've the rifles. We've no cleaning kits left. The police station in the next town had a cupboard of them, once.",
+			"Cleaning kits, from the police station in the next town. The CO wants us looking like a unit at the call, and we'd like to oblige while the CO can still tell the difference.");
+		Over("The kits came up with the truck from the stronghold. Somebody's thinking of us after all.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch the cleaning kits";
@@ -107,10 +107,10 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		w.m_ePlace = RZ_EErrandPlace.HERE;
 		w.m_fSeconds = 60;
 		w.m_fRadius = 15;
-		w.m_sStep = "Strip and clean a rifle with the new lads at {here} (a minute), slowly enough to follow.";
+		w.m_sStep = "Strip and clean a rifle in front of the new lads at {here} (a minute), slowly enough for them to follow.";
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
-		w.Done("They've got it. Mostly. One of them put the spring back the right way on his own.");
+		w.Done("They've got it. Mostly. One of them even put the spring back the right way on his own.");
 	}
 
 	//------------------------------------------------------------------------------------------------

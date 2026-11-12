@@ -14,17 +14,17 @@ class RZ_Errand_HandToHand : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"{local} wants a word. Not with the council. With you.\" \"When it's made, will you bring ours? You. Not them.\"",
-			"{local} asked for you by name. They don't trust the factions with it. They trust you, apparently.");
-		Over("{local} doesn't need to ask any more.");
+		Offer("{local} wants a word, and not with the council: with you. The cure's close now, and when it's made the factions will hand it out by their own rules. {local} wants to know if you'll bring this house's doses. You. Not them.",
+			"{local} asked for you by name. When the cure's made, Bastion will have a roster, the crews a book and the lab a list, and {local} doesn't trust any of them to reach this house. {local} trusts you, apparently. Will you bring ours?");
+		Over("{local} doesn't need to ask you any more.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Promise";
-		w.Done("You meant that. I watched you mean it.");
+		w.Done("You meant that. I watched you mean it. I'll tell {local}, and we'll hold you to it.");
 
 		w = Way("talk");
 		w.m_sLabel = "Don't promise";
-		w.Done("No. Fair. Nobody should promise anything, this week.");
+		w.Done("No. Fair. Nobody should promise anything, this close to the end.");
 	}
 
 	//------------------------------------------------------------------------------------------------
