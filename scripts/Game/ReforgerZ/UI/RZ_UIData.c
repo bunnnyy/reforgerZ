@@ -1078,7 +1078,7 @@ class RZ_UIW
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Turns the named image, degrees clockwise from up (the map's you-are-here, the tracker's arrow).
+	//! Turns the named image, degrees clockwise from up (the map's you-are-here).
 	//! VERIFY: ImageWidget.SetRotation turns the image about its centre, clockwise in degrees.
 	static void Rotate(Widget root, string name, float degrees)
 	{

@@ -11,10 +11,16 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 76b52d0: play the minimum subset on `Missions/RZ_Arland.conf`. Check the log lines in WBS §7, report every script exception and missing log line here, and run the play-test checklist in WBS §8.
 
 **UI (WBS §4, "Setting up the UI")**
+- 2026-11-12 4288689: re-check spawning in play: **one card, then quiet** (WBS §8, "Spawn: one card, then quiet"). Respawn a few times, first spawn and later ones: count the cards (one: the background and where you wake), see "+N in your notebook" and the Radio tab's World entries, one card at most every 45 s for five minutes. Report any other card in the first 30 s and its title.
+- 2026-11-12 4288689: the new settings **UI > Quiet start** (30), **First minutes** (300), **First minutes gap** (45) and **Guidance > Tips wait after spawn** (90) appear on the game mode (WBS §5): check the defaults came through.
+- 2026-11-12 4288689: **UI > Quests page** on `RZ_GameMode.et` is `RZ_QuestsPage.layout` (the cloud renamed the old `m_sHallPage` line; the layout kept the hall page's GUID `{FCD5A2E4F7512EFF}`): open the game mode and check the slot is set, then open `RZ_QuestsPage.layout`, `RZ_SeasonPage.layout` and `RZ_Hud.layout` (its new `TrackerPanel`) in the layout editor and fix what they report (UI/LAYOUTS.md).
+- 2026-11-12 4288689: with a pad, go through all five tabs (Standing, Journal, Radio, Quests, The season): the Journal has only notes, The season scrolls down to the hall of fame, and on Quests **Y** tracks the selected job (T on a keyboard; the TRACK button with the mouse): `RZ_TrackJob` is new in `chimeraInputCommon.conf`'s `MenuContext`; check Y does nothing else in the notebook (WBS §8, "Quests tab").
+- 2026-11-12 4288689: play the quest tracker (WBS §8, "The quest tracker"): take a contract, see the small box top left with a real icon (no flat square), the objective with a rough area (no metres), the other jobs as dim lines, the ring on the map; relog and it's still tracked.
+- 2026-11-12 3e921af: your `TrackPanel` (fc7cb37) is replaced by the cloud's `TrackerPanel` and its journal Track button by the Quests tab's; the map's you-are-here stays. Nothing to do but pull; the atlas with `marker_self` still needs importing for the map's arrow (that missing texture was the flat yellow square in the author's screenshot).
 - 2026-11-12 (cloud, docs pass): `UI/layouts/Menus/DeployMenu/RespawnMenu.layout` (the override of vanilla's deploy menu) is deleted: it embedded the removed `RZ_BackgroundPanel.layout`, and our spawn screen replaces that menu. Nothing to do but pull; with **UI > Spawn row layout** empty, vanilla's own deploy menu opens.
 - 2026-11-12 (cloud, docs pass): new in play: the journal's *The finale* row while the cure's routes are open, the jobs in each player's order, and a sound on each notice card (vanilla's hint sound): check them in Workbench play (UI.md).
 - 2026-11-12 (cloud, docs pass): `chimeraInputCommon.conf` has pad bindings for the notebook (View + RB, in play) and the talk screen's replies (LT + D-pad up/right/down/left = 1-4, RT + D-pad up/right/down = 5-7): open the conf in Workbench, then check both with a pad, and that View alone still opens the map and RB alone does what it did (UI.md, Controllers).
-- 2026-11-12 (cloud, docs pass): `Prefabs/ReforgerZ/UI/RZ_Notebook.et:40`, the item's Description: it still lists the map key (now on the map) and lacks the season tab. Set it to exactly: `Your notebook: standing, the jobs you know of, what you heard, the hall of fame and the season. Take it in hand to read it.`
+- 2026-11-12 4288689: `Prefabs/ReforgerZ/UI/RZ_Notebook.et:40`, the item's Description (the tabs are now Standing, Journal, Radio, Quests, The season). Set it to exactly: `Your notebook: standing, what you know, what you heard, your jobs and the season with its hall of fame. Take it in hand to read it.`
 - 2026-11-12 (cloud, docs pass): the map key moved up to offset (96, -190) in `RZ_MapLegend.layout`, clear of vanilla's key hints and scale bar: check in play that it covers none of vanilla's map widgets (WBS §8, the map key).
 - 2026-11-12 07f80de: the crafting screen (UI.md, "The crafting screen"): in Workbench add `MenuPreset RZ_CraftMenu` to `Configs/System/chimeraMenus.conf` (layout `RZ_CraftMenu.layout`, class `RZ_CraftMenu`, like the `RZ_ShopMenu` entry), and set **UI > Craft row layout** to `RZ_CraftRow.layout` on `RZ_GameMode.et` (WBS §4, Setting up the UI, step 4a.4). Until then every server start logs `GUI (E): Menu preset 'RZ_CraftMenu' not found!` (harmless: the actions stay).
 - 2026-11-12 07f80de: play the crafting screen with a pad, the mouse and on a TV at a workbench, with a few recipes' outputs set: open, move, short and ready recipes, Craft, the countdown, the item in your pack, B, danger closing it, and the slot emptied (WBS §8, "The crafting screen"); and the new VERIFY `UI/RZ_ItemPreview.c:65` (the output's description and weight).
@@ -116,7 +122,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-- Cloud (notices and quest tracker), 2026-11-12: `Configs/System/chimeraInputCommon.conf` (one new action, `RZ_TrackJob`). Don't edit it until this line is gone.
+(none)
 
 ## Status
 
