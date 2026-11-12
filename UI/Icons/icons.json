@@ -442,5 +442,11 @@
   "category": "Standing and needs",
   "use": "A faction wants revenge: a dagger. The Standing page's need column",
   "plate": false
+ },
+ {
+  "name": "voice_note",
+  "category": "Voices",
+  "use": "A note, sign or board read out: a sheet with a turned corner and a hand's lines. The source icon before a subtitle's name (the others are standing_word for in person, status_radio_open for a radio channel and status_broadcast for a loudspeaker)",
+  "plate": false
  }
 ]

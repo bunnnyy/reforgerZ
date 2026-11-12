@@ -72,7 +72,8 @@ up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
   it is, another person's line with their name in front. A line the journal also needs (a contract
   or an off-the-books offer, a mission's end, a background unlocked, anything tagged as about you
   now) is said there **and** still comes as a card. Danger, the infection, the broadcast and the
-  radio, world events, the world at spawn and the tips ("Remember") stay cards only. A line from
+  radio, world events, the world at spawn and the tips ("Remember") stay out of it, as cards (a
+  radio channel's voice in the radio-line box, [UI.md](UI.md#subtitles-and-the-reader)). A line from
   the speaker that arrives later (a treatment finishing) also goes into the screen while it's open.
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
   **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me? (with

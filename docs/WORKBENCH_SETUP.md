@@ -1266,7 +1266,7 @@ in `UI/layouts/ReforgerZ/`.
       with `RZ_NotebookGadgetComponent`): it should show the component, display name Notebook and
       weight 0.1 kg. **UI > Notebook prefab** points at it.
    3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
-      (its new `SubtitlePanel`, hidden) the same way. **UI > Talk reply layout** is set, so the
+      (its `SubtitlePanel` with the head row `SubtitleHead`, and `RadioLinePanel`, both hidden) the same way. **UI > Talk reply layout** is set, so the
       talk screen is on (**Dialogue > Talk screen**). Workbench may want a 4 px rounded image on the subtitle backing: that's cosmetic.
       Open `RZ_CarMenu.layout` and `RZ_CarJob.layout` too: **UI > Car job layout** is set, so the
       car repair screen is on. The same for `RZ_ShopMenu.layout` and `RZ_ShopItem.layout` (**UI >
@@ -2726,8 +2726,19 @@ when it happens)
   stays gone until you take a new job. Relog: the same job is still tracked.
 - [ ] On a dedicated server with two clients, a contract offer to one player never reaches the
   other's log (owner-only notices).
-- [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre in olive,
-  not a card; a Perimeter loudspeaker too. With **Subtitles** off, they're cards again.
+- [ ] Walk up to a Bastion checkpoint: its warning is a subtitle at the bottom centre, not a card,
+  its head row the speech bubble, "The corporal at the barrier" in olive and "· Bastion checkpoint"
+  dim, then (with a sentry within 15 m) an arrow and "4 m": turn round and the arrow keeps pointing
+  at the sentry, walk off and the metres count up. A bark (Trees on) points at the person who
+  barked. The roster board's line has the paper sheet and no arrow; a Perimeter
+  loudspeaker has the loudspeaker and no arrow. A wanderer with no faction has a grey name. With
+  **Subtitles** off, they're cards again.
+- [ ] Radio voices: on a wind-up radio near a faction's town (or with a cracked channel), the
+  faction's chatter ("Radio: Bastion net") shows in the box at the top left under the tracker, the
+  channel's name in dim italics, never at the bottom centre and not as a card; it's in the notebook's
+  Radio tab. A plain "Radio" notice (no power, nothing in range) and the government broadcast stay
+  cards. With the tracker and the radio indicator both showing, nothing overlaps; on a TV every line
+  reads.
 - [ ] Talk to a Trader wanderer: the talk screen opens with their name, what they say and the
   replies; "Buy supplies" shows its price and is dim with what it needs if you're short; pick a
   reply with the D-pad and A, with 1–5, with LT/RT + D-pad, and with a click; B leaves. Their choice actions don't show

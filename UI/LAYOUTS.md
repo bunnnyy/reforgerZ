@@ -68,7 +68,7 @@ mockup, its section says so.
 `tools/icon_atlas.py` packs the icons into one texture atlas and writes the imageset for it. It
 needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
-1. `py tools/icon_atlas.py` packs the white icons (74) from `UI/Icons/png/128/` into
+1. `py tools/icon_atlas.py` packs the white icons (75) from `UI/Icons/png/128/` into
    `UI/Textures/ReforgerZ/RZ_Icons.png`: 1024 × 1280, eight 128-pixel cells to a row, in name
    order.
 2. In Workbench's Resource Browser, import that PNG with the vanilla **TextureUIAtlas** preset. It
@@ -82,8 +82,8 @@ needs Python and Pillow ([PC_SETUP.md](../docs/PC_SETUP.md)).
 
 After adding or changing an icon, re-render the PNGs ([UI.md](../docs/UI.md#the-icon-set)) and do
 steps 1 to 3 again. **To do now:** steps 1 and 3 have been run for you-are-here (`marker_self` and
-`marker_self_back`, 74 in all), so import the PNG again (step 2). Until then the imported `.edds` is
-the 72-icon atlas while the imageset lists 74 in a taller atlas, so icons show the wrong cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
+`marker_self_back`) and the subtitles' note (`voice_note`), 75 in all, so import the PNG again (step 2). Until then the imported `.edds` is
+the 72-icon atlas while the imageset lists 75 in a taller atlas, so icons show the wrong cells. The imageset's `.meta` (its GUID) is unchanged, so nothing else needs doing. With **Icon imageset** empty, the scripts leave every image as the layout has
 it and only tint it.
 
 ## HUD: `RZ_Hud.layout`
@@ -118,6 +118,17 @@ Frame  (root, full screen)
 │  ├─ Image   RadioIcon         34 × 34 at (12, 13)                 status_secure_radio, static, tinted
 │  ├─ Text    RadioChannel      at (60, 10), mono bold 13           faction colour
 │  └─ Text    RadioSub          at (60, 32), mono 18, dim
+├─ VerticalLayout RadioLinePanel  560 wide, anchor top-left, offset (680, 24) (top centre, clear of the quest tracker in the top-left corner), fits its content, ignores the cursor, hidden; a radio channel's voice
+│  └─ Overlay (RadioLineBox)
+│     ├─ Image  (RadioLineBg)     #121416 at 85%
+│     ├─ Image  RadioLineAccent   4 wide, full height, left            the channel's colour, grey without one
+│     └─ SizeLayout (RadioLineWidth)  528 wide, padding 18 10 14 12
+│        └─ VerticalLayout (RadioLineBody)
+│           ├─ HorizontalLayout (RadioLineHead)  4 below
+│           │  ├─ Image  RadioLineIcon     24 × 24, status_radio_open (status_secure_radio when cracked), tinted
+│           │  └─ Text   RadioLineChannel  condensed italic 20, dim ("Bastion net")
+│           ├─ Text  RadioLineSpeaker  condensed bold 22, tinted; hidden without a name
+│           └─ Text  RadioLineText     condensed 26, bone, wraps
 ├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (552, -62), 10 apart, 85% opacity
 │  ├─ Image   (status_noise icon, 26 × 26, bone, static)
 │  ├─ HorizontalLayout (3 apart)
@@ -158,11 +169,18 @@ Frame  (root, full screen)
       ├─ Image  (SubtitleBg)      #0C0E0F at 88%
       └─ SizeLayout (SubtitleWidth)  1,044 wide, padding 28 16 28 20
          └─ VerticalLayout (SubtitleBody)
-            ├─ Text  SubtitleSpeaker  condensed bold 24, centred, tinted with the speaker's faction
+            ├─ HorizontalLayout (SubtitleHead)  centred, 6 above the line
+            │  ├─ Image  SubtitleSource   28 × 28, how it reaches you (standing_word, status_broadcast, voice_note, status_radio_open), tinted like the name
+            │  ├─ Text   SubtitleSpeaker  condensed bold 24, the speaker's faction colour, grey without one
+            │  ├─ Text   SubtitleRole     condensed 22, dim, 8 after ("· Haven council head in Morton"); hidden without a role
+            │  └─ HorizontalLayout SubtitleDir  22 after; in person only, hidden otherwise
+            │     ├─ Image  SubtitleArrow  24 × 24, marker_self, bone; turned to the speaker
+            │     └─ Text   SubtitleDist   bold 22, bone ("12 m")
             └─ Text  SubtitleText     regular 32, #F4F0E6, centred, wraps
 ```
 
-Without `SubtitlePanel` the HUD shows spoken lines as cards.
+Without `SubtitlePanel` the HUD shows spoken lines as cards; without `RadioLinePanel`, radio
+voices stay cards too (and a spoken line from a radio is a subtitle with the radio icon).
 
 ## Notice card: `RZ_NoticeCard.layout`
 

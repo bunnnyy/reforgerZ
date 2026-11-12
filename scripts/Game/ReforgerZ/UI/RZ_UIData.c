@@ -1126,3 +1126,316 @@ class RZ_UIW
 		return deg;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! How a spoken line reaches you (docs/UI.md, "Subtitles"): the icon before the name, and where on
+//! the screen it shows.
+enum RZ_ESaySource
+{
+	IN_PERSON,		// someone near you: the speech bubble, an arrow to them and the distance
+	RADIO,			// a radio channel: the radio, in the radio-line box at the top left
+	LOUDSPEAKER,	// Bastion's loudspeakers, the Perimeter line, a speaker on a post, a loudhailer
+	NOTE			// a sign, a board or a note, read out
+}
+
+//------------------------------------------------------------------------------------------------
+//! One spoken line as the HUD shows it (RZ_GameModeComponent.Say, RZ_HudDisplay): who says it (a
+//! name, a short role, their faction), how it reaches you, a radio line's channel, and where an
+//! in-person speaker stands. Worked out from the title the line comes under ("Ines Calder, council
+//! head in Morton", "Loudspeaker", "Radio: Bastion net") and the line itself, so the callers keep
+//! their signature. The server sends it (RZ_PlayerUIComponent.SendSayLine); the client builds one
+//! the same way from a plain spoken line or a radio notice.
+class RZ_SayLine
+{
+	static const float NEAR = 15;		// server: a line without a body is pinned on the nearest person this close to the player
+	static const int ROLE_CHARS = 48;
+
+	string m_sSpeaker;		// the title as given ("Name, role"), for the card it falls back to
+	string m_sName;
+	string m_sRole;
+	string m_sChannel;		// a radio line's channel ("Bastion net")
+	string m_sText;
+	int m_iFaction = -1;
+	int m_iSource;
+	bool m_bSecure;			// a cracked secure channel (client, from the notice's title)
+	vector m_vAt;			// where the speaker stood when it was said; vector.Zero: nowhere to point
+	RplId m_Who;			// their body, followed on the client while it streams in
+	IEntity m_Body;			// client: that body, once found
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_SayLine()
+	{
+		m_Who = RplId.Invalid();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A line from the title it comes under. faction: RZ_EFaction or -1.
+	static RZ_SayLine Make(string speaker, int faction, string text)
+	{
+		RZ_SayLine line = new RZ_SayLine();
+		line.m_sSpeaker = speaker;
+		line.m_iFaction = faction;
+		line.m_sText = text;
+		line.m_iSource = SourceFor(speaker, text);
+		if (line.m_iSource == RZ_ESaySource.RADIO)
+		{
+			line.m_sChannel = ChannelOf(speaker);
+			if (line.m_sChannel.IsEmpty())
+				line.m_sChannel = speaker;
+
+			return line;
+		}
+
+		int comma = speaker.IndexOf(", ");
+		if (comma > 0)
+		{
+			line.m_sName = speaker.Substring(0, comma);
+			line.m_sRole = speaker.Substring(comma + 2, speaker.Length() - comma - 2).Trim();
+		}
+		else
+		{
+			line.m_sName = speaker;
+		}
+
+		line.m_sRole = RoleWithFaction(line.m_sName, line.m_sRole, faction);
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A radio channel's voice (a notice titled "Radio: Bastion net", "Cracked: ..."), for the radio-line box.
+	static RZ_SayLine Radio(string title, string channel, int faction, string text)
+	{
+		RZ_SayLine line = new RZ_SayLine();
+		line.m_sSpeaker = title;
+		line.m_sChannel = channel;
+		line.m_iFaction = faction;
+		line.m_sText = text;
+		line.m_iSource = RZ_ESaySource.RADIO;
+		string t = title;
+		t.ToLower();
+		line.m_bSecure = t.IndexOf("cracked") == 0;
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The role says whose they are: "Haven council head in Morton", not "council head in Morton".
+	//! Left alone when the name or role already names the faction; cut to ROLE_CHARS.
+	protected static string RoleWithFaction(string name, string role, int faction)
+	{
+		string result = role;
+		if (RZ_Factions.IsValid(faction))
+		{
+			string shortName = RZ_Factions.GetShortName(faction);
+			string both = name + " " + role;
+			both.ToLower();
+			string shortLower = shortName;
+			shortLower.ToLower();
+			if (!both.Contains(shortLower))
+			{
+				string bare = role;
+				string bareLower = role;
+				bareLower.ToLower();
+				if (bareLower.IndexOf("the ") == 0)
+					bare = role.Substring(4, role.Length() - 4);
+
+				result = (shortName + " " + bare).Trim();
+			}
+		}
+
+		if (result.Length() > ROLE_CHARS)
+			result = result.Substring(0, ROLE_CHARS - 3) + "...";
+
+		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How it reaches you, from the title and the line (RZ_ESaySource).
+	static int SourceFor(string speaker, string text)
+	{
+		string s = speaker;
+		s.ToLower();
+		string t = text;
+		t.ToLower();
+		if (!ChannelOf(speaker).IsEmpty() || s == "a radio" || s == "the radio")
+			return RZ_ESaySource.RADIO;
+
+		if (s.Contains("loudspeaker") || s.Contains("loudhailer") || t.IndexOf("a loudhailer") == 0 || t.IndexOf("a speaker on a post") == 0)
+			return RZ_ESaySource.LOUDSPEAKER;
+
+		if (t.IndexOf("a sign ") == 0 || t.IndexOf("a sign,") == 0 || t.IndexOf("a new sign") == 0 || t.IndexOf("the board ") == 0 || t.IndexOf("the roster board") == 0 || t.IndexOf("under the toll sign") == 0 || t.IndexOf("a note") == 0)
+			return RZ_ESaySource.NOTE;
+
+		return RZ_ESaySource.IN_PERSON;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The channel a radio voice's title names ("Radio: Bastion net" is "Bastion net"; also
+	//! "Cracked: ...", "Wind-up radio: ...", "Radio chatter", "The open channel"), else "": a plain
+	//! "Radio", "Radio station" or anything else is not a channel's voice.
+	static string ChannelOf(string title)
+	{
+		string t = title;
+		t.ToLower();
+		if (t == "radio chatter")
+			return "Open channel";
+
+		if (t == "the open channel")
+			return "The open channel";
+
+		int colon = title.IndexOf(": ");
+		if (colon <= 0)
+			return "";
+
+		string before = t.Substring(0, colon);
+		if (before != "radio" && before != "cracked" && before != "wind-up radio")
+			return "";
+
+		string channel = title.Substring(colon + 2, title.Length() - colon - 2).Trim();
+		if (channel.IsEmpty())
+			return "";
+
+		string first = channel.Substring(0, 1);
+		first.ToUpper();
+		return first + channel.Substring(1, channel.Length() - 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: where an in-person speaker stands, from their body (its place and its RplId), else `at`.
+	void Place(IEntity who, vector at)
+	{
+		if (who)
+		{
+			m_vAt = who.GetOrigin();
+			RplComponent rpl = RplComponent.Cast(who.FindComponent(RplComponent));
+			if (rpl)
+				m_Who = rpl.Id();
+
+			return;
+		}
+
+		m_vAt = at;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the wire carries besides the numbers: "name|role|channel".
+	string Head()
+	{
+		return RZ_UIText.Clean(m_sName, 80) + RZ_UIText.SEP + RZ_UIText.Clean(m_sRole, 80) + RZ_UIText.SEP + RZ_UIText.Clean(m_sChannel, 80);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the line as it came (RZ_PlayerUIComponent.RpcDo_SayLine).
+	static RZ_SayLine FromWire(string head, int faction, int source, vector at, RplId who, string text)
+	{
+		array<string> f = {};
+		RZ_UIText.Split(head, RZ_UIText.SEP, f);
+		RZ_SayLine line = new RZ_SayLine();
+		line.m_sName = RZ_UIText.Str(f, 0);
+		line.m_sRole = RZ_UIText.Str(f, 1);
+		line.m_sChannel = RZ_UIText.Str(f, 2);
+		line.m_sSpeaker = line.m_sName;
+		if (!line.m_sRole.IsEmpty())
+			line.m_sSpeaker = line.m_sName + ", " + line.m_sRole;
+		if (line.m_sSpeaker.IsEmpty())
+			line.m_sSpeaker = line.m_sChannel;
+
+		line.m_iFaction = faction;
+		line.m_iSource = source;
+		line.m_vAt = at;
+		line.m_Who = who;
+		line.m_sText = text;
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One part of a long line: everything but the text is the same.
+	RZ_SayLine Part(string text)
+	{
+		RZ_SayLine p = new RZ_SayLine();
+		p.m_sSpeaker = m_sSpeaker;
+		p.m_sName = m_sName;
+		p.m_sRole = m_sRole;
+		p.m_sChannel = m_sChannel;
+		p.m_iFaction = m_iFaction;
+		p.m_iSource = m_iSource;
+		p.m_bSecure = m_bSecure;
+		p.m_vAt = m_vAt;
+		p.m_Who = m_Who;
+		p.m_sText = text;
+		return p;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Who it is, for a newer line replacing one of theirs still waiting.
+	string Key()
+	{
+		return m_sName + "|" + m_sRole + "|" + m_sChannel;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The source icon (UI/Icons): speech bubble, radio, loudspeaker, paper.
+	string SourceIcon()
+	{
+		switch (m_iSource)
+		{
+			case RZ_ESaySource.RADIO:
+			{
+				if (m_bSecure)
+					return "status_secure_radio";
+
+				return "status_radio_open";
+			}
+			case RZ_ESaySource.LOUDSPEAKER: return "status_broadcast";
+			case RZ_ESaySource.NOTE: return "voice_note";
+		}
+
+		return "standing_word";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The name tag's colour: the faction's, grey for people with none.
+	Color NameColor()
+	{
+		if (RZ_Factions.IsValid(m_iFaction))
+			return RZ_UIColor.Faction(m_iFaction);
+
+		return RZ_UIColor.Dim();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: where the speaker is now: their body while it's streamed in, else where they stood.
+	//! False: nowhere to point (not in person, or the server had no place).
+	bool Where(out vector at)
+	{
+		if (m_iSource != RZ_ESaySource.IN_PERSON)
+			return false;
+
+		if (!m_Body && m_Who.IsValid())
+		{
+			RplComponent rpl = RplComponent.Cast(Replication.FindItem(m_Who));
+			if (rpl)
+				m_Body = rpl.GetEntity();
+		}
+
+		if (m_Body)
+		{
+			at = m_Body.GetOrigin();
+			return true;
+		}
+
+		at = m_vAt;
+		return m_vAt != vector.Zero;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "12 m", "1.4 km".
+	static string Distance(float metres)
+	{
+		int m = RZ_Util.RoundToInt(metres);
+		if (m < 1000)
+			return string.Format("%1 m", m);
+
+		int tenths = RZ_Util.RoundToInt(metres / 100);
+		return string.Format("%1.%2 km", tenths / 10, tenths % 10);
+	}
+}

@@ -47,7 +47,7 @@ make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
 
 ## The icon set
 
-74 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
+75 icons, hand-written SVG on a 64×64 grid with 4-unit strokes, one colour (`currentColor`) on a
 transparent background, so the game can tint them. Every icon with its intended use is listed in
 [UI/Icons/README.md](../UI/Icons/README.md); the contact sheet is `UI/Previews/icons_sheet.png`.
 
@@ -60,6 +60,7 @@ transparent background, so the game can tint them. Every icon with its intended 
 | Items | 18 | key, sample, antidote, stabiliser, low-grade med, noisemaker, battery, tyre, spark plugs, fuel can, wind-up radio, molotov, bandage, tin-can tripwire, spike trap, purification tablets, planks, jewellery |
 | Status and HUD | 13 | bitten, golden window, Fever, Weakness, Final, secure radio, open channel, broadcast, noise, shortage, locked, unlocked and forced door |
 | Standing and needs | 9 | the Standing page's Favor (a coin), leader met, their kit, the next name and how they see you; four of a faction's needs (food, people, security, revenge; supplies and samples use `status_shortage` and `item_sample`) |
+| Voices | 1 | a note read out (a sheet with a turned corner). The other three ways a spoken line reaches you reuse icons above: in person the speech bubble (`standing_word`), a radio channel the open channel (`status_radio_open`, or `status_secure_radio` cracked), a loudspeaker the broadcast (`status_broadcast`) ([Subtitles](#subtitles-and-the-reader)) |
 
 **Files.** Sources in `UI/Icons/src/`. White PNGs at 64 and 128 px in `UI/Icons/png/64/` and
 `png/128/`. Coloured map and emblem variants (25, with a dark backing behind the plated markers'
@@ -68,9 +69,9 @@ cut-out glyphs, and one per faction for strongholds, outposts and quartermasters
 Chromium, nothing else). The game reads the white icons from one atlas,
 `UI/Textures/ReforgerZ/RZ_Icons.edds`, through the `RZ_Icons` imageset: after re-rendering, pack
 them again with `tools/icon_atlas.py` ([LAYOUTS.md](../UI/LAYOUTS.md#importing-the-icons)). The atlas
-PNG and the imageset hold all 74; the imported `.edds` is still the 72 before `marker_self` and
-`marker_self_back` until the PNG is imported again (step 2 there). The Standing page's nine and these
-two were rendered with headless Chrome the way `render_ui.js` does (no Playwright on the author's
+PNG and the imageset hold all 75; the imported `.edds` is still the 72 before `marker_self`,
+`marker_self_back` and `voice_note` until the PNG is imported again (step 2 there). The Standing page's nine and these
+three were rendered with headless Chrome the way `render_ui.js` does (no Playwright on the author's
 PC), so the contact sheet doesn't show them yet.
 
 ## Screens
@@ -90,7 +91,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, where you start, and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
 | Talk | `talk.png` | A person's name and who they are, what they say in large type, your replies with what each needs ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
-| Subtitles | `hud.png` | What people say outside the talk screen, at the bottom centre: the speaker in their faction colour, the line in bright bone ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` built as text in the HUD layout, not checked in play |
+| Subtitles | `hud.png` (the old one-line name) | What people say outside the talk screen, at the bottom centre: how it reaches you (an icon), the name in their faction colour and their role, for someone in person an arrow to them and how far; the line in bright bone. Radio channels' voices in their own box at the top centre, clear of the quest tracker ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` and `RadioLinePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | Car repair | `car_repair.png` | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
@@ -161,7 +162,8 @@ notices are cards; every other notice is logged in the notebook and counted unde
 that aren't urgent come at most one per **First minutes gap** (45 s). After that, at most **UI >
 Notice cards at once** (2) on screen, a new one at most every **Gap** (2 s). Waiting ones queue most
 important first, then oldest first. Each card comes in with vanilla's own hint sound
-(`SCR_SoundEvent.HINT`), the one the vanilla hint it replaces plays.
+(`SCR_SoundEvent.HINT`), the one the vanilla hint it replaces plays. A radio channel's voice skips the cards: it goes to the radio-line box at the top centre
+([Subtitles](#subtitles-and-the-reader)), and the Radio tab keeps it as before.
 
 | Priority | Means | Examples |
 |---|---|---|
@@ -392,16 +394,53 @@ leaves, and shows the person's actions again (`RZ_TalkMenu.Available`).
 ### Subtitles and the reader
 
 **Subtitles.** What people say *outside* the talk screen shows at the **bottom centre**: a solid
-dark backing (12, 14, 15 at 88%), the speaker's name on its own line in their faction colour (bold
-24, bone when they have no faction), the line in bright bone (32), centred, 1,100 units wide, its
-bottom 204 above the screen's (clear of the infection panel and the noise meter). The notice
-cards stay top right; the two never mix. One line at a time, on screen for **Subtitle shortest**
-to **longest** (2.5–8 s) by length at **reading speed** (18 characters a second); a line longer
-than two rows (130 characters) is split at sentence ends into parts shown in turn. At most four
-wait; a newer line from the same speaker replaces theirs still waiting. While the reader is open
-they wait. Nothing to press, so nothing to bind. A spoken line goes only to its player
-(`RZ_GameModeComponent.Say`, `SayNear`; `RpcDo_Say`). With **UI > Subtitles** off, without
-`SubtitlePanel` in the HUD layout, or without the UI component, it's a notice card, as before.
+dark backing (12, 14, 15 at 88%), a centred head row, then the line in bright bone (32), centred,
+1,100 units wide, its bottom 204 above the screen's (clear of the infection panel and the noise
+meter). The head row says who and from where:
+
+| Part | What it shows |
+|---|---|
+| Source icon (28) | how the line reaches you, in the speaker's colour: a speech bubble in person (`standing_word`), a loudspeaker (`status_broadcast`: Bastion's loudspeakers, the Perimeter line, a speaker on a post, a loudhailer), a paper sheet (`voice_note`: a sign, a board or a note read out). A radio's voice has the radio (`status_radio_open`) when it can't go to its own box |
+| Name (bold 24) | in their faction colour, grey (163, 158, 144) when they have none: "Marta Weber" |
+| Role (22, dim) | after a dot, what they are, with whose: "· Haven council head in Morton". The faction's short name goes in front unless the name or role already has it ("· Bastion checkpoint"); cut at 48 characters; hidden when there's none |
+| Arrow and distance (24, 22 bold, bone) | **in person only**: the you-are-here arrow (`marker_self`) turned to the speaker from where you face, and "12 m" (1.4 km past a kilometre), redrawn every frame while the line shows, from their body while it streams in, else from where they stood. Hidden for loudspeakers, notes and radio, and when the server had no place for them |
+
+The name and role come from the title the line is said under ("Marta Weber, cook at Morton" is
+Marta Weber, then the rest). How it reaches you is worked out from that title and the line
+(`RZ_SayLine.SourceFor`): a title naming a loudspeaker or loudhailer, or a line opening "A
+loudhailer" or "A speaker on a post", is a loudspeaker; a line opening "A sign", "A new sign",
+"The board", "The roster board", "Under the toll sign" or "A note" is a note; a radio channel's
+title ("Radio: Bastion net", "A radio") is the radio; anything else is in person. The server sends
+the name, role, faction, source, the channel, where the speaker stood and their body's `RplId`
+with each line (`RZ_PlayerUIComponent.SendSayLine`, `RpcDo_SayLine`). The body is the caller's
+(a bark's speaker) or, when the caller has none, the nearest living person within 15 m of the
+player who isn't a player or one of the infected, people you can talk to first
+(`RZ_SpeakerFinder`, one small sphere query per line). *Simplified:* that guess can pick the
+wrong person in a crowd, and a line about a door or a voice behind one points at whoever stands
+nearest; a speaker further than 15 m gets no arrow. The old `RpcDo_Say` (title, faction, line)
+still works: the client works the rest out itself, with no place to point.
+
+**Radio lines.** A radio channel's voice never shows where a person in front of you would: it
+goes to its own box at the **top centre** (`RadioLinePanel`, 560 wide at (680, 24)), clear of the
+quest tracker in the top-left corner and the notice cards on the right. A dark panel
+with a left bar in the channel's colour; the radio (`status_radio_open`, `status_secure_radio` for
+a cracked channel) and the channel's name in dim italics ("Bastion net", 20); the voice's name when
+there is one (bold 22, in its colour); the line (26, bone, wraps). Radio voices are the notices
+titled as a channel: "Radio: …" (the factions' open channels, the reel, the station), "Cracked:
+…", "Wind-up radio: …", "Radio chatter" and "The open channel", and a spoken line from a radio
+("A radio" in a house). They are still kept in the notebook's Radio tab; a plain "Radio" or "Radio
+station" notice (how the set works, the console) stays a card, and so does the government
+broadcast. Paced like the subtitles; a long one is cut at about three rows (130 characters); at
+most six wait.
+
+The notice cards stay top right; the three places never mix. One line at a time in each place,
+on screen for **Subtitle shortest** to **longest** (2.5–8 s) by length at **reading speed** (18
+characters a second); a subtitle longer than two rows (130 characters) is split at sentence ends
+into parts shown in turn. At most four subtitles wait; a newer line from the same speaker
+replaces theirs still waiting. While the reader is open both wait. Nothing to press, so nothing to
+bind. A spoken line goes only to its player (`RZ_GameModeComponent.Say`, `SayNear`). With **UI >
+Subtitles** off, without the panel in the HUD layout, or without the UI component, it's a notice
+card, as before (a radio voice without `RadioLinePanel` too).
 
 Which lines are subtitles:
 
@@ -415,10 +454,12 @@ Which lines are subtitles:
 | `RZ_LongTable` | the host stepping out on the road |
 | `RZ_Leaders` | a refusal at attitude −2 |
 | The screen guard | "Not now!" when danger closes a talk |
+| Dialogue barks | a person you pass who has a line for you ([DIALOGUE.md](DIALOGUE.md)), with their body for the arrow |
+| Traces | the town loudspeaker (a loudspeaker), the radio in an empty house (the radio-line box) |
 
-Everything else stays a card; radio voices stay cards (they're radio). While the talk screen is
-open, the person's own lines go into it instead, and so does whatever a reply tells you, but the
-journal's notices are cards too and danger, radio and tips stay cards only
+Everything else stays a card, except radio voices, which go to the radio-line box. While the talk
+screen is open, the person's own lines go into it instead, and so does whatever a reply tells you,
+but the journal's notices are cards too and danger, radio and tips stay out of it
 ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)).
 
 **The reader.** Notes open on a sheet of paper in the middle of the screen, as in `reader.html`: the
@@ -684,7 +725,7 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | Every input has a gamepad binding or a pad route | Each ReforgerZ action in `Configs/System/chimeraInputCommon.conf` binds a gamepad input next to its key, or what it does is reached another way on a pad (the table below) |
 | Every screen works without a mouse | It opens from something a pad can reach, moves with the D-pad or left stick, switches tabs with the shoulder buttons (`MenuTabLeft`/`MenuTabRight`), confirms with A (`MenuSelect`) and closes with B (`MenuBack`). Each screen gives a widget the focus when it opens (`RZ_UIW.Focus`), so the D-pad has something to move from |
 | Nothing needs hover, typing or a chat command | What a tooltip says also shows when the item has focus; whatever a chat command does also has a button or an action |
-| Readable on a TV | Sizes at 1920×1080: no text under 18 px and body text 26 px or more on the new screens (talk, reader, subtitles); the tabs and footers of the older screens are 18 px. Nothing important within 96 px of the left and right edges or 54 px of the top and bottom (a 90% safe area). Footer prompts are vanilla's input button (`RZ_UIW.AddPrompt`, `WLib_InputNavigationButton`), which shows the key or the pad button by the device in use |
+| Readable on a TV | Sizes at 1920×1080: no text under 18 px and body text 26 px or more on the new screens (talk, reader, subtitles, the radio-line box); the tabs and footers of the older screens are 18 px. Nothing important within 96 px of the left and right edges or 54 px of the top and bottom (a 90% safe area). Footer prompts are vanilla's input button (`RZ_UIW.AddPrompt`, `WLib_InputNavigationButton`), which shows the key or the pad button by the device in use |
 
 **The input actions** (all in `Configs/System/chimeraInputCommon.conf`; menus also use vanilla's
 `MenuUp`/`MenuDown`, `MenuSelect`, `MenuBack` and `MenuTabLeft`/`MenuTabRight`):
@@ -763,7 +804,9 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair, shop and crafting screens and closes them in danger (below) |
 | `RZ_PlayerEffectsComponent` | on the player controller | The infected's close moves on the owner's machine: a hold (with the hint and Jump to kick free), a stagger, a knockdown; the server decides each one ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
 | `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
-| `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards, the subtitles and the quest tracker |
+| `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards, the subtitles (the arrow to an in-person speaker every frame), the radio-line box and the quest tracker |
+| `RZ_SayLine`, `RZ_ESaySource` | server, client (`UI/RZ_UIData.c`) | A spoken line's who and how: name, role, faction, source, channel, where the speaker is ([Subtitles](#subtitles-and-the-reader)) |
+| `RZ_SpeakerFinder` | server (`UI/RZ_UIFeed.c`) | The nearest person to a player, for a spoken line whose caller gave no body |
 | `RZ_DoorMarkClient` | client, from the HUD's update | Traces' door marks as decals near the player, from the game mode's replicated list and the kit's atlas ([TRACES.md](TRACES.md#doors-you-can-see)); nothing without the atlas |
 | `RZ_TraceLightsClient` | client, from the HUD's update | Traces' lit windows (S2) near the player, from the game mode's replicated list: a small warm point light each within 150 m ([TRACES.md](TRACES.md#sound-and-light)); nothing unless **World > Traces > Lit windows** is on |
 | `RZ_NotebookMenu` and its pages (`RZ_NotebookPage`), `RZ_NoticeBoardMenu` | client (`ChimeraMenuBase`) | Ask for their data on open (each page when it's shown), redraw when a new copy arrives; `RZ_MenuClick` passes mouse clicks to them ([The notebook](#the-notebook)) |
@@ -832,7 +875,7 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop and the crafting screen). In code: the feed, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the season page with the hall of fame), the quest tracker on the HUD, one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer with you-are-here and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; eleven mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop and the crafting screen). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the season page with the hall of fame), the quest tracker on the HUD, one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, where you start, Deploy) and locked backgrounds refused by the server, the map's icon layer with you-are-here and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting and spawn screens' and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting and spawn screen presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons; the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
 | Not checked in play | The infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab and Track (Y and T); the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
