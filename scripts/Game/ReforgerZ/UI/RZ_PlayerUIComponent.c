@@ -418,7 +418,15 @@ class RZ_PlayerUIComponent : ScriptComponent
 		}
 		else if (kind == RZ_UIFeed.PAYLOAD_CRAFT)
 		{
-			RZ_CraftMenu.OnPayload(this, payload);
+			RZ_CraftMenu.OnPayload(this, payload, false);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_COOK)
+		{
+			RZ_CraftMenu.OnPayload(this, payload, true);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_RADIO)
+		{
+			RZ_RadioMenu.OnPayload(this, payload);
 		}
 		else if (kind == RZ_UIFeed.PAYLOAD_DETAIL)
 		{
@@ -707,7 +715,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Recipe `index` on the crafting screen with this serial.
+	//! Recipe `index` on the crafting screen (or the cooking screen) with this serial.
 	void SendCraft(int serial, int index)
 	{
 		if (Replication.IsServer())

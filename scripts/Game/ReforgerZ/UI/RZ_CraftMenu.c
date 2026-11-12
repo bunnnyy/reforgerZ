@@ -5,6 +5,10 @@
 //! a workbench (RZ_Crafting.Look); every Craft goes back to the server, which checks and takes the
 //! inputs as the bench's actions do (RZ_Crafting.DoCraft).
 //!
+//! The same screen is the cooking screen at a stove (docs/UI.md, "The cooking screen"): opened by
+//! "Use the stove" (RZ_Crafting.UseStove) with PAYLOAD_COOK, its rows from UI > Cook row layout, the
+//! button named for what the picked row does (Boil, Brew, Cook) and its text about the stove.
+//!
 //! Keys: up/down pick a recipe, Enter crafts, Esc closes. Pad: D-pad or left stick, A crafts, B
 //! closes. Mouse: click a recipe, the Craft button, the close button. You can't move while it's
 //! open; work under way goes on, and danger closes the screen (the server's screen guard).
@@ -17,6 +21,7 @@ class RZ_CraftMenu : RZ_MenuBase
 	protected static int s_iVersion;
 	protected static float s_fDataAt;
 	protected static bool s_bFailed;			// the menu couldn't open here: the actions come back
+	protected static bool s_bStove;				// the data is a stove's (the cooking screen)
 	protected static float s_fFallbackUntil;	// the server was at its cap: the actions for a minute
 
 	protected static const int INPUT_ROWS = 3;
@@ -39,22 +44,60 @@ class RZ_CraftMenu : RZ_MenuBase
 	protected string m_sDescription;
 
 	//------------------------------------------------------------------------------------------------
-	//! The crafting screen is used on this machine: UI > Craft row layout set (the server checks the
-	//! same), it hasn't failed to open here, and the server isn't at its cap of open screens.
-	static bool Available()
+	//! The crafting screen (or with `stove` the cooking screen) is used on this machine: its row
+	//! layout set (the server checks the same), it hasn't failed to open here, and the server isn't
+	//! at its cap of open screens.
+	static bool Available(bool stove = false)
 	{
-		return !s_bFailed && RZ_UIW.Now() >= s_fFallbackUntil && !RZ_UISettings.Get().m_sCraftRowLayout.IsEmpty();
+		if (s_bFailed || RZ_UIW.Now() < s_fFallbackUntil)
+			return false;
+
+		if (stove)
+			return !RZ_UISettings.Get().m_sCookRowLayout.IsEmpty();
+
+		return !RZ_UISettings.Get().m_sCraftRowLayout.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A workbench's Make slots hide while the screen is used: they're its recipes.
+	//! A workbench's Make slots, and a stove's Boil, Brew and Cook slots, hide while the screen is
+	//! used: they're its rows. The server marks such a spot by its read label.
 	static bool HidesSlotsOn(IEntity owner)
 	{
-		if (!owner || !Available())
+		if (!owner)
 			return false;
 
 		RZ_ClueComponent clue = RZ_ClueComponent.Cast(owner.FindComponent(RZ_ClueComponent));
-		return clue && clue.GetReadLabel() == RZ_Crafting.BENCH_LABEL;
+		if (!clue)
+			return false;
+
+		string label = clue.GetReadLabel();
+		if (label == RZ_Crafting.BENCH_LABEL)
+			return Available(false);
+
+		if (label == RZ_Crafting.STOVE_LABEL)
+			return Available(true);
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The screen kind the server knows this one by.
+	protected static int Kind()
+	{
+		if (s_bStove)
+			return RZ_ScreenGuard.KIND_COOK;
+
+		return RZ_ScreenGuard.KIND_CRAFT;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its notices' title.
+	protected static string Title()
+	{
+		if (s_bStove)
+			return "Stove";
+
+		return "Workbench";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -64,13 +107,14 @@ class RZ_CraftMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A crafting payload (RZ_PlayerUIComponent): opens or redraws the screen; X|reason closes it;
-	//! F|why: the server couldn't open one, so the bench's actions show for a minute.
-	static void OnPayload(RZ_PlayerUIComponent ui, string payload)
+	//! A crafting payload, or with `stove` a cooking one (RZ_PlayerUIComponent): opens or redraws
+	//! the screen; X|reason closes it; F|why: the server couldn't open one, so the bench's or the
+	//! stove's actions show for a minute.
+	static void OnPayload(RZ_PlayerUIComponent ui, string payload, bool stove)
 	{
 		if (payload.StartsWith("X" + RZ_UIText.SEP))
 		{
-			if (s_Open)
+			if (s_Open && s_bStove == stove)
 			{
 				s_Open.m_bDone = true;
 				s_Open.Close();
@@ -79,12 +123,13 @@ class RZ_CraftMenu : RZ_MenuBase
 			return;
 		}
 
+		s_bStove = stove;
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
 		if (payload.StartsWith("F" + RZ_UIText.SEP))
 		{
 			s_fFallbackUntil = RZ_UIW.Now() + 60;
 			if (gm)
-				gm.ShowNotice("Workbench", "Too much going on at once. The recipes are in the action menu for now.", RZ_ENoticeTag.AUTO);
+				gm.ShowNotice(Title(), "Too much going on at once. The recipes are in the action menu for now.", RZ_ENoticeTag.AUTO);
 
 			return;
 		}
@@ -97,9 +142,9 @@ class RZ_CraftMenu : RZ_MenuBase
 
 		// No preset or layout here: the actions come back
 		s_bFailed = true;
-		ui.SendScreenClosed(RZ_ScreenGuard.KIND_CRAFT);
+		ui.SendScreenClosed(Kind());
 		if (gm)
-			gm.ShowNotice("Workbench", "The recipes are in the action menu.", RZ_ENoticeTag.AUTO);
+			gm.ShowNotice(Title(), "The recipes are in the action menu.", RZ_ENoticeTag.AUTO);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -111,7 +156,11 @@ class RZ_CraftMenu : RZ_MenuBase
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		RZ_UIW.OnClick(m_wRoot, "CraftButton", m_Click);
-		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Craft");
+		string verb = "Craft";
+		if (s_bStove)
+			verb = "Cook";
+
+		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", verb);
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
 		m_Preview.Make(RZ_UIW.Find(m_wRoot, "PreviewSlot"));
@@ -130,7 +179,7 @@ class RZ_CraftMenu : RZ_MenuBase
 		// Esc, B, the close button, or another menu on top: the server forgets the screen
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui && !m_bDone)
-			ui.SendScreenClosed(RZ_ScreenGuard.KIND_CRAFT);
+			ui.SendScreenClosed(Kind());
 
 		m_bDone = true;
 		super.OnMenuClose();
@@ -271,7 +320,7 @@ class RZ_CraftMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! B|serial|title|look|status|ready|recipes; W|recipe|left|total; R|index|name|prefab|icon|seconds|heat|ready; N|index|name|have|need
+	//! B|serial|title|look|status|ready|recipes; W|recipe|left|total; R|index|name|prefab|icon|seconds|heat|ready|verb; N|index|name|have|need
 	override protected void Redraw()
 	{
 		if (m_iParsed != s_iVersion)
@@ -282,7 +331,11 @@ class RZ_CraftMenu : RZ_MenuBase
 
 		RZ_UIW.SetText(m_wRoot, "CraftTitle", RZ_UIText.Str(m_aHead, 2));
 		RZ_UIW.SetText(m_wRoot, "CraftSub", RZ_UIText.Str(m_aHead, 3));
-		RZ_UIW.SetText(m_wRoot, "CraftReady", string.Format("You can make %1 of %2", RZ_UIText.Int(m_aHead, 5), RZ_UIText.Int(m_aHead, 6)));
+		string readyText = "You can make %1 of %2";
+		if (s_bStove)
+			readyText = "You can cook %1 of %2";
+
+		RZ_UIW.SetText(m_wRoot, "CraftReady", string.Format(readyText, RZ_UIText.Int(m_aHead, 5), RZ_UIText.Int(m_aHead, 6)));
 		string status = m_sLocalStatus;
 		if (status.IsEmpty())
 			status = RZ_UIText.Str(m_aHead, 4);
@@ -317,6 +370,9 @@ class RZ_CraftMenu : RZ_MenuBase
 		m_aRows.Clear();
 		RZ_UIW.Show(m_wRoot, "RecipesEmpty", m_aRecipes.IsEmpty());
 		ResourceName rowLayout = RZ_UISettings.Get().m_sCraftRowLayout;
+		if (s_bStove)
+			rowLayout = RZ_UISettings.Get().m_sCookRowLayout;
+
 		foreach (int i, array<string> f : m_aRecipes)
 		{
 			Widget row = RZ_UIW.Create(rowLayout, list);
@@ -416,11 +472,14 @@ class RZ_CraftMenu : RZ_MenuBase
 		bool working = index == m_iWorking && m_fTotal > 0;
 		float left = Math.Max(0, m_fLeft - (RZ_UIW.Now() - s_fDataAt));
 		string time = string.Format("About %1 seconds at the bench", seconds);
+		if (s_bStove)
+			time = string.Format("About %1 seconds on the stove", seconds);
+
 		if (working)
 			time = string.Format("Working... %1 s", RZ_Util.RoundToInt(Math.Ceil(left)));
 
 		RZ_UIW.SetText(m_wRoot, "DetailTime", time);
-		RZ_UIW.SetText(m_wRoot, "DetailNoise", NoiseText(RZ_UIText.Int(f, 6)));
+		RZ_UIW.SetText(m_wRoot, "DetailNoise", NoiseText(RZ_UIText.Int(f, 6), s_bStove));
 		RZ_UIW.Show(m_wRoot, "CraftProgress", working);
 		if (working)
 			RZ_UIW.Progress(m_wRoot, "CraftProgress", 1 - left / m_fTotal);
@@ -437,6 +496,14 @@ class RZ_CraftMenu : RZ_MenuBase
 
 		RZ_UIW.Tint(m_wRoot, "CraftBg", bg);
 		RZ_UIW.Tint(m_wRoot, "CraftText", text);
+
+		// The button says what it does: CRAFT at the bench, BOIL, BREW or COOK at a stove
+		string verb = RZ_UIText.Str(f, 8);
+		if (verb.IsEmpty())
+			verb = "Craft";
+
+		verb.ToUpper();
+		RZ_UIW.SetText(m_wRoot, "CraftText", verb);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -473,9 +540,17 @@ class RZ_CraftMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! What the work's noise means (the heat it adds where you stand).
-	static string NoiseText(int heat)
+	//! What the work's noise means (the heat it adds where you stand); at a stove, the fire's smoke.
+	static string NoiseText(int heat, bool stove)
 	{
+		if (stove)
+		{
+			if (heat < 3)
+				return "A little smoke from the chimney. Someone may see it.";
+
+			return "Smoke, and the smell carries. Anything close will come and look.";
+		}
+
 		if (heat <= 0)
 			return "Quiet work.";
 

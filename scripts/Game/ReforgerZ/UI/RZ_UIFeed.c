@@ -90,6 +90,8 @@ class RZ_UIFeed
 	static const int PAYLOAD_CRAFT = 12;	// the crafting screen: B, W, R, N records; F falls back; X|reason closes (Interactions/RZ_Crafting.c)
 	static const int PAYLOAD_TRACKER = 13;	// the HUD's quest tracker: T and O records, the tracked job only; "" hides it (UI/RZ_Quests.c)
 	static const int PAYLOAD_OBJECT = 14;	// the object menu: O and R records; F falls back; X|reason closes (Interactions/RZ_ObjectScreen.c)
+	static const int PAYLOAD_COOK = 15;		// the cooking screen at a stove: the crafting screen's records (Interactions/RZ_Crafting.c)
+	static const int PAYLOAD_RADIO = 16;	// the radio screen: V and C records; F falls back; X|reason closes (Interactions/RZ_RadioScreen.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)

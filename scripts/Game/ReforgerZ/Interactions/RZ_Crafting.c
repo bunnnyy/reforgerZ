@@ -14,6 +14,11 @@
 //! - The home remedy (docs/DESIGN.md, "Treatments") is brewed on a stove from alcohol and herbs,
 //!   since the workbench's eight slots are taken. The water items are the hunger and thirst
 //!   mod's own if it has suitable ones (docs/MOD_STACK.md); ReforgerZ doesn't model drinking.
+//! - "Use the stove" opens the cooking screen (docs/UI.md, "The cooking screen") where UI > Cook
+//!   row layout is set: boiled water, the home remedy and the stove recipes (Interactions >
+//!   Crafting > Stove recipes, e.g. Metabolism's raw meat cooked), each with what it takes
+//!   against what you carry. A pick runs the same code as the stove's actions, which stay the
+//!   fallback (the first four) where the screen isn't used.
 
 //------------------------------------------------------------------------------------------------
 //! A recipe: up to three inputs (keywords, comma separated, and a count), one output prefab.
@@ -44,10 +49,10 @@ class RZ_Recipe
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "What it makes. Empty = the recipe is hidden", "et")]
 	ResourceName m_sOutput;
 
-	[Attribute("8", desc: "Seconds at the workbench")]
+	[Attribute("8", desc: "Seconds at the workbench or the stove")]
 	float m_fSeconds;
 
-	[Attribute("2", desc: "Heat it makes (hammering)")]
+	[Attribute("2", desc: "Heat it makes when it's done (hammering at the bench, the smell of food at a stove, where lighting the fire adds 2 more)")]
 	float m_fHeat;
 
 	// Set by code for the built-in recipes (not attributes): what the crafting screen calls each
@@ -56,6 +61,10 @@ class RZ_Recipe
 	string m_sShow2;
 	string m_sShow3;
 	string m_sIcon;
+	// A stove's: what it is (RZ_Crafting.STOVE_*; 0 a stove recipe, and every bench recipe) and the
+	// button's verb ("Boil"; "" at the bench, where it's Craft)
+	int m_iStove;
+	string m_sVerb;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -119,6 +128,9 @@ class RZ_CraftSettings
 
 	[Attribute(desc: "More recipes (added after the built-in ones; sixteen in all on the crafting screen, the first eight in the action menu)")]
 	ref array<ref RZ_Recipe> m_aRecipes;
+
+	[Attribute(desc: "Stove recipes, listed after boiled water and the home remedy (sixteen in all on the cooking screen, the first four in a stove's action menu), e.g. Metabolism's raw meat in and its cooked meat out. A recipe without an output is hidden")]
+	ref array<ref RZ_Recipe> m_aStoveRecipes;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -128,11 +140,19 @@ class RZ_Crafting
 	//! while it uses the crafting screen (RZ_CraftMenu.HidesSlotsOn).
 	static const string BENCH_LABEL = "Use the workbench";
 	static const string BENCH_LOOK = "A vice, a hammer with a taped handle, sawdust.";
+	//! The read label on a stove's spot; the client hides the stove's slots behind it while it uses
+	//! the cooking screen (RZ_CraftMenu.HidesSlotsOn, in its stove mode).
+	static const string STOVE_LABEL = "Use the stove";
+	static const string STOVE_LOOK = "Cold, but it would light. Whatever you put on it smokes a little.";
+	static const int STOVE_COOK = 0;		// a stove recipe (Interactions > Crafting > Stove recipes)
+	static const int STOVE_BOIL = 1;		// boiling untreated water
+	static const int STOVE_BREW = 2;		// brewing the home remedy
 
 	protected static const int SLOTS = 8;				// recipes in the action menu: four choice slots, four use slots
 	protected static const int SCREEN_RECIPES = 16;		// recipes on the crafting screen
 	protected static const int INPUTS = 3;
 	protected static const int PAYLOAD_ROOM = 5400;		// the screen's recipe records (RZ_UIFeed caps payloads at 6000)
+	protected static const int STOVE_SLOTS = 4;			// a stove's choice slots in the action menu
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -142,6 +162,9 @@ class RZ_Crafting
 	protected ref array<string> m_aBenchWords = {};
 	protected ref map<int, int> m_mScreenSpot = new map<int, int>();		// player -> the workbench spot their screen shows
 	protected ref map<int, int> m_mScreenSerial = new map<int, int>();	// player -> that screen's serial
+	protected ref array<int> m_aScreenStove = {};						// players whose screen is a stove's (the cooking screen)
+	protected ref array<ref RZ_Recipe> m_aStove = {};
+	protected bool m_bStoveBuilt;
 	protected int m_iNextSerial = 1;
 
 	//------------------------------------------------------------------------------------------------
@@ -205,6 +228,15 @@ class RZ_Crafting
 		if (output.IsEmpty() || m_aList.Count() >= SCREEN_RECIPES)
 			return null;
 
+		RZ_Recipe r = NewRecipe(name, in1, n1, in2, n2, in3, n3, output, seconds, heat);
+		m_aList.Insert(r);
+		return r;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A recipe made in code, in no list yet.
+	protected RZ_Recipe NewRecipe(string name, string in1, int n1, string in2, int n2, string in3, int n3, ResourceName output, float seconds, float heat)
+	{
 		RZ_Recipe r = RZ_Recipe.Cast(RZ_Util.NewWithDefaults("RZ_Recipe"));
 		r.m_sName = name;
 		r.m_sIn1 = in1;
@@ -216,7 +248,6 @@ class RZ_Crafting
 		r.m_sOutput = output;
 		r.m_fSeconds = seconds;
 		r.m_fHeat = heat;
-		m_aList.Insert(r);
 		return r;
 	}
 
@@ -245,7 +276,7 @@ class RZ_Crafting
 	//! action menu takes, as a notice.
 	void Look(int playerId, RZ_Spot s, IEntity user)
 	{
-		if (!OpenScreen(playerId, s))
+		if (!OpenScreen(playerId, s, false))
 			DescribeBench(playerId);
 	}
 
@@ -430,26 +461,28 @@ class RZ_Crafting
 	//! The work is done. With the crafting screen open, what it says goes into the screen.
 	void CompleteRecipe(int playerId, RZ_Spot s, int idx, IEntity user)
 	{
+		if (idx < 0 || idx >= m_aList.Count())
+			return;
+
 		bool captured = CaptureFor(playerId);
-		FinishRecipe(playerId, s, idx, user);
+		FinishRecipe(playerId, s, m_aList[idx], user, "Workbench", "Done: %1. Not pretty, but it'll do.");
 		Release(playerId, captured);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Checks the inputs again and takes each with TryDeleteItem; the output is given only when
-	//! every one came out.
-	protected void FinishRecipe(int playerId, RZ_Spot s, int idx, IEntity user)
+	//! every one came out. `done` says it's ready (%1 the recipe's name).
+	protected void FinishRecipe(int playerId, RZ_Spot s, RZ_Recipe r, IEntity user, string title, string done)
 	{
-		if (idx < 0 || idx >= m_aList.Count() || !user)
+		if (!r || !user)
 			return;
 
-		RZ_Recipe r = m_aList[idx];
 		array<int> haves = {};
 		array<IEntity> picked = {};
 		Allocate(user, r, haves, picked);
 		if (!AllFound(r, haves))
 		{
-			m_GM.NotifyPlayer(playerId, "Workbench", "Something you needed is gone from your pack.");
+			m_GM.NotifyPlayer(playerId, title, "Something you needed is gone from your pack.");
 			return;
 		}
 
@@ -464,7 +497,7 @@ class RZ_Crafting
 		if (taken < picked.Count())
 		{
 			RZ_Log.Info(string.Format("Crafting: %1 for player %2 stopped, %3 of %4 inputs came out of the pack.", r.m_sName, playerId, taken, picked.Count()));
-			m_GM.NotifyPlayer(playerId, "Workbench", "Something won't come out of your pack, and the work falls apart in your hands.");
+			m_GM.NotifyPlayer(playerId, title, "Something won't come out of your pack, and the work falls apart in your hands.");
 			return;
 		}
 
@@ -476,40 +509,88 @@ class RZ_Crafting
 		if (r.m_fHeat > 0)
 			m_GM.GetHeat().AddHeat(at, r.m_fHeat);
 
-		m_GM.NotifyPlayer(playerId, "Workbench", string.Format("Done: %1. Not pretty, but it'll do.", r.m_sName));
+		m_GM.NotifyPlayer(playerId, title, string.Format(done, r.m_sName));
 	}
 
 	// ================================================================ The crafting screen
 	//------------------------------------------------------------------------------------------------
 	//! Opens the crafting screen on this workbench for the player (docs/UI.md, "The crafting
-	//! screen"). False when it isn't used (no row layout, no UI component, no recipes): the caller
-	//! shows the notice. At the server's cap of open screens the client is told to use the actions
-	//! for a minute.
-	protected bool OpenScreen(int playerId, RZ_Spot s)
+	//! screen"), or with `stove` the cooking screen on this stove ("The cooking screen"). False
+	//! when it isn't used (no row layout, no UI component, nothing to make): the caller shows the
+	//! notice. At the server's cap of open screens the client is told to use the actions for a minute.
+	protected bool OpenScreen(int playerId, RZ_Spot s, bool stove)
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
-		if (!ui || !guard || !s || m_aList.IsEmpty() || RZ_UISettings.Get().m_sCraftRowLayout.IsEmpty())
+		if (!ui || !guard || !s || RecipesFor(stove).IsEmpty())
 			return false;
 
-		if (!guard.Open(playerId, RZ_ScreenGuard.KIND_CRAFT, s.m_Body, m_Hub.Title(s), -1))
+		ResourceName rowLayout = RZ_UISettings.Get().m_sCraftRowLayout;
+		int kind = RZ_ScreenGuard.KIND_CRAFT;
+		int payloadKind = RZ_UIFeed.PAYLOAD_CRAFT;
+		if (stove)
 		{
-			ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, "F|busy");
+			rowLayout = RZ_UISettings.Get().m_sCookRowLayout;
+			kind = RZ_ScreenGuard.KIND_COOK;
+			payloadKind = RZ_UIFeed.PAYLOAD_COOK;
+		}
+
+		if (rowLayout.IsEmpty())
+			return false;
+
+		if (!guard.Open(playerId, kind, s.m_Body, m_Hub.Title(s), -1))
+		{
+			ui.SendPayload(payloadKind, "F|busy");
 			return false;
 		}
 
 		m_mScreenSpot.Set(playerId, s.m_iId);
 		m_mScreenSerial.Set(playerId, m_iNextSerial);
+		m_aScreenStove.RemoveItem(playerId);
+		if (stove)
+			m_aScreenStove.Insert(playerId);
+
 		m_iNextSerial++;
 		SendScreen(playerId, "");
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The player has the crafting screen open (at any workbench).
+	//! The workbench's recipes, or with `stove` a stove's.
+	protected array<ref RZ_Recipe> RecipesFor(bool stove)
+	{
+		if (!stove)
+			return m_aList;
+
+		BuildStove();
+		return m_aStove;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player's open screen is a stove's (the cooking screen).
+	protected bool IsStoveScreen(int playerId)
+	{
+		return m_aScreenStove.Contains(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player has the crafting screen open (at any workbench) or the cooking screen (at any stove).
+	//! Forgotten here when the guard now holds another screen for them (one replaced it).
 	bool HasScreen(int playerId)
 	{
-		return m_mScreenSpot.Contains(playerId);
+		if (!m_mScreenSpot.Contains(playerId))
+			return false;
+
+		int kind = RZ_ScreenGuard.KIND_CRAFT;
+		if (IsStoveScreen(playerId))
+			kind = RZ_ScreenGuard.KIND_COOK;
+
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (guard && guard.IsOpen(playerId, kind))
+			return true;
+
+		OnScreenGone(playerId);
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -518,6 +599,7 @@ class RZ_Crafting
 	{
 		m_mScreenSpot.Remove(playerId);
 		m_mScreenSerial.Remove(playerId);
+		m_aScreenStove.RemoveItem(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -527,6 +609,10 @@ class RZ_Crafting
 		if (!HasScreen(playerId))
 			return;
 
+		int payloadKind = RZ_UIFeed.PAYLOAD_CRAFT;
+		if (IsStoveScreen(playerId))
+			payloadKind = RZ_UIFeed.PAYLOAD_COOK;
+
 		OnScreenGone(playerId);
 		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
 		if (guard)
@@ -534,7 +620,7 @@ class RZ_Crafting
 
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		if (ui)
-			ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, "X|" + reason);
+			ui.SendPayload(payloadKind, "X|" + reason);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -575,10 +661,11 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A pick on the crafting screen (RZ_PlayerUIComponent.RpcAsk_Craft). Checked here: the screen
-	//! is open on this serial, the bench is still there and the player beside it, nothing else is
-	//! under way; then the recipe runs through the same code as the bench's actions (its inputs
-	//! checked again when the work is done), and the screen redraws with what they would have said.
+	//! A pick on the crafting or the cooking screen (RZ_PlayerUIComponent.RpcAsk_Craft). Checked
+	//! here: the screen is open on this serial, the bench or stove is still there and the player
+	//! beside it, nothing else is under way; then the recipe runs through the same code as the
+	//! bench's or the stove's actions (its inputs checked again when the work is done), and the
+	//! screen redraws with what they would have said.
 	void DoCraft(int playerId, int serial, int index)
 	{
 		int spotId;
@@ -586,8 +673,13 @@ class RZ_Crafting
 		if (!m_mScreenSpot.Find(playerId, spotId) || !m_mScreenSerial.Find(playerId, current) || serial != current)
 			return;
 
+		bool stove = IsStoveScreen(playerId);
+		int kind = RZ_ScreenGuard.KIND_CRAFT;
+		if (stove)
+			kind = RZ_ScreenGuard.KIND_COOK;
+
 		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
-		if (!guard || !guard.IsOpen(playerId, RZ_ScreenGuard.KIND_CRAFT))
+		if (!guard || !guard.IsOpen(playerId, kind))
 		{
 			OnScreenGone(playerId);
 			return;
@@ -602,7 +694,7 @@ class RZ_Crafting
 			return;
 		}
 
-		if (index < 0 || index >= m_aList.Count() || RZ_Util.DistXZ(user.GetOrigin(), s.m_vPos) > RZ_DialogueSettings.Get().m_fRange)
+		if (index < 0 || index >= RecipesFor(stove).Count() || RZ_Util.DistXZ(user.GetOrigin(), s.m_vPos) > RZ_DialogueSettings.Get().m_fRange)
 			return;
 
 		if (m_Hub.HasTask(playerId))
@@ -612,14 +704,19 @@ class RZ_Crafting
 		}
 
 		RZ_ScreenCapture.Begin(playerId);
-		HandleRecipe(playerId, s, index, user);
+		if (stove)
+			HandleStove(playerId, s, index, user);
+		else
+			HandleRecipe(playerId, s, index, user);
+
 		Release(playerId, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The screen's payload: B|serial|title|look|status|ready|recipes, W|recipe|seconds left|seconds
-	//! in all while one is under way at this bench, then per recipe R|index|name|prefab|icon|seconds|
-	//! heat|ready and N|index|name|have|need per input (have counts what you carry, at most need).
+	//! in all while one is under way here, then per recipe R|index|name|prefab|icon|seconds|heat|
+	//! ready|verb and N|index|name|have|need per input (have counts what you carry, at most need).
+	//! The verb is the stove's ("Boil", "Brew", "Cook"); the bench leaves it empty (Craft).
 	protected void SendScreen(int playerId, string status)
 	{
 		int spotId;
@@ -636,16 +733,24 @@ class RZ_Crafting
 			return;
 		}
 
-		// The recipe under way at this bench, if any
+		// The recipe under way here, if any
+		bool stove = IsStoveScreen(playerId);
+		array<ref RZ_Recipe> list = RecipesFor(stove);
 		int working = -1;
 		float left = 0;
 		float total = 0;
 		RZ_TimedTask task = m_Hub.GetTask(playerId);
-		if (task && task.m_iKind == RZ_Interactions.TASK_CRAFT && task.m_iSpot == spotId && task.m_iArg >= 0 && task.m_iArg < m_aList.Count())
+		if (task && task.m_iSpot == spotId)
+			working = WorkingIndex(task, stove);
+
+		if (working >= 0 && working < list.Count())
 		{
-			working = task.m_iArg;
 			left = Math.Max(0, task.m_fLeft);
-			total = Math.Max(1, m_aList[working].m_fSeconds);
+			total = Math.Max(1, task.m_fTotal);
+		}
+		else
+		{
+			working = -1;
 		}
 
 		string rows = "";
@@ -653,15 +758,15 @@ class RZ_Crafting
 		int shown = 0;
 		array<int> haves = {};
 		array<IEntity> picked = {};
-		foreach (int i, RZ_Recipe r : m_aList)
+		foreach (int i, RZ_Recipe r : list)
 		{
 			Allocate(user, r, haves, picked);
 			int readyFlag = 0;
 			if (AllFound(r, haves))
 				readyFlag = 1;
 
-			string rec = string.Format("\nR|%1|%2|%3|%4|%5|%6|%7", i, RZ_UIText.Clean(r.m_sName, 60), r.m_sOutput, r.m_sIcon,
-				RZ_Util.RoundToInt(r.m_fSeconds), RZ_Util.RoundToInt(r.m_fHeat), readyFlag);
+			string rec = string.Format("\nR|%1|%2|%3|%4|%5|%6|%7|%8", i, RZ_UIText.Clean(r.m_sName, 60), r.m_sOutput, r.m_sIcon,
+				RZ_Util.RoundToInt(r.m_fSeconds), RZ_Util.RoundToInt(r.m_fHeat), readyFlag, RZ_UIText.Clean(r.m_sVerb, 12));
 			for (int k = 0; k < INPUTS; k++)
 			{
 				int need = InputCount(r, k);
@@ -677,11 +782,53 @@ class RZ_Crafting
 			shown++;
 		}
 
-		string payload = string.Format("B|%1|%2|%3|%4|%5|%6", serial, RZ_UIText.Clean(m_Hub.Title(s), 40), BENCH_LOOK, RZ_UIText.Clean(status, 400), ready, shown);
+		string look = BENCH_LOOK;
+		int payloadKind = RZ_UIFeed.PAYLOAD_CRAFT;
+		if (stove)
+		{
+			look = STOVE_LOOK;
+			payloadKind = RZ_UIFeed.PAYLOAD_COOK;
+		}
+
+		string payload = string.Format("B|%1|%2|%3|%4|%5|%6", serial, RZ_UIText.Clean(m_Hub.Title(s), 40), look, RZ_UIText.Clean(status, 400), ready, shown);
 		if (working >= 0)
 			payload += string.Format("\nW|%1|%2|%3", working, left, total);
 
-		ui.SendPayload(RZ_UIFeed.PAYLOAD_CRAFT, payload + rows);
+		ui.SendPayload(payloadKind, payload + rows);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Which recipe of the screen's list a timed task is (-1 none): the bench's work, or on a stove
+	//! the boiling, the brewing or a stove recipe.
+	protected int WorkingIndex(RZ_TimedTask task, bool stove)
+	{
+		if (!stove)
+		{
+			if (task.m_iKind == RZ_Interactions.TASK_CRAFT)
+				return task.m_iArg;
+
+			return -1;
+		}
+
+		if (task.m_iKind == RZ_Interactions.TASK_COOK)
+			return task.m_iArg;
+
+		int want = -1;
+		if (task.m_iKind == RZ_Interactions.TASK_BOIL)
+			want = STOVE_BOIL;
+		else if (task.m_iKind == RZ_Interactions.TASK_BREW)
+			want = STOVE_BREW;
+
+		if (want < 0)
+			return -1;
+
+		foreach (int i, RZ_Recipe r : RecipesFor(true))
+		{
+			if (r.m_iStove == want)
+				return i;
+		}
+
+		return -1;
 	}
 
 	// ================================================================ Water
@@ -722,14 +869,89 @@ class RZ_Crafting
 		m_GM.NotifyPlayer(playerId, title, "Cold and clear. Don't trust it: boil it on a stove or purify it before you drink.");
 	}
 
+	// ================================================================ The stove
 	//------------------------------------------------------------------------------------------------
-	//! "Boil water", and "Brew a home remedy" when its prefab is set.
+	//! The stove's list, made once: boiled water (with Clean water set), the home remedy (with its
+	//! prefab set), then the stove recipes whose output is set; sixteen at most.
+	protected void BuildStove()
+	{
+		if (m_bStoveBuilt)
+			return;
+
+		m_bStoveBuilt = true;
+		m_aStove.Clear();
+		if (!m_Water.m_sCleanWaterPrefab.IsEmpty() && !m_Water.m_sDirtyWaterWords.IsEmpty())
+		{
+			RZ_Recipe boil = NewRecipe("Boiled water", m_Water.m_sDirtyWaterWords, 1, "", 0, "", 0, m_Water.m_sCleanWaterPrefab, m_Water.m_fBoilSeconds, 3);
+			boil.m_sShow1 = "Untreated water";
+			boil.m_iStove = STOVE_BOIL;
+			boil.m_sVerb = "Boil";
+			m_aStove.Insert(boil);
+		}
+
+		RZ_Infection infection = m_GM.GetInfection();
+		ResourceName remedy = RemedyPrefab();
+		if (infection && !remedy.IsEmpty())
+		{
+			RZ_InfectionSettings med = infection.GetSettings();
+			RZ_Recipe brew = NewRecipe("Home remedy", med.m_sAlcoholWords, 1, med.m_sHerbWords, 1, "", 0, remedy, med.m_fBrewSeconds, 2);
+			brew.m_sShow1 = "Something strong to drink";
+			brew.m_sShow2 = "Herbs";
+			brew.m_sIcon = "item_med";
+			brew.m_iStove = STOVE_BREW;
+			brew.m_sVerb = "Brew";
+			m_aStove.Insert(brew);
+		}
+
+		if (!m_Settings.m_aStoveRecipes)
+			return;
+
+		foreach (RZ_Recipe r : m_Settings.m_aStoveRecipes)
+		{
+			if (!r || r.m_sOutput.IsEmpty() || r.m_sIn1.IsEmpty() || m_aStove.Count() >= SCREEN_RECIPES)
+				continue;
+
+			r.m_iStove = STOVE_COOK;
+			r.m_sVerb = "Cook";
+			r.m_sIcon = "need_food";
+			m_aStove.Insert(r);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stove's choice slots: the first four of its list ("Boil water", "Brew a home remedy
+	//! (alcohol, herbs)", "Cook: ..."); the cooking screen holds them all where it's used.
 	string StoveLabels()
 	{
-		if (RemedyPrefab().IsEmpty())
-			return "Boil water";
+		array<string> choice = {"", "", "", ""};
+		foreach (int i, RZ_Recipe r : RecipesFor(true))
+		{
+			if (i >= STOVE_SLOTS)
+				break;
 
-		return "Boil water|Brew a home remedy (alcohol, herbs)";
+			if (r.m_iStove == STOVE_BOIL)
+				choice[i] = "Boil water";
+			else if (r.m_iStove == STOVE_BREW)
+				choice[i] = "Brew a home remedy (alcohol, herbs)";
+			else
+				choice[i] = "Cook: " + r.m_sName;
+		}
+
+		return RZ_PuzzleLabels.Join(choice);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stove's read opens the cooking screen: UI > Cook row layout set and something to cook.
+	bool StoveScreenOn()
+	{
+		return !RZ_UISettings.Get().m_sCookRowLayout.IsEmpty() && !RecipesFor(true).IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "Use the stove": the cooking screen. False when it isn't used: the caller says what the stove is.
+	bool UseStove(int playerId, RZ_Spot s, IEntity user)
+	{
+		return OpenScreen(playerId, s, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -743,15 +965,36 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! 0 boil water, 1 brew a home remedy.
+	//! Item `option` of the stove's list, from its choice slot or the cooking screen: boil water,
+	//! brew a home remedy, or cook a stove recipe.
 	void HandleStove(int playerId, RZ_Spot s, int option, IEntity user)
 	{
-		if (option == 1)
-		{
-			StartBrew(playerId, s, user);
+		array<ref RZ_Recipe> list = RecipesFor(true);
+		if (!s || option < 0 || option >= list.Count())
 			return;
-		}
 
+		RZ_Recipe r = list[option];
+		if (r.m_iStove == STOVE_BOIL)
+			StartBoil(playerId, s, user);
+		else if (r.m_iStove == STOVE_BREW)
+			StartBrew(playerId, s, user);
+		else
+			StartCook(playerId, s, option, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A fire lit: heat, and a campfire spot for strangers for half an hour (docs/ERRANDS.md, "Strangers").
+	protected void LightFire(RZ_Spot s)
+	{
+		m_GM.GetHeat().AddHeat(s.m_vPos, 2);
+		if (m_GM.GetErrands())
+			m_GM.GetErrands().GetStrangers().NoteFire(s.m_vPos);
+	}
+
+	// ================================================================ Boiling water
+	//------------------------------------------------------------------------------------------------
+	protected void StartBoil(int playerId, RZ_Spot s, IEntity user)
+	{
 		string title = m_Hub.Title(s);
 		if (m_Water.m_sCleanWaterPrefab.IsEmpty() || !RZ_ItemHelper.Has(user, m_Water.m_sDirtyWaterWords))
 		{
@@ -759,28 +1002,28 @@ class RZ_Crafting
 			return;
 		}
 
-		m_GM.GetHeat().AddHeat(s.m_vPos, 2);
-		// A fire lit: a campfire spot for strangers for half an hour (docs/ERRANDS.md, "Strangers")
-		if (m_GM.GetErrands())
-			m_GM.GetErrands().GetStrangers().NoteFire(s.m_vPos);
-
+		LightFire(s);
 		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_BOIL, s.m_iId, 0, m_Water.m_fBoilSeconds, "the boiling", false);
 		m_GM.NotifyPlayer(playerId, title, string.Format("You get a small fire going under the pot. About %1 seconds. The smoke goes up the chimney, and someone may see it.", RZ_Util.RoundToInt(m_Water.m_fBoilSeconds)));
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The boiling is done. With the cooking screen open, what it says goes into the screen.
 	void CompleteBoil(int playerId, RZ_Spot s, IEntity user)
 	{
-		if (RZ_ItemHelper.Take(user, m_Water.m_sDirtyWaterWords, 1) <= 0)
-			return;
+		bool captured = CaptureFor(playerId);
+		if (RZ_ItemHelper.Take(user, m_Water.m_sDirtyWaterWords, 1) > 0)
+		{
+			vector at = user.GetOrigin();
+			if (s)
+				at = s.m_vPos;
 
-		vector at = user.GetOrigin();
-		if (s)
-			at = s.m_vPos;
+			RZ_ItemHelper.Give(m_Water.m_sCleanWaterPrefab, user, at);
+			m_GM.GetHeat().AddHeat(at, 3);
+			m_GM.NotifyPlayer(playerId, "Boiled water", "It rolls for a minute, and you let it cool. Flat and warm, and safe.");
+		}
 
-		RZ_ItemHelper.Give(m_Water.m_sCleanWaterPrefab, user, at);
-		m_GM.GetHeat().AddHeat(at, 3);
-		m_GM.NotifyPlayer(playerId, "Boiled water", "It rolls for a minute, and you let it cool. Flat and warm, and safe.");
+		Release(playerId, captured);
 	}
 
 	// ================================================================ The home remedy
@@ -805,16 +1048,19 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The brewing is done. With the cooking screen open, what it says goes into the screen.
 	void CompleteBrew(int playerId, RZ_Spot s, IEntity user)
 	{
 		RZ_Infection infection = m_GM.GetInfection();
 		if (!infection)
 			return;
 
+		bool captured = CaptureFor(playerId);
 		RZ_InfectionSettings med = infection.GetSettings();
 		if (!RZ_ItemHelper.Has(user, med.m_sAlcoholWords) || !RZ_ItemHelper.Has(user, med.m_sHerbWords))
 		{
 			m_GM.NotifyPlayer(playerId, "Home remedy", "Something you needed is gone from your pack.");
+			Release(playerId, captured);
 			return;
 		}
 
@@ -826,5 +1072,39 @@ class RZ_Crafting
 
 		RZ_ItemHelper.Give(RemedyPrefab(), user, at);
 		m_GM.NotifyPlayer(playerId, "Home remedy", "A bottle of something brown and bitter. It won't cure anything. It might buy you a few minutes, and it'll go straight to your head.");
+		Release(playerId, captured);
+	}
+
+	// ================================================================ Stove recipes
+	//------------------------------------------------------------------------------------------------
+	//! A stove recipe (Interactions > Crafting > Stove recipes): the inputs checked, the fire lit,
+	//! the timed work started. `idx` is its place in the stove's list.
+	protected void StartCook(int playerId, RZ_Spot s, int idx, IEntity user)
+	{
+		RZ_Recipe r = RecipesFor(true)[idx];
+		string title = m_Hub.Title(s);
+		if (!HasInputs(user, r))
+		{
+			m_GM.NotifyPlayer(playerId, title, string.Format("%1 takes %2. You haven't got it all.", r.m_sName, InputsText(r)));
+			return;
+		}
+
+		LightFire(s);
+		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_COOK, s.m_iId, idx, r.m_fSeconds, "the cooking", false);
+		m_GM.NotifyPlayer(playerId, title, string.Format("You get a small fire going and start on the %1. About %2 seconds. The smoke goes up the chimney, and someone may see it.", r.m_sName, RZ_Util.RoundToInt(r.m_fSeconds)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cooking is done: the inputs checked again and taken, the output given (FinishRecipe).
+	//! With the cooking screen open, what it says goes into the screen.
+	void CompleteCook(int playerId, RZ_Spot s, int idx, IEntity user)
+	{
+		array<ref RZ_Recipe> list = RecipesFor(true);
+		if (idx < 0 || idx >= list.Count())
+			return;
+
+		bool captured = CaptureFor(playerId);
+		FinishRecipe(playerId, s, list[idx], user, "Stove", "Done: %1. For a minute the place smells like somebody's kitchen.");
+		Release(playerId, captured);
 	}
 }

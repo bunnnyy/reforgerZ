@@ -1,0 +1,467 @@
+FrameWidgetClass "{80423D369D4E3F82}" {
+ Name "RadioMenu"
+ Slot FrameWidgetSlot "{68FF8A047838F756}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ {
+  ImageWidgetClass "{43385DE9918DBEB8}" {
+   Name "Dim"
+   Slot FrameWidgetSlot "{857A35F9DFD84590}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.031 0.035 0.039 0.6
+   Size 1 1
+  }
+  FrameWidgetClass "{043DAD5B8DDD7013}" {
+   Name "RadioPanel"
+   Slot FrameWidgetSlot "{C719EEE8F8F21C7D}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 1400
+    OffsetRight -1400
+    SizeY 900
+    OffsetBottom -900
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass "{58C52F4193A05B04}" {
+     Name "RadioBg"
+     Slot FrameWidgetSlot "{59BAF70A8F1355F4}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.059 0.067 0.075 1
+     Size 1 1
+    }
+    ImageWidgetClass "{54784D0D8010361F}" {
+     Name "RadioAccent"
+     Slot FrameWidgetSlot "{618E1CE497961B76}" {
+      Anchor 0 0 1 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 5
+      OffsetBottom -5
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Size 1 1
+    }
+    TextWidgetClass "{AA998CB36A9C868C}" {
+     Name "RadioTitle"
+     Slot FrameWidgetSlot "{B386A13B18462107}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 28
+      OffsetTop 28
+      SizeX 1160
+      OffsetRight -1208
+      SizeY 44
+      OffsetBottom -72
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text "Radio"
+     "Font Size" 34
+     "Min Font Size" 34
+     FontProperties FontProperties "{8A507507E9892552}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{F9175B147BF7FBF3}" {
+     Name "RadioSub"
+     Slot FrameWidgetSlot "{98C889E55D3A80B7}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 74
+      OffsetTop 74
+      SizeX 1160
+      OffsetRight -1208
+      SizeY 30
+      OffsetBottom -104
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "Morton"
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{64CCF661E39BFA3C}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{2021910506ADC0C6}" {
+     Name "CloseButton"
+     Slot FrameWidgetSlot "{52F208DE775E6E89}" {
+      Anchor 0 0 0 0
+      PositionX 1308
+      OffsetLeft 1308
+      PositionY 30
+      OffsetTop 30
+      SizeX 44
+      OffsetRight -1352
+      SizeY 44
+      OffsetBottom -74
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{EE86D8BF56E7C8B4}" {
+       Name "CloseBox"
+       Slot ButtonWidgetSlot "{3E9FD39D5C9608C7}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{D473DEA344DBA0A1}" {
+         Name "CloseBg"
+         Slot OverlayWidgetSlot "{29DEDDDDCD0A9523}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{07CFAFFCD67C0792}" {
+         Name "CloseText"
+         Slot OverlayWidgetSlot "{F3EF73387FDBCD62}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "X"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{7C810A562E8C8788}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ImageWidgetClass "{B1101DB6DDD5EE01}" {
+     Name "HeadRule"
+     Slot FrameWidgetSlot "{472EDF732AFE82B1}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 114
+      OffsetTop 114
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 2
+      OffsetBottom -116
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Size 1 1
+    }
+    TextWidgetClass "{B41B0EF7772E8A01}" {
+     Name "ChannelsLabel"
+     Slot FrameWidgetSlot "{B65A1EEB07F0B0E5}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 130
+      OffsetTop 130
+      SizeX 600
+      OffsetRight -648
+      SizeY 26
+      OffsetBottom -156
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "CHANNELS"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{4FB0684A85516575}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    FrameWidgetClass "{82187906469D6749}" {
+     Name "ChannelList"
+     Slot FrameWidgetSlot "{7699EF069E645057}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 162
+      OffsetTop 162
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 316
+      OffsetBottom -478
+      Alignment 0 0
+     }
+     {
+      ImageWidgetClass "{FCB82350E6AECBE6}" {
+       Name "ChannelListBg"
+       Slot FrameWidgetSlot "{F409B471DDC8C4BB}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      ScrollLayoutWidgetClass "{84F3B190EA91A2ED}" {
+       Name "ChannelScroll"
+       Slot FrameWidgetSlot "{11F4F2F370126AC6}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.431 0.416 0.376 1
+       style Small
+       {
+        SizeLayoutWidgetClass "{D1063FFF021C2C37}" {
+         Name "ChannelWidth"
+         Slot AlignableSlot "{ADF1CB1D298AD38D}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 1304
+         {
+          VerticalLayoutWidgetClass "{84B0FE450BE2B63F}" {
+           Name "Channels"
+           Slot AlignableSlot "{BAD4E8BE04075E85}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+          }
+         }
+        }
+       }
+      }
+      TextWidgetClass "{1DC7601B3366F655}" {
+       Name "ChannelsEmpty"
+       Slot FrameWidgetSlot "{7734EFB737C42CC1}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 138
+        OffsetTop 138
+        SizeX 1304
+        OffsetRight -1304
+        SizeY 40
+        OffsetBottom -178
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.639 0.62 0.565 1
+       Text "Static, and nothing under it."
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{F96899C4B40F0EED}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    TextWidgetClass "{3D73697D91047371}" {
+     Name "LogLabel"
+     Slot FrameWidgetSlot "{ABE2D1432CE7A6C6}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 494
+      OffsetTop 494
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 26
+      OffsetBottom -520
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "THE LOG: EVERYTHING ON THE RADIO"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{80B71BF2102C7136}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    FrameWidgetClass "{29C154DAE12FE1D4}" {
+     Name "LogList"
+     Slot FrameWidgetSlot "{7E0B4D07C85B1B77}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 526
+      OffsetTop 526
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 296
+      OffsetBottom -822
+      Alignment 0 0
+     }
+     {
+      ImageWidgetClass "{4D0D91A94B508F73}" {
+       Name "LogListBg"
+       Slot FrameWidgetSlot "{F356BBC51D074A5A}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      ScrollLayoutWidgetClass "{BA239E5ED3F8CF03}" {
+       Name "LogScroll"
+       Slot FrameWidgetSlot "{8D6EA9600BE386E1}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.431 0.416 0.376 1
+       style Small
+       {
+        SizeLayoutWidgetClass "{EC6D757DE1F245B1}" {
+         Name "LogWidth"
+         Slot AlignableSlot "{19546CAC50B6B250}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 1304
+         {
+          VerticalLayoutWidgetClass "{6B0ABE364FDE9306}" {
+           Name "Log"
+           Slot AlignableSlot "{8DA99A20C8465913}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+          }
+         }
+        }
+       }
+      }
+      TextWidgetClass "{B5934485B0CBC9E0}" {
+       Name "LogEmpty"
+       Slot FrameWidgetSlot "{93668477AC08E6E2}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 128
+        OffsetTop 128
+        SizeX 1304
+        OffsetRight -1304
+        SizeY 40
+        OffsetBottom -168
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.639 0.62 0.565 1
+       Text "Nothing heard on it this life."
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{F5089A4E548DF0D6}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    HorizontalLayoutWidgetClass "{0BBA5132DA67C78C}" {
+     Name "Prompts"
+     Slot FrameWidgetSlot "{3DDCCA9DFA3FC9C7}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 838
+      OffsetTop 838
+      SizeX 1000
+      OffsetRight -1048
+      SizeY 40
+      OffsetBottom -878
+      Alignment 0 0
+     }
+    }
+    TextWidgetClass "{C600DC8718DFBAA2}" {
+     Name "PromptsText"
+     Slot FrameWidgetSlot "{A663E63CFBF0994C}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 844
+      OffsetTop 844
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 30
+      OffsetBottom -874
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "UP / DOWN  CHANNEL    LB / RB  SCROLL THE LOG    B  CLOSE"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{666C7F200EF86479}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

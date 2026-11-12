@@ -267,6 +267,9 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_SpawnMenu` | `RZ_SpawnMenu` | `RZ_SpawnMenu.layout` |
 | `RZ_CraftMenu` | `RZ_CraftMenu` | `RZ_CraftMenu.layout` |
 | `RZ_ObjectMenu` | `RZ_ObjectMenu` | `RZ_ObjectMenu.layout` (not in the conf yet: the PC adds it) |
+| `RZ_RadioMenu` | `RZ_RadioMenu` | `RZ_RadioMenu.layout` |
+
+The cooking screen has no preset of its own: it's `RZ_CraftMenu` in its stove mode.
 
 **Input actions.** `Configs/System/chimeraInputCommon.conf` is an override of the vanilla input
 config (same GUID) that adds `RZ_OpenNotebook` (**N**, pad **View + RB**) in `IngameContext`, and
@@ -823,6 +826,61 @@ Button RecipeRow (root, 4 below it)
          ├─ Text   RecipeState   mono bold 20, right: READY (olive), "2 MISSING" (dim) or WORKING (amber)
          └─ Text   RecipeTime    mono bold 22, amber, right ("8 s")
 ```
+
+The cooking screen at a stove ([UI.md](../docs/UI.md#the-cooking-screen)) is this layout too: **UI >
+Cook row layout** can name `RZ_CraftRow.layout`. The script sets `CraftText` to the picked row's verb
+(CRAFT, BOIL, BREW, COOK) and the header and detail texts; no widget is added.
+
+## Radio screen: `RZ_RadioMenu.layout` and `RZ_RadioChannel.layout`
+
+The radio screen (`RZ_RadioMenu` preset; behaviour in [UI.md](../docs/UI.md#the-radio-screen)), in
+the object menu's style. Written as text (by a small generator from the object menu's widgets); no
+mockup. Positions inside `RadioPanel` are from its top left.
+
+```
+Frame (root, full screen)
+├─ Image   Dim             full screen, #08090A at 60%
+└─ Frame   RadioPanel      1,400 × 900, centred
+   ├─ Image  (RadioBg)      #0F1113
+   ├─ Image  (RadioAccent)  full width × 5, top edge, amber
+   ├─ Text   RadioTitle     at (48, 28), 1,160 wide, condensed bold 34, bone ("Radio")
+   ├─ Text   RadioSub       at (48, 74), regular 22, dim: the town, and a house set's weak batteries (hidden when empty)
+   ├─ Button CloseButton    44 × 44 at (1,308, 30), "X" in amber
+   ├─ Image  (HeadRule)     at (48, 114), 1,304 × 2, amber
+   ├─ Text   (ChannelsLabel) at (48, 130), mono bold 18, dim, "CHANNELS"
+   ├─ Frame  (ChannelList)  at (48, 162), 1,304 × 316, #0C0E0F
+   │  ├─ ScrollLayout ChannelScroll  fills it (the pad's up/down keep the picked row in view)
+   │  │  └─ SizeLayout (ChannelWidth) 1,304 wide
+   │  │     └─ VerticalLayout Channels   the channel rows
+   │  └─ Text  (ChannelsEmpty)  centred, regular 24, dim, hidden (there's always Everything)
+   ├─ Text   LogLabel       at (48, 494), mono bold 18, dim: "THE LOG: " and the picked channel
+   ├─ Frame  (LogList)      at (48, 526), 1,304 × 296, #0C0E0F
+   │  ├─ ScrollLayout LogScroll  fills it (LB/RB and the wheel scroll it)
+   │  │  └─ SizeLayout (LogWidth) 1,304 wide
+   │  │     └─ VerticalLayout Log   the log rows: the notebook's RZ_RadioRow.layout (UI > Radio row layout)
+   │  └─ Text  LogEmpty     centred, regular 24, dim, "Nothing heard on it this life." (hidden when there are rows)
+   ├─ HorizontalLayout Prompts  at (48, 838): the footer prompts the script makes
+   └─ Text   PromptsText    at (48, 844), mono bold 18, dim: the static footer, hidden once prompts are made
+```
+
+`RZ_RadioChannel.layout` (**UI > Radio channel layout**), one channel, created into `Channels`. The
+root is a `Button` named `ChannelRow` (a click picks it):
+
+```
+Button ChannelRow (root, 4 below it)
+└─ SizeLayout (ChannelSize)    1,304 × 72
+   └─ Overlay (ChannelBox)
+      ├─ Image  ChannelBg        #1B1F22, shown on the picked row
+      ├─ Image  ChannelBar       5 × 72, left edge, the channel's colour, shown on the picked row
+      └─ HorizontalLayout (ChannelRowLine)  padding 22 left and right, centred vertically
+         ├─ Image  ChannelIcon   30 × 30, the channel's icon in its colour (set by code), hidden without the imageset
+         ├─ VerticalLayout (ChannelText)  fills the row
+         │  ├─ Text  ChannelName  regular 24 (bright on the picked row, faint when nothing comes through)
+         │  └─ Text  ChannelLine  regular 20, dim: its latest line, one line (cut at 110 characters)
+         └─ Text   ChannelState  mono bold 20, right, in the channel's colour: ON AIR, QUIET, TOO FAINT, SCRAMBLED, "CRACKED: 14 MIN", "12 HEARD"
+```
+
+Four channel rows show at once; the rest scroll.
 
 ## Object menu: `RZ_ObjectMenu.layout` and `RZ_ObjectRow.layout`
 

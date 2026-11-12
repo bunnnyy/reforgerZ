@@ -2365,8 +2365,9 @@ player is near, capped and decaying, nothing left behind.
   house radio, a well and a petrol pump without the station have one prompt, their look ("Look at
   the stove"), which opens the [object menu](UI.md#the-object-menu): what you see and the options
   as a list. Bells, sirens, a locked door, a fresh bite and a doorway to burn keep their single
-  prompts (they're used in a hurry); a fixable car and a workbench open their own screens. With
-  **UI > Object row layout** empty, every option is a prompt again.
+  prompts (they're used in a hurry); a fixable car, a workbench and (with **UI > Cook row layout**
+  set) a stove open their own screens. With **UI > Object row layout** empty, every option is a
+  prompt again.
 - **Decided on the server.** Loot lies in houses and wrecks' boots only while a player is near and
   is data otherwise; a boot is rolled when it's first put out, a body when it dies. What was
   emptied, opened or burned is remembered as positions and times, and saved.
@@ -2692,8 +2693,21 @@ and you're beside it, then runs the same code as the actions; what they would sa
 screen. Without the layout, or where the screen can't open, **Use the workbench** lists what each
 recipe takes as a notice, and the first eight recipes are **Make:** actions, as before.
 
-The **home remedy** (alcohol and herbs, 20 s) is brewed on a stove ("Brew a home remedy"), since
-the workbench's eight action slots are full.
+**At a stove.** A stove, oven or fireplace boils untreated water (30 s), brews the **home remedy**
+(alcohol and herbs, 20 s; at a stove since the workbench's eight action slots are full) and cooks
+the **stove recipes** (**Interactions > Crafting > Stove recipes**, data like the bench's extra
+recipes: for example Metabolism's raw meat in and its cooked meat out; none by default). Each is
+hidden when what it makes isn't set; sixteen in all at most. Lighting the fire adds 2 heat and
+marks a campfire for strangers, as boiling does, and a stove recipe adds its own heat when it's
+done. Its inputs are checked and taken as a bench recipe's are.
+
+**The cooking screen.** With **UI > Cook row layout** set, a stove's one prompt is **Use the stove**,
+which opens the cooking screen ([UI.md](UI.md#the-cooking-screen)): the crafting screen with the
+stove's list (boiled water, the home remedy, the stove recipes), what each takes against what you
+carry, how long, and a button named for what it does (Boil, Brew, Cook), checked on the server
+and run through the stove's own code. Without the layout, or where the screen can't open, the
+stove's first four are its actions (**Boil water**, **Brew a home remedy**, **Cook: ...**) in the
+object menu, as before.
 
 ### Barricades, traps and generators
 
@@ -2763,6 +2777,12 @@ horde somewhere else. Players within 1.2 km hear it.
   Operator can crack one, on a radio on the ground or a house radio: stand still 60 s with
   nothing loud near. Then 20 minutes of a line every 4 minutes: truck routes, watch times, short
   places, samples needed.
+- **View radio** opens the radio screen ([UI.md](UI.md#the-radio-screen)), with **UI > Radio
+  channel layout** set: on the wind-up radio held up in hand (vanilla's inspection, beside its
+  Turn on/off) or lying on the ground, and as a house radio's fourth option. Every channel with
+  what's on it now (a house set on weak batteries pulls in two open channels), the secure ones
+  scrambled or cracked, and the log of what you heard this life, filtered by channel. It only
+  shows; it doesn't tune or crack anything.
 
 *Simplified:* spots stand at the middle of the thing's bounds (door spots on the door leaf, a wreck's boot at its rear). Carrying
 the wounded isn't added. Item names are matched by keyword. Fuel cans are full or empty by name:
