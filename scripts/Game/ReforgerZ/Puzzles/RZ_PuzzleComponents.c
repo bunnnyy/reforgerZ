@@ -553,7 +553,7 @@ class RZ_PuzzleActionHelper
 		if (comp.GetMissionId() == RZ_PowerGrid.TAG)
 		{
 			if (gm.GetPowerGrid())
-				gm.GetPowerGrid().HandleRead(playerId);
+				gm.GetPowerGrid().HandleRead(playerId, owner);
 
 			return true;
 		}

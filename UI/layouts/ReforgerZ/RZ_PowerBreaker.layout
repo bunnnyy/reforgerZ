@@ -1,0 +1,166 @@
+ButtonWidgetClass "{61882BBE04B68F83}" {
+ Name "BreakerRow"
+ Slot LayoutSlot "{54D5C43EDB4CE6A3}" {
+  HorizontalAlign 0
+  VerticalAlign 0
+  Padding 0 0 12 0
+ }
+ style blank
+ {
+  SizeLayoutWidgetClass "{29BA3F1181B720E4}" {
+   Name "BreakerSize"
+   Slot ButtonWidgetSlot "{4B83357C7B6D2FCD}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   AllowWidthOverride 1
+   WidthOverride 104
+   AllowHeightOverride 1
+   HeightOverride 290
+   {
+    OverlayWidgetClass "{8E1B8CA0D4255AFA}" {
+     Name "BreakerBox"
+     Slot AlignableSlot "{C150E53A1BEC0677}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     {
+      ImageWidgetClass "{C1EA74BE30DE72BC}" {
+       Name "BreakerFace"
+       Slot OverlayWidgetSlot "{F403BAAF70C5CEF8}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.106 0.122 0.133 1
+       Size 1 1
+      }
+      ImageWidgetClass "{E28C66EA528EB955}" {
+       Name "BreakerBg"
+       Slot OverlayWidgetSlot "{82286CB080A416D9}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       "Is Visible" 0
+       Color 0.165 0.18 0.192 1
+       Size 1 1
+      }
+      ImageWidgetClass "{B9F22FFD2D6BC564}" {
+       Name "BreakerFocus"
+       Slot OverlayWidgetSlot "{A05E1790B058AEA6}" {
+        HorizontalAlign 3
+        VerticalAlign 2
+       }
+       "Is Visible" 0
+       Color 0.89 0.639 0.231 1
+       Size 104 5
+      }
+      VerticalLayoutWidgetClass "{9B5F9124DCB6CA14}" {
+       Name "BreakerCol"
+       Slot OverlayWidgetSlot "{50CFC0AFB09564DA}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 0 16 0 0
+       }
+       {
+        ImageWidgetClass "{A41039B12D247BBD}" {
+         Name "BreakerLamp"
+         Slot LayoutSlot "{03B1DDDDDBA6CACF}" {
+          HorizontalAlign 1
+          VerticalAlign 0
+         }
+         Color 0.157 0.173 0.188 1
+         Size 22 22
+        }
+        SizeLayoutWidgetClass "{52C10D2D808F11D8}" {
+         Name "BreakerSlotSize"
+         Slot LayoutSlot "{2376874C44EDCA11}" {
+          HorizontalAlign 1
+          VerticalAlign 0
+          Padding 0 14 0 0
+         }
+         AllowWidthOverride 1
+         WidthOverride 48
+         AllowHeightOverride 1
+         HeightOverride 120
+         {
+          OverlayWidgetClass "{B5E77955A481371E}" {
+           Name "BreakerSlot"
+           Slot AlignableSlot "{C758DCC0CA91AE63}" {
+            HorizontalAlign 3
+            VerticalAlign 3
+           }
+           {
+            ImageWidgetClass "{1B896F43812326C0}" {
+             Name "BreakerSlotBg"
+             Slot OverlayWidgetSlot "{04346691229CA1E2}" {
+              HorizontalAlign 3
+              VerticalAlign 3
+             }
+             Color 0.031 0.035 0.039 1
+             Size 1 1
+            }
+            ImageWidgetClass "{2DDAB519DBE54407}" {
+             Name "BreakerUp"
+             Slot OverlayWidgetSlot "{7D6C6B94E1803D06}" {
+              HorizontalAlign 3
+              VerticalAlign 0
+              Padding 6 6 6 0
+             }
+             "Is Visible" 0
+             Color 0.91 0.886 0.816 1
+             Size 36 52
+            }
+            ImageWidgetClass "{650038FE52895221}" {
+             Name "BreakerDown"
+             Slot OverlayWidgetSlot "{B17D96E6A2B92ADD}" {
+              HorizontalAlign 3
+              VerticalAlign 2
+              Padding 6 0 6 6
+             }
+             Color 0.431 0.416 0.376 1
+             Size 36 52
+            }
+           }
+          }
+         }
+        }
+        TextWidgetClass "{F2E8886987204E20}" {
+         Name "BreakerNum"
+         Slot LayoutSlot "{E617EF53D0BB5860}" {
+          HorizontalAlign 1
+          VerticalAlign 0
+          Padding 0 12 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "1"
+         "Font Size" 22
+         "Min Font Size" 22
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{5D1016AFAA178126}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{5B745030642CCE4E}" {
+         Name "BreakerName"
+         Slot LayoutSlot "{23C9672C1C7F34F3}" {
+          HorizontalAlign 1
+          VerticalAlign 0
+          Padding 0 4 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "FEED A"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{F98D45CD12B963E6}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

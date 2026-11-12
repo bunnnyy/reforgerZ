@@ -162,7 +162,8 @@ and one way to end it: **research the cure.**
   past jobs and what you know, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks (one Talk prompt a person, their lines typed out a box at a time, small
   nametags over the people near you), a repair screen for the cars, a shop screen at the quartermasters, a
-  crafting screen at workbenches and a cooking screen at stoves, a radio screen with every channel and
+  crafting screen at workbenches, a panel at the power station (a breaker board to set from the card
+  inside its door) and a cooking screen at stoves, a radio screen with every channel and
   the log (View radio), and one small object menu for props and places (the game's own
   inventory, looting, healing, doors and fuel first, a menu for anything with options, a single
   prompt only for what's done in a hurry),
@@ -170,7 +171,7 @@ and one way to end it: **research the cure.**
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
-  repair, shop, crafting, cooking and radio screens, the object menu, reader, death brief and subtitles are written and not yet played).
+  repair, shop, crafting, cooking and radio screens, the object menu, the power panel, reader, death brief and subtitles are written and not yet played).
 
 ## Status
 
@@ -215,7 +216,8 @@ scripts/Game/ReforgerZ/
                  orders (one held waypoint each); the shared engine: the clocks, deeds, the
                  callback queue, names in public text
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
-                 town memory, the power grid, the radio station, the world facts (what content
+                 town memory, the power grid (where its station is, the control at it, the
+                 power panel's server side and its breakers), the radio station, the world facts (what content
                  reads: season flags, canon, claims and soft holds, text tokens) and its world
                  memory (reasons, signals, the town log, world records, the truth deck) with its
                  writers, the marks spawner, the Long Table, the land grid (water, height, trees,
@@ -275,7 +277,7 @@ scripts/Game/ReforgerZ/
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
-                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu, the screen guard, the notice board, the spawn screen and loadout lock, the
+                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu, the power panel, the screen guard, the notice board, the spawn screen and loadout lock, the
                  death brief, the map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist

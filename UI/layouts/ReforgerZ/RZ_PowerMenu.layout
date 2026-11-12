@@ -1,0 +1,774 @@
+FrameWidgetClass "{73153E522ECF6439}" {
+ Name "PowerMenu"
+ Slot FrameWidgetSlot "{25FAEB2D1E0AD891}" {
+  Anchor 0 0 1 1
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 0
+  OffsetRight 0
+  SizeY 0
+  OffsetBottom 0
+  Alignment 0 0
+ }
+ {
+  ImageWidgetClass "{FB41CAF43DB3AE53}" {
+   Name "Dim"
+   Slot FrameWidgetSlot "{25D45779D02763AC}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   Color 0.031 0.035 0.039 0.6
+   Size 1 1
+  }
+  FrameWidgetClass "{09A68B89EAA0E337}" {
+   Name "PowerPanel"
+   Slot FrameWidgetSlot "{E5B4966FB90143CA}" {
+    Anchor 0.5 0.5 0.5 0.5
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 1400
+    OffsetRight -1400
+    SizeY 860
+    OffsetBottom -860
+    Alignment 0.5 0.5
+   }
+   {
+    ImageWidgetClass "{F16F8C98AD718691}" {
+     Name "PowerBg"
+     Slot FrameWidgetSlot "{9067F77D239B334D}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+      Alignment 0 0
+     }
+     Color 0.059 0.067 0.075 1
+     Size 1 1
+    }
+    ImageWidgetClass "{6CD2F5F2083C9136}" {
+     Name "PowerAccent"
+     Slot FrameWidgetSlot "{22CCCB7636A8AC47}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 1400
+      OffsetRight -1400
+      SizeY 5
+      OffsetBottom -5
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Size 1 1
+    }
+    TextWidgetClass "{C0801F108D7B6379}" {
+     Name "PowerTitle"
+     Slot FrameWidgetSlot "{EEE706A661E8FEB8}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 30
+      OffsetTop 30
+      SizeX 1200
+      OffsetRight -1248
+      SizeY 44
+      OffsetBottom -74
+      Alignment 0 0
+     }
+     Color 0.91 0.886 0.816 1
+     Text "The substation outside Morton"
+     "Font Size" 34
+     "Min Font Size" 34
+     FontProperties FontProperties "{A1B2AF1FA140BBFA}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{191A183121EBB226}" {
+     Name "PowerSub"
+     Slot FrameWidgetSlot "{4D5ECA1C29D091BE}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 76
+      OffsetTop 76
+      SizeX 1200
+      OffsetRight -1248
+      SizeY 30
+      OffsetBottom -106
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "Dark. The control room is open."
+     "Font Size" 22
+     "Min Font Size" 22
+     FontProperties FontProperties "{0B93BAAA4A6E2AE7}" {
+      Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{632AC07406B7781E}" {
+     Name "CloseButton"
+     Slot FrameWidgetSlot "{876681A46310E51D}" {
+      Anchor 0 0 0 0
+      PositionX 1308
+      OffsetLeft 1308
+      PositionY 30
+      OffsetTop 30
+      SizeX 44
+      OffsetRight -1352
+      SizeY 44
+      OffsetBottom -74
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{CCECBFD1F9D9FD05}" {
+       Name "CloseBox"
+       Slot ButtonWidgetSlot "{68CD1A397D30993E}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{0F9D9D2613013562}" {
+         Name "CloseBg"
+         Slot OverlayWidgetSlot "{3D823BB9B02EAE5E}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{5D4F34154EFDA1C9}" {
+         Name "CloseText"
+         Slot OverlayWidgetSlot "{B22DEFC0FB3801EA}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "X"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{FC97B12EBD487ACB}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ImageWidgetClass "{807AC6B39A3F4095}" {
+     Name "HeadRule"
+     Slot FrameWidgetSlot "{EBB893F67F111ACD}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 116
+      OffsetTop 116
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 2
+      OffsetBottom -118
+      Alignment 0 0
+     }
+     Color 0.89 0.639 0.231 1
+     Size 1 1
+    }
+    TextWidgetClass "{90FAC7BC0CC8C248}" {
+     Name "PowerText"
+     Slot FrameWidgetSlot "{252334BB54B816C6}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 130
+      OffsetTop 130
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 96
+      OffsetBottom -226
+      Alignment 0 0
+     }
+     Color 0.851 0.824 0.745 1
+     Text "Breakers all tripped. A card inside the door says how they go back. The generator has fuel in it."
+     "Font Size" 24
+     "Min Font Size" 24
+     Wrap 1
+     FontProperties FontProperties "{2AE526BADE6826D7}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    FrameWidgetClass "{5FD3E097F5EF8937}" {
+     Name "CardPanel"
+     Slot FrameWidgetSlot "{EB853D8E5B5E3D37}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 240
+      OffsetTop 240
+      SizeX 560
+      OffsetRight -608
+      SizeY 440
+      OffsetBottom -680
+      Alignment 0 0
+     }
+     {
+      ImageWidgetClass "{C1172C9B0C691905}" {
+       Name "CardBg"
+       Slot FrameWidgetSlot "{2B2227229840A1E2}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.812 0.78 0.694 1
+       Size 1 1
+      }
+      TextWidgetClass "{BA2AE64AE0E602C9}" {
+       Name "CardLabel"
+       Slot FrameWidgetSlot "{4C5AE5BB6F703978}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 18
+        OffsetTop 18
+        SizeX 512
+        OffsetRight -536
+        SizeY 24
+        OffsetBottom -42
+        Alignment 0 0
+       }
+       Color 0.341 0.322 0.282 1
+       Text "THE CARD INSIDE THE DOOR"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{C3307674175511F5}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{6403885024FDF35A}" {
+       Name "CardText"
+       Slot FrameWidgetSlot "{DF73CEDFAF533861}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 54
+        OffsetTop 54
+        SizeX 512
+        OffsetRight -536
+        SizeY 360
+        OffsetBottom -414
+        Alignment 0 0
+       }
+       Color 0.11 0.118 0.125 1
+       Text "AFTER A BLACKOUT, CLOSE IN THIS ORDER: 1. CONTROL 2. FEED A 3. TOWN 2"
+       "Font Size" 26
+       "Min Font Size" 26
+       Wrap 1
+       FontProperties FontProperties "{238179DF32181B5B}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      TextWidgetClass "{188DF3ABFAE9074E}" {
+       Name "CardShut"
+       Slot FrameWidgetSlot "{67FA8A7B849080E6}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 54
+        OffsetTop 54
+        SizeX 512
+        OffsetRight -536
+        SizeY 80
+        OffsetBottom -134
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.341 0.322 0.282 1
+       Text "Behind a padlocked door."
+       "Font Size" 24
+       "Min Font Size" 24
+       Wrap 1
+       FontProperties FontProperties "{DE19F18477497E61}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    FrameWidgetClass "{7758631FBEF2F85F}" {
+     Name "BoardPanel"
+     Slot FrameWidgetSlot "{6D728783A1A7FC4B}" {
+      Anchor 0 0 0 0
+      PositionX 632
+      OffsetLeft 632
+      PositionY 240
+      OffsetTop 240
+      SizeX 720
+      OffsetRight -1352
+      SizeY 440
+      OffsetBottom -680
+      Alignment 0 0
+     }
+     {
+      ImageWidgetClass "{5BC614E7922E5E7D}" {
+       Name "BoardBg"
+       Slot FrameWidgetSlot "{75834E7B9D485AFE}" {
+        Anchor 0 0 1 1
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 0
+        OffsetRight 0
+        SizeY 0
+        OffsetBottom 0
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      TextWidgetClass "{879864CA83305237}" {
+       Name "BoardLabel"
+       Slot FrameWidgetSlot "{B44D412A0610DCA7}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 18
+        OffsetTop 18
+        SizeX 400
+        OffsetRight -424
+        SizeY 24
+        OffsetBottom -42
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "BREAKERS"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{3DA48AC53FC174B9}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      HorizontalLayoutWidgetClass "{7EAECA2889C8BF9A}" {
+       Name "Breakers"
+       Slot FrameWidgetSlot "{0C5AB805645F668A}" {
+        Anchor 0 0 0 0
+        PositionX 12
+        OffsetLeft 12
+        PositionY 52
+        OffsetTop 52
+        SizeX 700
+        OffsetRight -712
+        SizeY 300
+        OffsetBottom -352
+        Alignment 0 0
+       }
+      }
+      TextWidgetClass "{C3484408BCB3C8C4}" {
+       Name "BoardShut"
+       Slot FrameWidgetSlot "{F288EAC0DB7DBCCB}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 160
+        OffsetTop 160
+        SizeX 672
+        OffsetRight -696
+        SizeY 40
+        OffsetBottom -200
+        Alignment 0 0
+       }
+       "Is Visible" 0
+       Color 0.639 0.62 0.565 1
+       Text "The board is behind the door."
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{FE6A381285EE7CF6}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+      ImageWidgetClass "{6D6C39EF617CDFCE}" {
+       Name "ReadyLamp"
+       Slot FrameWidgetSlot "{D7E7D2A2725B8B2A}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 366
+        OffsetTop 366
+        SizeX 24
+        OffsetRight -48
+        SizeY 24
+        OffsetBottom -390
+        Alignment 0 0
+       }
+       Color 0.157 0.173 0.188 1
+       Size 1 1
+      }
+      TextWidgetClass "{5B35D93F3404A39F}" {
+       Name "ReadyText"
+       Slot FrameWidgetSlot "{8653A4FBC45678D4}" {
+        Anchor 0 0 0 0
+        PositionX 60
+        OffsetLeft 60
+        PositionY 364
+        OffsetTop 364
+        SizeX 300
+        OffsetRight -360
+        SizeY 28
+        OffsetBottom -392
+        Alignment 0 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text "NOT READY"
+       "Font Size" 22
+       "Min Font Size" 22
+       FontProperties FontProperties "{793F38F6C029018F}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{1BF8BC577522D8D0}" {
+       Name "BoardHint"
+       Slot FrameWidgetSlot "{A8F5811D5C182D11}" {
+        Anchor 0 0 0 0
+        PositionX 24
+        OffsetLeft 24
+        PositionY 402
+        OffsetTop 402
+        SizeX 672
+        OffsetRight -696
+        SizeY 26
+        OffsetBottom -428
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "Close them in the card's order. A wrong one trips the lot."
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{F960F06DD79234BD}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+     }
+    }
+    TextWidgetClass "{DD691175F485A92A}" {
+     Name "MeterText"
+     Slot FrameWidgetSlot "{755E90A9005BC986}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 700
+      OffsetTop 700
+      SizeX 560
+      OffsetRight -608
+      SizeY 28
+      OffsetBottom -728
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.89 0.639 0.231 1
+     Text "SPINNING UP: 64 s. STAY WITHIN 60 M."
+     "Font Size" 20
+     "Min Font Size" 20
+     FontProperties FontProperties "{088A3CA35D28F350}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    ProgressBarWidgetClass "{FBCBB0DCEDC2232C}" {
+     Name "MeterBar"
+     Slot FrameWidgetSlot "{11008148BE13F93F}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 734
+      OffsetTop 734
+      SizeX 560
+      OffsetRight -608
+      SizeY 8
+      OffsetBottom -742
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.89 0.639 0.231 1
+     style Simple
+     Maximum 1
+     Current 0.4
+    }
+    TextWidgetClass "{41D5EEF9C79A7703}" {
+     Name "PowerStatus"
+     Slot FrameWidgetSlot "{111C53DCBEAE7AB6}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 752
+      OffsetTop 752
+      SizeX 560
+      OffsetRight -608
+      SizeY 56
+      OffsetBottom -808
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.957 0.941 0.902 1
+     Text ""
+     "Font Size" 22
+     "Min Font Size" 22
+     Wrap 1
+     FontProperties FontProperties "{4D87B06536309756}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{348B143E9A7CC5E8}" {
+     Name "Action0"
+     Slot FrameWidgetSlot "{CD36B11434DCBB9A}" {
+      Anchor 0 0 0 0
+      PositionX 632
+      OffsetLeft 632
+      PositionY 696
+      OffsetTop 696
+      SizeX 344
+      OffsetRight -976
+      SizeY 60
+      OffsetBottom -756
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{2E55E5D8A35C864C}" {
+       Name "ActionBox0"
+       Slot ButtonWidgetSlot "{3BF53D20BF39486C}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{E44BAEA18CFEC31C}" {
+         Name "ActionBg0"
+         Slot OverlayWidgetSlot "{54F47F234E4F39E9}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        ImageWidgetClass "{581F0C5AA2692841}" {
+         Name "ActionLit0"
+         Slot OverlayWidgetSlot "{079EE02D3254A236}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         "Is Visible" 0
+         Color 0.165 0.18 0.192 1
+         Size 1 1
+        }
+        ImageWidgetClass "{DE0047D52EA1D032}" {
+         Name "ActionBar0"
+         Slot OverlayWidgetSlot "{05B2350087A26AF4}" {
+          HorizontalAlign 0
+          VerticalAlign 3
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         Size 5 60
+        }
+        TextWidgetClass "{0949354F2A38E341}" {
+         Name "ActionText0"
+         Slot OverlayWidgetSlot "{3CAECE40B381FEA8}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          Padding 18 0 18 0
+         }
+         Color 0.89 0.639 0.231 1
+         Text "Start the generator"
+         "Font Size" 24
+         "Min Font Size" 24
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{BF411FD604ED9542}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    ButtonWidgetClass "{FBDDF2A2B047FA40}" {
+     Name "Action1"
+     Slot FrameWidgetSlot "{A871541351832EEB}" {
+      Anchor 0 0 0 0
+      PositionX 1008
+      OffsetLeft 1008
+      PositionY 696
+      OffsetTop 696
+      SizeX 344
+      OffsetRight -1352
+      SizeY 60
+      OffsetBottom -756
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{6B276836636DAB0C}" {
+       Name "ActionBox1"
+       Slot ButtonWidgetSlot "{7EBDC8672C6963E7}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       {
+        ImageWidgetClass "{3790D7258DD50EB7}" {
+         Name "ActionBg1"
+         Slot OverlayWidgetSlot "{2CF73C00512A42B7}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        ImageWidgetClass "{B85A6AFF3806C65B}" {
+         Name "ActionLit1"
+         Slot OverlayWidgetSlot "{A9CABB659C0FD9C8}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         "Is Visible" 0
+         Color 0.165 0.18 0.192 1
+         Size 1 1
+        }
+        ImageWidgetClass "{06F975FF37068CB5}" {
+         Name "ActionBar1"
+         Slot OverlayWidgetSlot "{92A79EBC64D4BB08}" {
+          HorizontalAlign 0
+          VerticalAlign 3
+         }
+         "Is Visible" 0
+         Color 0.89 0.639 0.231 1
+         Size 5 60
+        }
+        TextWidgetClass "{EF985C7B96FDF4DE}" {
+         Name "ActionText1"
+         Slot OverlayWidgetSlot "{00B5CBC2331FC9CE}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          Padding 18 0 18 0
+         }
+         Color 0.89 0.639 0.231 1
+         Text "Start the generator"
+         "Font Size" 24
+         "Min Font Size" 24
+         "Horizontal Alignment" Center
+         FontProperties FontProperties "{9D8D85FD33A1119C}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+       }
+      }
+     }
+    }
+    TextWidgetClass "{DAFA4775F52EBDAC}" {
+     Name "ActionNeed0"
+     Slot FrameWidgetSlot "{ABE3EFBA1BC6A6E9}" {
+      Anchor 0 0 0 0
+      PositionX 632
+      OffsetLeft 632
+      PositionY 762
+      OffsetTop 762
+      SizeX 344
+      OffsetRight -976
+      SizeY 24
+      OffsetBottom -786
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.639 0.62 0.565 1
+     Text "The breakers first"
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{4498C824F135B233}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{14080D9A4A6B18DF}" {
+     Name "ActionNeed1"
+     Slot FrameWidgetSlot "{D86AE0FE597D0322}" {
+      Anchor 0 0 0 0
+      PositionX 1008
+      OffsetLeft 1008
+      PositionY 762
+      OffsetTop 762
+      SizeX 344
+      OffsetRight -1352
+      SizeY 24
+      OffsetBottom -786
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.639 0.62 0.565 1
+     Text ""
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{760EBB22831D6E1C}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    HorizontalLayoutWidgetClass "{735090B51E023D8A}" {
+     Name "Prompts"
+     Slot FrameWidgetSlot "{AC569C565F4C9E71}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 812
+      OffsetTop 812
+      SizeX 900
+      OffsetRight -948
+      SizeY 40
+      OffsetBottom -852
+      Alignment 0 0
+     }
+    }
+    TextWidgetClass "{8740EC81126A0523}" {
+     Name "PromptsText"
+     Slot FrameWidgetSlot "{82725456713CA299}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 818
+      OffsetTop 818
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 30
+      OffsetBottom -848
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "LEFT / RIGHT  CHOOSE    UP / DOWN  BOARD OR BUTTONS    A  FLIP OR PRESS    B  CLOSE"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{2B44716FADA02A3B}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}
