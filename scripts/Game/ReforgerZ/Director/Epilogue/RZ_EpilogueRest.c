@@ -298,6 +298,10 @@ class RZ_EpiRest
 			pick = cfg.m_sCratePrefab;
 		}
 
+		// One kit with Traces: its own piece when this slot is empty
+		if (pick.IsEmpty())
+			pick = RZ_Traces.EpilogueKit(b.key, b.more);
+
 		if (pick.IsEmpty())
 			return fallback;
 

@@ -1,75 +1,101 @@
 GenericEntity {
- ID "9159CC383F3C647A"
+ ID "3FE9D22A703B7CAA"
  components {
-  RplComponent "{C9A674FFE89832DF}" {
+  RplComponent "{DC08B895AB9D6679}" {
   }
-  Hierarchy "{538B383762CB7E69}" {
+  Hierarchy "{3F96576CF2D48DE4}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{7762F50A860DD074}Prefabs/Props/Military/Furniture/TableMilitary_US_01.et" {
-   ID "BDE5358D2B0A79A5"
+   ID "D031151F4656285F"
    components {
-    Hierarchy "{1D798A98EB3F5D19}" {
+    Hierarchy "{96E6D7EFD1F79E0C}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
-   ID "9F565B1DADA7DA91"
+   ID "C2FE29BC356F4009"
    components {
-    Hierarchy "{6289C1964F50B3AC}" {
+    Hierarchy "{1BF4B73F4AE19384}" {
     }
    }
-   coords 0.3 0.78 0
+   coords 0.4 0.78 0
    angles 0 10 0
   }
-  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
-   ID "17ACC8005AE0ABD0"
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "B9CA1EA8299135AF"
    components {
-    Hierarchy "{B841072394294221}" {
+    Hierarchy "{E56179DBAC7F1E63}" {
     }
    }
-   coords 0 0 0.8
+   coords -0.5 0.78 0.1
+   angles 0 -5 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "3341617BAC1B0E1C"
+   components {
+    Hierarchy "{F5E1E39D98105292}" {
+    }
+   }
+   coords 0 0.78 -0.1
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
-   ID "79247813543634C1"
+   ID "FCB18B3C88F25893"
    components {
-    Hierarchy "{089ABA053EB54B59}" {
+    Hierarchy "{D6C6EA4232CD0334}" {
     }
    }
-   coords 0 0 -0.8
+   coords 0.1 0 0.8
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "EB5FA47A06E06A3E"
+   components {
+    Hierarchy "{5421EA9E24794D89}" {
+    }
+   }
+   coords -0.2 0 -0.8
+  }
+  GenericEntity : "{452C9FF31AAF2B82}Prefabs/Props/Services/Healthcare/CabinetMedical_01.et" {
+   ID "470070097AEF72EC"
+   components {
+    Hierarchy "{E4E423D194E8A7E3}" {
+    }
+   }
+   coords 1.6 0 -0.9
+   angles 0 -80 0
   }
   GenericEntity {
-   ID "6E7881C3DDDF6A19"
+   ID "388F17C4E92D4843"
    components {
-    SCR_AISmartActionSentinelComponent "{F6BC36B1B622C266}" {
+    SCR_AISmartActionSentinelComponent "{422A8BD20D4DAD05}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0 1.6 -0.8
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{FDD6962A7058FDE7}" {
+    Hierarchy "{E327F15C24FDF981}" {
     }
    }
-   coords 0 0 0.8
+   coords 0.1 0 0.8
   }
   GenericEntity {
-   ID "C47EEAA5D18F70A5"
+   ID "39EF4BFF5B8F13BD"
    components {
-    SCR_AISmartActionSentinelComponent "{7CE50E86EA385E74}" {
+    SCR_AISmartActionSentinelComponent "{322B5732D85E9729}" {
      Tags {
       "RZ_Sit"
      }
      m_vLookPosition 0 1.6 0.8
      m_eLoiterAnimation SIT
     }
-    Hierarchy "{AFFC63097C7F707C}" {
+    Hierarchy "{D1E69C517A5E3D64}" {
     }
    }
-   coords 0 0 -0.8
+   coords -0.2 0 -0.8
   }
  }
 }

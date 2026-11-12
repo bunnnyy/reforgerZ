@@ -1,36 +1,64 @@
 GenericEntity {
- ID "319471B65CBC3039"
+ ID "C0E8D100C19D5159"
  components {
-  RplComponent "{332D5DA4D097D771}" {
+  RplComponent "{A0F8C5D19C6C213C}" {
   }
-  Hierarchy "{B6F655EA0A22AB65}" {
+  Hierarchy "{E0860D2A4AF2289E}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{CC98E67AC15E257D}Prefabs/Props/Recreation/Camp/TentBig_01/TentBig_01_orange.et" {
-   ID "F5935BA0E43479A2"
+   ID "860913DD3461D286"
    components {
-    Hierarchy "{3EAB6781D3F9E4D9}" {
+    Hierarchy "{EBCDE0EE2B5F6508}" {
     }
    }
    coords 0 0 0
+   angles 0 4 0
   }
-  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "6005DBF0522834EF"
+  GenericEntity : "{4A4B245D7CAC341B}Prefabs/Props/Furniture/ChairOld_02.et" {
+   ID "1F96E3942DB8B766"
    components {
-    Hierarchy "{C9024E552F9FBFF3}" {
+    Hierarchy "{1AB6C46D06916ADF}" {
     }
    }
-   coords -0.6 0.05 0.2
+   coords 1.0 0 2.6
+   angles 0 200 0
   }
-  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "049F51DD3242363B"
+  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+   ID "A96956CA463DF772"
    components {
-    Hierarchy "{FF6BF74449A627CD}" {
+    Hierarchy "{95FAF67AAD94A5F4}" {
     }
    }
-   coords 0.6 0.05 0.2
+   coords -2.4 0 2.4
+  }
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "92E59B71C7CF3005"
+   components {
+    Hierarchy "{329C4C905664B7EF}" {
+    }
+   }
+   coords -1.6 0 2.6
+   angles 0 80 0
+  }
+  GenericEntity : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+   ID "4C75DB6DD61E316C"
+   components {
+    Hierarchy "{665EFEF8944F0FC6}" {
+    }
+   }
+   coords 2.4 0 -1.4
+   angles 0 30 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "D844DDCC7F11A657"
+   components {
+    Hierarchy "{6075C392CB2F4C87}" {
+    }
+   }
+   coords -1.9 0 -1.8
   }
  }
 }

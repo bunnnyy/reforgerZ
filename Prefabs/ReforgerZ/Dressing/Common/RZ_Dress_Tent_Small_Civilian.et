@@ -1,28 +1,56 @@
 GenericEntity {
- ID "7BB75D03FD5CBD41"
+ ID "2D819BA5A6416F96"
  components {
-  RplComponent "{3CD496168B4103BA}" {
+  RplComponent "{197A5FABD4C81CBB}" {
   }
-  Hierarchy "{23DA9E8F4ACF7A77}" {
+  Hierarchy "{1622B06BFCE16237}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{2BF6748C6440D818}Prefabs/Props/Recreation/Camp/TentSmall_02/TentSmall_02_red.et" {
-   ID "4F00F627E9230E94"
+   ID "AE42D1E6962A6F5B"
    components {
-    Hierarchy "{A3780FDC3DC77B4C}" {
+    Hierarchy "{83636D7B060CD916}" {
     }
    }
    coords 0 0 0
+   angles 0 -6 0
   }
-  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "DDDEEAD62CADEA18"
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "E84EFD30B3F3D1BC"
    components {
-    Hierarchy "{8D5A30447D631126}" {
+    Hierarchy "{17742BC726DDF313}" {
     }
    }
-   coords 0 0.05 0.2
+   coords 1.4 0 0.9
+   angles 0 60 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "06FCC635548B4064"
+   components {
+    Hierarchy "{90858D54C767509C}" {
+    }
+   }
+   coords -1.3 0 1.0
+   angles 0 20 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "BA1D34AA2071334F"
+   components {
+    Hierarchy "{86AD550750AD3D49}" {
+    }
+   }
+   coords -1.3 0 1.0
+   angles 0 15 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "BD183731941429BF"
+   components {
+    Hierarchy "{005C9E7488637584}" {
+    }
+   }
+   coords 1.2 0 -1.0
   }
  }
 }

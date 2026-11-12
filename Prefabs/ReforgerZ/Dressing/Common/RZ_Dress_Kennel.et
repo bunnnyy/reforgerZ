@@ -1,28 +1,34 @@
 GenericEntity {
- ID "45A84BF1E93C5BDF"
+ ID "D05EE4270641F00E"
  components {
-  RplComponent "{D849577FDC2CB4BD}" {
+  RplComponent "{7FD3AC5F19A99D69}" {
   }
-  Hierarchy "{1A0731B97B71F3FA}" {
+  Hierarchy "{79F2683E08E66E0B}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{FEB4961C91993C22}Prefabs/Structures/Civilian/DogHouse_01.et" {
-   ID "4B4AB8F598F97000"
+   ID "B3F21FDAB0A04264"
    components {
-    Hierarchy "{1E7DB1B80ECD38D5}" {
+    Hierarchy "{17C4A044D5751CBC}" {
     }
    }
    coords 0 0 0
+   angles 0 12 0
   }
   GenericEntity : "{799E5AAAB698E210}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_bowl.et" {
-   ID "D2E549C3FBFCF397"
+   ID "44CC1629D233D5F1"
+   coords 0.6 0 0.9
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "5377E76156085935"
    components {
-    Hierarchy "{F58CF2D8A300D99B}" {
+    Hierarchy "{9344C68D18406DC6}" {
     }
    }
-   coords 0.6 0 0.8
+   coords -0.6 0 0.8
+   angles 0 40 0
   }
  }
 }

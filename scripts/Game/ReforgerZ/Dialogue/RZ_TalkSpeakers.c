@@ -105,6 +105,8 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	static const int ADMIN_TRIBES = 32;
 	static const int ADMIN_REP = 33;
 	static const int ADMIN_TRACES = 34;	// /traces: the door marks near you, to the server log (docs/TRACES.md)
+	static const int ADMIN_TALKTEST = 35;	// /talkdebug test: every conversation run once for you, to the log
+	static const int ADMIN_TALKRESET = 36;	// /talkdebug reset: this person's scenes undecided again
 
 	protected IEntity m_Owner;
 
@@ -150,7 +152,46 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 		if (tag == RZ_LongTable.TAG && gm.GetLongTable())
 			return DescribeTable(gm, idx, ctx);
 
+		if (tag > 0 && gm.GetMissions())
+			return DescribeMission(gm, tag, idx, ctx);
+
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone a contract or a questline stage spawned: `quest:<questline>` and `quest` for a
+	//! questline's people, `mission` for a contract's. Their built choices stay the verbs; a
+	//! conversation picks one with call:slot:N, so the stage resolves as built.
+	protected bool DescribeMission(RZ_GameModeComponent gm, int missionId, int idx, RZ_DCtx ctx)
+	{
+		RZ_Mission m = gm.GetMissions().FindById(missionId);
+		if (!m)
+			return false;
+
+		RZ_QuestRun run;
+		if (gm.GetQuestlines())
+			run = gm.GetQuestlines().RunOf(m);
+
+		if (run)
+		{
+			ctx.m_aKinds.Insert("quest:" + run.m_sKey);
+			ctx.m_aKinds.Insert("quest");
+		}
+		else
+		{
+			ctx.m_aKinds.Insert("mission");
+		}
+
+		ctx.m_sKey = string.Format("mission:%1:%2", missionId, idx);
+		ctx.m_sRun = "mission:" + missionId.ToString();
+		if (m.m_bHasGiver)
+			ctx.m_iFaction = m.m_eGiver;
+
+		ctx.m_sName = "Someone";
+		ctx.m_sShort = "them";
+		ctx.m_sRole = "person";
+		ctx.m_sPlace = m.GetLocationNameFor(gm, ctx.m_iPlayer, ctx.Pos());
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -299,7 +340,11 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			return;
 
 		if (gm.GetDialogue())
+		{
 			replies.Insert(Reply(ADMIN_TREES, "[Admin] Read this person's conversations"));
+			replies.Insert(Reply(ADMIN_TALKTEST, "[Admin] Test every conversation, to the log"));
+			replies.Insert(Reply(ADMIN_TALKRESET, "[Admin] Undecide this person's scenes"));
+		}
 
 		if (gm.GetTribes())
 			replies.Insert(Reply(ADMIN_TRIBES, "[Admin] The infected, to the server log"));
@@ -315,7 +360,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	//! The admin replies (none of them changes the game). True if replyId was one.
 	protected bool PickAdmin(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
-		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES)
+		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES && replyId != ADMIN_TALKTEST && replyId != ADMIN_TALKRESET)
 			return false;
 
 		if (!RZ_NoticeBoard.IsAdmin(playerId))
@@ -323,6 +368,10 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (replyId == ADMIN_TREES && gm.GetDialogue())
 			gm.GetDialogue().GetTrees().Debug(playerId, s);
+		else if (replyId == ADMIN_TALKTEST && gm.GetDialogue())
+			gm.GetDialogue().GetTrees().Command(playerId, s, "test");
+		else if (replyId == ADMIN_TALKRESET && gm.GetDialogue())
+			gm.GetDialogue().GetTrees().Command(playerId, s, "reset");
 		else if (replyId == ADMIN_TRIBES && gm.GetTribes())
 			gm.GetTribes().Command(playerId, "");
 		else if (replyId == ADMIN_REP && gm.GetRepWatch())

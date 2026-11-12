@@ -1,0 +1,104 @@
+# Who opens the conversation (docs/DIALOGUE.md, "Who opens a conversation"): a post's speaker puts
+# the question to someone in their kit below Known at 35 m, whether or not they press Talk, so walking
+# up in a borrowed jacket doesn't skip it. The claim itself is still yours to make: the topics below
+# the greeting are the claim, the word, and the truth. Walking away is no claim.
+
+conv post.bastion.opens
+for post:bastion
+when kit:in_kit & !caught & !passing
+greet
+opens approach 35
+prio quest
+voice bastion
+
+node start
+  say? kit:signed_other :: "Stop there. That's {kit_owner}'s jacket. Signed for. So where's {kit_owner}?"
+  say? kit:dead_mans :: "Stop there. That's {dead_name}'s kit. His name's on the nail behind the radio."
+  say? kit:off_turned :: "Stop there. That's off one of ours. Where is he?"
+  say "You. Not on the board. Stop there."
+
+conv post.redhand.opens
+for post:redhand
+when kit:in_kit & !caught & !passing
+greet
+opens approach 35
+prio quest
+voice redhand
+
+node start
+  say? kit:signed_other :: "Oi. That armband's got {kit_owner}'s name in the book. You're not {kit_owner}."
+  say? kit:dead_mans :: "Oi. That's {dead_name}'s. We put {dead_name} in the book last week. Paid."
+  say? kit:off_turned :: "Oi. You took that off one of them. Off one of ours, before that."
+  say "Oi! New face, our colours. Come here and tell me a story."
+
+# Kit that remembers whose it was, said without any claim, at a faction's holdings (Bastion's are in
+# cover.rzd)
+conv named.redhand.kit_issued
+for named:redhand
+when kit:issued & !tier:redhand>=known
+greet
+voice redhand
+daily
+
+node start
+  say "Still wearing the armband the boss gave you? Bold. The book says you owe for it now."
+
+conv named.halcyon.kit_issued
+for named:halcyon
+when kit:issued & !tier:halcyon>=known
+greet
+voice halcyon
+daily
+
+node start
+  say "Your coat is on our register. Your name is on another one now. Please return the coat."
+
+# Cover details said as choices (docs/REPUTATION.md, "Borrowed kit"): your own crew name, a notebook
+# number (the cover lines with a name are in cover.rzd). Each is the look's +1 when it's true; the look
+# decides, its score shown before you pick.
+conv post.redhand.crewname
+for post:redhand
+when kit:in_kit & !caught & crew
+topic "Give them your crew name."
+prio quest
+voice redhand
+
+node start
+  say "What do they call you, then? Everybody's called something."
+  > @name "They call me {crew}." -> passed | caught   check look redhand 2
+  > @leave "Never mind." -> hub
+
+node passed
+  say "{crew}! Course they do. Go on, and stop looking at the lorry."
+  do call:post_wave
+  > @back1 "Something else." -> hub
+
+node caught
+  say "Nobody calls you anything. That's the problem. Armband off."
+  > @back2 "Fair enough." -> hub
+
+conv named.halcyon.claim
+for named:halcyon
+when kit:in_kit & !caught
+topic "Say you're with the lab."
+prio quest
+voice halcyon
+
+node start
+  say "Badge, or notebook number. One or the other. Policy."
+  > @notebook "{cover}. I'm on the field team." -> passed | caught   check look halcyon 2   if cover:notebook
+  > @claim "Field team. Let me through." -> passed | caught   check look halcyon 2
+  > @truth "Not with the lab. The coat was there." -> honest
+  > @leave "Never mind." -> hub
+
+node passed
+  say "Fine. Ten minutes. Don't touch anything labelled. Everything is labelled."
+  > @back1 "Something else." -> hub
+
+node caught
+  say "No. The coat goes back on the hook. Security will want a word."
+  > @back2 "Understood." -> hub
+
+node honest
+  say "Thank you for saying so. Please take it off before somebody writes you down."
+  > @back3 "Something else." -> hub

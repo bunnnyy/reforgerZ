@@ -1,0 +1,85 @@
+# The secure nets (docs/DIALOGUE.md, "The radio"): a Radio Operator who has cracked a faction's net
+# (RZ_SecureRadio) and calls on a radio can talk on it too. An intruder's words go to the net, never
+# to the air: nothing here is public. A lie that's caught costs the lie's Infamy as anywhere, and they
+# change codes on you (the listening ends). Nobody names you on a net: you're a station, not a person.
+
+conv radio.bastion.net
+for radio:bastion
+topic "Talk on Bastion's command net."
+prio world
+voice bastion
+
+node start
+  say "Bastion, all stations. Roll at the shift change. Nothing heard from Command. Over."
+  > @word "Post four. Say again the word. Over." -> word | lost   check lie bastion 3
+  > @listen "Just listen." -> listen
+  > @off "Switch off." -> hub
+
+node word
+  say "Four, Bastion. Same as this morning. Don't make me say it twice. Out."
+  do call:net_word
+  > @back1 "Switch off." -> hub
+
+node lost
+  say "Post four's on the other set, whoever you are. All stations, change to the spare. Out."
+  do call:net_lost
+  > @back2 "Switch off." -> hub
+
+node listen
+  say? night :: "Post two. Movement at the treeline, two hundred. Holding fire. They're only walking."
+  say? mood:grim :: "Bastion, post three. Strength as last reported. Ration as last reported. Over."
+  say "Post three, Bastion. Patrol out at the shift change, back by dark. Log it. Out."
+  > @back3 "Switch off." -> hub
+
+conv radio.redhand.net
+for radio:redhand
+topic "Listen in on the boss's channel."
+prio world
+voice redhand
+
+node start
+  say "Right. Lorry at the crossroads, fifteen. Bridge, ten. Who's short? Nobody's short. Lovely."
+  > @toll "Crew here. What's the toll today?" -> toll | lost   check lie redhand 2   truth crew
+  > @listen "Just listen." -> listen
+  > @off "Switch off." -> hub
+
+node toll
+  say "Same as yesterday. Why are you asking me? Write it on your hand. Out."
+  do learn:redhand.toll
+  > @back1 "Switch off." -> hub
+
+node lost
+  say "That's not one of mine. Somebody's on the channel, lads. Swap it. Swap it now!"
+  do call:net_lost
+  > @back2 "Switch off." -> hub
+
+node listen
+  say? mood:hope :: "If the cure's real, the price of everything goes up. Start writing bigger numbers."
+  say "Book says the bridge crew's owed. Book's always right. Pay the bridge crew."
+  > @back3 "Switch off." -> hub
+
+conv radio.halcyon.net
+for radio:halcyon
+topic "Listen to the lab's channel."
+prio world
+voice halcyon
+
+node start
+  say "Lab, all field stations. Sample intake is below target. The director requests patience."
+  > @count "Station two. Say again the count." -> count | lost   check lie halcyon 2
+  > @listen "Just listen." -> listen
+  > @off "Switch off." -> hub
+
+node count
+  say "Station two, the lab. {cure_percent} percent. Samples wanted at the gate. Please do not round it up."
+  do learn:halcyon.count
+  > @back1 "Switch off." -> hub
+
+node lost
+  say "There is no station two today. Noted. All stations, the backup schedule. Lab out."
+  do call:net_lost
+  > @back2 "Switch off." -> hub
+
+node listen
+  say "Station one, the lab. Volunteer seven is comfortable. Volunteer eight is comfortable. Out."
+  > @back3 "Switch off." -> hub

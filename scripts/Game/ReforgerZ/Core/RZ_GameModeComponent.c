@@ -982,6 +982,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	RZ_MajorSettings GetMajorSettings() { return m_MajorSettings; }
 	RZ_CureFinale GetFinale() { return m_Finale; }
 	RZ_Epilogue GetEpilogue() { return m_Epilogue; }
+	ResourceName GetSamplePrefab() { return m_sSamplePrefab; }
 	RZ_Headlines GetHeadlines() { return m_Headlines; }
 	RZ_MissionManager GetMissions() { return m_Missions; }
 	RZ_CureResearch GetCure() { return m_Cure; }
@@ -2520,6 +2521,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 		vector pos = ent.GetOrigin();
 		RZ_Util.KillCharacter(ent);
+		// Grief: nobody jokes near a player who turned, for a while (docs/WRITING.md, the season mood)
+		RZ_ToneGuard.Death(pos, -1);
 		// Turned in the open near a tribe's range: it takes them (docs/INFECTED.md, the taken)
 		m_Tribes.OnTurned(playerId, pos);
 

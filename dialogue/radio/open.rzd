@@ -61,3 +61,33 @@ node start
 node haggle
   say "Half! Lads, it's asked for half. Love the nerve. Still {toll}. Come and argue at the barrier. We've chairs."
   > @out "Out." -> hub
+
+# A distress call (docs/DIALOGUE.md, "The radio"): someone near a Haven house asking for help, an hour
+# in two. Answering sends them to that house's gate, where errands deal its gate card (Who's at the
+# Gate) under errands' own rules and pay. Once a real hour per player; nothing personal on air.
+conv radio.open.distress
+for radio:open
+when distress
+topic "Answer the call for help."
+prio ask
+voice plain
+
+node start
+  say "...anyone on this. Two of us, near {distress}. The car's done and the light's going."
+  say "We don't need much. Just which way."
+  > @house "Make for {distress}. Knock twice." -> sent   do call:distress
+  > @hurt "Is anyone hurt? Anyone bitten?" -> hurt   if bg:doctor,nurse
+  > @sorry "I can't get to you. Sorry." -> sorry
+
+node hurt
+  say "Her ankle. Not a bite, she says. I believe her, near enough."
+  > @house2 "Make for {distress}. Mind the ankle." -> sent   do call:distress
+  > @sorry2 "I can't get to you." -> sorry
+
+node sent public
+  say "Copy. The house, and say the radio sent us. ...Thank you."
+  > @out "Out." -> hub
+
+node sorry
+  say "...Right. We'll walk, then. Thanks for answering. Most don't."
+  > @out2 "Out." -> hub

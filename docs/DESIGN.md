@@ -658,7 +658,9 @@ their camps warn off the people they watch: [REPUTATION.md](REPUTATION.md#checkp
 
 Code: `Factions/RZ_CampLife.c`; settings: **Territory > Camp life**. Holdings, Haven safehouses,
 Halcyon's field stations and road posts look lived in, and their people do things. It's
-scenery and behaviour only: nobody new decides who is there, and nothing is saved.
+scenery and behaviour only: nobody new decides who is there, and nothing is saved. Each faction
+moves into the building in its town that suits what it does and dresses its yard and road
+entries; with no building that fits, it camps on rings round its centre.
 
 **What stands there.** Each faction has a **kit** of compositions (the author builds them from
 vanilla props: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)):
@@ -675,7 +677,53 @@ vanilla props: [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-composition
 The full list of compositions, and each faction's kit, is in
 [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits).
 
-- **Placement, any map.** The layout is seeded from the place's position, so the same pieces
+**The building it moves into** (setting **Buildings**, on). A holding, a safehouse or a field
+station reads the buildings round its spot with the town code's own building data (the building
+query, each building's box, and the prefab-name words of door marks and landmarks:
+`RZ_DoorSlots.KindOf`, `RZ_LandmarkFinder.Matches`) and picks one by kind, then size, then
+distance, then roads. Road posts don't (they stand beside their barrier).
+
+| Faction | Stronghold | Outpost |
+|---|---|---|
+| Bastion | the school, town hall, police station or barracks (another public building will do; never the church), the largest, on a road | a farm or a petrol station, else a house, on a road |
+| Red Hand | a garage or petrol station (a farm or a factory will do; never the church or a clinic), where roads meet | the same, or a shop or café by the road |
+| Haven | the church (a school or a farm will do, then a house) | the same; a safehouse is its own house, the nearest one |
+| Halcyon | the lab or a clinic (another public building will do), on a road | a house: the field station |
+
+- **Which building.** Within 60 m of a stronghold's spot (its quartermaster), 90 m of an outpost's
+  (its town's middle), 30 m of a safehouse's. At least 100 m² for a stronghold, 45 m² for an
+  outpost or a field station, 30 m² for a safehouse; never a side over 70 m (a hangar, a factory
+  hall), a ruin, or a building that is scenery. The best six by kind, size (the largest for a
+  stronghold, a middling one elsewhere) and distance are then scored by the roads: Bastion and
+  Halcyon's lab want a road within 25 m of the building, the Red Hand roads meeting (each further
+  road within 45 m counts). Any building on the shortlist will do when none of the faction's kind
+  is there; with none at all, rings (below). It's read once a run and kept; the log says which
+  (`Camp life: ... moves into ...`).
+- **Its shape.** The **front** is the wall with the outside door nearest the way in (the
+  building's door children), else the side facing it. The **road entries** are where roads cross
+  a ring round the building (50 m for a stronghold, 40 m for an outpost, 28 m for a safehouse), at
+  most five; the **gate** is the one toward the nearest other town (the main road in), the others
+  are **closed**. The **yard** is behind the building (the Red Hand's is its forecourt), the
+  cooking side left or right by the seed.
+- **Its people** come out in the yard: the territory spawns a holding's guards, named people and
+  an outpost's quartermaster there (a stronghold's quartermaster stays where it's placed). Named
+  people stay within 20 m of the yard, more beside a long building.
+- **Where each piece stands** is its kit entry's **At** (written by `tools/camp_kit/build.py`
+  from `pieces.py`), or Auto from its ring and use. Tents aren't put up: in a building they sleep
+  indoors.
+
+  | At | Where | Auto for | Set for |
+  |---|---|---|---|
+  | **Yard** | 3–10 m out behind the building (the Red Hand: in front), along its width | Centre: the fire, the tables, the boards, the flag pole, the radio table | |
+  | **Front** | 3–9 m out in front | | the Red Hand's trophy wall, the Haven's vegetable stall |
+  | **Back** | 10–18 m behind | Inner: the wash stand, the water barrel, the cold box, the clutter | |
+  | **Side** | 3–9 m off the cooking side | the cook pot, the woodpile | |
+  | **Walls** | 10–20 m behind or 4–14 m off either side | Edge: the line, the garden, the generator, the antenna, the latrine, the kennel | |
+  | **Door** | 2.5–5 m out by the front door | | the bear board, the memorial, the decon shower |
+  | **Gate** | beside the road at the gate, 6.5–9.5 m off its line | watch and lean pieces on the approach: the nest, the toll barrier | the red hand sheet, the plague board |
+  | **Closed** | beside the road at the other entries, one entry after another | the other approach pieces: the barricades | |
+
+- **Rings, with no building.** The layout is seeded from the place's position, so the same pieces
   stand in the same places on every visit. An outpost is laid out as a small compound, its pieces
   on rings round the centre by role:
 
@@ -687,10 +735,12 @@ The full list of compositions, and each faction's kit, is in
   | **Edge** | 28–46 m, the other sides | the line, the garden, the generator, the latrine, the kennel |
 
   Strongholds spread 30% wider, safehouses 20% tighter; road posts put everything 5–11 m beside
-  the road. A spot is used only on flat
+  the road.
+- **Any spot**, by a building or on a ring, is used only on flat
   ground (under about 12°, from four ground heights), out of the water and away from the line,
   at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
-  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece. A piece with no good
+  from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece (the rules
+  are one placer, `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). A piece with no good
   spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
   safehouse at its own stronghold) isn't dressed twice.
 - **Nothing to abuse.** `RZ_DressingGuard` checks every piece and its children as it spawns and
@@ -713,7 +763,7 @@ nearest players** (Live places); elsewhere they stand.
 
 | Job | How (vanilla AI) |
 |---|---|
-| Sentry | the nest's watch point (a smart action), else an observation post toward the approach |
+| Sentry | the nest's watch point (a smart action), else an observation post toward the approach; by a building, the **lookout** at a front corner (the one nearer the gate first, a second watcher the other; a safehouse's at its door) |
 | Patrol | a loop of four points 40–80 m out (patrol waypoints in a cycle) |
 | Sit | a free seat at the fire or a table (a sit smart action) |
 | Work, lean | a free loiter or lean point at the line, the garden, the cold box, the barrel, the barrier |
@@ -721,8 +771,8 @@ nearest players** (Live places); elsewhere they stand.
 | Wash (mornings, 05:30–07:00) | the wash stand, the shaving stand or the decon shower |
 | Chop (by day) | the chopping block at the woodpile |
 | Cook (17:30–18:30, before the meal) | the cook pot |
-| Stroll, courier | a walk out and back: to the road, or 60–90 m to the edge |
-| Off shift | to the tents; with nobody within 80 m they **sleep**: despawned as data, back in the morning |
+| Stroll, courier | a walk out and back: to the road (by a building, the gate), or 60–90 m to the edge |
+| Off shift | to the tents (by a building, in at the front door); with nobody within 80 m they **sleep**: despawned as data, back in the morning, out of the same tent or door |
 
 A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`,
 `RZ_Cook`, `RZ_Wash`, `RZ_Chop`) and seats are counted, so two people never take the same chair.
@@ -733,8 +783,8 @@ the group prefab it stands.
 
 | Faction | By day | Moments | Night |
 |---|---|---|---|
-| Bastion | the nest, two on the loop, one at the board, one chopping wood, one at the fire, the rest at work | **05:30 and 17:30**: the watch changes hands (someone else takes the nest and the loop); one shaves in the morning, one cooks from 17:30. **20:30, the roll**: everyone at the board for 3 minutes, the routine line read out | the nest and one at the fire; the rest asleep |
-| Red Hand | two at the barrier taking the toll, one strolling to the road and back, one chopping wood, the rest at the fire, the table or the sofa | one cooks from 17:30 (nobody washes) | one lookout, the rest drinking at the fire |
+| Bastion | the nest, two on the loop (by a building, the lookout between them), one at the board, one chopping wood, one at the fire, the rest at work | **05:30 and 17:30**: the watch changes hands (someone else takes the nest and the loop); one shaves in the morning, one cooks from 17:30. **20:30, the roll**: everyone at the board for 3 minutes, the routine line read out | the nest and one at the fire; under the season's **curfew**, the nest and the lookout, nobody at the fire; the rest asleep |
+| Red Hand | two at the barrier taking the toll (at a stronghold's building, then the lookout), one strolling to the road and back, one chopping wood, the rest at the fire, the table or the sofa | one cooks from 17:30 (nobody washes) | one lookout, the rest drinking at the fire |
 | Haven | the lookout at the door, one chopping wood, chores (the line, the garden, the barrel, the stall) | one washes in the morning; one cooks from 17:30; **18:30, the dusk meal**: everyone at the table but the lookout; a name is read (the routine line) | the lookout; the rest inside (asleep) |
 | Halcyon | a guard pair at the door, researchers at the tables, work at the cold box and the racks | one through the decon shower in the morning; the **courier** walks out to the edge and back every 20 minutes | one guard, one at the cold box; the rest asleep |
 | Road posts | the crew leaning at the barrier | — | the same |
@@ -747,13 +797,24 @@ the group prefab it stands.
   sleep, so they can always be found and talked to. **Quartermasters, leaders and the medic**
   never get a job.
 - **Extras:** each live place may add **1** more person by day (its guard prefab, at most 6 on the
-  server), coming out of a tent while nobody is within 60 m. They join the routine like anyone
-  else, are the first pick for the courier's walk, and are removed with the place.
+  server), coming out of a tent (or the building's door) while nobody is within 60 m, but only
+  while the place has fewer people than it has **in play**: Bastion's stronghold 12, its outposts
+  6; the Red Hand's stronghold 10, a crew camp 4; the Haven's stronghold 8, an outpost 5, a
+  safehouse 3; Halcyon's lab 6, a field station 2. They join the routine like anyone else, are the
+  first pick for the courier's walk, and are removed with the place.
 - **Routine lines** are the territory's notices at the phase change (subtitles come with
   [Subtitles and the reader](ROADMAP.md#ui), planned).
 
 *Simplified:* a guard prefab that is an AI group gets one job for the whole group. Sleep is a
 despawn, not an animation. Props spawned at run time may not cut the navmesh (the VERIFY list).
+By a building: the lookout stands on the ground at a corner, not on the roof or in the bell
+tower; a closed entry is a barricade beside the road, not across it (the road stays open for the
+supply trucks and players' cars); the building's rooms aren't dressed inside (its stores are the
+quartermaster, its mess the meal at the yard's table, its barracks the sleepers); there are no
+graves, stockade or dogs; and no searchlight (no vanilla light prop is checked as safe yet, and
+nothing sweeps one). The people in play stay within the guard, occupant and extras caps, so a
+stronghold seldom reaches its count. Kinds are read from prefab names, so a map whose buildings
+are named otherwise gets the largest building that fits.
 
 ### Supply trucks
 
@@ -1854,7 +1915,7 @@ pick it. Tags show costs and requirements, never outcomes.
 |---|---|
 | Your access rank with the listener's faction (mixed tiers one lower, as built) | Stranger, Uneasy 0 · Known, Tolerated, Wildcard 1 · Trusted, Respected 2 · Champion 3 |
 | A background the option lists | +1 |
-| From dialogue (remembered help, or a vouch) | at most +1: dialogue's trees pass regard 2 or more, or the built helped or saved memory of this life ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)); a vouch is planned |
+| From dialogue (remembered help, or a vouch) | at most +1: dialogue's trees pass regard 2 or more, or the built helped or saved memory of this life ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)), or a vouch from someone they trust standing by ([DIALOGUE.md](DIALOGUE.md#several-players)) |
 | A lie found out, or a questline you worked against them (the life records `lied.<f>`, `crossed.<f>`) | −1 each (nothing writes them yet) |
 
 Hunted or worse: they won't be persuaded. People with no faction read your score with the Haven, at

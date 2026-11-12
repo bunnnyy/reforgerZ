@@ -373,7 +373,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **283 prefab fields**: 40 on `RZ_GameModeComponent`, 236 in its settings objects, and 7 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **288 entries**: 177 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 78 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **286 prefab fields**: 40 on `RZ_GameModeComponent`, 237 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **290 entries**: 178 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 79 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -514,6 +514,8 @@ and the UI files) need none, and seven have no base:
 | (existing prefab) | `LampKerosene_01_green.et`'s lit twin, its light on LIT_ON_SPAWN, no switch action (`RZ_Trace_Lantern_Lit.et`) | — | World > Traces > Kit > Lantern, lit | optional | S1, a lantern at the lived-in places nearest players after dark; empty = no lanterns. VERIFY 4 of the Traces spike: it lights on clients that stream it in |
 | `RZ_Sound_RadioHiss.et` | a new GenericEntity prefab with an RplComponent, a static radio mesh (no radio actions) and a SoundComponent whose project (.acp) has a looped static hiss on the event SOUND_LOOP | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Radio hiss | optional | S3, the hiss at the last meal and the Day 1 roadblock, 2 at most; empty = the broadcast's line only. Manual: the sound itself. VERIFY 6: the loop plays until the entity goes |
 | `RZ_Sound_GeneratorHum.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a looped generator hum on the event SOUND_LOOP; no mesh needed | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Generator hum | optional | S5, at the lab and Halcyon's outposts; empty = silent. Manual: the sound itself. As the radio |
+| `RZ_Sound_GeneratorHumNight.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has the generator hum, quieter, looped on the event SOUND_LOOP; no mesh needed | `RZ_AmbientLoopComponent` (Event SOUND_LOOP) | World > Traces > Kit > Generator hum, night | optional | S5 after dark, quieter; empty = the day's hum all night. Manual: the sound itself. As the generator hum |
+| (existing prefab) | compositions built like the scenes' own (Prefabs/ReforgerZ/Traces/): one more piece for a scene (a suitcase, a chair, a bucket) and its faded twin, or a faded twin of a scene's own piece (section 4, Traces) | — | World > Traces > Kit > Pieces that age (each entry's Piece and Faded) | optional | scenes that drop a piece as they age, and boards with a fresh and a faded look; empty = each scene is its one composition |
 | `RZ_Sound_Dogs.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a few dogs barking that stop dead on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Dogs | optional | S4, 5 minutes before a pack's hunt, at a town by its lair; empty = the Hunter's line only. Manual: the sound itself. As the tribes' call sound |
 | `RZ_Sound_Bell.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has one stroke of a church bell (carrying 1.2 km) on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Bell | optional | S6, at the Day 4 church at 18:30 after a Remembered name; empty = the line only. Manual: the sound itself. VERIFY 9: it carries to 1.2 km |
 | `RZ_Sound_Loudspeaker.et` | a new GenericEntity prefab with an RplComponent and a SoundComponent whose project (.acp) has a loudspeaker's chime and static on the event SOUND_CALL | `RZ_CallSoundComponent` (Event SOUND_CALL) | World > Traces > Kit > Loudspeaker | optional | S7, at Bastion's holdings at 05:30 and 17:30; empty = the subtitle only. Manual: the sound itself. As the tribes' call sound |
@@ -1045,92 +1047,35 @@ spawns, but nobody can pick it up and the building never counts as emptied.
 How camp life works is in [DESIGN.md](DESIGN.md#camp-life). It needs nothing to run: with no
 kits every place stays bare, and with no waypoint slots its people walk to their spots with the
 **Zombies > Move waypoint** and stand there. The plugin fills the four vanilla waypoint slots and
-the group prefab (section 4, *Camp life*). The smart-action waypoint, the 49 compositions and the
-six kits are in the repo, built as text and loading in Workbench (their stand-ins are in
-[Stand-in bases](#stand-in-bases)); the steps below say how, to redo or add to them.
+the group prefab (section 4, *Camp life*). Everything else is built from one file.
 
-**1. The smart-action waypoint.** Vanilla ships the class `SCR_SmartActionWaypoint` but no prefab.
-Create a new entity of that class in the World Editor, leave its tag and entity name empty (the
-script sets both), and save it as `Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et`. Set it as **Camp
-life > Smart action waypoint**.
+**The source: `tools/camp_kit/pieces.py`.** It holds the 49 camp-life pieces (each piece's props
+with their position, turn, height and tilt, and its seats), the six kits (faction, place, pieces in
+order with count and ring), where a piece stands by a building (`AT`, written as each kit piece's
+**At**; the rest are Auto) and the Traces compositions (section 4, *Traces*). To change a piece,
+edit it there and run:
 
-**2. The compositions.** Build each in `Prefabs/ReforgerZ/Dressing/<Faction>/` (`Common/` for the
-shared ones) from vanilla props: an empty root entity with an `RplComponent` (so clients see it
-when it spawns at run time), the props as children, and a **seat** for each person who can use it.
-A seat is a **direct child of the root** (vanilla looks for smart actions on the entity and its
-children, one level down) with `SCR_AISmartActionSentinelComponent`: its **Tags** hold the use's tag,
-its action offset is where the person stands or sits, **Look position** points where they face,
-and **Loiter animation** is the pose. If a vanilla chair or bench you use already carries a
-sentinel, add the tag to its list instead. Keep footprints small (under about 4 × 4 m, a large
-tent 6 × 4 m) and nothing with physics. A **Ring** in the tables is the piece's **Role**; on the
-inner ring a Sleep or Wash piece goes to the sleeping area at the back and a Cook or Chop piece to
-the cooking area at one side, by itself ([DESIGN.md](DESIGN.md#camp-life)). A piece facing out
-(the perimeter) has its front on the root's +Z.
+| Command | Does |
+|---|---|
+| `py tools/camp_kit/build.py` | Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**, **Smart action waypoint**) and the composition slots of **World > Traces > Kit** |
+| `py tools/camp_kit/render.py` | Draws [designs/camp_plans.html](../designs/camp_plans.html): a top-down plan of every piece, a camp concept per faction and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
 
-**Plain mesh copy** means a new prefab that has only the model (a `MeshObject` and its collision)
-of a vanilla thing that would be a real item or have an action: no inventory, no pick-up, no
-user action. Use it for the boots, the axe, the ammo boxes, the door leaf, the sample tubes and
-anything the guard's log names. **A new decal** is a flat texture on a plane (a decal or a
-painted-sheet material): the red hand, the bear stencil, the plague doctor, chalk marks.
+A new prop needs its ResourceName: pass `--index` with the resource index the Workbench plugin
+**ReforgerZ: Write resource index** writes ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)).
+`build.py` adds it to `tools/camp_kit/props.txt` as a `GenericEntity`; check its entity class and
+whether its prefab already has a `Hierarchy` component (**ReforgerZ: Dump prefabs and classes**) and
+correct the line (`Class {GUID}path`, plus ` hier` if it has one: a child can't take a second
+`Hierarchy`, and Workbench logs "component Hierarchy cannot be combined" when it does).
 
-*The 21 original pieces:*
-
-| Composition (folder) | Props to use | Seats (tag, pose) | Use, role in the kit |
-|---|---|---|---|
-| `RZ_Dress_FirePit` (Common) | `Prefabs/Props/Civilian/Fireplace_01.et` with a campfire particle, a log or two, `SackUniversal_01_Pile.et` | 4 × `RZ_Sit`, Sit, facing the fire | Sit, Centre |
-| `RZ_Dress_Table` (Common) | `PicnicTable_01`, or `TableMilitary_US_01.et` and two benches; a `LampKerosene_01_green.et` | 4 × `RZ_Sit`, Sit | Sit, Centre (Bastion, Haven: the meal's table) |
-| `RZ_Dress_Tarp` (Common) | a camo net or canvas over two poles, `CrateWooden_01_plain.et` | 2 × `RZ_Work`, Smoking / Loitering | Work, Inner |
-| `RZ_Dress_FireBarrel` (Common) | `BarrelMetal_01_rust.et` with a small campfire particle on top | 2 × `RZ_Lean`, Lean left / Lean right | Lean, Centre (Red Hand) or beside a road post |
-| `RZ_Dress_Tent_Small_Civilian` (Common) | a small civilian tent from `Prefabs/Structures/Recreation/` (`Tent*`), a bedroll inside | none | Sleep, Inner (Haven, Red Hand) |
-| `RZ_Dress_Tent_Large_Civilian` (Common) | a larger civilian tent, two bedrolls | none | Sleep, Inner (strongholds) |
-| `RZ_Dress_Tent_Small_Bastion` (Bastion) | `TentSmallUS_01.et`, a bedroll | none | Sleep, Inner |
-| `RZ_Dress_Tent_Large_Bastion` (Bastion) | `TentUS_01_Assembled.et`, two cots | none | Sleep, Inner |
-| `RZ_Dress_SentryNest_Bastion` (Bastion) | `Sandbag_Barricade_USSR_04.et` (or sandbags from `Prefabs/Props/Military/Sandbags/`) in a half ring | 1 × `RZ_Watch`, standing or crouched, look position outward, look range 120°, binoculars optional | Watch, Approach |
-| `RZ_Dress_RosterBoard` (Bastion) | a notice board or a plank on two posts with `Notice_A4_Vertical_V1.et` sheets | 4 × `RZ_Gather`, Loitering, facing the board | Gather, Centre |
-| `RZ_Dress_SentryNest_RedHand` (Red Hand) | tyres, a few sandbags, a pallet: scrappier than Bastion's | 1 × `RZ_Watch` as above | Watch, Approach |
-| `RZ_Dress_CardTable` (Red Hand) | a small table, `CrateWooden_01_plain.et` as seats, empty bottles | 3 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_TollBarrier` (Red Hand) | the same barrier as **Checkpoints > Red Hand roadblock** (a wreck or logs), a chair | 2 × `RZ_Lean`, Lean left / Smoking | Lean, Approach |
-| `RZ_Dress_WashingLine` (Haven) | `Clothesline*` from `.../Garden/`, a basket | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_Garden` (Haven) | a vegetable bed, `Hutch_01.et`, sacks, a hoe leaning on it | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_WaterBarrel` (Haven) | a wooden or plastic rain barrel (never a well) | 1 × `RZ_Work`, Loitering | Work, Inner |
-| `RZ_Dress_Tent_Halcyon` (Halcyon) | a white or medical canvas shelter (no field hospital station), `TableMedical_01.et` inside | 1 × `RZ_Work`, Loitering | Work, Inner (the canvas shelter) |
-| `RZ_Dress_FieldTable` (Halcyon) | `TableMilitary_US_01.et`, closed sample cases and a notebook as props, a stool | 2 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_ColdBox` (Halcyon) | a cooler or a closed medical box prop | 1 × `RZ_Work`, Loitering | Work, Inner |
-| `RZ_Dress_Antenna` (Halcyon) | `Antenna_FIA_02.et` or `Antenna_R161_01.et` on a stand, a cable | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_Generator` (Halcyon) | `GeneratorPortable_US_01_Off.et`, a cable run | 1 × `RZ_Work`, Loitering | Work, Edge |
-
-*The 28 lived-in pieces* (paths under `Prefabs/`; tags `RZ_Cook`, `RZ_Wash` and `RZ_Chop` are new: set the piece's **Use** to Cook, Wash or Chop):
-
-| Composition (folder) | Props to use | Seats (tag, pose) | Use, ring |
-|---|---|---|---|
-| `RZ_Dress_Firewood` (Common) | `Props/Forest/WoodPile/WoodPile_01_A.et`, `Props/Civilian/LogChopping_01.et` as the chopping block, two `Props/Forest/WoodPile/WoodLog_01_A.et`, an axe in the block (plain mesh copy: a real axe is an item) | 1 × `RZ_Chop`, Loitering, facing the block | Chop, Inner (the cooking area) |
-| `RZ_Dress_CookPot` (Common) | `Props/Civilian/Fireplace_01.et` with a small campfire particle, a tripod of three `Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et` leaned together, `Props/Civilian/Bucket_01.et` hung as the pot, `Props/Furniture/SkewerGrill_01/SkewerGrill_01.et`, `LitterInterior_USSR_01_bowl.et` and `_mug.et` (`Props/Garbage/Generic/LitterInterior_01/Single/`) | 1 × `RZ_Cook`, Loitering, facing the pot | Cook, Inner (the cooking area) |
-| `RZ_Dress_WashStand` (Common) | a pole with `Props/Furniture/MirrorBathroom_01.et`, `Props/Furniture/SinkOld_01.et` on a `Props/Crates/CrateWooden_01_plain.et` (or `Props/Civilian/Bucket_02.et` on `Props/Furniture/Stool_01.et`), `Props/Furniture/TowelRack_01.et` | 1 × `RZ_Wash`, Loitering, facing the mirror | Wash, Inner (behind the tents) |
-| `RZ_Dress_Latrine` (Common) | two `Structures/Walls/Metal/TinWall_01/TinWall_01_3m.et` as an L-shaped screen, `Props/Civilian/Bucket_01.et`, a plank seat (`Props/Garbage/Generic/Junk_01/Junk_01_single_planks.et`). Not `Latrine_01.et`: its door is a real door | none | None, Edge |
-| `RZ_Dress_DryingLine` (Common) | two `Structures/Civilian/ClotheslinePole_01.et`, shirts and a pair of boots hung on it (plain mesh copies: clothes are items), `Props/Furniture/BasketLaundry_01.et` | 1 × `RZ_Work`, Loitering | Work, Edge |
-| `RZ_Dress_CrateChairs` (Common) | `Props/Crates/CrateWooden_01_plain.et` as the table, `Props/Furniture/ChairOld_01.et`, `ChairOld_02.et`, `Stool_01.et`, `Props/Military/Camps/LanternMilitary_US_01.et` on the crate and two more hung from poles (vanilla has no string lights) | 3 × `RZ_Sit`, Sit, facing the crate | Sit, Centre |
-| `RZ_Dress_Clutter` (Common) | `Props/Civilian/SackUniversal_01.et`, `Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et`, `Props/Civilian/Guitar_01/Guitar_01.et` leaned on a sack, `LitterInterior_USSR_01_tincan_V1.et` and `_V2.et`, `Props/Civilian/BeerBottle_01_empty_brown.et`, a deck of cards (plain mesh copy, or leave it out), `Props/Civilian/Wheelbarrow_01.et` against a crate (vanilla has no bicycle) | none | None, Inner |
-| `RZ_Dress_RadioTable` (Common) | `Props/Furniture/TableOld_01/TableOld_01.et`, `Props/Civilian/RadioSmall_01_black.et` (if it shows a prompt in play, a plain mesh copy), `Props/Furniture/ChairOld_01.et`, `Props/Civilian/LampKerosene_01/LampKerosene_01_green.et`. Never a radio station | 1 × `RZ_Sit`, Sit, facing the radio | Sit, Centre |
-| `RZ_Dress_ScrapShelter` (Common) | two `Props/Industrial/Pallets/Pallet_01.et` stood up as walls, a `TinWall_01_3m.et` sheet laid across as the roof, `Props/Garbage/Generic/Junk_01/Junk_01_single_mattress.et`, `BlanketBeach_01_brown.et` inside | none | Sleep, Inner (the sleeping area) |
-| `RZ_Dress_Barricade_Fence` (Common) | `Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_4m.et`, two `Props/Industrial/Pallets/Pallet_01.et` stood up at its end, `Pallet_01_Pile.et` | none | None, Approach (a perimeter segment) |
-| `RZ_Dress_Kennel` (Common) | `Structures/Civilian/DogHouse_01.et`, a bowl (`LitterInterior_USSR_01_bowl.et`), a short chain (plain mesh), no dog | none | None, Edge |
-| `RZ_Dress_Barricade_Sandbag` (Bastion) | `Props/Military/Sandbags/Sandbag_01_long_burlap.et` and `Sandbag_01_end_burlap.et` in a straight run of about 4 m | none | None, Approach (a perimeter segment) |
-| `RZ_Dress_FlagPole` (Bastion) | `Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et`, no flag (the Zone flies none), `Sandbag_01_single_burlap.et` round its foot | none | None, Centre |
-| `RZ_Dress_ShavingStand` (Bastion) | a pole with `Props/Furniture/MirrorBathroom_01.et`, `Props/Civilian/Bucket_02.et` on `Props/Furniture/Stool_01.et`, `Props/Furniture/TowelRack_01.et` | 1 × `RZ_Wash`, Loitering, facing the mirror | Wash, Inner (behind the tents) |
-| `RZ_Dress_CrateSeats` (Bastion) | four ammo-crate-shaped seats round `Props/Crates/CrateWooden_02/CrateWooden_02_1x1x1.et`: plain mesh copies of an ammo box's model, **never** a vanilla ammo box | 4 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_DutyBoard` (Bastion) | `Props/Services/ChalkBoard_01/ChalkBoard_01.et` (or `Structures/Civilian/BoardMap_01/BoardMap_01.et`) with `Notice_A4_Vertical_V1.et` sheets: the duty rota | 2 × `RZ_Gather`, Loitering, facing the board | Gather, Centre |
-| `RZ_Dress_Barricade_Scrap` (Red Hand) | `TinWall_01_3m.et` sheets, `Props/Garbage/Tires/TirePile_01_small.et`, `Props/Garbage/Generic/Junk_01/Junk_01_pile_small.et`, a `Pallet_01.et` | none | None, Approach (a perimeter segment) |
-| `RZ_Dress_RedHandSheet` (Red Hand) | one `TinWall_01_3m.et` sheet stood on two `TirePile_01_small.et`, the red hand painted on it (a new decal) | none | None, Approach |
-| `RZ_Dress_TrophyWall` (Red Hand) | `Structures/Walls/Metal/TinWall_01/TinWall_01_6m_A.et` hung with `Props/Forest/DeerSkull_01/DeerSkull_01_board.et`, helmets, a Bastion armband and number plates (plain mesh copies: never real items) | none | None, Edge |
-| `RZ_Dress_Sofa` (Red Hand) | `Props/Furniture/Sofa_02/Sofa_02_green.et`, `Props/Furniture/Armchair_01.et`, `Props/Civilian/BeerBottle_01_group.et` on a `BarrelMetal_01_rust.et` side table | 3 × `RZ_Sit`, Sit | Sit, Centre |
-| `RZ_Dress_BearDoor` (Haven) | a door leaf leaned on a `WoodenFenceOld_01_pole.et` (plain mesh copy: a real door has its open action), the bear stencil painted on it (a new decal) | none | None, Approach |
-| `RZ_Dress_Memorial` (Haven) | `Props/Furniture/TableOld_01/TableOld_01_white.et`, three `Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et`, `Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et`, `Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et`, `Props/Commercial/Posters/Notice_A4_Vertical_V1.et` sheets with names, `Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_white.et` | 1 × `RZ_Work`, Loitering, facing the table | Work, Centre |
-| `RZ_Dress_ChildrensCorner` (Haven) | `Props/Services/ChalkBoard_01/ChalkBoard_01.et` propped low, `Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et`, chalk drawings on the ground (a new decal), a ball (plain mesh copy: vanilla has no loose ball), two `Stool_01.et` | none | None, Inner |
-| `RZ_Dress_VegStall` (Haven) | `Props/Commercial/MarketStand_01.et`, two `CrateWooden_01_plain.et`, `Props/Civilian/SackUniversal_01_Pile.et`, `Bucket_01.et`; vegetables as plain mesh copies (food is an item) or leave the sacks | 1 × `RZ_Work`, Loitering, behind the stall | Work, Edge |
-| `RZ_Dress_SampleRack` (Halcyon) | `Props/Commercial/ShelfUniversal_01_narrow.et` behind a pane of glass (a plain glass plane), `Props/Services/Healthcare/CabinetMedical_01.et`, `Props/Medical/ToolsSurgical_01_autoclavedrum.et`, sample tubes (plain mesh copies: never the sample items) | 1 × `RZ_Work`, Loitering, facing the rack | Work, Inner |
-| `RZ_Dress_DeconShower` (Halcyon) | `Structures/Recreation/Beach/ShowerBeach_01.et` on a `Pallet_01.et` floor, `Props/Furniture/ShowerCurtains_01_straight.et`, `Bucket_02.et` | 1 × `RZ_Wash`, Loitering, under the shower | Wash, Inner (behind the tents) |
-| `RZ_Dress_PlagueBoard` (Halcyon) | a plywood sheet on two `WoodenFenceOld_01_pole.et`, the plague-doctor stencil on it (a new decal) | none | None, Approach |
-| `RZ_Dress_NotebookBench` (Halcyon) | `Props/Forest/ForestBench_01/ForestBench_01.et`, `Props/Civilian/Notebook_01_Stack.et` and `Props/Civilian/FileOffice_01_Stack.et` on it, `LampKerosene_01_green.et` | 2 × `RZ_Sit`, Sit | Sit, Centre |
+**What a piece is.** An empty root entity with an `RplComponent` (so clients see it when it spawns
+at run time) and a `Hierarchy`, the props as children, and a **seat** for each person who can use it:
+a **direct child of the root** (vanilla looks for smart actions on the entity and its children, one
+level down) with `SCR_AISmartActionSentinelComponent`, its **Tags** holding the use's tag
+(`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`, `RZ_Cook`, `RZ_Wash`, `RZ_Chop`), **Look
+position** where they face and **Loiter animation** the pose; a watch seat looks over 120°. A
+piece's front is its +Z. Keep footprints small (under about 4 × 4 m, a large tent 6 × 4 m) and
+nothing with physics. Decals (the red hand, the bear stencil, the plague doctor, chalk) and plain
+mesh copies of items aren't made yet: those spots use a plank board or are left out.
 
 **Never use** anything from `Prefabs/Props/Military/AmmoBoxes`, `.../SupplyBox`, `.../Arsenal` or
 `Prefabs/Props/EmptyStorages/` (`USSR_AmmoBox_empty.et`), vanilla subcompositions with "Ammo",
@@ -1145,26 +1090,7 @@ action, and logs `Dressing: removed ...`. A generator or crate whose **root** ha
 whole. Check `GeneratorPortable_US_01_Off.et` and the crate: if the log names them, use a plain
 mesh copy.
 
-**3. The kits** (**Camp life > Kits**). One kit per faction for **Any** place, and one each for
-Bastion's and the Red Hand's **Road post**s (road posts take only a kit made for them). A kind's
-own kit wins over Any, so a stronghold kit is optional. List the pieces most important first: a
-place takes them in order until its piece count (stronghold 20, outpost 13, safehouse 8, field
-station 9, road post 4). Set each piece's **Use**, **Role** and **Seats** as in the tables (Seats
-= the number of sentinels with its tag; 1 for a piece with none). The ring is in brackets.
-
-| Kit | Pieces in order (count, ring) |
-|---|---|
-| Bastion, Any | SentryNest_Bastion (1, approach), RosterBoard (1, centre), FirePit (1, centre), Tent_Small_Bastion (2, inner), CookPot (1, inner), Barricade_Sandbag (2, approach), Table (1, centre), Firewood (1, inner), ShavingStand (1, inner), FlagPole (1, centre), CrateSeats (1, centre) · *an outpost stops here (13)* · Tent_Large_Bastion (1, inner), DutyBoard (1, centre), Tarp (1, inner), DryingLine (1, edge), Latrine (1, edge), Clutter (1, inner), Tent_Small_Bastion (1 more, inner) |
-| Red Hand, Any | TollBarrier (1, approach), FireBarrel (1, centre), CardTable (1, centre), Tent_Small_Civilian (2, inner), SentryNest_RedHand (1, approach), CookPot (1, inner), Sofa (1, centre), RedHandSheet (1, approach), Barricade_Scrap (1, approach), Firewood (1, inner), Clutter (1, inner), ScrapShelter (1, inner) · *13* · TrophyWall (1, edge), Kennel (1, edge), FirePit (1, centre), Tarp (1, inner), Tent_Large_Civilian (1, inner), Latrine (1, edge), DryingLine (1, edge) |
-| Haven, Any | Table (1, centre), CookPot (1, inner), WaterBarrel (1, inner), WashStand (1, inner), WashingLine (1, edge), Garden (1, edge), BearDoor (1, approach), Firewood (1, inner) · *a safehouse stops here (8)* · Memorial (1, centre), Tent_Small_Civilian (1, inner), ChildrensCorner (1, inner), Barricade_Fence (1, approach), VegStall (1, edge) · *13* · FirePit (1, centre), CrateChairs (1, centre), Tent_Large_Civilian (1, inner), Kennel (1, edge), Latrine (1, edge), Clutter (1, inner), Tarp (1, inner) |
-| Halcyon, Any | FieldTable (2, centre), ColdBox (1, inner), Tent_Halcyon (1, inner), DeconShower (1, inner), Generator (1, edge), SampleRack (1, inner), PlagueBoard (1, approach), Antenna (1, edge) · *a field station stops here (9)* · NotebookBench (1, centre), Barricade_Fence (2, approach), Tarp (1, inner), Tent_Large_Civilian (1, inner), RadioTable (1, centre), Latrine (1, edge), DryingLine (1, edge), Clutter (1, inner), CrateChairs (1, centre), Tent_Halcyon (1 more, inner) |
-| Bastion, Road post | FireBarrel (1), SentryNest_Bastion (1), Tarp (1), Barricade_Sandbag (1) |
-| Red Hand, Road post | FireBarrel (1), CardTable (1), Tarp (1), Barricade_Scrap (1) |
-
-Each Any kit holds 20 pieces, a stronghold's count. A place loses a piece that finds no good spot,
-so a cramped outpost can show fewer.
-
-**4. Test it.** Place each composition once in a test world and check the log is silent (no
+**Test it.** Show the pieces in Workbench with the plugin **ReforgerZ: Show the next composition group** ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or place each once in a test world, and check the log is silent (no
 `Dressing: removed` lines); then walk up to an outpost of each faction in Workbench play (the
 play-test checklist, *Camp life*).
 
@@ -1379,10 +1305,10 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform**, head-piece and service-weapon **keywords** per faction, 2 pieces, checked every 10 s, blown 60 min of play, 3 catches a life, impersonation 3 Infamy (6 an hour), gate pass 10 min, **Confiscation** (on), the Red Hand's fine 10 and beating 0.2, **Colours** (on), claim in full kit (on), stand radius 1,500 m, **again looks** every 3 min, **roll call** (on), **word gets round** 30 min within 1,500 m, **vouching** (on, 5 Infamy), **the Rogue's price** (20), **kit marks** (on), issued grace 24 real hours), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
-| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half) ([REPUTATION.md](REPUTATION.md#reputations)) |
+| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
-| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120; 45 while another player waits at the same person); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)) and **Talk Favor a day** (20 per faction) ([UI.md](UI.md#how-the-scripts-fit)) |
+| Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
 | Shared | Shared | `m_SharedSettings` | **Lanes** (on: unasked contacts one per 4 min, barks 60 s and 10 min a speaker), **Callbacks** (on, 10 a player, a pool of 100, 1 km, an hour of play apart, 3 season days, 24 h in the epilogue), **Marks** (on, spawn 150 m, remove past 200 m after 10 min, pools 40 / 100 / 30 / 30, the verge 6–10 m), the **season budget** lanes (majors ±20 morale and ±8 strength a faction, ±15 / ±5 a major, ±10 / ±5 a call; contracts ±10 / ±4 a season day, loyalty floor 30; finale ±10 / ±5; epilogue ±5), the **set-piece calendar** (quiet 600 m, 2 waits) ([DESIGN.md](DESIGN.md#the-shared-engine)) |
 | Map | (top level) |  | **Map markers** (on): vanilla text markers for world events and the lab, used only while the icon layer isn't set up (UI > Map icon layout) |
 | Debug | (top level) |  | Status log every few minutes (on) |
@@ -1467,6 +1393,8 @@ python3 tools/dialogue_pack.py --check         # lint, and fail if the packs or 
 python3 tools/dialogue_pack.py --lock          # add newly shipped conversation and choice ids to the lock
 python3 tools/dialogue_sim.py haven.leader.list --bg nurse --tier haven=trusted   # one conversation as one character sees it
 python3 tools/voice_sim.py                     # the voice bank: pool sizes and joke shares by mood
+python3 tools/voice_sim.py --season speed1     # a scripted season (speed1, speed2, slow): shares by mood, repeats per window
+python3 tools/dialogue_sim.py occupant.house.stove_bed --house short --chars "Mara:--tier haven=known" --chars "Tom:--bg nurse" --race
 ```
 
 **Conversations** are written in `dialogue/**/*.rzd` and packed into
@@ -1680,7 +1608,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **101** lines with the tag, all in the game scripts (one is the comment in
+There are **104** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1701,7 +1629,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:207` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:943` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (63)
+### Medium risk: big features, with a fallback (65)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1748,9 +1676,11 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:772` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:904` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Missions/Errands/RZ_Strangers.c:947` | a stranger is placed at the spot itself, 150–350 m ahead of the player (or 60–90 m from a stopped car), with no line-of-sight test for the design's out-of-sight point 60–90 m off | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Zombies/RZ_TribeProps.c:68`, `:348` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
+| `Zombies/RZ_TribeRest.c:987` | a dead leader's body withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stays where it fell through the vigil, and goes when it's inserted again at dawn | The body goes with the engine's usual cleanup; the vigil, its samples and its lines are unchanged |
+| `Zombies/RZ_TribeRest.c:1069` | with **Zombies > Tribes > Rival faction** set, Bacon's infected fight bodies moved onto a faction the faction manager makes hostile to theirs, mid-fight, during a staged Border Night | Nothing is seen fighting: the Border Night is heard, then found, as before. Leave **Rival faction** empty |
 | `Cure/RZ_CureFinale.c:1483` | the cure finale's clean room and loading bay: child entities named `RZ_CleanRoom` and `RZ_LoadingBay` on the lab prefab come back by `GetName()` through `GetChildren`/`GetSibling` on the server | Without them a land point 15–25 m from the lab (the bay 25 m on the far side) stands in: check it's somewhere players can stand and fight |
 | `Cure/RZ_CureFinale.c:1513` | `CharacterControllerComponent.IsUnconscious()` is true on the server for a downed player, so a downed player doesn't count in the clean room | If it's always false, a downed player holds the room until killed: fine for a first play-test |
 | `Cure/RZ_CureFinale.c:2014` | a faction group spawned at the stand fights the players whose hidden faction carries its bit ([REPUTATION.md](REPUTATION.md#what-makes-ai-shoot-you)) | The groups fight only the infected; set **Finale > Groups at the lab** to 0 if they misbehave |
@@ -1760,12 +1690,12 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
 
-### Low risk: contained or cosmetic (22)
+### Low risk: contained or cosmetic (23)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
-| `Director/Epilogue/RZ_EpilogueRest.c:575` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
-| `Director/Epilogue/RZ_EpilogueRest.c:673` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
+| `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
+| `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
@@ -1782,9 +1712,10 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
-| `Factions/RZ_CampLife.c:967` | the road network's points follow every drivable road near a camp | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
-| `Factions/RZ_CampLife.c:1523` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:1590` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `World/Traces/RZ_DressPlacer.c:47` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
+| `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
+| `Factions/RZ_CampLife.c:2365` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:2445` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 
 ### The UI (14)
 
@@ -1803,7 +1734,7 @@ quartermaster's Buy actions, **Spawn row layout** for vanilla's deploy menu, **U
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_UIData.c:959` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `Dialogue/RZ_Dialogue.c:650` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
+| `Dialogue/RZ_Dialogue.c:700` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:179` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:541` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ShopMenu.c:590` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
@@ -1820,7 +1751,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 ```
 [ReforgerZ] No common zombie prefabs configured. Set them on RZ_GameModeComponent > Zombies.
 [ReforgerZ] Stealth: on. Infected within 60 m see the most visible player near them (perception x0.3 to x1.2); losing them after 8 s hidden, searching 45 s: off (no move waypoint).
-[ReforgerZ] Camp life: dressing on, routines on, 0 kits, smart actions off, lone characters stand.
+[ReforgerZ] Camp life: dressing on, routines on, buildings on, 0 kits, smart actions off, lone characters stand.
 [ReforgerZ] No lab prefab set. Samples can't be delivered until one is configured or placed.
 [ReforgerZ] Hostility: bitmask mode, only 0 of 15 variant factions (SURV_H1 to SURV_H15) in the FactionManager. ...
 [ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 168 h after the cure.
@@ -1887,6 +1818,13 @@ releases N, take-backs N, unsticks N, moves landed N, hand-offs N, leaps N, char
 young sprints N, holds N (kicked free N), staggers N, knockdowns N, sound leads N, blood leads N,
 shrieks N, doors: went round N, broken N, regroups N, rings asleep N (woken N) |
 town life: asleep N agents, slept N, woken N, herded N`.
+
+The small rules add `Status | tribes' small rules: grounds moved to prey N, habits starved N, patrols
+taken N, crossings N, starving walkers N, rivals now N`, and events: `Tribes: <place> follows its prey:
+a new hunting ground at <grid>.`, `Tribes: <place> had a bad night; N of it are stragglers, home late.`,
+`Tribes: one of <place> crossed in the night to <place>.`, `Tribes: <place> loses a habit: nothing comes
+past its place any more.`, `Tribes: <place> burned out with N of it dead: N break off.`, `Tribes: the
+factions speak of <place>'s new leader.`
 
 The life cycle adds (with **Zombies > Tribes > Life cycle** on): `Status | tribes' life: rovers: lone
 N, splinters N; vacuums N, burned N, abandoned lairs N, open taken N | borders N (old N), fights N
@@ -1984,6 +1922,7 @@ Warnings worth acting on:
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
+| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). Rings where the town has no building of the faction's kind and none big enough; 0 road entries means the gate and barricades stand in front of the building |
 | `Camp life: ... smart actions off, lone characters stand.` | Set **Camp life > Smart action waypoint** (people loiter beside the pieces until then) and **Group prefab** (lone occupants and guards don't move until then) |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
 | `Puzzle clue prefab has no RZ_ClueComponent ...` / `Puzzle object prefab has no RZ_PuzzleObjectComponent ...` | A puzzle prefab is missing its component |
@@ -2141,7 +2080,7 @@ Infamy`; `Checks: <player> threatened <person> (pass|short|refused)` (The Ledger
 too).
 
 Talk and the voices ([DIALOGUE.md](DIALOGUE.md), [WRITING.md](WRITING.md#the-voice-bank)): at start,
-`Dialogue: loaded 106 conversations, 236 nodes`, `Dialogue: memory for N players` (or `Dialogue:
+`Dialogue: loaded 153 conversations, 334 nodes`, `Dialogue: memory for N players` (or `Dialogue:
 memory from season N dropped (season M)` after a wipe), `Reputation: season record for N players` (or
 `Reputation: season record from season N dropped (season M)`) and `Dialogue: trees off` (on with
 **Dialogue > Trees**); `Voice: N lines in the bank` the first time anyone speaks from it; while running, `Voice:
@@ -2153,6 +2092,16 @@ by <player>`, `Dialogue: sway <name> by <player> (now N)`, `Dialogue: <player> v
 `Dialogue: sway <major>.<vote>.<word> by <player> (voter N)` (a sitting), `Dialogue: session cap at <speaker>`.
 The finale's commit: `Dialogue: <player> committed to <route> at <speaker>`.
 Promises and barks: `Dialogue: promise <key> made|kept|broken by <player>`, `Dialogue: bark <conv> to <player>`.
+Talk's rest: `Dialogue: make it right <player> at <speaker>`, `Dialogue: made right <player> with <speaker>`,
+`Dialogue: <speaker> opened on <player> at N m` (a greet that opens by itself), `Dialogue: distress call
+answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<claim>.false tested false for
+<player>`, `Dialogue: <player> began <questline>`, `Dialogue: <player> saw for themselves: <key>` (a world
+predicate), `Dialogue: lie <key> found out: its found effects ran`, `Dialogue: Talk test: N conversations ...`
+(an admin's `/talkdebug test`, and the runtime test's `RZT Talk test: ...`), `Dialogue: scene <key> reset by
+an admin`. Reputation's voice: `Reputation: gate bark at <place> for <player>`, `Reputation: <player>
+laid a pack's leader down`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
+`Parley: <player>'s fire paused <player>'s parley`; the runtime test's `RZT Reputation test: ...` and `RZT
+voice <mood> faction N: radio [...] face [...]` (Voice > Force mood cycled).
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
 lie <key> told by <player> (<test>)`, `Story: lie <key> found out by <visit|road news|tick|rumour|call-out>`,
 `Story: lie <key> caught now by <speaker>`. Story jobs: `Story: <key> at <subject> is <truth>` (the story
@@ -2185,9 +2134,9 @@ each live write (`#-1` while the town's doors aren't resolved yet), `Traces: ove
 <author>`, `Traces: scene grave|pyre at <grid> (a player's)`, `Traces: scene <key> at <grid> (<trigger>)`
 for each vignette and live trace (`town gone dark`, `a bite declared`, `a truck lost`, `a death at the
 line: N crosses`...), `Traces: scene <key> gone (its days are up|made room)`, `Traces: no anchor for
-<kind> in <town>`, `Traces: prop budget full (<grid>)`, `Traces: the young come home to <town>#<slot>
-(<pack>)`, and once at the cure `Traces: handed over to the epilogue (N graves down, N wrecks kept for
-the week).`; every 5 minutes `Status | Traces: doors N (drawn M), scenes S, props P/40, lights L, loops
+<kind> in <town>`, `Traces: <kind> keeps off a questline's clue near <grid>`, `Traces: prop budget full
+(<grid>)`, `Traces: the young come home to <town>#<slot> (<pack>)`, and once at the cure `Traces: handed
+over to the epilogue (N graves down, N wrecks and N fallen posts kept for the week).`; every 5 minutes `Status | Traces: doors N (drawn M), scenes S, props P/40, lights L, loops
 O`; `/traces` writes `Traces: <town>#<slot> <key> at <grid>: [<author> <symbol> D<day> <first days|live|old
 mark>] | <the line>`, `Traces: scene <key> (<kind>) at <grid>, stage N, props|text | <the line>` and
 `Traces: <town> history: Day N <kind> (<faction>) xN`; with **Debug** on, `Traces: player N read
@@ -2479,6 +2428,27 @@ when it happens)
 - [ ] **The last week:** after the cure, the dusk call reads *"… still calls. There's hardly anyone left
   to come."*; kill a pack's leader and next morning it's gone; with **Epilogue hours** low, the last dusk
   is *"Nothing answers it."* and the packs are gone at dawn.
+- [ ] **The small rules** ([INFECTED.md](INFECTED.md); the status log's `tribes' small rules` line):
+  stand by a pack's hunting ground three nights and its first trail goes there more often; stand in
+  its range away from every ground three nights and at the next season day the log says it `follows
+  its prey`. Keep players and trucks off a habit's place a night and the habit weakens. After a bad
+  night (kill a quarter of a hunt) a group comes home late, 06:00–07:30, with the stragglers' line. As
+  a Hunter, a dusk call adds which way and how far; heard before, it's named by its call. A cunning
+  pack's second group comes from behind you, not the side. Go into a house: a scout never calls on you
+  there. At dusk the scouts sit above tonight's trail; in fog they sit lower. Kill a leader with you
+  near: its samples and body are still there at the end of the vigil (VERIFY). A new leader a season
+  day on: the Haven (and Bastion for a board pack) say who leads it now. Burn a lair after killing 4
+  there: a splinter breaks off. Walk up to an abandoned lair with someone's things: 1–2 items lie at
+  its back.
+- [ ] **The behaviour layer's untested levers** (not in the code; each needs a client first): lever
+  L6, a forced prone pose for crawlers with `ForceStance` (a prone `SetStanceChange` didn't hold in
+  B12): does a crawler stay flat and still fight within 12 m? L16, a scripted `AIDangerEventWeaponFire`
+  near an engaged body: does it pull it the way a real shot does? L23, a straight-path cost per kind in
+  `SCR_CreateAIExtraMoveParams` (×1 young, ×3 hunters; the hook loads and fires, B2): does a hunter's
+  chase curve? Report each here; one that works goes in as a behaviour setting.
+- [ ] **Notice rate:** time how long a steered group takes to notice you at each stance and distance of
+  phase 0's ladder, set **Zombies > Behaviour > Notice rate** to match, and run `python3
+  tools/tribe_sim.py` again with it.
 - [ ] **Crawlers' life:** by day a town's crawlers stand hunched and don't turn until you're within 40 m
   or shoot (the status log's `asleep` count); one groan as they wake. At night they drift the streets in
   slow herds; with a pack's group passing through they step aside. **Sleep lying crawlers** off: they
@@ -2597,7 +2567,44 @@ when it happens)
   lost Kid: each barks one line as a subtitle, at most one a minute, and the same person not again for
   10 minutes; nothing while you're talking to someone. The log has `Dialogue: bark ...`.
 - [ ] Trees on, a stranger: Talk repeats their call-out; their ways are there as before, and "Ask
-  who they are" style topics fill in their own words (the house, the town, the name).
+  who they are" style topics fill in their own words (the house, the town, the name). Walk up to a
+  new one: at 10 m the talk screen opens by itself ("Hey. You. Sorry. Have you got a minute?"), once,
+  and never twice inside 4 minutes of another unasked contact (the log's `Dialogue: ... opened on`).
+- [ ] Trees on, in Bastion kit you aren't Known in, walk toward a checkpoint: at about 35 m its
+  speaker's screen opens by itself ("You. Not on the board. Stop there."), with the claim, the word and
+  the truth as topics. Leave it and walk on: the built search or turn-back applies at the barrier. In
+  kit signed out to someone else, the greeting names them and any claim is caught at once.
+- [ ] Trees on, a seat leader at attitude -2 who doesn't hunt you: the hub shows "[Make it right]
+  "What would it take?"", which reserves their faction's amends job for an hour. Finish it: the
+  leader's "We start again." line, they deal with you again, and the reply is dim for the rest of the
+  season. Fail it or let the hour run out: nothing changes.
+- [ ] Trees on, a Radio Operator with Bastion's net cracked: the radio's "Call on the open channel"
+  also shows "Talk on Bastion's command net." Ask for the word: believed, "(The word at the wire
+  today: ...)" and a post's look counts it; caught, +2 Bastion Infamy and the listening ends. A house
+  radio's third choice calls only next to a running generator.
+- [ ] Trees on, near a Haven house with nobody at its gate: "Answer the call for help." shows on the
+  open channel about one hour in two; answering puts a stranger at that house's gate, and its named
+  person offers Who's at the Gate as built.
+- [ ] Trees on, the routes open: on the open channel, "Speak about the cure." leads to [Point of no
+  return]; saying it locks you to the Independent route, a second player within 1.5 km hears it with no
+  name, and the roads carry the rumour.
+- [ ] Trees on, the epilogue week: every leader has "Ask about the cure." (their own read of who holds
+  it, then the built season and where-to-look lines) and "Ask what they'll do now."; occupants greet
+  you with the week's line.
+- [ ] Trees on: open the notebook's Journal with a promise open: a "Promises" row shows the play left;
+  after seeing through the Scavenger's lie, a "What you know" row quotes it.
+- [ ] Trees on, the Long Table's host on the road: say they're expecting you back by dark, then stay
+  near the road past 20:30: the next meeting opens with "Still expected, are you?".
+- [ ] Walk up to a Bastion holding's gate, a Red Hand roadblock and a safehouse door: each says one
+  line about you within 25 m, only the first time this life or after your name or best deed with them
+  changed; a second player within 30 m hears it too once you're notorious with them (notoriety 3). In
+  another faction's colours you earned, the guard remarks on them once.
+- [ ] Mid-parley, have a second player fire within 150 m of the gate: the parley pauses 20 s and the
+  shooter gets that faction's grudge; no hunter squad of that faction is sent while it runs.
+- [ ] Trees on, the open channels for an hour: chatter sometimes ends with a short line; after a truck
+  is lost, that faction's channel stays plain for 20 minutes; no joke airs twice inside 6 hours.
+- [ ] Trees on, the epilogue week: each leader's first greeting each real day says the ending in
+  their voice and where you stood.
 - [ ] Trees on, the wind-up radio on the ground: "Call on the open channel" opens the talk screen.
   "Call in what you've seen" puts a rumour on the roads, and a second player within 1.5 km gets "On
   the open channel, someone: ..." with no name.
@@ -2963,6 +2970,23 @@ editor's time of day)
   the cook pot until the meal.
 - [ ] Named people stay within 20 m of the centre; talk to one: they stop, and go back to work a
   minute later. Quartermasters and leaders never move.
+
+**Faction bases on Everon** ([DESIGN.md](DESIGN.md#camp-life); after `build.py` has rewritten the kits)
+- [ ] Walk up to each faction's stronghold and one outpost: the log's `Camp life: ... moves into ...`
+  line names the building (Bastion a school, town hall or police station on a road; the Red Hand a
+  garage or petrol station where roads meet; the Haven the church; Halcyon the lab or a clinic, a
+  house for the field station). Note any that fell back to rings or picked an odd building.
+- [ ] The people come out in the yard behind it (the Red Hand: its forecourt); the fire, tables
+  and boards are there, the cook pot and woodpile together on one side, the line, garden and
+  latrine along the walls, no tents. The bear board, the memorial and the decon shower stand by
+  the front door.
+- [ ] The gate is on the road in from the next town: the nest or the toll barrier, the red hand
+  sheet or the plague board beside the road; the other road entries have a barricade beside the
+  road. Every road stays drivable (a supply truck and a car get through).
+- [ ] Bastion by day: a lookout at a front corner as well as the nest. Under a curfew season, two on
+  watch at night. Off shift they walk in at the front door, and come out of it after 05:30.
+- [ ] A Haven safehouse dresses its own house; a field station has the researcher and one other,
+  and no extra comes out.
 - [ ] Shoot near a camp (when Hunted): they fight as before, then go back to their jobs.
 - [ ] Do AI walk through the tents (the navmesh VERIFY)? Is one more person per camp and the server
   frame time fine with 3 live places and a stronghold's 20 pieces?
@@ -3011,6 +3035,16 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   its hunt, *"The dogs in ... have stopped."* (not on a night it doesn't set out); after a Haven Champion's death, one bell at 18:30 and the church's jars.
 - [ ] Status line: lights and loops count up and down as you come and go; nothing stays up after you
   leave. With **Sound and light** off, nothing at all.
+- [ ] **Traces' rest:** the gym's beds and the church's board stand at their buildings' own doors;
+  Rudi's red hand is on a garage's shutter near the crossroads (with the kit's Red Hand board); a
+  square's notices stand by its monument, bank or station. With **Kit > Pieces that age** entries, a
+  scene's extra pieces stand round it and drop as it ages, and a board shows its faded twin when old.
+  With **Indoor scenes** on, a town gone dark's last meal is laid inside the house. After dark at a camp
+  the lantern sits exactly on camp life's table lamp; a Halcyon station hums from its generator piece
+  (quieter at night with the night hum); a Bastion holding's chime comes from its loudspeaker pole. A
+  walk-out who's ended leaves no chair; one who walks on does. While a questline's clue is near, no
+  scene of its faction is dealt within 1 km (the log line). A Specimen from the Nest job puts a ringed
+  beak on a door by the nest as it starts.
 - [ ] The cure: `Traces: handed over to the epilogue`; the graves come down; no new scene or mark but
   the epilogue's (a name chalked as a candle at a safehouse, GONE HOME by its door); the epilogue's
   town beats end with the census (*"Four candles on the doors in Brod, and one bear."*).

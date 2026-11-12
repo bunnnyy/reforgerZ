@@ -1,67 +1,72 @@
 GenericEntity {
- ID "F3F94B8141653408"
+ ID "8CFB2A12E1D6E6F8"
  components {
-  RplComponent "{35029C4EB1732718}" {
+  RplComponent "{3BF05B90A5023777}" {
   }
-  Hierarchy "{E748EDEFD9E82C7E}" {
+  Hierarchy "{32FA65EB4A4FF6C6}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "B52EC314D9623A74"
+   ID "0E86F6CCC19776DE"
    components {
-    Hierarchy "{7005FAEAC9BB8D2B}" {
+    Hierarchy "{DE44774B5C3C0E98}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
-   ID "D689940B3679BAA6"
+   ID "497110D0BFF441DC"
    components {
-    Hierarchy "{FF6F1D2242CE3DFA}" {
+    Hierarchy "{FE9C0FAB76FD0D59}" {
     }
    }
-   coords 0 1.5 0.1
+   coords 0 1.5 0.08
   }
   GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
-   ID "944392BD90E0FE22"
+   ID "F59A45BF0D3AC56D"
    components {
-    Hierarchy "{F24ED08D9565A42D}" {
+    Hierarchy "{96A98B32AB389037}" {
     }
    }
-   coords 0 0 0.5
+   coords 0.1 0 0.5
   }
   GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
-   ID "962C6857B9A96D93"
+   ID "79F167502A98A330"
    components {
-    Hierarchy "{1B65C9968F03C86C}" {
+    Hierarchy "{2887ED5EB785834D}" {
     }
    }
-   coords 0 0.45 0.5
+   coords 0.1 0.45 0.5
   }
   GenericEntity : "{8AC23039E7EC0375}Prefabs/Props/Furniture/TowelRack_01.et" {
-   ID "02400FAABE20FC66"
+   ID "47A6B6D8590AFB31"
    components {
-    Hierarchy "{B2ADCC90BC8216E7}" {
+    Hierarchy "{347ECAC049BEA560}" {
     }
    }
-   coords 0.8 0 0.2
+   coords 0.8 0 0.15
+   angles 0 -8 0
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "E8684D2666C9F306"
+   coords -0.4 0 0.4
   }
   GenericEntity {
-   ID "98A6024AA0D3F70D"
+   ID "DA1A874AD017CED4"
    components {
-    SCR_AISmartActionSentinelComponent "{D7C2B9A23CC1BBE2}" {
+    SCR_AISmartActionSentinelComponent "{9C80D5048788A8F3}" {
      Tags {
       "RZ_Wash"
      }
      m_vLookPosition 0 1.6 -1.1
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{63D3221641CDE3A5}" {
+    Hierarchy "{1E1978AD67D0233A}" {
     }
    }
-   coords 0 0 1.1
+   coords 0.05 0 1.1
   }
  }
 }

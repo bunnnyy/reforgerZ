@@ -1,10 +1,15 @@
 //! Lived-in outposts and camps (docs/DESIGN.md, "Camp life").
 //!
 //! While a place's bodies exist (territory holdings, Haven safehouses, road posts: a player is
-//! near), its faction's scenery stands around it: compositions from Camp life > Kits, laid out
-//! from a seed (the place's position) as a small compound round its centre (a working area in
-//! the middle, a sleeping area at the back, a cooking area to one side, a perimeter toward the
-//! approach), on flat open ground, off roads and out of buildings. Pieces spawn a few per tick.
+//! near), its faction's scenery stands around it: compositions from Camp life > Kits. The place
+//! moves into the building in its town that suits its faction (Bastion a school, town hall or
+//! police station; the Red Hand a garage or petrol station; the Haven a church or a big house;
+//! Halcyon the lab or a house), picked by kind and size from the buildings' prefab names and
+//! boxes, and its pieces are laid out by that building: the working area in its yard, the cooking
+//! to one side, the rest along its walls, the gate on the road in from the next town and
+//! barricades at the other road entries. With no building that fits, a small compound on rings
+//! round its centre. Always from a seed (the place's position), on flat open ground, off roads
+//! and out of buildings. Pieces spawn a few per tick.
 //! Nothing is saved: the same seed gives the same layout on every
 //! visit, and the pieces go with the bodies. RZ_DressingGuard strips anything a player could
 //! use for gain, and the interaction scan ignores the pieces (IsDressing).
@@ -50,6 +55,23 @@ enum RZ_EDressUse
 }
 
 //------------------------------------------------------------------------------------------------
+//! Where a piece stands when its place has moved into a building (RZ_CampSite). Auto: from its
+//! role and use (Centre the yard, Inner the back or the cooking side, Approach the gate or the
+//! closed entries, Edge the walls).
+enum RZ_EDressAt
+{
+	AUTO,
+	YARD,		// the working area: behind the building (the Red Hand: its forecourt)
+	FRONT,		// along the front, toward the road: a market stall, a trophy wall
+	BACK,		// further behind the yard: the wash stand, the cold box, the clutter
+	SIDE,		// the cooking side, left or right by the seed: the cook pot, the woodpile
+	WALLS,		// along the back and side walls: the line, the garden, the generator, the latrine
+	DOOR,		// by the front door: the bear board, the memorial, the decon shower
+	GATE,		// at the road entry left open (the road in from the next town): the nest, the toll barrier, the sign
+	CLOSED		// at the other road entries, beside the road: barricades
+}
+
+//------------------------------------------------------------------------------------------------
 //! One kind of piece in a kit.
 [BaseContainerProps()]
 class RZ_DressingPiece
@@ -71,6 +93,9 @@ class RZ_DressingPiece
 
 	[Attribute("", desc: "Smart-action tag on its sentinels if not the use's own (RZ_Sit, RZ_Work, RZ_Watch, RZ_Gather, RZ_Lean, RZ_Cook, RZ_Wash, RZ_Chop)")]
 	string m_sTag;
+
+	[Attribute("0", UIWidgets.ComboBox, "Where it stands when the place has moved into a building: Auto (from its role and use), Yard, Front, Back, Side (the cooking side), Walls, Door, Gate (the road entry left open), Closed (the other road entries). Written by tools/camp_kit/build.py", "", ParamEnumArray.FromEnum(RZ_EDressAt))]
+	RZ_EDressAt m_eAt;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -98,6 +123,9 @@ class RZ_CampLifeSettings
 
 	[Attribute("1", desc: "Give their people jobs from their faction's routine (sentry, patrol, sit, work, wash, chop, cook, gather, sleep) at the Live places nearest players")]
 	bool m_bRoutines;
+
+	[Attribute("1", desc: "Holdings, safehouses and field stations move into the building in their town that suits their faction (by kind and size) and lay their pieces out by it and its road entries. Off, or no building fits: rings round the centre")]
+	bool m_bBuildings;
 
 	[Attribute("20", UIWidgets.Slider, "Pieces at a stronghold", "0 30 1")]
 	int m_iPiecesStronghold;
@@ -210,14 +238,49 @@ class RZ_CampPlace
 	float m_fCourierTimer;
 	int m_iAsleepGuards;		// slept as data: they come back in the morning
 	int m_iAsleepExtras;
+	ref RZ_CampSite m_Site;		// the building it has moved into; null = rings round m_vPos
+	vector m_vHome;				// where people gather and stay near: the site's yard, else m_vPos
+	vector m_vCentre;			// what the patrol and the courier walk round: the building, else m_vPos
+	float m_fPersonRadius = 20;	// named people stay this close to m_vHome
+	bool m_bHasTown;
+	float m_fTownBearing;		// toward the nearest other town (the main road's way in)
+	int m_iClosedNext;			// the next closed entry a barricade goes to
 }
 
 //------------------------------------------------------------------------------------------------
 //! Ground near a place, read once while it's dressed.
-class RZ_CampGround
+class RZ_CampGround : RZ_DressGround
 {
-	ref array<IEntity> m_aBuildings = {};
-	ref array<vector> m_aRoad = {};		// road segments, two points each
+}
+
+//------------------------------------------------------------------------------------------------
+//! The building a place has moved into, read once per run and kept (buildings don't move).
+//! Its box and transform are copied, so nothing here holds the building itself.
+class RZ_CampSite
+{
+	string m_sKey;
+	RZ_EFaction m_eFaction;
+	RZ_ECampPlace m_eKind;
+	vector m_vPlace;			// the place it was read for
+	bool m_bNone;				// no building fits: rings
+	string m_sWhat;				// "a school", "a house": for the log
+	vector m_vMins;				// the building's local box
+	vector m_vMaxs;
+	vector m_vRight;			// its world transform
+	vector m_vUp;
+	vector m_vFwd;
+	vector m_vOrigin;
+	vector m_vCentre;			// the box's middle, on the ground
+	int m_iAxis;				// the local axis (0 = x, 2 = z) its front faces along
+	float m_fSign = 1;			// which end of that axis is the front
+	float m_fDoor;				// the front door along the front wall, -1 to 1 (0 = the middle)
+	bool m_bDoor;				// a real outside door was found there
+	int m_iYardFace;			// RZ_CampLife.FACE_BACK, or FACE_FRONT for the Red Hand's forecourt
+	int m_iCookFace;			// FACE_LEFT or FACE_RIGHT, by the seed
+	vector m_vHome;				// the yard's middle
+	ref array<vector> m_aEntries = {};	// where roads cross the ring round the building
+	ref array<float> m_aEntryRoad = {};	// the road's bearing there
+	int m_iMain = -1;			// the entry left open (the gate); the others are closed
 }
 
 //------------------------------------------------------------------------------------------------
@@ -368,11 +431,20 @@ class RZ_CampLife
 	protected static const float KEEP_CLEAR = 4;			// metres from a quartermaster, the medic, the barrier
 	protected static const float LEADER_CLEAR = 6;			// from a leader's seat (the body stands 2-5 m from it)
 	protected static const float PIECE_GAP = 5.5;
-	protected static const float ROAD_CLEAR = 6;			// from a road's centre line
-	protected static const float BUILDING_MARGIN = 2;
-	protected static const float FLAT_STEP = 0.64;			// height change over 3 m: about 12 degrees
 	protected static const float SHARE_RADIUS = 60;			// a place this close to a dressed one isn't dressed again
 	protected static const int TRIES = 10;
+
+	static const int FACE_FRONT = 0;
+	static const int FACE_BACK = 1;
+	static const int FACE_LEFT = 2;
+	static const int FACE_RIGHT = 3;
+
+	protected static const float SITE_MAX_SIDE = 70;		// a building longer than this isn't a camp (a hangar, a factory)
+	protected static const int SITE_SHORTLIST = 6;			// the best few by kind, size and distance; then the roads decide
+	protected static const float ENTRY_MERGE = 14;			// road crossings this close are one entry
+	protected static const int MAX_ENTRIES = 5;
+	protected static const float LOOKOUT_OUT = 2;			// the lookout stands this far out from the front corner
+	protected static const int MAX_SITES = 64;			// sites kept per run
 
 	protected static ref array<IEntity> s_aPieces;			// every standing piece (IsDressing)
 
@@ -380,6 +452,8 @@ class RZ_CampLife
 	protected RZ_CampLifeSettings m_Settings;
 	protected ref array<ref RZ_CampPlace> m_aPlaces = {};
 	protected ref map<string, bool> m_mToldNoKit = new map<string, bool>();
+	protected ref map<string, ref RZ_CampSite> m_mSites = new map<string, ref RZ_CampSite>();
+	protected ref map<string, bool> m_mToldSite = new map<string, bool>();
 	protected float m_fClock;
 	protected float m_fCheckTimer;
 	protected float m_fLiveTimer;
@@ -397,8 +471,8 @@ class RZ_CampLife
 		if (settings.m_aKits)
 			kits = settings.m_aKits.Count();
 
-		RZ_Log.Info(string.Format("Camp life: dressing %1, routines %2, %3 kits, smart actions %4, lone characters %5.",
-			OnOff(settings.m_bDressing), OnOff(settings.m_bRoutines), kits,
+		RZ_Log.Info(string.Format("Camp life: dressing %1, routines %2, buildings %3, %4 kits, smart actions %5, lone characters %6.",
+			OnOff(settings.m_bDressing), OnOff(settings.m_bRoutines), OnOff(settings.m_bBuildings), kits,
 			OnOff(!settings.m_sSmartActionWaypoint.IsEmpty()), WrapText(!settings.m_sGroupPrefab.IsEmpty())));
 	}
 
@@ -433,6 +507,21 @@ class RZ_CampLife
 	{
 		if (s_aPieces && e)
 			s_aPieces.RemoveItem(e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Camp life's own pieces standing within radius of pos (Traces finds the table lamp, the Halcyon
+	//! generator and Bastion's loudspeaker pole among them: World/Traces/RZ_TraceSounds.c).
+	static void PiecesNear(vector pos, float radius, notnull array<IEntity> result)
+	{
+		if (!s_aPieces)
+			return;
+
+		foreach (IEntity e : s_aPieces)
+		{
+			if (e && RZ_Util.DistXZ(e.GetOrigin(), pos) <= radius && RZ_Util.GetPrefabName(e).Contains("RZ_Dress_"))
+				result.Insert(e);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -496,11 +585,7 @@ class RZ_CampLife
 		p.m_vPos = pos;
 		p.m_fYaw = yaw;
 		p.m_sExtraPrefab = extraPrefab;
-		p.m_iSeed = Seed(pos, faction, kind);
-		p.m_fCookSide = 90;
-		RZ_Rng sideRng = new RZ_Rng(p.m_iSeed + 11);
-		if (sideRng.Chance(0.5))
-			p.m_fCookSide = -90;
+		InitPlace(p, faction, kind, pos);
 
 		AddWorkers(p, guards, ROLE_GUARD);
 		AddWorkers(p, persons, ROLE_PERSON);
@@ -523,8 +608,44 @@ class RZ_CampLife
 
 		RZ_CampGround ground = new RZ_CampGround();
 		ReadGround(p, ground);
+		UseSite(p, ground, FindSite(p, ground));
 		if (m_Settings.m_bDressing && !IsDressedNear(p))
 			Dress(p, ground);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void InitPlace(RZ_CampPlace p, RZ_EFaction faction, RZ_ECampPlace kind, vector pos)
+	{
+		p.m_eFaction = faction;
+		p.m_eKind = kind;
+		p.m_vPos = pos;
+		p.m_vHome = pos;
+		p.m_vCentre = pos;
+		p.m_iSeed = Seed(pos, faction, kind);
+		p.m_fCookSide = 90;
+		RZ_Rng sideRng = new RZ_Rng(p.m_iSeed + 11);
+		if (sideRng.Chance(0.5))
+			p.m_fCookSide = -90;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a place's people spawn: the yard of the building it moves into, else pos. The owner
+	//! calls this before it spawns the bodies; Enter reuses the building it found.
+	vector HomeFor(string key, RZ_EFaction faction, RZ_ECampPlace kind, vector pos)
+	{
+		if (!m_Settings.m_bDressing || !m_Settings.m_bBuildings || kind == RZ_ECampPlace.ROAD_POST)
+			return pos;
+
+		RZ_CampPlace p = new RZ_CampPlace();
+		p.m_sKey = key;
+		InitPlace(p, faction, kind, pos);
+		RZ_CampGround ground = new RZ_CampGround();
+		ReadGround(p, ground);
+		RZ_CampSite site = FindSite(p, ground);
+		if (!site || site.m_bNone)
+			return pos;
+
+		return site.m_vHome;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -692,6 +813,11 @@ class RZ_CampLife
 			if (!piece || piece.m_sPrefab.IsEmpty())
 				continue;
 
+			// In a building they sleep indoors: no tents
+			if (p.m_Site && piece.m_eUse == RZ_EDressUse.SLEEP)
+				continue;
+
+			RZ_EDressAt at = PieceAt(piece);
 			int count = Math.Max(1, piece.m_iCount);
 			for (int n = 0; n < count; n++)
 			{
@@ -705,7 +831,10 @@ class RZ_CampLife
 				array<vector> spots = {};
 				for (int t = 0; t < TRIES; t++)
 				{
-					spots.Insert(Candidate(p, piece.m_eRole, piece.m_eUse, rng));
+					if (p.m_Site)
+						spots.Insert(SiteCandidate(p, at, rng));
+					else
+						spots.Insert(Candidate(p, piece.m_eRole, piece.m_eUse, rng));
 				}
 
 				vector spot;
@@ -719,6 +848,9 @@ class RZ_CampLife
 						break;
 					}
 				}
+
+				if (at == RZ_EDressAt.CLOSED)
+					p.m_iClosedNext++;
 
 				if (!found)
 					continue;
@@ -869,114 +1001,65 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pieces face the centre; the sentry nest faces out; at a road post they face the road.
+	//! Pieces face the centre (in a building, its yard); the perimeter faces out; at a road post
+	//! they face the road.
 	protected float PieceYaw(RZ_CampPlace p, RZ_EDressRole role, vector spot)
 	{
 		if (p.m_eKind != RZ_ECampPlace.ROAD_POST && role == RZ_EDressRole.APPROACH)
-			return RZ_Compass.Bearing(p.m_vPos, spot);
+			return RZ_Compass.Bearing(p.m_vCentre, spot);
 
-		return RZ_Compass.Bearing(spot, p.m_vPos);
+		if (p.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return RZ_Compass.Bearing(spot, p.m_vPos);
+
+		return RZ_Compass.Bearing(spot, p.m_vHome);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected bool GoodSpot(RZ_CampPlace p, RZ_CampGround ground, vector spot)
 	{
-		// Buildings (locked ones and their doorway blockers included) are checked below, from the
-		// one query ReadGround made
-		if (RZ_Util.IsWater(spot) || RZ_Perimeter.IsNearLineAt(spot))
-			return false;
-
-		if (!IsFlat(spot))
-			return false;
-
-		foreach (vector k : p.m_aKeepClear)
-		{
-			if (RZ_Util.DistXZ(k, spot) < KEEP_CLEAR)
-				return false;
-		}
-
 		foreach (vector seat : p.m_aLeaderSeats)
 		{
 			if (RZ_Util.DistXZ(seat, spot) < LEADER_CLEAR)
 				return false;
 		}
 
+		// The shared placer's rules (World/Traces/RZ_DressPlacer.c): dry, off the line, flat, clear
+		// of the quartermasters, the medic and the barrier, apart from the other pieces, off the
+		// roads and out of the buildings' footprints (locked ones and their doorway blockers too)
+		array<vector> taken = {};
 		foreach (RZ_CampPiece other : p.m_aPieces)
 		{
-			if (RZ_Util.DistXZ(other.m_vPos, spot) < PIECE_GAP)
-				return false;
+			taken.Insert(other.m_vPos);
 		}
 
-		for (int i = 0; i + 1 < ground.m_aRoad.Count(); i += 2)
-		{
-			if (DistToSegment(spot, ground.m_aRoad[i], ground.m_aRoad[i + 1]) < ROAD_CLEAR)
-				return false;
-		}
-
-		foreach (IEntity b : ground.m_aBuildings)
-		{
-			if (b && RZ_LockedSpots.InFootprint(b, spot, BUILDING_MARGIN))
-				return false;
-		}
-
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Slope under about 12 degrees, from four ground heights 1.5 m around the spot.
-	protected static bool IsFlat(vector spot)
-	{
-		BaseWorld world = GetGame().GetWorld();
-		float east = world.GetSurfaceY(spot[0] + 1.5, spot[2]);
-		float west = world.GetSurfaceY(spot[0] - 1.5, spot[2]);
-		float north = world.GetSurfaceY(spot[0], spot[2] + 1.5);
-		float south = world.GetSurfaceY(spot[0], spot[2] - 1.5);
-		return Math.AbsFloat(east - west) < FLAT_STEP && Math.AbsFloat(north - south) < FLAT_STEP;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static float DistToSegment(vector pt, vector a, vector b)
-	{
-		float dx = b[0] - a[0];
-		float dz = b[2] - a[2];
-		float len2 = dx * dx + dz * dz;
-		if (len2 < 0.01)
-			return RZ_Util.DistXZ(pt, a);
-
-		float t = ((pt[0] - a[0]) * dx + (pt[2] - a[2]) * dz) / len2;
-		t = Math.Clamp(t, 0, 1);
-		vector proj = a;
-		proj[0] = a[0] + dx * t;
-		proj[2] = a[2] + dz * t;
-		return RZ_Util.DistXZ(pt, proj);
+		return RZ_DressPlacer.Good(spot, ground, p.m_aKeepClear, KEEP_CLEAR, taken, PIECE_GAP);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Buildings and road segments near the place, and which way its approach faces.
 	protected void ReadGround(RZ_CampPlace p, RZ_CampGround ground)
 	{
-		RZ_BuildingQuery.FindBuildings(p.m_vPos, 70, ground.m_aBuildings);
-
-		RoadNetworkManager roads = RZ_Perimeter.GetRoadNetwork();
-		if (roads)
+		// The shared placer's read (World/Traces/RZ_DressPlacer.c), further out for a building
+		float reach = RZ_DressPlacer.BUILDINGS_NEAR;
+		float roadReach = RZ_DressPlacer.ROADS_NEAR;
+		if (m_Settings.m_bBuildings)
 		{
-			float r = 160;
-			vector mins = Vector(p.m_vPos[0] - r, -1000, p.m_vPos[2] - r);
-			vector maxs = Vector(p.m_vPos[0] + r, 10000, p.m_vPos[2] + r);
-			array<BaseRoad> found = {};
-			roads.GetRoadsInAABB(mins, maxs, found); // VERIFY: the road network's points follow every drivable road, so pieces keep off them (else a piece can stand on a road)
-			foreach (BaseRoad road : found)
-			{
-				if (!road)
-					continue;
+			reach = Math.Max(reach, SiteReach(p.m_eKind) + 10);
+			roadReach = 220;
+		}
 
-				array<vector> points = {};
-				road.GetPoints(points);
-				for (int i = 1; i < points.Count(); i++)
-				{
-					ground.m_aRoad.Insert(points[i - 1]);
-					ground.m_aRoad.Insert(points[i]);
-				}
+		RZ_DressPlacer.ReadGroundWithin(p.m_vPos, ground, reach, roadReach);
+
+		// The nearest other town: the main road comes in from there
+		float town = float.MAX;
+		foreach (RZ_Settlement s : m_GM.GetSettlements())
+		{
+			float ds = RZ_Util.DistXZ(s.m_vCenter, p.m_vPos);
+			if (ds > 300 && ds < town)
+			{
+				town = ds;
+				p.m_fTownBearing = RZ_Compass.Bearing(p.m_vPos, s.m_vCenter);
+				p.m_bHasTown = true;
 			}
 		}
 
@@ -999,24 +1082,763 @@ class RZ_CampLife
 			return;
 		}
 
-		float town = float.MAX;
-		bool haveTown = false;
-		foreach (RZ_Settlement s : m_GM.GetSettlements())
+		if (p.m_bHasTown)
 		{
-			float ds = RZ_Util.DistXZ(s.m_vCenter, p.m_vPos);
-			if (ds > 300 && ds < town)
+			p.m_fApproach = p.m_fTownBearing;
+			return;
+		}
+
+		RZ_Rng rng = new RZ_Rng(p.m_iSeed + 7);
+		p.m_fApproach = rng.Range(0, 360);
+	}
+
+	// ================================================================ The building a place moves into
+	//------------------------------------------------------------------------------------------------
+	//! How far from the place's spot its building may be: a stronghold is at its quartermaster, an
+	//! outpost at its town's middle, a safehouse in its own house.
+	protected static float SiteReach(RZ_ECampPlace kind)
+	{
+		switch (kind)
+		{
+			case RZ_ECampPlace.STRONGHOLD: return 60;
+			case RZ_ECampPlace.SAFEHOUSE: return 30;
+			case RZ_ECampPlace.ROAD_POST: return 0;
+		}
+
+		return 90;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The smallest footprint (square metres) worth moving into.
+	protected static float SiteMinArea(RZ_ECampPlace kind)
+	{
+		if (kind == RZ_ECampPlace.STRONGHOLD)
+			return 100;
+
+		if (kind == RZ_ECampPlace.SAFEHOUSE)
+			return 30;
+
+		return 45;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Road entries are where the roads cross a ring this far round the building.
+	protected static float EntryRing(RZ_ECampPlace kind)
+	{
+		if (kind == RZ_ECampPlace.STRONGHOLD)
+			return 50;
+
+		if (kind == RZ_ECampPlace.SAFEHOUSE)
+			return 28;
+
+		return 40;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How well a building suits the faction and the kind of place, from its prefab name (the town
+	//! code's words: RZ_LandmarkFinder.Matches, RZ_DoorSlots.KindOf): 3 just right, 2 good, 1 will
+	//! do, 0 any building, -1 never.
+	protected static int SiteTier(RZ_EFaction f, RZ_ECampPlace kind, string name, int door)
+	{
+		bool church = RZ_LandmarkFinder.Matches("church", name);
+		bool fuel = RZ_LandmarkFinder.Matches("fuel", name);
+		bool school = RZ_LandmarkFinder.Matches("school", name);
+		bool clinic = door == RZ_EDoorWant.CLINIC || RZ_LandmarkFinder.Matches("pharmacy", name);
+		bool garage = door == RZ_EDoorWant.GARAGE;
+		bool farm = door == RZ_EDoorWant.FARM;
+		bool house = door == RZ_EDoorWant.HOUSE;
+		bool hall = door == RZ_EDoorWant.PUBLIC && !church;
+		bool stronghold = kind == RZ_ECampPlace.STRONGHOLD;
+
+		if (f == RZ_EFaction.MILITARY)
+		{
+			// The school, the town hall or the police station; an outpost the farm or the petrol station
+			if (stronghold)
 			{
-				town = ds;
-				p.m_fApproach = RZ_Compass.Bearing(p.m_vPos, s.m_vCenter);
-				haveTown = true;
+				if (school || RZ_LandmarkFinder.Matches("police", name) || RZ_LandmarkFinder.Matches("military", name) || name.Contains("townhall") || name.Contains("town_hall") || name.Contains("cityhall"))
+					return 3;
+
+				if (hall)
+					return 2;
+
+				if (church)
+					return -1;
+
+				return 0;
+			}
+
+			if (farm || fuel)
+				return 3;
+
+			if (house)
+				return 1;
+
+			return 0;
+		}
+
+		if (f == RZ_EFaction.BANDITS)
+		{
+			// The garage or the petrol station; a crew camp also a café or a shop by the road
+			if (church || clinic)
+				return -1;
+
+			if (garage || fuel)
+				return 3;
+
+			if (!stronghold && door == RZ_EDoorWant.SHOP)
+				return 3;
+
+			if (farm || RZ_LandmarkFinder.Matches("industrial", name))
+				return 2;
+
+			return 0;
+		}
+
+		if (f == RZ_EFaction.SURVIVORS)
+		{
+			// The church (a school or a big farmhouse will do); a safehouse its own house
+			if (kind == RZ_ECampPlace.SAFEHOUSE)
+			{
+				if (house)
+					return 3;
+
+				return 0;
+			}
+
+			if (church)
+				return 3;
+
+			if (school || farm)
+				return 2;
+
+			if (house)
+				return 1;
+
+			return 0;
+		}
+
+		// Halcyon: the lab or a clinic; a field station a house
+		if (stronghold)
+		{
+			if (clinic || name.Contains("laborator") || name.Contains("/lab") || name.Contains("_lab") || name.Contains("institute"))
+				return 3;
+
+			if (hall)
+				return 2;
+
+			return 0;
+		}
+
+		if (house)
+			return 3;
+
+		if (farm)
+			return 1;
+
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the log: "the school", "the garage", "a house".
+	protected static string SiteWhat(string name, int door)
+	{
+		array<string> kinds = {"church", "school", "police", "fuel", "pharmacy", "military", "industrial"};
+		foreach (string kind : kinds)
+		{
+			if (RZ_LandmarkFinder.Matches(kind, name))
+				return RZ_LandmarkFinder.DisplayName(kind, name);
+		}
+
+		switch (door)
+		{
+			case RZ_EDoorWant.GARAGE: return "the garage";
+			case RZ_EDoorWant.FARM: return "the farm";
+			case RZ_EDoorWant.SHOP: return "the shop";
+			case RZ_EDoorWant.CLINIC: return "the clinic";
+			case RZ_EDoorWant.PUBLIC: return "the hall";
+			case RZ_EDoorWant.HOUSE: return "a house";
+		}
+
+		return "a building";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The building this place has moved into: found once per run and kept. A site with m_bNone
+	//! means none fits (rings). Null when buildings are off.
+	protected RZ_CampSite FindSite(RZ_CampPlace p, RZ_CampGround ground)
+	{
+		if (!m_Settings.m_bBuildings || p.m_eKind == RZ_ECampPlace.ROAD_POST)
+			return null;
+
+		RZ_CampSite kept;
+		if (m_mSites.Find(p.m_sKey, kept) && kept && kept.m_eFaction == p.m_eFaction && kept.m_eKind == p.m_eKind && RZ_Util.DistXZ(kept.m_vPlace, p.m_vPos) < 1)
+			return kept;
+
+		if (m_mSites.Count() >= MAX_SITES)
+			m_mSites.Clear();
+
+		RZ_CampSite site = PickSite(p, ground);
+		m_mSites.Set(p.m_sKey, site);
+
+		if (!m_mToldSite.Contains(p.m_sKey))
+		{
+			m_mToldSite.Set(p.m_sKey, true);
+			string what = string.Format("%1 %2", RZ_Factions.GetName(p.m_eFaction), typename.EnumToString(RZ_ECampPlace, p.m_eKind));
+			string grid = RZ_SettlementScanner.GridReference(p.m_vPos);
+			if (site.m_bNone)
+			{
+				RZ_Log.Info(string.Format("Camp life: %1 at %2: no building fits, laid out on rings.", what, grid));
+			}
+			else
+			{
+				int w = RZ_Util.RoundToInt(site.m_vMaxs[0] - site.m_vMins[0]);
+				int d = RZ_Util.RoundToInt(site.m_vMaxs[2] - site.m_vMins[2]);
+				RZ_Log.Info(string.Format("Camp life: %1 at %2 moves into %3 (%4 x %5 m), %6 road entries.", what, grid, site.m_sWhat, w, d, site.m_aEntries.Count()));
 			}
 		}
 
-		if (!haveTown)
+		return site;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The best building by kind, size and distance, then by the roads (Bastion on a road, the Red
+	//! Hand where roads meet). Never one with scenery on it, a ruin, a hangar-sized one or one
+	//! smaller than the kind needs.
+	protected RZ_CampSite PickSite(RZ_CampPlace p, RZ_CampGround ground)
+	{
+		RZ_CampSite site = new RZ_CampSite();
+		site.m_sKey = p.m_sKey;
+		site.m_eFaction = p.m_eFaction;
+		site.m_eKind = p.m_eKind;
+		site.m_vPlace = p.m_vPos;
+		site.m_bNone = true;
+
+		float reach = SiteReach(p.m_eKind);
+		float minArea = SiteMinArea(p.m_eKind);
+		bool stronghold = p.m_eKind == RZ_ECampPlace.STRONGHOLD;
+		float distWeight = 3;
+		if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
+			distWeight = 12;
+
+		array<IEntity> shortlist = {};
+		array<float> scores = {};
+		foreach (IEntity b : ground.m_aBuildings)
 		{
-			RZ_Rng rng = new RZ_Rng(p.m_iSeed + 7);
-			p.m_fApproach = rng.Range(0, 360);
+			if (!b || IsDressing(b))
+				continue;
+
+			vector mins;
+			vector maxs;
+			if (!RZ_DoorGeometry.LocalBox(b, mins, maxs))
+				continue;
+
+			float w = maxs[0] - mins[0];
+			float d = maxs[2] - mins[2];
+			float area = w * d;
+			if (w > SITE_MAX_SIDE || d > SITE_MAX_SIDE || area < minArea)
+				continue;
+
+			vector mid = RZ_DoorGeometry.ToWorld(b, (mins + maxs) * 0.5);
+			float dist = RZ_Util.DistXZ(mid, p.m_vPos);
+			if (dist > reach)
+				continue;
+
+			string name = RZ_Util.GetPrefabName(b);
+			name.ToLower();
+			if (name.Contains("ruin") || name.Contains("wreck"))
+				continue;
+
+			int tier = SiteTier(p.m_eFaction, p.m_eKind, name, RZ_DoorSlots.KindOf(b));
+			if (tier < 0)
+				continue;
+
+			// The largest for a stronghold; a middling one elsewhere
+			float size = Math.Min(area, 200) * 0.75;
+			if (stronghold)
+				size = Math.Min(area, 600) * 0.5;
+
+			float score = tier * 1000 + size - dist * distWeight;
+			int at = 0;
+			while (at < scores.Count() && scores[at] >= score)
+			{
+				at++;
+			}
+
+			if (at >= SITE_SHORTLIST)
+				continue;
+
+			shortlist.InsertAt(b, at);
+			scores.InsertAt(score, at);
+			if (shortlist.Count() > SITE_SHORTLIST)
+			{
+				shortlist.Remove(SITE_SHORTLIST);
+				scores.Remove(SITE_SHORTLIST);
+			}
 		}
+
+		IEntity best;
+		float bestScore = -float.MAX;
+		foreach (int i, IEntity cand : shortlist)
+		{
+			float total = scores[i] + RoadScore(p, ground, cand);
+			if (total > bestScore)
+			{
+				bestScore = total;
+				best = cand;
+			}
+		}
+
+		if (best)
+			ReadSite(p, ground, site, best);
+
+		return site;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bastion and Halcyon's lab want a road at the door (the truck); the Red Hand wants roads
+	//! meeting (the toll); the rest don't mind.
+	protected float RoadScore(RZ_CampPlace p, RZ_CampGround ground, IEntity b)
+	{
+		bool redHand = p.m_eFaction == RZ_EFaction.BANDITS;
+		bool wantsRoad = p.m_eFaction == RZ_EFaction.MILITARY || (p.m_eFaction == RZ_EFaction.INSTITUTE && p.m_eKind == RZ_ECampPlace.STRONGHOLD);
+		if (!redHand && !wantsRoad)
+			return 0;
+
+		vector mins;
+		vector maxs;
+		RZ_DoorGeometry.LocalBox(b, mins, maxs);
+		vector mid = RZ_DoorGeometry.ToWorld(b, (mins + maxs) * 0.5);
+		float half = Math.Max(maxs[0] - mins[0], maxs[2] - mins[2]) * 0.5;
+		float onRoad = half + 25;
+		float meet = half + 45;
+
+		bool near = false;
+		array<int> roads = {};
+		for (int i = 0; i + 1 < ground.m_aRoad.Count(); i += 2)
+		{
+			float d = RZ_DressPlacer.DistToSegment(mid, ground.m_aRoad[i], ground.m_aRoad[i + 1]);
+			if (d < onRoad)
+				near = true;
+
+			int id = ground.m_aRoadId[i / 2];
+			if (d < meet && !roads.Contains(id))
+				roads.Insert(id);
+		}
+
+		float score = 0;
+		if (near)
+			score = 150;
+
+		if (redHand)
+			score = score - 50 + Math.Max(0, roads.Count() - 1) * 150;
+
+		return Math.Max(0, score);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The building's box and transform, its road entries, its front (toward the road in) and
+	//! front door, its yard and its cooking side.
+	protected void ReadSite(RZ_CampPlace p, RZ_CampGround ground, RZ_CampSite site, IEntity b)
+	{
+		site.m_bNone = false;
+		vector mins;
+		vector maxs;
+		RZ_DoorGeometry.LocalBox(b, mins, maxs);
+		site.m_vMins = mins;
+		site.m_vMaxs = maxs;
+		vector mat[4];
+		b.GetWorldTransform(mat);
+		site.m_vRight = mat[0];
+		site.m_vUp = mat[1];
+		site.m_vFwd = mat[2];
+		site.m_vOrigin = mat[3];
+		site.m_vCentre = RZ_Util.GroundPos(LocalToWorld(site, (mins + maxs) * 0.5));
+
+		string name = RZ_Util.GetPrefabName(b);
+		name.ToLower();
+		site.m_sWhat = SiteWhat(name, RZ_DoorSlots.KindOf(b));
+
+		ReadEntries(p, ground, site);
+
+		// The front faces the road in: the gate, else the nearest road, else the next town
+		vector toward = RZ_Compass.PointAt(site.m_vCentre, p.m_fApproach, 60);
+		if (site.m_iMain >= 0)
+			toward = site.m_aEntries[site.m_iMain];
+		else if (p.m_bHasRoad)
+			toward = p.m_vRoad;
+
+		// The front door: the outside door nearest that way, if the building has door children
+		array<IEntity> doors = {};
+		RZ_DoorGeometry.FindDoors(b, 0, doors);
+		IEntity front;
+		float frontDist = float.MAX;
+		foreach (IEntity door : doors)
+		{
+			if (!RZ_DoorGeometry.IsOuterDoor(b, door))
+				continue;
+
+			float dd = RZ_Util.DistXZ(door.GetOrigin(), toward);
+			if (dd < frontDist)
+			{
+				frontDist = dd;
+				front = door;
+			}
+		}
+
+		if (front)
+		{
+			FaceOf(site, RZ_DoorGeometry.ToLocal(b, front.GetOrigin()), true);
+			site.m_bDoor = true;
+		}
+		else
+		{
+			FaceOf(site, RZ_DoorGeometry.ToLocal(b, toward), false);
+		}
+
+		site.m_iYardFace = FACE_BACK;
+		if (p.m_eFaction == RZ_EFaction.BANDITS)
+			site.m_iYardFace = FACE_FRONT;
+
+		site.m_iCookFace = FACE_LEFT;
+		RZ_Rng rng = new RZ_Rng(p.m_iSeed + 13);
+		if (rng.Chance(0.5))
+			site.m_iCookFace = FACE_RIGHT;
+
+		site.m_vHome = FacePoint(site, site.m_iYardFace, 0, 6);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The front is the side of the box nearest `local` (a door, or the way in), in the building's
+	//! own space. For a door, also where along that side it is.
+	protected static void FaceOf(RZ_CampSite site, vector local, bool isDoor)
+	{
+		vector mins = site.m_vMins;
+		vector maxs = site.m_vMaxs;
+		vector mid = (mins + maxs) * 0.5;
+		float halfX = Math.Max(0.5, (maxs[0] - mins[0]) * 0.5);
+		float halfZ = Math.Max(0.5, (maxs[2] - mins[2]) * 0.5);
+
+		// A door: the wall it's closest to. The way in: the side it lies beyond, by the box's shape
+		bool alongX;
+		if (isDoor)
+			alongX = Math.AbsFloat(local[0] - mid[0]) - halfX > Math.AbsFloat(local[2] - mid[2]) - halfZ;
+		else
+			alongX = Math.AbsFloat(local[0] - mid[0]) / halfX > Math.AbsFloat(local[2] - mid[2]) / halfZ;
+
+		site.m_iAxis = 2;
+		site.m_fSign = 1;
+		if (local[2] < mid[2])
+			site.m_fSign = -1;
+
+		if (alongX)
+		{
+			site.m_iAxis = 0;
+			site.m_fSign = 1;
+			if (local[0] < mid[0])
+				site.m_fSign = -1;
+		}
+
+		site.m_fDoor = 0;
+		if (!isDoor)
+			return;
+
+		if (site.m_iAxis == 0)
+			site.m_fDoor = Math.Clamp((local[2] - mid[2]) / halfZ, -1, 1);
+		else
+			site.m_fDoor = Math.Clamp((local[0] - mid[0]) / halfX, -1, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the roads cross the ring round the building: one entry per crossing. The main one
+	//! (the gate) is the one toward the next town; the others are closed.
+	protected void ReadEntries(RZ_CampPlace p, RZ_CampGround ground, RZ_CampSite site)
+	{
+		float ring = EntryRing(p.m_eKind);
+		vector c = site.m_vCentre;
+		for (int i = 0; i + 1 < ground.m_aRoad.Count(); i += 2)
+		{
+			vector a = ground.m_aRoad[i];
+			vector b = ground.m_aRoad[i + 1];
+			float da = RZ_Util.DistXZ(a, c);
+			float db = RZ_Util.DistXZ(b, c);
+			float bearing = RZ_Compass.Bearing(a, b);
+			if (da < ring && db >= ring)
+			{
+				AddCrossing(site, c, ring, a, b, bearing);
+			}
+			else if (db < ring && da >= ring)
+			{
+				AddCrossing(site, c, ring, b, a, bearing);
+			}
+			else if (da >= ring && db >= ring && RZ_DressPlacer.DistToSegment(c, a, b) < ring)
+			{
+				// A long straight passing through: in and out again
+				vector close = ClosestOnSegment(c, a, b);
+				AddCrossing(site, c, ring, close, a, bearing);
+				AddCrossing(site, c, ring, close, b, bearing);
+			}
+		}
+
+		if (site.m_aEntries.IsEmpty())
+			return;
+
+		site.m_iMain = 0;
+		if (!p.m_bHasTown)
+			return;
+
+		float bestDiff = float.MAX;
+		foreach (int k, vector e : site.m_aEntries)
+		{
+			float diff = Math.AbsFloat(RZ_Compass.Normalize(RZ_Compass.Bearing(c, e) - p.m_fTownBearing + 180) - 180);
+			if (diff < bestDiff)
+			{
+				bestDiff = diff;
+				site.m_iMain = k;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The point between `inside` and `outside` that lies on the ring (halved eight times), unless
+	//! an entry is already there.
+	protected static void AddCrossing(RZ_CampSite site, vector c, float ring, vector inside, vector outside, float roadBearing)
+	{
+		if (site.m_aEntries.Count() >= MAX_ENTRIES)
+			return;
+
+		vector lo = inside;
+		vector hi = outside;
+		for (int k = 0; k < 8; k++)
+		{
+			vector half = (lo + hi) * 0.5;
+			if (RZ_Util.DistXZ(half, c) < ring)
+				lo = half;
+			else
+				hi = half;
+		}
+
+		vector hit = (lo + hi) * 0.5;
+		foreach (vector e : site.m_aEntries)
+		{
+			if (RZ_Util.DistXZ(e, hit) < ENTRY_MERGE)
+				return;
+		}
+
+		site.m_aEntries.Insert(RZ_Util.GroundPos(hit));
+		site.m_aEntryRoad.Insert(roadBearing);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static vector ClosestOnSegment(vector pt, vector a, vector b)
+	{
+		float dx = b[0] - a[0];
+		float dz = b[2] - a[2];
+		float len2 = dx * dx + dz * dz;
+		if (len2 < 0.01)
+			return a;
+
+		float t = ((pt[0] - a[0]) * dx + (pt[2] - a[2]) * dz) / len2;
+		t = Math.Clamp(t, 0, 1);
+		vector proj = a;
+		proj[0] = a[0] + dx * t;
+		proj[2] = a[2] + dz * t;
+		return proj;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static vector LocalToWorld(RZ_CampSite site, vector local)
+	{
+		return site.m_vOrigin + site.m_vRight * local[0] + site.m_vUp * local[1] + site.m_vFwd * local[2];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A point `dist` m out from one side of the building (FACE_*), `along` that side from -1 to 1
+	//! (0 = the middle; past 1 = beyond the corner), on the ground.
+	protected static vector FacePoint(RZ_CampSite site, int face, float along, float dist)
+	{
+		int a = site.m_iAxis;
+		int o = 0;
+		if (a == 0)
+			o = 2;
+
+		float midA = (site.m_vMins[a] + site.m_vMaxs[a]) * 0.5;
+		float halfA = (site.m_vMaxs[a] - site.m_vMins[a]) * 0.5;
+		float midO = (site.m_vMins[o] + site.m_vMaxs[o]) * 0.5;
+		float halfO = (site.m_vMaxs[o] - site.m_vMins[o]) * 0.5;
+		float ca;
+		float co;
+		if (face == FACE_FRONT || face == FACE_BACK)
+		{
+			ca = midA + site.m_fSign * (halfA + dist);
+			if (face == FACE_BACK)
+				ca = midA - site.m_fSign * (halfA + dist);
+
+			co = midO + along * halfO;
+		}
+		else
+		{
+			co = midO + halfO + dist;
+			if (face == FACE_LEFT)
+				co = midO - (halfO + dist);
+
+			ca = midA + along * halfA;
+		}
+
+		vector local = vector.Zero;
+		local[a] = ca;
+		local[o] = co;
+		return RZ_Util.GroundPos(LocalToWorld(site, local));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A place that has moved into a building uses it: its yard is home, the building the centre,
+	//! and the way in is the gate.
+	protected void UseSite(RZ_CampPlace p, RZ_CampGround ground, RZ_CampSite site)
+	{
+		if (!site || site.m_bNone)
+			return;
+
+		p.m_Site = site;
+		p.m_vHome = site.m_vHome;
+		p.m_vCentre = site.m_vCentre;
+		float halfO = (site.m_vMaxs[0] - site.m_vMins[0]) * 0.5;
+		if (site.m_iAxis == 0)
+			halfO = (site.m_vMaxs[2] - site.m_vMins[2]) * 0.5;
+
+		p.m_fPersonRadius = Math.Max(PERSON_RADIUS, halfO + 8);
+		if (site.m_iMain >= 0)
+			p.m_fApproach = RZ_Compass.Bearing(site.m_vCentre, site.m_aEntries[site.m_iMain]);
+		else
+			p.m_fApproach = RZ_Compass.Bearing(site.m_vCentre, FacePoint(site, FACE_FRONT, 0, 10));
+
+		// The building's neighbours too, so no piece stands in one
+		array<IEntity> around = {};
+		RZ_BuildingQuery.FindBuildings(site.m_vCentre, 70, around);
+		foreach (IEntity b : around)
+		{
+			if (b && !ground.m_aBuildings.Contains(b))
+				ground.m_aBuildings.Insert(b);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a piece stands in a building's place: its own setting, else from its role and use.
+	protected static RZ_EDressAt PieceAt(RZ_DressingPiece piece)
+	{
+		if (piece.m_eAt != RZ_EDressAt.AUTO)
+			return piece.m_eAt;
+
+		if (piece.m_eRole == RZ_EDressRole.CENTRE)
+			return RZ_EDressAt.YARD;
+
+		if (piece.m_eRole == RZ_EDressRole.EDGE)
+			return RZ_EDressAt.WALLS;
+
+		if (piece.m_eRole == RZ_EDressRole.APPROACH)
+		{
+			if (piece.m_eUse == RZ_EDressUse.WATCH || piece.m_eUse == RZ_EDressUse.LEAN)
+				return RZ_EDressAt.GATE;
+
+			return RZ_EDressAt.CLOSED;
+		}
+
+		if (piece.m_eUse == RZ_EDressUse.COOK || piece.m_eUse == RZ_EDressUse.CHOP)
+			return RZ_EDressAt.SIDE;
+
+		return RZ_EDressAt.BACK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot by the building. Always four draws, whatever the spot.
+	protected vector SiteCandidate(RZ_CampPlace p, RZ_EDressAt at, RZ_Rng rng)
+	{
+		float a = rng.Float01();
+		float b = rng.Float01();
+		float c = rng.Float01();
+		bool side = rng.Chance(0.5);
+		RZ_CampSite site = p.m_Site;
+		float spread = a * 2 - 1;
+
+		if (at == RZ_EDressAt.YARD)
+			return FacePoint(site, site.m_iYardFace, spread * 0.9, 3 + b * 7);
+
+		if (at == RZ_EDressAt.FRONT)
+			return FacePoint(site, FACE_FRONT, spread * 0.9, 3 + b * 6);
+
+		if (at == RZ_EDressAt.BACK)
+			return FacePoint(site, FACE_BACK, spread * 1.1, 10 + b * 8);
+
+		if (at == RZ_EDressAt.SIDE)
+			return FacePoint(site, site.m_iCookFace, spread * 0.8, 3 + b * 6);
+
+		if (at == RZ_EDressAt.DOOR)
+			return FacePoint(site, FACE_FRONT, site.m_fDoor + spread * 0.25, 2.5 + b * 2.5);
+
+		if (at == RZ_EDressAt.WALLS)
+		{
+			if (c < 0.4)
+				return FacePoint(site, FACE_BACK, spread, 10 + b * 10);
+
+			if (c < 0.7)
+				return FacePoint(site, FACE_LEFT, spread, 4 + b * 10);
+
+			return FacePoint(site, FACE_RIGHT, spread, 4 + b * 10);
+		}
+
+		// The gate, or a closed entry: beside the road where it crosses the ring
+		int entry = site.m_iMain;
+		if (at == RZ_EDressAt.CLOSED)
+		{
+			int closed = site.m_aEntries.Count() - 1;
+			entry = -1;
+			if (closed > 0)
+			{
+				int pick = RZ_Util.PickIndex(p.m_iClosedNext, closed);
+				entry = pick;
+				if (pick >= site.m_iMain)
+					entry = pick + 1;
+			}
+		}
+
+		if (entry < 0)
+			return FacePoint(site, FACE_FRONT, spread, 10 + b * 10);
+
+		float sideSign = 1;
+		if (side)
+			sideSign = -1;
+
+		vector e = site.m_aEntries[entry];
+		vector beside = RZ_Compass.PointAt(e, site.m_aEntryRoad[entry] + 90 * sideSign, RZ_DressPlacer.ROAD_CLEAR + 0.5 + b * 3);
+		return RZ_Util.GroundPos(RZ_Compass.PointAt(beside, RZ_Compass.Bearing(site.m_vCentre, e), spread * 5));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lookout's spot: a front corner of the building (the one nearer the gate first), facing
+	//! the way in. From the ground: nobody is sent onto a roof.
+	protected vector LookoutSpot(RZ_CampPlace p, int which)
+	{
+		RZ_CampSite site = p.m_Site;
+		if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
+			return FacePoint(site, FACE_FRONT, site.m_fDoor, LOOKOUT_OUT);
+
+		vector left = FacePoint(site, FACE_FRONT, -1, LOOKOUT_OUT);
+		vector right = FacePoint(site, FACE_FRONT, 1, LOOKOUT_OUT);
+		vector gate = FacePoint(site, FACE_FRONT, 0, 30);
+		if (site.m_iMain >= 0)
+			gate = site.m_aEntries[site.m_iMain];
+
+		bool leftFirst = RZ_Util.DistXZ(left, gate) <= RZ_Util.DistXZ(right, gate);
+		if ((which % 2 == 0) == leftFirst)
+			return left;
+
+		return right;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where people go in to sleep and come out in the morning: outside the front door.
+	protected vector DoorSpot(RZ_CampPlace p)
+	{
+		return FacePoint(p.m_Site, FACE_FRONT, p.m_Site.m_fDoor, 1.5);
 	}
 
 	// ================================================================ Routines
@@ -1205,10 +2027,15 @@ class RZ_CampLife
 				return JOB_GATHER;
 			}
 
+			// Under the season's curfew: the gate and the lookout, nobody at the fire
 			if (night)
 			{
 				slots.Insert(JOB_WATCH);
-				slots.Insert(JOB_SIT);
+				if (IsCurfew())
+					slots.Insert(JOB_WATCH);
+				else
+					slots.Insert(JOB_SIT);
+
 				return JOB_OFF;
 			}
 
@@ -1221,9 +2048,13 @@ class RZ_CampLife
 				return JOB_SIT;
 			}
 
-			// The nest, two on the loop, one at the board, the phase's chore, one at the fire
+			// The nest, two on the loop (in a building, the lookout between them), one at the
+			// board, the phase's chore, one at the fire
 			slots.Insert(JOB_WATCH);
 			slots.Insert(JOB_PATROL);
+			if (p.m_Site)
+				slots.Insert(JOB_WATCH);
+
 			slots.Insert(JOB_PATROL);
 			slots.Insert(JOB_GATHER);
 			AddChore(slots, phase, true, true, true);
@@ -1244,6 +2075,9 @@ class RZ_CampLife
 			// the pot before the meal (nobody washes)
 			slots.Insert(JOB_LEAN);
 			slots.Insert(JOB_LEAN);
+			if (p.m_Site && p.m_eKind == RZ_ECampPlace.STRONGHOLD)
+				slots.Insert(JOB_WATCH);
+
 			slots.Insert(JOB_STROLL);
 			AddChore(slots, phase, false, true, true);
 			slots.Insert(JOB_SIT);
@@ -1283,6 +2117,14 @@ class RZ_CampLife
 		slots.Insert(JOB_SIT);
 		slots.Insert(JOB_WORK);
 		return JOB_WORK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The season's curfew (Bastion's season: RZ_Seasons): Bastion keeps two on watch at night.
+	protected static bool IsCurfew()
+	{
+		RZ_SeasonMods mods = RZ_Seasons.Mods();
+		return mods && mods.m_bCurfew;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1464,7 +2306,7 @@ class RZ_CampLife
 			if (!piece.m_Entity || piece.m_eUse != use || piece.m_iUsed >= piece.m_iSeats)
 				continue;
 
-			if (person && RZ_Util.DistXZ(piece.m_vPos, p.m_vPos) > PERSON_RADIUS)
+			if (person && RZ_Util.DistXZ(piece.m_vPos, p.m_vHome) > p.m_fPersonRadius)
 				continue;
 
 			return i;
@@ -1488,7 +2330,7 @@ class RZ_CampLife
 
 		if (idx < 0)
 		{
-			Loiter(w, group, RZ_Util.RandomPointInRing(p.m_vPos, 4, 10));
+			Loiter(w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
 			return;
 		}
 
@@ -1534,7 +2376,8 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The sentry: the nest's watch point, else an observation post at the approach.
+	//! The sentry: the nest's watch point, else an observation post: in a building the lookout at
+	//! a front corner (a second watcher takes the other), else at the approach.
 	protected void Watch(RZ_CampPlace p, RZ_CampWorker w, IEntity group)
 	{
 		int idx = FreePiece(p, RZ_EDressUse.WATCH, false);
@@ -1549,6 +2392,18 @@ class RZ_CampLife
 			reach = 8;
 
 		vector at = RZ_Compass.PointAt(p.m_vPos, p.m_fApproach - 20 + Math.RandomFloat(0, 40), reach);
+		if (p.m_Site)
+		{
+			int others = 0;
+			foreach (RZ_CampWorker o : p.m_aWorkers)
+			{
+				if (o != w && o.m_iJob == JOB_WATCH && o.m_iPiece < 0)
+					others++;
+			}
+
+			at = LookoutSpot(p, others);
+		}
+
 		ResourceName prefab = m_Settings.m_sObservationWaypoint;
 		if (prefab.IsEmpty())
 		{
@@ -1577,7 +2432,7 @@ class RZ_CampLife
 		array<IEntity> loop = {};
 		for (int i = 0; i < 4; i++)
 		{
-			vector at = RZ_Compass.PointAt(p.m_vPos, p.m_fApproach + i * 90 + rng.Range(-20, 20), rng.Range(40, 80));
+			vector at = RZ_Compass.PointAt(p.m_vCentre, p.m_fApproach + i * 90 + rng.Range(-20, 20), rng.Range(40, 80));
 			IEntity wp = RZ_Util.SpawnPrefab(prefab, at);
 			if (wp)
 				loop.Insert(wp);
@@ -1614,7 +2469,7 @@ class RZ_CampLife
 			return;
 		}
 
-		vector at = p.m_vPos;
+		vector at = p.m_vHome;
 		bool haveSpot = false;
 		foreach (RZ_CampPiece piece : p.m_aPieces)
 		{
@@ -1646,20 +2501,29 @@ class RZ_CampLife
 	{
 		vector away;
 		if (courier)
-			away = RZ_Compass.PointAt(p.m_vPos, Math.RandomFloat(0, 360), Math.RandomFloat(60, 90));
+			away = RZ_Compass.PointAt(p.m_vCentre, Math.RandomFloat(0, 360), Math.RandomFloat(60, 90));
+		else if (p.m_Site && p.m_Site.m_iMain >= 0)
+			away = p.m_Site.m_aEntries[p.m_Site.m_iMain];
 		else if (p.m_bHasRoad && RZ_Util.DistXZ(p.m_vRoad, p.m_vPos) < 120)
 			away = p.m_vRoad;
 		else
-			away = RZ_Compass.PointAt(p.m_vPos, p.m_fApproach, 40);
+			away = RZ_Compass.PointAt(p.m_vCentre, p.m_fApproach, 40);
 
 		MoveTo(w, group, away);
-		MoveTo(w, group, RZ_Util.RandomPointInRing(p.m_vPos, 4, 10));
+		MoveTo(w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Off shift: to the tents. They sleep (despawn) once nobody is close.
+	//! Off shift: to the tents (in a building, in at the front door). They sleep (despawn) once
+	//! nobody is close.
 	protected void ToBed(RZ_CampPlace p, RZ_CampWorker w, IEntity group)
 	{
+		if (p.m_Site)
+		{
+			MoveTo(w, group, DoorSpot(p));
+			return;
+		}
+
 		foreach (RZ_CampPiece piece : p.m_aPieces)
 		{
 			if (piece.m_Entity && piece.m_eUse == RZ_EDressUse.SLEEP)
@@ -1673,9 +2537,12 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where people come out in the morning: a tent, else the inner ring.
+	//! Where people come out in the morning: the building's front door, a tent, else the inner ring.
 	protected vector BedSpot(RZ_CampPlace p)
 	{
+		if (p.m_Site)
+			return RZ_Mission.LandPointNear(DoorSpot(p), 0.5, 2);
+
 		foreach (RZ_CampPiece piece : p.m_aPieces)
 		{
 			if (piece.m_Entity && piece.m_eUse == RZ_EDressUse.SLEEP)
@@ -1773,6 +2640,60 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! How many people a place has in play (the faction bases' counts): Bastion's school 12, its
+	//! outposts 6; the Red Hand's garage 10, a crew camp 4; the Haven's church 8, an outpost 5, a
+	//! safehouse 3; Halcyon's lab 6, a field station 2. Extras fill up to it, within their caps.
+	static int PeopleInPlay(RZ_EFaction f, RZ_ECampPlace kind)
+	{
+		bool stronghold = kind == RZ_ECampPlace.STRONGHOLD;
+		if (f == RZ_EFaction.MILITARY)
+		{
+			if (stronghold)
+				return 12;
+
+			return 6;
+		}
+
+		if (f == RZ_EFaction.BANDITS)
+		{
+			if (stronghold)
+				return 10;
+
+			return 4;
+		}
+
+		if (f == RZ_EFaction.SURVIVORS)
+		{
+			if (stronghold)
+				return 8;
+
+			if (kind == RZ_ECampPlace.SAFEHOUSE)
+				return 3;
+
+			return 5;
+		}
+
+		if (stronghold)
+			return 6;
+
+		return 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! People at a place now: the living members of every body that takes jobs, and the sleepers.
+	protected int CountPeople(RZ_CampPlace p)
+	{
+		int n = p.m_iAsleepGuards + p.m_iAsleepExtras;
+		foreach (RZ_CampWorker w : p.m_aWorkers)
+		{
+			if (w.m_iRole != ROLE_KEEPER && w.m_Unit)
+				n += RZ_Util.CountAlive(w.m_Unit);
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One more person at a live place by day (off-shift workers, the courier), out of sight.
 	protected void AddExtra(RZ_CampPlace p, int phase)
 	{
@@ -1787,6 +2708,10 @@ class RZ_CampLife
 		}
 
 		if (here >= m_Settings.m_iExtrasPerPlace || CountExtras() >= m_Settings.m_iExtrasMax)
+			return;
+
+		// Sized to the place: no extra where its people are already as many as it has in play
+		if (CountPeople(p) >= PeopleInPlay(p.m_eFaction, p.m_eKind))
 			return;
 
 		if (SpawnOwned(p, true))

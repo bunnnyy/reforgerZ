@@ -1,53 +1,80 @@
 GenericEntity {
- ID "D8D55FFB3A6AD0BD"
+ ID "AD799AA5D70B768A"
  components {
-  RplComponent "{3D5E845142EB6B4A}" {
+  RplComponent "{E19E7A7AE30D2321}" {
   }
-  Hierarchy "{E6D3C938357EA5D7}" {
+  Hierarchy "{D6B5F9F153857D23}" {
   }
  }
  coords 0 0 0
  {
   StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
-   ID "6785E6C62415A40A"
+   ID "8BC6D3B654E8CA7F"
    components {
-    Hierarchy "{DBD15B1CE1C35AD4}" {
+    Hierarchy "{419FB7A48D8DDB4C}" {
     }
    }
-   coords 0 0 0
+   coords -1.0 0 0
+   angles 0 3 0
+  }
+  StaticModelEntity : "{7839491ACC2102B9}Prefabs/Structures/Agriculture/VegetableBed_01/VegetableBed_01/VegetableBed_01_small.et" {
+   ID "129466FFF447CB1C"
+   components {
+    Hierarchy "{8E2FBF97C9088E93}" {
+    }
+   }
+   coords 0.6 0 0.2
+   angles 0 -4 0
   }
   GenericEntity : "{30A496094B91F0C3}Prefabs/Props/Civilian/Hutch_01.et" {
-   ID "10A922E32F0CE70D"
+   ID "CA74FB4EEBC0364B"
    components {
-    Hierarchy "{7B997F6093B9DE64}" {
+    Hierarchy "{3A6A5B92039B60AD}" {
     }
    }
-   coords 2.0 0 0.5
-   angles 0 -90 0
+   coords 2.4 0 0.6
+   angles 0 -88 0
   }
   GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
-   ID "CE3B655F4BBBF8E2"
+   ID "AD5E8894BC45BB14"
    components {
-    Hierarchy "{3C65340C5EB44391}" {
+    Hierarchy "{53BEB321DB4F842B}" {
     }
    }
-   coords -1.5 0 0.8
+   coords -2.1 0 1.4
    angles 0 30 0
   }
-  GenericEntity {
-   ID "0B7091456350045E"
+  GenericEntity : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+   ID "BAAEA5C53E03C565"
    components {
-    SCR_AISmartActionSentinelComponent "{2CB31831BFEC50F8}" {
+    Hierarchy "{3F43E8C0E98049C7}" {
+    }
+   }
+   coords 1.6 0 -1.9
+   angles 0 60 0
+  }
+  GenericEntity : "{D0B44EB8DBEDDA97}Prefabs/Props/Civilian/Bucket_02.et" {
+   ID "DED8413C2B25C1FE"
+   components {
+    Hierarchy "{1601DDA139F0EEE1}" {
+    }
+   }
+   coords -0.2 0 1.8
+  }
+  GenericEntity {
+   ID "0E981FA28BB72C83"
+   components {
+    SCR_AISmartActionSentinelComponent "{351C3032E0DC403B}" {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition 0 1.6 -1.2
+     m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{84FB38BB031D613A}" {
+    Hierarchy "{B014CE3D39D48A66}" {
     }
    }
-   coords 0 0 1.2
+   coords -0.2 0 1.5
   }
  }
 }

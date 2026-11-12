@@ -1,69 +1,103 @@
 GenericEntity {
- ID "450107ABA93703B5"
+ ID "494D37313FBACFC4"
  components {
-  RplComponent "{F74D545EBE9D8FB0}" {
+  RplComponent "{A34A5362234CFC5F}" {
   }
-  Hierarchy "{E8319BDA827E0B9B}" {
+  Hierarchy "{B51274E608D6300F}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "CAD16632571D5737"
+   ID "3FBABC83E3FBC1D9"
    components {
-    Hierarchy "{23F5A8C7144F7C4F}" {
+    Hierarchy "{AB0B96E5D16A9BAB}" {
     }
    }
    coords 0 0 1.5
-   angles 0 90 0
+   angles 0 92 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "AF9FBC07F501287B"
+   ID "A83AB6B0BCD40CB4"
    components {
-    Hierarchy "{A2C6F6A5963DCEF4}" {
+    Hierarchy "{A817D42926A41464}" {
     }
    }
-   coords 0 0.35 1.5
-   angles 0 88 0
+   coords 0.2 0.35 1.5
+   angles 0 86 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "C5765F762A3E3E4E"
+   components {
+    Hierarchy "{4531C1DEEAE6CB26}" {
+    }
+   }
+   coords -1.6 0 1.5
+   angles 90 0 0
+  }
+  GenericEntity : "{6095B175AA9804DC}Prefabs/Props/VehicleParts/Tires/Tire_UAZ469.et" {
+   ID "9CFF0E27D9A89F37"
+   components {
+    Hierarchy "{49A48B90B703B956}" {
+    }
+   }
+   coords 1.7 0 1.4
+   angles 90 0 0
   }
   GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
-   ID "A2ECCE10094D2D06"
+   ID "24AF7A8C4BB7EC61"
    components {
-    Hierarchy "{58EB7B23363AC0B0}" {
+    Hierarchy "{68D9F878CADE2032}" {
     }
    }
-   coords 1.8 0 0
-   angles 0 200 0
+   coords 2.3 0 -0.2
+   angles 0 205 0
+  }
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "A487DDFA799657C8"
+   components {
+    Hierarchy "{DB186B8115EFF218}" {
+    }
+   }
+   coords 2.9 0 0.7
+  }
+  ParticleEffectEntity : "{899360C930DA3EE3}Prefabs/Particles/Campfire_burning.et" {
+   ID "83C446264C5E8B67"
+   components {
+    Hierarchy "{0C412BC19780F805}" {
+    }
+   }
+   coords 2.9 0.9 0.7
   }
   GenericEntity {
-   ID "59712C9D92B4322C"
+   ID "69C30B0D6EF6A6FF"
    components {
-    SCR_AISmartActionSentinelComponent "{6BDE8141D3617462}" {
+    SCR_AISmartActionSentinelComponent "{7D5345D9E42C56C7}" {
      Tags {
       "RZ_Lean"
      }
      m_vLookPosition 0 1.6 3
      m_eLoiterAnimation LEAN_LEFT
     }
-    Hierarchy "{0FBB6EAA479A8568}" {
+    Hierarchy "{64B842CEAD5D6F87}" {
     }
    }
-   coords -1.6 0 0.6
+   coords -1.8 0 0.5
   }
   GenericEntity {
-   ID "66E732616A1FDEE8"
+   ID "828DC54DF5ACABF6"
    components {
-    SCR_AISmartActionSentinelComponent "{12693FF7CA8896D4}" {
+    SCR_AISmartActionSentinelComponent "{4709CB2BE6B8353C}" {
      Tags {
       "RZ_Lean"
      }
      m_vLookPosition 0 1.6 3
      m_eLoiterAnimation SMOKING
     }
-    Hierarchy "{3AA9147EBA7A80D5}" {
+    Hierarchy "{3FC1DECADEE64E05}" {
     }
    }
-   coords 1.8 0 0.6
+   coords 2.3 0 -0.2
   }
  }
 }

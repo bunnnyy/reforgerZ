@@ -1368,6 +1368,8 @@ class RZ_Interactions
 			{
 				read = "Listen to the radio";
 				choiceLabels = "Tune through the open channels|Work on a scrambled channel";
+				if (RZ_Dialogue.IsOn() && RZ_DialogueSettings.Get().m_bTrees)
+					choiceLabels += "|Call on the open channel";
 				break;
 			}
 			case RZ_ESpotKind.GENERATOR:

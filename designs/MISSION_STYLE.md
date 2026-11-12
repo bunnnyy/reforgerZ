@@ -18,6 +18,12 @@ and the work rows). This file keeps only the parts not in code yet.
   pack goes, through the "where the horde drifts" block); Bastion's lost posts as a one-choice job (their
   tags to the nail, or left walking).
 - **`walk.out` read by the tribes:** a man walked on feeds the nearest pack within 2 km as a named young.
+- **The packs' jobs' rest** (from the infected design, whose own part is built: [docs/INFECTED.md](../docs/INFECTED.md)):
+  Clear the Trail on a truck road (a trail where it crosses a road, `RZ_Tribe.m_aRoadCross`); Bait the
+  Crew's Zombie Bait Infamy when either side lands on a faction's people; Track Them Home's "not closer
+  than 80 m"; couriers and columns asking for an escort past a pack that hunts their road at its hour;
+  the capture case's pack following it to the lab (Capture the Index and the finale's tissue call
+  `RZ_Tribes.DrawTo(pack, case's spot, night)` while the case is carried).
 - **Tier 0:** check tags on the audited choices that have none.
 
 ## Tricks (from the disguise design, whose own part is built)

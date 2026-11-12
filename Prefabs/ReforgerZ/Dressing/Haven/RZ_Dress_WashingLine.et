@@ -1,52 +1,86 @@
 GenericEntity {
- ID "83B20F5619283548"
+ ID "FD1A2C489F04B50C"
  components {
-  RplComponent "{B46EC85EDF5F35ED}" {
+  RplComponent "{F76AADC399C1CA3B}" {
   }
-  Hierarchy "{86FFF5C9E94D6DFD}" {
+  Hierarchy "{ABF21895889CE7FB}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
-   ID "45C257158DADEE09"
+   ID "616D054570391172"
    components {
-    Hierarchy "{9494324EE3B13CE8}" {
+    Hierarchy "{75C4E3EFEFD57E12}" {
     }
    }
-   coords -2.0 0 0
+   coords -2.8 0 -0.2
   }
   GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
-   ID "4B6F9373EA50F564"
+   ID "5F3CC4689C0A7F0C"
    components {
-    Hierarchy "{2C18BCA558F3D2FA}" {
+    Hierarchy "{70E0328E01E46C92}" {
     }
    }
-   coords 2.0 0 0
+   coords 0.1 0 0.3
+  }
+  GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
+   ID "0FF5A0EA086470A1"
+   components {
+    Hierarchy "{732C7698EA82A78E}" {
+    }
+   }
+   coords 2.9 0 -0.1
+  }
+  GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
+   ID "757B3F3189166799"
+   components {
+    Hierarchy "{1331CB2DA9383981}" {
+    }
+   }
+   coords -1.4 0 0.05
+   angles 0 80 0
+  }
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "7F50DDBEF7E1FEF3"
+   components {
+    Hierarchy "{66637A038D81FD02}" {
+    }
+   }
+   coords 1.5 0 0.1
+   angles 0 95 0
   }
   GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
-   ID "B2F0E51BCCDF2662"
+   ID "51C291D955324E27"
    components {
-    Hierarchy "{FD07C410521651A8}" {
+    Hierarchy "{504E7D48EBE041FA}" {
     }
    }
-   coords 0.6 0 0.6
-   angles 0 20 0
+   coords -0.7 0 0.9
+   angles 0 15 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "3D5DE0E4D281F238"
+   components {
+    Hierarchy "{1B37356F8F909B6F}" {
+    }
+   }
+   coords 0.5 0 1.0
   }
   GenericEntity {
-   ID "5836E989569C6F24"
+   ID "C404CEB09DA4FA00"
    components {
-    SCR_AISmartActionSentinelComponent "{26AE03AC62CF24E6}" {
+    SCR_AISmartActionSentinelComponent "{C7DE890B54FFF383}" {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition 0 1.6 -0.8
+     m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{44D29F052BD64780}" {
+    Hierarchy "{477C687DB1ED161A}" {
     }
    }
-   coords 0 0 0.8
+   coords -0.2 0 1.0
   }
  }
 }

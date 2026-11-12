@@ -49,10 +49,12 @@ and one way to end it: **research the cure.**
 - **A living background**: strongholds that never fall, a few outposts, real supply trucks with
   AI crews, Haven safehouses that grow as you rescue people, named wanderers and leaders with
   loyalties of their own, story arcs and session headlines.
-- **Camps that look lived in**: an outpost is a small compound (barricades on the approach, a
-  working area, tents at the back, a cooking corner) with tents, fires, tables, washing, firewood,
-  clutter and each faction's own things round its posts, camps, safehouses and field stations
-  (scenery only: nothing to loot or use), and people who keep their faction's routine: the sentry,
+- **Camps that look lived in**: each faction moves into the building in town that suits it
+  (Bastion the school or town hall on the road, the Red Hand the garage at the crossroads, the
+  Haven the church, Halcyon the lab or a house), works in its yard and barricades its other road
+  entries; with no such building, a small compound on rings. Fires, tables, washing, firewood,
+  clutter and each faction's own things stand round its posts, camps, safehouses and field stations
+  (scenery only: nothing to loot or use), and people keep their faction's routine: the sentry,
   the patrol, the morning wash, chopping wood, cooking before the meal, Bastion's shift change and
   the roll at 20:30, the Red Hand's toll, the Haven's supper, Halcyon's courier, and the off shift
   asleep.
@@ -186,7 +188,7 @@ yet. Start with [PC_SETUP.md](docs/PC_SETUP.md) (Claude Code on your PC can do i
 [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md).
 
 **Not built yet:** what's left of the approved designs (talk, errands, the mission style, borrowed
-kit, reputation names, tone, Traces and the infected), built in the order of
+kit, reputation names and tone), built in the order of
 [designs/PLAN.md](designs/PLAN.md). Built so far: the epilogue week (phase 7, simplified, its design
 done: the record and the fuller record, the hall's freeze, beats in full with notables and titles,
 carriers, the dose outlets, the queue and the lab gate as moving scenes, the grey choices, the
@@ -220,10 +222,11 @@ young's sprint and the close moves on the player's machine: the ankle grab's hol
 knockdown) and the crawlers' daily life, and the people's side
 (each faction's words and marks, knowing, skills, your dead run, the moat, 13 contracts and the
 reworked events, the cure's hooks and the last week), and the great one with its Gathering and Night of
-Many Calls, the packs' signs and call sounds, the bright moon and the map's range rings (tribes phases
-1 to 5, [INFECTED.md](docs/INFECTED.md)); and Traces' door marks, doors you can see, player traces, the scenes,
-sound and light and the epilogue's handover (its phases 1 to 7, [TRACES.md](docs/TRACES.md); its compositions and sounds
-are optional kit prefabs the author builds in Workbench).
+Many Calls, the packs' signs and call sounds, the bright moon and the map's range rings, and the
+design's small rules (the whole infected design, [INFECTED.md](docs/INFECTED.md)); and all of Traces:
+door marks, doors you can see, player traces, the scenes and the pieces that age, sound and light and
+the epilogue's handover ([TRACES.md](docs/TRACES.md); its compositions and sounds are optional kit
+prefabs the author builds in Workbench).
 
 ## Docs
 
@@ -246,7 +249,7 @@ are optional kit prefabs the author builds in Workbench).
 | [PC_SETUP.md](docs/PC_SETUP.md) | Setting up your Windows PC with Claude Code: Steam apps, Workbench, local tests, play-testing |
 | [UI.md](docs/UI.md) | Art direction, the icon set, the screens, the UI scripts, built and planned |
 | [WORKBENCH_SETUP.md](docs/WORKBENCH_SETUP.md) | Turning the scripts into a playable mod |
-| [designs/](designs/README.md) | Approved designs not built yet (infected tribes, dialogue, errands, the mission style, reputation names, tone, traces) and the build plan. Each moves into `docs/` as it's built |
+| [designs/](designs/README.md) | Approved designs not built yet (dialogue, errands, the mission style, reputation names, tone) and the build plan. Each moves into `docs/` as it's built |
 
 ## Code
 
@@ -264,7 +267,8 @@ scripts/Game/ReforgerZ/
                  roads, bridges and wild land), named people, the finale's people and the faults
                  table
     Traces/      Traces: the door-mark grammar, the first days, doors on the map, the writers
-                 and the watch, reading, decals' list and boards, player traces
+                 and the watch, reading, decals' list and boards, player traces, the scenes,
+                 sound and light, the placer camp life shares, the clue registry
   Director/      outbreak stages, spread, heat, adaptation, time and weather,
                  the broadcast, the season mood and grief, story arcs, the questline engine,
                  the majors' engine (acts, votes, the dynamic fallbacks, the season story, the
@@ -276,7 +280,8 @@ scripts/Game/ReforgerZ/
                  the daily rhythm, hunts, scouts, their bodies), their life cycle, borders and
                  memory, the people's side (words, knowing, your dead run, the moat, the last
                  week; the tag and the call box), the great one, signs and sounds (props,
-                 call sounds, the moon), bite detection, stealth
+                 call sounds, the moon), the small rules (prey, stragglers, patrols), bite
+                 detection, stealth
                  (visibility, the infected's senses, losing them), the player effects component
                  (the close moves played on the player's machine)
     Behaviour/   the behaviour layer: Bacon's hooks, steering modes, senses, hearing, blood
@@ -307,7 +312,9 @@ scripts/Game/ReforgerZ/
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
                  (strangers and the open channel too), what a reply needs; the trees (hubs,
                  nodes, checks, effects), conditions, memory (dialogue.json: promises, callbacks,
-                 lies told), scenes and sittings, barks; Pack/: the conversations, generated from dialogue/
+                 lies told), scenes and sittings, barks, Make it right, greets that open, the secure
+                 nets and distress calls, bindings and world predicates, the notebook's talk rows;
+                 Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen, the reader,
                  the car repair and shop screens, the screen guard, the notice board, the spawn screen and loadout lock, the
@@ -330,6 +337,9 @@ Configs/ReforgerZ/PrefabManifest.json
 Configs/System/  the vanilla menu and input configs, with the ReforgerZ screens and keys added
 tools/prefab_manifest.py
                  checks the manifest against the scripts and writes the setup doc's tables
+tools/camp_kit/  pieces.py: the camp-life pieces, their kits and the Traces compositions; build.py
+                 writes their prefabs and the game mode's slots; render.py draws them and the faction
+                 bases' plans (bases.py) into designs/camp_plans.html
 UI/              icon sources and PNGs (Icons/), HTML mockups (Mockups/), previews (Previews/),
                  the layout guide (LAYOUTS.md), the layouts (layouts/ReforgerZ/), the icon
                  atlas and the car picture (Textures/ReforgerZ/) and its imageset (Imagesets/ReforgerZ/)

@@ -141,5 +141,21 @@ class RZ_DialoguePack_finale
 		db.Say("", "\"A line in the book, and this one doesn't get paid off. Here's the page.\"");
 		db.Choice("rs_sign", "\"Put me in the book.\"", "hub", "", "", "", "", "", "commit:redhand", "", "");
 		db.Choice("rs_wait", "\"Let me count first.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("finale.route.independent", "radio:open", "finale:open & route:none", "Speak about the cure.", 0, 8, "plain");
+		db.Node("start");
+		db.Say("", "Static, then a click. \"...open channel. Go ahead.\"");
+		db.Choice("all", "\"This is nobody. It goes to everyone.\"", "card", "", "", "", "", "", "", "", "");
+		db.Choice("off", "\"Switch off.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("card");
+		db.Confirm();
+		db.Say("", "Once it's on the air, every faction hears that somebody said it. Nobody hears who.");
+		db.Choice("say", "\"Say it.\"", "said", "", "", "", "", "", "commit:indep", "", "");
+		db.Choice("off2", "\"Switch off.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("said");
+		db.Public();
+		db.Say("", "\"This is nobody. The cure goes to everyone. No crates, no lists.\"");
+		db.Say("", "A long pause. Then a woman, a long way off: \"Heard you. {here} heard you, anyway.\"");
+		db.Do("rumour:\"Someone on the open channel says the cure goes to everyone. No crates, no lists.\"@12");
+		db.Choice("out", "\"Out.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 }

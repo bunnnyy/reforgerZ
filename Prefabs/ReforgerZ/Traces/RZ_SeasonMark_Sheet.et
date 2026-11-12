@@ -1,33 +1,33 @@
 GenericEntity {
- ID "9ECAE73074ED206E"
+ ID "8F53BB81D7877167"
  components {
-  RplComponent "{FDB09514DB0D89B7}" {
+  RplComponent "{D79054A60EE2AF8A}" {
   }
-  Hierarchy "{2428080E431115A5}" {
+  Hierarchy "{31EC90F4A9BD41D8}" {
   }
  }
  coords 0 0 0
  {
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "5BC9FC5FF9E23BF3"
+   ID "DB926B5B7FAAC6A3"
    components {
-    Hierarchy "{F2706D86FE5D186C}" {
+    Hierarchy "{DCB794B7F801AE01}" {
     }
    }
    coords -1.2 0 0
   }
   SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
-   ID "3E8A684BF526ABB6"
+   ID "4784D25AEA4D1F0B"
    components {
-    Hierarchy "{C84BA6D5D56F1D66}" {
+    Hierarchy "{7836F4B3BD6DF0B3}" {
     }
    }
    coords 1.2 0 0
   }
   GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
-   ID "1E4D9BF18417FC57"
+   ID "07A969414E2E3CDF"
    components {
-    Hierarchy "{E099F57CDA854EEE}" {
+    Hierarchy "{EE9CE58DDCE142FC}" {
     }
    }
    coords 0 1.0 0

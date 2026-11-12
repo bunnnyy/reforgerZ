@@ -2025,7 +2025,7 @@ class RZ_Wanderers
 
 		if (killer > 0)
 		{
-			m_GM.AddInfamy(killer, RZ_EFaction.SURVIVORS, m_Settings.m_iKillInfamy);
+			m_GM.AddInfamy(killer, RZ_EFaction.SURVIVORS, m_Settings.m_iKillInfamy, "killed a wanderer", 0, string.Format("shot %1, who walked the roads", w.GetShortName()));
 			m_GM.NotifyPlayer(killer, "The Haven", string.Format("Everyone will know who killed %1. (+%2 Haven Infamy)", w.GetShortName(), m_Settings.m_iKillInfamy));
 		}
 	}
@@ -2402,6 +2402,10 @@ class RZ_Wanderers
 		}
 
 		string text = MoodLine(w) + IntroText(w) + "\n" + IntelText(w, player.GetOrigin());
+		// Dialogue > Trees: their greeting by what they remember of you, else your Haven standing
+		string greet = RZ_RepVoice.WandererGreeting(m_GM, playerId, w, player.GetOrigin());
+		if (!greet.IsEmpty())
+			text = greet + "\n" + text;
 		// The epilogue week: road news about the season, by role
 		if (RZ_Epilogue.Get())
 		{
@@ -2883,7 +2887,7 @@ class RZ_Wanderers
 	protected void Rob(RZ_Wanderer w, int playerId, IEntity owner, IEntity user)
 	{
 		w.Remember(m_GM.GetProfile(playerId).m_sIdentity, MEM_WRONGED);
-		m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, m_Settings.m_iRobInfamy);
+		m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, m_Settings.m_iRobInfamy, "robbed a wanderer", 0, string.Format("robbed %1 on the road", w.GetShortName()));
 
 		string text = "They empty their pockets with shaking hands. There's almost nothing in them.";
 		if (w.m_eRole == RZ_EWandererRole.TRADER && m_Settings.m_aTraderGoods && !m_Settings.m_aTraderGoods.IsEmpty())

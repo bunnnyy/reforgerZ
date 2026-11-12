@@ -9,6 +9,10 @@ class RZ_DialoguePack_strangers
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
+		db.Conv("stranger.any.callout", "stranger", "", "", 0, 5, "plain");
+		db.Opens(10);
+		db.Node("start");
+		db.Say("", "\"Hey. You. Sorry. Have you got a minute? I wouldn't ask.\"");
 		db.Conv("stranger.any.where", "stranger", "", "Ask where they're headed.", 4, 1, "plain");
 		db.Node("start");
 		db.Say("", "\"Wherever's still standing. I'll know it when I see it, I expect.\"");
@@ -155,14 +159,14 @@ class RZ_DialoguePack_strangers
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("stranger.which_way.pram", "stranger:which_way", "", "Ask about the pram.", 4, 1, "plain");
 		db.Node("start");
-		db.Say("", "\"It carries more than a bag does. Don't look at me like that. Everyone looks at me like that.\"");
-		db.Choice("fair", "\"It's a good idea.\"", "fair", "", "", "", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Node("fair");
 	}
 
 	protected static void Add1(RZ_DialogueDB db)
 	{
+		db.Say("", "\"It carries more than a bag does. Don't look at me like that. Everyone looks at me like that.\"");
+		db.Choice("fair", "\"It's a good idea.\"", "fair", "", "", "", "", "", "", "", "");
+		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("fair");
 		db.Say("", "\"Thank you. Somebody gets it. The pans are for {their:town}. They've none left, apparently. Apparently nobody thought of pans.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}

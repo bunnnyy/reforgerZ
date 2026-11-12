@@ -430,6 +430,7 @@ class RZ_Seasons
 
 	//------------------------------------------------------------------------------------------------
 	int GetSeason() { return m_iSeason; }
+	int GetRulesWinner() { return m_iRulesWinner; }		// the faction whose rules this season started with (the last winner), -1 none
 
 	//------------------------------------------------------------------------------------------------
 	//! Whole real days since this season started, -1 if the clock isn't known.

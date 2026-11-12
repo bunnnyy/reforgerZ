@@ -1,25 +1,25 @@
 GenericEntity {
- ID "B6FAF74002F189B9"
+ ID "58950487B82FAC5B"
  components {
-  RplComponent "{9F9F14EDFBF09A6E}" {
+  RplComponent "{B061CD6BDB923A36}" {
   }
-  Hierarchy "{30CE75687AB55CF4}" {
+  Hierarchy "{70A476B2597F54F3}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{18D107DB09E20A36}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_blue_static.et" {
-   ID "CD0E50B99F1D0F69"
+   ID "DC420371FD16D92F"
    components {
-    Hierarchy "{7897040092E83AFE}" {
+    Hierarchy "{5F1169844AB258A8}" {
     }
    }
    coords 0 0 0
   }
   GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
-   ID "2C3F45D3DA1B2AB2"
+   ID "0587623F7A1BB40E"
    components {
-    Hierarchy "{2A561718B61EBC84}" {
+    Hierarchy "{1714462DA76C747A}" {
     }
    }
    coords 1.6 0 0.5

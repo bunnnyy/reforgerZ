@@ -317,6 +317,84 @@ class RZ_RepVoice
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A wanderer's greeting with Trees on: what they remember of you this life first (saved, helped,
+	//! wronged), else the manner of your Haven standing; the Deserter reads Bastion's, reversed (who
+	//! Bastion hunts, he warms to). "" with Trees off or no line: the built greeting stays.
+	static string WandererGreeting(RZ_GameModeComponent gm, int playerId, RZ_Wanderer w, vector pos)
+	{
+		if (!TreesOn() || !w || w.m_eRole == RZ_EWandererRole.KID)
+			return "";
+
+		RZ_PlayerProfile p = gm.GetProfile(playerId);
+		string manner = "";
+		if (w.MemoryLife(p.m_sIdentity) == p.m_iLives)
+		{
+			int mem = w.GetMemory(p.m_sIdentity);
+			if ((mem & RZ_Wanderers.MEM_SAVED) != 0)
+				manner = "saved";
+			else if ((mem & RZ_Wanderers.MEM_WRONGED) != 0)
+				manner = "wronged";
+			else if ((mem & RZ_Wanderers.MEM_HELPED) != 0)
+				manner = "helped";
+		}
+
+		string kind = "wanderer";
+		int faction = RZ_EFaction.SURVIVORS;
+		if (manner.IsEmpty() && w.m_eRole == RZ_EWandererRole.DESERTER)
+		{
+			kind = "wanderer_deserter";
+			faction = RZ_EFaction.MILITARY;
+			manner = Manner(p.GetFame(faction), p.GetInfamy(faction));
+			if (manner == "warm" || manner == "devoted" || manner == "fond")
+				manner = "warm";
+			else if (manner != "hostile")
+				manner = "unknown";
+		}
+		else if (manner.IsEmpty())
+		{
+			manner = Manner(p.GetFame(faction), p.GetInfamy(faction));
+		}
+
+		return RZ_VoiceBank.PickFor(gm, kind, faction, manner, null, playerId, pos);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pack's leader laid down (RZ_Tribes): the nearest player within 150 m gets the crews' Bailiff,
+	//! and each faction's own words for it as a deed, unless a bigger one stands ("laid the big
+	//! one down at its lair", "put the heavy down", "evicted the boss", "brought in the index").
+	static void PackLeaderDown(RZ_GameModeComponent gm, vector at)
+	{
+		int best = -1;
+		float bestDist = 150;
+		array<int> ids = {};
+		array<IEntity> players = {};
+		RZ_Util.GetAlivePlayers(ids, players);
+		foreach (int i, IEntity p : players)
+		{
+			float d = RZ_Util.DistXZ(p.GetOrigin(), at);
+			if (d <= bestDist)
+			{
+				bestDist = d;
+				best = ids[i];
+			}
+		}
+
+		if (best <= 0)
+			return;
+
+		CrewEvent(gm, best, CREW_BAILIFF);
+		RZ_PlayerProfile profile = gm.GetProfile(best);
+		profile.EnsureArrays();
+		array<string> words = {"laid the big one down at its lair", "put the heavy down", "evicted the boss up the hill", "brought in the index"};
+		for (int f = 0; f < RZ_Factions.COUNT && f < words.Count(); f++)
+		{
+			RZ_Deeds.NoteBest(profile, f, 1, words[f]);
+		}
+
+		RZ_Log.Info(string.Format("Reputation: %1 laid a pack's leader down", RZ_Util.PlayerName(best)));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A Bastion checkpoint run today (for Legs).
 	static void NoteRan(RZ_GameModeComponent gm, int playerId)
 	{
@@ -593,6 +671,16 @@ class RZ_RepVoice
 		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
 		string seat = string.Format("leader:%1:%2", l.m_iId, l.m_iGeneration);
 
+		// Step 1: a major's or a questline's ending this player decided, at a seat of the faction it was about
+		string crossing = CrossingLine(gm, ident, l, seat);
+		if (!crossing.IsEmpty())
+			return crossing;
+
+		// The epilogue week: the first visit each real day, the ending in their voice and where you stood
+		string week = EpilogueOpener(gm, playerId, l, seat);
+		if (!week.IsEmpty())
+			return week;
+
 		string deed = LocalDeed(playerId, seat);
 		if (!deed.IsEmpty())
 			return string.Format("\"You're the one who %1.\"", deed);
@@ -656,6 +744,174 @@ class RZ_RepVoice
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		return RZ_LeaderVoice.Greeting(rng, l.m_eFaction);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The epilogue week's opener, built from parts so every ending has plenty of plain lines: what the
+	//! ending is to this faction, then where you stood (on the route that won, on another, on none),
+	//! then the place's own beat when there is one. Plain, never a joke; the first visit each real day.
+	protected static string EpilogueOpener(RZ_GameModeComponent gm, int playerId, RZ_Leader l, string seat)
+	{
+		RZ_Epilogue epi = RZ_Epilogue.Get();
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		if (!epi || !epi.IsBuilt() || !trees)
+			return "";
+
+		string key = seat + "|week";
+		int at = trees.GetMemory().TopicAt(playerId, key);
+		if (at > 0 && RZ_SeasonClock.Now() - at < RZ_DialogueMemory.DAY)
+			return "";
+
+		trees.GetMemory().NoteTopic(playerId, key);
+		int ending = EndingIndex(epi);
+		string text = EndingClause(l.m_eFaction, ending);
+		RZ_CureFinale fin = gm.GetFinale();
+		int mine = RZ_CureFinale.NONE;
+		if (fin)
+			mine = fin.RouteOfPlayer(playerId);
+
+		int stood = 2;
+		if (mine != RZ_CureFinale.NONE && mine == epi.Route())
+			stood = 0;
+		else if (mine != RZ_CureFinale.NONE)
+			stood = 1;
+
+		text += " " + YouClause(l.m_eFaction, stood);
+		RZ_EpiBeats beats = epi.GetBeats();
+		if (beats)
+		{
+			string place = beats.PlaceLine(l.m_vPos, 400);
+			if (!place.IsEmpty() && Math.RandomInt(0, 2) == 0)
+				text += "\n" + place;
+		}
+
+		return "\"" + text + "\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 0-3 a faction's route, 4 the Independent, 5 the slow cure, 6 handed over, 7 no cure.
+	protected static int EndingIndex(RZ_Epilogue epi)
+	{
+		if (epi.Data().lastDay)
+			return 7;
+
+		if (epi.Data().slow)
+			return 5;
+
+		int r = epi.Route();
+		if (r >= 0 && r <= 4)
+			return r;
+
+		return 6;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string EndingClause(int faction, int ending)
+	{
+		array<string> haven = {"It went hand to hand, like we said. The houses are still arguing about who first.",
+			"Bastion has it in a crate. We're on their list, every one of us.",
+			"The Red Hand has it, and a price. We pay in tins.",
+			"The lab published it. Every name on the paper. I read it twice.",
+			"Somebody walked it out to every house. No crate, no list.",
+			"The lab finished on its own. Nobody fought for it, and everybody's claiming a share.",
+			"Nobody held the room, so it went where the Fame was. We take what comes.",
+			"No cure. We read the names tonight, and every night after."};
+		array<string> bastion = {"The Haven issues it by hand. No register. We keep one anyway.",
+			"Issued at the north road and the posts, one name and one signature at a time.",
+			"Sold, at a price. Logged as theft. The log doesn't help.",
+			"Published, with every name on it but ours. We have a copy.",
+			"Carried out by persons unknown, to everyone. Unregistered.",
+			"The lab finished unassisted. Every faction claims it. The log records all the claims.",
+			"Allocated by the season's standings. Not an order. A result.",
+			"No cure. The roll is called at the shift change, as before."};
+		array<string> redhand = {"The Haven's giving it away. Bad for business. Good for everyone else, I hear.",
+			"Bastion's got it locked up. Locks are a kind of price list.",
+			"Ours. Priced fair. Fair to us.",
+			"The beaks printed it. You can't sell a recipe everyone's read.",
+			"Somebody gave it to everyone for nothing. Robbed on behalf of the whole Zone.",
+			"The lab did it on its own. Nobody fought, so nobody gets paid. I hate it.",
+			"Nobody held the room. It went by the scores. The book noticed.",
+			"No cure. The book's closed. Nobody's paying anyone."};
+		array<string> halcyon = {"The Haven distributes by hand. Unmeasured. Effective by every measure we have.",
+			"Bastion holds the stock and issues it alphabetically. We are under H.",
+			"Sold. The dose is ours, the price is theirs. Both are recorded.",
+			"Published. Every author named. The method is on the lab door.",
+			"Distributed without control or record. The outcome is good. We are revising.",
+			"Completed in the lab without a finisher. A clean result. A lonely one.",
+			"Allocated by season standing, with no controller. Not the protocol. Acceptable.",
+			"No cure. The record ends here. Someone should write that down, and I will."};
+		ending = Math.ClampInt(ending, 0, 7);
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return haven[ending];
+			case RZ_EFaction.MILITARY: return bastion[ending];
+			case RZ_EFaction.BANDITS: return redhand[ending];
+		}
+
+		return halcyon[ending];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where you stood: 0 on the route that holds it, 1 on another, 2 on none.
+	protected static string YouClause(int faction, int stood)
+	{
+		array<string> haven = {"You stood with it. Sit. There's soup.", "You picked someone else's way. You're still fed here.", "You never picked a side. That's allowed. Eat."};
+		array<string> bastion = {"You signed the roster and held to it.", "You signed for someone else. It's on file.", "You signed nothing. Also logged."};
+		array<string> redhand = {"You backed the winner. The book likes that.", "You backed the other horse. No hard feelings. A few.", "You didn't bet. Sensible. Boring."};
+		array<string> halcyon = {"You chose this. Your name is in the acknowledgements.", "You chose another route. That is also data.", "You chose nothing. We have a column for that."};
+		stood = Math.ClampInt(stood, 0, 2);
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return haven[stood];
+			case RZ_EFaction.MILITARY: return bastion[stood];
+			case RZ_EFaction.BANDITS: return redhand[stood];
+		}
+
+		return halcyon[stood];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The crossing opener: once a life per leader, a leader of the faction a major's ending was about
+	//! says this player decided it ("You're the one who gave Bastion the book."). "" if none.
+	protected static string CrossingLine(RZ_GameModeComponent gm, string ident, RZ_Leader l, string seat)
+	{
+		RZ_Majors majors = RZ_Majors.Get();
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		int playerId = gm.FindPlayerByIdentity(ident);
+		if (!majors || !trees || playerId <= 0)
+			return "";
+
+		string once = seat + "|crossing";
+		if (trees.GetMemory().Has(playerId, RZ_DialogueMemory.NOTES, once))
+			return "";
+
+		foreach (RZ_StoryRecord r : majors.GetStories())
+		{
+			if (r.ending < 0 || r.faction != l.m_eFaction || !r.deciders.Contains(ident))
+				continue;
+
+			string ending = RZ_Majors.EndingName(r.major, r.ending);
+			if (ending.IsEmpty())
+				continue;
+
+			trees.GetMemory().Add(playerId, RZ_DialogueMemory.NOTES, once);
+			return CrossingWords(l.m_eFaction, ending);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string CrossingWords(int faction, string ending)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return string.Format("\"You're the one who was there for %1. The house remembers who stood up.\"", ending);
+			case RZ_EFaction.MILITARY: return string.Format("\"You were at %1. It's in the log, with your name beside it.\"", ending);
+			case RZ_EFaction.BANDITS: return string.Format("\"%1. That was you. The book's got a line about it, in red.\"", ending);
+		}
+
+		return string.Format("\"You were one of the people who decided %1. Noted, in the margin.\"", ending);
 	}
 
 	//------------------------------------------------------------------------------------------------

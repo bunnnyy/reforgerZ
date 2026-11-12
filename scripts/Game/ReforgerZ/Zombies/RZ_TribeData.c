@@ -92,6 +92,7 @@ class RZ_TribeHabit
 	vector m_vPos;
 	float m_fHour;			// game hour it was learned at (the road hour)
 	float m_fStrength;		// 0-100: sets that night's trail at 50 or more, gone under 10
+	int m_iPreyNight = -1;	// the counted night prey last came within 300 m of it (-1 unknown: never starved)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -132,6 +133,7 @@ class RZ_TribePart : RZ_InfectedPart
 	int m_iTrail = -1;					// the trail it walks tonight (worn trails)
 	bool m_bWaits;						// holds at the end of its path until it's sent home (a crossing, a wire, a border)
 	bool m_bGathering;					// gone to the Gathering tonight (RZ_TribeGreat): the set-out leaves it be
+	bool m_bBackTrail;					// a cunning pack's group placed on its target's back trail
 
 	//------------------------------------------------------------------------------------------------
 	//! The role its bodies carry (stealth reads it).
@@ -363,6 +365,19 @@ class RZ_Tribe
 	// Phase 5 (Zombies/RZ_TribeGreat.c)
 	bool m_bGreat;				// its leader is the great one: its clan answers it
 	bool m_bMoon;				// tonight's bright moon: its range x1.25, out until 05:30
+	// The small rules (Zombies/RZ_TribeRest.c)
+	ref array<float> m_aPrey = {};			// per hunting ground: prey seen there lately (trails scored by prey; not saved)
+	ref array<vector> m_aPreyAt = {};		// where prey was seen in its range away from its grounds (grounds follow prey)
+	ref array<int> m_aPreyHits = {};
+	ref array<int> m_aPreyNight = {};		// the counted night each spot was last counted (once a night)
+	ref array<vector> m_aPreyGrounds = {};	// grounds it moved to after its prey (kept across a restart)
+	ref array<vector> m_aRoadCross = {};	// where tonight's trails cross a road (trucks taken there; not saved)
+	float m_fTakenAliveAt = -1;				// season days: its leader was taken alive (the moat rules wait for a new one)
+	float m_fVoicedLeader = -1;				// the m_fLedSince the factions last spoke of (who leads it now)
+	vector m_vBorderShift;					// its range moved by its borders' offsets (worked out each dusk)
+	int m_iLastWandererNight = -10;			// a wanderer taken as data at most every 3 counted nights a tribe
+	bool m_bBadNight;						// lost a quarter or more of who set out: stragglers come home late
+	bool m_bSilentCall;						// didn't call this dusk (post-feed sleep): Bastion's "no contact"
 
 	//------------------------------------------------------------------------------------------------
 	bool IsRover()
@@ -371,10 +386,11 @@ class RZ_Tribe
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The range's centre: the lair, drifted (into a vacuum, toward people late in the season).
+	//! The range's centre: the lair, drifted (into a vacuum, toward people late in the season) and
+	//! moved by its borders (RZ_TribeRest.BorderShifts).
 	vector RangeCentre()
 	{
-		return m_vLair + m_vDrift;
+		return m_vLair + m_vDrift + m_vBorderShift;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -729,6 +745,14 @@ class RZ_TribeSave
 	int walkouts;
 	// Phase 5
 	bool great;
+	// The small rules (Zombies/RZ_TribeRest.c)
+	ref array<float> preyX = {};
+	ref array<float> preyZ = {};
+	ref array<int> preyHits = {};
+	ref array<float> preyGroundX = {};
+	ref array<float> preyGroundZ = {};
+	float takenAliveAt = -1;
+	float voicedLeader = -1;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -788,4 +812,5 @@ class RZ_TribesSave
 	ref RZ_TribeLifeSave life;
 	ref RZ_TribePeopleSave people;
 	ref RZ_TribeGreatSave great;
+	int restPatrolNight = -10;		// the counted night a Bastion patrol was last taken as data
 }

@@ -15,9 +15,12 @@ with every hunt strategy and the crawlers' daily life; and **the people's side**
 each faction's words, voices and marks, knowing and the ways to learn, skills, your dead run, the
 dark corners, the moat, the packs' contracts and events, the cure's milestones, the final stand's
 waves and the last week); and **[the great one](#the-great-one)** and **[signs and
-sounds](#signs-and-sounds)** (props, call sounds, the bright moon, the map's range rings). What's left
-is [planned](#planned). Nothing here has been play-tested
-with a game client yet ([ROADMAP.md](ROADMAP.md)).
+sounds](#signs-and-sounds)** (props, call sounds, the bright moon, the map's range rings); and **the
+small rules** the design kept to the end (prey, the borders moving the ranges, the stragglers, the
+factions on a new leader, scouts over tonight's trails, and the rest: each in its section below). The
+whole design is built; what still waits on a client or the author is in [Play-test and the
+author](#play-test-and-the-author). Nothing here has been play-tested with a game client yet
+([ROADMAP.md](ROADMAP.md)).
 
 Code: `Zombies/RZ_ZombieSpawner.c` (spawning, counting, removing), `Zombies/RZ_Crawlers.c` (towns),
 `Zombies/RZ_InfectedBodies.c` (roles, data parts, the sight rule, the agent budget, runtime
@@ -25,7 +28,7 @@ groups), `Zombies/RZ_Tribes.c`, `RZ_TribeData.c` and `RZ_TribeBodies.c` (the tri
 `Zombies/RZ_TribeLife.c`, `RZ_TribeBorders.c` and `RZ_TribeWays.c` (the life cycle),
 `Zombies/RZ_TribePeople.c` and `RZ_TribeItems.c` (the people's side), `Zombies/RZ_TribeGreat.c` (the
 great one), `Zombies/RZ_TribeProps.c` (props, call sounds, the moon), `Zombies/RZ_PackHordes.c`
-(the packs' heat hordes and lookers), `Zombies/RZ_TribeQuests.c` (the questline hooks), `Missions/Tribes/` and
+(the packs' heat hordes and lookers), `Zombies/RZ_TribeQuests.c` (the questline hooks), `Zombies/RZ_TribeRest.c` (the small rules), `Missions/Tribes/` and
 `Missions/Events/RZ_TribeEvents.c` (the packs' contracts and events),
 `Zombies/Behaviour/` (the behaviour layer and the crawlers' life), `World/RZ_Land.c` (the land grid),
 `Director/RZ_Adaptation.c` (infection adapts).
@@ -51,7 +54,9 @@ great one), `Zombies/RZ_TribeProps.c` (props, call sounds, the moon), `Zombies/R
 - [People](#people)
 - [The great one](#the-great-one)
 - [Signs and sounds](#signs-and-sounds)
-- [Planned](#planned)
+- [Play-test and the author](#play-test-and-the-author)
+- [The simulator](#the-simulator)
+- [Decisions](#decisions)
 
 ## Two switches
 
@@ -177,8 +182,10 @@ the stage's density), each spawned 250–300 m out behind terrain (or just past 
 A loose one that reaches its town becomes one of that town's crawlers. Each player keeps 2 within
 1.1 km; one that walks out of range is replaced. With no town or lair within 3 km, or for a special,
 they spawn as before. Splinters and lone ones walk the wild with bodies of their own
-([Lone ones and splinters](#lone-ones-and-splinters)); starving walkers go into a town as data.
-*Planned:* members crossing between ranges.
+([Lone ones and splinters](#lone-ones-and-splinters)). **Starving walkers** go into a town as data
+([Starvation](#starvation)), and until the next season day a loose one wanted within 1 km of their way
+from the lair to the town is one of them, walking to that town. Members also cross between ranges at
+night ([Borders](#borders)).
 
 ## Heat hordes
 
@@ -437,18 +444,27 @@ Every rule shows: a call, a track, a line, always with the place's name. Code:
   sealed checkpoint toward the largest town, at the nearest lair candidate within 1.5 km), **the site
   tribe** (the lair candidate within 1 km of `origin.site`, if that's wild), then the lair candidates in
   the most wild land, far from the lab and 3 km from each other. Each starts with 10–14 members and a
-  Rising alpha 2–5 season days into leading. More come later: from the taken, from towns gone dark,
+  Rising alpha 2–5 season days into leading (with **Prime after Halcyon** on, off by default: after a
+  season Halcyon won, 6–9, in its prime). More come later: from the taken, from towns gone dark,
   round lone ones and from splits ([New tribes](#new-tribes)).
 - **The place** every line carries: *"the woods north of Levie"*, *"the quarry by Morton"* (the lair's
   kind from the land grid, the nearest settlement and the compass). Each faction has its own word for
   it, always with the place ([People](#the-words)); player text never says "alpha", "tribe" or "crawler".
 - **The range:** 500–1,000 m round the lair by the wild land near it (350–700 m on maps under 25 km²).
 - **Hunting grounds** (up to 4): the edges of towns within 2 km that face the lair (not lived-in
-  towns), bridges and fords in the range, and the nearest field.
+  towns), bridges and fords in the range, and the nearest field. **They follow the prey:** each played
+  minute at dusk and night, players, wanderers and supply trucks in the range count for the ground
+  they're within 300 m of (that trail's **prey**, up to 4, ×0.8 a counted night; someone taken near it
+  +2), and away from every ground as a prey spot (6 kept). A spot with prey on 3 nights becomes a
+  ground at the next season day, in place of the one with the least prey (2 such grounds kept across a
+  restart), and its trails are worked out again (*"… follows its prey"* in the log). With **Life cycle**.
 - **Trails** from the lair to each ground: a point every 250 m, each the best of the square on the line
   and the two beside it (dry land, a forest edge or sparse trees preferred, out of towns and no man's
   land, river squares only at a crossing), thinned to 4–6 points.
 - **Scout posts:** the two highest wild squares in the range (a ridge first), 300 m apart.
+- **Where it lies up by its look** ([Looks](#who-they-are)): an outdoor pack has the widest range
+  (×1.15) and its posts on the highest ground out to 1.3 times its range; a dust-grey one lies up close,
+  under cover (its resting ring ×0.6).
 - **Temperament** (25% bold, 20% cautious, cunning, territorial, 15% nomadic; a quarry leans cunning,
   the column nomadic, a barn or silo cautious) and a **call pattern** (*"three short and a long"*) come
   from its seed. Temperament sets how it hunts (strategies, the core, the commitment) and how it lives:
@@ -473,6 +489,14 @@ Fog counts as dusk (a scout's pack is the dusk pack); in a storm nobody goes out
 moon](#signs-and-sounds) every pack hunts further and stays out until 05:30. With no game clock it's
 always day: day parties walk, scouts post, nobody hunts.
 
+- **The leader's echo shifts the hours** ([Echoes](#who-they-are)): a driver's pack sets out at
+  19:30–19:45 (when the evening traffic was), a runner's by 20:00, a farmer's late (20:15–20:30) and
+  its day party out at 06:30; a soldier's keeps the 17:30 shift change.
+- **Stragglers after a bad night.** A pack that lost a quarter or more of who set out (2 at least)
+  leaves one hunting group out at dawn; it sets off home between 06:00 and 07:30, slow (0.7 m/s), and
+  players within 800 m hear *"Stragglers from last night, coming in late toward the quarry by Morton.
+  Slow, and not many of them."*
+
 ### Day parties
 
 The author's change: the wild is never empty by day, but the tribe never comes in full until dusk.
@@ -491,6 +515,8 @@ The author's change: the wild is never empty by day, but the tribe never comes i
 - **Day noise draws only the day party:** a remembered noise within 700 m (400 for the young, and for a
   cautious tribe) turns it to look, 3 minutes, once per noise. The resting ring and the core never turn.
 - **Nobody out** the day after a feed, in a storm, the morning after the alpha fell, while weakened.
+- **Furious** ([Contracts and events](#contracts-and-events)): its walkers walk the capture road
+  toward the lab, out to 1.5 times its range, and back.
 - **A scout's day call brings at most 4** (below), never the alpha or a guard. Putting the whole day
   party down brings nothing else.
 
@@ -518,6 +544,19 @@ answer, two voices when it's restless, and its drift toward people late in the s
 A Radio Operator hears the calls pass ridge to ridge ([Skills](#skills)). After the cure the call
 thins out, and on the last dusk nothing answers ([The last week](#the-last-week)).
 
+- **Relayed from a ridge.** A call from a lair or a scout post on a ridge carries 4.5 km: a player with
+  no pack within 3 km hears it, *"Far off, carried from ridge to ridge."* first.
+- **By ear.** A Hunter adds which way and how far, and whether one voice leads it (*"By ear: about two
+  kilometres north-east of you. One deep voice leading."*); a Hunter or a Radio Operator who has heard
+  of the pack names it from its call (*"Three short and a long: you'd know that call anywhere. It's the
+  quarry by Morton."*) and has it Read.
+- **Two callers** when it's restless: the line says so, and the second is a sound of its own at its
+  first scout post.
+- **Short-handed.** With 2 or more of it still out at the call (a group waiting at a crossing or a
+  wire, walkers not back, the Gathering), the call adds *"Short-handed: some of them are still out."*
+- **The clans' relay:** players within 1 km of the line between two lairs of one clan that both called
+  hear *"The call goes along the ridges from … to … and back again, the same call one note apart."*
+
 ### Hunger and the night
 
 - **Counted nights.** A game night counts at 05:00 if someone was online **Counted night minutes** (20)
@@ -539,7 +578,7 @@ thins out, and on the last dusk nothing answers ([The last week](#the-last-week)
 - **Takings as data:** at night, with no player within 1 km, a hunting part takes a wanderer it passes
   (within 150 m, 1 time in 10), at most once a tribe every 3 counted nights: *"Marta the runner was
   taken by the infected on the road to Morton."* Supply trucks too ([Trucks taken as
-  data](#trucks-taken-as-data)).
+  data](#trucks-taken-as-data)), and Bastion patrols ([The taken](#the-taken-and-the-ones-who-ran)).
 - **Post-feed sleep.** After a counted night in which it took someone, it sleeps through the next day:
   no day party, no scouts, no dusk call (silence is the sign), and the lair's bodies appear only within
   150 m. It hunts again that night.
@@ -572,6 +611,8 @@ and it never switches.
   clock); the same character back in that time is hunted again, from there.
 - **Empty nights.** A pack that sets out three nights running and takes nobody drops its least-worn
   trail (until its places are worked out again), and the log says so.
+- **On your back trail.** A cunning pack's second hunter group comes up 150–200 m behind you, on the
+  way you came, not out to the side.
 - **The reckless young.** A hunting group of young goes to any loud noise (8 heat or more) within 400 m
   ahead of it, leaving the hunt to the others. *Simplified:* "indoors behind a closed door" isn't read yet; going indoors works
   through sight (the layer's senses never see through walls).
@@ -583,7 +624,12 @@ and it never switches.
   attribution, read when the player dies) in the open is taken by that tribe; inside a town (radius +
   100 m) they're the town's, and the town stirs (+30). A player who turns, and a wanderer bitten or
   turned (or taken as data), in the open within 1.5 × a tribe's range radius of its lair, is taken by
-  it. Each taking: −25 hunger, the alpha's count +1, the name or description kept (12, newest first), a
+  it. So is an outpost's or a safehouse's leader bitten off-screen there ([REPUTATION.md](REPUTATION.md)),
+  and **a Bastion patrol**: once on the server every 6 counted nights, a hungry pack that set out
+  within 2.5 km of a Bastion holding, with Bastion out on the roads (presence 0.2 or more) and no player
+  within 1 km, takes one 20% of the time (*"Patrol Four-One, last position Contact Papa-two, the quarry
+  by Morton. No reply since the small hours. Bastion out."* to Bastion's Known, and a headline). Each
+  taking: −25 hunger, the alpha's count +1, the name or description kept (12, newest first), a
   **kill site** (the crawlers' scavenging), and **a young at the next dusk**.
 - **Your dead run** (Described by default): a player's character counts as a young only after a life of
   10 minutes or more, once per player a season day, 3 players' young per tribe at most; public text
@@ -605,7 +651,8 @@ and it never switches.
   the lair if that was outside the range) and holds there until dawn; bodies stand 10–30 m round the spot
   for 30 real minutes at most. At dawn one of the guard takes up the call (a hunter if no guard is left),
   Rising, after the guard fight ([Succession](#succession)), and the next dusk is *"a voice nobody
-  knows"*. *Simplified:* the samples aren't kept from the loose-item cleanup.
+  knows"*. Through the vigil the leader's samples aren't cleaned up as loose items, and its body is
+  kept from the engine's cleanup (the garbage system, VERIFY); both go back to it at dawn.
 - **The alpha's body:** one character in its own runtime group, by day at the lair, at night with the
   core. **Health** is kept as data when its body goes and set again when it comes back (scaled health;
   infected never heal by themselves): it heals 0.1 an hour played while it lies up. An alpha hurt in the
@@ -624,7 +671,12 @@ and it never switches.
 checks running within its sight and in terrain line of sight (within 80 m, also nothing in between). The
 sight is stealth's: `RZ_Stealth.SightRadius(player, Scout sight)` (120 m at normal visibility, down to
 stealth's floor for someone fully hidden), ×1.5 in a vehicle, ×0.75 for a Hunter, ×1.5 for a character
-the tribe [knows](#memory). A Hunter gets *"The birds just went up off the ridge."* at the first check. Kill it inside those 5 seconds and nothing comes.
+the tribe [knows](#memory). A player inside a building is never seen (the building query: the
+buildings within 15 m and whether they stand in one's box, kept 3 s). A Hunter gets *"The birds just
+went up off the ridge."* at the first check. Kill it inside those 5 seconds and nothing comes.
+**Posts:** at the set-out the scouts move to the highest wild ground within 300 m of the middle of
+tonight's first trail, and are back on their own posts by day; in fog by day they sit 80 m lower,
+toward the lair.
 - **The call** (one a tribe every 10 minutes): +20 heat at the scout, *"A shriek from the ridge, and an
   answer from …"* to players within 600 m, +10 stir in a town within 600 m, and the scout comes for you.
 - **The pack** (one at a player cluster every 10 minutes): **by day** at most 4, the day party's groups
@@ -777,7 +829,9 @@ candidate (outside every range by 300 m, not burned):
   clan: they never fight, each answers the other's dusk call (*"The same call answers from ..., one
   note different."*), they go round each other's fear places, and a splinter joins its old tribe's
   clan first. A clan ends when one is left or they're 4 km apart. A clan of three that holds raises
-  [the great one](#the-great-one); after it dies there's no clan for 8 season days.
+  [the great one](#the-great-one); after it dies there's no clan for 8 season days. On a frenzy night
+  every pack of a clan runs its first trail to one ground: the wire of the lived-in place nearest the
+  clan's middle. Their dusk calls carry along the ridges ([The call](#the-call)).
 
 ### Lair moves and displacement
 
@@ -790,7 +844,7 @@ candidate (outside every range by 300 m, not burned):
 | A guard killed within 150 m of the lair | +15 |
 | Shells within 200 m (the Fire Mission perk and contract: Bastion's) | +50 |
 | Fire within 50 m (the fire system) | +60 |
-| The lair burned (fire within 30 m; it marks whoever set it) | +100 |
+| The lair burned (fire within 30 m; it marks whoever set it) | +100, and with 4 or more of it killed within 150 m of the lair in the last 30 played minutes, 3–6 of the rest break off as a splinter (Burn the Lair) |
 
 At 100 the lair moves (once a tribe and twice on the server a season day): to another lair candidate
 in its range 400 m or more away, else to a new range 1.5-4 km off in free wild land. **Displaced:**
@@ -806,8 +860,9 @@ there as data (bodies near players walk too), and its place, trails and posts ar
   no vacuum and no fear places.
 - **Abandoned lairs** stay a find for 2 season days. A player within 25 m finds it once: *"Somebody's
   things at the back of it: what's left of Marta the runner."* (the first of the people it took), and
-  a sample if a courier was among them (once). A nomad's empty old lair reads *"... Whatever lay up
-  here has moved on. Never the same place twice."* *Simplified:* the find is a line, not items.
+  a sample if a courier was among them (once), and their things: 1–2 items from the body search's
+  table at its back, once a lair, loose items like any find. A nomad's empty old lair reads *"...
+  Whatever lay up here has moved on. Never the same place twice."*
 
 ### Vacuums
 
@@ -841,12 +896,15 @@ range is near have their trails worked out again.
 A tribe at hunger 100 for two counted nights running loses a fifth (at least one) to the nearest town:
 they end up as its crawlers (+2 infection each, +10 a town a season day), and its hunger drops to 70.
 Players within 1.5 km of the town: *"Some of the quick ones from ... came down into Levie in the
-night, and stayed with the slow ones."*
+night, and stayed with the slow ones."* Until the next season day they're seen on the way as loose ones
+([The countryside](#the-countryside-loose-ones)).
 
 ### Trucks taken as data
 
 At night, a hunting part as data within 200 m of a supply truck on the road, with no player within
-1 km, takes it 15% of the time, one on the server every 3 counted nights. The truck fails the way any
+1 km, takes it 15% of the time, one on the server every 3 counted nights; so does a pack on its trails
+at any road one of them crosses (decision 15: up to 8 crossings a pack, at the nearest road point, one
+tried a played minute). The truck fails the way any
 truck does (`RZ_SupplyLines`: a shortage where it was going, its people told, the world memory's
 signal), it and its crew are gone, its driver counts as taken, and the tribe learns the road hour.
 
@@ -858,8 +916,11 @@ bridge is the border). Worked out each dusk.
 
 - **The calling contest**, each dusk. **Strength** = (hunters + guard) x the alpha's stage (Rising
   0.8, Prime 1.2, Decline 0.9, none 0.6), x1.3 territorial. The border moves 50 m toward the weaker,
-  300 m at most. A Radio Operator within 3 km: *"Calls across the bridge at dusk. The woods north of
-  Levie answered weaker tonight."* Every dusk call adds its border: *"The woods north of Levie answer
+  300 m at most. **The border moves the ranges:** after the contests both packs' range centres shift
+  along the line between their lairs by half the offset (the stronger's range takes ground, the
+  weaker's gives it; 200 m a pack at most), and every range check uses the moved centre. A Radio
+  Operator within 3 km: *"Calls across the bridge at dusk. The woods north of Levie answered weaker
+  tonight."* Every dusk call adds its border: *"The woods north of Levie answer
   from across the bridge."*; *"answer quietly"* on an old border; *"From ..., a new voice is testing
   the bridge."* when it reopened; a clan answers in the same call ([Clans](#splits-and-clans)).
 - **Old and reopened.** A border with no fight for 5 season days is old: fights half as likely. A
@@ -876,7 +937,12 @@ bridge is the border). Worked out each dusk.
   The side players thinned by 2 or more than the other loses (else strength decides). If nobody is
   within 150 m of the point, the loser's bodies there are killed where they stand (the silent kill's
   kill-and-mark: bodies to find, no samples, no credit); the rest of its losses just don't come home.
-  The groups go home. Bacon's infected share one faction, so the fight itself is heard, then found.
+  The groups go home. Bacon's infected share one faction, so the fight itself is heard, then found;
+  with **Zombies > Tribes > Rival faction** set (a faction key in the faction manager, hostile to the
+  infected's own; empty by default), the second side's hunter bodies within 150 m of the point join it
+  while the night is staged, so the two sides really fight, and go back when it's settled (VERIFY).
+- **Members cross.** Once a counted night, on one border with no clan, no job and a side 6 or more
+  bigger, one of the bigger side's young or hunters crosses to the smaller (30% a pair).
 - **Absorbing and merging** (the next season day, with no bodies out). A loser under 8 with no alpha,
   or a Declining one, joins the winner (30 at most; 30% splinter off, its alpha leaves alone). Two
   bordering tribes under 10, one with no alpha, join under the other's alpha. Players within 3 km:
@@ -903,7 +969,9 @@ Code: `Zombies/RZ_TribeWays.c`.
   | **The bells** | with a loud noise within 500 m in the last 10 minutes | The same |
 
   Every habit falls 10 a counted night, and 30 more on a night when 2 or more of the tribe die within
-  300 m of it: two such nights at its place break it. Gone under 10. A habit place ahead of a target
+  300 m of it: two such nights at its place break it. **Taking its prey away breaks it too:** a night
+  with no player, wanderer or supply truck within 300 m of its place (the trucks rerouted, the walks
+  stopped) takes 15 more. Gone under 10. A habit place ahead of a target
   makes an [ambush](#how-they-move-and-hunt) likelier.
 - **Marks.** Kill a tribe's alpha or a guard (the nearest player within 100 m), or burn its lair, and
   it knows your character (this life): strength 100, -25 a counted night, 4 a tribe, only inside its
@@ -911,7 +979,7 @@ Code: `Zombies/RZ_TribeWays.c`.
   times as far, and at night its hunt goes for you first, heat or not (never into one of its fear
   places); it never switches.
 - **Worn trails.** Each trail wears +1 a counted night it's walked and -1 a night it isn't (0-10), and
-  tonight's first trail is picked by wear. A Hunter reading a night's track: *"A path worn through the
+  tonight's first trail is picked by wear (+0.3 a point) and by its ground's prey (up to +4). A Hunter reading a night's track: *"A path worn through the
   bracken. Most nights."* (6 or more), *"They come this way most nights."* (3), *"Faint: new ground for
   them."* (a new one).
 - **Bonds.** Two taken at one kill site within 10 minutes are a bond among its young (3 at most). When
@@ -949,6 +1017,14 @@ Code: `Zombies/RZ_TribeWays.c`.
   tonight. Josef Hruby led them, and doesn't any more. Josef Hruby won the bridge off the woods north
   of Levie."*), a guard fight, a challenge won, a death of age, a split, a town gone dark, a truck
   taken. The factions speak of them in their own words ([People](#people)).
+- **A new leader, in each faction's words.** At dusk, once a leader has led a season day (never a
+  season's first leaders), one pack an evening, each faction that knows it says who leads it now: the
+  Haven (*"It's Josef Hruby leading them up at the quarry by Morton now. A driver from Levie,
+  before."*, or *"Something new leads them up at …. Nobody knows who it was."*), Bastion's contact log
+  for a pack on its board (*"Contact log, Contact Papa-two, the quarry by Morton: heavy replaced, day
+  14."*), the Red Hand for its fed crew or a pack within 3 km of its camps (*"… have a new boss. We'll
+  see what this one wants."*), Halcyon for a tagged pack (*"… a new index, day 14. The old one's file
+  is closed."*). The Haven's road news says it too, half the time, when it knew the leader.
 
 ## The signs
 
@@ -977,11 +1053,12 @@ Every rule above was checked against the design's signs table: each shows within
 | Histories | The headlines on joining |
 | Trucks | A truck that never arrives, and the shortage |
 
-**Waiting** (no sign of their own yet, or another phase): the clans' relay along the ridges, a range
-that moves as its border does (the border's offset is data only), hunting grounds following the prey,
-the stragglers after a bad night, tracks always fresh in snow. The people's side shows through its
-own lines, marks and the journal ([People](#people)); the great one through its call, the Gathering
-and the Night of Many Calls ([The great one](#the-great-one)).
+The small rules show too: the clans' relay and the calls carried from a ridge, the stragglers' line,
+a range moved by its border (its day walks and its hunts reach further on the stronger side), a new
+hunting ground's faint tracks, a habit's place gone quiet, a patrol that never reports back, and tracks
+always fresh in snow. The people's side shows through its own lines, marks and the journal
+([People](#people)); the great one through its call, the Gathering and the Night of Many Calls ([The
+great one](#the-great-one)).
 
 ## How they move and hunt
 
@@ -1253,7 +1330,7 @@ the young. The speaker follows a dot, `{tribe:3.bastion}` (`haven`, `bastion`, `
 
   | Faction | Which pack | Line |
   |---|---|---|
-  | Bastion | one it has just put on its board: a pack whose ground lies within 3 km of a Bastion holding, while its presence is 0.2 or more | *"Contact Papa-two, the quarry by Morton, twenty plus, one heavy. Cull pending. Bastion out."* (*"No cull. No reply."* under 0.2) |
+  | Bastion | one it has just put on its board: a pack whose ground lies within 3 km of a Bastion holding, while its presence is 0.2 or more | *"Contact Papa-two, the quarry by Morton, twenty plus, one heavy. Cull pending. Bastion out."* (*"No cull. No reply."* under 0.2). With nothing new for the board, a board pack that didn't call tonight: *"Contact Papa-four: no contact. Bastion out."*; a board pack gone: *"… no contact. Struck off the board."* |
   | The Haven | the hungriest hungry pack within 3 km of a house | *"Nobody on the roads by the quarry by Morton after seven. The Quarry lot are out."* |
   | Halcyon | a tagged pack | *"Pack P-02 (the quarry by Morton): the index is in its third week as lead. Please don't shoot it."* |
   | The Red Hand | its fed crew, 3 evenings in 10 | *"The Postmen up the quarry by Morton. Same as us: the boss is whoever's got something on the rest."* |
@@ -1350,7 +1427,8 @@ the taking rules are [above](#the-taken-and-the-ones-who-ran).
 
 All said sideways.
 - **The fat moat** (rule 19). Once a season day, the pack nearest a Red Hand camp whose ground lies
-  between the camp (within 3 km) and Bastion's nearest holding is the Red Hand's: its hunger rises at most
+  between the camp (within 3 km) and Bastion's nearest holding is the Red Hand's (never a pack whose
+  leader was taken alive, until it has a new one): its hunger rises at most
   3 a counted night and never past 40, it gains a member a season day up to 22, it stays settled and
   never splits. Only an Ex-Con's journal and the map of the crews say so.
 - **The old wall.** A pack whose ground comes within 1 km of the Long Table's farm gains at most 3
@@ -1363,7 +1441,8 @@ All said sideways.
 ### The factions' sides
 
 - **The moat rule.** When the territory tick would take an outpost whose straight line from the taker's
-  nearest holding crosses the ground of a pack whose leader is in its prime or older, the take waits;
+  nearest holding crosses the ground of a pack whose leader is in its prime or older (and wasn't taken
+  alive: by Capture the Index or a finale route's live tissue, until its succession), the take waits;
   the third time it's held up, it goes through (*"they found a way round"*, in the log). The Red Hand
   scores a camp town ×1.3 when its fed pack lies between the town and Bastion.
 - **A tagged leader** in its prime or older killed: +2 Halcyon Infamy to the nearest player within
@@ -1455,7 +1534,9 @@ server's ridges go quiet too:
   named young still running with each pack at the cure, players' characters among them by the name
   setting), brought home, taken alive for the lab, culled, burned out, the great one risen and fallen: kept in `state.json` (40 at most) and shown by `/tribes`.
   The epilogue reads the packs calling at the cure for its beats and Quiet the Ridges, and "taken alive"
-  for the director's grey choice ([EPILOGUE.md](EPILOGUE.md#the-closing-work)).
+  for the director's grey choice ([EPILOGUE.md](EPILOGUE.md#the-closing-work)); a beat made in the week
+  (culled, burned out, taken alive, brought home, the great one's fall) is also one of its
+  since-the-cure beats, at the pack it names (*"Something changed at … this week."* as its echo).
 
 ## The great one
 
@@ -1509,14 +1590,24 @@ always told.
   *"A full moon over the quarry by Morton, and not a cloud. They'll come further tonight, and they'll
   stay out late."* *Simplified:* the moon doesn't change what anyone sees (the engine's light does).
 
-## Planned
+## Play-test and the author
 
-What's left is in [designs/INFECTED.md](../designs/INFECTED.md): the model's small rules (prey-scored
-trails, the border moving the ranges, the clans' relay), the call's and the hunt's rest (stragglers,
-two callers, a cunning pack on your back trail), scouts' posts over the night's trails, the jobs' rest,
-the epilogue's beats from the other tribe beats (brought home, culled, burned out), and the behaviour
-layer's notice-rate calibration and untested levers. The finale's live tissue is
-[FINALE.md](FINALE.md#live-tissue)'s.
+The whole design is built. What's left needs a client, a play-test or the author's call:
+- **The behaviour layer's untested levers**: L6 (a forced prone pose for crawlers, `ForceStance`; a
+  prone `SetStanceChange` didn't hold in lab B12), L16 (a scripted `AIDangerEventWeaponFire` pulling
+  engaged bodies the way a shot does; hearing's leads cover it so far) and L23 (a straight-path cost per
+  kind in `SCR_CreateAIExtraMoveParams`, so a chase curves; the hook loads and fires, B2). None is in
+  the code: each needs a client to see it work first, so they're play-test items
+  ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#8-play-test-checklist)).
+- **Notice rate**: calibrate it to phase 0's ladder in a play-test, then run the simulator again with
+  it ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#8-play-test-checklist)).
+- **Phase 0's proposed retunes** wait for the author (`python3 tools/tribe_sim.py --proposed`): seeds on
+  every unkept slot (at most 4), the ones who ran at 6 infection points a young, and weakened packs
+  posting no scouts.
+- **The packs' jobs' rest** is the missions' (Clear the Trail on a truck road, Bait the Crew's Zombie
+  Bait Infamy, Track Them Home's 80 m, couriers and columns asking for an escort, the capture case's
+  pack following it: [designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md)); Burn the Lair's splinter
+  is the packs' own ([Lair moves](#lair-moves-and-displacement)).
 
 ## The simulator
 
@@ -1541,3 +1632,32 @@ keeps its towns from going dark, so Everon and Cain at 10 players hold fewer tri
 (with **Slots**) seeds in only half the seasons and breaks up; Chernarus-size's tribes, far from
 prey, go hungry and starve a few times each. Day crossings stay lighter than night ones (1.0-1.5 fights
 against 1.2-1.7 hunts).
+
+## Decisions
+
+The 16 tribes decisions, approved by the author on 2026-11-11 (the recommended options, except where
+noted). Their rules are in the sections above.
+
+| # | Decision | Approved |
+|---|---|---|
+| 1 | Where it's written | This doc, with short linking paragraphs in DESIGN.md |
+| 2 | Player-facing words | Nobody says alpha, tribe or crawler; each faction has its own words, always with the place ([WRITING.md](WRITING.md#writing-the-infected)) |
+| 3 | Fights between infected | Heard, then found: Border Night losses counted off out of sight, and the Clash's loser walks away alone (a rival faction makes them seen, behind a setting) |
+| 4 | Tribe slots | Wild km² ÷ a divisor (5, from phase 0), at least 1 from 1.5 km², one kept for splits from 3 slots, and a **Slots** override |
+| 5 | Everon's clan | The kept slot, the room kept round a big tribe, the daughter taking a weak neighbour's wood, growth from the ones who ran |
+| 6 | Growth | The ones who ran: young from nearby towns' rise in infection, 2 a season day at most |
+| 7 | The night's commitment | A hunt breaks off after losing a third of what it brought or two waves, with the long call; under 8 a pack goes quiet and rebuilds |
+| 8 | Time acceleration | A game day of about 4 real hours; a night counts only with 20 minutes of play in it |
+| 9 | The scout rule | 5 s in sight and in terrain line of sight, checked every second, chasing only the seen player; the sight radius from stealth; by day at most 4 and never the alpha |
+| 10 | Your dead run in public text | Described by default, named on the ID card, in their own journal and to their group; the server can switch to names, and players can opt out |
+| 11 | Samples from tribes | Alphas 2 in Prime and 3 in Decline, none while Rising, 3 a tribe a season; guards 1 under a Prime-or-older alpha, capped per played hour; only with a player within 150 m |
+| 12 | Finale tissue | Best first: a Prime-or-older alpha, else a lone one, else two guards, else two Live Capture specials; the great one counts more ([FINALE.md](FINALE.md#live-tissue)) |
+| 13 | Alpha Sighting | Renamed The Lone One (decision 2 keeps "alpha" out of player text) |
+| 14 | Bastion off-screen | Culls only through contracts and events players see |
+| 15 | Takings with nobody near | A wanderer per tribe and a truck per server every 3 counted nights, on any road a trail crosses, only with no player within 1 km, at night |
+| 16 | Optional extras | All kept: bloated crawlers, Winter lairs, three knowledge levels with a range ring icon, the bright moon, +2 Halcyon Infamy for a tagged Prime alpha |
+
+On top of them, the author's day parties: hunters and young only, a quarter at most, groups of 2–4, 6
+bodies near a cluster, the alpha and guard at the lair, at most 4 on a scout's day call, day noise
+drawing only the day party, hungry tribes as far as town edges, nobody out the day after a feed, fog
+as dusk, and the towns by day the crawlers'.

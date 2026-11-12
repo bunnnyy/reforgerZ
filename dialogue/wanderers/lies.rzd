@@ -61,3 +61,30 @@ node start
   say "The two who don't walk out? There's a room at the back of the lab. A chair by every bed and someone with a clipboard in it." ~truth:halcyon.back_room
   say "They're not cruel. They write everything down. That's worse, some days."
   > @thanks "Thank you for telling me." -> hub
+
+# A lie the world tests (docs/DIALOGUE.md, "Lies you're told"): the town is picked when the topic
+# opens (bind), the lie is about that town, and the truth is learned by walking into it while it's
+# thick with them (watch). Then the [Evidence] answer shows, the next time the topic opens.
+conv wanderer.trader.quiet_town
+for wanderer:trader
+topic "Ask which way is quiet."
+prio flavour
+voice plain
+
+bind target = town:thick_within(2500)
+
+node start
+  jump !bound -> nowhere
+  say "{bind:target}. Quiet as a church. I came through it this morning. Well. Near it." ~lie:trader.quiet@target
+  do watch:trader.quiet@target:60
+  > @thanks "Thanks. I'll go that way." -> hub
+  > @catch "{bind:target}? It's thick with them." -> caught   callout trader.quiet@target
+  > @no "I'll find my own way." -> hub
+
+node caught
+  say "Is it? Must have changed. Everything does. ...I sell things. Quiet is a thing. Here, have the truth for free: go round."
+  > @back1 "Something else." -> hub
+
+node nowhere
+  say "Every way's the same today. Pick one and keep your head down."
+  > @back2 "Something else." -> hub

@@ -21,6 +21,22 @@ class RZ_DialoguePack_posts
 		db.Conv("named.bastion.kit_turned", "named:bastion", "kit:off_turned", "", 4, 6, "bastion");
 		db.Node("start");
 		db.Say("", "\"That jacket's been on one of the turned. You can smell it from here. Burn it.\"");
+		db.Conv("named.halcyon.claim", "named:halcyon", "kit:in_kit & !caught", "Say you're with the lab.", 0, 0, "halcyon");
+		db.Node("start");
+		db.Say("", "\"Badge, or notebook number. One or the other. Policy.\"");
+		db.Choice("notebook", "\"{cover}. I'm on the field team.\"", "passed", "caught", "", "look halcyon 2", "", "cover:notebook", "", "", "");
+		db.Choice("claim", "\"Field team. Let me through.\"", "passed", "caught", "", "look halcyon 2", "", "", "", "", "");
+		db.Choice("truth", "\"Not with the lab. The coat was there.\"", "honest", "", "", "", "", "", "", "", "");
+		db.Choice("leave", "\"Never mind.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("passed");
+		db.Say("", "\"Fine. Ten minutes. Don't touch anything labelled. Everything is labelled.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught");
+		db.Say("", "\"No. The coat goes back on the hook. Security will want a word.\"");
+		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("honest");
+		db.Say("", "\"Thank you for saying so. Please take it off before somebody writes you down.\"");
+		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("named.halcyon.cover", "named:halcyon", "kit:in_kit & !caught & !claimed & cover:notebook", "Give them a notebook number.", 0, 0, "halcyon");
 		db.Node("start");
 		db.Say("", "\"I don't have you on the rota. Which notebook are you writing in?\"");
@@ -33,6 +49,12 @@ class RZ_DialoguePack_posts
 		db.Node("wrong");
 		db.Say("", "\"There's no notebook with that number. Security, please.\"");
 		db.Choice("back2", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("named.halcyon.kit_issued", "named:halcyon", "kit:issued & !tier:halcyon>=known", "", 4, 6, "halcyon");
+		db.Node("start");
+		db.Say("", "\"Your coat is on our register. Your name is on another one now. Please return the coat.\"");
+		db.Conv("named.redhand.kit_issued", "named:redhand", "kit:issued & !tier:redhand>=known", "", 4, 6, "redhand");
+		db.Node("start");
+		db.Say("", "\"Still wearing the armband the boss gave you? Bold. The book says you owe for it now.\"");
 		db.Conv("post.bastion.claim", "post:bastion", "kit:in_kit & !caught", "Answer as one of theirs.", 0, 0, "bastion");
 		db.Node("start");
 		db.Say("", "\"You. Which unit? I don't know your face.\"");
@@ -70,6 +92,13 @@ class RZ_DialoguePack_posts
 		db.Node("wrong");
 		db.Say("", "\"Never heard of him. Hands on the barrier.\"");
 		db.Choice("back3", "\"Understood.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("post.bastion.opens", "post:bastion", "kit:in_kit & !caught & !passing", "", 0, 4, "bastion");
+		db.Opens(35);
+		db.Node("start");
+		db.Say("kit:signed_other", "\"Stop there. That's {kit_owner}'s jacket. Signed for. So where's {kit_owner}?\"");
+		db.Say("kit:dead_mans", "\"Stop there. That's {dead_name}'s kit. His name's on the nail behind the radio.\"");
+		db.Say("kit:off_turned", "\"Stop there. That's off one of ours. Where is he?\"");
+		db.Say("", "\"You. Not on the board. Stop there.\"");
 		db.Conv("post.bastion.search", "post:bastion", "!hunted:bastion", "Ask about the search.", 2, 0, "bastion");
 		db.Node("start");
 		db.Say("", "\"Hands on the barrier, pockets out. We take suppressors and explosives. Everything else you keep.\"");
@@ -130,6 +159,10 @@ class RZ_DialoguePack_posts
 		db.Node("caught");
 		db.Say("", "\"Lads! Dress-up day. Armband off, if you please.\"");
 		db.Choice("back2", "\"Fair enough.\"", "hub", "", "", "", "", "", "", "", "");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Node("honest");
 		db.Say("", "\"It might, too. Not here. Here we count the armbands.\"");
 		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
@@ -154,17 +187,41 @@ class RZ_DialoguePack_posts
 		db.Node("wrong");
 		db.Say("", "\"Nobody calls you that. Nobody ever has.\"");
 		db.Choice("back3", "\"Fine.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("post.redhand.crewname", "post:redhand", "kit:in_kit & !caught & crew", "Give them your crew name.", 0, 0, "redhand");
+		db.Node("start");
+		db.Say("", "\"What do they call you, then? Everybody's called something.\"");
+		db.Choice("name", "\"They call me {crew}.\"", "passed", "caught", "", "look redhand 2", "", "", "", "", "");
+		db.Choice("leave", "\"Never mind.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("passed");
+		db.Say("", "\"{crew}! Course they do. Go on, and stop looking at the lorry.\"");
+		db.Do("call:post_wave");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("caught");
+		db.Say("", "\"Nobody calls you anything. That's the problem. Armband off.\"");
+		db.Choice("back2", "\"Fair enough.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("post.redhand.opens", "post:redhand", "kit:in_kit & !caught & !passing", "", 0, 4, "redhand");
+		db.Opens(35);
+		db.Node("start");
+		db.Say("kit:signed_other", "\"Oi. That armband's got {kit_owner}'s name in the book. You're not {kit_owner}.\"");
+		db.Say("kit:dead_mans", "\"Oi. That's {dead_name}'s. We put {dead_name} in the book last week. Paid.\"");
+		db.Say("kit:off_turned", "\"Oi. You took that off one of them. Off one of ours, before that.\"");
+		db.Say("", "\"Oi! New face, our colours. Come here and tell me a story.\"");
 		db.Conv("post.redhand.toll", "post:redhand", "!hunted:redhand", "Ask about the toll.", 2, 0, "redhand");
 		db.Node("start");
 		db.Say("", "\"Red hand means stop. Stop means pay. {toll} Favor, or walk round. It's only a few kilometres. Mostly dead people.\"");
 		db.Choice("pay", "\"Pay the toll.\"", "paid", "", "", "", "", "tier:redhand>=known", "call:toll", "", "");
 		db.Choice("move", "\"Move the car out of my way.\"", "moved", "laughed", "laughed", "threaten redhand 2", "", "", "", "", "");
-	}
-
-	protected static void Add1(RZ_DialogueDB db)
-	{
 		db.Choice("rudi", "\"Is this Rudi's road?\"", "rudi", "", "", "", "", "", "", "", "");
+		db.Choice("sent", "\"Rudi sent me.\"", "waved", "rudi_lie", "", "lie redhand 2", "", "", "", "", "");
+		db.ChoiceMore(true, "");
 		db.Choice("walk", "\"I'll walk round.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("waved");
+		db.Say("", "\"Did he. Off you pop.\"");
+		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("rudi_lie");
+		db.Say("", "\"Rudi was bitten. Day 7. Everybody knows that. Nice try.\"");
+		db.Choice("pay3", "\"Pay the toll.\"", "paid", "", "", "", "", "tier:redhand>=known", "call:toll", "", "");
+		db.Choice("round2", "\"Walk round.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("paid");
 		db.Say("", "\"Pleasure doing business. Mind the potholes. Some of them are people.\"");
 		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");

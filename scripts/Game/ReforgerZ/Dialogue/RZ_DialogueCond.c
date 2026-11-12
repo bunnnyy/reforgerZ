@@ -27,6 +27,8 @@ class RZ_DCtx
 	string m_sScene;				// the open topic's scene record key ("" none)
 	RZ_StrangerVisit m_Stranger;	// weak: a stranger (errands), for {their:...} and stranger:<kind>
 	bool m_bRadio;					// the open channel: no body, nothing personal on air
+	string m_sRun;					// a mission's people: "<mission id>" (the `run` scene scope)
+	ref map<string, string> m_mBind = new map<string, string>();	// bindings picked when a topic opens: name -> "town:N" | "house:N"
 
 	//------------------------------------------------------------------------------------------------
 	vector Pos()
@@ -366,8 +368,10 @@ class RZ_DialogueCond
 				return RelationTerm(ctx, t, false);
 		}
 
-		// Keys of designs not built yet (tribes, the majors, disguise, errands): quiet
-		return false;
+		// The season's story, the infected, the radio, kit marks (RZ_DialogueWorld)
+		bool known;
+		bool v = RZ_DialogueWorld.Term(ctx, t, known);
+		return known && v;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -774,6 +778,7 @@ class RZ_DialogueText
 				s.Replace("{boss}", "the boss");
 		}
 
+		s = RZ_DialogueWorld.Fill(ctx, s);
 		s = RZ_RepVoice.FillFor(ctx.m_GM, ctx.m_iPlayer, ctx.m_iFaction, s);
 		if (ctx.m_GM.GetFacts())
 			s = ctx.m_GM.GetFacts().Fill(s);

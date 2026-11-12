@@ -1271,6 +1271,8 @@ class RZ_SupplyLines
 		}
 
 		RZ_WorldWriters.TruckLost(t.m_eFaction, t.m_iDestKind == KIND_SAFEHOUSE, t.m_iDestIndex, t.m_sDestName, lostAt, t.m_vDest, cause);
+		// Grief: a truck crew lost, near where it happened and on the faction's radio
+		RZ_ToneGuard.Death(lostAt, t.m_eFaction);
 		RZ_TraceWriters.TruckLost(t.m_eFaction, lostAt, why, t.m_sDestName);
 		if (t.m_bConvoy && m_GM.GetStoryArcs())
 			m_GM.GetStoryArcs().OnConvoyResult(t.m_eFaction, t.m_sDestName, false);
@@ -1308,6 +1310,17 @@ class RZ_SupplyLines
 
 			m_GM.NotifyPlayer(ids[i], RZ_Factions.GetName(t.m_eFaction), RZ_FactionVoice.TruckLost(t.m_eFaction, t.m_sDestName));
 			RZ_Guidance.Report(ids[i], "shortage", t.m_sDestName);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the trucks on the road are now (the packs' prey: docs/INFECTED.md, Memory).
+	void TruckSpots(notnull array<vector> result)
+	{
+		foreach (RZ_SupplyTruck t : m_aTrucks)
+		{
+			if (!t.m_bDone && !t.m_bFailed && t.m_Vehicle)
+				result.Insert(t.m_Vehicle.GetOrigin());
 		}
 	}
 

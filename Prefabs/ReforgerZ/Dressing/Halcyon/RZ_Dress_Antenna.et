@@ -1,35 +1,61 @@
 GenericEntity {
- ID "985F9B58FFE0AE23"
+ ID "31081449614ADD5A"
  components {
-  RplComponent "{9C964F22A8BEA5FB}" {
+  RplComponent "{BB9BB49305503079}" {
   }
-  Hierarchy "{E3668453C4DB8608}" {
+  Hierarchy "{721C825C7E95AF2B}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et" {
-   ID "B15B33CB3E2419D9"
+   ID "8FF14F5CBF2B7EEB"
    components {
-    Hierarchy "{B3DE305343DAAB41}" {
+    Hierarchy "{1413915F4504381C}" {
     }
    }
    coords 0 0 0
   }
-  GenericEntity {
-   ID "23431D1DE2CAC7F8"
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "D18ACBD4A23ED150"
    components {
-    SCR_AISmartActionSentinelComponent "{0D7F093E97C0F912}" {
+    Hierarchy "{CFAD1A8C344DCD9F}" {
+    }
+   }
+   coords 1.0 0 0.6
+   angles 0 15 0
+  }
+  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+   ID "0F64AF73113E19CE"
+   components {
+    Hierarchy "{7E8A3AB3ADD74CCE}" {
+    }
+   }
+   coords 1.0 0.62 0.6
+   angles 0 195 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "3AEF21FAB6423A51"
+   components {
+    Hierarchy "{A3A185E769493A1C}" {
+    }
+   }
+   coords 1.1 0 1.3
+  }
+  GenericEntity {
+   ID "34DCA9339015CFD5"
+   components {
+    SCR_AISmartActionSentinelComponent "{B4034BC62DAF7262}" {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition -1.0 1.6 -0.8
+     m_vLookPosition -0.1 1.6 -0.7
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{4035909648B6933A}" {
+    Hierarchy "{8BFC5371196A137C}" {
     }
    }
-   coords 1.0 0 0.8
+   coords 1.1 0 1.3
   }
  }
 }

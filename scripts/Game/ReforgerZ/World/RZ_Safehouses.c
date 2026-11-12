@@ -1318,7 +1318,7 @@ class RZ_Safehouses
 			return;
 
 		m_mFireAt.Set(playerId, m_fClock);
-		m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, m_Settings.m_iFireInfamy);
+		m_GM.AddInfamy(playerId, RZ_EFaction.SURVIVORS, m_Settings.m_iFireInfamy, "fired at a house", 0, string.Format("fired at the door in %1", h.m_sName));
 		m_GM.NotifyPlayer(playerId, "The Haven", string.Format("Not here. Children sleep in %1. The Haven has one rule about guns, and you just broke it. (+%2 Infamy)",
 			h.m_sName, m_Settings.m_iFireInfamy));
 	}
@@ -1705,6 +1705,8 @@ class RZ_Safehouses
 
 		profile.m_bFallenPending = true;
 		profile.m_sFallenPlace = place;
+		// Grief: a Haven Champion remembered, near where they fell and on the Haven's radio
+		RZ_ToneGuard.Death(pos, RZ_EFaction.SURVIVORS);
 
 		string name = RZ_Util.PlayerName(playerId);
 		RZ_Leaders leaders = m_GM.GetLeaders();

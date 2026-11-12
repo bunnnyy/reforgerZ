@@ -1,52 +1,69 @@
 GenericEntity {
- ID "926AF942DAFE162C"
+ ID "ABC66B6CCC43F5F3"
  components {
-  RplComponent "{F8C77EDF1A6718F5}" {
+  RplComponent "{75CFFEA0D76C5E9F}" {
   }
-  Hierarchy "{3A7B0CD0A54C76FA}" {
+  Hierarchy "{83067487F24D6E45}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
-   ID "0FEFF1AFF2BEE49C"
+   ID "88654E82C086E924"
    components {
-    Hierarchy "{44FCDA1D38137A39}" {
+    Hierarchy "{394B3D2BD78C43AC}" {
     }
    }
-   coords -1.8 0 0
+   coords -1.9 0 -0.3
   }
   GenericEntity : "{3091168E31EA4734}Prefabs/Structures/Civilian/ClotheslinePole_01.et" {
-   ID "64F6E3C60E0EE18F"
+   ID "1F91A457AE42D515"
    components {
-    Hierarchy "{A12BD666F4EB1EDC}" {
+    Hierarchy "{43327E83C074E7BC}" {
     }
    }
-   coords 1.8 0 0
+   coords 1.8 0 0.4
   }
   GenericEntity : "{5444982FED78FECE}Prefabs/Props/Furniture/BasketLaundry_01.et" {
-   ID "C5457E4D58786257"
+   ID "30BB34BAA287A5D3"
    components {
-    Hierarchy "{897DB334307356BB}" {
+    Hierarchy "{D1E0ADC53AA5A763}" {
     }
    }
-   coords -0.5 0 0.6
-   angles 0 10 0
+   coords -0.4 0 0.8
+   angles 0 18 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "00F0EB7629C6CB79"
+   components {
+    Hierarchy "{1C39BC28EF92177E}" {
+    }
+   }
+   coords 0.7 0 0.9
+  }
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "00BC2A1090DB33BB"
+   components {
+    Hierarchy "{E18C858C12432CEA}" {
+    }
+   }
+   coords 0.2 0 0.05
+   angles 0 79 0
   }
   GenericEntity {
-   ID "EF618CD7BF4AFE6D"
+   ID "7D023430B1AA8094"
    components {
-    SCR_AISmartActionSentinelComponent "{4A17FDF610115C4A}" {
+    SCR_AISmartActionSentinelComponent "{9CE87AF4B4D49858}" {
      Tags {
       "RZ_Work"
      }
-     m_vLookPosition 0 1.6 -0.8
+     m_vLookPosition 0 1.6 -1.0
      m_eLoiterAnimation LOITERING
     }
-    Hierarchy "{406943E0B41C71D6}" {
+    Hierarchy "{6D5420AC032C05E3}" {
     }
    }
-   coords 0.4 0 0.8
+   coords 0.2 0 1.0
   }
  }
 }

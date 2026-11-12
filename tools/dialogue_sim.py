@@ -5,6 +5,8 @@
     python3 tools/dialogue_sim.py redhand.post.toll --tier redhand=known --infamy redhand=20 --bg excon
     python3 tools/dialogue_sim.py occupant.house.short --house short --food 3
     python3 tools/dialogue_sim.py --all --bg doctor            # every conversation, start nodes only
+    python3 tools/dialogue_sim.py occupant.house.stove_bed --house short \
+        --chars "Mara:--tier haven=known" --chars "Tom:--bg nurse" --race   # several characters in a scene
 
 Walks one conversation as one character sees it: which topic shows in the hub, every node reachable
 from the start, the lines that show (variants picked), and every choice with the tag the server
@@ -266,6 +268,66 @@ def walk(ch, conv, start_only=False):
             break
 
 
+def race(chars, conv):
+    """Several characters at one scene, in the order given: what each sees at the start node, then how
+    the engine settles it. A decide pick waits 5 s; anyone else talking to the speaker may Object once
+    (and is the speaker for 60 s) or Stand with; unobjected, it lands once for the world. A sway adds
+    one contribution per character. Nobody wins by picking first: the hold is there for that."""
+    node = conv.node("start")
+    deciding = []
+    sways = {}
+    for name, ch in chars:
+        print("-- %s" % name)
+        if not cond_true(ch, conv.when):
+            print("   doesn't see the topic (when: %s)" % conv.when)
+            continue
+        first = None
+        for c in node.choices:
+            tag, shown, result = describe_choice(ch, conv, c)
+            mark = " " if shown else "x"
+            print("   %s @%-10s %s %s  => %s" % (mark, c.id, (tag + " ") if tag else "", c.label, result))
+            ok = shown and not result.startswith("disabled") and (result.startswith("pass") or "->" not in result)
+            if ok and first is None and ("decide:" in c.do or "sway:" in c.do):
+                first = c
+        if first is None:
+            continue
+        who_ok = not conv.who or cond_true(ch, conv.who)
+        if "decide:" in first.do:
+            if who_ok:
+                deciding.append((name, first))
+            else:
+                print("   (only someone they trust can answer for it: %s may sway, not decide)" % name)
+        for part in [p.strip() for p in first.do.split(";")]:
+            if part.startswith("sway:"):
+                sways.setdefault(part[5:], []).append(name)
+    print("-- the race")
+    if deciding:
+        name, c = deciding[0]
+        print("   %s picks @%s: a 5 s hold, told to the room (30 m)." % (name, c.id))
+        others = deciding[1:]
+        if others:
+            oname, oc = others[0]
+            if oc.id != c.id:
+                print("   %s objects (once a scene) with @%s: the hold is off, and %s is the speaker for 60 s." % (oname, oc.id, oname))
+                print("   %s's pick lands instead, unless someone objects in turn." % oname)
+            else:
+                print("   %s stands with %s." % (oname, name))
+                print("   It lands: decided for the world, once.")
+        else:
+            print("   Nobody objects: it lands, decided for the world, once.")
+    else:
+        print("   Nobody can decide it here.")
+    for key, who in sorted(sways.items()):
+        print("   sway %s: +%d (%s), one each" % (key, len(who), ", ".join(who)))
+
+
+def char_from(spec, base_args, ap):
+    """'Name:--bg nurse --tier haven=known' -> (name, Char)."""
+    name, _, rest = spec.partition(":")
+    sub = ap.parse_args([base_args.conv or "x"] + rest.split())
+    return name.strip() or "someone", Char(sub)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("conv", nargs="?", help="conversation id")
@@ -284,6 +346,8 @@ def main():
     ap.add_argument("--food", type=int, default=0)
     ap.add_argument("--house", default="", help="short, fed or died")
     ap.add_argument("--trait", default="")
+    ap.add_argument("--chars", action="append", default=[], help="'Name:<options>' for each character in a scene")
+    ap.add_argument("--race", action="store_true", help="with --chars: how a scene's holds, objections and tallies settle")
     args = ap.parse_args()
 
     convs, errors = dp.load_all()
@@ -298,6 +362,15 @@ def main():
         ap.error("name a conversation, or --all")
     for c in convs:
         if c.id == args.conv:
+            if args.chars:
+                chars = [char_from(spec, args, ap) for spec in args.chars]
+                if args.race:
+                    race(chars, c)
+                else:
+                    for name, other in chars:
+                        print("-- %s" % name)
+                        walk(other, c, start_only=True)
+                return
             walk(ch, c)
             return
     print("no conversation '%s' (tools/dialogue_pack.py --list)" % args.conv)

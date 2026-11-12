@@ -1,0 +1,73 @@
+# Hiding things (docs/DIALOGUE.md, "Lies you're told"): a speaker keeps something back behind a
+# default deflection in their own voice, with a Press beside it (persuade, or a threat where one is
+# allowed), and a fail branch that isn't a dead end. And topics other systems put in front of you:
+# the packs on the hills near a house, a voter's lean at a sitting.
+
+conv redhand.boss.crossed
+for seat:redhand/crew_boss
+when tier:redhand>=known
+topic "Ask whose line is crossed out."
+prio world
+voice redhand
+
+node start
+  say "Book's the book. Ask me something else."
+  > @press "I saw the page. Whose name was that?" -> told | short   check persuade redhand 2 bg:excon
+  > @lean "Tell me. Or I mention the second book." -> told | laughed   check threaten redhand 2
+  > @back "Something else." -> hub
+
+node told
+  say "...A lad from the bridge crew. Paid in full. Day 9. He didn't pay. The infected did. Book balances."
+  do learn:redhand.crossed
+  > @back1 "Something else." -> hub
+
+node short
+  say "Nice try. The page is the page. Come back when you're in the book yourself."
+  > @back2 "Something else." -> hub
+
+node laughed
+  say "Two books! Lads, two books. Course I keep two books. Everyone knows. Go on, then, tell them."
+  > @back3 "Something else." -> hub
+
+conv occupant.hills
+for occupant
+when tribe & !house:died
+topic "Ask about the hills."
+prio world
+voice haven
+
+node start
+  say? alpha :: "{pack} again. And {pack_leader} with them. We keep the shutters down after dark."
+  say "{pack}, up the hill. You hear them at dusk. You learn not to answer."
+  > @where "Where do they go in the day?" -> day
+  > @back "Something else." -> hub
+
+node day
+  say "Somewhere quiet. Somewhere we don't go. Nobody's been to look, and nobody's volunteering."
+  > @back1 "Something else." -> hub
+
+# Topics other systems put in front of you (docs/DIALOGUE.md, "Trees"): a major's sitting, heard of
+# at another faction's seat while it runs. Plain gossip, never a joke in its first real day.
+conv bastion.leader.haven_sitting
+for stronghold:bastion
+when q:every_name.summoned & !ending:every_name
+topic "Ask about the Haven's sitting."
+prio world
+voice bastion
+
+node start
+  say "The Haven is voting on who eats. Show of hands, round a pot. We'd use a register."
+  say "If they want ours, it's on the wall. Nobody's asked."
+  > @back "Something else." -> hub
+
+conv redhand.leader.haven_sitting
+for stronghold:redhand
+when q:every_name.summoned & !ending:every_name
+topic "Ask about the Haven's sitting."
+prio world
+voice redhand
+
+node start
+  say "The Haven's voting on dinner. Lovely people. I've got odds on the pot, if you're interested."
+  say "Whatever they decide, somebody's hungry by Thursday. Somebody always is. That's where we come in."
+  > @back "Something else." -> hub

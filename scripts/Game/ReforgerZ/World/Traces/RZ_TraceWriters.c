@@ -131,9 +131,11 @@ class RZ_TraceWriters
 
 			t.History().Add(town, "walkout", RZ_EFaction.SURVIVORS, 1, m.m_vPos);
 			doors.Write(town, RZ_EDoorWant.HOUSE, m.m_vPos, RZ_DoorMark.Make(RZ_EDoorSymbol.HATCH, day), title);
-			// V3: the chair at the edge of the village he was walked out of
+			// V3: the chair at the edge of the village he was walked out of, only when he walked on
+			// (Walk Him Out's record walk.out: "walked on", not "ended")
 			RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
-			if (gm && gm.GetSafehouses())
+			RZ_WorldRecord walk = RZ_WorldFacts.Get().Memory().NewestRecord("walk.out", 0.1);
+			if (gm && gm.GetSafehouses() && walk && walk.value == "walked on")
 			{
 				int house = gm.GetSafehouses().FindNearest(m.m_vPos, 3000);
 				if (house >= 0)
@@ -446,6 +448,7 @@ class RZ_TraceWatch
 	protected ref map<string, vector> m_mExilePos = new map<string, vector>();
 	protected ref map<string, int> m_mExileDue = new map<string, int>();	// "ident|town" -> real time to write
 	protected ref set<string> m_aExileDone = new set<string>();	// "ident|day"
+	protected ref set<string> m_aStudied = new set<string>();		// "study|mission": L8 at a nest under study
 
 	protected static const int THUMB_SECONDS = 1200;	// an exile in a town nobody holds this long: they sleep there
 	protected static const int THUMB_DELAY = 7200;		// written 2 real hours later, never where they are now
@@ -471,6 +474,37 @@ class RZ_TraceWatch
 		Spread();
 		YoungHome();
 		Exiles();
+		NestsUnderStudy();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! L8 at a nest under study: while Halcyon's Specimen from the Nest runs (its study list is the
+	//! running jobs), a ringed beak goes on the nearest door to the nest, once a job: a nest Halcyon
+	//! wants left.
+	protected void NestsUnderStudy()
+	{
+		RZ_MissionManager missions = m_GM.GetMissions();
+		if (!missions)
+			return;
+
+		foreach (RZ_Mission m : missions.GetActive())
+		{
+			if (!m || m.m_eState != RZ_EMissionState.ACTIVE || m.m_bGlobal || m.m_sTitle.IndexOf("Specimen from the Nest") != 0)
+				continue;
+
+			string key = string.Format("study|%1", m.m_iId);
+			if (m_aStudied.Contains(key))
+				continue;
+
+			m_aStudied.Insert(key);
+			int town = RZ_TraceWriters.TownAt(m.m_vPos, m.m_iSettlement);
+			if (town < 0)
+				continue;
+
+			int day = RZ_WorldFacts.Get().Day();
+			int series = 20 + (town * 37 + day * 11) % 180;
+			m_Traces.GetDoors().Write(town, RZ_EDoorWant.NEAR, m.m_vPos, RZ_DoorMark.Make(RZ_EDoorSymbol.BEAK, day, series, 1 + day % 3, 0, RZ_DoorMark.F_RING), "a nest under study");
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

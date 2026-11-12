@@ -286,3 +286,16 @@ node look
   say You look. It isn't a fence. You both know, and neither of you says it.
   > @house "There's a house near. Go there." -> hub
   > @sit Sit with them a minute. -> hub
+
+# A stranger calls out as you come close (docs/DIALOGUE.md, "Who opens a conversation"): once, at
+# 10 m, inside the unasked-contact budget. What they want is still their ask, as built.
+conv stranger.any.callout
+for stranger
+greet
+opens approach 10
+prio quest
+once
+voice plain
+
+node start
+  say "Hey. You. Sorry. Have you got a minute? I wouldn't ask."

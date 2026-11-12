@@ -47,7 +47,6 @@ class RZ_Lies
 	static const float ROAD_RADIUS = 300;
 	static const int RUMOUR_FIRST = 1800;		// seconds: the next half-hour round
 	static const int RUMOUR_SECOND = 86400;
-	static const float RUMOUR_CHANCE = 0.15;
 	static const int VOUCH_INFAMY = 5;
 
 	protected ref array<ref RZ_Lie> m_aLies = {};
@@ -183,7 +182,7 @@ class RZ_Lies
 				if (now - lie.createdUnix >= due)
 				{
 					lie.rolls++;
-					float chance = RUMOUR_CHANCE;
+					float chance = RZ_DialogueSettings.Get().m_fRumourChance;
 					if (lie.talker)
 						chance += 0.1;
 
@@ -220,6 +219,10 @@ class RZ_Lies
 		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
 		if (trees && !lie.speaker.IsEmpty() && playerId > 0)
 			trees.GetMemory().AddRegard(playerId, lie.speaker, "lied", 3);
+
+		// A conversation's lie: its choice's `found` effects (docs/DIALOGUE.md)
+		if (trees && profile && profile.m_iLives == lie.life)
+			trees.OnLieFound(lie, playerId);
 
 		if (profile && profile.m_iLives == lie.life)
 		{

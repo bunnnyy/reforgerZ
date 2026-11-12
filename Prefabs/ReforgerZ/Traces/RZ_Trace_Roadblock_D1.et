@@ -1,76 +1,72 @@
 GenericEntity {
- ID "8297A3223E0B055B"
+ ID "0EF31936D86AA391"
  components {
-  RplComponent "{B026D2E9B070DE7B}" {
+  RplComponent "{E5D25676F56A2A54}" {
   }
-  Hierarchy "{902581CCB9520E5E}" {
+  Hierarchy "{10C13AC6CBB2657B}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
-   ID "33BE0B90F904C338"
+   ID "3E04ED50D4223CD7"
    components {
-    Hierarchy "{6BA8419A7ACBC179}" {
+    Hierarchy "{2128752A3C6AB801}" {
     }
    }
    coords 0 0 1.2
   }
   GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
-   ID "0340ADEF7DA61B1B"
+   ID "67FF55821DEA9F08"
    components {
-    Hierarchy "{DDC6A36D081E28DD}" {
+    Hierarchy "{1D5E02C31941BEF8}" {
     }
    }
    coords -1.1 0 0.6
    angles 0 55 0
   }
   GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
-   ID "F78F66622B65FB5C"
+   ID "1356009A8FEACB83"
    components {
-    Hierarchy "{D112C5F0EA555635}" {
+    Hierarchy "{B931B9B30D979315}" {
     }
    }
    coords 1.1 0 0.6
    angles 0 -55 0
   }
   GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
-   ID "A9B8C7A675EF35D1"
+   ID "1E3B42A82FFE9520"
    components {
-    Hierarchy "{18799E978C145EC6}" {
+    Hierarchy "{84F5A708353C4979}" {
     }
    }
    coords 2.6 0 1.0
    angles 0 90 0
   }
   GenericEntity : "{F7E3B5AB8E8D8B48}Prefabs/Props/Furniture/DeckChair_01/DeckChair_01_ochre.et" {
-   ID "A50679F52CFD9171"
+   ID "9D70D2C257FC8723"
    components {
-    Hierarchy "{499A3A13CB60C1B9}" {
+    Hierarchy "{AAA93937706023F6}" {
     }
    }
    coords 0 0 -0.6
   }
   GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
-   ID "A5258FF23570A6DA"
-   components {
-    Hierarchy "{EE66A093BE073E6F}" {
-    }
-   }
+   ID "4A012604EFBB97EF"
    coords 0.5 0 -0.9
   }
   GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
-   ID "5E9949D3AC0E8C91"
+   ID "3D901DD98D78997A"
    components {
-    Hierarchy "{3FC06084D6029B89}" {
+    Hierarchy "{FD9B2D6D04AA3A06}" {
     }
    }
    coords -0.8 0 -0.6
   }
   GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
-   ID "8BB5809824591449"
+   ID "9730CCA3FCE2EA00"
    components {
-    Hierarchy "{4F414E90FB355B44}" {
+    Hierarchy "{FD395F5C4FE1AE3D}" {
     }
    }
    coords -0.8 0.62 -0.6

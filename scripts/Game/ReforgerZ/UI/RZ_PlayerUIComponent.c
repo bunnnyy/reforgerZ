@@ -714,7 +714,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				RZ_Dialogue dialogue = gm.GetDialogue();
 				if (dialogue)
-					dialogue.GetTrees().Debug(playerId, dialogue.GetSession(playerId));
+					dialogue.GetTrees().Command(playerId, dialogue.GetSession(playerId), note);
 				break;
 			}
 			case CMD_TRIBES:

@@ -1,54 +1,67 @@
 GenericEntity {
- ID "F7BFA7150B3053CC"
+ ID "483F282160360E48"
  components {
-  RplComponent "{507F4EBA94982C48}" {
+  RplComponent "{63440FFFBDF18464}" {
   }
-  Hierarchy "{751D030BC38824B6}" {
+  Hierarchy "{426B0ED10AD6CB90}" {
   }
  }
  coords 0 0 0
  {
   GenericEntity : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
-   ID "2F2E8F8D3CFE459B"
+   ID "E3AA13303A24245A"
    components {
-    Hierarchy "{391F7672383B447A}" {
+    Hierarchy "{07479642E564A3F9}" {
     }
    }
-   coords -1.0 0 0.8
-   angles 0 20 0
-  }
-  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
-   ID "A6A07D7845DF3B3D"
-   components {
-    Hierarchy "{0787FEBE73B1800E}" {
-    }
-   }
-   coords 0.3 0 1.2
+   coords -0.9 0 1.0
   }
   GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
-   ID "D1D82FC58B42215C"
+   ID "0A07ABE58D8E04A8"
    components {
-    Hierarchy "{8C60FFD8B95D5DE0}" {
+    Hierarchy "{AA75FD8590297584}" {
     }
    }
-   coords 1.2 0.4 0.5
+   coords 0.6 0.6 1.3
+   angles 0 -8 85
+  }
+  GenericEntity : "{21D83950DF36F250}Prefabs/Props/Military/Sandbags/Sandbag_01_long_burlap.et" {
+   ID "30355DAE00145F1F"
+   components {
+    Hierarchy "{4103834D11718257}" {
+    }
+   }
+   coords 1.7 0 0.6
    angles 0 -60 0
   }
-  GenericEntity {
-   ID "8E135C9E62E6AC04"
+  GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
+   ID "E930E76E1FDEEDCE"
    components {
-    SCR_AISmartActionSentinelComponent "{F1390DBC67328BCE}" {
+    Hierarchy "{DD0D060EF11100E5}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 175 0
+  }
+  GenericEntity : "{8FE6D62204173656}Prefabs/Props/Civilian/BeerBottle_01_group.et" {
+   ID "89A45FAD424724D0"
+   coords 0.9 0 -0.4
+  }
+  GenericEntity {
+   ID "72F3CBDC3AA10260"
+   components {
+    SCR_AISmartActionSentinelComponent "{2954DD528611FC38}" {
      Tags {
       "RZ_Watch"
      }
      m_vLookPosition 0 1.6 10
      m_fLookDirectionRange 120
-     m_eLoiterAnimation LOITERING
+     m_eLoiterAnimation SIT
     }
-    Hierarchy "{310A7197BF121A77}" {
+    Hierarchy "{80FA222C729551A7}" {
     }
    }
-   coords 0 0 0
+   coords 0 0 0.1
   }
  }
 }
