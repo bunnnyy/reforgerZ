@@ -133,7 +133,7 @@ class RZ_DConv
 	ref array<string> m_aBindNames = {};	// `bind <name> = <picker>`, picked once when the topic opens
 	ref array<string> m_aBindPickers = {};
 	ref RZ_DCond m_SceneWho;	// who may decide (`scene <id> <scope> who <conditions>`); null: whoever may take the choice
-	float m_fOpens;			// a greet that opens the talk screen by itself within this many metres (0 never)
+	float m_fOpens;			// a greet that calls out (a subtitle) within this many metres (0 never)
 	ref array<int> m_aCarries = {};	// the built replies its choices run (call:slot:N): while it shows, they hide from the hub
 	ref array<ref RZ_DNode> m_aNodes = {};
 
@@ -238,7 +238,7 @@ class RZ_DialogueDB
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Greets that open the talk screen by themselves (RZ_DialogueOpens).
+	//! Greets that call out to a player walking up (RZ_DialogueOpens).
 	int CountOpens()
 	{
 		int n = 0;
@@ -389,7 +389,7 @@ class RZ_DialogueDB
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! `opens approach <metres>`: the greet opens the talk screen by itself within that distance.
+	//! `opens approach <metres>`: the greet calls out (its first line, a subtitle) within that distance.
 	void Opens(float metres)
 	{
 		if (m_Conv)

@@ -48,7 +48,9 @@ How the code does it:
 
 - **Jobs only by interaction.** Every job starts from a person you talk to or a thing you use,
   never from the radio, a timer, a spawn or walking past. The one exception is the openings'
-  steps ([ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)). How each kind starts:
+  steps, and only their "Talk to ..." objective while someone's outside (the steps are handed when
+  you talk to them; with nobody outside, a step starts by itself;
+  [ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)). How each kind starts:
 
   | Kind | Starts from |
   |---|---|

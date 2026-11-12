@@ -531,6 +531,14 @@ The keys that choose, say and turn pages work only on the replies; B and Esc wor
 press of A sends both `MenuSelect` and `RZ_TalkSkip`; the screen takes one step a press (0.15 s
 apart), and the press that ends their line never also says the reply that comes up (0.3 s).
 
+**It opens only when you talk.** The talk screen opens only from your own interaction: a person's
+**Talk to ...**, a quartermaster's **Ask for whoever's in charge**, or a radio's **Call on the open
+channel**. Nobody opens it on you by looking at them or walking up: someone who wants you calls out
+as a [subtitle](#subtitles-and-the-reader) with their name (a stranger, a road post, an opening's
+contact; [DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)), their nametag shows as you come near,
+and where it's a step of a job the [tracker](#the-quest-tracker) and the map's diamond point at them
+("Talk to Vera Holm.").
+
 **One Talk prompt per person.** Everyone who talks has exactly one prompt, **Talk to ...**, and
 everything else they offer is a reply on their hub (vanilla's own actions on them stay). For the
 people with the puzzle components that's their read; for a quartermaster and a safehouse's medic,

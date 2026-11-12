@@ -1,8 +1,9 @@
 //! An opening's contact as a speaker (docs/DIALOGUE.md, "Who talks"; Guidance/RZ_Openings.c):
 //! whoever's outside the door you come out of (someone from before, a stranger, or a wanderer who
-//! met an earlier life of yours). They speak first:
-//! the opening opens the talk screen on them as each step starts, with that step's piece of the
-//! story (RZ_Openings.TalkLines). With Dialogue > Trees on, the conversations `for opening`
+//! met an earlier life of yours). They call you over (a subtitle) and "Talk to <name>" is tracked;
+//! the talk screen opens only when you talk to them, and then the step that waited for you starts
+//! in it, with that step's piece of the story and its ask (RZ_Openings.TalkLines). With Dialogue >
+//! Trees on, the conversations `for opening`
 //! (dialogue/openings/openings.rzd) add their greeting by your background and topics by the step
 //! the chain is at (the character flag `opening.step`). Their one built reply is "What was it you
 //! needed?" (choice slot 0). They talk only to the player they waited for. Server only.
@@ -45,16 +46,16 @@ class RZ_TalkOpening : RZ_TalkGeneric
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Their lines (RZ_Openings.TalkLines): when they speak first, the step's piece of the story,
-	//! then the step's ask follows; when you come back, the step again. With a tree, the
-	//! conversation's greet by your background says the greeting before them.
+	//! Their lines (RZ_Openings.TalkLines): when the next step waits for you, its piece of the story,
+	//! then its ask; while a step runs, the step again. With a tree, the conversation's greet by your
+	//! background says the greeting before them.
 	override void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
 	{
 		RZ_Openings openings = RZ_Openings.Get();
 		if (!openings)
 			return;
 
-		openings.TalkLines(playerId, m_iOpening, s.m_Tree != null, s.m_aNew);
+		openings.TalkLines(playerId, m_iOpening, s.m_Tree != null, s.m_aNew, user);
 	}
 
 	//------------------------------------------------------------------------------------------------

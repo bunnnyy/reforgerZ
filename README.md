@@ -14,8 +14,8 @@ and one way to end it: **research the cure.**
   unlocked through Legacy.
 - **Openings:** every life starts somewhere random that suits who you were, coming out of a door
   for a reason (the last bottle empty, your group gone three days, the fever broken), and whoever's
-  outside speaks first: someone who knew you before, a stranger, or a wanderer who met an earlier
-  life of yours. Their small asks (the second your background's own: a fever to treat, a pump, a
+  outside calls you over: someone who knew you before, a stranger, or a wanderer who met an earlier
+  life of yours. Your first objective is to talk to them (nobody opens the talk screen on you). Their small asks (the second your background's own: a fever to treat, a pump, a
   gate to hold, a locked door) teach the Zone, tell its story and walk you to the Haven or the
   faction your background belongs with; experienced players get less of it.
 - **The Director** moves the server through four outbreak stages over a season of about 45

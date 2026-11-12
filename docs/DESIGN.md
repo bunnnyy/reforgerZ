@@ -1241,7 +1241,8 @@ with what each reply needs shown before you choose and no dice), and the convers
 Two kinds: **world events**, news on the radio for everyone and never a job, and **contracts**,
 offered in person only, to players who qualify. **Jobs only by interaction:** every job starts from
 a person you talk to or a thing you use, never from the radio, a timer, a spawn or walking past (the
-openings' steps are the one exception). The radio only says who to ask
+openings' steps are the one exception: with someone outside, only their "Talk to ..." objective is
+tracked before you talk to them, [Openings](#openings-how-every-life-starts)). The radio only says who to ask
 (`RZ_MissionManager.TellOfWork`, a Radio-tab entry); asking the giver offers the job
 (`RZ_Mission.Hire`), and only players it was offered to, and their group, are paid. How each kind
 starts, every mission, its requirements and its status are in
@@ -2947,17 +2948,27 @@ Someone from before, by your background:
 | Ex-Con | your old cellmate | Drifter | a face you half know |
 | Lab Technician | a junior from the institute | | |
 
-**They speak first.** Four seconds after the spawn, and again as each later step starts while
-you're within 30 m of them, they open the talk screen on you ([DIALOGUE.md](DIALOGUE.md#who-talks)),
-or say it as subtitles without it: that step's piece of the story, then the step's ask. Whatever you
-answer, the step is already yours and tracked. Their one built reply is "What was it you needed?"
-(the step again, short). If you leave the first step alone for two minutes and are still by them,
-they ask once more. This is the **only job in the game that starts without you talking to anyone or
-using anything**; its errands say so (`RZ_ErrandDef.IsOpening()`, `RZ_Errand.IsOpening()`).
+**They call you over; you talk to them.** Four seconds after the spawn they call to you, a subtitle
+with their name (*"Hey. Over here. It's me."*), and your first objective is tracked at once: *Talk
+to Vera Holm.* (their name; the errand *Outside the Door*, on the HUD tracker and as the map's diamond on
+them). The talk screen never opens by itself ([DIALOGUE.md](DIALOGUE.md#who-opens-a-conversation)):
+it opens when you talk to them, and then the first step starts in that conversation: their greeting,
+that step's piece of the story, then the step's ask, and the step is yours and tracked. Each later
+step waits for you the same way: once a step is done (you're back by them), *Back to Vera Holm*
+is tracked, they call you over (*"Come here a minute. There's something else."*), and talking to
+them gives the next piece of the story and the ask. Already talking to them when it's due, it comes
+into the same screen. Without the talk screen, **Talk to** says the same lines as subtitles. Their one
+built reply is "What was it you needed?" (the step again, short). Two minutes into a wait without
+talking to them, while you're within 30 m, they call once more; leave a step 1 alone for two minutes
+by them and they say it once more (a subtitle). Nobody comes to talk within 45 minutes: the opening
+ends. With nobody outside, or once they're dead, a step starts by itself, tracked: the chain's steps
+are the **only job in the game handed to you rather than asked for**; its errands say so
+(`RZ_ErrandDef.IsOpening()`, `RZ_Errand.IsOpening()`).
 
 **The chain** is steps on the errand engine, handed straight to you
 ([ERRANDS.md](ERRANDS.md#handed-errands-the-openings-chain)), so the tracker follows each one as it
-starts (the HUD and the Quests tab), with the giver's lines on the talk screen. By experience
+starts (the HUD and the Quests tab), with the giver's lines on the talk screen; with someone outside,
+a talk objective comes before each step (above). By experience
 ([levels](#experience-levels)):
 
 | Level | The chain |
@@ -2981,7 +2992,7 @@ No step 2 (yours can't run here, no well near and nothing medical on you): strai
 With **Dialogue > Trees** on, the conversations `for opening` add their greeting (by who they are,
 your background and why today) and things to ask on the way
 ([DIALOGUE.md](DIALOGUE.md#the-conversations)); without it, a plain greeting by who they are and why
-today opens the first step.
+today opens the first step, when you first talk to them.
 
 **Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
 errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's
@@ -3030,7 +3041,8 @@ it. Nobody waves you over for errands while it runs. One opening per life, runti
 nobody is within 150 m after the walk starts, or 45 minutes on with nobody within 50 m.
 
 **Log lines:** `Openings: started for ...` (background, place, town, grid, level, why today, who,
-the chain and where it ends), `... spoke first to ... at step N (the talk screen | subtitles)`, `... step N (key) for
+the chain and where it ends), `... called ... over before step N`, `... talked to by ... before step N`,
+`... went on talking with ... into step N`, `... step N (key) for
 ...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
 the fallbacks' `no ... place fits`, `no place`, `no contact could stand`, `no step 2 can run`,
 `...'s bitten friend was lost`, and `ended for ...: found work at ...`.

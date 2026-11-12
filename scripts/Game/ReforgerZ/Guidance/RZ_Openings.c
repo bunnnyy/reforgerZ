@@ -5,8 +5,11 @@
 //! group gone, the fever broken). By the door, the reason's scene, your background's own things,
 //! something to read and a clue (RZ_OpeningScenes). A few metres off, whoever's outside
 //! (RZ_EOpeningWho: someone from before, a stranger, or a wanderer who met an earlier life of
-//! yours) speaks first, on the talk screen, and the chain's first step is tracked straight away: the
-//! only job in the game that starts without you talking to anyone or using anything. The chain
+//! yours) calls you over (a subtitle with their name), and "Talk to <name>" is tracked straight away
+//! (the HUD and the map's diamond on them). The talk screen opens only when you talk to them: each
+//! step's piece of the story and its ask come in that conversation, and the step is handed there
+//! (between steps, "Talk to <name>" again). With nobody outside, or once they're dead, a step
+//! starts by itself, tracked: the only job in the game that does. The chain
 //! (RZ_OpeningChain) is errand steps by your guidance level: close by and quiet, your background's
 //! own system (RZ_OpeningSteps.c), and the walk to where your background belongs, which pays a
 //! little Fame with that faction (levels 0-1); your background's step, then the nearest place with
@@ -65,8 +68,8 @@ class RZ_Opening
 	vector m_vEnd;
 	string m_sEndPlace;			// "the safehouse in Morton"
 	ref array<int> m_aPlan = {};	// the stages, in order (RZ_EOpeningStage)
-	int m_iStage = -1;			// the plan's stage under way (-1 before they speak)
-	int m_iStep;				// 0 before they speak, 1-3 the step under way (the conversations' opening.step)
+	int m_iStage = -1;			// the plan's stage under way (-1 before they call you over)
+	int m_iStep;				// 0 before the first step, 1-3 the step under way (the conversations' opening.step)
 	bool m_bNext;				// the next stage starts at m_fNextAt
 	string m_sSearch;			// step 1's place: "the chemist's over the way"
 	int m_iTask;				// step 2's task (RZ_EOpeningTask)
@@ -78,9 +81,11 @@ class RZ_Opening
 	bool m_bTold;				// the task said once what's missing
 	int m_iErrand = -1;			// the current step's errand id
 	bool m_bResolved;			// the current step is done
-	bool m_bSpoke;
+	bool m_bSpoke;				// they've called you over (the chain has begun)
 	bool m_bAskedAgain;
-	bool m_bAnnounce;			// the talk screen is open because they spoke first (a step starting)
+	bool m_bWaitTalk;			// the plan's stage under way waits for you to talk to them
+	float m_fWaitAt;			// when that wait began
+	bool m_bCalledAgain;		// they called once more, two minutes into the wait
 	bool m_bEnded;
 	float m_fBorn;
 	float m_fStepAt;
@@ -100,11 +105,11 @@ class RZ_Openings
 	static const string FLAG_FIRST = "opening.first";	// 1 while the first step runs (their greeting)
 
 	protected static const float POLL = 1;
-	protected static const float SPEAK_DELAY = 4;		// seconds after the spawn before they speak
-	protected static const float SPEAK_RANGE = 30;
+	protected static const float SPEAK_DELAY = 4;		// seconds after the spawn before they call you over
+	protected static const float SPEAK_RANGE = 30;		// they call again (and nudge) only this close
 	protected static const float CONTACT_OUT = 6;		// the contact stands this far out of the door
 	protected static const float NEXT_STEP_DELAY = 4;
-	protected static const float ASK_AGAIN = 120;		// "Not now": asked again once, this long into step 1
+	protected static const float ASK_AGAIN = 120;		// called again once, this long into a wait or into step 1
 	protected static const float CONTACT_GONE = 150;	// the contact goes once nobody is this close (the walk, or over)
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
 	protected static const float SEARCH_MIN = 50;		// step 1's house: this far from the contact...
@@ -678,8 +683,9 @@ class RZ_Openings
 
 	// ================================================================ The tick
 	//------------------------------------------------------------------------------------------------
-	//! From the guidance's tick: they speak first, the next step starts, a contact who died, a step
-	//! that lapsed, "Not now" asked again once, and the contact leaves once nobody's near.
+	//! From the guidance's tick: they call you over, the next step waits for you to talk to them (or
+	//! starts, with nobody outside), a contact who died, a step that lapsed, a call once more, and
+	//! the contact leaves once nobody's near.
 	void Tick(float dt)
 	{
 		m_fClock += dt;
@@ -737,13 +743,14 @@ class RZ_Openings
 			if (m_fClock >= o.m_fNextAt)
 			{
 				o.m_bNext = false;
-				StartStage(o, me);
+				Ready(o, me);
 			}
 
 			return;
 		}
 
-		if (Stage(o) == RZ_EOpeningStage.WALK)
+		// On the walk (not while it waits for you to talk to them): they leave once nobody's near
+		if (Stage(o) == RZ_EOpeningStage.WALK && !o.m_bWaitTalk)
 			ContactGone(o, false);
 
 		if (o.m_bResolved || o.m_iErrand < 0)
@@ -761,7 +768,10 @@ class RZ_Openings
 			return;
 		}
 
-		AskAgain(o, me, e);
+		if (o.m_bWaitTalk)
+			CallAgain(o, me);
+		else
+			AskAgain(o, me, e);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -770,6 +780,12 @@ class RZ_Openings
 	protected void Lapsed(RZ_Opening o)
 	{
 		o.m_bResolved = true;
+		if (o.m_bWaitTalk)
+		{
+			Finish(o, "nobody came to talk");
+			return;
+		}
+
 		if (Stage(o) == RZ_EOpeningStage.TASK && (o.m_iTask == RZ_EOpeningTask.CLOCK || o.m_iTask == RZ_EOpeningTask.CLOCK_MED))
 		{
 			if (o.m_Contact)
@@ -784,42 +800,119 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The contact speaks first, and the first step is tracked at once, whatever you answer.
+	//! The chain begins: whoever's outside calls you over, and "Talk to <name>" is tracked at once
+	//! (nobody outside: the first step starts by itself).
 	protected void Speak(RZ_Opening o, IEntity me)
+	{
+		Begin(o);
+		Ready(o, me);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The chain's first stage is under way (waiting for you, or started).
+	protected void Begin(RZ_Opening o)
 	{
 		o.m_bSpoke = true;
 		SetFlag(o, FLAG_END, o.m_iEnd + 1);
 		SetFlag(o, FLAG_FIRST, 1);
 		o.m_iStage = 0;
-		StartStage(o, me);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A step starts with the contact close by: they speak first, on the talk screen (or, without
-	//! it, their lines as subtitles), with that step's piece of the story; the step's ask follows
-	//! into the same screen (RZ_Errands.Hand). Nothing when they're gone or out of earshot.
-	protected void Announce(RZ_Opening o, IEntity me)
+	//! Whoever's outside is still there to talk to.
+	protected static bool HasContact(RZ_Opening o)
 	{
-		if (!o.m_Contact || !RZ_Util.IsCharacterAlive(o.m_Contact) || RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) > SPEAK_RANGE)
-			return;
+		return o.m_Contact && !o.m_bContactDead && RZ_Util.IsCharacterAlive(o.m_Contact);
+	}
 
-		o.m_bAnnounce = true;
-		bool talking = OpenTalk(o, me);
-		o.m_bAnnounce = false;
-		string how = "the talk screen";
-		if (!talking)
+	//------------------------------------------------------------------------------------------------
+	//! The plan's next stage is due. With someone outside it waits for you to talk to them: "Talk to
+	//! <name>" is handed and tracked (the HUD, and the map's diamond on them), and they call you over
+	//! as a subtitle; the talk screen never opens by itself. Talking to them already: it starts in
+	//! that conversation. With nobody outside, it starts at once.
+	protected void Ready(RZ_Opening o, IEntity me)
+	{
+		if (!HasContact(o))
 		{
-			array<string> lines = {};
-			StepLines(o, false, lines);
-			foreach (string line : lines)
-			{
-				m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, line, o.m_Contact);
-			}
-
-			how = "subtitles";
+			StartStage(o, me, false, null, false);
+			return;
 		}
 
-		RZ_Log.Info(string.Format("Openings: %1 spoke first to %2 at step %3 (%4)", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), o.m_iStep, how));
+		// Talking to them already: the step's piece of the story and its ask go into that screen
+		RZ_Dialogue dialogue = m_GM.GetDialogue();
+		RZ_TalkSession session;
+		if (dialogue)
+			session = dialogue.GetSession(o.m_iPlayer);
+
+		if (session && session.m_Speaker == o.m_Contact)
+		{
+			array<string> beat = {};
+			RZ_Log.Info(string.Format("Openings: %1 went on talking with %2 into step %3", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), o.m_iStep + 1));
+			StartStage(o, me, session.m_Tree != null, beat, true);
+			return;
+		}
+
+		RZ_Errands errands = m_GM.GetErrands();
+		if (!errands || !errands.IsOn())
+		{
+			Finish(o, "errands are off");
+			return;
+		}
+
+		RZ_OpeningTalkDef d = m_Chain.m_TalkNext;
+		if (o.m_iStep <= 0)
+			d = m_Chain.m_TalkFirst;
+
+		vector at = o.m_Contact.GetOrigin();
+		RZ_Errand e = errands.Hand(d, o.m_iPlayer, "opening:" + o.m_iId.ToString(), o.m_sName, o.m_sSpeaker, RZ_EFaction.SURVIVORS, at, at, o.m_sName, me);
+		if (!e)
+		{
+			Finish(o, "the talk couldn't be handed");
+			return;
+		}
+
+		o.m_bWaitTalk = true;
+		o.m_fWaitAt = m_fClock;
+		o.m_bCalledAgain = false;
+		o.m_bResolved = false;
+		o.m_iErrand = e.m_iId;
+		RZ_UIFeed feed = m_GM.GetUIFeed();
+		if (feed && feed.GetTracker())
+			feed.GetTracker().Follow(o.m_iPlayer, -(RZ_UIFeed.ERRAND_ID_BASE + e.m_iId), e.Fill(d.m_sTitle));
+
+		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.CallOver(o.m_iStep, o.m_iWho, o.m_iAsks), o.m_Contact);
+		RZ_Log.Info(string.Format("Openings: %1 called %2 over before step %3", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), o.m_iStep + 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Two minutes into a wait, still not talked to and within 30 m: they call once more (a
+	//! subtitle; the tracker still points at them).
+	protected void CallAgain(RZ_Opening o, IEntity me)
+	{
+		if (o.m_bCalledAgain || m_fClock - o.m_fWaitAt < ASK_AGAIN || !HasContact(o))
+			return;
+
+		if (RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) > SPEAK_RANGE)
+			return;
+
+		RZ_Dialogue dialogue = m_GM.GetDialogue();
+		if (dialogue && dialogue.GetSession(o.m_iPlayer))
+			return;
+
+		o.m_bCalledAgain = true;
+		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.CallAgain(), o.m_Contact);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! You talked to them while the next step waited: the talk objective ends quietly and the step
+	//! starts in this conversation (its piece of the story into `beat`, then its ask). `sayNow`:
+	//! no talk screen, so the lines are said as subtitles as they come.
+	protected void TalkedTo(RZ_Opening o, IEntity me, bool tree, notnull array<string> beat, bool sayNow)
+	{
+		o.m_bWaitTalk = false;
+		DropStep(o, "done");
+		RZ_Log.Info(string.Format("Openings: %1 talked to by %2 before step %3", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer), o.m_iStep + 1));
+		StartStage(o, me, tree, beat, sayNow);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -845,18 +938,8 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool OpenTalk(RZ_Opening o, IEntity me)
-	{
-		RZ_Dialogue dialogue = m_GM.GetDialogue();
-		if (!dialogue || dialogue.GetSession(o.m_iPlayer) || RZ_Util.IsInVehicle(me))
-			return false;
-
-		return dialogue.Open(o.m_iPlayer, o.m_Contact, me);
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! "Not now", or nothing at all: two minutes into step 1, with nothing done and still by the
-	//! contact, they ask once more.
+	//! contact, they say it once more (a subtitle; the screen opens only when you talk to them).
 	protected void AskAgain(RZ_Opening o, IEntity me, RZ_Errand e)
 	{
 		if (o.m_bAskedAgain || o.m_iStep != 1 || m_fClock - o.m_fStepAt < ASK_AGAIN || e.m_fProgress > 0 || e.m_bStepDone)
@@ -865,9 +948,12 @@ class RZ_Openings
 		if (!o.m_Contact || RZ_Util.DistXZ(o.m_Contact.GetOrigin(), me.GetOrigin()) > SPEAK_RANGE)
 			return;
 
+		RZ_Dialogue dialogue = m_GM.GetDialogue();
+		if (dialogue && dialogue.GetSession(o.m_iPlayer))
+			return;
+
 		o.m_bAskedAgain = true;
-		if (!OpenTalk(o, me))
-			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch), o.m_Contact);
+		m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch), o.m_Contact);
 	}
 
 	// ================================================================ The steps
@@ -898,8 +984,11 @@ class RZ_Openings
 
 	//------------------------------------------------------------------------------------------------
 	//! Hands the plan's stage under way to the player through the errands and tracks it. A step 2
-	//! with nothing that can run here goes straight on to the next stage.
-	protected void StartStage(RZ_Opening o, IEntity me)
+	//! with nothing that can run here goes straight on to the next stage. `beat` (when you talked to
+	//! them): the step's piece of the story goes there before the step's ask; `sayNow` says it at once
+	//! instead (as subtitles, or into a talk screen already open). `tree`: Dialogue > Trees' greet
+	//! says the greeting.
+	protected void StartStage(RZ_Opening o, IEntity me, bool tree, array<string> beat, bool sayNow)
 	{
 		RZ_Errands errands = m_GM.GetErrands();
 		if (!errands || !errands.IsOn())
@@ -948,7 +1037,7 @@ class RZ_Openings
 				else
 					o.m_iStage++;
 
-				StartStage(o, me);
+				StartStage(o, me, tree, beat, sayNow);
 				return;
 			}
 
@@ -988,7 +1077,20 @@ class RZ_Openings
 		o.m_bResolved = false;
 		o.m_fStepAt = m_fClock;
 		SetFlag(o, FLAG_STEP, step);
-		Announce(o, me);
+		if (beat)
+		{
+			StepLines(o, tree, beat);
+			if (sayNow)
+			{
+				foreach (string line : beat)
+				{
+					m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, line, o.m_Contact);
+				}
+
+				beat.Clear();
+			}
+		}
+
 		string giverName = o.m_sName;
 		string giverTitle = o.m_sSpeaker;
 		if (!o.m_Contact && stage == RZ_EOpeningStage.LEAD)
@@ -1214,6 +1316,7 @@ class RZ_Openings
 	protected void ContactDied(RZ_Opening o)
 	{
 		o.m_bContactDead = true;
+		o.m_bWaitTalk = false;
 		SetFlag(o, FLAG_FIRST, 0);
 		DropStep(o, "the contact died");
 		RZ_Wanderers wanderers = m_GM.GetWanderers();
@@ -1263,8 +1366,11 @@ class RZ_Openings
 		if (!errands || o.m_iErrand < 0 || o.m_bResolved)
 			return;
 
+		// A talk objective isn't a job of its own: it goes quietly, not into the past jobs
 		RZ_Errand e = errands.FindById(o.m_iErrand);
-		if (e)
+		if (e && RZ_OpeningTalkDef.Cast(e.m_Def))
+			errands.Drop(e, "done");
+		else if (e)
 			errands.Drop(e, why);
 
 		o.m_bResolved = true;
@@ -1334,10 +1440,12 @@ class RZ_Openings
 	// ================================================================ Talking to them
 	//------------------------------------------------------------------------------------------------
 	//! What they say when you talk to them (the talk screen's greeting, RZ_TalkOpening, and "Talk to
-	//! ..." without it): the step's lines when they spoke first; else, before they've spoken, their
-	//! greeting; while a step runs, the step again, short; once it's over, a send-off. Anyone else
-	//! is told they're waiting for someone. `tree`: Dialogue > Trees' greet says the greeting.
-	void TalkLines(int playerId, int id, bool tree, notnull array<string> lines)
+	//! ..." without it). While the next step waits for you (their "Talk to <name>"), talking to them
+	//! starts it: that step's piece of the story, then its ask (RZ_Errands.Hand, into the same
+	//! screen). Else, while a step runs, the step again, short; once it's over, a send-off. Anyone
+	//! else is told they're waiting for someone. `tree`: Dialogue > Trees' greet says the greeting.
+	//! `sayNow`: no talk screen, the step's lines are said as subtitles, in order.
+	void TalkLines(int playerId, int id, bool tree, notnull array<string> lines, IEntity user, bool sayNow = false)
 	{
 		RZ_Opening o = ById(id);
 		if (!o || o.m_iPlayer != playerId)
@@ -1346,9 +1454,19 @@ class RZ_Openings
 			return;
 		}
 
-		if (o.m_bAnnounce)
+		// Talked to before they called you over (the first 4 s): the chain begins here
+		if (!o.m_bSpoke && !o.m_bEnded && user)
 		{
-			StepLines(o, tree, lines);
+			Begin(o);
+			o.m_bWaitTalk = true;
+		}
+
+		if (o.m_bWaitTalk && !o.m_bEnded && user)
+		{
+			TalkedTo(o, user, tree, lines, sayNow);
+			if (o.m_bEnded && lines.IsEmpty() && !sayNow)
+				lines.Insert(RZ_OpeningText.AskAgain(3, RZ_EOpeningTask.NONE, ""));
+
 			return;
 		}
 
@@ -1371,11 +1489,12 @@ class RZ_Openings
 
 	//------------------------------------------------------------------------------------------------
 	//! "Talk to ..." without the talk screen (RZ_PuzzleActionHelper.RouteRead): their lines as
-	//! subtitles.
+	//! subtitles (a waiting step starts here too).
 	void HandleTalk(int playerId, int id, IEntity owner)
 	{
 		array<string> lines = {};
-		TalkLines(playerId, id, false, lines);
+		IEntity user = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		TalkLines(playerId, id, false, lines, user, true);
 		string title = "Someone";
 		RZ_Opening o = ById(id);
 		if (o)
@@ -1388,11 +1507,12 @@ class RZ_Openings
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "What was it you needed?" (their choice slot 0): the step again, short.
+	//! "What was it you needed?" (their choice slot 0): the step again, short; while the next step
+	//! waits for you, it starts, as when you talk to them.
 	void HandleChoice(int playerId, int id, int option, IEntity owner)
 	{
 		RZ_Opening o = ById(id);
-		if (!o || o.m_iPlayer != playerId)
+		if (!o || o.m_iPlayer != playerId || (o.m_bWaitTalk && !o.m_bEnded))
 		{
 			HandleTalk(playerId, id, owner);
 			return;
