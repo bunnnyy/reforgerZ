@@ -523,9 +523,10 @@ Each memo has three lines, turning with the hour. **Missions > Errands > Pinned 
 - **Shown near those who know them.** A local's body is labelled (Talk to, Ask how they are) only while a
   player who knows them is within 100 m; otherwise it's a plain occupant.
 - **Coming to you.** Passing 80–250 m from a local's house, someone they remember helping or saving
-  them may see them walk up (a stand-in beside you for 90 s) with their line and *"They could use a hand
-  there"*; once a real day per local per player, one on the server at a time, never in a fight, a car
-  or near a job.
+  them may see them walk up (a stand-in 15–25 m off, out of your sight when they appear, for 90 s and
+  gone once nobody sees them) with their line and *"They could use a hand there"*; once a real day per
+  local per player, one on the server at a time, never in a fight, a car or near a job, and only with
+  room in the body budget (`errand`, [INFECTED.md](INFECTED.md#the-one-body-budget)) and a hidden spot.
 - **Their spot as a place.** A house errand's "here" step, for someone who knows a local there, is
   that local's spot at its hour: the gate at dusk, the stove or the bench at supper.
 

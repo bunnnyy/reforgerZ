@@ -198,6 +198,24 @@ class RZ_InfectedBodies
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A spot minR-maxR m from centre, at least minR from every player and out of every player's
+	//! sight (terrain, buildings and trees): where a person may walk up unseen. False in 8 tries.
+	static bool FindHiddenSpot(vector centre, float minR, float maxR, array<IEntity> players, out vector spot)
+	{
+		for (int i = 0; i < 8; i++)
+		{
+			spot = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(centre, minR, maxR));
+			if (RZ_Util.IsWater(spot) || RZ_Util.NearestDistance(spot, players) < minR)
+				continue;
+
+			if (!InSight(spot, players, true))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Out of every player's sight and beyond P: a body may go back to data unseen.
 	static bool Unseen(vector pos, array<IEntity> players)
 	{
@@ -420,8 +438,8 @@ class RZ_BodyEntry
 
 //------------------------------------------------------------------------------------------------
 //! The one body budget (docs/INFECTED.md, "The one body budget"): every body that isn't an infected
-//! and comes from the shared pieces (the people of a mission, wanderers, and later scenes, errands,
-//! strangers, epilogue scenes and post speakers) asks RZ_Shared.CanSpawnBody(kind, pos) first and is
+//! and comes from the shared pieces (the people of a mission, wanderers, talk scenes, door callers,
+//! locals walking up, strangers, epilogue scenes and post speakers) asks RZ_Shared.CanSpawnBody(kind, pos) first and is
 //! entered with RZ_Shared.AddBody(kind, entity). They count in agents inside the infected's agent
 //! budget (RZ_InfectedBudget), so the infected leave room for them; each kind has its own cap.
 //! Owned by the spawner. Server only.

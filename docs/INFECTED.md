@@ -371,13 +371,13 @@ caps apply.
 
 | Kind | Rule | Callers |
 |---|---|---|
-| `story` | A mission's people: always allowed, so no job stalls, but counted | The escort block (`Missions/Blocks/RZ_Escort.c`): every escort, rescue and walk-along |
+| `story` | A mission's people: always allowed, so no job stalls, but counted | The escort block (`Missions/Blocks/RZ_Escort.c`): every escort, rescue and walk-along; story groups (`Missions/Story/RZ_StoryGroups.c`), such as Crash Site's recovery team |
 | `wanderer` | Needs room in the server's 100 agents; refused, the wanderer stays data and tries again next tick | Wanderers (`World/RZ_Wanderers.c`) |
-| `scene`, `asker` | 16 agents together, and room in the budget | *Planned:* dialogue's scenes and askers |
-| `errand` | 10, and room | *Planned:* errand scenes |
-| `stranger` | 6, and room | *Planned:* strangers |
+| `scene`, `asker` | 16 agents together, and room in the budget | Talk scenes' people (`Missions/Story/RZ_TalkScene.c`: refused, they wait for room) and door callers (`Missions/Story/RZ_DoorCallers.c`: refused, the line alone) |
+| `errand` | 10, and room | Locals walking up to you (`Missions/Errands/RZ_ErrandsDealer.c`: refused, not this time) |
+| `stranger` | 6, and room | Strangers (`Missions/Errands/RZ_Strangers.c`) |
 | `epilogue` | 18 (3 scenes of 6), and room | The epilogue's people: the queue, the route's table, the lab gate, the barrier, Loose Ends' people ([EPILOGUE.md](EPILOGUE.md#places-and-scenes)) |
-| `speaker` | Only within 100 m of a player, and room | *Planned:* post speakers |
+| `speaker` | Only within 100 m of a player, and room | Checkpoint post speakers (`Factions/RZ_Checkpoints.c`) |
 
 Faction AI, leaders, camp life, supply trucks and the Long Table keep their own limits; they share only
 the engine's active-AI limit ([above](#the-agent-budget)). The status line shows the ledger as

@@ -54,7 +54,7 @@ class RZ_ErrandsDealer
 		if (m_Visitor)
 		{
 			m_fVisitorAge += dt;
-			if (m_fVisitorAge >= RZ_DoorCallers.STAY_SECONDS)
+			if (RZ_DoorCallers.GoneUnseen(m_Visitor, m_fVisitorAge, RZ_DoorCallers.STAY_SECONDS))
 			{
 				RZ_Util.DeleteUnit(m_Visitor);
 				m_Visitor = null;
@@ -344,9 +344,21 @@ class RZ_ErrandsDealer
 				if (m_mVisited.Find(key, last) && now - last < VISIT_GAP)
 					continue;
 
+				// Out of sight 15-25 m off, inside the body budget (an errand's person); else not this time
+				vector spot;
+				RZ_Shared shared = RZ_Shared.Get();
+				if (!RZ_InfectedBodies.FindHiddenSpot(p.GetOrigin(), RZ_DoorCallers.NEAR_MIN, RZ_DoorCallers.NEAR_MAX, players, spot))
+					return;
+
+				if (shared && !shared.CanSpawnBody(RZ_BodyBudget.ERRAND, spot))
+					return;
+
 				m_mVisited.Set(key, now);
-				m_Visitor = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(RZ_Util.RandomPointInRing(p.GetOrigin(), 5, 8)), Math.RandomFloat(0, 360));
+				m_Visitor = RZ_Util.SpawnPrefab(prefab, spot, Math.RandomFloat(0, 360));
 				m_fVisitorAge = 0;
+				if (shared && m_Visitor)
+					shared.AddBody(RZ_BodyBudget.ERRAND, m_Visitor);
+
 				gm.NotifyPlayerAs(ids[i], string.Format("%1, %2", l.name, l.role), string.Format("%1 comes over from the house. \"%2\" They could use a hand there, if you've the time.", l.name, l.line), RZ_ENoticeTag.AUTO);
 				RZ_Log.Info(string.Format("Errands: local %1 walked up to %2", l.name, RZ_Util.PlayerName(ids[i])));
 				return;

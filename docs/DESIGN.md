@@ -1346,8 +1346,8 @@ twenty on the story job's kit) are in [MISSIONS.md](MISSIONS.md#who-gets-offered
   other (Off-Book Requisition's and Rein In's Favor, The Pit's Debtor's debt, Honour Among Thieves'
   *[Talk - 3 in 5]*, Rival Survivors' *[Trade]*).
 - **Talk scenes** (`RZ_TalkScene`): a scene person (the civilian puzzle prefab, object index 91)
-  stands at the job's place, spawned once someone is within 80 m; no prefab, no person, and the job
-  goes on its own ways. It has 2 or 3 **nodes**: a line and up to four options on its choice slots,
+  stands at the job's place, spawned once someone is within 80 m and the body budget has room (a
+  `scene`; until then they wait); no prefab, no person, and the job goes on its own ways. It has 2 or 3 **nodes**: a line and up to four options on its choice slots,
   the last always "Leave it" (back to the first node). Options ask (a line, maybe a truth found,
   maybe the next node: anyone in the room may pick them), check (Trust, Fear, a trick in a kit, with
   the usual tags and one try per player per person), pay (tins, which need no standing, or Favor),
@@ -2137,9 +2137,11 @@ Saved with the season (**Shared > Callbacks** and the numbers above). The story 
 (`RZ_StoryKit.Later`), as do errands and dialogue.
 
 - **At the door** (`Missions/Story/RZ_DoorCallers.c`): a story job's callback can be a person: when
-  it comes due within 300 m of its place, a stand-in (the civilian puzzle prefab) turns up 4–7 m from
-  the player as the line is told, and goes after 90 s. One at a time on the server; no prefab, or
-  further off, the line alone.
+  it comes due within 300 m of its place, a stand-in (the civilian puzzle prefab) turns up 15–25 m from
+  the player, somewhere they can't see, as the line is told, and goes after 90 s once nobody can see
+  them (5 minutes at most). One at a time on the server, an `asker` in the body budget
+  ([INFECTED.md](INFECTED.md#the-one-body-budget)); no prefab, no room, no hidden spot, or further
+  off, the line alone.
 
 ### Notice lanes
 

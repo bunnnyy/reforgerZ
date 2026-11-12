@@ -180,10 +180,18 @@ class RZ_TalkScene
 			if (m_aNodes.IsEmpty() || !RZ_ContractHelp.AnyNear(players, m_vAt, SHOW_RANGE))
 				return;
 
-			m_bShown = true;
+			// Inside the body budget (a scene's person): no room, and they turn up when there is
 			ResourceName prefab = gm.GetPuzzlePrefab(RZ_EPuzzleProp.CIVILIAN);
+			RZ_Shared shared = RZ_Shared.Get();
+			if (!prefab.IsEmpty() && shared && !shared.CanSpawnBody(RZ_BodyBudget.SCENE, m_vAt))
+				return;
+
+			m_bShown = true;
 			if (!prefab.IsEmpty())
 				m_Person = RZ_Util.SpawnPrefab(prefab, RZ_Util.GroundPos(m_vAt), Math.RandomFloat(0, 360));
+
+			if (m_Person && shared)
+				shared.AddBody(RZ_BodyBudget.SCENE, m_Person);
 
 			if (!m_Person)
 			{

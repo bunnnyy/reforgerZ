@@ -3341,8 +3341,9 @@ on the talk screen says why something wasn't dealt)
   dead man, at most 3 a life.
 - [ ] Strangers: one appears 60–90 m off, out of sight (no pop-in), and goes once you can't see them;
   a junction of two busy roads deals one; robbing a dead one's pockets (within 3 m) is +8 Haven Infamy.
-- [ ] A local you helped walks up as you pass their house (once a real day); their labels show only
-  while you (or someone who knows them) are within 100 m.
+- [ ] A local you helped walks up as you pass their house (once a real day), appearing 15–25 m off
+  where you weren't looking, and leaves once you look away; their labels show only while you (or
+  someone who knows them) are within 100 m.
 - [ ] A lie found out: a Paranoid leader of that faction offers you no in-person job for 2 hours of
   play; on your next life, that faction's next errand opens with "The last one who said that lied".
 - [ ] A major's act opening logs `Story: reason major.<key> posted`, and its margin card opens with the
@@ -3351,8 +3352,8 @@ on the talk screen says why something wasn't dealt)
   within 25 m of someone in the giver's kit breaks their look.
 - [ ] Each kit job once: its truth in the log, a read for the right background at its place, the tins
   way and the check way at its person, the end question's options by truth, and its record. A
-  callback at the door (The Cache's family, the boy from Bust Out) turns up as a person beside you
-  some hours of play later, then goes.
+  callback at the door (The Cache's family, the boy from Bust Out) turns up as a person 15–25 m off,
+  out of your sight, some hours of play later, then goes once you look away.
 - [ ] Protection Racket: a Short persuade, then the next collection at that house: the brief mentions
   the promise. Collected: a note at the house comes back some hours of play later.
 - [ ] The bed by the stove (Dialogue > Trees on, a short house): someone Known with the Haven decides;
