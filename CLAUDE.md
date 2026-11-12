@@ -19,6 +19,8 @@ behaviour, design, content or setup is complete until the docs match it.**
    - New **prefab, component, action or attribute** the user must set up → `docs/WORKBENCH_SETUP.md`
    - New or changed **screen, icon or widget name** a script looks up → `docs/UI.md` and `UI/LAYOUTS.md`
    - New, changed or removed **conversation** (`dialogue/**/*.rzd`) → `docs/DIALOGUE.md`'s list of conversations
+   - New, changed or removed **door mark, scene, trace sound or light** → `docs/TRACES.md`
+   - Change to **the week after the cure** (its phases, beats, carriers, closing work) → `docs/EPILOGUE.md`
    - New, changed or removed **Workshop dependency** → `docs/MOD_STACK.md`
    - Change to **setting or factions** → `docs/LORE.md` / `docs/REPUTATION.md`; to **tone or how text is written** → `docs/WRITING.md`
    - New or changed **tool, test script, Steam app, install step, folder or anything else the
