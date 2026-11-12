@@ -112,7 +112,7 @@ class RZ_GuidanceWorld
 
 		// If it doesn't fit (or the insert call doesn't work), it lies at their feet
 		if (!RZ_Util.InsertIntoInventory(ent, item))
-			m_GM.NotifyPlayer(playerId, RZ_Guidance.RADIO_TITLE, "There's a wind-up radio at your feet. Somebody's. Yours now.");
+			m_GM.NotifyPlayer(playerId, RZ_Guidance.RADIO_TITLE, "There's a wind-up radio at your feet. Somebody's. Yours now. Wind it and listen: the open channels say who holds what, and where.");
 	}
 
 	// ================================================================ Clue props

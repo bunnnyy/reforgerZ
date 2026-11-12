@@ -129,7 +129,7 @@ class RZ_GuidanceText
 	static string RedHandShout(RZ_Rng rng, string boss)
 	{
 		array<string> lines = {
-			"New face! Tolls are fair, %1 is fairer, and Bastion's on a radio nobody answers. Come and say hello."
+			"Morning! Tolls are fair, %1 is fairer, and Bastion's on a radio nobody answers. Come and say hello."
 		};
 
 		if (RZ_WorldFacts.Get().IsCured())
@@ -153,7 +153,7 @@ class RZ_GuidanceText
 				if (role == RZ_EWandererRole.DESERTER)
 					return RZ_WorldFacts.Get().Fill(string.Format("Bastion's dug in at %1. Every night they read the roster out loud. When they get to my name, nobody answers. Don't tell them where you saw me.", place));
 
-				return string.Format("Bastion holds %1. Follow their rules and they'll leave you alone. Their rules change.", place);
+				return string.Format("Bastion holds %1. Curfew at dusk, a search at the gate, weapons slung inside the wire. Keep to that and they'll leave you alone.", place);
 			case RZ_EFaction.BANDITS:
 				return string.Format("The Red Hand runs %1 these days. They'll sell you anything, including your own boots back.", place);
 			case RZ_EFaction.INSTITUTE:
