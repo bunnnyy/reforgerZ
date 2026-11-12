@@ -238,8 +238,9 @@ class RZ_Major_Book : RZ_Quest_TheBook
 			case S_FIRE: return Free(gm, run, S_FIRE);
 			case S_STAND:
 			{
+				// Read once the cure is out (who took the room is known then); no cure: the wipe's default
 				RZ_CureResearch cure = gm.GetCure();
-				return cure && (cure.IsFinalStand() || cure.IsCured());
+				return cure && cure.IsCured();
 			}
 			case S_CODA_WAIT: return RZ_MajorHelp.CodaDue(gm, "proof");
 			case S_CODA: return Free(gm, run, S_CODA);
@@ -780,7 +781,8 @@ class RZ_Major_Book : RZ_Quest_TheBook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The final stand (the finale owns it): how the Red Hand turned up, from the last page.
+	//! The final stand (the finale owns it), read at the cure: how the Red Hand turned up, from the
+	//! last page and who took the room.
 	protected int AfterStand(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		int last = RZ_MajorHelp.World(gm, "book.last");
@@ -795,10 +797,19 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		}
 		else if (last == 5 || last == 6)
 		{
-			// With no finale, Take the Lab runs as built: a stolen batch counts as the room taken
+			// The room taken: under the finale the Red Hand route controls the cure (held, forced or
+			// stolen by Take the Lab); with no finale, Take the Lab runs as built and a stolen batch counts
 			stand = 3;
-			if (gm.GetCure() && gm.GetCure().GetBatchesStolen() > run.Flag("stolen_before"))
+			RZ_CureFinale finale = RZ_CureFinale.Get();
+			if (finale && RZ_CureFinale.IsOn())
+			{
+				if (finale.Controller() == RZ_CureFinale.REDHAND)
+					stand = 2;
+			}
+			else if (gm.GetCure() && gm.GetCure().GetBatchesStolen() > run.Flag("stolen_before"))
+			{
 				stand = 2;
+			}
 		}
 
 		RZ_MajorHelp.SetWorld(gm, "book.stand", stand);
