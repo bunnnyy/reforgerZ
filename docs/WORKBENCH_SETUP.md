@@ -1254,7 +1254,8 @@ in `UI/layouts/ReforgerZ/`.
    ([how](../UI/LAYOUTS.md#importing-the-icons)). **UI > Icon imageset** is set to it.
 3. **The HUD** (done). `RZ_Hud.layout` and `RZ_NoticeCard.layout` are built, the HUD with the quest
    tracker top left (`TrackerPanel`, its icons with `Texture` and `Image` set, so none is a flat
-   square). The player controller's `SCR_HUDManagerComponent` has an info display of class
+   square; its area row with the arrow, `TrackerAreaRow` and `TrackerArrow`, written as text, not
+   opened in Workbench yet). The player controller's `SCR_HUDManagerComponent` has an info display of class
    `RZ_HudDisplay` with the HUD layout, and **UI > Notice layout** is set.
 4. **The menus** (done as text; not checked in play yet). The notebook's frame
    (`RZ_NotebookMenu.layout`), its five page layouts, the notice board's layout and the two row
@@ -1989,7 +1990,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_TalkMenu.c:655` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
 | `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
 | `UI/RZ_UIData.c:1110` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1249` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow and the talk screen's down arrows (its page indicator and the ▼ at the end of their line) | The arrows point the wrong way or swing about a corner: the markers still sit in the right place and the tracker's text still gives the compass point |
+| `UI/RZ_UIData.c:1249` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
 | `Dialogue/RZ_Dialogue.c:949` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:185` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:563` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
@@ -2951,7 +2952,17 @@ when it happens)
   small in the top-left corner, no box, the text readable on the world (on a TV too): its type icon
   (a real icon, no flat square, in the giver's colour) and the name; the current objective after a
   filled yellow diamond; if known, the next one dimmer after an open diamond; the rough area on its
-  own line in yellow ("Morton, a few km north-west", never metres). No kind tag, no "Then:".
+  own line in yellow ("Morton, a few km north-west"). No kind tag, no "Then:".
+- [ ] **The tracker's arrow and metres** (`TrackerAreaRow` in `RZ_Hud.layout`: open the layout once in
+  Workbench and check the row and its `TrackerArrow` load): walk toward a tracked errand's place. Past
+  1 km the area line is words only; under 1 km an amber arrow comes in front of it with "Camurac,
+  640 m". Turn on the spot: the arrow turns with you and points at the place (ahead is up), smoothly,
+  not in steps. The metres count down by 10 (by 5 under 100 m), readable on a TV. Within the place's
+  radius (25 m) the arrow goes and the line reads "Camurac, close by"; done there, "Go back to ..."
+  points the arrow at the giver until 15 m. A contract with only a rough area: "Search area, 240 m"
+  to the circle's edge, then "In the search area" with no arrow inside it; learn the spot and it
+  becomes the spot's metres. Die: the arrow goes, the words stay. If the arrow points the wrong way
+  or spins about a corner, report it (the rotation's own VERIFY row, `RZ_UIData.c`).
 - [ ] **Only the tracked job on the HUD**: take a second and a third job. The first stays tracked
   and the tracker still shows that one job alone: no dim lines under it and no "+N more". The others
   are in the Quests tab only. A major you haven't taken part in never shows. Crack a secure channel:

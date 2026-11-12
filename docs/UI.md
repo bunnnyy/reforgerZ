@@ -152,7 +152,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 
 | Screen | Preview | What it shows | Script | Status |
 |---|---|---|---|---|
-| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on). Under the noise meter during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Top left, **the quest tracker** ([below](#the-quest-tracker), mockup `tracker.png`): only the job you track, its current objective, the known next one and a rough area; your other jobs are in the Quests tab only. Nothing to press, so it's the same on a pad (Track is in the notebook's Quests tab) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line, the look line and the tracker not seen yet |
+| HUD | `hud.png` | The infection timer: the golden window countdown, then Fever, Weakness and Final on one track, a paused tag under a stabiliser, a glow in the Final stage. Notice cards: a faction-coloured header, the speaker, the text, a bar that runs down; two at once, the most important first ([Notices](#notices)). The secure-radio indicator while a cracked channel lasts. A subtle noise meter, and above it how visible you are: five segments and HIDDEN, LOW, SEEN or IN PLAIN SIGHT (only with [Stealth](DESIGN.md#stealth) on). Under the noise meter during the cure finale's stand, within 150 m of the lab: the stand's line (`StandPanel`, `StandText`: *"CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00."*, routes never players; sent by `RZ_PlayerUIComponent.SendStand` every 2 s, gone 5 s after the last, [FINALE.md](FINALE.md#the-stand-a-fight-for-the-clean-room)). Above the visibility meter while borrowed kit's look is coming: **the look line** (`RZ_Hud_Look`: `LookPanel`, the Watched eye `LookIcon` and `LookText`, *"PASS AS BASTION: 2 OF 2"* or *"…: SEEN THROUGH"*; owner-only through `RZ_UIFeed.PushLook`, sent only when it changes, gone once the look is done, the kit comes off or you're 200 m on; [REPUTATION.md](REPUTATION.md#borrowed-kit)). Top left, **the quest tracker** ([below](#the-quest-tracker), mockup `tracker.png`): only the job you track, its current objective, the known next one and a rough area (within a kilometre an arrow and metres); your other jobs are in the Quests tab only. Nothing to press, so it's the same on a pad (Track is in the notebook's Quests tab) | `RZ_HudDisplay` | Works in play: cards, visibility and noise seen; the timer, the radio indicator, the stand's line, the look line and the tracker not seen yet |
 | The notebook | — | One menu with five tabs, the five rows below, in this order ([below](#the-notebook)) | `RZ_NotebookMenu` | Frame and pages built as text, not checked in play |
 | Notebook: Standing | `standing.png` (the old four-column page; the page is now design G2) | In the header, the whole picture after your name ([REPUTATION.md](REPUTATION.md#what-people-call-you)). One row per faction, stacked down the page with the faction's colour as a left bar, mostly icons: the emblem and name; **what they call you**, large (the reputation's name, or the tier word with Reputation > Names off; the tier icon beside it, both in the tier's colour); Favor (a coin and the number); the leaders you've met (a bust and how many, or NONE); what they need (its icon and word, or NONE); and a kit tell (a jacket, only for Bastion, the Red Hand and Halcyon with borrowed kit on: dim while they don't know you, yellow once they know your face or caught you, red while you're blown). No Fame or Infamy numbers, bars or grid. Up/down or the mouse only **highlights** a row (a bone wash and border); a click, A or Enter **opens** it (or closes it again). At most one row is open, filling the free space while the others shrink to their strip; with none open (the start) the four share the page. The open row has four blocks: *How they see you* (their word as a sentence, what the name counts as, what's left to forgive while there's Infamy, a line when they hunt you, and **Next**: the next name up with what earns it, "TRUSTED: 12 more Fame" or "KNOWN: work off 8 Infamy", none at the top), *Leaders you've met* (names and titles, then the nearest one's verdict), *What they need* (the need and its line) and *In their kit* (whether they know your face, catches, blown time, their tells, what their enemies do to their colours: the payload's `K` records). The other rows stay one line, so all four names are always on screen. Under the rows, **between the factions**: the truces and feuds on one line | `RZ_StandingPage` | Page built, not checked in play |
 | Notebook: Quests | `tracker.png` (right) | Every job you have (only jobs offered to you in person: [MISSIONS.md](MISSIONS.md#who-gets-offered-what)), in three groups: the season's story, questlines and jobs, errands; in each the ones you've taken first, then the ones offered. Each row: the type icon, the name, its rough area, and TRACKED. The selected job's detail: the faction, who gave it and the area on one line, a short brief in the giver's voice, its **objectives** New Vegas style, the reward as far as you know it, and what you've found. **A** tracks it or untracks it ([below](#notebook-quests)) | `RZ_QuestsPage` | Page built as text, not checked in play |
@@ -193,11 +193,12 @@ hidden` or `/mydead shown` keeps your name out of public text if you die out the
 ([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. With **Board menus** off,
 reading the board is a notice and notes are written with `/note` only.
 
-**Rough areas, never metres.** Every job's place in the notebook and on the tracker is a rough area
+**Rough areas in words.** Every job's place in the notebook, and on the tracker past a kilometre, is a rough area
 (`RZ_QuestText.RoughArea`): the nearest settlement or the side of it ("Morton", "East of Levie") and
 a band, close by (under 150 m), under a km, a few km (under 4 km) or far off, with a compass word
 ("East of Levie, a few km north-west"). A contract points at its rough circle until the player
-knows the spot ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)). **Mouse:** click a tab to switch, the close button to
+knows the spot ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)). Within a kilometre the tracker
+gives an arrow and metres instead ([The quest tracker](#the-quest-tracker)). **Mouse:** click a tab to switch, the close button to
 close, a journal row to select it, the filter chip to cycle the radio filter; the wheel scrolls the
 lists (they sit in a ScrollLayout). Those widgets are Buttons in the layouts. On a pad, up and
 down scroll the same lists.
@@ -288,12 +289,28 @@ under the secure-radio panel while that shows), for the one job you follow. The 
 - **The tracked job and nothing else:** its type icon (from the imageset, tinted the giver's
   colour) and its name; its **current objective** after a filled diamond (`track_current`); the
   **known next objective**, dim, after an open diamond (`track_next`), when there is one; and the
-  **rough area** on a line of its own in the accent colour ("Morton, a few km north-west"). Never
-  metres. No box: the text sits on the world with a dark shadow.
+  **area line**, on a line of its own in amber (`TrackerAreaRow`), as below. No box: the text sits
+  on the world with a dark shadow.
+- **The area line.** Far off, the rough area in words ("Morton, a few km north-west",
+  `RZ_QuestText.RoughArea`). **Within a kilometre** of a spot you know: an amber arrow
+  (`TrackerArrow`, the `marker_self` icon, 20 across) turned toward it from where your character
+  faces, and the metres ("Camurac, 120 m": to 10 m from 100 m up, to 5 m below,
+  `RZ_QuestText.Metres`). Inside the objective's **arrival radius** the arrow goes and the words
+  come back ("Camurac, close by"). A **search area** (you know only the rough circle): within a
+  kilometre of its edge, the arrow to its centre and the metres to its edge ("Search area, 240 m"),
+  then *In the search area* once you're inside it, no arrow; the centre is off the real spot, so
+  the arrow never gives the spot away. Dead, or a job with no place: the words alone, no arrow.
+  The arrow turns every frame and the text is set only when it changes, client-side from the
+  position the tracker's record carries (as the subtitles' arrow, [below](#subtitles-and-the-reader)).
+- **The arrival radius** is the job's own: an errand's step its way's radius (25 m unless the way
+  says), 15 m back with the giver; a mission the radius it counts you as there at
+  (`m_fParticipationRadius`), at most 50 m so the arrow still leads into a big site, 25 m when it
+  has none; a questline's place 25 m.
 - **Your other jobs are not on the HUD.** They're in the notebook's Quests tab only.
 - **Hidden** while nothing is tracked. Owner-only: sent to your machine alone, only when it changes,
-  checked every 2 s on the UI feed's tick (`RZ_QuestTracker`, payload kind 13: `T` and `O` records);
-  the HUD redraws it only when a new copy arrives.
+  checked every 2 s on the UI feed's tick (`RZ_QuestTracker`, payload kind 13: `T` and `O` records;
+  `T` carries the area's words, the place alone, where it points, the arrival radius and the search
+  area's radius); the HUD redraws it only when a new copy arrives, and only the area line between.
 
 **What's tracked.** Nothing, until you pick a job in the Quests tab or take one. Taking a job (being
 counted on it: a job offered to you that you reached, a questline you took part in, an errand you

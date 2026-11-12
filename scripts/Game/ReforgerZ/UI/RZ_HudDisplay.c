@@ -122,6 +122,16 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected static const float TRACK_Y = 24;
 	protected static const float TRACK_Y_RADIO = 126;	// below the secure-radio panel while it shows
 	protected int m_iTrackerDrawn = -1;
+	protected static const float TRACK_NEAR = 995;	// under a km (995 m rounds to 1,000): the arrow and metres
+	protected bool m_bTrackShown;		// the tracker shows a job
+	protected bool m_bTrackAt;			// it points somewhere (x, z sent)
+	protected vector m_vTrackAt;		// where: the spot, or the search area's centre
+	protected float m_fTrackArrive;		// the spot is reached within this (m)
+	protected float m_fTrackSearch;		// the search area's radius (m), 0 for a spot
+	protected string m_sTrackWords;		// the server's words ("Camurac, a few km north-west")
+	protected string m_sTrackPlace;		// the place alone ("Camurac")
+	protected string m_sTrackLine = "-";	// the area line last written, so it's set only when it changes
+	protected int m_iTrackArrow = -1;	// the arrow last shown (1) or hidden (0)
 	protected static const int SUB_CHARS = 130;	// about two lines at 32 px in 1,044 units
 	protected static const int RADIO_WAITING = 6;
 	protected static const int RADIO_CHARS = 130;	// about three lines at 26 px in 528 units
@@ -164,6 +174,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_NametagClient.Tick(timeSlice, m_wRoot);
 		// The arrow to whoever is speaking turns with you, every frame (one rotation, the text on change)
 		DrawSubtitleDir();
+		// So does the tracker's arrow to the tracked objective, within a km
+		DrawTrackerDir();
 		m_fRefresh -= timeSlice;
 		if (m_fRefresh > 0)
 			return;
@@ -202,6 +214,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		else
 		{
 			RZ_UIW.Show(m_wRoot, "TrackerPanel", false);
+			m_bTrackShown = false;
+			m_iTrackerDrawn = -1;
 			RZ_UIW.Show(m_wRoot, "StandPanel", false);
 			RZ_UIW.Show(m_wRoot, "LookPanel", false);
 			RZ_UIW.Show(m_wRoot, "InfectionPanel", false);
@@ -363,9 +377,10 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	//------------------------------------------------------------------------------------------------
 	//! The quest tracker (docs/UI.md, "The quest tracker"), top left, small, owner-only: the tracked
 	//! job alone, its type icon and name, its current objective (a filled diamond), the known next
-	//! one (an open diamond, dim) and the rough area in the accent colour. The other jobs taken are
-	//! the Quests tab's, never here. Hidden while nothing is tracked. Redrawn only when the server
-	//! sends a new copy; a layout without TrackerPanel shows nothing.
+	//! one (an open diamond, dim) and the area line in the accent colour (DrawTrackerDir: words, or
+	//! within a km an arrow and metres). The other jobs taken are the Quests tab's, never here.
+	//! Hidden while nothing is tracked. Redrawn only when the server sends a new copy; a layout
+	//! without TrackerPanel shows nothing.
 	protected void DrawTracker(RZ_PlayerUIComponent ui)
 	{
 		Widget panel = RZ_UIW.Find(m_wRoot, "TrackerPanel");
@@ -401,6 +416,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		}
 
 		RZ_UIW.Show(m_wRoot, "TrackerPanel", head != null);
+		m_bTrackShown = head != null;
 		if (!head)
 			return;
 
@@ -416,10 +432,82 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		RZ_UIW.Show(m_wRoot, "TrackerNextRow", !next.IsEmpty());
 		RZ_UIW.SetText(m_wRoot, "TrackerNext", next);
 
-		// The rough area on its own line, in the accent colour; never metres
+		// The area on its own line, in the accent colour: where it points, and how to say it far off
 		string area = RZ_UIText.Str(head, 6);
-		RZ_UIW.Show(m_wRoot, "TrackerArea", !area.IsEmpty());
-		RZ_UIW.SetText(m_wRoot, "TrackerArea", RZ_QuestText.Cap(area));
+		m_sTrackWords = RZ_QuestText.Cap(area);
+		m_sTrackPlace = RZ_UIText.Str(head, 7);
+		m_bTrackAt = !RZ_UIText.Str(head, 8).IsEmpty() && !RZ_UIText.Str(head, 9).IsEmpty();
+		m_vTrackAt = Vector(RZ_UIText.Float(head, 8), 0, RZ_UIText.Float(head, 9));
+		m_fTrackArrive = RZ_UIText.Float(head, 10);
+		m_fTrackSearch = RZ_UIText.Float(head, 11);
+		bool areaShown = !area.IsEmpty() || m_bTrackAt;
+		RZ_UIW.Show(m_wRoot, "TrackerAreaRow", areaShown);
+		RZ_UIW.Show(m_wRoot, "TrackerArea", areaShown);
+		m_sTrackLine = "-";
+		m_iTrackArrow = -1;
+		DrawTrackerDir();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tracker's area line, every frame (docs/UI.md, "The quest tracker"). Within a km of a known
+	//! spot: an arrow turned to it from where you face and the metres ("Camurac, 120 m"); inside its
+	//! arrival radius the arrow goes and the words come back ("Camurac, close by"). A search area:
+	//! the arrow to its centre and the metres to its edge ("Search area, 240 m"), then "In the search
+	//! area" once you're inside it. Farther off, dead, or a job with no place: the server's words
+	//! alone. Client-side from the position in the tracker's record; one rotation a frame, the
+	//! text and the arrow's visibility only when they change.
+	protected void DrawTrackerDir()
+	{
+		if (!m_wRoot || !m_bTrackShown)
+			return;
+
+		string line = m_sTrackWords;
+		bool arrow = false;
+		IEntity me = RZ_UIW.LocalEntity();
+		if (me && m_bTrackAt)
+		{
+			vector here = me.GetOrigin();
+			float dist = RZ_Util.DistXZ(here, m_vTrackAt);
+			if (m_fTrackSearch > 0)
+			{
+				float edge = dist - m_fTrackSearch;
+				if (edge <= 0)
+				{
+					line = "In the search area";
+				}
+				else if (edge < TRACK_NEAR)
+				{
+					arrow = true;
+					line = "Search area, " + RZ_QuestText.Metres(edge);
+				}
+			}
+			else if (dist > m_fTrackArrive && dist < TRACK_NEAR)
+			{
+				arrow = true;
+				line = RZ_QuestText.Metres(dist);
+				if (!m_sTrackPlace.IsEmpty())
+					line = m_sTrackPlace + ", " + line;
+			}
+
+			if (arrow)
+				RZ_UIW.Rotate(m_wRoot, "TrackerArrow", RZ_UIW.Bearing(here, m_vTrackAt) - RZ_UIW.Heading(me));
+		}
+
+		int shown = 0;
+		if (arrow)
+			shown = 1;
+
+		if (shown != m_iTrackArrow)
+		{
+			m_iTrackArrow = shown;
+			RZ_UIW.Show(m_wRoot, "TrackerArrow", arrow);
+		}
+
+		if (line != m_sTrackLine)
+		{
+			m_sTrackLine = line;
+			RZ_UIW.SetText(m_wRoot, "TrackerArea", line);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
