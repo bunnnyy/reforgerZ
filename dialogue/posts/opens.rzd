@@ -1,7 +1,8 @@
 # Who opens the conversation (docs/DIALOGUE.md, "Who opens a conversation"): a post's speaker puts
 # the question to someone in their kit below Known at 35 m, whether or not they press Talk, so walking
 # up in a borrowed jacket doesn't skip it. The claim itself is still yours to make: the topics below
-# the greeting are the claim, the word, and the truth. Walking away is no claim.
+# the greeting are the claim, the word, and the truth. Walking away is no claim. Every greeting line
+# here is a say? on what the kit says (the hub opens on the replies, so a plain line isn't shown).
 
 conv post.bastion.opens
 for post:bastion
@@ -12,10 +13,10 @@ prio quest
 voice bastion
 
 node start
-  say? kit:signed_other :: "Stop there. That's {kit_owner}'s jacket. Signed for. So where's {kit_owner}?"
-  say? kit:dead_mans :: "Stop there. That's {dead_name}'s kit. His name's on the nail behind the radio."
-  say? kit:off_turned :: "Stop there. That's off one of ours. Where is he?"
-  say "You. Not on the board. Stop there."
+  say? kit:signed_other :: Stop there. That jacket is signed out of our stores to {kit_owner}, and you are not {kit_owner}. Before you take another step, tell me where {kit_owner} is.
+  say? kit:dead_mans :: Stop there. That's {dead_name}'s kit. The tag is on the nail behind our radio, and somebody picked the name tape off that sleeve. Explain yourself from where you're standing.
+  say? kit:off_turned :: Stop there. That jacket came off one of ours after they turned. I can smell it from here. Where did you find them, and what did you do?
+  say? kit:in_kit :: Stop there. You're in Bastion kit and you're not on this post's board, and I know every name on it. Hands where I can see them, and tell me who you are.
 
 conv post.redhand.opens
 for post:redhand
@@ -26,10 +27,10 @@ prio quest
 voice redhand
 
 node start
-  say? kit:signed_other :: "Oi. That armband's got {kit_owner}'s name in the book. You're not {kit_owner}."
-  say? kit:dead_mans :: "Oi. That's {dead_name}'s. We put {dead_name} in the book last week. Paid."
-  say? kit:off_turned :: "Oi. You took that off one of them. Off one of ours, before that."
-  say "Oi! New face, our colours. Come here and tell me a story."
+  say? kit:signed_other :: Oi. That armband's down in the book against {kit_owner}, and you're not {kit_owner}. Armbands don't walk on their own. Come here and tell me how that one walked.
+  say? kit:dead_mans :: Oi. That's {dead_name}'s armband. We sent {dead_name} off loud last week and put the kit on the market. Bought it, did you? Come and show me the line in the book.
+  say? kit:off_turned :: Oi. You took that off one of them, and before that it was on one of ours. Come here. I want to hear exactly where you found it.
+  say? kit:in_kit :: Oi! New face in our colours, walking up to our lorry like you own it. I know every face on this road. Come here and tell me a story, and make it a good one.
 
 # Kit that remembers whose it was, said without any claim, at a faction's holdings (Bastion's are in
 # cover.rzd)
@@ -41,7 +42,7 @@ voice redhand
 daily
 
 node start
-  say "Still wearing the armband the boss gave you? Bold. The book says you owe for it now."
+  say? kit:issued :: Still wearing the armband the boss gave you, after the way your standing went? Bold. The book says you owe for it now, and the book never forgets an armband.
 
 conv named.halcyon.kit_issued
 for named:halcyon
@@ -51,7 +52,7 @@ voice halcyon
 daily
 
 node start
-  say "Your coat is on our register. Your name is on another one now. Please return the coat."
+  say? kit:issued :: That coat is on our stores register, issued against your name when the lab still trusted you. Your name is on a different list now. Please return the coat to the quartermaster.
 
 # Cover details said as choices (docs/REPUTATION.md, "Borrowed kit"): your own crew name, a notebook
 # number (the cover lines with a name are in cover.rzd). Each is the look's +1 when it's true; the look
@@ -59,46 +60,46 @@ node start
 conv post.redhand.crewname
 for post:redhand
 when kit:in_kit & !caught & crew
-topic "Give them your crew name."
+topic "The crews gave me a name, you know."
 prio quest
 voice redhand
 
 node start
-  say "What do they call you, then? Everybody's called something."
-  > @name "They call me {crew}." -> passed | caught   check look redhand 2
-  > @leave "Never mind." -> hub
+  say Did they. Everybody on the roads gets called something, once the crews have watched you long enough to laugh. Go on, then. What do they call you, and where did you earn it?
+  > @name They call me {crew}. -> passed | caught   check look redhand 2
+  > @leave Doesn't matter. Forget I said it. -> hub
 
 node passed
-  say "{crew}! Course they do. Go on, and stop looking at the lorry."
+  say {crew}! Course they do, I heard about that one. Go on through, and stop looking at the lorry. Nothing on it is yours.
   do call:post_wave
-  > @back1 "Something else." -> hub
+  > @back1 Before I go, one more thing. -> hub
 
 node caught
-  say "Nobody calls you anything. That's the problem. Armband off."
-  > @back2 "Fair enough." -> hub
+  say Nobody on this road calls you anything. That's the problem: a crew name gets earned in front of us, and I've never seen you. Armband off, and hands where I like them.
+  > @back2 All right. It's coming off. -> hub
 
 conv named.halcyon.claim
 for named:halcyon
 when kit:in_kit & !caught
-topic "Say you're with the lab."
+topic "Mind if I come through?"
 prio quest
 voice halcyon
 
 node start
-  say "Badge, or notebook number. One or the other. Policy."
-  > @notebook "{cover}. I'm on the field team." -> passed | caught   check look halcyon 2   if cover:notebook
-  > @claim "Field team. Let me through." -> passed | caught   check look halcyon 2
-  > @truth "Not with the lab. The coat was there." -> honest
-  > @leave "Never mind." -> hub
+  say Not without a badge or a notebook number. This is a Halcyon field station: cold boxes, samples and the radio to the lab. Nobody goes past the tape who isn't on the rota. Which are you?
+  > @notebook {cover}. I'm on the field team. -> passed | caught   check look halcyon 2   if cover:notebook
+  > @claim I'm field team. Let me through. -> passed | caught   check look halcyon 2
+  > @truth I'm not with the lab. I found the coat. -> honest
+  > @leave Never mind. I'll stay this side. -> hub
 
 node passed
-  say "Fine. Ten minutes. Don't touch anything labelled. Everything is labelled."
-  > @back1 "Something else." -> hub
+  say Fine. Ten minutes inside the tape. Don't touch anything labelled, and everything is labelled. If the field lead asks, you came for the cold box.
+  > @back1 Thanks. Before I go in, a question. -> hub
 
 node caught
-  say "No. The coat goes back on the hook. Security will want a word."
-  > @back2 "Understood." -> hub
+  say No. Nobody on our rota answers like that, and I keep the rota. The coat goes back on the hook, and the guard at the gate will want your name for the log.
+  > @back2 Understood. I'll take it off. -> hub
 
 node honest
-  say "Thank you for saying so. Please take it off before somebody writes you down."
-  > @back3 "Something else." -> hub
+  say Thank you for saying so. It saves us both a form. Please take the coat off before someone from the lab sees it and writes you down as a thief.
+  > @back3 I will. Can I ask you something else? -> hub

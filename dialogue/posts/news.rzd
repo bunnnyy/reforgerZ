@@ -4,7 +4,7 @@
 conv post.bastion.road
 for post:bastion
 when !hunted:bastion
-topic "Ask what's moving on the road."
+topic "What's moving on the road?"
 prio world
 voice bastion
 
@@ -15,24 +15,24 @@ bind truck = supply:truck
 node start
   jump news:horde -> horde
   jump news:lost_by(redhand) -> sold
-  say? supply:road & bound:truck :: "Our truck, outbound to {bind:truck}. Don't wave at it. Don't stand near it."
-  say? night :: "At night? Lights we can't explain and engines we can. Mostly the second."
-  say? fog :: "Fog. The road could be full of anything. We assume it is."
-  say "Carts, bikes, people on foot carrying everything they own. Same as every day."
-  > @back0 "Understood." -> hub
+  say? supply:road & bound:truck :: Our supply truck is outbound to {bind:truck} this hour. Don't wave it down and don't walk close to it. The gunner has orders, and the orders don't know your face.
+  say? night :: At night? Lights in the fields we can't explain, and engines we can. Mostly the engines: Red Hand lorries running between their tolls with the headlamps off.
+  say? fog :: Fog off the low ground. The road could be full of anything for two hundred metres either side of {here}. We assume it is, and so should you.
+  say Carts, bikes, people on foot carrying everything they own, the same as every day since the roads shut. Most of them are making for a Haven house. Most of them get there.
+  > @back0 Understood, corporal. -> hub
 
 node horde
-  say "Contact moving near {bind:horde}. Large. Following noise. If you're going that way, don't make any."
-  > @back1 "Understood." -> hub
+  say Contact moving near {bind:horde}. A big group, following noise: a shot, an engine, a door banging in the wind. If you're going that way, go quiet, go round, and don't fire unless you have to.
+  > @back1 I'll keep clear of {bind:horde}. -> hub
 
 node sold
-  say "Red Hand lost {bind:lost}. We watched them leave it. Fast. Selling is not what that was." ~truth:gossip.sold@lost
-  > @back2 "Understood." -> hub
+  say The Red Hand lost {bind:lost}. We watched them leave it through the glasses: fast, and without their lorry. Whatever they tell you at the toll, that wasn't a sale. ~truth:gossip.sold@lost
+  > @back2 Good to know. Thanks. -> hub
 
 conv post.redhand.road
 for post:redhand
 when !hunted:redhand
-topic "Ask what's moving on the road."
+topic "Anything worth knowing on this road?"
 prio world
 voice redhand
 
@@ -42,15 +42,15 @@ bind truck = news:truck
 node start
   jump news:lost_by(bastion) -> withdrew
   jump news:truck -> truck
-  say? rain :: "Rain. People walk faster in rain. They pay faster too."
-  say? night :: "Nothing that pays. Things that bite. Different line in the book."
-  say "Business. Two carts, a bike, a man with a goat. The goat paid. The man's still thinking about it."
-  > @back0 "Lovely." -> hub
+  say? rain :: Rain. People walk faster in rain and argue less at the lorry. They pay faster too. Best weather we get, honestly.
+  say? night :: Nothing that pays. Things in the ditches that bite, and Bastion's lot creeping about with no lights. Different line in the book, both of them.
+  say Business. Two carts, a bike and a man with a goat since breakfast. The goat paid. The man's still sat at the bend, thinking about it.
+  > @back0 Thanks. I'll mind the bend. -> hub
 
 node withdrew
-  say "Bastion left {bind:lost}. At a run. Watched them. Withdrew, they'll call it. Withdrew at a sprint." ~truth:gossip.withdrew@lost
-  > @back1 "Lovely." -> hub
+  say Bastion left {bind:lost}. At a run. We watched from the ridge. Withdrew, they'll call it on their net. Withdrew at a sprint, with the kettle still on. ~truth:gossip.withdrew@lost
+  > @back1 I'll remember that. -> hub
 
 node truck
-  say "A truck didn't get there. {bind:truck}. Wasn't us. Ours get there. That's the whole point of ours."
-  > @back2 "Lovely." -> hub
+  say A truck bound for {bind:truck} never got there. Not one of ours: ours get there, that's the whole point of paying us. Somebody's shelves are empty tonight, and our prices just went up.
+  > @back2 Not your truck. Got it. -> hub

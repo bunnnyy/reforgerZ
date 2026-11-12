@@ -6,37 +6,37 @@
 conv opening.settle
 for opening
 when cflag:opening.step=2 & cflag:opening.task=16 & cflag:opening.settled=0
-topic "Hear the two families out."
+topic "All right. What's the trouble?"
 prio quest
 voice plain
 
 node start
-  say "The Kerns say the Orlovs took the last of the coal from the shed they share. The Orlovs say it was theirs, and the Kerns' boy kicked their dog."
-  say "Nobody's lying, which is the trouble. Say something they can both live with."
-  > @split "Split the coal. Sorry to the dog." -> settled | half | half   check persuade none 1 bg:elder do cset:opening.settled=1 short cset:opening.settled=2 else cset:opening.settled=2
-  > @later "Let me think on it." -> hub
+  say The Kerns and the Orlovs share the coal shed out the back. The Kerns say the Orlovs took the last of it in the night. The Orlovs say it was theirs, and the Kerns' boy kicked their dog.
+  say Nobody's lying, which is the trouble. They've stopped speaking, and it's cold at night. They'll listen to you. Say something they can both live with.
+  > @split Split the coal, and the boy says sorry. -> settled | half | half   check persuade none 1 bg:elder do cset:opening.settled=1 short cset:opening.settled=2 else cset:opening.settled=2
+  > @later Let me think on it. -> hub
 
 node settled
-  say "Old Kern laughed. Nobody's heard him laugh since the roads shut. The Orlov girl is fetching the dog to be apologised to."
-  > @good "Good. Tell them I said so." -> hub
+  say Old Kern laughed. Nobody's heard him laugh since the roads shut. The Orlov girl is fetching the dog to be apologised to, and there's a kettle on in both houses.
+  > @good Good. Tell them I said so. -> hub
 
 node half
-  say "They heard you. They didn't like it. They'll take turns with the coal and not look at each other."
-  > @enough "That'll have to do for now." -> hub
+  say They heard you. They didn't like it. They'll take turns with the coal and not look at each other on the stairs. It'll do until somebody's colder.
+  > @enough That'll have to do for now. -> hub
 
 conv opening.channel
 for radio:open
 when cflag:opening.step=2 & cflag:opening.task=10 & cflag:opening.answered=0
-topic "Answer the voice asking for anyone."
+topic "I hear you. Who's calling?"
 prio quest
 voice plain
 
 node start
-  say "...anyone at all, on this. I've been calling since it got light. Just say you're there."
-  > @here "I'm here. You're not on your own." -> heard
-  > @where "I hear you. Where are you?" -> heard
+  say Anyone at all, on this. I've been calling since it got light. I'm in a house on my own with the shutters down and a radio, and nobody's answered. Just say you're there. I don't need anything else.
+  > @here I'm here. You're not on your own. -> heard
+  > @where I hear you. Where are you? -> heard
 
 node heard public
-  say "Somebody. Somebody's there. I'll keep this on. I'll call again at dusk, if you'll listen."
+  say Somebody. Somebody's there. Thank you. I'll keep the set on, and I'll call again at dusk, the same time every day, if you'll listen.
   do cset:opening.answered=1
-  > @dusk "I'll listen at dusk." -> hub
+  > @dusk I'll listen at dusk. -> hub

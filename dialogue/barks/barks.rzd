@@ -1,7 +1,8 @@
 # Barks (docs/DIALOGUE.md, "Barks"): one line to a player passing within 6 m, without Talk. One a
 # minute per player, one per speaker per player every 10 minutes. A bark never names a player who
 # is in someone else's kit, never jokes about who eats, and never gives away anything the player
-# couldn't see. `once` barks are said once a life per speaker.
+# couldn't see. `once` barks are said once a life per speaker. Each one says something real about
+# the place or the moment.
 
 conv bark.occupant.short
 for occupant
@@ -10,9 +11,9 @@ bark
 voice haven
 
 node start
-  say? promise:house.tins@here :: "Tins? No? Later, then. We're good at later."
-  say? kept:house.tins@here :: "You're the one who brought the tins. The children call you the tin one. It's a compliment."
-  say "Mind the stores. We're counting."
+  say? promise:house.tins@here :: No tins yet? Later, then. We're good at later in this house. The shelf in the stores is cleared for them.
+  say? kept:house.tins@here :: You're the one who brought the tins. The children call you the tin one now. From them, that's a compliment.
+  say Mind the stores as you go by. We're on half portions this week, and we're counting every tin twice.
 
 conv bark.occupant.died
 for occupant
@@ -21,7 +22,7 @@ bark
 voice haven
 
 node start
-  say "Hat off, if you're coming in. We lost someone."
+  say Hat off if you're coming in. We lost someone this week. The candle stays in the window till the name's read at supper.
 
 conv bark.occupant.dusk
 for occupant
@@ -30,7 +31,7 @@ bark
 voice haven
 
 node start
-  say "Light's going. In or out, love. Not on the step."
+  say Light's going, love. In or out, not on the step: the door's barred at dark, and the watch won't open it twice.
 
 conv bark.named.redhand.crew
 for named:redhand
@@ -39,8 +40,8 @@ bark
 voice redhand
 
 node start
-  say? tier:redhand>=trusted :: "Oi, {crew}! Still breathing? The book's thrilled."
-  say "Oi, {crew}! Don't go far. You owe us a story."
+  say? tier:redhand>=trusted :: Oi, {crew}! Still breathing? The book's thrilled. So's the crew, they had money on you.
+  say Oi, {crew}! Don't wander off. You still owe us the end of that story.
 
 conv bark.named.redhand.toll
 for named:redhand/toll_man
@@ -49,7 +50,7 @@ bark
 voice redhand
 
 node start
-  say "Toll's {toll}. Don't make me say it twice. I charge for twice."
+  say Toll's {toll} at the lorry, in the book, no exceptions. Don't make me say it twice. I charge for twice.
 
 conv bark.named.bastion.shift
 for named:bastion
@@ -58,7 +59,7 @@ bark
 voice bastion
 
 node start
-  say "Shift change at half five. Two minutes. Don't stand there."
+  say Shift change at half five, two minutes. Don't stand in the gateway when the relief comes through.
 
 conv bark.named.bastion.word
 for named:bastion
@@ -68,7 +69,7 @@ once
 voice bastion
 
 node start
-  say "{word}. As you were."
+  say {word}. Your name came up at the roll last night. As you were.
 
 conv bark.named.halcyon.rota
 for named:halcyon
@@ -77,8 +78,8 @@ bark
 voice halcyon
 
 node start
-  say? night :: "Lights out at the lab is a suggestion. Nobody follows it. Nobody sleeps."
-  say "Mind the samples. They're labelled. You aren't."
+  say? night :: Lights out at the lab is a suggestion. The incubators don't sleep, so nobody on the night shift does either.
+  say Mind the sample cases on the step. They're labelled. You aren't.
 
 conv bark.wanderer.kid
 for wanderer:kid
@@ -87,7 +88,7 @@ bark
 voice plain
 
 node start
-  say "Are you going to the house? Can I come? I won't talk. Much."
+  say If you're going to the house with the bear on the door, I'll walk behind you. I won't be any trouble. I don't know the way from here.
 
 conv bark.wanderer.scavenger.back
 for wanderer:scavenger
@@ -97,7 +98,7 @@ once
 voice plain
 
 node start
-  say "Oh. You. How was the chemist's? Don't answer. Your face says it all."
+  say Oh. You. Back from the chemist's already? Picked clean, was it? Don't answer. Your face says it all.
 
 conv bark.named.bastion.back
 for named:bastion/sentry
@@ -107,4 +108,4 @@ once
 voice bastion
 
 node start
-  say "Road's logged as walked. Your name's on it. In pencil, but it's on it."
+  say Road's logged as walked, with your name beside it on the board. In pencil, but it's there.

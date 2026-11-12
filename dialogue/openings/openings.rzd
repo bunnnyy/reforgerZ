@@ -7,7 +7,10 @@
 # wanderer who met an earlier life of yours); opening.earlier what that wanderer remembers (1 a
 # kindness, 2 a wrong, 3 only the face); opening.step the step under way (1-3; 4 once it's over);
 # opening.end the faction it ends with (1 the Haven, 2 Bastion, 3 the Red Hand, 4 Halcyon).
-# Voice: plain, a neighbour's.
+# Voice: plain, a neighbour's. Each greeting says who they are to you and what happened, in one line;
+# the built lines after it say what to do. Every greeting line is a say? on the opening's flags (the
+# hub opens on the replies, so a plain line isn't shown); the last one reads opening.first, which the
+# greet's `when` already holds, so one line always comes.
 
 conv opening.greet.stranger
 for opening
@@ -18,9 +21,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "Your lot went out three mornings ago, four of them, with a map. I watched from my window. I've been watching it since."
-  say? cflag:opening.why=3 :: "That was my chalk on your door. I heard you through it for three nights. Then I didn't, and I waited anyway."
-  say "I heard the bolt go. Don't mind me. I don't know you, but nobody should come out of a door on their own."
+  say? cflag:opening.why=2 :: I live across the street. Your lot went out three mornings ago, four of them with a map, and I've watched for them from my window since. Nobody's come back yet, and I'm sorry for it.
+  say? cflag:opening.why=3 :: I'm the one who chalked your door. I live two doors down. I heard you through it for three nights, then nothing, and I waited anyway. You're you. I can't tell you how glad I am.
+  say? cflag:opening.first=1 :: I live across the road. I heard your bolt go, after all these days shut in. I don't know you, but nobody should come out of a door on their own. Not with the roads shut.
 
 conv opening.greet.earlier
 for opening
@@ -31,9 +34,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.earlier=2 :: "You look like someone I knew. Someone I'd cross the road from. Different face, though. Different chance."
-  say? cflag:opening.earlier=1 :: "You look like someone I knew. They did me a kindness on the road, once. Funny. You stand the way they did."
-  say "You look like someone I knew. Same walk. I don't suppose you'd remember a face from the road."
+  say? cflag:opening.earlier=2 :: You look like someone I knew. Someone I'd cross the road from, out on the roads. Different face, though. I'll give a different face a different chance.
+  say? cflag:opening.earlier=1 :: You look like someone I knew. They did me a kindness on the road once and never stayed to be thanked. You stand the way they did, with your weight on the back foot.
+  say? cflag:opening.first=1 :: You look like someone I knew, from the road. Same walk. I walk these roads between the towns, always have. I don't suppose you'd remember my face.
 
 conv opening.greet.nurse
 for opening
@@ -44,9 +47,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "It's you. I came back and the others didn't. My boy kept asking for the nurse who did his stitches. I said you'd be here."
-  say? cflag:opening.why=3 :: "You did my boy's stitches in May, and I sat outside your door four nights. I wasn't leaving you to it."
-  say "It's you. You did my boy's stitches in May. He still shows people the scar, when there's people to show."
+  say? cflag:opening.why=2 :: It's you. You did my boy's stitches in May. Your group went out with a map three days ago and didn't come back. I did. He kept asking for his nurse.
+  say? cflag:opening.why=3 :: You did my boy's stitches in May, and I've sat outside your door four nights since the fever took you. I chalked it. I wasn't leaving you to it, not after him.
+  say? cflag:opening.first=1 :: It's you. You did my boy's stitches in May. I knocked on this door every day since the roads shut, then every other day. He still shows people the scar.
 
 conv opening.greet.doctor
 for opening
@@ -57,9 +60,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "Doctor. They went for the clinic at the crossroads and I turned back halfway. I'm not proud of it. I'm here, though."
-  say? cflag:opening.why=3 :: "I chalked the door, Doctor. Ward rule: if they talk sense on day four, they're through it. You talked sense."
-  say "Doctor. I'd know that cough through a wall. Ward three's gone, you know. All of it. We're what's left of the rota."
+  say? cflag:opening.why=2 :: Doctor. It's me, from ward three. The others went for the clinic at the crossroads three days ago, and I turned back halfway. I'm not proud of it. I'm here, though.
+  say? cflag:opening.why=3 :: Doctor. I chalked your door. Ward rule: if they talk sense on day four, they're through it. You talked sense last night. Ward three's gone. We're the rota now.
+  say? cflag:opening.first=1 :: Doctor. It's me, from ward three. I'd know that cough through a wall. Ward three's gone, all of it, the week the roads shut. We're what's left of the rota.
 
 conv opening.greet.mechanic
 for opening
@@ -70,9 +73,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "You're still here. They took my van to go and look, and the van's not back either. You'd have heard her coming."
-  say? cflag:opening.why=3 :: "That cough's gone. Good. I sat out here with my toolbox, fixing nothing, just to have something in my hands."
-  say "It's you. You fixed my van twice and charged me once. I always meant to pay the other one."
+  say? cflag:opening.why=2 :: You're still here. It's me, the van. Your lot took my van to go and look at the next town, and the van's not back either. You'd have heard her coming.
+  say? cflag:opening.why=3 :: That cough's gone. Good. It's me, the van you kept running. I chalked your door and sat out here with my toolbox, fixing nothing, just to have something in my hands.
+  say? cflag:opening.first=1 :: It's you. You fixed my van twice and charged me once. I knocked on this door every morning since the roads shut. I always meant to pay you for the other one.
 
 conv opening.greet.hunter
 for opening
@@ -83,9 +86,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "They went off across my bottom field three mornings back, the four of them. I'd know their tracks. Nobody's walked them home."
-  say? cflag:opening.why=3 :: "I wrote that on your door. Saw a fox come through a fever like that, once. Never a person, till now."
-  say "Thought that was you. Nobody else walks that quiet. My top field's yours now, if anyone still wants fields."
+  say? cflag:opening.why=2 :: Thought that was you. It's my land you hunted. Your four went across my bottom field three mornings back. I'd know their tracks. Nobody's walked them home.
+  say? cflag:opening.why=3 :: It's me, from the farm. I wrote that on your door. I saw a fox come through a fever like that once. Never a person, till now.
+  say? cflag:opening.first=1 :: Thought that was you. Nobody else walks that quiet. It's me, from the farm. I'd given up knocking. My top field's yours now, if anyone still wants fields.
 
 conv opening.greet.police
 for opening
@@ -96,9 +99,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "Officer. Your lot went out with a map and a whistle. I kept the shop door open for them. I'll keep it open a while yet."
-  say? cflag:opening.why=3 :: "Officer. I locked you in. Sorry. It was the only key I had, and you'd have done the same on your beat."
-  say "Officer. You bought one apple every morning and never ate it. I used to wonder about that. I still do."
+  say? cflag:opening.why=2 :: Officer. It's me, from the shop on your beat. Your lot went out with a map and a whistle three days ago. I've kept the shop door open for them. I'll keep it open a while yet.
+  say? cflag:opening.why=3 :: Officer. It's me, from the shop. I locked you in and chalked the door when the fever took you. Sorry. It was the only key I had, and you'd have done the same.
+  say? cflag:opening.first=1 :: Officer. It's me, from the shop on the corner. You bought one apple every morning and never ate it. I'd stopped knocking. I'm glad I was wrong to.
 
 conv opening.greet.excon
 for opening
@@ -109,9 +112,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "Four went out, three days back. I stayed. I've done enough time waiting on people who said back by dark."
-  say? cflag:opening.why=3 :: "Wrote it on your door like a cell wall. Counted the mornings the same way. Some things you don't unlearn."
-  say "Look at you. Out of one box and straight into another. Some of us have a gift for it."
+  say? cflag:opening.why=2 :: Look who it is. Your old cellmate. Four went out three days back and I stayed. I've done enough time waiting on people who said back by dark.
+  say? cflag:opening.why=3 :: It's me. Your old cellmate. I wrote on your door like a cell wall and counted the mornings the same way. Some things you don't unlearn.
+  say? cflag:opening.first=1 :: Look at you. Out of one box and straight into another. It's me, your old cellmate. I'd stopped knocking. Some of us have a gift for being locked in.
 
 conv opening.greet.labtech
 for opening
@@ -122,9 +125,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "They took our notes to the lab to trade for a place. I said I'd mind you. I'm minding you."
-  say? cflag:opening.why=3 :: "Day four, the fever broke and the bite closed over. I wrote it all down. Somebody at the lab will want those notes."
-  say "You're alive. They read your name out at the lab gate, with the missing. They still want hands like yours."
+  say? cflag:opening.why=2 :: It's me, from the institute. They took our notes to the lab three days ago to trade for a place, and said back by dark. I said I'd mind you. I'm minding you.
+  say? cflag:opening.why=3 :: It's me, from the institute. Day four, the fever broke and the bite closed over. I wrote it all down. Somebody at the lab will want those notes, and you.
+  say? cflag:opening.first=1 :: You're alive. It's me, from the institute. They read your name out at the lab gate with the missing. I'd stopped knocking. They still want hands like yours up there.
 
 conv opening.greet.radioham
 for opening
@@ -135,9 +138,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "They took the good set and went looking for a higher roof. I've listened on the old one every night. Nothing on it."
-  say? cflag:opening.why=3 :: "I chalked your door and sat out here with the wind-up, reading you the weather. Every night. You never answered, till now."
-  say "I know that voice. Half past one, the night band. You always signed off with the weather."
+  say? cflag:opening.why=2 :: I know that voice. Half past one, the night band. Your lot took the good set and went for a higher roof. I've listened on the old one every night since. Nothing on it.
+  say? cflag:opening.why=3 :: I know that voice. I chalked your door and sat out here with the wind-up, reading you the weather every night. You never answered. Till now.
+  say? cflag:opening.first=1 :: I know that voice. Half past one, the night band. You always signed off with the weather. I knocked till I gave up. Tonight's clear, by the way.
 
 conv opening.greet.unemployed
 for opening
@@ -148,9 +151,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "They went out to see about food and I stayed to see about you. Neither of us had anything better on."
-  say? cflag:opening.why=3 :: "I sat outside four nights. Didn't have anywhere else to be. Never have, really."
-  say "You're alive. Good. Don't worry about the money. Money's a joke now, and not a good one."
+  say? cflag:opening.why=2 :: It's me, from next door. They went out to see about food three days ago, and I stayed to see about you. Neither of us had anything better on.
+  say? cflag:opening.why=3 :: It's me, from next door. I chalked the door and sat out here four nights. Didn't have anywhere else to be. Never have, really.
+  say? cflag:opening.first=1 :: You're alive. It's me, from next door. I'd stopped knocking. Don't worry about the money I lent you. Money's a joke now, and not a good one.
 
 conv opening.greet.soldier
 for opening
@@ -161,9 +164,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "Sarge. The others went to find the line, to see if it's still there. I stayed with you. Somebody had to hold here."
-  say? cflag:opening.why=3 :: "Sarge. Bitten on the arm, and still you. I chalked it on the door like a sitrep. I didn't believe it either."
-  say "Sarge? It's me. The line went and I never made it back to it. Looks like you didn't either."
+  say? cflag:opening.why=2 :: Sarge. It's me, from the section. The others went to find the line, to see if it's still there. That was three days ago. I stayed with you. Somebody had to hold here.
+  say? cflag:opening.why=3 :: Sarge. It's me. Bitten on the arm, and still you. I chalked it on the door like a sitrep. I didn't believe it either.
+  say? cflag:opening.first=1 :: Sarge? It's me, from the section. The line went on Day 2 and I never made it back to it. Looks like you didn't either. I'd stopped knocking.
 
 conv opening.greet.raider
 for opening
@@ -174,9 +177,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "Your crew left you three days ago. I'd have left you too. I came back for my watch, and here you are."
-  say? cflag:opening.why=3 :: "I wrote on your door. Don't look at me like that. If you'd turned, I wanted my watch back first."
-  say "You. You took my watch in March. Keep it. I want something else from you, and it isn't what you think."
+  say? cflag:opening.why=2 :: You. You took my watch in March. Your crew left you three days ago. I'd have left you too. I came back for my watch, and here you are.
+  say? cflag:opening.why=3 :: I wrote on your door. Don't look at me like that. You took my watch in March, and if you'd turned, I wanted it back first.
+  say? cflag:opening.first=1 :: You. You took my watch in March. Keep it. I've knocked on this door for days, and I want something else from you, and it isn't what you think.
 
 conv opening.greet.elder
 for opening
@@ -187,9 +190,9 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "They went to see about the next town. I stayed. Somebody ought to be here when the old ones open their doors."
-  say? cflag:opening.why=3 :: "I sat with your door like I sat with my mother's. She didn't come through it. You did."
-  say "It's you. The children kept asking if you'd gone. I kept saying no. I'm glad I wasn't lying to them."
+  say? cflag:opening.why=2 :: It's me, from your street. They went to see about the next town three days ago. I stayed. Somebody ought to be here when the old ones open their doors.
+  say? cflag:opening.why=3 :: It's me, from your street. I sat with your door like I sat with my mother's. She didn't come through it. You did.
+  say? cflag:opening.first=1 :: It's you. It's me, from the end of your street. The children kept asking if you'd gone. I kept saying no. I'm glad I wasn't lying to them.
 
 conv opening.greet.drifter
 for opening
@@ -200,134 +203,135 @@ once
 voice plain
 
 node start
-  say? cflag:opening.why=2 :: "You were with that lot who went out with the map. I know you. Everyone knows you a bit. They're not back."
-  say? cflag:opening.why=3 :: "Somebody had to write on your door. I've seen you at every pump and market from here to the line. Couldn't not."
-  say "I know you. Everyone knows you a bit, don't they. Never mind from where. You're alive, that's the thing."
+  say? cflag:opening.why=2 :: I know you. Everyone knows you a bit, don't they. You were with that lot who went out with the map three days back. They're not back.
+  say? cflag:opening.why=3 :: Somebody had to write on your door. I've seen you at every pump and market from here to the line. I couldn't not.
+  say? cflag:opening.first=1 :: I know you. Everyone knows you a bit, don't they. Never mind from where. I'd stopped knocking. You're alive, that's the thing.
 
 conv opening.who_else
 for opening
 when cflag:opening.step>=1 & cflag:opening.step<=3
-topic "Ask who else made it."
+topic "Who else made it?"
 prio world
 once
 voice plain
 
 node start
-  say "Fewer than you'd hope. More than you'd think. Most are behind doors, same as you were."
-  say "The ones who went for the roads in the first week, I don't count them any more. It's easier."
-  > @road "What happened on the roads?" -> road
-  > @back "Something else." -> hub
+  say Fewer than you'd hope, more than you'd think. Most are behind doors, same as you were, living off tins and rainwater. Some went to the Haven's houses. They take you in if you'll work.
+  say The ones who went for the roads in the first week, I don't count any more. It's easier that way.
+  > @road What happened on the roads? -> road
+  > @back Let me ask you something else. -> hub
 
 node road
-  say "Concrete where the bridges were. Drones over the fields. A loudspeaker that knows your name before you've said it."
-  > @back1 "Something else." -> hub
+  say Concrete where the bridges were, the day after it started. Drones over the fields. A loudspeaker at every barrier telling you to turn back, then a shot from somebody you never see.
+  say Nobody's got out. Not one. Whatever you were going to try, someone has already tried it.
+  > @back1 Let me ask you something else. -> hub
 
 conv opening.who_holds
 for opening
 when cflag:opening.step>=2 & cflag:opening.step<=3
-topic "Ask who's in charge now."
+topic "Who's in charge round here now?"
 prio world
 once
 voice plain
 
 node start
-  say "Depends where you stand. The soldiers count you. The red-hand lot charge you. The lab people want your blood, politely."
-  say "And the safehouses feed you if you work. That's the whole government now. Pick one before one picks you."
-  > @lab "The lab people?" -> lab
-  > @back "Something else." -> hub
+  say Depends where you stand. The soldiers, Bastion, count you and search you at their barriers. The Red Hand charge you a toll on every road they hold. The lab people want your blood, politely.
+  say And the Haven's safehouses feed you if you work. That's the whole government now. Pick one before one picks you.
+  > @lab Who are the lab people? -> lab
+  > @back Let me ask you something else. -> hub
 
 node lab
-  say "Halcyon. White coats in a school, in masks. They say there's a cure in the specials, if enough of them get cut open."
-  > @back1 "Something else." -> hub
+  say Halcyon. Scientists in {lab_town}, in hoods with long beaks on the masks. They say they're close to a cure, if enough samples come in off the infected. A cure's the only thing that opens the roads.
+  > @back1 Let me ask you something else. -> hub
 
 conv opening.where_now
 for opening
 when cflag:opening.step=3
-topic "Ask where they'll go now."
+topic "Where will you go now?"
 prio flavour
 once
 voice plain
 
 node start
-  say? cflag:opening.end=3 :: "Not where you're going. They'd have the coat off my back before I'd said hello. I'll find a door."
-  say "Behind you, at a distance. I'm slower than I look, and I look slow. Don't wait for me."
-  > @come "Come with me." -> come
-  > @fine "Mind how you go." -> hub
+  say? cflag:opening.end=3 :: Not where you're going. The Red Hand would have the coat off my back before I'd said hello. I'll find a door with a bear on it, and somebody behind it who'll let me in.
+  say Behind you, at a distance. I'm slower than I look, and I look slow. Don't wait for me, and don't keep looking back to check. I'll get there.
+  > @come Come with me. We'll go together. -> come
+  > @fine Mind how you go. -> hub
 
 node come
-  say "I will. Just not at your pace. Go on. If I'm not there by dark, I found somewhere better."
-  > @back1 "Something else." -> hub
+  say I will. Just not at your pace. Go on ahead. If I'm not there by dark, I found somewhere better, and you're not to come looking.
+  > @back1 All right. One more thing, then. -> hub
 
 conv opening.why_hiding
 for opening
 when cflag:opening.why=1 & cflag:opening.step>=1 & cflag:opening.step<=3
-topic "Ask how long it's been."
+topic "How long was I in there?"
 prio flavour
 once
 voice plain
 
 node start
-  say "Long enough that the calendar's mostly pencil. Long enough that I stopped knocking every day and started knocking every other."
-  say "People came out of their doors in ones and twos all week. You're the last on this street, I think."
-  > @others "Who else came out?" -> others
-  > @back "Something else." -> hub
+  say Long enough that the calendar's mostly pencil. It's Day {day}. They shut the roads on the second, and I stopped knocking every day and started knocking every other.
+  say People came out of their doors in ones and twos all week. You're the last on this street, I think.
+  > @others Who else came out? -> others
+  > @back Let me ask you something else. -> hub
 
 node others
-  say "The baker's girl. The man with the dogs, without the dogs. A few I didn't know. Everybody looks thinner than I remember."
-  > @back1 "Something else." -> hub
+  say The baker's girl. The man with the dogs, without the dogs. A few I didn't know. Everybody looks thinner than I remember. Most of them made for the Haven's house.
+  > @back1 Let me ask you something else. -> hub
 
 conv opening.why_group
 for opening
 when cflag:opening.why=2 & cflag:opening.step>=1 & cflag:opening.step<=3
-topic "Ask where the others went."
+topic "Where did the others go?"
 prio flavour
 once
 voice plain
 
 node start
-  say "To see about the next town. Bread, somebody said. Somebody always says bread."
-  say "There's three days of dark between back by dark and now. Count them if you want. I've stopped counting."
-  > @look "Should we go and look?" -> look
-  > @back "Something else." -> hub
+  say To see about the next town. Bread, somebody said. Somebody always says bread. They took the map off the table and said back by dark.
+  say That was three days ago. There's three days of dark between back by dark and now. I've stopped counting them.
+  > @look Should we go and look for them? -> look
+  > @back Let me ask you something else. -> hub
 
 node look
-  say "Not today, and not the two of us. If they're anywhere, someone at a safehouse will have their names. Ask there."
-  > @back1 "Something else." -> hub
+  say Not today, and not the two of us. If they got anywhere, someone at a Haven safehouse will have their names. They write down everyone who comes to the door. Ask there.
+  > @back1 Let me ask you something else. -> hub
 
 conv opening.why_fever
 for opening
 when cflag:opening.why=3 & cflag:opening.step>=1 & cflag:opening.step<=3
-topic "Ask what happened to you."
+topic "What happened to me?"
 prio flavour
 once
 voice plain
 
 node start
-  say "You were bitten on the third day. Then the fever. Most don't come out of it, or they come out as something else."
-  say "You came out as you. The lab people would want to know how. I wouldn't tell them yet."
-  > @why "Why not tell them?" -> lab
-  > @back "Something else." -> hub
+  say You were bitten on the third day, on the arm. Then the fever. Most don't come out of it, or they come out as something else. We waited by the door to see which.
+  say You came out as you. The lab people would want to know how. I wouldn't tell them yet.
+  > @why Why not tell them? -> lab
+  > @back Let me ask you something else. -> hub
 
 node lab
-  say "Because they'd want more than your story. Let them earn it. Go and see them when you choose, not when they send for you."
-  > @back1 "Something else." -> hub
+  say Because they'd want more than your story. They'd want your blood in a cold box and you in a back room with a clipboard. Let them earn it. Go when you choose, not when they send for you.
+  > @back1 Let me ask you something else. -> hub
 
 conv opening.earlier_who
 for opening
 when cflag:opening.who=3 & cflag:opening.step>=1 & cflag:opening.step<=3
-topic "Ask who they think you are."
+topic "Who do you think I am?"
 prio flavour
 once
 voice plain
 
 node start
-  say? cflag:opening.earlier=2 :: "Someone who did me wrong on the road. Took what I had and left me the walk. Different face. I'm choosing to think so."
-  say? cflag:opening.earlier=1 :: "Someone who did me a kindness on the road and never stayed to be thanked. Different face. Same way of standing."
-  say "Someone I passed on the road, before. Different face, same hands. I'm probably wrong."
-  say "If I'm not, you owe me a story. If I am, you owe me nothing. Either way, sit a minute."
-  > @maybe "Maybe I was." -> maybe
-  > @back "Something else." -> hub
+  say? cflag:opening.earlier=2 :: Someone who did me wrong on the road. Took what I had and left me the walk. Different face, though. I'm choosing to think so.
+  say? cflag:opening.earlier=1 :: Someone who did me a kindness on the road and never stayed to be thanked. Different face. Same way of standing.
+  say Someone I passed on the road, before. Different face, same hands. I'm probably wrong.
+  say If I'm not, you owe me a story. If I am, you owe me nothing. Either way, sit a minute.
+  > @maybe Maybe I was that person. -> maybe
+  > @back Let me ask you something else. -> hub
 
 node maybe
-  say "Then welcome back. It's no better out here than it was. The roads still go nowhere you'd want."
-  > @back1 "Something else." -> hub
+  say Then welcome back. It's no better out here than it was. The roads still go nowhere you'd want, and the loudspeakers still say aid's on its way.
+  > @back1 Let me ask you something else. -> hub

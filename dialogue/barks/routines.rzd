@@ -9,8 +9,8 @@ bark
 voice bastion
 
 node start
-  say? hour>=17 & hour<18 :: "Shift change. Two minutes. Don't stand in the doorway."
-  say "Shift change. Two minutes."
+  say? hour>=17 & hour<18 :: Evening shift change at half five. The roster's on the board by the door if you're looking for a name.
+  say Shift change. Relief is on its way in, and that's the only relief anyone here still expects.
 
 conv bark.occupant.supper
 for occupant
@@ -19,8 +19,8 @@ bark
 voice haven
 
 node start
-  say? house:short :: "Supper's thin. Sit anyway. It's grace first, then argue about the potatoes."
-  say "Sit, it's grace. You can eat standing up afterwards, like the rest of us."
+  say? house:short :: Supper's thin tonight. Sit anyway: grace first, then you can argue about the potatoes.
+  say Sit, it's grace. Half six in every house, and nobody starts before the youngest. You can eat standing up afterwards, like the rest of us.
 
 conv bark.named.bastion.watch
 for named:bastion, post:bastion
@@ -29,7 +29,7 @@ bark
 voice bastion
 
 node start
-  say "Night watch. Lights down. If you're staying, you're on the roll."
+  say Night watch from half eight, and the roll after it. Lights down. If you're staying inside the wire tonight, you're on the roster.
 
 conv bark.occupant.epilogue
 for occupant
@@ -38,9 +38,9 @@ bark
 voice haven
 
 node start
-  say? cure_held:everyone :: "Somebody brought it to the door. Didn't stop for soup. Who doesn't stop for soup?"
-  say? cure_held:bastion :: "We're on the list. Everyone's on a list. It's almost restful."
-  say "Processing at the checkpoints, the loudspeakers say. Nobody's gone up yet."
+  say? cure_held:everyone :: Somebody brought the cure to the door in a crate with no name on it, and didn't stop for soup. Who doesn't stop for soup?
+  say? cure_held:bastion :: We're all on Bastion's register now, every name in the house. Everyone's on a list. It's almost restful, being counted.
+  say Processing at the checkpoints, the loudspeakers say. Nobody from this house has gone up the road yet.
 
 conv bark.named.redhand.epilogue
 for named:redhand
@@ -49,8 +49,8 @@ bark
 voice redhand
 
 node start
-  say? cure_held:redhand :: "Prices on the board, cure in the crate. Best week we've ever had."
-  say "Cure's out. Toll's still a tin. Some things are sacred."
+  say? cure_held:redhand :: Prices on the board, cure in the crate, a queue round the lorry. Best week this road has ever had.
+  say Cure's out, and the toll's still a tin. Some things in the Zone are sacred.
 
 conv bark.named.halcyon.epilogue
 for named:halcyon
@@ -59,4 +59,4 @@ bark
 voice halcyon
 
 node start
-  say "Results are in. The writing-up takes longer than the work did."
+  say The batch is out and the results are in. The writing-up takes longer than the work did. It always has.

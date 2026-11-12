@@ -3,61 +3,62 @@
 
 conv table.road.host
 for table:road
-topic "Ask about the road ahead."
+topic "What's the road like ahead?"
 prio world
 voice table
 
 node start
-  say "Clear to the bridge, if you keep off the verges. The trucks went through this morning, both of them."
-  say "Where are you headed? Is anyone expecting you?"
-  > @alone "Nobody. I'm on my own." -> alone
-  > @expected "They're expecting me back by dark." -> expected
-  > @road "Just passing." -> passing
+  say Clear as far as the bridge, if you keep off the verges. The trucks went through this morning, both of them, and nothing's come along behind them that I've seen.
+  say Where are you headed, then? And is anyone expecting you back tonight?
+  > @alone Nobody's expecting me. I'm on my own. -> alone
+  > @expected They're expecting me back by dark. -> expected
+  > @road I'm just passing through. -> passing
 
 node alone
-  say "Then you'll eat with us. Mother cooks for twenty and there are never twenty. Supper's at half six."
+  say Then you'll eat with us tonight. Mother cooks for twenty and there are never twenty any more. Supper's at half six, at the farmhouse up the lane, with the lamp in the window.
   do claim:alone
-  > @maybe "Maybe I will." -> hub
-  > @no "Another time." -> hub
+  > @maybe Maybe I will. Thank you. -> hub
+  > @no Another time, maybe. -> hub
 
 node expected
-  say "Then you'd best be on your way before the light goes. People worry. Come another day, with them."
+  say Then you'd best be on your way before the light goes. People worry when someone's late, these days. Come another day, and bring them with you. There's always room.
   do claim:expected; test:expected:20.5:300
-  > @thanks "Thanks for the road." -> hub
+  > @thanks Thanks. I'll mind the verges. -> hub
 
 node passing
-  say "Everyone is. That's what roads are for. The offer stands, whenever you're passing next."
-  > @back1 "I'll remember." -> hub
+  say Everyone is, these days. That's what roads are for. The offer stands whenever you're passing next. Supper's at half six, and Mother always asks after the ones who said no.
+  > @back1 I'll remember that. -> hub
 
 conv table.mother.house
 for table:mother
 when !table:crossed
-topic "Ask about the farm."
+topic "This is a big farm. Is it yours?"
 prio flavour
 voice table
 
 node start
-  say "It was my husband's people's. Always a big house, always a long table. Sit, sit. You're thin."
-  say "Have you been bitten, love? We ask everyone. You can tell me."
-  > @no "No. Not bitten." -> fine
-  > @bite "I've a bite. Here." -> bitten   if bite_shown
-  > @boy "Is the boy yours?" -> boy
+  say It was my husband's people's, three generations of them. Always a big house, always a long table, and always somebody at it. Sit, sit, love. You're thin as a rail.
+  say Have you been bitten, love? We ask everyone who comes in. You can tell me. It doesn't change your welcome. Only how long you stay.
+  > @no No. I haven't been bitten. -> fine
+  > @bite I have. Here, look. -> bitten   if bite_shown
+  > @boy Is that boy yours? -> boy
 
 node fine
-  say "Good. Then there's no hurry at all, is there. Stay as long as you like."
-  > @back1 "Something else." -> hub
+  say Good. Then there's no hurry at all, is there? Stay as long as you like. The roads will still be there in the morning, and so will we.
+  > @back1 Thank you. Can I ask something else? -> hub
 
 node bitten
-  say "Oh, love. Then you'll eat first, and we'll say a kind word over you, and you'll go before dark."
+  say Oh, love. I'm so sorry. Then you'll eat first, and we'll say a kind word over you, and you'll be on the road before dark. We learned that the hard way, back at the start.
   do call:slot:2
-  > @back2 "Something else." -> hub
+  > @back2 Thank you. Can I ask something else? -> hub
 
 node boy
-  say "He came with the others. He's ours now. He eats what he's given."
-  > @back3 "Something else." -> hub
+  say He came to us with the others, back at the start, when the houses sent us the ones they couldn't feed. He's ours now. He eats what he's given and never complains.
+  > @back3 I see. Something else, then. -> hub
 
 # The host on the road speaks first (docs/DIALOGUE.md, "Who opens a conversation"): at 12 m, once a
-# life, inside the unasked-contact budget. Nothing is ever described.
+# life, inside the unasked-contact budget. Nothing is ever described. Its line is a say? (the hub opens
+# on the replies, so a plain line isn't shown): the first meeting, who he is and the question.
 conv table.road.hello
 for table:road
 when !table:crossed
@@ -68,7 +69,7 @@ once
 voice table
 
 node start
-  say "Hello there. Don't mind me. Sit, sit, you look thin. Where've you come from?"
+  say? !met :: Hello there. I'm from the farm up the lane, out walking the road with a flask like most days. You look done in. Where've you come from, and where are you off to?
 
 # A claim the family tests (docs/DIALOGUE.md, "Lies you're told"): "They're expecting me back by
 # dark" is checked at 20:30. Still within 300 m of the road it was said on, it wasn't true.
@@ -81,4 +82,4 @@ once
 voice table
 
 node start
-  say "Still expected, are you? Never mind, love. Supper's at half six. There's always room."
+  say? nmem:expected.false :: Still expected, are you? It's gone half eight and here you are on the same road. Never mind, love. Supper was at half six, but there's always room.

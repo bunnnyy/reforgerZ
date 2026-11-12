@@ -1,66 +1,66 @@
 # The open channel (docs/DIALOGUE.md, "The open channel"): a radio with "Call on the open channel".
 # No body, no faction. A public node goes out on air to everyone within the channel's reach, as
 # one line, with no name: nobody's name goes on air (the lint refuses {player}, {name} and the like
-# here). Nobody is threatened on air.
+# here). Nobody is threatened on air. Every line is a voice on the channel, spoken: no narration.
 
 conv radio.open.call_in
 for radio:open
-topic "Call in what you've seen."
+topic "Anyone on this? I've got road news."
 prio world
 voice plain
 
 node start
-  say A hiss, then a tired voice: "Go ahead. Keep it short. Batteries."
-  > @thick "{here}'s thick with them. Go round." -> thick   if town:infection>=60
-  > @quiet "{here} is quiet. For now." -> quiet   if town:infection<60
-  > @nothing "Nothing. Just checking anyone's there." -> anyone
+  say Go ahead, caller, and keep it short. Batteries are the one thing nobody in the Zone is making any more. What have you seen, and where?
+  > @thick {here}'s thick with them. Go round. -> thick   if town:infection>=60
+  > @quiet {here} is quiet. For now. -> quiet   if town:infection<60
+  > @nothing Nothing. Just checking anyone's there. -> anyone
 
 node thick public
-  say "Copy. {here}, go round. Thanks, whoever you are."
+  say Copy that. {here} is thick with them, go round it. Everyone listening, you heard the caller. Thanks, whoever you are.
   do rumour:"Someone on the open channel says {here} is thick with them. Go round."@4
-  > @out "Out." -> hub
+  > @out Out. -> hub
 
 node quiet public
-  say "Copy. {here} quiet. For now. Nobody believes for now, but thanks."
+  say Copy. {here} is quiet, for now. Nobody on this channel believes in for now any more, but thank you all the same.
   do rumour:"Someone on the open channel says {here} is quiet, for now."@4
-  > @out2 "Out." -> hub
+  > @out2 Thanks. Out. -> hub
 
 node anyone
-  say "Someone's always here. That's the only thing this channel's for, most nights."
-  > @out3 "Out." -> hub
+  say Someone's always here, caller. Most nights that's all this channel's for: so nobody listening in a dark house thinks they're the last one left.
+  > @out3 Good to hear. Out. -> hub
 
 conv radio.open.listen
 for radio:open
-topic "Listen for anyone calling."
+topic "Is anyone out there?"
 prio flavour
 voice plain
 
 node start
-  say? night :: Static. A long way off, somebody counting slowly to ten, then starting again. Nobody answers them.
-  say? mood:hope :: Two voices arguing about whether the cure is real. Both of them sound happier than they did last week.
-  say? mood:bleak :: Static. Then a child asking if anyone has seen her dog. Then static again.
-  say A woman's voice: "If you can hear this, the houses are open. Bring water if you can. Bring yourself either way."
-  > @answer "Heard you. Still here." -> answered
-  > @off Switch it off. -> hub
+  say? night :: Nine. Ten. That's the night watch counted at our end, ten of us on the wall. Is anyone counting at yours? Anyone? All right. One. Two.
+  say? mood:hope :: Is it true, then, about the cure? My neighbour says the lab's nearly there. I say they've said that before. We've argued about it all week, and we're both happier for it.
+  say? mood:bleak :: This is for anyone near the square. Has anybody seen a brown dog with one white ear? He answers to Bruno. My daughter keeps asking. If you see him, that's all. Thank you.
+  say If you can hear this, the houses are open. Bring water if you can. Bring yourself either way. The Haven keeps a bed and a bowl for anyone who'll work.
+  > @answer Heard you. Still here. -> answered
+  > @off Nothing for me tonight. Out. -> hub
 
 node answered public
-  say A pause. Then, very quietly, from somewhere: "Good. Good. Keep being still here."
-  > @out "Out." -> hub
+  say Good. Good. Keep being still here, whoever you are. That's all anyone on this channel is asking for.
+  > @out Out. -> hub
 
 conv radio.open.toll
 for radio:open
-topic "Ask the crews what the toll is."
+topic "Red Hand, what's the toll today?"
 prio flavour
 voice redhand
 
 node start
-  say "Who's asking? Never mind. Toll for you is {toll}. Same as yesterday. Prices only go one way, sweetheart."
-  > @haggle "Too much. Half." -> haggle
-  > @fine "Fine. Out." -> hub
+  say Who's asking? Never mind. Toll for you is {toll} Favor at every lorry, same as yesterday. Prices only go one way on this channel, sweetheart, and it isn't down.
+  > @haggle That's too much. Half, and I'll pay now. -> haggle
+  > @fine Fine. Out. -> hub
 
 node haggle
-  say "Half! Lads, it's asked for half. Love the nerve. Still {toll}. Come and argue at the barrier. We've chairs."
-  > @out "Out." -> hub
+  say Half! Lads, it's asked for half. Love the nerve. Still {toll}. Come and argue at the barrier if you like. We've got chairs, a kettle and six blokes who don't haggle.
+  > @out Out. -> hub
 
 # A distress call (docs/DIALOGUE.md, "The radio"): someone near a Haven house asking for help, an hour
 # in two. Answering sends them to that house's gate, where errands deal its gate card (Who's at the
@@ -68,26 +68,26 @@ node haggle
 conv radio.open.distress
 for radio:open
 when distress
-topic "Answer the call for help."
+topic "I'm on. Who's calling for help?"
 prio ask
 voice plain
 
 node start
-  say "...anyone on this. Two of us, near {distress}. The car's done and the light's going."
-  say "We don't need much. Just which way."
-  > @house "Make for {distress}. Knock twice." -> sent   do call:distress
-  > @hurt "Is anyone hurt? Anyone bitten?" -> hurt   if bg:doctor,nurse
-  > @sorry "I can't get to you. Sorry." -> sorry
+  say Anyone on this. Two of us, on foot near {distress}. The car's done, the light's going, and we've been hearing them in the trees for an hour.
+  say We don't need much. Just which way to somewhere with a door that bolts and people behind it.
+  > @house Make for {distress}. Knock twice. -> sent   do call:distress
+  > @hurt Is anyone hurt? Anyone bitten? -> hurt   if bg:doctor,nurse
+  > @sorry I can't get to you. Sorry. -> sorry
 
 node hurt
-  say "Her ankle. Not a bite, she says. I believe her, near enough."
-  > @house2 "Make for {distress}. Mind the ankle." -> sent   do call:distress
-  > @sorry2 "I can't get to you." -> sorry
+  say Her ankle. She went over on it in a ditch. Not a bite, she says, and I looked. I believe her, near enough. She can walk if I hold her up.
+  > @house2 Make for {distress}. Mind the ankle. -> sent   do call:distress
+  > @sorry2 I'm sorry. I can't get to you. -> sorry
 
 node sent public
-  say "Copy. The house, and say the radio sent us. ...Thank you."
-  > @out "Out." -> hub
+  say Copy. The Haven house at {distress}, knock twice, and say the radio sent us. Thank you. Thank you, whoever you are.
+  > @out Out. -> hub
 
 node sorry
-  say "...Right. We'll walk, then. Thanks for answering. Most don't."
-  > @out2 "Out." -> hub
+  say Right. We'll walk, then, and keep off the road. Thanks for answering. Most nights nobody does.
+  > @out2 Out. -> hub
