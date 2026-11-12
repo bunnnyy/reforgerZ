@@ -134,6 +134,9 @@ class RZ_ZombieSpawner
 	protected float m_fFogSpawnMult = 1;
 	protected int m_iFocusSettlement = -1;	// gets 1.5x density, every other town 0.4x
 	protected ref array<int> m_aSuppressed = {};	// settlements with no spawns at all (The Silent Village)
+	protected ref array<vector> m_aQuiet = {};		// an opening's waiting contact: no spawns near, strays cleared (SetQuietSpots)
+	protected static const float QUIET_SPAWN = 150;	// no infected spawn this close to a quiet spot
+	protected static const float QUIET_CLEAR = 60;	// ...and those that wander this close go
 
 	protected static const float AMBIENT_RADIUS = 300;
 	protected static const float HORDE_PLAYER_RANGE = 600;	// heat hordes only go to squares this close to a living player
@@ -187,6 +190,7 @@ class RZ_ZombieSpawner
 	void Tick(float dt, array<IEntity> players)
 	{
 		m_Bodies.Tick(players, IsPlumbingOn());
+		KeepQuiet(players);
 		if (IsPlumbingOn())
 		{
 			TickInfected(dt, players);
@@ -456,7 +460,7 @@ class RZ_ZombieSpawner
 		if (RZ_Util.IsWater(pos) || RZ_Util.NearestDistance(pos, players) < MinSpawnDistance(pos))
 			return false;
 
-		if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+		if (IsSuppressedAt(pos))
 			return false;
 
 		return !RZ_InfectedBodies.InSight(pos, players, false);
@@ -679,7 +683,68 @@ class RZ_ZombieSpawner
 				return true;
 		}
 
+		return NearQuiet(pos, QUIET_SPAWN);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The openings' waiting contacts (RZ_Openings): nothing spawns within 150 m of one, and infected
+	//! that wander within 60 m go: out of every player's sight they're removed; in sight, or a
+	//! tribe's or a hunting one, they're sent back home. Replaces the last set; empty = none.
+	void SetQuietSpots(notnull array<vector> spots)
+	{
+		m_aQuiet.Clear();
+		foreach (vector v : spots)
+		{
+			m_aQuiet.Insert(v);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool NearQuiet(vector pos, float radius)
+	{
+		foreach (vector q : m_aQuiet)
+		{
+			if (RZ_Util.DistXZ(pos, q) <= radius)
+				return true;
+		}
+
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Strays near a quiet spot (SetQuietSpots). Mission infected stay.
+	protected void KeepQuiet(array<IEntity> players)
+	{
+		if (m_aQuiet.IsEmpty())
+			return;
+
+		for (int i = m_aTracked.Count() - 1; i >= 0; i--)
+		{
+			RZ_TrackedZombie z = m_aTracked[i];
+			if (z.m_iMissionId != -1 || !z.m_Entity || !NearQuiet(z.m_vLastPos, QUIET_CLEAR))
+				continue;
+
+			// The data's own (a tribe's, a town's part, a hunt): walk home, never deleted
+			if (z.m_iTribe >= 0 || z.m_Part || z.m_bHunting || z.m_bRelentless)
+			{
+				if (!NearQuiet(z.m_vHome, QUIET_CLEAR * 2))
+					RZ_Util.SendGroupTo(z.m_Entity, z.m_vHome, m_Settings.m_sMoveWaypointPrefab);
+
+				continue;
+			}
+
+			// In sight: never vanishes in front of you; it's turned away instead
+			if (RZ_InfectedBodies.InSight(z.m_vLastPos, players, false))
+			{
+				if (!NearQuiet(z.m_vHome, QUIET_CLEAR * 2))
+					RZ_Util.SendGroupTo(z.m_Entity, z.m_vHome, m_Settings.m_sMoveWaypointPrefab);
+
+				continue;
+			}
+
+			RZ_Util.DeleteUnit(z.m_Entity);
+			Untrack(i);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1167,7 +1232,7 @@ class RZ_ZombieSpawner
 			if (maxFromPlayer > 0 && nearest > maxFromPlayer)
 				continue;
 
-			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+			if (IsSuppressedAt(pos))
 				continue;
 
 			// Nothing crawls out of a building that's still smouldering (world interactions, fire)
@@ -1662,7 +1727,7 @@ class RZ_ZombieSpawner
 			if (nearest < minDist * mult || nearest > maxFromPlayer)
 				continue;
 
-			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+			if (IsSuppressedAt(pos))
 				continue;
 
 			if (hub && hub.IsActive() && hub.GetTraps().IsScorched(pos))
@@ -1801,7 +1866,7 @@ class RZ_ZombieSpawner
 			if (RZ_Util.IsWater(pos) || RZ_Util.NearestDistance(pos, players) < m_Settings.m_fMinSpawnDistance)
 				continue;
 
-			if (!m_aSuppressed.IsEmpty() && IsSuppressedAt(pos))
+			if (IsSuppressedAt(pos))
 				continue;
 
 			if (RZ_InfectedBodies.InSight(pos, players, false))

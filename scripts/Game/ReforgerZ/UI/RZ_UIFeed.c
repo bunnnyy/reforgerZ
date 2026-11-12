@@ -156,6 +156,56 @@ class RZ_UIFeed
 		// The notebook item, once the inventory exists
 		if (!RZ_UISettings.Get().m_sNotebookPrefab.IsEmpty())
 			GetGame().GetCallqueue().CallLater(GiveNotebook, 3000, false, playerId);
+
+		// A compass and a paper map (docs/DESIGN.md, "The wind-up radio and faction voices")
+		GetGame().GetCallqueue().CallLater(GiveMapAndCompass, 3500, false, playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every new life gets vanilla's compass and folded paper map (UI > Compass prefab, Map prefab),
+	//! unless its loadout already has one of each; one that doesn't fit lies at their feet.
+	protected void GiveMapAndCompass(int playerId)
+	{
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!ent || !RZ_Util.IsCharacterAlive(ent))
+			return;
+
+		RZ_UISettings settings = RZ_UISettings.Get();
+		if (!settings.m_sCompassPrefab.IsEmpty() && !CarriesWith(ent, SCR_CompassComponent))
+			GiveLoose(ent, settings.m_sCompassPrefab);
+
+		if (!settings.m_sMapPrefab.IsEmpty() && !CarriesWith(ent, SCR_MapGadgetComponent))
+			GiveLoose(ent, settings.m_sMapPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Does the character carry an item with this component (anywhere on them)?
+	protected static bool CarriesWith(IEntity ent, typename component)
+	{
+		SCR_InventoryStorageManagerComponent inv = SCR_InventoryStorageManagerComponent.Cast(ent.FindComponent(SCR_InventoryStorageManagerComponent));
+		if (!inv)
+			return false;
+
+		array<IEntity> items = {};
+		inv.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (item && item.FindComponent(component))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void GiveLoose(IEntity ent, ResourceName prefab)
+	{
+		IEntity item = RZ_Util.SpawnPrefab(prefab, ent.GetOrigin() + Vector(0, 0.3, 0));
+		if (!item)
+			return;
+
+		RZ_GameModeComponent.TrackLooseItem(item);
+		RZ_Util.InsertIntoInventory(ent, item);
 	}
 
 	//------------------------------------------------------------------------------------------------

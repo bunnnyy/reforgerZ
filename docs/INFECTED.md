@@ -90,7 +90,9 @@ players.
   when killed: with Crawlers or Tribes on, where that special fell.
 - **Caps:** 60 tracked units on the server; before phase 1, 4 spawns a tick. With either switch on,
   the [agent budget](#the-agent-budget) counts every member instead.
-- **Zombie-free settlements** while a mission needs one (The Silent Village).
+- **Zombie-free settlements** while a mission needs one (The Silent Village), and **quiet spots**
+  round an opening's waiting contact: no spawns within 150 m, strays within 60 m removed out of
+  sight or sent home ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)).
 - **Kills:** each one takes 1.5 infection off its town ([DESIGN.md](DESIGN.md#the-director-outbreak-stages-and-spread)).
 
 ## Towns: the crawlers

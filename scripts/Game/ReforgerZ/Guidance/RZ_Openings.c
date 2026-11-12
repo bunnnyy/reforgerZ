@@ -683,6 +683,26 @@ class RZ_Openings
 
 	// ================================================================ The tick
 	//------------------------------------------------------------------------------------------------
+	//! A contact waiting for you (steps 1 and 2) keeps the infected off (RZ_ZombieSpawner.SetQuietSpots):
+	//! none spawn near them and strays out of sight go, so they aren't killed while you talk or search.
+	//! You shooting them still ends it.
+	protected void KeepContactsQuiet()
+	{
+		RZ_ZombieSpawner spawner = m_GM.GetSpawner();
+		if (!spawner)
+			return;
+
+		array<vector> spots = {};
+		foreach (RZ_Opening o : m_aOpenings)
+		{
+			if (!o.m_bEnded && !o.m_bContactDead && o.m_iStep <= 2 && o.m_Contact && RZ_Util.IsCharacterAlive(o.m_Contact))
+				spots.Insert(o.m_Contact.GetOrigin());
+		}
+
+		spawner.SetQuietSpots(spots);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! From the guidance's tick: they call you over, the next step waits for you to talk to them (or
 	//! starts, with nobody outside), a contact who died, a step that lapsed, a call once more, and
 	//! the contact leaves once nobody's near.
@@ -690,10 +710,14 @@ class RZ_Openings
 	{
 		m_fClock += dt;
 		m_fPoll += dt;
-		if (m_fPoll < POLL || m_aOpenings.IsEmpty())
+		if (m_fPoll < POLL)
 			return;
 
 		m_fPoll = 0;
+		KeepContactsQuiet();
+		if (m_aOpenings.IsEmpty())
+			return;
+
 		m_aIds.Clear();
 		m_aPlayers.Clear();
 		RZ_Util.GetAlivePlayers(m_aIds, m_aPlayers);
