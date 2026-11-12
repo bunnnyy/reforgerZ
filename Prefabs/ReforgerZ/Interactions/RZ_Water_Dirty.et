@@ -1,0 +1,16 @@
+GenericEntity : "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et" {
+ ID "5C1E7A2B93D04F61"
+ components {
+  B_FoodWaterGadgetComponent "{6516C2554CA51A59}" {
+   m_fSicknessChance 0.5
+  }
+  InventoryItemComponent "{6516C2554CA51B29}" {
+   Attributes SCR_ItemAttributeCollection "{6516C2554CA51B10}" {
+    ItemDisplayName UIInfo "{6516C2554CA51AA6}" {
+     Name "Untreated water"
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}

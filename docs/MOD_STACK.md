@@ -54,7 +54,7 @@ The compile check, the runtime test and the zombie lab drop it from their throwa
 
 | Mod | Role | How ReforgerZ uses it |
 |---|---|---|
-| [Metabolism](https://reforger.armaplatform.com/workshop/64E3272AFD56FEF7-Metabolism) | Hunger and thirst, **no sleep** | A dependency in `addon.gproj` since 2026-11-12. Version 0.0.3; it brings Enfusion Persistence Framework and Enfusion Database Framework with it, and modifies the vanilla game mode, character and player controller prefabs. It has one water item (`WaterBottle.et`, no unsafe/safe pair), so **Dirty / Clean water** both take it; its food items feed safehouses by the **Food keywords**. ReforgerZ can't read hunger itself, so the "hungry" tip waits for a bridge to call `RZ_Guidance.Report`. Compiles with ReforgerZ on 1.9 |
+| [Metabolism](https://reforger.armaplatform.com/workshop/64E3272AFD56FEF7-Metabolism) | Hunger and thirst, **no sleep** | A dependency in `addon.gproj` since 2026-11-12. Version 0.0.3; it brings Enfusion Persistence Framework and Enfusion Database Framework with it, and modifies the vanilla game mode, character and player controller prefabs. It has one water item (`WaterBottle.et`, no unsafe/safe pair): **Clean water** is that bottle and **Dirty water** is `RZ_Water_Dirty.et`, the same bottle with a 50% sickness chance; its food items feed safehouses by the **Food keywords**. ReforgerZ can't read hunger itself, so the "hungry" tip waits for a bridge to call `RZ_Guidance.Report`. Compiles with ReforgerZ on 1.9 |
 
 ## Optional
 

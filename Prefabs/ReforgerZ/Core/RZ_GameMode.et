@@ -840,6 +840,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
    }
    m_InteractionSettings RZ_InteractionSettings "{7EFF2EC9C6B2E7D8}" {
     m_sSpotPrefab "{9663558A51F14179}Prefabs/ReforgerZ/Interactions/RZ_InteractionSpot.et"
+    m_sDirtyWaterPrefab "{58299CF5D46C2B6B}Prefabs/ReforgerZ/Interactions/RZ_Water_Dirty.et"
+    m_sCleanWaterPrefab "{D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et"
    }
    m_SearchSettings RZ_SearchSettings "{6AD67DC2B9820A51}" {
     m_aLootPool {

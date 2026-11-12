@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **287 prefab fields**: 40 on `RZ_GameModeComponent`, 238 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **291 entries**: 178 prefabs the plugin creates, 33 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 80 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **287 prefab fields**: 40 on `RZ_GameModeComponent`, 238 in its settings objects, and 9 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **291 entries**: 179 prefabs the plugin creates, 32 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 80 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -384,18 +384,18 @@ fill the slot with a prefab you already have. All new prefabs go under `Prefabs/
 tables are generated from the manifest ([1.4](#14-changing-the-manifest)): change the manifest,
 not the tables.
 
-**Bases.** The manifest names a base (`basePrefab`) for 152 entries and all 13 loadouts: real
+**Bases.** The manifest names a base (`basePrefab`) for 153 entries and all 13 loadouts: real
 ResourceNames from vanilla 1.9, Bacon Zombies and Special Zombies, picked by reading the game's
 resource database. The tables' **Suggested base** is what a prefab should be; `basePrefab` is what
 it's built on now, and many are [stand-ins](#stand-in-bases). Two more entries are found by name
 (`baseFind`: the spawn point and the move waypoint), the 9 entries set by hand (the hand-set lists
-and the UI files) need none, and seven have no base:
+and the UI files) need none, and six have no base:
 
 | Entry | Why |
 |---|---|
 | `RZ_Drone.et`, `RZ_WarningShot.et`, Interactions > Crafting > Spear | Vanilla has nothing like them (no drone, no melee weapon) |
 | `RZ_InteractionSpot.et`, `RZ_DoorBlocker.et` | To make from an empty entity (the plugin's option) with collision added by hand; not made yet |
-| Interactions > General > Dirty water, Clean water | They're the survival mod's water bottles, and Metabolism isn't a dependency yet ([MOD_STACK.md](MOD_STACK.md)) |
+| Interactions > General > Clean water | It's Metabolism's own `WaterBottle.et`, set directly ([MOD_STACK.md](MOD_STACK.md)) |
 
 <!-- manifest:prefabs -->
 #### Core and cure
@@ -761,8 +761,8 @@ and the UI files) need none, and seven have no base:
 | `RZ_TripwireKit.et` | a small item | `RZ_PlaceableComponent` (Kind TRIPWIRE); `RZ_PlaceAction` | Interactions > Crafting > Tripwire | optional | tripwires |
 | `RZ_SpikeTrapKit.et` | a small item | `RZ_PlaceableComponent` (Kind SPIKES); `RZ_PlaceAction` | Interactions > Crafting > Spike trap | optional | spike traps |
 | `RZ_Tablets.et` | a small pill tube item | — | Interactions > Crafting > Tablets | optional | water purification |
-| (existing prefab) | the survival mod's untreated water bottle | — | Interactions > General > Dirty water | optional | wells, stoves |
-| (existing prefab) | the survival mod's safe water bottle | — | Interactions > General > Clean water | optional | wells, stoves |
+| `RZ_Water_Dirty.et` | Metabolism's water bottle, named "Untreated water", with B_FoodWaterGadgetComponent's m_fSicknessChance 0.5 (its name matches the dirty-water keywords) | — | Interactions > General > Dirty water | optional | wells, stoves |
+| (existing prefab) | Metabolism's WaterBottle.et ({D5E10AA9B0808D76}prefabs/Items/Water/WaterBottle.et) | — | Interactions > General > Clean water | optional | wells, stoves |
 
 #### Loot items
 
