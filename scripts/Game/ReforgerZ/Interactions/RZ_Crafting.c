@@ -17,8 +17,9 @@
 //! - "Use the stove" opens the cooking screen (docs/UI.md, "The cooking screen") where UI > Cook
 //!   row layout is set: boiled water, the home remedy and the stove recipes (Interactions >
 //!   Crafting > Stove recipes, e.g. Metabolism's raw meat cooked), each with what it takes
-//!   against what you carry. A pick runs the same code as the stove's actions, which stay the
-//!   fallback (the first four) where the screen isn't used.
+//!   against what you carry, under the stove's status strip (FIRE, FUEL, ON THE HOB). A pick runs
+//!   the same code as the stove's actions, which stay the fallback (the first four, in the object
+//!   menu with the same strip and locked rows) where the screen isn't used.
 
 //------------------------------------------------------------------------------------------------
 //! A recipe: up to three inputs (keywords, comma separated, and a count), one output prefab.
@@ -144,6 +145,7 @@ class RZ_Crafting
 	//! the cooking screen (RZ_CraftMenu.HidesSlotsOn, in its stove mode).
 	static const string STOVE_LABEL = "Use the stove";
 	static const string STOVE_LOOK = "Cold, but it would light. Whatever you put on it smokes a little.";
+	static const string STOVE_LIT_LOOK = "The fire's going and the pot's on. Whatever you put on it smokes a little.";
 	static const int STOVE_COOK = 0;		// a stove recipe (Interactions > Crafting > Stove recipes)
 	static const int STOVE_BOIL = 1;		// boiling untreated water
 	static const int STOVE_BREW = 2;		// brewing the home remedy
@@ -151,8 +153,15 @@ class RZ_Crafting
 	protected static const int SLOTS = 8;				// recipes in the action menu: four choice slots, four use slots
 	protected static const int SCREEN_RECIPES = 16;		// recipes on the crafting screen
 	protected static const int INPUTS = 3;
-	protected static const int PAYLOAD_ROOM = 5400;		// the screen's recipe records (RZ_UIFeed caps payloads at 6000)
+	protected static const int PAYLOAD_ROOM = 5200;		// the screen's recipe records, leaving room for the header and a stove's tiles (RZ_UIFeed caps payloads at 6000)
 	protected static const int STOVE_SLOTS = 4;			// a stove's choice slots in the action menu
+
+	// What water and the stove say when you're short (their actions, and the object menu's locked rows)
+	protected static const string NO_WATER_ITEMS = "You could drink from it with your hands, if you were desperate. (No water items are configured.)";
+	protected static const string NO_BOTTLE = "You need an empty bottle or canteen to fill.";
+	protected static const string NO_TABLETS = "You've no purification tablets. Fill it as it is and boil it later, or find tablets in a pharmacy.";
+	protected static const string NOTHING_TO_BOIL = "You've nothing to boil. Fill a bottle at a well first.";
+	protected static const string BREW_TAKES = "A home remedy takes something strong to drink and a handful of herbs. You haven't got both.";
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Interactions m_Hub;
@@ -713,10 +722,11 @@ class RZ_Crafting
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The screen's payload: B|serial|title|look|status|ready|recipes, W|recipe|seconds left|seconds
-	//! in all while one is under way here, then per recipe R|index|name|prefab|icon|seconds|heat|
-	//! ready|verb and N|index|name|have|need per input (have counts what you carry, at most need).
-	//! The verb is the stove's ("Boil", "Brew", "Cook"); the bench leaves it empty (Craft).
+	//! The screen's payload: B|serial|title|look|status|ready|recipes|town|hint|lit, W|recipe|seconds
+	//! left|seconds in all while one is under way here, a stove's status tiles (S records,
+	//! RZ_ObjectStatus), then per recipe R|index|name|prefab|icon|seconds|heat|ready|verb and
+	//! N|index|name|have|need per input (have counts what you carry, at most need). The verb is the
+	//! stove's ("Boil", "Brew", "Cook"); the bench leaves it empty (Craft). Lit: the stove's fire is going.
 	protected void SendScreen(int playerId, string status)
 	{
 		int spotId;
@@ -782,19 +792,183 @@ class RZ_Crafting
 			shown++;
 		}
 
+		// A stove's status strip (FIRE, FUEL, ON THE HOB) and whether its fire is going
 		string look = BENCH_LOOK;
 		int payloadKind = RZ_UIFeed.PAYLOAD_CRAFT;
+		RZ_ObjectStatus st = new RZ_ObjectStatus();
+		int lit = 0;
 		if (stove)
 		{
 			look = STOVE_LOOK;
 			payloadKind = RZ_UIFeed.PAYLOAD_COOK;
+			StoveStatus(playerId, s, st);
+			if (StoveWork(playerId, spotId))
+			{
+				look = STOVE_LIT_LOOK;
+				lit = 1;
+			}
 		}
 
-		string payload = string.Format("B|%1|%2|%3|%4|%5|%6", serial, RZ_UIText.Clean(m_Hub.Title(s), 40), look, RZ_UIText.Clean(status, 400), ready, shown);
+		string payload = string.Format("B|%1|%2|%3|%4|%5|%6|%7|%8|%9", serial, RZ_UIText.Clean(m_Hub.Title(s), 40), look, RZ_UIText.Clean(status, 400), ready, shown,
+			RZ_UIText.Clean(TownOf(s.m_vPos), 40), RZ_UIText.Clean(st.m_sHint, 120), lit);
 		if (working >= 0)
 			payload += string.Format("\nW|%1|%2|%3", working, left, total);
 
-		ui.SendPayload(payloadKind, payload + rows);
+		ui.SendPayload(payloadKind, payload + st.Records() + rows);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The town a bench or stove is in, "" out in the open (as the object menu's).
+	protected string TownOf(vector pos)
+	{
+		RZ_Settlement here = m_GM.GetSettlement(m_GM.FindNearestSettlement(pos));
+		if (here && RZ_Util.DistXZ(here.m_vCenter, pos) < 600)
+			return here.m_sName;
+
+		return "";
+	}
+
+	// ================================================================ The stove's status strip
+	//------------------------------------------------------------------------------------------------
+	//! Boiling, brewing or a stove recipe: work that lights a stove's fire.
+	protected bool IsStoveTask(RZ_TimedTask t)
+	{
+		return t.m_iKind == RZ_Interactions.TASK_BOIL || t.m_iKind == RZ_Interactions.TASK_BREW || t.m_iKind == RZ_Interactions.TASK_COOK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The work on this stove now: the player's own if it's here, else anyone's; null: its fire is cold.
+	protected RZ_TimedTask StoveWork(int playerId, int spotId)
+	{
+		RZ_TimedTask own = m_Hub.GetTask(playerId);
+		if (own && own.m_iSpot == spotId && IsStoveTask(own))
+			return own;
+
+		array<int> ids = {};
+		GetGame().GetPlayerManager().GetPlayers(ids);
+		foreach (int id : ids)
+		{
+			RZ_TimedTask t = m_Hub.GetTask(id);
+			if (t && t.m_iSpot == spotId && IsStoveTask(t))
+				return t;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stove's tiles (RZ_ObjectStatus), on the cooking screen and in the object menu: FIRE (lit
+	//! while something's on it), FUEL (not counted: there's always wood and scraps to hand) and ON
+	//! THE HOB (what's cooking, counting down on the client).
+	void StoveStatus(int playerId, RZ_Spot s, notnull RZ_ObjectStatus st)
+	{
+		RZ_TimedTask work = StoveWork(playerId, s.m_iId);
+		if (work)
+			st.Add("FIRE", "LIT", RZ_ObjectStatus.STATE_OK);
+		else
+			st.Add("FIRE", "COLD", RZ_ObjectStatus.STATE_DIM);
+
+		st.Add("FUEL", "ENOUGH", RZ_ObjectStatus.STATE_OK);
+		array<ref RZ_Recipe> list = RecipesFor(true);
+		int idx = -1;
+		if (work)
+			idx = WorkingIndex(work, true);
+
+		if (idx < 0 || idx >= list.Count())
+		{
+			st.Add("ON THE HOB", "EMPTY", RZ_ObjectStatus.STATE_DIM);
+			return;
+		}
+
+		string name = list[idx].m_sName;
+		name.ToUpper();
+		st.Add("ON THE HOB", name, RZ_ObjectStatus.STATE_PART, RZ_Util.RoundToInt(Math.Ceil(work.m_fLeft)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stove's row `option` (its place in the stove's list) can't go now: what Boil, Brew or Cook
+	//! would say, and SHORT N (NEEDS WATER for boiling).
+	bool StoveLock(int option, IEntity user, out string reason, out string tag)
+	{
+		array<ref RZ_Recipe> list = RecipesFor(true);
+		if (option < 0 || option >= list.Count())
+			return false;
+
+		RZ_Recipe r = list[option];
+		array<int> haves = {};
+		array<IEntity> picked = {};
+		Allocate(user, r, haves, picked);
+		if (AllFound(r, haves))
+			return false;
+
+		int missing = 0;
+		for (int i = 0; i < INPUTS; i++)
+		{
+			if (i < haves.Count() && haves[i] < InputCount(r, i))
+				missing++;
+		}
+
+		tag = string.Format("SHORT %1", missing);
+		if (r.m_iStove == STOVE_BOIL)
+		{
+			reason = NOTHING_TO_BOIL;
+			tag = "NEEDS WATER";
+		}
+		else if (r.m_iStove == STOVE_BREW)
+		{
+			reason = BREW_TAKES;
+		}
+		else
+		{
+			reason = string.Format("%1 takes %2. You haven't got it all.", r.m_sName, InputsText(r));
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A well's tiles (RZ_ObjectStatus): the water, and whether you carry a bottle and tablets.
+	void WellStatus(IEntity user, notnull RZ_ObjectStatus st)
+	{
+		st.Add("WATER", "UNTREATED", RZ_ObjectStatus.STATE_PART);
+		st.YesNo("BOTTLE", RZ_ItemHelper.Has(user, m_Water.m_sContainerWords));
+		if (m_Water.m_sCleanWaterPrefab.IsEmpty())
+			st.m_sHint = "Boil it on a stove before you drink.";
+		else if (RZ_ItemHelper.Has(user, m_Water.m_sTabletWords))
+			st.Add("TABLETS", "YES", RZ_ObjectStatus.STATE_OK);
+		else
+			st.Add("TABLETS", "NO", RZ_ObjectStatus.STATE_DIM);
+
+		if (st.m_sHint.IsEmpty())
+			st.m_sHint = "Boil it on a stove or purify it before you drink.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A well's row can't be done now: what HandleWell would say instead.
+	bool WellLock(int option, IEntity user, out string reason, out string tag)
+	{
+		if (m_Water.m_sDirtyWaterPrefab.IsEmpty())
+		{
+			reason = NO_WATER_ITEMS;
+			tag = "NOT SET UP";
+			return true;
+		}
+
+		if (!RZ_ItemHelper.Has(user, m_Water.m_sContainerWords))
+		{
+			reason = NO_BOTTLE;
+			tag = "NEEDS BOTTLE";
+			return true;
+		}
+
+		if (option == 1 && (m_Water.m_sCleanWaterPrefab.IsEmpty() || !RZ_ItemHelper.Has(user, m_Water.m_sTabletWords)))
+		{
+			reason = NO_TABLETS;
+			tag = "NEEDS TABLETS";
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -839,20 +1013,20 @@ class RZ_Crafting
 		string title = m_Hub.Title(s);
 		if (m_Water.m_sDirtyWaterPrefab.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, title, "You could drink from it with your hands, if you were desperate. (No water items are configured.)");
+			m_GM.NotifyPlayer(playerId, title, NO_WATER_ITEMS);
 			return;
 		}
 
 		if (!RZ_ItemHelper.Has(user, m_Water.m_sContainerWords))
 		{
-			m_GM.NotifyPlayer(playerId, title, "You need an empty bottle or canteen to fill.");
+			m_GM.NotifyPlayer(playerId, title, NO_BOTTLE);
 			return;
 		}
 
 		bool purify = option == 1;
 		if (purify && (m_Water.m_sCleanWaterPrefab.IsEmpty() || !RZ_ItemHelper.Has(user, m_Water.m_sTabletWords)))
 		{
-			m_GM.NotifyPlayer(playerId, title, "You've no purification tablets. Fill it as it is and boil it later, or find tablets in a pharmacy.");
+			m_GM.NotifyPlayer(playerId, title, NO_TABLETS);
 			return;
 		}
 
@@ -998,7 +1172,7 @@ class RZ_Crafting
 		string title = m_Hub.Title(s);
 		if (m_Water.m_sCleanWaterPrefab.IsEmpty() || !RZ_ItemHelper.Has(user, m_Water.m_sDirtyWaterWords))
 		{
-			m_GM.NotifyPlayer(playerId, title, "You've nothing to boil. Fill a bottle at a well first.");
+			m_GM.NotifyPlayer(playerId, title, NOTHING_TO_BOIL);
 			return;
 		}
 
@@ -1038,7 +1212,7 @@ class RZ_Crafting
 		RZ_InfectionSettings med = infection.GetSettings();
 		if (!RZ_ItemHelper.Has(user, med.m_sAlcoholWords) || !RZ_ItemHelper.Has(user, med.m_sHerbWords))
 		{
-			m_GM.NotifyPlayer(playerId, title, "A home remedy takes something strong to drink and a handful of herbs. You haven't got both.");
+			m_GM.NotifyPlayer(playerId, title, BREW_TAKES);
 			return;
 		}
 

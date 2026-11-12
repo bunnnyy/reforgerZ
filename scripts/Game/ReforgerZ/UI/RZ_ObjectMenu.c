@@ -1,5 +1,6 @@
 //! The object menu (docs/UI.md, "The object menu"), in the crafting and car repair screens' style:
-//! what a prop or a place is (its title, what you see) and its options as a list. Opened by the
+//! what a prop or a place is (its title, its status strip, what you see) and its options as a
+//! list, the ones you can't do now locked with a short tag saying why. Opened by the
 //! server when a player uses the one prompt left on it (Interactions/RZ_ObjectScreen.c); every pick
 //! goes back to the server, which runs that option's own action code.
 //!
@@ -25,9 +26,20 @@ class RZ_ObjectMenu : RZ_MenuBase
 	protected float m_fLeft;
 	protected float m_fTotal;
 	protected string m_sWorking;
+	protected int m_iLocal;						// bumps when only this client changed something (a locked row's reason)
+	protected string m_sLocalStatus;
+	protected Widget m_wSelectPrompt;			// the footer's A, dimmed on a locked row
 	protected ref array<string> m_aHead = {};
 	protected ref array<ref array<string>> m_aRows = {};
+	protected ref array<ref array<string>> m_aTiles = {};
 	protected ref array<Widget> m_aRowWidgets = {};
+
+	// The status strip's room (RZ_ObjectMenu.layout): with it, the body sits lower and the panel is taller
+	protected static const float BODY_Y_STRIP = 262;
+	protected static const float BODY_Y_PLAIN = 132;
+	protected static const float PANEL_W = 1200;
+	protected static const float PANEL_H_STRIP = 940;
+	protected static const float PANEL_H_PLAIN = 810;
 
 	//------------------------------------------------------------------------------------------------
 	//! The object menu is used on this machine: UI > Object row layout set (the server checks the
@@ -108,8 +120,8 @@ class RZ_ObjectMenu : RZ_MenuBase
 		input.AddActionListener("MenuUp", EActionTrigger.DOWN, OnUp);
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
-		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Do it");
-		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && prompts;
+		m_wSelectPrompt = RZ_StatusStrip.MakePrompt(m_wRoot, "Prompts", "MenuSelect", "Do it");
+		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && m_wSelectPrompt != null;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
 	}
 
@@ -133,14 +145,15 @@ class RZ_ObjectMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! New data, a new selection, and once a second while work is under way (its countdown).
+	//! New data, a new selection, a locked row's reason, and once a second while work is under way
+	//! or a tile counts down.
 	override protected int DataVersion()
 	{
 		int tick = 0;
-		if (!m_sWorking.IsEmpty())
+		if (!m_sWorking.IsEmpty() || RZ_StatusStrip.Counting(m_aTiles))
 			tick = RZ_Util.RoundToInt(Math.Floor(RZ_UIW.Now())) % 1000;
 
-		return s_iVersion * 100000 + tick * 20 + m_iSelected;
+		return s_iVersion * 1000000 + (m_iLocal % 50) * 20000 + tick * 20 + m_iSelected;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -170,7 +183,8 @@ class RZ_ObjectMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Do option `index` if it can be done (the server checks it again).
+	//! Do option `index` if it can be done (the server checks it again); a locked one only says why,
+	//! in the status line, without asking the server.
 	protected void Do(int index)
 	{
 		if (index < 0 || index >= m_aRows.Count())
@@ -179,7 +193,14 @@ class RZ_ObjectMenu : RZ_MenuBase
 		m_iSelected = index;
 		array<string> f = m_aRows[index];
 		if (RZ_UIText.Int(f, 3) != 1)
+		{
+			m_sLocalStatus = RZ_UIText.Str(f, 4);
+			if (m_sLocalStatus.IsEmpty())
+				m_sLocalStatus = "You can't do that here right now.";
+
+			m_iLocal++;
 			return;
+		}
 
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
@@ -187,7 +208,8 @@ class RZ_ObjectMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! O|serial|title|sub|text|status|working|left|total; R|index|label|enabled|reason
+	//! O|serial|title|sub|text|status|working|left|total|read label|hint; S|label|value|state|left;
+	//! R|index|label|enabled|reason|tag
 	override protected void Redraw()
 	{
 		if (m_iParsed != s_iVersion)
@@ -200,11 +222,19 @@ class RZ_ObjectMenu : RZ_MenuBase
 		string sub = RZ_UIText.Str(m_aHead, 3);
 		RZ_UIW.SetText(m_wRoot, "ObjectSub", sub);
 		RZ_UIW.Show(m_wRoot, "ObjectSub", !sub.IsEmpty());
+		DrawStrip();
+		string readLabel = RZ_UIText.Str(m_aHead, 9);
+		RZ_UIW.SetText(m_wRoot, "ObjectReadLabel", readLabel);
+		RZ_UIW.Show(m_wRoot, "ObjectReadLabel", !readLabel.IsEmpty());
 		string text = Unflat(RZ_UIText.Str(m_aHead, 4));
 		RZ_UIW.SetText(m_wRoot, "ObjectText", text);
 		RZ_UIW.Show(m_wRoot, "ObjectText", !text.IsEmpty());
 
-		string status = Unflat(RZ_UIText.Str(m_aHead, 5));
+		// What the last pick said, or why the locked row picked here can't be done
+		string status = m_sLocalStatus;
+		if (status.IsEmpty())
+			status = Unflat(RZ_UIText.Str(m_aHead, 5));
+
 		RZ_UIW.SetText(m_wRoot, "ObjectStatus", status);
 		RZ_UIW.Show(m_wRoot, "ObjectStatus", !status.IsEmpty());
 
@@ -224,12 +254,35 @@ class RZ_ObjectMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The status strip and its line under the title; the body moves up and the panel shrinks when
+	//! the thing has neither.
+	protected void DrawStrip()
+	{
+		RZ_StatusStrip.Draw(m_wRoot, m_aTiles, RZ_UIW.Now() - s_fDataAt);
+		string hint = RZ_UIText.Str(m_aHead, 10);
+		RZ_UIW.SetText(m_wRoot, "StatusHint", hint);
+		RZ_UIW.Show(m_wRoot, "StatusHint", !hint.IsEmpty());
+		bool strip = !m_aTiles.IsEmpty() || !hint.IsEmpty();
+		float bodyY = BODY_Y_PLAIN;
+		float panelH = PANEL_H_PLAIN;
+		if (strip)
+		{
+			bodyY = BODY_Y_STRIP;
+			panelH = PANEL_H_STRIP;
+		}
+
+		RZ_UIW.SetPos(RZ_UIW.Find(m_wRoot, "ObjectBody"), 0, bodyY);
+		RZ_UIW.SetSize(RZ_UIW.Find(m_wRoot, "ObjectPanel"), PANEL_W, panelH); // VERIFY: FrameSlot.SetSize on the centred panel (anchor and alignment 0.5) keeps it centred
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Parse()
 	{
 		array<ref array<string>> recs = {};
 		RZ_MenuBase.Records(s_sData, recs);
 		m_aHead.Clear();
 		m_aRows.Clear();
+		m_aTiles.Clear();
 		foreach (array<string> f : recs)
 		{
 			string tag = RZ_UIText.Str(f, 0);
@@ -245,8 +298,14 @@ class RZ_ObjectMenu : RZ_MenuBase
 			{
 				m_aRows.Insert(f);
 			}
+			else if (tag == "S")
+			{
+				m_aTiles.Insert(f);
+			}
 		}
 
+		// The server's word replaces what this client said
+		m_sLocalStatus = "";
 		m_iSelected = Math.Clamp(m_iSelected, 0, Math.Max(0, m_aRows.Count() - 1));
 	}
 
@@ -270,6 +329,10 @@ class RZ_ObjectMenu : RZ_MenuBase
 			m_aRowWidgets.Insert(row);
 		}
 
+		// The footer's A reads dimmed on a locked row
+		bool canDo = m_iSelected >= 0 && m_iSelected < m_aRows.Count() && RZ_UIText.Int(m_aRows[m_iSelected], 3) == 1;
+		RZ_StatusStrip.SetPrompt(m_wSelectPrompt, "", canDo);
+
 		// Pad focus on the selected option, kept in view
 		if (m_iSelected >= 0 && m_iSelected < m_aRowWidgets.Count())
 			RZ_UIW.FocusWidget(m_aRowWidgets[m_iSelected]);
@@ -282,9 +345,13 @@ class RZ_ObjectMenu : RZ_MenuBase
 	protected void FillRow(Widget row, int i)
 	{
 		array<string> f = m_aRows[i];
+		// A locked row: dim, a lock before it and a short tag on hazard yellow saying why
 		bool on = i == m_iSelected;
 		bool can = RZ_UIText.Int(f, 3) == 1;
-		string reason = RZ_UIText.Str(f, 4);
+		string tag = RZ_UIText.Str(f, 5);
+		if (tag.IsEmpty())
+			tag = RZ_UIText.Str(f, 4);
+
 		Color fg = RZ_UIColor.Bone();
 		if (!can)
 			fg = RZ_UIW.Rgb(110, 106, 96);
@@ -293,8 +360,10 @@ class RZ_ObjectMenu : RZ_MenuBase
 
 		RZ_UIW.SetText(row, "OptionName", RZ_UIText.Str(f, 2));
 		RZ_UIW.Tint(row, "OptionName", fg);
-		RZ_UIW.SetText(row, "OptionNeed", reason);
-		RZ_UIW.Show(row, "OptionNeed", !can && !reason.IsEmpty());
+		RZ_UIW.SetText(row, "OptionNeed", tag);
+		RZ_UIW.Show(row, "OptionTag", !can && !tag.IsEmpty());
+		RZ_UIW.Show(row, "OptionLock", !can && !RZ_UISettings.Get().m_sIconImageset.IsEmpty());
+		RZ_UIW.Icon(row, "OptionLock", "status_door_locked");
 		RZ_UIW.Show(row, "OptionBg", on);
 		RZ_UIW.Show(row, "OptionBar", on);
 		RZ_UIW.Tint(row, "OptionBar", RZ_UIColor.Faction(RZ_EFaction.SURVIVORS));

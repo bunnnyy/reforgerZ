@@ -776,9 +776,9 @@ client shows the actions for a minute.
 ### The crafting screen
 
 As in `crafting.html`, in the shop's style: **Use the workbench** at a workbench
-([DESIGN.md](DESIGN.md#light-crafting)) opens a panel 1,600 × 880 in the middle of the screen, the
-world dimmed. The header is "Workbench", what the bench looks like, and on the right "You can make
-3 of 8". On the left, under RECIPES, the recipes as a list: each with its item icon (where the icon
+([DESIGN.md](DESIGN.md#light-crafting)) opens a panel 1,600 × 858 in the middle of the screen, the
+world dimmed. The header is "Workbench", the town (when the bench is in one), what the bench looks
+like, and on the right "You can make 3 of 8". On the left, under RECIPES, the recipes as a list: each with its item icon (where the icon
 set has one), its name, READY in olive or "2 MISSING" (how many of its inputs you're short of)
 dim, and how long it takes in amber ("8 s"). A recipe you're short for is dim; one whose output slot
 is empty isn't listed. On the right, for the picked recipe: a picture of what it makes (vanilla's
@@ -803,8 +803,8 @@ Range** (6 m) from the bench, or after **Idle seconds** (120) with no pick.
 
 **How it works.** The read action on a workbench's spot ("Use the workbench") reaches the server
 (`RZ_Crafting.Look`), which opens a screen-guard entry and sends `PAYLOAD_CRAFT` (kind 12) to that
-player: `B|serial|title|look|status|ready|recipes`, `W|recipe|seconds left|seconds` while one is under
-way at this bench, then per recipe `R|index|name|prefab|icon|seconds|heat|ready` and per input
+player: `B|serial|title|look|status|ready|recipes|town|hint|lit`, `W|recipe|seconds left|seconds`
+while one is under way at this bench, a stove's status tiles (`S` records, [below](#the-status-strip-and-locked-rows)), then per recipe `R|index|name|prefab|icon|seconds|heat|ready` and per input
 `N|index|name|have|need`; `X|reason` closes it. Have and missing are counted on the server against
 the player's inventory, each carried item counted for one input only. Craft goes back as
 `RpcAsk_Craft(serial, index)` (at most two a second); the client sends it only for a ready recipe
@@ -827,20 +827,33 @@ and a recipe added as data has no icon and names its inputs by their first keywo
 ### The cooking screen
 
 The crafting screen at a stove, oven or fireplace ([DESIGN.md](DESIGN.md#light-crafting)): **Use the
-stove** opens it, with the same panel, rows, picture and keys, and the stove's words. The header is
-"Stove" and what it looks like ("Cold, but it would light..."), "You can cook 2 of 3" on the right.
-The rows are the stove's list: **Boiled water** (untreated water), **Home remedy** (something strong
-to drink, herbs; the med icon) and the **stove recipes** (**Interactions > Crafting > Stove
-recipes**; the food icon), each hidden while what it makes isn't set. The detail says "About 30
-seconds on the stove" and how far the smoke carries ("A little smoke from the chimney. Someone may
-see it.", or "Smoke, and the smell carries..." from 3 heat), and the button is named for what the
-picked row does: **BOIL**, **BREW** or **COOK**. The keys are the crafting screen's (A or Enter
-cooks; the footer says Cook).
+stove** opens it, with the same panel, rows, picture and keys, and the stove's words; the author's
+pick of the mockups ("F with H's top status"). The header is "Stove", the town and what it looks
+like ("Cold, but it would light...", or "The fire's going and the pot's on..." while something
+cooks), "You can cook 2 of 3" on the right. Under it, the stove's
+[status strip](#the-status-strip-and-locked-rows): **FIRE** (LIT or COLD), **FUEL** (ENOUGH: a
+stove's fuel isn't counted) and **ON THE HOB** (EMPTY, or what's cooking with its seconds counting
+down, "BOILED WATER · 12 S"); the panel is 1,600 × 960 with it.
+
+On the left, under RECIPES, the stove's list: **Boiled water** (untreated water), **Home remedy**
+(something strong to drink, herbs; the med icon) and the **stove recipes**
+(**Interactions > Crafting > Stove recipes**; the food icon), each hidden while what it makes isn't set. Each row's tag on the
+right is READY in olive, SHORT 1 (how many of its inputs you're short of) in red, NONE dim when you
+carry none of it, or WORKING in amber. On the right, the picked row's detail: its picture, name and
+description, IT TAKES with each input's have and need on the right ("1 / 1", olive when you have it,
+red when you don't), "A lit stove: YES" (olive), or "A lit stove: NO, you'll light it" (dim: the
+work lights it, so it never stops you), "About 30 seconds on the stove" and how far the smoke carries
+("A little smoke from the chimney. Someone may see it.", or "Smoke, and the smell carries..." from 3
+heat), and the button named for what the picked row does: **BOIL**, **BREW** or **COOK**, dark while
+you're short. The keys are the crafting screen's; the footer's A says the same verb ("A Boil · B
+Close") and dims while the button is dark.
 
 **How it works.** The stove's read ("Use the stove") reaches the server (`RZ_Crafting.UseStove`),
 which opens a screen-guard entry of its own kind (`KIND_COOK`) and sends `PAYLOAD_COOK` (kind 15)
-with the crafting screen's records; each `R` record ends with the button's verb. The client opens the
-same menu (`RZ_CraftMenu`, the `RZ_CraftMenu` preset) in its stove mode. A pick goes back as
+with the crafting screen's records; each `R` record ends with the button's verb, the `B` record's
+`lit` is 1 while the fire's going, and the stove's tiles come as `S` records (`RZ_Crafting.StoveStatus`:
+the fire is lit while anyone's boiling, brewing or cooking on that stove, the player's own work first).
+The client opens the same menu (`RZ_CraftMenu`, the `RZ_CraftMenu` preset) in its stove mode. A pick goes back as
 `RpcAsk_Craft`, and the server runs the stove's own code (`HandleStove`: boiling, brewing, or a stove
 recipe's timed work, `TASK_COOK`); when it's done the inputs are checked again and taken, and what it
 says is caught for the status line. Up to sixteen rows are listed (the action menu has room for the
@@ -850,8 +863,10 @@ first four).
 **Cook:** actions hide (`RZ_CraftMenu.HidesSlotsOn`: the spot's read label is "Use the stove"), and
 the stove isn't an object menu. With **UI > Cook row layout** empty, the read is "Look at the stove"
 and the stove's first four are rows of [the object menu](#the-object-menu) (or world prompts without
-it), as before. A client that can't open the menu says so and shows the actions; at the server's cap
-of open screens, the actions for a minute.
+it), as before, with the same tiles and its rows locked while you're short. A client that can't open
+the menu says so and shows the actions; at the server's cap of open screens, the actions for a minute.
+*Simplified:* the strip is sent with the screen, so another player's cooking on the same stove shows
+the next time it's sent (your own pick, or your work ending).
 
 ### The radio screen
 
@@ -900,20 +915,27 @@ is read when the screen opens, not again while it's open (new lines you hear joi
 One small generic screen in the crafting screen's style, for props and places with several
 options or something to read ([Default first, then menus](#default-first-then-menus)): a stove
 (without [the cooking screen](#the-cooking-screen)), a generator, a house radio, a well, a puzzle object or keypad, the safehouse services, a
-quartermaster's asks, the lab, the notebook item's name and season. A panel 1,200 × 860 in the
-middle of the screen, the world dimmed: the name ("Stove", "Ask the quartermaster") and the town,
-what you see (the read's text: "Cold, but it would light..."), and under WHAT YOU CAN DO the
-options, one row each. An option you can't do now is dim with why ("No samples"). While work you
-started is under way (boiling water, cracking a channel), "Busy with the boiling... 12 s" over a
-thin amber bar. Under the list, what the last pick said.
+quartermaster's asks, the lab, the notebook item's name and season. The author's pick of the mockups
+("B with A's tag and the lock"). A panel 1,200 × 940 in the middle of the screen (810 for a thing
+without a status strip), the world dimmed: the name ("Radio", "Ask the quartermaster") and the
+town; under them the thing's [status strip](#the-status-strip-and-locked-rows) (a house radio's POWER
+OFF, RECEIVE ON, TRANSMIT NO, SIGNAL WEAK) and one line saying what would change it ("A running
+generator within 40 m would power it."); then what you see (the read's text: "Cold, but it would
+light...", or for a house radio the line it caught, under "LAST HEARD · BASTION"), and under WHAT YOU
+CAN DO the options, one row each. An option you can't do now is **locked**: dim, a lock before it
+and a short tag on the right saying why (NEEDS POWER, OPERATOR ONLY). While work you started is
+under way (boiling water, cracking a channel), "Busy with the boiling... 12 s" over a thin amber
+bar. Under the list, what the last pick said.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
 | Pick an option | up/down, or click it | D-pad or left stick |
-| Do it | Enter, or click the row | A |
+| Do it | Enter, or click the row | A (dimmed on a locked row; A there only says why, in the line under the list) |
 | Close | Esc, or the close button | B |
 
-The text is TV-sized: options 26, the description 24, the smallest labels 18. You can't move
+The selected row has the amber bar on its left and a lighter fill, locked or not, so the D-pad
+moves through every row. The text is TV-sized: options 26, the description 24, the tiles' values 24,
+the smallest labels 18. You can't move
 while it's open; the world keeps running. Work you start goes on after it closes, as long as you
 stay close (the timed action's own rule). The screen guard closes it in danger, more than
 **Dialogue > Range** (6 m) from the thing, or after **Idle seconds** (120) with no pick.
@@ -926,12 +948,15 @@ actions when two or more show. While this machine uses the menu, one prompt stay
 ("Look at the stove") or, without one, the first action under the group's title ("Ask the
 quartermaster"). Using it reaches the server, which runs the read with what it says caught
 (`RZ_ScreenCapture`; a paper goes into the text, not the reader), opens a screen-guard entry and
-sends `PAYLOAD_OBJECT` (kind 14) to that player: `O|serial|title|town|text|status|working|left|total`
-and `R|index|label|enabled|reason` per row; `X|reason` closes it. A pick goes back as
+sends `PAYLOAD_OBJECT` (kind 14) to that player: `O|serial|title|town|text|status|working|left|total|read
+label|hint`, the thing's tiles as `S` records, and `R|index|label|enabled|reason|tag` per row (enabled
+0: locked, with its full reason and its tag); `X|reason` closes it. A locked row's pick never leaves
+the client: it puts the full reason in the status line. Any other pick goes back as
 `RpcAsk_ObjectPick(serial, index)` (at most two a second). The server checks the menu is open on
-that serial, the thing is there and you're within range, then runs that row's own `Run` (the code
-its world prompt runs); what it says is caught for the status line and the menu is sent again with
-the rows as they are now. A timed action's end or stop is caught the same way.
+that serial, the thing is there and you're within range and the row isn't locked (a locked one sends
+the menu back with its reason), then runs that row's own `Run` (the code its world prompt runs);
+what it says is caught for the status line and the menu is sent again with the strip and the rows as
+they are now. A timed action's end or stop is caught the same way.
 
 **Fallbacks.** With **UI > Object row layout** empty, every action is a world prompt as before. A
 client that can't open the menu (no `RZ_ObjectMenu` preset or layout) shows the description as a
@@ -939,6 +964,72 @@ card, tells the server (`RpcAsk_ObjectFailed`: the prompt it used runs, and that
 prompts from then on) and shows the prompts; when the server is at its cap of open screens the
 client shows the prompts for a minute. A dedicated server never hides a prompt, so a client
 without the menu can use any of them.
+
+### The status strip and locked rows
+
+Two pieces the object menu and the cooking screen share: a row of readout tiles saying what state a
+thing is in, and rows you can't use now shown locked with the reason.
+
+**The strip.** Up to four tiles in a row under the screen's header: each a dark tile (`#2A2D30`)
+with a small label in capitals (mono bold 18, `#B8B2A3`), a square lamp and a one-word value (mono
+bold 24) beside it, and a 4-unit bar along its bottom, both lamp and bar in the state's colour. The
+mockups' label was 16; it's 18 for the TV rule ([Controllers](#controllers)).
+
+| State | Lamp and bar | Value | Means |
+|---|---|---|---|
+| On, ok | olive `#9AA35E` | `#C4CC8A` | on, working, you have it |
+| Off, blocked | red `#D9574C` | `#F08A80` | off, empty, missing: something to fix |
+| Partly | amber `#E8B23A` | `#E8B23A` | weak, low, under way |
+| Unknown, idle | faint `#6E6A60` | dim `#A39E90` | nothing going on, or it doesn't matter now |
+
+A value with a countdown ("BOILED WATER · 12 S") counts down on the client. In the object menu one
+line under the strip says what would change it. Things without tiles show no strip, and the screen
+closes up the space. What each thing shows:
+
+| Thing | Tiles | The line under them |
+|---|---|---|
+| A house radio | POWER (ON, or OFF in red), RECEIVE (ON: its batteries hear the channels), TRANSMIT (YES with power; NO in red without, dim when calling isn't on), SIGNAL (STRONG with three or more open channels coming through, WEAK one or two, NONE) | Without power: "A running generator within 40 m would power it." Its read's text has "LAST HEARD · " and the channel it caught over it |
+| A generator found in town | ENGINE (RUNNING, or STOPPED dim), FUEL ("~25 MIN", amber under 10 minutes, EMPTY in red), YOUR CAN (FULL when you carry fuel, NONE dim) | What it does running, or that a jerrycan would fill it |
+| A stove (the cooking screen, and the object menu without it) | FIRE (LIT, COLD dim), FUEL (ENOUGH: not counted), ON THE HOB (EMPTY, or what's cooking and its seconds) | None |
+| A well (**Interactions > Well spots** on) | WATER (UNTREATED, amber), BOTTLE (YES, NO in red), TABLETS (YES, NO dim) | "Boil it on a stove or purify it before you drink." |
+
+The power station has none: its own screen is [the power panel](#the-power-panel), and without it
+its prompts are never an object menu.
+
+**Locked rows.** In the object menu, a row you can't do now is dim, has the lock icon
+(`status_door_locked`, shown only with the icon imageset) before its name and, on the right, a tag of
+one or two words in capitals saying why, dark on a hazard-yellow chip (`#F2C230`). The selected row
+keeps its amber bar and lighter fill. A on it does nothing but put the full reason (the sentence the
+thing's own code says when you try) in the status line, and the footer's A reads dimmed while it's
+selected. The tags ([WRITING.md](WRITING.md#by-channel) has the rule for writing one):
+
+| Row | Tag | When |
+|---|---|---|
+| Any row of a stove, generator, house radio or well | BUSY | Work of yours is under way (a house radio's **View radio** never locks) |
+| A house radio's **Work on a scrambled channel** | OPERATOR ONLY, LISTENING, NO CHANNEL, TOO LOUD | Not a Radio Operator; already on a cracked channel; no faction place in range; too much noise or an infected close (the crack's own checks, in its order) |
+| A house radio's **Call on the open channel** | NEEDS POWER | No power where it stands |
+| A generator's **Start or stop** | NEEDS FUEL, ONE RUNNING | Stopped with an empty tank; one of yours already runs (stopping it never locks) |
+| A generator's **Refuel** | NEEDS FUEL | No full jerrycan on you |
+| A stove's **Boil water** | NEEDS WATER | No untreated water on you |
+| A stove's **Brew** and **Cook:** rows | SHORT 1, SHORT 2 | How many of its inputs you're short of |
+| A well's **Fill a bottle** rows | NEEDS BOTTLE, NEEDS TABLETS, NOT SET UP | No empty bottle; no tablets (purify); no water items configured |
+| Any other action that has its own reason | NO SAMPLES, CURE OUT, STORE FULL, NOTHING, LOCKED | The lab's deliveries, a hand-over, a door: the action's own reason, given a tag by name; a reason of two words or fewer is its own tag, anything longer NOT NOW |
+
+On the cooking screen the rows aren't locked: their tag is READY, SHORT 1 or NONE
+([above](#the-cooking-screen)) and the button stays dark while you're short.
+
+**How it works.** The server builds the strip with each send (`Interactions/RZ_ObjectStatus.c`): a
+world interaction spot's from its own system (`RZ_SecureRadio.HouseRadioStatus`,
+`RZ_Traps.FoundGeneratorStatus`, `RZ_Crafting.StoveStatus` and `WellStatus`), anything else's from
+the menu's opener (`RZ_GroupedAction.MenuStatus`, none by default). Each tile goes as
+`S|label|value|state|left` (state 0 unknown, 1 on, 2 off, 3 partly; left the seconds its value
+counts down). A row's lock is `RZ_GroupedAction.Locked`: by default the action's own
+`CanBePerformed` and reason, with a tag by `RZ_ObjectStatus.TagFor`; a spot's choice
+(`RZ_PuzzleChoiceAction`) asks its system first (`RZ_ObjectStatus.SpotLock`), with the same
+sentence the action says when it runs. The client draws the tiles into `Tile0` to `Tile3` of the
+screen's layout (`UI/RZ_StatusStrip.c`), which also keeps the footer's A to relabel and dim it.
+*Simplified:* the world prompts aren't locked (they still say why when used); a strip is as fresh as
+the last send; SIGNAL is a word, not bars.
 
 ### The power panel
 
@@ -1277,6 +1368,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_Crafting` (its screen part), `RZ_CraftMenu`, `RZ_ItemPreview` | server, client, client | The crafting screen and the cooking screen ([above](#the-crafting-screen)) |
 | `RZ_RadioScreen`, `RZ_ViewRadioAction`, `RZ_RadioMenu` | server, every machine, client | The radio screen ([above](#the-radio-screen)) |
 | `RZ_ObjectScreen`, `RZ_ActionMenus`, `RZ_GroupedAction`, `RZ_ObjectMenu` | server, every machine, every machine, client | The object menu ([above](#the-object-menu)) |
+| `RZ_ObjectStatus`, `RZ_StatusStrip` | server, client | The status strip's tiles and the locked rows' reasons and tags, shared by the object menu and the cooking screen ([above](#the-status-strip-and-locked-rows)) |
 | `RZ_PowerPanel` (`World/RZ_PowerPanel.c`), `RZ_PowerMenu` | server, client | The power panel and its breakers ([above](#the-power-panel)) |
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair, shop, crafting, cooking and radio screens, object menus and power panels and closes them in danger (below) |
@@ -1362,7 +1454,7 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; twelve mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places, the power panel at the power station, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; twelve mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen, the shop, the crafting screen, and the quest tracker with the Quests tab). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the power panel at the power station, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, radio, object menu, power panel and spawn screens', the death brief's and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting, spawn screen, death brief, radio and power panel presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend, power breaker and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
 | Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen and its picture; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |

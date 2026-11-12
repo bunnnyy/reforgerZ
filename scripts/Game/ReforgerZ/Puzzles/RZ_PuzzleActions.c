@@ -175,6 +175,16 @@ class RZ_PuzzleChoiceAction : RZ_GroupedAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! On a world interaction spot, what its own code would refuse now (RZ_ObjectStatus.SpotLock).
+	override bool Locked(IEntity user, out string reason, out string tag)
+	{
+		if (RZ_ObjectStatus.SpotLock(GetOwner(), user, m_iOption, reason, tag))
+			return true;
+
+		return super.Locked(user, reason, tag);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();

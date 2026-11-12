@@ -725,6 +725,11 @@ class RZ_Traps
 	}
 
 	// ================================================================ Generators
+	// Why a generator won't start or take fuel (Toggle, Refuel, and the object menu's locked rows)
+	protected static const string NO_CAN = "You've no fuel for it. A jerrycan, from a garage or a wreck.";
+	protected static const string TANK_EMPTY = "It turns over and dies. No fuel.";
+	protected static const string ONE_RUNNING = "You're already running one. Two would bring every dead thing in the county.";
+
 	//------------------------------------------------------------------------------------------------
 	protected RZ_Generator FindGenerator(IEntity ent, string key)
 	{
@@ -781,6 +786,91 @@ class RZ_Traps
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The object menu's status strip on a found generator (RZ_ObjectStatus): ENGINE, FUEL and
+	//! whether you carry a can, and what it does or would need.
+	void FoundGeneratorStatus(RZ_Spot s, IEntity user, notnull RZ_ObjectStatus st)
+	{
+		RZ_Generator g = FindGenerator(null, s.m_sKey);
+		bool running = g && g.m_bRunning;
+		float fuel = 0;
+		if (g)
+			fuel = g.m_fFuel;
+
+		if (running)
+			st.Add("ENGINE", "RUNNING", RZ_ObjectStatus.STATE_OK);
+		else
+			st.Add("ENGINE", "STOPPED", RZ_ObjectStatus.STATE_DIM);
+
+		if (fuel <= 0)
+			st.Add("FUEL", "EMPTY", RZ_ObjectStatus.STATE_OFF);
+		else if (fuel < 600)
+			st.Add("FUEL", RZ_ObjectStatus.Minutes(fuel), RZ_ObjectStatus.STATE_PART);
+		else
+			st.Add("FUEL", RZ_ObjectStatus.Minutes(fuel), RZ_ObjectStatus.STATE_OK);
+
+		bool can = RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY);
+		if (can)
+			st.Add("YOUR CAN", "FULL", RZ_ObjectStatus.STATE_OK);
+		else
+			st.Add("YOUR CAN", "NONE", RZ_ObjectStatus.STATE_DIM);
+
+		int radius = RZ_Util.RoundToInt(PowerRadius());
+		if (running)
+			st.m_sHint = string.Format("It powers lights and radios within %1 m. Everything for half a mile can hear it.", radius);
+		else if (fuel <= 0)
+			st.m_sHint = "A jerrycan from a garage or a wreck would fill it.";
+		else
+			st.m_sHint = string.Format("Started, it would power lights and radios within %1 m.", radius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A found generator's option can't be done now: what Toggle or Refuel would say instead.
+	bool FoundGeneratorLock(int playerId, RZ_Spot s, int option, IEntity user, out string reason, out string tag)
+	{
+		if (!m_Settings.m_bEnabled)
+			return false;
+
+		if (option == 1)
+		{
+			if (RZ_ItemHelper.Has(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY))
+				return false;
+
+			reason = NO_CAN;
+			tag = "NEEDS FUEL";
+			return true;
+		}
+
+		// Stopping is always fine; starting needs fuel in it, and none of yours already running
+		RZ_Generator g = FindGenerator(null, s.m_sKey);
+		if (option != 0 || (g && g.m_bRunning))
+			return false;
+
+		if (!g || g.m_fFuel <= 0)
+		{
+			reason = TANK_EMPTY;
+			tag = "NEEDS FUEL";
+			return true;
+		}
+
+		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
+		if (profile && CountRunning(profile.m_sIdentity) >= m_Settings.m_iGeneratorsPerPlayer)
+		{
+			reason = ONE_RUNNING;
+			tag = "ONE RUNNING";
+			return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How close (m) a running generator powers lights and radios (RZ_PowerGrid.IsPoweredAt).
+	float PowerRadius()
+	{
+		return m_Settings.m_fGeneratorLightRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! 0 start or stop, 1 refuel. A found generator starts out empty.
 	void HandleFoundGenerator(int playerId, RZ_Spot s, int option, IEntity user)
 	{
@@ -807,7 +897,7 @@ class RZ_Traps
 	{
 		if (RZ_ItemHelper.Take(user, m_Settings.m_sFuelWords + RZ_ItemHelper.NOT_EMPTY, 1) <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, "Generator", "You've no fuel for it. A jerrycan, from a garage or a wreck.");
+			m_GM.NotifyPlayer(playerId, "Generator", NO_CAN);
 			return;
 		}
 
@@ -827,14 +917,14 @@ class RZ_Traps
 
 		if (g.m_fFuel <= 0)
 		{
-			m_GM.NotifyPlayer(playerId, "Generator", "It turns over and dies. No fuel.");
+			m_GM.NotifyPlayer(playerId, "Generator", TANK_EMPTY);
 			return;
 		}
 
 		string ident = m_GM.GetProfile(playerId).m_sIdentity;
 		if (CountRunning(ident) >= m_Settings.m_iGeneratorsPerPlayer)
 		{
-			m_GM.NotifyPlayer(playerId, "Generator", "You're already running one. Two would bring every dead thing in the county.");
+			m_GM.NotifyPlayer(playerId, "Generator", ONE_RUNNING);
 			return;
 		}
 

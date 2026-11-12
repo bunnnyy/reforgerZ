@@ -7,7 +7,9 @@
 //!
 //! The same screen is the cooking screen at a stove (docs/UI.md, "The cooking screen"): opened by
 //! "Use the stove" (RZ_Crafting.UseStove) with PAYLOAD_COOK, its rows from UI > Cook row layout, the
-//! button named for what the picked row does (Boil, Brew, Cook) and its text about the stove.
+//! button named for what the picked row does (Boil, Brew, Cook) and its text about the stove, the
+//! stove's status strip (FIRE, FUEL, ON THE HOB; UI/RZ_StatusStrip.c) under the header, and the
+//! rows' tags READY, SHORT 1 or NONE.
 //!
 //! Keys: up/down pick a recipe, Enter crafts, Esc closes. Pad: D-pad or left stick, A crafts, B
 //! closes. Mouse: click a recipe, the Craft button, the close button. You can't move while it's
@@ -26,6 +28,13 @@ class RZ_CraftMenu : RZ_MenuBase
 
 	protected static const int INPUT_ROWS = 3;
 
+	// The status strip's room (RZ_CraftMenu.layout): with it, the body sits lower and the panel is taller
+	protected static const float BODY_Y_STRIP = 262;
+	protected static const float BODY_Y_PLAIN = 160;
+	protected static const float PANEL_W = 1600;
+	protected static const float PANEL_H_STRIP = 960;
+	protected static const float PANEL_H_PLAIN = 858;
+
 	protected int m_iSerial;
 	protected int m_iParsed = -1;
 	protected bool m_bDone;						// closed by the server: nothing to send back
@@ -38,7 +47,9 @@ class RZ_CraftMenu : RZ_MenuBase
 	protected ref array<string> m_aHead = {};
 	protected ref array<ref array<string>> m_aRecipes = {};
 	protected ref array<ref array<string>> m_aInputs = {};
+	protected ref array<ref array<string>> m_aTiles = {};		// a stove's status strip (S records)
 	protected ref array<Widget> m_aRows = {};
+	protected Widget m_wSelectPrompt;							// the footer's A: the button's verb, dimmed when it can't go
 	protected ref RZ_ItemPreview m_Preview = new RZ_ItemPreview();
 	protected ResourceName m_sDescribed;
 	protected string m_sDescription;
@@ -160,8 +171,8 @@ class RZ_CraftMenu : RZ_MenuBase
 		if (s_bStove)
 			verb = "Cook";
 
-		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", verb);
-		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && prompts;
+		m_wSelectPrompt = RZ_StatusStrip.MakePrompt(m_wRoot, "Prompts", "MenuSelect", verb);
+		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && m_wSelectPrompt != null;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
 		m_Preview.Make(RZ_UIW.Find(m_wRoot, "PreviewSlot"));
 	}
@@ -186,11 +197,12 @@ class RZ_CraftMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! New data, a new selection, a local status, and once a second while work is under way.
+	//! New data, a new selection, a local status, and once a second while work is under way or a
+	//! stove's tile counts down.
 	override protected int DataVersion()
 	{
 		int tick = 0;
-		if (m_iWorking >= 0)
+		if (m_iWorking >= 0 || RZ_StatusStrip.Counting(m_aTiles))
 			tick = RZ_Util.RoundToInt(Math.Floor(RZ_UIW.Now())) % 100;
 
 		return s_iVersion * 1000000 + m_iLocal * 10000 + tick * 100 + m_iSelected;
@@ -289,11 +301,14 @@ class RZ_CraftMenu : RZ_MenuBase
 		m_aHead.Clear();
 		m_aRecipes.Clear();
 		m_aInputs.Clear();
+		m_aTiles.Clear();
 		m_iWorking = -1;
 		foreach (array<string> f : recs)
 		{
 			string tag = RZ_UIText.Str(f, 0);
-			if (tag == "B")
+			if (tag == "S")
+				m_aTiles.Insert(f);
+			else if (tag == "B")
 			{
 				m_aHead.Copy(f);
 				m_iSerial = RZ_UIText.Int(f, 1);
@@ -320,7 +335,8 @@ class RZ_CraftMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! B|serial|title|look|status|ready|recipes; W|recipe|left|total; R|index|name|prefab|icon|seconds|heat|ready|verb; N|index|name|have|need
+	//! B|serial|title|look|status|ready|recipes|town|hint|lit; W|recipe|left|total; S|label|value|state|left;
+	//! R|index|name|prefab|icon|seconds|heat|ready|verb; N|index|name|have|need
 	override protected void Redraw()
 	{
 		if (m_iParsed != s_iVersion)
@@ -330,7 +346,11 @@ class RZ_CraftMenu : RZ_MenuBase
 		}
 
 		RZ_UIW.SetText(m_wRoot, "CraftTitle", RZ_UIText.Str(m_aHead, 2));
+		string town = RZ_UIText.Str(m_aHead, 7);
+		RZ_UIW.SetText(m_wRoot, "CraftTown", town);
+		RZ_UIW.Show(m_wRoot, "CraftTown", !town.IsEmpty());
 		RZ_UIW.SetText(m_wRoot, "CraftSub", RZ_UIText.Str(m_aHead, 3));
+		DrawStrip();
 		string readyText = "You can make %1 of %2";
 		if (s_bStove)
 			readyText = "You can cook %1 of %2";
@@ -344,6 +364,24 @@ class RZ_CraftMenu : RZ_MenuBase
 		RZ_UIW.Show(m_wRoot, "CraftStatus", !status.IsEmpty());
 		DrawRecipes();
 		DrawDetails();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A stove's status strip (FIRE, FUEL, ON THE HOB) under the header; at a bench there's none,
+	//! so the body moves up and the panel shrinks.
+	protected void DrawStrip()
+	{
+		RZ_StatusStrip.Draw(m_wRoot, m_aTiles, RZ_UIW.Now() - s_fDataAt);
+		float bodyY = BODY_Y_PLAIN;
+		float panelH = PANEL_H_PLAIN;
+		if (!m_aTiles.IsEmpty())
+		{
+			bodyY = BODY_Y_STRIP;
+			panelH = PANEL_H_STRIP;
+		}
+
+		RZ_UIW.SetPos(RZ_UIW.Find(m_wRoot, "CraftBody"), 0, bodyY);
+		RZ_UIW.SetSize(RZ_UIW.Find(m_wRoot, "CraftPanel"), PANEL_W, panelH); // VERIFY: FrameSlot.SetSize on the centred panel (anchor and alignment 0.5) keeps it centred
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -409,6 +447,17 @@ class RZ_CraftMenu : RZ_MenuBase
 			state = string.Format("%1 MISSING", MissingCount(index));
 			stateColour = RZ_UIColor.Dim();
 			fg = RZ_UIW.Rgb(110, 106, 96);
+
+			// At a stove: SHORT 1 in red, or NONE dim when you carry none of it
+			if (s_bStove && HasNone(index))
+			{
+				state = "NONE";
+			}
+			else if (s_bStove)
+			{
+				state = string.Format("SHORT %1", MissingCount(index));
+				stateColour = HaveColour(false);
+			}
 		}
 		else if (on)
 		{
@@ -463,6 +512,19 @@ class RZ_CraftMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! You carry nothing at all that recipe `index` takes.
+	protected bool HasNone(int index)
+	{
+		foreach (array<string> f : m_aInputs)
+		{
+			if (RZ_UIText.Int(f, 1) == index && RZ_UIText.Int(f, 3) > 0)
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void DrawDetails()
 	{
 		array<string> f = Selected();
@@ -470,6 +532,7 @@ class RZ_CraftMenu : RZ_MenuBase
 		if (!f)
 		{
 			m_Preview.Show("");
+			RZ_StatusStrip.SetPrompt(m_wSelectPrompt, "", false);
 			return;
 		}
 
@@ -500,6 +563,19 @@ class RZ_CraftMenu : RZ_MenuBase
 
 		RZ_UIW.SetText(m_wRoot, "DetailTime", time);
 		RZ_UIW.SetText(m_wRoot, "DetailNoise", NoiseText(RZ_UIText.Int(f, 6), s_bStove));
+
+		// At a stove: whether its fire is going (it doesn't stop you: the work lights it)
+		RZ_UIW.Show(m_wRoot, "DetailLit", s_bStove);
+		if (RZ_UIText.Int(m_aHead, 9) == 1)
+		{
+			RZ_UIW.SetText(m_wRoot, "DetailLit", "A lit stove: YES");
+			RZ_UIW.Tint(m_wRoot, "DetailLit", HaveColour(true));
+		}
+		else
+		{
+			RZ_UIW.SetText(m_wRoot, "DetailLit", "A lit stove: NO, you'll light it");
+			RZ_UIW.Tint(m_wRoot, "DetailLit", RZ_UIColor.Dim());
+		}
 		RZ_UIW.Show(m_wRoot, "CraftProgress", working);
 		if (working)
 			RZ_UIW.Progress(m_wRoot, "CraftProgress", 1 - left / m_fTotal);
@@ -522,12 +598,15 @@ class RZ_CraftMenu : RZ_MenuBase
 		if (verb.IsEmpty())
 			verb = "Craft";
 
+		// The footer's A says the same ("A Boil"), dimmed while it can't go
+		RZ_StatusStrip.SetPrompt(m_wSelectPrompt, verb, canGo);
 		verb.ToUpper();
 		RZ_UIW.SetText(m_wRoot, "CraftText", verb);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "IT TAKES": one row per input, its name, "1 of 2" and HAVE or MISSING.
+	//! "IT TAKES": one row per input, its name, "1 of 2" and HAVE or MISSING; at a stove its name
+	//! and "1 / 1" on the right, olive when you have it, red when you don't.
 	protected void DrawInputs(int index)
 	{
 		int row = 0;
@@ -544,6 +623,10 @@ class RZ_CraftMenu : RZ_MenuBase
 			if (enough)
 				mark = "HAVE";
 
+			if (s_bStove)
+				mark = string.Format("%1 / %2", have, need);
+
+			RZ_UIW.Show(m_wRoot, "Input" + idx + "Count", !s_bStove);
 			RZ_UIW.Show(m_wRoot, "Input" + idx, true);
 			RZ_UIW.SetText(m_wRoot, "Input" + idx + "Name", RZ_UIText.Str(n, 2));
 			RZ_UIW.SetText(m_wRoot, "Input" + idx + "Count", string.Format("%1 of %2", have, need));

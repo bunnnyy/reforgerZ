@@ -186,6 +186,8 @@ class RZ_Dialogue
 	static const int ADMIN_BACK = 97;	// Back.: from the [Admin] list to the replies
 	static const int ADMIN = 96;		// [Admin]: a server admin's replies, as their own list
 	static const int ROWS = 5;			// replies on the screen at once, the way out included
+	//! A house set without power can't call (OpenRadio, and the object menu's locked Call row)
+	static const string NO_POWER = "No power. It'll hear the channel, but it won't carry your voice. A generator close by would do it.";
 	protected static const float TALK_GAP = 2;
 	protected static const float PICK_GAP = 0.3;
 	protected static const int MAX_SAID = 1400;
@@ -359,7 +361,7 @@ class RZ_Dialogue
 		// A house set needs power to carry a voice (a carried radio has its own batteries)
 		if (!RZ_DialogueNets.CanCall(radio))
 		{
-			m_GM.NotifyPlayer(playerId, "Radio", "No power. It'll hear the channel, but it won't carry your voice. A generator close by would do it.");
+			m_GM.NotifyPlayer(playerId, "Radio", NO_POWER);
 			return true;
 		}
 

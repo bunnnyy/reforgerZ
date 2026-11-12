@@ -169,7 +169,8 @@ and one way to end it: **research the cure.**
   nametags over the people near you), a repair screen for the cars, a shop screen at the quartermasters, a
   crafting screen at workbenches, a panel at the power station (a breaker board to set from the card
   inside its door) and a cooking screen at stoves, a radio screen with every channel and
-  the log (View radio), and one small object menu for props and places (the game's own
+  the log (View radio), and one small object menu for props and places, with a strip of readouts (POWER OFF, FIRE LIT)
+  and the options you can't use yet locked with a word saying why (the game's own
   inventory, looting, healing, doors and fuel first, a menu for anything with options, a single
   prompt only for what's done in a hurry),
   spoken lines as subtitles that say who is talking and from where (radio voices in their own box), notes on a paper reader, and on the map only what you know (of the jobs, only the tracked one's objective), with its key in the corner. Gamepad
@@ -272,7 +273,7 @@ scripts/Game/ReforgerZ/
   Interactions/  loose loot, wrecks' boots, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, petrol pumps as vanilla fuel, crafting and
                  the stove (and their screen's server side), the object menu's server side and grouped
-                 actions, water, traps, generators, fire, secure radio and the radio screen's server
+                 actions, its status strip and locked rows, water, traps, generators, fire, secure radio and the radio screen's server
                  side (View radio), a medic slowing a bite
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
@@ -284,7 +285,7 @@ scripts/Game/ReforgerZ/
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
-                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu, the power panel, the screen guard, the notice board, the spawn screen and loadout lock, the
+                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the screen guard, the notice board, the spawn screen and loadout lock, the
                  death brief, the map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
