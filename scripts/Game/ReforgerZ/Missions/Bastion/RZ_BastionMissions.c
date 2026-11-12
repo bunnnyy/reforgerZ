@@ -1028,7 +1028,8 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 
 		m_bTeam = true;
 		vector road = LandPointNear(m_vPos, 70, 110);
-		if (RZ_StoryGroups.Spawn(gm, this, RZ_Mission_BustOut.SquadPrefab(gm), road, LandPointNear(m_vPos, 8, 15), "recovery team"))
+		ResourceName team = gm.PickLook(RZ_Mission_BustOut.SquadPrefab(gm), RZ_Looks.SeedAt(road));
+		if (RZ_StoryGroups.Spawn(gm, this, team, road, LandPointNear(m_vPos, 8, 15), "recovery team"))
 			RZ_ContractHelp.NotifyNear(gm, m_vPos, 150, m_sTitle, string.Format("A truck pulls up on the road, %1, and a section climbs down and walks toward the wreck.", RZ_Util.DirectionText(m_vPos, road)));
 
 		bool trusted = false;

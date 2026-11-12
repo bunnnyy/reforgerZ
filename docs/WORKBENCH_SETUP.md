@@ -1168,13 +1168,14 @@ members of the 18 faction group prefabs below; `--arrays` prints the game mode's
 any clothing ResourceName is missing from the resource index (`$profile:RZ_ResourceIndex.txt`,
 [PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or if a look leaves a garment you can see
 (Hat, Jacket, Pants, Boots, ArmoredVest, HandWear) to its parent. A new prefab's GUID comes from its
-path, so re-running keeps them. 109 looks: 76 characters and 33 group mixes.
+path, so re-running keeps them. 111 looks: 78 characters and 33 group mixes.
 
 | Kind | Inherits | Per faction | Fills |
 |---|---|---|---|
 | `RZ_Occupant_<Faction>_<look>` | the faction's occupant | Haven 6, Bastion 5, Red Hand 5, Halcyon 6 | **Territory > <faction> occupant looks**; the Haven's also join **Haven > Occupant prefabs** |
 | `RZ_Armed_<Faction>_<look>` | a vanilla soldier, for his weapon: FIA AC (the Haven), US Rifleman and US Team Leader (Bastion), FIA Partisan (the Red Hand), US Rifleman variant 1 (Halcyon) | Haven 8, Bastion 6, Red Hand 5, Halcyon 5 | members of the group looks and the dressed groups below (no slot of their own) |
 | `RZ_Staff_Halcyon_Researcher` | the vanilla FIA medic | 1 | the member of the escorted scientist |
+| `RZ_Civ_Haven_<look>` | a vanilla civilian (turtleneck 2, cotton shirt 3) | 2 | the survivor group's two unarmed members |
 | `RZ_QM_<Faction>_<look>` | the faction's quartermaster | 3 each | **Factions > <faction> quartermaster looks** |
 | `RZ_CouncilHead_<look>`, `RZ_Outpost_<Faction>_<look>` | the council head, the faction's outpost leader | 3; 2 each | **Leaders > Council head looks**, **<faction> outpost looks** |
 | `RZ_Leader_<Faction>_<look>` | the faction's stronghold leader | 2 each | **Leaders > <faction> leader looks** |
@@ -1188,8 +1189,34 @@ path, so re-running keeps them. 109 looks: 76 characters and 33 group mixes.
 are dressed wherever they spawn as themselves: `Territory/RZ_Guard_<Faction>`, `Haven/RZ_SafehouseGuard`,
 `Factions/RZ_BastionPostCrew`, `RZ_RedHandPostCrew`, `RZ_BastionHunters`, `RZ_RedHandHunters`,
 `Supply/RZ_TruckCrew_<Faction>`, and the missions' `RZ_BastionSquad`, `RZ_EscortSoldier`,
-`RZ_RedHandGroup`, `RZ_EscortScientist` and `RZ_SurvivorGroup` (its two civilians stay vanilla). Only
-`m_aUnitPrefabSlots` changes; the faction and the rest of each prefab are kept.
+`RZ_RedHandGroup`, `RZ_EscortScientist` and `RZ_SurvivorGroup` (its two civilians are the Haven's
+`RZ_Civ_Haven_` looks). Only `m_aUnitPrefabSlots` changes; the faction and the rest of each prefab are kept.
+
+**No random variants.** A vanilla AI group spawns each member with `SpawnEntityPrefabEx(prefab, true)`,
+which swaps the prefab for a random one of its editable-entity variants
+(`SCR_EditableCharacterComponent` > **Variants**, the prefab itself counting as one). The US rifleman
+and his variant 1 list each other, so a look built on either came out of a group as the plain US
+rifleman half the time. Every look built on a parent with variants (the Bastion and Halcyon armed
+looks, Bastion's occupants) sets each inherited variant's **Enabled** to off; the tool's `VARIANTS`
+table lists them.
+
+**The check.** `py tools/people_looks.py --check --game <game folder> --mods <Workshop mods folder>`
+writes nothing and must print `OK`. It fails if the looks on disk aren't what the tables write; if
+any faction group (the dressed groups above, the group looks, the slots' own groups) lists anything
+but a character look, its first (leader) slot included; if a look leaves a random variant on; if a
+Looks list on `RZ_GameMode.et` isn't the tables' looks, isn't registered in `RegisterLooks`, or sits
+next to a slot prefab other than the looks' parent (PickLook finds a slot's looks by that prefab);
+or if a script spawns a faction person slot without `PickLook` (it follows the slot fields
+`RegisterLooks` names, the functions that return them and the locals set from them, and lets through
+a helper that calls `PickLook` on the prefab it's given). With `--game` and `--mods` (or `RZ_GAME_DIR`
+and `RZ_MODS_DIR`) it also reads the game's and the loaded Workshop mods' `resourceDatabase.rdb` and
+`.pak` files: every garment and parent must resolve by its GUID (two mods can ship a file at the same
+path under different GUIDs, as MedicalAccessories' mask does at Zelik's `ZEL_FaceClothing_Base.et`),
+every slot a look sets must be on its parent (Zelik's **Face** and **Head** included), every item list
+packed into a garment a look changes must move with it, and `VARIANTS` must be the parents' real
+variants. The game folder is the server's or the game's (with `addons/data`); the mods folder holds
+the downloaded mods (`BaconZombies_622120A5448725E3` and the rest). Without them it says so and checks
+the rest. Run it after changing the tables, a spawn of a faction person, or a Looks list.
 
 A look overrides clothing slots only: **Hat**, **Jacket**, **Pants**, **Boots**, **Back**, **Vest**,
 **ArmoredVest**, **HandWear**, and Zelik's Character slots **Face** (balaclavas, the hazmat and
@@ -1201,8 +1228,9 @@ those item lists (`ItemsInitConfigurationItem` `TargetStorage`) at the new garme
 vest when the garment is gone. Armed looks keep the parent's **Vest** (its magazines are in it).
 
 **Test it.** Open one look of each kind in Workbench and check it shows the clothes in its name and
-no warning in the log (a wrong slot name, a garment that won't attach); open `RZ_Guard_Halcyon.et`
-and `RZ_BastionSquad.et` and check their members are the looks; then the play-test checklist,
+no warning in the log (a wrong slot name, a garment that won't attach); open `RZ_Armed_Halcyon_Hood.et`
+and check **Variants** shows its one variant disabled; open `RZ_Guard_Halcyon.et` and
+`RZ_BastionSquad.et` and check their members are the looks; then the play-test checklist,
 *People's looks*.
 
 ### Traces: the Workbench spike (phase 0)
@@ -3712,6 +3740,11 @@ editor's time of day)
   helmet, flak vest or trousers, or in the FIA's beret and dirty turtleneck: check the lab's guards
   and extras, a supply truck's crew, the stronghold leaders (Halcyon's director in a suit and mask)
   and a mission's groups (Bust Out's Bastion squad, a Red Hand group, the escorted scientist).
+- [ ] Every member of a unit wears a look, the second man as much as the first: at the lab, a
+  Halcyon field station and the Halcyon stronghold, both guards of every pair in black hazmat, never
+  one in woodland with a flak vest; the same at a Bastion holding (both in olive M65, neither in
+  rolled-up woodland sleeves). Leave and come back three times (each visit spawns them afresh).
+  A survivor group's two unarmed members wear the Haven's work clothes.
 - [ ] Leave (past 300 m) and come back: each named person wears the same look as before.
 - [ ] A guard in each faction's looks fights through more than one magazine (his starting items
   moved with his clothes); a Haven guard in overalls and a Halcyon guard in hazmat still have theirs.
