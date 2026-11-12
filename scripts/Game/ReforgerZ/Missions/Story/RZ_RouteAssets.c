@@ -20,7 +20,7 @@ class RZ_RouteAssets
 		if (mine == RZ_CureFinale.NONE || mine == route)
 			return "";
 
-		return "\"You've picked your side. This isn't it.\"";
+		return "You've picked your side. This isn't it.";
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -314,7 +314,7 @@ class RZ_Mission_WeighingVault : RZ_PuzzleMission
 		{
 			int n = m_Rng.Int(3, 10);
 			m_fTarget = n;
-			riddle = string.Format("\"My scale is old and honest and it only counts. Feed it %1 things, no more, no fewer, then pull the lever.\"", RZ_NoteText.NumberPhrase(n));
+			riddle = string.Format("My scale is old and honest and it only counts. Feed it %1 things, no more, no fewer, then pull the lever.", RZ_NoteText.NumberPhrase(n));
 		}
 		else
 		{
@@ -330,7 +330,7 @@ class RZ_Mission_WeighingVault : RZ_PuzzleMission
 				thumb = " Then add half a kilo for the miller's thumb.";
 			}
 
-			riddle = string.Format("\"My scale only opens for an honest weight. Take %1 kilos, give back %2.%3 Put it in the crate and pull the lever.\"",
+			riddle = string.Format("My scale only opens for an honest weight. Take %1 kilos, give back %2.%3 Put it in the crate and pull the lever.",
 				RZ_NoteText.NumberPhrase(big), RZ_NoteText.NumberPhrase(small), thumb);
 		}
 

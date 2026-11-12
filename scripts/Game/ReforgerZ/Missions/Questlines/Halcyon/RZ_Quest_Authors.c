@@ -747,7 +747,7 @@ class RZ_Quest_Authors : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage <= S_OFFER)
-			return "\"The cure's nearly done, and everybody wants their name on it. Bastion wants a key. The Red Hand wants the whole thing.\"";
+			return "The cure's nearly done, and everybody wants their name on it. Bastion wants a key. The Red Hand wants the whole thing.";
 
 		return "";
 	}
@@ -862,7 +862,7 @@ class RZ_QM_AuthorsLetter : RZ_QM_HalcyonScene
 
 		if (!IsHolder(playerId))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"You don't have it. Whoever does should be here.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You don't have it. Whoever does should be here.");
 			return;
 		}
 
@@ -1064,7 +1064,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 			{
 				if (!IsHolder(playerId))
 				{
-					gm.NotifyPlayer(playerId, m_sTitle, "\"I was told someone would bring it. It wasn't you.\"");
+					gm.NotifyPlayer(playerId, m_sTitle, "I was told someone would bring it. It wasn't you.");
 					return;
 				}
 
@@ -1088,7 +1088,7 @@ class RZ_QM_AuthorsPlan : RZ_QM_HalcyonScene
 			{
 				if (!IsHolder(playerId))
 				{
-					gm.NotifyPlayer(playerId, m_sTitle, "\"Bring me the case, then we'll talk.\"");
+					gm.NotifyPlayer(playerId, m_sTitle, "Bring me the case, then we'll talk.");
 					return;
 				}
 
@@ -1177,7 +1177,7 @@ class RZ_QM_AuthorsAnswer : RZ_QM_HalcyonScene
 		m_iSettlement = gm.FindNearestSettlement(co.m_vPos);
 		string demand = "\"A locked crate for the batch. A key, in my pocket. A Bastion guard on the clean room through the stand.\" The adjutant reads it out flat, the way he reads everything. \"The CO considers that generous.\"";
 		if (QFlag(gm, "early_terms") == 1)
-			demand = "\"The CO has read the dead woman's notebook, and knows what the lab sat on for three weeks. The terms: a locked crate, a key in the CO's own pocket, and a Bastion guard on the clean room.\"";
+			demand = "The CO has read the dead woman's notebook, and knows what the lab sat on for three weeks. The terms: a locked crate, a key in the CO's own pocket, and a Bastion guard on the clean room.";
 
 		int talk = AddClue("The adjutant", demand);
 		AddSpot(m_vPos, RZ_EPuzzleProp.CIVILIAN, OBJ_ADJUTANT, talk, "Talk to the adjutant", "Agree, for the director|Bargain: two guards at the gate, no key|Refuse, for the lab", "the commanding officer's adjutant");

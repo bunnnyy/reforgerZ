@@ -1,7 +1,7 @@
 # Writing
 
-How every line of player text in ReforgerZ is written: the tone, the voices, the rules each line
-follows, and the lint that checks them. Who the factions are as people, and the setting they speak
+How every line of player text in ReforgerZ is written: the tone, the voices, how people talk to you
+(the house rules for talk, below), the rules each line follows, and the lint that checks them. Who the factions are as people, and the setting they speak
 from, is in [LORE.md](LORE.md). The epilogue week's lines (route and terms, the lab, the queue,
 the leaders' verdicts, residents, the road, the open channels) are in
 `Director/Epilogue/RZ_EpilogueText.c` ([EPILOGUE.md](EPILOGUE.md)); a leader's opener in the week is
@@ -13,6 +13,7 @@ built from parts here (below).
 - [Everyone is right about something](#everyone-is-right-about-something)
 - [The voices](#the-voices)
 - [By channel](#by-channel)
+- [Talk](#talk)
 - [The government broadcast](#the-government-broadcast)
 - [Information comes first](#information-comes-first)
 - [The season mood](#the-season-mood)
@@ -81,7 +82,7 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
 - **Headlines** about the factions are one plain sentence with one small detail: *"Bastion buried
   Corporal Weber outside Morton. No salute: they're saving ammunition."*
 - **Haven gossip** is about food, never blame: *"The safehouse in Levie has gone to half portions.
-  The children eat first."* When a hungry house takes from a fed one, it's *"borrowed"*, in quotes.
+  The children eat first."* When a hungry house takes from a fed one, it's *'borrowed'*, in single quotes.
   The Haven's dark side is always said sideways, never announced.
 - **Whoever's outside an opening's door** ([DESIGN.md](DESIGN.md#openings-how-every-life-starts))
   talks like a neighbour on a doorstep: plain, relieved, a little embarrassed, never an institution.
@@ -106,7 +107,8 @@ hard edges are each faction's in [LORE.md](LORE.md#the-factions-as-people).
 - **Players on the radio station** pick a preset, and it reads like a person: their name, one real
   place, one request. *"This is Mara. There's a horde moving around Morton. Stay clear of it."*
 - **Leaders** speak in their faction's voice, coloured by their traits. One short line before a
-  brief and one after, never a speech:
+  brief and one after, never a speech; on the talk screen the brief is followed by where, the pay and
+  the danger in their words, and you say yes or no ([Talk](#talk), rule 5):
 
 | Trait | Humour | Example of the register |
 |---|---|---|
@@ -135,7 +137,8 @@ while, about food. The boss always jokes. The director never jokes on purpose.
 | Traces: door marks, graves, the season marks ([TRACES.md](TRACES.md)) | What anyone sees, then the writer's meaning, then one true detail ([levels](TRACES.md#reading-a-door)) | One plain sentence and one detail; the writer's voice briefly at Read and Know | None. The mark's own words may be dry | A gore detail, a child hurt, a pronoun for a seeded person, a hint at the Long Table, a joke at a victim. The Haven never writes "taken" |
 | Leader openers and closers | A named person | Faction voice and traits ([above](#the-voices)) | Set by trait | A speech |
 | Mission briefs | The giver | The giver's voice | Haven and Red Hand givers may open with one. Bastion is procedural, Halcyon clinical. **Mercy jobs never** | Telling the player what's right |
-| Choice labels | The player | Verb and object, then the cost or check in brackets | None | Judgement words. Rewards or consequences |
+| Replies on the talk screen | The player | What you say, word for word ([Talk](#talk)) | Only the player's own wry replies (`dry`) | A menu label. Judgement words. Rewards or consequences |
+| Action labels (world prompts, the object menu) | The player | Verb and object, then the cost or check in brackets | None | Judgement words. Rewards or consequences |
 | Outcomes | What happened, then one reaction | Three beats ([below](#phrasing-choices-and-outcomes)) | Only in the reaction | A verdict. Numbers inside the voiced beats |
 | Guidance | A voiced speaker, or nobody | Voiced tips: the speaker's register. Plain hints: plain | Voiced tips: the speaker's. Plain hints, veterans' short lines, standing and pay notices: none | Burying a critical instruction: it comes first and can't be misread |
 | The Long Table | The family | Homely | None, ever | Describing anything |
@@ -150,6 +153,71 @@ works half the time..."* The target is the price, the dose and the drinking, not
 person's fear or pain.
 
 **Swearing:** mild and rare, only in Red Hand and Bastion voices, and never the punchline.
+
+## Talk
+
+The house rules for everything a person says to you: lines on the talk screen, the replies you
+pick, job offers, subtitles, and radio and loudspeaker lines. The model is Fallout: New Vegas: their
+name sits at the top right, their line in the band, your replies in the box, and both read like two
+people talking. They apply to the conversation files (`dialogue/**/*.rzd`) and to every line and
+reply the scripts build; the text lint checks what it can ([below](#checking-text)). Examples on
+this page are in italics; the quotation marks some of them carry elsewhere on the page are the
+page's, never the line's.
+
+1. **They talk to you, straight.** Their line is spoken to the player in the first person, as
+   someone standing in front of you would say it. No quotation marks around it, no speaker label
+   ("The guard:", "Sgt Hale says"), no narration or stage directions ("He looks away."), and never a
+   line that's only "...". The name is already on screen. A quote inside a line takes single quotes:
+   *We call it 'borrowed'. Nobody's fooled.*
+2. **Every line carries context.** Someone new to the Zone must be able to follow it: who's talking
+   (their job, side, what they care about), what's going on, where (a real place from the tokens),
+   and why it matters to you. Build the world: the seal and the Perimeter, the broadcast, the
+   factions and their people, the infected, the season's days, shortages, the dead. Concrete details
+   (names, places, numbers, objects, smells) beat mood. Two to four sentences is normal. The screen
+   pages a node's line in boxes of about three rows; keep a node under about 420 characters and split
+   a longer thought into a chain of nodes with a reply like "Go on."
+3. **Depth over filler.** Every line tells you something new, gives you a choice that matters, or
+   shows who this person is. Cut "Stay safe.", "Hmm.", "Something else?", or give them a reason to
+   exist. Keep each faction's voice ([The voices](#the-voices)) and the season mood, the humour line
+   ([below](#dark-humour-not-edginess)) and the swearing rule (mild, Red Hand and Bastion only).
+4. **Replies are what you say, word for word.** First person, natural, short (under about 70
+   characters), never a menu label, and varied by speaker and situation. A check keeps the engine's
+   tag in front of the words ([Persuade - Haven - 1 of 2] *You don't want this on your conscience.*):
+   writers never type the tag ([DIALOGUE.md](DIALOGUE.md#checks-and-tags)).
+5. **A job is explained before you take it.** The giver says what, where, who it's for, why it
+   matters to them, what it pays and the danger in it, in their own voice. Then your replies are
+   what you'd say, and the yes makes clear you're agreeing: *I'll do it.*, *Count me in. Where do I
+   start?*, *What's in it for me?*, *Not today.*
+6. **Ids are the engine's.** Node ids, reply ids (`@id`), conditions, effects, checks and tokens
+   stay as they are unless a change needs them; the dialogue lint must pass ([DIALOGUE.md](DIALOGUE.md#tools)).
+7. **Radio and loudspeakers are speech too.** No quotation marks; a sign-off like *Bastion out.* is
+   part of the speech, not a label. The channel's name is the title.
+
+**No filler greeting.** When you walk up and talk, the screen opens on your replies: nobody says a
+default hello. They speak first only when they have something to say: a first meeting (`say? !met
+:: ...`), a callback or promise, news, an event, their state, a refusal, a job waiting, or because
+they called you over. How the engine does it: [DIALOGUE.md](DIALOGUE.md#no-filler-greeting).
+
+| | Not this | This |
+|---|---|---|
+| Their line | *"Stores are open, such as they are."* | (nothing: the screen opens on your replies) |
+| Their line | The Haven: "We're managing." | We're managing, just about. Morton's had soup three nights running and nobody's complained yet, which worries me. |
+| Their line | He holds up an empty sack. "Got a tin?" | Got a tin? Just the one. {house} is on half portions and I've a girl there. Look, the sack's empty. |
+| Radio | "Bastion to Command. Over." A long hiss. | Bastion to Command. Requesting status of relief. Over. ... Bastion out. |
+| Reply | Ask for work | Got any work for me? (Bastion), Is there anything the house needs doing? (the Haven) |
+| Reply | Trade | Show me what you've got. (the Red Hand), I need to draw from stores. (Bastion) |
+| Reply | Something else. / Leave. | Let me ask you something else. / I'll let you get on. |
+| Reply | Check standing | (gone: the notebook's Standing tab says it) |
+| Reply | Give them your antidote | Here. Take my antidote. Quickly. |
+| Job offer | "Nothing for you today." / the job as a card | The leader's intro, the brief and their sign-off, then *It's at Morton, 1.2 km north-east. Pay is 15 Favor on completion, and 10 Fame on the roster.* and the danger; then *I'll do it.* / *Not today.* |
+
+**Built replies.** A reply the scripts build from an action's name ("Ask for work", "Trade", "Share
+some food", a stranger's "Give him a tin") keeps that name for the world prompt and the object menu;
+the talk screen says it in the words in `Dialogue/RZ_TalkWords.c`, by the speaker's faction. A new
+built reply gets an entry there (the text lint holds every one to it). An errand's ways on offer are
+said as what you agree to: "Fetch the cleaning kits" is *I'll fetch the cleaning kits.*, its "Not now"
+*Not now. Ask me again another time.* The way out varies by who you're talking to (*I'll let you get
+on.* at the Haven, *That's all for now.* to Bastion).
 
 ## The government broadcast
 
@@ -281,14 +349,18 @@ optional condition in the conversation syntax (`cure>=50`), a weight and the tex
 
 Conversation lines ([DIALOGUE.md](DIALOGUE.md)) follow everything on this page, and these:
 
-- **Lines.** One to three short lines a node, in the faction's voice, coloured by the speaker's
-  traits. The speaker talks in the first person; no he, she, him or her for a seeded speaker.
-- **Choices** are things a person would say or do: speech in quotes, actions as plain words, 40
-  characters or fewer. No choice is labelled good or evil, and every option costs something real;
-  the kind one usually pays least. A wry line is never the only way through, and never the only
-  kind way.
+- **Lines** follow [Talk](#talk): one to three says a node, spoken straight to you, in the
+  faction's voice, coloured by the speaker's traits; no he, she, him or her for a seeded speaker.
+- **A first meeting** is a `say? !met :: ...` on the greet: `met` is true once you've talked to that
+  speaker this life, for every speaker ([DIALOGUE.md](DIALOGUE.md#no-filler-greeting)). A greet's plain
+  `say` is never shown when the screen opens on its own; only its `say?` lines that hold are.
+- **Choices** are what you say ([Talk](#talk), rule 4), without quotation marks, 40 characters or
+  fewer where the lint allows (labels 60). No choice is labelled good or evil, and every option costs
+  something real; the kind one usually pays least. A wry line is never the only way through, and
+  never the only kind way.
 - **Tags are the engine's.** Writers never type "[Persuade]" or "(20 Favor)": the tag comes from
-  the check or the price, so it can't promise what isn't tested.
+  the check or the price, so it can't promise what isn't tested, and the screen shows it in front of
+  your words.
 - **The player's voice by background:** Ex-Con and Raider wry and quick; Unemployed and Drifter
   plain, sometimes funny; Soldier and Police procedural; Nurse, Doctor and Lab Technician clinical
   and kind; Hunter, Mechanic and Radio Operator practical, few words; the Elder slow, and knows
@@ -474,7 +546,8 @@ row):
 
 ## Phrasing choices and outcomes
 
-- **Choice labels:**
+- **Action labels** (world prompts, the object menu; a reply on the talk screen is speech instead,
+  [Talk](#talk)):
   - Verb and object, from the player's point of view, 40 characters or fewer, with no judgement words.
   - Then the check or cost in short brackets: `[Police or Known]`, `(20 Favor)`.
   - The whole label is 64 characters or fewer, so the action menu doesn't cut it.
@@ -628,15 +701,21 @@ Two tools check the scripts' text; how to run them is in
 
 - **`tools/strings_inventory.py`** lists every literal that can reach a player: notices, headlines,
   rumours, briefs, labels and choices, clues, journal lines, outcomes, the guidance tips, the voice
-  pools and the voice bank, and every line of the conversation files (`dialogue/**/*.rzd`: says as
-  talk-screen lines, labels as choices; the generated packs are skipped). For each: its file and line, the channel (guessed from the call, the assignment or the
+  pools and the voice bank, the replies the talk screen's code builds (`reply`: `Reply`, `OwnRow`, a
+  scene's `Verb`, and what `RZ_TalkWords` returns), and every line of the conversation files
+  (`dialogue/**/*.rzd`: says as talk-screen lines, labels as choices; the generated packs are skipped). For each: its file and line, the channel (guessed from the call, the assignment or the
   function), the faction (from the folder, or the nearest `case RZ_EFaction.X:`), a register guess
   (PLAIN, WRY, JOKE, TAUNT, BLEAK, SILENCE) and how often it repeats.
 - **`tools/voice_lint.py`** checks that list against the rules on this page:
 
 | Check | The rule |
 |---|---|
-| `length` | Radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers, talk-screen lines and Traces' lines (channels `trace` and `door`): 200 characters or fewer. Labels and choices: the action part 40 or fewer, the whole 64 or fewer. Briefs over 500: a warning only |
+| `length` | Radio, hints, leader lines, rumours, headlines, the broadcast, loudspeakers and Traces' lines (channels `trace` and `door`): 200 characters or fewer. Labels and choices: the action part 40 or fewer, the whole 64 or fewer. Briefs over 500: a warning only |
+| `quote` | No double quotation marks in a spoken line: talk-screen lines, the radio, loudspeakers, the broadcast, the voice pools, leaders' lines, replies built in code, and a conversation's says and choices ([Talk](#talk), rules 1 and 7) |
+| `speaker` | A talk-screen line doesn't start with a speaker's label ("The guard: ", "Sgt Hale: "). A conversation's `say (role)` lines are the engine's and pass |
+| `reply` | A reply (a conversation's choice, or one built in code) reads as speech: not a bare label ("Trade", "Leave.", "Something else."), not an action ("Ask for work", "Tell them you've been bitten"), and it ends like speech (`.` `?` `!`). Check tags in brackets in front or behind are fine; a built label with an entry in `Dialogue/RZ_TalkWords.c` passes, since the screen says it in those words |
+| `split` | A talk-screen line built in code, or a conversation node's says together (a `say?` counts as the say it stands in for), is 420 characters or fewer |
+| `ellipsis` | No spoken line that's only "..." |
 | `bang` | `!` only in Red Hand lines, notice titles and loudspeakers (alarms) |
 | `format` | `%1`–`%9` only |
 | `token` | Every `{token}` is a `Fill` token or a questline's key (a conversation's tokens in `.rzd` files, `{place}` in the voice bank) |
@@ -651,4 +730,7 @@ Two tools check the scripts' text; how to run them is in
 
 `tools/voice_lint_baseline.txt` holds the findings in today's text (the check, the file and a hash of
 the line), so the lint fails only on new or changed text. Each writing pass fixes lines and shrinks
-it. The lint checks words and limits, not tone: the three tests above are still the author's.
+it: most of it today is the talk pass's `quote` and `reply` findings in the conversation files and
+the errands' cards, which the rewrite drives to zero. The lint checks words and limits, not tone or
+narration: the three tests above, and whether a line gives context ([Talk](#talk)), are still the
+author's.

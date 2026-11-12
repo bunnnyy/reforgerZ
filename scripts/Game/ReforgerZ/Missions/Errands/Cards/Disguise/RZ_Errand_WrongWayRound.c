@@ -14,9 +14,9 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"Somebody's taking tolls on the road by {house} under our hand. Painted it backwards. Go and look, then tell me what you want done about it.\"",
-			"\"Red hands on a road we don't run, by {house}. Thumbs on the wrong side. That's either an insult or children.\"");
-		Over("\"The hands by {house} got painted over. Somebody else had a word.\"");
+		Offer("Somebody's taking tolls on the road by {house} under our hand. Painted it backwards. Go and look, then tell me what you want done about it.",
+			"Red hands on a road we don't run, by {house}. Thumbs on the wrong side. That's either an insult or children.");
+		Over("The hands by {house} got painted over. Somebody else had a word.");
 
 		RZ_ErrandWay w = Way("report");
 		w.m_sLabel = "Tell the boss";
@@ -35,7 +35,7 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the lads on the road by {house} and take your share of the tolls (10 s there). Then tell {giver} it was nobody.";
 		w.m_iFavor = 6;
-		w.Done("\"Nobody? Fine. Paint's paint.\"");
+		w.Done("Nobody? Fine. Paint's paint.");
 
 		w = Way("talk");
 		w.m_sLabel = "Warn them off";
@@ -45,7 +45,7 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the lads on the road by {house} and tell them to paint over the hands before the crews come (10 s there). Then tell {giver} it was nothing.";
 		w.m_iFame = 2;
-		w.Done("\"Nothing? Then it'll be gone by the time I look.\"");
+		w.Done("Nothing? Then it'll be gone by the time I look.");
 
 		w = Way("press");
 		w.m_sLabel = "Recruit them";
@@ -56,7 +56,7 @@ class RZ_Errand_WrongWayRound : RZ_ErrandCard
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the lads on the road by {house} and tell them the Red Hand has work for people who can hold a road (10 s there). Then bring {giver} the news.";
 		w.m_iFame = 2;
-		w.Done("\"Keen, are they? Good. Teach them which way round a hand goes.\"");
+		w.Done("Keen, are they? Good. Teach them which way round a hand goes.");
 	}
 
 	//------------------------------------------------------------------------------------------------

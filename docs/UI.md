@@ -472,7 +472,12 @@ The notice board opens when you read a safehouse board, with **UI > Board menus*
 
 New Vegas style, in **two steps** (the mockup is `talk.html`): the world isn't dimmed, the person
 stays in view, and their name (bold 40) and sub-line, "The Haven - council head - knows your name"
-(24, bone), sit at the top right in their faction colour, with a shadow, from start to end.
+(24, bone), sit at the top right in their faction colour, with a shadow, from start to end. Their name
+is shown **only there**: never in front of their line. Their line shows without quotation marks
+(the screen takes a leading and trailing pair of straight or curly quotes off each line, and the
+speaker's own "Name: " in front, `RZ_TalkMenu.Spoken`; someone else's name in front of their line
+stays). When they have nothing to say first ([DIALOGUE.md](DIALOGUE.md#no-filler-greeting)) the
+screen **opens straight on step 2**, your replies, with no line.
 
 1. **Their line on its own.** When they speak, only their line shows, in a subtitle band in the
    lower middle (1,320 wide, #121416 at 85%, a 5 px bar down its left in the faction colour; the
@@ -493,8 +498,10 @@ stays in view, and their name (bold 40) and sub-line, "The Haven - council head 
    five**: the selected one with a fill and an outline in the faction colour; a reply's tag before
    it in the faction colour, in brackets ("[a job]", "[news]", "[trade]", "[Speech - Bastion 2/3]");
    a reply you can't take faint, its tag too, with what it needs after it ("(you have 1)"); a reply
-   with nothing new behind it **grey** (it still works). The last is always the way out, "I'll be
-   going.". Under the box, the footer: "D-pad: choose · A: say it · LB/RB: page · B: leave" (the
+   with nothing new behind it **grey** (it still works). Every reply is what you say, word for word
+   (*Show me what you've got.*, not "Trade": [WRITING.md](WRITING.md#talk)), without quotation marks.
+   The last is always the way out, said to this person (*I'll let you get on.*, *That's all for
+   now.*, *I'll be going.*). Under the box, the footer: "D-pad: choose · A: say it · LB/RB: page · B: leave" (the
    pad's or the keys' glyphs, by the device in use), with "1-5: a reply · Q/E: page · Esc: leave"
    on its right.
 3. **Their answer.** The reply you say fades (the others go at once) and their answer takes the
@@ -531,7 +538,8 @@ apart), and the press that ends their line never also says the reply that comes 
 everything else they offer is a reply on their hub (vanilla's own actions on them stay). For the
 people with the puzzle components that's their read; for a quartermaster and a safehouse's medic,
 who have none, it's **Talk to the quartermaster** / **Talk to the medic** (`RZ_TalkAction`), and
-their old prompts are replies: **Trade** opens [the shop screen](#the-shop-screen), **Ask for
+their old prompts are replies, said as speech (*Show me what you've got.*, *Who's in charge here?
+I'd like a word.*): **Trade** opens [the shop screen](#the-shop-screen), **Ask for
 whoever's in charge** hands the conversation to the seat's leader, **Ask for the trial dose** on
 Halcyon's shows only greyed with what it needs until it applies, and the Haven's house services
 (hand over food, get patched up, tell them you're bitten, the radio, the board...) are rows, greyed

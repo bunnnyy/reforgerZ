@@ -11,22 +11,22 @@ class RZ_Errand_CharacterReference : RZ_ErrandCard
 		m_sTitle = "Character Reference";
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("\"You go to {other}. What are they actually like? Not the radio. You.\"",
-			"\"Off the record. {other}. You've been in with them. Are they people we could deal with, or not?\"");
-		Over("\"Never mind. We've made our minds up. Probably wrongly.\"");
+		Offer("You go to {other}. What are they actually like? Not the radio. You.",
+			"Off the record. {other}. You've been in with them. Are they people we could deal with, or not?");
+		Over("Never mind. We've made our minds up. Probably wrongly.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Say what you've seen";
 		w.m_iFavor = 3;
-		w.Done("\"Huh. That's not what I expected. That's probably why it's true.\"");
+		w.Done("Huh. That's not what I expected. That's probably why it's true.");
 
 		w = Way("talk");
 		w.m_sLabel = "Speak well of them";
-		w.Done("\"Really? Well. If you say so.\"");
+		w.Done("Really? Well. If you say so.");
 
 		w = Way("talk");
 		w.m_sLabel = "Speak ill of them";
-		w.Done("\"I knew it. I always knew it.\"");
+		w.Done("I knew it. I always knew it.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -87,6 +87,6 @@ class RZ_Errand_CharacterReference : RZ_ErrandCard
 		// An answer that wasn't what you'd seen comes back to you
 		RZ_Shared shared = gm.GetShared();
 		if (w.m_iIndex != 0 && shared)
-			shared.GetCallbacks().Queue(playerId, e.m_sGiverTitle, string.Format("\"You told us what %1 are like. We went and looked. You owe us a better answer.\"", other), e.m_vGiver);
+			shared.GetCallbacks().Queue(playerId, e.m_sGiverTitle, string.Format("You told us what %1 are like. We went and looked. You owe us a better answer.", other), e.m_vGiver);
 	}
 }

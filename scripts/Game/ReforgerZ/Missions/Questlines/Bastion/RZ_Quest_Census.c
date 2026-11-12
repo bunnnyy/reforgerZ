@@ -661,7 +661,7 @@ class RZ_Quest_Census : RZ_Questline
 				ChangeFood(gm, ha, 2);
 				ChangeFood(gm, hb, 2);
 				Headline(gm, run.Fill("Bastion read {names} names to Command last night. No reply."));
-				SpreadRumour(gm, run.Fill("\"Bastion has every name in {town_a} and {town_b} on a card now. The trucks stop there first. So will everything else.\""), 8);
+				SpreadRumour(gm, run.Fill("Bastion has every name in {town_a} and {town_b} on a card now. The trucks stop there first. So will everything else."), 8);
 				break;
 			}
 			case E_FORGED:
@@ -684,7 +684,7 @@ class RZ_Quest_Census : RZ_Questline
 					RZ_BastionQuest.SetWorld(gm, KEY + ".spared", spared);
 				}
 
-				SpreadRumour(gm, "\"Bastion's numbers don't add up. Somebody's made sure of it.\"", 6);
+				SpreadRumour(gm, "Bastion's numbers don't add up. Somebody's made sure of it.", 6);
 				break;
 			}
 			case E_REFUSED:
@@ -696,7 +696,7 @@ class RZ_Quest_Census : RZ_Questline
 				int pressed = RZ_BastionQuest.World(gm, KEY + ".pressed") | RZ_BastionQuest.HouseBit(ha) | RZ_BastionQuest.HouseBit(hb);
 				RZ_BastionQuest.SetWorld(gm, KEY + ".pressed", pressed);
 				RZ_BastionQuest.SetWorld(gm, KEY + ".refused", 1);
-				SpreadRumour(gm, run.Fill("\"Somebody tore up Bastion's count at the radio. {co} wants to know who. The Haven isn't saying.\""), 8);
+				SpreadRumour(gm, run.Fill("Somebody tore up Bastion's count at the radio. {co} wants to know who. The Haven isn't saying."), 8);
 				break;
 			}
 			case E_REDHAND:
@@ -728,13 +728,13 @@ class RZ_Quest_Census : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage <= S_CARDS)
-			return "\"Bastion's counting heads in {town_a}. Says it's for ration cards. Last time they had a list, we ended up at the line.\"";
+			return "Bastion's counting heads in {town_a}. Says it's for ration cards. Last time they had a list, we ended up at the line.";
 
 		if (run.m_iStage == S_CURFEW)
-			return "\"Curfew in {town_f} tonight. Bastion's orders. In a Haven town.\"";
+			return "Curfew in {town_f} tonight. Bastion's orders. In a Haven town.";
 
 		if (run.m_iStage <= S_RAID)
-			return "\"The Red Hand's been asking which houses got Bastion's ration cards. Funny question.\"";
+			return "The Red Hand's been asking which houses got Bastion's ration cards. Funny question.";
 
 		return "";
 	}
@@ -1417,7 +1417,7 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 
 		if (RZ_BastionQuest.Rank(gm, playerId, RZ_EFaction.BANDITS) < 1)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"You? I don't know you. Walk your little beat.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You? I don't know you. Walk your little beat.");
 			return;
 		}
 
@@ -2037,7 +2037,7 @@ class RZ_QM_CensusCall : RZ_QuestMission
 		}
 
 		run.SetText("names", RZ_BastionQuest.NumberWords(names));
-		string text = string.Format("\"Command, Bastion. Effective strength %1. Civilians sheltered, %2. Requesting relief. Over.\"", RZ_BastionQuest.NumberWords(m_iStrength), RZ_BastionQuest.NumberWords(names)) + hiss;
+		string text = string.Format("Command, Bastion. Effective strength %1. Civilians sheltered, %2. Requesting relief. Over.", RZ_BastionQuest.NumberWords(m_iStrength), RZ_BastionQuest.NumberWords(names)) + hiss;
 		if (outcome == RZ_Quest_Census.OUT_TRUE)
 		{
 			run.Reward(gm, playerId, RZ_EFaction.MILITARY, 5, 30, "Everything is signed for.");

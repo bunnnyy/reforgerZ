@@ -13,9 +13,9 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"You're army. You'll know. My son's in your stockade, they said, three weeks now. Can you find out? I've a tin for whoever does the paperwork.\"",
-			"\"Excuse me. Sir. My boy's with your lot, in the stockade. Is he eating? Is there a form? I'll fill in any form.\"");
-		Over("\"Never mind. Someone from the post came by. I know now, and I wish I didn't.\"");
+		Offer("You're army. You'll know. My son's in your stockade, they said, three weeks now. Can you find out? I've a tin for whoever does the paperwork.",
+			"Excuse me. Sir. My boy's with your lot, in the stockade. Is he eating? Is there a form? I'll fill in any form.");
+		Over("Never mind. Someone from the post came by. I know now, and I wish I didn't.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Tell her you're not Bastion";
@@ -23,7 +23,7 @@ class RZ_Errand_OfficersCoat : RZ_ErrandCard
 
 		w = Way("lie");
 		w.m_sLabel = "Take the tin \"for the paperwork\"";
-		w.Done("\"Thank you. Thank you. I'll wait to hear.\"");
+		w.Done("Thank you. Thank you. I'll wait to hear.");
 
 		w = Way("do");
 		w.m_sLabel = "Ask at the post yourself";

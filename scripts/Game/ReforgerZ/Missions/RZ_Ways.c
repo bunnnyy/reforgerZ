@@ -175,7 +175,7 @@ class RZ_Ways
 		IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 		bool pass = false;
 		if (seenThrough)
-			d.Caught(playerId, faction, me, "\"I know you. Whatever you're wearing.\"");
+			d.Caught(playerId, faction, me, "I know you. Whatever you're wearing.");
 		else
 			pass = d.Look(playerId, faction, difficulty, person, paper, 600);
 

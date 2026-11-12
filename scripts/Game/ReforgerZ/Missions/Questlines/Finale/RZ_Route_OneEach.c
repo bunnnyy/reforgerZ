@@ -112,8 +112,8 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				int clerk = scene.Person(RZ_MajorHelp.NearSeat(lab), "the lab's clerk", "Talk to the clerk", "The Day 6 ledger, the same one the Haven reads.");
 				scene.Choice(clerk, "Read the Day 6 ledger [Halcyon: Known]").Needs(RZ_EFaction.INSTITUTE, 1).Decides(OUT_ACT1).Says("Eight names beside eight numbers. A house medic matches them to faces.", "read the Day 6 ledger");
 				scene.Choice(clerk, "Pay a courier for a look [20 Favor]").Bribe(RZ_EFaction.INSTITUTE, 20).Decides(OUT_ACT1).Says("A courier copies the eight lines for you.", "bought a look at the ledger");
-				int doctor = scene.Person(LabGate(gm), "the Doctor at the lab gate", "Talk to the Doctor", "\"I sat with two of them that night.\"");
-				scene.Choice(doctor, "Ask about the eight").Persuade(RZ_EFaction.SURVIVORS, 1, "doctor,nurse").Decides(OUT_ACT1).Says("\"Most went back to the houses. One's on a Bastion roster. One's in a crew's book. One stayed at a field station.\"", "heard about the eight from the Doctor").Refused("\"Ask me when you know why you're asking.\"");
+				int doctor = scene.Person(LabGate(gm), "the Doctor at the lab gate", "Talk to the Doctor", "I sat with two of them that night.");
+				scene.Choice(doctor, "Ask about the eight").Persuade(RZ_EFaction.SURVIVORS, 1, "doctor,nurse").Decides(OUT_ACT1).Says("Most went back to the houses. One's on a Bastion roster. One's in a crew's book. One stayed at a field station.", "heard about the eight from the Doctor").Refused("Ask me when you know why you're asking.");
 				return true;
 			}
 			case S_DOOR:
@@ -132,7 +132,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 						continue;
 
 					vector at = PersonAt(key, lab);
-					int who = scene.Person(at, p.name + ", one of the eight", "Talk to them", "\"Day 6. I walked up the hill and I walked back down. What do you want with that?\"");
+					int who = scene.Person(at, p.name + ", one of the eight", "Talk to them", "Day 6. I walked up the hill and I walked back down. What do you want with that?");
 					scene.Choice(who, AskLabel(p.faction)).Sets("do:ask:" + key).Says("A yes, and a bag, at the edge of the town at dusk.", "asked one of the eight");
 					asked++;
 				}
@@ -140,19 +140,19 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				if (eight.Count() < 3)
 					run.SetFlag("short", 1);
 
-				int gate = scene.Person(scene.m_vPos, "the Doctor at the lab gate", "Talk to the Doctor", "\"If the eight can't, the houses' donors can. It's slower.\"");
+				int gate = scene.Person(scene.m_vPos, "the Doctor at the lab gate", "Talk to the Doctor", "If the eight can't, the houses' donors can. It's slower.");
 				scene.Choice(gate, "Donors at a Haven medic instead").Only("short").Decides(OUT_OTHER).Says("Donors at a Haven medic, one by one. Nobody's, all of them.", "asked the houses' donors");
 				if (run.Flag("short") != 0 && Finale().GetPeople().IsAlive("twice"))
 				{
 					// The eight's fallback: Twice, who has the same luck, and the Scavenger
-					int twice = scene.Person(PersonAt("twice", lab), "a man the crews call Twice", "Talk to Twice", "\"Killed in action once. Bitten once. Neither took. For everyone? Fine.\"");
+					int twice = scene.Person(PersonAt("twice", lab), "a man the crews call Twice", "Talk to Twice", "Killed in action once. Bitten once. Neither took. For everyone? Fine.");
 					RZ_QM_RouteScene.Cast(scene).TrackSubject(twice, "twice");
 					scene.Choice(twice, "Pay his debt and ask [30 Favor]").Sets("do:ask:twice").Says("A yes, and a bag, at the edge of the town at dusk.", "asked Twice");
 				}
 
 				if (run.Flag("short") != 0)
 				{
-					int scav = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 30, 60), "the Scavenger at the lab gate", "Talk to the Scavenger", "\"Bitten twice on the road. Ate well both times. Want some?\"");
+					int scav = scene.Person(RZ_Mission.LandPointNear(scene.m_vPos, 30, 60), "the Scavenger at the lab gate", "Talk to the Scavenger", "Bitten twice on the road. Ate well both times. Want some?");
 					scene.Choice(scav, "Share food and ask [2 food]").Trade(RZ_EErrandItem.FOOD, 2).Sets("do:scav").Says("A bag, given over a tin of peaches. \"For everyone. Even them.\"", "asked the Scavenger");
 				}
 
@@ -172,19 +172,19 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 			case S_ACT4:
 			{
 				scene.m_vPos = lab;
-				int lead = scene.Person(RZ_Mission.LandPointNear(lab, 30, 60), "a field lead", "Talk to the field lead", "\"Some of us would rather give it away.\"");
+				int lead = scene.Person(RZ_Mission.LandPointNear(lab, 30, 60), "a field lead", "Talk to the field lead", "Some of us would rather give it away.");
 				int step = 2;
 				if (Major(gm, "authors.open") != 0)
 					step = 1;
 
-				scene.Choice(lead, "A tray off the books").Persuade(RZ_EFaction.INSTITUTE, step, "labtech").Sets("do:tray").Says("A tray set aside, \"spoiled\".", "had a tray set aside").Refused("\"Not one of ours. Not under nobody's name.\"");
-				int clerk2 = DutyOfficer(gm, scene, "\"A tray under nobody's name. The director won't like the sheet.\"");
+				scene.Choice(lead, "A tray off the books").Persuade(RZ_EFaction.INSTITUTE, step, "labtech").Sets("do:tray").Says("A tray set aside, \"spoiled\".", "had a tray set aside").Refused("Not one of ours. Not under nobody's name.");
+				int clerk2 = DutyOfficer(gm, scene, "A tray under nobody's name. The director won't like the sheet.");
 				scene.Choice(clerk2, "A spoiled tray [30 Favor]").Bribe(RZ_EFaction.INSTITUTE, 30).Sets("do:tray").Says("The duty officer marks a tray spoiled.", "bought a spoiled tray");
 				int director = scene.Person(RZ_MajorHelp.NearSeat(lab), "the director", "Talk to the director", "The batch sheet: \"Released to: ...\"");
-				scene.Choice(director, "Released to: nobody").Only("tray").Persuade(RZ_EFaction.INSTITUTE, SheetStep(gm), "labtech").Decides(OUT_LAST).Says("\"Everyone. Fine.\" The director writes a dash.", "had the director write the sheet").Refused("\"Somebody has to be on the label.\"");
+				scene.Choice(director, "Released to: nobody").Only("tray").Persuade(RZ_EFaction.INSTITUTE, SheetStep(gm), "labtech").Decides(OUT_LAST).Says("\"Everyone. Fine.\" The director writes a dash.", "had the director write the sheet").Refused("Somebody has to be on the label.");
 				scene.Choice(clerk2, "Fill in the sheet [40 Favor]").Only("tray").Bribe(RZ_EFaction.INSTITUTE, 40).Decides(OUT_LAST).Says("The duty officer fills it in: Released to: -", "bought the batch sheet");
 				scene.Choice(lead, "Fill it in yourself [unseen]").Only("tray").Sneak().Decides(OUT_LAST).Says("The records room at night. A dash where a name goes.", "filled in the batch sheet at night");
-				int still = scene.Person(RZ_Mission.LandPointNear(RZ_WorldFacts.Get().CanonPos("redhand.still"), 8, 20), "the still's crew", "Talk to the crew", "\"Trays? We've one we're not using. It's yours for a price.\"");
+				int still = scene.Person(RZ_Mission.LandPointNear(RZ_WorldFacts.Get().CanonPos("redhand.still"), 8, 20), "the still's crew", "Talk to the crew", "Trays? We've one we're not using. It's yours for a price.");
 				scene.Choice(still, "Buy a tray at the still [30 Red Hand Favor]").Bribe(RZ_EFaction.BANDITS, 30).Sets("do:tray").Says("A tray in a cold box that smells of diesel. A deal's a deal.", "bought a tray at the still");
 				int store = scene.Person(RZ_Mission.LandPointNear(lab, 20, 40), "the lab's night store", "Look at the night store", "A cold room with a padlock and a rota. Nobody's on the rota at the change of shift.");
 				scene.Choice(store, "Steal a tray [unseen]").Sneak().Sets("do:tray").Says("Ninety seconds. A tray under your coat, and a gap on the shelf.", "stole a tray for nobody");
@@ -236,7 +236,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				return "Nobody here answers to that.";
 
 			if (p.yes >= 0 && p.yes != m_iRoute)
-				return "\"I've given to someone already. One each.\"";
+				return "I've given to someone already. One each.";
 
 			// Hand to Hand: a promised local in their house makes the yes one step easier
 			int ease = 0;
@@ -248,28 +248,28 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 				case RZ_EFaction.MILITARY:
 				{
 					if (RZ_Reputation.GetAccessRank(gm.GetTier(playerId, RZ_EFaction.MILITARY)) < 1 - ease)
-						return "\"Sedlak says no. Come back when Bastion knows you.\"";
+						return "Sedlak says no. Come back when Bastion knows you.";
 
 					break;
 				}
 				case RZ_EFaction.BANDITS:
 				{
 					if (!gm.SpendFavor(playerId, RZ_EFaction.BANDITS, 30 - 10 * ease))
-						return "\"The crew boss owns the debt. Thirty Red Hand Favor, or it stays.\"";
+						return "The crew boss owns the debt. Thirty Red Hand Favor, or it stays.";
 
 					break;
 				}
 				case RZ_EFaction.INSTITUTE:
 				{
 					if (RZ_Reputation.GetAccessRank(gm.GetTier(playerId, RZ_EFaction.INSTITUTE)) < 0 - ease)
-						return "\"The field lead wants her blood for the paper. Not from you.\"";
+						return "The field lead wants her blood for the paper. Not from you.";
 
 					break;
 				}
 				default:
 				{
 					if (!RZ_QuestApproach.Persuade(gm, playerId, RZ_EFaction.SURVIVORS, 2 - ease, "nurse"))
-						return "\"The council head lets them choose. They choose not to, for now.\"";
+						return "The council head lets them choose. They choose not to, for now.";
 
 					break;
 				}
@@ -279,10 +279,10 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 		}
 
 		if (code == "tray" && !Finale().TakeTray(m_iRoute))
-			return "\"No tray. Not while you've one out, or we've none in.\"";
+			return "No tray. Not while you've one out, or we've none in.";
 
 		if (code == "scav" && run.Flag("scav") != 0)
-			return "\"I gave. Once is generous.\"";
+			return "I gave. Once is generous.";
 
 		if (code == "store_any" && Finale().GetItems().CountAny(IdentOf(gm, playerId), RZ_CureFinale.INDEP) <= 0)
 			return "You haven't got anything of anyone's with you.";
@@ -291,10 +291,10 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 		{
 			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 			if (me && RZ_Util.IsArmed(me))
-				return "\"Not with that. A sit-in is hands empty.\"";
+				return "Not with that. A sit-in is hands empty.";
 
 			if (!Between(17, 18) && !Between(5, 6))
-				return "\"At the change of shift. Half five, morning or evening.\"";
+				return "At the change of shift. Half five, morning or evening.";
 		}
 
 		return super.CanDo(gm, run, playerId, code);
@@ -356,7 +356,7 @@ class RZ_Route_OneEach : RZ_FinaleRoute
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. Nobody's people choose who it goes to.";
 		scene.m_vPos = gm.GetLabPosition();
-		int form = DutyOfficer(gm, scene, "\"Nobody's batch. So who's it for?\"");
+		int form = DutyOfficer(gm, scene, "Nobody's batch. So who's it for?");
 		scene.Choice(form, "Open: one each").Decides(OUT_TERMS + 1).Says("The ONE EACH crate at the queue. Free, once each, first come first served.", "chose one each");
 		scene.Choice(form, "Sold").Decides(OUT_TERMS + 3).Says("The same crate, with a price chalked on it. The payment goes nowhere.", "had it sold");
 		scene.Choice(form, "Kept back").Decides(OUT_TERMS + 4).Says("A padlock that isn't the lab's. BACK SOON.", "kept it back");

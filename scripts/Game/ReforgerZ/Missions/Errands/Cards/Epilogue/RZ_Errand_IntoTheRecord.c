@@ -9,9 +9,9 @@ class RZ_Errand_IntoTheRecord : RZ_EpiCard
 		m_sTitle = "Into the Record";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("\"{dead} went out {lies} and didn't come back. The notebook should be with them. It belongs in the record.\"",
-			"\"There's a notebook {lies}, with {dead}. Whatever's in it goes in the appendix. Every page.\"");
-		Over("\"Somebody brought the notebook in. It's in the box already.\"");
+		Offer("{dead} went out {lies} and didn't come back. The notebook should be with them. It belongs in the record.",
+			"There's a notebook {lies}, with {dead}. Whatever's in it goes in the appendix. Every page.");
+		Over("Somebody brought the notebook in. It's in the box already.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch {dead}'s notebook";

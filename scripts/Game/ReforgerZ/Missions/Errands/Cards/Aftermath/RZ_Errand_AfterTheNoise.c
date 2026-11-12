@@ -12,9 +12,9 @@ class RZ_Errand_AfterTheNoise : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "lookout";
-		Offer("\"They went through {subject_place} last night. All of them. I want to know what they left behind, and if any of it is still standing.\"",
-			"\"A horde passed {subject_place}. Walk the edge. Count what's lying down. Don't count what isn't.\"");
-		Over("\"Never mind. Somebody's been. It's quiet.\"");
+		Offer("They went through {subject_place} last night. All of them. I want to know what they left behind, and if any of it is still standing.",
+			"A horde passed {subject_place}. Walk the edge. Count what's lying down. Don't count what isn't.");
+		Over("Never mind. Somebody's been. It's quiet.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Walk the edge, unseen";
@@ -24,7 +24,7 @@ class RZ_Errand_AfterTheNoise : RZ_ErrandCard
 		w.m_bUnseen = true;
 		w.m_sStep = "Walk the edge of {subject_place} unseen (20 s hidden there), then tell {giver} what's lying down.";
 		w.m_iFavor = 5;
-		w.Done("\"That many down. And the rest moved on. Right. We can breathe for a day.\"");
+		w.Done("That many down. And the rest moved on. Right. We can breathe for a day.");
 
 		w = Way("do");
 		w.m_sLabel = "Read the ground";
@@ -34,7 +34,7 @@ class RZ_Errand_AfterTheNoise : RZ_ErrandCard
 		w.m_fRadius = 80;
 		w.m_sStep = "Read the ground at the edge of {subject_place} (10 s there), then tell {giver} which way they went.";
 		w.m_iFavor = 5;
-		w.Done("\"North-east, and not coming back this way. You're sure? You look sure.\"");
+		w.Done("North-east, and not coming back this way. You're sure? You look sure.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -260,13 +260,13 @@ class RZ_Locals
 		l.metUnix = RZ_SeasonClock.Now();
 		if (i < 0)
 		{
-			m_GM.Say(playerId, title, RZ_EFaction.SURVIVORS, "\"Evening. You'll be new. Mind the step, it's loose.\"");
+			m_GM.Say(playerId, title, RZ_EFaction.SURVIVORS, "Evening. You'll be new. Mind the step, it's loose.");
 			return;
 		}
 
 		if (l.lives[i] != profile.m_iLives)
 		{
-			m_GM.Say(playerId, title, RZ_EFaction.SURVIVORS, "\"You've a look of someone. Never mind. Evening.\"");
+			m_GM.Say(playerId, title, RZ_EFaction.SURVIVORS, "You've a look of someone. Never mind. Evening.");
 			return;
 		}
 
@@ -289,25 +289,25 @@ class RZ_Locals
 		switch (memo)
 		{
 			case "lied":
-				Three(lines, "\"You told me a thing that wasn't so. I remember. Everyone here remembers.\"", "\"Oh, it's you. Say something true and I'll write it down. I'll need the paper.\"", "\"I believed you. I'm not proud of it. I'm not proud of you either.\"");
+				Three(lines, "You told me a thing that wasn't so. I remember. Everyone here remembers.", "Oh, it's you. Say something true and I'll write it down. I'll need the paper.", "I believed you. I'm not proud of it. I'm not proud of you either.");
 				break;
 			case "crossed":
-				Three(lines, "\"I've nothing to say to you. The step's still loose. Mind it.\"", "\"Not you. Not tonight. Try the others.\"", "\"You know what you did. So do I. That's two of us too many.\"");
+				Three(lines, "I've nothing to say to you. The step's still loose. Mind it.", "Not you. Not tonight. Try the others.", "You know what you did. So do I. That's two of us too many.");
 				break;
 			case "sold":
-				Three(lines, "\"I know what you did. Don't make me say it in front of them.\"", "\"There's a chair empty at supper. You know whose.\"", "\"Go on, then. Walk past. You're good at it.\"");
+				Three(lines, "I know what you did. Don't make me say it in front of them.", "There's a chair empty at supper. You know whose.", "Go on, then. Walk past. You're good at it.");
 				break;
 			case "promised":
-				Three(lines, "\"You said you'd bring it when it's made. I'm still here. I'll be here.\"", "\"Is it made yet? No. I know. I ask everyone. I ask you differently.\"", "\"Still waiting. Hands in my lap, like you said.\"");
+				Three(lines, "You said you'd bring it when it's made. I'm still here. I'll be here.", "Is it made yet? No. I know. I ask everyone. I ask you differently.", "Still waiting. Hands in my lap, like you said.");
 				break;
 			default:
 				if (!l.line.IsEmpty())
 					lines.Insert(l.line);
 				else
-					lines.Insert("\"It's you. Sit a minute, if you've a minute.\"");
+					lines.Insert("It's you. Sit a minute, if you've a minute.");
 
-				lines.Insert("\"Look who it is. The kettle's on. It's always on. Nothing in it.\"");
-				lines.Insert("\"You came back. People don't, much. Sit.\"");
+				lines.Insert("Look who it is. The kettle's on. It's always on. Nothing in it.");
+				lines.Insert("You came back. People don't, much. Sit.");
 				break;
 		}
 

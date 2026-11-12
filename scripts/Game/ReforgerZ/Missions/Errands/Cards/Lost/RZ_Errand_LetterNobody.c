@@ -12,8 +12,8 @@ class RZ_Errand_LetterNobody : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.WANDERER;
 		m_iWandererRole = RZ_EWandererRole.COURIER;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"Letter for someone from {house}. They left. The house thinks they went to {other_house}. I've a bag of letters for people who went somewhere. Take this one?\"");
-		Over("\"Never mind. Someone from {other_house} came for it.\"");
+		Offer("Letter for someone from {house}. They left. The house thinks they went to {other_house}. I've a bag of letters for people who went somewhere. Take this one?");
+		Over("Never mind. Someone from {other_house} came for it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry it to {other_house}";
@@ -21,13 +21,13 @@ class RZ_Errand_LetterNobody : RZ_ErrandCard
 		w.m_fSeconds = 5;
 		w.m_fRadius = 40;
 		w.m_sStep = "Take the letter to the safehouse at {other_house} (at its gate), then find {giver} on the road again.";
-		w.Later("\"The letter you carried got an answer. Short. It said yes.\"");
+		w.Later("The letter you carried got an answer. Short. It said yes.");
 		w.m_iFavor = 4;
-		w.Done("\"Delivered? Good. One out of the bag. The bag doesn't notice.\"");
+		w.Done("Delivered? Good. One out of the bag. The bag doesn't notice.");
 
 		w = Way("talk");
 		w.m_sLabel = "Give it back to him";
-		w.Done("\"Fair. It goes back in with the others. The post is mostly waiting, now.\"");
+		w.Done("Fair. It goes back in with the others. The post is mostly waiting, now.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -363,7 +363,7 @@ class RZ_SecureRadio
 			line = life.GetSecureTraffic(f);
 
 		if (line.IsEmpty())
-			return "\"...nothing to report. Maintain.\"";
+			return "...nothing to report. Maintain.";
 
 		return line;
 	}

@@ -203,16 +203,16 @@ class RZ_Faults
 
 			string place = HoldingPlace(h.m_iId);
 			if (f == RZ_EFaction.MILITARY && Has(place, RZ_EFault.SET))
-				result.Insert(string.Format("\"%1, say again. You're all hiss. Change your battery and call it in.\"", h.m_sName));
+				result.Insert(string.Format("%1, say again. You're all hiss. Change your battery and call it in.", h.m_sName));
 
 			if (f == RZ_EFaction.MILITARY && Has(place, RZ_EFault.RELIEF))
-				result.Insert(string.Format("\"%1: relief not arrived. One on the gate until further notice.\"", h.m_sName));
+				result.Insert(string.Format("%1: relief not arrived. One on the gate until further notice.", h.m_sName));
 
 			if (f == RZ_EFaction.INSTITUTE && Has(place, RZ_EFault.FUEL))
-				result.Insert(string.Format("\"%1 station: freezer fuel below one night. Samples at risk from 02:00.\"", h.m_sName));
+				result.Insert(string.Format("%1 station: freezer fuel below one night. Samples at risk from 02:00.", h.m_sName));
 
 			if (f == RZ_EFaction.INSTITUTE && Has(place, RZ_EFault.SENSOR))
-				result.Insert(string.Format("\"%1 station: perimeter sensor four is dark. No readings since the shift change.\"", h.m_sName));
+				result.Insert(string.Format("%1 station: perimeter sensor four is dark. No readings since the shift change.", h.m_sName));
 		}
 	}
 

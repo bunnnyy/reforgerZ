@@ -451,7 +451,7 @@ class RZ_TribeRest
 			t.AddHistory("took a Bastion patrol");
 			RZ_TribePeople people = m_Tribes.GetPeople();
 			if (people.IsOn())
-				people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "patrol", t, string.Format("\"%1, last position %2. No reply since the small hours. Bastion out.\"", call, people.NameAt(t, RZ_EFaction.MILITARY)));
+				people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "patrol", t, string.Format("%1, last position %2. No reply since the small hours. Bastion out.", call, people.NameAt(t, RZ_EFaction.MILITARY)));
 
 			m_Tribes.GetWays().Headline(t, string.Format("A Bastion patrol went out past %1 in the night and didn't come back.", t.m_sPlace));
 			return;
@@ -781,19 +781,19 @@ class RZ_TribeRest
 				continue;
 
 			int day = RZ_SeasonClock.Day();
-			string haven = string.Format("\"Something new leads them up at %1. Nobody knows who it was.\"", t.m_sPlace);
+			string haven = string.Format("Something new leads them up at %1. Nobody knows who it was.", t.m_sPlace);
 			if (people.HavenKnowsLeader(t))
-				haven = string.Format("\"It's %1 leading them up at %2 now. %3, before.\"", t.m_sAlphaName, t.m_sPlace, RZ_Util.Capitalize(t.m_sAlphaWho));
+				haven = string.Format("It's %1 leading them up at %2 now. %3, before.", t.m_sAlphaName, t.m_sPlace, RZ_Util.Capitalize(t.m_sAlphaWho));
 
 			people.TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "leader", t, haven);
 			if (t.m_iContact > 0)
-				people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "leader", t, string.Format("\"Contact log, %1: heavy replaced, day %2. Bastion out.\"", people.NameAt(t, RZ_EFaction.MILITARY), day));
+				people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "leader", t, string.Format("Contact log, %1: heavy replaced, day %2. Bastion out.", people.NameAt(t, RZ_EFaction.MILITARY), day));
 
 			if (t.m_bMoat || NearCamp(t))
-				people.TellFaction(RZ_EFaction.BANDITS, "The Red Hand", "leader", t, string.Format("\"%1 have a new boss. We'll see what this one wants.\"", RZ_Util.Capitalize(people.NameAt(t, RZ_EFaction.BANDITS))));
+				people.TellFaction(RZ_EFaction.BANDITS, "The Red Hand", "leader", t, string.Format("%1 have a new boss. We'll see what this one wants.", RZ_Util.Capitalize(people.NameAt(t, RZ_EFaction.BANDITS))));
 
 			if (t.m_iTagDay >= 0)
-				people.TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "leader", t, string.Format("\"%1: a new index, day %2. The old one's file is closed.\"", people.NameAt(t, RZ_EFaction.INSTITUTE), day));
+				people.TellFaction(RZ_EFaction.INSTITUTE, "Halcyon", "leader", t, string.Format("%1: a new index, day %2. The old one's file is closed.", people.NameAt(t, RZ_EFaction.INSTITUTE), day));
 
 			RZ_Log.Info(string.Format("Tribes: the factions speak of %1's new leader.", t.m_sPlace));
 			return;
@@ -1242,7 +1242,7 @@ class RZ_TribeRest
 			if (t.m_iContact <= 0 || !t.m_bSilentCall)
 				continue;
 
-			people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "nocontact", t, string.Format("\"%1: no contact. Bastion out.\"", people.Name(t, RZ_EFaction.MILITARY)));
+			people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "nocontact", t, string.Format("%1: no contact. Bastion out.", people.Name(t, RZ_EFaction.MILITARY)));
 			return true;
 		}
 
@@ -1257,7 +1257,7 @@ class RZ_TribeRest
 		if (t.m_iContact <= 0 || !people.IsOn())
 			return;
 
-		people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "nocontact", t, string.Format("\"%1: no contact. Struck off the board. Bastion out.\"", people.Name(t, RZ_EFaction.MILITARY)));
+		people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "nocontact", t, string.Format("%1: no contact. Struck off the board. Bastion out.", people.Name(t, RZ_EFaction.MILITARY)));
 	}
 
 	// ================================================================ The epilogue's beats

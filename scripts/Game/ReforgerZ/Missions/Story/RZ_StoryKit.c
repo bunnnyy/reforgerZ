@@ -16,7 +16,7 @@ class RZ_StoryKit
 		if (m.m_Story.m_Deciding.MayDecide(gm, m, playerId))
 			return true;
 
-		gm.NotifyPlayer(playerId, m.m_sTitle, "\"It's not your call. You weren't hired for this.\"");
+		gm.NotifyPlayer(playerId, m.m_sTitle, "It's not your call. You weren't hired for this.");
 		return false;
 	}
 

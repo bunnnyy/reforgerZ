@@ -370,7 +370,7 @@ class RZ_MajorRest
 			return false;
 
 		RZ_QuestRun run = OtherMajor(gm, l);
-		string text = "\"Whatever that is, it's somebody else's.\"";
+		string text = "Whatever that is, it's somebody else's.";
 		if (run)
 			text = string.Format("\"%1? We hear things.\" %2", run.m_Line.m_sTitle, run.m_Line.JournalText(gm, run));
 
@@ -450,16 +450,16 @@ class RZ_MajorRest
 		{
 			case RZ_Major_Orders.S_COUNT:
 			{
-				int pad = scene.Person(RZ_Mission.LandPointNear(at, 10, 20), "the duty officer's desk", "Talk to the duty officer", "\"If a post is padding its count, I'd want to know. So would the CO. Or would they.\"");
+				int pad = scene.Person(RZ_Mission.LandPointNear(at, 10, 20), "the duty officer's desk", "Talk to the duty officer", "If a post is padding its count, I'd want to know. So would the CO. Or would they.");
 				scene.Choice(pad, "Report a padded post").Sets("world:orders.reported_pad").Says("The duty officer writes it down and doesn't look up. A sergeant somewhere loses a stripe.", "reported a padded post");
 				scene.Choice(pad, "Cover for the commander").Sets("world:orders.covered").Says("\"No padding that I saw.\" The duty officer nods slowly. The number stays as it was.", "covered for a post's commander");
-				scene.Choice(pad, "Take a dead man's name off the nail").Trick(RZ_EFaction.MILITARY, 2).Sets("post0").Says("A name off the nail, and a roster you're now on twice. The post's count comes out true.", "counted a post under a dead man's name").Refused("\"That's not your name. I knew him.\"");
+				scene.Choice(pad, "Take a dead man's name off the nail").Trick(RZ_EFaction.MILITARY, 2).Sets("post0").Says("A name off the nail, and a roster you're now on twice. The post's count comes out true.", "counted a post under a dead man's name").Refused("That's not your name. I knew him.");
 				scene.Choice(pad, "Buy the fence's rifle count [20 Favor]").Bribe(RZ_EFaction.BANDITS, 20).Sets("post1").Says("The fence knows how many rifles every post sold. That's the count.", "bought the fence's rifle count");
 				break;
 			}
 			case RZ_Major_Orders.S_MUSTER:
 			{
-				int copies = scene.Person(RZ_Mission.LandPointNear(at, 10, 20), "the clerk with the carbon copies", "Talk to the clerk", "\"Every post kept a copy of the orders. If you want the call kept, they should all be in one stove.\"");
+				int copies = scene.Person(RZ_Mission.LandPointNear(at, 10, 20), "the clerk with the carbon copies", "Talk to the clerk", "Every post kept a copy of the orders. If you want the call kept, they should all be in one stove.");
 				scene.Choice(copies, "Buy the clerk's copy [30 Favor]").Bribe(RZ_EFaction.MILITARY, 30).Sets("world:orders.copies").Says("The last carbon, folded small. The stove takes it.", "collected the last copy of the orders");
 				scene.Choice(copies, "Walk the chair's clerk to the radio").Sets("world:orders.chair_clerk").Says("After curfew, with a torch, the long way round. The chair's clerk sits by the radio for the call.", "walked the chair's clerk to the radio");
 				break;
@@ -486,7 +486,7 @@ class RZ_MajorRest
 			case RZ_Major_EveryName.S_FAMILY:
 			{
 				int cough = scene.Person(RZ_Mission.LandPointNear(at, 6, 10), "the coughing child", "Look at the child", "A cough the head says is the fever. It might just be a cough.");
-				scene.Choice(cough, "Call it a chest cold").Persuade(RZ_EFaction.SURVIVORS, 1, "nurse,doctor").Decides(RZ_Major_EveryName.OUT_ALL_IN).Says("\"A chest cold. Listen to it.\" The head listens, and lets all four in.", "called the cough a chest cold").Refused("\"You'd know the difference, would you?\"");
+				scene.Choice(cough, "Call it a chest cold").Persuade(RZ_EFaction.SURVIVORS, 1, "nurse,doctor").Decides(RZ_Major_EveryName.OUT_ALL_IN).Says("\"A chest cold. Listen to it.\" The head listens, and lets all four in.", "called the cough a chest cold").Refused("You'd know the difference, would you?");
 				break;
 			}
 			case RZ_Major_EveryName.S_SITTING1:
@@ -524,7 +524,7 @@ class RZ_MajorRest
 		{
 			case RZ_Major_Proof.S_DAYONE:
 			{
-				int crew = scene.Person(RZ_Mission.LandPointNear(at, 30, 60), "the crew's radio man", "Talk to the radio man", "\"Give me the date and I'll read it on our channel. Thirty, and Halcyon can't take it back.\"");
+				int crew = scene.Person(RZ_Mission.LandPointNear(at, 30, 60), "the crew's radio man", "Talk to the radio man", "Give me the date and I'll read it on our channel. Thirty, and Halcyon can't take it back.");
 				scene.Choice(crew, "Have it read on the crews' channel").Bribe(RZ_EFaction.BANDITS, 30).Sets("world:proof.rh_read").Says("The date goes out on the Red Hand's channel, with a laugh after it.", "had the date read on the Red Hand's channel");
 				break;
 			}
@@ -540,7 +540,7 @@ class RZ_MajorRest
 				if (!chair)
 					break;
 
-				int supper = scene.Person(RZ_MajorHelp.NearSeat(chair.m_vPos), "the chair at supper", "Talk to the chair", "\"Read us the author list. All of it. The ones from Day 6 first.\"");
+				int supper = scene.Person(RZ_MajorHelp.NearSeat(chair.m_vPos), "the chair at supper", "Talk to the chair", "Read us the author list. All of it. The ones from Day 6 first.");
 				scene.Choice(supper, "Read the author list at supper").Needs(RZ_EFaction.SURVIVORS, 1).Sets("world:proof.read_supper").Says("The Day 6 names first, then the rest. The table is quiet for a long time.", "read the author list at supper");
 				int ham = scene.Person(RZ_MajorHelp.NorthRoad(gm, 200), "the radio ham on the verge", "Talk to the radio ham", "An aerial between two trees and an exercise book open on a knee.");
 				scene.Choice(ham, "Read the paper's first page to the ham").Sets("world:proof.ham").Says("\"Got it.\" The ham writes it all down, and reads it back to check.", "read the first page to the radio ham");

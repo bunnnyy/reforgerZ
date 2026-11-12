@@ -13,9 +13,9 @@ class RZ_Errand_BothDoors : RZ_ErrandCard
 		m_sFamily = "background";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"You go in at {subject_place} and nobody shoots. Remarkable. We'd like their shift times. They'd like ours. You'd be the man in the middle. Again.\"",
-			"\"The crews at {subject_place} want our shift times and we want theirs. You're the only one either side lets through both doors.\"");
-		Over("\"Never mind. They changed their shifts. So did we. Everyone's guessing again.\"");
+		Offer("You go in at {subject_place} and nobody shoots. Remarkable. We'd like their shift times. They'd like ours. You'd be the man in the middle. Again.",
+			"The crews at {subject_place} want our shift times and we want theirs. You're the only one either side lets through both doors.");
+		Over("Never mind. They changed their shifts. So did we. Everyone's guessing again.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry true times both ways";
@@ -25,7 +25,7 @@ class RZ_Errand_BothDoors : RZ_ErrandCard
 		w.m_sStep = "Take Bastion's shift times to the crews at {subject_place} and bring theirs back (5 s there).";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"Nobody trusts a man everyone trusts. Except everyone, apparently.\"");
+		w.Done("Nobody trusts a man everyone trusts. Except everyone, apparently.");
 
 		w = Way("lie");
 		w.m_sLabel = "Give the crews a false time";
@@ -34,11 +34,11 @@ class RZ_Errand_BothDoors : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Take the crews at {subject_place} a shift time that's wrong, and bring theirs back (5 s there).";
 		w.m_iFavor = 3;
-		w.Done("\"Their times. Lovely. And ours? You gave them ours. Good.\"");
+		w.Done("Their times. Lovely. And ours? You gave them ours. Good.");
 
 		w = Way("talk");
 		w.m_sLabel = "Carry nothing, and say so";
-		w.Done("\"Neither side, then. Fair. Infuriating, but fair.\"");
+		w.Done("Neither side, then. Fair. Infuriating, but fair.");
 	}
 
 	//------------------------------------------------------------------------------------------------

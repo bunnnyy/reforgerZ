@@ -1236,7 +1236,7 @@ class RZ_SayLine
 		RZ_SayLine line = new RZ_SayLine();
 		line.m_sSpeaker = speaker;
 		line.m_iFaction = faction;
-		line.m_sText = text;
+		line.m_sText = RZ_TalkWords.Unquote(text);	// spoken: the subtitle names the speaker, no quotes
 		line.m_iSource = SourceFor(speaker, text);
 		if (line.m_iSource == RZ_ESaySource.RADIO)
 		{

@@ -12,6 +12,7 @@ class RZ_DCtx
 	IEntity m_Body;					// weak: the speaker's body
 	ref array<string> m_aKinds = {};	// speaker selectors ("seat:haven/council_head", "leader:haven", "leader")
 	string m_sKey;					// memory key ("leader:12:0", "wanderer:3:1", "house:2", "named:41:1", "post:2:7", "table:host")
+	int m_iMetBefore = -1;			// `met` as it was when this conversation opened (1 or 0), -1 not taken yet
 	int m_iFaction = -1;			// the speaker's faction, -1 none
 	string m_sName;					// "Ines Calder"
 	string m_sShort;				// "Calder", "Old Marta"
@@ -256,7 +257,13 @@ class RZ_DialogueCond
 			case "mood":
 				return facts && RZ_SeasonMood.Name(facts.SeasonMood()) == t.m_sArg;
 			case "met":
-				return MemoryBit(ctx, 1);
+			{
+				// As it was when the conversation opened: a first meeting stays one to its end
+				if (ctx.m_iMetBefore >= 0)
+					return ctx.m_iMetBefore == 1;
+
+				return Met(ctx);
+			}
 			case "helped":
 				return MemoryBit(ctx, 2);
 			case "saved":
@@ -445,6 +452,19 @@ class RZ_DialogueCond
 		}
 
 		return 99;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! You've talked to this speaker before this life: a leader's or wanderer's built memory, or the
+	//! talk memory's note `met` that every conversation leaves (RZ_DialogueTrees.MarkMet), so `met`
+	//! works for every speaker (occupants, residents, named people, strangers, posts, the table).
+	static bool Met(RZ_DCtx ctx)
+	{
+		if (MemoryBit(ctx, 1))
+			return true;
+
+		RZ_DialogueTrees trees = RZ_DialogueTrees.Get();
+		return trees && !ctx.m_sKey.IsEmpty() && trees.GetMemory().Has(ctx.m_iPlayer, RZ_DialogueMemory.NOTES, ctx.m_sKey + "|met");
 	}
 
 	//------------------------------------------------------------------------------------------------

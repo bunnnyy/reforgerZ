@@ -11,9 +11,9 @@ class RZ_Errand_Stray : RZ_ErrandCard
 		m_sFamily = "standing";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"The Haven threw you out. Good. Strays are useful. Nobody looks at a stray. Take this to the crossroads, and don't open it.\"",
-			"\"A parcel, a crossroads, and no questions. You've a face nobody wants to look at. That's a qualification.\"");
-		Over("\"Never mind. Somebody else took it. Somebody with an even worse face.\"");
+		Offer("The Haven threw you out. Good. Strays are useful. Nobody looks at a stray. Take this to the crossroads, and don't open it.",
+			"A parcel, a crossroads, and no questions. You've a face nobody wants to look at. That's a qualification.");
+		Over("Never mind. Somebody else took it. Somebody with an even worse face.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Carry it to the crossroads";
@@ -22,7 +22,7 @@ class RZ_Errand_Stray : RZ_ErrandCard
 		w.m_fRadius = 30;
 		w.m_sStep = "Take the parcel to the crossroads {subject_place} and leave it with whoever's there (5 s), then come back to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"Delivered. See? Nobody looked at you once.\"");
+		w.Done("Delivered. See? Nobody looked at you once.");
 	}
 
 	//------------------------------------------------------------------------------------------------

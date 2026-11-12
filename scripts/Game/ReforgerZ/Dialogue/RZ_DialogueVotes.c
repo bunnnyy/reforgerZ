@@ -96,7 +96,7 @@ class RZ_DialogueVotes
 		int option = OptionOf(gm, key, word);
 		if (vote.Result() >= 0 || option < 0 || !vote.IsTabled(option))
 		{
-			said = "\"It's not on the table. Not at this sitting.\"";
+			said = "It's not on the table. Not at this sitting.";
 			return true;
 		}
 

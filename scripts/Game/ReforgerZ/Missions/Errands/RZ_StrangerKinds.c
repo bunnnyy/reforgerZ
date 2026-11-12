@@ -195,7 +195,7 @@ class RZ_Stranger_Roof : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"Up here. On the roof. Are they gone? Tell me they're gone.\" Someone on the roof edge, waving one arm, holding on with the other.";
+		return "Up here. On the roof. Are they gone? Tell me they're gone. I've been holding on up here since the noise started, and my arm's going.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -216,7 +216,7 @@ class RZ_Stranger_Roof : RZ_StrangerKind
 		s.ToHouse(v.m_iHouse);
 		s.Finish(v, playerId, "They come down the drainpipe faster than you'd think, and go off toward {house} without looking back.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 4);
-		Local(s, v, playerId, "who came down off a roof", "\"You talked me off that roof. I still can't look at a ladder.\"", "bench", "helped");
+		Local(s, v, playerId, "who came down off a roof", "You talked me off that roof. I still can't look at a ladder.", "bench", "helped");
 	}
 }
 
@@ -258,18 +258,18 @@ class RZ_Stranger_Tin : RZ_StrangerKind
 		array<RZ_Reason> towns = {};
 		RZ_WorldFacts.Get().Memory().ReasonsNear(v.m_vPos, 3000, towns, "town.infested");
 		if (t)
-			v.SetText("tip", string.Format("\"The lot from %1 come out %2 of the house at dusk. Go the other way.\"", t.m_sPlace, RZ_Tribes.CompassWord(gm.GetSafehouses().Get(v.m_iHouse).m_vPos, t.m_vLair)));
+			v.SetText("tip", string.Format("The lot from %1 come out %2 of the house at dusk. Go the other way.", t.m_sPlace, RZ_Tribes.CompassWord(gm.GetSafehouses().Get(v.m_iHouse).m_vPos, t.m_vLair)));
 		else if (!towns.IsEmpty())
-			v.SetText("tip", string.Format("\"%1 Go round it, not through.\"", towns[0].text));
+			v.SetText("tip", string.Format("%1 Go round it, not through.", towns[0].text));
 		else
-			v.SetText("tip", "\"Keep off the low road after dark. That's all I know, and it's true.\"");
+			v.SetText("tip", "Keep off the low road after dark. That's all I know, and it's true.");
 
 		return true;
 	}
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"Got a tin? Just the one. {house} is on half portions and I've a girl there.\" He holds up an empty sack, as if that proves it.";
+		return "Got a tin? Just the one. {house} is on half portions and I've a girl there. Look, the sack's empty. I'm not lying to you.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -308,7 +308,7 @@ class RZ_Stranger_Tin : RZ_StrangerKind
 			return;
 
 		s.Finish(v, playerId, "He holds the tin with both hands. Then, quietly: {tip}", true);
-		Local(s, v, playerId, "who had the empty sack", "\"You gave me a tin on the road. The girl had it with bread. Well, with water.\"", "gate", "helped");
+		Local(s, v, playerId, "who had the empty sack", "You gave me a tin on the road. The girl had it with bread. Well, with water.", "gate", "helped");
 	}
 }
 
@@ -342,7 +342,7 @@ class RZ_Stranger_Funeral : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"It was my wife's. She drove it to {town} every Thursday.\" He pats the roof. \"Take what's in the boot if you want. She'd want it used. Then help me put it in the ditch, would you? Out of the road.\"";
+		return "This was my wife's car. She drove it to {town} every Thursday. Take what's in the boot if you want, she'd want it used. Then help me put it in the ditch, would you? Out of the road.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -419,7 +419,7 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"Which way's {town}? The straight way goes past {trouble}, and I'd rather not.\" The woman has a pram with no baby in it, full of pans.";
+		return "Which way's {town}? The straight way goes past {trouble}, and I'd rather not. It's only pans in the pram. Everything I could carry.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -455,7 +455,7 @@ class RZ_Stranger_WhichWay : RZ_StrangerKind
 		s.ToHouse(v.m_iHouse);
 		s.Finish(v, playerId, "\"I can see the smoke from here.\" She goes on with the pans clattering, and waves once without turning round.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
-		Local(s, v, playerId, "with the pram full of pans", "\"You walked me past it. I still have the pans. Want one? I've too many pans.\"", "stove", "helped");
+		Local(s, v, playerId, "with the pram full of pans", "You walked me past it. I still have the pans. Want one? I've too many pans.", "stove", "helped");
 	}
 }
 
@@ -486,7 +486,7 @@ class RZ_Stranger_Door : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "A door opens a hand's width. \"Are you real? They come out when it's dark. I've been in here since Tuesday. Is there anywhere left?\"";
+		return "Are you real? Don't come closer, just talk. They come out when it's dark. I've been behind this door since Tuesday. Is there anywhere left?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -523,7 +523,7 @@ class RZ_Stranger_Door : RZ_StrangerKind
 		s.ToHouse(v.m_iHouse);
 		s.Finish(v, playerId, "They don't stop shaking until they can see {house}'s fence. Then they walk the last of it on their own.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
-		Local(s, v, playerId, "who hid behind the door", "\"You came and got me out. I sleep with the light on. They let me.\"", "bench", "saved");
+		Local(s, v, playerId, "who hid behind the door", "You came and got me out. I sleep with the light on. They let me.", "bench", "saved");
 	}
 }
 
@@ -550,7 +550,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Two kids in the back seat and a father under the bonnet. \"It was going. Then it wasn't. The kids think it's an adventure. Don't tell them otherwise.\"";
+		return "It was going. Then it wasn't. I've two kids in the back who think this is an adventure. Don't tell them otherwise.";
 	}
 
 	override string Labels(RZ_Strangers s, RZ_StrangerVisit v)
@@ -564,7 +564,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 		{
 			if (!Bg(s, playerId, "mechanic"))
 			{
-				s.Say(v, playerId, "\"No offence, but you're looking at it the way I was.\"");
+				s.Say(v, playerId, "No offence, but you're looking at it the way I was.");
 				return;
 			}
 
@@ -599,7 +599,7 @@ class RZ_Stranger_TwoInTheBack : RZ_StrangerKind
 	{
 		s.Finish(v, playerId, "It catches. The kids cheer like it's a football match. They drive on to {house} with the windows down.", true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
-		Local(s, v, playerId, "with the car and the two kids", "\"The kids still call you the car man. I've stopped correcting them.\"", "gate", "helped");
+		Local(s, v, playerId, "with the car and the two kids", "The kids still call you the car man. I've stopped correcting them.", "gate", "helped");
 	}
 }
 
@@ -627,7 +627,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "A woman digging by the verge with a coal shovel. \"Nobody should lie by a road. Not even a road this quiet.\"";
+		return "Nobody should lie by a road. Not even a road this quiet. It's a coal shovel, it's all I had. I'll get there.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -672,7 +672,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 
 		s.Finish(v, playerId, end, true);
 		s.HouseFavor(playerId, RZ_EFaction.SURVIVORS, 3);
-		Local(s, v, playerId, "who digs by the road", "\"You helped me with the one by the road. I go back and tidy it. Someone should.\"", "bench", "helped");
+		Local(s, v, playerId, "who digs by the road", "You helped me with the one by the road. I go back and tidy it. Someone should.", "bench", "helped");
 	}
 }
 
@@ -712,7 +712,7 @@ class RZ_Stranger_StillWalking : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "A man with his sleeve rolled down tight. \"They said there's a lab that gives a shot. Is that true, or is it the sort of thing people say?\"";
+		return "They said there's a lab that gives a shot. For, you know. Is that true, or is it the sort of thing people say?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -792,7 +792,7 @@ class RZ_Stranger_WarmHands : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "A voice from the dark, then a man with his hands up. \"Mind if I sit? I'm not armed. I'm just cold.\"";
+		return "Don't shoot. My hands are up. Mind if I sit by you? I'm not armed. I'm just cold.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -810,7 +810,7 @@ class RZ_Stranger_WarmHands : RZ_StrangerKind
 
 			v.SetText("house", s.HouseName(v.m_iHouse));
 			s.Finish(v, playerId, "He eats it cold, with his fingers, by your fire. \"I'm at {house}, if you're ever by. Ask for the man who ate your tin.\"", true);
-			Local(s, v, playerId, "who sat at your fire", "\"You let me sit at your fire. I still think about that fire.\"", "stove", "helped");
+			Local(s, v, playerId, "who sat at your fire", "You let me sit at your fire. I still think about that fire.", "stove", "helped");
 			return;
 		}
 
@@ -831,18 +831,18 @@ class RZ_Stranger_WarmHands : RZ_StrangerKind
 		{
 			RZ_Tribe t = tribes.NearestTribe(at, 3000);
 			if (t && t.m_bFed)
-				return string.Format("\"The lot from %1 ate last night. Tomorrow they'll sleep. Go then, if you're going.\"", t.m_sPlace);
+				return string.Format("The lot from %1 ate last night. Tomorrow they'll sleep. Go then, if you're going.", t.m_sPlace);
 
 			if (t)
-				return string.Format("\"The lot from %1 go out at dusk and come back before the light. Every night. You could set a watch by it.\"", t.m_sPlace);
+				return string.Format("The lot from %1 go out at dusk and come back before the light. Every night. You could set a watch by it.", t.m_sPlace);
 		}
 
 		array<RZ_Reason> towns = {};
 		RZ_WorldFacts.Get().Memory().ReasonsNear(at, 3000, towns, "town.infested");
 		if (!towns.IsEmpty())
-			return "\"" + towns[0].text + " I came through it. Don't.\"";
+			return towns[0].text + " I came through it. Don't.";
 
-		return "\"The road east is quieter than the road west. That's all I know for sure.\"";
+		return "The road east is quieter than the road west. That's all I know for sure.";
 	}
 }
 
@@ -888,7 +888,7 @@ class RZ_Stranger_SeedPotatoes : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"This was mine. The farm, I mean, not the mess.\" He points along the field edge. \"I buried a sack of seed potatoes on Day 2. Go the day after they've fed. Nobody's out then.\"";
+		return "This was mine. The farm, I mean, not the mess. I buried a sack of seed potatoes along that field edge on Day 2. Go the day after they've fed. Nobody's out then.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -961,7 +961,7 @@ class RZ_Stranger_Manners : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "A mother and two boys, one carrying a bundle in a tea towel. \"It's their grandfather's. For the rabbits.\" She looks at the post. \"They search everything now, don't they.\"";
+		return "The bundle's their grandfather's. In the tea towel. It's for the rabbits. They search everything at that post now, don't they?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1065,9 +1065,9 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
 		if (v.m_bTwist && Knows(s, v.m_iAsker))
-			return "\"My sister was put out of {house}. Upkeep. You'll have seen her on the road?\" He scratches his wrist, and the sleeve rides up on a red hand.";
+			return "My sister was put out of {house}. Upkeep, they called it. You'll have seen her on the road? I just want to know where she's got to.";
 
-		return "\"My sister was put out of {house}. Upkeep. You'll have seen her on the road?\" He keeps his hands in his pockets. \"She'll be in some barn. She always liked barns.\"";
+		return "My sister was put out of {house}. Upkeep, they called it. You'll have seen her on the road? She'll be in some barn. She always liked barns.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1102,7 +1102,7 @@ class RZ_Stranger_Sister : RZ_StrangerKind
 			v.SetText("house", s.HouseName(other));
 			s.ToHouse(other);
 			s.Finish(v, playerId, "She's there, asleep on a feed sack. You tell her someone's asking. She doesn't ask who. She goes to {house} before dark.", true);
-			Local(s, v, playerId, "who was asleep in the barn", "\"You warned me on. I never asked who was looking. I didn't want to know.\"", "stove", "saved");
+			Local(s, v, playerId, "who was asleep in the barn", "You warned me on. I never asked who was looking. I didn't want to know.", "stove", "saved");
 			return;
 		}
 
@@ -1162,7 +1162,7 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"Is that their toll? I've nothing to pay it with. {house} is just past it.\" She has a coat on over another coat.";
+		return "Is that their toll? I've nothing to pay it with. Everything I own, I'm wearing. {house} is just past it.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1215,7 +1215,7 @@ class RZ_Stranger_Toll : RZ_StrangerKind
 	{
 		s.ToHouse(v.m_iHouse);
 		s.Finish(v, playerId, "Past it, she takes one coat off and gives it to you. It doesn't fit. You keep it anyway.", true);
-		Local(s, v, playerId, "in the two coats", "\"You walked me round the toll. I've still got your coat. Well, my coat.\"", "gate", "saved");
+		Local(s, v, playerId, "in the two coats", "You walked me round the toll. I've still got your coat. Well, my coat.", "gate", "saved");
 	}
 }
 
@@ -1248,7 +1248,7 @@ class RZ_Stranger_Line : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "A woman at the edge of the warning zone, waving at the far side. \"He's just there. Behind the trees. He waves back, sometimes. Can you see him?\"";
+		return "He's just there, past the line. Behind the trees. He waves back, sometimes. Can you see him?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1264,7 +1264,7 @@ class RZ_Stranger_Line : RZ_StrangerKind
 
 			s.ToHouse(v.m_iHouse);
 			s.Finish(v, playerId, "You talk about nothing until she's walking with you. At {house} she lets them take her coat. She says she'll go back tomorrow. Maybe.", true);
-			Local(s, v, playerId, "who waves at the line", "\"You walked me back from the line. I still go some days. I don't go as close.\"", "gate", "saved");
+			Local(s, v, playerId, "who waves at the line", "You walked me back from the line. I still go some days. I don't go as close.", "gate", "saved");
 			return;
 		}
 
@@ -1325,7 +1325,7 @@ class RZ_Stranger_Notice : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"You're the face on the notice. Good. I need someone with nothing to lose.\" He doesn't run. \"My landlord's book is in the crew hut at {hut}. What I owe is in it. All of it.\"";
+		return "You're the face on the notice. Good. I'm not running. I need someone with nothing to lose. My landlord's book is in the crew hut at {hut}. What I owe is in it. All of it.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1383,7 +1383,7 @@ class RZ_Stranger_Hiding : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "From under a car, a voice: \"Is it over? All that noise. I didn't come out. I'm sorry. I didn't come out.\"";
+		return "Is it over? I'm under the car. All that noise. I didn't come out. I'm sorry. I didn't come out.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1424,7 +1424,7 @@ class RZ_Stranger_First : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "A scavenger with a full bag and both hands where you can see them. \"Got here first. Didn't think anyone else would. We can be civil about it.\"";
+		return "Hands where you can see them, look. I got here first. Didn't think anyone else would. We can be civil about it.";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)
@@ -1478,7 +1478,7 @@ class RZ_Stranger_Bitten : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "Someone sitting against a wall, holding one arm with the other. \"It's a scratch. Off a fence. Is there a house near?\"";
+		return "It's a scratch. Off a fence. I'm just holding it so it stops throbbing. Is there a house near?";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)

@@ -524,7 +524,7 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			ChangeStanding(gm, run, RZ_EFaction.INSTITUTE, 4, 0);
 			gm.GetCure().AddResearch(1, "Dr Wolff's notebook went into the lab's record.");
 			LeadLeaves(gm, run);
-			SpreadRumour(gm, "\"Halcyon burned notebook pages in the stove the other night. Halcyon never burns paper.\"", 8);
+			SpreadRumour(gm, "Halcyon burned notebook pages in the stove the other night. Halcyon never burns paper.", 8);
 			return;
 		}
 
@@ -536,14 +536,14 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 			if (run.Flag("raid") == 2)
 				Headline(gm, "The Red Hand went through the lab's store room looking for more pages, and found nothing they could read.", false);
 
-			SpreadRumour(gm, "\"Halcyon made this. Ask them about the three weeks and watch their faces.\"", 48);
+			SpreadRumour(gm, "Halcyon made this. Ask them about the three weeks and watch their faces.", 48);
 			return;
 		}
 
 		q.SetWorldFlag(FLAG_BASTION, 1);
 		NudgeStrength(gm, RZ_EFaction.MILITARY, 3);
 		Headline(gm, string.Format("%1 has a dead researcher's notebook in Bastion's file now, and questions for the lab.", RZ_QM_HalcyonScene.TopName(gm, RZ_EFaction.MILITARY, "Bastion's commanding officer")));
-		SpreadRumour(gm, "\"Bastion's got something on the lab. A notebook. The commanding officer reads it at night, they say.\"", 12);
+		SpreadRumour(gm, "Bastion's got something on the lab. A notebook. The commanding officer reads it at night, they say.", 12);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -615,10 +615,10 @@ class RZ_Quest_ThreeWeeks : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage == S_SITE || run.m_iStage == S_LEAD)
-			return "\"Somebody's been up at the old site past {site_town}. Halcyon's people go quiet when you ask what they kept up there.\"";
+			return "Somebody's been up at the old site past {site_town}. Halcyon's people go quiet when you ask what they kept up there.";
 
 		if (run.m_iStage == S_READERS)
-			return "\"There's a dead woman's notebook going round, and everybody wants to read it first.\"";
+			return "There's a dead woman's notebook going round, and everybody wants to read it first.";
 
 		return "";
 	}

@@ -611,7 +611,7 @@ class RZ_Checkpoints
 		{
 			c.m_bCleared = true;
 			if (disguise.Look(playerId, post.m_eFaction, 2, PostKey(post), "", 0))
-				m_GM.Say(playerId, title, post.m_eFaction, "\"Right. Go on, then.\" You walk through as one of theirs.");
+				SayThen(playerId, title, post.m_eFaction, "Right. Go on, then.", "You walk through as one of theirs.");
 			else
 				c.m_bPunished = true;
 
@@ -620,9 +620,9 @@ class RZ_Checkpoints
 		if (post.m_eFaction == RZ_EFaction.BANDITS)
 		{
 			if (c.m_bCleared)
-				m_GM.Say(playerId, title, post.m_eFaction, "\"You've paid. Go on, before I think of a reason you haven't.\"");
+				m_GM.Say(playerId, title, post.m_eFaction, "You've paid. Go on, before I think of a reason you haven't.");
 			else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.TRUSTED))
-				m_GM.Say(playerId, title, post.m_eFaction, "\"You're one of ours. Why are you talking to me? Drive.\"");
+				m_GM.Say(playerId, title, post.m_eFaction, "You're one of ours. Why are you talking to me? Drive.");
 			else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
 			{
 				// After the book burns or its debts die, the sign's in a new hand and the jokes stop
@@ -630,10 +630,10 @@ class RZ_Checkpoints
 				if (book && (book.Flag("book.burnt") > 0 || book.Flag("book.debts_dead") > 0))
 					m_GM.Say(playerId, title, post.m_eFaction, string.Format("A new sign, in someone else's hand: TOLL %1. No joke under it this time.", TollFor(playerId)));
 				else
-					m_GM.Say(playerId, title, post.m_eFaction, string.Format("\"Red hand means stop. Stop means pay. %1 Favor, or walk round.\"", TollFor(playerId)));
+					m_GM.Say(playerId, title, post.m_eFaction, string.Format("Red hand means stop. Stop means pay. %1 Favor, or walk round.", TollFor(playerId)));
 			}
 			else
-				m_GM.Say(playerId, title, post.m_eFaction, "\"You don't know us and we don't know you. That's a turn-round face.\"");
+				m_GM.Say(playerId, title, post.m_eFaction, "You don't know us and we don't know you. That's a turn-round face.");
 
 			// The toll sign's tally, a board of record (Missions/Story/RZ_Grey.c)
 			string tally = RZ_RecordBoards.Tally();
@@ -644,11 +644,11 @@ class RZ_Checkpoints
 		}
 
 		if (c.m_bCleared)
-			m_GM.Say(playerId, title, post.m_eFaction, "\"You're done. Move along. Keep to the left of the road.\"");
+			m_GM.Say(playerId, title, post.m_eFaction, "You're done. Move along. Keep to the left of the road.");
 		else if (RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN) && tier != RZ_ETier.WILDCARD)
-			m_GM.Say(playerId, title, post.m_eFaction, "\"Cleared. You don't need to talk to me. Nobody needs to talk to me.\"");
+			m_GM.Say(playerId, title, post.m_eFaction, "Cleared. You don't need to talk to me. Nobody needs to talk to me.");
 		else
-			m_GM.Say(playerId, title, post.m_eFaction, "\"Checkpoint. Hands on the barrier, a search, and you're through. Fifteen seconds if you don't argue.\"");
+			m_GM.Say(playerId, title, post.m_eFaction, "Checkpoint. Hands on the barrier, a search, and you're through. Fifteen seconds if you don't argue.");
 
 		// Bastion's board: the season's impostors, never by name
 		if (disguise)
@@ -708,22 +708,22 @@ class RZ_Checkpoints
 
 		RZ_PostContact c = GetContact(post, playerId);
 		if (c.m_bCleared)
-			return "\"You've paid already. We're bandits, not thieves.\"";
+			return "You've paid already. We're bandits, not thieves.";
 
 		if (!RZ_Reputation.IsAtLeast(m_GM.GetTier(playerId, RZ_EFaction.BANDITS), RZ_ETier.KNOWN))
-			return "\"Toll's for people we know. You're not people we know.\"";
+			return "Toll's for people we know. You're not people we know.";
 
 		int toll = TollFor(playerId);
 		int had = m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS);
 		if (!m_GM.SpendFavor(playerId, RZ_EFaction.BANDITS, toll))
-			return string.Format("\"%1 Favor. You've got %2. Walk round.\"", toll, had);
+			return string.Format("%1 Favor. You've got %2. Walk round.", toll, had);
 
 		c.m_bCleared = true;
 		RZ_RecordBoards.NoteToll();
 		if (had == toll)
 			RZ_RepVoice.CrewEvent(m_GM, playerId, RZ_RepVoice.CREW_SKINT);
 
-		return string.Format("You pay the toll: %1 Favor. \"Pleasure. Mind the potholes.\" %2 Favor left.", toll, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS));
+		return string.Format("Pleasure doing business. Mind the potholes on your way. (Toll paid: %1 Favor, %2 left.)", toll, m_GM.GetProfile(playerId).GetFavor(RZ_EFaction.BANDITS));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -865,20 +865,20 @@ class RZ_Checkpoints
 		{
 			c.m_bWarned = true;
 			if (hunted)
-				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"We know who you are. Drop your weapons and walk to the barrier, slowly, if you want to talk. Otherwise turn around.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "We know who you are. Drop your weapons and walk to the barrier, slowly, if you want to talk. Otherwise turn around.");
 			else if (claim)
 				disguise.ShowComing(playerId, RZ_EFaction.MILITARY, 2, PostKey(post), "", title);
 			else if (wholeCar && RZ_Reputation.IsAtLeast(tier, RZ_ETier.KNOWN))
-				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry knows your face, then looks at who you came with. \"We search the whole car.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "I know your face. I don't know theirs. We search the whole car.");
 
 			if (wholeCar)
 				RZ_Log.Info(string.Format("Checkpoints: %1 searched with the whole car at %2 (before any look)", RZ_Util.PlayerName(playerId), post.m_sNear));
 			else if (redColours)
-				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry looks at the red on you, then at you. \"Arms out. We search everyone in those colours.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "That's Red Hand colour you're wearing. Arms out. We search everyone in those colours.");
 			else if (wildcard)
-				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "The sentry knows your face, and doesn't like what he knows. \"Arms out. Walk to the barrier. We search you today.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "I know you, and I don't like what I know. Arms out. Walk to the barrier. We search you today.");
 			else
-				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "A loudhailer: \"Checkpoint. Walk to the barrier and wait to be searched. Leave once you're there and we'll treat it as running.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "Checkpoint. Walk to the barrier and wait to be searched. Leave once you're there and we'll treat it as running.");
 		}
 
 		// Hunted but coming in with empty hands: they hold their fire while you walk up and wait.
@@ -911,7 +911,7 @@ class RZ_Checkpoints
 			{
 				c.m_bCleared = true;
 				if (disguise.Look(playerId, RZ_EFaction.MILITARY, 2, PostKey(post), "", 0))
-					m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"Not on the board.\" A long look, then a nod. The pole goes up, and you walk through as one of theirs.");
+					SayThen(playerId, title, RZ_EFaction.MILITARY, "You're not on the board. Hm. Fine, go through.", "The pole goes up, and you walk through as one of theirs.");
 				else
 					c.m_bPunished = true;
 
@@ -961,7 +961,7 @@ class RZ_Checkpoints
 			if (hostility)
 				hostility.AddGrudge(playerId, RZ_EFaction.MILITARY, post.m_vPos);
 
-			m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"Stop! STOP!\" You ran the checkpoint. They'll remember the face.");
+			SayThen(playerId, title, RZ_EFaction.MILITARY, "Stop! STOP!", "You ran the checkpoint. They'll remember the face.");
 		}
 	}
 
@@ -1035,6 +1035,17 @@ class RZ_Checkpoints
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! What the post says (spoken, under its title), then what happens, as a plain notice: speech is
+	//! never wrapped in quotes or mixed with narration (docs/WRITING.md, "Talk").
+	protected void SayThen(int playerId, string title, int faction, string speech, string outcome)
+	{
+		m_GM.Say(playerId, title, faction, speech);
+		if (!outcome.IsEmpty())
+			m_GM.NotifyPlayer(playerId, "Checkpoint", outcome);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected RZ_Disguise Disguise()
 	{
 		RZ_Hostility hostility = m_GM.GetHostility();
@@ -1078,7 +1089,7 @@ class RZ_Checkpoints
 		float gap = m_Settings.m_fSurrenderCooldownMinutes * 60;
 		if (m_mSurrenderAt.Find(ident, last) && m_fClock - last < gap)
 		{
-			m_GM.Say(playerId, title, RZ_EFaction.MILITARY, "\"You again. We've had this talk.\" A search, and nothing more.");
+			SayThen(playerId, title, RZ_EFaction.MILITARY, "You again. We've had this talk. Arms out.", "A search, and nothing more.");
 			return false;
 		}
 
@@ -1138,13 +1149,13 @@ class RZ_Checkpoints
 		{
 			c.m_bWarned = true;
 			if (armyColours)
-				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"We don't sell passes to the army. Turn round, soldier.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "We don't sell passes to the army. Turn round, soldier.");
 			else if (claim)
 				disguise.ShowComing(playerId, RZ_EFaction.BANDITS, 2, PostKey(post), "", title);
 			else if (known)
-				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("\"Toll road. %1 Favor and you're a friend. Walk up slow.\" %2", toll, NightRate(playerId)).Trim());
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, string.Format("Toll road. %1 Favor and you're a friend. Walk up slow. %2", toll, NightRate(playerId)).Trim());
 			else
-				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"This road's ours. Turn around. Come any closer and we start shooting.\"");
+				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "This road's ours. Turn around. Come any closer and we start shooting.");
 		}
 
 		if (dist > m_Settings.m_fStopRadius)
@@ -1158,7 +1169,7 @@ class RZ_Checkpoints
 		{
 			c.m_bCleared = true;
 			if (disguise.Look(playerId, RZ_EFaction.BANDITS, 2, PostKey(post), "", 0))
-				m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"What do they call you?\" You tell them. A grunt, and the car rolls back. You walk through like crew.");
+				SayThen(playerId, title, RZ_EFaction.BANDITS, "What do they call you? ...Right. Walk on through.", "The car rolls back, and you walk through like crew.");
 			else
 				c.m_bPunished = true;
 
@@ -1184,11 +1195,11 @@ class RZ_Checkpoints
 			hostility.AddGrudge(playerId, RZ_EFaction.BANDITS, post.m_vPos);
 
 		if (armyColours)
-			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"Told you. No passes for the army.\" The rifles come up.");
+			SayThen(playerId, title, RZ_EFaction.BANDITS, "Told you. No passes for the army.", "The rifles come up.");
 		else if (known)
-			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"No Favor? Then you're no friend.\" The rifles come up.");
+			SayThen(playerId, title, RZ_EFaction.BANDITS, "No Favor? Then you're no friend.", "The rifles come up.");
 		else
-			m_GM.Say(playerId, title, RZ_EFaction.BANDITS, "\"You were told.\" The rifles come up.");
+			SayThen(playerId, title, RZ_EFaction.BANDITS, "You were told.", "The rifles come up.");
 	}
 
 	// ================================================================ Camps and safe zones
@@ -1278,7 +1289,7 @@ class RZ_Checkpoints
 			if (!redColours && m_mSignedIn.Find(passKey, signedUntil) && m_fClock < signedUntil)
 			{
 				if (Tell(playerId, place, "visitor", GATE_GAP))
-					m_GM.Say(playerId, title, f, "\"Visitor. Your friend's name is on your pass.\" The gate opens.");
+					SayThen(playerId, title, f, "Visitor. Your friend's name is on your pass. Go on in.", "The gate opens.");
 
 				return;
 			}
@@ -1307,7 +1318,7 @@ class RZ_Checkpoints
 			if (Tell(playerId, place, "warn", TELL_GAP))
 			{
 				if (redColours)
-					m_GM.Say(playerId, title, f, "\"Not in those colours. Take the red off before you come up here.\"");
+					m_GM.Say(playerId, title, f, "Not in those colours. Take the red off before you come up here.");
 				else
 					m_GM.Say(playerId, title, f, RZ_FactionVoice.CampWarning(f));
 			}
@@ -1321,7 +1332,7 @@ class RZ_Checkpoints
 				{
 					string gate = "The gate stays shut. Nobody here will deal with you until you've made it right with them.";
 					if (FriendWelcome(playerId, ent, f))
-						gate += " \"Your friend can come in. You wait outside.\"";
+						gate += " Your friend can come in. You wait outside.";
 
 					m_GM.Say(playerId, title, f, gate);
 				}
@@ -1336,7 +1347,7 @@ class RZ_Checkpoints
 			if (hostility)
 				hostility.AddGrudge(playerId, f, pos);
 
-			m_GM.Say(playerId, title, f, "\"We told you once.\" Armed and still coming: they open fire.");
+			SayThen(playerId, title, f, "We told you once.", "Armed and still coming: they open fire.");
 			return;
 		}
 

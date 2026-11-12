@@ -78,7 +78,7 @@ class RZ_MissionGoods
 		{
 			string owner = Owner(item);
 			if (!owner.IsEmpty())
-				return string.Format("\"These are %1's. Take them back to %1.\"", owner);
+				return string.Format("These are %1's. Take them back to %1.", owner);
 		}
 
 		return "";

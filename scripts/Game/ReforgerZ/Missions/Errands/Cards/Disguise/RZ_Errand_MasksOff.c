@@ -14,9 +14,9 @@ class RZ_Errand_MasksOff : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("\"Someone in one of our coats has been taking samples from the bitten at {house}. We sent nobody. Coat number 17. Please find out who is inside it.\"",
-			"\"A coat and a respirator at {house}, with a tray and no paperwork. Number 17 is signed out to Dr Brandt, who has not left the lab.\"");
-		Over("\"Number 17 came back on its own, folded. We are choosing not to ask.\"");
+		Offer("Someone in one of our coats has been taking samples from the bitten at {house}. We sent nobody. Coat number 17. Please find out who is inside it.",
+			"A coat and a respirator at {house}, with a tray and no paperwork. Number 17 is signed out to Dr Brandt, who has not left the lab.");
+		Over("Number 17 came back on its own, folded. We are choosing not to ask.");
 
 		RZ_ErrandWay w = Way("report");
 		w.m_sLabel = "Turn the orderly in";
@@ -25,7 +25,7 @@ class RZ_Errand_MasksOff : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Find the beak at {house} (15 s there): a Haven orderly with a tray of samples. Bring the coat back to {giver}, and the name.";
 		w.m_iFame = 2;
-		w.Done("\"Number 17. Thank you. We will speak to the Haven about the orderly, politely.\"");
+		w.Done("Number 17. Thank you. We will speak to the Haven about the orderly, politely.");
 
 		w = Way("talk");
 		w.m_sLabel = "Let the orderly go";
@@ -35,7 +35,7 @@ class RZ_Errand_MasksOff : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Find the beak at {house} (15 s there). Hear out the orderly, who has a daughter and no antidote. Then tell {giver} you found nobody.";
 		w.m_iFame = 2;
-		w.Done("\"Nobody. I see. We will keep looking, and so, I expect, will the coat.\"");
+		w.Done("Nobody. I see. We will keep looking, and so, I expect, will the coat.");
 
 		w = Way("take");
 		w.m_sLabel = "Take the coat for yourself";

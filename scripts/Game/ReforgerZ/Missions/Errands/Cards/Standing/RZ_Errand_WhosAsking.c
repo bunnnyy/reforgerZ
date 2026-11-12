@@ -11,9 +11,9 @@ class RZ_Errand_WhosAsking : RZ_ErrandCard
 		m_sTitle = "Who's Asking";
 		m_sFamily = "standing";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("\"The boss doesn't care what the Haven thinks of you. Neither do I. A crate of tins for the back door at {subject_place}. Don't let them see who brought it.\"",
-			"\"You're out with the Haven. Handy. The boss sends them tins they're not supposed to know about. Take them round the back.\"");
-		Over("\"Never mind the crate. The boss changed his mind. He does that.\"");
+		Offer("The boss doesn't care what the Haven thinks of you. Neither do I. A crate of tins for the back door at {subject_place}. Don't let them see who brought it.",
+			"You're out with the Haven. Handy. The boss sends them tins they're not supposed to know about. Take them round the back.");
+		Over("Never mind the crate. The boss changed his mind. He does that.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take the tins round the back";
@@ -22,7 +22,7 @@ class RZ_Errand_WhosAsking : RZ_ErrandCard
 		w.m_fRadius = 30;
 		w.m_sStep = "Leave the crate at the back door of the house at {subject_place} without being seen (10 s there), then come back to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"Good. The boss likes them fed. Fed people don't come asking.\"");
+		w.Done("Good. The boss likes them fed. Fed people don't come asking.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -15,16 +15,16 @@ class RZ_Errand_HandToHand : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		Offer("\"{local} wants a word. Not with the council. With you.\" \"When it's made, will you bring ours? You. Not them.\"",
-			"\"{local} asked for you by name. They don't trust the factions with it. They trust you, apparently.\"");
-		Over("\"{local} doesn't need to ask any more.\"");
+			"{local} asked for you by name. They don't trust the factions with it. They trust you, apparently.");
+		Over("{local} doesn't need to ask any more.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Promise";
-		w.Done("\"You meant that. I watched you mean it.\"");
+		w.Done("You meant that. I watched you mean it.");
 
 		w = Way("talk");
 		w.m_sLabel = "Don't promise";
-		w.Done("\"No. Fair. Nobody should promise anything, this week.\"");
+		w.Done("No. Fair. Nobody should promise anything, this week.");
 	}
 
 	//------------------------------------------------------------------------------------------------

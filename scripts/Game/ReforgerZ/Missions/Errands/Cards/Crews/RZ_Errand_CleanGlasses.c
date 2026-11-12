@@ -12,9 +12,9 @@ class RZ_Errand_CleanGlasses : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
 		m_bTimed = true;
-		Offer("\"The crews sit down soon. The boss wants glasses. Six. Not cracked. He wants it to look civilised. Then he'll read out who owes.\"",
-			"\"Six glasses, unbroken, from {place}. For the boss's table. Don't ask. Nobody asks.\"");
-		Over("\"Never mind the glasses. He's drinking from the bottle. That's a bad sign for somebody.\"");
+		Offer("The crews sit down soon. The boss wants glasses. Six. Not cracked. He wants it to look civilised. Then he'll read out who owes.",
+			"Six glasses, unbroken, from {place}. For the boss's table. Don't ask. Nobody asks.");
+		Over("Never mind the glasses. He's drinking from the bottle. That's a bad sign for somebody.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Find six unbroken glasses";
@@ -24,7 +24,7 @@ class RZ_Errand_CleanGlasses : RZ_ErrandCard
 		w.m_sStep = "Search the houses at {place} for six glasses without a crack (30 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 5;
-		w.Done("\"Six. Clean. He'll hold one up to the light before he reads the names. Old habit.\"");
+		w.Done("Six. Clean. He'll hold one up to the light before he reads the names. Old habit.");
 	}
 
 	//------------------------------------------------------------------------------------------------

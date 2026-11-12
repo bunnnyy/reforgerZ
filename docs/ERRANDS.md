@@ -105,6 +105,9 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   Tags show costs and requirements, never outcomes. The replies are that player's for 90 seconds,
   or until they pick or walk 20 m off; anyone else at the same person hears *"Give us a minute."*
 - **Not now** is always free: nothing is remembered, and the offer stands 10 minutes.
+- **On the talk screen** the ways are said as what you agree to (`RZ_TalkWords.Agree`): "Hand over
+  two tins" is *I'll hand over two tins.*, with its tag in front, and "Not now" is *Not now. Ask me
+  again another time.* ([WRITING.md](WRITING.md#talk)). The labels above stay the world prompt's.
 - **The reason in their voice.** Asked when nothing's true, or when it isn't safe, the giver says
   why: *"Not while that lot's at the fence."*, *"You've your hands full already."*, *"Nothing on the
   board for you. Check back after the shift change."*

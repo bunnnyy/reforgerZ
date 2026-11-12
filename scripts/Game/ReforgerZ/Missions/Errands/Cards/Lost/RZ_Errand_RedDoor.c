@@ -12,9 +12,9 @@ class RZ_Errand_RedDoor : RZ_ErrandCard
 		m_sFamily = "lost";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"The boy keeps drawing the same house. Red door, a tree, a window with a cat in it. It's {town}, I think. Would you look?\"",
-			"\"He's drawn the red door again. Same house every time. Somebody should go, and it shouldn't be him.\"");
-		Over("\"He's stopped drawing it. Don't ask him about it.\"");
+		Offer("The boy keeps drawing the same house. Red door, a tree, a window with a cat in it. It's {town}, I think. Would you look?",
+			"He's drawn the red door again. Same house every time. Somebody should go, and it shouldn't be him.");
+		Over("He's stopped drawing it. Don't ask him about it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Find the house, then tell him the truth";
@@ -22,7 +22,7 @@ class RZ_Errand_RedDoor : RZ_ErrandCard
 		w.m_fSeconds = 15;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the house with the red door in {place} and what's left inside (15 s there), then go back to the boy at {here}.";
-		w.Later("\"The boy sat on the step all evening after you told him. Then he came in for supper. That's something.\"");
+		w.Later("The boy sat on the step all evening after you told him. Then he came in for supper. That's something.");
 		w.m_iFavor = 4;
 		w.Done("You tell him she went to another house. True, nearly. He nods like a grown-up, which is worse.");
 
@@ -88,7 +88,7 @@ class RZ_Errand_RedDoor : RZ_ErrandCard
 			return;
 
 		// He waits at the gate at dusk from now on: a pinned local, kept to the end
-		RZ_Local l = dealer.GetLocals().Make(playerId, "the boy at the gate", "\"Is she coming today? You said soon. It's been soon for ages.\"", e.m_iHouse, "gate", true, "promised");
+		RZ_Local l = dealer.GetLocals().Make(playerId, "the boy at the gate", "Is she coming today? You said soon. It's been soon for ages.", e.m_iHouse, "gate", true, "promised");
 		if (l)
 			said.Insert("From now on he's at the gate when the light goes. Every evening you pass, he asks.");
 	}

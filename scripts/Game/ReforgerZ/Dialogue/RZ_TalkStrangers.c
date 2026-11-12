@@ -54,6 +54,13 @@ class RZ_TalkStranger : RZ_TalkGeneric
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A stranger called out to you: they speak first, every time.
+	override bool SpeaksFirst(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId)
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Their call-out, said again to whoever talks to them.
 	override void Greet(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, IEntity user)
 	{
@@ -63,7 +70,7 @@ class RZ_TalkStranger : RZ_TalkGeneric
 			line = v.Fill(v.m_Kind.CallOut(gm.GetErrands().GetStrangers(), v));
 
 		if (line.IsEmpty())
-			line = "\"Oh. You're real. Sorry. I've been talking to myself all day.\"";
+			line = "Oh. You're real. Sorry, I've been talking to myself all day. I don't belong to anyone's lot, if that's what you're wondering.";
 
 		s.m_aNew.Insert(line);
 	}

@@ -714,24 +714,24 @@ class RZ_DisguiseMarks
 		if (kind == KIT_TURNED)
 		{
 			if (f == RZ_EFaction.INSTITUTE)
-				return "\"That coat was on one of the turned. We counted it lost.\"";
+				return "That coat was on one of the turned. We counted it lost.";
 
-			return "\"That's off one of ours. Where is he?\"";
+			return "That's off one of ours. Where is he?";
 		}
 
 		if (kind == KIT_DEAD && m)
 		{
 			if (f == RZ_EFaction.MILITARY)
-				return string.Format("\"%1? %1 went on the nail on Day %2. Hands on the barrier.\"", Surname(m.m_sName), DayOf(m));
+				return string.Format("%1? %1 went on the nail on Day %2. Hands on the barrier.", Surname(m.m_sName), DayOf(m));
 
 			if (f == RZ_EFaction.INSTITUTE)
-				return string.Format("\"That coat is signed out to %1, and %1 isn't coming back.\"", m.m_sName);
+				return string.Format("That coat is signed out to %1, and %1 isn't coming back.", m.m_sName);
 
-			return "\"That jacket's one of ours, and it hasn't been through the market.\"";
+			return "That jacket's one of ours, and it hasn't been through the market.";
 		}
 
 		if (kind == KIT_SIGNED_OTHER && m)
-			return string.Format("\"Signed out to %1. You're not %1.\"", m.m_sName);
+			return string.Format("Signed out to %1. You're not %1.", m.m_sName);
 
 		return "";
 	}
@@ -786,7 +786,7 @@ class RZ_DisguiseMarks
 				continue;
 			}
 
-			line = string.Format(" \"Army property, signed out to %1. They'll be hearing from us.\"", name);
+			line = string.Format(" Army property, signed out to %1. They'll be hearing from us.", name);
 			int buyer = m_GM.FindPlayerByIdentity(owner);
 			if (buyer > 0)
 				m_GM.NotifyPlayer(buyer, RZ_Factions.GetName(RZ_EFaction.MILITARY), "Kit signed out to you turned up on somebody else at a checkpoint. It's back in the stores.");
@@ -965,7 +965,7 @@ class RZ_DisguiseMarks
 		if (m_Data.coatsOut <= 0)
 			return "";
 
-		return string.Format("\"Coats returned: %1 of %2.\"", Math.Min(m_Data.coatsBack, m_Data.coatsOut), m_Data.coatsOut);
+		return string.Format("Coats returned: %1 of %2.", Math.Min(m_Data.coatsBack, m_Data.coatsOut), m_Data.coatsOut);
 	}
 
 	//------------------------------------------------------------------------------------------------

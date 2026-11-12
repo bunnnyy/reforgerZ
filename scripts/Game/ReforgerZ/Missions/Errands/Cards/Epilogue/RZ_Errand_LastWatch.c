@@ -9,9 +9,9 @@ class RZ_Errand_LastWatch : RZ_EpiCard
 		m_sKey = "epi_last_watch";
 		m_sTitle = "The Last Watch";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("\"We held this gate all season. Somebody should stand the last proper watch on it. Ten minutes. I'd like it to be someone we know.\"",
-			"\"One more watch on the gate, before it doesn't matter. Ten minutes. Then I'll write it down as kept.\"");
-		Over("\"Never mind. The lads are taking it themselves.\"");
+		Offer("We held this gate all season. Somebody should stand the last proper watch on it. Ten minutes. I'd like it to be someone we know.",
+			"One more watch on the gate, before it doesn't matter. Ten minutes. Then I'll write it down as kept.");
+		Over("Never mind. The lads are taking it themselves.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Stand the gate for ten minutes";

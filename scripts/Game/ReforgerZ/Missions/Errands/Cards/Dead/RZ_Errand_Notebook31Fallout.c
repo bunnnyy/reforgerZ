@@ -12,9 +12,9 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("\"{who}. Notebook thirty-one is still with him, {subject_place}. And his coat. The coat is numbered. A small request: bring both.\"",
-			"\"We'd like {who}'s notebook back. And him on the authors' list, where he belongs. He's {subject_place}.\"");
-		Over("\"Someone returned the notebook. His name goes on the list at the change of shift.\"");
+		Offer("{who}. Notebook thirty-one is still with him, {subject_place}. And his coat. The coat is numbered. A small request: bring both.",
+			"We'd like {who}'s notebook back. And him on the authors' list, where he belongs. He's {subject_place}.");
+		Over("Someone returned the notebook. His name goes on the list at the change of shift.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring back the coat and the notebook";
@@ -25,7 +25,7 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 5;
 		w.m_iFame = 2;
-		w.Done("\"Thirty-one. The handwriting gets worse towards the end. They always do. Thank you.\"");
+		w.Done("Thirty-one. The handwriting gets worse towards the end. They always do. Thank you.");
 
 		w = Way("lie");
 		w.m_sLabel = "Sell the notebook to the fence";
@@ -38,7 +38,7 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_sStep = "Take the notebook off {who} {subject_place} (15 s), sell it at the fence, and tell {giver} it wasn't there.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_iFavor = 6;
-		w.Done("\"Not there. I see. I'll put him down as 'notes lost'.\"");
+		w.Done("Not there. I see. I'll put him down as 'notes lost'.");
 
 		w = Way("do");
 		w.m_sLabel = "Keep the notebook";
@@ -47,7 +47,7 @@ class RZ_Errand_Notebook31Fallout : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Take the notebook off {who} {subject_place} (15 s) and keep it. Tell {giver} what you like.";
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
-		w.Done("\"You've kept it. Of course you have. It has a number. Numbers open doors here.\"");
+		w.Done("You've kept it. Of course you have. It has a number. Numbers open doors here.");
 	}
 
 	//------------------------------------------------------------------------------------------------

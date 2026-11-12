@@ -11,9 +11,9 @@ class RZ_Errand_TollMansDebt : RZ_EpiCard
 		m_sTitle = "The Toll Man's Last Debt";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"We had three tins off {house} in the spring. The book says square by the end. Walk them back for me. I'm not welcome there.\"",
-			"\"Last line in my page: three tins, {house}. I'd like it crossed out before the gates open. You carry, I cross.\"");
-		Over("\"Forget it. Somebody from {house} came for them.\"");
+		Offer("We had three tins off {house} in the spring. The book says square by the end. Walk them back for me. I'm not welcome there.",
+			"Last line in my page: three tins, {house}. I'd like it crossed out before the gates open. You carry, I cross.");
+		Over("Forget it. Somebody from {house} came for them.");
 
 		RZ_ErrandWay w = Way("give");
 		w.m_sLabel = "Carry the tins to {house}";
@@ -22,7 +22,7 @@ class RZ_Errand_TollMansDebt : RZ_EpiCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry the toll man's three tins to {house} (at the gate), then come back to {giver}.";
 		w.m_iFavor = 5;
-		w.Done("\"Crossed out. First line I've ever crossed out going that way.\"");
+		w.Done("Crossed out. First line I've ever crossed out going that way.");
 
 		w = Way("press");
 		w.m_sLabel = "Sell the tins back to the crew";

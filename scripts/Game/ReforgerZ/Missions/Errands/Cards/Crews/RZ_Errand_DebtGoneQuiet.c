@@ -12,9 +12,9 @@ class RZ_Errand_DebtGoneQuiet : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"{name} at {subject_place} stopped paying. Stopped answering. That's not like him. Find out why before the lads go and find out their way.\"",
-			"\"A line in the book went quiet. {name}. Go and ask him nicely. You're good at nicely, people say. Or the other thing.\"");
-		Over("\"Never mind {name}. The lads went up there themselves, and it's sorted now.\"");
+		Offer("{name} at {subject_place} stopped paying. Stopped answering. That's not like him. Find out why before the lads go and find out their way.",
+			"A line in the book went quiet. {name}. Go and ask him nicely. You're good at nicely, people say. Or the other thing.");
+		Over("Never mind {name}. The lads went up there themselves, and it's sorted now.");
 
 		RZ_ErrandWay w = Way("press");
 		w.m_sLabel = "Find him, and lean on him";
@@ -23,18 +23,18 @@ class RZ_Errand_DebtGoneQuiet : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Find {name} at {subject_place} and make him pay (15 s there), then come back to {giver}.";
 		w.m_iFavor = 6;
-		w.Done("\"Paid. Good. I don't want to know what you said. I want it in the book.\"");
+		w.Done("Paid. Good. I don't want to know what you said. I want it in the book.");
 
 		w = Way("pay");
 		w.m_sLabel = "Pay what he owes yourself";
 		w.m_iFavorCost = 10;
 		w.m_iFame = 1;
-		w.Done("\"Your money, his line. The book doesn't care whose. I do, a bit.\"");
+		w.Done("Your money, his line. The book doesn't care whose. I do, a bit.");
 
 		w = Way("lie");
 		w.m_sLabel = "Say he's dead";
 		w.m_iFavor = 3;
-		w.Done("\"Dead. Shame. I'll draw a line through him.\"");
+		w.Done("Dead. Shame. I'll draw a line through him.");
 	}
 
 	//------------------------------------------------------------------------------------------------

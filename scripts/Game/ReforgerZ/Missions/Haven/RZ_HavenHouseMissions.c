@@ -121,7 +121,7 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 		m_iQuietTown = QuietTown(gm, m_vStart, dest);
 		RZ_Settlement quiet = gm.GetSettlement(m_iQuietTown);
 		if (quiet)
-			m_sBrief += string.Format(" \"The short way is straight through %1. Quiet in there pays better. Loud, and you'd better hope the letters are worth it.\"", quiet.m_sName);
+			m_sBrief += string.Format(" The short way is straight through %1. Quiet in there pays better. Loud, and you'd better hope the letters are worth it.", quiet.m_sName);
 
 		// A pack that hunts the road at its hour: the courier asks you to see the letters past it
 		string hunt = RZ_TribeContract.RoadHuntLine(gm, m_vStart, dest, 300, RZ_EFaction.SURVIVORS);
@@ -143,16 +143,16 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 		m_Job.Read("the_writer", "elder", "Every envelope's in the same hand, and so is the name on the back of each.");
 		m_Job.Read("crew", "excon,raider", "One envelope's sealed with red wax and a thumbprint. A crew's letter, riding in the Haven's post.");
 
-		string reveal = "\"Mothers, mostly. Mothers write. Sons don't.\"";
+		string reveal = "Mothers, mostly. Mothers write. Sons don't.";
 		if (m_sTruth == "the_writer")
-			reveal = "\"Him again. He writes to himself so someone brings him the post. We all pretend.\"";
+			reveal = "Him again. He writes to himself so someone brings him the post. We all pretend.";
 		else if (m_sTruth == "crew")
 			reveal = "She holds the red-sealed one up to the light. \"That's a toll list, that is. In our own post.\"";
 
 		RZ_TalkScene sc = m_Job.Scene("The woman at the door", "letters.door", LandPointNear(dest, 3, 6));
 		int n0 = sc.Node("A woman at the door takes the bundle before you've offered it. \"Anything for me? There never is. I check anyway.\"");
-		int n1 = sc.Node("\"Go on, then. What do you want done with it?\"");
-		sc.Ask(n0, "\"Who are they for?\"", n1, reveal, true);
+		int n1 = sc.Node("Go on, then. What do you want done with it?");
+		sc.Ask(n0, "Who are they for?", n1, reveal, true);
 		if (m_sTruth == "crew")
 			sc.Decide(n1, "Burn the red one", "burn the crew's letter", WAY_BURN, "The red-sealed letter goes in the stove. The rest go on the shelf by the door.", RZ_EFaction.SURVIVORS);
 

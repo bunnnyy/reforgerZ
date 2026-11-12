@@ -132,7 +132,7 @@ class RZ_Parley
 			run.m_sPlace = place;
 			run.m_iStarted = RZ_SeasonClock.Now();
 			m_mRuns.Set(playerId, run);
-			m_GM.Say(playerId, title, f, "\"Stop there. Empty hands, or not at all.\"");
+			m_GM.Say(playerId, title, f, "Stop there. Empty hands, or not at all.");
 			RZ_Log.Info(string.Format("Parley: %1 at %2 (%3) opened", RZ_Util.PlayerName(playerId), place, RZ_Factions.GetName(f)));
 			return true;
 		}
@@ -158,7 +158,7 @@ class RZ_Parley
 
 		if (hostility && hostility.IsFightFor(playerId, f, me.GetOrigin(), RZ_ReputationSettings.Get().m_fParleySquadRadius))
 		{
-			Break(run, "\"They've got friends coming. So have we.\"", false);
+			Break(run, "They've got friends coming. So have we.", false);
 			return;
 		}
 
@@ -176,7 +176,7 @@ class RZ_Parley
 			if (!run.m_bWarnedOthers)
 			{
 				run.m_bWarnedOthers = true;
-				TellOthers(run, "\"Back off. We're talking.\"");
+				TellOthers(run, "Back off. We're talking.");
 			}
 
 			run.m_fLastDist = dist;
@@ -200,7 +200,7 @@ class RZ_Parley
 			{
 				run.m_iPhase = 1;
 				run.m_fPhaseTime = 0;
-				m_GM.Say(playerId, run.m_sTitle, f, "\"Hands on the barrier. Nobody's coming out to you, so don't wait for it.\"");
+				m_GM.Say(playerId, run.m_sTitle, f, "Hands on the barrier. Nobody's coming out to you, so don't wait for it.");
 			}
 
 			if (closing || dist <= BARRIER)
@@ -236,7 +236,7 @@ class RZ_Parley
 
 		if (dist < 10)
 		{
-			Break(run, "\"Past the barrier? No.\"", true);
+			Break(run, "Past the barrier? No.", true);
 			return;
 		}
 
@@ -289,7 +289,7 @@ class RZ_Parley
 		text += " Talk.\"";
 		string offer = ReserveAmends(playerId, f);
 		if (offer.IsEmpty())
-			text += " \"Nothing for you today. Come back later.\"";
+			text += " Nothing for you today. Come back later.";
 		else
 			text += "\n" + offer;
 
@@ -363,7 +363,7 @@ class RZ_Parley
 				continue;
 
 			other.m_fPausedFor = PAUSE_ON_FIRE;
-			m_GM.Say(pid, other.m_sTitle, other.m_iFaction, "\"Not you. Stay where you are, hands where we can see them.\"");
+			m_GM.Say(pid, other.m_sTitle, other.m_iFaction, "Not you. Stay where you are, hands where we can see them.");
 			RZ_Hostility grudges = m_GM.GetHostility();
 			if (grudges)
 				grudges.AddGrudge(playerId, other.m_iFaction, other.m_vGate);
@@ -441,7 +441,7 @@ class RZ_Parley
 		string closed = Closed(playerId, f, door, me);
 		if (closed == "not alone")
 		{
-			m_GM.Say(playerId, title, f, "\"Just you. Send the others down the road and knock again.\"");
+			m_GM.Say(playerId, title, f, "Just you. Send the others down the road and knock again.");
 			return true;
 		}
 
@@ -458,7 +458,7 @@ class RZ_Parley
 		if (offer.IsEmpty())
 		{
 			profile.m_aParleyUnix[f] = 0;
-			text += " \"Nothing I can give you today. Come back.\"";
+			text += " Nothing I can give you today. Come back.";
 		}
 		else
 		{
@@ -478,7 +478,7 @@ class RZ_Parley
 	{
 		RZ_PlayerProfile profile = m_GM.GetProfile(playerId);
 		if (profile.GetInfamy(f) <= 0)
-			return "\"You don't owe us anything to settle.\"";
+			return "You don't owe us anything to settle.";
 
 		if (profile.ForgiveLeft(f) <= 0)
 			return m_GM.ForgiveSpentText(f);
@@ -491,15 +491,15 @@ class RZ_Parley
 		}
 
 		if (profile.m_aSettled[f] >= RZ_ReputationSettings.Get().m_iSettleDayCap)
-			return "\"That's enough settling for one day. Come back tomorrow.\"";
+			return "That's enough settling for one day. Come back tomorrow.";
 
 		if (profile.GetFame(f) < RZ_ReputationSettings.Get().m_iSettleFame)
-			return string.Format("\"Settling costs %1 Fame with us. You haven't got it.\"", RZ_ReputationSettings.Get().m_iSettleFame);
+			return string.Format("Settling costs %1 Fame with us. You haven't got it.", RZ_ReputationSettings.Get().m_iSettleFame);
 
 		// The cure finale: no settling with a faction whose route is fighting yours
 		RZ_CureFinale finale = RZ_CureFinale.Get();
 		if (finale && finale.ParleyClosed(playerId, f))
-			return "\"Not while your lot and ours are at it. After the cure, maybe.\"";
+			return "Not while your lot and ours are at it. After the cure, maybe.";
 
 		// The Fame goes first, through AddFame (the tier notice), so Forgive's notice reads the
 		// standing after both. The stronghold leader's temper counts, as on every amends

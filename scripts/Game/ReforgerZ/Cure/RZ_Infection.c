@@ -1070,19 +1070,19 @@ class RZ_Infection
 
 		if (!p.IsInfected())
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"The trial is for the bitten. Come back if you need it. I hope you don't.\"");
+			m_GM.NotifyPlayer(playerId, title, "The trial is for the bitten. Come back if you need it. I hope you don't.");
 			return;
 		}
 
 		if (p.IsWoundFresh())
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"It hasn't taken yet. Wash it out, now, properly. Come back if it takes.\"");
+			m_GM.NotifyPlayer(playerId, title, "It hasn't taken yet. Wash it out, now, properly. Come back if it takes.");
 			return;
 		}
 
 		if (p.m_bTrialDoseTaken)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"You've had your dose. A second one would kill you faster than the bite. I'm sorry.\"");
+			m_GM.NotifyPlayer(playerId, title, "You've had your dose. A second one would kill you faster than the bite. I'm sorry.");
 			return;
 		}
 

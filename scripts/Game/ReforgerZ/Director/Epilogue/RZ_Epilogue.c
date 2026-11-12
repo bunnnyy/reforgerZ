@@ -1254,7 +1254,7 @@ class RZ_Epilogue
 
 		if (!IsBuilt())
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), "\"The season? It isn't over yet.\"");
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), "The season? It isn't over yet.");
 			return;
 		}
 
@@ -1270,12 +1270,12 @@ class RZ_Epilogue
 		if (replyId == 41)
 		{
 			IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-			string look = "\"Nowhere you haven't been.\"";
+			string look = "Nowhere you haven't been.";
 			if (ent)
 				look = m_Beats.WhereToLook(playerId, ent.GetOrigin());
 
 			if (look.IsEmpty())
-				look = "\"Nowhere you haven't been.\"";
+				look = "Nowhere you haven't been.";
 
 			m_GM.NotifyPlayer(playerId, l.GetHeader(), look);
 			return;
@@ -1292,7 +1292,7 @@ class RZ_Epilogue
 		if (l.IsStronghold())
 			text = RZ_EpiText.Verdict(l.m_eFaction, Route(), m_S.terms, m_S.faction);
 		else
-			text = "\"" + RZ_EpiText.Where(Route(), m_S.terms, m_S.faction) + "\"";
+			text = RZ_EpiText.Where(Route(), m_S.terms, m_S.faction);
 
 		string place = m_Beats.PlaceLine(l.m_vPos, 400);
 		if (!place.IsEmpty())

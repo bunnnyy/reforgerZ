@@ -13,14 +13,14 @@ class RZ_Errand_OffTheReport : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_sRoles = "sentry,mechanic";
-		Offer("\"There's a duty report on the sergeant's desk with my name on it. Asleep on watch. It's true. I'd still rather it wasn't there. You've bent a rule or two. Bend this one.\"",
-			"\"One line on a report. Mine. It's accurate, which is the problem. Could it go missing?\"");
-		Over("\"The report's gone up to the stronghold. Out of reach. Out of everyone's.\"");
+		Offer("There's a duty report on the sergeant's desk with my name on it. Asleep on watch. It's true. I'd still rather it wasn't there. You've bent a rule or two. Bend this one.",
+			"One line on a report. Mine. It's accurate, which is the problem. Could it go missing?");
+		Over("The report's gone up to the stronghold. Out of reach. Out of everyone's.");
 
 		RZ_ErrandWay w = Way("lie");
 		w.m_sLabel = "Lose the report for him";
 		w.m_iFavor = 4;
-		w.Done("\"Gone? Gone. I owe you. Don't tell anyone I owe you.\"");
+		w.Done("Gone? Gone. I owe you. Don't tell anyone I owe you.");
 
 		w = Way("talk");
 		w.m_sLabel = "Tell him to own it";

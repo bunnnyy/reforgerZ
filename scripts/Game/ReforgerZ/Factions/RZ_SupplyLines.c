@@ -507,12 +507,12 @@ class RZ_SupplyLines
 		if (post && post.m_eFaction != t.m_eFaction)
 		{
 			headline = string.Format("%1's truck for %2 turned round on the road: the post there is %3's now.", RZ_Util.Capitalize(who), t.m_sDestName, RZ_Factions.GetNameInText(post.m_eFaction));
-			rumour = string.Format("\"%1's truck for %2 came back full. No point unloading for %3.\"", RZ_Util.Capitalize(who), t.m_sDestName, RZ_Factions.GetNameInText(post.m_eFaction));
+			rumour = string.Format("%1's truck for %2 came back full. No point unloading for %3.", RZ_Util.Capitalize(who), t.m_sDestName, RZ_Factions.GetNameInText(post.m_eFaction));
 		}
 		else
 		{
 			headline = string.Format("%1's truck for %2 turned round on the road. There's nobody left there to unload it.", RZ_Util.Capitalize(who), t.m_sDestName);
-			rumour = string.Format("\"%1 gave up on %2. Their truck turned round halfway and came back full.\"", RZ_Util.Capitalize(who), t.m_sDestName);
+			rumour = string.Format("%1 gave up on %2. Their truck turned round halfway and came back full.", RZ_Util.Capitalize(who), t.m_sDestName);
 		}
 
 		RZ_WorldFacts.Get().Changed(string.Format("supply.%1.called_off", t.m_eFaction), headline, rumour, "", 3);

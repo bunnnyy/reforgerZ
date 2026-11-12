@@ -132,13 +132,13 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 
 				int cooker = scene.Person(PersonAt("cook", rh), run.Fill("{cook} at the dusk meal"), "Talk to the cook", "\"He let people pay later. That's what he died of.\" Soup, as always.");
 				RZ_QM_RouteScene.Cast(scene).TrackSubject(cooker, "cook");
-				scene.Choice(cooker, "Ask what she needs [Red Hand: Known]").Needs(RZ_EFaction.BANDITS, 1).Sets("world:cook.heard").Decides(OUT_ACT1).Says("\"A tray of theirs. A night on the still. The lab's word. And mark my line paid the way you marked yours.\"", "heard the cook's terms");
-				scene.Choice(cooker, "Win her round").Persuade(RZ_EFaction.BANDITS, 2, "excon,labtech,doctor,nurse").Sets("world:cook.heard").Decides(OUT_ACT1).Says("\"Fine. A tray. A night. The lab's word. And my line.\"", "talked the cook round").Refused("\"Soup. It keeps.\"");
+				scene.Choice(cooker, "Ask what she needs [Red Hand: Known]").Needs(RZ_EFaction.BANDITS, 1).Sets("world:cook.heard").Decides(OUT_ACT1).Says("A tray of theirs. A night on the still. The lab's word. And mark my line paid the way you marked yours.", "heard the cook's terms");
+				scene.Choice(cooker, "Win her round").Persuade(RZ_EFaction.BANDITS, 2, "excon,labtech,doctor,nurse").Sets("world:cook.heard").Decides(OUT_ACT1).Says("Fine. A tray. A night. The lab's word. And my line.", "talked the cook round").Refused("Soup. It keeps.");
 				scene.Choice(cooker, "Follow her after supper [unseen]").Sneak().Sets("world:cook.still_known").Decides(OUT_ACT1).Says(run.Fill("A barn past {still}, smoke at night. The still."), "followed the cook to the still");
-				scene.Choice(cooker, "Eat at her table in crew colours").Trick(RZ_EFaction.BANDITS, 2).Sets("world:cook.heard").Decides(OUT_ACT1).Says("Nobody asks which crew. She talks shop over the soup: a tray, a night, the lab's word.", "ate at the cook's table in crew colours").Refused("\"Whose crew? Didn't think so.\"");
-				int sister = scene.Person(PersonAt("sister", Seat(gm, RZ_EFaction.SURVIVORS)), "the cook's sister", "Talk to the sister", "\"She was a dinner lady. Now she's a chemist. Don't tell her I said so.\"");
-				scene.Choice(sister, "Ask where the still is [3 food]").Sets("do:food3").Decides(OUT_ACT1).Says(run.Fill("\"A barn past {still}. Nobody lives near.\""), "asked the cook's sister");
-				int lines = scene.Person(Seat(gm, RZ_EFaction.MILITARY), "a man who sells lines at the post", "Talk to him", "\"Who came back from the cook's pans? I know three. A line each.\"");
+				scene.Choice(cooker, "Eat at her table in crew colours").Trick(RZ_EFaction.BANDITS, 2).Sets("world:cook.heard").Decides(OUT_ACT1).Says("Nobody asks which crew. She talks shop over the soup: a tray, a night, the lab's word.", "ate at the cook's table in crew colours").Refused("Whose crew? Didn't think so.");
+				int sister = scene.Person(PersonAt("sister", Seat(gm, RZ_EFaction.SURVIVORS)), "the cook's sister", "Talk to the sister", "She was a dinner lady. Now she's a chemist. Don't tell her I said so.");
+				scene.Choice(sister, "Ask where the still is [3 food]").Sets("do:food3").Decides(OUT_ACT1).Says(run.Fill("A barn past {still}. Nobody lives near."), "asked the cook's sister");
+				int lines = scene.Person(Seat(gm, RZ_EFaction.MILITARY), "a man who sells lines at the post", "Talk to him", "Who came back from the cook's pans? I know three. A line each.");
 				scene.Choice(lines, "Buy a paid line [15 Favor]").Bribe(RZ_EFaction.MILITARY, 15).Decides(OUT_ACT1).Says("\"Bitten Tuesday, cut dose Wednesday, digging trenches Friday.\" A still, and whose.", "bought a paid line about the cook");
 				RivalSpot(gm, run, scene, rh, "cook", "the cook", "");
 				return true;
@@ -146,22 +146,22 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 			case S_DOOR:
 			{
 				scene.m_vPos = gm.GetLabPosition();
-				int director = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "the director", "Talk to the director", "\"I want to see it keep. That's the only reason I'd do this.\"");
+				int director = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "the director", "Talk to the director", "I want to see it keep. That's the only reason I'd do this.");
 				scene.Choice(director, "Ask for a tray [Halcyon: Trusted]").Needs(RZ_EFaction.INSTITUTE, 2).Sets("do:tray").Decides(OUT_DOOR).Says("A tray, signed out \"for observation\".", "had a tray from the director");
 				if (Finale().PactOf(m_iRoute) == RZ_CureFinale.HALCYON || Major(gm, "proof.redhand") != 0)
 					scene.Choice(director, "A page of her tally for a tray").Sets("do:tray").Decides(OUT_DOOR).Says("The lab keeps the page. The method goes on the paper.", "traded a page of the tally for a tray");
 
 				if (Major(gm, "authors.bastion_key") != 0)
-					scene.Choice(director, "Bastion's key, for a tray").Sets("do:tray").Decides(OUT_DOOR).Says("\"Bastion lent us a key once. We owe it a favour, and you're collecting.\"", "had a tray on Bastion's key");
+					scene.Choice(director, "Bastion's key, for a tray").Sets("do:tray").Decides(OUT_DOOR).Says("Bastion lent us a key once. We owe it a favour, and you're collecting.", "had a tray on Bastion's key");
 
-				int lead = scene.Person(RZ_Mission.LandPointNear(gm.GetLabPosition(), 30, 60), "a field lead off the books", "Talk to the field lead", "\"For the field annex. Nobody counts them at night.\"");
+				int lead = scene.Person(RZ_Mission.LandPointNear(gm.GetLabPosition(), 30, 60), "a field lead off the books", "Talk to the field lead", "For the field annex. Nobody counts them at night.");
 				scene.Choice(lead, "Buy a tray [40 Favor]").Bribe(RZ_EFaction.BANDITS, 40).Sets("do:tray").Decides(OUT_DOOR).Says("A tray walks out at night \"for the field annex\".", "bought a tray off the books");
 				scene.Choice(lead, "Steal one from the night store [unseen]").Sneak().Sets("do:tray_stolen").Decides(OUT_DOOR).Says("Ninety seconds at the night store. Halcyon will notice in the morning.", "stole a tray from the night store");
-				scene.Choice(lead, "Two tins a copy [2 food]").Trade(RZ_EErrandItem.FOOD, 2).Sets("do:tray").Decides(OUT_DOOR).Says("\"Two tins a copy. That's the going rate for a page, and a tray's only a page that keeps.\"", "traded two tins for a tray");
-				scene.Choice(lead, "Through the back door in a coat").Trick(RZ_EFaction.INSTITUTE, 2).Sets("do:tray_stolen").Decides(OUT_DOOR).Says("A coat, a clipboard, the back door. A tray signed out to a name that isn't yours.", "took a tray in a borrowed coat").Refused("\"That's not your coat.\"");
+				scene.Choice(lead, "Two tins a copy [2 food]").Trade(RZ_EErrandItem.FOOD, 2).Sets("do:tray").Decides(OUT_DOOR).Says("Two tins a copy. That's the going rate for a page, and a tray's only a page that keeps.", "traded two tins for a tray");
+				scene.Choice(lead, "Through the back door in a coat").Trick(RZ_EFaction.INSTITUTE, 2).Sets("do:tray_stolen").Decides(OUT_DOOR).Says("A coat, a clipboard, the back door. A tray signed out to a name that isn't yours.", "took a tray in a borrowed coat").Refused("That's not your coat.");
 				int courier = scene.Person(RZ_Mission.LandPointNear(gm.GetLabPosition(), 300, 600), "a Halcyon courier on the road", "Talk to the courier", "A cold case on the back of a bicycle. \"Field annex. Signed for.\"");
 				scene.Choice(courier, "Rob the courier [loud]").Side(-1, RZ_EFaction.INSTITUTE, 0, 10).Sets("do:tray_stolen").Decides(OUT_DOOR).Says("The courier lets go of the case. Halcyon writes down the time, and your face.", "robbed a Halcyon courier of a tray");
-				int boss = scene.Person(rh, "the quartermaster", "Talk to the quartermaster", "\"Four doses, stolen fair and square. A harder base. Two nights instead of one.\"");
+				int boss = scene.Person(rh, "the quartermaster", "Talk to the quartermaster", "Four doses, stolen fair and square. A harder base. Two nights instead of one.");
 				scene.Choice(boss, "Cook on four stolen doses [30 Favor]").Bribe(RZ_EFaction.BANDITS, 30).Sets("harder").Decides(OUT_OTHER).Says("Four doses off the black market go in her crate.", "took four stolen doses for the base");
 				return true;
 			}
@@ -183,23 +183,23 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 				scene.Choice(cooker2, "Cut the pan on the tray").Sets("do:base").HoldAt(still, 480, OUT_PIECE, -1).Says("Keep the still running while she cuts the batch. The smoke will bring them.", "kept the still running");
 				scene.Choice(cooker2, "Run it cold [unseen]").Sneak().Sets("do:base_clean").Decides(OUT_PIECE).Says("No light, no shots. A clean run.", "ran the still cold");
 				scene.Choice(cooker2, "Feed it two jerrycans [2 fuel]").Trade(RZ_EErrandItem.FUEL, 2).Sets("do:base_clean").Decides(OUT_PIECE).Says("Enough diesel to run it slow and even. A clean run, and quiet.", "fed the still two jerrycans");
-				scene.Choice(cooker2, "Talk her through the cut").Persuade(RZ_EFaction.BANDITS, 2, "labtech,doctor,nurse,mechanic").Sets("do:base_clean").Decides(OUT_PIECE).Says("You read the thermometer out loud and she cuts on your word. Clean.", "talked the cook through the cut").Refused("\"Hush. I'm counting.\"");
-				int rival = scene.Person(RZ_Mission.LandPointNear(still, 30, 60), "the rival crew boss at midnight", "Talk to the crew boss", "\"Nice still. Shame if the smoke brought company.\"");
+				scene.Choice(cooker2, "Talk her through the cut").Persuade(RZ_EFaction.BANDITS, 2, "labtech,doctor,nurse,mechanic").Sets("do:base_clean").Decides(OUT_PIECE).Says("You read the thermometer out loud and she cuts on your word. Clean.", "talked the cook through the cut").Refused("Hush. I'm counting.");
+				int rival = scene.Person(RZ_Mission.LandPointNear(still, 30, 60), "the rival crew boss at midnight", "Talk to the crew boss", "Nice still. Shame if the smoke brought company.");
 				scene.Choice(rival, "Cut him in [20 Favor]").Bribe(RZ_EFaction.BANDITS, 20).Sets("world:cook.crew_cut").Says("\"A cut of the cut. Fair.\" He goes back to his fire.", "cut the rival crew in");
-				scene.Choice(rival, "Lean on him").Threaten(RZ_EFaction.BANDITS, 2).Says("He goes back to his fire. He'll talk about it.", "leaned on the rival crew boss").Refused("\"Mine's bigger. Crew, I mean.\"");
+				scene.Choice(rival, "Lean on him").Threaten(RZ_EFaction.BANDITS, 2).Says("He goes back to his fire. He'll talk about it.", "leaned on the rival crew boss").Refused("Mine's bigger. Crew, I mean.");
 				RivalSpot(gm, run, scene, still, "cook", "the cook", "the pan");
 				return true;
 			}
 			case S_ACT4:
 			{
 				scene.m_vPos = gm.GetLabPosition();
-				int vol = scene.Person(RZ_Mission.LandPointNear(rh, 15, 40), "someone bitten who asked for it", "Talk to the volunteer", "\"It's yours? Never tried on a tray of theirs? Give it here anyway.\"");
+				int vol = scene.Person(RZ_Mission.LandPointNear(rh, 15, 40), "someone bitten who asked for it", "Talk to the volunteer", "It's yours? Never tried on a tray of theirs? Give it here anyway.");
 				scene.Choice(vol, "Give the dose, told plainly").Sets("do:proof").Says("Five minutes, watched. It holds.", "gave the proof dose");
 				scene.Choice(vol, "Take the proof dose yourself").Sets("do:proof_self").Says("You roll up your own sleeve. Five minutes, watched. It holds, and the crews saw you do it.", "took the proof dose themselves");
-				int duty = DutyOfficer(gm, scene, "\"A case of cut doses, at the front door. The director checks it in an hour.\"");
+				int duty = DutyOfficer(gm, scene, "A case of cut doses, at the front door. The director checks it in an hour.");
 				scene.Choice(duty, "Bring the case in").Only("proved").Sets(string.Format("do:store:case:1:%1", OUT_LAST)).Says("The director opens the case and doesn't say anything for a while.", "brought the cook's case to the lab");
-				int bossman = scene.Person(rh, "the boss", "Talk to the boss", "\"Everyone inside knows. Outside it's a rumour. You'd make it a fact?\"");
-				scene.Choice(bossman, "Mark her line paid").Persuade(RZ_EFaction.BANDITS, 3, "excon").Sets("world:cook.line_paid").Says("The boss marks her line on the first page: Paid. Same hand as the boss's own.", "had the cook's line marked paid").Refused("\"A debt is a debt.\"");
+				int bossman = scene.Person(rh, "the boss", "Talk to the boss", "Everyone inside knows. Outside it's a rumour. You'd make it a fact?");
+				scene.Choice(bossman, "Mark her line paid").Persuade(RZ_EFaction.BANDITS, 3, "excon").Sets("world:cook.line_paid").Says("The boss marks her line on the first page: Paid. Same hand as the boss's own.", "had the cook's line marked paid").Refused("A debt is a debt.");
 				return true;
 			}
 		}
@@ -214,7 +214,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 		if (code == "tray" || code == "tray_stolen")
 		{
 			if (!f.TakeTray(m_iRoute))
-				return "\"No tray for you. Not while you've got one out, or we've none in.\"";
+				return "No tray for you. Not while you've got one out, or we've none in.";
 
 			return "";
 		}
@@ -222,7 +222,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 		if (code == "base" || code == "base_clean")
 		{
 			if (run.Flag("harder") == 0 && Carries(gm, playerId, "tray") <= 0)
-				return "\"No tray, no batch. Bring me the tray.\"";
+				return "No tray, no batch. Bring me the tray.";
 
 			return "";
 		}
@@ -230,7 +230,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 		if (code == "proof" || code == "proof_self")
 		{
 			if (run.Flag("proved") != 0)
-				return "\"It's proved. Take the case in.\"";
+				return "It's proved. Take the case in.";
 
 			// 60 percent, +15 a step (a clean run, Halcyon watching, the formula out), -15 for the
 			// harder base; each failed pan is a step higher, and the third always holds
@@ -291,7 +291,7 @@ class RZ_Route_RedHand : RZ_FinaleRoute
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. The Red Hand's people set the price.";
 		scene.m_vPos = gm.GetLabPosition();
-		int form = DutyOfficer(gm, scene, "\"Price, then. Write it in. The director signs under protest.\"");
+		int form = DutyOfficer(gm, scene, "Price, then. Write it in. The director signs under protest.");
 		scene.Choice(form, "The boss's price [Trusted]").Needs(RZ_EFaction.BANDITS, 2).Decides(OUT_TERMS + 1).Says("Two tins a dose at the crossroads. Lab stickers extra.", "set the boss's price");
 		scene.Choice(form, "Pay when you can").Only("world:cook.heard").Decides(OUT_TERMS + 2).Says("One tin now, one when you come back. The unpaid lines are read out and marked paid.", "chose pay when you can");
 		scene.Choice(form, "The first pan to the houses [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Decides(OUT_TERMS + 3).Says("Through her sister's house, for nothing. The boss writes that house a line.", "sent the first pan to the houses");

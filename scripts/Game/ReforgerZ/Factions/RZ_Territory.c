@@ -1854,6 +1854,17 @@ class RZ_Territory
 		if (!h || idx < 0 || idx >= h.m_aPeople.Count())
 			return;
 
+		// The talk screen: no filler greeting (their routine line and the faction's need wait to be
+		// asked, through Ask how things are and the conversations)
+		RZ_CampLife held = m_GM.GetCampLife();
+		if (RZ_Dialogue.Quiet(m_GM, playerId))
+		{
+			if (held)
+				held.HoldPersonNear(playerId);
+
+			return;
+		}
+
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		int phase = RoutinePhase(RZ_GameTime.GetHour());
 		string text = RZ_FactionVoice.PersonLine(rng, h.m_eFaction, h.m_aRoles[idx], phase, h.m_sName, playerId, h.m_vPos);

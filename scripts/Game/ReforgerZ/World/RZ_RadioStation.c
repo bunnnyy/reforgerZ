@@ -407,7 +407,7 @@ class RZ_RadioStation
 				if (m_GM.GetHeat().GetHottest(hot, heat) && heat >= 20)
 					where = NearTown(hot);
 
-				return string.Format("\"This is %1. There's a horde moving around %2. Stay clear of it, and keep it down if you're close.\"", name, where);
+				return string.Format("This is %1. There's a horde moving around %2. Stay clear of it, and keep it down if you're close.", name, where);
 			}
 			case 1:
 			{
@@ -424,25 +424,25 @@ class RZ_RadioStation
 				}
 
 				if (!hungry)
-					return string.Format("\"This is %1. If you've got food to spare, somebody near you needs it more. Share it.\"", name);
+					return string.Format("This is %1. If you've got food to spare, somebody near you needs it more. Share it.", name);
 
-				return string.Format("\"This is %1. The safehouse in %2 is running low. If you've got tins, that's where they should go.\"", name, hungry.m_sName);
+				return string.Format("This is %1. The safehouse in %2 is running low. If you've got tins, that's where they should go.", name, hungry.m_sName);
 			}
 			case 2:
 			{
-				return string.Format("\"This is %1, at %2, grid %3. We're friendly. Come quiet, come unarmed if you can.\"", name, m_sName, RZ_SettlementScanner.GridReference(m_vPos));
+				return string.Format("This is %1, at %2, grid %3. We're friendly. Come quiet, come unarmed if you can.", name, m_sName, RZ_SettlementScanner.GridReference(m_vPos));
 			}
 			case 3:
 			{
 				// Processing: the "Going home" preset (the epilogue week)
 				if (RZ_Epilogue.Get() && RZ_Epilogue.Get().Phase() >= 3)
-					return string.Format("\"This is %1, at %2. Going home.\"", name, m_sName);
+					return string.Format("This is %1, at %2. Going home.", name, m_sName);
 
 				int day = 11;
 				if (m_GM.GetBroadcast())
 					day = m_GM.GetBroadcast().GetDay();
 
-				return string.Format("\"This is %1. %2, and we're still here. Whoever's listening: so are you. Keep going.\"", name, RZ_NoteText.Day(day));
+				return string.Format("This is %1. %2, and we're still here. Whoever's listening: so are you. Keep going.", name, RZ_NoteText.Day(day));
 			}
 		}
 

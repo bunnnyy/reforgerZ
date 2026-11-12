@@ -245,11 +245,11 @@ class RZ_DialogueWorld
 
 			int lean = vote.Lean(i);
 			if (lean < 0)
-				return "\"I haven't made my mind up. Nobody believes that, but it's true.\"";
+				return "I haven't made my mind up. Nobody believes that, but it's true.";
 
 			string what = run.Text("vote." + parts[1] + ".w" + lean.ToString());
 			what.Replace("_", " ");
-			return string.Format("\"My vote's on the %1. Tell me why it shouldn't be.\"", what);
+			return string.Format("My vote's on the %1. Tell me why it shouldn't be.", what);
 		}
 
 		return "";

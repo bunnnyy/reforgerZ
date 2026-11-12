@@ -265,18 +265,18 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 		m_Job.Read("owed", "excon,raider", string.Format("The thin one won't look up the east road. That's a man who owes %1, and knows it.", m_sCrew));
 		m_Job.Read("", "elder", string.Format("Three generations of %1s and one pram. The grandmother is pushing the pram, and the pram is full of spoons.", m_sSurname));
 
-		string reveal = string.Format("\"The %1s. All of us, and the spoons. Nobody else.\"", m_sSurname);
+		string reveal = string.Format("The %1s. All of us, and the spoons. Nobody else.", m_sSurname);
 		if (truth == "bitten")
 			reveal = "\"My nephew. He fell on a dog.\" The nephew nods too quickly.";
 		else if (truth == "owed")
-			reveal = string.Format("\"And him. He married in. He owes %1 for the wedding, if you can believe it.\"", m_sCrew);
+			reveal = string.Format("And him. He married in. He owes %1 for the wedding, if you can believe it.", m_sCrew);
 
 		RZ_TalkScene sc = m_Job.Scene("The grandmother", "column.gran", LandPointNear(m_vPos, 4, 7));
 		int n0 = sc.Node("An old woman sits on a suitcase. \"We packed the good spoons. Priorities.\"");
-		int n1 = sc.Node("\"So where are you walking us, and how slow?\"");
-		sc.Ask(n0, "\"Who's with you?\"", n1, reveal, true);
+		int n1 = sc.Node("So where are you walking us, and how slow?");
+		sc.Ask(n0, "Who's with you?", n1, reveal, true);
 		if (m_iNearer >= 0)
-			sc.Way(n1, "\"There's a nearer house.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_NEAR, string.Format("\"Nearer is better.\" She points the pram at %1.", gm.GetSafehouses().Get(m_iNearer).m_sName), "\"Nearer to what? We were told the other one.\"");
+			sc.Way(n1, "There's a nearer house.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_NEAR, string.Format("\"Nearer is better.\" She points the pram at %1.", gm.GetSafehouses().Get(m_iNearer).m_sName), "Nearer to what? We were told the other one.");
 
 		sc.Way(n1, "Two tins for a carter", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "A man with a horse cart takes the tins and the grandmother. The rest climb on after her.");
 		sc.Service(n1, "Fix the carter's axle", "mechanic", 25, WAY_CART, "The axle holds. The carter takes the grandmother first, then the spoons, then the rest.");
@@ -350,7 +350,7 @@ class RZ_Mission_RefugeeColumn : RZ_Mission
 			m_fRewardScale = 0.6;
 			RZ_StoryKit.Dirty(gm, this, decider);
 			if (h)
-				gm.GetFacts().Memory().Lies().Tell(gm, decider, "column.bite", town, RZ_EFaction.SURVIVORS, "", h.m_vPos, RZ_ELieTest.VISIT, 8, "\"You walked a bitten man through our door and said nothing.\"");
+				gm.GetFacts().Memory().Lies().Tell(gm, decider, "column.bite", town, RZ_EFaction.SURVIVORS, "", h.m_vPos, RZ_ELieTest.VISIT, 8, "You walked a bitten man through our door and said nothing.");
 
 			RZ_StoryKit.Record(this, "fate", town, "hid", who);
 			return;
@@ -634,11 +634,11 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 
 		RZ_TalkScene sc = m_Job.Scene("The seller", "informant.seller", LandPointNear(m_vPos, 3, 6));
 		int n0 = sc.Node("A thin man in a good coat, who looks at your hands before your face. \"You're new. What are you buying?\"");
-		int n1 = sc.Node("\"Everyone pays something. The question's what.\"");
+		int n1 = sc.Node("Everyone pays something. The question's what.");
 		sc.Way(n0, "Buy what he's selling", RZ_TalkScene.WAY, -1, 0, WAY_BUY, "He counts your money and talks while he counts.");
-		sc.Ask(n0, "\"How do you pay, then?\"", n1, "\"Money, tins, a name. Names are the dearest. Don't ask who's buying yours.\"");
+		sc.Ask(n0, "How do you pay, then?", n1, "Money, tins, a name. Names are the dearest. Don't ask who's buying yours.");
 		sc.Way(n1, "Pay in tins", RZ_TalkScene.FOOD, -1, 2, WAY_TINS, "He likes tins. Tins don't ask questions either.");
-		sc.Way(n1, "\"Mira sent me.\"", RZ_TalkScene.TRICK, RZ_EFaction.BANDITS, 1, WAY_KIT, "\"Why didn't you say?\" He gives you the long list, the one for friends.", "\"Mira's been dead a month.\" He walks off fast.");
+		sc.Way(n1, "Mira sent me.", RZ_TalkScene.TRICK, RZ_EFaction.BANDITS, 1, WAY_KIT, "\"Why didn't you say?\" He gives you the long list, the one for friends.", "\"Mira's been dead a month.\" He walks off fast.");
 
 		string labels = "Give the Haven the names";
 		if (truth == "bait")
@@ -688,7 +688,7 @@ class RZ_Mission_TheInformant : RZ_PuzzleMission
 			RZ_StoryKit.Dirty(gm, this, decider);
 			RZ_Safehouse h = RZ_ContractHelp.Safehouse(gm, m_iHouse);
 			if (h)
-				gm.GetFacts().Memory().Lies().Tell(gm, decider, "informant.copy", town, RZ_EFaction.SURVIVORS, "", h.m_vPos, RZ_ELieTest.VISIT, 5, "\"Bastion knew the crew's runs before we did. Funny, that.\"");
+				gm.GetFacts().Memory().Lies().Tell(gm, decider, "informant.copy", town, RZ_EFaction.SURVIVORS, "", h.m_vPos, RZ_ELieTest.VISIT, 5, "Bastion knew the crew's runs before we did. Funny, that.");
 
 			RZ_StoryKit.Record(this, "names", town, "copied", who);
 			return;

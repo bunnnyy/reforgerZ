@@ -12,9 +12,9 @@ class RZ_Errand_BoardedUp : RZ_ErrandCard
 		m_sFamily = "aftermath";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"Somebody boarded up a house in {subject_place}. There's a family behind the boards, our lookout says. Bring them in, or bring them something.\"",
-			"\"There are people behind somebody's barricade in {subject_place}. With all that out there. Do us a turn.\"");
-		Over("\"They've come in on their own. Or they haven't. The lookout won't say which.\"");
+		Offer("Somebody boarded up a house in {subject_place}. There's a family behind the boards, our lookout says. Bring them in, or bring them something.",
+			"There are people behind somebody's barricade in {subject_place}. With all that out there. Do us a turn.");
+		Over("They've come in on their own. Or they haven't. The lookout won't say which.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk them to the house";
@@ -22,9 +22,9 @@ class RZ_Errand_BoardedUp : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the barricaded house in {subject_place} and bring the family out (10 s there), then come back to {giver}.";
-		w.Later("\"The family you brought out of {subject_place} have the room by the stove. The little one draws barricades now.\"");
+		w.Later("The family you brought out of {subject_place} have the room by the stove. The little one draws barricades now.");
 		w.m_iFavor = 4;
-		w.Done("\"In you come. Shoes off. Somebody find them a blanket.\"");
+		w.Done("In you come. Shoes off. Somebody find them a blanket.");
 
 		w = Way("give");
 		w.m_sLabel = "Leave them a tin";
@@ -36,7 +36,7 @@ class RZ_Errand_BoardedUp : RZ_ErrandCard
 		w.m_fRadius = 60;
 		w.m_sStep = "Leave a tin at the barricade in {subject_place} (5 s there), then tell {giver}.";
 		w.m_iFavor = 3;
-		w.Done("\"A tin. It's not nothing. It's not much either.\"");
+		w.Done("A tin. It's not nothing. It's not much either.");
 	}
 
 	//------------------------------------------------------------------------------------------------

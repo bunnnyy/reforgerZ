@@ -555,7 +555,7 @@ class RZ_FactionPerks
 		if (!IsRequisitionStock(prefab))
 		{
 			RZ_Log.Warn(string.Format("Requisition '%1' (%2) isn't ammo or rations (prefab name keywords): refused", itemName, prefab));
-			m_GM.NotifyPlayer(playerId, bastion, string.Format("\"We sign out ammunition and rations. Not %1.\"", itemName));
+			m_GM.NotifyPlayer(playerId, bastion, string.Format("We sign out ammunition and rations. Not %1.", itemName));
 			return false;
 		}
 
@@ -1281,7 +1281,7 @@ class RZ_FactionPerks
 		string target;
 		if (!m_mLastKiller.Find(ident, target) || target.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"A bounty on who? Nobody's put you down lately. Not that we heard.\"");
+			m_GM.NotifyPlayer(playerId, title, "A bounty on who? Nobody's put you down lately. Not that we heard.");
 			return;
 		}
 
@@ -1290,7 +1290,7 @@ class RZ_FactionPerks
 		int targetId = FindPlayer(target);
 		if (targetId > 0 && RZ_Util.SameGroup(playerId, targetId))
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"On your own crew? Sort that out yourselves.\"");
+			m_GM.NotifyPlayer(playerId, title, "On your own crew? Sort that out yourselves.");
 			return;
 		}
 
@@ -1298,20 +1298,20 @@ class RZ_FactionPerks
 		{
 			if (mine.m_sPoster == ident)
 			{
-				m_GM.NotifyPlayer(playerId, title, string.Format("\"You've already got one up, on %1. One at a time.\"", mine.m_sTargetName));
+				m_GM.NotifyPlayer(playerId, title, string.Format("You've already got one up, on %1. One at a time.", mine.m_sTargetName));
 				return;
 			}
 		}
 
 		if (FindPosting(target))
 		{
-			m_GM.NotifyPlayer(playerId, title, string.Format("\"There's already a price on %1. Wait your turn.\"", targetName));
+			m_GM.NotifyPlayer(playerId, title, string.Format("There's already a price on %1. Wait your turn.", targetName));
 			return;
 		}
 
 		if (m_aPosted.Count() >= settings.m_iBountyMaxActive)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"Board's full. Come back when somebody's collected.\"");
+			m_GM.NotifyPlayer(playerId, title, "Board's full. Come back when somebody's collected.");
 			return;
 		}
 

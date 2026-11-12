@@ -121,12 +121,12 @@ class RZ_Mission_TheRat : RZ_PuzzleMission
 	{
 		string other = m_aNames[target];
 		if (type == STMT_ACCUSE)
-			return string.Format("\"It was %1. Ask %1 where they were when the truck left. Go on, ask.\"", other);
+			return string.Format("It was %1. Ask %1 where they were when the truck left. Go on, ask.", other);
 
 		if (type == STMT_CLEAR)
-			return string.Format("\"%1 was with me at the fuel dump all night, moaning about the cold. It wasn't %1.\"", other);
+			return string.Format("%1 was with me at the fuel dump all night, moaning about the cold. It wasn't %1.", other);
 
-		return "\"I've been with the Hand since Day 2. I've bled for it. It's not me.\"";
+		return "I've been with the Hand since Day 2. I've bled for it. It's not me.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ class RZ_Mission_PatientZeroLedger : RZ_PuzzleMission
 		}
 
 		LockOut(300);
-		gm.NotifyPlayer(playerId, m_sTitle, "\"That doesn't fit the dates. Go back over it. You get one more try, in five minutes.\"");
+		gm.NotifyPlayer(playerId, m_sTitle, "That doesn't fit the dates. Go back over it. You get one more try, in five minutes.");
 	}
 
 	//------------------------------------------------------------------------------------------------

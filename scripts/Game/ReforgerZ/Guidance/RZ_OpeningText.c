@@ -225,26 +225,26 @@ class RZ_OpeningText
 	static string GreetPlain(int reason, int who)
 	{
 		if (who == RZ_EOpeningWho.EARLIER)
-			return "\"You look like someone I knew. Same walk. Never mind. Come here, let me look at you.\"";
+			return "You look like someone I knew. Same walk. Never mind. Come here, let me look at you.";
 
 		if (who == RZ_EOpeningWho.STRANGER)
 		{
 			switch (reason)
 			{
-				case RZ_EOpeningReason.GROUP: return "\"You were with the four who went out. I saw them go. I never saw them come home.\"";
-				case RZ_EOpeningReason.FEVER: return "\"I'm the one who wrote on your door. I didn't know your name. I sat out here anyway.\"";
+				case RZ_EOpeningReason.GROUP: return "You were with the four who went out. I saw them go. I never saw them come home.";
+				case RZ_EOpeningReason.FEVER: return "I'm the one who wrote on your door. I didn't know your name. I sat out here anyway.";
 			}
 
-			return "\"I heard the door. Sorry. I don't know you, but you look like you could use someone.\"";
+			return "I heard the door. Sorry. I don't know you, but you look like you could use someone.";
 		}
 
 		switch (reason)
 		{
-			case RZ_EOpeningReason.GROUP: return "\"You're still here. I came back for you. The others didn't come back at all.\"";
-			case RZ_EOpeningReason.FEVER: return "\"It's you. It's really you. I wrote that on the door and then I couldn't bear to look.\"";
+			case RZ_EOpeningReason.GROUP: return "You're still here. I came back for you. The others didn't come back at all.";
+			case RZ_EOpeningReason.FEVER: return "It's you. It's really you. I wrote that on the door and then I couldn't bear to look.";
 		}
 
-		return "\"Look at you. Alive. I'd stopped knocking on that door.\"";
+		return "Look at you. Alive. I'd stopped knocking on that door.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -256,26 +256,26 @@ class RZ_OpeningText
 	{
 		if (step <= 1)
 		{
-			lines.Insert(string.Format("\"Day %1. They shut the roads on the second, and nobody's opened one since. I counted. Somebody had to.\"", day));
+			lines.Insert(string.Format("Day %1. They shut the roads on the second, and nobody's opened one since. I counted. Somebody had to.", day));
 			return;
 		}
 
 		if (step == 2)
 		{
-			lines.Insert("\"Listen. The radio's still on the same tape: aid is on its way. Every hour, the same voice. I used to wait for it.\"");
-			lines.Insert("\"Nobody's coming. Say it out loud once. It helps, I promise.\"");
+			lines.Insert("Listen. The radio's still on the same tape: aid is on its way. Every hour, the same voice. I used to wait for it.");
+			lines.Insert("Nobody's coming. Say it out loud once. It helps, I promise.");
 			return;
 		}
 
-		lines.Insert("\"My brother tried the river road. The loudspeaker said his name. Then it didn't.\"");
-		lines.Insert("\"The lab people say there's a way out. A cure. Proof, they call it. It won't come to us in here, so we go to it.\"");
+		lines.Insert("My brother tried the river road. The loudspeaker said his name. Then it didn't.");
+		lines.Insert("The lab people say there's a way out. A cure. Proof, they call it. It won't come to us in here, so we go to it.");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Anyone else who talks to the contact.
 	static string NotYou()
 	{
-		return "\"Sorry. I'm waiting for someone. Give us a minute.\"";
+		return "Sorry. I'm waiting for someone. Give us a minute.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -287,33 +287,33 @@ class RZ_OpeningText
 			if (search.IsEmpty())
 				search = "the house over the way";
 
-			return string.Format("\"%1. Look, and come back. Walk, don't run.\"", Capital(search));
+			return string.Format("%1. Look, and come back. Walk, don't run.", Capital(search));
 		}
 
 		if (step == 2)
 		{
 			switch (task)
 			{
-				case RZ_EOpeningTask.WATER: return "\"Water. The well. Whatever you can carry.\"";
-				case RZ_EOpeningTask.CUT: return "\"My hand. Anything clean you've got.\"";
-				case RZ_EOpeningTask.FEVER: return "\"The boy. Whatever's in your bag.\"";
-				case RZ_EOpeningTask.BOILED: return "\"Water for the fever. I've got the fire going.\"";
-				case RZ_EOpeningTask.PUMP: return "\"A can of fuel from the pump. Just the one.\"";
-				case RZ_EOpeningTask.DOWNWIND: return "\"Watch where they go about. Don't let them see you.\"";
-				case RZ_EOpeningTask.KEYS: return "\"The locked door. You've got the key now.\"";
-				case RZ_EOpeningTask.TOLL: return "\"The toll. Talk, look, come back. No shooting.\"";
-				case RZ_EOpeningTask.SAMPLE: return "\"The sample. By the remains, down the road.\"";
-				case RZ_EOpeningTask.CHANNEL: return "\"Call on the open channel. Somebody's asking.\"";
-				case RZ_EOpeningTask.SWAP: return "\"Catch the one on the road. See what they'll swap.\"";
-				case RZ_EOpeningTask.GATE: return "\"The gate. One minute.\"";
-				case RZ_EOpeningTask.CLOCK: return "\"The antidote. Now, while it still works.\"";
-				case RZ_EOpeningTask.CLOCK_MED: return "\"Keep him going. A dressing, anything.\"";
-				case RZ_EOpeningTask.DEBT: return "\"The house that owes. Ask them.\"";
-				case RZ_EOpeningTask.SETTLE: return "\"The two families. Sit with me and hear it.\"";
+				case RZ_EOpeningTask.WATER: return "Water. The well. Whatever you can carry.";
+				case RZ_EOpeningTask.CUT: return "My hand. Anything clean you've got.";
+				case RZ_EOpeningTask.FEVER: return "The boy. Whatever's in your bag.";
+				case RZ_EOpeningTask.BOILED: return "Water for the fever. I've got the fire going.";
+				case RZ_EOpeningTask.PUMP: return "A can of fuel from the pump. Just the one.";
+				case RZ_EOpeningTask.DOWNWIND: return "Watch where they go about. Don't let them see you.";
+				case RZ_EOpeningTask.KEYS: return "The locked door. You've got the key now.";
+				case RZ_EOpeningTask.TOLL: return "The toll. Talk, look, come back. No shooting.";
+				case RZ_EOpeningTask.SAMPLE: return "The sample. By the remains, down the road.";
+				case RZ_EOpeningTask.CHANNEL: return "Call on the open channel. Somebody's asking.";
+				case RZ_EOpeningTask.SWAP: return "Catch the one on the road. See what they'll swap.";
+				case RZ_EOpeningTask.GATE: return "The gate. One minute.";
+				case RZ_EOpeningTask.CLOCK: return "The antidote. Now, while it still works.";
+				case RZ_EOpeningTask.CLOCK_MED: return "Keep him going. A dressing, anything.";
+				case RZ_EOpeningTask.DEBT: return "The house that owes. Ask them.";
+				case RZ_EOpeningTask.SETTLE: return "The two families. Sit with me and hear it.";
 			}
 		}
 
-		return "\"Go on. Don't wait for me. I'm slower than I look.\"";
+		return "Go on. Don't wait for me. I'm slower than I look.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -321,23 +321,23 @@ class RZ_OpeningText
 	static string NextAsk(int asksDone)
 	{
 		if (asksDone == 1)
-			return "\"That's one. The woman at the end house heard you were about. She's got a thing too.\"";
+			return "That's one. The woman at the end house heard you were about. She's got a thing too.";
 
-		return "\"Last one, I promise. The man with the cart asked. Everyone asks, once they've seen you'll do it.\"";
+		return "Last one, I promise. The man with the cart asked. Everyone asks, once they've seen you'll do it.";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The clock ran out.
 	static string ClockLost()
 	{
-		return "\"It's taken him. I stayed till it did. Don't come back this way: I'll see to it.\"";
+		return "It's taken him. I stayed till it did. Don't come back this way: I'll see to it.";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The two families settled only halfway (the check came up short).
 	static string SettledHalf()
 	{
-		return "\"Half a peace. They'll take turns at the well and glare the whole time. Better than knives.\"";
+		return "Half a peace. They'll take turns at the well and glare the whole time. Better than knives.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -389,7 +389,7 @@ class RZ_OpeningText
 	//! Whoever finds you after the contact is killed.
 	static string ContactDied(string town)
 	{
-		return string.Format("\"Your friend's gone. I saw. Don't stand there. There's a safehouse in %1. They take people in.\"", town);
+		return string.Format("Your friend's gone. I saw. Don't stand there. There's a safehouse in %1. They take people in.", town);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -432,12 +432,12 @@ class RZ_OpeningText
 	{
 		switch (faction)
 		{
-			case RZ_EFaction.MILITARY: return "\"Go to {place}. The soldiers count you at the door. Let them. It's how they know you're real.\"";
-			case RZ_EFaction.BANDITS: return "\"Try {place}. They'll want to know what you're worth. Tell them, but not all of it.\"";
-			case RZ_EFaction.INSTITUTE: return "\"Go to {place}. The lab people say there's a way out. A cure. They'll want hands like yours.\"";
+			case RZ_EFaction.MILITARY: return "Go to {place}. The soldiers count you at the door. Let them. It's how they know you're real.";
+			case RZ_EFaction.BANDITS: return "Try {place}. They'll want to know what you're worth. Tell them, but not all of it.";
+			case RZ_EFaction.INSTITUTE: return "Go to {place}. The lab people say there's a way out. A cure. They'll want hands like yours.";
 		}
 
-		return "\"Get yourself to {place}. They feed you if you work. Go on. I'll follow when it's dark.\"";
+		return "Get yourself to {place}. They feed you if you work. Go on. I'll follow when it's dark.";
 	}
 
 	//------------------------------------------------------------------------------------------------

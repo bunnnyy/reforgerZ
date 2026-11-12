@@ -385,17 +385,17 @@ class RZ_Mission_ColdChain : RZ_Mission_Delivery
 		m_Job.Read("trial", "labtech", "No batch number. Lot codes like these are for trials, not clinics.");
 		m_Job.Read("trial", "nurse,doctor", "The dose on the label's wrong for a clinic. It's a trial dose, and someone means to watch what it does.");
 
-		string reveal = "\"Antidotes, they tell me. I carry boxes. I'm not paid to read them.\"";
+		string reveal = "Antidotes, they tell me. I carry boxes. I'm not paid to read them.";
 		if (truth == "short")
-			reveal = "\"Ten, where it says twelve. The tech who packed it has a sister in a house. I'm only saying.\"";
+			reveal = "Ten, where it says twelve. The tech who packed it has a sister in a house. I'm only saying.";
 		else if (truth == "trial")
-			reveal = "\"No number on it. The ones with no number come back with forms.\"";
+			reveal = "No number on it. The ones with no number come back with forms.";
 
 		RZ_TalkScene sc = m_Job.Scene("The porter", "coldchain.porter", LandPointNear(m_vPos, 3, 6));
 		int n0 = sc.Node("A porter with frost on his gloves. \"Fifteen minutes, they say. I've seen it done in twelve. I've also seen it not done.\"");
-		int n1 = sc.Node("\"Ice and newspaper. It's not science. Well. It's a bit of science.\"");
-		sc.Ask(n0, "\"What's in the box?\"", n1, reveal, true);
-		sc.Way(n1, "\"Pack it properly.\"", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_PACK, "He packs it in ice and newspaper, tight. \"Twenty-five minutes. Don't drop it.\"", "\"Pack it yourself. I'm on my break.\"");
+		int n1 = sc.Node("Ice and newspaper. It's not science. Well. It's a bit of science.");
+		sc.Ask(n0, "What's in the box?", n1, reveal, true);
+		sc.Way(n1, "Pack it properly.", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_PACK, "He packs it in ice and newspaper, tight. \"Twenty-five minutes. Don't drop it.\"", "Pack it yourself. I'm on my break.");
 		sc.Way(n1, "Two tins for his ice", RZ_TalkScene.FOOD, -1, 2, WAY_PACK, "The tins buy his good ice, the stuff he keeps for himself.");
 
 		string labels = "Hand them over";
@@ -620,17 +620,17 @@ class RZ_Mission_EscortTheScientist : RZ_PuzzleMission
 		m_Job.Read("brother", "elder", string.Format("She asks every house you pass about a man called %1, with her nose. She's looking for someone.", m_sBrother));
 		m_Job.Read("readings", "labtech", "Soil and water: ordinary readings, carefully taken, and labelled in a hand that's done it a thousand times.");
 
-		string reveal = "\"Best we've got. She once took readings through a horde. They were good readings.\"";
+		string reveal = "Best we've got. She once took readings through a horde. They were good readings.";
 		if (truth == "brother")
-			reveal = string.Format("\"Her brother %1 went to a house out that way in the spring. She picks her sites.\"", m_sBrother);
+			reveal = string.Format("Her brother %1 went to a house out that way in the spring. She picks her sites.", m_sBrother);
 		else if (truth == "line")
-			reveal = "\"She times the drones. Every site's on a drone's turn. Don't tell her I said.\"";
+			reveal = "She times the drones. Every site's on a drone's turn. Don't tell her I said.";
 
 		RZ_TalkScene sc = m_Job.Scene("The lab's driver", "scientist.driver", LandPointNear(m_vPos, 6, 12));
 		int n0 = sc.Node("A driver leans on a van with no wheels. \"She'll walk you off your feet. Then she'll walk you off the map.\"");
-		int n1 = sc.Node("\"I know the last site. I could take it myself, for a consideration.\"");
-		sc.Ask(n0, "\"Who is she?\"", n1, reveal, true);
-		sc.Way(n1, "\"Take the last one yourself.\"", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHORT, "\"Fine. Two for you, one for me.\" He picks up a case and walks off whistling.", "\"For you? No.\"");
+		int n1 = sc.Node("I know the last site. I could take it myself, for a consideration.");
+		sc.Ask(n0, "Who is she?", n1, reveal, true);
+		sc.Way(n1, "Take the last one yourself.", RZ_TalkScene.TRUST, RZ_EFaction.INSTITUTE, 1, WAY_SHORT, "\"Fine. Two for you, one for me.\" He picks up a case and walks off whistling.", "For you? No.");
 		sc.Way(n1, "Two tins for the last site", RZ_TalkScene.FOOD, -1, 2, WAY_SHORT, "He pockets the tins. \"Two sites for you, then. I'll do the far one.\"");
 
 		string labels = "Hand the readings in";

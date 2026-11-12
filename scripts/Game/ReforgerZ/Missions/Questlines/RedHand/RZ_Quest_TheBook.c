@@ -590,7 +590,7 @@ class RZ_Quest_TheBook : RZ_Questline
 			}
 
 			Headline(gm, run.Fill("The Red Hand's book balances again. The crews have started calling {returner} \"{crewname}\"."));
-			SpreadRumour(gm, run.Fill("\"The Red Hand's got its page back. Ask for {crewname} if you want to know how.\""), 8);
+			SpreadRumour(gm, run.Fill("The Red Hand's got its page back. Ask for {crewname} if you want to know how."), 8);
 			return;
 		}
 
@@ -612,7 +612,7 @@ class RZ_Quest_TheBook : RZ_Questline
 				RZ_RedHandQuest.SwingLoyalty(gm, squeezed, -RZ_RedHandQuest.SWING);
 
 			Headline(gm, "Somebody outside the Red Hand is holding a page of its book, the crews say. Nobody will say whose names are on it.", false);
-			SpreadRumour(gm, "\"The boss is asking who's got the page. Nobody's answering, which is an answer.\"", 6);
+			SpreadRumour(gm, "The boss is asking who's got the page. Nobody's answering, which is an answer.", 6);
 			return;
 		}
 
@@ -631,7 +631,7 @@ class RZ_Quest_TheBook : RZ_Questline
 				Headline(gm, "A page of the Red Hand's book is on Bastion's commanding officer's desk, and it's being read slowly.");
 			}
 
-			SpreadRumour(gm, "\"Bastion's got a page of the Red Hand's book. The Red Hand's got a list of who gave it to them.\"", 8);
+			SpreadRumour(gm, "Bastion's got a page of the Red Hand's book. The Red Hand's got a list of who gave it to them.", 8);
 			return;
 		}
 
@@ -649,7 +649,7 @@ class RZ_Quest_TheBook : RZ_Questline
 		}
 
 		Headline(gm, "Somebody burned a page of the Red Hand's book. The boss says a debt is a debt, page or no page.");
-		SpreadRumour(gm, "\"A page of the Red Hand's book went in a fire. Three people slept properly that night, and none of them were Red Hand.\"", 8);
+		SpreadRumour(gm, "A page of the Red Hand's book went in a fire. Three people slept properly that night, and none of them were Red Hand.", 8);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -688,7 +688,7 @@ class RZ_Quest_TheBook : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage >= S_FIND && run.m_iStage <= S_PAGE)
-			return "\"Somebody tore a page out of the Red Hand's book. Half the crews are checking their pockets, and the other half are checking their friends'.\"";
+			return "Somebody tore a page out of the Red Hand's book. Half the crews are checking their pockets, and the other half are checking their friends'.";
 
 		return "";
 	}
@@ -843,12 +843,12 @@ class RZ_QM_BookWho : RZ_QuestMission
 	{
 		string other = m_aNames[target];
 		if (type == STMT_ACCUSE)
-			return string.Format("\"It was %1. Ask %1 why he kept going back to the book-keeper's tent. Go on, ask.\"", other);
+			return string.Format("It was %1. Ask %1 why he kept going back to the book-keeper's tent. Go on, ask.", other);
 
 		if (type == STMT_CLEAR)
-			return string.Format("\"%1 was on the gate with me all night, moaning about his feet. It wasn't %1.\"", other);
+			return string.Format("%1 was on the gate with me all night, moaning about his feet. It wasn't %1.", other);
 
-		return "\"I can't even read the book. Why would I want a page of it? It's not me.\"";
+		return "I can't even read the book. Why would I want a page of it? It's not me.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1056,7 +1056,7 @@ class RZ_QM_BookFind : RZ_QuestMission
 		{
 			if (armed)
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "\"Put that away first. I'm not coming out to a gun.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "Put that away first. I'm not coming out to a gun.");
 				return;
 			}
 
@@ -1072,7 +1072,7 @@ class RZ_QM_BookFind : RZ_QuestMission
 			}
 
 			Remember(gm, playerId, RZ_EQuestApproach.PERSUADE, "tried to talk him out");
-			gm.NotifyPlayer(playerId, m_sTitle, "\"You're the boss's errand boy. I don't come out for errand boys.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You're the boss's errand boy. I don't come out for errand boys.");
 			return;
 		}
 
@@ -1214,7 +1214,7 @@ class RZ_QM_BookRead : RZ_RedHandQuestMission
 			case RZ_EFaction.SURVIVORS: return run.Fill(string.Format("{%1} has flour on their hands and doesn't wipe it off. \"Three months. We haven't had it. We've thirty mouths here, and every one of them eats before the Red Hand does.\"", key));
 		}
 
-		return "\"I know why you're here.\"";
+		return "I know why you're here.";
 	}
 
 	//------------------------------------------------------------------------------------------------

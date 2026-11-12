@@ -426,7 +426,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 
 		RZ_TalkScene sc = m_Job.Scene("The neighbour", "trail.neighbour", LandPointNear(m_aSpots[0], 6, 10));
 		int n0 = sc.Node("A neighbour hangs out washing that won't dry. \"Gone three days. The dog came back on the second. Make of that what you like.\"");
-		sc.Way(n0, "\"Which way did they go?\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_SKIP, "She points with a peg, past the next town and the one after. \"Walking fast, like they'd decided.\"", "\"I don't watch the road. I watch the washing.\"");
+		sc.Way(n0, "Which way did they go?", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_SKIP, "She points with a peg, past the next town and the one after. \"Walking fast, like they'd decided.\"", "I don't watch the road. I watch the washing.");
 		sc.Way(n0, "A tin for what she saw", RZ_TalkScene.FOOD, -1, 1, WAY_SKIP, "She pockets the tin and tells you exactly where, down to the gate.");
 	}
 
@@ -451,7 +451,7 @@ class RZ_Mission_TrailOfClues : RZ_PuzzleMission
 
 		RZ_TalkScene look = m_Job.Scene("The crew's lookout", "trail.lookout", LandPointNear(m_aSpots[2], 4, 8));
 		int l0 = look.Node(string.Format("A crew lookout sits on a wall by %1. \"New hire. Keen. Can't shoot, but keen.\"", m_sName));
-		look.Way(l0, "\"Let the kid go home.\"", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FREE, "He shrugs. \"Go on, then. We'll keep your bunk.\"", "\"The kid signed. Well. Drew a hand.\"");
+		look.Way(l0, "Let the kid go home.", RZ_TalkScene.TRUST, RZ_EFaction.BANDITS, 1, WAY_FREE, "He shrugs. \"Go on, then. We'll keep your bunk.\"", "The kid signed. Well. Drew a hand.");
 		look.Way(l0, "Three tins for the kid", RZ_TalkScene.FOOD, -1, 3, WAY_FREE, "\"Sold.\" He counts the tins twice.");
 		look.Decide(l0, "Leave the kid with the crew", "leave the kid with the crew", WAY_CREW, "\"Smart.\" The lookout nods to you like a colleague.", RZ_EFaction.BANDITS);
 	}
@@ -729,7 +729,7 @@ class RZ_Mission_BarterChain : RZ_Mission
 
 			if (RZ_FoodHelper.TakeFood(player, keywords, 1) <= 0)
 			{
-				gm.NotifyPlayer(playerId, title, string.Format("\"%1? Sure. For something to eat. Anything.\"", m_sMiddle));
+				gm.NotifyPlayer(playerId, title, string.Format("%1? Sure. For something to eat. Anything.", m_sMiddle));
 				return true;
 			}
 
@@ -767,11 +767,11 @@ class RZ_Mission_BarterChain : RZ_Mission
 
 		// Out of order: a hint
 		if (who == 0)
-			gm.NotifyPlayer(playerId, title, string.Format("\"Still no %1, then. %2 has some, I heard.\"", m_sWant, gm.GetWanderers().GetName(m_aPeople[1])));
+			gm.NotifyPlayer(playerId, title, string.Format("Still no %1, then. %2 has some, I heard.", m_sWant, gm.GetWanderers().GetName(m_aPeople[1])));
 		else if (who == 1)
-			gm.NotifyPlayer(playerId, title, string.Format("\"%1? Maybe. If you bring me %2.\"", m_sWant, m_sMiddle));
+			gm.NotifyPlayer(playerId, title, string.Format("%1? Maybe. If you bring me %2.", m_sWant, m_sMiddle));
 		else
-			gm.NotifyPlayer(playerId, title, "\"I've nothing left you'd want. Unless you've got food.\"");
+			gm.NotifyPlayer(playerId, title, "I've nothing left you'd want. Unless you've got food.");
 
 		return true;
 	}

@@ -10,9 +10,9 @@ class RZ_Errand_ComeIn : RZ_EpiCard
 		m_sTitle = "Come In";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
 		m_sFamily = "amends";
-		Offer("\"It's the last week. Walk up to the gate slowly, and wait. We'll talk after.\"",
-			"\"Gates open soon. Nobody wants to carry this out with them. Come to the gate and stand there a minute.\"");
-		Over("\"Not today. Come back when it's quieter.\"");
+		Offer("It's the last week. Walk up to the gate slowly, and wait. We'll talk after.",
+			"Gates open soon. Nobody wants to carry this out with them. Come to the gate and stand there a minute.");
+		Over("Not today. Come back when it's quieter.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk up to the gate and wait";
@@ -21,7 +21,7 @@ class RZ_Errand_ComeIn : RZ_EpiCard
 		w.m_fRadius = 15;
 		w.m_bAmends = true;
 		w.m_sStep = "Walk up to {here}'s gate and wait there a minute, then come back to {giver}.";
-		w.Done("\"You came. That's most of it.\"", "\"Stood there the whole minute. All right. We'll start again from there.\"");
+		w.Done("You came. That's most of it.", "Stood there the whole minute. All right. We'll start again from there.");
 	}
 
 	//------------------------------------------------------------------------------------------------

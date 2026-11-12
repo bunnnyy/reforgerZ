@@ -15,9 +15,9 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"She's bitten, and the lab gives a trial dose, and the post on the road turns the bitten back. Get her past it. However you get her past it.\"",
-			"\"There's a family here with a bite among them, and a green post between us and the lab. Walk them through. Or round. Or anything.\"");
-		Over("\"It's too late for the lab. Or it isn't needed. Don't make me say which.\"");
+		Offer("She's bitten, and the lab gives a trial dose, and the post on the road turns the bitten back. Get her past it. However you get her past it.",
+			"There's a family here with a bite among them, and a green post between us and the lab. Walk them through. Or round. Or anything.");
+		Over("It's too late for the lab. Or it isn't needed. Don't make me say which.");
 
 		RZ_ErrandWay w = Way("sneak");
 		w.m_sLabel = "Walk them round the post";
@@ -25,7 +25,7 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Walk the family round the Bastion post, well off the road {subject_place} (10 s there, more than 150 m from the barrier), then come back to {giver}.";
-		w.Done("\"They're on the lab road. Past it. Thank you.\"");
+		w.Done("They're on the lab road. Past it. Thank you.");
 
 		w = Way("talk");
 		w.m_sLabel = "Ask the sergeant straight";
@@ -35,7 +35,7 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 25;
 		w.m_sStep = "Take the family to the barrier and ask the sergeant to let them through to the lab (10 s there), then come back to {giver}.";
-		w.Done("\"He let them through? He did. Well. There are some.\"");
+		w.Done("He let them through? He did. Well. There are some.");
 
 		w = Way("trick");
 		w.m_sLabel = "Walk them through in Bastion kit";
@@ -53,7 +53,7 @@ class RZ_Errand_BorrowedGreen : RZ_ErrandCard
 		w.m_fSeconds = 10;
 		w.m_fRadius = 25;
 		w.m_sStep = "Take the family to the barrier, where your Favor with Bastion gets them through (10 s there), then come back to {giver}.";
-		w.Done("\"It cost you. I know it cost you. Thank you.\"");
+		w.Done("It cost you. I know it cost you. Thank you.");
 	}
 
 	//------------------------------------------------------------------------------------------------

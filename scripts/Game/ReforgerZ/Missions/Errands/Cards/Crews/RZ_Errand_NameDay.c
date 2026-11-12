@@ -12,9 +12,9 @@ class RZ_Errand_NameDay : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"You've no name with us yet. Names are earned, and they're earned stupid. Pick a dare. Whatever goes wrong, that's what we'll call you.\"",
-			"\"Name day. Everybody gets one. Fetch a church clock or go a round in the pit. Don't worry about doing it well. Nobody does.\"");
-		Over("\"Never mind. The lads have found something to call you already. You won't like it.\"");
+		Offer("You've no name with us yet. Names are earned, and they're earned stupid. Pick a dare. Whatever goes wrong, that's what we'll call you.",
+			"Name day. Everybody gets one. Fetch a church clock or go a round in the pit. Don't worry about doing it well. Nobody does.");
+		Over("Never mind. The lads have found something to call you already. You won't like it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Belfry: fetch the church clock";
@@ -24,7 +24,7 @@ class RZ_Errand_NameDay : RZ_ErrandCard
 		w.m_sStep = "Get up the church tower in {subject_place} and bring the clock down (20 s there). It's theirs now, the town. Mind the stairs.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"A clock. It's the wrong clock, but it's a clock. Legs, we'll call you. You should've seen yourself on those stairs.\"");
+		w.Done("A clock. It's the wrong clock, but it's a clock. Legs, we'll call you. You should've seen yourself on those stairs.");
 
 		w = Way("do");
 		w.m_sLabel = "Ringside: one round in the pit";
@@ -34,7 +34,7 @@ class RZ_Errand_NameDay : RZ_ErrandCard
 		w.m_sStep = "Go one round in the pit at {pit} (a minute in the ring).";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"You said sorry every time you hit him. Every time. Sorry, then. That's your name.\"");
+		w.Done("You said sorry every time you hit him. Every time. Sorry, then. That's your name.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -508,6 +508,6 @@ class RZ_TownMemory
 			return "";
 
 		RZ_JournalSave j = m_aJournals.GetRandomElement();
-		return string.Format("\"Found a notebook near %1. Somebody's last days. I read it twice and then I couldn't any more.\"", j.place);
+		return string.Format("Found a notebook near %1. Somebody's last days. I read it twice and then I couldn't any more.", j.place);
 	}
 }

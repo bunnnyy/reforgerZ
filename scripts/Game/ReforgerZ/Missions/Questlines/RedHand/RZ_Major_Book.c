@@ -301,8 +301,8 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		scene.m_eTier = RZ_ETier.STRANGER;
 		scene.m_iTimeout = OUT_SENT;
 		scene.SetHold(cross, 240, OUT_SENT, OUT_SENT_LOST);
-		int keeper = scene.Person(RZ_MajorHelp.NearSeat(cross), "the book-keeper at the shutter", "Talk to the book-keeper", run.Fill("\"Horns at dusk, then the book. Every crew boss is supposed to be here. {rival_short} sent word: too much on this week.\""));
-		scene.Choice(keeper, "Ask a crew boss to come [Known]").Persuade(RZ_EFaction.BANDITS, 1, "excon").Sets("crews", 1).Says("A crew boss comes, with two lorries and a horn that only plays one note. The book-keeper writes the name down.", "brought a crew boss to the send-off").Refused("\"They'll come when the boss asks them. You're not the boss.\"");
+		int keeper = scene.Person(RZ_MajorHelp.NearSeat(cross), "the book-keeper at the shutter", "Talk to the book-keeper", run.Fill("Horns at dusk, then the book. Every crew boss is supposed to be here. {rival_short} sent word: too much on this week."));
+		scene.Choice(keeper, "Ask a crew boss to come [Known]").Persuade(RZ_EFaction.BANDITS, 1, "excon").Sets("crews", 1).Says("A crew boss comes, with two lorries and a horn that only plays one note. The book-keeper writes the name down.", "brought a crew boss to the send-off").Refused("They'll come when the boss asks them. You're not the boss.");
 		scene.Choice(keeper, "Pay a greedy one to come (15 Favor)").Bribe(RZ_EFaction.BANDITS, 15).Sets("crews_paid", 1).Says("The money goes in an inside pocket. A crew boss who wasn't coming turns up early and stands at the front.", "paid a crew boss to come");
 		scene.Choice(keeper, "Hold the crossroads through it").Hold().Says("The horns start. Somewhere past the hedges, things that were lying still get up.", "held the crossroads for the send-off");
 		return true;
@@ -322,18 +322,18 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		if (page == P_IN_BOOK)
 			run.SetFlag("page_in", 1);
 
-		int keeper = scene.Person(RZ_MajorHelp.NearSeat(cross), "the book-keeper at the lorry", "Talk to the book-keeper", run.Fill("\"Every line, front to back, then the back page. {boss} reads the first one. Then {rival_short} gets to talk, and everyone gets to watch.\""));
+		int keeper = scene.Person(RZ_MajorHelp.NearSeat(cross), "the book-keeper at the lorry", "Talk to the book-keeper", run.Fill("Every line, front to back, then the back page. {boss} reads the first one. Then {rival_short} gets to talk, and everyone gets to watch."));
 		scene.Choice(keeper, "Hold the crossroads while it's read").Hold().Says("The reading starts. The horns go first, and the hedges answer.", "held the crossroads for the reading");
-		scene.Choice(keeper, "Laugh it off with the crews [Known]").Needs(RZ_EFaction.BANDITS, 1).Decides(OUT_LAUGHED).Says("You laugh first, and the crews laugh after you. {rival_short} stops talking halfway through a word.", "laughed the rival off").Refused("\"Laugh at a crew boss? You'd want to be known here first.\"");
-		int rival = scene.Person(RZ_MajorHelp.NearSeat(cross), run.Fill("{rival_short} by the lorries"), "Talk to the rival", run.Fill("\"A book is only worth what the one holding it can keep. Ask the boss where the back page went.\""));
-		scene.Choice(rival, "Name the rival to the crews [Trusted]").Persuade(RZ_EFaction.BANDITS, NameStep(gm, run), "excon").Only("page_in").Decides(OUT_PURGED).Says("You say who paid the thief, and how much. Nobody laughs. The boss's men walk {rival_short} off the road.", "named the rival").Refused("\"Name me? With what? The page isn't even in the book.\"");
+		scene.Choice(keeper, "Laugh it off with the crews [Known]").Needs(RZ_EFaction.BANDITS, 1).Decides(OUT_LAUGHED).Says("You laugh first, and the crews laugh after you. {rival_short} stops talking halfway through a word.", "laughed the rival off").Refused("Laugh at a crew boss? You'd want to be known here first.");
+		int rival = scene.Person(RZ_MajorHelp.NearSeat(cross), run.Fill("{rival_short} by the lorries"), "Talk to the rival", run.Fill("A book is only worth what the one holding it can keep. Ask the boss where the back page went."));
+		scene.Choice(rival, "Name the rival to the crews [Trusted]").Persuade(RZ_EFaction.BANDITS, NameStep(gm, run), "excon").Only("page_in").Decides(OUT_PURGED).Says("You say who paid the thief, and how much. Nobody laughs. The boss's men walk {rival_short} off the road.", "named the rival").Refused("Name me? With what? The page isn't even in the book.");
 		scene.Choice(rival, "Speak for the rival [Trusted]").Persuade(RZ_EFaction.BANDITS, NameStep(gm, run), "excon").Decides(OUT_PULLED).Says("You say {rival_short} only asked out loud what everyone was thinking. The boss writes that name under yours, with a debt beside it.", "spoke for the rival").Refused("The crews don't hear you over the horns.");
 		scene.Choice(rival, "Stand with the rival (+15 Infamy)").Way(RZ_EQuestApproach.BETRAY).Side(-1, RZ_EFaction.BANDITS, 0, 15).Decides(OUT_STOOD, false).Says("You stand next to {rival_short}. The boss's crew comes up the road for both of you. It was never going to work. It still costs.", "stood with the rival");
 		scene.Choice(rival, "Offer the rival's crew a Haven door [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Side(RZ_EFaction.SURVIVORS, RZ_EFaction.BANDITS, 10, 10).Decides(OUT_HAVEN, false).Says("{rival_short} looks at the lorries, then at the hands painted on them. By morning three of that crew are painting them out.", "walked the rival's crew to a Haven door");
 		RZ_Leader co = RZ_MajorHelp.Top(gm, RZ_EFaction.MILITARY);
 		if (co)
 		{
-			int duty = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "Bastion's duty officer at " + co.m_sPlace, "Talk to the duty officer", "\"If you've got something to report, report it. If you've got something to sell, there's a queue.\"");
+			int duty = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "Bastion's duty officer at " + co.m_sPlace, "Talk to the duty officer", "If you've got something to report, report it. If you've got something to sell, there's a queue.");
 			scene.Choice(duty, "Say where the crews will be [Known]").Needs(RZ_EFaction.MILITARY, NameRaidRank(gm)).Side(RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, 10, 15).Decides(OUT_RAID, false).Says("The duty officer writes the grid down and the time. That night Bastion hits a camp with half its crew away at a reading.", "told Bastion where the crews would be");
 		}
 
@@ -379,10 +379,10 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		if (boss.HasTrait(RZ_ELeaderTrait.PARANOID) || boss.HasTrait(RZ_ELeaderTrait.PRAGMATIST) || !whole || RZ_MajorHelp.World(gm, "book.thief") == T_PLACE || RZ_MajorHelp.World(gm, "book.thief") == T_PAID || RZ_MajorHelp.World(gm, "book.thief") == T_FREED)
 			loud = 1;
 
-		int seat = scene.Person(RZ_MajorHelp.NearSeat(boss.m_vPos), run.Fill("{boss} at the book"), "Talk to the boss", run.Fill("\"First page, ten litres, on tick. Paid. Every line after it, paid or owed. The last page is what the cure owes us.\""));
-		scene.Choice(seat, "Stand for nothing [Trusted]").Persuade(RZ_EFaction.BANDITS, 2, "excon").Decides(OUT_NOTHING).Says("\"A debt's a debt. We hold the road, and the cure owes us.\" The boss writes it on the last page in capitals.", "talked the boss into standing for nothing").Refused("\"Nothing? You'd want to be trusted here before you sell me nothing.\"");
-		scene.Choice(seat, "Sell it by the page").Way(RZ_EQuestApproach.TRADE).Only("is_whole").Decides(OUT_SOLD).Says("Three lines, three couriers, three strongholds buying their own names back. The boss counts it twice.", "sold the book by the page").Refused("\"Sell what? Half of it's ash or in somebody's pocket.\"");
-		scene.Choice(seat, "Say send it off loud").Persuade(RZ_EFaction.BANDITS, loud, "excon").Decides(OUT_LOUD).Says("\"When the gates open, that book is a confession, and its first page is your own.\" The boss looks at the first page for a long time.", "talked the boss into burning the book").Refused("\"Burn the book? Then what am I?\"");
+		int seat = scene.Person(RZ_MajorHelp.NearSeat(boss.m_vPos), run.Fill("{boss} at the book"), "Talk to the boss", run.Fill("First page, ten litres, on tick. Paid. Every line after it, paid or owed. The last page is what the cure owes us."));
+		scene.Choice(seat, "Stand for nothing [Trusted]").Persuade(RZ_EFaction.BANDITS, 2, "excon").Decides(OUT_NOTHING).Says("\"A debt's a debt. We hold the road, and the cure owes us.\" The boss writes it on the last page in capitals.", "talked the boss into standing for nothing").Refused("Nothing? You'd want to be trusted here before you sell me nothing.");
+		scene.Choice(seat, "Sell it by the page").Way(RZ_EQuestApproach.TRADE).Only("is_whole").Decides(OUT_SOLD).Says("Three lines, three couriers, three strongholds buying their own names back. The boss counts it twice.", "sold the book by the page").Refused("Sell what? Half of it's ash or in somebody's pocket.");
+		scene.Choice(seat, "Say send it off loud").Persuade(RZ_EFaction.BANDITS, loud, "excon").Decides(OUT_LOUD).Says("\"When the gates open, that book is a confession, and its first page is your own.\" The boss looks at the first page for a long time.", "talked the boss into burning the book").Refused("Burn the book? Then what am I?");
 		scene.Choice(seat, "Ask to keep the first page out [Trusted]").Needs(RZ_EFaction.BANDITS, 2).Sets("world:book.first_page").Says("The boss closes a hand over the first page. \"That one stays mine.\"", "asked the boss to keep the first page out");
 
 		int table = scene.Person(RZ_MajorHelp.NearSeat(boss.m_vPos), "the boss's table at supper", "Look at the table", "The book on the table, a mug on the book. The crews eat at the other end, with their backs to it.");
@@ -391,8 +391,8 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		RZ_Leader director = RZ_MajorHelp.Top(gm, RZ_EFaction.INSTITUTE);
 		if (director)
 		{
-			int lab = scene.Person(RZ_MajorHelp.NearSeat(director.m_vPos), "the lab's duty officer", "Talk to the duty officer", "\"The director doesn't meet couriers. Leave it with me.\"");
-			scene.Choice(lab, "Hand over the boss's bill").Needs(RZ_EFaction.INSTITUTE, 1).Only("is_whole").Decides(OUT_BILL).Says("The bill forgives the live ones and the cases, for two doses and the lab road at the stand. The duty officer signs for it.", "carried the bill to the lab").Refused("\"The director won't take a bill from a book with pages missing.\"");
+			int lab = scene.Person(RZ_MajorHelp.NearSeat(director.m_vPos), "the lab's duty officer", "Talk to the duty officer", "The director doesn't meet couriers. Leave it with me.");
+			scene.Choice(lab, "Hand over the boss's bill").Needs(RZ_EFaction.INSTITUTE, 1).Only("is_whole").Decides(OUT_BILL).Says("The bill forgives the live ones and the cases, for two doses and the lab road at the stand. The duty officer signs for it.", "carried the bill to the lab").Refused("The director won't take a bill from a book with pages missing.");
 			scene.Choice(lab, "Warn the director (+10 Infamy)").Side(RZ_EFaction.INSTITUTE, RZ_EFaction.BANDITS, 10, 10).Decides(OUT_TAKES, false).Says("You tell the duty officer what's coming. One more guard on the gate tonight. The boss will take what's owed some other way.", "warned the director about the bill");
 		}
 
@@ -436,7 +436,7 @@ class RZ_Major_Book : RZ_Quest_TheBook
 		switch (RZ_MajorHelp.World(gm, "book.last"))
 		{
 			case 4: return "The lorry is empty. The horns go anyway. \"Nothing written down.\"";
-			case 5: return "\"The book's in a cupboard at Bastion's. I'll read you the open ones from memory. I've got a good memory.\"";
+			case 5: return "The book's in a cupboard at Bastion's. I'll read you the open ones from memory. I've got a good memory.";
 		}
 
 		if (run.Flag("whole") != 1)
@@ -945,9 +945,9 @@ class RZ_Major_Book : RZ_Quest_TheBook
 	override string BetweenLine(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage == S_LAST_WAIT)
-			return "\"The boss has been counting the book again. Every night now.\"";
+			return "The boss has been counting the book again. Every night now.";
 
-		return "\"Settling day's coming. Every crew boss is going through their own line twice.\"";
+		return "Settling day's coming. Every crew boss is going through their own line twice.";
 	}
 
 	//------------------------------------------------------------------------------------------------

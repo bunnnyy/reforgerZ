@@ -83,7 +83,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		RZ_QuestStage summons = WaitStage(S_SUMMONS, "The first sitting", "The houses are filling and the trucks come less often. Sooner or later {chair} will call the council to write the second rule down.");
 		summons.Wait(0);
 
-		RZ_QuestStage first = MissionStage(S_SITTING1, "The first sitting", "\"All houses. The council sits at {chair_place} at supper. Every head comes, or sends someone. Bring your count. Bring yourself either way.\"");
+		RZ_QuestStage first = MissionStage(S_SITTING1, "The first sitting", "All houses. The council sits at {chair_place} at supper. Every head comes, or sends someone. Bring your count. Bring yourself either way.");
 		first.GiveUp(4, "");
 
 		RZ_QuestStage hungryWait = WaitStage(S_HUNGRY_WAIT, "The hungry week", "The rule is written. Now somebody finds out what it costs.");
@@ -541,8 +541,8 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		if (head && head.HasTrait(RZ_ELeaderTrait.MERCIFUL))
 			easier = 1;
 
-		int spot = scene.Person(scene.m_vPos, run.Fill("{family_head} at the edge of town"), "Talk to the council head", "\"It's the first hungry week again, in small. I can feed two who work. I can't feed four who don't.\"");
-		scene.Choice(spot, "Talk the head round").Persuade(RZ_EFaction.SURVIVORS, easier, "elder,nurse,doctor").Decides(OUT_ALL_IN).Says("All four come in. The girl's cough is a chest cold, and the grandfather asks where he can be useful. The house is two meals shorter.", "talked the head into taking all four").Refused("\"Kind of you. Feed them yourself, then.\"");
+		int spot = scene.Person(scene.m_vPos, run.Fill("{family_head} at the edge of town"), "Talk to the council head", "It's the first hungry week again, in small. I can feed two who work. I can't feed four who don't.");
+		scene.Choice(spot, "Talk the head round").Persuade(RZ_EFaction.SURVIVORS, easier, "elder,nurse,doctor").Decides(OUT_ALL_IN).Says("All four come in. The girl's cough is a chest cold, and the grandfather asks where he can be useful. The house is two meals shorter.", "talked the head into taking all four").Refused("Kind of you. Feed them yourself, then.");
 		scene.Choice(spot, "Pay into the stores (20 Favor)").Bribe(RZ_EFaction.SURVIVORS, 20).Decides(OUT_ALL_IN).Says("The stores take your Favor in tins. All four come in, and the head writes four names on the house's List.", "paid the stores for the family");
 		scene.Choice(spot, "Walk two to a Bastion post").Needs(RZ_EFaction.MILITARY, 1).Side(RZ_EFaction.MILITARY, -1, 5, 0).Decides(OUT_TO_BASTION).Says("The grandfather and the girl are signed for at the nearest post, as civilians sheltered. The two who can work go in.", "walked two of the family to Bastion");
 		scene.Choice(spot, "Walk two back to the road").Way(RZ_EQuestApproach.LEAVE).Decides(OUT_TURNED).Says("At dusk you walk the grandfather and the girl back to the road. The head pays you, and writes two names on the List with a line through them.", "walked two of the family back to the road");
@@ -586,7 +586,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		for (int i = 0; i < vote.Count(); i++)
 		{
 			vector at = RZ_MajorHelp.NearSeat(chair.m_vPos);
-			int spot = scene.Person(at, vote.VoterName(i), "Talk to " + vote.VoterName(i), string.Format("\"I lean to %1. Tell me why I shouldn't.\"", RuleName(vote.Lean(i))), i);
+			int spot = scene.Person(at, vote.VoterName(i), "Talk to " + vote.VoterName(i), string.Format("I lean to %1. Tell me why I shouldn't.", RuleName(vote.Lean(i))), i);
 			scene.Choice(spot, "Speak for the shared pot [Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sway(R_POT).Says("\"Everyone eats.\" The head writes it down and underlines it.", "spoke for the shared pot");
 			scene.Choice(spot, "Speak for workers first [Known]").Needs(RZ_EFaction.SURVIVORS, 1).Sway(R_WORKERS).Says("\"Houses that work, eat.\" The head doesn't look up, and nods.", "spoke for workers first");
 			scene.Choice(spot, "Speak for Bastion's cards [Known]").Needs(RZ_EFaction.SURVIVORS, 1).Only("t_cards").Sway(R_CARDS).Says("\"Names for bread.\" The head turns the card over and reads the back.", "spoke for Bastion's cards").Refused("Nobody has put Bastion's cards on the table.");
@@ -603,7 +603,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		}
 
 		run.SetFlag("truth", RZ_Majors.Bit(RZ_MajorHelp.World(gm, "list.truth") > 0));
-		scene.Choice(clerk, "Read it out").Persuade(RZ_EFaction.SURVIVORS, ReadStep(gm, run), "elder").Only("truth").HoldAt(chair.m_vPos, 180, OUT_SAT + 10, OUT_SAT + 11).Says("You read the first crossed name. {chair} answers once: \"We'd all be dead. I decided, and I'd decide it again. Read the next one.\" The bells bring them.", "read the List out at supper").Refused("\"Read what? Sit down and eat.\"");
+		scene.Choice(clerk, "Read it out").Persuade(RZ_EFaction.SURVIVORS, ReadStep(gm, run), "elder").Only("truth").HoldAt(chair.m_vPos, 180, OUT_SAT + 10, OUT_SAT + 11).Says("You read the first crossed name. {chair} answers once: \"We'd all be dead. I decided, and I'd decide it again. Read the next one.\" The bells bring them.", "read the List out at supper").Refused("Read what? Sit down and eat.");
 		scene.Choice(clerk, "Give the copies to the chair").Sets("buried", 1).Swings(ChairLean(gm), 1).Says("{chair} puts the copies in the drawer and locks it. The loyal heads vote with the chair.", "gave the copies to the chair");
 		scene.Choice(clerk, "Carry the copies to Bastion").Sneak().Needs(RZ_EFaction.MILITARY, 1).Only("cards_ok").Sets("to_bastion", 1).Tables(R_CARDS).Swings(R_CARDS, 2).Side(RZ_EFaction.MILITARY, RZ_EFaction.SURVIVORS, 10, 15).Says("The copies go to a Bastion seat before the vote. Two heads come back from supper talking about the census.", "carried the List to Bastion");
 		scene.Choice(clerk, "Sell the copies to a crew boss").Sneak().Sets("to_redhand", 1).Tables(R_ARRANGEMENT).Swings(R_ARRANGEMENT, 2).Says("The copies go to the crossroads. Two heads come back from supper talking about tins.", "sold the List to the Red Hand");
@@ -614,12 +614,12 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 	protected string ClerkLine(RZ_GameModeComponent gm, RZ_QuestRun run, bool second)
 	{
 		if (!second)
-			return "\"Two rules on the table. Bring an offer and there's four. The vote is at half eight.\"";
+			return "Two rules on the table. Bring an offer and there's four. The vote is at half eight.";
 
 		if (RZ_MajorHelp.World(gm, "list.truth") == 1)
-			return "\"The copies are here. So is the radio log, Day 7, in the chair's hand. Somebody has to decide whether supper hears it.\"";
+			return "The copies are here. So is the radio log, Day 7, in the chair's hand. Somebody has to decide whether supper hears it.";
 
-		return "\"The copies are here. They point at a farm. That's all they point at.\"";
+		return "The copies are here. They point at a farm. That's all they point at.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -658,7 +658,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		scene.m_fWindow = 5400;
 		scene.m_iTimeout = -1;
 		scene.SetHold(h.m_vPos, 240, OUT_HELD, OUT_GIVEN_UP);
-		int spot = scene.Person(RZ_MajorHelp.NearSeat(h.m_vPos), run.Fill("{hungry_head} at the stores"), "Talk to the council head", "\"Four days of food for six days. I've done the sums three times.\"");
+		int spot = scene.Person(RZ_MajorHelp.NearSeat(h.m_vPos), run.Fill("{hungry_head} at the stores"), "Talk to the council head", "Four days of food for six days. I've done the sums three times.");
 		scene.Choice(spot, "Pay for their food (30 Favor)").Bribe(RZ_EFaction.SURVIVORS, 30).Decides(OUT_FED).Says("Your Favor turns into four days of tins from the best-fed house. Nobody's walked anywhere tonight.", "fed the hungry house");
 		scene.Choice(spot, "Hold the house tonight").Hold().Says("The doors are barred. Three times before dawn something tries them.", "held the hungry house");
 		scene.Choice(spot, "Walk two to a Bastion post").Needs(RZ_EFaction.MILITARY, 1).Only("cards_ok").Side(RZ_EFaction.MILITARY, -1, 6, 0).Decides(OUT_MOVED).Says("Two mouths signed for at a Bastion post as civilians sheltered. The head writes \"moved\" next to their names.", "walked two mouths to Bastion").Refused("Bastion's posts take nobody in now.");
@@ -687,7 +687,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		run.SetFlag("rule_pot", RZ_Majors.Bit(rule == 1));
 		run.SetFlag("rule_far", RZ_Majors.Bit(rule == 2));
 		run.SetFlag("rule_paid", RZ_Majors.Bit(rule == 4));
-		int spot = scene.Person(RZ_MajorHelp.NearSeat(h.m_vPos), run.Fill("the head at {week_house}"), "Talk to the council head", "\"A week on, and the rule has a cost now. It has names, too.\"");
+		int spot = scene.Person(RZ_MajorHelp.NearSeat(h.m_vPos), run.Fill("the head at {week_house}"), "Talk to the council head", "A week on, and the rule has a cost now. It has names, too.");
 		scene.Choice(spot, "Hear both houses and split it [Known]").Needs(RZ_EFaction.SURVIVORS, 1).Only("rule_pot").Decides(OUT_WEEK_HELD).Says("Both houses talk, then both eat. The pot holds, for now.", "split the borrowed food between houses").Refused("That isn't what this house is arguing about.");
 		scene.Choice(spot, "Carry food to the far house (20 Favor)").Bribe(RZ_EFaction.SURVIVORS, 20).Only("rule_far").Sets("world:every_name.far_fed").Decides(OUT_WEEK_HELD).Says("The far house eats this week. Its head tells you who left, by name.", "fed the far house").Refused("The far house isn't the one asking.");
 		scene.Choice(spot, "Pay the collection (25 Favor)").Bribe(RZ_EFaction.BANDITS, 25).Only("rule_paid").Decides(OUT_WEEK_HELD).Says("The crew's man wanted a name. He takes Favor instead, and writes the house's line paid for the week.", "paid the crossroads' collection in Favor").Refused("Nobody's come collecting here.");
@@ -727,7 +727,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 		run.SetFlag("may_read", RZ_Majors.Bit(RZ_MajorHelp.World(gm, "list.truth") == 1 && RZ_MajorHelp.World(gm, KEY + ".ending", -1) != 0));
 		int spot = scene.Person(RZ_MajorHelp.NearSeat(bend), run.Fill("{chair} at the bend"), "Stand with the chair", GateLine(gm));
 		scene.Choice(spot, "Stand with the chair").Decides(OUT_GATE).Says("{chair} reads the names towards the barrier. Nobody behind it answers, just as on Day 2.", "stood with the chair at the gate");
-		scene.Choice(spot, "Read the crossed names yourself").Persuade(RZ_EFaction.SURVIVORS, 2, "elder").Only("may_read").Sets("world:every_name.crossed_read").Says("You read the crossed names after the chair stops. Nobody stops you.", "read the crossed names at the barrier").Refused("\"Not here. Not today.\"");
+		scene.Choice(spot, "Read the crossed names yourself").Persuade(RZ_EFaction.SURVIVORS, 2, "elder").Only("may_read").Sets("world:every_name.crossed_read").Says("You read the crossed names after the chair stops. Nobody stops you.", "read the crossed names at the barrier").Refused("Not here. Not today.");
 		scene.Choice(spot, "Hold the road while it's read").Hold().Says("Behind the column, the infected come down the road. The reading doesn't stop.", "held the road at the gate");
 		return true;
 	}
@@ -737,13 +737,13 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 	{
 		switch (RZ_MajorHelp.World(gm, KEY + ".ending", -1))
 		{
-			case 0: return "\"Every name. The crossed ones too.\"";
-			case 2: return "\"The names of the houses that worked. The far house reads its own.\"";
+			case 0: return "Every name. The crossed ones too.";
+			case 2: return "The names of the houses that worked. The far house reads its own.";
 			case 3: return "A Bastion officer stands beside the chair with the Haven's number on a card.";
 			case 4: return "A Red Hand lorry is parked on the verge. Nobody looks at it.";
 		}
 
-		return "\"The names. Not the crossed ones.\"";
+		return "The names. Not the crossed ones.";
 	}
 
 	// ================================================================ How it goes on
@@ -1131,7 +1131,7 @@ class RZ_Major_EveryName : RZ_Quest_TheList
 	//------------------------------------------------------------------------------------------------
 	override string BetweenLine(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		return "\"Every house is counting its pantry twice. The council will sit again before long.\"";
+		return "Every house is counting its pantry twice. The council will sit again before long.";
 	}
 
 	//------------------------------------------------------------------------------------------------

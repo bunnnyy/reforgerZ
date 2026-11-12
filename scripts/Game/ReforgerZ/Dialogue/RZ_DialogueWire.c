@@ -73,7 +73,7 @@ class RZ_DialogueWire
 		}
 
 		if (user && d.InTheirKit(playerId, RZ_EFaction.MILITARY))
-			d.Caught(playerId, RZ_EFaction.MILITARY, user, "\"Wrong word. Hands on the barrier.\"");
+			d.Caught(playerId, RZ_EFaction.MILITARY, user, "Wrong word. Hands on the barrier.");
 
 		return false;
 	}

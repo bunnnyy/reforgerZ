@@ -212,12 +212,12 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 	protected string TruthText()
 	{
 		if (m_iSource == SOURCE_TAPE)
-			return "\"Signal traced to grid %1. Recording on a timer. Day 2 traffic. Not Command.\"";
+			return "Signal traced to grid %1. Recording on a timer. Day 2 traffic. Not Command.";
 
 		if (m_iSource == SOURCE_SET)
-			return "\"Signal traced to grid %1. Our own set, someone else's hand. Not Command.\"";
+			return "Signal traced to grid %1. Our own set, someone else's hand. Not Command.";
 
-		return "\"Signal traced to grid %1. Nothing found. Not Command.\"";
+		return "Signal traced to grid %1. Nothing found. Not Command.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -657,15 +657,15 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 	protected string HisSide()
 	{
 		if (m_sTruth == "written_off")
-			return "\"Rations? I never took a tin. Check the book. They needed the numbers to come out.\"";
+			return "Rations? I never took a tin. Check the book. They needed the numbers to come out.";
 
 		if (m_sTruth == "qm_gap")
-			return "\"The quartermaster sold half the stores the night before. Me walking off was very handy for him.\"";
+			return "The quartermaster sold half the stores the night before. Me walking off was very handy for him.";
 
 		if (m_sTruth == "haven_door")
-			return "\"The tins went to two kids at the house. Their mum was in my section. Somebody had to.\"";
+			return "The tins went to two kids at the house. Their mum was in my section. Somebody had to.";
 
-		return "\"I took them. I'd take them again. I'm not going back to that post.\"";
+		return "I took them. I'd take them again. I'm not going back to that post.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -960,7 +960,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 			IEntity me = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
 			if (!me || RZ_HavenQuest.CountFood(gm, me) < TRADE_FOOD || !RZ_StoryStats.TakeFood(gm, me, TRADE_FOOD))
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "\"Four tins. For them, not me. Then I'll come.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "Four tins. For them, not me. Then I'll come.");
 				return;
 			}
 

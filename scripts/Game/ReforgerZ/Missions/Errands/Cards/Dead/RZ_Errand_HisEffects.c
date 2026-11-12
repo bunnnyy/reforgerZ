@@ -14,9 +14,9 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		m_sFamily = "dead";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
 		m_iPerLife = 3;
-		Offer("\"The truck that went over {where_place}. The crew's things are still in the cab. Somebody should bring them home.\"",
-			"\"There's a wreck {where_place}, and a man's papers in it. I'd like his name said properly.\"");
-		Over("\"Someone brought his things in this morning. Thank you all the same.\"");
+		Offer("The truck that went over {where_place}. The crew's things are still in the cab. Somebody should bring them home.",
+			"There's a wreck {where_place}, and a man's papers in it. I'd like his name said properly.");
+		Over("Someone brought his things in this morning. Thank you all the same.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring his things back";
@@ -28,8 +28,8 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_bCarry = true;
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"I'll read his name tonight. The rest goes in the box, for when the gates open.\"",
-			"\"His papers. He had a good hand. You'd never know from the driving.\"");
+		w.Done("I'll read his name tonight. The rest goes in the box, for when the gates open.",
+			"His papers. He had a good hand. You'd never know from the driving.");
 
 		w = Way("do");
 		w.m_sLabel = "Sell them to the fence";
@@ -43,7 +43,7 @@ class RZ_Errand_HisEffects : RZ_ErrandCard
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_bCarry = true;
 		w.m_iFavor = 0;
-		w.Done("\"Gone? Somebody got there first. Listed as kit lost. That's how it goes.\"");
+		w.Done("Gone? Somebody got there first. Listed as kit lost. That's how it goes.");
 	}
 
 	//------------------------------------------------------------------------------------------------

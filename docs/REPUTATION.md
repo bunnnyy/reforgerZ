@@ -502,7 +502,7 @@ count ×1.2, never the total), then what's left of the budget:
 | **Errand amends** | At 15+ Infamy with the faction, an errand pays amends instead of Fame; the amends family (Make It Right, the Latrine, Clean Slate) is for the Watched ([ERRANDS.md](ERRANDS.md#pay-nothing-for-free)) | 2 Infamy | at most 8 a life per faction from errands, never below 15 |
 | **Settling up** | "Settle up" at any quartermaster: spent Fame for Infamy (**Reputation > Settling up**) | 5 Infamy for 10 Fame, the stronghold leader's temper counting as on amends | at most 10 a real day per faction; closed with a faction whose route is fighting yours after the 90% lock. Spent Fame is gone: it can drop your band and your tier (the Fame comes off first, so the tier notice reads both) |
 | **Parley amends** | The owed, at a gate ([below](#the-parley-and-the-knock)): one amends contract reserved for 60 minutes though they're Hunted | the contract's Fame, as Infamy off | one offer per parley |
-| **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *"What would it take?"* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this life) is cleared, once a season per leader |
+| **Make it right** | A leader who won't deal with you on attitude (−2 or below, not Hunted), with Dialogue > Trees: *What would it take to fix this?* reserves that faction's amends contract for an hour ([DIALOGUE.md](DIALOGUE.md#make-it-right)) | the contract's Fame, as Infamy off (when Watched or worse) | done, that leader's regard goes to 0 and their crossed memory of you (this life) is cleared, once a season per leader |
 
 **When the budget is spent:**
 - An amends contract pays its Fame as ordinary Fame, rival shares and all: "Bastion has forgiven you
@@ -701,8 +701,10 @@ line. You can also turn a rogue leader in: most rogue deliveries have a drop at 
 ### Talking to leaders
 
 Talk to a leader (their body, or **Ask for whoever's in charge** in the quartermaster's talk) and the
-talk screen opens ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)): **Ask for work** (their personal
-job, else the stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
+talk screen opens ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)), on your replies unless they have
+something to say first (a first contact, a job waiting): **Ask for work** (their personal job,
+explained first with where, pay and danger, then *I'll do it.* or *Not today.*; else the
+stronghold's contracts), **Heard anything?** (other leaders' loyalties, hungry
 safehouses, noise, rumours) and **What do you make of me?**. Without the talk screen these are
 actions on the leader; with **Dialogue > Trees** they come out of the leader's own topics instead of a
 menu ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)). Radio

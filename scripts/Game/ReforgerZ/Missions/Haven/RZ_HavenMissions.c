@@ -101,9 +101,9 @@ class RZ_Mission_SupplyCache : RZ_Mission_Hold
 		RZ_TalkScene sc = m_Job.Scene("The scavenger", "cache.scavenger", LandPointNear(m_vPos, 4, 8));
 		int n0 = sc.Node("A man sits on the crates eating out of one. \"Finders keepers. I found it. I'm keeping it, mostly.\"");
 		int n1 = sc.Node("He taps a lid with his spoon. \"What's in it is one question. Who it's for is the other.\"");
-		sc.Way(n0, "\"The Haven sent me.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_TALK, "He pockets two tins and stands. \"Tell them I guarded it. Very carefully.\"", "\"The Haven sends everybody. I'm still sitting here.\"");
+		sc.Way(n0, "The Haven sent me.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_TALK, "He pockets two tins and stands. \"Tell them I guarded it. Very carefully.\"", "The Haven sends everybody. I'm still sitting here.");
 		sc.Way(n0, "Two tins and you walk", RZ_TalkScene.FOOD, -1, 2, WAY_TINS, "He weighs the tins in his hands and walks off whistling.");
-		sc.Ask(n0, "\"Whose is it?\"", n1);
+		sc.Ask(n0, "Whose is it?", n1);
 		sc.Ask(n1, "Look at the lids", -1, reveal, true);
 		sc.Service(n1, "Dress his cut hand", "nurse,doctor", 20, WAY_TINS, "\"That's better than tins.\" He flexes the hand and walks off, waving it.");
 
@@ -912,30 +912,30 @@ class RZ_Mission_MedicineRun : RZ_Mission_Delivery
 		m_Job.Read("upstairs", "elder", "Washing on the line upstairs, one woman's, and a chair by the window facing the door. She still lives here.");
 
 		string line = "A woman leans in the doorway. \"Help yourself. I'm only the neighbour. The chemist's been dead since spring, God rest his prices.\"";
-		string reveal = "\"Nobody wants it but you and the things in the aisles. They don't read labels.\"";
+		string reveal = "Nobody wants it but you and the things in the aisles. They don't read labels.";
 		if (truth == "looted")
 		{
 			line = "A woman leans in the doorway, watching the road. \"Half's gone already. A crew came Tuesday with a list.\"";
-			reveal = string.Format("\"%1. Their runner's due back for the other half. He's polite, if you're quick.\"", m_sCrew);
+			reveal = string.Format("%1. Their runner's due back for the other half. He's polite, if you're quick.", m_sCrew);
 		}
 		else if (truth == "upstairs")
 		{
 			line = "A woman leans in the doorway with a ledger. \"That's my shop. I live upstairs. I count the boxes every night.\"";
-			reveal = "\"Mine. Every box. I've kept people alive on that shelf since the trucks stopped. Ask nicely.\"";
+			reveal = "Mine. Every box. I've kept people alive on that shelf since the trucks stopped. Ask nicely.";
 		}
 
 		RZ_TalkScene sc = m_Job.Scene("The woman in the doorway", "medicine.door", LandPointNear(m_vPos, 6, 10));
 		int n0 = sc.Node(line);
-		int n1 = sc.Node("\"So. What's it to be?\"");
-		sc.Way(n0, "\"It's for the house.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GIVE, string.Format("She sighs and brings the box down herself. \"For %1, then. Tell them who.\"", m_sHomeName), "\"Everybody says that. Everybody's for a house.\"");
+		int n1 = sc.Node("So. What's it to be?");
+		sc.Way(n0, "It's for the house.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_GIVE, string.Format("She sighs and brings the box down herself. \"For %1, then. Tell them who.\"", m_sHomeName), "Everybody says that. Everybody's for a house.");
 		sc.Way(n0, "Three tins for the box", RZ_TalkScene.FOOD, -1, 3, WAY_GIVE, "She counts the tins twice and goes in for the box.");
-		sc.Ask(n0, "\"Who else wants it?\"", n1, reveal, true);
+		sc.Ask(n0, "Who else wants it?", n1, reveal, true);
 		if (truth == "upstairs")
 			sc.Decide(n1, "Split it with her", "split the medicine with the chemist", WAY_SPLIT, "\"Half, then. Half's more than anyone's offered.\" She brings down what she'll part with.", RZ_CureFinale.INDEP);
 		else if (truth == "looted")
 			sc.Decide(n1, "Sell it to the crew's runner", "sell the medicine to the crew", WAY_SELL, "The runner turns up on a bicycle, counts out the price and takes the box. He thanks you nicely.", RZ_EFaction.BANDITS);
 		else
-			sc.Ask(n1, "\"Why are you still here?\"", -1, "\"Where would I go? I'm the only one left who can read his handwriting.\"");
+			sc.Ask(n1, "Why are you still here?", -1, "Where would I go? I'm the only one left who can read his handwriting.");
 
 		sc.Service(n1, "See to her cough", "nurse,doctor", 20, WAY_GIVE, "\"Fine. You've earned a box.\" She brings it down herself.");
 	}
@@ -1289,7 +1289,7 @@ class RZ_Mission_MissingScout : RZ_Mission_Delivery
 			m_bStash = false;
 			m_Choice.PayWith(gm, this, RZ_EFaction.BANDITS, 10);
 			gm.GetFacts().Memory().Lies().Tell(gm, decider, "scout.page", m_sName, RZ_EFaction.SURVIVORS, "", m_vHome, RZ_ELieTest.VISIT, 5,
-				"\"The crew had our water runs off a page someone sold back to them. We know whose hands it went through.\"");
+				"The crew had our water runs off a page someone sold back to them. We know whose hands it went through.");
 			RZ_StoryKit.Record(this, "fate", m_sName, "sold", who);
 			NotifyParticipants(gm, m_sTitle, "The crew pays for its page back. The house gets the rest of the notes and thanks you for them.");
 			return;
@@ -1431,7 +1431,7 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 		m_Job.Read("stores", "soldier", "The tins have Bastion lot numbers under the new paint. These came off a post's shelf.");
 		m_Job.Read("stores", "labtech", "Forty tins on the cart, and the manifest says twelve. Somebody can't count, or doesn't want to.");
 
-		string reveal = "\"They want the cart. Everybody wants the cart. It's a very good cart.\"";
+		string reveal = "They want the cart. Everybody wants the cart. It's a very good cart.";
 		if (truth == "debt")
 			reveal = string.Format("The boy looks at his feet. \"Dad owes %1. They're not raiding. They're collecting.\"", m_sCrew);
 		else if (truth == "stores")
@@ -1439,9 +1439,9 @@ class RZ_Mission_TraderCaravan : RZ_Mission
 
 		RZ_TalkScene sc = m_Job.Scene("The trader's boy", "caravan.boy", LandPointNear(m_vPos, 5, 9));
 		int n0 = sc.Node("A boy sits on the cart's shaft. \"Prices are fair. Dad says fair for him is what fair means.\"");
-		int n1 = sc.Node("\"Dad won't leave the goods. He'd leave me first, he says. He's joking. Mostly.\"");
-		sc.Ask(n0, "\"Why are they coming?\"", n1, reveal, true);
-		sc.Way(n1, "\"Pack up. Go now.\"", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_PACK, "The boy whistles and his dad starts throwing sacks on the cart. They're gone up the side road in a minute.", "\"He won't go for you. He says you look expensive.\"");
+		int n1 = sc.Node("Dad won't leave the goods. He'd leave me first, he says. He's joking. Mostly.");
+		sc.Ask(n0, "Why are they coming?", n1, reveal, true);
+		sc.Way(n1, "Pack up. Go now.", RZ_TalkScene.TRUST, RZ_EFaction.SURVIVORS, 1, WAY_PACK, "The boy whistles and his dad starts throwing sacks on the cart. They're gone up the side road in a minute.", "He won't go for you. He says you look expensive.");
 		if (truth == "debt")
 		{
 			sc.Way(n1, "Pay what he owes", RZ_TalkScene.FOOD, -1, 4, WAY_PAY, "The boy runs the tins to the trees. Nobody comes out of them shooting.");

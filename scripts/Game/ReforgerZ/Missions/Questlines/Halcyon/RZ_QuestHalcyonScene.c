@@ -199,7 +199,7 @@ class RZ_QM_HalcyonScene : RZ_QuestMission
 			return true;
 
 		if (tell)
-			gm.NotifyPlayer(playerId, m_sTitle, "\"I don't know you. This isn't your business.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "I don't know you. This isn't your business.");
 
 		return false;
 	}

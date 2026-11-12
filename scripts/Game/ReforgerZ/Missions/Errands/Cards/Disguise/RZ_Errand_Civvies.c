@@ -14,9 +14,9 @@ class RZ_Errand_Civvies : RZ_ErrandCard
 		m_sFamily = "across";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"There's someone sleeping in the back who used to be a soldier. {deserter}. The board at the post says KIA. Help them stop looking like one.\"",
-			"\"{deserter} came in wearing green and won't take it off, because there's nothing else. Find something that isn't anybody's colours.\"");
-		Over("\"{deserter} left before light. Took the bread and left the jacket.\"");
+		Offer("There's someone sleeping in the back who used to be a soldier. {deserter}. The board at the post says KIA. Help them stop looking like one.",
+			"{deserter} came in wearing green and won't take it off, because there's nothing else. Find something that isn't anybody's colours.");
+		Over("{deserter} left before light. Took the bread and left the jacket.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring civilian clothes";

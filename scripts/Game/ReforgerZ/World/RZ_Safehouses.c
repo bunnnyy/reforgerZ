@@ -1456,7 +1456,9 @@ class RZ_Safehouses
 			}
 		}
 
-		TellStatus(playerId, h);
+		// The talk screen: no status readout at hello; Ask how things are gives it
+		if (!RZ_Dialogue.Quiet(m_GM, playerId))
+			TellStatus(playerId, h);
 
 		// They stop what they're doing while you talk
 		RZ_CampLife camp = m_GM.GetCampLife();
@@ -1469,11 +1471,11 @@ class RZ_Safehouses
 	{
 		int need = h.FoodNeed(m_Settings.m_iPeoplePerFood);
 		int meals = h.m_iFood / need;
-		string mood = "\"We're managing. Don't tell anyone I said that.\"";
+		string mood = "We're managing. Don't tell anyone I said that.";
 		if (h.m_iFood < need)
-			mood = "\"There's nothing left in the stores. People are talking about leaving.\"";
+			mood = "There's nothing left in the stores. People are talking about leaving.";
 		else if (meals <= 1)
-			mood = "\"We've food for one more round, maybe. If you find tins, bring them here.\"";
+			mood = "We've food for one more round, maybe. If you find tins, bring them here.";
 
 		string services = "a bed and a spawn point";
 		if (h.GuardCount() > 0)
@@ -1554,7 +1556,7 @@ class RZ_Safehouses
 
 			if (CarriesBoughtFood(user))
 			{
-				m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "\"That's off a quartermaster's shelf. We don't take what was bought: bring us what you found.\"");
+				m_GM.NotifyPlayer(playerId, "Safehouse: " + h.m_sName, "That's off a quartermaster's shelf. We don't take what was bought: bring us what you found.");
 				return;
 			}
 
@@ -1662,13 +1664,13 @@ class RZ_Safehouses
 		bool pending = infection && !profile.IsInfected() && infection.SeemsInfected(playerId);
 		if (!profile.IsInfected() && !pending)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"You're not bitten. Good. Keep it that way.\"");
+			m_GM.NotifyPlayer(playerId, title, "You're not bitten. Good. Keep it that way.");
 			return;
 		}
 
 		if (profile.m_bBiteDeclared)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"We know. We've done what we can. Sit by the door, where it's cooler.\"");
+			m_GM.NotifyPlayer(playerId, title, "We know. We've done what we can. Sit by the door, where it's cooler.");
 			return;
 		}
 
@@ -1680,7 +1682,7 @@ class RZ_Safehouses
 				if (profile.IsInfected())
 					profile.m_bBiteDeclared = true;
 
-				m_GM.NotifyPlayer(playerId, title, "\"Just now? Sit. Bite your sleeve.\" Boiled water, a brush, the last of the iodine, and a clean dressing. \"If it was going to work, that did it.\"");
+				m_GM.NotifyPlayer(playerId, title, "Just now? Sit. Bite your sleeve, this stings. Boiled water, brush, the last of our iodine, clean dressing. There. If it was going to work, that did it.");
 			}
 			else
 			{
@@ -1699,7 +1701,7 @@ class RZ_Safehouses
 
 		if (profile.m_bDeclareSlowed)
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"Again? We've nothing left that would help, not twice. You can stay. Sit by the door, where it's cooler.\"");
+			m_GM.NotifyPlayer(playerId, title, "Again? We've nothing left that would help, not twice. You can stay. Sit by the door, where it's cooler.");
 			return;
 		}
 
@@ -1708,11 +1710,11 @@ class RZ_Safehouses
 		int minutes = RZ_Util.RoundToInt(profile.m_fInfectionLeft / 60);
 		if (h.HasMedic())
 		{
-			m_GM.NotifyPlayer(playerId, title, string.Format("You tell the medic. She doesn't flinch. Something cold in a needle, a clean dressing. \"It'll buy you time. About %1 minutes. Use it well.\"", minutes));
+			m_GM.NotifyPlayer(playerId, title, string.Format("Thank you for telling me. Most don't. Arm out, this is cold. And a clean dressing. It'll buy you time, about %1 minutes. Use it well.", minutes));
 			return;
 		}
 
-		m_GM.NotifyPlayer(playerId, title, string.Format("There's no medic here, just a first-aid box and a woman who used to teach biology. She does what she can, and it's not nothing. \"About %1 minutes. Go to the lab, love. They run a trial for people like you.\"", minutes));
+		m_GM.NotifyPlayer(playerId, title, string.Format("We've no medic here, love. I taught biology, and this is a first-aid box. I've done what I can, and it's not nothing: about %1 minutes. Go to the lab. They run a trial for people like you.", minutes));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1727,7 +1729,7 @@ class RZ_Safehouses
 
 		if (prefab.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, title, "\"Aspirin and a kind word. That's the medicine cabinet.\"");
+			m_GM.NotifyPlayer(playerId, title, "Aspirin and a kind word. That's the medicine cabinet.");
 			return;
 		}
 
@@ -1744,7 +1746,7 @@ class RZ_Safehouses
 			return;
 		}
 
-		m_GM.NotifyPlayer(playerId, title, "A strip of antibiotics two years out of date, from a shoebox under the stairs. \"It's that or nothing. It might buy you a little time. It'll make you sick.\"");
+		m_GM.NotifyPlayer(playerId, title, "Antibiotics, from the shoebox under the stairs. Two years out of date. It's that or nothing. It might buy you a little time, and it'll make you sick.");
 	}
 
 	// ================================================================ Haven Champions (docs/REPUTATION.md)

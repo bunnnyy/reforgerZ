@@ -621,7 +621,7 @@ class RZ_StoryArcs
 		{
 			CheckCourierCamp();
 			m_Arc.SetI(3, 1);	// someone heard it
-			return string.Format("\"You know the Halcyon courier who went missing? I saw Red Hand men near %1 carrying lab cases. White ones, with the stickers.\"", m_Arc.S(1));
+			return string.Format("You know the Halcyon courier who went missing? I saw Red Hand men near %1 carrying lab cases. White ones, with the stickers.", m_Arc.S(1));
 		}
 
 		if (m_Arc.m_iKind == ARC_MAP)
@@ -646,17 +646,17 @@ class RZ_StoryArcs
 			case RZ_EArc.COURIER:
 			{
 				if (m_Arc.m_iStep >= 2)
-					return string.Format("\"The Red Hand camp near %1 has antidotes for sale. In Halcyon cases. Make of that what you like.\"", m_Arc.S(1));
+					return string.Format("The Red Hand camp near %1 has antidotes for sale. In Halcyon cases. Make of that what you like.", m_Arc.S(1));
 
 				break;
 			}
-			case RZ_EArc.CONVOY: return string.Format("\"Bastion's pulling %1 back. Big convoy. Every Red Hand lookout from here to the coast is watching that road.\"", m_Arc.S(0));
-			case RZ_EArc.FLOCK: return string.Format("\"%1 rings the bells in every town now. And they follow him. Hundreds.\"", m_Arc.S(0));
-			case RZ_EArc.FEVER: return string.Format("\"Half the safehouse in %1 is running a fever. Somebody says the Red Hand put something in the well.\"", m_Arc.S(0));
+			case RZ_EArc.CONVOY: return string.Format("Bastion's pulling %1 back. Big convoy. Every Red Hand lookout from here to the coast is watching that road.", m_Arc.S(0));
+			case RZ_EArc.FLOCK: return string.Format("%1 rings the bells in every town now. And they follow him. Hundreds.", m_Arc.S(0));
+			case RZ_EArc.FEVER: return string.Format("Half the safehouse in %1 is running a fever. Somebody says the Red Hand put something in the well.", m_Arc.S(0));
 			case RZ_EArc.CONGREGATION:
 			{
 				if (m_Arc.m_iStep >= 1)
-					return string.Format("\"The safehouse in %1 has gone strange. They pray with the Preacher, eat half portions and 'borrow' from the other houses. Nobody says no to them.\"", m_Arc.S(0));
+					return string.Format("The safehouse in %1 has gone strange. They pray with the Preacher, eat half portions and 'borrow' from the other houses. Nobody says no to them.", m_Arc.S(0));
 
 				break;
 			}
@@ -674,8 +674,8 @@ class RZ_StoryArcs
 
 		NextStep();
 		Headline(string.Format("Bastion's convoy has left for %1. Red Hand lookouts were seen on the ridge above the road.", dest));
-		NotifyKnown(RZ_EFaction.BANDITS, "The Red Hand", string.Format("\"Bastion's big convoy is on the road to %1. Lot of stock on one truck. Just saying.\"", dest));
-		NotifyKnown(RZ_EFaction.MILITARY, "Task Force Bastion", string.Format("\"Convoy rolling for %1. Anyone who wants to be useful, ride along.\"", dest));
+		NotifyKnown(RZ_EFaction.BANDITS, "The Red Hand", string.Format("Bastion's big convoy is on the road to %1. Lot of stock on one truck. Just saying.", dest));
+		NotifyKnown(RZ_EFaction.MILITARY, "Task Force Bastion", string.Format("Convoy rolling for %1. Anyone who wants to be useful, ride along.", dest));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -690,12 +690,12 @@ class RZ_StoryArcs
 		if (m_Arc.m_iStep == 0)
 		{
 			End(string.Format("%1 fell before Bastion's convoy could leave. There's nobody left there to pull back.", dest));
-			RZ_WorldFacts.Get().AddRumour(string.Format("\"Bastion was going to pull %1 back. Too late: there's nobody left there to pull.\"", dest), 4);
+			RZ_WorldFacts.Get().AddRumour(string.Format("Bastion was going to pull %1 back. Too late: there's nobody left there to pull.", dest), 4);
 		}
 		else
 		{
 			End(string.Format("%1 fell before Bastion's convoy arrived. The truck turned round on the road and came home full.", dest));
-			RZ_WorldFacts.Get().AddRumour(string.Format("\"Bastion's big convoy for %1 came back full. Nothing left to pull out by the time it got close.\"", dest), 4);
+			RZ_WorldFacts.Get().AddRumour(string.Format("Bastion's big convoy for %1 came back full. Nothing left to pull out by the time it got close.", dest), 4);
 		}
 
 		return true;
@@ -763,7 +763,7 @@ class RZ_StoryArcs
 	string HouseLine(int houseIdx)
 	{
 		if (m_Arc && m_Arc.m_iKind == ARC_CONGREGATION && m_Arc.I(0) == houseIdx && m_Arc.m_iStep >= 1)
-			return "\"We eat half and pray the rest. Brother says the hunger is a door. You can come in, if you leave the gun outside and bring something for the table.\"";
+			return "We eat half and pray the rest. Brother says the hunger is a door. You can come in, if you leave the gun outside and bring something for the table.";
 
 		return "";
 	}
@@ -952,7 +952,7 @@ class RZ_StoryArcs
 					CheckCourierCamp();
 					NextStep();
 					Headline(string.Format("A Red Hand camp near %1 is selling antidotes. In Halcyon cases.", m_Arc.S(1)));
-					NotifyKnown(RZ_EFaction.INSTITUTE, "Halcyon", string.Format("\"Our cases. Our antidotes. Near %1. Whatever they took from our courier, they'll be back for more.\"", m_Arc.S(1)));
+					NotifyKnown(RZ_EFaction.INSTITUTE, "Halcyon", string.Format("Our cases. Our antidotes. Near %1. Whatever they took from our courier, they'll be back for more.", m_Arc.S(1)));
 					return;
 				}
 
@@ -1461,7 +1461,7 @@ class RZ_Mission_DeserterMap : RZ_PuzzleMission
 
 		AddParticipant(playerId);
 		if (m_aGiven[which])
-			return "\"I gave my piece away already. Ask around.\"";
+			return "I gave my piece away already. Ask around.";
 
 		m_aGiven[which] = true;
 		string text = "They look around before they open their coat. \"He paid me to keep this. He's dead, then.\" A strip of oilcloth: a ridge line and a number.";

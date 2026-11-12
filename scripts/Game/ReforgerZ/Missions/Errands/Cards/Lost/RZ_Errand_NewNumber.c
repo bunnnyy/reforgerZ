@@ -11,9 +11,9 @@ class RZ_Errand_NewNumber : RZ_ErrandCard
 		m_sFamily = "lost";
 		m_eAnchor = RZ_EErrandAnchor.HALCYON_STATION;
 		m_iFaction = RZ_EFaction.INSTITUTE;
-		Offer("\"The board at the gate still says the old number. The queue reads it every morning. A small request: paint the new one. Neatly. People photograph it. Well. They would.\"",
-			"\"We've moved on, scientifically. The board hasn't. Paint the number at the gate. Please don't round it up.\"");
-		Over("\"Never mind the board. Somebody painted it. Badly.\"");
+		Offer("The board at the gate still says the old number. The queue reads it every morning. A small request: paint the new one. Neatly. People photograph it. Well. They would.",
+			"We've moved on, scientifically. The board hasn't. Paint the number at the gate. Please don't round it up.");
+		Over("Never mind the board. Somebody painted it. Badly.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Paint the new number";
@@ -22,7 +22,7 @@ class RZ_Errand_NewNumber : RZ_ErrandCard
 		w.m_fRadius = 20;
 		w.m_sStep = "Paint the new number on the board at the gate {place} (10 s there), then tell {giver}.";
 		w.m_iFavor = 3;
-		w.Done("\"It looks smaller than it felt. They always do.\"");
+		w.Done("It looks smaller than it felt. They always do.");
 	}
 
 	//------------------------------------------------------------------------------------------------

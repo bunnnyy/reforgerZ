@@ -42,9 +42,9 @@ class RZ_Errand_WeatherWriteItDown : RZ_ErrandCard
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_sRoles = "radio operator,operator";
 		m_bTimed = true;
-		Offer("\"Log wants a weather reading from the ridge. Wind, cloud, visibility. The CO writes 'weather' against anything that went wrong, so it may as well be accurate.\"",
-			"\"I need eyes on the weather from up {place}. For the log. Everything in the log is weather, lately.\"");
-		Over("\"Never mind the reading. The CO's written 'weather' already. He usually does.\"");
+		Offer("Log wants a weather reading from the ridge. Wind, cloud, visibility. The CO writes 'weather' against anything that went wrong, so it may as well be accurate.",
+			"I need eyes on the weather from up {place}. For the log. Everything in the log is weather, lately.");
+		Over("Never mind the reading. The CO's written 'weather' already. He usually does.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Take the reading on the ridge";
@@ -86,9 +86,9 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
 		m_bTimed = true;
-		Offer("\"Rifles clean for the call, the CO says. We've the rifles. We've no kits. The police station in {place} had a cupboard of them, once.\"",
-			"\"Cleaning kits. The station in {place}. The CO wants us looking like a unit at the call, and we'd like to oblige him while he can still tell.\"");
-		Over("\"Kits came up with the truck. Somebody's thinking of us after all.\"");
+		Offer("Rifles clean for the call, the CO says. We've the rifles. We've no kits. The police station in {place} had a cupboard of them, once.",
+			"Cleaning kits. The station in {place}. The CO wants us looking like a unit at the call, and we'd like to oblige him while he can still tell.");
+		Over("Kits came up with the truck. Somebody's thinking of us after all.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch the cleaning kits";
@@ -98,8 +98,8 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		w.m_sStep = "Search the police station in {place} for cleaning kits (20 s there), then bring them to {giver}.";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 4;
-		w.Done("\"Oil, rods, patches. Like Christmas, if Christmas was regulation.\"",
-			"\"That'll do. We'll shine for the call. Shining is what's left.\"");
+		w.Done("Oil, rods, patches. Like Christmas, if Christmas was regulation.",
+			"That'll do. We'll shine for the call. Shining is what's left.");
 
 		w = Way("do");
 		w.m_sLabel = "Show the new lads how it's done";
@@ -110,7 +110,7 @@ class RZ_Errand_CleanRifles : RZ_ErrandCard
 		w.m_sStep = "Strip and clean a rifle with the new lads at {here} (a minute), slowly enough to follow.";
 		w.m_iFavor = 3;
 		w.m_iFame = 1;
-		w.Done("\"They've got it. Mostly. One of them put the spring back the right way on his own.\"");
+		w.Done("They've got it. Mostly. One of them put the spring back the right way on his own.");
 	}
 
 	//------------------------------------------------------------------------------------------------

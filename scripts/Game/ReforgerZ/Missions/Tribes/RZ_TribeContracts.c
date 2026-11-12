@@ -25,7 +25,7 @@ class RZ_TribeContract : RZ_Mission
 				if (h.m_eKind != RZ_EHabit.ROAD || h.m_fStrength < 50 || RZ_Util.DistToSegmentXZ(h.m_vPos, a, b) > range)
 					continue;
 
-				return string.Format("\"%1 hunt that road about %2. Walk with us past it, would you?\"", RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, who)), RZ_GameTime.Clock(h.m_fHour));
+				return string.Format("%1 hunt that road about %2. Walk with us past it, would you?", RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, who)), RZ_GameTime.Clock(h.m_fHour));
 			}
 		}
 
@@ -1201,7 +1201,7 @@ class RZ_Mission_Cull : RZ_TribeContract
 		Tribes(gm).GetLife().Disturb(t, 100, RZ_EFaction.MILITARY);
 		people.TellFaction(RZ_EFaction.MILITARY, "Task Force Bastion", "cull", t, string.Format("%1, culled. Not our sector now. Bastion out.", people.NameAt(t, RZ_EFaction.MILITARY)));
 		if (t.m_sPlace != was)
-			people.TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "moved", t, string.Format("\"Bastion's been at %1. What's left of them is at %2 now, and that's our side of the valley.\"", was, t.m_sPlace));
+			people.TellFaction(RZ_EFaction.SURVIVORS, "The Haven", "moved", t, string.Format("Bastion's been at %1. What's left of them is at %2 now, and that's our side of the valley.", was, t.m_sPlace));
 
 		people.AddBeat(string.Format("Culled: the leader of %1, for Bastion.", people.NameAt(t, RZ_EFaction.MILITARY)));
 	}
@@ -2142,7 +2142,7 @@ class RZ_Mission_StockThePit : RZ_TribeContract
 			return true;
 		}
 
-		gm.NotifyPlayer(playerId, m_sTitle, "\"One in the cage. Now the other.\"");
+		gm.NotifyPlayer(playerId, m_sTitle, "One in the cage. Now the other.");
 		return true;
 	}
 

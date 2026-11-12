@@ -107,7 +107,7 @@ class RZ_QM_RouteScene : RZ_QM_MajorScene
 			why = "";
 			int theirs = finale.RouteOfPlayer(playerId);
 			if (theirs == RZ_CureFinale.NONE || theirs == m_iRoute)
-				why = "\"That's for the other routes' people. Not you.\"";
+				why = "That's for the other routes' people. Not you.";
 		}
 
 		// Guard the door: a rival's talk needs a pact; a sneak or a trick there is one step harder
@@ -569,7 +569,7 @@ class RZ_FinaleRoute : RZ_Questline
 		if (head == "wait" && parts.Count() >= 2)
 		{
 			if (RZ_SeasonClock.Now() < run.Flag(parts[1]))
-				return "\"Not yet. The work takes the time it takes.\"";
+				return "Not yet. The work takes the time it takes.";
 
 			return "";
 		}
@@ -661,7 +661,7 @@ class RZ_FinaleRoute : RZ_Questline
 		if (move == "spoil")
 		{
 			if (run.Flag(string.Format("spoil.%1.%2", what, theirs)) != 0)
-				return "\"You've told me. I heard you the first time.\"";
+				return "You've told me. I heard you the first time.";
 
 			return "";
 		}
@@ -670,7 +670,7 @@ class RZ_FinaleRoute : RZ_Questline
 		{
 			RZ_FinalePersonSave p = people.Get(what);
 			if (!p || !p.alive || p.holder >= 0)
-				return "\"I'm not going anywhere with you.\"";
+				return "I'm not going anywhere with you.";
 
 			return "";
 		}
@@ -805,7 +805,7 @@ class RZ_FinaleRoute : RZ_Questline
 			return;
 
 		int holder = RZ_CureFinale.PayFaction(p.holder);
-		scene.Choice(spot, "Talk them out of it").Persuade(holder, 3, "elder,police").Sets("do:free:" + key).Says("\"Fine. Take them. They weren't giving us anything anyway.\"", "talked one of the finale's people out of custody").Refused("\"They stay with us.\"");
+		scene.Choice(spot, "Talk them out of it").Persuade(holder, 3, "elder,police").Sets("do:free:" + key).Says("Fine. Take them. They weren't giving us anything anyway.", "talked one of the finale's people out of custody").Refused("They stay with us.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1234,13 +1234,13 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 	{
 		if (f.RouteOfPlayer(playerId) != RZ_CureFinale.INDEP)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Sign first. Then we'll talk about coats.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Sign first. Then we'll talk about coats.");
 			return;
 		}
 
 		if (!f.CoatRunOpen())
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Not now. Another route's batch, in the cold, at a change of shift. And only once.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Not now. Another route's batch, in the cold, at a change of shift. And only once.");
 			return;
 		}
 
@@ -1328,7 +1328,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		// The unsigned sheet: with Trees on, the Doctor (else the Courier) on the road takes the names
 		if (option <= 1 && m_iRoute == RZ_CureFinale.INDEP && TreesTakeNames() && f.HasIndependentVoice())
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Not on a sheet. Find the Doctor on the road, or the Courier. Ask them about the cure.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Not on a sheet. Find the Doctor on the road, or the Courier. Ask them about the cure.");
 			return;
 		}
 
@@ -1352,7 +1352,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 				float at;
 				if (!m_mArmed.Find(playerId, at) || m_fDeskClock - at > CONFIRM_SECONDS)
 				{
-					gm.NotifyPlayer(playerId, m_sTitle, "\"Hear what it means first. Then tell me.\"");
+					gm.NotifyPlayer(playerId, m_sTitle, "Hear what it means first. Then tell me.");
 					return;
 				}
 
@@ -1388,7 +1388,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 
 		if (!RZ_Reputation.IsHunted(gm.GetTier(playerId, m_iRoute)))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"You don't need to pay that. Just ask.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "You don't need to pay that. Just ask.");
 			return;
 		}
 
@@ -1403,13 +1403,13 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 			{
 				if (!RZ_WorldFacts.Get().IsDusk() || RZ_Util.IsArmed(me))
 				{
-					gm.NotifyPlayer(playerId, m_sTitle, "\"At the knock. Dusk, and nothing in your hands.\"");
+					gm.NotifyPlayer(playerId, m_sTitle, "At the knock. Dusk, and nothing in your hands.");
 					return;
 				}
 
 				if (!RZ_HavenQuest.TakeFood(gm, me, 4))
 				{
-					gm.NotifyPlayer(playerId, m_sTitle, "\"Four for the pot. And a name to read.\"");
+					gm.NotifyPlayer(playerId, m_sTitle, "Four for the pot. And a name to read.");
 					return;
 				}
 
@@ -1420,7 +1420,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 			{
 				if (!TakeFirearm(me))
 				{
-					gm.NotifyPlayer(playerId, m_sTitle, "\"Hand over one firearm. Then we'll talk about the roster.\"");
+					gm.NotifyPlayer(playerId, m_sTitle, "Hand over one firearm. Then we'll talk about the roster.");
 					return;
 				}
 
@@ -1437,7 +1437,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 			{
 				if (RZ_Util.IsArmed(me))
 				{
-					gm.NotifyPlayer(playerId, m_sTitle, "\"Unarmed, please. This is a field station, not a checkpoint.\"");
+					gm.NotifyPlayer(playerId, m_sTitle, "Unarmed, please. This is a field station, not a checkpoint.");
 					return;
 				}
 
@@ -1486,14 +1486,14 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		int mine = f.RouteOfPlayer(playerId);
 		if (mine == m_iRoute)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"It's ours. Just give it back.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "It's ours. Just give it back.");
 			return;
 		}
 
 		int n = f.GetItems().GiveBack(gm.GetProfile(playerId).m_sIdentity, m_iRoute);
 		if (n <= 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Nothing of ours on you.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Nothing of ours on you.");
 			return;
 		}
 
@@ -1501,7 +1501,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		if (mine != RZ_CureFinale.NONE)
 			f.Hostile(mine, m_iRoute);
 
-		gm.NotifyPlayer(playerId, m_sTitle, "\"Paid. Don't think we won't remember who we paid.\"");
+		gm.NotifyPlayer(playerId, m_sTitle, "Paid. Don't think we won't remember who we paid.");
 		RZ_Log.Info(string.Format("Finale: %1 item(s) of %2 ransomed back.", n, RZ_CureFinale.RouteName(m_iRoute)));
 	}
 
@@ -1535,9 +1535,9 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 	protected string PlanTalk()
 	{
 		if (m_iRoute == RZ_CureFinale.REDHAND)
-			return "\"Everyone wants to know when the lorry backs up. I know a man who knows.\"";
+			return "Everyone wants to know when the lorry backs up. I know a man who knows.";
 
-		return "\"The coat, the shift, the night. Somebody always knows. For a price.\"";
+		return "The coat, the shift, the night. Somebody always knows. For a price.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1558,7 +1558,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		int mine = f.RouteOfPlayer(playerId);
 		if (mine == RZ_CureFinale.NONE || mine == m_iRoute)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Not to you. You'd only tell them.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Not to you. You'd only tell them.");
 			return;
 		}
 
@@ -1572,20 +1572,20 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 			price = 30;
 			if (!HasRogue(gm, RZ_EFaction.BANDITS))
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "\"Nobody's selling. Every crew boss is the boss's, this season.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "Nobody's selling. Every crew boss is the boss's, this season.");
 				return;
 			}
 		}
 
 		if (RZ_WorldFacts.Get().Flag(key) != 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Sold already. Plans only sell once.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Sold already. Plans only sell once.");
 			return;
 		}
 
 		if (!gm.SpendFavor(playerId, faction, price))
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, string.Format("\"%1 %2 Favor. That's the price.\"", price, RZ_Factions.GetName(faction)));
+			gm.NotifyPlayer(playerId, m_sTitle, string.Format("%1 %2 Favor. That's the price.", price, RZ_Factions.GetName(faction)));
 			return;
 		}
 
@@ -1618,7 +1618,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		int n = f.GetItems().GiveBack(gm.GetProfile(playerId).m_sIdentity, m_iRoute);
 		if (n <= 0)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Nothing of ours on you.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Nothing of ours on you.");
 			return;
 		}
 
@@ -1629,7 +1629,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		if (favor > 0)
 			f.PayIdent(gm.GetProfile(playerId).m_sIdentity, RZ_CureFinale.PayFaction(m_iRoute), 0, favor, 0, "found it");
 
-		gm.NotifyPlayer(playerId, m_sTitle, "\"Found it, did you. Good.\"");
+		gm.NotifyPlayer(playerId, m_sTitle, "Found it, did you. Good.");
 	}
 }
 
@@ -1747,11 +1747,11 @@ class RZ_FinaleTissue
 	{
 		switch (r)
 		{
-			case RZ_CureFinale.HAVEN: return "\"Whoever they were, bring them in alive. We'll say the name if we know it.\"";
-			case RZ_CureFinale.BASTION: return "\"A contact, alive. Bring it in on a stretcher and sign for it.\"";
-			case RZ_CureFinale.REDHAND: return "\"A live one. The pit crews know where they lie up.\"";
-			case RZ_CureFinale.HALCYON: return "\"The index. Alive, please, and tagged before it wakes.\"";
-			case RZ_CureFinale.INDEP: return "\"Somebody's, once. Bring them in.\"";
+			case RZ_CureFinale.HAVEN: return "Whoever they were, bring them in alive. We'll say the name if we know it.";
+			case RZ_CureFinale.BASTION: return "A contact, alive. Bring it in on a stretcher and sign for it.";
+			case RZ_CureFinale.REDHAND: return "A live one. The pit crews know where they lie up.";
+			case RZ_CureFinale.HALCYON: return "The index. Alive, please, and tagged before it wakes.";
+			case RZ_CureFinale.INDEP: return "Somebody's, once. Bring them in.";
 		}
 
 		return "";

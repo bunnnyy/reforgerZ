@@ -15,8 +15,8 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
 		m_sRoles = "clerk";
-		Offer("\"A satchel came in with no name in it. {who}. Somebody should put it where they fell, or on the board, so it's somewhere.\"");
-		Over("\"Someone took the satchel out at first light. It is done.\"");
+		Offer("A satchel came in with no name in it. {who}. Somebody should put it where they fell, or on the board, so it's somewhere.");
+		Over("Someone took the satchel out at first light. It is done.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Leave it on a cairn where they fell";
@@ -25,7 +25,7 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Carry the satchel {where_place} and build a small cairn for it (10 s there), then tell {giver}.";
 		w.m_iFavor = 4;
-		w.Done("\"A cairn. That's more than most get. That's a long time, now, out there.\"");
+		w.Done("A cairn. That's more than most get. That's a long time, now, out there.");
 
 		// A fallout's dead at a job's site: the named body, its ID carried to the house or post it names
 		w = Way("do");
@@ -37,11 +37,11 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 		w.m_eProp = RZ_EErrandProp.EFFECTS;
 		w.m_bCarry = true;
 		w.m_iFavor = 0;
-		w.Done("\"That's the name. We'll see it gets to the people it belongs to.\"");
+		w.Done("That's the name. We'll see it gets to the people it belongs to.");
 
 		w = Way("talk");
 		w.m_sLabel = "Pin the line to the board";
-		w.Done("\"On the board, then. Someone will read it and know who it was. Or won't. It's there.\"");
+		w.Done("On the board, then. Someone will read it and know who it was. Or won't. It's there.");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ class RZ_Errand_NameOnTheTag : RZ_ErrandCard
 				f = RZ_EFaction.BANDITS;
 
 			if (f == RZ_EFaction.BANDITS)
-				said.Insert("\"The crew won't want it back. They don't bury theirs. We'll keep it on the board.\"");
+				said.Insert("The crew won't want it back. They don't bury theirs. We'll keep it on the board.");
 			else
 				dealer.SmallFavor(playerId, f, 4);
 		}

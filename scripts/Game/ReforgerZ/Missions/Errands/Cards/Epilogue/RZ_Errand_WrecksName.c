@@ -9,9 +9,9 @@ class RZ_Errand_WrecksName : RZ_EpiCard
 		m_sKey = "epi_wreck";
 		m_sTitle = "The Wreck's Name";
 		m_eAnchor = RZ_EErrandAnchor.ANY_HOLDING;
-		Offer("\"The truck for {dest} is still on its side {lies}. The driver's papers are in the cab. I'd like the name for the roll.\"",
-			"\"Nobody went back for the truck to {dest}. The driver had papers. Somebody should know who drove it.\"");
-		Over("\"Never mind. A patrol stripped the wreck this morning.\"");
+		Offer("The truck for {dest} is still on its side {lies}. The driver's papers are in the cab. I'd like the name for the roll.",
+			"Nobody went back for the truck to {dest}. The driver had papers. Somebody should know who drove it.");
+		Over("Never mind. A patrol stripped the wreck this morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Fetch the driver's papers";
@@ -21,7 +21,7 @@ class RZ_Errand_WrecksName : RZ_EpiCard
 		w.m_sStep = "Search the wreck {lies} for the driver's papers (20 s there), then bring them to {giver}.";
 		w.m_iFavor = 5;
 		w.m_iFame = 1;
-		w.Done("\"That's the name. I'd forgotten it. That's worse than anything.\"");
+		w.Done("That's the name. I'd forgotten it. That's worse than anything.");
 
 		w = Way("press");
 		w.m_sLabel = "Sell the photo frame to the fence";

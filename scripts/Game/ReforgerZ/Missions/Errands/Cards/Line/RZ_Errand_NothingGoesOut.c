@@ -12,8 +12,8 @@ class RZ_Errand_NothingGoesOut : RZ_ErrandCard
 		m_sFamily = "line";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"Letter for my sister. She's outside. Leave it at the warning point, under a stone, where someone coming in would see it. Nobody's coming in. Leave it anyway.\"");
-		Over("\"Forget it. I burned it. It was badly spelled.\"");
+		Offer("Letter for my sister. She's outside. Leave it at the warning point, under a stone, where someone coming in would see it. Nobody's coming in. Leave it anyway.");
+		Over("Forget it. I burned it. It was badly spelled.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Leave it under a stone at the line";
@@ -22,7 +22,7 @@ class RZ_Errand_NothingGoesOut : RZ_ErrandCard
 		w.m_fRadius = 25;
 		w.m_sStep = "Take the letter to the warning point, {where_place}, 150 m short of the checkpoint, and leave it under a stone (5 s there). Don't go further. Then report to {giver}.";
 		w.m_iFavor = 3;
-		w.Done("\"Under a stone. Good. Now it's somewhere.\"");
+		w.Done("Under a stone. Good. Now it's somewhere.");
 
 		w = Way("do");
 		w.m_sLabel = "Read it on the way, then leave it";
@@ -31,7 +31,7 @@ class RZ_Errand_NothingGoesOut : RZ_ErrandCard
 		w.m_fRadius = 25;
 		w.m_sStep = "Take the letter to the warning point, {where_place}, and leave it under a stone (5 s there). Then report to {giver}.";
 		w.m_iFavor = 3;
-		w.Done("\"You read it. I can tell. It says she should eat properly. She won't.\"");
+		w.Done("You read it. I can tell. It says she should eat properly. She won't.");
 	}
 
 	//------------------------------------------------------------------------------------------------

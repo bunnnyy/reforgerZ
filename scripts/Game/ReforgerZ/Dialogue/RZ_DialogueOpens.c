@@ -93,7 +93,7 @@ class RZ_DialogueOpens
 				return;
 
 			m_mOpened.Set(ident + "|" + ctx.m_sKey, m_fClock);
-			if (dialogue.Open(pid, body, me))
+			if (dialogue.Open(pid, body, me, true))
 				RZ_Log.Info(string.Format("Dialogue: %1 opened on %2 at %3 m", ctx.m_sKey, RZ_Util.PlayerName(pid), RZ_Util.RoundToInt(dist)));
 
 			return;

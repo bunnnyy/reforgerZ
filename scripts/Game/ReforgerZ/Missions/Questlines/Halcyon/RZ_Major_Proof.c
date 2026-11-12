@@ -77,7 +77,7 @@ class RZ_Major_Proof : RZ_Questline
 		RZ_QuestStage readingWait = WaitStage(S_READING_WAIT, "The reading", "The methods chapter is nearly written. The first page is read to the authors at the change of shift once it's done.");
 		readingWait.Wait(0);
 
-		RZ_QuestStage reading = MissionStage(S_READING, "The reading", "\"Immunity serum. The methods chapter is eight in ten; we write down the other two. The first page is read to the authors at the change of shift.\"");
+		RZ_QuestStage reading = MissionStage(S_READING, "The reading", "Immunity serum. The methods chapter is eight in ten; we write down the other two. The first page is read to the authors at the change of shift.");
 		reading.GiveUp(4, "");
 
 		RZ_QuestStage before = MissionStage(S_BEFORE, "Before the stand", "The first page is written. Until the batch is made, the director's three pages are still loose somewhere, and so is the draft in the records room.");
@@ -93,7 +93,7 @@ class RZ_Major_Proof : RZ_Questline
 		paper.GiveUp(4, "");
 
 		Act(A_DAYONE, "Day One").Stage(S_DAYONE).AnchorCure(25).Need(2).LastCall("If nobody brings the clinic's file in by the change of shift, the field lead goes to the clinic in person.");
-		Act(A_WEEKS, "The Three Weeks").Stage(S_WEEKS).AnchorCure(50).Need(4).Watch().LastCall("\"Nobody has asked about the first three weeks. The lab will take that as an answer.\"");
+		Act(A_WEEKS, "The Three Weeks").Stage(S_WEEKS).AnchorCure(50).Need(4).Watch().LastCall("Nobody has asked about the first three weeks. The lab will take that as an answer.");
 		Act(A_AUTHORS, "Authors").Stage(S_AUTHORS).AnchorCure(75).Need(3).Watch();
 		Act(A_READING, "The reading").Stage(S_READING_WAIT).Stage(S_READING).Opens(75).Need(1).PatienceEvenings(2).SetPiece(17.5, 20.5).Climax().LastCall("The director reads the first page at tomorrow's change of shift. The draft stands if nobody asks.");
 		Act(A_STAND, "The final stand").Stage(S_BEFORE).Stage(S_STAND).PastGate();
@@ -244,21 +244,21 @@ class RZ_Major_Proof : RZ_Questline
 		int file = scene.Person(scene.m_vPos, "the clinic's records room", "Read the file", "A patient file, a ward ledger and three hospital bracelets. In the margin, in a hurry: notify the Institute. Underlined twice.");
 		scene.Choice(file, "Copy the margin first").Sneak().Sets("copied", 1).Sets("world:proof.copy").Says("You copy the margin onto the back of your hand, then onto paper. The copy is yours.", "copied the clinic file's margin");
 
-		int duty = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "the lab's duty officer", "Talk to the duty officer", "\"For the director? Sealed, please. The director reads things in order.\"");
+		int duty = scene.Person(RZ_MajorHelp.NearSeat(gm.GetLabPosition()), "the lab's duty officer", "Talk to the duty officer", "For the director? Sealed, please. The director reads things in order.");
 		scene.Choice(duty, "Hand it in sealed").Decides(OUT_SEALED).Says("The duty officer signs for it and doesn't look inside. The first page still says Day 1.", "handed in the clinic file sealed");
-		scene.Choice(duty, "Ask the director to read the date").Persuade(RZ_EFaction.INSTITUTE, 2, "doctor,labtech").Decides(OUT_READ_DATE).Says("At the change of shift the director reads one date on the open channel, and nothing after it.", "had the director read the date").Refused("\"The director will read it when the director reads it.\"");
+		scene.Choice(duty, "Ask the director to read the date").Persuade(RZ_EFaction.INSTITUTE, 2, "doctor,labtech").Decides(OUT_READ_DATE).Says("At the change of shift the director reads one date on the open channel, and nothing after it.", "had the director read the date").Refused("The director will read it when the director reads it.");
 
 		RZ_Leader co = RZ_MajorHelp.Top(gm, RZ_EFaction.MILITARY);
 		if (co)
 		{
-			int adj = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the CO's adjutant", "Talk to the adjutant", "\"If it's proof the lab knew, Bastion files it. Bastion files everything.\"");
+			int adj = scene.Person(RZ_MajorHelp.NearSeat(co.m_vPos), "the CO's adjutant", "Talk to the adjutant", "If it's proof the lab knew, Bastion files it. Bastion files everything.");
 			scene.Choice(adj, "Give it to Bastion [Bastion: Known]").Needs(RZ_EFaction.MILITARY, 1).Side(RZ_EFaction.MILITARY, RZ_EFaction.INSTITUTE, 10, 10).Decides(OUT_TO_BASTION, false).Says("The adjutant files it under the lab's name. Now the CO has proof the lab knew.", "gave the clinic file to Bastion");
 		}
 
 		RZ_Leader chair = RZ_MajorHelp.Top(gm, RZ_EFaction.SURVIVORS);
 		if (chair)
 		{
-			int clerk = scene.Person(RZ_MajorHelp.NearSeat(chair.m_vPos), "the chair's clerk", "Talk to the clerk", "\"The chair would like to know when it started. So would everyone at supper.\"");
+			int clerk = scene.Person(RZ_MajorHelp.NearSeat(chair.m_vPos), "the chair's clerk", "Talk to the clerk", "The chair would like to know when it started. So would everyone at supper.");
 			scene.Choice(clerk, "Give it to the chair's clerk [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Side(RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE, 10, 5).Decides(OUT_PUBLIC, false).Says("The clerk reads it at supper. By morning every house knows the date.", "took the clinic file to the Haven");
 		}
 
@@ -278,9 +278,9 @@ class RZ_Major_Proof : RZ_Questline
 		scene.m_iTimeout = -1;
 		vector lab = gm.GetLabPosition();
 		int whole = WholeStep(gm, run);
-		int table = scene.Person(RZ_MajorHelp.NearSeat(lab), run.Fill("{director} at the table"), "Talk to the director", "\"Day 1. That's where the paper starts. Tell me why it shouldn't.\"");
-		scene.Choice(table, "Ask for the whole of it").Persuade(RZ_EFaction.INSTITUTE, whole, "labtech,doctor").Side(RZ_EFaction.SURVIVORS, -1, 10, 0).Decides(OUT_WHOLE).Says("The director crosses out Day 1 and writes a date three weeks earlier, then one word: Continue. The director's name goes last.", "had the director write the whole of it").Refused("\"Then nothing we did in here counts. No.\"");
-		scene.Choice(table, "Stand with the director [Trusted]").Needs(RZ_EFaction.INSTITUTE, 2).Decides(OUT_DAY1).Says("The first page stays as it is. The director doesn't thank you, and writes your name among the authors.", "stood with the director at the reading").Refused("\"I don't need a stranger to stand with me.\"");
+		int table = scene.Person(RZ_MajorHelp.NearSeat(lab), run.Fill("{director} at the table"), "Talk to the director", "Day 1. That's where the paper starts. Tell me why it shouldn't.");
+		scene.Choice(table, "Ask for the whole of it").Persuade(RZ_EFaction.INSTITUTE, whole, "labtech,doctor").Side(RZ_EFaction.SURVIVORS, -1, 10, 0).Decides(OUT_WHOLE).Says("The director crosses out Day 1 and writes a date three weeks earlier, then one word: Continue. The director's name goes last.", "had the director write the whole of it").Refused("Then nothing we did in here counts. No.");
+		scene.Choice(table, "Stand with the director [Trusted]").Needs(RZ_EFaction.INSTITUTE, 2).Decides(OUT_DAY1).Says("The first page stays as it is. The director doesn't thank you, and writes your name among the authors.", "stood with the director at the reading").Refused("I don't need a stranger to stand with me.");
 		run.SetFlag("pages_held", RZ_Majors.Bit(RZ_MajorHelp.World(gm, "proof.pages") == 2));
 		bool reads = RZ_MajorHelp.TopHas(gm, RZ_EFaction.INSTITUTE, RZ_ELeaderTrait.IDEALIST) || RZ_MajorHelp.TopHas(gm, RZ_EFaction.INSTITUTE, RZ_ELeaderTrait.MERCIFUL) || ZoneKnows(gm);
 		int leverage = OUT_STOVED;
@@ -292,7 +292,7 @@ class RZ_Major_Proof : RZ_Questline
 		RZ_Leader chair = RZ_MajorHelp.Top(gm, RZ_EFaction.SURVIVORS);
 		if (chair && ClerkSits(gm))
 		{
-			int clerk = scene.Person(RZ_MajorHelp.NearSeat(lab), "the chair's clerk", "Talk to the clerk", "\"The chair would like to know when it started. That's the only question I was sent with.\"");
+			int clerk = scene.Person(RZ_MajorHelp.NearSeat(lab), "the chair's clerk", "Talk to the clerk", "The chair would like to know when it started. That's the only question I was sent with.");
 			scene.Choice(clerk, "Take up the chair's question [Haven: Known]").Needs(RZ_EFaction.SURVIVORS, 1).Persuade(RZ_EFaction.INSTITUTE, Math.MaxInt(1, whole - 1), "labtech,doctor").Side(RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE, 5, 5).Decides(OUT_WHOLE).Says("You ask the chair's question out loud. The director answers it, all of it.", "took up the chair's question at the reading").Refused("The director answers the question with a date: Day 1.");
 		}
 
@@ -301,8 +301,8 @@ class RZ_Major_Proof : RZ_Questline
 		run.SetFlag("terms", RZ_Majors.Bit(RZ_MajorHelp.World(gm, "authors.terms") == 1 || RZ_MajorHelp.World(gm, "authors.terms") == 2 || RZ_MajorHelp.World(gm, "weeks.bastion") != 0 || RZ_MajorHelp.World(gm, "proof.day_one") == 3 || RZ_MajorHelp.World(gm, "legacy.terms") != 0));
 		if (co && stance != 4)
 		{
-			int adj = scene.Person(RZ_MajorHelp.NearSeat(lab), "the CO's adjutant", "Talk to the adjutant", "\"Bastion secured this lab on Day 4. The paper could say so, over a signature.\"");
-			scene.Choice(adj, "Have Bastion countersign [Bastion: Known]").Needs(RZ_EFaction.MILITARY, 1).Only("terms").Side(RZ_EFaction.MILITARY, RZ_EFaction.INSTITUTE, 10, 10).Decides(OUT_SEAL, false).Says("The adjutant signs under the director's name. The first page now says Task Force Bastion secured the lab on Day 4.", "had Bastion countersign the paper").Refused("\"Bastion signs for what Bastion has terms on. Not this.\"");
+			int adj = scene.Person(RZ_MajorHelp.NearSeat(lab), "the CO's adjutant", "Talk to the adjutant", "Bastion secured this lab on Day 4. The paper could say so, over a signature.");
+			scene.Choice(adj, "Have Bastion countersign [Bastion: Known]").Needs(RZ_EFaction.MILITARY, 1).Only("terms").Side(RZ_EFaction.MILITARY, RZ_EFaction.INSTITUTE, 10, 10).Decides(OUT_SEAL, false).Says("The adjutant signs under the director's name. The first page now says Task Force Bastion secured the lab on Day 4.", "had Bastion countersign the paper").Refused("Bastion signs for what Bastion has terms on. Not this.");
 		}
 
 		return true;
@@ -398,10 +398,10 @@ class RZ_Major_Proof : RZ_Questline
 		RZ_Leader boss = RZ_MajorHelp.Top(gm, RZ_EFaction.BANDITS);
 		if (boss)
 		{
-			int man = scene.Person(RZ_MajorHelp.NearSeat(boss.m_vPos), "the boss's man", "Talk to the boss's man", "\"Paper's paper. The boss buys paper. Two tins a copy, once it's printed.\"");
+			int man = scene.Person(RZ_MajorHelp.NearSeat(boss.m_vPos), "the boss's man", "Talk to the boss's man", "Paper's paper. The boss buys paper. Two tins a copy, once it's printed.");
 			scene.Choice(man, "Sell him the director's pages [Red Hand: Known]").Needs(RZ_EFaction.BANDITS, 1).Only("pages_held").Side(RZ_EFaction.BANDITS, RZ_EFaction.INSTITUTE, 10, 15).Sets("sold").Says("He counts the pages, then counts them again, and writes the lab into the book.", "sold the director's pages to the Red Hand").Refused("You'd need the pages for that.");
-			scene.Choice(man, "Pay the lab's line off (40 Favor)").Bribe(RZ_EFaction.BANDITS, 40).Only("sold").Sets("cleared").Says("He crosses the line out and hands the pages back. \"Paid is paid.\"", "paid the lab's line in the book").Refused("\"There's no line to pay. Yet.\"");
-			scene.Choice(man, "Put the debt in your own name [Red Hand: Trusted]").Needs(RZ_EFaction.BANDITS, 2).Only("sold").Sets("debt_yours").Says("He writes your name where the lab's was. The pages come back across the table.", "took the lab's debt in their own name").Refused("\"Your name's not good for that much.\"");
+			scene.Choice(man, "Pay the lab's line off (40 Favor)").Bribe(RZ_EFaction.BANDITS, 40).Only("sold").Sets("cleared").Says("He crosses the line out and hands the pages back. \"Paid is paid.\"", "paid the lab's line in the book").Refused("There's no line to pay. Yet.");
+			scene.Choice(man, "Put the debt in your own name [Red Hand: Trusted]").Needs(RZ_EFaction.BANDITS, 2).Only("sold").Sets("debt_yours").Says("He writes your name where the lab's was. The pages come back across the table.", "took the lab's debt in their own name").Refused("Your name's not good for that much.");
 			scene.Choice(man, "Lift the pages from his satchel").Sneak().Way(RZ_EQuestApproach.SNEAK).Only("sold").Sets("lifted").Says("Two lookouts, one satchel, three pages. Nobody saw you, this time.", "lifted the pages from the boss's man").Refused("There's nothing in the satchel worth taking yet.");
 		}
 
@@ -466,7 +466,7 @@ class RZ_Major_Proof : RZ_Questline
 		RZ_MajorHelp.PayIdents(gm, sellers, RZ_EFaction.BANDITS, 5, 0);
 		NudgeMorale(gm, RZ_EFaction.INSTITUTE, -5);
 		NudgeMorale(gm, RZ_EFaction.BANDITS, 5);
-		SpreadRumour(gm, "\"Halcyon made this. It's in their own hand. Two tins a copy at any Red Hand camp.\"", 48);
+		SpreadRumour(gm, "Halcyon made this. It's in their own hand. Two tins a copy at any Red Hand camp.", 48);
 		Headline(gm, "The Red Hand's market has the lab's first page for sale, two tins a copy. The stickers are still on.");
 		if (gm.GetFactionLife())
 			gm.GetFactionLife().OpenChannelLine(RZ_EFaction.BANDITS, "Page one of the lab's own log, read out for anyone with a radio. The rest is two tins a copy.");
@@ -537,7 +537,7 @@ class RZ_Major_Proof : RZ_Questline
 			{
 				dayOne = 4;
 				NudgeMorale(gm, RZ_EFaction.INSTITUTE, -3);
-				SpreadRumour(gm, "\"Halcyon made this. Ask the clinic. They had a file on it three weeks before the gates.\"", 8);
+				SpreadRumour(gm, "Halcyon made this. Ask the clinic. They had a file on it three weeks before the gates.", 8);
 				line = "The clinic's date was read at supper in every Haven house. The Zone knows when it started.";
 				break;
 			}
@@ -701,7 +701,7 @@ class RZ_Major_Proof : RZ_Questline
 				if (ZoneKnows(gm))
 				{
 					NudgeMorale(gm, RZ_EFaction.SURVIVORS, -3);
-					SpreadRumour(gm, "\"The lab's paper starts on Day 1. Under 'Origin' it says: under investigation.\"", 24);
+					SpreadRumour(gm, "The lab's paper starts on Day 1. Under 'Origin' it says: under investigation.", 24);
 					story = "The lab's paper is on the table at the barrier. Under 'Origin' it says: under investigation.";
 				}
 				else
@@ -778,7 +778,7 @@ class RZ_Major_Proof : RZ_Questline
 	//------------------------------------------------------------------------------------------------
 	override string BetweenLine(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
-		return "\"The director has been redrafting the first page. Three drafts this week. All of them say Day 1.\"";
+		return "The director has been redrafting the first page. Three drafts this week. All of them say Day 1.";
 	}
 
 	//------------------------------------------------------------------------------------------------

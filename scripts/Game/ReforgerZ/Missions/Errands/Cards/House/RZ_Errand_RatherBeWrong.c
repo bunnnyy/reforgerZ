@@ -12,24 +12,24 @@ class RZ_Errand_RatherBeWrong : RZ_ErrandCard
 		m_sFamily = "house";
 		m_eAnchor = RZ_EErrandAnchor.HAVEN_HOUSE;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"The lab's trial dose. You know about these things. Tell me it isn't poison, because I've been telling people it is.\"");
-		Over("\"Never mind. The medic from the lab came by. We shouted at each other. It helped.\"");
+		Offer("The lab's trial dose. You know about these things. Tell me it isn't poison, because I've been telling people it is.");
+		Over("Never mind. The medic from the lab came by. We shouted at each other. It helped.");
 
 		RZ_ErrandWay w = Way("talk");
 		w.m_sLabel = "Go through the numbers";
 		w.m_sBackground = "doctor,nurse";
 		w.m_iFavor = 3;
-		w.Done("\"Eight in ten. Eight in ten is a number I can hate properly. Thank you.\"");
+		w.Done("Eight in ten. Eight in ten is a number I can hate properly. Thank you.");
 
 		w = Way("talk");
 		w.m_sLabel = "Read them the labels";
 		w.m_sBackground = "labtech";
 		w.m_iFavor = 3;
-		w.Done("\"Batch numbers and a cold chain. It's real, then. I'm not saying you're right. I'm saying I'd rather be wrong my way.\"");
+		w.Done("Batch numbers and a cold chain. It's real, then. I'm not saying you're right. I'm saying I'd rather be wrong my way.");
 
 		w = Way("talk");
 		w.m_sLabel = "Agree with them";
-		w.Done("\"I knew it. Well. I didn't know it. Nobody knows anything. Thank you for saying so.\"");
+		w.Done("I knew it. Well. I didn't know it. Nobody knows anything. Thank you for saying so.");
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -888,16 +888,17 @@ class RZ_Perimeter
 	protected string GetWarningText(vector pos)
 	{
 		if (GetCheckpointDistance(pos) < m_Settings.m_fCheckpointWarnRadius + LEAVE_MARGIN)
-			return "\"This road is closed. You are approaching the quarantine line. Turn back.\"";
+			return "This road is closed. You are approaching the quarantine line. Turn back.";
 
-		return "\"You are approaching the quarantine line. Turn back.\"";
+		return "You are approaching the quarantine line. Turn back.";
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void WarningShot(int playerId, IEntity player)
 	{
 		SpawnEffect(RZ_Util.RandomPointInRing(player.GetOrigin(), 3, 6));
-		m_GM.Say(playerId, LOUDSPEAKER, -1, "A shot cracks past you and kicks up the ground.\n\"Final warning. Turn back now.\"\nGet away from the line: the next one won't miss.");
+		m_GM.Say(playerId, LOUDSPEAKER, -1, "Final warning. Turn back now.");
+		m_GM.NotifyPlayer(playerId, "The line", "A shot cracks past you and kicks up the ground. Get away from the line: the next one won't miss.");
 	}
 
 	//------------------------------------------------------------------------------------------------

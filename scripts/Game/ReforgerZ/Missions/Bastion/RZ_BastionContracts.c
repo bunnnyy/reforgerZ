@@ -250,17 +250,17 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		m_Job.Read("sold", "soldier", "The rack log's last line: 'released, by order', a sergeant's signature, no order number.");
 		m_Job.Read("sold", "excon,raider", string.Format("Crew chalk on the door frame: %1's hand and a price. Somebody was paid for these.", m_sCrew));
 
-		string reveal = "\"Nobody. Crows. A dog once. The dog took nothing.\"";
+		string reveal = "Nobody. Crows. A dog once. The dog took nothing.";
 		if (truth == "emptied")
-			reveal = "\"Scavengers, a week back. Took what they could carry. One case was too heavy for them.\"";
+			reveal = "Scavengers, a week back. Took what they could carry. One case was too heavy for them.";
 		else if (truth == "sold")
-			reveal = string.Format("\"Your sergeant came with a lorry. %1 paid him at the gate. I swept up after.\"", m_sCrew);
+			reveal = string.Format("Your sergeant came with a lorry. %1 paid him at the gate. I swept up after.", m_sCrew);
 
 		RZ_TalkScene sc = m_Job.Scene("The caretaker", "armory.caretaker", LandPointNear(m_vPos, 5, 10));
 		int n0 = sc.Node("An old man with a broom. \"Nobody's been. Except everybody.\"");
 		int n1 = sc.Node("He leans on the broom. \"I sweep. I see. Nobody asks the man with the broom.\"");
-		sc.Ask(n0, "\"Who's everybody?\"", n1, reveal, true);
-		sc.Way(n0, "\"Show me where.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_SHOW, "He takes you through the back and kicks the case out from under a bench.", "\"Show you? You've got the uniform and still no idea.\"");
+		sc.Ask(n0, "Who's everybody?", n1, reveal, true);
+		sc.Way(n0, "Show me where.", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_SHOW, "He takes you through the back and kicks the case out from under a bench.", "Show you? You've got the uniform and still no idea.");
 		sc.Way(n0, "A tin for the keys", RZ_TalkScene.FOOD, -1, 1, WAY_SHOW, "He drops a ring of keys in your hand and points with the broom.");
 		if (truth == "sold")
 			sc.Decide(n1, "Name the sergeant to the post", "name the sergeant to the post", WAY_NAME, "You'll put his name on the form. The caretaker sweeps a little more cheerfully.");
@@ -753,17 +753,17 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_Job.Read("ditched", "soldier", "The flight plan clipped in the cockpit doesn't end at the post. It ends at the line.");
 		m_Job.Read("cargo", "excon,raider", string.Format("Handcart ruts from the cargo door to the road. That's %1's pickup, and they knew where to wait.", m_sCrew));
 
-		string reveal = "\"Smoke, then a bang, then cabbages everywhere. He swore all the way down. I liked him.\"";
+		string reveal = "Smoke, then a bang, then cabbages everywhere. He swore all the way down. I liked him.";
 		if (truth == "ditched")
-			reveal = "\"No smoke. He came down slow as you like, sat a while, then tried to walk off east. His leg had other ideas.\"";
+			reveal = "No smoke. He came down slow as you like, sat a while, then tried to walk off east. His leg had other ideas.";
 		else if (truth == "cargo")
-			reveal = "\"Two men with a handcart got here before me. They took a crate and left him. Polite about it.\"";
+			reveal = "Two men with a handcart got here before me. They took a crate and left him. Polite about it.";
 
 		RZ_TalkScene sc = m_Job.Scene("The farmer", "pilot.farmer", LandPointNear(m_vWreck, 12, 20));
 		int n0 = sc.Node("A farmer leans on a fence. \"He landed in my cabbages. I'd like that written down somewhere.\"");
-		int n1 = sc.Node("\"He asked me not to tell anyone. So I'm telling you quietly.\"");
-		sc.Ask(n0, "\"What did you see?\"", n1, reveal, true);
-		sc.Way(n0, "\"Lend us your cart.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_CART, "He brings the cart round and you lift the pilot on. \"Mind the cabbages.\"", "\"Bastion borrowed my last cart. I'm still waiting.\"");
+		int n1 = sc.Node("He asked me not to tell anyone. So I'm telling you quietly.");
+		sc.Ask(n0, "What did you see?", n1, reveal, true);
+		sc.Way(n0, "Lend us your cart.", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_CART, "He brings the cart round and you lift the pilot on. \"Mind the cabbages.\"", "Bastion borrowed my last cart. I'm still waiting.");
 		sc.Way(n0, "Two tins for the cart", RZ_TalkScene.FOOD, -1, 2, WAY_CART, "The tins buy the cart and the farmer's silence about the cabbages.");
 		sc.Service(n1, "Fix his water pump", "mechanic", 25, WAY_CART, "The pump coughs and runs. \"Take the cart. Take the pump if you like.\"");
 
@@ -816,7 +816,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		{
 			m_fRewardScale = 0.6;
 			RZ_StoryKit.Dirty(gm, this, decider);
-			gm.GetFacts().Memory().Lies().Tell(gm, decider, "pilot.engine", RZ_WorldFacts.HELI, RZ_EFaction.MILITARY, "", m_vDest, RZ_ELieTest.RUMOUR, 6, "\"The engine was fine. You knew. He told the mechanic, the mechanic told the cook.\"");
+			gm.GetFacts().Memory().Lies().Tell(gm, decider, "pilot.engine", RZ_WorldFacts.HELI, RZ_EFaction.MILITARY, "", m_vDest, RZ_ELieTest.RUMOUR, 6, "The engine was fine. You knew. He told the mechanic, the mechanic told the cook.");
 			RZ_StoryKit.Record(this, "fate", RZ_WorldFacts.HELI, "covered", who);
 			return;
 		}

@@ -444,7 +444,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 	{
 		if (m_sTruth == "paid_twice")
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"We paid. Ask Janda at the pit. The receipt's on the wall in the stores, if you can read.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "We paid. Ask Janda at the pit. The receipt's on the wall in the stores, if you can read.");
 			RZ_StoryKit.Read(gm, this, playerId, "excon", "The red hand under the receipt is Janda's crew's. You'd know it anywhere.");
 			return;
 		}
@@ -459,7 +459,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 
 		if (m_sTruth == "off_book")
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Again? Your lot came Tuesday. Different face. Same sack.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Again? Your lot came Tuesday. Different face. Same sack.");
 			RZ_StoryKit.Read(gm, this, playerId, "excon", "This isn't the crew's collection. It's one man's. You've seen it done before, from the inside.");
 			RZ_StoryKit.Read(gm, this, playerId, "radioham", string.Format("On the secure net, faint: \"Who sent a collector to %1?\" Nobody answers.", m_sHouse));
 			return;
@@ -489,7 +489,7 @@ class RZ_Mission_ProtectionRacket : RZ_PuzzleMission
 			RZ_Deeds.AddLifeRecord(gm.GetProfile(playerId), "speak_for", true);
 			array<int> promised = {playerId};
 			RZ_StoryKit.Record(this, "speak_for", HouseKey(), "1", promised);
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Fine. But you speak for us at the next collection. You.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Fine. But you speak for us at the next collection. You.");
 		}
 
 		m_fRewardScale = 0.75;
@@ -991,16 +991,16 @@ class RZ_Mission_BustOut : RZ_PuzzleMission
 		m_Job.Read("talked", "excon,raider", "One stands apart and the others let him. In a cell, that means he talked.");
 		m_Job.Read("crew", "soldier", "The stockade board says 'looters, holding for transfer'. Transfer to where, it doesn't say.");
 
-		string reveal = "\"Four. All crew. All innocent, obviously.\"";
+		string reveal = "Four. All crew. All innocent, obviously.";
 		if (truth == "boy")
-			reveal = "\"Four. Three of us, and a kid they picked up stealing bread. He cries at night. We let him.\"";
+			reveal = "Four. Three of us, and a kid they picked up stealing bread. He cries at night. We let him.";
 		else if (truth == "talked")
-			reveal = "\"Four. Well. Three, and him. Ask him how he got the cell with the window.\"";
+			reveal = "Four. Well. Three, and him. Ask him how he got the cell with the window.";
 
 		RZ_TalkScene sc = m_Job.Scene("The prisoner at the wire", "bustout.wire", LandPointNear(m_vGate, 3, 6));
 		int n0 = sc.Node("A man at the wire with his fingers through it. \"Room service. About time.\"");
-		int n1 = sc.Node("\"The night guard sells the key for tins. Everyone knows. Nobody's had tins.\"");
-		sc.Ask(n0, "\"How many of you?\"", n1, reveal, true);
+		int n1 = sc.Node("The night guard sells the key for tins. Everyone knows. Nobody's had tins.");
+		sc.Ask(n0, "How many of you?", n1, reveal, true);
 		sc.Way(n1, "Four tins for the night key", RZ_TalkScene.FOOD, -1, 4, WAY_KEY, "The tins go through the wire. A key comes back the other way, warm from somebody's pocket.");
 
 		string labels = "All of them to the crew";
@@ -1324,15 +1324,15 @@ class RZ_Mission_DoubleAgent : RZ_Mission_Delivery
 		m_Job.Read("real", "soldier", "These are Bastion's own unit codes, current. Somebody inside sold them, and this sells them back.");
 		m_Job.Read("test", "police", "Whoever packed this wanted to know who'd open it. There's a hair across the seal.");
 
-		string reveal = "\"The lieutenant. He believes everything until lunch.\"";
+		string reveal = "The lieutenant. He believes everything until lunch.";
 		if (truth == "real" && m_iHouse >= 0)
 			reveal = string.Format("He glances at the cover. \"Grid round %1? Oh, he'll love that. He's been wanting a reason.\"", gm.GetSafehouses().Get(m_iHouse).m_sName);
 
 		RZ_TalkScene sc = m_Job.Scene("The clerk", "double.clerk", LandPointNear(meet, 4, 8));
 		int n0 = sc.Node("A clerk with ink to the elbow. \"Another dossier. Everybody's a patriot this week.\"");
-		int n1 = sc.Node("\"Leave it in the tray. Or don't. I'm not your mother.\"");
-		sc.Ask(n0, "\"Who reads these?\"", n1, reveal, truth == "real");
-		sc.Way(n1, "\"Put this on top of the pile.\"", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_TOP, "\"On top it goes. He reads the top one properly.\"", "\"Everybody wants the top.\"");
+		int n1 = sc.Node("Leave it in the tray. Or don't. I'm not your mother.");
+		sc.Ask(n0, "Who reads these?", n1, reveal, truth == "real");
+		sc.Way(n1, "Put this on top of the pile.", RZ_TalkScene.TRUST, RZ_EFaction.MILITARY, 1, WAY_TOP, "On top it goes. He reads the top one properly.", "Everybody wants the top.");
 		sc.Way(n1, "Two tins for the clerk", RZ_TalkScene.FOOD, -1, 2, WAY_TOP, "The tins vanish into a drawer. The pile gets a new top.");
 		if (truth == "real")
 			sc.Decide(n1, "Warn the house instead", "warn the house and keep the dossier", WAY_WARN, "You keep the dossier. The house will hear before Bastion does.", RZ_EFaction.SURVIVORS);

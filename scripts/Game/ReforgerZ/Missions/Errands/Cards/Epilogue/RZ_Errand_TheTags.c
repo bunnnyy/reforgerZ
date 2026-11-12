@@ -11,9 +11,9 @@ class RZ_Errand_TheTags : RZ_EpiCard
 		m_sTitle = "The Tags";
 		m_eAnchor = RZ_EErrandAnchor.BASTION_POST;
 		m_iFaction = RZ_EFaction.MILITARY;
-		Offer("\"{dead} is still out {lies}. The tags belong on the nail before the gates open. Nobody here can leave the gate.\"",
-			"\"We never brought {dead} in. The tags, at least. The roll's read with or without him.\"");
-		Over("\"Never mind. Somebody brought {dead}'s tags in this morning.\"");
+		Offer("{dead} is still out {lies}. The tags belong on the nail before the gates open. Nobody here can leave the gate.",
+			"We never brought {dead} in. The tags, at least. The roll's read with or without him.");
+		Over("Never mind. Somebody brought {dead}'s tags in this morning.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Bring {dead}'s tags in";
@@ -23,8 +23,8 @@ class RZ_Errand_TheTags : RZ_EpiCard
 		w.m_sStep = "Find {dead} {lies} and take the tags (15 s there), then bring them to {giver} for the nail.";
 		w.m_iFavor = 6;
 		w.m_iFame = 1;
-		w.Done("\"On the nail. That name gets answered at the roll now, one way or the other.\"",
-			"\"Thank you. I'll tell the lieutenant who brought them.\"");
+		w.Done("On the nail. That name gets answered at the roll now, one way or the other.",
+			"Thank you. I'll tell the lieutenant who brought them.");
 
 		w = Way("press");
 		w.m_sLabel = "Sell the photo frame to the fence";

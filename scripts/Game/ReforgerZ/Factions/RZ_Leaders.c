@@ -1613,7 +1613,98 @@ class RZ_Leaders
 		else
 			outro = RZ_LeaderVoice.SignOff(rng, l.m_eFaction);
 
-		return string.Format("%1, %2:\n\"%3\" %4 \"%5\"", l.m_sName, l.m_sTitle, RZ_LeaderVoice.Intro(rng, lead), m.GetBrief(m_GM), outro);
+		// Spoken straight to you: no name in front (the talk screen and the card's title name them)
+		return string.Format("%1 %2 %3", RZ_LeaderVoice.Intro(rng, lead), m.GetBrief(m_GM), outro);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A job explained before you take it, in the giver's voice (docs/WRITING.md, "Talk"): what and
+	//! why (the brief, in their voice), where, what it pays, and the danger in it.
+	string Pitch(RZ_Leader l, RZ_Mission m, int playerId, IEntity user)
+	{
+		string text = VoiceBrief(m, playerId);
+		vector from = vector.Zero;
+		if (user)
+			from = user.GetOrigin();
+
+		string where = m.GetLocationNameFor(m_GM, playerId, from);
+		string dir = m.GetDirectionFor(m_GM, from, playerId);
+		if (!dir.IsEmpty())
+			text += "\n" + string.Format("It's at %1, %2 from here.", where, dir);
+		else if (!where.IsEmpty())
+			text += "\n" + string.Format("It's at %1.", where);
+
+		text += "\n" + RZ_LeaderVoice.PayLine(l.m_eFaction, m.m_iFavorReward, m.m_iFameReward);
+		if (m.m_bRogueJob)
+			text += "\n" + RZ_LeaderVoice.RogueWarning(l.m_eFaction);
+
+		if (m.m_bHasRival && RZ_Factions.IsValid(m.m_eRival))
+			text += "\n" + string.Format(RZ_LeaderVoice.RivalWarning(l.m_eFaction), RZ_Factions.GetName(m.m_eRival));
+
+		if (m.HasBonus(m_GM, playerId))
+			text += "\n" + RZ_LeaderVoice.BonusLine(l.m_eFaction);
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The talk screen's "Ask for work" said straight to the leader (RZ_TalkLeader): their own job is
+	//! explained first and you say yes or no (TakeWork). Returns that job's id; -1 when they have none
+	//! for you (the stronghold's contracts, or nothing today, are said as OfferWork does).
+	int PitchWork(int playerId, int id, IEntity user)
+	{
+		RZ_Leader l = Get(id);
+		if (!l || !l.IsPresent() || !user)
+			return -1;
+
+		if (Attitude(l, playerId) <= -2)
+		{
+			m_GM.Say(playerId, l.GetHeader(), l.m_eFaction, RZ_LeaderVoice.Refuse(l.m_eFaction));
+			return -1;
+		}
+
+		RZ_Mission job = FindJob(l);
+		if (!job)
+			job = TryCreateJob(l);
+
+		if (!job || !job.IsEligible(m_GM, playerId) || job.m_aOfferedTo.Contains(playerId))
+		{
+			OfferWork(l, playerId, user);
+			return -1;
+		}
+
+		m_GM.NotifyPlayer(playerId, l.GetHeader(), Pitch(l, job, playerId, user));
+		return job.m_iId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Your answer to a pitched job: yes hires you for it (your Quests tab), no leaves it with them.
+	void TakeWork(int playerId, int id, int jobId, bool yes, IEntity user)
+	{
+		RZ_Leader l = Get(id);
+		if (!l || !l.IsPresent())
+			return;
+
+		if (!yes)
+		{
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Declined(l.m_eFaction));
+			return;
+		}
+
+		RZ_Mission job = m_GM.GetMissions().FindById(jobId);
+		if (!job || job.m_eState != RZ_EMissionState.ACTIVE || !job.IsEligible(m_GM, playerId))
+		{
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Gone(l.m_eFaction));
+			return;
+		}
+
+		job.Hire(playerId);
+		m_GM.NotifyPlayer(playerId, l.GetHeader(), RZ_LeaderVoice.Agreed(l.m_eFaction));
+		string where = job.GetLocationName(m_GM);
+		if (user)
+			where = job.GetWhereTextFor(m_GM, user.GetOrigin(), playerId);
+
+		m_GM.NotifyPlayer(playerId, "Off the books: " + job.m_sTitle, string.Format("Taken. %1", where));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1865,11 +1956,11 @@ class RZ_Leaders
 
 		if (!work.IsEmpty())
 		{
-			m_GM.NotifyPlayer(playerId, header, "\"This is what the stronghold wants doing:\"\n" + work);
+			m_GM.NotifyPlayer(playerId, header, RZ_LeaderVoice.ContractsIntro(l.m_eFaction) + "\n" + work);
 			return;
 		}
 
-		m_GM.NotifyPlayer(playerId, header, "\"Nothing for you today. Come back tomorrow, or the day after.\"");
+		m_GM.NotifyPlayer(playerId, header, RZ_LeaderVoice.NoWork(l.m_eFaction));
 	}
 
 	// ================================================================ Loyalty
@@ -2639,7 +2730,7 @@ class RZ_Leaders
 			if (!l.Remembers(ident, MEM_CROSSED))
 			{
 				l.Remember(ident, MEM_CROSSED);
-				m_GM.NotifyPlayer(playerId, l.GetHeader(), "\"Put it away. Now. I'll remember this.\"");
+				m_GM.NotifyPlayer(playerId, l.GetHeader(), "Put it away. Now. I'll remember this.");
 			}
 		}
 	}
@@ -2685,7 +2776,7 @@ class RZ_Leaders
 				continue;
 
 			l.Remember(ident, MEM_SAVED);
-			m_GM.NotifyPlayer(best, l.GetHeader(), string.Format("%1 lets out a breath. \"That one was at the door. I won't forget it.\"", l.m_sShort));
+			m_GM.NotifyPlayer(best, l.GetHeader(), "That one was right at the door. I won't forget what you did.");
 		}
 	}
 
@@ -2737,10 +2828,18 @@ class RZ_Leaders
 			}
 		}
 
+		// The talk screen: no filler greeting. Only what's real now is said (a first meeting, what you
+		// did for their people, a questline, a job waiting); the hello, the news and the need wait to
+		// be asked (docs/DIALOGUE.md, "No filler greeting")
+		bool quiet = RZ_Dialogue.Quiet(m_GM, playerId);
 		string text;
 		if (!l.Remembers(Ident(playerId), MEM_MET))
 		{
 			text = FirstContact(l, playerId);
+		}
+		else if (quiet)
+		{
+			text = "";
 		}
 		else if (RZ_RepVoice.TreesOn())
 		{
@@ -2759,7 +2858,7 @@ class RZ_Leaders
 			text = doneHere + "\n" + text;
 
 		// What the faction needs right now, and now and then a big moment they remember
-		if (m_GM.GetFactionLife())
+		if (m_GM.GetFactionLife() && !quiet)
 		{
 			string extra = m_GM.GetFactionLife().TalkExtra(l.m_eFaction, l.m_vPos);
 			if (!extra.IsEmpty())
@@ -2776,7 +2875,11 @@ class RZ_Leaders
 
 		RZ_Mission job = FindJob(l);
 		if (job && job.IsEligible(m_GM, playerId) && !job.m_aOfferedTo.Contains(playerId))
-			text += string.Format("\n%1 lowers their voice. \"I might have something for you. Ask.\"", l.m_sShort);
+			text += "\n" + RZ_LeaderVoice.JobWaiting(l.m_eFaction);
+
+		text = text.Trim();
+		if (text.IsEmpty())
+			return;
 
 		m_GM.NotifyPlayer(playerId, l.GetHeader(), text);
 	}
@@ -2839,13 +2942,13 @@ class RZ_Leaders
 		RZ_Leader l = FindSeat(owner);
 		if (!l)
 		{
-			m_GM.NotifyPlayer(playerId, "Nobody in charge", "Whoever ran this place isn't here. Someone says to come back in a day or two.");
+			m_GM.NotifyPlayer(playerId, "Nobody in charge", "There's nobody in the chair right now. Whoever ran this place is gone. Come back in a day or two and ask again.");
 			return;
 		}
 
 		if (l.m_iHeldBy >= 0)
 		{
-			m_GM.NotifyPlayer(playerId, l.GetHeader(), "They're busy with someone from the stronghold. Come back later.");
+			m_GM.NotifyPlayer(playerId, l.GetHeader(), "I've got someone from the stronghold in front of me. Come back later.");
 			return;
 		}
 
@@ -2919,12 +3022,12 @@ class RZ_Leaders
 		string text = RZ_LeaderVoice.Opinion(attitude);
 		int mem = l.GetMemory(Ident(playerId));
 		if ((mem & MEM_SAVED) != 0)
-			text += " \"You were there when it counted. I don't forget that.\"";
+			text += " You were there when it counted. I don't forget that.";
 		else if ((mem & MEM_HELPED) != 0)
-			text += " \"You've done work for us. It was done properly.\"";
+			text += " You've done work for us. It was done properly.";
 
 		if ((mem & MEM_CROSSED) != 0)
-			text += " \"And I haven't forgotten the other thing.\"";
+			text += " And I haven't forgotten the other thing.";
 
 		if (attitude >= 1)
 		{
@@ -2956,9 +3059,9 @@ class RZ_Leaders
 				boss = top.m_sPlace;
 
 			if (other.m_eLoyalty == RZ_ELoyalty.ROGUE)
-				lines.Insert(string.Format("\"They say %1 in %2 doesn't answer to %3 any more.\"", other.m_sName, other.m_sPlace, boss));
+				lines.Insert(string.Format("They say %1 in %2 doesn't answer to %3 any more.", other.m_sName, other.m_sPlace, boss));
 			else if (FindJob(other))
-				lines.Insert(string.Format("\"%1 in %2 has work going that %3 doesn't know about.\"", other.m_sShort, other.m_sPlace, boss));
+				lines.Insert(string.Format("%1 in %2 has work going that %3 doesn't know about.", other.m_sShort, other.m_sPlace, boss));
 		}
 
 		RZ_Safehouses houses = m_GM.GetSafehouses();
@@ -2969,7 +3072,7 @@ class RZ_Leaders
 				RZ_Safehouse h = houses.Get(i);
 				if (h.m_bShort)
 				{
-					lines.Insert(string.Format("\"The safehouse in %1 is out of food.\"", h.m_sName));
+					lines.Insert(string.Format("The safehouse in %1 is out of food.", h.m_sName));
 					break;
 				}
 			}
@@ -2978,7 +3081,7 @@ class RZ_Leaders
 		vector hot;
 		float heat;
 		if (m_GM.GetHeat().GetHottest(hot, heat) && heat >= 40 && RZ_Util.DistXZ(from, hot) <= 2500)
-			lines.Insert(string.Format("\"Something's stirred them up, %1 from here.\"", RZ_Util.DirectionText(from, hot)));
+			lines.Insert(string.Format("Something's stirred them up, %1 from here.", RZ_Util.DirectionText(from, hot)));
 
 		// Territory and faction news: the latest quiet headline, a rumour (true or not)
 		if (m_GM.GetFactionLife())
@@ -2993,7 +3096,7 @@ class RZ_Leaders
 		}
 
 		if (lines.IsEmpty())
-			return "\"Nothing worth repeating. That's news too, these days.\"";
+			return "Nothing worth repeating. That's news too, these days.";
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		array<int> order = {};

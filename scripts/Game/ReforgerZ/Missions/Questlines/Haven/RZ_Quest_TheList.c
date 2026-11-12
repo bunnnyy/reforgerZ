@@ -273,7 +273,7 @@ class RZ_Quest_TheList : RZ_Questline
 
 		if (stage == S_ASKING)
 		{
-			SpreadRumour(gm, "\"Someone's been going round the houses asking about the List. With copies of it, I heard. Bold.\"", 4);
+			SpreadRumour(gm, "Someone's been going round the houses asking about the List. With copies of it, I heard. Bold.", 4);
 			Headline(gm, "Someone's been asking about the List.", false);
 		}
 	}
@@ -508,7 +508,7 @@ class RZ_Quest_TheList : RZ_Questline
 					q.SetWorldFlag("list.head_replaced", 1);
 
 				Headline(gm, "Every Haven house read the List at supper last night, crossed names and all.");
-				SpreadRumour(gm, "\"They read the List out. All of it. There was a farm, in the first week. Nobody's saying what happened there, only that the council knew.\"", 8);
+				SpreadRumour(gm, "They read the List out. All of it. There was a farm, in the first week. Nobody's saying what happened there, only that the council knew.", 8);
 				return;
 			}
 			case E_BURIED:
@@ -517,7 +517,7 @@ class RZ_Quest_TheList : RZ_Questline
 				ChangeStanding(gm, run, RZ_EFaction.SURVIVORS, 5, 0);
 				RZ_HavenQuest.LeaderRemembers(gm, run, RZ_HavenQuest.KeptLeader(gm, run, "chair"), RZ_Leaders.MEM_HELPED);
 				Headline(gm, run.Fill("The council in {chair_place} has its List back in the drawer. Nobody asks about it at supper."), false);
-				SpreadRumour(gm, "\"Somebody was asking about the List. Not any more. The council had a word.\"", 6);
+				SpreadRumour(gm, "Somebody was asking about the List. Not any more. The council had a word.", 6);
 				return;
 			}
 			case E_CENSUS:
@@ -525,7 +525,7 @@ class RZ_Quest_TheList : RZ_Questline
 				q.SetWorldFlag("list.to_bastion", 1);
 				NudgeMorale(gm, RZ_EFaction.SURVIVORS, -10);
 				Headline(gm, "Bastion has a census of the Haven now, house by house and name by name. Somebody handed them the lists.");
-				SpreadRumour(gm, "\"Bastion knows how many of us there are in every house. They wrote it on a board. Somebody gave them our own lists to do it.\"", 8);
+				SpreadRumour(gm, "Bastion knows how many of us there are in every house. They wrote it on a board. Somebody gave them our own lists to do it.", 8);
 				return;
 			}
 			case E_SOLD:
@@ -541,7 +541,7 @@ class RZ_Quest_TheList : RZ_Questline
 					Headline(gm, "A Red Hand crew has been asking after Haven people by name. Names it shouldn't know.", false);
 				}
 
-				SpreadRumour(gm, "\"The Red Hand knows who the Haven turned out, and where they went. They've got it in writing now.\"", 8);
+				SpreadRumour(gm, "The Red Hand knows who the Haven turned out, and where they went. They've got it in writing now.", 8);
 			}
 		}
 	}
@@ -550,10 +550,10 @@ class RZ_Quest_TheList : RZ_Questline
 	override string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
 		if (run.m_iStage == S_COPIES || run.m_iStage == S_PATTERN)
-			return "\"Every house keeps a list. Names in pencil. Some of them have a line through, and nobody died.\"";
+			return "Every house keeps a list. Names in pencil. Some of them have a line through, and nobody died.";
 
 		if (run.m_iStage == S_FARM)
-			return "\"There was a farm, the first week. They sent the ones who couldn't work. Nobody went back to check. That's all I'm saying.\"";
+			return "There was a farm, the first week. They sent the ones who couldn't work. Nobody went back to check. That's all I'm saying.";
 
 		return "";
 	}
@@ -1061,7 +1061,7 @@ class RZ_QM_ListCopies : RZ_HavenQM
 		}
 
 		if (l.m_iSafehouse == QFlag(gm, "house", -1))
-			return "\"You've got ours. Get the others.\"";
+			return "You've got ours. Get the others.";
 
 		int slot = m_aHouses.Find(l.m_iSafehouse);
 		if (slot < 0)
@@ -1069,7 +1069,7 @@ class RZ_QM_ListCopies : RZ_HavenQM
 
 		string town = HouseName(gm, slot);
 		if (HasCopy(gm, l.m_iSafehouse))
-			return "\"You've had our copy. Don't wave it about.\"";
+			return "You've had our copy. Don't wave it about.";
 
 		if (!IsEligible(gm, playerId))
 			return string.Format("%1 shakes their head. \"The list? Not for you.\"", l.m_sShort);
@@ -1165,7 +1165,7 @@ class RZ_QM_ListCopies : RZ_HavenQM
 		{
 			if (QFlag(gm, "copy_rh") == 1)
 			{
-				gm.NotifyPlayer(playerId, m_sTitle, "\"You've got it. Pleasure doing business.\"");
+				gm.NotifyPlayer(playerId, m_sTitle, "You've got it. Pleasure doing business.");
 				return;
 			}
 
@@ -1989,7 +1989,7 @@ class RZ_QM_ListChair : RZ_HavenQM
 	{
 		if (playerId != m_iCarrier || to != m_iTo)
 		{
-			gm.NotifyPlayer(playerId, m_sTitle, "\"Not from you.\"");
+			gm.NotifyPlayer(playerId, m_sTitle, "Not from you.");
 			return;
 		}
 

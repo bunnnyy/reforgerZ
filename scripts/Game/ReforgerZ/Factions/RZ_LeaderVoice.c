@@ -109,6 +109,141 @@ class RZ_LeaderVoice
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A leader with a job for you that they haven't offered yet: said at the greeting, so you know
+	//! to ask (RZ_Leaders.HandleTalk).
+	static string JobWaiting(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return "Before you go, I've a job that needs someone from outside the house. Ask me about it when you're ready.";
+			case RZ_EFaction.MILITARY: return "There's a task on my desk that needs a body who isn't on my roster. Ask me for work if you want it.";
+			case RZ_EFaction.BANDITS: return "I've got something that pays, if you're the asking sort. So ask.";
+			case RZ_EFaction.INSTITUTE: return "There is work, if you want it. The lab is short of something only someone outside can fetch. Ask.";
+		}
+
+		return "I might have something for you. Ask me for it.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a pitched job pays, said by the giver (RZ_Leaders.Pitch).
+	static string PayLine(RZ_EFaction faction, int favor, int fame)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return string.Format("It's worth %1 Favor with the houses, and people will hear who helped. That's %2 Fame, for what it's worth.", favor, fame);
+			case RZ_EFaction.MILITARY: return string.Format("Pay is %1 Favor on completion, and %2 Fame on the roster. Nothing up front.", favor, fame);
+			case RZ_EFaction.BANDITS: return string.Format("%1 Favor in the book when it's done, and %2 Fame, because people talk.", favor, fame);
+			case RZ_EFaction.INSTITUTE: return string.Format("The lab will credit you %1 Favor, and %2 Fame. Those are the numbers.", favor, fame);
+		}
+
+		return string.Format("It pays %1 Favor and %2 Fame.", favor, fame);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A job off the stronghold's books: the danger, said plainly.
+	static string RogueWarning(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.MILITARY: return "This isn't on Command's books. If anyone at the stronghold asks, you never heard it from me.";
+			case RZ_EFaction.BANDITS: return "The boss doesn't know about this one, and the boss doesn't like surprises. Keep it quiet.";
+			case RZ_EFaction.INSTITUTE: return "This isn't in the director's log. If it gets out, it ends both our careers.";
+		}
+
+		return "The council doesn't know about this one. If they hear, it's my seat, and you'll be the one they blame.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A job that someone else will hold against you; %1 is who.
+	static string RivalWarning(RZ_EFaction faction)
+	{
+		if (faction == RZ_EFaction.BANDITS)
+			return "%1 won't like it. That's half the fun.";
+
+		return "%1 won't thank you for it, and they'll remember your face.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Your background suits the job.
+	static string BonusLine(RZ_EFaction faction)
+	{
+		if (faction == RZ_EFaction.MILITARY)
+			return "Your background fits the task. That counts for extra on the roster.";
+
+		return "Someone with your background is exactly who this needs. It'll count for more.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! You said yes to a pitched job.
+	static string Agreed(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return "Thank you. Really. Come back in one piece, that's the main thing.";
+			case RZ_EFaction.MILITARY: return "Good. You're on it as of now. Report back when it's done.";
+			case RZ_EFaction.BANDITS: return "Knew you would. Don't make me regret the book entry.";
+			case RZ_EFaction.INSTITUTE: return "Good. I've noted it. Bring back exactly what was asked for.";
+		}
+
+		return "Good. Come back when it's done.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! You said no to a pitched job.
+	static string Declined(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return "That's all right. I'll ask someone else. The offer stands while it lasts.";
+			case RZ_EFaction.MILITARY: return "Understood. It stays on my desk until someone takes it.";
+			case RZ_EFaction.BANDITS: return "Your loss. Someone hungrier will take it by dark.";
+			case RZ_EFaction.INSTITUTE: return "Noted. I'll find someone else. Don't take too long deciding if you change your mind.";
+		}
+
+		return "Suit yourself.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The job went (someone finished it, or it ran out) while you talked.
+	static string Gone(RZ_EFaction faction)
+	{
+		if (faction == RZ_EFaction.BANDITS)
+			return "Too slow. That one's gone. Ask me again later.";
+
+		return "Ah. That's already been dealt with, while we were talking. Ask me again later.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Before the stronghold's contracts are listed (RZ_Leaders.OfferWork).
+	static string ContractsIntro(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return "Nothing of mine, but the council has a list. These are the jobs the houses need doing. They're yours if you want them:";
+			case RZ_EFaction.MILITARY: return "Nothing from me. These are the stronghold's standing tasks. They're on your list now:";
+			case RZ_EFaction.BANDITS: return "Not from me. The boss has a list, though. Here's what's paying:";
+			case RZ_EFaction.INSTITUTE: return "I have nothing of my own. These are the lab's open requests. I've put your name against them:";
+		}
+
+		return "This is what the stronghold wants doing:";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Nothing for you today.
+	static string NoWork(RZ_EFaction faction)
+	{
+		switch (faction)
+		{
+			case RZ_EFaction.SURVIVORS: return "Nothing today, love. The jobs that matter got taken at breakfast. Come back tomorrow.";
+			case RZ_EFaction.MILITARY: return "Nothing on the board for you today. Check back tomorrow, or the day after.";
+			case RZ_EFaction.BANDITS: return "Nothing worth your time today. Come back when the book's fuller.";
+			case RZ_EFaction.INSTITUTE: return "There's nothing outstanding. The lab's requests come in batches. Try again tomorrow.";
+		}
+
+		return "Nothing for you today. Come back tomorrow, or the day after.";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One line about who they were before the gates closed.
 	static string Backstory(RZ_Rng rng, RZ_EFaction faction, string place)
 	{
@@ -220,16 +355,16 @@ class RZ_LeaderVoice
 	{
 		switch (faction)
 		{
-			case RZ_EFaction.SURVIVORS: return "\"We're the Haven. Just people who were here when the gates closed. We feed who we can, and nobody shoots in the house.\"";
-			case RZ_EFaction.MILITARY: return "\"Task Force Bastion. What's left of it. Nobody's coming for us, so we look after our own. Stay on the right side of that.\"";
-			case RZ_EFaction.BANDITS: return "\"The Red Hand. We're the ones who noticed the rules stopped. Don't look so worried. Yet.\"";
+			case RZ_EFaction.SURVIVORS: return "We're the Haven. Just people who were here when the gates closed. We feed who we can, and nobody shoots in the house.";
+			case RZ_EFaction.MILITARY: return "Task Force Bastion. What's left of it. Nobody's coming for us, so we look after our own. Stay on the right side of that.";
+			case RZ_EFaction.BANDITS: return "The Red Hand. We're the ones who noticed the rules stopped. Don't look so worried. Yet.";
 			case RZ_EFaction.INSTITUTE:
 			{
 				// After the cure the proof is out: the gates wait on the outside now
 				if (RZ_WorldFacts.Get().IsCured())
-					return "\"Halcyon. We were studying the site before the lockdown. The proof went out with the cure. Now we wait for the gates, like everyone else.\"";
+					return "Halcyon. We were studying the site before the lockdown. The proof went out with the cure. Now we wait for the gates, like everyone else.";
 
-				return "\"Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.\"";
+				return "Halcyon. We were studying the site before the lockdown. We're the only ones who can prove the Zone is clean, and nobody outside opens the gates without proof.";
 			}
 		}
 
@@ -252,30 +387,30 @@ class RZ_LeaderVoice
 		{
 			case RZ_EFaction.SURVIVORS:
 			{
-				if (other == RZ_EFaction.MILITARY) return "\"Bastion keeps the roads, when it remembers to. Follow their rules and they'll protect you. Their rules change.\"";
-				if (other == RZ_EFaction.BANDITS) return "\"The Red Hand will smile at you and count your boots. Don't trade with them unless you have to. Some of us have to.\"";
-				if (other == RZ_EFaction.INSTITUTE) return "\"The scientists say they can end this. Bring them samples from the changed ones. It's the only real hope anyone's offered.\"";
+				if (other == RZ_EFaction.MILITARY) return "Bastion keeps the roads, when it remembers to. Follow their rules and they'll protect you. Their rules change.";
+				if (other == RZ_EFaction.BANDITS) return "The Red Hand will smile at you and count your boots. Don't trade with them unless you have to. Some of us have to.";
+				if (other == RZ_EFaction.INSTITUTE) return "The scientists say they can end this. Bring them samples from the changed ones. It's the only real hope anyone's offered.";
 				break;
 			}
 			case RZ_EFaction.MILITARY:
 			{
-				if (other == RZ_EFaction.SURVIVORS) return "\"The Haven runs the safehouses. Civilians. Feed them and they'll vouch for you, which is worth more than you'd think.\"";
-				if (other == RZ_EFaction.BANDITS) return "\"Red Hand. Looters with a logo. If you deal with them, we'll know.\"";
-				if (other == RZ_EFaction.INSTITUTE) return "\"Halcyon has the lab. Command wanted it secured. Command isn't answering, so they secure it themselves.\"";
+				if (other == RZ_EFaction.SURVIVORS) return "The Haven runs the safehouses. Civilians. Feed them and they'll vouch for you, which is worth more than you'd think.";
+				if (other == RZ_EFaction.BANDITS) return "Red Hand. Looters with a logo. If you deal with them, we'll know.";
+				if (other == RZ_EFaction.INSTITUTE) return "Halcyon has the lab. Command wanted it secured. Command isn't answering, so they secure it themselves.";
 				break;
 			}
 			case RZ_EFaction.BANDITS:
 			{
-				if (other == RZ_EFaction.SURVIVORS) return "\"The Haven? Lovely people. Lots of tins. Terrible locks.\"";
-				if (other == RZ_EFaction.MILITARY) return "\"Bastion? The one crew we can't buy a name from. Stay off their roads, or pay toll on ours.\"";
-				if (other == RZ_EFaction.INSTITUTE) return "\"The eggheads pay in hope. We pay in cash. Samples sell both ways, mind.\"";
+				if (other == RZ_EFaction.SURVIVORS) return "The Haven? Lovely people. Lots of tins. Terrible locks.";
+				if (other == RZ_EFaction.MILITARY) return "Bastion? The one crew we can't buy a name from. Stay off their roads, or pay toll on ours.";
+				if (other == RZ_EFaction.INSTITUTE) return "The eggheads pay in hope. We pay in cash. Samples sell both ways, mind.";
 				break;
 			}
 			case RZ_EFaction.INSTITUTE:
 			{
-				if (other == RZ_EFaction.SURVIVORS) return "\"The Haven keeps people alive long enough to matter. Their medics are better than they have any right to be.\"";
-				if (other == RZ_EFaction.MILITARY) return "\"Bastion would like the cure in a locked crate. We would like it in people. Be careful which of us you help.\"";
-				if (other == RZ_EFaction.BANDITS) return "\"The Red Hand buys samples. Every one they buy is research we lose. I'd ask you not to. I can't stop you.\"";
+				if (other == RZ_EFaction.SURVIVORS) return "The Haven keeps people alive long enough to matter. Their medics are better than they have any right to be.";
+				if (other == RZ_EFaction.MILITARY) return "Bastion would like the cure in a locked crate. We would like it in people. Be careful which of us you help.";
+				if (other == RZ_EFaction.BANDITS) return "The Red Hand buys samples. Every one they buy is research we lose. I'd ask you not to. I can't stop you.";
 				break;
 			}
 		}
@@ -289,13 +424,13 @@ class RZ_LeaderVoice
 	protected static string HintAfterCure(RZ_EFaction speaker, RZ_EFaction other)
 	{
 		if (speaker == RZ_EFaction.SURVIVORS && other == RZ_EFaction.INSTITUTE)
-			return "\"The scientists did it. The cure's out. Now we just have to still be here when the gates open.\"";
+			return "The scientists did it. The cure's out. Now we just have to still be here when the gates open.";
 
 		if (speaker == RZ_EFaction.BANDITS && other == RZ_EFaction.INSTITUTE)
-			return "\"The cure's out. Nobody's buying samples now, not even us. The eggheads finally paid in something real.\"";
+			return "The cure's out. Nobody's buying samples now, not even us. The eggheads finally paid in something real.";
 
 		if (speaker == RZ_EFaction.INSTITUTE && other == RZ_EFaction.BANDITS)
-			return "\"The Red Hand used to buy samples. It doesn't matter now. Nothing they took can take the cure back.\"";
+			return "The Red Hand used to buy samples. It doesn't matter now. Nothing they took can take the cure back.";
 
 		// Who got the cure (the season's winner) decides which of these is true
 		if (speaker == RZ_EFaction.INSTITUTE && other == RZ_EFaction.MILITARY)
@@ -306,12 +441,12 @@ class RZ_LeaderVoice
 				winner = gm.GetSeasonWinner();
 
 			if (winner == RZ_EFaction.MILITARY)
-				return "\"Bastion has the cure in its locked crate, as it wanted. We wrote the method. They decide who gets it. We're told that's temporary.\"";
+				return "Bastion has the cure in its locked crate, as it wanted. We wrote the method. They decide who gets it. We're told that's temporary.";
 
 			if (winner == RZ_EFaction.INSTITUTE)
-				return "\"Bastion wanted the cure in a locked crate. It went out over every frequency instead. They're still deciding how they feel about that.\"";
+				return "Bastion wanted the cure in a locked crate. It went out over every frequency instead. They're still deciding how they feel about that.";
 
-			return "\"Bastion wanted the cure in a locked crate. It didn't end up in one. They're still deciding how they feel about that.\"";
+			return "Bastion wanted the cure in a locked crate. It didn't end up in one. They're still deciding how they feel about that.";
 		}
 
 		return "";
@@ -330,7 +465,7 @@ class RZ_LeaderVoice
 				return line;
 		}
 
-		return "\"Yes?\"";
+		return "Yes? What do you need?";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -338,13 +473,13 @@ class RZ_LeaderVoice
 	{
 		switch (faction)
 		{
-			case RZ_EFaction.SURVIVORS: return "\"I'm sorry. Not you. Not after what you did.\"";
-			case RZ_EFaction.MILITARY: return "\"You're on a list. Turn around.\"";
-			case RZ_EFaction.BANDITS: return "\"Oh, it's you. No. Walk.\"";
-			case RZ_EFaction.INSTITUTE: return "\"We've nothing to discuss. Please leave before the guards decide that for me.\"";
+			case RZ_EFaction.SURVIVORS: return "I'm sorry. Not you. Not after what you did.";
+			case RZ_EFaction.MILITARY: return "You're on a list. Turn around.";
+			case RZ_EFaction.BANDITS: return "Oh, it's you. No. Walk.";
+			case RZ_EFaction.INSTITUTE: return "We've nothing to discuss. Please leave before the guards decide that for me.";
 		}
 
-		return "\"No.\"";
+		return "No. We're done talking.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -352,13 +487,13 @@ class RZ_LeaderVoice
 	static string Opinion(int attitude)
 	{
 		if (attitude >= 3)
-			return "\"You're one of the good ones. Don't make me regret saying so.\"";
+			return "You're one of the good ones. Don't make me regret saying so.";
 		if (attitude >= 1)
-			return "\"I know your name. That's a start.\"";
+			return "I know your name. That's a start.";
 		if (attitude == 0)
-			return "\"I don't know you yet.\"";
+			return "I don't know you yet.";
 
-		return "\"I've heard things about you. Prove them wrong.\"";
+		return "I've heard things about you. Prove them wrong.";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -369,10 +504,10 @@ class RZ_LeaderVoice
 		{
 			switch (faction)
 			{
-				case RZ_EFaction.SURVIVORS: return "\"The council in town sends its decisions. I make the ones that keep people here fed.\"";
-				case RZ_EFaction.MILITARY: return "\"Orders come down. I follow the ones that make sense out here.\"";
-				case RZ_EFaction.BANDITS: return "\"The boss gets a cut. The boss doesn't get a say.\"";
-				case RZ_EFaction.INSTITUTE: return "\"The director has priorities. So do the people in front of me.\"";
+				case RZ_EFaction.SURVIVORS: return "The council in town sends its decisions. I make the ones that keep people here fed.";
+				case RZ_EFaction.MILITARY: return "Orders come down. I follow the ones that make sense out here.";
+				case RZ_EFaction.BANDITS: return "The boss gets a cut. The boss doesn't get a say.";
+				case RZ_EFaction.INSTITUTE: return "The director has priorities. So do the people in front of me.";
 			}
 		}
 
@@ -380,10 +515,10 @@ class RZ_LeaderVoice
 		{
 			switch (faction)
 			{
-				case RZ_EFaction.SURVIVORS: return "\"What the council doesn't know keeps us alive. I'll answer for it later.\"";
-				case RZ_EFaction.MILITARY: return "\"Command left. I'm still here. Work it out.\"";
-				case RZ_EFaction.BANDITS: return "\"The boss is getting old. Everyone can see it but the boss.\"";
-				case RZ_EFaction.INSTITUTE: return "\"The director would call some of what I do unethical. The director would be right. People are dying in the meantime.\"";
+				case RZ_EFaction.SURVIVORS: return "What the council doesn't know keeps us alive. I'll answer for it later.";
+				case RZ_EFaction.MILITARY: return "Command left. I'm still here. Work it out.";
+				case RZ_EFaction.BANDITS: return "The boss is getting old. Everyone can see it but the boss.";
+				case RZ_EFaction.INSTITUTE: return "The director would call some of what I do unethical. The director would be right. People are dying in the meantime.";
 			}
 		}
 

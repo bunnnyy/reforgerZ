@@ -419,13 +419,19 @@ def parse_file(path):
 ROLE_RE = re.compile(r"^\(([a-z][a-z ]*)\)\s+(.*)$")
 
 
+# Every say written with a (role): the text lint lets their "Role: " through (strings_inventory)
+ROLE_LINES = set()
+
+
 def role_line(text):
     """say (<role>) <text>: someone else in the scene says it, shown as 'Role: text'."""
     m = ROLE_RE.match(text)
     if not m:
         return text
     role = m.group(1)
-    return role[0].upper() + role[1:] + ": " + m.group(2)
+    line = role[0].upper() + role[1:] + ": " + m.group(2)
+    ROLE_LINES.add(line)
+    return line
 
 
 def strip_mark(node, text):

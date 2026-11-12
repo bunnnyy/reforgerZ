@@ -12,8 +12,8 @@ class RZ_Errand_DesertersWay : RZ_ErrandCard
 		m_eAnchor = RZ_EErrandAnchor.WANDERER;
 		m_iWandererRole = RZ_EWandererRole.DESERTER;
 		m_iFaction = RZ_EFaction.SURVIVORS;
-		Offer("\"There's a post on my road. They'll know my face, and the list says I'm dead. Walk the long way round with me? Meet me past it.\"");
-		Over("\"Post's gone. I'll take the road like a citizen.\"");
+		Offer("There's a post on my road. They'll know my face, and the list says I'm dead. Walk the long way round with me? Meet me past it.");
+		Over("Post's gone. I'll take the road like a citizen.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Meet him past the post";
@@ -22,7 +22,7 @@ class RZ_Errand_DesertersWay : RZ_ErrandCard
 		w.m_fRadius = 40;
 		w.m_sStep = "Go round the post through the wild and wait for him {where_place} (10 s there), then find {giver} again.";
 		w.m_iFavor = 4;
-		w.Done("\"Past it. I owe you. Don't collect too soon, I'm skint.\"");
+		w.Done("Past it. I owe you. Don't collect too soon, I'm skint.");
 
 		w = Way("report");
 		w.m_sLabel = "Turn him in at the post";
@@ -32,7 +32,7 @@ class RZ_Errand_DesertersWay : RZ_ErrandCard
 		w.m_iPayFaction = RZ_EFaction.MILITARY;
 		w.m_iFame = 2;
 		w.m_sStep = "Walk to the Bastion post {post_place} and give his name at the barrier (5 s there).";
-		w.Done("\"Name taken. He'll be on the roll by morning, struck off or not.\"");
+		w.Done("Name taken. He'll be on the roll by morning, struck off or not.");
 	}
 
 	//------------------------------------------------------------------------------------------------

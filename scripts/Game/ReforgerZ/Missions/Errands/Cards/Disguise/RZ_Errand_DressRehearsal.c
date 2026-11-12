@@ -13,8 +13,8 @@ class RZ_Errand_DressRehearsal : RZ_ErrandCard
 		m_sFamily = "crews";
 		m_eAnchor = RZ_EErrandAnchor.REDHAND_CAMP;
 		m_iFaction = RZ_EFaction.BANDITS;
-		Offer("\"The green post {where_place}. Walk up in their kit, ask the sentry when the shift changes, and walk back. If you can do that, so can we.\"");
-		Over("\"Heard it on the open channel. Somebody in borrowed green, and the whole post laughing. Leave it.\"");
+		Offer("The green post {where_place}. Walk up in their kit, ask the sentry when the shift changes, and walk back. If you can do that, so can we.");
+		Over("Heard it on the open channel. Somebody in borrowed green, and the whole post laughing. Leave it.");
 
 		RZ_ErrandWay w = Way("do");
 		w.m_sLabel = "Walk through in Bastion kit";
@@ -24,7 +24,7 @@ class RZ_Errand_DressRehearsal : RZ_ErrandCard
 		w.m_sStep = "Walk up to the Bastion post {where_place} in Bastion kit and pass their look, ask the sentry when the shift changes (10 s at the barrier), then come back to {giver}.";
 		w.m_iFavor = 10;
 		w.m_iFame = 2;
-		w.Done("\"Six and six. Thank you. We'll pick a time that isn't either.\"");
+		w.Done("Six and six. Thank you. We'll pick a time that isn't either.");
 	}
 
 	//------------------------------------------------------------------------------------------------

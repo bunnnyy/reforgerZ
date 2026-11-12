@@ -155,7 +155,7 @@ class RZ_Checks
 	{
 		RZ_Safehouses houses = gm.GetSafehouses();
 		if (houses && houses.FindNearest(pos, 60) >= 0)
-			return "\"Not here. Not under this roof.\"";
+			return "Not here. Not under this roof.";
 
 		RZ_Territory territory = gm.GetTerritory();
 		if (territory && territory.IsActive())
@@ -163,12 +163,12 @@ class RZ_Checks
 			foreach (RZ_Holding h : territory.GetHoldings())
 			{
 				if (h.m_bStronghold && RZ_Util.DistXZ(h.m_vPos, pos) <= 80)
-					return "\"Inside the wire? Try it.\"";
+					return "Inside the wire? Try it.";
 			}
 		}
 
 		if (gm.HasLab() && RZ_Util.DistXZ(gm.GetLabPosition(), pos) <= 80)
-			return "\"Inside the wire? Try it.\"";
+			return "Inside the wire? Try it.";
 
 		return "";
 	}

@@ -18,7 +18,6 @@ class RZ_DTalk
 	string m_sPrev;
 	bool m_bInNode;
 	ref array<RZ_DConv> m_aTopics = {};
-	ref array<string> m_aHubSaid = {};	// what they said at the hub, to show again
 	int m_iFavorPaid;				// this conversation (10 at most)
 	float m_fNodeAt;
 	string m_sLabel;				// the choice being landed (a promise's words)
@@ -137,6 +136,12 @@ class RZ_DialogueTrees
 		t.m_Ctx = ctx;
 		t.m_iKit = KitNow(s.m_iPlayer);
 
+		// `met` is read as it was before this conversation (a leader's first contact sets theirs
+		// during the greeting); MarkMet notes the meeting once the screen opens
+		ctx.m_iMetBefore = 0;
+		if (RZ_DialogueCond.Met(ctx))
+			ctx.m_iMetBefore = 1;
+
 		// Talking to their people undisguised: they know your face this life
 		if (RZ_Factions.IsValid(ctx.m_iFaction) && !InTheirKit(s.m_iPlayer, ctx.m_iFaction))
 			m_Memory.NoteFace(s.m_iPlayer, ctx.m_iFaction);
@@ -220,8 +225,10 @@ class RZ_DialogueTrees
 	RZ_RepSeason GetRecord() { return m_Record; }
 
 	//------------------------------------------------------------------------------------------------
-	//! A greet whose `when` holds: its lines go before the built greeting.
-	void Opening(RZ_TalkSession s, notnull array<string> lines)
+	//! A greet whose `when` holds: its lines go before the built greeting. `quiet` (the talk screen
+	//! opening on its own, nobody called you over): only its `say?` lines whose conditions hold are
+	//! said, never a plain `say`: no filler greeting (docs/DIALOGUE.md, "No filler greeting").
+	void Opening(RZ_TalkSession s, notnull array<string> lines, bool quiet = false)
 	{
 		RZ_DTalk t = s.m_Tree;
 		array<RZ_DConv> all = {};
@@ -238,12 +245,23 @@ class RZ_DialogueTrees
 
 		if (best && !best.m_aNodes.IsEmpty())
 		{
-			NoteTopic(t, best);
-			Lines(t, best.m_aNodes[0], lines);
+			int before = lines.Count();
+			LinesFor(t.m_Ctx, best.m_aNodes[0], lines, quiet);
+			if (lines.Count() > before)
+				NoteTopic(t, best);
 		}
 
 		// What's still promised to this speaker, with the play left
 		m_Memory.OpenLines(s.m_iPlayer, t.m_Ctx.m_sKey, lines);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! You've met this speaker now (this life): `met` holds from the next conversation on, for every
+	//! speaker (RZ_DialogueCond.Met).
+	void MarkMet(RZ_TalkSession s)
+	{
+		if (s && s.m_Tree && s.m_Tree.m_Ctx && !s.m_Tree.m_Ctx.m_sKey.IsEmpty())
+			m_Memory.Add(s.m_iPlayer, RZ_DialogueMemory.NOTES, s.m_Tree.m_Ctx.m_sKey + "|met");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -605,8 +623,6 @@ class RZ_DialogueTrees
 			return true;
 		}
 
-		t.m_aHubSaid.Clear();
-		t.m_aHubSaid.InsertAll(s.m_aSaid);
 		t.m_Conv = c;
 		t.m_Ctx.m_sScene = RZ_DialogueScenes.SceneKey(c, t.m_Ctx);
 		t.m_sPrev = "";
@@ -645,7 +661,7 @@ class RZ_DialogueTrees
 		string commitTo = CommitRoute(c);
 		if (!commitTo.IsEmpty())
 		{
-			string no = "\"Not here.\"";
+			string no = "Not here.";
 			if (t.m_Node.m_bConfirm && RZ_CureFinale.Get())
 				no = RZ_CureFinale.Get().CanCommit(pid, RZ_CureFinale.RouteOfWord(commitTo));
 
@@ -677,7 +693,7 @@ class RZ_DialogueTrees
 				int failedAt = m_Memory.FailedAt(pid, key);
 				if (failedAt > -100 && score <= failedAt)
 				{
-					s.m_aNew.Insert("\"You've said that already.\"");
+					s.m_aNew.Insert("You've said that already.");
 					s.m_aNew.InsertAll(s.m_aSaid);
 					return true;
 				}
@@ -703,7 +719,7 @@ class RZ_DialogueTrees
 			RZ_WorldFacts facts = m_GM.GetFacts();
 			if (facts && facts.Flag("threat." + ctx.m_sKey) > 0)
 			{
-				s.m_aNew.Insert("\"Already scared. Of someone else.\"");
+				s.m_aNew.Insert("Already scared. Of someone else.");
 				s.m_aNew.InsertAll(s.m_aSaid);
 				return true;
 			}
@@ -744,7 +760,7 @@ class RZ_DialogueTrees
 		{
 			if (LieBarred(ctx))
 			{
-				s.m_aNew.Insert("\"Not again. Not today.\"");
+				s.m_aNew.Insert("Not again. Not today.");
 				s.m_aNew.InsertAll(s.m_aSaid);
 				return true;
 			}
@@ -765,7 +781,7 @@ class RZ_DialogueTrees
 			// One claim per speaker per life: they remember who said they were one of them
 			if (m_Memory.Has(pid, RZ_DialogueMemory.NOTES, ctx.m_sKey + "|claimed"))
 			{
-				s.m_aNew.Insert("\"You told me that already. I'm still thinking about it.\"");
+				s.m_aNew.Insert("You told me that already. I'm still thinking about it.");
 				s.m_aNew.InsertAll(s.m_aSaid);
 				return true;
 			}
@@ -780,7 +796,7 @@ class RZ_DialogueTrees
 		{
 			if (t.m_Conv && t.m_Conv.m_SceneWho && !RZ_DialogueCond.Holds(ctx, t.m_Conv.m_SceneWho))
 			{
-				s.m_aNew.Insert("\"It's not your call. Not here.\"");
+				s.m_aNew.Insert("It's not your call. Not here.");
 				s.m_aNew.InsertAll(s.m_aSaid);
 				return true;
 			}
@@ -788,7 +804,7 @@ class RZ_DialogueTrees
 			RZ_WorldFacts sceneFacts = m_GM.GetFacts();
 			if (sceneFacts && sceneFacts.Flag("scene." + ctx.m_sScene) > 0)
 			{
-				s.m_aNew.Insert("\"It's been settled. You weren't here for it.\"");
+				s.m_aNew.Insert("It's been settled. You weren't here for it.");
 				s.m_aNew.InsertAll(s.m_aSaid);
 				return true;
 			}
@@ -798,7 +814,7 @@ class RZ_DialogueTrees
 			{
 				if (!scenes.StartHold(s, ctx.m_sScene, idx, result, verdict, RZ_DialogueText.Fill(ctx, c.m_sLabel)))
 				{
-					s.m_aNew.Insert("\"Give it a moment. Someone's answering already.\"");
+					s.m_aNew.Insert("Give it a moment. Someone's answering already.");
 					s.m_aNew.InsertAll(s.m_aSaid);
 					return true;
 				}
@@ -966,7 +982,7 @@ class RZ_DialogueTrees
 		if ((ctx.m_Leader && ctx.m_Leader.m_eFaction == f) || (ctx.m_bStronghold && ctx.m_iFaction == f))
 		{
 			if (me)
-				d.Caught(ctx.m_iPlayer, f, me, "\"Nice try. I know my own.\"");
+				d.Caught(ctx.m_iPlayer, f, me, "Nice try. I know my own.");
 
 			return RZ_ECheck.REFUSED;
 		}
@@ -1131,10 +1147,10 @@ class RZ_DialogueTrees
 		t.m_bInNode = false;
 		t.m_Node = null;
 		t.m_Conv = null;
+		// Back at the hub they say nothing more unless something new came of the pick: the greeting
+		// isn't repeated (docs/DIALOGUE.md, "No filler greeting")
 		if (!extra.IsEmpty())
 			s.m_aNew.InsertAll(extra);
-		else
-			s.m_aNew.InsertAll(t.m_aHubSaid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1197,8 +1213,9 @@ class RZ_DialogueTrees
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The same for any speaker as conditions see them (barks too).
-	void LinesFor(RZ_DCtx ctx, RZ_DNode node, notnull array<string> lines)
+	//! The same for any speaker as conditions see them (barks too). `onlyHeld`: only `say?` variants
+	//! whose conditions hold are said; a plain `say` is left out (a quiet greet).
+	void LinesFor(RZ_DCtx ctx, RZ_DNode node, notnull array<string> lines, bool onlyHeld = false)
 	{
 		RZ_DSay pending;
 		bool hasPending;
@@ -1220,7 +1237,7 @@ class RZ_DialogueTrees
 
 			if (hasPending)
 				SayLine(ctx, pending, lines);
-			else
+			else if (!onlyHeld)
 				SayLine(ctx, item, lines);
 
 			hasPending = false;
@@ -1489,7 +1506,7 @@ class RZ_DialogueTrees
 		if (!commitTo.IsEmpty())
 		{
 			tag = Join(tag, "[Point of no return]");
-			string why = "\"Not here.\"";
+			string why = "Not here.";
 			if (t.m_Node && t.m_Node.m_bConfirm && RZ_CureFinale.Get())
 				why = RZ_CureFinale.Get().CanCommit(ctx.m_iPlayer, RZ_CureFinale.RouteOfWord(commitTo));
 
@@ -1786,7 +1803,7 @@ class RZ_DialogueTrees
 					// A speaker a running story holds offers nothing else this turn
 					if (RZ_DialogueWorld.Claimed(ctx) && (!t.m_Conv || t.m_Conv.m_iPrio != 0))
 					{
-						s.m_aNew.Insert("\"Not now. I've got enough on.\"");
+						s.m_aNew.Insert("Not now. I've got enough on.");
 						break;
 					}
 
@@ -1863,7 +1880,7 @@ class RZ_DialogueTrees
 		int paid = m_Memory.TakeTalkFavor(s.m_iPlayer, faction, want, RZ_DialogueSettings.Get().m_iTalkFavorPerDay);
 		if (paid <= 0)
 		{
-			s.m_aNew.Insert("\"That's all I've got today.\"");
+			s.m_aNew.Insert("That's all I've got today.");
 			RZ_Log.Info(string.Format("Dialogue: budget reached %1 %2", RZ_Util.PlayerName(s.m_iPlayer), RZ_Factions.GetName(faction)));
 			return;
 		}

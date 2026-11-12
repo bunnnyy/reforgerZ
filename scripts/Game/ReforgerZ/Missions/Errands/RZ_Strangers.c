@@ -1321,7 +1321,7 @@ class RZ_Strangers
 
 		if (v.m_iStep >= 0)
 		{
-			m_GM.NotifyPlayer(playerId, "A stranger", "\"Go on, then. I'll be here.\"");
+			m_GM.NotifyPlayer(playerId, "A stranger", "Go on, then. I'll be here.");
 			return;
 		}
 
