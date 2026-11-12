@@ -448,6 +448,9 @@ class RZ_CampLife
 	protected static const float LOOKOUT_OUT = 2;			// the lookout stands this far out from the front corner
 	protected static const int MAX_SITES = 64;			// sites kept per run
 	protected static const float RINGS_REACH = 62;		// a place on rings: its edge pieces stand up to this far out
+	protected static const float WALL_CLEAR = 0.4;			// a spot people stand or lean at keeps this far off a wall (else a lean's head is in it)
+	protected static const float PIECE_WALL_CLEAR = 1.4;	// a piece from a wall: its seats stand within about 1 m of it
+	protected static const float LEAN_WALL_CLEAR = 2.3;		// a lean piece: the toll barrier's lean point is 1.9 m out
 
 	protected static ref array<IEntity> s_aPieces;			// every standing piece (IsDressing)
 
@@ -866,6 +869,10 @@ class RZ_CampLife
 				continue;
 
 			RZ_EDressAt at = PieceAt(piece);
+			float wallClear = PIECE_WALL_CLEAR;
+			if (piece.m_eUse == RZ_EDressUse.LEAN)
+				wallClear = LEAN_WALL_CLEAR;
+
 			int count = Math.Max(1, piece.m_iCount);
 			for (int n = 0; n < count; n++)
 			{
@@ -889,12 +896,17 @@ class RZ_CampLife
 				bool found = false;
 				foreach (vector c : spots)
 				{
-					if (GoodSpot(p, ground, c))
-					{
-						spot = c;
-						found = true;
-						break;
-					}
+					if (!GoodSpot(p, ground, c))
+						continue;
+
+					// Pushed back off any wall or fence too close for its seats (and checked again if moved)
+					vector pushed = OffWalls(c, wallClear);
+					if (RZ_Util.DistXZ(pushed, c) > 0.01 && !GoodSpot(p, ground, pushed))
+						continue;
+
+					spot = pushed;
+					found = true;
+					break;
 				}
 
 				if (at == RZ_EDressAt.CLOSED)
@@ -2389,7 +2401,7 @@ class RZ_CampLife
 
 		if (idx < 0)
 		{
-			Loiter(w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
+			Loiter(p, w, group, RZ_Util.RandomPointInRing(p.m_vHome, 4, 10));
 			return;
 		}
 
@@ -2410,18 +2422,18 @@ class RZ_CampLife
 			return;
 		}
 
-		Loiter(w, group, RZ_Util.RandomPointInRing(piece.m_vPos, 1.5, 3));
+		Loiter(p, w, group, RZ_Util.RandomPointInRing(piece.m_vPos, 1.5, 3));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Stand about at a spot: the loiter waypoint, else a plain move there.
-	protected void Loiter(RZ_CampWorker w, IEntity group, vector at)
+	//! Stand about at a spot (kept off the walls): the loiter waypoint, else a plain move there.
+	protected void Loiter(RZ_CampPlace p, RZ_CampWorker w, IEntity group, vector at)
 	{
 		ResourceName prefab = m_Settings.m_sLoiterWaypoint;
 		if (prefab.IsEmpty())
 			prefab = m_GM.GetSpawner().GetMoveWaypointPrefab();
 
-		IEntity wp = RZ_Util.AddGroupWaypoint(group, at, prefab, 4); // VERIFY: a loiter (timed defend) waypoint with a 4 m radius uses only the smart actions within it, and holds the group there
+		IEntity wp = RZ_Util.AddGroupWaypoint(group, StandClear(p, at), prefab, 4); // VERIFY: a loiter (timed defend) waypoint with a 4 m radius uses only the smart actions within it, and holds the group there
 		if (wp)
 			w.m_aWaypoints.Insert(wp);
 	}
@@ -2432,6 +2444,94 @@ class RZ_CampLife
 		IEntity wp = RZ_Util.AddGroupWaypoint(group, at, m_GM.GetSpawner().GetMoveWaypointPrefab(), 3);
 		if (wp)
 			w.m_aWaypoints.Insert(wp);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot someone stands at (a loiter, a lookout), out of the place's building and WALL_CLEAR off
+	//! every wall, so a lean there keeps its head out of the wall.
+	protected vector StandClear(RZ_CampPlace p, vector at)
+	{
+		vector spot = at;
+		if (p.m_Site)
+			spot = OutOfBox(p.m_Site, spot, WALL_CLEAR);
+
+		return OffWalls(spot, WALL_CLEAR);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot inside the building's box (grown by `margin`) moves out through its nearest side.
+	protected static vector OutOfBox(RZ_CampSite site, vector at, float margin)
+	{
+		vector d = at - site.m_vOrigin;
+		vector local = Vector(vector.Dot(d, site.m_vRight), vector.Dot(d, site.m_vUp), vector.Dot(d, site.m_vFwd));
+		float loX = site.m_vMins[0] - margin;
+		float hiX = site.m_vMaxs[0] + margin;
+		float loZ = site.m_vMins[2] - margin;
+		float hiZ = site.m_vMaxs[2] + margin;
+		if (local[0] <= loX || local[0] >= hiX || local[2] <= loZ || local[2] >= hiZ)
+			return at;
+
+		// The nearest side, and just past it
+		float toLoX = local[0] - loX;
+		float toHiX = hiX - local[0];
+		float toLoZ = local[2] - loZ;
+		float toHiZ = hiZ - local[2];
+		float least = Math.Min(Math.Min(toLoX, toHiX), Math.Min(toLoZ, toHiZ));
+		if (least == toLoX)
+			local[0] = loX - 0.05;
+		else if (least == toHiX)
+			local[0] = hiX + 0.05;
+		else if (least == toLoZ)
+			local[2] = loZ - 0.05;
+		else
+			local[2] = hiZ + 0.05;
+
+		return RZ_Util.GroundPos(LocalToWorld(site, local));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot pushed back from any wall (a building's, a garden wall, a fence) closer than `clear`:
+	//! flat traces eight ways at waist and head height, twice (for a corner).
+	protected static vector OffWalls(vector at, float clear)
+	{
+		vector spot = RZ_Util.GroundPos(at);
+		for (int pass = 0; pass < 2; pass++)
+		{
+			vector push = vector.Zero;
+			for (int k = 0; k < 8; k++)
+			{
+				float rad = k * 45 * Math.DEG2RAD;
+				vector dir = Vector(Math.Sin(rad), 0, Math.Cos(rad));
+				float hitAt = Math.Min(WallDistance(spot, dir, 1.0, clear), WallDistance(spot, dir, 1.6, clear));
+				if (hitAt < clear)
+					push = push - dir * (clear - hitAt);
+			}
+
+			float pushLen = push.Length();
+			if (pushLen < 0.01)
+				break;
+
+			if (pushLen > clear)
+				push = push * (clear / pushLen);
+
+			spot = RZ_Util.GroundPos(spot + push);
+		}
+
+		return spot;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How far a flat trace from `spot` (at `height`) goes along `dir` before it meets a wall, up to
+	//! `reach`. Characters don't count.
+	protected static float WallDistance(vector spot, vector dir, float height, float reach)
+	{
+		TraceParam param = new TraceParam();
+		param.Start = spot + Vector(0, height, 0);
+		param.End = param.Start + dir * reach;
+		param.LayerMask = EPhysicsLayerPresets.Projectile;
+		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		float frac = ChimeraCharacter.TraceMoveWithoutCharacters(GetGame().GetWorld(), param); // VERIFY: a flat trace this short at waist and head height stops on a building's wall, a garden wall and a fence, and a spawned camp piece too
+		return Math.Clamp(frac, 0, 1) * reach;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2466,11 +2566,11 @@ class RZ_CampLife
 		ResourceName prefab = m_Settings.m_sObservationWaypoint;
 		if (prefab.IsEmpty())
 		{
-			Loiter(w, group, at);
+			Loiter(p, w, group, at);
 			return;
 		}
 
-		IEntity wp = RZ_Util.AddGroupWaypoint(group, at, prefab, 3);
+		IEntity wp = RZ_Util.AddGroupWaypoint(group, StandClear(p, at), prefab, 3);
 		if (wp)
 			w.m_aWaypoints.Insert(wp);
 	}
@@ -2551,7 +2651,7 @@ class RZ_CampLife
 			}
 		}
 
-		Loiter(w, group, RZ_Util.RandomPointInRing(at, 2, 4));
+		Loiter(p, w, group, RZ_Util.RandomPointInRing(at, 2, 4));
 	}
 
 	//------------------------------------------------------------------------------------------------

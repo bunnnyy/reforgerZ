@@ -749,8 +749,11 @@ distance, then roads. Road posts don't (they stand beside their barrier).
   at least 6 m from a road's centre line, outside every building's footprint (2 m margin), 4 m
   from a quartermaster or the medic, 6 m from a leader's seat and 5.5 m from another piece, its
   own place's or any other system's scenery (the rules are one placer,
-  `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). A piece with no good
-  spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
+  `World/Traces/RZ_DressPlacer.c`, which Traces' scenes share). Then the spot is **pushed back
+  off any wall**, a building's, a garden wall or a fence: flat traces eight ways at waist and head
+  height, and the piece moves away until it stands 1.4 m clear (2.3 m for a lean piece: the toll
+  barrier's lean point is 1.9 m out), so its seats and lean points keep 0.4 m off the wall. A
+  pushed spot is checked again. A piece with no good spot (ten tries) is left out. A place within 60 m of one already dressed (the Haven's
   safehouse at its own stronghold) isn't dressed twice.
 - **Nothing to abuse.** `RZ_DressingGuard` checks every piece and its children as it spawns and
   deletes any part with an arsenal, any inventory storage, a pick-up item, a support station
@@ -788,7 +791,9 @@ nearest players** (Live places); elsewhere they stand.
 A piece's smart actions are found by tag (`RZ_Sit`, `RZ_Work`, `RZ_Watch`, `RZ_Gather`, `RZ_Lean`,
 `RZ_Cook`, `RZ_Wash`, `RZ_Chop`) and seats are counted, so two people never take the same chair.
 A chore with no piece of its own (no cook pot in the kit) falls back to a seat, a work or a lean
-point. Without a free seat, the smart-action waypoint or the piece, they loiter beside it. A lone character (an occupant, a
+point. Without a free seat, the smart-action waypoint or the piece, they loiter beside it. Every
+spot someone loiters or keeps watch at is kept out of the place's building and **0.4 m off every
+wall** (traced as the pieces are), so a vanilla lean there doesn't put a head in the wall. A lone character (an occupant, a
 single guard) is put in an empty AI group of its own faction so it can take waypoints; without
 the group prefab it stands.
 
