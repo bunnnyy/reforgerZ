@@ -1,0 +1,280 @@
+# Named people at holdings, the hub (docs/DIALOGUE.md, "Hubs: work comes out of talk"): their errand
+# ("Anything need doing?", slot 1) comes out of their own work, and "Ask how things are" (slot 0) out
+# of what's going round. Each speaks for their faction and their job; persona:1-3 keeps two of one
+# job apart. Some of what's going round is wrong, and somebody else knows it.
+
+# ------------------------------------------------------------------------------------ The Haven
+conv named.haven.work
+for named:haven
+when !exiled & !hunted:haven
+topic "Ask what the day's been like."
+prio ask
+voice haven
+
+node start
+  say? role:farmer & rain :: "Rain. The beans like it. The fence posts don't. Neither do I, much."
+  say? role:farmer :: "Turned a row by hand. The tractor wants fuel and the fuel wants a truck that wants a road."
+  say? role:nurse & persona:1 :: "Two fevers and a cut that's just a cut. I checked it three times. It's just a cut."
+  say? role:nurse :: "Boiled the bandages again. They're more boil than bandage now."
+  say? role:cook :: "Soup. Then soup. Someone asked for bread and I laughed until I had to sit down."
+  say? role:lookout :: "Long. Nothing moved. Nothing moving is the best day and the most tiring."
+  say "Long. They're all long now."
+  > @what "What would make it shorter?" -> ask
+  > @nurse "Who are you most worried about?" -> worried   if role:nurse
+  > @how "How are things here, generally?" -> hub   do call:slot:0
+  > @no "I'll let you get on." -> hub
+
+node worried
+  say "The quiet one by the window. Hasn't eaten in two days. Says she isn't hungry. Nobody's not hungry."
+  > @help "Is there anything I can do?" -> ask
+  > @back1 "Something else." -> hub
+
+node ask
+  say? persona:2 :: "Honestly? Another pair of hands. Ask me properly and I'll see what's true today."
+  say "Something always needs doing. Ask, and I'll say if it's real."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @later "Later, then." -> hub
+
+conv named.haven.word
+for named:haven
+when !exiled & !hunted:haven
+topic "Ask what's going round."
+prio world
+voice haven
+
+bind hungry = news:hungry
+bind lost = news:lost_by(bastion)
+bind took = news:taken
+bind who = news:taken_by
+
+node start
+  jump news:hungry -> hungry
+  jump news:lost_by(bastion) -> withdrew
+  jump news:taken -> taken
+  say? epilogue :: "That it's ending. People say it at the door like the weather."
+  say? need:food :: "That supper's thin everywhere, not just here. That helps, oddly."
+  say "Nothing worth repeating. Which never stops anyone."
+  > @me "What do they say about me?" -> me
+  > @how "And here? How are things?" -> hub   do call:slot:0
+  > @back0 "Something else." -> hub
+
+node hungry
+  say "That {bind:hungry} is on half portions. The children eat first there too. That part never changes."
+  > @how1 "And here?" -> hub   do call:slot:0
+  > @back1 "Something else." -> hub
+
+node withdrew
+  say "That Bastion lost {bind:lost}. Lost it, mind. A man came through with a burned hand who was there." ~truth:gossip.withdrew@lost
+  say "Bastion won't say it like that. They'll say something with a lot of long words."
+  > @how2 "And here?" -> hub   do call:slot:0
+  > @back2 "Something else." -> hub
+
+node taken
+  say "That {bind:who} has {bind:took} now. The flag changed. The families didn't."
+  > @how3 "And here?" -> hub   do call:slot:0
+  > @back3 "Something else." -> hub
+
+node me
+  jump kit:other -> me_colours
+  say? best:haven :: "That you {best}. They say it like they were there. Half of them weren't."
+  say? tier:haven>=known :: "That you're all right. That's high praise here. We're sparing with praise. It's cheaper."
+  say "Nothing. You're a coat and a pair of boots so far. Give them something."
+  > @back4 "Something else." -> hub
+
+node me_colours
+  say "That you're wearing someone else's coat. Polite people asked whose. Less polite people guessed."
+  > @back5 "Something else." -> hub
+
+# ------------------------------------------------------------------------------------ Bastion
+conv named.bastion.work
+for named:bastion
+when !hunted:bastion
+topic "Ask how the shift's going."
+prio ask
+voice bastion
+
+node start
+  say? role:sentry & night :: "Night shift. Four hours of looking at a road that looks back."
+  say? role:sentry :: "Quiet. Quiet is logged as quiet. Loud is logged as loud. I'm a very simple instrument."
+  say? role:radio_operator :: "Called Command at oh-six-hundred. Static. Logged the static. It's a very consistent static."
+  say? role:mechanic :: "Two vehicles. One runs. The other is a source of parts and comfort."
+  say? role:medic & persona:3 :: "Three sick, one hurt, one pretending to be sick to get out of the latrine rota."
+  say? role:medic :: "Quiet in the aid post. Quiet's good. I'm not used to good."
+  say "Same as yesterday."
+  > @what "Anything that'd make it easier?" -> ask
+  > @command "Does anyone answer?" -> command   if role:radio_operator
+  > @how "How are things here?" -> hub   do call:slot:0
+  > @no "Carry on." -> hub
+
+node command
+  say "No. But I keep calling. If I stop, it's true."
+  > @help "Is there anything I can do?" -> ask
+  > @back1 "Something else." -> hub
+
+node ask
+  say "There's always tasking. Ask properly. I'll tell you if it's live."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @later "Later, then." -> hub
+
+# A sentry's patrol report: the patrol saw nothing in a town that's thick with them (a lie by leaving
+# out). Walk in and see (watch), then call it out.
+conv named.bastion.word
+for named:bastion
+when !hunted:bastion
+topic "Ask what the patrol reported."
+prio world
+voice bastion
+
+bind thick = town:thick_within(2500)
+bind lost = news:lost_by(redhand)
+bind truck = news:truck
+
+node start
+  jump news:lost_by(redhand) -> sold
+  jump news:truck -> truck
+  jump bound:thick -> cleared
+  say? edge :: "Drones on their pattern. Loudspeaker said the usual. Nobody crossed. Nobody's crossed since Day three."
+  say "Patrol out and back. Nothing to report."
+  > @how "How are things here?" -> hub   do call:slot:0
+  > @back0 "Something else." -> hub
+
+node cleared
+  say "Patrol went through {bind:thick} this morning. Patrol saw nothing." ~lie:gossip.cleared@thick
+  do watch:gossip.cleared@thick:60
+  > @catch "{bind:thick} is thick with them." -> caught   callout gossip.cleared@thick
+  > @how1 "And here?" -> hub   do call:slot:0
+  > @back1 "Something else." -> hub
+
+node caught
+  say "Correct. The patrol saw nothing because the patrol didn't go in. That's not in the report."
+  say "Now you know why."
+  > @how2 "And here?" -> hub   do call:slot:0
+  > @back2 "Something else." -> hub
+
+node sold
+  say "The Red Hand lost {bind:lost}. They'll tell you they sold it. They didn't sell anything. They ran." ~truth:gossip.sold@lost
+  > @how3 "And here?" -> hub   do call:slot:0
+  > @back3 "Something else." -> hub
+
+node truck
+  say "A truck didn't arrive. {bind:truck}. The crew's on the list of people we look for."
+  > @how4 "And here?" -> hub   do call:slot:0
+  > @back4 "Something else." -> hub
+
+# ------------------------------------------------------------------------------------ The Red Hand
+conv named.redhand.work
+for named:redhand
+when !hunted:redhand
+topic "Ask how business is."
+prio ask
+voice redhand
+
+node start
+  say? role:toll_man :: "Business is people. People are slow today. Slow people pay the same, eventually."
+  say? role:lookout & persona:1 :: "Business is watching. I'm very good at it. I watched a crow for an hour. The crow lost."
+  say? role:lookout :: "Watching the road. The road's watching back. We've an understanding."
+  say? role:mechanic :: "Three trucks, two engines, one of me. The maths is against me, and I love maths."
+  say? role:cook :: "Business is beans. Beans are booming."
+  say "Business is business."
+  > @what "Anything I can do for it?" -> ask
+  > @how "How are things round here?" -> hub   do call:slot:0
+  > @no "Good luck with it." -> hub
+
+node ask
+  say "Might be. Ask me nicely and I'll tell you if it's real money."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @later "Later, then." -> hub
+
+# A lookout's tip: a thick town called quiet (a joke lie, to see if you'll go). Walk in and see.
+conv named.redhand.word
+for named:redhand
+when !hunted:redhand
+topic "Ask what the lookouts saw."
+prio world
+voice redhand
+
+bind thick = town:thick_within(2500)
+bind lost = news:lost_by(bastion)
+bind burned = news:burned
+
+node start
+  jump news:lost_by(bastion) -> withdrew
+  jump news:burned -> burned
+  jump bound:thick -> quiet
+  say? holds:redhand>=4 :: "That we've got more road than ever. More road, more toll, more lookouts saying 'road'."
+  say "Nothing. A dog. Bastion pretending not to watch us watching them."
+  > @how "How are things round here?" -> hub   do call:slot:0
+  > @back0 "Something else." -> hub
+
+node quiet
+  say "{bind:thick}? Quiet. Dead quiet. Not that kind of dead. Go on, have a look." ~lie:gossip.quiet@thick
+  do watch:gossip.quiet@thick:60
+  > @catch "{bind:thick} is full of them." -> caught   callout gossip.quiet@thick
+  > @how1 "And here?" -> hub   do call:slot:0
+  > @back1 "Something else." -> hub
+
+node caught
+  say "Ha. You went. I owe someone a tin. Fine: it's thick. Go round. That one's free."
+  > @how2 "And here?" -> hub   do call:slot:0
+  > @back2 "Something else." -> hub
+
+node withdrew
+  say "Bastion lost {bind:lost}. Watched them go. Withdrew, they'll call it. Withdrew at a run." ~truth:gossip.withdrew@lost
+  > @how3 "And here?" -> hub   do call:slot:0
+  > @back3 "Something else." -> hub
+
+node burned
+  say "{bind:burned} burned. Not us. You can't toll ash. Whoever says it was us can pay for saying it." ~truth:gossip.burned@burned
+  > @how4 "And here?" -> hub   do call:slot:0
+  > @back4 "Something else." -> hub
+
+# ------------------------------------------------------------------------------------ Halcyon
+conv named.halcyon.work
+for named:halcyon
+when !hunted:halcyon
+topic "Ask what they're working on."
+prio ask
+voice halcyon
+
+node start
+  say? role:lab_assistant :: "Labelling. Four hundred tubes. If one label is wrong, a week is wrong."
+  say? role:guard & persona:2 :: "Standing. I stand very well. Eight hours, two doors, one of which doesn't lock."
+  say? role:guard :: "Watching the door. The door is the most important thing in the lab. Nobody believes me."
+  say? role:technician :: "The generator. It runs at seventy percent. Below sixty, the cultures die. I check it every hour."
+  say "Work. There is a great deal of it."
+  > @what "Anything I can help with?" -> ask
+  > @how "How are things here?" -> hub   do call:slot:0
+  > @no "I'll leave you to it." -> hub
+
+node ask
+  say "Possibly. Ask, and I'll check if it's current."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @later "Later, then." -> hub
+
+conv named.halcyon.word
+for named:halcyon
+when !hunted:halcyon
+topic "Ask what's on the board today."
+prio world
+voice halcyon
+
+bind over = news:overrun
+bind dead = news:leader_dead
+
+node start
+  jump news:overrun -> overrun
+  jump news:leader_dead -> dead
+  say? cure>=75 :: "The cure figure. {cure_percent} percent. Someone underlines it every morning. The underline is getting thicker."
+  say "The board says {cure_percent} percent. It said that yesterday. Yesterday it said it with less confidence."
+  > @how "How are things here?" -> hub   do call:slot:0
+  > @back0 "Something else." -> hub
+
+node overrun
+  say "{bind:over}. Infection index above eighty. We'd like samples from there. Nobody would like to fetch them."
+  > @how1 "And here?" -> hub   do call:slot:0
+  > @back1 "Something else." -> hub
+
+node dead
+  say "{bind:dead}. Deceased. Someone wrote it under the cure figure, small. The two numbers don't go together."
+  > @how2 "And here?" -> hub   do call:slot:0
+  > @back2 "Something else." -> hub

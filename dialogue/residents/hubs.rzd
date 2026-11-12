@@ -1,0 +1,228 @@
+# Safehouse people, the hub (docs/DIALOGUE.md, "Hubs: work comes out of talk"). An occupant's
+# "Ask how things are" (slot 0) comes out of what people are saying; a named resident's errand
+# ("Anything need doing?", slot 1) out of their own work, and the house's news out of their gossip.
+# Voice: the Haven's. Haven gossip is about food, never blame; the Haven lies with kindness.
+
+conv occupant.house.word
+for occupant
+topic "Ask what people are saying."
+prio world
+voice haven
+
+bind horde = news:horde
+bind gone = news:emptied
+bind saved = news:rescue
+bind dead = news:death
+bind lost = news:lost_by(redhand)
+
+node start
+  jump news:emptied -> emptied
+  jump news:rescue -> rescue
+  jump news:horde -> horde
+  jump news:death -> death
+  jump news:lost_by(redhand) -> sold
+  say? persona:1 & house:short :: "That the soup's thinner. Nobody says it. Everybody says it with their spoons."
+  say? persona:2 & night :: "At this hour? Who snores. Who's courting. Who's crying, and we pretend we didn't hear."
+  say? persona:3 & rain :: "That the roof's going in the east room. The bucket's the most popular person here."
+  say? epilogue :: "That we're all leaving. Nobody says where. People are packing the bear off the door."
+  say "Nothing much. Who's coughing, who borrowed whose boots, who's sweet on the lookout."
+  > @house "And the house? Honestly?" -> hub   do call:slot:0
+  > @back0 "Something else." -> hub
+
+node emptied
+  say "That the house in {bind:gone} is empty. They walked here, some of them. We squeezed."
+  say? persona:2 :: "Don't ask about the ones who didn't walk here. Nobody here asks."
+  say "We'll paint their bear on our door. That's what you do."
+  > @house1 "How's this house holding up?" -> hub   do call:slot:0
+  > @back1 "Something else." -> hub
+
+node rescue
+  say "That somebody brought people in alive at {bind:saved}. Alive. We had a little cheer at supper."
+  say? helped :: "Somebody said it was you. Was it? Don't tell me. I like not knowing."
+  > @house2 "And this house?" -> hub   do call:slot:0
+  > @back2 "Something else." -> hub
+
+node horde
+  say "A crowd of them went through near {bind:horde}. We kept the lights off and the children quiet."
+  say "Quiet's the rule now. You learn to whisper with a whole body."
+  > @house3 "How's the house holding up?" -> hub   do call:slot:0
+  > @back3 "Something else." -> hub
+
+node death
+  say "Somebody died near {bind:dead}. One of you. The travelling ones. We'll light a candle anyway."
+  > @house4 "How's this house, then?" -> hub   do call:slot:0
+  > @back4 "Something else." -> hub
+
+node sold
+  say "The Red Hand lost {bind:lost}. Not sold. Lost. They'll say sold. Somebody's cousin was there." ~truth:gossip.sold@lost
+  say "Whoever holds it now, the families there still need feeding."
+  > @house5 "And this house?" -> hub   do call:slot:0
+  > @back5 "Something else." -> hub
+
+# The cook: food is the first thing a house says, and the last.
+conv resident.cook.supper
+for resident:cook
+when !exiled
+topic "Ask what's for supper."
+prio ask
+voice haven
+
+bind h = house:nearest
+
+node start
+  jump house:short -> short
+  say? persona:1 :: "Potatoes. Yesterday it was potatoes too. Tomorrow I'm going to call them something else."
+  say? persona:2 :: "Whatever's in the tin with no label. It's a game. Nobody wins, but everybody eats."
+  say? persona:3 :: "Soup. It's always soup. Soup is just patience with a spoon in it."
+  say "Supper, if nothing goes wrong. Things go wrong."
+  > @stores "How are the stores?" -> stores
+  > @help "Is there anything I can do?" -> ask
+  > @house "How's the house generally?" -> hub   do call:slot:0
+  > @no "Smells good. I'll leave you to it." -> hub
+
+node short
+  say "Half portions. Whatever the storekeeper tells you. I can count the bowls and I can count the people." ~truth:house.stores@h
+  say? persona:3 :: "I've started calling the soup tea. The children believe me. The old ones don't argue."
+  > @help2 "Then let me help." -> ask
+  > @house2 "How's the house otherwise?" -> hub   do call:slot:0
+  > @back2 "Something else." -> hub
+
+node stores
+  say? house:fed :: "Full, for once. Somebody brought tins. I'm hiding two for a bad week. Don't tell."
+  say "Enough for today. Today is the only day I plan for now."
+  > @help3 "Anything I can do to help?" -> ask
+  > @back3 "Something else." -> hub
+
+node ask
+  say? persona:1 :: "There might be. Ask me plainly. I'm better with plain."
+  say "Always something. Ask, and I'll tell you if it's true today."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @house9 "How's the house, really?" -> hub   do call:slot:0
+  > @later "Later, then." -> hub
+
+# The lookout: on the roof, sees the roads, says what moves.
+conv resident.lookout.roof
+for resident:lookout
+when !exiled
+topic "Ask what they've seen from the roof."
+prio ask
+voice haven
+
+bind horde = news:horde
+bind fire = news:burned
+bind thick = town:thick_within(2500)
+
+node start
+  jump news:horde -> horde
+  jump news:burned -> fire
+  say? persona:1 & night :: "Torches on the north road. Two. Then one. Then none. I wrote it down."
+  say? persona:2 & fog :: "Fog. I've seen fog. Fog has seen me. We're even."
+  say? persona:3 & bound:thick :: "{bind:thick} is thick with them. You can see them standing in the street, waiting for nothing."
+  say "Roads. Birds. Somebody's washing on a line two farms over, which means somebody's still there."
+  > @see "Anything coming this way?" -> coming
+  > @help "Need a hand with anything?" -> ask
+  > @house "How's the house holding up?" -> hub   do call:slot:0
+  > @no "Keep watching." -> hub
+
+node horde
+  say "A crowd of them near {bind:horde}. Moving with the noise. Somebody was hammering. Somebody always is."
+  say "They went past. Mostly. I counted the ones that didn't."
+  > @see1 "Are they coming here?" -> coming
+  > @help1 "Can I help?" -> ask
+  > @back1 "Something else." -> hub
+
+node fire
+  say "Smoke from {bind:fire}. Black, then grey, then nothing. Nobody put it out."
+  say "I don't know who lit it. I only know it went out by itself."
+  > @help2 "Need a hand with anything?" -> ask
+  > @back2 "Something else." -> hub
+
+node coming
+  say? town:infested :: "They're already here, in the streets round us. That's why we whisper."
+  say "Not yet. Yet is my whole job. I sit up here and wait for yet."
+  > @help3 "Then let me help before yet." -> ask
+  > @back3 "Something else." -> hub
+
+node ask
+  say "Could be something. Ask me straight and I'll tell you if it's true now."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @house9 "How's the house, really?" -> hub   do call:slot:0
+  > @later "Later, then." -> hub
+
+# The storekeeper: keeps the count, and keeps it kindly. Lies about it, kindly, when it's short:
+# the cook tells the truth (~truth:house.stores@h).
+conv resident.storekeeper.count
+for resident:storekeeper
+when !exiled
+topic "Ask what's running low."
+prio ask
+voice haven
+
+bind h = house:nearest
+
+node start
+  jump house:short -> short
+  say? persona:1 :: "Thread. Nobody thinks of thread until a coat comes apart in the rain."
+  say? persona:2 :: "Batteries. We have torches and no batteries, which is a very fancy way of having sticks."
+  say? persona:3 :: "Salt. Of all things. You can live without it. You don't want to."
+  say "Everything, a little. Nothing, all the way. That's a good week."
+  > @help "Can I help with any of it?" -> ask
+  > @house "How's the house otherwise?" -> hub   do call:slot:0
+  > @no "I'll keep an eye out." -> hub
+
+node short
+  say "We're fine. Really. Don't you worry about us. There's plenty for a few days yet." ~lie:house.stores@h
+  > @catch "The cook says it's half portions." -> caught   callout house.stores@h
+  > @help2 "Can I help anyway?" -> ask
+  > @back2 "Something else." -> hub
+
+node caught
+  say "...The cook talks too much. Yes. Half portions. We didn't want to worry you."
+  say "You've got enough to carry without our soup."
+  > @help3 "Then let me help with it." -> ask
+  > @back3 "Something else." -> hub
+
+node ask
+  say "If it's true today, I'll tell you. Ask me."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @house9 "How's the house, really?" -> hub   do call:slot:0
+  > @later "Later, then." -> hub
+
+# The clerk: keeps the house's book, the names in and out.
+conv resident.clerk.names
+for resident:clerk
+when !exiled
+topic "Ask whose names are new."
+prio ask
+voice haven
+
+bind gone = news:emptied
+
+node start
+  jump news:emptied -> emptied
+  say? persona:1 :: "Two this week. A man with a dog and a dog with a man. I wrote them both down."
+  say? persona:2 :: "None. That's worse than it sounds. People stop coming when there's nowhere to come from."
+  say? persona:3 :: "A girl who won't say her surname. I wrote 'won't say'. It's a surname now."
+  say "Some in, some out. The book's never the same two days running."
+  > @out "And whose went out?" -> out
+  > @help "Is there anything I can do?" -> ask
+  > @house "How's the house holding up?" -> hub   do call:slot:0
+  > @no "Thanks. I'll go." -> hub
+
+node emptied
+  say "The people from {bind:gone}. All of them. Their names came with them on a sheet of wallpaper."
+  say "I've copied them in. Neatly. It felt important that it was neat."
+  > @help1 "Can I help them settle?" -> ask
+  > @back1 "Something else." -> hub
+
+node out
+  say? house:died :: "One. We'll read it at supper. I put a line through it, gently. You can still read it under the line."
+  say "Moved on. That's what we write. Sometimes it's true."
+  > @help2 "Anything I can do?" -> ask
+  > @back2 "Something else." -> hub
+
+node ask
+  say "There might be. Ask me plainly."
+  > @take "Anything need doing?" -> hub   do call:slot:1
+  > @house9 "How's the house, really?" -> hub   do call:slot:0
+  > @later "Later, then." -> hub
