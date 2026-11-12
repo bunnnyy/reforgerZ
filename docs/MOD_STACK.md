@@ -77,15 +77,15 @@ Workshop's.
 
 | Mod | Workshop ID | MB | For | Note |
 |---|---|---|---|---|
-| SBBG - Wrecks | `6529635700E0B228` | 3.0 | all | Vanilla wrecks made placeable (UAZ-452, Ural, M923, BTR, helicopters): blocked roads, the column, ambush sites. Current game version, no dependencies |
-| Lamas vanilla plus gear pack | `64FD478E9982027A` | 4.2 | Bastion | Worn, era-correct US kit: M65, raincoat, overcoat, medic helmet. Old build: test it |
+| SBBG - Wrecks | `6529635700E0B228` | 3.0 | all | Vanilla wrecks made placeable (UAZ-469 and UAZ-452, Ural and M923 cargo, an M997 ambulance, a BRDM, helicopter parts): blocked roads, the column, ambush sites. Current game version, no dependencies. Downloaded and looked at in Workbench on 2026-11-12: loads cleanly |
+| Lamas vanilla plus gear pack | `64FD478E9982027A` | 4.2 | Bastion | Worn, era-correct US kit: dark BDUs and M65 trousers, a night-camo jacket, a raincoat, patrol and woodland caps, a UN-blue PASGT helmet. Downloaded and looked at in Workbench on 2026-11-12: loads and dresses a character |
 | BanditGear | `66B523AD189F3233` | 101.9 | Red Hand | Dirty scavenged clothing, balaclavas, gloves, Molotovs, spray-painted cars. Already downloaded; maintained |
 | BasicHazmatSuit | `68AB4B626C8AB069` | 49.3 | Halcyon | Hooded hazmat suit with a gas mask in three colours. Already downloaded; APL-ND |
 | MedicalAccessories | `66052DD2B655BF72` | 12.0 | Halcyon, Haven | Medical face mask and nitrile gloves. Already downloaded |
 | Clothing_pack_v2 | `666D2C5F02F88A56` | 68.1 | Haven | Farmers, carpenters, overalls, a mechanic's uniform, prisoner uniforms (the convicts). Already downloaded; not updated for a year |
 | Domins Civilian Expansion | `630B3E95B52F31DF` | 63.1 | Haven, Halcyon | Paramedic and fireman uniforms, gas mask, oxygen tank. Needs Functional Knives; old build |
 | Timmmmmbs Garbage Composition | `62E8BD33444EA5A4` | 4.7 | Red Hand, Haven | Junk and scrap barricades. Needs IH_Better_GM_Props; old |
-| Placeable Posters | `62B40182B1190ACF` | 12.7 | all | Posters with your own textures: quarantine notices, missing posters, the red hand, the bear |
+| Placeable Posters | `62B40182B1190ACF` | 12.7 | all | Posters with your own textures: quarantine notices, missing posters, the red hand, the bear. Downloaded 2026-11-12: the posters are built on the demolition charge and placed like one (on a wall), not free-standing props, so they need a test in play |
 | Borkeds Props | `670895D328DC3AA9` | 141.5 | Halcyon | 1980s computers, tapes and a reel-to-reel recorder for the lab. CC BY-NC: credit, no commercial use |
 | SecurityFences | `6AB0C0CC87D6EAB1` | 20.2 | Bastion, Halcyon | Mesh fence, razor coil, gates. Already downloaded; its keypad gates are a system, and its licence forbids changes: ask the author |
 | MoreGMProps | `66A920DA264A9F98` | 122.7 | Bastion | Hesco and T-walls, burn piles; also turn-ins to ignore. Already downloaded |
