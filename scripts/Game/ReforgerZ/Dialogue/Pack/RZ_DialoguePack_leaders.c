@@ -17,18 +17,19 @@ class RZ_DialoguePack_leaders
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
-		db.Conv("bastion.leader.brief_lie", "leader:bastion", "knows:brieflie.bastion", "Report what the brief left out.", 3, 0, "bastion");
+		db.Conv("bastion.leader.brief_lie", "leader:bastion", "knows:brieflie.bastion", "That briefing wasn't straight.", 3, 0, "bastion");
 		db.Node("start");
-		db.Say("", "\"A brief that wasn't straight. Put it in a report. Short.\"");
-		db.Choice("tell", "\"Report it.\"", "told", "", "", "", "", "", "", "", "");
-		db.Choice("keep", "\"Leave it out of the record.\"", "kept", "", "", "", "", "", "", "", "");
+		db.Say("", "A briefing that wasn't straight. If it came off one of our posts, it goes in a report, and the report goes up to the stronghold.");
+		db.Say("", "It'll cost somebody: that post's word is worth less after. Keep it short and keep it accurate.");
+		db.Choice("tell", "Here's what it left out.", "told", "", "", "", "", "", "", "", "");
+		db.Choice("keep", "Leave it out of the record.", "kept", "", "", "", "", "", "", "", "");
 		db.Node("told");
-		db.Say("", "\"Received. It goes up the chain, such as the chain is.\"");
+		db.Say("", "Received. It goes up the chain, such as the chain is. The commander concerned will be asked about it at the roll.");
 		db.Do("call:brief_public");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Good. Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("kept");
-		db.Say("", "\"Not reported, then. I didn't hear it either.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Not reported, then. I didn't hear it either. That's how it goes in the log: it doesn't.");
+		db.Choice("back1", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("bastion.leader.command", "stronghold:bastion,seat:bastion/outpost_lead", "", "Does Command ever answer you?", 4, 0, "bastion");
 		db.Node("start");
 		db.Say("", "Every night, after the roll, the operator reads our numbers to Command. Effective strength, rounds, fuel, civilians sheltered. Last of all: requesting relief.");
@@ -51,11 +52,11 @@ class RZ_DialoguePack_leaders
 		db.Say("", "Every post hears every other post call in. As long as the calls go out, nobody's the last one left. A post that reads rations, one day, usually has a truck from here by morning.");
 		db.Say("", "The first post that stops calling is the first post that's alone. Not us. Not tonight.");
 		db.Choice("back4", "Fair enough. Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("bastion.leader.haven_sitting", "stronghold:bastion", "q:every_name.summoned & !ending:every_name", "Ask about the Haven's sitting.", 2, 0, "bastion");
+		db.Conv("bastion.leader.haven_sitting", "stronghold:bastion", "q:every_name.summoned & !ending:every_name", "What's the Haven voting on?", 2, 0, "bastion");
 		db.Node("start");
-		db.Say("", "\"The Haven is voting on who eats. Show of hands, round a pot. We'd use a register.\"");
-		db.Say("", "\"If they want ours, it's on the wall. Nobody's asked.\"");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "The Haven's council is voting on who eats, house by house. Show of hands round a pot. We'd use a register and a ration card.");
+		db.Say("", "If they want our cards, the template's on the wall. Nobody's asked. They'd rather argue than be counted, and I half understand it.");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("bastion.leader.hello", "stronghold:bastion,seat:bastion/outpost_lead", "!met", "", 4, 5, "bastion");
 		db.Node("start");
 		db.Say("stronghold & !met", "I'm {npc}, {role}. Command stopped answering on Day 2. Since then this stronghold, its posts and the families on our roster are all Bastion has. Keep your weapon slung in here.");
@@ -63,7 +64,7 @@ class RZ_DialoguePack_leaders
 		db.Say("!met", "I'm {npc}, {role}. This is a Bastion post: soldiers left inside the line when it closed, and the families who stayed with us. Weapon slung inside the wire. Then we can talk.");
 		db.Conv("bastion.leader.lied", "leader:bastion", "nmem:lied", "", 0, 5, "bastion");
 		db.Node("start");
-		db.Say("", "\"What you told me didn't check out. It's in your file now. Next to the other things.\"");
+		db.Say("nmem:lied", "What you told me last time didn't check out. It's in your file now, next to everything else, and the sentries read the file.");
 		db.Conv("bastion.leader.me", "stronghold:bastion,seat:bastion/outpost_lead", "", "How would you log me?", 3, 0, "bastion");
 		db.Node("start");
 		db.Jump("kit:other", "colours");
@@ -103,7 +104,7 @@ class RZ_DialoguePack_leaders
 		db.Choice("back5", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("bastion.leader.name", "leader:bastion", "seasoned:bastion & !met", "", 3, 5, "bastion");
 		db.Node("start");
-		db.Say("", "\"Don't know the face. Know the name. It's in the file as {title:bastion}. New face, same file.\"");
+		db.Say("seasoned:bastion & !met", "I don't know the face. I know the name: it's in our file as {title:bastion}, from a life the roster remembers. New face, same file. The sentries will be told.");
 		db.Conv("bastion.leader.news", "stronghold:bastion,seat:bastion/outpost_lead", "", "What's in the morning report?", 2, 0, "bastion");
 		db.Bind("lost", "news:lost_by(bastion)");
 		db.Bind("took", "news:taken");
@@ -166,11 +167,11 @@ class RZ_DialoguePack_leaders
 		db.Say("kills:bastion>=2", "Your name's in the log next to ours. Not in the good column. Every one of them is still on a board somewhere.");
 		db.Say("best:bastion", "Entry: you {best}. Underlined. We don't underline much.");
 		db.Say("", "Civilian. Seen at the wire. No further entries. That's a clean page. Keep it that way, or don't.");
-		db.Choice("back7", "Fair enough. Something else.", "hub", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add1(RZ_DialogueDB db)
 	{
+		db.Choice("back7", "Fair enough. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("me_colours");
 		db.Say("", "Entry: civilian at the wire in another outfit's colours. Possibly a thief. Possibly cold. Logged as both until I know which.");
 		db.Choice("back8", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
@@ -320,11 +321,11 @@ class RZ_DialoguePack_leaders
 		db.Choice("later4", "Then not today.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("other_route");
 		db.Say("", "You've committed to another outfit's route for the cure. Noted, and logged. You won't hear the in-jokes from us for a while.");
-		db.Say("", "We still have gaps on this table, and you still have hands. Tasking pays the same whoever you march with.");
 	}
 
 	protected static void Add2(RZ_DialogueDB db)
 	{
+		db.Say("", "We still have gaps on this table, and you still have hands. Tasking pays the same whoever you march with.");
 		db.Choice("take2", "Then I'll take a task anyway.", "hub", "", "", "", "", "", "call:slot:0", "", "");
 		db.Choice("back5", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("after");
@@ -333,110 +334,110 @@ class RZ_DialoguePack_leaders
 		db.Say("", "We still have names on the board that nobody's found. I'd like them found before anyone walks out at the north road.");
 		db.Choice("take3", "Then give me a name to find.", "hub", "", "", "", "", "", "call:slot:0", "", "");
 		db.Choice("back6", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.bastion.cure", "leader:bastion", "epilogue", "Ask about the cure.", 2, 0, "bastion");
+		db.Conv("epilogue.bastion.cure", "leader:bastion", "epilogue", "What's happening with the cure?", 2, 0, "bastion");
 		db.Node("start");
-		db.Say("cure_held:bastion", "\"Issued against name and signature, at the north road and the posts. In order. As planned.\"");
-		db.Say("cure_held:haven", "\"The Haven hands it out at its houses. No register. Somebody has to keep one, so we do.\"");
-		db.Say("cure_held:redhand", "\"Sold. At a price. Logged as theft. The log doesn't help, but it's accurate.\"");
-		db.Say("cure_held:halcyon", "\"Published. Every name on the paper but ours. Noted.\"");
-		db.Say("cure_held:everyone", "\"Carried out by persons unknown. To everyone. Unregistered. I've stopped writing to Command about it.\"");
-		db.Say("", "\"Cure confirmed. Processing at the checkpoints. The order hasn't changed. The tone has.\"");
-		db.Choice("here", "\"What happened here, this season?\"", "season", "", "", "", "", "", "", "", "");
-		db.Choice("look", "\"Where should I look?\"", "look", "", "", "", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("cure_held:bastion", "We hold it. Issued against name and signature, at the north road and at the posts. In order. As planned, for once.");
+		db.Say("cure_held:haven", "The Haven hands it out at its houses, with no register. Somebody has to keep one, so we do, from what people tell us at the wire.");
+		db.Say("cure_held:redhand", "The Red Hand sells it, at a price on a board. Logged as theft. The log doesn't help anyone, but it's accurate.");
+		db.Say("cure_held:halcyon", "Published. The lab put every name on the paper but ours. Noted.");
+		db.Say("cure_held:everyone", "Carried out to everyone by persons unknown. Unregistered. I've stopped writing to Command about it, and Command has stopped not answering.");
+		db.Say("", "Cure confirmed. The line's stood down: no drones, no snipers. Processing at the road checkpoints. The order hasn't changed. The tone has.");
+		db.Choice("here", "What happened here, this season?", "season", "", "", "", "", "", "", "", "");
+		db.Choice("look", "Where should I go before it's over?", "look", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("season");
-		db.Say("", "\"For the log, then.\"");
+		db.Say("", "For the log, then. Names, dates, what we held and what we didn't.");
 		db.Do("call:season");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back2", "Thank you. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("look");
-		db.Say("", "\"Grid squares you haven't covered. Cover them.\"");
+		db.Say("", "Grid squares you haven't covered, and people you haven't reported to. Cover them before processing.");
 		db.Do("call:look");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.bastion.me", "leader:bastion", "epilogue", "Ask what they'll do now.", 4, 0, "bastion");
+		db.Choice("back3", "I'll cover them. Something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("epilogue.bastion.me", "leader:bastion", "epilogue", "What will you do now?", 4, 0, "bastion");
 		db.Node("start");
-		db.Say("route:won", "\"You signed the roster and held to it. That goes in the log, in ink.\"");
-		db.Say("route:lost", "\"You signed for someone else. Logged. Then eat something.\"");
-		db.Say("was:orders", "\"You were there when the orders were read. You'll remember them longer than Command did.\"");
-		db.Say("", "\"Hand over the post. Sign for the stores. Walk out last. Same as any posting.\"");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.halcyon.cure", "leader:halcyon", "epilogue", "Ask about the cure.", 2, 0, "halcyon");
+		db.Say("route:won", "You signed on with us for the cure and held to it. That goes in the log, in ink.");
+		db.Say("route:lost", "You signed for someone else's route. Logged. Now eat something.");
+		db.Say("was:orders", "You were there when the orders were read. You'll remember them longer than Command did.");
+		db.Say("", "Hand over the post. Sign for the stores. Read the roll one last time, all of it. Then walk out last at the north road. Same as any posting.");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("epilogue.halcyon.cure", "leader:halcyon", "epilogue", "What's happening with the cure?", 2, 0, "halcyon");
 		db.Node("start");
-		db.Say("cure_held:halcyon", "\"Published. Every author named. The method is on the lab door. Someone corrected the spelling.\"");
-		db.Say("cure_held:bastion", "\"Bastion holds the stock. They issue it alphabetically. We are under H.\"");
-		db.Say("cure_held:haven", "\"The Haven distributes by hand. Unmeasured. Effective, by every measure we have.\"");
-		db.Say("cure_held:redhand", "\"Sold. The dose is ours. The price is theirs. We have recorded both.\"");
-		db.Say("cure_held:everyone", "\"Distributed without control or record. The outcome is good. We are revising our assumptions.\"");
-		db.Say("", "\"The work is done. The record is not. It never is.\"");
-		db.Choice("here", "\"What happened here, this season?\"", "season", "", "", "", "", "", "", "", "");
-		db.Choice("look", "\"Where should I look?\"", "look", "", "", "", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("cure_held:halcyon", "Published. Every author named, the volunteers by number. The method is pinned to the lab door. Someone corrected the spelling.");
+		db.Say("cure_held:bastion", "Bastion holds the stock. They issue it alphabetically. We're under H.");
+		db.Say("cure_held:haven", "The Haven distributes it by hand. Unmeasured. Effective, by every measure we have.");
+		db.Say("cure_held:redhand", "Sold. The dose is ours. The price is theirs. We've recorded both.");
+		db.Say("cure_held:everyone", "Distributed without control or record. The outcome is good. We're revising our assumptions.");
+		db.Say("", "The work is done. The line has stood down, and processing starts at the road checkpoints. The record is not done. It never is.");
+		db.Choice("here", "What happened here, this season?", "season", "", "", "", "", "", "", "", "");
+		db.Choice("look", "Where should I go before it's over?", "look", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("season");
-		db.Say("", "\"The record, then. The short version.\"");
+		db.Say("", "The record, then. The short version, with dates.");
 		db.Do("call:season");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back2", "Thank you. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("look");
-		db.Say("", "\"Unsampled locations. Your notebook should list them. It probably doesn't.\"");
+		db.Say("", "Unsampled locations. Your notebook should list them. It probably doesn't, so I will.");
 		db.Do("call:look");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.halcyon.me", "leader:halcyon", "epilogue", "Ask what they'll do now.", 4, 0, "halcyon");
+		db.Choice("back3", "I'll go. Something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("epilogue.halcyon.me", "leader:halcyon", "epilogue", "What will you do now?", 4, 0, "halcyon");
 		db.Node("start");
-		db.Say("route:won", "\"You chose the paper. Your name is in the acknowledgements. Small type. Still there.\"");
-		db.Say("route:lost", "\"You chose another route. That is also data.\"");
-		db.Say("was:proof", "\"You were there when the paper went out. Witness noted.\"");
-		db.Say("", "\"Write it up. Every page, including the first one. Then leave by the north road like anyone.\"");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.haven.cure", "leader:haven", "epilogue", "Ask about the cure.", 2, 0, "haven");
+		db.Say("route:won", "You chose the paper. Your name is in the acknowledgements. Small type. Still there.");
+		db.Say("route:lost", "You chose another route. That is also data.");
+		db.Say("was:proof", "You were there when the paper went out. Witness noted.");
+		db.Say("", "Write it up. Every page, including the first one, which nobody wants to write. Then leave by the north road, in the queue, like anyone.");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("epilogue.haven.cure", "leader:haven", "epilogue", "What's happening with the cure?", 2, 0, "haven");
 		db.Node("start");
-		db.Say("cure_held:haven", "\"It went hand to hand, like we said. The houses argued about who went first. They're still arguing. That's how you know it's ours.\"");
-		db.Say("cure_held:bastion", "\"Bastion has it in a crate with a number on it. We're on their list. Everyone's on a list now.\"");
-		db.Say("cure_held:redhand", "\"The Red Hand has it, and a price on it. We're paying in tins. They're keeping the tins, mostly.\"");
-		db.Say("cure_held:halcyon", "\"The lab has published. Every name on the paper. I read it twice. I understood the second time.\"");
-		db.Say("cure_held:everyone", "\"Somebody walked it out to every house. No crate, no list. Nobody would say who to thank.\"");
-		db.Say("", "\"It came. That's the part I keep saying out loud, to see if it's true.\"");
-		db.Choice("here", "\"What happened here, this season?\"", "season", "", "", "", "", "", "", "", "");
-		db.Choice("look", "\"Where should I look?\"", "look", "", "", "", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("cure_held:haven", "It went hand to hand, house to house, like we always said it would. The houses argued about who went first. They're still arguing. That's how you know it's ours.");
+		db.Say("cure_held:bastion", "Bastion has it in crates with numbers on, and it's issued by name and signature. We're on their list. Everyone's on a list now, even us.");
+		db.Say("cure_held:redhand", "The Red Hand has it, and there's a price on a board at the crossroads. We're paying in tins. They're keeping the tins, mostly.");
+		db.Say("cure_held:halcyon", "The lab published it. Every name on the paper, the volunteers too, by number. I read it twice. I understood it the second time.");
+		db.Say("cure_held:everyone", "Somebody walked it out to every house. No crate, no list, no price. Nobody would say who to thank, so we thank everyone at supper.");
+		db.Say("", "It came. That's the part I keep saying out loud, to see if it's true. The line's stood down. The barriers stay shut until processing, then it's the north road, one name at a time.");
+		db.Choice("here", "What happened here, this season?", "season", "", "", "", "", "", "", "", "");
+		db.Choice("look", "Where should I go before it's over?", "look", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("season");
-		db.Say("", "\"Sit down. I'll tell it the way the house tells it.\"");
+		db.Say("", "Sit down. I'll tell it the way the house tells it, names and all.");
 		db.Do("call:season");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back2", "Thank you. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("look");
-		db.Say("", "\"Places you haven't been. I'll say them; you go.\"");
+		db.Say("", "Places you haven't been yet, and people who'd like to see you before the north road. I'll name them, and you go.");
 		db.Do("call:look");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.haven.me", "leader:haven", "epilogue", "Ask what they'll do now.", 4, 0, "haven");
+		db.Choice("back3", "I'll go. Something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("epilogue.haven.me", "leader:haven", "epilogue", "What will you do now?", 4, 0, "haven");
 		db.Node("start");
-		db.Say("route:won", "\"You stood with us. I won't forget it, and nobody here will let me.\"");
-		db.Say("route:lost", "\"You picked someone else's way. You'll still be fed here. We've fed people who picked worse.\"");
-		db.Say("was:every_name", "\"You were at the table when the names were read. I saw you.\"");
-		db.Say("", "\"When they open the north road I'll be the last one out. Somebody has to lock the stores.\"");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.redhand.cure", "leader:redhand", "epilogue", "Ask about the cure.", 2, 0, "redhand");
+		db.Say("route:won", "You stood with us at the end, when it mattered. I won't forget it, and nobody in this house will let me.");
+		db.Say("route:lost", "You picked someone else's way for the cure. You'll still be fed here. We've fed people who picked worse.");
+		db.Say("was:every_name", "You were at the table when the names were read. I saw you. I saw who you looked at.");
+		db.Say("", "When they open the north road I'll be the last one out of this house. Somebody has to count the stores one more time and lock the door, and leave the bear on it.");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("epilogue.redhand.cure", "leader:redhand", "epilogue", "What's happening with the cure?", 2, 0, "redhand");
 		db.Node("start");
-		db.Say("cure_held:redhand", "\"Ours. Priced fair. Fair to us. The queue's at the board, and the board's got prices on it.\"");
-		db.Say("cure_held:bastion", "\"Bastion's got it in a crate. We've got the crate's address. Patience.\"");
-		db.Say("cure_held:haven", "\"The Haven's giving it away. Free! Bad for business. Good for everyone else, I'm told.\"");
-		db.Say("cure_held:halcyon", "\"The beaks printed it. Can't sell a recipe everyone's read. I've tried.\"");
-		db.Say("cure_held:everyone", "\"Somebody gave it to everyone for nothing. I've been robbed before, but never on behalf of the whole Zone.\"");
-		db.Say("", "\"It's out. Everything's for sale again, including leaving.\"");
-		db.Choice("here", "\"What happened here, this season?\"", "season", "", "", "", "", "", "", "", "");
-		db.Choice("look", "\"Where should I look?\"", "look", "", "", "", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("cure_held:redhand", "Ours. Priced fair. Fair to us. The queue's at the board at the crossroads, and the board's got prices on it.");
+		db.Say("cure_held:bastion", "Bastion's got it in crates. We've got the crates' address. Patience.");
+		db.Say("cure_held:haven", "The Haven's giving it away. Free! Terrible for business. Good for everyone else, I'm told.");
+		db.Say("cure_held:halcyon", "The beaks printed the recipe. You can't sell a recipe everyone's read. I've tried.");
+		db.Say("cure_held:everyone", "Somebody gave it to everyone for nothing. I've been robbed before, but never on behalf of the whole Zone.");
+		db.Say("", "It's out. The drones have gone home. Everything's for sale again, including leaving, and leaving's the one thing I can't put a price on yet.");
+		db.Choice("here", "What happened here, this season?", "season", "", "", "", "", "", "", "", "");
+		db.Choice("look", "Where should I go before it's over?", "look", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("season");
-		db.Say("", "\"The book remembers. Sit. I'll read you the good bits.\"");
+		db.Say("", "The book remembers everything. Sit. I'll read you the good bits.");
 		db.Do("call:season");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back2", "Thanks. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("look");
-		db.Say("", "\"Places you haven't robbed yet. That's a joke. Half of one.\"");
+		db.Say("", "Places you haven't robbed yet. That's a joke. Half of one. Here's where.");
 		db.Do("call:look");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("epilogue.redhand.me", "leader:redhand", "epilogue", "Ask what they'll do now.", 4, 0, "redhand");
+		db.Choice("back3", "I'll go. Something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("epilogue.redhand.me", "leader:redhand", "epilogue", "What will you do now?", 4, 0, "redhand");
 		db.Node("start");
-		db.Say("route:won", "\"You stood with the book. The book stands with you. That's as warm as it gets here.\"");
-		db.Say("route:lost", "\"You backed the other horse. No hard feelings. A few soft ones.\"");
-		db.Say("was:book", "\"You were at the table when the book was closed. You know what's in it. That makes two of us.\"");
-		db.Say("", "\"Me? Close the book. Count it twice. Then see what the outside charges for a sandwich.\"");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("route:won", "You stood with the book for the cure. The book stands with you. That's as warm as it gets round here.");
+		db.Say("route:lost", "You backed the other horse. No hard feelings. A few soft ones.");
+		db.Say("was:book", "You were at the table when the book was closed. You know what's in it. That makes two of us.");
+		db.Say("", "Me? Close the book. Count it twice. Then walk up the north road and see what the outside charges for a sandwich.");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("halcyon.lead.volunteers", "seat:halcyon/field_lead", "cure>=25", "What happens to the volunteers?", 2, 0, "halcyon");
 		db.Node("start");
 		db.Say("", "Anyone bitten can volunteer for the trial dose, once. The first ten came up from the Haven on Day 6, and eight walked out.");
@@ -474,23 +475,24 @@ class RZ_DialoguePack_leaders
 		db.Say("", "Numbered, one each. Every reading, every sample, every volunteer. When one of us dies, the notebook belongs to the lab.");
 		db.Say("", "We read it into the record, page by page. It takes longer than the funeral. The director speaks for two minutes and goes back to work.");
 		db.Do("learn:halcyon.notebooks");
-		db.Choice("back2", "That's a hard way to grieve.", "hub", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add3(RZ_DialogueDB db)
 	{
-		db.Conv("halcyon.leader.brief_lie", "leader:halcyon", "knows:brieflie.halcyon", "Report what the brief left out.", 3, 0, "halcyon");
+		db.Choice("back2", "That's a hard way to grieve.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("halcyon.leader.brief_lie", "leader:halcyon", "knows:brieflie.halcyon", "That brief left something out.", 3, 0, "halcyon");
 		db.Node("start");
-		db.Say("", "\"A discrepancy in a brief. The lab takes discrepancies seriously, on paper.\"");
-		db.Choice("tell", "\"Put it on the record.\"", "told", "", "", "", "", "", "", "", "");
-		db.Choice("keep", "\"Leave it off the record.\"", "kept", "", "", "", "", "", "", "", "");
+		db.Say("", "A discrepancy in a brief. The lab takes discrepancies seriously, on paper.");
+		db.Say("", "On the record, the director is told and whoever wrote the brief answers for it. Off the record, it joins a great many other things.");
+		db.Choice("tell", "Put it on the record.", "told", "", "", "", "", "", "", "", "");
+		db.Choice("keep", "Leave it off the record.", "kept", "", "", "", "", "", "", "", "");
 		db.Node("told");
-		db.Say("", "\"Recorded. The director will be told. The director won't thank either of us.\"");
+		db.Say("", "Recorded, with the date. The director will be told. The director won't thank either of us.");
 		db.Do("call:brief_public");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back", "That's fine by me.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("kept");
-		db.Say("", "\"Off the record, then. There's a lot off the record.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Off the record, then. There's a great deal off the record. It's the largest file we keep.");
+		db.Choice("back1", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("halcyon.leader.hello", "stronghold:halcyon,seat:halcyon/field_lead", "!met", "", 4, 5, "halcyon");
 		db.Node("start");
 		db.Say("bite_shown & !met", "I'm {npc}, {role}. That bite is recent, by the colour. The trial dose is free, once, at our stores: eight in ten walk out. Please go now. We can talk after.");
@@ -498,7 +500,7 @@ class RZ_DialoguePack_leaders
 		db.Say("!met", "I'm {npc}, {role}. This is a Halcyon field station: sensors, a cold box and a radio to the lab. The cure is at {cure_percent} percent. Mind the sample cases.");
 		db.Conv("halcyon.leader.lied", "leader:halcyon", "nmem:lied", "", 0, 5, "halcyon");
 		db.Node("start");
-		db.Say("", "\"Your account didn't replicate. The discrepancy is in the record, with your initials.\"");
+		db.Say("nmem:lied", "Your account didn't replicate. The discrepancy is in the record now, with your initials beside it.");
 		db.Conv("halcyon.leader.me", "stronghold:halcyon,seat:halcyon/field_lead", "", "How would you file me?", 3, 0, "halcyon");
 		db.Node("start");
 		db.Jump("kit:other", "colours");
@@ -530,7 +532,7 @@ class RZ_DialoguePack_leaders
 		db.Choice("back4", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("halcyon.leader.name", "leader:halcyon", "seasoned:halcyon & !met", "", 3, 5, "halcyon");
 		db.Node("start");
-		db.Say("", "\"Different face. Same name in the record: {title:halcyon}. We'll treat it as a repeat measurement.\"");
+		db.Say("seasoned:halcyon & !met", "Different face. Same name in the record: {title:halcyon}, from an earlier life. We'll treat you as a repeat measurement and see whether the result holds.");
 		db.Conv("halcyon.leader.news", "stronghold:halcyon,seat:halcyon/field_lead", "", "What do the radio logs say?", 2, 0, "halcyon");
 		db.Bind("dead", "news:leader_dead");
 		db.Bind("horde", "news:horde");
@@ -627,12 +629,12 @@ class RZ_DialoguePack_leaders
 		db.Node("told");
 		db.Say("", "The trial doses. One in three of the new batch takes. That's an improvement. The other two are also a number.");
 		db.Say("", "I'd like you to remember both.");
-		db.Do("learn:halcyon.one_in_three:6h");
-		db.Choice("help4", "I'll remember. What can I do?", "offer", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add4(RZ_DialogueDB db)
 	{
+		db.Do("learn:halcyon.one_in_three:6h");
+		db.Choice("help4", "I'll remember. What can I do?", "offer", "", "", "", "", "", "", "", "");
 		db.Choice("back3", "I'll remember. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("partial");
 		db.Say("", "The numbers are saying everything. You're not listening to all of them. Neither is anyone else.");
@@ -722,18 +724,19 @@ class RZ_DialoguePack_leaders
 		db.Say("tier:haven>=trusted", "You've the amber ribbon, haven't you? That does the same job on a person. People see it and put the rifle down.");
 		db.Say("", "It goes on doors, love, not on people. People get shot at anyway. Earn the houses' trust and they'll give you an amber ribbon instead, to wear or not as you like.");
 		db.Choice("back2", "I'll earn it, then.", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("haven.leader.brief_lie", "leader:haven", "knows:brieflie.haven", "Tell them what the brief left out.", 3, 0, "haven");
+		db.Conv("haven.leader.brief_lie", "leader:haven", "knows:brieflie.haven", "The job I took left something out.", 3, 0, "haven");
 		db.Node("start");
-		db.Say("", "\"Go on. If one of ours told you half of it, the house should hear the other half.\"");
-		db.Choice("tell", "\"Tell them what you found.\"", "told", "", "", "", "", "", "", "", "");
-		db.Choice("keep", "\"Keep it to yourself.\"", "kept", "", "", "", "", "", "", "", "");
+		db.Say("", "Go on, then. If one of ours told you half of it, the house should hear the other half. That's how a house stays a house.");
+		db.Say("", "It'll cost them, whoever it was. People stop trusting the voice that hands out the work. Say it or don't. It's your call, not mine.");
+		db.Choice("tell", "Here's what I found.", "told", "", "", "", "", "", "", "", "");
+		db.Choice("keep", "I'll keep it to myself.", "kept", "", "", "", "", "", "", "", "");
 		db.Node("told");
-		db.Say("", "\"Right. I'll read it out at supper. Nobody will enjoy it.\"");
+		db.Say("", "Right. I'll read it out at supper, after the name. Nobody will enjoy it, and somebody will go quiet for a week.");
 		db.Do("call:brief_public");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back", "It's better they know.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("kept");
-		db.Say("", "\"Your call. Some things go quieter if you let them.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Your call. Some things go quieter if you let them, and some go bad. We'll see which this is.");
+		db.Choice("back1", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("haven.leader.hello", "stronghold:haven,seat:haven/council_head", "!met", "", 4, 5, "haven");
 		db.Node("start");
 		db.Say("bite_shown & !met", "I'm {npc}, {role}. That's a bite on your arm, love. Say it out loud to the house and we'll help if we can. That's the one rule we don't bend.");
@@ -741,7 +744,7 @@ class RZ_DialoguePack_leaders
 		db.Say("!met", "I'm {npc}, {role}. This is a Haven house: ordinary people who opened a door and kept it open. You get in if you'll help. Don't fire that near the house, and everyone works.");
 		db.Conv("haven.leader.lied", "leader:haven", "nmem:lied", "", 0, 5, "haven");
 		db.Node("start");
-		db.Say("", "\"You told me something that wasn't true. I found out. I'm not angry. I'm just counting differently now.\"");
+		db.Say("nmem:lied", "You told me something that wasn't true, and I found out. I'm not angry. I'm just counting differently now, and so will the house.");
 		db.Conv("haven.leader.list", "stronghold:haven,seat:haven/council_head", "!exiled", "What's the list of names by the door?", 2, 0, "haven");
 		db.Node("start");
 		db.Say("", "Every house keeps one. Who's here, who's moved on, who's gone to a better house with more room. We send copies between the houses by hand.");
@@ -780,13 +783,13 @@ class RZ_DialoguePack_leaders
 		db.Say("", "You're wearing their colours. We don't shoot through doors with bears on them. Don't make us reconsider.");
 		db.Choice("explain", "It was what I could find.", "found", "", "", "", "", "", "", "", "");
 		db.Choice("more1", "Where do I stand with you?", "hub", "", "", "", "", "", "call:slot:2", "", "");
-		db.Choice("back1", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
-		db.Node("found");
-		db.Say("", "Everything is, these days. Take it off before supper, love. The children ask questions, and they ask them loudly.");
 	}
 
 	protected static void Add5(RZ_DialogueDB db)
 	{
+		db.Choice("back1", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Node("found");
+		db.Say("", "Everything is, these days. Take it off before supper, love. The children ask questions, and they ask them loudly.");
 		db.Choice("back2", "I'll change before supper.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("bitten");
 		db.Say("", "Show me the arm. No. Don't. I can see it from here.");
@@ -813,7 +816,7 @@ class RZ_DialoguePack_leaders
 		db.Choice("back6", "Good. Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("haven.leader.name", "leader:haven", "seasoned:haven & !met", "", 3, 5, "haven");
 		db.Node("start");
-		db.Say("", "\"I don't know the face. I know the name. {title:haven}, wasn't it? Sit. Faces change. Soup doesn't.\"");
+		db.Say("seasoned:haven & !met", "I don't know your face, love, but I know the name. {title:haven}, the houses called you, didn't they? Faces change out here. The soup doesn't. Come and sit by the stove.");
 		db.Conv("haven.leader.news", "stronghold:haven,seat:haven/council_head", "!exiled", "What are the houses saying?", 2, 0, "haven");
 		db.Bind("took", "news:taken");
 		db.Bind("who", "news:taken_by");
@@ -934,13 +937,13 @@ class RZ_DialoguePack_leaders
 		db.Choice("burnt", "Who's taking the burned-out families?", "families", "", "", "", "", "bound:burned", "", "", "");
 		db.Choice("fences", "Who's watching your fences?", "fences", "", "", "", "", "", "", "", "");
 		db.Choice("elder", "You've seen worse than this. Say it.", "told", "", "", "", "", "bg:elder", "", "", "");
-		db.Choice("press", "Tell me what you're not saying.", "told", "half", "half", "persuade haven 2 easier:merciful harder:paranoid bg:elder,nurse", "", "", "", "", "");
-		db.Choice("help", "Is there anything I can do?", "offer", "", "", "", "", "", "", "", "");
-		db.Node("place");
 	}
 
 	protected static void Add6(RZ_DialogueDB db)
 	{
+		db.Choice("press", "Tell me what you're not saying.", "told", "half", "half", "persuade haven 2 easier:merciful harder:paranoid bg:elder,nurse", "", "", "", "", "");
+		db.Choice("help", "Is there anything I can do?", "offer", "", "", "", "", "", "", "", "");
+		db.Node("place");
 		db.Say("", "The dead came in through the back gardens, the way they do. The people left by the front, the way we taught them.");
 		db.Say("", "Some got to us. Some didn't. We'll read their names at supper and light the candles.");
 		db.Choice("help2", "Then let me help.", "offer", "", "", "", "", "", "", "", "");
@@ -1044,76 +1047,79 @@ class RZ_DialoguePack_leaders
 		db.Say("", "The cure's out, or near enough, and the soup hasn't heard. People still eat every day, and the barriers stay closed until processing.");
 		db.Choice("take3", "Then I'll keep working for you.", "hub", "", "", "", "", "", "call:slot:0", "", "");
 		db.Choice("back6", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("haven.sitting.first", "seat:haven/council_head,stronghold:haven", "sitting:every_name.first & !swayed:every_name.first", "Talk about the sitting.", 0, 0, "haven");
+		db.Conv("haven.sitting.first", "seat:haven/council_head,stronghold:haven", "sitting:every_name.first & !swayed:every_name.first", "What's the council voting on?", 0, 0, "haven");
 		db.Node("start");
-		db.Say("", "\"The council sits at supper. Every head has a count and a worry, and the worry's always the same: mouths.\"");
-		db.Say("", "\"Say your piece now, if you've got one. At the table, nobody hears anybody.\"");
-		db.Choice("pot", "\"Everyone eats. Say that at the table.\"", "moved", "short", "refused", "persuade haven 2 bg:elder,nurse", "", "tabled:every_name.first.pot", "sway:every_name.first.pot", "", "");
-		db.Choice("workers", "\"Houses that work should eat first.\"", "moved", "short", "refused", "persuade haven 2 bg:elder,soldier", "", "tabled:every_name.first.workers", "sway:every_name.first.workers", "", "");
-		db.Choice("cards", "\"Take Bastion's cards. They're fair.\"", "moved", "short", "refused", "persuade haven 3 bg:police,soldier", "", "tabled:every_name.first.cards", "sway:every_name.first.cards", "", "");
-		db.Choice("tins", "\"Keep the stores full. Don't ask how.\"", "moved", "short", "refused", "persuade haven 3 bg:excon,raider", "", "tabled:every_name.first.tins", "sway:every_name.first.tins", "", "");
-		db.Choice("listen", "\"I'll listen, not talk.\"", "listen", "", "", "", "", "", "", "", "");
+		db.Say("", "The council sits at supper tonight: a head from every house, round one pot. They're voting on how the Haven eats when there isn't enough for everyone.");
+		db.Say("", "Every head brings a count and a worry, and the worry's always the same: mouths. Say your piece to me now, if you've got one. At the table, nobody hears anybody.");
+		db.Choice("pot", "Everyone eats. Say that at the table.", "moved", "short", "refused", "persuade haven 2 bg:elder,nurse", "", "tabled:every_name.first.pot", "sway:every_name.first.pot", "", "");
+		db.Choice("workers", "Houses that work should eat first.", "moved", "short", "refused", "persuade haven 2 bg:elder,soldier", "", "tabled:every_name.first.workers", "sway:every_name.first.workers", "", "");
+		db.Choice("cards", "Take Bastion's cards. They're fair.", "moved", "short", "refused", "persuade haven 3 bg:police,soldier", "", "tabled:every_name.first.cards", "sway:every_name.first.cards", "", "");
+		db.Choice("tins", "Keep the stores full. Don't ask how.", "moved", "short", "refused", "persuade haven 3 bg:excon,raider", "", "tabled:every_name.first.tins", "sway:every_name.first.tins", "", "");
+		db.Choice("listen", "I'll just listen tonight.", "listen", "", "", "", "", "", "", "", "");
 		db.Node("moved");
-		db.Say("", "\"Hm. That's not nothing. I'll say it at the table, in my own words. They'll know whose they were.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "That's not nothing. I'll say it at the table, in my own words. They'll know whose words they were, mind, and some of them will look at you.");
+		db.Choice("back1", "Thank you. That's all I ask.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("short");
-		db.Say("", "\"I hear you. I don't agree, quite. I'll think about it on the walk over, which is as far as thinking goes these days.\"");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "I hear you. I don't agree, quite. I'll think about it on the walk over, which is as far as thinking goes these days.");
+		db.Choice("back2", "That's fair. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("refused");
-		db.Say("", "\"No. I know my house. You know the road. Sit at the end tonight and listen, and see if you still think so.\"");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "No. I know my house, and you know the road. Sit at the end tonight and listen, and see if you still think so after.");
+		db.Choice("back3", "I'll come and listen.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("listen");
-		db.Say("", "\"Then listen. Whatever they decide, somebody walks out of a house because of it. Remember that when you eat.\"");
-		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("haven.sitting.second", "seat:haven/council_head,stronghold:haven", "sitting:every_name.second & !swayed:every_name.second", "Talk about the second sitting.", 0, 0, "haven");
+		db.Say("", "Then listen. Whatever they decide, somebody walks out of a house because of it. Remember that when you eat.");
+		db.Choice("back4", "I'll remember.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("haven.sitting.second", "seat:haven/council_head,stronghold:haven", "sitting:every_name.second & !swayed:every_name.second", "The council's sitting again?", 0, 0, "haven");
 		db.Node("start");
-		db.Say("", "\"We sit again. Keep the rule or change it. The hungry week answered half of it for us already.\"");
-		db.Choice("pot", "\"Everyone eats. Still.\"", "moved", "short", "refused", "persuade haven 2 bg:elder,nurse", "", "tabled:every_name.second.pot", "sway:every_name.second.pot", "", "");
-		db.Choice("workers", "\"Work first, then eat. It held.\"", "moved", "short", "refused", "persuade haven 2 bg:elder,soldier", "", "tabled:every_name.second.workers", "sway:every_name.second.workers", "", "");
-		db.Choice("cards", "\"Bastion's cards. Keep them.\"", "moved", "short", "refused", "persuade haven 3 bg:police,soldier", "", "tabled:every_name.second.cards", "sway:every_name.second.cards", "", "");
-		db.Choice("tins", "\"Keep the Thursday arrangement.\"", "moved", "short", "refused", "persuade haven 3 bg:excon,raider", "", "tabled:every_name.second.tins", "sway:every_name.second.tins", "", "");
-		db.Choice("listen", "\"I'll listen, not talk.\"", "listen", "", "", "", "", "", "", "", "");
+		db.Say("", "We sit again tonight. Keep the rule we made, or change it. The hungry week has already answered half the question for us, and not kindly.");
+		db.Say("", "Everyone saw who went thin, and who didn't. Say your piece now if you want it carried in.");
+		db.Choice("pot", "Everyone eats. Still.", "moved", "short", "refused", "persuade haven 2 bg:elder,nurse", "", "tabled:every_name.second.pot", "sway:every_name.second.pot", "", "");
+		db.Choice("workers", "Work first, then eat. It held.", "moved", "short", "refused", "persuade haven 2 bg:elder,soldier", "", "tabled:every_name.second.workers", "sway:every_name.second.workers", "", "");
+		db.Choice("cards", "Keep Bastion's ration cards.", "moved", "short", "refused", "persuade haven 3 bg:police,soldier", "", "tabled:every_name.second.cards", "sway:every_name.second.cards", "", "");
+		db.Choice("tins", "Keep the Thursday arrangement.", "moved", "short", "refused", "persuade haven 3 bg:excon,raider", "", "tabled:every_name.second.tins", "sway:every_name.second.tins", "", "");
+		db.Choice("listen", "I'll just listen tonight.", "listen", "", "", "", "", "", "", "", "");
 		db.Node("moved");
-		db.Say("", "\"All right. I'll carry it in. If it goes badly, it was my idea. If it goes well, it was also my idea.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "All right. I'll carry it in. If it goes badly, it was my idea. If it goes well, it was also my idea.");
+		db.Choice("back1", "Thank you. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("short");
-		db.Say("", "\"Maybe. I'll see who's hungry tonight. That decides more votes than speeches do.\"");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Maybe. I'll see who's hungry tonight. That decides more votes than speeches do.");
+		db.Choice("back2", "That's fair. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("refused");
-		db.Say("", "\"No. You weren't here for the hungry week, not the way we were. Come to the table anyway.\"");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "No. You weren't here for the hungry week, not the way we were. Come to the table anyway. You should see it.");
+		db.Choice("back3", "I'll come and see it.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("listen");
-		db.Say("", "\"Then you'll hear the whole house argue about bread. That's the Haven. Bread, and who's not here to eat it.\"");
-		db.Choice("back4", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("occupant.hills", "occupant", "tribe & !house:died", "Ask about the hills.", 2, 0, "haven");
+		db.Say("", "Then you'll hear the whole house argue about bread. That's the Haven: bread, and who isn't here to eat it.");
+		db.Choice("back4", "I'll be there.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("occupant.hills", "occupant", "tribe & !house:died", "What's up in the hills?", 2, 0, "haven");
 		db.Node("start");
-		db.Say("alpha", "\"{pack} again. And {pack_leader} with them. We keep the shutters down after dark.\"");
-		db.Say("", "\"{pack}, up the hill. You hear them at dusk. You learn not to answer.\"");
-		db.Choice("where", "\"Where do they go in the day?\"", "day", "", "", "", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 	}
 
 	protected static void Add7(RZ_DialogueDB db)
 	{
+		db.Say("alpha", "That's {pack} again, up the hill, and {pack_leader} with them now. Since that one came they've been bolder. We keep the shutters down after dark.");
+		db.Say("", "{pack}, up the hill. That's what the houses call them. You hear them at dusk, and you learn not to answer, and to keep the children from answering.");
+		db.Choice("where", "Where do they go in the daytime?", "day", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("day");
-		db.Say("", "\"Somewhere quiet. Somewhere we don't go. Nobody's been to look, and nobody's volunteering.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("redhand.boss.crossed", "seat:redhand/crew_boss", "tier:redhand>=known", "Ask whose line is crossed out.", 2, 0, "redhand");
+		db.Say("", "Somewhere quiet. Somewhere we don't go. Nobody's been up to look, nobody's volunteering, and I wouldn't ask them to.");
+		db.Say("", "If you do go, go in daylight and come back before the lamps are lit. We'll leave the door on the latch till then.");
+		db.Choice("back1", "I'll be back before dark.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("redhand.boss.crossed", "seat:redhand/crew_boss", "tier:redhand>=known", "Whose line did you cross out?", 2, 0, "redhand");
 		db.Node("start");
-		db.Say("", "\"Book's the book. Ask me something else.\"");
-		db.Choice("press", "\"I saw the page. Whose name was that?\"", "told", "short", "", "persuade redhand 2 bg:excon", "", "", "", "", "");
-		db.Choice("lean", "\"Tell me. Or I mention the second book.\"", "told", "laughed", "", "threaten redhand 2", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Book's the book. Lines get crossed out when they're paid, and how they got paid is between the line and me. Ask me something else.");
+		db.Choice("press", "I saw the page. Whose name was that?", "told", "short", "", "persuade redhand 2 bg:excon", "", "", "", "", "");
+		db.Choice("lean", "Tell me, or I mention the second book.", "told", "laughed", "", "threaten redhand 2", "", "", "", "", "");
+		db.Choice("back", "Fine. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("told");
-		db.Say("", "\"...A lad from the bridge crew. Paid in full. Day 9. He didn't pay. The infected did. Book balances.\"");
+		db.Say("", "A lad from the bridge crew. Paid in full, Day 9. He didn't pay, mind. The infected did, on the bridge, while he was on watch for us. The book balances.");
+		db.Say("", "Don't spread it. His mother's in a Haven house and thinks he's still out on the road somewhere. Let her.");
 		db.Do("learn:redhand.crossed");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back1", "I won't spread it.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("short");
-		db.Say("", "\"Nice try. The page is the page. Come back when you're in the book yourself.\"");
-		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Nice try. The page is the page. Come back when you're in the book yourself, and then we'll talk about other people's lines.");
+		db.Choice("back2", "Fine. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("laughed");
-		db.Say("", "\"Two books! Lads, two books. Course I keep two books. Everyone knows. Go on, then, tell them.\"");
-		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Two books! Lads, hear this, two books. Course I keep two books. Everyone in this camp knows I keep two books. Go on, then. Tell the whole camp.");
+		db.Choice("back3", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("redhand.leader.book", "stronghold:redhand,seat:redhand/crew_boss", "", "What's that book you keep?", 2, 0, "redhand");
 		db.Node("start");
 		db.Say("", "The book. Who owes, who's owed, and whose it was before they paid with it. Every crew on every road pays its cut, and every cut goes in here.");
@@ -1145,23 +1151,24 @@ class RZ_DialoguePack_leaders
 		db.Node("shut");
 		db.Say("", "The book's for reading out loud, at the right moment. This isn't it. You'll know the moment when it comes. Everybody does.");
 		db.Choice("back5", "Then something else.", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("redhand.leader.brief_lie", "leader:redhand", "knows:brieflie.redhand", "Tell the crew what the job left out.", 3, 0, "redhand");
+		db.Conv("redhand.leader.brief_lie", "leader:redhand", "knows:brieflie.redhand", "Somebody sold me a job short.", 3, 0, "redhand");
 		db.Node("start");
-		db.Say("", "\"Somebody sold you a job short? Careful. The crew likes a story, and it'll want a name.\"");
-		db.Choice("tell", "\"Tell the crew.\"", "told", "", "", "", "", "", "", "", "");
-		db.Choice("keep", "\"Let it lie.\"", "kept", "", "", "", "", "", "", "", "");
+		db.Say("", "Somebody sold you a job short? Careful. The crew loves a story like that, and it'll want a name to go with it.");
+		db.Say("", "Tell it, and it's round the fires by dark and somebody's page gets longer. Keep it, and you're holding something on them. Both are worth something.");
+		db.Choice("tell", "Tell the crew. I want it heard.", "told", "", "", "", "", "", "", "", "");
+		db.Choice("keep", "Let it lie. I'll hold on to it.", "kept", "", "", "", "", "", "", "", "");
 		db.Node("told");
-		db.Say("", "\"That'll go round the fires by dark. Somebody's evening just got worse.\"");
+		db.Say("", "That'll go round the fires by dark. Somebody's evening just got a lot worse.");
 		db.Do("call:brief_public");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Good. Something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("kept");
-		db.Say("", "\"Good. A secret's worth more kept. Remember who owes you for it.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("redhand.leader.haven_sitting", "stronghold:redhand", "q:every_name.summoned & !ending:every_name", "Ask about the Haven's sitting.", 2, 0, "redhand");
+		db.Say("", "Good. A secret's worth more kept. Remember who owes you for it, because they'll try to forget.");
+		db.Choice("back1", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("redhand.leader.haven_sitting", "stronghold:redhand", "q:every_name.summoned & !ending:every_name", "What's the Haven voting on?", 2, 0, "redhand");
 		db.Node("start");
-		db.Say("", "\"The Haven's voting on dinner. Lovely people. I've got odds on the pot, if you're interested.\"");
-		db.Say("", "\"Whatever they decide, somebody's hungry by Thursday. Somebody always is. That's where we come in.\"");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "The Haven's voting on dinner. Who eats, who works, who gets the bowl first. Lovely people. I've got odds on the pot, if you're interested.");
+		db.Say("", "Whatever they decide, somebody's hungry by Thursday. Somebody always is. That's where we come in, with tins, at a price.");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("redhand.leader.hello", "stronghold:redhand,seat:redhand/crew_boss", "!met", "", 4, 5, "redhand");
 		db.Node("start");
 		db.Say("stronghold & !met", "I'm {npc}, {role}. That's the book on the desk. Every crew on every road pays into it. Guns stay quiet in camp, and anything you want has a price. Pull up a chair.");
@@ -1169,7 +1176,7 @@ class RZ_DialoguePack_leaders
 		db.Say("!met", "I'm {npc}, {role}. This is a Red Hand camp. This stretch of road is ours, and so is the toll on it. Guns stay quiet in camp. Want something? Everything's got a price.");
 		db.Conv("redhand.leader.lied", "leader:redhand", "nmem:lied", "", 0, 5, "redhand");
 		db.Node("start");
-		db.Say("", "\"You lied to me. To me! In my own camp. I'd be impressed if I wasn't writing it down.\"");
+		db.Say("nmem:lied", "You lied to me. To me! In my own camp. I'd be impressed if I wasn't busy writing it in the book.");
 		db.Conv("redhand.leader.me", "stronghold:redhand,seat:redhand/crew_boss", "", "What does the crew call me?", 3, 0, "redhand");
 		db.Node("start");
 		db.Jump("kit:other", "colours");
@@ -1208,7 +1215,7 @@ class RZ_DialoguePack_leaders
 		db.Choice("back5", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("redhand.leader.name", "leader:redhand", "seasoned:redhand & !met", "", 3, 5, "redhand");
 		db.Node("start");
-		db.Say("", "\"Don't know the face. Know the name, though. The book never forgets a name. Faces, all the time.\"");
+		db.Say("seasoned:redhand & !met", "Don't know the face. Know the name, though: {title:redhand}. The book never forgets a name. Faces it forgets all the time, which is lucky for some people.");
 		db.Conv("redhand.leader.news", "stronghold:redhand,seat:redhand/crew_boss", "", "What's going round?", 2, 0, "redhand");
 		db.Bind("lost", "news:lost_by(redhand)");
 		db.Bind("burned", "news:burned");
@@ -1238,6 +1245,10 @@ class RZ_DialoguePack_leaders
 		db.Choice("more1", "What else is on the road?", "hub", "", "", "", "", "", "call:slot:1", "", "");
 		db.Choice("back1", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("caught");
+	}
+
+	protected static void Add8(RZ_DialogueDB db)
+	{
 		db.Say("", "Thrown out is a strong word. We were encouraged to leave. With guns. Fine. It's on a page. Somebody's page, and it isn't mine.");
 		db.Choice("more2", "What else is on the road?", "hub", "", "", "", "", "", "call:slot:1", "", "");
 		db.Choice("back2", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
@@ -1245,10 +1256,6 @@ class RZ_DialoguePack_leaders
 		db.Say("", "{bind:burned} burned. Not us. Burning's waste. You can't toll a pile of ash.");
 		db.Mark("truth", "gossip.burned@burned");
 		db.Say("", "Whoever lit it didn't do the sums. Ask the Haven. They'll say it was us. They say everything was us.");
-	}
-
-	protected static void Add8(RZ_DialogueDB db)
-	{
 		db.Choice("more3", "What else is on the road?", "hub", "", "", "", "", "", "call:slot:1", "", "");
 		db.Choice("back3", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("dead");
@@ -1392,24 +1399,25 @@ class RZ_DialoguePack_leaders
 		db.Say("", "The cure's out. People still owe. The book doesn't care about medicine, and leaving is going to cost somebody something.");
 		db.Choice("take3", "Then I'll still collect for you.", "hub", "", "", "", "", "", "call:slot:0", "", "");
 		db.Choice("back6", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
-		db.Conv("table.road.exile", "table:road", "exiled & !table:crossed", "", 4, 5, "table");
-		db.Node("start");
-		db.Say("", "\"Put out, were you? The houses do that. Counting, always counting. We don't count. We just make room.\"");
-		db.Conv("wanderer.deserter.picture", "wanderer:deserter", "tier:bastion!=stranger", "Ask what Bastion makes of you.", 4, 2, "plain");
-		db.Node("start");
-		db.Say("rep:bastion=necessary_evil", "\"Bastion's got you as a Necessary Evil. Means they'll use you till you're used up. Ask me how I know.\"");
-		db.Say("rep:bastion=useful_trouble", "\"Useful Trouble. They'll smile at you and log it. Both, every time.\"");
 	}
 
 	protected static void Add9(RZ_DialogueDB db)
 	{
-		db.Say("hunted:bastion", "\"Hunted. Welcome to the club. There's no club. There's a ditch and a lot of looking over your shoulder.\"");
-		db.Say("tier:bastion>=trusted", "\"They trust you. I was trusted once. It's a lovely feeling until they read you an order.\"");
-		db.Say("", "\"They've got you on a board somewhere, in chalk. Chalk rubs out. Remember that.\"");
-		db.Choice("why", "\"Why did you leave?\"", "why", "", "", "", "", "", "", "", "");
-		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Conv("table.road.exile", "table:road", "exiled & !table:crossed", "", 4, 5, "table");
+		db.Node("start");
+		db.Say("exiled & !table:crossed", "Put out, were you? The houses do that, love. Counting, always counting. We don't count. We just make room. Is anyone expecting you back tonight?");
+		db.Conv("wanderer.deserter.picture", "wanderer:deserter", "tier:bastion!=stranger", "What does Bastion make of me?", 4, 2, "plain");
+		db.Node("start");
+		db.Say("rep:bastion=necessary_evil", "Bastion's got you down as a Necessary Evil. That means they'll use you till you're used up, and log every use. Ask me how I know.");
+		db.Say("rep:bastion=useful_trouble", "Useful Trouble, they call you. They'll smile at you at the wire and write it down after. Both, every time.");
+		db.Say("hunted:bastion", "You're Hunted by them. Welcome to the club. There's no club. There's a ditch, a cold camp and a lot of looking over your shoulder.");
+		db.Say("tier:bastion>=trusted", "They trust you. I was trusted once, at a post past the hills. It's a lovely feeling, right up until they read you an order.");
+		db.Say("", "They've got you on a board somewhere, in grease pencil, with a line about where you were last seen. Grease pencil rubs off. Remember that.");
+		db.Choice("why", "Why did you leave them?", "why", "", "", "", "", "", "", "", "");
+		db.Choice("back", "Let me ask something else.", "hub", "", "", "", "", "", "", "", "");
 		db.Node("why");
-		db.Say("", "\"Same reason anyone leaves. Somebody read out an order and I heard it properly for once.\"");
-		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Say("", "Same reason anyone leaves. A sergeant read out an order, and for once I heard it properly. I won't say what it was. You'd only go and look.");
+		db.Say("", "Bastion writes people like me up as killed in action. It's kinder than the other word, and it means somebody is still sent to look.");
+		db.Choice("back1", "I won't ask again.", "hub", "", "", "", "", "", "", "", "");
 	}
 }

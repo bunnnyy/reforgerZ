@@ -3,175 +3,176 @@
 # was there (was), this player's route (route), and this character's memory. "The cure." gives the
 # leader's own read and opens the built carriers (the season at this seat, where to look); "Me." is
 # the leader on themselves, a week from the barrier. Nothing here pays anything.
+# Spoken straight to the player; the barriers stay closed until processing, then the north road.
 
 # ------------------------------------------------------------------ The Haven
 conv epilogue.haven.cure
 for leader:haven
 when epilogue
-topic "Ask about the cure."
+topic "What's happening with the cure?"
 prio world
 voice haven
 
 node start
-  say? cure_held:haven :: "It went hand to hand, like we said. The houses argued about who went first. They're still arguing. That's how you know it's ours."
-  say? cure_held:bastion :: "Bastion has it in a crate with a number on it. We're on their list. Everyone's on a list now."
-  say? cure_held:redhand :: "The Red Hand has it, and a price on it. We're paying in tins. They're keeping the tins, mostly."
-  say? cure_held:halcyon :: "The lab has published. Every name on the paper. I read it twice. I understood the second time."
-  say? cure_held:everyone :: "Somebody walked it out to every house. No crate, no list. Nobody would say who to thank."
-  say "It came. That's the part I keep saying out loud, to see if it's true."
-  > @here "What happened here, this season?" -> season
-  > @look "Where should I look?" -> look
-  > @back "Something else." -> hub
+  say? cure_held:haven :: It went hand to hand, house to house, like we always said it would. The houses argued about who went first. They're still arguing. That's how you know it's ours.
+  say? cure_held:bastion :: Bastion has it in crates with numbers on, and it's issued by name and signature. We're on their list. Everyone's on a list now, even us.
+  say? cure_held:redhand :: The Red Hand has it, and there's a price on a board at the crossroads. We're paying in tins. They're keeping the tins, mostly.
+  say? cure_held:halcyon :: The lab published it. Every name on the paper, the volunteers too, by number. I read it twice. I understood it the second time.
+  say? cure_held:everyone :: Somebody walked it out to every house. No crate, no list, no price. Nobody would say who to thank, so we thank everyone at supper.
+  say It came. That's the part I keep saying out loud, to see if it's true. The line's stood down. The barriers stay shut until processing, then it's the north road, one name at a time.
+  > @here What happened here, this season? -> season
+  > @look Where should I go before it's over? -> look
+  > @back Let me ask something else. -> hub
 
 node season
-  say "Sit down. I'll tell it the way the house tells it."
+  say Sit down. I'll tell it the way the house tells it, names and all.
   do call:season
-  > @back2 "Something else." -> hub
+  > @back2 Thank you. Something else. -> hub
 
 node look
-  say "Places you haven't been. I'll say them; you go."
+  say Places you haven't been yet, and people who'd like to see you before the north road. I'll name them, and you go.
   do call:look
-  > @back3 "Something else." -> hub
+  > @back3 I'll go. Something else. -> hub
 
 conv epilogue.haven.me
 for leader:haven
 when epilogue
-topic "Ask what they'll do now."
+topic "What will you do now?"
 prio flavour
 voice haven
 
 node start
-  say? route:won :: "You stood with us. I won't forget it, and nobody here will let me."
-  say? route:lost :: "You picked someone else's way. You'll still be fed here. We've fed people who picked worse."
-  say? was:every_name :: "You were at the table when the names were read. I saw you."
-  say "When they open the north road I'll be the last one out. Somebody has to lock the stores."
-  > @back "Something else." -> hub
+  say? route:won :: You stood with us at the end, when it mattered. I won't forget it, and nobody in this house will let me.
+  say? route:lost :: You picked someone else's way for the cure. You'll still be fed here. We've fed people who picked worse.
+  say? was:every_name :: You were at the table when the names were read. I saw you. I saw who you looked at.
+  say When they open the north road I'll be the last one out of this house. Somebody has to count the stores one more time and lock the door, and leave the bear on it.
+  > @back Let me ask something else. -> hub
 
 # ------------------------------------------------------------------ Bastion
 conv epilogue.bastion.cure
 for leader:bastion
 when epilogue
-topic "Ask about the cure."
+topic "What's happening with the cure?"
 prio world
 voice bastion
 
 node start
-  say? cure_held:bastion :: "Issued against name and signature, at the north road and the posts. In order. As planned."
-  say? cure_held:haven :: "The Haven hands it out at its houses. No register. Somebody has to keep one, so we do."
-  say? cure_held:redhand :: "Sold. At a price. Logged as theft. The log doesn't help, but it's accurate."
-  say? cure_held:halcyon :: "Published. Every name on the paper but ours. Noted."
-  say? cure_held:everyone :: "Carried out by persons unknown. To everyone. Unregistered. I've stopped writing to Command about it."
-  say "Cure confirmed. Processing at the checkpoints. The order hasn't changed. The tone has."
-  > @here "What happened here, this season?" -> season
-  > @look "Where should I look?" -> look
-  > @back "Something else." -> hub
+  say? cure_held:bastion :: We hold it. Issued against name and signature, at the north road and at the posts. In order. As planned, for once.
+  say? cure_held:haven :: The Haven hands it out at its houses, with no register. Somebody has to keep one, so we do, from what people tell us at the wire.
+  say? cure_held:redhand :: The Red Hand sells it, at a price on a board. Logged as theft. The log doesn't help anyone, but it's accurate.
+  say? cure_held:halcyon :: Published. The lab put every name on the paper but ours. Noted.
+  say? cure_held:everyone :: Carried out to everyone by persons unknown. Unregistered. I've stopped writing to Command about it, and Command has stopped not answering.
+  say Cure confirmed. The line's stood down: no drones, no snipers. Processing at the road checkpoints. The order hasn't changed. The tone has.
+  > @here What happened here, this season? -> season
+  > @look Where should I go before it's over? -> look
+  > @back Let me ask something else. -> hub
 
 node season
-  say "For the log, then."
+  say For the log, then. Names, dates, what we held and what we didn't.
   do call:season
-  > @back2 "Something else." -> hub
+  > @back2 Thank you. Something else. -> hub
 
 node look
-  say "Grid squares you haven't covered. Cover them."
+  say Grid squares you haven't covered, and people you haven't reported to. Cover them before processing.
   do call:look
-  > @back3 "Something else." -> hub
+  > @back3 I'll cover them. Something else. -> hub
 
 conv epilogue.bastion.me
 for leader:bastion
 when epilogue
-topic "Ask what they'll do now."
+topic "What will you do now?"
 prio flavour
 voice bastion
 
 node start
-  say? route:won :: "You signed the roster and held to it. That goes in the log, in ink."
-  say? route:lost :: "You signed for someone else. Logged. Then eat something."
-  say? was:orders :: "You were there when the orders were read. You'll remember them longer than Command did."
-  say "Hand over the post. Sign for the stores. Walk out last. Same as any posting."
-  > @back "Something else." -> hub
+  say? route:won :: You signed on with us for the cure and held to it. That goes in the log, in ink.
+  say? route:lost :: You signed for someone else's route. Logged. Now eat something.
+  say? was:orders :: You were there when the orders were read. You'll remember them longer than Command did.
+  say Hand over the post. Sign for the stores. Read the roll one last time, all of it. Then walk out last at the north road. Same as any posting.
+  > @back Let me ask something else. -> hub
 
 # ------------------------------------------------------------------ The Red Hand
 conv epilogue.redhand.cure
 for leader:redhand
 when epilogue
-topic "Ask about the cure."
+topic "What's happening with the cure?"
 prio world
 voice redhand
 
 node start
-  say? cure_held:redhand :: "Ours. Priced fair. Fair to us. The queue's at the board, and the board's got prices on it."
-  say? cure_held:bastion :: "Bastion's got it in a crate. We've got the crate's address. Patience."
-  say? cure_held:haven :: "The Haven's giving it away. Free! Bad for business. Good for everyone else, I'm told."
-  say? cure_held:halcyon :: "The beaks printed it. Can't sell a recipe everyone's read. I've tried."
-  say? cure_held:everyone :: "Somebody gave it to everyone for nothing. I've been robbed before, but never on behalf of the whole Zone."
-  say "It's out. Everything's for sale again, including leaving."
-  > @here "What happened here, this season?" -> season
-  > @look "Where should I look?" -> look
-  > @back "Something else." -> hub
+  say? cure_held:redhand :: Ours. Priced fair. Fair to us. The queue's at the board at the crossroads, and the board's got prices on it.
+  say? cure_held:bastion :: Bastion's got it in crates. We've got the crates' address. Patience.
+  say? cure_held:haven :: The Haven's giving it away. Free! Terrible for business. Good for everyone else, I'm told.
+  say? cure_held:halcyon :: The beaks printed the recipe. You can't sell a recipe everyone's read. I've tried.
+  say? cure_held:everyone :: Somebody gave it to everyone for nothing. I've been robbed before, but never on behalf of the whole Zone.
+  say It's out. The drones have gone home. Everything's for sale again, including leaving, and leaving's the one thing I can't put a price on yet.
+  > @here What happened here, this season? -> season
+  > @look Where should I go before it's over? -> look
+  > @back Let me ask something else. -> hub
 
 node season
-  say "The book remembers. Sit. I'll read you the good bits."
+  say The book remembers everything. Sit. I'll read you the good bits.
   do call:season
-  > @back2 "Something else." -> hub
+  > @back2 Thanks. Something else. -> hub
 
 node look
-  say "Places you haven't robbed yet. That's a joke. Half of one."
+  say Places you haven't robbed yet. That's a joke. Half of one. Here's where.
   do call:look
-  > @back3 "Something else." -> hub
+  > @back3 I'll go. Something else. -> hub
 
 conv epilogue.redhand.me
 for leader:redhand
 when epilogue
-topic "Ask what they'll do now."
+topic "What will you do now?"
 prio flavour
 voice redhand
 
 node start
-  say? route:won :: "You stood with the book. The book stands with you. That's as warm as it gets here."
-  say? route:lost :: "You backed the other horse. No hard feelings. A few soft ones."
-  say? was:book :: "You were at the table when the book was closed. You know what's in it. That makes two of us."
-  say "Me? Close the book. Count it twice. Then see what the outside charges for a sandwich."
-  > @back "Something else." -> hub
+  say? route:won :: You stood with the book for the cure. The book stands with you. That's as warm as it gets round here.
+  say? route:lost :: You backed the other horse. No hard feelings. A few soft ones.
+  say? was:book :: You were at the table when the book was closed. You know what's in it. That makes two of us.
+  say Me? Close the book. Count it twice. Then walk up the north road and see what the outside charges for a sandwich.
+  > @back Let me ask something else. -> hub
 
 # ------------------------------------------------------------------ Halcyon
 conv epilogue.halcyon.cure
 for leader:halcyon
 when epilogue
-topic "Ask about the cure."
+topic "What's happening with the cure?"
 prio world
 voice halcyon
 
 node start
-  say? cure_held:halcyon :: "Published. Every author named. The method is on the lab door. Someone corrected the spelling."
-  say? cure_held:bastion :: "Bastion holds the stock. They issue it alphabetically. We are under H."
-  say? cure_held:haven :: "The Haven distributes by hand. Unmeasured. Effective, by every measure we have."
-  say? cure_held:redhand :: "Sold. The dose is ours. The price is theirs. We have recorded both."
-  say? cure_held:everyone :: "Distributed without control or record. The outcome is good. We are revising our assumptions."
-  say "The work is done. The record is not. It never is."
-  > @here "What happened here, this season?" -> season
-  > @look "Where should I look?" -> look
-  > @back "Something else." -> hub
+  say? cure_held:halcyon :: Published. Every author named, the volunteers by number. The method is pinned to the lab door. Someone corrected the spelling.
+  say? cure_held:bastion :: Bastion holds the stock. They issue it alphabetically. We're under H.
+  say? cure_held:haven :: The Haven distributes it by hand. Unmeasured. Effective, by every measure we have.
+  say? cure_held:redhand :: Sold. The dose is ours. The price is theirs. We've recorded both.
+  say? cure_held:everyone :: Distributed without control or record. The outcome is good. We're revising our assumptions.
+  say The work is done. The line has stood down, and processing starts at the road checkpoints. The record is not done. It never is.
+  > @here What happened here, this season? -> season
+  > @look Where should I go before it's over? -> look
+  > @back Let me ask something else. -> hub
 
 node season
-  say "The record, then. The short version."
+  say The record, then. The short version, with dates.
   do call:season
-  > @back2 "Something else." -> hub
+  > @back2 Thank you. Something else. -> hub
 
 node look
-  say "Unsampled locations. Your notebook should list them. It probably doesn't."
+  say Unsampled locations. Your notebook should list them. It probably doesn't, so I will.
   do call:look
-  > @back3 "Something else." -> hub
+  > @back3 I'll go. Something else. -> hub
 
 conv epilogue.halcyon.me
 for leader:halcyon
 when epilogue
-topic "Ask what they'll do now."
+topic "What will you do now?"
 prio flavour
 voice halcyon
 
 node start
-  say? route:won :: "You chose the paper. Your name is in the acknowledgements. Small type. Still there."
-  say? route:lost :: "You chose another route. That is also data."
-  say? was:proof :: "You were there when the paper went out. Witness noted."
-  say "Write it up. Every page, including the first one. Then leave by the north road like anyone."
-  > @back "Something else." -> hub
+  say? route:won :: You chose the paper. Your name is in the acknowledgements. Small type. Still there.
+  say? route:lost :: You chose another route. That is also data.
+  say? was:proof :: You were there when the paper went out. Witness noted.
+  say Write it up. Every page, including the first one, which nobody wants to write. Then leave by the north road, in the queue, like anyone.
+  > @back Let me ask something else. -> hub

@@ -1,6 +1,7 @@
 # The name, not the face (docs/REPUTATION.md, "The season record"): a new life is a new face, but
 # the season record keeps the name an earlier life made. Once a life per leader. And a lie that was
-# caught or found out (nmem:lied): the speaker's next greeting says so, once.
+# caught or found out (nmem:lied): the speaker's next greeting says so, once. Greet lines are
+# conditional (say?), so the talk screen opens on a line only when it says something new.
 
 conv haven.leader.name
 for leader:haven
@@ -11,7 +12,7 @@ prio reaction
 voice haven
 
 node start
-  say "I don't know the face. I know the name. {title:haven}, wasn't it? Sit. Faces change. Soup doesn't."
+  say? seasoned:haven & !met :: I don't know your face, love, but I know the name. {title:haven}, the houses called you, didn't they? Faces change out here. The soup doesn't. Come and sit by the stove.
 
 conv bastion.leader.name
 for leader:bastion
@@ -22,7 +23,7 @@ prio reaction
 voice bastion
 
 node start
-  say "Don't know the face. Know the name. It's in the file as {title:bastion}. New face, same file."
+  say? seasoned:bastion & !met :: I don't know the face. I know the name: it's in our file as {title:bastion}, from a life the roster remembers. New face, same file. The sentries will be told.
 
 conv redhand.leader.name
 for leader:redhand
@@ -33,7 +34,7 @@ prio reaction
 voice redhand
 
 node start
-  say "Don't know the face. Know the name, though. The book never forgets a name. Faces, all the time."
+  say? seasoned:redhand & !met :: Don't know the face. Know the name, though: {title:redhand}. The book never forgets a name. Faces it forgets all the time, which is lucky for some people.
 
 conv halcyon.leader.name
 for leader:halcyon
@@ -44,7 +45,7 @@ prio reaction
 voice halcyon
 
 node start
-  say "Different face. Same name in the record: {title:halcyon}. We'll treat it as a repeat measurement."
+  say? seasoned:halcyon & !met :: Different face. Same name in the record: {title:halcyon}, from an earlier life. We'll treat you as a repeat measurement and see whether the result holds.
 
 conv haven.leader.lied
 for leader:haven
@@ -55,7 +56,7 @@ prio quest
 voice haven
 
 node start
-  say "You told me something that wasn't true. I found out. I'm not angry. I'm just counting differently now."
+  say? nmem:lied :: You told me something that wasn't true, and I found out. I'm not angry. I'm just counting differently now, and so will the house.
 
 conv bastion.leader.lied
 for leader:bastion
@@ -66,7 +67,7 @@ prio quest
 voice bastion
 
 node start
-  say "What you told me didn't check out. It's in your file now. Next to the other things."
+  say? nmem:lied :: What you told me last time didn't check out. It's in your file now, next to everything else, and the sentries read the file.
 
 conv redhand.leader.lied
 for leader:redhand
@@ -77,7 +78,7 @@ prio quest
 voice redhand
 
 node start
-  say "You lied to me. To me! In my own camp. I'd be impressed if I wasn't writing it down."
+  say? nmem:lied :: You lied to me. To me! In my own camp. I'd be impressed if I wasn't busy writing it in the book.
 
 conv halcyon.leader.lied
 for leader:halcyon
@@ -88,28 +89,29 @@ prio quest
 voice halcyon
 
 node start
-  say "Your account didn't replicate. The discrepancy is in the record, with your initials."
+  say? nmem:lied :: Your account didn't replicate. The discrepancy is in the record now, with your initials beside it.
 
 conv wanderer.deserter.picture
 for wanderer:deserter
 when tier:bastion!=stranger
-topic "Ask what Bastion makes of you."
+topic "What does Bastion make of me?"
 prio flavour
 daily
 voice plain
 
 node start
-  say? rep:bastion=necessary_evil :: "Bastion's got you as a Necessary Evil. Means they'll use you till you're used up. Ask me how I know."
-  say? rep:bastion=useful_trouble :: "Useful Trouble. They'll smile at you and log it. Both, every time."
-  say? hunted:bastion :: "Hunted. Welcome to the club. There's no club. There's a ditch and a lot of looking over your shoulder."
-  say? tier:bastion>=trusted :: "They trust you. I was trusted once. It's a lovely feeling until they read you an order."
-  say "They've got you on a board somewhere, in chalk. Chalk rubs out. Remember that."
-  > @why "Why did you leave?" -> why
-  > @back "Something else." -> hub
+  say? rep:bastion=necessary_evil :: Bastion's got you down as a Necessary Evil. That means they'll use you till you're used up, and log every use. Ask me how I know.
+  say? rep:bastion=useful_trouble :: Useful Trouble, they call you. They'll smile at you at the wire and write it down after. Both, every time.
+  say? hunted:bastion :: You're Hunted by them. Welcome to the club. There's no club. There's a ditch, a cold camp and a lot of looking over your shoulder.
+  say? tier:bastion>=trusted :: They trust you. I was trusted once, at a post past the hills. It's a lovely feeling, right up until they read you an order.
+  say They've got you on a board somewhere, in grease pencil, with a line about where you were last seen. Grease pencil rubs off. Remember that.
+  > @why Why did you leave them? -> why
+  > @back Let me ask something else. -> hub
 
 node why
-  say "Same reason anyone leaves. Somebody read out an order and I heard it properly for once."
-  > @back1 "Something else." -> hub
+  say Same reason anyone leaves. A sergeant read out an order, and for once I heard it properly. I won't say what it was. You'd only go and look.
+  say Bastion writes people like me up as killed in action. It's kinder than the other word, and it means somebody is still sent to look.
+  > @back1 I won't ask again. -> hub
 
 conv table.road.exile
 for table:road
@@ -119,4 +121,4 @@ once
 voice table
 
 node start
-  say "Put out, were you? The houses do that. Counting, always counting. We don't count. We just make room."
+  say? exiled & !table:crossed :: Put out, were you? The houses do that, love. Counting, always counting. We don't count. We just make room. Is anyone expecting you back tonight?
