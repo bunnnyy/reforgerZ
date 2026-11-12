@@ -153,8 +153,14 @@ you; until then you're "new face" (**Reputation > Crew names**, on).
 | Paid a toll with exactly the Favor you had | Skint |
 | Had three things taken at one Bastion search | Pockets |
 | Killed one of theirs, then did a Red Hand job the same season day | Sorry |
-
 | Laid a pack's leader down (the nearest player within 150 m when it falls) | Bailiff |
+| Threw a smoke grenade | Smoke |
+
+**Smoke's throw hook** (`Factions/RZ_RepNamesThrows.c`): every alive player's character is listened
+to for the character's `OnGrenadeThrown` event, as the molotov's trap is (VERIFY: it fires on the
+server for a thrown smoke); a throw counts when the thrown thing's prefab name says "smoke" (vanilla's
+M18 and RDG-2, Bastion's signal smoke), not by weapon type, because the bottles and the tin rattle are
+smoke grenades underneath. Log line: `Reputation: <player> threw a smoke`.
 
 The Name Day card's dares give theirs ([ERRANDS.md](ERRANDS.md#the-cards)). A pack's leader laid down
 is also a deed in each faction's own words, unless a bigger one stands: "laid the big one down at its
@@ -209,14 +215,29 @@ the gate hear it too, once per 10 minutes per place for everyone (*"Someone at t
 ..."*), under the names policy ("that one" for the anonymous). Log line: `Reputation: gate bark at
 <place> for <player>`.
 
-**On the standing page** the word is what each faction calls you to your face, and for the owed the
-tier's note reads *"Hunted - they owe you a hearing"* (the feed's `F` record carries the word and the
-owed flag).
+**On the standing page** (`Factions/RZ_RepNamesPage.c`) the header carries the whole picture after
+your name, background and life (*"MARA - NURSE - LIFE 2   "Word is you're the Haven's Champion and
+Bastion's Bad News. I'll believe the better half.""*). Each faction's leaders column opens with two
+lines: the word as a sentence (*"The crews call you Lucky."*, *"Bastion has you down as civilian,
+cleared."*; "The crews don't call you anything yet." before a crew name) and the nearest leader of
+theirs you've met, with what they make of you. For the owed the tier's note reads *"Hunted - they owe
+you a hearing"* (the feed's `F` record carries the word and the owed flag; `H` the picture; `W` the two
+lines). With **Reputation > Names** off, neither the picture nor the two lines are sent. A contract the
+parley reserved for you reads **"Amends: works off Infamy · finishes where the job says"** in the
+journal's requirements.
 
 **Bounty notices** carry the target's name with the Red Hand and a dry note for the owed: *"The Red
 Hand board: 40 Favor on Mara, Merciful Thug. The book says they're owed, too."*
 
-**Deed phrases** beyond the contracts' own: firing at a house (*"fired at the door in Levie"*), killing
+**Deed phrases from missions** (`Factions/RZ_RepNamesDeeds.c`): every contract and world event has
+its own phrase, set on the mission (`m_sDeed`) or, for the rest, by class (*"took back Morton"*,
+*"held the lab"*, *"answered a distress call near Levie"*); a class missing from both says *"did a job
+for us near {town}"*. Each questline's, major's and finale route's ending has a few words, written as
+the deed of the Fame the ending pays, online or not (*"buried the list"*, *"put the paper under
+seal"*, *"brought the cure home"*). War deeds between locked players are the finale's (`NoteWar`,
+[FINALE.md](FINALE.md)).
+
+**Deed phrases** beyond the missions: firing at a house (*"fired at the door in Levie"*), killing
 or robbing a wanderer (*"shot Old Marta, who walked the roads"*, *"robbed the Trader on the road"*),
 and shooting the farm's people (*"shot a farmer who'd done nobody any harm"*).
 

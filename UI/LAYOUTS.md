@@ -238,7 +238,7 @@ Positions below are the old menu's (before the 0.973 scale into the safe area).
 
 ```
 Frame StandingPage (root)
-├─ (in the frame: Header, the player, background and life)
+├─ (in the frame: Header, the player, background and life, then the whole picture as said)
 ├─ Frame  (Factions)           at (72, 168), 1778 × 610
 │  └─ Frame ×4, one per faction, 431 × 610, 18 apart; names end in the faction number:
 │     0 the Haven, 1 Task Force Bastion, 2 the Red Hand, 3 Halcyon
@@ -254,7 +254,8 @@ Frame StandingPage (root)
 │     ├─ Text    InfamyValueN    right, mono bold 14 ("36 - 12 TO FORGIVE") │ ProgressBar InfamyBarN 387 × 10, fill #D2553F
 │     │   (three 2-unit dark ticks over both bars at 15%, 40% and 75%: the tier bands)
 │     ├─ Text    FavorValueN     mono bold 24, faction colour
-│     ├─ Text    (label "LEADERS YOU'VE MET") │ Text LeadersN  wraps, 18, in a ScrollLayout
+│     ├─ Text    (label "LEADERS YOU'VE MET") │ Text LeadersN  wraps, 18, in a ScrollLayout; its first two
+│     │   lines are the word as a sentence and the nearest met leader's verdict
 │     ├─ Frame   NeedBlockN
 │     │  ├─ Text   (label "WHAT THEY NEED")
 │     │  ├─ Text   NeedTitleN     mono bold 18, faction colour

@@ -1298,7 +1298,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Factions | Hostility | `m_HostilitySettings` | **Mode** (Bitmask / Outlaw / Off), each faction's **Shoots from** (Hunted), exile armed only (on) and radius (100 m), fight radius (350 m), wanderers fight back (on) and grudge radius (80 m), **Retaliation** (on, 300 m, 180 s, 3 Infamy, cap 12/h), **Disguises** (on; **uniform**, head-piece and service-weapon **keywords** per faction, 2 pieces, checked every 10 s, blown 60 min of play, 3 catches a life, impersonation 3 Infamy (6 an hour), gate pass 10 min, **Confiscation** (on), the Red Hand's fine 10 and beating 0.2, **Colours** (on), claim in full kit (on), stand radius 1,500 m, **again looks** every 3 min, **roll call** (on), **word gets round** 30 min within 1,500 m, **vouching** (on, 5 Infamy), **the Rogue's price** (20), **kit marks** (on), issued grace 24 real hours), the three AI faction keys |
 | Factions | Services | `m_ServiceSettings` | **Fire Mission** (on, 60 min cooldown, 6 infected, 50 m, 30 s, kills at most 25, not within 250 m of people), **Fence** (on, keywords, 3 Favor an item, 8 a sale, 30 an hour), **Bounty board** (on, 60 to post, 40 paid, 3 at once, 2 h), booster (80) and medic (20) prices, **Amends** (15 Favor, ×1.5 each time, 5 Infamy, 15 a life, never below 15, every 30 min), armband and ribbon prefabs |
 | Factions | Checkpoints | `m_CheckpointSettings` | **Road posts** (on, 2 at once, every 15 min, 45 min each, within 2.5 km of a holding, bodies within 600 m), barrier and crew prefabs, warn (150 m) and barrier (35 m) radius, search (15 s, **contraband keywords**), run Infamy (3), toll (10), **Surrender** (on, 10 s, 8 Infamy, once an hour, 5 min hold fire), **Camps** (on, warn 150 m, gate 50 m), **Safe zones** (on, 80 m, 2 Infamy) |
-| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on) ([REPUTATION.md](REPUTATION.md#reputations)) |
+| Factions | Reputation | `m_ReputationSettings` | **Names** (on: the 16 names with what each counts as; off = the tier words), **Forgiveness budget** (30 Infamy per faction per life, every route), **Credit rule** (on, from 75 Fame: new Infamy costs the same Fame), **Wildcard at posts** (on: searched at Bastion checkpoints, running it 6 Infamy; Red Hand toll ×2), threats per life per faction (3), change notice (held 30 s, 5 min apart), **Crew names** (on), **Life-stamped memory** (on: earlier lives count at half), **Parley** (on: 2 real hours a faction, closed by a squad within 1 km, alone within 150 m, the hold to 200 m or 90 s), **Settling up** (on: 10 Fame for 5 Infamy, 10 a real day), **Gate barks** and **Others hear** (on), **Quiet success** (on, at Fear 2: a questline stage's threat tries Fear first, [DESIGN.md](DESIGN.md#checks-and-ways)) ([REPUTATION.md](REPUTATION.md#reputations)) |
 | Voice | Voice | `m_VoiceSettings` | **Season mood** (on: the broadcast and the voice bank read one ladder, and each faction's temper), **Lines** (add a voice bank line, or replace a default by its id), **Disabled** (ids to switch off), the debug **Log** (off) and **Force mood** (off) ([WRITING.md](WRITING.md#the-voice-bank)) |
 | UI | UI | `m_UISettings` | **Styled notices** (on; off = the vanilla hint), notice seconds (9), cards at once (2), gap (2 s), wait (45 s), calm after spawn (4 s), queue (12), Radio tab entries (60), infection timer and noise meter (on), resync (60 s), **icon imageset**, the three row layouts, the **spawn row layout** (our spawn screen; empty = vanilla's deploy menu), the **map icon layout** (refresh 20 s) and the **map legend layout** (full while a kilometre is up to 150 units across on screen, gone at 450), **lock loadouts** (on), **board menus** (off; on = the notice board menu), **subtitles** (on, 2.5–8 s, 18 characters a second), **reader** (on, 700 characters a page), the notebook's five **page** layouts and the **notebook prefab**, the talk screen's **reply layout** ([UI.md](UI.md), [UI/LAYOUTS.md](../UI/LAYOUTS.md)) |
 | Dialogue | Dialogue | `m_DialogueSettings` | The screen guard that closes the talk screen and the reader in danger: an infected within **Danger near** (6 m) or one closing in within **Danger closing** (30 m), **Open at most** (32 on the server); for talk, **Range** (6 m) and **Idle seconds** (120); **Trees** (off: conversation trees, topics and memory on the talk screen; [DIALOGUE.md](DIALOGUE.md)), **Talk Favor a day** (20 per faction), **Make it right** (on), **Opens** (on: greets that open by themselves), **Radio calls** (on: distress calls and the secure nets), waiting idle (45 s), conversations with one person (6; 16 in a scene), hearing (8 m), the room (30 m), the decide hold (5 s), a promise's hours (2) and real days (3), barks (6 m, 60 s a player, 600 s a speaker), the rumour round's chance for lies (0.15) ([UI.md](UI.md#how-the-scripts-fit)) |
@@ -1601,7 +1601,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **101** lines with the tag, all in the game scripts (one is the comment in
+There are **102** lines with the tag, all in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 16 are in the UI, the talk screen and the server's loadout
 lock). The Workbench plugin has none left: its real
 run settled them ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -1690,6 +1690,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
 | `Interactions/RZ_Traps.c:265` | the character's `OnGrenadeThrown` event fires on the server for a thrown molotov, naming the bottle (as the entity or the weapon's owner) | Molotovs never ignite when thrown: douse the doorway with a fuel can instead |
+| `Factions/RZ_RepNamesThrows.c:59` | the same `OnGrenadeThrown` event fires on the server for a thrown smoke grenade, naming the grenade | Nobody is ever called Smoke by the crews; every other crew name still works |
 | `Puzzles/RZ_BlinkingLight.c:178` | `SetFlags/ClearFlags(EntityFlags.VISIBLE)` hides a light and its mesh, on clients too | Remove `RZ_BlinkLightComponent` from the lamp: it's spawned per flash |
 | `Core/RZ_Util.c:864` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:641` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
@@ -2081,7 +2082,7 @@ answered by <player>, sent to house N (bitten B)`, `Dialogue: claim <speaker>|<c
 predicate), `Dialogue: lie <key> found out: its found effects ran`, `Dialogue: Talk test: N conversations ...`
 (an admin's `/talkdebug test`, and the runtime test's `RZT Talk test: ...`), `Dialogue: scene <key> reset by
 an admin`. Reputation's voice: `Reputation: gate bark at <place> for <player>`, `Reputation: <player>
-laid a pack's leader down`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
+laid a pack's leader down`, `Reputation: <player> threw a smoke`, `Reputation: time per cell (player-faction minutes): ...` (every 30 minutes),
 `Parley: <player>'s fire paused <player>'s parley`; the runtime test's `RZT Reputation test: ...` and `RZT
 voice <mood> faction N: radio [...] face [...]` (Voice > Force mood cycled).
 The season record: `Reputation: season record: <player> locked to <route>`. Lies: `Story:
@@ -2647,6 +2648,19 @@ when it happens)
   checkpoint searches you ("Arms out"); leaving the barrier early costs 6 Infamy. A Red Hand
   roadblock asks 20 Favor.
 - [ ] `/rep <your name>` as an admin prints the four factions; as a non-admin it's refused.
+- [ ] Known with the Red Hand and no crew name yet, throw a vanilla smoke grenade: the log has
+  `Reputation: <you> threw a smoke` and the notice says the crews call you Smoke. Throw a bottle: no
+  line (the throw hook, VERIFY).
+- [ ] The Standing page: the header has the whole picture after your name; each faction's column
+  opens with the word as a sentence ("The crews call you Smoke.") and the nearest leader you've met
+  there with what they make of you. Take a parley's amends job: the journal's requirements read
+  "Amends: works off Infamy · finishes where the job says".
+- [ ] One per approach: walk up to a Bastion post's gate with a name change pending and a tip due: the
+  gate's bark first (with a rival-colours remark in the same line, in another faction's armband), the
+  change notice 30 s later, then the tip 30 s after that.
+- [ ] Quiet success: Cargo's driver, Threaten him, with 40+ Red Hand Infamy this life: he talks and the
+  next stage's camp isn't on guard; with none, the built line ("you can guess who he's running to
+  tell").
 - [ ] Notice lanes ([DESIGN.md](DESIGN.md#notice-lanes)): walk past two leaders who have work for
   you within 4 minutes: only the first catches your eye; the second does once the 4 minutes are up.
 - [ ] Contracts and the season budget: finish several contracts for one faction in one session; the

@@ -31,7 +31,7 @@ class RZ_RepVoice
 	static const int CREW_POCKETS = 4;	// three things taken at one Bastion search
 	static const int CREW_BAILIFF = 5;	// laid down a pack's leader (with the tribes)
 	static const int CREW_SORRY = 6;	// killed a crewman, then did a Red Hand job the same day
-	static const int CREW_SMOKE = 7;	// threw a signal smoke (planned: needs a throw hook)
+	static const int CREW_SMOKE = 7;	// threw a smoke grenade (RZ_RepThrows, the throw hook)
 
 	//------------------------------------------------------------------------------------------------
 	static bool TreesOn()

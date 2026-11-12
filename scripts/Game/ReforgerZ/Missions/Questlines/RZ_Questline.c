@@ -628,6 +628,11 @@ class RZ_Questline
 		if (RZ_Majors.IsNoPay())
 			return;
 
+		// The ending's own words as the deed (RZ_RepDeeds), when the run has reached one
+		string deed = "";
+		if (run.m_iEnding >= 0)
+			deed = RZ_RepDeeds.ForEnding(run.m_sKey, run.m_iEnding);
+
 		array<string> idents = {};
 		run.GetIdents(idents);
 		foreach (string ident : idents)
@@ -635,14 +640,14 @@ class RZ_Questline
 			if (onlyApproach >= 0 && !run.IdentDid(ident, onlyApproach))
 				continue;
 
-			ChangeStandingFor(gm, ident, faction, fame, infamy);
+			ChangeStandingFor(gm, ident, faction, fame, infamy, deed);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Standing for one identity (online or not; offline straight onto the saved profile, with no
 	//! tier message), inside a major's caps while a major pays (RZ_Majors.ClipPay).
-	static void ChangeStandingFor(RZ_GameModeComponent gm, string ident, int faction, int fame, int infamy)
+	static void ChangeStandingFor(RZ_GameModeComponent gm, string ident, int faction, int fame, int infamy, string deed = "")
 	{
 		if (RZ_Majors.IsNoPay() || ident.IsEmpty() || !RZ_Factions.IsValid(faction))
 			return;
@@ -655,7 +660,7 @@ class RZ_Questline
 		int playerId = gm.GetQuestlines().OnlineId(ident);
 		if (playerId > 0)
 		{
-			gm.AddFame(playerId, faction, fame, false);
+			gm.AddFame(playerId, faction, fame, false, 0, deed);
 			gm.AddInfamy(playerId, faction, infamy, "questline", RZ_RepFlag.SHARE);
 			return;
 		}
@@ -667,6 +672,9 @@ class RZ_Questline
 		RZ_EFaction ef = faction;
 		if (fame != 0)
 			profile.AddFame(ef, fame);
+
+		if (fame > 0)
+			RZ_Deeds.NoteBest(profile, faction, fame, deed);
 
 		if (infamy > 0)
 			profile.AddInfamy(ef, infamy, true);

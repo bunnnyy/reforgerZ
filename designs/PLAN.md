@@ -11,7 +11,7 @@ trees on the talk screen behind **Dialogue > Trees**, reputation's voice, tone's
 built and lives in [DIALOGUE.md](../docs/DIALOGUE.md), [REPUTATION.md](../docs/REPUTATION.md#what-people-call-you)
 and [WRITING.md](../docs/WRITING.md#the-season-mood), and so are the last pieces of talk, reputation's names and
 tone; what's left of those three waits for an engine check or another session's code
-([DIALOGUE.md](../docs/DIALOGUE.md), [REPUTATION_NAMES.md](REPUTATION_NAMES.md), [TONE.md](TONE.md)). Phase 1 (the shared engine and
+([DIALOGUE.md](../docs/DIALOGUE.md), [REPUTATION.md](../docs/REPUTATION.md), [TONE.md](TONE.md)). Phase 1 (the shared engine and
 reputation's names) is built and lives in [DESIGN.md](../docs/DESIGN.md#the-shared-engine) and
 [REPUTATION.md](../docs/REPUTATION.md#reputations); the one body budget lives inside the tribes' agent budget
 ([INFECTED.md](../docs/INFECTED.md#the-one-body-budget)).
@@ -110,7 +110,7 @@ the forcing is now in the test, and waits for its next server run).
 
 | Layer | Pieces | What a player gets |
 |---|---|---|
-| Who you are | Reputation ([REPUTATION_NAMES.md](REPUTATION_NAMES.md)), disguise ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) | A name with each faction ("Merciful Thug"), deeds people quote back to you, and borrowed kit that buys a moment, never a living |
+| Who you are | Reputation ([REPUTATION.md](../docs/REPUTATION.md)), disguise ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) | A name with each faction ("Merciful Thug"), deeds people quote back to you, and borrowed kit that buys a moment, never a living |
 | What you do | Missions ([MISSION_STYLE.md](MISSION_STYLE.md)), errands ([ERRANDS.md](ERRANDS.md)), dialogue ([DIALOGUE.md](../docs/DIALOGUE.md)) | Several ways through every job; small jobs that come out of what's true right now; conversations with checks, lies and memory |
 | How it sounds | Tone (the standard and the lint built in [WRITING.md](../docs/WRITING.md); the rest in [TONE.md](TONE.md)) | One standard for grey choices and dark humour, a season mood, one voice bank and one lint |
 | What the Zone remembers | World memory (shared by missions, errands and the epilogue), the epilogue ([EPILOGUE.md](../docs/EPILOGUE.md)) | Callbacks all season, and an ending told by places and people, not slides |
@@ -201,7 +201,7 @@ an initialiser (step 0.5).
 
 | Thing | Owner | Others only read or call it |
 |---|---|---|
-| Tiers, the 16 names, the faction's word, crew names, life deeds and tallies, the forgiveness budget, the parley, settling up, `CanSideWith`, the season record | Reputation ([REPUTATION_NAMES.md](REPUTATION_NAMES.md)) | Everyone |
+| Tiers, the 16 names, the faction's word, crew names, life deeds and tallies, the forgiveness budget, the parley, settling up, `CanSideWith`, the season record | Reputation ([REPUTATION.md](../docs/REPUTATION.md)) | Everyone |
 | Kit and colours, the look, catches, word gets round, vouching at barriers, the nail list | Disguise ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)) | Dialogue (claims), missions (`PassAs`), errands (cards), tone (lines), the finale (the Coat Run's look) |
 | Conversations, sessions, owner-only delivery, regard, claims, knowledge, scenes, sways into tallies, the commit node | Dialogue ([DIALOGUE.md](../docs/DIALOGUE.md)) | Everything that talks |
 | The story kit: ways, the persuade and Fear checks, who benefits, who decides, truths, fallout, route assets, reasons, the price table | Missions ([MISSION_STYLE.md](MISSION_STYLE.md)) | Errands, the majors' stages, the finale's stages |
@@ -752,9 +752,9 @@ applied in the design file named, and this plan follows them.
 | 18 | The finale's world effects vs the spent majors' budget | The finale gets its own lane: morale ±10, strength ±5 per faction | [FINALE.md](../docs/FINALE.md), [MAJORS.md](../docs/QUESTLINES.md#the-majors) |
 | 19 | Two half rule sets plus four story rules next season | At most one half rule set (the deal partner, else the Fame leader), then the story rules, through `RZ_SeasonMods.Add` and `Cap` | [FINALE.md](../docs/FINALE.md) |
 | 20 | The last runtime test started no questline and none of the reused missions | Task 37 before phase 5: force the preconditions; each reused mission and every questline starts and ends once | [FINALE.md](../docs/FINALE.md), [MAJORS.md](../docs/QUESTLINES.md#the-majors), this plan (step 0.4) |
-| 21 | Two mechanics called "the knock" | The Haven's price door is "In pencil", built on reputation's Knock: an exile who isn't owed can offer 4 food and a name. It forgives nothing | [FINALE.md](../docs/FINALE.md), [REPUTATION_NAMES.md](REPUTATION_NAMES.md) |
+| 21 | Two mechanics called "the knock" | The Haven's price door is "In pencil", built on reputation's Knock: an exile who isn't owed can offer 4 food and a name. It forgives nothing | [FINALE.md](../docs/FINALE.md), [REPUTATION.md](../docs/REPUTATION.md) |
 | 22 | Hand to Hand promises easing a stronghold leader | Promises ease only the eight's yes and shorten the lab-gate sit-in (a minute per promised local present). The director's check counts locals at the gate | [FINALE.md](../docs/FINALE.md), [ERRANDS.md](ERRANDS.md) |
-| 23 | "Hand it in" taking 8 Bastion Infamy off outside the budget | The surrender goes through `Forgive()`. With the budget spent, the box is still taken in, and no Infamy comes off | [FINALE.md](../docs/FINALE.md), [REPUTATION_NAMES.md](REPUTATION_NAMES.md) |
+| 23 | "Hand it in" taking 8 Bastion Infamy off outside the budget | The surrender goes through `Forgive()`. With the budget spent, the box is still taken in, and no Infamy comes off | [FINALE.md](../docs/FINALE.md), [REPUTATION.md](../docs/REPUTATION.md) |
 | 24 | The New Vegas plan's Independent (the fifth track, any subject, commit until the stand ends) | The final finale: its own subject (the eight and the ham), at most one unit from another route's subject, the lab-alone track as a sixth track for the slow finish only, a lock counting at a stand only if it came before the batch was ready | [FINALE.md](../docs/FINALE.md), this plan ([The finale's edges](#the-finales-edges)) |
 | 25 | Drop route Fame (New Vegas plan) vs the finale's capped chunk | Decision 4: keep the chunk | [FINALE.md](../docs/FINALE.md), this plan |
 | 26 | Three faction groups at the stand | At most two of the majors' groups, the finisher's faction first, plus Halcyon's guard | disguise ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)), [MAJORS.md](../docs/QUESTLINES.md#the-majors), this plan |
@@ -762,7 +762,7 @@ applied in the design file named, and this plan follows them.
 | 28 | Bastion's confirm node: "until the season ends", and the lock card's lines missing | "From now until the cure...", with the route's admission and the bring and leave lines | [DIALOGUE.md](../docs/DIALOGUE.md) |
 | 29 | The toll man's old Rudi story ("before dark, like he asked"; Day 8) | *"Rudi? Rudi got bitten. Day 7. Everybody knows that. Nice try. It's fifteen now."* Tell note: dead since Day 7. The official lie, said flatly | [DIALOGUE.md](../docs/DIALOGUE.md) |
 | 30 | "Mrs Halas" at a Haven house | A seeded name that isn't in LORE | [DIALOGUE.md](../docs/DIALOGUE.md) |
-| 31 | Crew names "an honour" | Crew names are what the crew holds on you. The table mostly fits; Bailiff's trigger becomes "laid down a tribe's leader"; Nanny is reworded or cut; the quoted code is fixed | [REPUTATION_NAMES.md](REPUTATION_NAMES.md), [ERRANDS.md](ERRANDS.md) |
+| 31 | Crew names "an honour" | Crew names are what the crew holds on you. The table mostly fits; Bailiff's trigger becomes "laid down a tribe's leader"; Nanny is reworded or cut; the quoted code is fixed | [REPUTATION.md](../docs/REPUTATION.md), [ERRANDS.md](ERRANDS.md) |
 | 32 | Tone's old lore (crew names, grey reasons, Rudi as a toast, names leaving the roster) | Red Hand: *"Nobody was coming, and nothing taken ever has to be given back. Everyone would sell you, so keep something on everyone."* Bastion: *"They're all they have: feed your own, look for your own, bring your own home."* Rudi's end is never a joke; the lie is said flatly. *"Someone got to him first. His KIA's rubbed out."* | [TONE.md](TONE.md), [MISSION_STYLE.md](MISSION_STYLE.md) |
 | 33 | Disguise: a dead man's boots, deserters off the roster | A dead Red Hand man's kit passes only if bought from the fence (*"Bought fair. It's in the book."*). "A deserter struck off as KIA, his name still on the board"; the call-back is "hands his tag to the sergeant" | disguise ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)), [ERRANDS.md](ERRANDS.md) |
 | 34 | Disguise's Coat Run walks the batch out | Disguise keeps only the look (difficulty 3, the lock's −1, call-outs harder) and links to the finale; the batch is re-labelled inside the lab (decision 7) | disguise ([docs/REPUTATION.md](../docs/REPUTATION.md#borrowed-kit)), [FINALE.md](../docs/FINALE.md) |
@@ -879,7 +879,7 @@ system is built, and each with CLAUDE.md's Doc map and the README's doc list in 
 
 | Design | Lands in |
 |---|---|
-| [REPUTATION_NAMES.md](REPUTATION_NAMES.md) | REPUTATION.md (names, the credit rule, the budget, the parley), WRITING.md, DESIGN.md, UI.md |
+| Reputation's names (built; its design file is gone) | REPUTATION.md (names, the credit rule, the budget, the parley), WRITING.md, DESIGN.md, UI.md |
 | Disguise (built; its design file is gone) | REPUTATION.md ("Borrowed kit"), DIALOGUE.md (claims), UI.md, WORKBENCH_SETUP.md |
 | [MISSION_STYLE.md](MISSION_STYLE.md) | DESIGN.md ("Story blocks"), MISSIONS.md (each story job's row, the drops, the merges), QUESTLINES.md |
 | [ERRANDS.md](ERRANDS.md) | docs/ERRANDS.md (its own doc), MISSIONS.md's counts |

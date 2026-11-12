@@ -1847,8 +1847,18 @@ worked against in a questline ending one harder (the life record `crossed.<f>`),
 Free-standing talk threats are never made at a safehouse or inside a stronghold's or the lab's wire
 (`ThreatRefusedAt`); a threat a mission writes into its own scene stays. The Ledger's and Debt
 Collection's threats now run this check (+3 Infamy whatever happens; refused, they don't give in).
-The quiet success on the questlines' built FORCE stages is planned
-([REPUTATION_NAMES.md](../designs/REPUTATION_NAMES.md)).
+**The quiet success** (**Reputation > Quiet success**, on, at Fear 2): a questline stage's built threat
+tries Fear first (`m_iMenaceDifficulty` set in the stage's Setup, `TryMenace`). Passed, the stage gets
+its better outcome, still recorded as FORCE; failed, the built outcome, as before:
+
+| Stage | Quiet success |
+|---|---|
+| Cargo: the driver (Threaten him) | He tells it all and goes back to his van: the camp isn't on guard |
+| The Well Story: collect (Lean on them) | Said once, quietly: nobody comes out of the houses, no fight, no Haven Infamy for the lean |
+| The Book: read the page (Lean on them) | They pay and tell nobody: no Infamy for the lean with their faction |
+| The Three Weeks: the driver (Threaten him) | He names the site and won't tell the houses: no Haven Infamy, and the wanderer doesn't remember it as a wrong |
+
+The threat's own +3 Infamy stands either way.
 
 **The look** (`RZ_Checks.LookScore`): the disguise check, fixed and shown before you commit
 ([REPUTATION.md](REPUTATION.md#borrowed-kit)). **A lie** (`RZ_Checks.Lie`): a tell catches it first
@@ -1984,8 +1994,14 @@ that speaks unasked may speak now.
 | Bark | One a minute, one per speaker per 10 minutes |
 | Ambient | Approach and ambient lines: once per place per session |
 
+**Notices, one per approach:** the gate's own line first (a gate bark, with a rival-colours remark
+folded into the same line, `TryGate`), then a change notice, then a tip; anything lower waits until 30 s
+after the last approach line (`ApproachHolds`), and an ambient line held past 2 minutes is dropped. A
+held change notice waits on its own tick and is never dropped; a held tip is kept (one per player) and
+tried again each tick, dropped past 2 minutes.
+
 **The budget is a ceiling only:** it can stop a contact, never start one. A caller asks
-(`TryContact`, `TryBark`, `TryAmbient`) and stays quiet to try again later. Wired today: a leader
+(`TryContact`, `TryBark`, `TryAmbient`, `TryGate`) and stays quiet to try again later. Wired today: a leader
 catching your eye about work, and the Long Table's host stepping out on the road. Runtime only.
 (**Shared > Lanes**, contact gap 4 min, bark gap 60 s, speaker gap 10 min.)
 

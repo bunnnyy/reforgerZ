@@ -769,6 +769,8 @@ class RZ_QM_CargoDriver : RZ_QuestMission
 		else
 			m_sBrief = QFill(gm, "One of {crew_short}'s drivers, {driver_short}, wants a word with someone who isn't {crew_short}. Crossroads outside {crew_place}, dusk. Listen to him. Whatever he's carrying, find out.");
 
+		// The quiet threat (Reputation > Quiet success): Fear first, before he runs to tell
+		m_Ways.m_iMenaceDifficulty = RZ_ReputationSettings.QuietDifficulty();
 		return true;
 	}
 
@@ -802,6 +804,14 @@ class RZ_QM_CargoDriver : RZ_QuestMission
 
 		if (option == 1)
 		{
+			// Quiet success: he's more afraid of you than of them, so nobody tells the crew
+			if (TryMenace(gm, playerId, "cargo.driver", RZ_EFaction.BANDITS, false))
+			{
+				gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You say it once, quietly. {driver_short} tells you all of it: the vans, the strays, where they go. Then he goes back to his van as if nothing happened. He won't be telling anyone. He's more scared of you than of them."));
+				Resolve(gm, playerId, RZ_EQuestApproach.FORCE, RZ_Quest_Cargo.OUT_MET, "threatened the driver quietly");
+				return;
+			}
+
 			gm.NotifyPlayer(playerId, m_sTitle, QFill(gm, "You don't give him time to be careful. It all comes out at once: the vans, the strays, where they go. Then he's gone into the dusk, and you can guess who he's running to tell."));
 			Resolve(gm, playerId, RZ_EQuestApproach.FORCE, RZ_Quest_Cargo.OUT_THREATENED, "threatened the driver");
 		}
