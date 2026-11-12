@@ -821,8 +821,8 @@ still to do:
 | Single characters: quartermasters, leaders, occupants, wanderers | Vanilla civilian, US and FIA characters. Their faction affiliation was set afterwards, as their names say | They keep their vanilla kits: set them by hand. Halcyon's people are FIA medics; the kid is an adult |
 | `RZ_Antidote.et`; `RZ_Stabiliser.et` and `RZ_CutDose.et` | Saline; morphine, with their consumable effects set to `RZ_ConsumableAntidote` and `RZ_ConsumableMed` | They look like saline and morphine |
 | `RZ_Molotov.et`, `RZ_Bottle.et`, `RZ_TinRattle.et` | Smoke grenades with the beer bottle mesh (the tin can mesh for the tin), the smoke cleared, their own names | They throw as grenades do; a real throwable item is the fix |
-| `RZ_Explosion.et` | The vanilla mortar effect module | A real HE round: it damages what's near it |
-| `RZ_Nest.et` | Special Zombies' `ZombieHive_Minor` | It spawns its own infected |
+| `RZ_Explosion.et` | The vanilla mortar effect module (`EffectModule_MortarShell`) | A real HE round: it damages what's near it. **Make it look and sound only, no damage.** The scripts decide every harm themselves, as data (Fire Mission's strike, the infection Bastion Shelling takes off, Gas Station Fire's kills), and the same prefab goes off where players stand by design: the convoy's tripwire at the crates, the bridge charges they set, the burning helicopter they watch, Bastion's guns on the farm. Rebuild it the way `Perimeter/RZ_WarningShot.et` is built: base `Prefabs/Weapons/Warheads/Warhead_Base.et`; a `TimerTriggerComponent` (TIMER 0.05) whose PROJECTILE_EFFECTS hold one `SpawnParticleEffect` with `Particles/Weapon/Blast_Mortar_Dirt.ptc` and the explosion's sound event; a `SoundComponent` with `Sounds/Weapons/Ammo/MortarShells/Weapons_Ammo_MortarShell_8xmm_HE.acp` (use the event name that file's explosion plays); `SignalsManagerComponent` and `RplComponent`; no explosion damage effect and no `HitEffectComponent` damage. Check in play: a character 3 m from one, and a car 5 m from one, are untouched |
+| `RZ_Nest.et` | Special Zombies' `ZombieHive_Minor` | It spawns its own infected (a child `Bacon_622120A5448725E3_InfectedSpawnerEntity`, ID 69BD219DDB924140) and blows up when destroyed (`Warhead_Exploder_HiveBlast.et`). **The nest must not spawn:** Burn the Nest and Specimen from the Nest bring their own guards through the spawner, inside the agent budget ([INFECTED.md](INFECTED.md)); the hive's spawner would double them, outside it. Keep the hive's look and that it burns, and drop both: in `RZ_Nest.et` delete the spawner child; if Workbench won't delete an inherited child, build `RZ_Nest.et` as a plain `GenericEntity` instead with the hive's `MeshObject` (`HaystackSmall_01.xob` with its two Hive materials), `RigidBody` (Static 1, ResponseIndex MediumDestructible, ModelGeometry 1), `SCR_DestructionMultiPhaseComponent` (base health 750, Incendiary, Explosive and Fragmentation multipliers 20, Kinetic 0.01; on destruction only the `Blast_huge_Hive.ptc` particle, no `SCR_PrefabSpawnable` warhead), a `SoundComponent` with `Environment_Hive.acp`, and an `RplComponent`. Check in play: 5 minutes beside it bring nothing but the mission's guards, and a grenade destroys it |
 | `RZ_Lab.et` | A vanilla US tent | It can be destroyed (1000 HP) |
 | The packs' signs | Kill sites: suitcases, a UAZ tyre, a folded blanket; the old lair: a bunk-bed mattress; the marks: a stone verge post (the Haven), the minefield sign (Bastion), the FIA graffiti decal (the Red Hand), a no-entry sign (Halcyon) | Close enough to read; swap in better props when there are any |
 | Camp life's compositions | Vanilla props only: the barrel fire is `Particles/Campfire_burning.et`, the cooler a small crate and an autoclave drum, Halcyon's tent `TentSmall_03_white` with a medical table, the civilian tents `TentSmall_02_red` and `TentBig_01_orange` | No new meshes or decals (the red hand, the bear, the plague doctor, chalk, the ball, vegetables, boots, the axe, tubes): those spots are left out or are a plank |
@@ -1420,12 +1420,18 @@ so the test forces them (each logged as `RZT forced: ...`).
 **Missions.** Before each mission the towns go back to a spread of infection (20, 45, 75 and 95 in
 turn), whatever earlier missions did to them. A Setup that misses (a random spot in the sea, every
 town of its range busy) gets up to 8 goes, as the manager would try again later (`tries=` in the
-log line). An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
+log line), and each go after the first shifts the spread by one town: on Arland 13 of the 14
+settlements are lived in, so the one or two empty towns that most contracts need must pass through
+every band. A mission that still doesn't start logs `RZT mission <type> why: ...`: who holds what it
+claims, what else runs, how many towns are held, busy and free, the packs and its weight. The test
+world sets **Zombies > Tribes > Slots** to 2, so Arland (under the wild-land floor) has a pack for the
+packs' contracts; their first go is at the clock as it is, the others in the contract's offer window
+(dusk for Not Tonight, dawn for Escort at Dawn; `RZT forced: the clock into ...`). An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
 left set: a crate for the nest (Burn the Nest, Specimen from the Nest), the helicopter wreck (Crash
 Site), the dead drop, the fuel depot (Arson), the relay, the fallback landmark
 (The Smuggler's Ledger) and the scale crate (The Weighing Vault); a civilian for the trader, the
 bounty target (Collect the Bounty, The Sniper) and the Bastion outpost commander (Kill the Officer);
-an FIA fire team for the rival group. Convoy Escort and Hijack the Convoy get a Bastion truck and
+an FIA fire team for the rival group; the canteen for Plant a Tag's tag. Convoy Escort and Hijack the Convoy get a Bastion truck and
 crew, Mobile Lab a Halcyon truck and quiet towns near the lab, the Locked Bunker a keypad prop.
 
 **Questlines.** Before the first: no town overrun, the season a couple of days old, every
@@ -1434,7 +1440,12 @@ the roads, a Red Hand van and the clock held at dusk. Before each, the flags and
 reads: Walk Him Out done, Bastion short of supplies, the Last Helicopter's LZ kept, Patient Zero's
 ledger solved, the farm found, the host's offer to the tester (who is made a stranger to the Haven
 for it, and put back after: the offer is for someone the Haven doesn't take in), research at 80
-percent and, for Authors, the final stand, stopped again after. The Well Story runs before Cargo
+percent and, for Authors, the final stand, stopped again after. Before each, too, every seat the
+mission phase emptied is filled and every leader a finished mission still holds is let go (a season
+fills a seat after **Leaders > Replace minutes**), and The Three Weeks gets a scavenger again. A
+questline that doesn't start logs `RZT quest <key> why: ...` (the Red Hand's and Halcyon's seats, the
+puzzle prefabs, and what its own start reads). The two majors with no built questline under them
+(Every Name, Proof) are left to the majors' phase. The Well Story runs before Cargo
 (Cargo's purge ending dismisses the one crew boss it needs). While a questline waits for its stage
 mission, every mission that isn't a questline stage is ended, so a contract on the board can't hold
 the stage's town for the hour it lasts (a real stage waits hours before it gives up; the test's
@@ -1456,7 +1467,9 @@ with a scripted take by the pact's side and the tester in the clean room running
 (20 s), the stand's HUD line naming the holder's route; the win, the controller, the winner rule, the
 route's chunk and `finale.came`; and the release's terms
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
-five routes are left out of the questlines' phase: they only start at the gate.
+five routes are left out of the questlines' phase: they only start at the gate. The stand finds who
+stands in the clean room (and at the bay) by their character, and the fake player has no engine id,
+so the test's patch tells it which character is his.
 
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
 week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
@@ -1484,7 +1497,12 @@ tab's lines and the stand's groups by Bastion's stance (`RZT majors check:
 Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
-mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes. If the fake player dies outside the Perimeter test (a mission or the line got him), it says where and respawns him.
+mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes.
+Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
+in the line's band (The Blind Spot's does by design), and a death there would end the life a
+questline was following (A Place at the Table fizzles when its guest's life ends). It logs
+`RZT perimeter: ...` once per visit instead. If the fake player dies outside the Perimeter test
+anyway, it says where and respawns him.
 
 ```bash
 SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
@@ -1497,7 +1515,17 @@ SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
 A mission or questline that still doesn't start needs a world state the test doesn't create (an
 outpost of the right faction, a spot on the map, the weather). Expected on Arland: **Gas Station
 Fire** starts only when the island's petrol station is in a town nobody holds, which depends on the
-season's territory roll (about one run in three). The test world has no AI navigation (`No AIWorld`
+season's territory roll (about one run in three). The same roll decides how many towns are lived in
+(11 to 13 of Arland's 14), so the jobs that need towns well clear of where people live (**Fire
+Mission**, **Install Sensors**, **Bastion Shelling**, **Bust Out**, **Lead Them Away**) start in some
+runs and not others. Arland's one pack is a fresh one, so the packs' contracts that need a pack's
+history or a second pack are expected misses: **Bring Them Home** (a named young who was someone's),
+**Break the Habit** (a habit come due), **Cull** (12 or more round a heavy, near a Bastion holding),
+**Capture the Index** and **Plant a Tag** (a pack at stage 1 with its heavy; Capture also an alpha
+prefab, which the test world doesn't set), **Burn the Lair** (a player who has mapped the lair),
+**Stock the Pit** (two young and a Red Hand camp), **Bait the Crew** (two packs that border), **Escort
+at Dawn** (the pack between two safehouses 0.8 to 3.5 km apart), and **Not Tonight** and **Track Them
+Home** unless the pack is coming back to a house or has a party walking at that moment. The test world has no AI navigation (`No AIWorld`
 in the log), so a spawned group has no members, and a mission built on one may end by itself early
 (`ended by itself` in the log). None of this is part of the mod: the test files are copied into a throwaway addon folder.
 

@@ -3,6 +3,10 @@ class RZT_Fake
 {
 	static const int ID = 901;
 	static IEntity s_Ent;
+	//! The route's Perimeter test is on: until then the line leaves the tester alone (RZ_Perimeter
+	//! below), so a mission spot the test teleports him to near the edge can't end his life
+	static bool s_bLineTest;
+	static bool s_bLineSaid;
 
 	static void Add(array<int> ids, array<IEntity> ents)
 	{
@@ -33,5 +37,32 @@ class RZT_Fake
 		SCR_DamageManagerComponent dm = SCR_DamageManagerComponent.Cast(s_Ent.FindComponent(SCR_DamageManagerComponent));
 		if (dm)
 			dm.Kill(Instigator.CreateInstigatorGM());
+	}
+}
+
+// Until the route's Perimeter test, the line ignores the tester (a mission or questline spot the test
+// teleports him to may lie in the line's band on a small map); it says so once per visit
+modded class RZ_Perimeter
+{
+	override protected void UpdatePlayer(int playerId, IEntity player, float dt)
+	{
+		if (playerId != RZT_Fake.ID || RZT_Fake.s_bLineTest)
+		{
+			super.UpdatePlayer(playerId, player, dt);
+			return;
+		}
+
+		RZ_EPerimeterZone zone = GetZone(player.GetOrigin());
+		if (zone == RZ_EPerimeterZone.NONE)
+		{
+			RZT_Fake.s_bLineSaid = false;
+			return;
+		}
+
+		if (!RZT_Fake.s_bLineSaid)
+		{
+			RZT_Fake.s_bLineSaid = true;
+			Print(string.Format("RZT perimeter: the tester is in the line's %1 zone at %2 (left alone until the route's Perimeter test)", typename.EnumToString(RZ_EPerimeterZone, zone), RZ_SettlementScanner.GridReference(player.GetOrigin())));
+		}
 	}
 }

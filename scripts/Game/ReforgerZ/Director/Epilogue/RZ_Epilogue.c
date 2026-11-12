@@ -277,7 +277,9 @@ class RZ_Epilogue
 			return;
 		}
 
+		// Built first: the closing work's list reads ClosingOn, which needs the story built
 		m_iBuildStep = -1;
+		m_S.built = true;
 		m_Closing.List();
 		Commit();
 	}
