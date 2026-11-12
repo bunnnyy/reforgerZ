@@ -1758,6 +1758,17 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
      }
     }
    }
+   m_ErrandSettings RZ_ErrandSettings "{1A88DE76F799F053}" {
+    m_Props RZ_ErrandProps "{BF8F66648B138030}" {
+     m_sEffects "{7144274EFF1E57D7}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Effects.et"
+     m_sCrate "{F0991212CFA72F49}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Crate.et"
+     m_sPapers "{CC67500203DC4E03}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Papers.et"
+     m_sParts "{24EEE691C0EBECF7}Prefabs/ReforgerZ/Missions/RZ_ErrandProp_Parts.et"
+     m_sPayRation "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et"
+     m_sPayMagazine "{BBB50A815A2F916B}Prefabs/Weapons/Magazines/Magazine_545x39_AK_30rnd_Ball.et"
+     m_sWatch "{6FD6C96121905202}Prefabs/Items/Equipment/Watches/Watch_Vostok.et"
+    }
+   }
    m_GuidanceSettings RZ_GuidanceSettings "{6AD67DC2B8040E09}" {
     m_sRadioPrefab "{6F4EF5D0232D4827}Prefabs/ReforgerZ/Guidance/RZ_WindupRadio.et"
     m_sCarWreckPrefab "{02AC434CE3C3B56A}Prefabs/ReforgerZ/Guidance/RZ_CarWreck.et"
@@ -1883,6 +1894,7 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sSparkPrefab "{6CEB9445ED635609}Prefabs/ReforgerZ/Interactions/RZ_SparkPlugs.et"
     m_sFuelPrefab "{7BE5A0EEE4464399}Prefabs/ReforgerZ/Interactions/RZ_FuelCan_Full.et"
     m_sBootPrefab "{68DAED9D4949EE53}Prefabs/ReforgerZ/Interactions/RZ_WreckBoot.et"
+    m_sPumpStationPrefab "{FE30B9DD9761E1CE}Prefabs/ReforgerZ/Interactions/RZ_FuelPumpStation.et"
    }
    m_CraftSettings RZ_CraftSettings "{6AD67DC2BBC177FB}" {
     m_sBandagePrefab "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
@@ -2005,6 +2017,9 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
     m_sShopItemLayout "{73145BE069067DCE}UI/layouts/ReforgerZ/RZ_ShopItem.layout"
     m_sCraftRowLayout "{6AB6F35160E2EAC4}UI/layouts/ReforgerZ/RZ_CraftRow.layout"
     m_sPowerBreakerLayout "{6683AECB51379132}UI/layouts/ReforgerZ/RZ_PowerBreaker.layout"
+    m_sCookRowLayout "{6AB6F35160E2EAC4}UI/layouts/ReforgerZ/RZ_CraftRow.layout"
+    m_sRadioChannelLayout "{38124ADD31EC54A3}UI/layouts/ReforgerZ/RZ_RadioChannel.layout"
+    m_sObjectRowLayout "{15BF70C88E57E8DE}UI/layouts/ReforgerZ/RZ_ObjectRow.layout"
     m_sCarPicture "{093077085A47F892}UI/Textures/ReforgerZ/RZ_CarSide.edds"
     m_sStandingPage "{C712EC69C8D01A1F}UI/layouts/ReforgerZ/RZ_StandingPage.layout"
     m_sJournalPage "{47813396177D0DFF}UI/layouts/ReforgerZ/RZ_JournalPage.layout"

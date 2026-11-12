@@ -28,18 +28,6 @@ SCR_ChimeraCharacter : "{A2B367FFF37E6416}Prefabs/Characters/Factions/CIV/Dockwo
     }
    }
   }
-  ActionsManagerComponent "{520EA1D2F659CE02}" {
-   additionalActions {
-    RZ_TreatOtherAction "{6AD67DC2A8C67FA8}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A8F94525}" {
-      Name "Treat"
-     }
-    }
-   }
-  }
  }
  coords 0 0 0
 }

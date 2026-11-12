@@ -29,18 +29,6 @@ SCR_ChimeraCharacter : "{A517C72CEF150898}Prefabs/Characters/Factions/CIV/Busine
     }
    }
   }
-  ActionsManagerComponent "{520EA1D2F659CE02}" {
-   additionalActions {
-    RZ_TreatOtherAction "{6AD67DC2A8D56473}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A8D456DD}" {
-      Name "Treat"
-     }
-    }
-   }
-  }
  }
  coords 0 0 0
 }

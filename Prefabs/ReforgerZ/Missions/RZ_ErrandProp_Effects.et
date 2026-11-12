@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "03159FE3123CD3F9"
+ components {
+  RplComponent "{9EF526D974FD6209}" {
+  }
+  Hierarchy "{E10AC2BFF1CE0BA3}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "7F5F51A0A8EB66F0"
+   components {
+    Hierarchy "{5F8B85A546D5CE05}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 20 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "9744AB24C530BAA5"
+   components {
+    Hierarchy "{9E34961A2A987C57}" {
+    }
+   }
+   coords 0.05 0.28 0.1
+   angles 0 35 0
+  }
+  GenericEntity : "{2AEAA31471171A50}Prefabs/Props/Military/Photos/Photo_Square_01/Photo_Square_01_V1.et" {
+   ID "5DEC927F69E07847"
+   components {
+    Hierarchy "{776FA8DF4BEE2FE8}" {
+    }
+   }
+   coords 0.5 0 0.2
+   angles 0 80 0
+  }
+ }
+}

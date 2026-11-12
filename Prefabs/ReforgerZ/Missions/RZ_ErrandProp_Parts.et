@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "2540D5C3ABCD4309"
+ components {
+  RplComponent "{4F9EEAC9F85FCE3E}" {
+  }
+  Hierarchy "{EFD6C6133548713A}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{4BC3BE99653BECCE}Prefabs/Props/Industrial/ToolBox_02/ToolBox_02_lightblue.et" {
+   ID "110DA47448BDC9CD"
+   components {
+    Hierarchy "{F75AE0ED539F4C2A}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 25 0
+  }
+  GenericEntity : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+   ID "DFA77193B6912D17"
+   components {
+    Hierarchy "{28CB44B315A39E89}" {
+    }
+   }
+   coords 0.6 0 0.2
+   angles 0 0 0
+  }
+ }
+}

@@ -1,0 +1,23 @@
+GenericEntity {
+ ID "D472523E94AF3433"
+ components {
+  SCR_FuelManagerComponent "{D3637AC2D6FCB670}" {
+   Enabled 1
+   FuelNodes {
+    SCR_FuelNode "{39FA96F3A6F08D7B}" {
+     MaxFuel 60
+     m_fInitialFuelTankState 60
+     m_MaxFlowCapacityOut VEHICLE_MEDIUM
+     m_MaxFlowCapacityIn MANUAL
+     m_eFuelNodeType 10
+    }
+   }
+  }
+  SCR_FuelSupportStationComponent "{16C7A43AC3D4F5FC}" : "{85736C070896F361}Prefabs/Components/SupportStations/Fuel/FuelSupportStation_FuelPump.ct" {
+  }
+  RplComponent "{74D645D20C6054FD}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

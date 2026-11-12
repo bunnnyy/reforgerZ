@@ -22,18 +22,6 @@ SCR_ChimeraCharacter : "{C943F3CC53D187B6}Prefabs/Characters/Factions/CIV/Generi
     }
    }
   }
-  ActionsManagerComponent "{520EA1D2F659CE02}" {
-   additionalActions {
-    RZ_TreatOtherAction "{6AD67DC2A82D1FA4}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A82CE2FF}" {
-      Name "Treat"
-     }
-    }
-   }
-  }
  }
  coords 0 0 0
 }
