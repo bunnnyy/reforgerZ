@@ -2329,11 +2329,15 @@ player is near, capped and decaying, nothing left behind.
 **How it works on any map.**
 
 - **Things are recognised by name.** Every 10 s the server looks at static map objects within
-  30 m of each player and sorts them by prefab or mesh name: buildings by type, car wrecks,
-  workbenches, wells and pumps, fuel pumps, stoves, bells (every church gets one), sirens, house
-  radios and generators. Furniture is where loot lies.
+  30 m of each player (buildings within the loot's 45 m) and sorts them by prefab or mesh name:
+  buildings by type, car wrecks, workbenches, wells and pumps, fuel pumps, stoves, bells (every
+  church gets one), sirens, house radios and generators. Furniture is where loot lies.
 - **Interaction spots, only near players:** an invisible prop with labelled actions ("Search the
-  boot"), at most 10 per player and 70 on the server. Buildings and furniture get none.
+  boot"), at most 10 per player and 70 on the server. Buildings, furniture and bodies get none.
+  A thing's spot stands at the middle of its bounds (many props have their origin at a back
+  corner), at about counter height (its own height, 0.6 to 1 m), pulled up to 0.35 m toward its
+  open side, the side with the most free room beyond it, so a stove's prompt is on the stove, not
+  on the wall behind it.
 - **Decided on the server.** Loot lies in houses only while a player is near and is data
   otherwise; a car boot is rolled when it's searched, a body when it dies. What was searched, opened, stripped
   or burned is remembered as positions and times, and saved.

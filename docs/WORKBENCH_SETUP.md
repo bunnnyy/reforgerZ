@@ -3301,6 +3301,13 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   a bounty notice names only a nearby town. Die as a Haven Champion: the memorial headline goes
   out, and your next character is greeted and treated free at their first safehouse.
 - [ ] A stove offers "Brew a home remedy" with alcohol and herbs in your pack.
+- [ ] The stove's prompt ("Look at the stove") shows on the stove, at about worktop height on its
+  front, not on the wall beside or behind it; the same for a workbench, a generator and a house
+  radio (VERIFY `Interactions/RZ_Interactions.c:177`).
+- [ ] As a Nurse or Doctor, treat a bitten player (the infection has taken) with a bandage from
+  your hands, vanilla's way: both of you get a line that the bite was cleaned properly, and their
+  time left grows by about 15%; a second treatment that life does nothing more. There's no
+  "Treat their wounds" prompt (VERIFY `Interactions/RZ_Medical.c:15`).
 - [ ] A wanderer can be talked to and remembers you.
 - [ ] Bodies: kill a few infected near you. There's no "Search the body" prompt; open a body's
   inventory as you would any body's: now and then something is in it (bandages, ammo, a key with a

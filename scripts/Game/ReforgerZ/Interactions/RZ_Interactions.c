@@ -118,7 +118,8 @@ class RZ_Spot
 	string m_sNoun;			// "the blue door", "the wreck"
 	int m_iRef = -1;		// car project id...
 	float m_fSeen;			// hub clock when a player last saw it
-	float m_fExpires = -1;	// bodies: gone after this
+	float m_fExpires = -1;	// a bite's spot: gone after this
+	float m_fLift = 0.6;	// its prop stands this high above m_vPos (a map object's: about counter height)
 	IEntity m_Body;
 	RZ_PuzzleObjectComponent m_Comp;
 }
@@ -147,7 +148,94 @@ class RZ_SpotCandidate
 	vector m_vPos;
 	string m_sName;		// lower-case prefab or mesh name
 	float m_fDist;
-	IEntity m_Entity;	// buildings: their doors are looked at (RZ_DoorLocks)
+	IEntity m_Entity;	// the map object (buildings: their doors are looked at, RZ_DoorLocks; props: where the spot stands)
+}
+
+//------------------------------------------------------------------------------------------------
+//! Where a map object's interaction spot stands: the middle of its world bounds (many props have
+//! their origin at a back corner), at about counter height, pulled a little toward its open side
+//! (away from the wall it stands against). Worked out once, when the spot is made.
+class RZ_SpotPlacer
+{
+	protected static const float MIN_LIFT = 0.6;
+	protected static const float MAX_LIFT = 1.0;	// counter height
+	protected static const float PULL = 0.35;		// at most this far (m) toward the open side
+	protected static const float PROBE = 1.5;		// free space looked for beyond each side (m)
+	protected static const float MAX_SIZE = 12;		// bigger bounds than this (m): the origin is used
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot's ground point (its prop stands `lift` above it). The origin and 0.6 m without bounds.
+	static vector Place(IEntity e, out float lift)
+	{
+		lift = MIN_LIFT;
+		if (!e)
+			return vector.Zero;
+
+		vector origin = e.GetOrigin();
+		vector mins;
+		vector maxs;
+		e.GetBounds(mins, maxs); // VERIFY: a static map prop's local bounds are its mesh's box (a stove's front is inside them), not zero or its whole composition
+		vector size = maxs - mins;
+		if (size[0] <= 0.05 || size[2] <= 0.05 || size[0] > MAX_SIZE || size[2] > MAX_SIZE)
+			return origin;
+
+		vector mat[4];
+		e.GetWorldTransform(mat);
+		lift = Math.Clamp(size[1], MIN_LIFT, MAX_LIFT);
+		vector localMid = Vector((mins[0] + maxs[0]) * 0.5, mins[1], (mins[2] + maxs[2]) * 0.5);
+		vector mid = mat[3] + mat[0] * localMid[0] + mat[1] * localMid[1] + mat[2] * localMid[2];
+		vector probeAt = mid + Vector(0, lift, 0);
+
+		// The prop's own four sides: the one with the most free space beyond it is the open side
+		vector right = Flat(mat[0]);
+		vector ahead = Flat(mat[2]);
+		array<vector> dirs = {right, right * -1, ahead, ahead * -1};
+		array<float> halves = {size[0] * 0.5, size[0] * 0.5, size[2] * 0.5, size[2] * 0.5};
+		int best = -1;
+		float bestFree = 0.3;
+		foreach (int i, vector d : dirs)
+		{
+			float free = FreeBeyond(e, probeAt, d, halves[i]);
+			if (free > bestFree)
+			{
+				bestFree = free;
+				best = i;
+			}
+		}
+
+		if (best < 0)
+			return mid;
+
+		return mid + dirs[best] * Math.Min(PULL, halves[best]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A direction without its height, unit length (x if it has none).
+	protected static vector Flat(vector d)
+	{
+		vector f = Vector(d[0], 0, d[2]);
+		float len = f.Length();
+		if (len < 0.01)
+			return Vector(1, 0, 0);
+
+		return f * (1 / len);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How much room (m) there is past the prop's side in `dir`, up to PROBE: a flat trace from the
+	//! middle that ignores the prop itself.
+	protected static float FreeBeyond(IEntity e, vector from, vector dir, float half)
+	{
+		float len = half + PROBE;
+		TraceParam param = new TraceParam();
+		param.Start = from;
+		param.End = from + dir * len;
+		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		param.LayerMask = EPhysicsLayerPresets.Projectile;
+		param.Exclude = e;
+		float frac = ChimeraCharacter.TraceMoveWithoutCharacters(GetGame().GetWorld(), param);
+		return frac * len - half;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -458,11 +546,10 @@ class RZ_ItemHelper
 }
 
 //------------------------------------------------------------------------------------------------
-//! Spot kinds (the same values as RZ_Interactions.KIND_*), for switch statements.
+//! Spot kinds (the same values as RZ_Interactions.KIND_*), for switch statements. Buildings and
+//! bodies have none: loot lies loose in buildings (RZ_Loot) and bodies use vanilla's inventory.
 enum RZ_ESpotKind
 {
-	BUILDING,
-	BODY,
 	WRECK,
 	WORKBENCH,
 	WELL,
@@ -503,21 +590,20 @@ class RZ_Interactions
 	static const int TAG = -9;				// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id for spots
 	static const int TAG_NOTE = -10;		// readable things (lying in a house, or left by a search)
 
-	static const int KIND_BUILDING = 0;		// a look-around candidate only (doors, loot, church bells): never a spot
-	static const int KIND_BODY = 1;		// unused: bodies are looted with vanilla's inventory (RZ_Search.OnZombiesKilled); kept for the enum's order
-	static const int KIND_WRECK = 2;
-	static const int KIND_WORKBENCH = 3;
-	static const int KIND_WELL = 4;
-	static const int KIND_FUELPUMP = 5;
-	static const int KIND_STOVE = 6;
-	static const int KIND_BELL = 7;
-	static const int KIND_SIREN = 8;
-	static const int KIND_RADIO = 9;
-	static const int KIND_GENERATOR = 10;
-	static const int KIND_CAR = 11;
-	static const int KIND_DOOR = 12;		// a locked place's outside door (RZ_DoorLocks)
-	static const int KIND_WOUND = 13;		// a fresh bite at a player's feet (RZ_Infection): Clean the bite
-	static const int KIND_BURN = 14;		// a building's doorway near someone holding fuel (RZ_Traps): Douse the doorway
+	static const int KIND_WRECK = 0;
+	static const int KIND_WORKBENCH = 1;
+	static const int KIND_WELL = 2;
+	static const int KIND_FUELPUMP = 3;
+	static const int KIND_STOVE = 4;
+	static const int KIND_BELL = 5;
+	static const int KIND_SIREN = 6;
+	static const int KIND_RADIO = 7;
+	static const int KIND_GENERATOR = 8;
+	static const int KIND_CAR = 9;
+	static const int KIND_DOOR = 10;		// a locked place's outside door (RZ_DoorLocks)
+	static const int KIND_WOUND = 11;		// a fresh bite at a player's feet (RZ_Infection): Clean the bite
+	static const int KIND_BURN = 12;		// a building's doorway near someone holding fuel (RZ_Traps): Douse the doorway
+	static const int CAND_BUILDING = 100;	// a look-around candidate only (doors, loose loot, church bells): never a spot, not in RZ_ESpotKind
 
 	static const int TASK_SEARCH = 0;
 	static const int TASK_FORCE = 1;
@@ -794,7 +880,7 @@ class RZ_Interactions
 
 			// A locked place's outside doors get a spot each (Unlock, Lock, Force); the building
 			// itself never gets one (its loot lies loose: RZ_Loot)
-			if (c.m_iKind == KIND_BUILDING)
+			if (c.m_iKind == CAND_BUILDING)
 			{
 				added += m_Doors.OnBuildingSeen(c.m_Entity, c.m_sName, m_Settings.m_iSpotsPerPlayer - added);
 				continue;
@@ -832,21 +918,27 @@ class RZ_Interactions
 		if (kind < 0 || RZ_CampLife.IsDressing(e))
 			return true;
 
+		vector origin = e.GetOrigin();
+		float dist = RZ_Util.DistXZ(origin, m_vScanCenter);
+		// The sphere reaches out to the loot's spawn radius: past the spot radius only buildings
+		// count, and only for their loot
+		if (kind == CAND_BUILDING)
+			m_Loot.OnBuildingSeen(e, name);
+
+		if (dist > m_Settings.m_fScanRadius)
+			return true;
+
 		RZ_SpotCandidate c = new RZ_SpotCandidate();
 		c.m_iKind = kind;
-		c.m_vPos = e.GetOrigin();
+		c.m_vPos = origin;
 		c.m_sName = name;
-		c.m_fDist = RZ_Util.DistXZ(c.m_vPos, m_vScanCenter);
-		if (kind == KIND_BUILDING)
-		{
-			c.m_Entity = e;
-			m_Loot.OnBuildingSeen(e, name);
-		}
+		c.m_fDist = dist;
+		c.m_Entity = e;
 
 		m_aCand.Insert(c);
 
 		// A church gets a bell
-		if (kind == KIND_BUILDING && RZ_LandmarkFinder.Matches("church", name))
+		if (kind == CAND_BUILDING && RZ_LandmarkFinder.Matches("church", name))
 		{
 			RZ_SpotCandidate bell = new RZ_SpotCandidate();
 			bell.m_iKind = KIND_BELL;
@@ -895,7 +987,7 @@ class RZ_Interactions
 			return -1;
 
 		if (building || name.Contains("/buildings/") || name.Contains("house"))
-			return KIND_BUILDING;
+			return CAND_BUILDING;
 
 		return -1;
 	}
@@ -912,6 +1004,12 @@ class RZ_Interactions
 		s.m_vBuilding = c.m_vPos;
 		s.m_sType = "house";
 		s.m_fSeen = m_fClock;
+		if (c.m_Entity)
+		{
+			float lift;
+			s.m_vPos = RZ_SpotPlacer.Place(c.m_Entity, lift);
+			s.m_fLift = lift;
+		}
 
 		if (c.m_iKind == KIND_RADIO || c.m_iKind == KIND_STOVE || c.m_iKind == KIND_WORKBENCH)
 		{
@@ -939,7 +1037,7 @@ class RZ_Interactions
 		float bestDist = 15;
 		foreach (RZ_SpotCandidate c : m_aCand)
 		{
-			if (c.m_iKind != KIND_BUILDING)
+			if (c.m_iKind != CAND_BUILDING)
 				continue;
 
 			float d = RZ_Util.DistXZ(c.m_vPos, pos);
@@ -973,7 +1071,7 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A spot other systems ask for (bodies, car projects). Returns its id, -1 at the cap.
+	//! A spot other systems ask for (a bite, car projects). Returns its id, -1 at the cap.
 	int AddSpot(int kind, vector pos, string type, string noun, int refId, float expires)
 	{
 		// A bite spot is never refused: one per bitten player, and missing it costs a life
@@ -1221,7 +1319,7 @@ class RZ_Interactions
 	//------------------------------------------------------------------------------------------------
 	protected void SpawnSpot(RZ_Spot s)
 	{
-		s.m_Body = RZ_Util.SpawnPrefab(SpotPrefab(), s.m_vPos + Vector(0, 0.6, 0), 0);
+		s.m_Body = RZ_Util.SpawnPrefab(SpotPrefab(), s.m_vPos + Vector(0, s.m_fLift, 0), 0);
 		if (!s.m_Body)
 			return;
 
