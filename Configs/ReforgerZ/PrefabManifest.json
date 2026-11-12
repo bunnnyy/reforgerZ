@@ -4757,8 +4757,60 @@
    "slotLabel": "Interactions > General > Spot prefab",
    "required": false,
    "minimum": false,
-   "use": "every searchable thing, the Unlock/Lock/Force spot, the Clean the bite spot (falls back to the puzzle object, which is visible)",
+   "use": "every world interaction prompt (wells, pumps, stoves, bells, radios, generators, workbenches), the Clean the bite spot, and the Unlock/Lock/Force spot when Door spot is empty (falls back to the puzzle object, which is visible)",
    "notes": "Add the small collision box by hand; keep it off the character collision layer."
+  },
+  {
+   "id": "DoorSpot",
+   "kind": "create",
+   "system": "World interactions",
+   "path": "Prefabs/ReforgerZ/Interactions/RZ_DoorSpot.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "the interaction spot with a tiny interaction box (0.12 m) and a 0.35 m action radius",
+   "components": [
+    {"cls": "RZ_PuzzleObjectComponent", "values": [], "name": ""},
+    {"cls": "RZ_ClueComponent", "values": [], "name": ""}
+   ],
+   "actions": [
+    {"cls": "RZ_ReadClueAction", "values": [], "name": "Read"},
+    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=0"], "name": "Use"},
+    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=1"], "name": "Use"},
+    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=2"], "name": "Use"},
+    {"cls": "RZ_PuzzleUseAction", "values": ["m_iValue=3"], "name": "Use"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=0"], "name": "Choose"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=1"], "name": "Choose"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=2"], "name": "Choose"},
+    {"cls": "RZ_PuzzleChoiceAction", "values": ["m_iOption=3"], "name": "Choose"}
+   ],
+   "slots": ["m_InteractionSettings.m_sDoorSpotPrefab"],
+   "listSlot": false,
+   "slotLabel": "Interactions > General > Door spot prefab",
+   "required": false,
+   "minimum": false,
+   "use": "a locked door's Unlock, Lock and Force, on the door leaf at handle height (empty = the Spot prefab, whose bigger box can cover vanilla's Open door)",
+   "notes": "Built as text (set in the game mode). Keep its box tiny and its action context small, so vanilla's Open door at the handle stays reachable."
+  },
+  {
+   "id": "WreckBoot",
+   "kind": "create",
+   "system": "World interactions",
+   "path": "Prefabs/ReforgerZ/Interactions/RZ_WreckBoot.et",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "an empty GenericEntity with a small interaction box (no mesh, no collision) and vanilla's open-storage action",
+   "components": [
+    {"cls": "RZ_WreckBootStorageComponent", "values": [], "name": ""},
+    {"cls": "SCR_InventoryStorageManagerComponent", "values": [], "name": ""}
+   ],
+   "actions": [{"cls": "SCR_OpenStorageAction", "values": [], "name": "Open the boot"}],
+   "slots": ["m_CarSettings.m_sBootPrefab"],
+   "listSlot": false,
+   "slotLabel": "Interactions > Cars > Wreck boot prefab",
+   "required": false,
+   "minimum": false,
+   "use": "a car wreck's boot: one Open the boot prompt at its rear opens the vanilla inventory with what's in it (empty = wrecks hold nothing)",
+   "notes": "Built as text (set in the game mode). Its storage holds up to 100000 volume, 200 kg and items up to 100 x 100 x 100; a loot item that doesn't fit lies beside the wreck (logged once)."
   },
   {
    "id": "Key",
@@ -4803,7 +4855,7 @@
    "path": "",
    "basePrefab": "{EB21D26B8D5A3232}Prefabs/Items/Food/MRE.et,{50A68300B537EDFA}Prefabs/Items/Food/ArmyCrackers_Soviet_01.et,{C22A2F123CD609FC}Prefabs/Items/Food/Meat_01_Dry.et,{70BC751317551D9B}Prefabs/Items/Equipment/Canteens/Canteen_Soviet_01.et,{630FB4AD4A735264}Prefabs/Items/Equipment/Canteens/Canteen_US_01.et,{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et,{C3F1FA1E2EC2B345}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_USSR_01.et,{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et,{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et,{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et,{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et,{3A421547BC29F679}Prefabs/Items/Equipment/Flashlights/Flashlight_MX991/Flashlight_MX991.et,{7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et,{243948B23D90BECB}Prefabs/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.et,{61A705D76908160C}Prefabs/Items/Equipment/Watches/Watch_Orlik38/Watch_Orlik38.et,{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et,{12D5AD21E383B768}Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et,{8B853CDD11BA916E}Prefabs/Weapons/Magazines/Magazine_9x18_PM_8rnd_Ball.et,{9C05543A503DB80E}Prefabs/Weapons/Magazines/Magazine_9x19_M9_15rnd_Ball.et,{48720FC416263FC1}Prefabs/Weapons/Magazines/Vz58/Magazine_762x39_Vz58_30rnd_Ball.et,{BBB50A815A2F916B}Prefabs/Weapons/Magazines/Magazine_545x39_AK_30rnd_Ball.et,{2EBF60EF24B108FC}Prefabs/Weapons/Magazines/Magazine_556x45_STANAG_30rnd_M855_Ball.et,{BE19A15F1073E7BD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_black.et,{8266820FFDE17477}Prefabs/Characters/Handwear/Gloves_Wool_01/Gloves_Wool_01.et,{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et,{B0F4EAC29E9058EA}Prefabs/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01_grey.et,{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et,{C7923961D7235D70}Prefabs/Characters/Footwear/CombatBoots_Soviet_01.et,{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et,{41A9C55B61F375F0}Prefabs/Items/Equipment/Backpacks/Backpack_Kolobok.et",
    "baseFind": "",
-   "baseHint": "every item that can lie in a house or turn up in a car boot or on a body (vanilla and mod items)",
+   "baseHint": "every item that can lie in a house or turn up in a wreck's boot or on a body (vanilla and mod items)",
    "components": [],
    "actions": [],
    "slots": ["m_SearchSettings.m_aLootPool"],
@@ -4919,7 +4971,7 @@
    "slotLabel": "Interactions > Cars > Fuel prefab",
    "required": false,
    "minimum": false,
-   "use": "siphoning, pumps, fuel, fire",
+   "use": "the hand pump, fuel, fire",
    "notes": ""
   },
   {
@@ -5292,7 +5344,7 @@
    "slotLabel": "(loot)",
    "required": false,
    "minimum": false,
-   "use": "siphoning, pumps",
+   "use": "filled at the hand pump",
    "notes": ""
   },
   {
@@ -6442,13 +6494,13 @@
    "category": "Interactions",
    "object": "General",
    "field": "m_InteractionSettings",
-   "covers": "**Enabled**, spot prefab, scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others"
+   "covers": "**Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others"
   },
   {
    "category": "Interactions",
    "object": "Search",
    "field": "m_SearchSettings",
-   "covers": "**Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, and a car boot or body search; rare 0.1, electronics 0.1), car boot and body searches (4 s, 1 heat, a boot empty for 60 min), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
+   "covers": "**Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15)"
   },
   {
    "category": "Interactions",
@@ -6460,7 +6512,7 @@
    "category": "Interactions",
    "object": "Cars",
    "field": "m_CarSettings",
-   "covers": "Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), siphon and pump timings, Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix))"
+   "covers": "Car prefabs, parked prefabs, per settlement (0.34), max (6), **parts missing** (2 to 3), parts and keywords, **tool keywords** (wrench, toolkit and the like, to fit parts; empty = no tool), hotwiring (45 s, Mechanic 15 s, 20 heat, fails 0.35, Mechanic 0.1), keys (0.2 a car, 0.1 a search), pump timings, **Wreck boot prefab** (empty = wrecks hold nothing), wreck part chance (0.3), wreck return (120 min), Mechanic part cost (12) ([DESIGN.md](DESIGN.md#cars-found-rare-and-hard-to-fix), [Car wrecks](DESIGN.md#car-wrecks-one-boot-to-open))"
   },
   {
    "category": "Interactions",
@@ -7292,9 +7344,6 @@
     "m_fFindChance": "0.6",
     "m_fRareChance": "0.1",
     "m_fElectronicsChance": "0.1",
-    "m_fSpotReturnMinutes": "60",
-    "m_fSearchSeconds": "4",
-    "m_fSearchHeat": "1",
     "m_bLocks": "1",
     "m_fLockPharmacy": "0.5",
     "m_fLockPolice": "0.5",
@@ -7352,6 +7401,7 @@
     "m_sFuelWords": "jerrycan,jerry_can,fuelcan,fuel_can,canister",
     "m_sContainerWords": "jerrycan_empty,empty_jerrycan,canister_empty,empty_canister,fuelcan_empty",
     "m_sWreckWords": "wreck,carwreck,car_wreck,burntcar,burnt_car,car_burnt",
+    "m_fWreckPartChance": "0.3",
     "m_iMinParts": "2",
     "m_iMaxParts": "3",
     "m_sToolWords": "wrench,spanner,toolkit,tool_kit,toolbox,tool_box,repairkit,repair_kit",
@@ -7364,9 +7414,6 @@
     "m_fKeysChance": "0.2",
     "m_fKeyFindChance": "0.1",
     "m_fFitSeconds": "8",
-    "m_fStripSeconds": "12",
-    "m_fSiphonSeconds": "15",
-    "m_fSiphonChance": "0.6",
     "m_fPumpSeconds": "30",
     "m_fPumpHeat": "10",
     "m_fPumpCooldownMinutes": "20",

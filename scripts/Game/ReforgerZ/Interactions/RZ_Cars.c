@@ -1,6 +1,6 @@
 //! Cars as easy projects, kept rare (docs/DESIGN.md, "World interactions"). At most one
 //! fixable car per town and a small server-wide cap (about one per three settlements); every
-//! other wreck is just a wreck you can search, strip for one part or siphon.
+//! other wreck is just a wreck: a burnt-out shell whose boot you open (RZ_WreckBoots.c).
 //!
 //! A fixable car is data until it runs: which car it is, where it stands, what it's missing (two
 //! or three of fuel, battery, tyre, spark plugs by default), whether its keys are in a house in
@@ -19,16 +19,16 @@
 //! one house the mission names (loose loot, RZ_Loot), or hotwiring. It isn't saved, doesn't trigger a replacement,
 //! and goes when the mission ends unless someone started it.
 //!
-//! Parts come from garages (loose loot) and car boots (search), stripping wrecks (one part each), a
-//! Mechanic wanderer for Favor (never a quartermaster: they refuse to sell parts). Fuel comes from
-//! siphoning wrecks or a petrol station's hand pump into a container.
+//! Parts come from garages (loose loot), wrecks' boots (sometimes one), a Mechanic wanderer for
+//! Favor (never a quartermaster: they refuse to sell parts). Fuel comes from a petrol station's
+//! hand pump into a container, or a full can found as loot; never from a wreck.
 
 //------------------------------------------------------------------------------------------------
 //! Settings on RZ_GameModeComponent > Interactions > Cars.
 [BaseContainerProps()]
 class RZ_CarSettings
 {
-	[Attribute("1", desc: "Fixable cars and wrecks you can strip and siphon")]
+	[Attribute("1", desc: "Fixable cars, and wrecks whose boot you open")]
 	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Drivable vehicles a fixed car becomes (one at random). Empty = no fixable cars (wrecks still work)", "et")]
@@ -49,7 +49,7 @@ class RZ_CarSettings
 	[Attribute("0.25", desc: "Fuel in a freshly fixed car (0..1 of its tank)")]
 	float m_fStartFuel;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Car battery item (stripping, the Mechanic)", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Car battery item (garages, wreck boots, the Mechanic)", "et")]
 	ResourceName m_sBatteryPrefab;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Tyre item", "et")]
@@ -58,7 +58,7 @@ class RZ_CarSettings
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Spark plugs item", "et")]
 	ResourceName m_sSparkPrefab;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A full fuel can (siphoning, the hand pump). Empty = no siphoning or pumping", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "A full fuel can (the hand pump). Empty = no pumping", "et")]
 	ResourceName m_sFuelPrefab;
 
 	[Attribute("battery,accumulator", desc: "Car battery keywords")]
@@ -73,11 +73,17 @@ class RZ_CarSettings
 	[Attribute("jerrycan,jerry_can,fuelcan,fuel_can,canister", desc: "Fuel keywords (one is used up fuelling a car)")]
 	string m_sFuelWords;
 
-	[Attribute("jerrycan_empty,empty_jerrycan,canister_empty,empty_canister,fuelcan_empty", desc: "Empty fuel container keywords (filled by siphoning or pumping)")]
+	[Attribute("jerrycan_empty,empty_jerrycan,canister_empty,empty_canister,fuelcan_empty", desc: "Empty fuel container keywords (filled at the hand pump)")]
 	string m_sContainerWords;
 
-	[Attribute("wreck,carwreck,car_wreck,burntcar,burnt_car,car_burnt", desc: "Wreck keywords (search the boot, strip a part, siphon)")]
+	[Attribute("wreck,carwreck,car_wreck,burntcar,burnt_car,car_burnt", desc: "Wreck keywords (their boot opens: Wreck boot prefab)")]
 	string m_sWreckWords;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Wreck boot: an invisible storage (a small interaction box, no mesh) with RZ_WreckBootStorageComponent, SCR_InventoryStorageManagerComponent and vanilla's SCR_OpenStorageAction (Open the boot). Stands at a wreck's rear near players. Empty = wrecks hold nothing", "et")]
+	ResourceName m_sBootPrefab;
+
+	[Attribute("0.3", desc: "Chance a wreck's boot holds a car part (a battery, a tyre or spark plugs) when it's filled")]
+	float m_fWreckPartChance;
 
 	[Attribute("2", desc: "Fewest parts a new fixable car is missing (1 to 4: fuel, battery, tyre, spark plugs)")]
 	int m_iMinParts;
@@ -115,15 +121,6 @@ class RZ_CarSettings
 	[Attribute("8", desc: "Seconds to fit parts or fuel")]
 	float m_fFitSeconds;
 
-	[Attribute("12", desc: "Seconds to strip a part from a wreck")]
-	float m_fStripSeconds;
-
-	[Attribute("15", desc: "Seconds to siphon a wreck")]
-	float m_fSiphonSeconds;
-
-	[Attribute("0.6", desc: "Chance a wreck still has fuel to siphon")]
-	float m_fSiphonChance;
-
 	[Attribute("30", desc: "Seconds to fill a can at a petrol station's hand pump")]
 	float m_fPumpSeconds;
 
@@ -133,7 +130,7 @@ class RZ_CarSettings
 	[Attribute("20", desc: "Real minutes before the same pump gives fuel again")]
 	float m_fPumpCooldownMinutes;
 
-	[Attribute("120", desc: "Real minutes before a stripped or siphoned wreck has anything again")]
+	[Attribute("120", desc: "Real minutes before an emptied wreck boot has things again (leftovers stay, and roll fresh after three times this)")]
 	float m_fWreckReturnMinutes;
 
 	[Attribute("12", desc: "Haven Favor for a part from a Mechanic wanderer")]
@@ -334,11 +331,15 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The pumps' times (a boot's are RZ_WreckBoots'; stripped and siphoned wrecks in older saves
+	//! are dropped).
 	void RestoreWrecks(RZ_InteractionSave data)
 	{
 		for (int i = 0; i < data.wreckKey.Count() && i < data.wreckAt.Count(); i++)
 		{
-			m_mWreck.Set(data.wreckKey[i], data.wreckAt[i]);
+			string key = data.wreckKey[i];
+			if (key.Length() > 5 && key.Substring(0, 5) == "pump:")
+				m_mWreck.Set(key, data.wreckAt[i]);
 		}
 	}
 
@@ -1442,6 +1443,18 @@ class RZ_Cars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One of the car parts at random (a wreck's boot), "" if none is set.
+	ResourceName RandomPart()
+	{
+		array<ResourceName> parts = {};
+		AllParts(parts);
+		if (parts.IsEmpty())
+			return "";
+
+		return parts.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void AllParts(notnull array<ResourceName> parts)
 	{
 		if (!m_Settings.m_sBatteryPrefab.IsEmpty())
@@ -1537,120 +1550,7 @@ class RZ_Cars
 		m_mStartedWired.Remove(carId);
 	}
 
-	// ================================================================ Wrecks
-	//------------------------------------------------------------------------------------------------
-	void WreckLabels(RZ_Spot s, out string read, out string choiceLabels)
-	{
-		read = "Look at the wreck";
-		choiceLabels = "Search the boot|Strip a part|Siphon fuel (empty can)";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void DescribeWreck(int playerId, RZ_Spot s)
-	{
-		string text = "Flat tyres, smashed glass, a child seat in the back. Just a wreck. The boot might have something; the engine bay still has parts.";
-		if (WreckUsed("strip:" + s.m_sKey))
-			text += " Someone's had the parts out of it already.";
-
-		m_GM.NotifyPlayer(playerId, "Wreck", text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected bool WreckUsed(string key)
-	{
-		float at;
-		return m_mWreck.Find(key, at) && m_Hub.GetClock() - at < m_Settings.m_fWreckReturnMinutes * 60;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! 0 search the boot, 1 strip a part, 2 siphon.
-	void HandleWreck(int playerId, RZ_Spot s, int option, IEntity user)
-	{
-		if (option == 0)
-		{
-			m_Hub.GetSearch().StartSearch(playerId, s, user);
-			return;
-		}
-
-		if (option == 1)
-		{
-			if (WreckUsed("strip:" + s.m_sKey))
-			{
-				m_GM.NotifyPlayer(playerId, "Wreck", "Stripped already. Somebody had the battery and the plugs out of it.");
-				return;
-			}
-
-			array<ResourceName> parts = {};
-			AllParts(parts);
-			if (parts.IsEmpty())
-			{
-				m_GM.NotifyPlayer(playerId, "Wreck", "Nothing in there worth the skinned knuckles.");
-				return;
-			}
-
-			m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_STRIP, s.m_iId, 0, m_Settings.m_fStripSeconds, "the stripping", false);
-			return;
-		}
-
-		if (option == 2)
-		{
-			if (m_Settings.m_sFuelPrefab.IsEmpty())
-				return;
-
-			if (WreckUsed("siphon:" + s.m_sKey))
-			{
-				m_GM.NotifyPlayer(playerId, "Wreck", "The tank's been drained. You can smell it.");
-				return;
-			}
-
-			if (!RZ_ItemHelper.Has(user, m_Settings.m_sContainerWords))
-			{
-				m_GM.NotifyPlayer(playerId, "Wreck", "You need an empty can to siphon into.");
-				return;
-			}
-
-			m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_SIPHON, s.m_iId, 0, m_Settings.m_fSiphonSeconds, "the siphoning", false);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void CompleteStrip(int playerId, RZ_Spot s, IEntity user)
-	{
-		if (!s)
-			return;
-
-		m_mWreck.Set("strip:" + s.m_sKey, m_Hub.GetClock());
-		array<ResourceName> parts = {};
-		AllParts(parts);
-		m_GM.GetHeat().AddHeat(s.m_vPos, 4);
-		if (parts.IsEmpty())
-			return;
-
-		ResourceName part = parts.GetRandomElement();
-		RZ_ItemHelper.Give(part, user, s.m_vPos);
-		m_GM.NotifyPlayer(playerId, "Wreck", string.Format("Ten minutes of swearing and one part: %1. The rest is rust.", RZ_ItemHelper.DisplayName(part)));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void CompleteSiphon(int playerId, RZ_Spot s, IEntity user)
-	{
-		if (!s)
-			return;
-
-		m_mWreck.Set("siphon:" + s.m_sKey, m_Hub.GetClock());
-		if (Math.RandomFloat01() >= m_Settings.m_fSiphonChance)
-		{
-			m_GM.NotifyPlayer(playerId, "Wreck", "A mouthful of air and a taste of petrol. Dry.");
-			return;
-		}
-
-		if (RZ_ItemHelper.Take(user, m_Settings.m_sContainerWords, 1) <= 0)
-			return;
-
-		RZ_ItemHelper.Give(m_Settings.m_sFuelPrefab, user, s.m_vPos);
-		m_GM.NotifyPlayer(playerId, "Wreck", "The can fills slowly. Enough to get a car somewhere.");
-	}
-
+	// ================================================================ The hand pump
 	//------------------------------------------------------------------------------------------------
 	//! A petrol station's hand pump: louder and slower, but nearly always has fuel.
 	void HandlePump(int playerId, RZ_Spot s, IEntity user)

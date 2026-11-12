@@ -1,14 +1,15 @@
-//! Loot rules, locks and keys, readable things, the one search that's left (car boots, RZ_Cars)
-//! and what the bodies of infected killed near players carry (docs/DESIGN.md, "World
-//! interactions"). Loot in houses lies loose (RZ_Loot.c) and is rolled here (PickHouseLoot);
-//! bodies are looted with vanilla's inventory (OnZombiesKilled).
+//! Loot rules, locks and keys, readable things, and what the bodies of infected killed near
+//! players carry (docs/DESIGN.md, "World interactions"). Loot in houses lies loose (RZ_Loot.c)
+//! and is rolled here (PickHouseLoot), as is what's in a wreck's boot (PickBootLoot, for
+//! RZ_WreckBoots.c); bodies are looted with vanilla's inventory (OnZombiesKilled). There are no
+//! search prompts left.
 //!
 //! - Loot suits the building: pharmacy, garage, farm, police, shop or house, from the prefab
 //!   name of the building. Tables are configurable per type; anything left empty is filled from
 //!   one flat loot pool by keywords (bandage words for pharmacies, tool and fuel words for
 //!   garages...). Scaled by the town's loot level (RZ_TownMemory.GetLootLevel); electronics get
 //!   the power grid's multiplier (RZ_PowerGrid.LootMult).
-//! - A car boot is searched (a few seconds), rolled then, and remembered as searched for an hour.
+//! - A wreck's boot is a container (RZ_WreckBoots.c), rolled when it's first put out near a player.
 //!   A body is rolled when it dies and its things go into its inventory (or beside it).
 //! - Locks: some pharmacies, garages, police stations, shops and houses are locked (seeded
 //!   from the building's position, so the same ones stay locked). The lock is on the building's
@@ -25,7 +26,7 @@
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sType")]
 class RZ_LootTable
 {
-	[Attribute("house", desc: "Building type: pharmacy, garage, farm, police, shop, house, body (infected bodies) or car (car boots)")]
+	[Attribute("house", desc: "Building type: pharmacy, garage, farm, police, shop, house, body (infected bodies) or car (wrecks' boots)")]
 	string m_sType;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Everyday finds", "et")]
@@ -43,16 +44,16 @@ class RZ_LootTable
 [BaseContainerProps()]
 class RZ_SearchSettings
 {
-	[Attribute("1", desc: "Searching car boots, what infected bodies carry, locks and keys, readable things (loot in houses: Interactions > Loot)")]
+	[Attribute("1", desc: "What wrecks' boots and infected bodies hold, locks and keys, readable things (loot in houses: Interactions > Loot)")]
 	bool m_bEnabled;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item that can lie in a house or turn up in a car boot or on a body. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md). Each must be a real item with vanilla's pick-up action", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Loot pool: every item that can lie in a house or turn up in a wreck's boot or on a body. Tables left empty are filled from it by keywords in the prefab names (see docs/WORKBENCH_SETUP.md). Each must be a real item with vanilla's pick-up action", "et")]
 	ref array<ResourceName> m_aLootPool;
 
 	[Attribute(desc: "Loot tables per building type (optional; empty lists use the pool)")]
 	ref array<ref RZ_LootTable> m_aTables;
 
-	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a car boot search finds anything; on a body, the chance it carries anything")]
+	[Attribute("0.6", desc: "At full town loot (scaled by what the town has left): the chance each of a building's item slots holds something (loose loot), and that a wreck's boot holds anything; on a body, the chance it carries anything")]
 	float m_fFindChance;
 
 	[Attribute("0.1", desc: "Chance a find is rare (doubled behind a lock)")]
@@ -60,15 +61,6 @@ class RZ_SearchSettings
 
 	[Attribute("0.1", desc: "Chance a find is electronics (x the power grid's electronics multiplier)")]
 	float m_fElectronicsChance;
-
-	[Attribute("60", desc: "Real minutes before a searched car boot has anything again")]
-	float m_fSpotReturnMinutes;
-
-	[Attribute("4", desc: "Seconds a car boot search takes (stay close)")]
-	float m_fSearchSeconds;
-
-	[Attribute("1", desc: "Heat a car boot search makes")]
-	float m_fSearchHeat;
 
 	// ---------------------------------------------------------------- Locks and keys
 	[Attribute("1", desc: "Some buildings are locked (seeded from their position): their outside doors (the vanilla door action refuses; Unlock, Lock and Force at the door)")]
@@ -130,7 +122,7 @@ class RZ_SearchSettings
 	float m_fDoorBangSeconds;
 
 	// ---------------------------------------------------------------- Readable things and bodies
-	[Attribute("0.12", desc: "Chance a building's loot (or a car boot) has something readable (ID card, letter, receipt, photo)")]
+	[Attribute("0.12", desc: "Chance a building's loot (or a wreck's boot) has something readable (ID card, letter, receipt, photo)")]
 	float m_fReadableChance;
 
 	[Attribute("0.3", desc: "Chance an infected body has something readable on it")]
@@ -156,7 +148,7 @@ class RZ_Readable
 }
 
 //------------------------------------------------------------------------------------------------
-//! A stash someone wrote about: the building or car boot nearest it holds it.
+//! A stash someone wrote about: the building or wreck's boot nearest it holds it.
 class RZ_Stash
 {
 	vector m_vPos;
@@ -180,7 +172,6 @@ class RZ_Search
 	protected RZ_Interactions m_Hub;
 	protected RZ_SearchSettings m_Settings;
 	protected ref map<string, ref RZ_LootTable> m_mTables = new map<string, ref RZ_LootTable>();
-	protected ref map<string, float> m_mSearched = new map<string, float>();	// car boots
 	protected ref map<string, float> m_mOpened = new map<string, float>();
 	protected ref map<string, float> m_mForced = new map<string, float>();	// opened by force: broken until the reset
 	protected ref array<ref RZ_Readable> m_aNotes = {};
@@ -210,16 +201,6 @@ class RZ_Search
 	void SaveInto(RZ_InteractionSave data)
 	{
 		float now = m_Hub.GetClock();
-		float keep = m_Settings.m_fSpotReturnMinutes * 60;
-		foreach (string key, float at : m_mSearched)
-		{
-			if (now - at < keep)
-			{
-				data.searchedKey.Insert(key);
-				data.searchedAt.Insert(at);
-			}
-		}
-
 		float relock = m_Settings.m_fRelockMinutes * 60;
 		foreach (string okey, float oat : m_mOpened)
 		{
@@ -236,11 +217,6 @@ class RZ_Search
 	//------------------------------------------------------------------------------------------------
 	void RestoreFrom(RZ_InteractionSave data)
 	{
-		for (int i = 0; i < data.searchedKey.Count() && i < data.searchedAt.Count(); i++)
-		{
-			m_mSearched.Set(data.searchedKey[i], data.searchedAt[i]);
-		}
-
 		for (int j = 0; j < data.openKey.Count() && j < data.openAt.Count(); j++)
 		{
 			m_mOpened.Set(data.openKey[j], data.openAt[j]);
@@ -857,27 +833,7 @@ class RZ_Search
 		}
 	}
 
-	// ================================================================ Searching car boots
-	//------------------------------------------------------------------------------------------------
-	protected bool WasSearched(string key)
-	{
-		float at;
-		return m_mSearched.Find(key, at) && m_Hub.GetClock() - at < m_Settings.m_fSpotReturnMinutes * 60;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A search of a car boot: a few seconds, then the roll.
-	void StartSearch(int playerId, RZ_Spot s, IEntity user)
-	{
-		if (WasSearched(s.m_sKey))
-		{
-			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "You've been through it, or someone has. Nothing new. Give it time, or try somewhere else.");
-			return;
-		}
-
-		m_Hub.StartTask(playerId, user, RZ_Interactions.TASK_SEARCH, s.m_iId, 0, m_Settings.m_fSearchSeconds, "the search", false);
-	}
-
+	// ================================================================ Forcing a door
 	//------------------------------------------------------------------------------------------------
 	//! A forced door: open, loud, and broken until the reset.
 	void CompleteForce(int playerId, RZ_Spot s, IEntity user)
@@ -888,90 +844,6 @@ class RZ_Search
 		OpenBuilding(s.m_sBuildingKey, true);
 		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fForceHeat);
 		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The frame splinters and the lock tears out of it. The door's open, and it won't lock again for hours. Everything for a mile heard that.");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void CompleteSearch(int playerId, RZ_Spot s, IEntity user)
-	{
-		if (!s)
-			return;
-
-		string title = m_Hub.Title(s);
-		m_mSearched.Set(s.m_sKey, m_Hub.GetClock());
-		PruneSearched();
-		m_GM.GetHeat().AddHeat(s.m_vPos, m_Settings.m_fSearchHeat);
-
-		array<string> found = {};
-		int items = RollLoot(s.m_sType, s.m_vPos, false, user, s.m_vPos, found);
-
-		// A stash someone wrote about
-		if (TakeStashNear(s.m_vPos))
-		{
-			for (int i = 0; i < 2; i++)
-			{
-				items += RollLoot(s.m_sType, s.m_vPos, true, user, s.m_vPos, found);
-			}
-
-			found.Insert("the stash from the note, wrapped in a bin bag");
-		}
-
-		if (items > 0)
-			RZ_TownMemory.ReportSearched(s.m_vPos, m_Hub.GetLoot().GetTownLootPerItem() * items);
-
-		// Treatments (docs/DESIGN.md, "Treatments"): one roll
-		RZ_Infection infection = m_GM.GetInfection();
-		if (infection)
-		{
-			string med = infection.RollMedFind(s.m_sType, false, user, s.m_vPos);
-			if (!med.IsEmpty())
-				found.Insert(med);
-		}
-
-		string text = "";
-		if (found.IsEmpty())
-			text = EmptyText(RZ_TownMemory.GetLootLevel(s.m_vPos));
-		else
-			text = "You find " + ListText(found) + ".";
-
-		if (Math.RandomFloat01() < m_Settings.m_fReadableChance)
-		{
-			string keyId;
-			string keyTag;
-			string line;
-			int note = CreateReadable(s.m_vPos, false, false, keyId, keyTag, line);
-			if (note >= 0)
-			{
-				// A search leaves the readable thing where it was, for others to read too
-				SpawnNote(note, RZ_Util.RandomPointInRing(s.m_vPos, 0.4, 1) + Vector(0, 0.2, 0), Math.RandomFloat(0, 360));
-				if (!keyId.IsEmpty())
-					GiveKey(playerId, keyId, keyTag);
-
-				text += "\n" + line;
-			}
-		}
-
-		m_GM.NotifyPlayer(playerId, title, text);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void PruneSearched()
-	{
-		if (m_mSearched.Count() < 800)
-			return;
-
-		float now = m_Hub.GetClock();
-		float keep = m_Settings.m_fSpotReturnMinutes * 60;
-		array<string> old = {};
-		foreach (string key, float at : m_mSearched)
-		{
-			if (now - at >= keep)
-				old.Insert(key);
-		}
-
-		foreach (string k : old)
-		{
-			m_mSearched.Remove(k);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1029,25 +901,26 @@ class RZ_Search
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Rolls what a car boot search finds and gives it. Returns how many items. Names go into `found`.
-	protected int RollLoot(string type, vector pos, bool locked, IEntity user, vector at, notnull array<string> found)
+	//! What a wreck's boot holds (RZ_WreckBoots), as prefabs: something Find chance x the town's
+	//! loot level of the time, sometimes two. `stash` (a stash someone wrote about): +0.25, two
+	//! half the time, and twice the rare chance.
+	void PickBootLoot(vector pos, bool stash, notnull array<ResourceName> picks)
 	{
-		RZ_LootTable t = TableFor(type);
+		RZ_LootTable t = TableFor("car");
 		if (!t)
-			return 0;
+			return;
 
 		float level = RZ_TownMemory.GetLootLevel(pos);
-
 		float chance = m_Settings.m_fFindChance * level;
-		if (locked)
+		if (stash)
 			chance += 0.25;
 
 		if (Math.RandomFloat01() >= Math.Clamp(chance, 0, 0.95))
-			return 0;
+			return;
 
 		int count = 1;
 		float twoChance = 0.2 * level;
-		if (locked)
+		if (stash)
 			twoChance = 0.5;
 
 		if (Math.RandomFloat01() < twoChance)
@@ -1055,22 +928,13 @@ class RZ_Search
 
 		float rare;
 		float electronics;
-		Odds(type, pos, locked, false, rare, electronics);
-		int given = 0;
+		Odds("car", pos, stash, false, rare, electronics);
 		for (int i = 0; i < count; i++)
 		{
 			ResourceName pick = PickFrom(t, rare, electronics);
-			if (pick.IsEmpty())
-				continue;
-
-			if (RZ_ItemHelper.Give(pick, user, at))
-			{
-				found.Insert(RZ_ItemHelper.DisplayName(pick));
-				given++;
-			}
+			if (!pick.IsEmpty())
+				picks.Insert(pick);
 		}
-
-		return given;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1090,32 +954,6 @@ class RZ_Search
 			return m_Settings.m_aLootPool.GetRandomElement();
 
 		return "";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static string ListText(array<string> parts)
-	{
-		string text = "";
-		foreach (int i, string p : parts)
-		{
-			if (i > 0 && i == parts.Count() - 1)
-				text += " and ";
-			else if (i > 0)
-				text += ", ";
-
-			text += p;
-		}
-
-		return text;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static string EmptyText(float level)
-	{
-		if (level < 0.4)
-			return "Empty. Somebody beat you to it, and somebody beat them.";
-
-		return "A spare wheel with no air in it and an empty oil can.";
 	}
 
 	// ================================================================ Readable things
@@ -1252,7 +1090,7 @@ class RZ_Search
 
 	//------------------------------------------------------------------------------------------------
 	//! A stash someone wrote about lies within reach of pos: it's used up and true (the building
-	//! placed there, or the car boot searched there, holds it).
+	//! placed there, or a wreck's boot filled there, holds it).
 	bool TakeStashNear(vector pos)
 	{
 		float now = m_Hub.GetClock();

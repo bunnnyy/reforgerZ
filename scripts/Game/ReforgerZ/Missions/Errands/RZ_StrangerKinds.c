@@ -342,7 +342,7 @@ class RZ_Stranger_Funeral : RZ_StrangerKind
 
 	override string CallOut(RZ_Strangers s, RZ_StrangerVisit v)
 	{
-		return "\"It was my wife's. She drove it to {town} every Thursday.\" He pats the roof. \"Siphon it if you want. She'd want it used. Then help me put it in the ditch, would you? Out of the road.\"";
+		return "\"It was my wife's. She drove it to {town} every Thursday.\" He pats the roof. \"Take what's in the boot if you want. She'd want it used. Then help me put it in the ditch, would you? Out of the road.\"";
 	}
 
 	override void Choose(RZ_Strangers s, RZ_StrangerVisit v, int playerId, int option, IEntity user)

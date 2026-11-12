@@ -27,7 +27,7 @@ NOT_ON_PREFABS = {
     "RZ_SampleDeliveryActionBase",  # abstract base of the lab and dead-drop actions
 }
 # Vanilla component bases (outside our scripts) that make a class a component.
-VANILLA_COMPONENT_BASES = {"SCR_GadgetComponent", "ScriptGameComponent"}
+VANILLA_COMPONENT_BASES = {"SCR_GadgetComponent", "ScriptGameComponent", "SCR_UniversalInventoryStorageComponent"}
 # Consumable effects are set on an item's consumable component by hand (see the entry notes).
 CONSUMABLE_EFFECTS = {"RZ_ConsumableAntidote", "RZ_ConsumableMed"}
 

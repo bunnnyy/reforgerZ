@@ -1,5 +1,5 @@
-//! World interactions (docs/DESIGN.md, "World interactions"): loose loot in houses, searching car
-//! boots and bodies, locks and keys, readable things, fixable cars, crafting, water, barricades
+//! World interactions (docs/DESIGN.md, "World interactions"): loose loot in houses, wrecks' boots
+//! and bodies, locks and keys, readable things, fixable cars, crafting, water, barricades
 //! and traps, generators, fire, bells and sirens, cracking secure radio channels and treating
 //! other players.
 //!
@@ -9,17 +9,19 @@
 //!   type (pharmacy, garage, farm, police, shop, house), wrecks, workbenches, wells and pumps,
 //!   stoves, bells, sirens, radios, generators. Buildings get a loot record (RZ_Loot.c).
 //! - Only near a player, an invisible **interaction spot** (one small prefab with the generic
-//!   puzzle object's components) is put on each thing, with replicated labels ("Search the
-//!   boot"). The puzzle actions route here (TAG). Spots are removed when everyone leaves.
+//!   puzzle object's components) is put on each thing, with replicated labels ("Ring the
+//!   bell"). The puzzle actions route here (TAG). Spots are removed when everyone leaves. A
+//!   locked door's spot sits on the door leaf (RZ_DoorGeometry.HandlePoint). A wreck's "spot" is
+//!   its boot instead: an invisible storage opened with vanilla's inventory (RZ_WreckBoots.c).
 //! - What happens is decided on the server. Loot lies in houses only near players and is
-//!   kept as data otherwise; a car boot is rolled when it's searched, a body when it dies. What was searched,
+//!   kept as data otherwise; a wreck's boot is rolled when it's first put out, a body when it dies. What was emptied,
 //!   opened or burned is remembered as data (positions and times) and saved; town loot comes
 //!   back through RZ_TownMemory.
-//! - Longer actions (searching, forcing a lock, hotwiring, crafting, cracking a channel,
+//! - Longer actions (forcing a lock, hotwiring, crafting, cracking a channel,
 //!   treating someone) are timed on the server tick: stay put until they finish.
 //!
 //! The parts live in their own files: RZ_Loot.c, RZ_Search.c, RZ_DoorLocks.c (with
-//! RZ_DoorHooks.c and RZ_KeyItem.c), RZ_Cars.c, RZ_Crafting.c (and water),
+//! RZ_DoorHooks.c and RZ_KeyItem.c), RZ_Cars.c, RZ_WreckBoots.c, RZ_Crafting.c (and water),
 //! RZ_Traps.c (barricades, tripwires, spike traps, generators, molotovs and fire),
 //! RZ_SecureRadio.c and RZ_Medical.c.
 
@@ -28,11 +30,14 @@
 [BaseContainerProps()]
 class RZ_InteractionSettings
 {
-	[Attribute("1", desc: "World interactions on: loose loot, searching car boots and bodies, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/DESIGN.md, World interactions)")]
+	[Attribute("1", desc: "World interactions on: loose loot, wrecks' boots and bodies, locks, cars, crafting, water, traps, generators, fire, bells, secure radio, treating others (docs/DESIGN.md, World interactions)")]
 	bool m_bEnabled;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Interaction spot: a small invisible prop (a little collision box, no mesh) with RplComponent, ActionsManagerComponent and the generic puzzle object's components (RZ_PuzzleObjectComponent, RZ_ClueComponent, RZ_ReadClueAction, 4 RZ_PuzzleUseAction values 0-3, 4 RZ_PuzzleChoiceAction options 0-3). Empty = Puzzles > Generic object (visible)", "et")]
 	ResourceName m_sSpotPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Door spot: the interaction spot for a locked door's Unlock, Lock and Force, on the door leaf at handle height. The same components as the Spot prefab with a tiny interaction box and a small action radius, so it doesn't cover vanilla's Open door at the handle. Empty = the Spot prefab", "et")]
+	ResourceName m_sDoorSpotPrefab;
 
 	[Attribute("30", desc: "Things within this distance (m) of a player get an interaction spot")]
 	float m_fScanRadius;
@@ -134,6 +139,7 @@ class RZ_Spot
 	int m_iRef = -1;		// car project id...
 	float m_fSeen;			// hub clock when a player last saw it
 	float m_fExpires = -1;	// bodies: gone after this
+	float m_fLift = 0.6;	// its prop stands this high (m) above m_vPos (a door's: 0, it's on the leaf)
 	IEntity m_Body;
 	RZ_PuzzleObjectComponent m_Comp;
 }
@@ -162,7 +168,7 @@ class RZ_SpotCandidate
 	vector m_vPos;
 	string m_sName;		// lower-case prefab or mesh name
 	float m_fDist;
-	IEntity m_Entity;	// buildings: their doors are looked at (RZ_DoorLocks)
+	IEntity m_Entity;	// buildings: their doors are looked at (RZ_DoorLocks); wrecks: where their boot is
 }
 
 //------------------------------------------------------------------------------------------------
@@ -170,7 +176,7 @@ class RZ_InteractionSave
 {
 	int seed;
 	float clock;
-	ref array<string> searchedKey = {};
+	ref array<string> searchedKey = {};	// unused since car boots aren't searched (RZ_WreckBoots); kept so older saves load
 	ref array<float> searchedAt = {};
 	ref array<string> openKey = {};
 	ref array<float> openAt = {};
@@ -178,7 +184,7 @@ class RZ_InteractionSave
 	ref array<float> burnX = {};
 	ref array<float> burnZ = {};
 	ref array<float> burnAt = {};
-	ref array<string> wreckKey = {};
+	ref array<string> wreckKey = {};		// "pump:<key>" (RZ_Cars), "boot:<key>" (RZ_WreckBoots)
 	ref array<float> wreckAt = {};
 	ref array<string> lootKey = {};		// loose loot: each building's rolled-at and emptied-at times (no items)
 	ref array<float> lootRolled = {};
@@ -535,13 +541,13 @@ class RZ_Interactions
 	static const int KIND_WOUND = 13;		// a fresh bite at a player's feet (RZ_Infection): Clean the bite
 	static const int KIND_BURN = 14;		// a building's doorway near someone holding fuel (RZ_Traps): Douse the doorway
 
-	static const int TASK_SEARCH = 0;
+	static const int TASK_SEARCH = 0;		// unused (car boots aren't searched: RZ_WreckBoots); kept for the enum's order
 	static const int TASK_FORCE = 1;
 	static const int TASK_HOTWIRE = 2;
 	static const int TASK_CRAFT = 3;
-	static const int TASK_SIPHON = 4;
+	static const int TASK_SIPHON = 4;		// unused (wrecks have no fuel); kept for the enum's order
 	static const int TASK_PUMP = 5;
-	static const int TASK_STRIP = 6;
+	static const int TASK_STRIP = 6;		// unused (a wreck's part is in its boot); kept for the enum's order
 	static const int TASK_BOIL = 7;
 	static const int TASK_CRACK = 8;
 	static const int TASK_TREAT = 9;
@@ -560,6 +566,7 @@ class RZ_Interactions
 	protected ref RZ_Loot m_Loot;
 	protected ref RZ_DoorLocks m_Doors;
 	protected ref RZ_Cars m_Cars;
+	protected ref RZ_WreckBoots m_Boots;
 	protected ref RZ_Crafting m_Crafting;
 	protected ref RZ_Traps m_Traps;
 	protected ref RZ_SecureRadio m_Radio;
@@ -594,6 +601,7 @@ class RZ_Interactions
 		m_Loot = new RZ_Loot(gm, this, loot);
 		m_Doors = new RZ_DoorLocks(gm, this, m_Search, search);
 		m_Cars = new RZ_Cars(gm, this, cars);
+		m_Boots = new RZ_WreckBoots(gm, this, cars);
 		m_Crafting = new RZ_Crafting(gm, this, craft, settings);
 		m_Traps = new RZ_Traps(gm, this, traps);
 		m_Radio = new RZ_SecureRadio(gm, this, radio);
@@ -609,6 +617,7 @@ class RZ_Interactions
 	RZ_Loot GetLoot() { return m_Loot; }
 	RZ_DoorLocks GetDoors() { return m_Doors; }
 	RZ_Cars GetCars() { return m_Cars; }
+	RZ_WreckBoots GetBoots() { return m_Boots; }
 	RZ_Crafting GetCrafting() { return m_Crafting; }
 	RZ_Traps GetTraps() { return m_Traps; }
 	RZ_SecureRadio GetRadio() { return m_Radio; }
@@ -645,6 +654,7 @@ class RZ_Interactions
 		m_Loot.SaveInto(data);
 		m_Traps.SaveInto(data);
 		m_Cars.SaveInto(data);
+		m_Boots.SaveInto(data);
 		return data;
 	}
 
@@ -675,6 +685,7 @@ class RZ_Interactions
 			m_Loot.RestoreFrom(m_Restored);
 			m_Traps.RestoreFrom(m_Restored);
 			m_Cars.RestoreWrecks(m_Restored);
+			m_Boots.RestoreFrom(m_Restored);
 		}
 
 		m_bActive = true;
@@ -689,6 +700,8 @@ class RZ_Interactions
 
 		m_Restored = null;
 		RZ_Log.Info(string.Format("World interactions: on. %1 fixable cars on the map.", m_Cars.Count()));
+		if (!m_Boots.IsOn())
+			RZ_Log.Info("Wreck boots: off (Interactions > Cars > Wreck boot prefab is empty, or cars are off). Wrecks hold nothing.");
 	}
 
 	// ================================================================ Tick
@@ -713,6 +726,7 @@ class RZ_Interactions
 		m_Traps.Tick(dt, ids, players);
 		m_Radio.Tick(dt, ids, players);
 		m_Search.Tick(dt);
+		m_Boots.Tick();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -860,6 +874,10 @@ class RZ_Interactions
 			c.m_Entity = e;
 			m_Loot.OnBuildingSeen(e, name);
 		}
+		else if (kind == KIND_WRECK)
+		{
+			c.m_Entity = e;
+		}
 
 		m_aCand.Insert(c);
 
@@ -941,8 +959,13 @@ class RZ_Interactions
 			}
 		}
 
+		// A wreck's boot stands at its rear (the key stays the wreck's own position)
 		if (c.m_iKind == KIND_WRECK)
+		{
 			s.m_sType = "car";
+			if (c.m_Entity)
+				s.m_vPos = RZ_WreckBoots.BootPoint(c.m_Entity);
+		}
 
 		s.m_sBuildingKey = PosKey(s.m_vBuilding, 4);
 		s.m_sNoun = Noun(s, c.m_sName);
@@ -1067,14 +1090,38 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A spot outside a locked place's door (RZ_DoorLocks). False if it exists already (a double
-	//! door shares one) or at the cap.
-	bool AddDoorSpot(vector pos, vector buildingPos, string buildingKey, string type, string noun, int doorIndex)
+	//! A spot on a locked place's door (RZ_DoorLocks), its prop exactly at pos (on the leaf). False
+	//! if it exists already (a double door shares one) or at the cap. The door's own spot moves to
+	//! pos when `canMove` (the door is shut) and pos is more than 0.3 m from where it is.
+	bool AddDoorSpot(vector pos, vector buildingPos, string buildingKey, string type, string noun, int doorIndex, bool canMove)
 	{
 		string key = "door_" + PosKey(pos, 1);
 		foreach (RZ_Spot o : m_aSpots)
 		{
-			if (o.m_sKey == key || (o.m_iKind == KIND_DOOR && o.m_sBuildingKey == buildingKey && RZ_Util.DistXZ(o.m_vPos, pos) < 1.8))
+			if (o.m_iKind != KIND_DOOR || o.m_sBuildingKey != buildingKey)
+			{
+				if (o.m_sKey == key)
+				{
+					o.m_fSeen = m_fClock;
+					return false;
+				}
+
+				continue;
+			}
+
+			if (o.m_iRef == doorIndex)
+			{
+				o.m_fSeen = m_fClock;
+				if (canMove && vector.Distance(o.m_vPos, pos) > 0.3)
+				{
+					DespawnSpot(o);
+					o.m_vPos = pos;
+				}
+
+				return false;
+			}
+
+			if (RZ_Util.DistXZ(o.m_vPos, pos) < 1.8)
 			{
 				o.m_fSeen = m_fClock;
 				return false;
@@ -1090,6 +1137,7 @@ class RZ_Interactions
 		s.m_iKind = KIND_DOOR;
 		s.m_sKey = key;
 		s.m_vPos = pos;
+		s.m_fLift = 0;
 		s.m_vBuilding = buildingPos;
 		s.m_sBuildingKey = buildingKey;
 		s.m_sType = type;
@@ -1205,6 +1253,16 @@ class RZ_Interactions
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A locked door's spot: the door spot prefab, else the interaction spot.
+	protected ResourceName DoorSpotPrefab()
+	{
+		if (!m_Settings.m_sDoorSpotPrefab.IsEmpty())
+			return m_Settings.m_sDoorSpotPrefab;
+
+		return SpotPrefab();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The interaction spot prefab (else the generic puzzle object), for systems that place their own.
 	ResourceName GetSpotPrefab()
 	{
@@ -1239,7 +1297,18 @@ class RZ_Interactions
 	//------------------------------------------------------------------------------------------------
 	protected void SpawnSpot(RZ_Spot s)
 	{
-		s.m_Body = RZ_Util.SpawnPrefab(SpotPrefab(), s.m_vPos + Vector(0, 0.6, 0), 0);
+		// A wreck: its boot, a storage vanilla's inventory opens (no labels, no puzzle actions)
+		if (s.m_iKind == KIND_WRECK)
+		{
+			s.m_Body = m_Boots.PutOut(s);
+			return;
+		}
+
+		ResourceName prefab = SpotPrefab();
+		if (s.m_iKind == KIND_DOOR)
+			prefab = DoorSpotPrefab();
+
+		s.m_Body = RZ_Util.SpawnPrefab(prefab, s.m_vPos + Vector(0, s.m_fLift, 0), 0);
 		if (!s.m_Body)
 			return;
 
@@ -1262,6 +1331,10 @@ class RZ_Interactions
 	//------------------------------------------------------------------------------------------------
 	protected void DespawnSpot(RZ_Spot s)
 	{
+		// A wreck's boot: what's left in it is kept as data, then it goes
+		if (s.m_iKind == KIND_WRECK)
+			m_Boots.PutAway(s);
+
 		if (s.m_Body)
 			RZ_Util.DeleteUnit(s.m_Body);
 
@@ -1313,11 +1386,6 @@ class RZ_Interactions
 			case RZ_ESpotKind.DOOR:
 			{
 				m_Doors.Labels(s, read, choiceLabels);
-				break;
-			}
-			case RZ_ESpotKind.WRECK:
-			{
-				m_Cars.WreckLabels(s, read, choiceLabels);
 				break;
 			}
 			case RZ_ESpotKind.FUELPUMP:
@@ -1409,7 +1477,6 @@ class RZ_Interactions
 		switch (s.m_iKind)
 		{
 			case RZ_ESpotKind.DOOR: m_Doors.Describe(playerId, s); return;
-			case RZ_ESpotKind.WRECK: m_Cars.DescribeWreck(playerId, s); return;
 			case RZ_ESpotKind.CAR: m_Cars.Inspect(playerId, s, user); return;
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.Look(playerId, s, user); return;
 			case RZ_ESpotKind.RADIO: m_Radio.ListenHouseRadio(playerId, s, user); return;
@@ -1479,7 +1546,6 @@ class RZ_Interactions
 		switch (s.m_iKind)
 		{
 			case RZ_ESpotKind.DOOR: m_Doors.HandleChoice(playerId, s, option, user); return;
-			case RZ_ESpotKind.WRECK: m_Cars.HandleWreck(playerId, s, option, user); return;
 			case RZ_ESpotKind.CAR: m_Cars.HandleProject(playerId, s, option, user); return;
 			case RZ_ESpotKind.FUELPUMP: m_Cars.HandlePump(playerId, s, user); return;
 			case RZ_ESpotKind.WORKBENCH: m_Crafting.HandleRecipe(playerId, s, option, user); return;
@@ -1693,13 +1759,10 @@ class RZ_Interactions
 		RZ_Spot s = FindSpot(t.m_iSpot);
 		switch (t.m_iKind)
 		{
-			case RZ_ETaskKind.SEARCH: m_Search.CompleteSearch(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.FORCE: m_Search.CompleteForce(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.BURN: m_Traps.CompleteBurn(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.HOTWIRE: m_Cars.CompleteHotwire(t.m_iPlayerId, s, t.m_iArg); return;
 			case RZ_ETaskKind.FIT: m_Cars.CompleteFit(t.m_iPlayerId, s, t.m_iArg, user); return;
-			case RZ_ETaskKind.SIPHON: m_Cars.CompleteSiphon(t.m_iPlayerId, s, user); return;
-			case RZ_ETaskKind.STRIP: m_Cars.CompleteStrip(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.PUMP: m_Cars.CompletePump(t.m_iPlayerId, s, user); return;
 			case RZ_ETaskKind.CRAFT: m_Crafting.CompleteRecipe(t.m_iPlayerId, s, t.m_iArg, user); return;
 			case RZ_ETaskKind.BOIL: m_Crafting.CompleteBoil(t.m_iPlayerId, s, user); return;
