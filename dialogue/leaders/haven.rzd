@@ -1,81 +1,98 @@
 # The Haven's leaders: the chair at the stronghold and the council heads at the safehouses.
 # Voice: warm, worried, practical, darkly funny sideways. The List is said sideways, never announced.
+# Lines are spoken straight to the player (docs/WRITING.md, "Conversations"): who they are, where
+# you are and what's going on, in their own words.
 
-conv haven.leader.bear
+# The first time you meet one (a greet: the talk screen opens on it). One line, said only to a
+# stranger (!met); the season's name (names.rzd) and a caught lie come first when they apply.
+conv haven.leader.hello
 for stronghold:haven, seat:haven/council_head
-topic "Ask about the bear on the door."
+when !met
+greet
+once
 prio flavour
 voice haven
 
 node start
-  say "Day two. The teacher's eleven slept in the gym, and somebody painted a bear on the doors so nobody would shoot through them."
-  say "Nobody did. So now every house with children has one."
-  > @eye "Why is one eye stitched shut?" -> eye
-  > @mine "Could I have one painted?" -> mine
-  > @other "Something else." -> hub
+  say? bite_shown & !met :: I'm {npc}, {role}. That's a bite on your arm, love. Say it out loud to the house and we'll help if we can. That's the one rule we don't bend.
+  say? stronghold & !met :: I'm {npc}, {role}. Every Haven house sends its count to this table. You're welcome if you'll help. Don't fire that near the house, and sit down. You look like you walked here.
+  say? !met :: I'm {npc}, {role}. This is a Haven house: ordinary people who opened a door and kept it open. You get in if you'll help. Don't fire that near the house, and everyone works.
+
+conv haven.leader.bear
+for stronghold:haven, seat:haven/council_head
+topic "Why is there a bear on the door?"
+prio flavour
+voice haven
+
+node start
+  say On Day 2 a teacher's class of eleven slept in a school gym, and somebody stencilled a teddy bear on the doors so nobody would shoot through them in the dark.
+  say Nobody did. So now every house with children in it has the bear on its door, and it's become the Haven's mark. Most people see it and lower the rifle.
+  > @eye Why is one of its eyes stitched shut? -> eye
+  > @mine Could I wear one myself? -> mine
+  > @other Let me ask you something else. -> hub
 
 node eye
-  say "Somebody touched it up with the wrong brush and nobody had the heart to start again. It has a patch on its belly too."
-  say "It's been through more than most of us. Leave it be."
-  > @back1 "Something else." -> hub
+  say It's been touched up so often. Somebody did the eye with the wrong brush, and nobody had the heart to start again. There's a patch on its belly too, over a hole that wasn't paint.
+  say It's been through more than most of us. We leave it be.
+  > @back1 I like it better that way. -> hub
 
 node mine
-  say? tier:haven>=trusted :: "You've a ribbon, haven't you. That does the same job. People see it and put the rifle down."
-  say "It goes on doors, love, not on people. People get shot at anyway."
-  > @back2 "Something else." -> hub
+  say? tier:haven>=trusted :: You've the amber ribbon, haven't you? That does the same job on a person. People see it and put the rifle down.
+  say It goes on doors, love, not on people. People get shot at anyway. Earn the houses' trust and they'll give you an amber ribbon instead, to wear or not as you like.
+  > @back2 I'll earn it, then. -> hub
 
 conv haven.leader.list
 for stronghold:haven, seat:haven/council_head
 when !exiled
-topic "Ask about the names on the list."
+topic "What's the list of names by the door?"
 prio world
 voice haven
 
 node start
-  say "Every house keeps one. Who's here, who's moved on, who's gone to a better house."
-  say "It's a list. You count people so you know when one's missing."
-  > @crossed "Some names are crossed out." -> press
-  > @drop "Fair enough." -> hub
+  say Every house keeps one. Who's here, who's moved on, who's gone to a better house with more room. We send copies between the houses by hand.
+  say It's only a list. You count people so you notice when one's missing. Bastion counts its soldiers. We count everyone.
+  > @crossed Some of the names are crossed out. -> press
+  > @drop That makes sense. Something else. -> hub
 
 node press
-  say "Some are. People leave. People move to houses with more room."
-  > @why "Who crosses them out?" -> told | half | shut   check persuade haven 2 easier:merciful harder:paranoid bg:elder,nurse
-  > @let "Let it go." -> hub
+  say Some are. People leave. People go to houses with more room and more soup. It happens every week, and crossing out is quicker than writing the list again.
+  > @why Who crosses them out? -> told | half | shut   check persuade haven 2 easier:merciful harder:paranoid bg:elder,nurse
+  > @let I'll let it go. -> hub
 
 node told
-  say "Whoever's on the pencil that week. Some names go because the person went. Some go because the stores did."
-  say "I didn't say that. Eat something before you go."
+  say Whoever's got the pencil that week. Some names go because the person went. Some go because the stores did, and the council had to choose who the soup was for.
+  say I didn't say that, and you didn't hear it. Eat something before you go, and don't read the list on your way out.
   do learn:haven.list
-  > @thanks "Thank you for telling me." -> hub
+  > @thanks Thank you for telling me. -> hub
 
 node half
-  say "The council does. The council has its reasons, and its reasons have names too."
-  say "Ask me again when I know you better."
-  > @later "Another time, then." -> hub
+  say The council does. The council has its reasons, and the reasons have names too, if you know which list to look at.
+  say Ask me again when I know you better. I'm not saying no. I'm saying not on an empty stomach.
+  > @later Another time, then. -> hub
 
 node shut
-  say "That's the council's book, not mine. Ask the council. They'll say the same."
-  > @fine "Something else, then." -> hub
+  say That's the council's book, not mine. Ask the council. They'll tell you the same thing, only worse.
+  > @fine Then I'll ask about something else. -> hub
 
 conv haven.leader.supper
 for stronghold:haven, seat:haven/council_head
-topic "Ask who they read out at supper."
+topic "Who do you read out at supper?"
 prio flavour
 voice haven
 
 node start
-  say "Before anyone eats, somebody reads a name. One of ours who's gone. Then the bowls go round, counted twice."
-  say? kin :: "We read one of yours, once. That's why there's always a bowl for you."
-  say "It's not much of a ceremony. It's what we've got."
-  > @stay "Can I stay for it?" -> stay
-  > @count "Why count the bowls twice?" -> count
-  > @other3 "Something else." -> hub
+  say Before anyone eats, somebody reads a name. One of ours who's gone: bitten, or lost on a road, or worn out. Then the bowls go round, and we count them twice.
+  say When it's somebody who stood up for the Haven, every house lights a candle in the window that night too. It's not much of a ceremony. It's what we've got.
+  say? kin :: We read one of yours, once. That's why there's always a bowl for you here, and the medic won't take your Favor.
+  > @stay Can I stay and hear it? -> stay
+  > @count Why count the bowls twice? -> count
+  > @other3 Let me ask you something else. -> hub
 
 node stay
-  say "Anyone can stay. Sit at the end, keep your hat off, and don't eat before the name."
-  > @back3 "I'll remember." -> hub
+  say Anyone can stay. Sit at the end, take your hat off, and don't touch your spoon before the name. The children watch new faces to see if they know the rule.
+  > @back3 I'll remember. -> hub
 
 node count
-  say "Once to see how many we've got. Once to see how many we are. If the numbers don't match, somebody goes without."
-  say "Usually me. Don't tell the children."
-  > @back4 "Something else." -> hub
+  say Once to see how many bowls we've got. Once to see how many we are. If the numbers don't match, somebody goes without.
+  say Usually me. Don't tell the children. They'd start passing me theirs, and then where would we be.
+  > @back4 Your secret's safe. Something else. -> hub

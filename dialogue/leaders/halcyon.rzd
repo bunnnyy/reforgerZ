@@ -1,81 +1,105 @@
 # Halcyon's leaders: the research director at the lab and the field leads.
 # Voice: precise, a bit cold, sometimes guilty. Humour only by accident: exact words that land wrong.
+# Lines are spoken straight to the player (docs/WRITING.md, "Conversations"): who they are, where
+# you are and what's going on, in their own words.
 
-conv halcyon.leader.beaks
+# The first time you meet one (a greet: the talk screen opens on it). One line, said only to a
+# stranger (!met); the season's name (names.rzd) and a caught lie come first when they apply.
+conv halcyon.leader.hello
 for stronghold:halcyon, seat:halcyon/field_lead
-topic "Ask why they call you the beaks."
+when !met
+greet
+once
 prio flavour
 voice halcyon
 
 node start
-  say "The respirators. Long filters. From a distance we look like birds, apparently, or plague doctors."
-  say "Someone stencilled a plague doctor on a sample case as a joke. It is now on every case, door and van."
-  > @scrub "Why not scrub it off?" -> scrub
-  > @notebook "You still keep a notebook each?" -> notebook   if bg:labtech,doctor,nurse
-  > @other "Something else." -> hub
+  say? bite_shown & !met :: I'm {npc}, {role}. That bite is recent, by the colour. The trial dose is free, once, at our stores: eight in ten walk out. Please go now. We can talk after.
+  say? stronghold & !met :: I'm {npc}, {role}. This is the only lab in the Zone, and the cure is at {cure_percent} percent. The cure is what opens the gates. Please don't touch the cold boxes.
+  say? !met :: I'm {npc}, {role}. This is a Halcyon field station: sensors, a cold box and a radio to the lab. The cure is at {cure_percent} percent. Mind the sample cases.
+
+conv halcyon.leader.beaks
+for stronghold:halcyon, seat:halcyon/field_lead
+topic "Why do people call you the beaks?"
+prio flavour
+voice halcyon
+
+node start
+  say The respirators. Long filters, and the hoods. From a distance we look like birds, apparently, or old plague doctors. The Zone noticed before we did.
+  say Somebody stencilled a plague doctor on a sample case as a joke. By the time anyone senior noticed, it was on every case, door and van we own.
+  > @scrub Why not scrub it off? -> scrub
+  > @notebook You still keep a notebook each? -> notebook   if bg:labtech,doctor,nurse
+  > @other Let me ask about something else. -> hub
 
 node scrub
-  say "Nobody could think of a reason that was worth the solvent. We are short of solvent."
-  say "Also, people move out of our way. That has value."
-  > @back1 "Something else." -> hub
+  say Nobody could think of a reason that was worth the solvent. We're short of solvent.
+  say Also, people step out of our way on the road. That has measurable value.
+  > @back1 I suppose it does. Something else. -> hub
 
 node notebook
-  say "Numbered. Every reading, every sample, every volunteer. When one of us dies, the notebook belongs to the lab."
-  say "We read it into the record, page by page. It takes longer than the funeral."
+  say Numbered, one each. Every reading, every sample, every volunteer. When one of us dies, the notebook belongs to the lab.
+  say We read it into the record, page by page. It takes longer than the funeral. The director speaks for two minutes and goes back to work.
   do learn:halcyon.notebooks
-  > @back2 "Something else." -> hub
+  > @back2 That's a hard way to grieve. -> hub
 
 conv halcyon.leader.numbers
 for stronghold:halcyon, seat:halcyon/field_lead
 when !epilogue
-topic "Ask how close the cure is."
+topic "How close is the cure?"
 prio world
 voice halcyon
 
 node start
-  say "The number this morning was {cure_percent} percent. I wouldn't repeat it to anyone with a gun."
-  say "Eight in ten walk out of the trial dose. We write down the other two."
-  > @two "Who sits with the other two?" -> two
-  > @help "What would speed it up?" -> help
-  > @other3 "Something else." -> hub
+  say The number this morning was {cure_percent} percent. I wouldn't repeat it to anyone with a gun. People make plans around numbers.
+  say The trial dose is the part that works today. Anyone bitten can have it once, for nothing. Eight in ten walk out. We write down the other two.
+  > @two Who sits with the other two? -> two
+  > @help What would speed it up? -> help
+  > @hundred What happens when it reaches a hundred? -> hundred
+  > @other3 Let me ask about something else. -> hub
 
 node two
-  say "Someone with a clipboard. Somebody has to, and they should be counted."
-  say "It isn't a good job. It's a necessary one. Those aren't the same, and I've stopped pretending they are."
-  > @back3 "Something else." -> hub
+  say Someone with a clipboard. Somebody has to, and they should be counted: by name if the family gives one, by number if not.
+  say It isn't a good job. It's a necessary one. Those aren't the same thing, and I've stopped pretending they are.
+  > @back3 Let me ask something else. -> hub
 
 node help
-  say "Samples. Live tissue from the big ones, cold and labelled. And time, which nobody can bring us."
-  say? need:samples :: "We are short this week. The field leads will pay for anything usable."
-  say "Ask the quartermaster what pays. I don't handle money. I handle consequences."
-  > @back4 "Something else." -> hub
+  say Samples. Live tissue from the big ones, cold and labelled, under six hours old. And time, which nobody can bring us.
+  say? need:samples :: We're short this week. The field stations will pay for anything usable.
+  say Ask the quartermaster what pays. I don't handle money. I handle consequences.
+  > @back4 I'll ask. Something else. -> hub
+
+node hundred
+  say A cure isn't only a dose. It's proof: proof the Zone can be made clean, which is the one thing the people outside said would lift the quarantine.
+  say Our Institute's last call, on Day 2, said exactly that. Then the line went dead. We've been working toward one sentence ever since.
+  > @back5 Then I hope you finish it. -> hub
 
 # A field lead who hides the other two: the lie, and the truth that opens a better answer
 # (the Doctor wanderer says it too: dialogue/wanderers/lies.rzd).
 conv halcyon.lead.volunteers
 for seat:halcyon/field_lead
 when cure>=25
-topic "Ask about the volunteers."
+topic "What happens to the volunteers?"
 prio world
 voice halcyon
 
 node start
-  say "Eight in ten walk out of the trial. We write down the other two. They're in the record."
-  > @where "Where are the other two now?" -> deflect
-  > @sheets "Ten went in. Your beds say eight." -> back_room   if bg:labtech,doctor
-  > @catch "There's a room at the back. I know." -> back_room   callout halcyon.back_room
-  > @leave "That's enough for me." -> hub
+  say Anyone bitten can volunteer for the trial dose, once. The first ten came up from the Haven on Day 6, and eight walked out.
+  say It's been eight in ten ever since, which is a coincidence. We write down the other two. They're in the record.
+  > @where Where are the other two now? -> deflect
+  > @sheets Ten went in. Your beds say eight. -> back_room   if bg:labtech,doctor
+  > @catch There's a room at the back. I know. -> back_room   callout halcyon.back_room
+  > @leave That's enough for me. -> hub
 
 node deflect
-  say "Somewhere quiet. They're comfortable. Ask me something else." ~lie:halcyon.back_room
-  > @show "Show me." -> back_room | refused   check persuade halcyon 3 bg:labtech,doctor
-  > @drop "Something else, then." -> hub
+  say Somewhere quiet, where they can rest. They're comfortable. Ask me something else. ~lie:halcyon.back_room
+  > @show Then show me where they are. -> back_room | refused   check persuade halcyon 3 bg:labtech,doctor
+  > @drop All right. Something else. -> hub
 
 node refused
-  say "No. And if you're from the houses, tell them we're sorry. We are."
-  > @yourself "Tell them yourself." -> start
-  > @drop2 "Something else." -> hub
+  say No. And if you're from the houses, tell them we're sorry. We are.
+  > @yourself Tell them yourself. -> start
+  > @drop2 Let me ask something else. -> hub
 
 node back_room
-  say "There's a room at the back. Someone sits with them, with a clipboard. It's the protocol, and I hate it." ~truth:halcyon.back_room
-  > @back1 "Something else." -> hub
+  say There's a room at the back of the station. Someone sits with them, with a clipboard and a sample kit, until they turn. It's the protocol, and I hate it. ~truth:halcyon.back_room
+  > @back1 Thank you for telling me. -> hub

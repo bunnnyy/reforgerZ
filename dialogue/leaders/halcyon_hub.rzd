@@ -1,134 +1,145 @@
 # Halcyon's leaders, the hub (docs/DIALOGUE.md, "Hubs: work comes out of talk"): 0 the job, 1 the
 # built news, 2 what they make of you, each carried by a topic. Voice: precise, a bit cold,
 # sometimes guilty. Humour only by accident. Halcyon talks in numbers.
+# Work talk explains the work (what, where, who for, the pay, the danger) before the accept.
 
 conv halcyon.leader.work_samples
 for stronghold:halcyon, seat:halcyon/field_lead
 when need:samples
-topic "Ask what the count is short of."
+topic "What is the count short of?"
 prio ask
 voice halcyon
 
 node start
   jump route:out -> other_route
   jump epilogue -> after
-  say? stronghold :: "Tissue. Fresh, from the infected, under six hours old. We have three samples. We need eleven."
-  say? trait:idealist :: "Samples. I know what that word sounds like. It's the only word that gets us to the cure."
-  say "Samples. The work stops without them. The work cannot stop."
-  say "We're at {cure_percent} percent. Every point costs something that used to walk."
-  > @what "What sort of samples?" -> what
-  > @who "Whose samples?" -> whose
-  > @worth "What do I get?" -> worth
-  > @lab "Your chain of custody is a mess." -> custody   if bg:labtech,doctor,nurse
-  > @help "Is there work in it for me?" -> offer
-  > @no "Not today." -> hub
+  say? stronghold :: Tissue. Fresh, from the infected, under six hours old. We have three usable samples this week. We need eleven.
+  say? trait:idealist :: Samples. I know what that word sounds like to you. It's the only word that gets us to the cure.
+  say Samples. The work stops without them, and the work can't stop: the incubators run on a schedule, not on what we happen to have.
+  say We're at {cure_percent} percent. Every point costs something that used to walk, and we buy the points one sample at a time.
+  > @what What sort of samples? -> what
+  > @who Samples from whom, exactly? -> whose
+  > @worth What do I get for them? -> worth
+  > @lab Your chain of custody is a mess. -> custody   if bg:labtech,doctor,nurse
+  > @help Is there work in it for me? -> offer
+  > @no Not today. -> hub
 
 node what
-  say "Blood, tissue, a sample of the fluid behind the eye. We provide the kit. You provide the nerve."
-  say "Sealed, labelled, cold. Under six hours, or it's a souvenir."
-  > @help2 "I can do cold." -> offer
-  > @back1 "Something else." -> hub
+  say Blood, tissue, a sample of the fluid behind the eye. The unusual ones are best: the ones that run, or scream. We provide the kit. You provide the nerve.
+  say Sealed, labelled, cold. Under six hours, or it's a souvenir.
+  > @help2 I can do cold. -> offer
+  > @back1 Let me ask something else. -> hub
 
 node whose
-  say "The dead ones. The infected. Nobody living, if that's your question. That's always the first question."
-  say? major:proof :: "The second question is the one the Haven keeps asking about our volunteers. Ask it somewhere else."
-  say "It's a fair question. I'd ask it."
-  > @help3 "Then I'll bring them." -> offer
-  > @back2 "Something else." -> hub
+  say The dead ones. The infected. Nobody living, if that's your question. It's always the first question.
+  say? major:proof :: The second question is the one the Haven keeps asking, about our volunteers. Ask it somewhere else, please.
+  say It's a fair question. I'd ask it.
+  > @help3 Then I'll bring them in. -> offer
+  > @back2 Let me ask something else. -> hub
 
 node worth
-  say? trait:greedy :: "Favor. A place in the queue for the first doses. The queue is the only thing in the Zone that's worth more every day."
-  say "Favor, and our gratitude, which we record. In triplicate."
-  > @help4 "Triplicate it is." -> offer
-  > @back3 "Something else." -> hub
+  say? trait:greedy :: Favor. A place in the queue for the first doses. The queue is the only thing in the Zone that's worth more every day.
+  say Halcyon Favor, which buys antiseptic and stabilisers at our stores, and antidotes when we have them. And our gratitude, which we record. In triplicate.
+  > @help4 Triplicate it is. -> offer
+  > @back3 Let me think about it. -> hub
 
 node custody
-  say "It is. Two of my four field staff can't spell 'contaminated'. You can, apparently."
-  say "Bring them sealed and dated and I'll stop apologising to the director."
-  > @help5 "Then let me bring them in properly." -> offer
-  > @back4 "Something else." -> hub
+  say It is. Two of my four field staff can't spell contaminated. You can, apparently.
+  say Bring them sealed and dated, and I'll stop apologising to the director.
+  > @help5 Then let me bring them in properly. -> offer
+  > @back4 Let me ask something else. -> hub
 
 node offer
-  say "There's tasking. It's described exactly. Please read the description exactly."
-  > @take "Show me." -> hub   do call:slot:0
-  > @later "Let me think about it." -> hub
+  say It's fieldwork. You go into an infested town, kill what you have to, and bring us tissue in a sealed case. Or carry a case between a station and the lab, or guard someone taking readings.
+  say It pays Halcyon Favor, and it moves the number. Infested towns are infested for a reason. Most of what we'll ask you to kill was a person once, and still runs like one.
+  > @take I'll do it. Give me the kit. -> hub   do call:slot:0
+  > @risk What's the risk, honestly? -> risk
+  > @later Let me think about it. -> hub
+
+node risk
+  say Bites, mostly. Sample work is close work. If you're bitten, the trial dose is free, once, and eight in ten walk out. So, conditionally, the risk is two in ten.
+  say I've been told that's a cold way to put it. The Red Hand buy samples too, and they don't like competition on the road.
+  > @take4 Understood. I'll do it. -> hub   do call:slot:0
+  > @later4 Not today, then. -> hub
 
 node other_route
-  say "You've committed to another route for the cure. It's in your file. The file doesn't stop us using you."
-  > @take2 "Is there work anyway?" -> hub   do call:slot:0
-  > @back5 "Something else." -> hub
+  say You've committed to another route for the cure. It's in your file. The file doesn't stop us using you, and the work pays the same.
+  > @take2 Is there work for me anyway? -> hub   do call:slot:0
+  > @back5 Let me ask something else. -> hub
 
 node after
-  say? cure_held:halcyon :: "We hold the cure. The work now is making enough of it, and deciding who's first. The second part isn't science."
-  say "The cure exists. The work isn't finished. It's never finished. It's just less urgent."
-  > @take3 "Then I'll still work." -> hub   do call:slot:0
-  > @back6 "Something else." -> hub
+  say? cure_held:halcyon :: We hold the cure. The work now is making enough of it, and deciding who's first. The second part isn't science.
+  say The cure exists. The work isn't finished. It's never finished. It's just less urgent, and the barriers stay closed until processing.
+  > @take3 Then I'll keep working for you. -> hub   do call:slot:0
+  > @back6 Let me ask something else. -> hub
 
 conv halcyon.leader.work
 for stronghold:halcyon, seat:halcyon/field_lead
 when !need:samples
-topic "Ask what the lab needs."
+topic "What does the lab need?"
 prio ask
 voice halcyon
 
 node start
   jump route:out -> other_route
   jump epilogue -> after
-  say? need:security :: "Guards. The lab has two doors and four guards. One of the doors doesn't lock. I've stopped writing that down."
-  say? need:supplies :: "Reagents, filters, generator fuel. If the power drops for forty minutes, two weeks of cultures die."
-  say? need:people :: "Hands. Clean ones. The volunteers are not staff, whatever the rota says."
-  say "Time. We need time, and the only way to buy it is people bringing us things."
-  say? stand :: "The lab is holding its final stand. Every door has someone at it. One percent at a time, under fire."
-  say? cure>=90 :: "We are past ninety. Everyone wants to be in the room when it finishes. Nobody wants to be in the room if it doesn't."
-  say? finale:open :: "And four factions want the cure to belong to them. We'd like it to work first."
-  say "We're at {cure_percent} percent. The last ten are the slowest. They always are."
-  > @why "Why is it so slow?" -> slow
-  > @risk "What happens if the power goes?" -> power
-  > @press "What aren't the numbers saying?" -> told | partial | partial   check persuade halcyon 2 harder:paranoid bg:labtech,doctor
-  > @help "Give me something to do." -> offer
-  > @no "Not today." -> hub
+  say? need:security :: Guards. The lab has two doors and four guards. One of the doors doesn't lock. I've stopped writing that down.
+  say? need:supplies :: Reagents, filters, generator fuel. If the power drops for forty minutes, two weeks of cultures die.
+  say? need:people :: Hands. Clean ones. The volunteers are not staff, whatever the rota says.
+  say Time. We need time, and the only way to buy it is people bringing us things.
+  say? stand :: The lab is holding its final stand. Every door has someone at it. One percent at a time, under fire.
+  say? cure>=90 :: We're past ninety. Everyone wants to be in the room when it finishes. Nobody wants to be in the room if it doesn't.
+  say? finale:open :: And four factions want the cure to belong to them. We'd like it to work first.
+  say We're at {cure_percent} percent. The last ten are the slowest. They always are.
+  > @why Why is it taking so long? -> slow
+  > @risk What happens if the power goes? -> power
+  > @press What aren't the numbers saying? -> told | partial | partial   check persuade halcyon 2 harder:paranoid bg:labtech,doctor
+  > @help Give me something to do. -> offer
+  > @no Not today. -> hub
 
 node slow
-  say "Because every step is a test, and every test is a person or a part of one. We go as fast as the dead allow."
-  > @help2 "Then let me speed it up." -> offer
-  > @back1 "Something else." -> hub
+  say Because every step is a test, and every test is a person, or a part of one. We go as fast as the dead allow, and they don't hurry for anyone.
+  > @help2 Then let me speed it up. -> offer
+  > @back1 Let me ask something else. -> hub
 
 node power
-  say "We lose two weeks. Possibly three. We'd survive. Some of the cultures would not. Neither, possibly, would I."
-  > @help3 "Then let me keep it running." -> offer
-  > @back2 "Something else." -> hub
+  say We lose two weeks of cultures. Possibly three. We'd survive. Some of the cultures would not. Neither, possibly, would I.
+  say The generator takes diesel, and diesel comes from the Red Hand or out of Bastion's stores. Neither sells it to us cheaply.
+  > @help3 Then let me keep it running. -> offer
+  > @back2 Let me ask something else. -> hub
 
 node told
-  say "The trial doses. One in three takes. That's an improvement. The other two are also a number."
-  say "I'd like you to remember both."
+  say The trial doses. One in three of the new batch takes. That's an improvement. The other two are also a number.
+  say I'd like you to remember both.
   do learn:halcyon.one_in_three:6h
-  > @help4 "I'll remember. What can I do?" -> offer
-  > @back3 "Something else." -> hub
+  > @help4 I'll remember. What can I do? -> offer
+  > @back3 I'll remember. Something else. -> hub
 
 node partial
-  say "The numbers are saying everything. You're not listening to all of them. Neither is anyone."
-  > @help5 "Then give me work instead." -> offer
-  > @back4 "Something else." -> hub
+  say The numbers are saying everything. You're not listening to all of them. Neither is anyone else.
+  > @help5 Then give me work instead. -> offer
+  > @back4 Let me ask something else. -> hub
 
 node offer
-  say? trait:ruthless :: "There's work. The form was short."
-  say "There's tasking. It's described exactly. Please read the description exactly."
-  > @take "Show me." -> hub   do call:slot:0
-  > @later "Let me think about it." -> hub
+  say There's tasking: fuel and a generator part for the lab, a crashed drone's core, sensors placed in infested towns, a hard drive out of a dead clinic. Each one is described exactly.
+  say It pays Halcyon Favor, and some of it moves the cure. Please read the description exactly. People who skim it come back with the wrong part, or don't come back.
+  say? trait:ruthless :: The form was short. So is the margin for error.
+  > @take I'll do it. What's first? -> hub   do call:slot:0
+  > @later Let me think about it. -> hub
 
 node other_route
-  say "You've committed to another route for the cure. It's in your file. The file doesn't stop us using you."
-  > @take2 "Is there work anyway?" -> hub   do call:slot:0
-  > @back5 "Something else." -> hub
+  say You've committed to another route for the cure. It's in your file. The file doesn't stop us using you, and the work pays the same.
+  > @take2 Is there work for me anyway? -> hub   do call:slot:0
+  > @back5 Let me ask something else. -> hub
 
 node after
-  say "The cure exists. The rest is logistics, and grief, and paperwork about both."
-  > @take3 "Then give me some paperwork." -> hub   do call:slot:0
-  > @back6 "Something else." -> hub
+  say The cure exists. The rest is logistics, and grief, and paperwork about both. The barriers stay closed until processing.
+  > @take3 Then give me some paperwork. -> hub   do call:slot:0
+  > @back6 Let me ask something else. -> hub
 
 conv halcyon.leader.news
 for stronghold:halcyon, seat:halcyon/field_lead
-topic "Ask what the radio logs say."
+topic "What do the radio logs say?"
 prio world
 voice halcyon
 
@@ -143,51 +154,51 @@ node start
   jump news:overrun -> overrun
   jump news:horde -> horde
   jump news:taken -> taken
-  say? epilogue :: "The logs say processing at the road checkpoints. Ninety-one percent of messages since are people asking what processing means."
-  say? edge :: "The logs say the drones flew their usual pattern. Fourteen passes a day. We counted. Counting is calming."
-  say? outbreak:overrun :: "The logs say the infected are adapting. Faster than we are. That's a measurement, not an opinion."
-  say "The logs say what they always say. Forty messages a day, six worth keeping."
-  > @mine "What does your file say about me?" -> me
-  > @more "Anything else in the logs?" -> hub   do call:slot:1
-  > @back0 "Something else." -> hub
+  say? epilogue :: The logs say processing at the road checkpoints. Ninety-one percent of the messages since are people asking what processing means.
+  say? edge :: The logs say the drones over the line flew their usual pattern. Fourteen passes a day. We counted. Counting is calming.
+  say? outbreak:overrun :: The logs say the infected are adapting faster than we are. That's a measurement, not an opinion.
+  say The logs say what they always say. Forty messages a day on the open channel, six worth keeping. We read our own numbers out at every shift change, in case anyone outside is writing them down.
+  > @mine What does your file say about me? -> me
+  > @more Anything else in the logs? -> hub   do call:slot:1
+  > @back0 Let me ask something else. -> hub
 
 node dead
-  say "{bind:dead} is dead. I've added the name to a list. We keep a lot of lists."
-  say? trait:idealist :: "It shouldn't feel like a statistic. It does. I'm sorry for that, not that it matters."
-  > @more1 "What else is in the logs?" -> hub   do call:slot:1
-  > @back1 "Something else." -> hub
+  say {bind:dead} is dead. I've added the name to a list. We keep a lot of lists.
+  say? trait:idealist :: It shouldn't feel like a statistic. It does. I'm sorry for that, not that it helps anyone.
+  > @more1 What else is in the logs? -> hub   do call:slot:1
+  > @back1 Let me ask something else. -> hub
 
 node overrun
-  say "{bind:over} has passed eighty on our infection index. That's what we call overrun when we're being polite."
-  say "If you're going there, take a sample kit. If you're not going there, good."
-  > @more2 "What else is in the logs?" -> hub   do call:slot:1
-  > @back2 "Something else." -> hub
+  say {bind:over} has passed eighty on our infection index. That's what we call overrun when we're being polite.
+  say If you're going there, take a sample kit. If you're not going there, good.
+  > @more2 What else is in the logs? -> hub   do call:slot:1
+  > @back2 Let me ask something else. -> hub
 
 node horde
-  say "A group of them moved near {bind:horde}. Somewhere between forty and sixty, by the noise. They follow sound."
-  say "Somebody ran a generator. Generators are the dinner bell of the modern age."
-  > @more3 "What else is in the logs?" -> hub   do call:slot:1
-  > @back3 "Something else." -> hub
+  say A group of them moved near {bind:horde}. Somewhere between forty and sixty, by the noise. They follow sound.
+  say Somebody ran a generator. Generators are the dinner bell of the modern age.
+  > @more3 What else is in the logs? -> hub   do call:slot:1
+  > @back3 Let me ask something else. -> hub
 
 node taken
-  say "{bind:who} holds {bind:took} now. It changes nothing for the lab. It changes everything for the people there."
-  > @more4 "What else is in the logs?" -> hub   do call:slot:1
-  > @back4 "Something else." -> hub
+  say {bind:who} holds {bind:took} now. It changes nothing for the lab. It changes everything for the people there.
+  > @more4 What else is in the logs? -> hub   do call:slot:1
+  > @back4 Let me ask something else. -> hub
 
 node me
   jump kit:other -> me_colours
-  say? best:halcyon :: "That you {best}. Noted with a date. Dates are how we say thank you."
-  say? symptoms :: "That you're symptomatic. That's in the file in red. Red means come and see us before the end."
-  say "A file with your name on it and two lines of notes. Two is more than most."
-  > @back5 "Something else." -> hub
+  say? best:halcyon :: That you {best}. Noted, with a date. Dates are how we say thank you.
+  say? symptoms :: That you're symptomatic. That's in the file in red. Red means come and see us before the end, not after.
+  say A file with your name on it and two lines of notes. Two is more than most people get.
+  > @back5 Good to know. Something else. -> hub
 
 node me_colours
-  say "That you came in another faction's clothes. Recorded as an observation, not a judgment."
-  > @back6 "Something else." -> hub
+  say That you came in wearing another faction's clothes. Recorded as an observation, not a judgement.
+  > @back6 Let me ask something else. -> hub
 
 conv halcyon.leader.me
 for stronghold:halcyon, seat:halcyon/field_lead
-topic "Ask how they'd file you."
+topic "How would you file me?"
 prio reaction
 voice halcyon
 
@@ -196,30 +207,30 @@ node start
   jump bite_shown -> bitten
   jump tier:halcyon>=trusted -> trusted
   jump tier:halcyon>=known -> known
-  say? fresh :: "New. One page. Most of it blank. Blank is not a bad result."
-  say "Subject: unaffiliated. Useful: not yet measured. That's not an insult. It's a column."
-  > @more "And what's in the column now?" -> hub   do call:slot:2
-  > @fair "Fair." -> hub
+  say? fresh :: New. One page, most of it blank. Blank is not a bad result. It means nothing has gone wrong yet.
+  say Subject: unaffiliated. Usefulness: not yet measured. That's not an insult. It's a column, and the column is empty.
+  > @more And what's in the column now? -> hub   do call:slot:2
+  > @fair Fair. -> hub
 
 node colours
-  say "You're wearing someone else's colours in a sterile area. Two problems. I've ranked them."
-  > @more1 "And otherwise?" -> hub   do call:slot:2
-  > @back1 "Something else." -> hub
+  say You're wearing someone else's colours in a sterile area. That's two problems. I've ranked them.
+  > @more1 And otherwise, where do I stand? -> hub   do call:slot:2
+  > @back1 Let me ask something else. -> hub
 
 node bitten
-  say "Bite visible. Under twelve hours, by the colour. You know where the lab is. I'd prefer you came in walking."
-  say? declared :: "You told a house. That's in your favour, in the file and otherwise."
-  > @more2 "Am I still welcome here?" -> hub   do call:slot:2
-  > @back2 "Something else." -> hub
+  say Bite visible. Under twelve hours, by the colour. You know where the lab is. I'd prefer you came in walking.
+  say? declared :: You told a house. That's in your favour, in the file and otherwise.
+  > @more2 Am I still welcome here? -> hub   do call:slot:2
+  > @back2 I'll come to the lab. -> hub
 
 node trusted
-  say? title:halcyon :: "Staff call you {title:halcyon}. They don't name anyone. Two of them argued about it for a day."
-  say "Reliable. That's the highest word we use. It sounds small. In here it's a medal."
-  > @more3 "The full file?" -> hub   do call:slot:2
-  > @back3 "Something else." -> hub
+  say? title:halcyon :: Staff call you {title:halcyon}. They don't name anyone. Two of them argued about it for a day.
+  say Reliable. That's the highest word we use. It sounds small. In here it's a medal.
+  > @more3 Can I see the full file? -> hub   do call:slot:2
+  > @back3 Thank you. Something else. -> hub
 
 node known
-  say? jobs:halcyon>=3 :: "Three tasks, completed to specification. Statistically, you're a pattern."
-  say "Known to the lab. The guards will use your name. They'll still check your hands."
-  > @more4 "And where do I stand?" -> hub   do call:slot:2
-  > @back4 "Something else." -> hub
+  say? jobs:halcyon>=3 :: Three tasks, completed to specification. Statistically, you're a pattern.
+  say Known to the lab. The guards will use your name. They'll still check your hands.
+  > @more4 And where do I stand overall? -> hub   do call:slot:2
+  > @back4 Let me ask something else. -> hub

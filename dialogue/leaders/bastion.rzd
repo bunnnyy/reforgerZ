@@ -1,55 +1,94 @@
 # Bastion's leaders: the commanding officer at the stronghold and the outpost commanders.
 # Voice: clipped, procedural, tired; close with its own. Nobody is coming; they're all they have.
+# Lines are spoken straight to the player (docs/WRITING.md, "Conversations"): who they are, where
+# you are and what's going on, in their own words.
 
-conv bastion.leader.roster
+# The first time you meet one (a greet: the talk screen opens on it). One line, said only to a
+# stranger (!met); the season's name (names.rzd) and a caught lie come first when they apply.
+conv bastion.leader.hello
 for stronghold:bastion, seat:bastion/outpost_lead
-topic "Ask about the board on the wall."
-prio world
-voice bastion
-
-node start
-  say "The roster. Every name, every duty, in grease pencil. A name on it eats, stands a watch, and is looked for if it doesn't come back."
-  say "The dead stay on it. We read them at the roll."
-  > @rubout "Do you ever rub a name out?" -> rubout
-  > @soldier "Procedure says you strike the dead." -> soldier   if bg:soldier,police
-  > @on "Could my name go on it?" -> sign
-  > @other "Something else." -> hub
-
-node rubout
-  say "One kind. A man listed KIA who walks back in. Then we rub out the KIA, not the man."
-  say "Hasn't happened often. It's happened."
-  > @back1 "Something else." -> hub
-
-node soldier
-  say "Procedure says a lot. Procedure was written by people who were coming back for us."
-  say "Nobody is coming. So the names stay. We're all we have."
-  do learn:bastion.roster
-  > @back2 "Understood." -> hub
-
-node sign
-  say? tier:bastion>=trusted :: "You're on it already, under civilians attached. Someone wrote it in last week. Nobody asked you."
-  say "Civilians get signed on. Families, mechanics. You'd stand a watch and eat what we eat. That's the whole contract."
-  > @think "I'll think about it." -> hub
-  > @why "What does it get me?" -> what
-
-node what
-  say "A name on a board, and somebody who comes looking if you don't answer the roll."
-  say "Out here that's most of what anyone has."
-  > @back3 "Something else." -> hub
-
-conv bastion.leader.command
-for stronghold:bastion, seat:bastion/outpost_lead
-topic "Ask if Command ever answers."
+when !met
+greet
+once
 prio flavour
 voice bastion
 
 node start
-  say "Every night. Effective strength, rounds, fuel, civilians sheltered. Then: requesting relief."
-  say "Then the operator writes: no reply. The sergeant chalks up a day."
-  > @stop "Why not stop calling?" -> stop
-  > @other4 "Something else." -> hub
+  say? stronghold & !met :: I'm {npc}, {role}. Command stopped answering on Day 2. Since then this stronghold, its posts and the families on our roster are all Bastion has. Keep your weapon slung in here.
+  say? kit:other & !met :: I'm {npc}, {role}. You're at a Bastion post in someone else's colours, so a sentry has had a rifle on you since the gate. Keep your hands where they are and we'll talk.
+  say? !met :: I'm {npc}, {role}. This is a Bastion post: soldiers left inside the line when it closed, and the families who stayed with us. Weapon slung inside the wire. Then we can talk.
+
+conv bastion.leader.roster
+for stronghold:bastion, seat:bastion/outpost_lead
+topic "What's that board on the wall?"
+prio world
+voice bastion
+
+node start
+  say That's the roster. Every name at this post and every duty, in grease pencil. Shift change at oh-five-thirty and seventeen-thirty. Night watch at twenty-thirty.
+  say A name on that board eats, stands a watch if it can, and gets looked for if it doesn't come back. The dead stay on it. We read every one of them at the roll.
+  say? stronghold :: Lieutenant Sedlak keeps it. On Day 6 she wrote the families from her Day 2 column onto it, under civilians attached. They've been ours since.
+  > @rubout Do you ever rub a name off it? -> rubout
+  > @roll What happens at the roll? -> roll
+  > @soldier Regs say the dead come off the board. -> soldier   if bg:soldier,police
+  > @on Could my name go on that board? -> sign
+  > @other Let me ask you something else. -> hub
+
+node rubout
+  say One kind of name. A man listed KIA who walks back in through the wire. Then we rub out the KIA, not the man.
+  say It's happened. Not often. Every time it did, the whole post came out to look at him, like he was weather.
+  > @back1 Good. Let me ask something else. -> hub
+
+node roll
+  say When the night watch is set, the sergeant reads the whole board out loud. The living answer here. For each of the dead, the whole post answers together.
+  say The roll gets longer every week. Nobody's suggested we shorten it. Then the operator calls Command, and Command says nothing.
+  > @why1 Why read the dead at all? -> soldier
+  > @back0 I see. Something else, then. -> hub
+
+node soldier
+  say Procedure says a lot of things. It was written by people who meant to come back for us. On Day 5 we watched the north road barrier get relieved in eleven minutes. Not for us.
+  say Nobody is coming. So the names stay up, and we answer for them. We're all we have.
+  do learn:bastion.roster
+  > @back2 Understood. Let me ask something else. -> hub
+
+node sign
+  say? tier:bastion>=trusted :: You're on it already, under civilians attached. Somebody wrote you in last week. Nobody asked you, and nobody needed to.
+  say Civilians get signed on. Families, mechanics, a nurse at one post. You'd stand a watch, eat what we eat and answer the roll. That's the whole contract.
+  > @why What would it get me? -> what
+  > @think I'll think about it. -> hub
+
+node what
+  say A name on a board, and a squad that comes looking when you don't answer at twenty-thirty. We've walked into overrun towns for names on that board.
+  say Out here that's most of what anyone has. The Haven gives you soup. We give you somebody who won't stop looking.
+  > @back3 That's worth something. Something else. -> hub
+
+conv bastion.leader.command
+for stronghold:bastion, seat:bastion/outpost_lead
+topic "Does Command ever answer you?"
+prio flavour
+voice bastion
+
+node start
+  say Every night, after the roll, the operator reads our numbers to Command. Effective strength, rounds, fuel, civilians sheltered. Last of all: requesting relief.
+  say Then the operator writes no reply in the log, and the sergeant chalks up another day on the wall. Every night since Day 2.
+  > @know When did you know they weren't coming? -> know
+  > @stop Why not stop calling? -> stop
+  > @other4 Let me ask about something else. -> hub
+
+node know
+  say Day 5, oh-five-thirty. Corporal Vrana was on the hill over the north road barrier with binoculars. Four trucks with our badge on the doors came up the far side.
+  say Fresh men took the sandbags, the old ones climbed aboard, and they drove away. A relief in place, by the manual. Lieutenant Sedlak logged it at oh-five-forty-one: not for us.
+  > @go Go on. -> know2
+  > @back5 That's enough. Something else. -> hub
+
+node know2
+  say? stronghold :: That night I read it to Command myself, with the numbers. No reply. Next shift change I spoke to every post. Nobody is coming. We feed our own, look for our own, bring our own home.
+  say That night the major read it to Command, with the numbers. No reply. Next shift change the major spoke to every post. Nobody is coming. We feed our own, look for our own, bring our own home.
+  say Nobody walks out on the rest. That's been the order ever since, and it's the only one that's never been late.
+  > @stop2 And still you call every night? -> stop
+  > @back6 I understand. Something else. -> hub
 
 node stop
-  say "Every post hears the others. As long as the calls go out, nobody's the last one left."
-  say "First post that stops calling is the first post that's alone. Not us. Not tonight."
-  > @back4 "Something else." -> hub
+  say Every post hears every other post call in. As long as the calls go out, nobody's the last one left. A post that reads rations, one day, usually has a truck from here by morning.
+  say The first post that stops calling is the first post that's alone. Not us. Not tonight.
+  > @back4 Fair enough. Let me ask something else. -> hub

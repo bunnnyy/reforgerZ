@@ -6,62 +6,63 @@
 conv haven.sitting.first
 for seat:haven/council_head, stronghold:haven
 when sitting:every_name.first & !swayed:every_name.first
-topic "Talk about the sitting."
+topic "What's the council voting on?"
 prio quest
 voice haven
 
 node start
-  say "The council sits at supper. Every head has a count and a worry, and the worry's always the same: mouths."
-  say "Say your piece now, if you've got one. At the table, nobody hears anybody."
-  > @pot "Everyone eats. Say that at the table." -> moved | short | refused   if tabled:every_name.first.pot   check persuade haven 2 bg:elder,nurse   do sway:every_name.first.pot
-  > @workers "Houses that work should eat first." -> moved | short | refused   if tabled:every_name.first.workers   check persuade haven 2 bg:elder,soldier   do sway:every_name.first.workers
-  > @cards "Take Bastion's cards. They're fair." -> moved | short | refused   if tabled:every_name.first.cards   check persuade haven 3 bg:police,soldier   do sway:every_name.first.cards
-  > @tins "Keep the stores full. Don't ask how." -> moved | short | refused   if tabled:every_name.first.tins   check persuade haven 3 bg:excon,raider   do sway:every_name.first.tins
-  > @listen "I'll listen, not talk." -> listen
+  say The council sits at supper tonight: a head from every house, round one pot. They're voting on how the Haven eats when there isn't enough for everyone.
+  say Every head brings a count and a worry, and the worry's always the same: mouths. Say your piece to me now, if you've got one. At the table, nobody hears anybody.
+  > @pot Everyone eats. Say that at the table. -> moved | short | refused   if tabled:every_name.first.pot   check persuade haven 2 bg:elder,nurse   do sway:every_name.first.pot
+  > @workers Houses that work should eat first. -> moved | short | refused   if tabled:every_name.first.workers   check persuade haven 2 bg:elder,soldier   do sway:every_name.first.workers
+  > @cards Take Bastion's cards. They're fair. -> moved | short | refused   if tabled:every_name.first.cards   check persuade haven 3 bg:police,soldier   do sway:every_name.first.cards
+  > @tins Keep the stores full. Don't ask how. -> moved | short | refused   if tabled:every_name.first.tins   check persuade haven 3 bg:excon,raider   do sway:every_name.first.tins
+  > @listen I'll just listen tonight. -> listen
 
 node moved
-  say "Hm. That's not nothing. I'll say it at the table, in my own words. They'll know whose they were."
-  > @back1 "Something else." -> hub
+  say That's not nothing. I'll say it at the table, in my own words. They'll know whose words they were, mind, and some of them will look at you.
+  > @back1 Thank you. That's all I ask. -> hub
 
 node short
-  say "I hear you. I don't agree, quite. I'll think about it on the walk over, which is as far as thinking goes these days."
-  > @back2 "Something else." -> hub
+  say I hear you. I don't agree, quite. I'll think about it on the walk over, which is as far as thinking goes these days.
+  > @back2 That's fair. Something else. -> hub
 
 node refused
-  say "No. I know my house. You know the road. Sit at the end tonight and listen, and see if you still think so."
-  > @back3 "Something else." -> hub
+  say No. I know my house, and you know the road. Sit at the end tonight and listen, and see if you still think so after.
+  > @back3 I'll come and listen. -> hub
 
 node listen
-  say "Then listen. Whatever they decide, somebody walks out of a house because of it. Remember that when you eat."
-  > @back4 "Something else." -> hub
+  say Then listen. Whatever they decide, somebody walks out of a house because of it. Remember that when you eat.
+  > @back4 I'll remember. -> hub
 
 conv haven.sitting.second
 for seat:haven/council_head, stronghold:haven
 when sitting:every_name.second & !swayed:every_name.second
-topic "Talk about the second sitting."
+topic "The council's sitting again?"
 prio quest
 voice haven
 
 node start
-  say "We sit again. Keep the rule or change it. The hungry week answered half of it for us already."
-  > @pot "Everyone eats. Still." -> moved | short | refused   if tabled:every_name.second.pot   check persuade haven 2 bg:elder,nurse   do sway:every_name.second.pot
-  > @workers "Work first, then eat. It held." -> moved | short | refused   if tabled:every_name.second.workers   check persuade haven 2 bg:elder,soldier   do sway:every_name.second.workers
-  > @cards "Bastion's cards. Keep them." -> moved | short | refused   if tabled:every_name.second.cards   check persuade haven 3 bg:police,soldier   do sway:every_name.second.cards
-  > @tins "Keep the Thursday arrangement." -> moved | short | refused   if tabled:every_name.second.tins   check persuade haven 3 bg:excon,raider   do sway:every_name.second.tins
-  > @listen "I'll listen, not talk." -> listen
+  say We sit again tonight. Keep the rule we made, or change it. The hungry week has already answered half the question for us, and not kindly.
+  say Everyone saw who went thin, and who didn't. Say your piece now if you want it carried in.
+  > @pot Everyone eats. Still. -> moved | short | refused   if tabled:every_name.second.pot   check persuade haven 2 bg:elder,nurse   do sway:every_name.second.pot
+  > @workers Work first, then eat. It held. -> moved | short | refused   if tabled:every_name.second.workers   check persuade haven 2 bg:elder,soldier   do sway:every_name.second.workers
+  > @cards Keep Bastion's ration cards. -> moved | short | refused   if tabled:every_name.second.cards   check persuade haven 3 bg:police,soldier   do sway:every_name.second.cards
+  > @tins Keep the Thursday arrangement. -> moved | short | refused   if tabled:every_name.second.tins   check persuade haven 3 bg:excon,raider   do sway:every_name.second.tins
+  > @listen I'll just listen tonight. -> listen
 
 node moved
-  say "All right. I'll carry it in. If it goes badly, it was my idea. If it goes well, it was also my idea."
-  > @back1 "Something else." -> hub
+  say All right. I'll carry it in. If it goes badly, it was my idea. If it goes well, it was also my idea.
+  > @back1 Thank you. Something else. -> hub
 
 node short
-  say "Maybe. I'll see who's hungry tonight. That decides more votes than speeches do."
-  > @back2 "Something else." -> hub
+  say Maybe. I'll see who's hungry tonight. That decides more votes than speeches do.
+  > @back2 That's fair. Something else. -> hub
 
 node refused
-  say "No. You weren't here for the hungry week, not the way we were. Come to the table anyway."
-  > @back3 "Something else." -> hub
+  say No. You weren't here for the hungry week, not the way we were. Come to the table anyway. You should see it.
+  > @back3 I'll come and see it. -> hub
 
 node listen
-  say "Then you'll hear the whole house argue about bread. That's the Haven. Bread, and who's not here to eat it."
-  > @back4 "Something else." -> hub
+  say Then you'll hear the whole house argue about bread. That's the Haven: bread, and who isn't here to eat it.
+  > @back4 I'll be there. -> hub

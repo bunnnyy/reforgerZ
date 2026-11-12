@@ -1,11 +1,12 @@
 # Bastion's leaders, the hub (docs/DIALOGUE.md, "Hubs: work comes out of talk"): 0 the job, 1 the
 # built news, 2 what they make of you, each carried by a topic. Voice: clipped, procedural, tired;
 # close with its own. Nobody is coming. Bastion lies by leaving things out.
+# Work talk explains the work (what, where, who for, the pay, the danger) before the accept.
 
 conv bastion.leader.work_wire
 for stronghold:bastion, seat:bastion/outpost_lead
 when need:security
-topic "Ask what the map table says."
+topic "What does the map table say?"
 prio ask
 voice bastion
 
@@ -15,67 +16,79 @@ bind horde = news:horde
 node start
   jump route:out -> other_route
   jump epilogue -> after
-  say? stronghold :: "Pins on the map. Red is them, blue is us. There's less blue than last week. Write that down, then burn it."
-  say? trait:paranoid :: "Close the door. Who saw you come in. Fine. The map, then."
-  say "Perimeter's thin. We're covering three posts with men for two."
-  say? bound:horde :: "A crowd of them moved near {bind:horde}. Somebody made noise. Somebody always makes noise."
-  say? bound:over :: "{bind:over} is lost to them. Contact on the south side, then silence."
-  say? night :: "Night watch is set. Half of them are asleep standing up."
-  say "We hold what we hold. That's the order. The order is ours now."
-  > @where "Where's it weakest?" -> weak
-  > @command "What does Command say?" -> command
-  > @pay "What's the pay?" -> pay
-  > @soldier "Show me the rota." -> rota   if bg:soldier,police
-  > @help "Put me on the board." -> offer
-  > @no "Not today." -> hub
+  say? stronghold :: This is the map table. Red pins are them, blue pins are us, and there's less blue than last week. Every post in the Zone reports into this table at twenty hundred.
+  say? trait:paranoid :: Close the door first. Who saw you come in? Fine. The map, then. Red pins are them, blue are us. I trust the pins more than I trust most people.
+  say The map says we're thin. Three posts' worth of ground covered by men for two. Every gap between our pins is a road the infected can walk down to somebody's door.
+  say? bound:horde :: A crowd of them moved near {bind:horde} overnight. Somebody ran an engine or rang something, and they came to look. They always come to look.
+  say? bound:over :: {bind:over} is lost to them. Contact on the south side at dusk, then silence on the net. We pulled the pin this morning.
+  say? night :: Night watch is set. Half of them have been on since oh-five-thirty, and you can hear it on the net.
+  say Our order is to hold what we hold. Command gave it on Day 2 and never took it back, so it's ours now.
+  > @where Where's the line weakest? -> weak
+  > @command What does Command say about it? -> command
+  > @pay What does Bastion pay? -> pay
+  > @soldier Show me the duty rota. -> rota   if bg:soldier,police
+  > @help Is there something I can do? -> offer
+  > @no Not today. -> hub
 
 node weak
-  say? bound:over :: "Between here and {bind:over}. Nothing between us and it now but a ditch and a sign."
-  say "Wherever we aren't. That's the honest answer. It's always where we aren't."
-  > @help2 "Then send me where you aren't." -> offer
-  > @back1 "Something else." -> hub
+  say? bound:over :: Between here and {bind:over}. There's nothing between us and that town now but a ditch and a sign we painted ourselves.
+  say Wherever we aren't. That's the honest answer, and it's always the answer. The infected don't attack a post. They walk round it to whatever's soft.
+  say The houses are soft. The Haven's people come to our wire when it goes bad, and some nights I've nobody to send back with them.
+  > @help2 Then send me where you aren't. -> offer
+  > @back1 I'll keep that in mind. -> hub
 
 node command
-  say "Command says nothing. We call at oh-six-hundred and twenty hundred. Static both times."
-  say? trait:veteran :: "Sergeant Holt used to answer for Command. Very good impression. He's in the ground at the north post now."
-  say "We log the silence. It's the only report we file that's never late."
-  > @help3 "Then I'll take an order from you." -> offer
-  > @back2 "Something else." -> hub
+  say Command says nothing. We call at oh-six-hundred and twenty hundred. Static both times, and the operator logs it like a reply.
+  say? trait:veteran :: Sergeant Holt used to answer for Command at the north post, in the voice. Very good impression. He's in the ground outside that post now, and nobody does the voice.
+  say So the orders come from this table now. Somebody had to give them, and nobody else volunteered.
+  > @help3 Then I'll take an order from you. -> offer
+  > @back2 Let me ask you something else. -> hub
 
 node pay
-  say? trait:greedy :: "Pay first, then the job. Rations, ammunition, a word in the log. The word is worth more than you think."
-  say "Rations and a line in the log. The log is who we feed and who we look for."
-  > @help4 "That'll do. What's the job?" -> offer
-  > @back3 "Something else." -> hub
+  say? trait:greedy :: Pay first, then the job. Fine. Rations, Favor with our quartermaster, and a line in the log. Don't sneer at the line. The log decides who we go looking for.
+  say Favor with our quartermaster, rations from our stores, ammunition if it's that kind of job, and your name in the log. The log is who we feed and who we go looking for.
+  say? !tier:bastion>=known :: Do enough of it and the sentries stop searching you at our checkpoints. That alone saves you an hour a day.
+  > @help4 That'll do. What's the job? -> offer
+  > @back3 Let me think about it. Something else. -> hub
 
 node rota
-  say "Here. Twelve names. Four are dead and still on it, because taking them off means the gap is real."
-  say "You read a rota. Good. Most civilians read it as a list of people."
+  say Here. Twelve names on this post's rota. Four of them are dead and still on it, because taking them off would make the gap real, and then somebody would have to stand in it.
+  say You read a rota like a rota. Good. Most civilians read it as a list of people.
   do learn:bastion.rota_dead:6h
-  > @help5 "Put me on it, then." -> offer
-  > @back4 "Something else." -> hub
+  > @help5 Then put me in one of the gaps. -> offer
+  > @back4 Noted. Something else. -> hub
 
 node offer
-  say? tier:bastion>=trusted :: "You're on it already. Civilians attached. Here's what's open."
-  say "There's tasking. Listen to all of it before you say yes."
-  > @take "Let's hear it." -> hub   do call:slot:0
-  > @later "Not yet." -> hub
+  say Here's how it works. I give you a task off this table: a town to clear, a patrol to find, a road to watch, a checkpoint to hold. You go, you do it, you report to any Bastion post.
+  say It pays in Favor and rations and a line in the log. It's dangerous: every pin on this table is there because something went wrong. Listen to all of it before you say yes.
+  say? tier:bastion>=trusted :: You're on the roster already, under civilians attached, so you get the same tasking the soldiers get.
+  > @take I'll do it. Give me the task. -> hub   do call:slot:0
+  > @risk How bad does it get out there? -> risk
+  > @later Not yet. Let me think on it. -> hub
+
+node risk
+  say Last week a patrol of four went to look at a pharmacy and two came back. The report says contact, withdrew. The two who came back don't say anything.
+  say I don't send civilians where I wouldn't send my own. But I send my own everywhere, so read that how you like.
+  > @take4 Understood. I'll do it. -> hub   do call:slot:0
+  > @later4 Then not today. -> hub
 
 node other_route
-  say "You're attached to another outfit. Noted. Logged. We still have gaps, and you still have hands."
-  > @take2 "Any tasking anyway?" -> hub   do call:slot:0
-  > @back5 "Something else." -> hub
+  say You've committed to another outfit's route for the cure. Noted, and logged. You won't hear the in-jokes from us for a while.
+  say We still have gaps on this table, and you still have hands. Tasking pays the same whoever you march with.
+  > @take2 Then I'll take a task anyway. -> hub   do call:slot:0
+  > @back5 Let me ask something else. -> hub
 
 node after
-  say? cure_held:bastion :: "We hold the cure. Orders are to secure it. Orders are also to stand down. We're doing both, badly."
-  say "The cure's out. The line is standing down. We still have a list of people nobody's found."
-  > @take3 "Then give me a name to find." -> hub   do call:slot:0
-  > @back6 "Something else." -> hub
+  say? cure_held:bastion :: We hold the cure. Orders are to issue it by name and signature. Orders are also to stand the line down. We're doing both, badly.
+  say The cure's out and the line is standing down. Processing at the road checkpoints, they say. The barriers are still closed.
+  say We still have names on the board that nobody's found. I'd like them found before anyone walks out at the north road.
+  > @take3 Then give me a name to find. -> hub   do call:slot:0
+  > @back6 Let me ask something else. -> hub
 
 conv bastion.leader.work
 for stronghold:bastion, seat:bastion/outpost_lead
 when !need:security
-topic "Ask what needs doing at the wire."
+topic "What needs doing at the wire?"
 prio ask
 voice bastion
 
@@ -85,65 +98,69 @@ bind short = supply:short
 node start
   jump route:out -> other_route
   jump epilogue -> after
-  say? need:food :: "Rations are down to the brown packets. Nobody knows what's in the brown packets."
-  say? need:supplies :: "Ammunition. Filters. Batteries. We count rounds at the roll now, same as names."
-  say? need:people :: "Bodies. Live ones. We're short of men who can stand a watch."
-  say? supply:short & bound:short :: "{bind:short} is short and the truck's late. Late is a word. It means nothing is coming."
-  say "Same as yesterday. Hold the post, watch the road, log what moves."
-  say? rain :: "And it's raining, which is the one thing nobody had to order."
-  say? fog :: "Fog. Fog is when the drones see nothing and we see less."
-  say "Ask your question. I'll answer what I can."
-  > @truck "Where's the truck going?" -> truck   if supply:road
-  > @why "Why are you still here?" -> why
-  > @press "What's the report leaving out?" -> told | short_said | short_said   check persuade bastion 2 harder:paranoid bg:soldier,police
-  > @help "What can I do?" -> offer
-  > @no "Not today." -> hub
+  say? need:food :: Rations. We're down to the brown packets at the back of the store. Nobody knows what's in the brown packets, and the quartermaster won't guess.
+  say? need:supplies :: Supplies. Ammunition, mask filters, batteries. We count rounds at the roll now, same as names, and both numbers are going the wrong way.
+  say? need:people :: People. Live ones who can stand a watch. We've more posts than men to put on them, and the men we have haven't slept.
+  say? need:revenge :: Somebody shot one of ours. Bastion doesn't ask who started it. It keeps a list and it sends people, and right now the list is longer than the people.
+  say Same as yesterday. Hold the post, watch the road, log what moves, get the trucks through. Nothing comes from outside, so everything we eat came down one of our roads.
+  say? supply:short & bound:short :: {bind:short} is short and the truck's late. Late is a word we use. It means nothing is coming until somebody goes and gets it.
+  say? rain :: And it's raining, which is the one thing round here nobody had to order.
+  say? fog :: And there's fog. Fog is when the drones over the line see nothing and we see less.
+  > @truck Where's the truck headed? -> truck   if supply:road
+  > @why Why are you still holding here? -> why
+  > @press What's the report leaving out? -> told | short_said | short_said   check persuade bastion 2 harder:paranoid bg:soldier,police
+  > @help What can I do for you? -> offer
+  > @no Not today. -> hub
 
 node truck
-  say "{bind:truck}. Two men, one gun, one radio. Don't follow it. If you follow it, so will they."
-  > @help2 "I could ride along." -> offer
-  > @back1 "Something else." -> hub
+  say It's on the road to {bind:truck}. Two men, one rifle, one radio, and whatever's in the back that we can't spare.
+  say Don't follow it. If you follow it, so will they, and so will the Red Hand. Their crews know our trucks by the sound.
+  > @help2 I could ride along with it. -> offer
+  > @back1 I'll stay clear of it. -> hub
 
 node why
-  say? trait:idealist :: "Because somebody has to be where the government said it would be. We're the government. That's the whole joke."
-  say "Orders were to hold. Nobody countermanded. So we hold."
-  say "And because the people in the houses come to the wire when it's bad. Somebody has to be at the wire."
-  > @help3 "Then let me help hold it." -> offer
-  > @back2 "Something else." -> hub
+  say? trait:idealist :: Because somebody has to be where the government said it would be. We're the government now. That's the whole joke, and I've stopped laughing at it.
+  say The order on Day 2 was hold the line and await relief. Nobody countermanded it. So we hold.
+  say And because when it goes bad, the people in the houses come to the wire. Somebody has to be standing at the wire when they get here.
+  > @help3 Then let me help hold it. -> offer
+  > @back2 Fair enough. Something else. -> hub
 
 node told
-  say? supply:lost :: "We lost a truck. Crew walked in. Cargo didn't. The report says 'delayed'."
-  say "Last patrol came back one short. The report says the patrol saw nothing. That's correct. He saw nothing."
+  say? supply:lost :: We lost a truck. The crew walked in. The cargo didn't. The report says delayed, and delayed is accurate until somebody asks how long.
+  say Last patrol came back one short. The report says the patrol saw nothing. That's correct. The man who isn't here saw something, and he isn't here to log it.
   do learn:bastion.report_short:6h
-  > @help4 "Then send me where he went." -> offer
-  > @back3 "Something else." -> hub
+  > @help4 Then send me where he went. -> offer
+  > @back3 I'm sorry. Something else. -> hub
 
 node short_said
-  say "The report is accurate. It's in the log. You can read the log when you're in the log."
-  > @help5 "Then put me in the log." -> offer
-  > @back4 "Something else." -> hub
+  say The report is accurate. It's in the log. You can read the log when you're in the log, and you get in the log by doing tasks for this post.
+  > @help5 Then put me in the log. -> offer
+  > @back4 Another time, then. -> hub
 
 node offer
-  say? trait:ruthless :: "There's work. The form was short. So's the job."
-  say "There's tasking. Listen to all of it before you say yes."
-  > @take "Let's hear it." -> hub   do call:slot:0
-  > @later "Not yet." -> hub
+  say? trait:ruthless :: There's work. The form was short, so's the briefing: a place, a task, a time to report back. You'll get all three.
+  say There's tasking. Escorting a truck, clearing a road, finding a patrol that missed its call, standing a checkpoint. Whatever it is, you report back to a Bastion post when it's done.
+  say It pays Favor with our quartermaster and rations, and it goes in the log under your name. Some of it gets people shot. Listen to all of it before you say yes.
+  > @take I'm in. Give me the task. -> hub   do call:slot:0
+  > @later Not yet. -> hub
 
 node other_route
-  say "You're attached to another outfit. Noted. Logged. We still have gaps, and you still have hands."
-  > @take2 "Any tasking anyway?" -> hub   do call:slot:0
-  > @back5 "Something else." -> hub
+  say You've committed to another outfit's route for the cure. Noted, and logged. You won't hear the in-jokes from us for a while.
+  say The wire still needs holding, and you still have hands. Tasking pays the same whoever you march with.
+  > @take2 Then I'll take a task anyway. -> hub   do call:slot:0
+  > @back5 Let me ask something else. -> hub
 
 node after
-  say "The line is standing down. There's still a road full of people who don't believe it."
-  > @take3 "Then give me something to do." -> hub   do call:slot:0
-  > @back6 "Something else." -> hub
+  say The line is standing down. Drones gone home, loudspeakers on a new tape. The barriers are still closed.
+  say There's still a road full of people who don't believe any of it, and somebody in a uniform has to stand on that road and be calm.
+  > @take3 Then give me something to do. -> hub   do call:slot:0
+  > @back6 Let me ask something else. -> hub
 
 # Bastion's word on a post it lost: it was a withdrawal (a lie by leaving out), until somebody who
 # saw it tells you otherwise (posts and other factions' people, ~truth:gossip.withdrew@lost).
 conv bastion.leader.news
 for stronghold:bastion, seat:bastion/outpost_lead
-topic "Ask for the morning report."
+topic "What's in the morning report?"
 prio world
 voice bastion
 
@@ -160,67 +177,69 @@ node start
   jump news:shelled -> shelled
   jump news:taken -> taken
   jump news:horde -> horde
-  say? stand :: "Report: the lab is under attack and everybody wants it. We hold our posts. Holding is what we do."
-  say? epilogue :: "Report: the line stood down. Processing at the road checkpoints. Nobody believes processing. Nobody's wrong."
-  say? edge :: "Report: drones over the line, as usual. Loudspeakers, as usual. Nobody crossed. Nobody crosses."
-  say? cure>=75 :: "Report: the lab's past seventy-five. Command was informed. Command was silent."
-  say "Report: nothing to report. Which is a report. Night watch saw lights to the east. We wrote them down."
-  say? night :: "It's not morning. You'll get the night report. It's shorter and worse."
-  > @mine "What's in the log about me?" -> me
-  > @more "Anything else on the net?" -> hub   do call:slot:1
-  > @back0 "Something else." -> hub
+  say? stand :: Report: the lab is under attack and every outfit in the Zone wants what's inside it. We hold our posts. Holding is what we do.
+  say? epilogue :: Report: the line stood down. Processing at the road checkpoints. Nobody believes processing, and nobody's wrong yet.
+  say? edge :: Report: drones over the line, as usual. Loudspeakers, as usual. Nobody crossed. Nobody crosses. We log it anyway.
+  say? cure>=75 :: Report: the lab's past seventy-five percent. Command was informed at twenty hundred. Command was silent at twenty hundred.
+  say Report: no contact worth the name. Night watch saw lights to the east and logged them. Lights to the east are a report, so we report them.
+  say? night :: It's not morning. You get the night report, which is shorter and worse.
+  > @mine What's in the log about me? -> me
+  > @more Anything else come in on the net? -> hub   do call:slot:1
+  > @back0 Let me ask something else. -> hub
 
 node lost
-  say "We withdrew from {bind:lost}. Orderly. Equipment recovered. Casualties within tolerance." ~lie:gossip.withdrew@lost
-  say "Tolerance is a word we use now."
-  > @catch "Withdrew? I heard you were thrown out." -> caught   callout gossip.withdrew@lost
-  > @more1 "What else is on the net?" -> hub   do call:slot:1
-  > @back1 "Something else." -> hub
+  say We withdrew from {bind:lost}. Orderly. Equipment recovered. Casualties within tolerance. ~lie:gossip.withdrew@lost
+  say Tolerance is a word we use now. It used to mean something about engines.
+  > @catch Withdrew? I heard you were thrown out. -> caught   callout gossip.withdrew@lost
+  > @more1 What else came in on the net? -> hub   do call:slot:1
+  > @back1 Let me ask something else. -> hub
 
 node caught
-  say "...Thrown out. Yes. Correct. The report will say withdrew. The men who were there will say the other thing."
-  say "I'd rather you heard it from me. Now you have."
-  > @more2 "What else is on the net?" -> hub   do call:slot:1
-  > @back2 "Something else." -> hub
+  say Thrown out. Yes. Correct. The report will say withdrew. The men who were there will say the other thing, and they'll be right.
+  say I'd rather you heard it from me. Now you have. Don't repeat it at the wire. They've had enough of hearing it.
+  > @more2 What else came in on the net? -> hub   do call:slot:1
+  > @back2 I won't. Something else. -> hub
 
 node dead
-  say "{bind:dead}, deceased. Confirmed by two sources. One of them was a radio. The other was the smell."
-  say? trait:veteran :: "We'll read the name at the roll. We read everyone's. Even the ones who weren't ours."
-  say "Somebody will fill the chair. Somebody always fills the chair. That's the problem with chairs."
-  > @more3 "What else is on the net?" -> hub   do call:slot:1
-  > @back3 "Something else." -> hub
+  say {bind:dead}, deceased. Confirmed by two sources. One was a radio. The other was a patrol that went to look.
+  say? trait:veteran :: We'll read the name at the roll tonight. We read everyone's, even the ones who weren't ours. It costs nothing but breath.
+  say Somebody will fill that chair. Somebody always fills the chair. That's the trouble with chairs.
+  > @more3 What else came in on the net? -> hub   do call:slot:1
+  > @back3 Let me ask something else. -> hub
 
 node shelled
-  say "Fire mission near {bind:shelled}. Ours. Authorised. I won't say by whom, and I won't say it was wise."
-  > @more4 "What else is on the net?" -> hub   do call:slot:1
-  > @back4 "Something else." -> hub
+  say Fire mission near {bind:shelled}. Ours. Authorised. I won't say by whom, and I won't say it was wise.
+  say Four shells on a crowd of them. The crowd's gone. So is the street they were standing in.
+  > @more4 What else came in on the net? -> hub   do call:slot:1
+  > @back4 Let me ask something else. -> hub
 
 node taken
-  say "{bind:who} has {bind:took}. Logged. Map updated. Pins are cheap."
-  say? feud:redhand :: "If it's the Red Hand, they'll put a toll on it by supper. That's not a guess. That's a pattern."
-  > @more5 "What else is on the net?" -> hub   do call:slot:1
-  > @back5 "Something else." -> hub
+  say {bind:who} has {bind:took}. Logged, and the map's updated. Pins are cheap. Getting a town back isn't.
+  say? feud:redhand :: If it's the Red Hand, there'll be a toll on the road out of it by supper. That's not a guess. That's a pattern.
+  > @more5 What else came in on the net? -> hub   do call:slot:1
+  > @back5 Let me ask something else. -> hub
 
 node horde
-  say "Large contact near {bind:horde}. Moving with the noise. We don't engage crowds. We let them walk past and write them down."
-  > @more6 "What else is on the net?" -> hub   do call:slot:1
-  > @back6 "Something else." -> hub
+  say Large contact near {bind:horde}, moving with the noise. We don't engage crowds. We let them walk past and write them down.
+  say If you're headed that way, go quiet: no engines, no shots you don't need. They come to sound like we come to a radio.
+  > @more6 What else came in on the net? -> hub   do call:slot:1
+  > @back6 I'll go quiet. Something else. -> hub
 
 node me
   jump kit:other -> me_colours
-  say? kit:own :: "Attached personnel. Kit correctly worn, mostly. The collar was noted."
-  say? kills:bastion>=2 :: "Your name is in the log next to ours. Not in the good column."
-  say? best:bastion :: "Entry: you {best}. Underlined. We don't underline much."
-  say "Civilian. Seen at the wire. No further entries. That's a clean page. Keep it that way or don't."
-  > @back7 "Something else." -> hub
+  say? kit:own :: Attached personnel. Kit correctly worn, mostly. The collar was noted.
+  say? kills:bastion>=2 :: Your name's in the log next to ours. Not in the good column. Every one of them is still on a board somewhere.
+  say? best:bastion :: Entry: you {best}. Underlined. We don't underline much.
+  say Civilian. Seen at the wire. No further entries. That's a clean page. Keep it that way, or don't.
+  > @back7 Fair enough. Something else. -> hub
 
 node me_colours
-  say "Entry: civilian in another faction's colours. Possibly a thief. Possibly cold. Logged as both."
-  > @back8 "Something else." -> hub
+  say Entry: civilian at the wire in another outfit's colours. Possibly a thief. Possibly cold. Logged as both until I know which.
+  > @back8 Let me ask something else. -> hub
 
 conv bastion.leader.me
 for stronghold:bastion, seat:bastion/outpost_lead
-topic "Ask how you'd be logged."
+topic "How would you log me?"
 prio reaction
 voice bastion
 
@@ -230,38 +249,38 @@ node start
   jump kills:bastion>=2 -> killer
   jump tier:bastion>=trusted -> trusted
   jump tier:bastion>=known -> known
-  say? fresh :: "New arrival. No history. History is what we write after you've done something."
-  say "Civilian. Unattached. Not a threat at this time. The 'at this time' is doing a lot of work."
-  > @more "And in full? Where do I stand?" -> hub   do call:slot:2
-  > @fair "Understood." -> hub
+  say? fresh :: New arrival. No history. History is what we write after you've done something, and you haven't yet.
+  say Civilian. Unattached. Not a threat at this time. The at this time is doing a lot of work in that sentence.
+  > @more And in full? Where do I stand with you? -> hub   do call:slot:2
+  > @fair Understood. -> hub
 
 node colours
-  say? kit:issued :: "That jacket is ours. Signed out. You're not on the sheet you're wearing."
-  say "You're in someone else's colours at my wire. That goes in the log before your name does."
-  > @more1 "And my name?" -> hub   do call:slot:2
-  > @back1 "Something else." -> hub
+  say? kit:issued :: That jacket is ours. It was signed out to somebody, and you're not the name on the sheet.
+  say You're in someone else's colours at my wire. That goes in the log before your name does, and the sentries read the log.
+  > @more1 And under my name? -> hub   do call:slot:2
+  > @back1 Let me ask something else. -> hub
 
 node bitten
-  say "Bite on the arm. I'm logging it. You're logging it too, I hope, at the nearest house."
-  say "We don't shoot the bitten. We watch them. Don't make the watching interesting."
-  > @more2 "Am I still cleared?" -> hub   do call:slot:2
-  > @back2 "Something else." -> hub
+  say Bite on the arm. I'm logging it. I hope you're getting it declared at the nearest house, or walking to the lab for the trial dose.
+  say We don't shoot the bitten. We watch them, and somebody sits with them at the end. Don't make the watching interesting.
+  > @more2 Am I still cleared at your wire? -> hub   do call:slot:2
+  > @back2 I'll get it seen to. -> hub
 
 node killer
-  say "You've put {kills} of ours down. Each one is a name we read at the roll. Each one is still on the board."
-  say "I'm talking to you because orders say talk first. Orders are getting old."
-  > @more3 "Then say where I stand." -> hub   do call:slot:2
-  > @back3 "Something else." -> hub
+  say You've put {kills} of ours in the ground. Each one is a name we read at the roll. Each one is still on the board.
+  say I'm talking to you because standing orders say talk first. Standing orders are getting old.
+  > @more3 Then say it. Where do I stand? -> hub   do call:slot:2
+  > @back3 Let me ask something else. -> hub
 
 node trusted
-  say? title:bastion :: "The men call you {title:bastion}. They don't name civilians. Draw your own conclusion."
-  say? best:bastion :: "You {best}. It's on the board, under ours."
-  say "You're on the roster, under civilians attached. We look for the people on the roster."
-  > @more4 "Where do I stand, in full?" -> hub   do call:slot:2
-  > @back4 "Something else." -> hub
+  say? title:bastion :: The men call you {title:bastion}. They don't name civilians. Draw your own conclusion.
+  say? best:bastion :: You {best}. It's on the board, under ours.
+  say You're on the roster, under civilians attached. We go looking for the people on the roster. That's not a courtesy. It's the rule.
+  > @more4 Where do I stand, in full? -> hub   do call:slot:2
+  > @back4 Thank you. Something else. -> hub
 
 node known
-  say? jobs:bastion>=3 :: "Three tasks or more, completed. That's a pattern. We like patterns."
-  say "Known at the wire. The sentries won't ask your name twice. They'll still ask once."
-  > @more5 "And where do I stand?" -> hub   do call:slot:2
-  > @back5 "Something else." -> hub
+  say? jobs:bastion>=3 :: Three tasks or more, completed and logged. That's a pattern. We like patterns.
+  say Known at the wire. The sentries won't ask your name twice. They'll still ask once, and they'll still search the bag.
+  > @more5 And where do I stand overall? -> hub   do call:slot:2
+  > @back5 Let me ask something else. -> hub
