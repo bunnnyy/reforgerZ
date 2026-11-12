@@ -106,6 +106,10 @@ trefoil:
 | The infected | A virion, slightly out of round, its spikes ending in knobs, with a bite taken out of it |
 | The Long Table | A preserving jar with a cloth tied over it, labelled only "9". The family labels its jars by the day, not by what's in them, and Day 9 was the first soup ([LORE.md](LORE.md#the-long-table)). It isn't a faction and it's a secret, so no screen shows the mark: the Long Table is told by absence ([TRACES.md](TRACES.md#the-long-table-absence)). It's the family's emblem in the set and on the icon sheet only |
 
+**Selected and hovered.** The selected row of a list has a lighter fill, a bar on its left edge
+(amber, or the faction colour on a faction's screen) and brighter text. The mouse over a row or a
+button gets the same look ([Controllers](#controllers), "Hover lights what the pad would").
+
 **Type.** Headings in a condensed bold, upper case with wide spacing (stencil-like); timers,
 distances and channel names in a mono face; body text in a plain sans. In the game the layouts
 make do with the vanilla fonts ([LAYOUTS.md](../UI/LAYOUTS.md#conventions)).
@@ -1172,6 +1176,7 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | Every input has a gamepad binding or a pad route | Each ReforgerZ action in `Configs/System/chimeraInputCommon.conf` binds a gamepad input next to its key, or what it does is reached another way on a pad (the table below) |
 | Every screen works without a mouse | It opens from something a pad can reach, moves with the D-pad or left stick, switches tabs with the shoulder buttons (`MenuTabLeft`/`MenuTabRight`), confirms with A (`MenuSelect`) and closes with B (`MenuBack`). Each screen gives a widget the focus when it opens (`RZ_UIW.Focus`), so the D-pad has something to move from |
 | Nothing needs hover, typing or a chat command | What a tooltip says also shows when the item has focus; whatever a chat command does also has a button or an action |
+| Hover lights what the pad would | On every screen the mouse over a row or a button shows the pad's selected look, and moving off returns it (below). It never fires for a pad or the keys: only when the mouse was the last thing used (`RZ_UIW.ByMouse`) |
 | Default first, then menus | Vanilla's own feature where there is one, a menu for anything with options or text, a single prompt only for what's done in a hurry ([the rule and the audit](#default-first-then-menus)) |
 | Readable on a TV | Sizes at 1920×1080: no text under 18 px and body text 26 px or more on the new screens (talk, reader, subtitles, the radio-line box); the tabs and footers of the older screens are 18 px. Nothing important within 96 px of the left and right edges or 54 px of the top and bottom (a 90% safe area). Footer prompts are vanilla's input button (`RZ_UIW.AddPrompt`, `WLib_InputNavigationButton`), which shows the key or the pad button by the device in use |
 
@@ -1216,6 +1221,21 @@ Not yet checked with a pad. X is free in the board menu, so the radio filter and
 share it, each only in its own screen; Y and T are the car screen's Start and the notebook's Track,
 each only in its own screen.
 
+**Hover.** Every row and button a screen hears clicks on also hears the cursor, through the one
+handler they share (`RZ_MenuClick` into `RZ_MenuBase.OnWidgetHover`), so the mouse and the pad show
+the same thing:
+
+| What's under the cursor | What it does | Screens |
+|---|---|---|
+| A row a click acts on | Becomes the selected row, drawn in place, so A or Enter then does what a click would | The talk screen's replies, the Standing page's rows, the object menu's options, the car repair screen's jobs (and the ring on the car), the power panel's breakers and its two buttons |
+| A row a click only picks | Lit like the selected row while the cursor is on it; the selection, its detail and what A does stay as they were, so passing over rows on the way to BUY, CRAFT or DEPLOY changes nothing | The shop's items, the crafting and cooking screens' recipes, the spawn screen's backgrounds, the radio screen's channels, the notebook's Quests and Journal rows |
+| Any other button | A lighter fill and an amber bar on its left edge, made in the button's Overlay the first time (`RZ_UIW.HoverMark`), off when the cursor leaves | The notebook's and the shop's tabs, every close button, CRAFT, BUY, DEPLOY, START THE ENGINE, TRACK, the radio filter chip, PIN IT UP, the reader's arrows, the death brief's CONTINUE |
+
+Rows lit by hover are redrawn in place, never rebuilt, so the list stays where it is under the cursor;
+and while the mouse is in use a list doesn't scroll to its selection (`RZ_UIW.KeepInView`), which the
+pad and keys still get. Left out: the shop's 3D preview (a click turns it), the death brief's
+full-screen click-off area and the talk screen's page arrows (pictures, no Overlay).
+
 **The check** (done in the files; not yet played with a pad, the VERIFY list's UI part):
 
 | Part | Checked | Fixed |
@@ -1223,7 +1243,7 @@ each only in its own screen.
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
 | The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop, the crafting and cooking screens, the radio screen, the object menu, the power panel and the death brief each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen and the death brief open by themselves; **View radio** on a radio held up is vanilla's inspection, which a pad reaches), close with B (the spawn screen's B opens the pause menu; the death brief's A closes it too), set the focus and move with the D-pad and shoulders. The HUD, the subtitles, the nametags and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
 | Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5: a reply · Q/E: page · Esc: leave", with D-pad, A, LB/RB and B in the footer) and its line's footer (vanilla's prompts, "A Skip" while it types and "A Continue" after, with a static "A: continue · B: leave" fallback that names Enter, Space and Esc on keys) |
-| Hover, typing, chat | No screen needs hover or a tooltip (the talk screen lights the reply under the cursor and the Standing page highlights the row under it, as the D-pad does; a click opens it). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
+| Hover, typing, chat | No screen needs hover or a tooltip; hover only shows what the D-pad would (below). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the old Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The Standing page (G2) has nothing under 18; its names are 40 and its detail text 22. |
 
 **What needs Workbench** (it can't be checked as text):

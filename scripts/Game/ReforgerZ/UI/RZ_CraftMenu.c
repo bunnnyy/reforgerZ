@@ -373,47 +373,13 @@ class RZ_CraftMenu : RZ_MenuBase
 		if (s_bStove)
 			rowLayout = RZ_UISettings.Get().m_sCookRowLayout;
 
-		foreach (int i, array<string> f : m_aRecipes)
+		for (int i = 0; i < m_aRecipes.Count(); i++)
 		{
 			Widget row = RZ_UIW.Create(rowLayout, list);
 			if (!row)
 				return;
 
-			bool on = i == m_iSelected;
-			bool ready = RZ_UIText.Int(f, 7) == 1;
-			int index = RZ_UIText.Int(f, 1);
-			string icon = RZ_UIText.Str(f, 4);
-			string state = "READY";
-			Color stateColour = HaveColour(true);
-			Color fg = RZ_UIColor.Bone();
-			if (!ready)
-			{
-				state = string.Format("%1 MISSING", MissingCount(index));
-				stateColour = RZ_UIColor.Dim();
-				fg = RZ_UIW.Rgb(110, 106, 96);
-			}
-			else if (on)
-			{
-				fg = RZ_UIW.Rgb(244, 240, 230);
-			}
-
-			if (index == m_iWorking)
-			{
-				state = "WORKING";
-				stateColour = Amber();
-			}
-
-			RZ_UIW.SetText(row, "RecipeName", RZ_UIText.Str(f, 2));
-			RZ_UIW.Tint(row, "RecipeName", fg);
-			RZ_UIW.SetText(row, "RecipeState", state);
-			RZ_UIW.Tint(row, "RecipeState", stateColour);
-			RZ_UIW.SetText(row, "RecipeTime", string.Format("%1 s", RZ_UIText.Int(f, 5)));
-			RZ_UIW.Show(row, "RecipeIcon", !icon.IsEmpty() && !RZ_UISettings.Get().m_sIconImageset.IsEmpty());
-			RZ_UIW.Icon(row, "RecipeIcon", icon);
-			RZ_UIW.Tint(row, "RecipeIcon", fg);
-			RZ_UIW.Show(row, "RecipeBg", on);
-			RZ_UIW.Show(row, "RecipeBar", on);
-			RZ_UIW.Tint(row, "RecipeBar", Amber());
+			FillRow(row, i, i == m_iSelected || Hovered("RecipeRow", i));
 			RZ_UIW.SetTag(row, i);
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRows.Insert(row);
@@ -423,9 +389,63 @@ class RZ_CraftMenu : RZ_MenuBase
 		if (m_iSelected >= 0 && m_iSelected < m_aRows.Count())
 			RZ_UIW.FocusWidget(m_aRows[m_iSelected]);
 
-		ScrollLayoutWidget sc = ScrollLayoutWidget.Cast(RZ_UIW.Find(m_wRoot, "RecipeScroll"));
-		if (sc && m_aRows.Count() > 1)
-			sc.SetSliderPos(0, m_iSelected / (m_aRows.Count() - 1.0));
+		RZ_UIW.KeepInView(m_wRoot, "RecipeScroll", m_iSelected, m_aRows.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Recipe `i` in its row; `on`: lit (a lighter fill, the amber bar, bright text), as the selected
+	//! row and the row under the mouse are.
+	protected void FillRow(Widget row, int i, bool on)
+	{
+		array<string> f = m_aRecipes[i];
+		bool ready = RZ_UIText.Int(f, 7) == 1;
+		int index = RZ_UIText.Int(f, 1);
+		string icon = RZ_UIText.Str(f, 4);
+		string state = "READY";
+		Color stateColour = HaveColour(true);
+		Color fg = RZ_UIColor.Bone();
+		if (!ready)
+		{
+			state = string.Format("%1 MISSING", MissingCount(index));
+			stateColour = RZ_UIColor.Dim();
+			fg = RZ_UIW.Rgb(110, 106, 96);
+		}
+		else if (on)
+		{
+			fg = RZ_UIW.Rgb(244, 240, 230);
+		}
+
+		if (index == m_iWorking)
+		{
+			state = "WORKING";
+			stateColour = Amber();
+		}
+
+		RZ_UIW.SetText(row, "RecipeName", RZ_UIText.Str(f, 2));
+		RZ_UIW.Tint(row, "RecipeName", fg);
+		RZ_UIW.SetText(row, "RecipeState", state);
+		RZ_UIW.Tint(row, "RecipeState", stateColour);
+		RZ_UIW.SetText(row, "RecipeTime", string.Format("%1 s", RZ_UIText.Int(f, 5)));
+		RZ_UIW.Show(row, "RecipeIcon", !icon.IsEmpty() && !RZ_UISettings.Get().m_sIconImageset.IsEmpty());
+		RZ_UIW.Icon(row, "RecipeIcon", icon);
+		RZ_UIW.Tint(row, "RecipeIcon", fg);
+		RZ_UIW.Show(row, "RecipeBg", on);
+		RZ_UIW.Show(row, "RecipeBar", on);
+		RZ_UIW.Tint(row, "RecipeBar", Amber());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Mouse: the recipe under the cursor is lit like the selected one until the cursor leaves (a
+	//! click picks it; moving over others on the way to CRAFT doesn't).
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		if (name != "RecipeRow")
+			return false;
+
+		if (tag >= 0 && tag < m_aRecipes.Count())
+			FillRow(w, tag, on || tag == m_iSelected);
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

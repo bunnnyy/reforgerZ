@@ -446,6 +446,50 @@ class RZ_PowerMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Mouse: the breaker or button under the cursor becomes the selected one (a click flips or
+	//! presses it, and A or Enter then does the same), drawn in place.
+	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
+	{
+		int row = -1;
+		int col = -1;
+		if (name == "BreakerRow" && tag >= 0 && tag < m_aBreakers.Count())
+		{
+			row = 0;
+			col = tag;
+		}
+		else if (name == "Action0" || name == "Action1")
+		{
+			row = 1;
+			col = 0;
+			if (name == "Action1")
+				col = 1;
+
+			if (col >= m_aButtons.Count())
+				return true;
+		}
+		else
+		{
+			return name == "BreakerRow";
+		}
+
+		if (!on || (row == m_iRow && col == m_iCol))
+			return true;
+
+		m_iRow = row;
+		m_iCol = col;
+		foreach (Widget b : m_aBreakerWidgets)
+		{
+			bool lit = m_iRow == 0 && RZ_UIW.GetTag(b) == m_iCol;
+			RZ_UIW.Show(b, "BreakerBg", lit);
+			RZ_UIW.Show(b, "BreakerFocus", lit);
+		}
+
+		DrawButtons();
+		RZ_UIW.FocusWidget(w);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Pad focus on what's selected, so the D-pad and A act on what's lit.
 	protected void FocusSelected()
 	{
