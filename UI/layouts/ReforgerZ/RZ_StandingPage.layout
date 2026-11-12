@@ -1,6 +1,6 @@
-FrameWidgetClass "{8BD7FCB8F7923E51}" {
+FrameWidgetClass "{DF66A73B6FA7F414}" {
  Name "StandingPage"
- Slot FrameWidgetSlot "{19F2D38244E822CB}" {
+ Slot FrameWidgetSlot "{B63A207D33CEB538}" {
   Anchor 0 0 1 1
   PositionX 0
   OffsetLeft 0
@@ -14,9 +14,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
  }
  "Ignore Cursor" 0
  {
-  FrameWidgetClass "{92B606810F176DE7}" {
+  FrameWidgetClass "{887D8B212F61A5DC}" {
    Name "ColumnHeads"
-   Slot FrameWidgetSlot "{D698587F36948227}" {
+   Slot FrameWidgetSlot "{95EC0CC5C9347080}" {
     Anchor 0 0 0 0
     PositionX 96
     OffsetLeft 96
@@ -29,9 +29,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
     Alignment 0 0
    }
    {
-    TextWidgetClass "{D7D4AAE3D0190C22}" {
+    TextWidgetClass "{F3F85211E4FD0F3D}" {
      Name "HeadFaction"
-     Slot FrameWidgetSlot "{9DBE65E8C1C68988}" {
+     Slot FrameWidgetSlot "{FB3712B76CE896CB}" {
       Anchor 0 0 0 0
       PositionX 28
       OffsetLeft 28
@@ -47,13 +47,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Text "FACTION"
      "Font Size" 18
      "Min Font Size" 18
-     FontProperties FontProperties "{38D000750AAF62EB}" {
+     FontProperties FontProperties "{92E9603816AF135B}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }
-    ImageWidgetClass "{20600FC4FA6A66B0}" {
+    ImageWidgetClass "{11ACF9669634DF59}" {
      Name "HeadStandingIcon"
-     Slot FrameWidgetSlot "{C6E8B94BA3D25A73}" {
+     Slot FrameWidgetSlot "{301FB55A94871935}" {
       Anchor 0 0 0 0
       PositionX 452
       OffsetLeft 452
@@ -70,9 +70,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Image "standing_word"
      Size 28 28
     }
-    TextWidgetClass "{6D11DD8BE29FF8ED}" {
+    TextWidgetClass "{AA6EB8EEFE1EC386}" {
      Name "HeadStanding"
-     Slot FrameWidgetSlot "{EBDE8D811E6136C5}" {
+     Slot FrameWidgetSlot "{A69B267E20626CD0}" {
       Anchor 0 0 0 0
       PositionX 500
       OffsetLeft 500
@@ -88,13 +88,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Text "WHAT THEY CALL YOU"
      "Font Size" 18
      "Min Font Size" 18
-     FontProperties FontProperties "{E8B88E0602FF63B6}" {
+     FontProperties FontProperties "{0A7D94446EC5058D}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }
-    ImageWidgetClass "{2F99B73773D2177F}" {
+    ImageWidgetClass "{6040063237A14CF0}" {
      Name "HeadFavorIcon"
-     Slot FrameWidgetSlot "{EE00A5A3557F16A2}" {
+     Slot FrameWidgetSlot "{E1112F5CD6B23ED5}" {
       Anchor 0 0 0 0
       PositionX 1004
       OffsetLeft 1004
@@ -111,9 +111,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Image "standing_favor"
      Size 28 28
     }
-    TextWidgetClass "{FDA3F8F7DBBE19B6}" {
+    TextWidgetClass "{B79BEB63D9A27F56}" {
      Name "HeadFavor"
-     Slot FrameWidgetSlot "{E820983A200E6AA8}" {
+     Slot FrameWidgetSlot "{0E7B77D865880526}" {
       Anchor 0 0 0 0
       PositionX 1046
       OffsetLeft 1046
@@ -129,13 +129,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Text "FAVOR"
      "Font Size" 18
      "Min Font Size" 18
-     FontProperties FontProperties "{57BB5834B3AD7252}" {
+     FontProperties FontProperties "{7EA4249DAFA3ABB4}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }
-    ImageWidgetClass "{1ACC6B7D361CC256}" {
+    ImageWidgetClass "{F17C5AA00BB37A12}" {
      Name "HeadLeaderIcon"
-     Slot FrameWidgetSlot "{5DC2604EEB9A97B8}" {
+     Slot FrameWidgetSlot "{A58FFB1F6D4D3932}" {
       Anchor 0 0 0 0
       PositionX 1200
       OffsetLeft 1200
@@ -152,9 +152,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Image "standing_leader"
      Size 28 28
     }
-    TextWidgetClass "{7F418BD46A18840F}" {
+    TextWidgetClass "{E2C9B34776FBC126}" {
      Name "HeadLeader"
-     Slot FrameWidgetSlot "{CA54983EEC7E47BC}" {
+     Slot FrameWidgetSlot "{F708088A19D479C5}" {
       Anchor 0 0 0 0
       PositionX 1242
       OffsetLeft 1242
@@ -170,13 +170,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Text "LEADERS"
      "Font Size" 18
      "Min Font Size" 18
-     FontProperties FontProperties "{E7D998523851DA84}" {
+     FontProperties FontProperties "{E01BF2F9DCF9B124}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }
-    ImageWidgetClass "{5649E75C46420C5A}" {
+    ImageWidgetClass "{6975E4CC1E410526}" {
      Name "HeadNeedIcon"
-     Slot FrameWidgetSlot "{50B3B0328D62F835}" {
+     Slot FrameWidgetSlot "{26F369978E9031C5}" {
       Anchor 0 0 0 0
       PositionX 1386
       OffsetLeft 1386
@@ -193,9 +193,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Image "status_shortage"
      Size 28 28
     }
-    TextWidgetClass "{4D451CC2E1BF4BB1}" {
+    TextWidgetClass "{5902ACDC084869BF}" {
      Name "HeadNeed"
-     Slot FrameWidgetSlot "{B29631B2EE0B3C18}" {
+     Slot FrameWidgetSlot "{D78BC4CF9191B6A6}" {
       Anchor 0 0 0 0
       PositionX 1430
       OffsetLeft 1430
@@ -211,13 +211,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Text "NEEDS"
      "Font Size" 18
      "Min Font Size" 18
-     FontProperties FontProperties "{3812F7BDE36CD8C2}" {
+     FontProperties FontProperties "{729B4C040E912965}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }
-    ImageWidgetClass "{7B9AA9537450C7A7}" {
+    ImageWidgetClass "{07304436C8C948EB}" {
      Name "HeadKitIcon"
-     Slot FrameWidgetSlot "{52C2F7CB4EC45A8B}" {
+     Slot FrameWidgetSlot "{527D55AC8BDEDA81}" {
       Anchor 0 0 0 0
       PositionX 1626
       OffsetLeft 1626
@@ -234,9 +234,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Image "standing_kit"
      Size 28 28
     }
-    TextWidgetClass "{7F19C295F3C27482}" {
+    TextWidgetClass "{40424AC58EE32FB5}" {
      Name "HeadKit"
-     Slot FrameWidgetSlot "{7EEF5666251718E7}" {
+     Slot FrameWidgetSlot "{0E60A8072877FEA0}" {
       Anchor 0 0 0 0
       PositionX 1662
       OffsetLeft 1662
@@ -252,15 +252,15 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
      Text "KIT"
      "Font Size" 18
      "Min Font Size" 18
-     FontProperties FontProperties "{1F35DB0B0F421744}" {
+     FontProperties FontProperties "{2F914B892B8B8B89}" {
       Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
      }
     }
    }
   }
-  FrameWidgetClass "{DBBD8BE39B9CE8DF}" {
+  FrameWidgetClass "{79C109F6752A658A}" {
    Name "Rows"
-   Slot FrameWidgetSlot "{013F4D5BFB717AC1}" {
+   Slot FrameWidgetSlot "{1F953F2A5253B5EA}" {
     Anchor 0 0 0 0
     PositionX 96
     OffsetLeft 96
@@ -273,9 +273,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
     Alignment 0 0
    }
    {
-    ButtonWidgetClass "{104E75858CC84A93}" {
+    ButtonWidgetClass "{43DD3914CE67AB99}" {
      Name "Row0"
-     Slot FrameWidgetSlot "{BCF7BF91F60C9708}" {
+     Slot FrameWidgetSlot "{547444F35AE20F7D}" {
       Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
@@ -283,22 +283,22 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
       OffsetTop 0
       SizeX 1728
       OffsetRight -1728
-      SizeY 444
-      OffsetBottom -444
+      SizeY 174
+      OffsetBottom -174
       Alignment 0 0
      }
      style blank
      {
-      FrameWidgetClass "{009241E63E1A69AD}" {
+      FrameWidgetClass "{DFB495BBBA98D384}" {
        Name "RowFrame0"
-       Slot ButtonWidgetSlot "{42467ACA0DDECEDA}" {
+       Slot ButtonWidgetSlot "{0DA96348A251555A}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
        {
-        ImageWidgetClass "{89EB26C831E2C279}" {
+        ImageWidgetClass "{DC82CBB817EAF1EC}" {
          Name "RowBg0"
-         Slot FrameWidgetSlot "{08E85E752581F5EA}" {
+         Slot FrameWidgetSlot "{23645F3A4DFF7FD8}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -313,9 +313,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.071 0.078 0.086 0.9
          Size 1 1
         }
-        ImageWidgetClass "{BE03B03A92F32246}" {
-         Name "RowOpen0"
-         Slot FrameWidgetSlot "{3DE785FDAB4D4C12}" {
+        ImageWidgetClass "{D37E6EE21F887125}" {
+         Name "RowSelected0"
+         Slot FrameWidgetSlot "{AB7A8FC9E5597C51}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -330,9 +330,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.91 0.886 0.816 0.06
          Size 1 1
         }
-        PanelWidgetClass "{2C68521DDC01CFF2}" {
+        PanelWidgetClass "{34E3588C228E9159}" {
          Name "RowLine0"
-         Slot FrameWidgetSlot "{33A65F4254B5522F}" {
+         Slot FrameWidgetSlot "{C8AE5A85A94F7075}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -347,9 +347,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.165 0.18 0.192 1
          style outline_2px
         }
-        ImageWidgetClass "{6AC8199E634D844F}" {
+        ImageWidgetClass "{415B7B5B8474C3A9}" {
          Name "Accent0"
-         Slot FrameWidgetSlot "{D77D00E82EA3534B}" {
+         Slot FrameWidgetSlot "{B9A096407FBF86D9}" {
           Anchor 0 0 0 1
           PositionX 0
           OffsetLeft 0
@@ -364,233 +364,250 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.89 0.639 0.231 1
          Size 1 1
         }
-        ImageWidgetClass "{187A5EA7DE5FA0E7}" {
-         Name "Emblem0"
-         Slot FrameWidgetSlot "{B54E7F957256FC28}" {
+        FrameWidgetClass "{94973FB9FE7B28D2}" {
+         Name "Strip0"
+         Slot FrameWidgetSlot "{E61DA8D518B73D11}" {
           Anchor 0 0 0 0
-          PositionX 28
-          OffsetLeft 28
-          PositionY 16
-          OffsetTop 16
-          SizeX 52
-          OffsetRight -80
-          SizeY 52
-          OffsetBottom -68
+          PositionX 0
+          OffsetLeft 0
+          PositionY 45
+          OffsetTop 45
+          SizeX 1728
+          OffsetRight -1728
+          SizeY 84
+          OffsetBottom -129
           Alignment 0 0
          }
-         Color 0.89 0.639 0.231 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "faction_haven"
-         Size 52 52
+         {
+          ImageWidgetClass "{561E6A2E79BD242D}" {
+           Name "Emblem0"
+           Slot FrameWidgetSlot "{FE3ED8D3CC68E9A6}" {
+            Anchor 0 0 0 0
+            PositionX 28
+            OffsetLeft 28
+            PositionY 16
+            OffsetTop 16
+            SizeX 52
+            OffsetRight -80
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.89 0.639 0.231 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "faction_haven"
+           Size 52 52
+          }
+          TextWidgetClass "{2608A0FB68DC5AC2}" {
+           Name "FactionName0"
+           Slot FrameWidgetSlot "{577B2F4FC6BEF097}" {
+            Anchor 0 0 0 0
+            PositionX 96
+            OffsetLeft 96
+            PositionY 25
+            OffsetTop 25
+            SizeX 320
+            OffsetRight -416
+            SizeY 34
+            OffsetBottom -59
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text "THE HAVEN"
+           "Font Size" 28
+           "Min Font Size" 28
+           FontProperties FontProperties "{EF6E5DE757B77465}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{D350A85978A27E0B}" {
+           Name "TierIcon0"
+           Slot FrameWidgetSlot "{6F1C881CEA0F63A2}" {
+            Anchor 0 0 0 0
+            PositionX 440
+            OffsetLeft 440
+            PositionY 18
+            OffsetTop 18
+            SizeX 48
+            OffsetRight -488
+            SizeY 48
+            OffsetBottom -66
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "tier_stranger"
+           Size 48 48
+          }
+          TextWidgetClass "{17EF86D3CEA49A75}" {
+           Name "TierName0"
+           Slot FrameWidgetSlot "{4EF809C80239EF0F}" {
+            Anchor 0 0 0 0
+            PositionX 500
+            OffsetLeft 500
+            PositionY 16
+            OffsetTop 16
+            SizeX 480
+            OffsetRight -980
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           FontProperties FontProperties "{B37F1CBA1DB68097}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{A9F96816F45DCB9F}" {
+           Name "FavorIcon0"
+           Slot FrameWidgetSlot "{355882152FD5D98E}" {
+            Anchor 0 0 0 0
+            PositionX 1000
+            OffsetLeft 1000
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1036
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.89 0.639 0.231 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_favor"
+           Size 36 36
+          }
+          TextWidgetClass "{9CF715FEDF90E478}" {
+           Name "FavorValue0"
+           Slot FrameWidgetSlot "{328C764A6C17C2D0}" {
+            Anchor 0 0 0 0
+            PositionX 1046
+            OffsetLeft 1046
+            PositionY 24
+            OffsetTop 24
+            SizeX 140
+            OffsetRight -1186
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 30
+           "Min Font Size" 30
+           FontProperties FontProperties "{416605502DA1C75C}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{6C2B31B78FEF120D}" {
+           Name "LeaderIcon0"
+           Slot FrameWidgetSlot "{0BEA47DE8B71EA02}" {
+            Anchor 0 0 0 0
+            PositionX 1196
+            OffsetLeft 1196
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1232
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_leader"
+           Size 36 36
+          }
+          TextWidgetClass "{11A06BF3D26402FE}" {
+           Name "LeaderCount0"
+           Slot FrameWidgetSlot "{89544B42A6CE76D4}" {
+            Anchor 0 0 0 0
+            PositionX 1242
+            OffsetLeft 1242
+            PositionY 26
+            OffsetTop 26
+            SizeX 120
+            OffsetRight -1362
+            SizeY 34
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 26
+           "Min Font Size" 26
+           FontProperties FontProperties "{31677687D34CBB2D}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{23EB66F756AC578B}" {
+           Name "NeedIcon0"
+           Slot FrameWidgetSlot "{34FF90FE2BC6885B}" {
+            Anchor 0 0 0 0
+            PositionX 1380
+            OffsetLeft 1380
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1420
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.89 0.639 0.231 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "status_shortage"
+           Size 40 40
+          }
+          TextWidgetClass "{1C2E08A06AECBB0D}" {
+           Name "NeedTitle0"
+           Slot FrameWidgetSlot "{D29153AA6AF8C758}" {
+            Anchor 0 0 0 0
+            PositionX 1430
+            OffsetLeft 1430
+            PositionY 28
+            OffsetTop 28
+            SizeX 170
+            OffsetRight -1600
+            SizeY 30
+            OffsetBottom -58
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 22
+           "Min Font Size" 22
+           FontProperties FontProperties "{1517696AC0EA2765}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{FFA0583DB2871ABB}" {
+           Name "KitIcon0"
+           Slot FrameWidgetSlot "{AA22626C14433251}" {
+            Anchor 0 0 0 0
+            PositionX 1620
+            OffsetLeft 1620
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1660
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_kit"
+           Size 40 40
+          }
+         }
         }
-        TextWidgetClass "{229BF17C94727D24}" {
-         Name "FactionName0"
-         Slot FrameWidgetSlot "{32BFF8E54ADA5514}" {
-          Anchor 0 0 0 0
-          PositionX 96
-          OffsetLeft 96
-          PositionY 25
-          OffsetTop 25
-          SizeX 320
-          OffsetRight -416
-          SizeY 34
-          OffsetBottom -59
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text "THE HAVEN"
-         "Font Size" 28
-         "Min Font Size" 28
-         FontProperties FontProperties "{A128D6B53C1A9D98}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{9507A7AC38639FFB}" {
-         Name "TierIcon0"
-         Slot FrameWidgetSlot "{B528D58E70B5F820}" {
-          Anchor 0 0 0 0
-          PositionX 440
-          OffsetLeft 440
-          PositionY 18
-          OffsetTop 18
-          SizeX 48
-          OffsetRight -488
-          SizeY 48
-          OffsetBottom -66
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "tier_stranger"
-         Size 48 48
-        }
-        TextWidgetClass "{371EE722D45C8863}" {
-         Name "TierName0"
-         Slot FrameWidgetSlot "{A641B9A10B737A7F}" {
-          Anchor 0 0 0 0
-          PositionX 500
-          OffsetLeft 500
-          PositionY 16
-          OffsetTop 16
-          SizeX 480
-          OffsetRight -980
-          SizeY 52
-          OffsetBottom -68
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Text ""
-         "Font Size" 40
-         "Min Font Size" 40
-         FontProperties FontProperties "{5D410754FA0493B2}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{37591BD37362AB9B}" {
-         Name "FavorIcon0"
-         Slot FrameWidgetSlot "{D689EFD1F2D90395}" {
-          Anchor 0 0 0 0
-          PositionX 1000
-          OffsetLeft 1000
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1036
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.89 0.639 0.231 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_favor"
-         Size 36 36
-        }
-        TextWidgetClass "{15A2BF1184FBDCDD}" {
-         Name "FavorValue0"
-         Slot FrameWidgetSlot "{6BC32AB4C4841C37}" {
-          Anchor 0 0 0 0
-          PositionX 1046
-          OffsetLeft 1046
-          PositionY 24
-          OffsetTop 24
-          SizeX 140
-          OffsetRight -1186
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 30
-         "Min Font Size" 30
-         FontProperties FontProperties "{E3CCD84B753F9807}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{32686C1ADE114BC5}" {
-         Name "LeaderIcon0"
-         Slot FrameWidgetSlot "{01E8BC6B4D401575}" {
-          Anchor 0 0 0 0
-          PositionX 1196
-          OffsetLeft 1196
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1232
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_leader"
-         Size 36 36
-        }
-        TextWidgetClass "{649454BC9F4CA8D3}" {
-         Name "LeaderCount0"
-         Slot FrameWidgetSlot "{5CD307B24AEB628B}" {
-          Anchor 0 0 0 0
-          PositionX 1242
-          OffsetLeft 1242
-          PositionY 26
-          OffsetTop 26
-          SizeX 120
-          OffsetRight -1362
-          SizeY 34
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 26
-         "Min Font Size" 26
-         FontProperties FontProperties "{CBF3A053362C46FD}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{A971989BE8B042D8}" {
-         Name "NeedIcon0"
-         Slot FrameWidgetSlot "{0F3DC8ABBC5D06FF}" {
-          Anchor 0 0 0 0
-          PositionX 1380
-          OffsetLeft 1380
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1420
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.89 0.639 0.231 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "status_shortage"
-         Size 40 40
-        }
-        TextWidgetClass "{4EA9C946D014C894}" {
-         Name "NeedTitle0"
-         Slot FrameWidgetSlot "{82F9BC587433DAEB}" {
-          Anchor 0 0 0 0
-          PositionX 1430
-          OffsetLeft 1430
-          PositionY 28
-          OffsetTop 28
-          SizeX 170
-          OffsetRight -1600
-          SizeY 30
-          OffsetBottom -58
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 22
-         "Min Font Size" 22
-         FontProperties FontProperties "{BC3804F03FCF8786}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{C20D64A79592E8C3}" {
-         Name "KitIcon0"
-         Slot FrameWidgetSlot "{1067D0CAD7C63DAB}" {
-          Anchor 0 0 0 0
-          PositionX 1620
-          OffsetLeft 1620
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1660
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_kit"
-         Size 40 40
-        }
-        FrameWidgetClass "{485DFEB64E4BFB18}" {
+        FrameWidgetClass "{620090066D3367A4}" {
          Name "Detail0"
-         Slot FrameWidgetSlot "{48339D59A7FCC5CE}" {
+         Slot FrameWidgetSlot "{62DF85AF5649363D}" {
           Anchor 0 0 1 1
           PositionX 28
           OffsetLeft 28
@@ -602,10 +619,11 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
           OffsetBottom 16
           Alignment 0 0
          }
+         "Is Visible" 0
          {
-          ImageWidgetClass "{03A2C153416BFA91}" {
+          ImageWidgetClass "{5894CEBDED5C6950}" {
            Name "DetailRule0"
-           Slot FrameWidgetSlot "{FD79B61DC6DA5275}" {
+           Slot FrameWidgetSlot "{53A3E978EF7B9DBA}" {
             Anchor 0 0 1 0
             PositionX 0
             OffsetLeft 0
@@ -620,9 +638,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
            Color 0.165 0.18 0.192 1
            Size 1 1
           }
-          FrameWidgetClass "{65E65997A844EA83}" {
+          FrameWidgetClass "{A804B29FFD0534DD}" {
            Name "SeeBlock0"
-           Slot FrameWidgetSlot "{82C22EE6945CB941}" {
+           Slot FrameWidgetSlot "{E328484351CCB4B3}" {
             Anchor 0 0 0 1
             PositionX 0
             OffsetLeft 0
@@ -635,9 +653,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{875A2A1CD8BC346A}" {
+            ImageWidgetClass "{5DB998A128FD3E03}" {
              Name "SeeIcon0"
-             Slot FrameWidgetSlot "{94798B7C9D3FD672}" {
+             Slot FrameWidgetSlot "{ABD88F51981E695A}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -654,9 +672,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_word"
              Size 30 30
             }
-            TextWidgetClass "{DCA8EAC09735BD96}" {
+            TextWidgetClass "{548346BB44540022}" {
              Name "SeeLabel0"
-             Slot FrameWidgetSlot "{8F482A358867887E}" {
+             Slot FrameWidgetSlot "{1664870900D84EDC}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -672,13 +690,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "HOW THEY SEE YOU"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{2CD2350D44EA052D}" {
+             FontProperties FontProperties "{A11E286D687FC016}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{E71BE44947637631}" {
+            ScrollLayoutWidgetClass "{AC3E809CAF866475}" {
              Name "SeeScroll0"
-             Slot FrameWidgetSlot "{11522F4F23494C36}" {
+             Slot FrameWidgetSlot "{54DB1EB614C71D40}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -693,18 +711,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{B2BEADECCCAA0809}" {
+              SizeLayoutWidgetClass "{E9E31F99757721D9}" {
                Name "SeeSize0"
-               Slot AlignableSlot "{CF90B82B09AC9188}" {
+               Slot AlignableSlot "{85B50127E7347461}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{D09EDED7028CB3D3}" {
+                TextWidgetClass "{A182501DCBAECFFB}" {
                  Name "SeeText0"
-                 Slot AlignableSlot "{40FF0FEC1D7D4A58}" {
+                 Slot AlignableSlot "{BDE9687B429F7D65}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -713,7 +731,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{842CE0E5CE413769}" {
+                 FontProperties FontProperties "{0C3F96A311E2DEC8}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -721,9 +739,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               }
              }
             }
-            FrameWidgetClass "{E55374450FFB727D}" {
+            FrameWidgetClass "{CED72319B49F2FAD}" {
              Name "NextBlock0"
-             Slot FrameWidgetSlot "{BA9922742F76C2A1}" {
+             Slot FrameWidgetSlot "{43735FA3754E1FAF}" {
               Anchor 0 1 1 1
               PositionX 0
               OffsetLeft 0
@@ -736,9 +754,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               Alignment 0 0
              }
              {
-              ImageWidgetClass "{9D6CDF2BC8388AB4}" {
+              ImageWidgetClass "{036FEF1475270B0E}" {
                Name "NextIcon0"
-               Slot FrameWidgetSlot "{5E75B63A49C187F0}" {
+               Slot FrameWidgetSlot "{7BB83A1DCA33ED1D}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -755,9 +773,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Image "standing_next"
                Size 26 26
               }
-              TextWidgetClass "{5FA57AC5A394638F}" {
+              TextWidgetClass "{108EE957F82B8578}" {
                Name "NextLabel0"
-               Slot FrameWidgetSlot "{3F457C00E2455381}" {
+               Slot FrameWidgetSlot "{F3C760691057EAB6}" {
                 Anchor 0 0 0 0
                 PositionX 36
                 OffsetLeft 36
@@ -773,13 +791,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Text "NEXT"
                "Font Size" 18
                "Min Font Size" 18
-               FontProperties FontProperties "{843976052B6EFB1F}" {
+               FontProperties FontProperties "{A47DF91392D0CF06}" {
                 Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
                }
               }
-              TextWidgetClass "{3B14AE31E4A1F0EA}" {
+              TextWidgetClass "{FE93BDC26B6E8611}" {
                Name "NextText0"
-               Slot FrameWidgetSlot "{40668CCD3D1F7E98}" {
+               Slot FrameWidgetSlot "{01433569098352F0}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -796,7 +814,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                "Font Size" 22
                "Min Font Size" 22
                Wrap 1
-               FontProperties FontProperties "{96FC84853F18854A}" {
+               FontProperties FontProperties "{09B8FFE526872D6C}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                }
               }
@@ -804,9 +822,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{2295C975331F8FD3}" {
+          FrameWidgetClass "{6C7A856C6E2760B1}" {
            Name "LeadersBlock0"
-           Slot FrameWidgetSlot "{CC7EED520FD71F10}" {
+           Slot FrameWidgetSlot "{1FD482CB2E5ED91E}" {
             Anchor 0 0 0 1
             PositionX 424
             OffsetLeft 424
@@ -819,9 +837,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{FA0223AD5ED61428}" {
+            ImageWidgetClass "{A3FD7CF1D8A6FAD0}" {
              Name "LeadersIconBig0"
-             Slot FrameWidgetSlot "{FF2DF0012E0F9EC7}" {
+             Slot FrameWidgetSlot "{02E9763BBDFEEDDF}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -838,9 +856,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_leader"
              Size 30 30
             }
-            TextWidgetClass "{E9F0034DE0381EA2}" {
+            TextWidgetClass "{C13BF49F3908258F}" {
              Name "LeadersLabel0"
-             Slot FrameWidgetSlot "{0F1EDBBEFD90095B}" {
+             Slot FrameWidgetSlot "{E14345B40BE1D4CB}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -856,13 +874,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "LEADERS YOU'VE MET"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{93052FFFF2BFAE2F}" {
+             FontProperties FontProperties "{F24AF0766283BA95}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{E49AD46F406D395D}" {
+            ScrollLayoutWidgetClass "{70498D4D59196EC7}" {
              Name "LeadersScroll0"
-             Slot FrameWidgetSlot "{0B93C2EAE8975507}" {
+             Slot FrameWidgetSlot "{9EA8F0548B1C7335}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -877,18 +895,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{AF627AE0FCE1FCEB}" {
+              SizeLayoutWidgetClass "{1168812923F052CF}" {
                Name "LeadersSize0"
-               Slot AlignableSlot "{F1A52014FBB95326}" {
+               Slot AlignableSlot "{D435FB22D7F7A0DD}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{AEBD35D8948B8202}" {
+                TextWidgetClass "{BF8F2EFC28464717}" {
                  Name "LeadersText0"
-                 Slot AlignableSlot "{F16F16FEA0C22039}" {
+                 Slot AlignableSlot "{BE7B3DE0C3842946}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -897,7 +915,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{F3EC909A97DE9599}" {
+                 FontProperties FontProperties "{16398B7350B109C5}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -907,9 +925,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{3642B33E18EC8574}" {
+          FrameWidgetClass "{53F1AAA72EDD264A}" {
            Name "NeedBlock0"
-           Slot FrameWidgetSlot "{DA59FC3B62C6D6FD}" {
+           Slot FrameWidgetSlot "{B5DDBF48BB78E9B8}" {
             Anchor 0 0 0 1
             PositionX 848
             OffsetLeft 848
@@ -922,9 +940,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{FC87945A784CE688}" {
+            ImageWidgetClass "{B56AB0BE1ADC4A73}" {
              Name "NeedIconBig0"
-             Slot FrameWidgetSlot "{5677C049BF6A9EC1}" {
+             Slot FrameWidgetSlot "{1793D812476644BE}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -941,9 +959,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "status_shortage"
              Size 30 30
             }
-            TextWidgetClass "{16F7ECC288FEE126}" {
+            TextWidgetClass "{170A904E5E9E803A}" {
              Name "NeedLabel0"
-             Slot FrameWidgetSlot "{D185886AD115EF3F}" {
+             Slot FrameWidgetSlot "{BD7A714BA3ECF62D}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -959,13 +977,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "WHAT THEY NEED"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{0ED926F3B6512E52}" {
+             FontProperties FontProperties "{8DFFEC5BC46658F2}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            TextWidgetClass "{C404B2C0065FF684}" {
+            TextWidgetClass "{A372D112E67718FB}" {
              Name "NeedName0"
-             Slot FrameWidgetSlot "{97BCA10B469CCB0A}" {
+             Slot FrameWidgetSlot "{E91199564035489E}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -981,13 +999,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text ""
              "Font Size" 24
              "Min Font Size" 24
-             FontProperties FontProperties "{70FFF9245E674390}" {
+             FontProperties FontProperties "{E3A75AB67C9B95A6}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{88CBCE599DF4904B}" {
+            ScrollLayoutWidgetClass "{3364A8F421DE0BCA}" {
              Name "NeedScroll0"
-             Slot FrameWidgetSlot "{4C50489C393EC406}" {
+             Slot FrameWidgetSlot "{3581AD1838FAAA88}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -1002,18 +1020,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{6A216D4FF876D99B}" {
+              SizeLayoutWidgetClass "{0D58A31B3A8E78C2}" {
                Name "NeedSize0"
-               Slot AlignableSlot "{FD577FAAD5FC0C6F}" {
+               Slot AlignableSlot "{96BCEE4BB1B28267}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{A04C3BDBA81E322E}" {
+                TextWidgetClass "{27F29BF8D4EB22EC}" {
                  Name "NeedText0"
-                 Slot AlignableSlot "{9DCEA4DB8B77120B}" {
+                 Slot AlignableSlot "{5928196409243D50}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -1022,7 +1040,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{B05DA479751A0AA0}" {
+                 FontProperties FontProperties "{34F6AE1CE3B98556}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                   Italic 1
                  }
@@ -1033,9 +1051,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{3536B8490187B985}" {
+          FrameWidgetClass "{0EB6802AFFA0CD93}" {
            Name "KitBlock0"
-           Slot FrameWidgetSlot "{9F68E71825A479D9}" {
+           Slot FrameWidgetSlot "{1E52C8425B1BA8A3}" {
             Anchor 0 0 0 1
             PositionX 1272
             OffsetLeft 1272
@@ -1048,9 +1066,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{9D2E8BB8777DA2C4}" {
+            ImageWidgetClass "{7ACD6D7FB105562C}" {
              Name "KitIconBig0"
-             Slot FrameWidgetSlot "{07262771A48BFE17}" {
+             Slot FrameWidgetSlot "{00A598AE8E62F389}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -1067,9 +1085,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_kit"
              Size 30 30
             }
-            TextWidgetClass "{3C79A8447298A32F}" {
+            TextWidgetClass "{44D0953D7BBEAD1E}" {
              Name "KitLabel0"
-             Slot FrameWidgetSlot "{95CB75216E8C4B17}" {
+             Slot FrameWidgetSlot "{997A2D7CEF2264B0}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -1085,13 +1103,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "IN THEIR KIT"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{C43678FE99C19678}" {
+             FontProperties FontProperties "{4A1AEE405F6C011E}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{3B3AE48D31021686}" {
+            ScrollLayoutWidgetClass "{32A266C197DFA795}" {
              Name "KitScroll0"
-             Slot FrameWidgetSlot "{503D86D21D7D0B4C}" {
+             Slot FrameWidgetSlot "{3F13BA83D1B4A89E}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -1106,18 +1124,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{57A948A5431B487D}" {
+              SizeLayoutWidgetClass "{73C742BECFC1BBBF}" {
                Name "KitSize0"
-               Slot AlignableSlot "{46341B1C42DD51ED}" {
+               Slot AlignableSlot "{CFC01B7FCECAB01A}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{EA3B08AB5EA1E33B}" {
+                TextWidgetClass "{BD54C9F77D93E736}" {
                  Name "KitText0"
-                 Slot AlignableSlot "{A46255FA95562582}" {
+                 Slot AlignableSlot "{F7CF2CFC242246B7}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -1126,7 +1144,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{2E8C32B98A977682}" {
+                 FontProperties FontProperties "{C2C740D188380361}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -1142,32 +1160,32 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
       }
      }
     }
-    ButtonWidgetClass "{D8AEC407D1B681B4}" {
+    ButtonWidgetClass "{819F618A0FC8879F}" {
      Name "Row1"
-     Slot FrameWidgetSlot "{0959AB413795F0E0}" {
+     Slot FrameWidgetSlot "{1320CE87F77C109F}" {
       Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
-      PositionY 452
-      OffsetTop 452
+      PositionY 182
+      OffsetTop 182
       SizeX 1728
       OffsetRight -1728
-      SizeY 84
-      OffsetBottom -536
+      SizeY 174
+      OffsetBottom -356
       Alignment 0 0
      }
      style blank
      {
-      FrameWidgetClass "{41BC0125CE69BE3D}" {
+      FrameWidgetClass "{01CA4F4605EB85C2}" {
        Name "RowFrame1"
-       Slot ButtonWidgetSlot "{2EDE19DB025FA44C}" {
+       Slot ButtonWidgetSlot "{9473340D7ADB3373}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
        {
-        ImageWidgetClass "{E3467F87F4A348FA}" {
+        ImageWidgetClass "{F9B192742AFE8B1C}" {
          Name "RowBg1"
-         Slot FrameWidgetSlot "{C6F9F0E9006DC59E}" {
+         Slot FrameWidgetSlot "{82FF8FB2391894A5}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -1182,9 +1200,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.071 0.078 0.086 0.9
          Size 1 1
         }
-        ImageWidgetClass "{58911BB2A5E4E332}" {
-         Name "RowOpen1"
-         Slot FrameWidgetSlot "{E693C1E1CA8C5B6E}" {
+        ImageWidgetClass "{03E8C3CE87B1A6E6}" {
+         Name "RowSelected1"
+         Slot FrameWidgetSlot "{194A30EA4851A068}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -1200,9 +1218,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.91 0.886 0.816 0.06
          Size 1 1
         }
-        PanelWidgetClass "{87772B6081213B33}" {
+        PanelWidgetClass "{A6181884B0AE9871}" {
          Name "RowLine1"
-         Slot FrameWidgetSlot "{D6C3139DB07648BB}" {
+         Slot FrameWidgetSlot "{3794477BD50A2DBE}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -1217,9 +1235,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.165 0.18 0.192 1
          style outline_2px
         }
-        ImageWidgetClass "{297E5A351533613E}" {
+        ImageWidgetClass "{F720D11E22CFC1D1}" {
          Name "Accent1"
-         Slot FrameWidgetSlot "{F1651231314A14CF}" {
+         Slot FrameWidgetSlot "{BA9E7599AF42CEBC}" {
           Anchor 0 0 0 1
           PositionX 0
           OffsetLeft 0
@@ -1234,233 +1252,250 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.604 0.639 0.369 1
          Size 1 1
         }
-        ImageWidgetClass "{DA412A80B2BF60C1}" {
-         Name "Emblem1"
-         Slot FrameWidgetSlot "{797B36999CC4B577}" {
+        FrameWidgetClass "{56B20E449BD5D16D}" {
+         Name "Strip1"
+         Slot FrameWidgetSlot "{CCD37017E9E95988}" {
           Anchor 0 0 0 0
-          PositionX 28
-          OffsetLeft 28
-          PositionY 16
-          OffsetTop 16
-          SizeX 52
-          OffsetRight -80
-          SizeY 52
-          OffsetBottom -68
+          PositionX 0
+          OffsetLeft 0
+          PositionY 45
+          OffsetTop 45
+          SizeX 1728
+          OffsetRight -1728
+          SizeY 84
+          OffsetBottom -129
           Alignment 0 0
          }
-         Color 0.604 0.639 0.369 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "faction_bastion"
-         Size 52 52
+         {
+          ImageWidgetClass "{5D000E550AF7AFF6}" {
+           Name "Emblem1"
+           Slot FrameWidgetSlot "{9DB95BDC63D18AEA}" {
+            Anchor 0 0 0 0
+            PositionX 28
+            OffsetLeft 28
+            PositionY 16
+            OffsetTop 16
+            SizeX 52
+            OffsetRight -80
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.604 0.639 0.369 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "faction_bastion"
+           Size 52 52
+          }
+          TextWidgetClass "{DF076B46302BB59E}" {
+           Name "FactionName1"
+           Slot FrameWidgetSlot "{473D6A49C6D19F47}" {
+            Anchor 0 0 0 0
+            PositionX 96
+            OffsetLeft 96
+            PositionY 25
+            OffsetTop 25
+            SizeX 320
+            OffsetRight -416
+            SizeY 34
+            OffsetBottom -59
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text "TASK FORCE BASTION"
+           "Font Size" 28
+           "Min Font Size" 28
+           FontProperties FontProperties "{C4E6B40575A1BCE6}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{DDE24C93F759275C}" {
+           Name "TierIcon1"
+           Slot FrameWidgetSlot "{32F641ED2CB15436}" {
+            Anchor 0 0 0 0
+            PositionX 440
+            OffsetLeft 440
+            PositionY 18
+            OffsetTop 18
+            SizeX 48
+            OffsetRight -488
+            SizeY 48
+            OffsetBottom -66
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "tier_stranger"
+           Size 48 48
+          }
+          TextWidgetClass "{08AB48F2632D222F}" {
+           Name "TierName1"
+           Slot FrameWidgetSlot "{F25C913C0C2AC39A}" {
+            Anchor 0 0 0 0
+            PositionX 500
+            OffsetLeft 500
+            PositionY 16
+            OffsetTop 16
+            SizeX 480
+            OffsetRight -980
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           FontProperties FontProperties "{1CD871830073DCEA}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{F381577056665D11}" {
+           Name "FavorIcon1"
+           Slot FrameWidgetSlot "{FF2E4294CB3C50A5}" {
+            Anchor 0 0 0 0
+            PositionX 1000
+            OffsetLeft 1000
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1036
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.604 0.639 0.369 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_favor"
+           Size 36 36
+          }
+          TextWidgetClass "{F37FDDAE00A047F2}" {
+           Name "FavorValue1"
+           Slot FrameWidgetSlot "{5BCC7D62896C9D22}" {
+            Anchor 0 0 0 0
+            PositionX 1046
+            OffsetLeft 1046
+            PositionY 24
+            OffsetTop 24
+            SizeX 140
+            OffsetRight -1186
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 30
+           "Min Font Size" 30
+           FontProperties FontProperties "{442D91A3CBB44972}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{BA7008686ED5004B}" {
+           Name "LeaderIcon1"
+           Slot FrameWidgetSlot "{28E35B5918B96C21}" {
+            Anchor 0 0 0 0
+            PositionX 1196
+            OffsetLeft 1196
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1232
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_leader"
+           Size 36 36
+          }
+          TextWidgetClass "{454BE00A1BF8D749}" {
+           Name "LeaderCount1"
+           Slot FrameWidgetSlot "{A210063B93310A0F}" {
+            Anchor 0 0 0 0
+            PositionX 1242
+            OffsetLeft 1242
+            PositionY 26
+            OffsetTop 26
+            SizeX 120
+            OffsetRight -1362
+            SizeY 34
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 26
+           "Min Font Size" 26
+           FontProperties FontProperties "{F6B321F6B02778D6}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{0B15400C28BA5806}" {
+           Name "NeedIcon1"
+           Slot FrameWidgetSlot "{A33B8AFBB7B54D80}" {
+            Anchor 0 0 0 0
+            PositionX 1380
+            OffsetLeft 1380
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1420
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.604 0.639 0.369 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "status_shortage"
+           Size 40 40
+          }
+          TextWidgetClass "{0A67D46968C1FC7C}" {
+           Name "NeedTitle1"
+           Slot FrameWidgetSlot "{657F7296F5D4F040}" {
+            Anchor 0 0 0 0
+            PositionX 1430
+            OffsetLeft 1430
+            PositionY 28
+            OffsetTop 28
+            SizeX 170
+            OffsetRight -1600
+            SizeY 30
+            OffsetBottom -58
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 22
+           "Min Font Size" 22
+           FontProperties FontProperties "{EC279635A42E18F4}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{80D17E5D6057C4DD}" {
+           Name "KitIcon1"
+           Slot FrameWidgetSlot "{2209134D788FAA9D}" {
+            Anchor 0 0 0 0
+            PositionX 1620
+            OffsetLeft 1620
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1660
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_kit"
+           Size 40 40
+          }
+         }
         }
-        TextWidgetClass "{04F9C18F8A4100C8}" {
-         Name "FactionName1"
-         Slot FrameWidgetSlot "{229492AE1A313119}" {
-          Anchor 0 0 0 0
-          PositionX 96
-          OffsetLeft 96
-          PositionY 25
-          OffsetTop 25
-          SizeX 320
-          OffsetRight -416
-          SizeY 34
-          OffsetBottom -59
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text "TASK FORCE BASTION"
-         "Font Size" 28
-         "Min Font Size" 28
-         FontProperties FontProperties "{39E13A34B676D46A}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{0984F5ECACC048B6}" {
-         Name "TierIcon1"
-         Slot FrameWidgetSlot "{545390F39F36E8D1}" {
-          Anchor 0 0 0 0
-          PositionX 440
-          OffsetLeft 440
-          PositionY 18
-          OffsetTop 18
-          SizeX 48
-          OffsetRight -488
-          SizeY 48
-          OffsetBottom -66
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "tier_stranger"
-         Size 48 48
-        }
-        TextWidgetClass "{AEAC439AD876C8E2}" {
-         Name "TierName1"
-         Slot FrameWidgetSlot "{7010C3DD77A1408F}" {
-          Anchor 0 0 0 0
-          PositionX 500
-          OffsetLeft 500
-          PositionY 16
-          OffsetTop 16
-          SizeX 480
-          OffsetRight -980
-          SizeY 52
-          OffsetBottom -68
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Text ""
-         "Font Size" 40
-         "Min Font Size" 40
-         FontProperties FontProperties "{66B9A96A5644086B}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{16028481DCE236E0}" {
-         Name "FavorIcon1"
-         Slot FrameWidgetSlot "{18FFF976A990DD7D}" {
-          Anchor 0 0 0 0
-          PositionX 1000
-          OffsetLeft 1000
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1036
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.604 0.639 0.369 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_favor"
-         Size 36 36
-        }
-        TextWidgetClass "{580D43C6836F5EE4}" {
-         Name "FavorValue1"
-         Slot FrameWidgetSlot "{9862B989BF24AE36}" {
-          Anchor 0 0 0 0
-          PositionX 1046
-          OffsetLeft 1046
-          PositionY 24
-          OffsetTop 24
-          SizeX 140
-          OffsetRight -1186
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 30
-         "Min Font Size" 30
-         FontProperties FontProperties "{4069F43E11E95A8D}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{9E0EEFE4E37C5947}" {
-         Name "LeaderIcon1"
-         Slot FrameWidgetSlot "{9471EC896C24D355}" {
-          Anchor 0 0 0 0
-          PositionX 1196
-          OffsetLeft 1196
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1232
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_leader"
-         Size 36 36
-        }
-        TextWidgetClass "{773A9FF8D4973A95}" {
-         Name "LeaderCount1"
-         Slot FrameWidgetSlot "{5172B564C483221E}" {
-          Anchor 0 0 0 0
-          PositionX 1242
-          OffsetLeft 1242
-          PositionY 26
-          OffsetTop 26
-          SizeX 120
-          OffsetRight -1362
-          SizeY 34
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 26
-         "Min Font Size" 26
-         FontProperties FontProperties "{94BBAF7F33A73ECE}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{97305587CC00E4E5}" {
-         Name "NeedIcon1"
-         Slot FrameWidgetSlot "{7EF27617A480B68F}" {
-          Anchor 0 0 0 0
-          PositionX 1380
-          OffsetLeft 1380
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1420
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.604 0.639 0.369 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "status_shortage"
-         Size 40 40
-        }
-        TextWidgetClass "{FD30C58BB73B7CE8}" {
-         Name "NeedTitle1"
-         Slot FrameWidgetSlot "{4C667E869C558257}" {
-          Anchor 0 0 0 0
-          PositionX 1430
-          OffsetLeft 1430
-          PositionY 28
-          OffsetTop 28
-          SizeX 170
-          OffsetRight -1600
-          SizeY 30
-          OffsetBottom -58
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 22
-         "Min Font Size" 22
-         FontProperties FontProperties "{F4BBE9085EC7D251}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{AE279EB592988038}" {
-         Name "KitIcon1"
-         Slot FrameWidgetSlot "{A3243264E7E38F45}" {
-          Anchor 0 0 0 0
-          PositionX 1620
-          OffsetLeft 1620
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1660
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_kit"
-         Size 40 40
-        }
-        FrameWidgetClass "{2454FF1964B12B06}" {
+        FrameWidgetClass "{29101355C5014555}" {
          Name "Detail1"
-         Slot FrameWidgetSlot "{1798A3B3C2A2AFCB}" {
+         Slot FrameWidgetSlot "{BC6EB78D29363EB6}" {
           Anchor 0 0 1 1
           PositionX 28
           OffsetLeft 28
@@ -1474,9 +1509,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          }
          "Is Visible" 0
          {
-          ImageWidgetClass "{7D3C07346CAF8990}" {
+          ImageWidgetClass "{3741A2B8CB030C88}" {
            Name "DetailRule1"
-           Slot FrameWidgetSlot "{377DE3E39C2372F1}" {
+           Slot FrameWidgetSlot "{69E0697F1B5E535F}" {
             Anchor 0 0 1 0
             PositionX 0
             OffsetLeft 0
@@ -1491,9 +1526,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
            Color 0.165 0.18 0.192 1
            Size 1 1
           }
-          FrameWidgetClass "{DF2095E907965690}" {
+          FrameWidgetClass "{FE3126F901E72886}" {
            Name "SeeBlock1"
-           Slot FrameWidgetSlot "{F22C7439D90CDA3E}" {
+           Slot FrameWidgetSlot "{5A4B23E0E0E9D0BE}" {
             Anchor 0 0 0 1
             PositionX 0
             OffsetLeft 0
@@ -1506,9 +1541,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{8345C939AEC6025B}" {
+            ImageWidgetClass "{BD9769172D3ED9B4}" {
              Name "SeeIcon1"
-             Slot FrameWidgetSlot "{C72D795997BE43B2}" {
+             Slot FrameWidgetSlot "{1CFC015C188BE39C}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -1525,9 +1560,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_word"
              Size 30 30
             }
-            TextWidgetClass "{A28602475033457A}" {
+            TextWidgetClass "{A324E941867F57FF}" {
              Name "SeeLabel1"
-             Slot FrameWidgetSlot "{FEC4925DB6B02FD4}" {
+             Slot FrameWidgetSlot "{1427149E6996A928}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -1543,13 +1578,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "HOW THEY SEE YOU"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{C21808D6F798E7E2}" {
+             FontProperties FontProperties "{68856E99F46CF880}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{B73386092715F36F}" {
+            ScrollLayoutWidgetClass "{67D6F3F74ECF3A52}" {
              Name "SeeScroll1"
-             Slot FrameWidgetSlot "{FA96CAA9F3452F1C}" {
+             Slot FrameWidgetSlot "{855F806B1162A3E8}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -1564,18 +1599,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{5CF82F408B91B057}" {
+              SizeLayoutWidgetClass "{E9B5E942546E3075}" {
                Name "SeeSize1"
-               Slot AlignableSlot "{908A04E95E2A4246}" {
+               Slot AlignableSlot "{A816AC6767A5B448}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{8B052E9B07BBC8AD}" {
+                TextWidgetClass "{40E8234B2C38124B}" {
                  Name "SeeText1"
-                 Slot AlignableSlot "{0F5D68D8D1756BD0}" {
+                 Slot AlignableSlot "{F3DDB061139F6727}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -1584,7 +1619,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{DAE16291BC9601D6}" {
+                 FontProperties FontProperties "{5B99F826264C70ED}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -1592,9 +1627,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               }
              }
             }
-            FrameWidgetClass "{D70A8EDA15CE2991}" {
+            FrameWidgetClass "{AC3C12E28F0351A7}" {
              Name "NextBlock1"
-             Slot FrameWidgetSlot "{DAEF141EA8A75AA1}" {
+             Slot FrameWidgetSlot "{7A11B078B8B73449}" {
               Anchor 0 1 1 1
               PositionX 0
               OffsetLeft 0
@@ -1607,9 +1642,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               Alignment 0 0
              }
              {
-              ImageWidgetClass "{EDF7FCD0BE6B897A}" {
+              ImageWidgetClass "{C87592421F544615}" {
                Name "NextIcon1"
-               Slot FrameWidgetSlot "{2450CD3B766F4AFA}" {
+               Slot FrameWidgetSlot "{B8C37CA432FF3726}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -1626,9 +1661,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Image "standing_next"
                Size 26 26
               }
-              TextWidgetClass "{A2115D1373A1C3CD}" {
+              TextWidgetClass "{493183FCE7A1AE5B}" {
                Name "NextLabel1"
-               Slot FrameWidgetSlot "{3B7431686A81A733}" {
+               Slot FrameWidgetSlot "{FE8A9FA75D4479DB}" {
                 Anchor 0 0 0 0
                 PositionX 36
                 OffsetLeft 36
@@ -1644,13 +1679,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Text "NEXT"
                "Font Size" 18
                "Min Font Size" 18
-               FontProperties FontProperties "{3C8761EE9482A474}" {
+               FontProperties FontProperties "{B993D32F40F6C087}" {
                 Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
                }
               }
-              TextWidgetClass "{5446C14884C62933}" {
+              TextWidgetClass "{75981D4BE087FF99}" {
                Name "NextText1"
-               Slot FrameWidgetSlot "{37D77DA556885BEC}" {
+               Slot FrameWidgetSlot "{2920CAFA7E89651D}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -1667,7 +1702,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                "Font Size" 22
                "Min Font Size" 22
                Wrap 1
-               FontProperties FontProperties "{DDED368C4DB3C125}" {
+               FontProperties FontProperties "{D9C9FF2B41ED7E43}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                }
               }
@@ -1675,9 +1710,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{D4744C5341E18E4A}" {
+          FrameWidgetClass "{077D513106F0BEAE}" {
            Name "LeadersBlock1"
-           Slot FrameWidgetSlot "{374264952F40F921}" {
+           Slot FrameWidgetSlot "{BC3E1F00275D472D}" {
             Anchor 0 0 0 1
             PositionX 424
             OffsetLeft 424
@@ -1690,9 +1725,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{EF9B5D89177006CC}" {
+            ImageWidgetClass "{C4187C08EDEFDED8}" {
              Name "LeadersIconBig1"
-             Slot FrameWidgetSlot "{05F300A5ACCDEC64}" {
+             Slot FrameWidgetSlot "{36B59EEF876D7234}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -1709,9 +1744,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_leader"
              Size 30 30
             }
-            TextWidgetClass "{0479F8AA94BEDC3E}" {
+            TextWidgetClass "{00B59EC0FE43E978}" {
              Name "LeadersLabel1"
-             Slot FrameWidgetSlot "{770B92391C87D7B7}" {
+             Slot FrameWidgetSlot "{515EB65DD057935A}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -1727,13 +1762,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "LEADERS YOU'VE MET"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{2D5F60BC4C3073E9}" {
+             FontProperties FontProperties "{6BEF913CD2607571}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{7668EF61FFE570E0}" {
+            ScrollLayoutWidgetClass "{273707DEAAB2DDF7}" {
              Name "LeadersScroll1"
-             Slot FrameWidgetSlot "{BA0166D300C368D4}" {
+             Slot FrameWidgetSlot "{7D92EBFDB925F655}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -1748,18 +1783,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{37CFCE75A5B5027F}" {
+              SizeLayoutWidgetClass "{5CA96DC7D05DE063}" {
                Name "LeadersSize1"
-               Slot AlignableSlot "{1724DAB6337AEA9A}" {
+               Slot AlignableSlot "{15E7DF9F8CA5DA03}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{8BB4364933750C6D}" {
+                TextWidgetClass "{2C99CE2F5493BFA5}" {
                  Name "LeadersText1"
-                 Slot AlignableSlot "{F58BB29791239FDE}" {
+                 Slot AlignableSlot "{714694A59C442590}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -1768,7 +1803,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{5E0C7F0B7F8B2867}" {
+                 FontProperties FontProperties "{A08C14F4BD1011DF}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -1778,9 +1813,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{92C676AFF6FBB3E6}" {
+          FrameWidgetClass "{DB9232635EDA7826}" {
            Name "NeedBlock1"
-           Slot FrameWidgetSlot "{A98EAA9A9C3E5840}" {
+           Slot FrameWidgetSlot "{24DF380F276437A9}" {
             Anchor 0 0 0 1
             PositionX 848
             OffsetLeft 848
@@ -1793,9 +1828,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{97A073C7252724F7}" {
+            ImageWidgetClass "{55973D48409C2EC5}" {
              Name "NeedIconBig1"
-             Slot FrameWidgetSlot "{622EE1A34EF62E7B}" {
+             Slot FrameWidgetSlot "{77109ED5BA8714C5}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -1812,9 +1847,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "status_shortage"
              Size 30 30
             }
-            TextWidgetClass "{ECA9163E9AEB613A}" {
+            TextWidgetClass "{B55065F53E31576E}" {
              Name "NeedLabel1"
-             Slot FrameWidgetSlot "{8967F4AD875567D6}" {
+             Slot FrameWidgetSlot "{2A156E70C94806A7}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -1830,13 +1865,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "WHAT THEY NEED"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{F8076ABDCDF476F9}" {
+             FontProperties FontProperties "{74C78324B1B6354D}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            TextWidgetClass "{613C1C94A6EDE3C3}" {
+            TextWidgetClass "{30D06C559EEFEF53}" {
              Name "NeedName1"
-             Slot FrameWidgetSlot "{33A38F1F95262359}" {
+             Slot FrameWidgetSlot "{9453AACD0111D5CD}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -1852,13 +1887,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text ""
              "Font Size" 24
              "Min Font Size" 24
-             FontProperties FontProperties "{690443AA8501C0C8}" {
+             FontProperties FontProperties "{283D82B5B553E80B}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{10C31D466C806F12}" {
+            ScrollLayoutWidgetClass "{79BF94B0896A5D9F}" {
              Name "NeedScroll1"
-             Slot FrameWidgetSlot "{8F110778EE98A1B4}" {
+             Slot FrameWidgetSlot "{24B2FAC6693F2D1F}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -1873,18 +1908,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{98790B6C983877FD}" {
+              SizeLayoutWidgetClass "{7A3ECDED755ED79D}" {
                Name "NeedSize1"
-               Slot AlignableSlot "{523771B7ED84C840}" {
+               Slot AlignableSlot "{80A896C29FEBB916}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{D6B222A5384C9580}" {
+                TextWidgetClass "{6487E990B6D14662}" {
                  Name "NeedText1"
-                 Slot AlignableSlot "{FD78C1130F575976}" {
+                 Slot AlignableSlot "{13F1344F8437D0CA}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -1893,7 +1928,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{FD5475237F9D097B}" {
+                 FontProperties FontProperties "{A14625590BE0BC13}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                   Italic 1
                  }
@@ -1904,9 +1939,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{F93701378B7C1748}" {
+          FrameWidgetClass "{E6F8F786FAA997D7}" {
            Name "KitBlock1"
-           Slot FrameWidgetSlot "{724650A2764189F4}" {
+           Slot FrameWidgetSlot "{FAB724CDE0498B74}" {
             Anchor 0 0 0 1
             PositionX 1272
             OffsetLeft 1272
@@ -1919,9 +1954,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{BBF9B6C0869135EF}" {
+            ImageWidgetClass "{FFE540BA3E59081F}" {
              Name "KitIconBig1"
-             Slot FrameWidgetSlot "{9176027D404B6691}" {
+             Slot FrameWidgetSlot "{9EEEA60F28A5B3DE}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -1938,9 +1973,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_kit"
              Size 30 30
             }
-            TextWidgetClass "{85F2C9ADCEAE57A4}" {
+            TextWidgetClass "{9C2615810601DC9F}" {
              Name "KitLabel1"
-             Slot FrameWidgetSlot "{CC42B5F01177343A}" {
+             Slot FrameWidgetSlot "{28CE02E865683DD8}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -1956,13 +1991,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "IN THEIR KIT"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{5D5C043CDC06C385}" {
+             FontProperties FontProperties "{D2D941A3C7C2430A}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{09E678BF04622434}" {
+            ScrollLayoutWidgetClass "{3047030407A2D4D7}" {
              Name "KitScroll1"
-             Slot FrameWidgetSlot "{AE5C17AB082D97C2}" {
+             Slot FrameWidgetSlot "{3067B9808C287D62}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -1977,18 +2012,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{7C4F88E7DEA89A5D}" {
+              SizeLayoutWidgetClass "{533A006FE689CA5F}" {
                Name "KitSize1"
-               Slot AlignableSlot "{D6FAE9B5F95BB8B4}" {
+               Slot AlignableSlot "{9B5B58B81D36F3AD}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{2A11D3B2E25175FF}" {
+                TextWidgetClass "{8934D354C3896655}" {
                  Name "KitText1"
-                 Slot AlignableSlot "{39068E91FD0AB358}" {
+                 Slot AlignableSlot "{E1783B87ADF77D74}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -1997,7 +2032,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{4A7AC7854F6E0E3A}" {
+                 FontProperties FontProperties "{D6436A129982ADC4}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -2013,32 +2048,32 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
       }
      }
     }
-    ButtonWidgetClass "{A996388498F47AA9}" {
+    ButtonWidgetClass "{62054F1BB4EB9044}" {
      Name "Row2"
-     Slot FrameWidgetSlot "{730A4B2FF367BB0B}" {
+     Slot FrameWidgetSlot "{176A714E6924CFE2}" {
       Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
-      PositionY 544
-      OffsetTop 544
+      PositionY 364
+      OffsetTop 364
       SizeX 1728
       OffsetRight -1728
-      SizeY 84
-      OffsetBottom -628
+      SizeY 174
+      OffsetBottom -538
       Alignment 0 0
      }
      style blank
      {
-      FrameWidgetClass "{7E8AB2FC2CF86DE2}" {
+      FrameWidgetClass "{3AEBBDB90001BEEE}" {
        Name "RowFrame2"
-       Slot ButtonWidgetSlot "{15625E5714C48CA0}" {
+       Slot ButtonWidgetSlot "{F507FA15F2A498F3}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
        {
-        ImageWidgetClass "{4438ED3D4A29788C}" {
+        ImageWidgetClass "{5E787F42917EB567}" {
          Name "RowBg2"
-         Slot FrameWidgetSlot "{F4DADBB5C3B75CC6}" {
+         Slot FrameWidgetSlot "{30D3F23103E23694}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -2053,9 +2088,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.071 0.078 0.086 0.9
          Size 1 1
         }
-        ImageWidgetClass "{1675ABE0A41BC5AA}" {
-         Name "RowOpen2"
-         Slot FrameWidgetSlot "{CAD473777AB8EF74}" {
+        ImageWidgetClass "{C35916263C781159}" {
+         Name "RowSelected2"
+         Slot FrameWidgetSlot "{18C64BB2A4FC445A}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -2071,9 +2106,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.91 0.886 0.816 0.06
          Size 1 1
         }
-        PanelWidgetClass "{D58D11767A4F15AA}" {
+        PanelWidgetClass "{EF629F227D26B9B2}" {
          Name "RowLine2"
-         Slot FrameWidgetSlot "{88AA1358BE50C16E}" {
+         Slot FrameWidgetSlot "{53F80F630F6C78F4}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -2088,9 +2123,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.165 0.18 0.192 1
          style outline_2px
         }
-        ImageWidgetClass "{F4D169DF706B4A36}" {
+        ImageWidgetClass "{DBBD100287D5F9D0}" {
          Name "Accent2"
-         Slot FrameWidgetSlot "{C38B9C8C34BF2BDA}" {
+         Slot FrameWidgetSlot "{36F9F7D27EE11917}" {
           Anchor 0 0 0 1
           PositionX 0
           OffsetLeft 0
@@ -2105,233 +2140,250 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.784 0.208 0.169 1
          Size 1 1
         }
-        ImageWidgetClass "{7843F75BBDDAA234}" {
-         Name "Emblem2"
-         Slot FrameWidgetSlot "{64166B5E8BFEA5E4}" {
+        FrameWidgetClass "{F78BE580BDEA7F70}" {
+         Name "Strip2"
+         Slot FrameWidgetSlot "{23D8F1F3CA98DC17}" {
           Anchor 0 0 0 0
-          PositionX 28
-          OffsetLeft 28
-          PositionY 16
-          OffsetTop 16
-          SizeX 52
-          OffsetRight -80
-          SizeY 52
-          OffsetBottom -68
+          PositionX 0
+          OffsetLeft 0
+          PositionY 45
+          OffsetTop 45
+          SizeX 1728
+          OffsetRight -1728
+          SizeY 84
+          OffsetBottom -129
           Alignment 0 0
          }
-         Color 0.784 0.208 0.169 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "faction_redhand"
-         Size 52 52
+         {
+          ImageWidgetClass "{801B9453A8899B46}" {
+           Name "Emblem2"
+           Slot FrameWidgetSlot "{5A740854F97C37CC}" {
+            Anchor 0 0 0 0
+            PositionX 28
+            OffsetLeft 28
+            PositionY 16
+            OffsetTop 16
+            SizeX 52
+            OffsetRight -80
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.784 0.208 0.169 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "faction_redhand"
+           Size 52 52
+          }
+          TextWidgetClass "{3AA2E8C5041FC62E}" {
+           Name "FactionName2"
+           Slot FrameWidgetSlot "{4D86877F1FE798B4}" {
+            Anchor 0 0 0 0
+            PositionX 96
+            OffsetLeft 96
+            PositionY 25
+            OffsetTop 25
+            SizeX 320
+            OffsetRight -416
+            SizeY 34
+            OffsetBottom -59
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text "THE RED HAND"
+           "Font Size" 28
+           "Min Font Size" 28
+           FontProperties FontProperties "{87B7B04E7D352D40}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{7B636466DA8A8775}" {
+           Name "TierIcon2"
+           Slot FrameWidgetSlot "{844057CD4DE57668}" {
+            Anchor 0 0 0 0
+            PositionX 440
+            OffsetLeft 440
+            PositionY 18
+            OffsetTop 18
+            SizeX 48
+            OffsetRight -488
+            SizeY 48
+            OffsetBottom -66
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "tier_stranger"
+           Size 48 48
+          }
+          TextWidgetClass "{68AD895645FDDBC3}" {
+           Name "TierName2"
+           Slot FrameWidgetSlot "{C91BB0F3410148B9}" {
+            Anchor 0 0 0 0
+            PositionX 500
+            OffsetLeft 500
+            PositionY 16
+            OffsetTop 16
+            SizeX 480
+            OffsetRight -980
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           FontProperties FontProperties "{407DC41D428DB50F}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{7C11172DC877FB6A}" {
+           Name "FavorIcon2"
+           Slot FrameWidgetSlot "{2E509F9E7F30EE64}" {
+            Anchor 0 0 0 0
+            PositionX 1000
+            OffsetLeft 1000
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1036
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.784 0.208 0.169 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_favor"
+           Size 36 36
+          }
+          TextWidgetClass "{558F2E6E2E2379A4}" {
+           Name "FavorValue2"
+           Slot FrameWidgetSlot "{1C0334DE4F9AC940}" {
+            Anchor 0 0 0 0
+            PositionX 1046
+            OffsetLeft 1046
+            PositionY 24
+            OffsetTop 24
+            SizeX 140
+            OffsetRight -1186
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 30
+           "Min Font Size" 30
+           FontProperties FontProperties "{8C061170B5BF6417}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{318EA5406E9DBADE}" {
+           Name "LeaderIcon2"
+           Slot FrameWidgetSlot "{F22C414EE750F5B6}" {
+            Anchor 0 0 0 0
+            PositionX 1196
+            OffsetLeft 1196
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1232
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_leader"
+           Size 36 36
+          }
+          TextWidgetClass "{567DFF01128BD046}" {
+           Name "LeaderCount2"
+           Slot FrameWidgetSlot "{F5BFF1DC083DC25C}" {
+            Anchor 0 0 0 0
+            PositionX 1242
+            OffsetLeft 1242
+            PositionY 26
+            OffsetTop 26
+            SizeX 120
+            OffsetRight -1362
+            SizeY 34
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 26
+           "Min Font Size" 26
+           FontProperties FontProperties "{E911020481646975}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{7265B5E53EFBFBE7}" {
+           Name "NeedIcon2"
+           Slot FrameWidgetSlot "{6817AD09676ECE75}" {
+            Anchor 0 0 0 0
+            PositionX 1380
+            OffsetLeft 1380
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1420
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.784 0.208 0.169 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "status_shortage"
+           Size 40 40
+          }
+          TextWidgetClass "{D314CBAB9370D360}" {
+           Name "NeedTitle2"
+           Slot FrameWidgetSlot "{4CE48E5B11094AC8}" {
+            Anchor 0 0 0 0
+            PositionX 1430
+            OffsetLeft 1430
+            PositionY 28
+            OffsetTop 28
+            SizeX 170
+            OffsetRight -1600
+            SizeY 30
+            OffsetBottom -58
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 22
+           "Min Font Size" 22
+           FontProperties FontProperties "{0EA395B37F7ADFD1}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{CD329DE416EE701A}" {
+           Name "KitIcon2"
+           Slot FrameWidgetSlot "{2630B0F0ACA3EC6F}" {
+            Anchor 0 0 0 0
+            PositionX 1620
+            OffsetLeft 1620
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1660
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_kit"
+           Size 40 40
+          }
+         }
         }
-        TextWidgetClass "{2EBF1747F1C78C72}" {
-         Name "FactionName2"
-         Slot FrameWidgetSlot "{0E392E44C9B92E54}" {
-          Anchor 0 0 0 0
-          PositionX 96
-          OffsetLeft 96
-          PositionY 25
-          OffsetTop 25
-          SizeX 320
-          OffsetRight -416
-          SizeY 34
-          OffsetBottom -59
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text "THE RED HAND"
-         "Font Size" 28
-         "Min Font Size" 28
-         FontProperties FontProperties "{834CEE69D1BB05EC}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{8BC1465620FCDD29}" {
-         Name "TierIcon2"
-         Slot FrameWidgetSlot "{DB6C2F5732022571}" {
-          Anchor 0 0 0 0
-          PositionX 440
-          OffsetLeft 440
-          PositionY 18
-          OffsetTop 18
-          SizeX 48
-          OffsetRight -488
-          SizeY 48
-          OffsetBottom -66
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "tier_stranger"
-         Size 48 48
-        }
-        TextWidgetClass "{2EB7BCA429A93BC0}" {
-         Name "TierName2"
-         Slot FrameWidgetSlot "{B0D233A711A7B516}" {
-          Anchor 0 0 0 0
-          PositionX 500
-          OffsetLeft 500
-          PositionY 16
-          OffsetTop 16
-          SizeX 480
-          OffsetRight -980
-          SizeY 52
-          OffsetBottom -68
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Text ""
-         "Font Size" 40
-         "Min Font Size" 40
-         FontProperties FontProperties "{5686DD94AD82AEC8}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{DA3EBEBF6CECE788}" {
-         Name "FavorIcon2"
-         Slot FrameWidgetSlot "{01DE8643055B22A2}" {
-          Anchor 0 0 0 0
-          PositionX 1000
-          OffsetLeft 1000
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1036
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.784 0.208 0.169 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_favor"
-         Size 36 36
-        }
-        TextWidgetClass "{4E3354D10E7854C5}" {
-         Name "FavorValue2"
-         Slot FrameWidgetSlot "{41B6ACCF446A25A8}" {
-          Anchor 0 0 0 0
-          PositionX 1046
-          OffsetLeft 1046
-          PositionY 24
-          OffsetTop 24
-          SizeX 140
-          OffsetRight -1186
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 30
-         "Min Font Size" 30
-         FontProperties FontProperties "{3AA4438B8C84B6B1}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{189EAD00F3B0CDC8}" {
-         Name "LeaderIcon2"
-         Slot FrameWidgetSlot "{3F68D4F73C2BB6E6}" {
-          Anchor 0 0 0 0
-          PositionX 1196
-          OffsetLeft 1196
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1232
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_leader"
-         Size 36 36
-        }
-        TextWidgetClass "{34D4CAC223F5C05D}" {
-         Name "LeaderCount2"
-         Slot FrameWidgetSlot "{EEE3EAB96312A5B5}" {
-          Anchor 0 0 0 0
-          PositionX 1242
-          OffsetLeft 1242
-          PositionY 26
-          OffsetTop 26
-          SizeX 120
-          OffsetRight -1362
-          SizeY 34
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 26
-         "Min Font Size" 26
-         FontProperties FontProperties "{F706594B1073A50E}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{5A7F04B386198BA3}" {
-         Name "NeedIcon2"
-         Slot FrameWidgetSlot "{A3AD91AB8A181861}" {
-          Anchor 0 0 0 0
-          PositionX 1380
-          OffsetLeft 1380
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1420
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.784 0.208 0.169 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "status_shortage"
-         Size 40 40
-        }
-        TextWidgetClass "{BE8F0546D0E70E6D}" {
-         Name "NeedTitle2"
-         Slot FrameWidgetSlot "{2904C05A73FF2090}" {
-          Anchor 0 0 0 0
-          PositionX 1430
-          OffsetLeft 1430
-          PositionY 28
-          OffsetTop 28
-          SizeX 170
-          OffsetRight -1600
-          SizeY 30
-          OffsetBottom -58
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 22
-         "Min Font Size" 22
-         FontProperties FontProperties "{498A2DDFB9689F4A}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{93B2EF8199D6186E}" {
-         Name "KitIcon2"
-         Slot FrameWidgetSlot "{9AFA89A6D9D16029}" {
-          Anchor 0 0 0 0
-          PositionX 1620
-          OffsetLeft 1620
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1660
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_kit"
-         Size 40 40
-        }
-        FrameWidgetClass "{58A92CB63794B595}" {
+        FrameWidgetClass "{FD9024216DB8B5B2}" {
          Name "Detail2"
-         Slot FrameWidgetSlot "{8273D0B65F02C124}" {
+         Slot FrameWidgetSlot "{D685105476E9F7DE}" {
           Anchor 0 0 1 1
           PositionX 28
           OffsetLeft 28
@@ -2345,9 +2397,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          }
          "Is Visible" 0
          {
-          ImageWidgetClass "{815B89CE799AB391}" {
+          ImageWidgetClass "{A7F5A6ACC0C94DA9}" {
            Name "DetailRule2"
-           Slot FrameWidgetSlot "{2A82A14AFFFAAED2}" {
+           Slot FrameWidgetSlot "{EE5D2D20ED22503D}" {
             Anchor 0 0 1 0
             PositionX 0
             OffsetLeft 0
@@ -2362,9 +2414,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
            Color 0.165 0.18 0.192 1
            Size 1 1
           }
-          FrameWidgetClass "{1C872F0503FF5183}" {
+          FrameWidgetClass "{1678397C7ED70821}" {
            Name "SeeBlock2"
-           Slot FrameWidgetSlot "{CAA011C91C62B8A8}" {
+           Slot FrameWidgetSlot "{46F962C0C978BE02}" {
             Anchor 0 0 0 1
             PositionX 0
             OffsetLeft 0
@@ -2377,9 +2429,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{9E82D2CBBAFA2670}" {
+            ImageWidgetClass "{5701E7D29CAFE0A5}" {
              Name "SeeIcon2"
-             Slot FrameWidgetSlot "{73ABA7E4158683EE}" {
+             Slot FrameWidgetSlot "{95B758CF8815B08A}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -2396,9 +2448,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_word"
              Size 30 30
             }
-            TextWidgetClass "{F1842AD43C7330E3}" {
+            TextWidgetClass "{9C864A6B2DDA397F}" {
              Name "SeeLabel2"
-             Slot FrameWidgetSlot "{9F03100C89A44796}" {
+             Slot FrameWidgetSlot "{AB644DFA37DC772A}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -2414,13 +2466,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "HOW THEY SEE YOU"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{316ADD148AB02773}" {
+             FontProperties FontProperties "{95833836E174ABBF}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{7F3CD634E20D4131}" {
+            ScrollLayoutWidgetClass "{32089BFE252A645C}" {
              Name "SeeScroll2"
-             Slot FrameWidgetSlot "{7911A38C5068C169}" {
+             Slot FrameWidgetSlot "{9991C0D38024E10F}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -2435,18 +2487,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{FF1B6087B4E36EE9}" {
+              SizeLayoutWidgetClass "{56C9E0F91DFD5735}" {
                Name "SeeSize2"
-               Slot AlignableSlot "{70C2B419CD7ED594}" {
+               Slot AlignableSlot "{C69B848FB14E1207}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{7C3C5B51FB0E93BD}" {
+                TextWidgetClass "{19D7D81B3EE25678}" {
                  Name "SeeText2"
-                 Slot AlignableSlot "{A0123D792B843215}" {
+                 Slot AlignableSlot "{8E10AE353A4EE15D}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -2455,7 +2507,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{4CC0B175256AE175}" {
+                 FontProperties FontProperties "{D85C839B95A723FD}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -2463,9 +2515,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               }
              }
             }
-            FrameWidgetClass "{CE8E7E46923AE0F8}" {
+            FrameWidgetClass "{239F24C858CCCB18}" {
              Name "NextBlock2"
-             Slot FrameWidgetSlot "{7A1BA6E549F5B372}" {
+             Slot FrameWidgetSlot "{F79EA5D0CAA5FF04}" {
               Anchor 0 1 1 1
               PositionX 0
               OffsetLeft 0
@@ -2478,9 +2530,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               Alignment 0 0
              }
              {
-              ImageWidgetClass "{6C8D2EEDCD14A5DA}" {
+              ImageWidgetClass "{A435ABF8E785EA65}" {
                Name "NextIcon2"
-               Slot FrameWidgetSlot "{4384F26492DCABB4}" {
+               Slot FrameWidgetSlot "{CE5D40938153843E}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -2497,9 +2549,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Image "standing_next"
                Size 26 26
               }
-              TextWidgetClass "{9C6109080BFA9252}" {
+              TextWidgetClass "{F35D5D7B15BC0730}" {
                Name "NextLabel2"
-               Slot FrameWidgetSlot "{2824F60A0B0AEAA8}" {
+               Slot FrameWidgetSlot "{CDB8699EDB47E3D4}" {
                 Anchor 0 0 0 0
                 PositionX 36
                 OffsetLeft 36
@@ -2515,13 +2567,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Text "NEXT"
                "Font Size" 18
                "Min Font Size" 18
-               FontProperties FontProperties "{6FECFA393B6DAD43}" {
+               FontProperties FontProperties "{1419218F874A2FF7}" {
                 Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
                }
               }
-              TextWidgetClass "{C021DDD6DF38651E}" {
+              TextWidgetClass "{79F0CBB892B2319B}" {
                Name "NextText2"
-               Slot FrameWidgetSlot "{73477DD428ABA033}" {
+               Slot FrameWidgetSlot "{3895993C97CFA30B}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -2538,7 +2590,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                "Font Size" 22
                "Min Font Size" 22
                Wrap 1
-               FontProperties FontProperties "{A602148DD2A9294D}" {
+               FontProperties FontProperties "{7C3EEAC2DC558506}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                }
               }
@@ -2546,9 +2598,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{EB0027A5377362CF}" {
+          FrameWidgetClass "{685E074E31002229}" {
            Name "LeadersBlock2"
-           Slot FrameWidgetSlot "{557DEBC0E3891404}" {
+           Slot FrameWidgetSlot "{F0F6D9C784991AF4}" {
             Anchor 0 0 0 1
             PositionX 424
             OffsetLeft 424
@@ -2561,9 +2613,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{69359C7C276192F7}" {
+            ImageWidgetClass "{F09698A5EBD3B29A}" {
              Name "LeadersIconBig2"
-             Slot FrameWidgetSlot "{A6D3F44E8C3A0814}" {
+             Slot FrameWidgetSlot "{26C4029A838028B6}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -2580,9 +2632,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_leader"
              Size 30 30
             }
-            TextWidgetClass "{6177F60918CCCA0C}" {
+            TextWidgetClass "{36E19717191B4222}" {
              Name "LeadersLabel2"
-             Slot FrameWidgetSlot "{FCBF28FFCFCE0FBC}" {
+             Slot FrameWidgetSlot "{BE7FC9BC74A6E1EE}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -2598,13 +2650,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "LEADERS YOU'VE MET"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{C8B2E8E643825C0E}" {
+             FontProperties FontProperties "{2DBF7833DBFB5375}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{2174293AF2B41EB4}" {
+            ScrollLayoutWidgetClass "{7C7B1DE07F6E60B9}" {
              Name "LeadersScroll2"
-             Slot FrameWidgetSlot "{6C9EDC21379A2530}" {
+             Slot FrameWidgetSlot "{C8B29321813C9241}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -2619,18 +2671,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{E9BC5420E5F79B67}" {
+              SizeLayoutWidgetClass "{3ECB927A7BDB07E0}" {
                Name "LeadersSize2"
-               Slot AlignableSlot "{F08F58807191B08C}" {
+               Slot AlignableSlot "{F013E5E5D8F8CE10}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{40C2A5866E2CA2AC}" {
+                TextWidgetClass "{25666326F111D4DC}" {
                  Name "LeadersText2"
-                 Slot AlignableSlot "{E4A41A970603E726}" {
+                 Slot AlignableSlot "{DC69001AB9B31E3B}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -2639,7 +2691,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{C1FAAFBB95EDCE79}" {
+                 FontProperties FontProperties "{EC9FEA55A0DA949B}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -2649,9 +2701,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{F5B97B4AFA9193AD}" {
+          FrameWidgetClass "{36D797AC71AE4CC7}" {
            Name "NeedBlock2"
-           Slot FrameWidgetSlot "{306C53809BE7A5DA}" {
+           Slot FrameWidgetSlot "{C22A18EEEDD587C9}" {
             Anchor 0 0 0 1
             PositionX 848
             OffsetLeft 848
@@ -2664,9 +2716,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{B6B34AFA641C7AAF}" {
+            ImageWidgetClass "{9B7495E52D170F25}" {
              Name "NeedIconBig2"
-             Slot FrameWidgetSlot "{F0854B21171C3EDC}" {
+             Slot FrameWidgetSlot "{52E5D5A260E42CCB}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -2683,9 +2735,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "status_shortage"
              Size 30 30
             }
-            TextWidgetClass "{C2D5746DBAF66139}" {
+            TextWidgetClass "{D09524DFAC10288D}" {
              Name "NeedLabel2"
-             Slot FrameWidgetSlot "{885AE23EF23A1818}" {
+             Slot FrameWidgetSlot "{A1F8697172AF90B1}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -2701,13 +2753,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "WHAT THEY NEED"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{2BF2CE68103CBB14}" {
+             FontProperties FontProperties "{0EA85CFB37F27D43}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            TextWidgetClass "{624142995338DE56}" {
+            TextWidgetClass "{1C141FD75CEDDFB5}" {
              Name "NeedName2"
-             Slot FrameWidgetSlot "{48668FA98AD44D61}" {
+             Slot FrameWidgetSlot "{342EAABD2A195916}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -2723,13 +2775,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text ""
              "Font Size" 24
              "Min Font Size" 24
-             FontProperties FontProperties "{07D1C38B7733DEA0}" {
+             FontProperties FontProperties "{518510616B9C6571}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{B6054A7CDB53B9EE}" {
+            ScrollLayoutWidgetClass "{18AE64A5B97F50AB}" {
              Name "NeedScroll2"
-             Slot FrameWidgetSlot "{DCBE99A54349FB54}" {
+             Slot FrameWidgetSlot "{EF024E7A6ED79B11}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -2744,18 +2796,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{FC09B10F8FEF0649}" {
+              SizeLayoutWidgetClass "{5A7EBE310302B6B1}" {
                Name "NeedSize2"
-               Slot AlignableSlot "{D85B9FF77BA886D6}" {
+               Slot AlignableSlot "{25BEA2FB699563BC}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{8ED4CCC33CC4C6B1}" {
+                TextWidgetClass "{8BE6DDEF2EE3A7D6}" {
                  Name "NeedText2"
-                 Slot AlignableSlot "{F43A0B003690871E}" {
+                 Slot AlignableSlot "{C3DFF84CAF6F010D}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -2764,7 +2816,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{C30D744CBA4C1FD0}" {
+                 FontProperties FontProperties "{9DF5140687F324AE}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                   Italic 1
                  }
@@ -2775,9 +2827,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{37CDC0DEA81BFCF5}" {
+          FrameWidgetClass "{86A3511AC112B078}" {
            Name "KitBlock2"
-           Slot FrameWidgetSlot "{35B8DBE418E86FC6}" {
+           Slot FrameWidgetSlot "{9794099424206432}" {
             Anchor 0 0 0 1
             PositionX 1272
             OffsetLeft 1272
@@ -2790,9 +2842,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{5EBCBFECA4C83108}" {
+            ImageWidgetClass "{38FD5B1C0757F595}" {
              Name "KitIconBig2"
-             Slot FrameWidgetSlot "{CAFDAE302B68C1DA}" {
+             Slot FrameWidgetSlot "{ACFDC4B713319F10}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -2809,9 +2861,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_kit"
              Size 30 30
             }
-            TextWidgetClass "{620BB6CB421373A2}" {
+            TextWidgetClass "{93BD291DA035BF99}" {
              Name "KitLabel2"
-             Slot FrameWidgetSlot "{3FD1C358CC5104E6}" {
+             Slot FrameWidgetSlot "{EFDC007CC28FBC14}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -2827,13 +2879,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "IN THEIR KIT"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{1CC5E58FDD3702B3}" {
+             FontProperties FontProperties "{46CD41901CA8DD06}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{6D145F73272E8BF3}" {
+            ScrollLayoutWidgetClass "{B0AD2C56C8766249}" {
              Name "KitScroll2"
-             Slot FrameWidgetSlot "{2EE8B761790BD54B}" {
+             Slot FrameWidgetSlot "{4BFA37CB1A50C9D8}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -2848,18 +2900,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{BE8A9C919159CE9E}" {
+              SizeLayoutWidgetClass "{CAF89BEF7496FD6D}" {
                Name "KitSize2"
-               Slot AlignableSlot "{9729E3A0E74FEB96}" {
+               Slot AlignableSlot "{5D98F5563B93032A}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{17D8D10FDF87C019}" {
+                TextWidgetClass "{DC556B5EF93FFA94}" {
                  Name "KitText2"
-                 Slot AlignableSlot "{16705B723548B600}" {
+                 Slot AlignableSlot "{D09B39E89C283A6D}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -2868,7 +2920,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{4847F7B27B2FB693}" {
+                 FontProperties FontProperties "{8EB6BC2DFD90A622}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -2884,32 +2936,32 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
       }
      }
     }
-    ButtonWidgetClass "{E81ADCAF084F3624}" {
+    ButtonWidgetClass "{BF42B32F8F2C675E}" {
      Name "Row3"
-     Slot FrameWidgetSlot "{B4DEDCB4289252B0}" {
+     Slot FrameWidgetSlot "{408F780998EC78CF}" {
       Anchor 0 0 0 0
       PositionX 0
       OffsetLeft 0
-      PositionY 636
-      OffsetTop 636
+      PositionY 546
+      OffsetTop 546
       SizeX 1728
       OffsetRight -1728
-      SizeY 84
+      SizeY 174
       OffsetBottom -720
       Alignment 0 0
      }
      style blank
      {
-      FrameWidgetClass "{9E435027470FFEA1}" {
+      FrameWidgetClass "{951A172949158199}" {
        Name "RowFrame3"
-       Slot ButtonWidgetSlot "{FC5AF153D1687E75}" {
+       Slot ButtonWidgetSlot "{CEBE453DAF0137EF}" {
         HorizontalAlign 3
         VerticalAlign 3
        }
        {
-        ImageWidgetClass "{AFC05A728B92EAFF}" {
+        ImageWidgetClass "{CEC45B016F1E1BCB}" {
          Name "RowBg3"
-         Slot FrameWidgetSlot "{88E6B2AA082FA77A}" {
+         Slot FrameWidgetSlot "{73B2E31FA4BD4C79}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -2924,9 +2976,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.071 0.078 0.086 0.9
          Size 1 1
         }
-        ImageWidgetClass "{18EF8F955F624A4F}" {
-         Name "RowOpen3"
-         Slot FrameWidgetSlot "{62E034001F9DF7CB}" {
+        ImageWidgetClass "{81743EF1F51A3285}" {
+         Name "RowSelected3"
+         Slot FrameWidgetSlot "{129341D01A067D78}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -2942,9 +2994,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.91 0.886 0.816 0.06
          Size 1 1
         }
-        PanelWidgetClass "{C3901C480171FAA0}" {
+        PanelWidgetClass "{727D7B6C17D9507D}" {
          Name "RowLine3"
-         Slot FrameWidgetSlot "{58FDB3BAFDE80A56}" {
+         Slot FrameWidgetSlot "{1EBF3A7640BFAD1E}" {
           Anchor 0 0 1 1
           PositionX 0
           OffsetLeft 0
@@ -2959,9 +3011,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.165 0.18 0.192 1
          style outline_2px
         }
-        ImageWidgetClass "{A4B1B40FBE368A22}" {
+        ImageWidgetClass "{43D7DE1D3F69768F}" {
          Name "Accent3"
-         Slot FrameWidgetSlot "{E098F6CE584076A4}" {
+         Slot FrameWidgetSlot "{10BC7CA846667587}" {
           Anchor 0 0 0 1
           PositionX 0
           OffsetLeft 0
@@ -2976,233 +3028,250 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          Color 0.31 0.722 0.69 1
          Size 1 1
         }
-        ImageWidgetClass "{7092655BB1FCBBA1}" {
-         Name "Emblem3"
-         Slot FrameWidgetSlot "{970899639B416C41}" {
+        FrameWidgetClass "{0A8CAE860DDC8F5D}" {
+         Name "Strip3"
+         Slot FrameWidgetSlot "{9A8EFA485859DCCA}" {
           Anchor 0 0 0 0
-          PositionX 28
-          OffsetLeft 28
-          PositionY 16
-          OffsetTop 16
-          SizeX 52
-          OffsetRight -80
-          SizeY 52
-          OffsetBottom -68
+          PositionX 0
+          OffsetLeft 0
+          PositionY 45
+          OffsetTop 45
+          SizeX 1728
+          OffsetRight -1728
+          SizeY 84
+          OffsetBottom -129
           Alignment 0 0
          }
-         Color 0.31 0.722 0.69 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "faction_halcyon"
-         Size 52 52
+         {
+          ImageWidgetClass "{70969472B46AA5A5}" {
+           Name "Emblem3"
+           Slot FrameWidgetSlot "{78787AC85D77B84F}" {
+            Anchor 0 0 0 0
+            PositionX 28
+            OffsetLeft 28
+            PositionY 16
+            OffsetTop 16
+            SizeX 52
+            OffsetRight -80
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.31 0.722 0.69 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "faction_halcyon"
+           Size 52 52
+          }
+          TextWidgetClass "{D2608B1B59363521}" {
+           Name "FactionName3"
+           Slot FrameWidgetSlot "{374491C918C67C77}" {
+            Anchor 0 0 0 0
+            PositionX 96
+            OffsetLeft 96
+            PositionY 25
+            OffsetTop 25
+            SizeX 320
+            OffsetRight -416
+            SizeY 34
+            OffsetBottom -59
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text "HALCYON"
+           "Font Size" 28
+           "Min Font Size" 28
+           FontProperties FontProperties "{E5428BEE7881921D}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{4916BBADBCB1A6E4}" {
+           Name "TierIcon3"
+           Slot FrameWidgetSlot "{7CE0C4C6A334CE4A}" {
+            Anchor 0 0 0 0
+            PositionX 440
+            OffsetLeft 440
+            PositionY 18
+            OffsetTop 18
+            SizeX 48
+            OffsetRight -488
+            SizeY 48
+            OffsetBottom -66
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "tier_stranger"
+           Size 48 48
+          }
+          TextWidgetClass "{C2A5183C218ED061}" {
+           Name "TierName3"
+           Slot FrameWidgetSlot "{C24CF47AC2D659DD}" {
+            Anchor 0 0 0 0
+            PositionX 500
+            OffsetLeft 500
+            PositionY 16
+            OffsetTop 16
+            SizeX 480
+            OffsetRight -980
+            SizeY 52
+            OffsetBottom -68
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Text ""
+           "Font Size" 40
+           "Min Font Size" 40
+           FontProperties FontProperties "{5C7327FA14199059}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{65D7164DDE799404}" {
+           Name "FavorIcon3"
+           Slot FrameWidgetSlot "{498D75BAD2815AA2}" {
+            Anchor 0 0 0 0
+            PositionX 1000
+            OffsetLeft 1000
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1036
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.31 0.722 0.69 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_favor"
+           Size 36 36
+          }
+          TextWidgetClass "{A1DFA56B4C070C05}" {
+           Name "FavorValue3"
+           Slot FrameWidgetSlot "{78661642F5DC3AD6}" {
+            Anchor 0 0 0 0
+            PositionX 1046
+            OffsetLeft 1046
+            PositionY 24
+            OffsetTop 24
+            SizeX 140
+            OffsetRight -1186
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 30
+           "Min Font Size" 30
+           FontProperties FontProperties "{7454A7D35ED53590}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{6A00877D9F9619A8}" {
+           Name "LeaderIcon3"
+           Slot FrameWidgetSlot "{484B10632BA541C3}" {
+            Anchor 0 0 0 0
+            PositionX 1196
+            OffsetLeft 1196
+            PositionY 24
+            OffsetTop 24
+            SizeX 36
+            OffsetRight -1232
+            SizeY 36
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_leader"
+           Size 36 36
+          }
+          TextWidgetClass "{FABB0628E47149B7}" {
+           Name "LeaderCount3"
+           Slot FrameWidgetSlot "{B2237449E10E25EB}" {
+            Anchor 0 0 0 0
+            PositionX 1242
+            OffsetLeft 1242
+            PositionY 26
+            OffsetTop 26
+            SizeX 120
+            OffsetRight -1362
+            SizeY 34
+            OffsetBottom -60
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 26
+           "Min Font Size" 26
+           FontProperties FontProperties "{8E198832BCEA4FA7}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{807E41F8F30AA486}" {
+           Name "NeedIcon3"
+           Slot FrameWidgetSlot "{3F34F73C0744EE05}" {
+            Anchor 0 0 0 0
+            PositionX 1380
+            OffsetLeft 1380
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1420
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.31 0.722 0.69 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "status_shortage"
+           Size 40 40
+          }
+          TextWidgetClass "{067E63F873B225F6}" {
+           Name "NeedTitle3"
+           Slot FrameWidgetSlot "{83754A74A08182BA}" {
+            Anchor 0 0 0 0
+            PositionX 1430
+            OffsetLeft 1430
+            PositionY 28
+            OffsetTop 28
+            SizeX 170
+            OffsetRight -1600
+            SizeY 30
+            OffsetBottom -58
+            Alignment 0 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 22
+           "Min Font Size" 22
+           FontProperties FontProperties "{EDD0AAAEE08A68D6}" {
+            Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+           }
+          }
+          ImageWidgetClass "{9C7E15CF663B1F6E}" {
+           Name "KitIcon3"
+           Slot FrameWidgetSlot "{12BF4971145B97D6}" {
+            Anchor 0 0 0 0
+            PositionX 1620
+            OffsetLeft 1620
+            PositionY 22
+            OffsetTop 22
+            SizeX 40
+            OffsetRight -1660
+            SizeY 40
+            OffsetBottom -62
+            Alignment 0 0
+           }
+           Color 0.639 0.62 0.565 1
+           Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+           Image "standing_kit"
+           Size 40 40
+          }
+         }
         }
-        TextWidgetClass "{2B5C837B61AF3B25}" {
-         Name "FactionName3"
-         Slot FrameWidgetSlot "{F37906929E556487}" {
-          Anchor 0 0 0 0
-          PositionX 96
-          OffsetLeft 96
-          PositionY 25
-          OffsetTop 25
-          SizeX 320
-          OffsetRight -416
-          SizeY 34
-          OffsetBottom -59
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text "HALCYON"
-         "Font Size" 28
-         "Min Font Size" 28
-         FontProperties FontProperties "{8D7D8992C23AE91F}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{A5CAB04C5C48D832}" {
-         Name "TierIcon3"
-         Slot FrameWidgetSlot "{75DD2A947D7C7637}" {
-          Anchor 0 0 0 0
-          PositionX 440
-          OffsetLeft 440
-          PositionY 18
-          OffsetTop 18
-          SizeX 48
-          OffsetRight -488
-          SizeY 48
-          OffsetBottom -66
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "tier_stranger"
-         Size 48 48
-        }
-        TextWidgetClass "{2B77E35DE75D0567}" {
-         Name "TierName3"
-         Slot FrameWidgetSlot "{1FD38A4562540A6A}" {
-          Anchor 0 0 0 0
-          PositionX 500
-          OffsetLeft 500
-          PositionY 16
-          OffsetTop 16
-          SizeX 480
-          OffsetRight -980
-          SizeY 52
-          OffsetBottom -68
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Text ""
-         "Font Size" 40
-         "Min Font Size" 40
-         FontProperties FontProperties "{8ADC381EDAAA46E6}" {
-          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{112A417BFBE25623}" {
-         Name "FavorIcon3"
-         Slot FrameWidgetSlot "{31CDC7BFA1642B7C}" {
-          Anchor 0 0 0 0
-          PositionX 1000
-          OffsetLeft 1000
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1036
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.31 0.722 0.69 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_favor"
-         Size 36 36
-        }
-        TextWidgetClass "{6C6CE21C08840128}" {
-         Name "FavorValue3"
-         Slot FrameWidgetSlot "{26DC80A929450C0B}" {
-          Anchor 0 0 0 0
-          PositionX 1046
-          OffsetLeft 1046
-          PositionY 24
-          OffsetTop 24
-          SizeX 140
-          OffsetRight -1186
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 30
-         "Min Font Size" 30
-         FontProperties FontProperties "{58863A17B25B6789}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{852747414716751D}" {
-         Name "LeaderIcon3"
-         Slot FrameWidgetSlot "{61C006D54A173121}" {
-          Anchor 0 0 0 0
-          PositionX 1196
-          OffsetLeft 1196
-          PositionY 24
-          OffsetTop 24
-          SizeX 36
-          OffsetRight -1232
-          SizeY 36
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_leader"
-         Size 36 36
-        }
-        TextWidgetClass "{10294E6C534E8FC0}" {
-         Name "LeaderCount3"
-         Slot FrameWidgetSlot "{AACF30B671495AA6}" {
-          Anchor 0 0 0 0
-          PositionX 1242
-          OffsetLeft 1242
-          PositionY 26
-          OffsetTop 26
-          SizeX 120
-          OffsetRight -1362
-          SizeY 34
-          OffsetBottom -60
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 26
-         "Min Font Size" 26
-         FontProperties FontProperties "{B2D69A36D318C2D3}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{829F47413D4970DE}" {
-         Name "NeedIcon3"
-         Slot FrameWidgetSlot "{6C2D44606482AECC}" {
-          Anchor 0 0 0 0
-          PositionX 1380
-          OffsetLeft 1380
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1420
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.31 0.722 0.69 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "status_shortage"
-         Size 40 40
-        }
-        TextWidgetClass "{615D22315C278511}" {
-         Name "NeedTitle3"
-         Slot FrameWidgetSlot "{685652B0CD587B4F}" {
-          Anchor 0 0 0 0
-          PositionX 1430
-          OffsetLeft 1430
-          PositionY 28
-          OffsetTop 28
-          SizeX 170
-          OffsetRight -1600
-          SizeY 30
-          OffsetBottom -58
-          Alignment 0 0
-         }
-         Color 0.91 0.886 0.816 1
-         Text ""
-         "Font Size" 22
-         "Min Font Size" 22
-         FontProperties FontProperties "{EA162B0127F8BBD4}" {
-          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-         }
-        }
-        ImageWidgetClass "{2556E574D0434441}" {
-         Name "KitIcon3"
-         Slot FrameWidgetSlot "{CE50E58E0EC1E722}" {
-          Anchor 0 0 0 0
-          PositionX 1620
-          OffsetLeft 1620
-          PositionY 22
-          OffsetTop 22
-          SizeX 40
-          OffsetRight -1660
-          SizeY 40
-          OffsetBottom -62
-          Alignment 0 0
-         }
-         Color 0.639 0.62 0.565 1
-         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
-         Image "standing_kit"
-         Size 40 40
-        }
-        FrameWidgetClass "{1205AD9C06593A5D}" {
+        FrameWidgetClass "{B8A69ED2245A1D67}" {
          Name "Detail3"
-         Slot FrameWidgetSlot "{FC6A9B42D1FC1B35}" {
+         Slot FrameWidgetSlot "{4A107498B48FF404}" {
           Anchor 0 0 1 1
           PositionX 28
           OffsetLeft 28
@@ -3216,9 +3285,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
          }
          "Is Visible" 0
          {
-          ImageWidgetClass "{9D9D06E220FE9CA8}" {
+          ImageWidgetClass "{2146B9609B5F173F}" {
            Name "DetailRule3"
-           Slot FrameWidgetSlot "{59358506C1D322CC}" {
+           Slot FrameWidgetSlot "{244E9BDFBBABCA41}" {
             Anchor 0 0 1 0
             PositionX 0
             OffsetLeft 0
@@ -3233,9 +3302,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
            Color 0.165 0.18 0.192 1
            Size 1 1
           }
-          FrameWidgetClass "{4953BFDF01EB3B24}" {
+          FrameWidgetClass "{E000FD087F0DC589}" {
            Name "SeeBlock3"
-           Slot FrameWidgetSlot "{5D6FE792CCA39692}" {
+           Slot FrameWidgetSlot "{1D6C861566590DB5}" {
             Anchor 0 0 0 1
             PositionX 0
             OffsetLeft 0
@@ -3248,9 +3317,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{B31E5EBAC4B0BC9B}" {
+            ImageWidgetClass "{F4127FB95FF64D6B}" {
              Name "SeeIcon3"
-             Slot FrameWidgetSlot "{482BA5D65A06679D}" {
+             Slot FrameWidgetSlot "{E54D0C78323B98CA}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -3267,9 +3336,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_word"
              Size 30 30
             }
-            TextWidgetClass "{87AC8392928D5473}" {
+            TextWidgetClass "{BF020F5A0A320E19}" {
              Name "SeeLabel3"
-             Slot FrameWidgetSlot "{BC6B3F2DCF02663C}" {
+             Slot FrameWidgetSlot "{5EF1CABB74976B38}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -3285,13 +3354,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "HOW THEY SEE YOU"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{797EBCEEED3EB01D}" {
+             FontProperties FontProperties "{BF77C2213481AB1A}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{314DFD989FDDFA35}" {
+            ScrollLayoutWidgetClass "{3F6930D44F53EAC8}" {
              Name "SeeScroll3"
-             Slot FrameWidgetSlot "{E305B41AD402B336}" {
+             Slot FrameWidgetSlot "{66D4D8F8BCA5C541}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -3306,18 +3375,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{580F1C32D11C41EA}" {
+              SizeLayoutWidgetClass "{29066FB3A45CEA6D}" {
                Name "SeeSize3"
-               Slot AlignableSlot "{2956902DB72CDD75}" {
+               Slot AlignableSlot "{63C0E119C14CA892}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{E6E920764638C160}" {
+                TextWidgetClass "{F3DD9ADEAFAABE75}" {
                  Name "SeeText3"
-                 Slot AlignableSlot "{915520CD844BC55D}" {
+                 Slot AlignableSlot "{DE558F5406A49577}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -3326,7 +3395,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{49A400513DBB2A33}" {
+                 FontProperties FontProperties "{22512FCBEC1EF00F}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -3334,9 +3403,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               }
              }
             }
-            FrameWidgetClass "{60A3B863932A9E68}" {
+            FrameWidgetClass "{C28766989BE30036}" {
              Name "NextBlock3"
-             Slot FrameWidgetSlot "{E80724E1F7DF9668}" {
+             Slot FrameWidgetSlot "{2FE6D75F7AD2655A}" {
               Anchor 0 1 1 1
               PositionX 0
               OffsetLeft 0
@@ -3349,9 +3418,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
               Alignment 0 0
              }
              {
-              ImageWidgetClass "{34323E8CF3467FC4}" {
+              ImageWidgetClass "{BD63301D393EF2D6}" {
                Name "NextIcon3"
-               Slot FrameWidgetSlot "{2ECD1B5DF18E1E24}" {
+               Slot FrameWidgetSlot "{00DFCC7332B843A8}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -3368,9 +3437,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Image "standing_next"
                Size 26 26
               }
-              TextWidgetClass "{3623D34C8DEB8107}" {
+              TextWidgetClass "{A6F5287D13FBA6CD}" {
                Name "NextLabel3"
-               Slot FrameWidgetSlot "{DDBDA7E7D85899E3}" {
+               Slot FrameWidgetSlot "{B6C62005ED21D242}" {
                 Anchor 0 0 0 0
                 PositionX 36
                 OffsetLeft 36
@@ -3386,13 +3455,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                Text "NEXT"
                "Font Size" 18
                "Min Font Size" 18
-               FontProperties FontProperties "{6C927983A122DF8E}" {
+               FontProperties FontProperties "{068F7906F74641CA}" {
                 Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
                }
               }
-              TextWidgetClass "{8096EF391389D5F8}" {
+              TextWidgetClass "{02C0BE1B403DFEDE}" {
                Name "NextText3"
-               Slot FrameWidgetSlot "{BEBEA145B20D8939}" {
+               Slot FrameWidgetSlot "{B63554CE53E9AA1A}" {
                 Anchor 0 0 0 0
                 PositionX 0
                 OffsetLeft 0
@@ -3409,7 +3478,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                "Font Size" 22
                "Min Font Size" 22
                Wrap 1
-               FontProperties FontProperties "{1B6DAAFD876B8BBE}" {
+               FontProperties FontProperties "{FDD1634AD8A89F7F}" {
                 Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
                }
               }
@@ -3417,9 +3486,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{F146B63F2175D579}" {
+          FrameWidgetClass "{C58D2D246CD6FD96}" {
            Name "LeadersBlock3"
-           Slot FrameWidgetSlot "{D7ED703ED0083FD7}" {
+           Slot FrameWidgetSlot "{5FC5932BCB3F9C72}" {
             Anchor 0 0 0 1
             PositionX 424
             OffsetLeft 424
@@ -3432,9 +3501,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{DFE0B4983699377E}" {
+            ImageWidgetClass "{C105E8658ED3CCFF}" {
              Name "LeadersIconBig3"
-             Slot FrameWidgetSlot "{AA122E7A633D567E}" {
+             Slot FrameWidgetSlot "{20112340C318868F}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -3451,9 +3520,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_leader"
              Size 30 30
             }
-            TextWidgetClass "{6BEAA730D2D873CF}" {
+            TextWidgetClass "{151AF21F59BB7997}" {
              Name "LeadersLabel3"
-             Slot FrameWidgetSlot "{84B3F40BAE8E9294}" {
+             Slot FrameWidgetSlot "{A7002352B3695B6C}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -3469,13 +3538,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "LEADERS YOU'VE MET"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{71C195687EA3B3FF}" {
+             FontProperties FontProperties "{26589179FD6BE925}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{F755630C34A0444A}" {
+            ScrollLayoutWidgetClass "{3B4737BD82B9560B}" {
              Name "LeadersScroll3"
-             Slot FrameWidgetSlot "{80A32A81E4105819}" {
+             Slot FrameWidgetSlot "{B6E7C2070F6BFD59}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -3490,18 +3559,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{D600AD3E4107AA7A}" {
+              SizeLayoutWidgetClass "{EA7A5F6A9573EF2D}" {
                Name "LeadersSize3"
-               Slot AlignableSlot "{F36C00AD6BD6E295}" {
+               Slot AlignableSlot "{BCC9194C42F8F962}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{218E5A90DE1FE1F7}" {
+                TextWidgetClass "{E568C43D6A87902B}" {
                  Name "LeadersText3"
-                 Slot AlignableSlot "{E9F1A5917D200B9B}" {
+                 Slot AlignableSlot "{D8B59DEF14BB1499}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -3510,7 +3579,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{7339784D382E4741}" {
+                 FontProperties FontProperties "{A7711B0B6E474473}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -3520,9 +3589,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{DA9960BEB8428D97}" {
+          FrameWidgetClass "{1E500CB5900E8269}" {
            Name "NeedBlock3"
-           Slot FrameWidgetSlot "{4FD3C5BE67C1A5CE}" {
+           Slot FrameWidgetSlot "{D8E0FD0F9A1FD723}" {
             Anchor 0 0 0 1
             PositionX 848
             OffsetLeft 848
@@ -3535,9 +3604,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{8B0314862402CDAC}" {
+            ImageWidgetClass "{225F7B63107BD305}" {
              Name "NeedIconBig3"
-             Slot FrameWidgetSlot "{F9A3E48C27E8AC33}" {
+             Slot FrameWidgetSlot "{BB0A2458ADD84141}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -3554,9 +3623,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "status_shortage"
              Size 30 30
             }
-            TextWidgetClass "{B332E05E22497F09}" {
+            TextWidgetClass "{0C9D7E00893223A5}" {
              Name "NeedLabel3"
-             Slot FrameWidgetSlot "{FEAB0C39B3AA8B44}" {
+             Slot FrameWidgetSlot "{37824BDA9693D1F8}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -3572,13 +3641,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "WHAT THEY NEED"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{3A2B41AFC114212D}" {
+             FontProperties FontProperties "{D129DFEA78670101}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            TextWidgetClass "{C72685FFDF28185A}" {
+            TextWidgetClass "{393B0E687F7B50F4}" {
              Name "NeedName3"
-             Slot FrameWidgetSlot "{B7F6788CC6B4FA01}" {
+             Slot FrameWidgetSlot "{DB6D9DB2577D57FF}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -3594,13 +3663,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text ""
              "Font Size" 24
              "Min Font Size" 24
-             FontProperties FontProperties "{250AE346B6DD2449}" {
+             FontProperties FontProperties "{7EECF54ED51BADC7}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{C509170977056D82}" {
+            ScrollLayoutWidgetClass "{0F7AF4E24BBD7226}" {
              Name "NeedScroll3"
-             Slot FrameWidgetSlot "{7DFC4760C80A4205}" {
+             Slot FrameWidgetSlot "{7FF2BEE16C19930C}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -3615,18 +3684,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{6CA847D6D2C03FF7}" {
+              SizeLayoutWidgetClass "{0207294839455047}" {
                Name "NeedSize3"
-               Slot AlignableSlot "{093E2A97D579BCDD}" {
+               Slot AlignableSlot "{74E453024CCF2A2C}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{9CEBBB9529B8E9C9}" {
+                TextWidgetClass "{1A6F86C7C2645E5D}" {
                  Name "NeedText3"
-                 Slot AlignableSlot "{123DBCE70F97242B}" {
+                 Slot AlignableSlot "{8F826C10F4663E3F}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -3635,7 +3704,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{078A7F4422D221C0}" {
+                 FontProperties FontProperties "{4B3A11878E8BD31E}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                   Italic 1
                  }
@@ -3646,9 +3715,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             }
            }
           }
-          FrameWidgetClass "{2BDDBE5717529E94}" {
+          FrameWidgetClass "{13C18E41EEB24261}" {
            Name "KitBlock3"
-           Slot FrameWidgetSlot "{034498BC7EBD5127}" {
+           Slot FrameWidgetSlot "{C36525DA05D3A7A1}" {
             Anchor 0 0 0 1
             PositionX 1272
             OffsetLeft 1272
@@ -3661,9 +3730,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
             Alignment 0 0
            }
            {
-            ImageWidgetClass "{E9EDB208C5BE2525}" {
+            ImageWidgetClass "{A3B1AFF51D3D996A}" {
              Name "KitIconBig3"
-             Slot FrameWidgetSlot "{49C8CBACF6C8F9AF}" {
+             Slot FrameWidgetSlot "{0810036C2E43BD9D}" {
               Anchor 0 0 0 0
               PositionX 0
               OffsetLeft 0
@@ -3680,9 +3749,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Image "standing_kit"
              Size 30 30
             }
-            TextWidgetClass "{30C35017ACB25016}" {
+            TextWidgetClass "{B5234739FE552BEB}" {
              Name "KitLabel3"
-             Slot FrameWidgetSlot "{C49603EC6902DF2C}" {
+             Slot FrameWidgetSlot "{3BB1EBDCDB17DC5B}" {
               Anchor 0 0 0 0
               PositionX 40
               OffsetLeft 40
@@ -3698,13 +3767,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Text "IN THEIR KIT"
              "Font Size" 20
              "Min Font Size" 20
-             FontProperties FontProperties "{884842EA1250751D}" {
+             FontProperties FontProperties "{80F3D6583D814744}" {
               Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
              }
             }
-            ScrollLayoutWidgetClass "{FA84C8CCB4F17464}" {
+            ScrollLayoutWidgetClass "{48A89D61749F3DCA}" {
              Name "KitScroll3"
-             Slot FrameWidgetSlot "{9406B8FD7022A66E}" {
+             Slot FrameWidgetSlot "{E152C58B013A4E2A}" {
               Anchor 0 0 1 1
               PositionX 0
               OffsetLeft 0
@@ -3719,18 +3788,18 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
              Color 0.431 0.416 0.376 1
              style Small
              {
-              SizeLayoutWidgetClass "{118DD0FAEED9A379}" {
+              SizeLayoutWidgetClass "{2753E56ACFD1F220}" {
                Name "KitSize3"
-               Slot AlignableSlot "{AC480A320A60DB35}" {
+               Slot AlignableSlot "{BE486A757CF65D3F}" {
                 HorizontalAlign 0
                 VerticalAlign 0
                }
                AllowWidthOverride 1
                WidthOverride 388
                {
-                TextWidgetClass "{CE6CC53193883B86}" {
+                TextWidgetClass "{7D9BD24D4686D952}" {
                  Name "KitText3"
-                 Slot AlignableSlot "{C377B474874B55C2}" {
+                 Slot AlignableSlot "{0CC292678810EAAF}" {
                   HorizontalAlign 3
                   VerticalAlign 0
                  }
@@ -3739,7 +3808,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
                  "Font Size" 22
                  "Min Font Size" 22
                  Wrap 1
-                 FontProperties FontProperties "{9CDD9E4AB212BF25}" {
+                 FontProperties FontProperties "{E92BFAE438ED1756}" {
                   Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
                  }
                 }
@@ -3757,9 +3826,9 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
     }
    }
   }
-  TextWidgetClass "{93A7CD6AB9D17964}" {
+  TextWidgetClass "{39AAF1B3604883C8}" {
    Name "RelationsLabel"
-   Slot FrameWidgetSlot "{E9DDE3FFDC4A6DCA}" {
+   Slot FrameWidgetSlot "{FCAB1D723C0FF338}" {
     Anchor 0 0 0 0
     PositionX 96
     OffsetLeft 96
@@ -3775,13 +3844,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
    Text "BETWEEN THE FACTIONS"
    "Font Size" 18
    "Min Font Size" 18
-   FontProperties FontProperties "{F3128FC117C2149B}" {
+   FontProperties FontProperties "{88BB3D710A0C0E0F}" {
     Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
    }
   }
-  TextWidgetClass "{D105519F1D28B881}" {
+  TextWidgetClass "{5A06FCC0811537C2}" {
    Name "Relations"
-   Slot FrameWidgetSlot "{D18F372C35F476C1}" {
+   Slot FrameWidgetSlot "{4384566D165024AB}" {
     Anchor 0 0 0 0
     PositionX 356
     OffsetLeft 356
@@ -3798,13 +3867,13 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
    "Font Size" 18
    "Min Font Size" 18
    Wrap 1
-   FontProperties FontProperties "{3D036FABE6B3B149}" {
+   FontProperties FontProperties "{842F554DCA2D3705}" {
     Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
    }
   }
-  TextWidgetClass "{C8E0B8401FDECA39}" {
+  TextWidgetClass "{E6C8A70DBA6A91AC}" {
    Name "Waiting"
-   Slot FrameWidgetSlot "{93FE43B875BBD8BD}" {
+   Slot FrameWidgetSlot "{571D37FB0E8AC935}" {
     Anchor 0.5 0.5 0.5 0.5
     PositionX 0
     OffsetLeft 0
@@ -3822,7 +3891,7 @@ FrameWidgetClass "{8BD7FCB8F7923E51}" {
    "Min Font Size" 22
    "Horizontal Alignment" Center
    "Vertical Alignment" Center
-   FontProperties FontProperties "{B6BF073107F39B4C}" {
+   FontProperties FontProperties "{A9F70595E3071C2B}" {
     Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
     Italic 1
    }

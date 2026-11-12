@@ -1853,7 +1853,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
 | `UI/RZ_Notebook.c:94` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:940` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse opens | Only hover is lost: up/down and a click still open and pin rows |
+| `UI/RZ_Notebook.c:953` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:37` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_UIData.c:964` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
 | `Dialogue/RZ_Dialogue.c:700` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
@@ -2842,9 +2842,10 @@ when it happens)
   line (the throw hook, VERIFY).
 - [ ] The Standing page (G2): four rows, each with what they call you large, Favor, leaders met, the
   need's icon and (Bastion, the Red Hand, Halcyon with borrowed kit on) the kit tell; no Fame or
-  Infamy numbers. With a pad, up/down open the next row and A pins it; with the mouse, the row under
-  the cursor opens, a click pins it and a second click lets it go; Q/E and B/Esc work as on the
-  other tabs. An open row's *How they see you* has the word as a sentence ("The crews call you
+  Infamy numbers. No row is open at first and the four share the page. With a pad, up/down only
+  highlight a row and A opens it (A again closes it); with the mouse, the row under the cursor is
+  highlighted and a click opens or closes it; opening another row closes the first. Q/E and B/Esc
+  work as on the other tabs. An open row's *How they see you* has the word as a sentence ("The crews call you
   Smoke.") and *Leaders you've met* the nearest one with what they make of you. Every icon shows
   its picture, none a flat square (after the atlas is imported again). Take a parley's amends job: the journal's requirements read
   "Amends: works off Infamy · finishes where the job says".

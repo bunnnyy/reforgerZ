@@ -206,10 +206,10 @@ root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `Ra
 `HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
 **Mouse.** The tabs, `CloseButton`, the journal row's root (`MissionRow`), the radio filter chip
-(`FilterButton`), the Standing page's rows (`Row0` to `Row3`, which also open under the mouse) and
+(`FilterButton`), the Standing page's rows (`Row0` to `Row3`, highlighted under the mouse) and
 the notice board's `PostButton` are `Button`s. Long text sits in a `ScrollLayout` so the wheel
 scrolls it, and on a pad up and down do: `ListScroll` (the journal), `LogScroll` (the radio),
-`NotesScroll` and `PastScroll`. On the Standing page up and down open the next row instead.
+`NotesScroll` and `PastScroll`. On the Standing page up and down highlight the next row instead.
 Menus show the cursor while open; if one doesn't, check its entry in `chimeraMenus.conf`.
 
 **Menu presets.** `Configs/System/chimeraMenus.conf` is an override of the vanilla file (same
@@ -236,7 +236,7 @@ vanilla menu actions (B, LB/RB, the D-pad and A on a pad).
 
 ### Standing page: `RZ_StandingPage.layout`
 
-Design G2: one row per faction, mostly icons, one row open at a time (behaviour in
+Design G2: one row per faction, mostly icons, at most one row open (behaviour in
 [UI.md](../docs/UI.md#the-notebook)). Positions are at 1920×1080, in the 90% safe area. Every icon
 has its image set in the layout (the `RZ_Icons` imageset and a name, so none draws as a flat
 square); the script swaps the ones that change. The layout is written by a script, so it has no
@@ -251,12 +251,15 @@ Frame StandingPage (root)
 │                              (status_shortage), KIT (standing_kit)
 ├─ Frame  Rows                 at (96, 206), 1728 × 720
 │  └─ Button RowN ×4 (style blank; N is the faction: 0 the Haven, 1 Task Force Bastion, 2 the Red
-│     │  Hand, 3 Halcyon). The script places them: the open row 444 high, the others 84, 8 apart
+│     │  Hand, 3 Halcyon). The script places them, 8 apart: none open, 174 high each (the layout's
+│     │  own); one open, it 444 and the others 84
 │     └─ Frame RowFrameN (fills the button)
 │        ├─ Image  RowBgN        panel, full size
-│        ├─ Image  RowOpenN      bone 6%, full size, shown on the open row
-│        ├─ Panel  RowLineN      border; bone on a pinned row, #2A2E31 otherwise (tinted)
+│        ├─ Image  RowSelectedN  bone 6%, full size, shown on the highlighted row
+│        ├─ Panel  RowLineN      border; bone on the highlighted row, #2A2E31 otherwise (tinted)
 │        ├─ Image  AccentN       8 wide, full height, left edge         faction colour
+│        ├─ Frame  StripN        1728 × 84, the row's one line: at the row's top while a row is open,
+│        │                       centred in it otherwise (the script moves it); positions below are in it
 │        ├─ Image  EmblemN       52 × 52 at (28, 16)                    faction_* icon, faction colour
 │        ├─ Text   FactionNameN  at (96, 25), 320 × 34, condensed bold 28 ("TASK FORCE BASTION")
 │        ├─ Image  TierIconN     48 × 48 at (440, 18)                   tier_* icon, tier colour
