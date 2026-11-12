@@ -3201,8 +3201,8 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		if (RZ_ScreenCapture.Take(playerId, title, text))
 			return;
 
-		// A line from the person this player is talking to goes into the talk screen
-		if (m_Dialogue && m_Dialogue.Capture(playerId, title, text))
+		// A line for a player who is talking goes into the talk screen (RZ_Dialogue.Capture)
+		if (m_Dialogue && m_Dialogue.Capture(playerId, title, text, tag))
 			return;
 
 		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);
@@ -3225,7 +3225,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	//! "Subtitles"), owner-only like notices. speaker: their name; faction: RZ_EFaction or -1.
 	void Say(int playerId, string speaker, int faction, string text)
 	{
-		if (m_Dialogue && m_Dialogue.Capture(playerId, speaker, text))
+		if (m_Dialogue && m_Dialogue.Capture(playerId, speaker, text, RZ_ENoticeTag.AUTO, true))
 			return;
 
 		PlayerController pc = GetGame().GetPlayerManager().GetPlayerController(playerId);

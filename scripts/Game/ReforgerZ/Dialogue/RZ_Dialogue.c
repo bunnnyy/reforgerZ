@@ -6,12 +6,13 @@
 //!
 //! - the greeting is that person's Talk handler, run while the engine **captures** the player's
 //!   notices and spoken lines whose title is the speaker's (the adapter knows it; else the first
-//!   one of the greeting). Those lines go into the talk screen; anything else (a contract offer,
-//!   a standing change) still goes out as a card. A later line from the speaker (a treatment
-//!   finishing) also goes into the screen while it's open;
+//!   one of the greeting). Those lines go into the talk screen, and so does whatever else the
+//!   handler tells the player (Capture): a journal line (a contract offer) is a card as well;
+//!   danger, radio and tips stay cards. A later line from the speaker (a treatment finishing)
+//!   also goes into the screen while it's open;
 //! - the replies are the person's choice and use slots (their labels are on the server, in
 //!   RZ_PuzzleObjectComponent), with what each needs shown before you choose, plus Leave;
-//! - a pick runs that slot's handler, capturing again.
+//! - a pick runs that slot's handler, capturing again; the answer shows, then the replies after it.
 //!
 //! The screen shows at most 5 replies: a page of them, Something else. for the next page, and the
 //! way out. A server admin's replies sit under one [Admin] reply that opens them as their own list.
@@ -148,6 +149,7 @@ class RZ_TalkSession
 	float m_fLastPick = -100;
 	ref RZ_DTalk m_Tree;				// Dialogue > Trees: the topics and the node (null when off)
 	bool m_bAdmin;						// the [Admin] list is open in place of the replies
+	bool m_bEnded;						// a tree ended it: their last words, then only the way out
 	int m_iPage;						// the page of replies shown (Something else. turns it)
 	string m_sList;						// the list the page belongs to (the hub, a node, the admin list)
 	ref array<string> m_aPicked = {};	// built replies picked in this conversation (shown grey after)
@@ -178,6 +180,7 @@ class RZ_Dialogue
 	protected static const float IDLE_BUMP = 30;		// at the cap, the one idle this long gives way
 	protected static const float RESUME_SECONDS = 60;
 	protected static const string LINE_BREAK = "^";
+	protected static const string NO_ANSWER = "(They have nothing to add to that.)";	// a reply that said nothing
 
 	protected RZ_GameModeComponent m_GM;
 	protected ref map<int, ref RZ_TalkSession> m_mSessions = new map<int, ref RZ_TalkSession>();
@@ -264,9 +267,28 @@ class RZ_Dialogue
 
 		if (!goOn)
 		{
-			End(h.m_iDecider, "", true);
+			Finish(s, user);
 			return;
 		}
+
+		TakeNew(s);
+		SendNode(s, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A tree's pick ended the conversation (`end`): their last words show with only the way out, so
+	//! you see the answer before you go. Nothing said: it closes at once.
+	protected void Finish(RZ_TalkSession s, IEntity user)
+	{
+		if (s.m_aNew.IsEmpty())
+		{
+			End(s.m_iPlayer, "", true);
+			return;
+		}
+
+		s.m_bEnded = true;
+		if (s.m_Tree)
+			s.m_Tree.m_bInNode = false;		// nothing to pick up again afterwards
 
 		TakeNew(s);
 		SendNode(s, user);
@@ -492,32 +514,82 @@ class RZ_Dialogue
 	//------------------------------------------------------------------------------------------------
 	//! From RZ_GameModeComponent.NotifyPlayerAs and Say: a line for a player who is talking. True if
 	//! it went into the talk screen (then it isn't a card or a subtitle).
-	bool Capture(int playerId, string title, string text)
+	//!
+	//! While a greeting or a pick runs, everything else it tells this player goes into the screen
+	//! too, so every reply is answered there: another title's notice (a standing change, "Nothing
+	//! happens"), another speaker's line (with their name). A line for the journal (a contract, an
+	//! offer, a mission's end) is said there and still a card; danger, the infection, the radio and
+	//! the tips stay cards only. `spoken`: a subtitle (RZ_GameModeComponent.Say), title is a name.
+	bool Capture(int playerId, string title, string text, int tag = RZ_ENoticeTag.AUTO, bool spoken = false)
 	{
 		RZ_TalkSession s;
 		if (!m_mSessions.Find(playerId, s))
 			return false;
 
-		if (s.m_sHeader.IsEmpty())
+		bool apart = StaysCard(title, tag);
+		bool journal = !apart && ForJournal(title, tag);
+		if (s.m_sHeader.IsEmpty() && s.m_bCapturing && !journal && title != RZ_Guidance.PLAIN_TITLE)
 		{
-			if (!s.m_bCapturing)
-				return false;
-
 			s.m_sHeader = title;
 			s.m_Adapter.FromHeader(m_GM, s, title);
 		}
 
-		if (title != s.m_sHeader)
-			return false;
-
-		s.m_aNew.Insert(text);
-		if (!s.m_bCapturing)
+		if (!s.m_sHeader.IsEmpty() && title == s.m_sHeader)
 		{
-			TakeNew(s);
-			SendNode(s, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
+			s.m_aNew.Insert(text);
+			if (!s.m_bCapturing)
+			{
+				TakeNew(s);
+				SendNode(s, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
+			}
+
+			return true;
 		}
 
-		return true;
+		if (!s.m_bCapturing || apart)
+			return false;
+
+		string line = text;
+		if (spoken)
+		{
+			string who = title;
+			int comma = who.IndexOf(", ");
+			if (comma > 0)
+				who = who.Substring(0, comma);
+
+			line = who + ": " + text;
+		}
+
+		s.m_aNew.Insert(line);
+		return !journal;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Never into the talk screen: danger and the infection, the broadcast and the radio, world
+	//! events and the world at spawn, and the tips ("Remember").
+	protected static bool StaysCard(string title, int tag)
+	{
+		if (title == RZ_Guidance.PLAIN_TITLE)
+			return true;
+
+		RZ_NoticeStyle st = RZ_NoticeStyle.Classify(title, tag);
+		if (st.IsRadio() || st.m_iPriority == RZ_ENoticePriority.URGENT)
+			return true;
+
+		return st.m_iKind == RZ_ENoticeKind.INFECTION || st.m_iKind == RZ_ENoticeKind.EVENT || st.m_iKind == RZ_ENoticeKind.WORLD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Said in the talk screen and still a card, for the journal and the Radio tab: a mission's
+	//! notices, contracts and off-the-books jobs, a background unlocked, anything about you now.
+	protected static bool ForJournal(string title, int tag)
+	{
+		if (tag == RZ_ENoticeTag.MISSION || tag == RZ_ENoticeTag.HIGH)
+			return true;
+
+		string t = title;
+		t.ToLower();
+		return t.StartsWith("off the books:") || RZ_NoticeStyle.PriorityFor(t, RZ_ENoticeKind.PLAIN, RZ_ENoticeTag.AUTO) == RZ_ENoticePriority.HIGH;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -599,7 +671,7 @@ class RZ_Dialogue
 
 			if (!goOn)
 			{
-				End(playerId, "", true);
+				Finish(s, user);
 				return;
 			}
 		}
@@ -612,7 +684,21 @@ class RZ_Dialogue
 		if (!m_mSessions.Contains(playerId))
 			return;
 
-		// Nothing new said (the answer was a card, a contract offer): what they said stays
+		// The reply opened another screen (the shop, the reader): that one is open now, this is over
+		if (!guard.IsOpen(playerId, RZ_ScreenGuard.KIND_TALK))
+		{
+			m_mSessions.Remove(playerId);
+			RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
+			if (ui)
+				ui.SendPayload(RZ_UIFeed.PAYLOAD_TALK, "X|other");
+
+			return;
+		}
+
+		// Every reply is answered in the screen, then the replies after it
+		if (s.m_aNew.IsEmpty())
+			s.m_aNew.Insert(NO_ANSWER);
+
 		TakeNew(s);
 		SendNode(s, user);
 	}
@@ -703,6 +789,14 @@ class RZ_Dialogue
 
 		if (admin.IsEmpty())
 			s.m_bAdmin = false;
+
+		// Ended by a tree: their last words and only the way out
+		if (s.m_bEnded)
+		{
+			rows.Clear();
+			admin.Clear();
+			s.m_bAdmin = false;
+		}
 
 		RZ_TalkReply way = OwnRow(LEAVE, "I'll be going.");
 		string listKey = "hub";

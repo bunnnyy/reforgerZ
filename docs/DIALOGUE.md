@@ -66,14 +66,22 @@ objects, spots and doors keep their actions.
 up to 8 labelled slots. The engine doesn't rewrite them; it wraps them:
 
 - **Greeting:** their Talk handler, run while the engine *captures* the player's notices and
-  spoken lines whose title is the speaker's (a leader's is known; otherwise the first title the
-  greeting uses). Those lines go into the screen. Anything else (a contract offer, a standing
-  change) still comes as a card. A line from the speaker that arrives later (a treatment
-  finishing) also goes into the screen while it's open.
+  spoken lines. Lines under the speaker's title (a leader's is known; otherwise the first title the
+  greeting uses) go into the screen as theirs. So does everything else the handler tells you, so
+  every answer is in the screen: another title's notice ("Nothing happens", a standing change) as
+  it is, another person's line with their name in front. A line the journal also needs (a contract
+  or an off-the-books offer, a mission's end, a background unlocked, anything tagged as about you
+  now) is said there **and** still comes as a card. Danger, the infection, the broadcast and the
+  radio, world events, the world at spawn and the tips ("Remember") stay cards only. A line from
+  the speaker that arrives later (a treatment finishing) also goes into the screen while it's open.
 - **Replies:** the person's visible choice and use slots (their labels are on the server), plus
   **I'll be going.** A leader's are Ask for work, Heard anything?, What do you make of me?
-- **A pick** runs that slot's handler, capturing again. If it said nothing new (the answer was a
-  card), what they said stays. Then come their answer and the replies after it, New Vegas style.
+- **A pick** runs that slot's handler, capturing again. Their answer shows where they speak, then
+  the replies after it (the hub's again, or the node's), New Vegas style. A reply that says nothing
+  at all is answered "(They have nothing to add to that.)". It closes only when you leave, when
+  danger or distance ends it, or when the reply opens another screen (the shop, the reader): that
+  screen takes over. A tree choice that ends the conversation (`end`) shows their last words with
+  only I'll be going.; with nothing said, it closes at once.
 - **Five at most on the screen.** The server sends a page of the list: up to four replies and the
   way out, or, when there are more, three, **Something else.** (the next page, round to the first)
   and the way out. A new list (another node, back to the hub) starts on its first page.

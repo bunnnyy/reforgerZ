@@ -324,7 +324,9 @@ Which lines are subtitles:
 | The screen guard | "Not now!" when danger closes a talk |
 
 Everything else stays a card; radio voices stay cards (they're radio). While the talk screen is
-open, the person's own lines go into it instead.
+open, the person's own lines go into it instead, and so does whatever a reply tells you, but the
+journal's notices are cards too and danger, radio and tips stay cards only
+([DIALOGUE.md](DIALOGUE.md#the-talk-screen)).
 
 **The reader.** Notes open on a sheet of paper in the middle of the screen, as in `reader.html`: the
 world dimmed; the paper (#EDE7D6, ink #1C1A16) 960 × 800: the title (bold 34), a dim line on how it
