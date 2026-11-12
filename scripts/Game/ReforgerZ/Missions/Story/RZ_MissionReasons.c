@@ -193,6 +193,33 @@ class RZ_MissionReasons
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Orders `list` for this player, highest OrderScore first; equal scores keep their order.
+	static void SortFor(RZ_GameModeComponent gm, notnull array<RZ_Mission> list, int playerId, vector at)
+	{
+		array<int> scores = {};
+		foreach (RZ_Mission m : list)
+		{
+			scores.Insert(OrderScore(gm, m, playerId, at));
+		}
+
+		for (int i = 1; i < list.Count(); i++)
+		{
+			RZ_Mission held = list[i];
+			int heldScore = scores[i];
+			int j = i - 1;
+			while (j >= 0 && scores[j] < heldScore)
+			{
+				list[j + 1] = list[j];
+				scores[j + 1] = scores[j];
+				j--;
+			}
+
+			list[j + 1] = held;
+			scores[j + 1] = heldScore;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! What the world says when a job of type `t` fails, told to those it was offered to after the fail
 	//! text; "" none. Story jobs with a fallout errand say theirs through the errand instead.
 	static string FalloutLine(typename t)

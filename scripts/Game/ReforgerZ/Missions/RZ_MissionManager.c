@@ -537,15 +537,21 @@ class RZ_MissionManager
 	string ListContractsFor(int playerId, RZ_EFaction faction, IEntity player)
 	{
 		string text = "";
-		foreach (RZ_Mission m : m_aActive)
+		array<RZ_Mission> offers = {};
+		foreach (RZ_Mission c : m_aActive)
 		{
-			if (!m.m_bContract || m.m_Req.m_eGiver != faction || !m.IsEligible(m_GM, playerId))
+			if (!c.m_bContract || c.m_Req.m_eGiver != faction || !c.IsEligible(m_GM, playerId))
 				continue;
 
 			// A leader's personal job is only mentioned at their own seat
-			if (!m.CanOfferAt(m_GM, player.GetOrigin()))
-				continue;
+			if (c.CanOfferAt(m_GM, player.GetOrigin()))
+				offers.Insert(c);
+		}
 
+		// This player's order: near, reason-started, a leader they helped first (docs/DESIGN.md)
+		RZ_MissionReasons.SortFor(m_GM, offers, playerId, player.GetOrigin());
+		foreach (RZ_Mission m : offers)
+		{
 			if (!m.m_aOfferedTo.Contains(playerId))
 				m.m_aOfferedTo.Insert(playerId);
 

@@ -300,6 +300,7 @@ In this order, because later ones depend on earlier ones:
 | The most-Fame winner | Replaced by control of the clean room; season Fame is only the fallback |
 | Take the Lab stealing the batch under a finale | Replaced by the Red Hand route's holder change |
 | The earlier finale draft's route Fame bonus | The finale's one capped route Fame chunk is the reward (the author's decision 4); a bonus on top paid the same win twice |
+| The Long Table's mark in the journal, the hall of fame and at the farm | The Long Table is told by absence only (Traces' decision 5); a mark would name what players should only notice |
 | Grounds, the earlier design for the infected in the wild | Replaced by the tribes and crawlers design ([INFECTED.md](INFECTED.md)) |
 | A 48- or 72-hour epilogue | Too short for every story to end; the epilogue is a week, 168 hours (the author's decision 12) |
 | A 10-day season | Replaced by the season of about 45 real days paced by play ([Season pacing](DESIGN.md#season-pacing)) |
@@ -320,8 +321,7 @@ In this order, because later ones depend on earlier ones:
 | Factions hostile to all players or none | Replaced by per-player hostility through hidden faction variants |
 | Haven guards that never shoot | They shoot armed exiles near a safehouse; unarmed exiles just find the door shut |
 | Shop System as the faction traders | Our own quartermasters gate stock by standing; Shop System stays optional for general trading |
-| DarcMissions | Its convoys, occupations and crash sites assume forces from outside; they don't fit the sealed Zone |
-| Ambient Zombies | Overlaps the ReforgerZ spawner |
+| DarcMissions and Ambient Zombies as dependencies | [MOD_STACK.md](MOD_STACK.md#not-used) says why |
 | Sleep and time skip | Out of scope by design |
 | The infected dragging a player | The server can't move a player smoothly against their own machine's prediction; the ankle grab's hold is built instead |
 | The infected breaking heavy fences | The zombie lab showed the big one goes round (B17); weak doors break instead |

@@ -32,7 +32,7 @@
  {
   "name": "faction_longtable",
   "category": "Faction emblems",
-  "use": "The Long Table (not a faction, and a secret): a preserving jar labelled only \"9\". The journal and the hall of fame once a player has found the family out, and scratched at the farm (planned). Never on the map or the standing screen",
+  "use": "The Long Table (not a faction, and a secret): a preserving jar labelled only \"9\". Its emblem in the set only: no screen shows it, as the Long Table is told by absence. Never on the map or the standing screen",
   "plate": false
  },
  {
