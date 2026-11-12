@@ -22,6 +22,24 @@ class RZ_GuidanceText
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The spawn card's line: where you wake, in one short line, no distances (docs/UI.md,
+	//! "Notices"). The full scene goes into the notebook (Scene).
+	static string SpawnLine(int scenario, string town)
+	{
+		switch (scenario)
+		{
+			case RZ_EGuideScenario.CAR: return string.Format("A back road outside %1. A car in the ditch, a note on the dash.", town);
+			case RZ_EGuideScenario.BASEMENT: return string.Format("A cold basement in %1. Scratches on the back of the door.", town);
+			case RZ_EGuideScenario.CHURCH: return string.Format("%1. A flyer pinned up close by.", town);
+			case RZ_EGuideScenario.FARMHOUSE: return string.Format("A farmhouse kitchen in %1. A wind-up radio, still talking.", town);
+			case RZ_EGuideScenario.ATTIC: return string.Format("An attic in %1. You're not alone up here.", town);
+			case RZ_EGuideScenario.BARRICADE: return string.Format("Behind a Bastion barricade in %1. A soldier who isn't getting up.", town);
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Where you wake. `brief` = a veteran: one line.
 	static string Scene(int scenario, string town, string extra, bool brief)
 	{

@@ -199,6 +199,9 @@ class RZ_GuidanceWorld
 		string town = TownNear(spawn);
 		RZ_Rng rng = NewRng();
 
+		// The spawn card's one line (docs/UI.md, "Notices"); the full scene goes into the notebook
+		m_Guide.SetSpawnLine(playerId, RZ_GuidanceText.SpawnLine(scenario, town));
+
 		switch (scenario)
 		{
 			case RZ_EGuideScenario.CAR: RunCar(playerId, spawn, town, brief, rng); break;
@@ -218,7 +221,7 @@ class RZ_GuidanceWorld
 		if (!placed && !clueText.IsEmpty())
 			text += string.Format("\n\n%1:\n%2", clueTitle, clueText);
 
-		m_GM.NotifyPlayer(playerId, RZ_GuidanceText.ScenarioTitle(scenario), text);
+		m_GM.NotifyPlayerAs(playerId, RZ_GuidanceText.ScenarioTitle(scenario), text, RZ_ENoticeTag.QUIET);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -301,7 +304,7 @@ class RZ_GuidanceWorld
 		PlaceClue(prop, RZ_EPuzzleProp.CLUE, false, RZ_Mission.LandPointNear(spawn, 2, 4), "Listen to the radio", RZ_Guidance.RADIO_TITLE, channel);
 
 		string broadcast = m_GM.GetBroadcast().GetText();
-		m_GM.NotifyPlayer(playerId, RZ_GuidanceText.ScenarioTitle(RZ_EGuideScenario.FARMHOUSE), RZ_GuidanceText.Scene(RZ_EGuideScenario.FARMHOUSE, town, broadcast, brief));
+		m_GM.NotifyPlayerAs(playerId, RZ_GuidanceText.ScenarioTitle(RZ_EGuideScenario.FARMHOUSE), RZ_GuidanceText.Scene(RZ_EGuideScenario.FARMHOUSE, town, broadcast, brief), RZ_ENoticeTag.QUIET);
 
 		RZ_GuidePending next = new RZ_GuidePending();
 		next.m_iPlayer = playerId;

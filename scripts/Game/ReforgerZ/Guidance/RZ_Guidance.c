@@ -91,6 +91,9 @@ class RZ_GuidanceSettings
 	[Attribute("1", desc: "A Courier or Scavenger wanderer comes looking for brand-new players in their first 15 minutes")]
 	bool m_bWandererFinds;
 
+	[Attribute("90", desc: "Seconds after a new life before any tip that isn't critical (the spawn is quiet: docs/UI.md, Notices)")]
+	float m_fTipQuietSeconds;
+
 	[Attribute(desc: "Tips: one line from the nearest plausible speaker when something happens. Empty = the built-in table (RZ_GuidanceTips)")]
 	ref array<ref RZ_GuidanceTip> m_aTips;
 }
@@ -106,6 +109,7 @@ class RZ_GuidePlayer
 	int m_iRadioStep;
 	float m_fNudgeAt;
 	bool m_bNudged;
+	string m_sSpawnLine;	// the spawn card's "where" line (RZ_GuidanceText.SpawnLine), taken once
 }
 
 //------------------------------------------------------------------------------------------------
@@ -122,6 +126,7 @@ class RZ_Guidance
 	protected static const float WANDERER_RADIUS = 60;
 	protected static const float SPECIAL_RADIUS = 80;		// players this close to a special's death hear about samples
 	protected static const float SAMPLE_CHECK = 30;
+	protected static const float QM_RADIUS = 25;			// the quartermaster tip: this close to one
 	protected static const float PERIMETER_AHEAD = 150;	// the tip comes this far before the loudspeaker does
 	protected static const float CHECKPOINT_AHEAD = 350;
 	protected static const float UNIX_INTERVAL = 300;
@@ -238,6 +243,26 @@ class RZ_Guidance
 
 		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
 		m_World.OnPlayerSpawned(playerId, ent, p, GetState(playerId), GetLevel(p));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spawn card's "where" line from this life's scenario ("A cold basement in Morton.
+	//! Scratches on the back of the door."), once; "" if there was no scenario.
+	string TakeSpawnLine(int playerId)
+	{
+		RZ_GuidePlayer st;
+		if (!m_mPlayers.Find(playerId, st))
+			return "";
+
+		string line = st.m_sSpawnLine;
+		st.m_sSpawnLine = "";
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetSpawnLine(int playerId, string line)
+	{
+		GetState(playerId).m_sSpawnLine = line;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -380,6 +405,13 @@ class RZ_Guidance
 		if (night)
 			Fire(playerId, "night");
 
+		// From context (docs/DESIGN.md, New-player guidance): a bleed, a quartermaster close by
+		if (IsBleeding(ent))
+			Fire(playerId, "bleeding");
+
+		if (NearQuartermaster(playerId, pos))
+			Fire(playerId, "quartermaster");
+
 		RZ_Safehouses houses = m_GM.GetSafehouses();
 		if (houses && !houses.IsExiled(playerId))
 		{
@@ -401,6 +433,37 @@ class RZ_Guidance
 			if (!samples.IsEmpty())
 				Fire(playerId, "samples", LabText(pos));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! VERIFY: SCR_CharacterDamageManagerComponent.IsBleeding() reads true on the server while the
+	//! character bleeds (Zombies/Behaviour/RZ_Hearing.c uses it the same way).
+	protected static bool IsBleeding(IEntity ent)
+	{
+		SCR_CharacterDamageManagerComponent dmg = SCR_CharacterDamageManagerComponent.Cast(ent.FindComponent(SCR_CharacterDamageManagerComponent));
+		return dmg && dmg.IsBleeding();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A quartermaster of a faction that would serve this player stands within 25 m.
+	protected bool NearQuartermaster(int playerId, vector pos)
+	{
+		RZ_FactionPerks perks = m_GM.GetPerks();
+		if (!perks)
+			return false;
+
+		for (int f = 0; f < 4; f++)
+		{
+			RZ_EFaction fac = f;
+			vector qm;
+			if (RZ_Reputation.IsHunted(m_GM.GetTier(playerId, fac)) || !perks.GetQuartermasterPos(fac, qm))
+				continue;
+
+			if (RZ_Util.DistXZ(qm, pos) < QM_RADIUS)
+				return true;
+		}
+
+		return false;
 	}
 
 	// ================================================================ Events
@@ -545,6 +608,10 @@ class RZ_Guidance
 			return false;
 
 		if (!tip.m_bCritical && m_fClock - st.m_fLastTip < m_Settings.m_fTipGapSeconds)
+			return false;
+
+		// The spawn is quiet: no tip that isn't critical in a life's first seconds
+		if (!tip.m_bCritical && p.m_fLifeSeconds < m_Settings.m_fTipQuietSeconds)
 			return false;
 
 		// One per approach: a tip waits behind the gate's line and a change notice, retried on the

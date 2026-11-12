@@ -411,7 +411,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
         VerticalAlign 1
        }
        Color 0.639 0.62 0.565 1
-       Text "HALL OF FAME"
+       Text "QUESTS"
        "Font Size" 18
        "Min Font Size" 18
        "Horizontal Alignment" Center
@@ -607,7 +607,7 @@ FrameWidgetClass "{AB5E9B60F341F09E}" {
     Alignment 0 1
    }
    Color 0.639 0.62 0.565 1
-   Text "ESC / B  CLOSE      Q / E, LB / RB  TABS      F / X  RADIO FILTER"
+   Text "ESC / B  CLOSE      Q / E, LB / RB  TABS      T / Y  TRACK      F / X  RADIO FILTER"
    "Font Size" 18
    "Min Font Size" 18
    FontProperties FontProperties "{AB8EA5F5E8A85B9C}" {

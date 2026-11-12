@@ -9,7 +9,7 @@
 [BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sId")]
 class RZ_GuidanceTip
 {
-	[Attribute("", desc: "Trigger id. Built in: clean (a fresh bite), bitten (%1 nearest safehouse town; the bite has taken), med_stabiliser, med_antibiotics, med_vet, med_cutdose, med_suppressant, med_remedy (first use of each), special and samples (%1 the lab, place and direction), tier (%1 faction, %2 tier), watched and hunted (%1 faction), perimeter, loud, night, safehouse and shortage (%1 town), clue. Hooks for other systems: hungry, car, channel (RZ_Guidance.Report)")]
+	[Attribute("", desc: "Trigger id. Built in: clean (a fresh bite), bitten (%1 nearest safehouse town; the bite has taken), med_stabiliser, med_antibiotics, med_vet, med_cutdose, med_suppressant, med_remedy (first use of each), special and samples (%1 the lab, place and direction), tier (%1 faction, %2 tier), watched and hunted (%1 faction), perimeter, loud, night, bleeding, quartermaster, safehouse and shortage (%1 town), clue. Hooks for other systems: hungry, car, channel (RZ_Guidance.Report)")]
 	string m_sId;
 
 	[Attribute("0", desc: "Critical: past its level, a veteran still gets the short line")]
@@ -206,6 +206,21 @@ class RZ_GuidanceTips
 		t.m_sHalcyon = "\"They hunt by sound, and you've made a great deal of it. A noisemaker thrown away from you will draw them off.\"";
 		t.m_sWanderer = "\"Too much noise round here. They're coming. Throw something loud the other way and go quiet.\"";
 		t.m_sPlain = "Too loud: they're coming. A thrown bottle or a firecracker pulls them away from you.";
+
+		t = Add(list, "bleeding", false, 2, true, 0);
+		t.m_sHaven = "\"You're bleeding, love. Bandage first, questions after. It won't stop on its own.\"";
+		t.m_sBastion = "\"You're bleeding. Field dressing, now, before you go anywhere.\"";
+		t.m_sRedHand = "\"You're leaking. Wrap it up before you faint on my road.\"";
+		t.m_sHalcyon = "\"You're losing blood. A bandage will stop it. Do it now.\"";
+		t.m_sWanderer = "\"You're bleeding. Wrap it before you go another step.\"";
+		t.m_sPlain = "You're bleeding. A bandage stops it; it won't stop on its own.";
+
+		t = Add(list, "quartermaster", false, 2, true, 0);
+		t.m_sHaven = "\"That's our quartermaster. Tins and medicine, for Favor. Bring food and she'll remember you.\"";
+		t.m_sBastion = "\"Quartermaster. Requisitions against Favor, nothing on credit.\"";
+		t.m_sRedHand = "\"The quartermaster. Pay in Favor. The prices are the prices, and so is the man behind them.\"";
+		t.m_sHalcyon = "\"Our quartermaster. Equipment against Favor; the better kit wants more standing.\"";
+		t.m_sPlain = "A quartermaster: trade Favor for gear. Better kit needs more standing.";
 
 		t = Add(list, "car", false, 2, true, 0);
 		t.m_sHaven = "\"That car might run. A jerrycan and some patience. Mind, an engine is a dinner bell.\"";

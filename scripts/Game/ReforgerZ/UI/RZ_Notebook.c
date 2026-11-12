@@ -1,13 +1,14 @@
 //! The notebook (docs/UI.md, "The notebook"): one menu with five tabs, Standing, Journal, Radio,
-//! Hall of fame and The season (the map key is on the map itself, RZ_MapIcons.c). The menu (RZ_NotebookMenu, layout RZ_NotebookMenu.layout) holds the
+//! Quests and The season (the map key is on the map itself, RZ_MapIcons.c). The menu (RZ_NotebookMenu, layout RZ_NotebookMenu.layout) holds the
 //! shared frame, the tabs with their unread counts and an empty `Page` frame; each tab is a page
 //! (RZ_NotebookPage) whose layout (UI > Notebook pages) is created into `Page` when the tab is
 //! shown, so switching tabs swaps the page instead of closing one menu and opening another.
 //!
 //! Opened with N (RZ_OpenNotebook), the pause menu's Notebook button (RZ_PauseNotebook.c) or the
 //! notebook item (RZ_NotebookItem.c). It opens on the tab last used this session (the first time:
-//! Journal). LB/RB or Q/E switch tabs, up/down move in the list, A or Enter selects, X or F cycles
-//! the Radio filter, B or Esc closes. It only reads; nothing here changes the game.
+//! Journal). LB/RB or Q/E switch tabs, up/down move in the list, A or Enter selects, Y or T tracks
+//! the selected job (Quests), X or F cycles the Radio filter, B or Esc closes. Track is the one
+//! thing here that changes anything: which job the HUD's tracker follows.
 
 //------------------------------------------------------------------------------------------------
 //! The notebook's tabs, in order.
@@ -16,7 +17,7 @@ enum RZ_ENotebookTab
 	STANDING,
 	JOURNAL,
 	RADIO,
-	HALL,
+	QUESTS,
 	SEASON
 }
 
@@ -108,7 +109,7 @@ class RZ_Notebook
 			case RZ_ENotebookTab.STANDING: return "STANDING";
 			case RZ_ENotebookTab.JOURNAL: return "JOURNAL";
 			case RZ_ENotebookTab.RADIO: return "RADIO";
-			case RZ_ENotebookTab.HALL: return "HALL OF FAME";
+			case RZ_ENotebookTab.QUESTS: return "QUESTS";
 			case RZ_ENotebookTab.SEASON: return "THE SEASON";
 		}
 
@@ -135,6 +136,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 		input.AddActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		input.AddActionListener("RZ_RadioFilter", EActionTrigger.DOWN, OnFilter);
+		input.AddActionListener("RZ_TrackJob", EActionTrigger.DOWN, OnTrack);
 		for (int t = 0; t < RZ_Notebook.TABS; t++)
 		{
 			RZ_UIW.OnClick(m_wRoot, "Tab" + t.ToString(), m_Click);
@@ -143,7 +145,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 		// Footer prompts by device (vanilla input buttons); the layout's static line otherwise
 		bool prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabLeft", "");
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuTabRight", "Tabs") && prompts;
-		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuSelect", "Open / Track") && prompts;
+		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "RZ_TrackJob", "Track") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "RZ_RadioFilter", "Radio filter") && prompts;
 		prompts = RZ_UIW.AddPrompt(m_wRoot, "Prompts", "MenuBack", "Close") && prompts;
 		RZ_UIW.Show(m_wRoot, "PromptsText", !prompts);
@@ -162,6 +164,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 		input.RemoveActionListener("MenuDown", EActionTrigger.DOWN, OnDown);
 		input.RemoveActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		input.RemoveActionListener("RZ_RadioFilter", EActionTrigger.DOWN, OnFilter);
+		input.RemoveActionListener("RZ_TrackJob", EActionTrigger.DOWN, OnTrack);
 		if (m_Page)
 			m_Page.Close();
 
@@ -211,7 +214,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 		{
 			case RZ_ENotebookTab.STANDING: return new RZ_StandingPage();
 			case RZ_ENotebookTab.RADIO: return new RZ_RadioPage();
-			case RZ_ENotebookTab.HALL: return new RZ_HallPage();
+			case RZ_ENotebookTab.QUESTS: return new RZ_QuestsPage();
 			case RZ_ENotebookTab.SEASON: return new RZ_SeasonPage();
 		}
 
@@ -243,11 +246,11 @@ class RZ_NotebookMenu : RZ_MenuBase
 
 	//------------------------------------------------------------------------------------------------
 	//! The open tab bone with dark text; the others dark with a border; a count on a tab with
-	//! something new since you last looked (Journal: mission notices, Radio: logged notices).
+	//! something new since you last looked (Quests: mission notices, Radio: logged notices).
 	protected void DrawTabs()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		if (ui && m_iTab == RZ_ENotebookTab.JOURNAL)
+		if (ui && m_iTab == RZ_ENotebookTab.QUESTS)
 			ui.MarkJournalSeen();
 		else if (ui && m_iTab == RZ_ENotebookTab.RADIO)
 			ui.MarkRadioSeen();
@@ -269,7 +272,7 @@ class RZ_NotebookMenu : RZ_MenuBase
 			RZ_UIW.Show(m_wRoot, "Tab" + n + "Line", !on);
 
 			int unread = 0;
-			if (ui && t == RZ_ENotebookTab.JOURNAL)
+			if (ui && t == RZ_ENotebookTab.QUESTS)
 				unread = ui.GetUnreadJournal();
 			else if (ui && t == RZ_ENotebookTab.RADIO)
 				unread = ui.GetUnreadRadio();
@@ -343,6 +346,14 @@ class RZ_NotebookMenu : RZ_MenuBase
 		if (m_Page && m_wPage)
 			m_Page.Filter();
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Y or T: track the selected job (the Quests tab; the other tabs ignore it).
+	protected void OnTrack(float value = 0, EActionTrigger reason = 0)
+	{
+		if (m_Page && m_wPage)
+			m_Page.Track();
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -413,6 +424,11 @@ class RZ_NotebookPage
 
 	//------------------------------------------------------------------------------------------------
 	void Filter()
+	{
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void Track()
 	{
 	}
 }
@@ -970,11 +986,14 @@ class RZ_StandingRowHandler : ScriptedWidgetEventHandler
 }
 
 //------------------------------------------------------------------------------------------------
-//! Active contracts and events with type, giver, rough direction, requirements and rewards, the
-//! puzzle clues you've read (docs/MISSIONS.md), and the lab's line (research and its backlog).
+//! The Journal tab (docs/UI.md, "The notebook"): what you know that isn't a job (the packs you know
+//! of, Read on doors, the finale's page, your promises, the lies you've seen through), each with its
+//! detail, and the lab's line (research and its backlog). The jobs are the Quests tab's
+//! (RZ_QuestsPage, the same list and detail with jobs only). Both read the journal payload.
 class RZ_JournalPage : RZ_NotebookPage
 {
 	protected int m_iSelected;
+	protected int m_iTracked;			// the tracked job's id (the payload's K record), 0 none
 	protected ref array<ref array<string>> m_aMissions = {};
 	protected ref array<ref array<string>> m_aClues = {};
 	protected ref array<Widget> m_aRows = {};
@@ -986,13 +1005,27 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A job's row (a mission, a questline, an errand) by its id; the rest are notes.
+	static bool IsJobRow(int id)
+	{
+		return id != 0 && id > -RZ_UIFeed.TRIBE_ID_BASE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This page's rows: notes here, jobs on the Quests tab.
+	protected bool Wants(int id)
+	{
+		return !IsJobRow(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override int DataVersion()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (!ui)
 			return m_iSelected;
 
-		return (ui.GetJournalVersion() * 10000 + ui.GetDetailVersion() * 100 + m_iSelected) * 31 + RZ_Tracker.GetVersion();
+		return ui.GetJournalVersion() * 10000 + ui.GetDetailVersion() * 100 + m_iSelected;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1001,8 +1034,6 @@ class RZ_JournalPage : RZ_NotebookPage
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
 			ui.Ask(RZ_UIFeed.PAYLOAD_JOURNAL);
-
-		RZ_UIW.OnClick(m_wRoot, "TrackButton", m_Click);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1022,8 +1053,7 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A or Enter: the row with the focus becomes the selected one; on the selected row (where the
-	//! D-pad leaves the focus) it tracks it on the HUD, or stops tracking it. On the Track button too.
+	//! A or Enter: the row with the focus becomes the selected one.
 	override void Select()
 	{
 		WorkspaceWidget ws = GetGame().GetWorkspace();
@@ -1031,36 +1061,19 @@ class RZ_JournalPage : RZ_NotebookPage
 			return;
 
 		Widget focused = ws.GetFocusedWidget();
-		if (focused && focused.GetName() == "TrackButton")
-		{
-			ToggleTrack();
-			return;
-		}
-
 		int idx = RZ_UIW.GetTag(focused);
-		if (!focused || focused.GetName() != "MissionRow" || idx < 0 || idx >= m_aMissions.Count())
-			return;
-
-		if (idx == m_iSelected)
-			ToggleTrack();
-		else
+		if (focused && focused.GetName() == "MissionRow" && idx >= 0 && idx < m_aMissions.Count())
 			m_iSelected = idx;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The selected row: tracked on the HUD, or no longer if it was (RZ_Tracker).
-	protected void ToggleTrack()
+	//! The rows this page lists, in their order (the Quests tab puts the jobs you've taken first).
+	protected void Collect(array<ref array<string>> rows)
 	{
-		if (m_aMissions.IsEmpty())
-			return;
-
-		int sel = Math.Min(m_iSelected, m_aMissions.Count() - 1);
-		array<string> m = m_aMissions[sel];
-		if (!RZ_Tracker.Trackable(m))
-			return;
-
-		bool tracked = RZ_Tracker.Pick(m_aMissions, RZ_UIW.LocalEntity()) == sel;
-		RZ_Tracker.Toggle(RZ_UIText.Int(m, 1), tracked);
+		foreach (array<string> f : rows)
+		{
+			m_aMissions.Insert(f);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1069,34 +1082,74 @@ class RZ_JournalPage : RZ_NotebookPage
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		m_aMissions.Clear();
 		m_aClues.Clear();
+		m_iTracked = 0;
 		string lab = "";
+		array<ref array<string>> rows = {};
 		if (ui)
 		{
 			array<ref array<string>> recs = {};
 			RZ_MenuBase.Records(ui.GetJournal(), recs);
 			foreach (array<string> f : recs)
 			{
-				if (RZ_UIText.Str(f, 0) == "M")
-					m_aMissions.Insert(f);
-				else if (RZ_UIText.Str(f, 0) == "C")
+				string tag = RZ_UIText.Str(f, 0);
+				if (tag == "M" && Wants(RZ_UIText.Int(f, 1)))
+					rows.Insert(f);
+				else if (tag == "C")
 					m_aClues.Insert(f);
-				else if (RZ_UIText.Str(f, 0) == "S")
+				else if (tag == "S")
 					lab = RZ_UIText.Str(f, 1);
+				else if (tag == "K")
+					m_iTracked = RZ_UIText.Int(f, 1);
 			}
 		}
 
-		// The lab's line: research, what waits in its backlog and how long that takes
-		RZ_UIW.Show(m_wRoot, "LabStatus", !lab.IsEmpty());
-		RZ_UIW.SetText(m_wRoot, "LabStatus", lab);
+		Collect(rows);
+		DrawLab(lab);
 		RZ_UIW.Show(m_wRoot, "Empty", m_aMissions.IsEmpty());
-		RZ_UIW.SetText(m_wRoot, "Header", string.Format("%1 OPEN", m_aMissions.Count()));
+		RZ_UIW.SetText(m_wRoot, "Empty", EmptyText());
+		RZ_UIW.SetText(m_wRoot, "Header", HeaderText());
 		DrawList();
+		RZ_UIW.Show(m_wRoot, "DetailPanel", !m_aMissions.IsEmpty());
 		if (!m_aMissions.IsEmpty())
 		{
 			m_iSelected = Math.Min(m_iSelected, m_aMissions.Count() - 1);
 			DrawDetail(m_aMissions[m_iSelected]);
 			FocusFirst();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lab's line: research, what waits in its backlog and how long that takes.
+	protected void DrawLab(string lab)
+	{
+		RZ_UIW.Show(m_wRoot, "LabStatus", !lab.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "LabStatus", lab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string EmptyText()
+	{
+		return "Nothing written down yet.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string HeaderText()
+	{
+		return string.Format("%1 NOTES", m_aMissions.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A row's sub-line, rough area and right-hand word (a job's time left, a note's level).
+	protected void FillRow(Widget row, array<string> m, int i)
+	{
+		int giver = RZ_UIText.Int(m, 3);
+		string sub = RZ_UIText.Str(m, 6);
+		if (giver >= 0)
+			sub = RZ_Factions.GetName(giver) + " - " + sub;
+
+		RZ_UIW.SetText(row, "RowSub", sub);
+		RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
+		RZ_UIW.SetText(row, "RowTime", RZ_UIText.Str(m, 5));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1114,28 +1167,15 @@ class RZ_JournalPage : RZ_NotebookPage
 
 			int giver = RZ_UIText.Int(m, 3);
 			Color accent = RZ_UIColor.Hazard();
-			string sub = RZ_UIText.Str(m, 6);
 			if (giver >= 0)
-			{
 				accent = RZ_UIColor.Faction(giver);
-				sub = RZ_Factions.GetName(giver) + " - " + sub;
-			}
 
 			RZ_UIW.Icon(row, "RowIcon", RZ_UIText.MissionIcon(RZ_UIText.Int(m, 2)));
 			RZ_UIW.Tint(row, "RowIcon", accent);
 			RZ_UIW.Tint(row, "RowAccent", accent);
 			RZ_UIW.Show(row, "RowSelected", i == m_iSelected);
 			RZ_UIW.SetText(row, "RowTitle", RZ_UIText.Str(m, 4));
-			RZ_UIW.SetText(row, "RowSub", sub);
-			RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
-			// A questline has no clock (minutes -1); a pack shows what you know of it
-			string rowTime = RZ_UIText.Str(m, 8) + " min left";
-			if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.PACK || RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.DOORS || RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.FINALE)
-				rowTime = RZ_UIText.Str(m, 5);
-			else if (RZ_UIText.Int(m, 8) < 0)
-				rowTime = "Questline";
-
-			RZ_UIW.SetText(row, "RowTime", rowTime);
+			FillRow(row, m, i);
 			RZ_UIW.SetTag(row, i);
 			RZ_UIW.OnClick(row, "", m_Click);
 			m_aRows.Insert(row);
@@ -1143,23 +1183,47 @@ class RZ_JournalPage : RZ_NotebookPage
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A click on a row (its root, MissionRow, is a Button) selects it; on the Track button, tracks
-	//! the selected row or stops.
+	//! A click on a row (its root, MissionRow, is a Button) selects it.
 	override void OnClick(Widget w, string name)
 	{
-		if (name == "TrackButton")
-		{
-			ToggleTrack();
-			return;
-		}
-
 		int idx = RZ_UIW.GetTag(w);
 		if (name == "MissionRow" && idx >= 0 && idx < m_aMissions.Count())
 			m_iSelected = idx;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! M|id|kind|giver|title|given by|where|direction|minutes|requirements|Fame|Favor|brief|taking part
+	//! The detail's rewards line.
+	protected string RewardsText(array<string> m)
+	{
+		int kind = RZ_UIText.Int(m, 2);
+		int giver = RZ_UIText.Int(m, 3);
+		if (kind == RZ_EMissionKindUI.PACK)
+			return "Heard of: a rough area. Read: its ground. Mapped: where it lies up. Read and Mapped are rings on the map.";
+
+		if (kind == RZ_EMissionKindUI.DOORS)
+			return "What people wrote on doors, as you read it. It goes with this life.";
+
+		if (kind == RZ_EMissionKindUI.FINALE)
+			return "The lab's readout by faction, never by player. Lock counts are never shown.";
+
+		if (RZ_UIText.Int(m, 8) < 0)
+			return "It depends on how it ends.";
+
+		if (giver >= 0)
+			return string.Format("About %1 Fame and %2 Favor with %3", RZ_UIText.Str(m, 10), RZ_UIText.Str(m, 11), RZ_Factions.GetNameInText(giver));
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The detail's brief.
+	protected string BriefText(array<string> m)
+	{
+		return RZ_UIText.Str(m, 12);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! M|id|kind|giver|title|given by|where|rough area|minutes|requirements|Fame|Favor|brief|taking part|kind label|now
 	protected void DrawDetail(array<string> m)
 	{
 		int giver = RZ_UIText.Int(m, 3);
@@ -1175,53 +1239,34 @@ class RZ_JournalPage : RZ_NotebookPage
 		RZ_UIW.Tint(m_wRoot, "DetailIcon", accent);
 		RZ_UIW.Icon(m_wRoot, "DetailIcon", icon);
 		RZ_UIW.SetText(m_wRoot, "DetailTitle", RZ_UIText.Str(m, 4));
-		// Track / Stop tracking: this row on the HUD (RZ_Tracker); not for packs, doors or the finale
-		bool trackable = RZ_Tracker.Trackable(m);
-		RZ_UIW.Show(m_wRoot, "TrackButton", trackable);
-		if (trackable)
-		{
-			string trackText = "TRACK";
-			if (RZ_Tracker.Pick(m_aMissions, RZ_UIW.LocalEntity()) == m_iSelected)
-				trackText = "STOP TRACKING";
-
-			RZ_UIW.SetText(m_wRoot, "TrackText", trackText);
-		}
 		string by = RZ_UIText.Str(m, 5);
 		if (by.IsEmpty() && giver >= 0)
 			by = RZ_Factions.GetName(giver);
 
+		string label = RZ_UIText.Str(m, 14);
+		if (!label.IsEmpty())
+			by = label + " - " + by;
+
 		RZ_UIW.SetText(m_wRoot, "DetailBy", by);
-		RZ_UIW.SetText(m_wRoot, "DetailBrief", RZ_UIText.Str(m, 12));
+		RZ_UIW.SetText(m_wRoot, "DetailBrief", BriefText(m));
 		RZ_UIW.SetText(m_wRoot, "DetailWhere", string.Format("%1\n%2", RZ_UIText.Str(m, 7), RZ_UIText.Str(m, 6)));
 		string req = RZ_UIText.Str(m, 9);
 		if (req.IsEmpty())
 			req = "Open to anyone.";
 
 		RZ_UIW.SetText(m_wRoot, "DetailReq", req);
-		string rewards = "";
-		if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.PACK)
-			rewards = "Heard of: a rough area. Read: its ground. Mapped: where it lies up. Read and Mapped are rings on the map.";
-		else if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.DOORS)
-			rewards = "What people wrote on doors, as you read it. It goes with this life.";
-		else if (RZ_UIText.Int(m, 2) == RZ_EMissionKindUI.FINALE)
-			rewards = "The lab's readout by faction, never by player. Lock counts are never shown.";
-		else if (RZ_UIText.Int(m, 8) < 0)
-			rewards = "It depends on how it ends.";
-		else if (giver >= 0)
-			rewards = string.Format("About %1 Fame and %2 Favor with %3", RZ_UIText.Str(m, 10), RZ_UIText.Str(m, 11), RZ_Factions.GetNameInText(giver));
-
-		RZ_UIW.SetText(m_wRoot, "DetailRewards", rewards);
+		RZ_UIW.SetText(m_wRoot, "DetailRewards", RewardsText(m));
 
 		string id = RZ_UIText.Str(m, 1);
 		string clues = "";
 
 		// The row's detail, asked for when it's selected (what they told you, what you've found,
-		// who it went to)
+		// who it went to, and a job's objectives)
+		array<ref array<string>> detail = {};
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
 		{
 			ui.AskDetail(RZ_UIText.Int(m, 1));
-			array<ref array<string>> detail = {};
 			RZ_MenuBase.Records(ui.GetDetail(), detail);
 			foreach (array<string> d : detail)
 			{
@@ -1244,6 +1289,200 @@ class RZ_JournalPage : RZ_NotebookPage
 
 		RZ_UIW.Show(m_wRoot, "CluesBlock", !clues.IsEmpty());
 		RZ_UIW.SetText(m_wRoot, "DetailClues", clues);
+		DrawObjectives(id, detail);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Quests tab's objectives; the Journal has none.
+	protected void DrawObjectives(string id, array<ref array<string>> detail)
+	{
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The Quests tab (docs/UI.md, "Notebook: Quests"): every job you have (missions, contracts,
+//! questlines, the majors you're in, errands), the ones you've taken first, each with its type icon,
+//! its current objective and its rough area; the tracked one says TRACKED. The selected job's
+//! detail: its brief, who gave it, the rough area, the reward as far as it's known, and its
+//! objectives, New Vegas style (current bright, known next dim, done ticked, optional marked).
+//! Y or T (or the Track button) tracks the selected job; the same again stops tracking it. This
+//! tab is the one place to choose what the HUD's tracker follows.
+class RZ_QuestsPage : RZ_JournalPage
+{
+	protected static const int OBJ_ROWS = 6;
+
+	//------------------------------------------------------------------------------------------------
+	override ResourceName Layout(RZ_UISettings settings)
+	{
+		return settings.m_sQuestsPage;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected bool Wants(int id)
+	{
+		return IsJobRow(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected void OnOpened()
+	{
+		super.OnOpened();
+		RZ_UIW.OnClick(m_wRoot, "TrackButton", m_Click);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The jobs you've taken first, then the ones offered, each group in the server's order.
+	override protected void Collect(array<ref array<string>> rows)
+	{
+		foreach (array<string> taken : rows)
+		{
+			if (RZ_UIText.Int(taken, 13) == 1)
+				m_aMissions.Insert(taken);
+		}
+
+		foreach (array<string> offered : rows)
+		{
+			if (RZ_UIText.Int(offered, 13) != 1)
+				m_aMissions.Insert(offered);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The lab's line belongs to the Journal.
+	override protected void DrawLab(string lab)
+	{
+		RZ_UIW.Show(m_wRoot, "LabStatus", false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected string EmptyText()
+	{
+		return "No jobs yet. Listen to the radio, or ask at a safehouse.";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override protected string HeaderText()
+	{
+		int taken = 0;
+		foreach (array<string> m : m_aMissions)
+		{
+			if (RZ_UIText.Int(m, 13) == 1)
+				taken++;
+		}
+
+		return string.Format("%1 TAKEN, %2 OFFERED", taken, m_aMissions.Count() - taken);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current objective under the title, the rough area, and TRACKED, the time left or Offered.
+	override protected void FillRow(Widget row, array<string> m, int i)
+	{
+		string now = RZ_UIText.Str(m, 15);
+		if (now.IsEmpty())
+			now = RZ_UIText.Str(m, 14);
+
+		RZ_UIW.SetText(row, "RowSub", now);
+		RZ_UIW.SetText(row, "RowDir", RZ_UIText.Str(m, 7));
+		string right = "";
+		int minutes = RZ_UIText.Int(m, 8);
+		if (RZ_UIText.Int(m, 1) == m_iTracked)
+			right = "TRACKED";
+		else if (RZ_UIText.Int(m, 13) != 1)
+			right = "Offered";
+		else if (minutes >= 0)
+			right = string.Format("%1 min left", minutes);
+		else
+			right = RZ_UIText.Str(m, 14);
+
+		RZ_UIW.SetText(row, "RowTime", right);
+		if (RZ_UIText.Int(m, 1) == m_iTracked)
+			RZ_UIW.Tint(row, "RowTime", RZ_UIColor.Hazard());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A short brief in the giver's voice (RZ_QuestText.Short); the full one stays in the detail's
+	//! "what they told you".
+	override protected string BriefText(array<string> m)
+	{
+		return RZ_QuestText.Short(RZ_UIText.Str(m, 12));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Y or T: track the selected job; the tracked one again stops tracking it.
+	override void Track()
+	{
+		if (m_aMissions.IsEmpty())
+			return;
+
+		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
+		if (ui)
+			ui.AskTrack(RZ_UIText.Int(m_aMissions[Math.Min(m_iSelected, m_aMissions.Count() - 1)], 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnClick(Widget w, string name)
+	{
+		if (name == "TrackButton")
+		{
+			Track();
+			return;
+		}
+
+		super.OnClick(w, name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! O|id|state|line from the detail: Obj1 to Obj6, current bright, next dim, done ticked.
+	override protected void DrawObjectives(string id, array<ref array<string>> detail)
+	{
+		int shown = 0;
+		foreach (array<string> o : detail)
+		{
+			if (RZ_UIText.Str(o, 0) != "O" || RZ_UIText.Str(o, 1) != id || shown >= OBJ_ROWS)
+				continue;
+
+			shown++;
+			string n = shown.ToString();
+			int state = RZ_UIText.Int(o, 2);
+			string line = RZ_UIText.Str(o, 3);
+			Color c = RZ_UIColor.Bone();
+			if (state == RZ_EObjState.DONE)
+			{
+				line = "Done: " + line;
+				c = RZ_UIW.Rgb(110, 106, 96);
+			}
+			else if (state == RZ_EObjState.NEXT)
+			{
+				c = RZ_UIColor.Dim();
+			}
+			else if (state == RZ_EObjState.OPTIONAL)
+			{
+				line = line + " (Optional)";
+				c = RZ_UIColor.Dim();
+			}
+			else if (state == RZ_EObjState.FAILED)
+			{
+				line = "Failed: " + line;
+				c = RZ_UIColor.Stage(RZ_EInfectionUI.FINAL);
+			}
+
+			RZ_UIW.Show(m_wRoot, "Obj" + n, true);
+			RZ_UIW.SetText(m_wRoot, "Obj" + n, line);
+			RZ_UIW.Tint(m_wRoot, "Obj" + n, c);
+		}
+
+		for (int k = shown + 1; k <= OBJ_ROWS; k++)
+		{
+			RZ_UIW.Show(m_wRoot, "Obj" + k.ToString(), false);
+		}
+
+		RZ_UIW.Show(m_wRoot, "ObjectivesBlock", shown > 0);
+		bool tracked = !m_aMissions.IsEmpty() && id == m_iTracked.ToString();
+		string trackWord = "TRACK";
+		if (tracked)
+			trackWord = "UNTRACK";
+
+		RZ_UIW.SetText(m_wRoot, "TrackButtonText", trackWord);
 	}
 }
 
@@ -1368,8 +1607,10 @@ class RZ_RadioPage : RZ_NotebookPage
 }
 
 //------------------------------------------------------------------------------------------------
-//! The season tab (docs/UI.md, "The notebook"): the four majors as they stand, then, in the
-//! epilogue, the season as the Zone tells it, your lines and what's still open. Read only.
+//! The season tab (docs/UI.md, "The notebook"), one page that scrolls: the four majors as they stand,
+//! in the epilogue the season as the Zone tells it and your lines, then the hall of fame (this
+//! season's records and names, all time, the last seasons; Persistence/RZ_HallOfFame.c). Read only;
+//! up and down scroll it.
 class RZ_SeasonPage : RZ_NotebookPage
 {
 	//------------------------------------------------------------------------------------------------
@@ -1385,36 +1626,46 @@ class RZ_SeasonPage : RZ_NotebookPage
 		if (!ui)
 			return 0;
 
-		return ui.GetSeasonVersion();
+		return ui.GetSeasonVersion() * 1000 + ui.GetHallVersion();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override protected void OnOpened()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		if (ui)
-			ui.Ask(RZ_UIFeed.PAYLOAD_SEASON);
+		if (!ui)
+			return;
+
+		ui.Ask(RZ_UIFeed.PAYLOAD_SEASON);
+		ui.Ask(RZ_UIFeed.PAYLOAD_HALL);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Move(int dir)
 	{
-		RZ_UIW.Scroll(m_wRoot, "ZoneScroll", dir);
+		RZ_UIW.Scroll(m_wRoot, "SeasonScroll", dir);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! M|line (the majors), Z|line (as the Zone tells it), Y|line (and you, unfinished)
 	override void Redraw()
 	{
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		bool have = false;
 		if (ui)
-			have = !ui.GetSeason().IsEmpty();
+			have = !ui.GetSeason().IsEmpty() || !ui.GetHall().IsEmpty();
 
 		RZ_UIW.Show(m_wRoot, "Waiting", !have);
 		if (!have)
 			return;
 
+		DrawStory(ui);
+		DrawHall(ui);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! M|line (the majors), Z|line (as the Zone tells it), Y|line (and you, unfinished)
+	protected void DrawStory(RZ_PlayerUIComponent ui)
+	{
 		array<ref array<string>> recs = {};
 		RZ_MenuBase.Records(ui.GetSeason(), recs);
 		string majors = "";
@@ -1438,59 +1689,17 @@ class RZ_SeasonPage : RZ_NotebookPage
 		if (zone.IsEmpty())
 			zone = "The season isn't over. Nobody's writing it down yet.";
 
-		RZ_UIW.SetText(m_wRoot, "MajorsList", majors);
-		RZ_UIW.SetText(m_wRoot, "ZoneList", zone);
-		RZ_UIW.SetText(m_wRoot, "YouList", you);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! The hall of fame (Persistence/RZ_HallOfFame.c): this season's names, all time, and past seasons.
-class RZ_HallPage : RZ_NotebookPage
-{
-	//------------------------------------------------------------------------------------------------
-	override ResourceName Layout(RZ_UISettings settings)
-	{
-		return settings.m_sHallPage;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override int DataVersion()
-	{
-		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		if (!ui)
-			return 0;
-
-		return ui.GetHallVersion();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override protected void OnOpened()
-	{
-		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		if (ui)
-			ui.Ask(RZ_UIFeed.PAYLOAD_HALL);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void Move(int dir)
-	{
-		RZ_UIW.Scroll(m_wRoot, "PastScroll", dir);
+		RZ_UIW.SetText(m_wRoot, "MajorsList", majors.Trim());
+		RZ_UIW.SetText(m_wRoot, "ZoneList", zone.Trim());
+		RZ_UIW.Show(m_wRoot, "YouLabel", !you.IsEmpty());
+		RZ_UIW.Show(m_wRoot, "YouList", !you.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "YouList", you.Trim());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! H|season, S and A|category|category name|name|value, P|season|winner|lines
-	override void Redraw()
+	protected void DrawHall(RZ_PlayerUIComponent ui)
 	{
-		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
-		bool have = false;
-		if (ui)
-			have = !ui.GetHall().IsEmpty();
-
-		RZ_UIW.Show(m_wRoot, "Waiting", !have);
-		if (!have)
-			return;
-
 		array<ref array<string>> recs = {};
 		RZ_MenuBase.Records(ui.GetHall(), recs);
 		string seasonText = "";
@@ -1505,15 +1714,15 @@ class RZ_HallPage : RZ_NotebookPage
 			}
 			else if (tag == "S" || tag == "A")
 			{
-				string line = string.Format("%1\n%2", RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
+				string line = string.Format("%1: %2", RZ_UIText.Str(f, 2), RZ_UIText.Str(f, 3));
 				string value = RZ_UIText.Str(f, 4);
 				if (!value.IsEmpty())
 					line += "  (" + value + ")";
 
 				if (tag == "S")
-					seasonText += line + "\n\n";
+					seasonText += line + "\n";
 				else
-					allText += line + "\n\n";
+					allText += line + "\n";
 			}
 			else if (tag == "P")
 			{
@@ -1524,8 +1733,12 @@ class RZ_HallPage : RZ_NotebookPage
 		if (seasonText.IsEmpty())
 			seasonText = "Nobody's name is on it yet.";
 
-		RZ_UIW.SetText(m_wRoot, "SeasonList", seasonText);
-		RZ_UIW.SetText(m_wRoot, "AllTimeList", allText);
-		RZ_UIW.SetText(m_wRoot, "PastList", pastText);
+		RZ_UIW.SetText(m_wRoot, "SeasonList", seasonText.Trim());
+		RZ_UIW.Show(m_wRoot, "AllTimeLabel", !allText.IsEmpty());
+		RZ_UIW.Show(m_wRoot, "AllTimeList", !allText.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "AllTimeList", allText.Trim());
+		RZ_UIW.Show(m_wRoot, "PastLabel", !pastText.IsEmpty());
+		RZ_UIW.Show(m_wRoot, "PastList", !pastText.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "PastList", pastText.Trim());
 	}
 }

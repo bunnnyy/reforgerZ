@@ -538,7 +538,7 @@ every 10 minutes server-wide (5 with power). **Cosmetic and social only:** no Fa
 
 ### The government broadcast
 
-A looping flavour message to everyone every 25 minutes and on each player's first spawn.
+A looping flavour message to everyone every 25 minutes, and in the notebook at each player's first spawn (no card: [UI.md](UI.md#notices)).
 Its tone follows the season mood, the one ladder every voice reads ([WRITING.md](WRITING.md#the-season-mood);
 [LORE.md](LORE.md), "The outside world: silent, watching"; its lines:
 [WRITING.md](WRITING.md#the-government-broadcast)).
@@ -1506,8 +1506,8 @@ Longer storylines, over many sessions and with choices, are [questlines](#questl
 The missions inside arcs are in [MISSIONS.md](MISSIONS.md), "Story arc missions".
 
 **Headlines.** The last 10 headlines are kept: leader news, territory changes, life events,
-arcs, the power grid and burned towns. A player's first spawn of a session gets 3–4 lines of
-server news ("Word on the roads"): the latest headline, the last wanderer lost, the biggest
+arcs, the power grid and burned towns. A player's first spawn of a session puts 3–4 lines of
+server news ("Word on the roads") into the notebook's *This season* entry, no card: the latest headline, the last wanderer lost, the biggest
 rescue so far, now and then a dead character's journal or a line of Haven gossip, and always
 the cure percentage.
 
@@ -2717,6 +2717,17 @@ Code: `Guidance/`.
 The world teaches itself through things you find and people you hear, never tutorial pop-ups.
 Every line is in a speaker's voice ([WRITING.md](WRITING.md#the-voices)).
 
+### The welcome: one card, then quiet
+
+A new life gets **one card**: the background's name and where you wake, in a line or two (the
+spawn scenario's line, `RZ_GuidanceText.SpawnLine`: "A cold basement in Morton. Scratches on the
+back of the door."; without a scenario "You come to east of Levie."). Everything else at spawn goes
+quietly into the notebook: the perk, flaw and goal, the scene in full with its clue, the outbreak,
+the broadcast, the season with the news and the hall of fame in one entry, the radio's jobs, pay
+owed while you were away in one entry. For the first 30 s nothing else is a card unless it's urgent,
+and for the first five minutes cards come at most one every 45 s; the rules and settings are in
+[UI.md](UI.md#notices).
+
 ### Experience levels
 
 Each player has a **guidance level** from lives that lasted at least 10 minutes. It fades but
@@ -2736,7 +2747,9 @@ A player who comes back after 30+ real days gets two levels more guidance for tw
 When something happens, the nearest plausible person says **one line**: a faction leader within
 40 m or someone at a safehouse; else a wanderer within 60 m; else a voice on your radio; else a
 plain hint. Each tip comes at most once per life, with a cooldown across lives and 90 s between
-tips (critical ones don't wait). The table is data (**Guidance > Tips**, defaults in
+tips (critical ones don't wait), and none that isn't critical in a life's first 90 s
+(**Guidance > Tips wait after spawn**): tips come from what's happening to you, one at a time, never
+a stack at spawn. The table is data (**Guidance > Tips**, defaults in
 `RZ_GuidanceTips.c`); more can be fired with `RZ_Guidance.Report(playerId, id)`.
 
 | Tip | Trigger | Critical |
@@ -2751,6 +2764,8 @@ tips (critical ones don't wait). The table is data (**Guidance > Tips**, default
 | hunted | Hunted or Kill on Sight | ✅ |
 | perimeter | near the edge or a checkpoint, while the line is sealed | |
 | loud | heat 45+ where you stand | |
+| bleeding | you're bleeding (checked every 10 s; VERIFY `Guidance/RZ_Guidance.c:439`) | |
+| quartermaster | within 25 m of a quartermaster of a faction that doesn't hunt you | |
 | night | the first night | |
 | safehouse | your first safehouse | |
 | shortage | at a place that's short of food or supplies | |
@@ -3171,8 +3186,8 @@ With the finale the season's lines open with who controls the cure and the seaso
 cure**: the epilogue week adds only lines to the season block, by fixed rules
 ([EPILOGUE.md](EPILOGUE.md#the-hall-of-fame-and-the-season-block)). `/anonymous` keeps a player's
 name out of it across seasons ([EPILOGUE.md](EPILOGUE.md#names)).
-Players get it on their first spawn of a session, after the news, and the notebook's Hall of
-fame tab shows it in full ([UI.md](UI.md#the-notebook)).
+Players find it in the notebook: the first spawn of a session adds it to the *This season* entry (no
+card), and The season tab shows it in full at the bottom ([UI.md](UI.md#the-notebook)).
 
 *Simplified:* players are matched by their backend identity and shown by the name they last
 played under; at most 500 records are kept per list (the emptiest go first).

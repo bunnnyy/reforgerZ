@@ -118,14 +118,6 @@ Frame  (root, full screen)
 │  ├─ Image   RadioIcon         34 × 34 at (12, 13)                 status_secure_radio, static, tinted
 │  ├─ Text    RadioChannel      at (60, 10), mono bold 13           faction colour
 │  └─ Text    RadioSub          at (60, 32), mono 18, dim
-├─ Frame  TrackPanel            440 × 82, anchor top-left, offset (96, 126), ignores the cursor; hidden until there's a job to track
-│  ├─ Image   TrackBg           panel, #121416 85%
-│  ├─ Image   TrackAccent       4 × full height, left edge          the giver's colour, else hazard
-│  ├─ Image   TrackIcon         30 × 30 at (14, 10)                 mission_* icon (static mission_contract), tinted
-│  ├─ Text    TrackTitle        at (54, 8), 290 × 30, condensed bold 22, bone (cut at 30 characters)
-│  ├─ Text    TrackTime         at (334, 12), 96 wide, mono bold 18, dim, right-aligned ("12 MIN"; empty without a clock)
-│  ├─ Image   TrackArrow        28 × 28 at (54, 44)                 marker_self (static), hazard; turned to the job, hidden without a place
-│  └─ Text    TrackDist         at (92, 46), 338 × 26, mono bold 20, bone ("1.2 KM NE", "ABOUT 800 M SW")
 ├─ HorizontalLayout NoisePanel  anchor bottom-left, offset (552, -62), 10 apart, 85% opacity
 │  ├─ Image   (status_noise icon, 26 × 26, bone, static)
 │  ├─ HorizontalLayout (3 apart)
@@ -134,12 +126,30 @@ Frame  (root, full screen)
 ├─ HorizontalLayout StandPanel  anchor bottom-left, offset (552, -30), 90% opacity; hidden unless the cure finale's stand line is fresh
 │  └─ Text    StandText         mono bold 18, bone ("CLEAN ROOM: BASTION. THE HAVEN TAKING: 0:35 OF 1:00.")
 ├─ HorizontalLayout LookPanel   anchor bottom-left, offset (552, -122), 8 apart, 95% opacity; hidden unless borrowed kit's look is coming (RZ_Hud_Look)
-│  ├─ Image   LookIcon          24 × 24, the tier_watched eye (set by code), gold
+│  ├─ Image   LookIcon          24 × 24, the tier_watched eye (static Texture and Image, set again by code), gold
 │  └─ Text    LookText          bold 20 (min 18), bone ("PASS AS BASTION: 2 OF 2", or "PASS AS BASTION: SEEN THROUGH")
 ├─ HorizontalLayout SeenPanel   anchor bottom-left, offset (588, -90), 10 apart, 85% opacity; hidden until the server sends a visibility (Stealth on)
 │  ├─ HorizontalLayout (3 apart)
 │  │  └─ Image Seen1 … Seen5    14 × 8 each, no texture (tinted lit, dim, or green when hidden)
 │  └─ Text    SeenText          mono bold 18, dim (HIDDEN, LOW, SEEN, IN PLAIN SIGHT)
+├─ VerticalLayout TrackerPanel  the quest tracker: 400 wide, anchor top-left, offset (24, 24), fits its content, 92% opacity, hidden
+│  │                            (the script moves it to (24, 126) while RadioPanel shows; UI.md, "The quest tracker")
+│  └─ Overlay (TrackerBox)
+│     ├─ Image  (TrackerBg)       #0C0E0F at 72%
+│     ├─ Image  TrackerAccent     3 wide, full height, left edge; tinted the giver's colour (hazard yellow without one)
+│     └─ SizeLayout (TrackerWidth) 374 wide, padding 14 8 12 10
+│        └─ VerticalLayout (TrackerBody)
+│           ├─ HorizontalLayout (TrackerHead)
+│           │  ├─ Image  TrackerIcon    22 × 22, Texture the RZ_Icons imageset, Image mission_contract (static; the script sets the job's type icon)
+│           │  ├─ Text   TrackerTitle   condensed bold 20, bone, fills: the job's name
+│           │  └─ Text   TrackerKind    condensed 18, dim, right: "THE SEASON'S STORY", "CONTRACT", "ERRAND"
+│           ├─ Text  TrackerNow       condensed 18, bone, wraps, 30 in: the current objective, then the rough area in brackets
+│           ├─ Text  TrackerNext      condensed 18, dim, wraps, 30 in, hidden: "Then: " and the known next objective
+│           ├─ VerticalLayout TrackerOthers  75% opacity, hidden: the other jobs taken
+│           │  └─ HorizontalLayout TrackerOther1 … TrackerOther5 (hidden; the script uses four)
+│           │     ├─ Image  TrackerOtherIconN  18 × 18, Texture and Image set (mission_contract), dim; the script sets the type icon
+│           │     └─ Text   TrackerOtherTextN  condensed 18, dim: the name, "(4 min left)" when it's running out
+│           └─ Text  TrackerMore      18, dim, 30 in, hidden: "+2 more in your notebook"
 ├─ VerticalLayout (NoticeArea)  460 wide, anchor top-right, offset (-96, 96)
 │  ├─ VerticalLayout NoticeStack  the notice cards
 │  └─ Text   NoticeQueued       under the stack, right-aligned, mono 18, faint ("+3 in your notebook")
@@ -194,7 +204,7 @@ Frame (root, full screen)
 ├─ Text    Heading         at (96, 54), condensed bold 46: the tab's name (set by the script)
 ├─ Text    Header          at (96, 112), 840 wide, mono 18, dim: the sub-line (set by each page)
 ├─ Image   HeadRule        stretched from 96 to -96 at y 150, 2 high
-├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Hall of fame, The season
+├─ Button  Tab0 … Tab4     168 × 40 each, 4 apart, right-aligned to -96 at y 100: Standing, Journal, Radio, Quests, The season
 │  └─ Overlay TabNBox
 │     ├─ Image  TabNBg      the open tab bone, the others #1A1D20 (tinted by the script)
 │     ├─ Panel  TabNLine    border, hidden on the open tab
@@ -210,9 +220,9 @@ The pages are the old menus' layouts with the frame parts (overlay, heading, hea
 close button, footer) taken out, and their content moved into the 90% safe area: every horizontal
 position and width scaled by 0.973 from the left margin, which moves from 72 to 96. Each page's
 root is a full-screen `Frame` named after it (`StandingPage`, `JournalPage`, `RadioPage`,
-`HallPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
+`QuestsPage`, `SeasonPage`). Widget names inside are unchanged, so the drawing code is too.
 
-**Mouse.** The tabs, `CloseButton`, the journal row's root (`MissionRow`), the radio filter chip
+**Mouse.** The tabs, `CloseButton`, the journal and quest row's root (`MissionRow`), the Quests tab's `TrackButton`, the radio filter chip
 (`FilterButton`), the Standing page's rows (`Row0` to `Row3`, highlighted under the mouse) and
 the notice board's `PostButton` are `Button`s. Long text sits in a `ScrollLayout` so the wheel
 scrolls it, and on a pad up and down do: `ListScroll` (the journal), `LogScroll` (the radio),
@@ -306,27 +316,23 @@ Frame StandingPage (root)
 
 ```
 Frame JournalPage (root)
-├─ (in the frame: Header, "3 OPEN")
+├─ (in the frame: Header, "3 NOTES")
 ├─ Frame  (list panel, at (72, 168), 660 × 840)
 │  ├─ VerticalLayout (list column)
 │  │  ├─ ScrollLayout (fills the column above LabStatus)
 │  │  │  └─ VerticalLayout List   the rows
 │  │  └─ Text  LabStatus      mono 18, dim, wraps: the lab's line ("Research 63 percent.
 │  │                          Waiting: 14 samples' worth, about 4 days of work."); hidden without a lab
-│  └─ Text  Empty             centred, italic 18, "The radio is quiet."
+│  └─ Text  Empty             centred, italic 18 (the script sets it: "Nothing written down yet.")
 └─ Frame  (detail panel, at (750, 168), 1098 × 840)
    ├─ Image  DetailAccent     full width × 5, top
    ├─ Image  DetailIcon       56 × 56 at (34, 31)
-   ├─ Text   DetailTitle      at (108, 30), 700 wide, condensed bold 34
+   ├─ Text   DetailTitle      at (108, 30), condensed bold 34
    ├─ Text   DetailBy         at (108, 72), 18, dim
-   ├─ Button TrackButton      216 × 44 at (818, 26), style blank: tracks the selected row on the HUD
-   │  └─ Frame TrackFrame (fills it): Image TrackButtonBg #1A1D20, Panel TrackButtonLine border,
-   │     Image TrackButtonIcon 22 at (14, 11) marker_self (static, hazard), Text TrackText at (44, 10),
-   │     mono bold 18: TRACK or STOP TRACKING (hidden for packs, the doors and the finale)
    └─ VerticalLayout (detail body, at (34, 112), 1030 × 712)
       ├─ Text   DetailBrief   italic 18, wraps, on a faint panel with a 3-unit faint bar on its left
       ├─ (WHERE and REWARDS side by side)
-      │  ├─ Text (label "WHERE")   │ Text DetailWhere    mono bold 20, wraps: the direction, then the area
+      │  ├─ Text (label "WHERE")   │ Text DetailWhere    mono bold 20, wraps: the rough area, then the place
       │  └─ Text (label "REWARDS") │ Text DetailRewards  mono bold 18, wraps
       ├─ Text   (label "REQUIREMENTS") │ Text DetailReq  18, wraps
       └─ VerticalLayout CluesBlock
@@ -335,7 +341,8 @@ Frame JournalPage (root)
                                (first the selected row's detail: "What you've found", "Who it went to")
 ```
 
-An errand you hold is a row like any other (its icon `mission_errand`); no new widget.
+The Journal lists the notes (packs, doors, the finale, promises, what you know); the jobs use the
+same row on the Quests page.
 
 Unlike the mockup, `DetailWhere` is one `Text` (the script fills both lines into it), not a big
 direction over a small area, and the brief's bar isn't tinted with the accent.
@@ -415,40 +422,55 @@ has the focus), and A on PIN IT UP pins it, so writing a note needs no typing.
 `NoteInput` is a single-line `EditBox`: the script reads it as an `EditBoxWidget`, and a
 multi-line edit box isn't one.
 
-### Hall of fame page: `RZ_HallPage.layout`
+### Quests page: `RZ_QuestsPage.layout`
+
+The Journal page's tree (fresh GUIDs, the root named `QuestsPage`; the file took the old hall page's
+place and GUID, `{FCD5A2E4F7512EFF}`), with the objectives and a Track button added. Written as text,
+not opened in Workbench yet. **UI > Quests page**.
 
 ```
-Frame HallPage (root)
-├─ (in the frame: Header, "SEASON 3")
-├─ Frame  (this season, at (72, 168), 580 × 840)
-│  ├─ Text (label "THIS SEASON")
-│  └─ Text SeasonList    wraps, 18 (each record: the category, then the name and value)
-├─ Frame  (all time, at (670, 168), 580 × 840)
-│  ├─ Text (label "ALL TIME")
-│  └─ Text AllTimeList   wraps, 18
-├─ Frame  (past seasons, at (1268, 168), 580 × 840)
-│  ├─ Text (label "PAST SEASONS")
-│  └─ Text PastList      wraps, 18, dim, in a ScrollLayout
-└─ Text   Waiting        centred, italic 22, "Reading the names..." (until the data arrives)
+Frame QuestsPage (root)
+├─ (in the frame: Header, "2 TAKEN, 3 OFFERED")
+├─ Frame  (list panel, as the Journal's)
+│  ├─ VerticalLayout (list column)
+│  │  ├─ ScrollLayout → VerticalLayout List   the rows (RZ_MissionRow.layout): RowSub the current objective,
+│  │  │                                       RowDir the rough area, RowTime TRACKED (hazard), the time left or Offered
+│  │  └─ Text  LabStatus      hidden here (the lab's line is the Journal's)
+│  └─ Text  Empty             centred, italic 18 ("No jobs yet. Listen to the radio, or ask at a safehouse.")
+└─ Frame  DetailPanel (as the Journal's)
+   ├─ Image  DetailAccent, Image DetailIcon, Text DetailTitle (720 wide, room for the button), Text DetailBy (its kind, then who gave it)
+   ├─ Button TrackButton      180 × 44, top right at (-212, 30), blank style
+   │  └─ Overlay (TrackBox): Image TrackBg #1A1D20, Panel TrackLine hazard outline,
+   │     Text TrackButtonText condensed bold 20, centred: "TRACK", or "UNTRACK" on the tracked job
+   └─ VerticalLayout (detail body)
+      ├─ (BriefBox) Text DetailBrief    the short brief (RZ_QuestText.Short)
+      ├─ VerticalLayout ObjectivesBlock  hidden without objectives
+      │  ├─ Text  (ObjectivesLabel "OBJECTIVES")
+      │  └─ Text  Obj1 … Obj6     condensed 20, wraps; tinted by state: current bone, next dim,
+      │                           "Done: ..." faint, "(Optional)" dim, "Failed: ..." red
+      ├─ (ROUGHLY WHERE and REWARD, AS FAR AS YOU KNOW side by side: DetailWhere, DetailRewards)
+      ├─ (REQUIREMENTS: DetailReq)
+      └─ VerticalLayout CluesBlock (as the Journal's)
 ```
 
 ### The season page: `RZ_SeasonPage.layout`
 
-The hall page's three panels with their own names and labels (written as text, not opened in
-Workbench yet).
+One page that scrolls, the hall of fame at the bottom (written as text, not opened in Workbench yet).
 
 ```
 Frame SeasonPage (root)
-├─ Frame  MajorsPanel  (at (72, 168), 580 × 840)
-│  ├─ Text MajorsLabel  "THE MAJORS"
-│  └─ Text MajorsList   wraps, 18 (each major's title in capitals, then its lines; an ending told)
-├─ Frame  YouPanel     (at (670, 168), 580 × 840)
-│  ├─ Text YouLabel     "AND YOU"
-│  └─ Text YouList      wraps, 18 (your lines, then UNFINISHED and what's open)
-├─ Frame  ZonePanel    (at (1268, 168), 580 × 840)
-│  ├─ Text ZoneLabel    "AS THE ZONE TELLS IT"
-│  └─ Text ZoneList     wraps, 18, dim, in a ScrollLayout ZoneScroll (up and down scroll it)
-└─ Text   Waiting       centred, italic 22, "Asking around..." (until the data arrives)
+├─ (in the frame: Header, "SEASON 3", from the hall)
+├─ Frame  SeasonPanel  (at (96, 168), 1728 × 840)
+│  ├─ Image (SeasonBg)
+│  └─ ScrollLayout SeasonScroll  (up and down scroll it), 24 in
+│     └─ SizeLayout (SeasonWidth, 1,040 wide) → VerticalLayout (SeasonBody)
+│        ├─ Text MajorsLabel   "THIS SEASON'S STORIES"  │ Text MajorsList   condensed 20, wraps
+│        ├─ Text ZoneLabel     "AS THE ZONE TELLS IT"   │ Text ZoneList     condensed 20, wraps
+│        ├─ Text YouLabel      "AND YOU" (hidden empty) │ Text YouList      your lines, then UNFINISHED
+│        ├─ Text SeasonLabel   "THIS SEASON'S RECORDS"  │ Text SeasonList   each record "category: name (value)"
+│        ├─ Text AllTimeLabel  "ALL TIME" (hidden empty)│ Text AllTimeList
+│        └─ Text PastLabel     "THE LAST SEASONS" (hidden empty) │ Text PastList
+└─ Text   Waiting       centred, italic 18, "Asking around..." (until the data arrives)
 ```
 
 ## Talk screen: `RZ_TalkMenu.layout` and `RZ_TalkReply.layout`

@@ -59,8 +59,9 @@ How the code does it:
   radius). Within 500 m of the spot a player learns it, and is told if it was offered to them.
   **Radio Operators** and players **Trusted** (or more) with the giver get the exact spot from the
   start. Offers, the quartermaster's and safehouse radio's lists, leaders, wanderers, the Haven
-  neighbours perk and the journal all use the same rule (**Contracts > Rough radius**, 0 = always
-  exact). Contracts that give their own positions keep them: puzzles (their clues and grids),
+  neighbours perk and the notebook all use the same rule (**Contracts > Rough radius**, 0 = always
+  exact); the notebook and the quest tracker say it in words, never metres ("East of Morton, a few
+  km north-west": [UI.md](UI.md#the-quest-tracker)), and the map rings the tracked job's circle. Contracts that give their own positions keep them: puzzles (their clues and grids),
   points to visit (Install Sensors, Recon, Burn the Bodies, Water Survey, leaders'
   visits), the Memorial, the car keys job and Medical Drone (its brief already
   gives a ping, give or take 250 m). World events stay exact. *Simplified:* the extra lines some
@@ -140,6 +141,24 @@ How the code does it:
   in these tables at which someone sees you are for normal visibility and shrink for a player who
   is hard to see, and an infected close by is slower to notice them. With it off, everything is
   exactly as written.
+
+### Objectives
+
+Every job reports its **objectives** for the quest tracker and the notebook's Quests tab
+([UI.md](UI.md#the-quest-tracker)), each **current**, **next** (known), **done**, **optional** or
+**failed**. A step shows only once the player has learned of it: no placeholders, nothing hidden.
+
+| Job | Where its objectives come from | How a step is revealed |
+|---|---|---|
+| A mission or contract (the default) | `RZ_Mission.GetObjectives`: until you're taking part, "Get to *place*." (or "Search around *town*." while you only know the rough area), then its ask as next; once you're there, the ask as current. The ask is `m_sObjective` if the mission sets one, else the brief's last sentence that tells you to do something ("Secure it and hold the area for a minute."), else the title | Being counted on the job makes the ask current |
+| A mission with steps of its own | `ObjSteps(...)` (and `ObjOptional`) in its setup, `ObjStepDone()` as each is done, `ObjReveal(n)` when the players learn of the steps ahead (a clue read, a person talked to): the done ones, the current one, the next only once revealed. *None of the 131 missions declares steps yet;* they use the default or a step chain | `ObjStepDone`, `ObjReveal` |
+| A step chain (Patient Zero, Struck Off's trail and the rest on `RZ_StepChain`) | Each step reached is "Reached *town*." (done); the current one "Go to *town*.", or "Find what was left in *town*." once you're there and its clue is unread. The steps after it never show | Reaching a step; its clue points onward |
+| A questline, a major's act, a finale route | `RZ_Questline.GetObjectives`: the stages you took part in, done (by their titles); the current stage's mission's own objectives, or for a wait stage "Wait for word: *stage*." The next stages never show. A questline may override it | Each new stage, as it comes |
+| An errand | The step you agreed to, current, and "Go back to *giver*." next (they told you both); once the step is done, it's done and going back is current | Agreeing to it |
+
+*Simplified:* the ask is found in the brief by its first word, so a brief with no such sentence
+shows the title; a mission can name its own (`m_sObjective`). Briefs aren't rewritten: the Quests
+tab shows a job's own brief cut to about three sentences at a sentence's end.
 
 ### One-choice jobs and work
 
@@ -571,7 +590,7 @@ write one: [DESIGN.md](DESIGN.md#questlines). Code: `Missions/Questlines/<Factio
 
 - **Who gets offered what.** Each stage mission is a normal contract from the questline's
   faction, offered like any other. Anyone who did something at a stage is part of the questline
-  from then on: it's in their journal, and they hear when the next stage opens.
+  from then on: it's on their Quests tab, and they hear when the next stage opens.
 - **Pay.** A stage mission pays its Fame and Favor as usual; approaches can add personal standing
   (siding with another faction) or a small reward. The ending's world consequences are shared,
   and its standing goes to everyone who took part.

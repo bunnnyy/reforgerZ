@@ -150,9 +150,10 @@ and one way to end it: **research the cure.**
 - **Any map**: towns, the quarantine line and its checkpoints are found automatically.
 - **A UI that looks like the Zone**: quarantine signage and survivor marks, original faction
   emblems, a spawn screen in place of vanilla's deploy menu, an infection timer with the golden window, styled notice cards in each faction's
-  colour that come a few at a time by importance, a HUD tracker for the job you pick, a you-are-here
+  colour that come a few at a time by importance (one card at spawn, the rest into the notebook),
+  a small quest tracker top left with each job's objectives, a you-are-here
   arrow on the map, a notebook (standing, journal, radio,
-  hall of fame, the season) opened with N, the pause menu or the notebook every life carries, a talk screen
+  quests, the season with the hall of fame) opened with N, the pause menu or the notebook every life carries, a talk screen
   for everyone who talks, a repair screen for the cars, a shop screen at the quartermasters and a
   crafting screen at workbenches,
   spoken lines as subtitles, notes on a paper reader, and on the map only what you know, with its key in the corner. Gamepad

@@ -87,6 +87,7 @@ class RZ_UIFeed
 	static const int PAYLOAD_DETAIL = 10;	// one journal row's detail, asked when it's selected (BuildDetail)
 	static const int PAYLOAD_SEASON = 11;	// the notebook's season tab, asked when it opens (BuildSeason)
 	static const int PAYLOAD_CRAFT = 12;	// the crafting screen: B, W, R, N records; F falls back; X|reason closes (Interactions/RZ_Crafting.c)
+	static const int PAYLOAD_TRACKER = 13;	// the HUD's quest tracker: T, O, A records; "" hides it (UI/RZ_Quests.c)
 	static const int DETAIL_MAX = 1500;
 	static const int ERRAND_ID_BASE = 100000;	// errand rows' ids: -(base + errand id)
 	static const int TRIBE_ID_BASE = 200000;	// the packs' rows (what you know of them): -(base + pack id)
@@ -98,6 +99,7 @@ class RZ_UIFeed
 	protected static const float JUMP_SECONDS = 5;	// the infection timer is re-sent when it jumps more than this
 
 	protected RZ_GameModeComponent m_GM;
+	protected ref RZ_QuestTracker m_Tracker;
 	protected ref map<int, ref RZ_UIFeedState> m_mStates = new map<int, ref RZ_UIFeedState>();
 	protected ref map<int, ref array<ref RZ_UIClue>> m_mClues = new map<int, ref array<ref RZ_UIClue>>();
 	protected ref map<string, string> m_mGear = new map<string, string>();				// loadout name -> what it spawned with
@@ -111,6 +113,13 @@ class RZ_UIFeed
 	void RZ_UIFeed(RZ_GameModeComponent gm)
 	{
 		m_GM = gm;
+		m_Tracker = new RZ_QuestTracker(gm);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	RZ_QuestTracker GetTracker()
+	{
+		return m_Tracker;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -132,6 +141,7 @@ class RZ_UIFeed
 	{
 		m_mStates.Remove(playerId);
 		m_mClues.Remove(playerId);
+		m_Tracker.Reset(playerId);
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetFor(playerId);
 		if (ui)
 			ui.SendNewLife();
@@ -139,13 +149,6 @@ class RZ_UIFeed
 		// The notebook item, once the inventory exists
 		if (!RZ_UISettings.Get().m_sNotebookPrefab.IsEmpty())
 			GetGame().GetCallqueue().CallLater(GiveNotebook, 3000, false, playerId);
-
-		// A compass and a map, so everyone can tell where they are and where they're facing
-		if (!RZ_UISettings.Get().m_sCompassPrefab.IsEmpty())
-			GetGame().GetCallqueue().CallLater(GiveCompass, 3500, false, playerId);
-
-		if (!RZ_UISettings.Get().m_sMapPrefab.IsEmpty())
-			GetGame().GetCallqueue().CallLater(GiveMap, 4000, false, playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -158,38 +161,6 @@ class RZ_UIFeed
 			return;
 
 		IEntity item = RZ_Util.SpawnPrefab(RZ_UISettings.Get().m_sNotebookPrefab, ent.GetOrigin() + Vector(0, 0.3, 0));
-		if (!item)
-			return;
-
-		RZ_GameModeComponent.TrackLooseItem(item);
-		RZ_Util.InsertIntoInventory(ent, item);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Every life carries a compass, unless its loadout already has one (any item named "compass").
-	protected void GiveCompass(int playerId)
-	{
-		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		if (!ent || !RZ_Util.IsCharacterAlive(ent) || RZ_ItemHelper.Has(ent, "compass"))
-			return;
-
-		IEntity item = RZ_Util.SpawnPrefab(RZ_UISettings.Get().m_sCompassPrefab, ent.GetOrigin() + Vector(0, 0.3, 0));
-		if (!item)
-			return;
-
-		RZ_GameModeComponent.TrackLooseItem(item);
-		RZ_Util.InsertIntoInventory(ent, item);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Every life carries a paper map, unless its loadout already has one (any item named "papermap").
-	protected void GiveMap(int playerId)
-	{
-		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
-		if (!ent || !RZ_Util.IsCharacterAlive(ent) || RZ_ItemHelper.Has(ent, "papermap,map_paper"))
-			return;
-
-		IEntity item = RZ_Util.SpawnPrefab(RZ_UISettings.Get().m_sMapPrefab, ent.GetOrigin() + Vector(0, 0.3, 0));
 		if (!item)
 			return;
 
@@ -215,6 +186,9 @@ class RZ_UIFeed
 			PushListening(ui, playerId, st);
 			PushNoise(ui, ent, st);
 		}
+
+		// The quest tracker, owner-only, sent when it changes (UI/RZ_Quests.c)
+		m_Tracker.Tick(dt, ids, players);
 
 		m_fVisitTimer += dt;
 		if (m_fVisitTimer >= 30)
@@ -677,9 +651,9 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! M|id|kind|giver (-1 none)|title|given by|where|direction and distance|minutes left|requirements|Fame|Favor|brief|taking part (0/1)|x|z|rough (0/1)
-	//!   x and z: the point the direction is worked from (the rough area's centre while rough, then
-	//!   rough 1), "" with no single place; the HUD tracker works its distance and arrow from them.
+	//! K|the tracked job's id (0 none)
+	//! M|id|kind|giver (-1 none)|title|given by|where|rough area|minutes left|requirements|Fame|Favor|brief|taking part (0/1)|
+	//!   kind label ("The season's story")|current objective (one line)
 	//! C|mission id|clue title|clue text
 	//! S|the lab's line ("Research 63 percent. Waiting: 14 samples' worth, about 4 days of work.")
 	//! A questline the player is part of is an M record too: a negative id, kind QUESTLINE, its
@@ -713,7 +687,8 @@ class RZ_UIFeed
 		array<RZ_Mission> list = {};
 		mm.ListFor(playerId, list);
 		RZ_MissionReasons.SortFor(m_GM, list, playerId, from);	// near, reason-started, a leader they helped first
-		string s = lab;
+		RZ_UILine lnK = new RZ_UILine("K");
+		string s = lab + lnK.AddInt(m_Tracker.TrackedFor(playerId)).End();
 		array<int> shown = {};
 		foreach (RZ_Mission m : list)
 		{
@@ -730,27 +705,11 @@ class RZ_UIFeed
 					by = l.GetHeader();
 			}
 
-			// Contracts give a rough area until the player knows the spot (RZ_Mission)
+			// A rough area, never metres (docs/UI.md, "The quest tracker"); contracts point at the
+			// rough circle until the player knows the spot (RZ_Mission)
 			string dir = "";
-			if (ent)
-				dir = m.GetDirectionFor(m_GM, from, playerId);
-
-			// The tracker's point: the same one the direction is worked from
-			string tx = "";
-			string tz = "";
-			int rough = 0;
-			if (!m.m_bGlobal)
-			{
-				vector at = m.m_vPos;
-				if (m.IsRoughFor(m_GM, playerId, from))
-				{
-					at = m.GetRoughCenter(m_GM);
-					rough = 1;
-				}
-
-				tx = RZ_Util.RoundToInt(at[0]).ToString();
-				tz = RZ_Util.RoundToInt(at[2]).ToString();
-			}
+			if (ent && !m.m_bGlobal)
+				dir = RZ_QuestText.RoughArea(m_GM, from, m.GetAreaFor(m_GM, playerId, from));
 
 			string req = "";
 			if (m.m_bContract)
@@ -768,7 +727,7 @@ class RZ_UIFeed
 			RZ_UILine lnM = new RZ_UILine("M");
 			lnM.AddInt(m.m_iId).AddInt(MissionKind(m)).AddInt(giver).Add(m.m_sTitle).Add(by).Add(m.GetLocationNameFor(m_GM, playerId, from)).Add(dir);
 			lnM.AddInt(RZ_Util.RoundToInt(m.m_fTimeLeft / 60)).Add(req).AddInt(m.m_iFameReward).AddInt(m.m_iFavorReward).Add(m.GetBrief(m_GM)).Add(part);
-			lnM.Add(tx).Add(tz).AddInt(rough);
+			lnM.Add(RZ_QuestText.KindLabel(MissionKind(m), false)).Add(NowFor(playerId, m.m_iId, from));
 			s += lnM.End();
 			shown.Insert(m.m_iId);
 		}
@@ -797,6 +756,15 @@ class RZ_UIFeed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A job's current objective in one line, for its journal row (RZ_QuestTracker.Objectives).
+	protected string NowFor(int playerId, int id, vector from)
+	{
+		RZ_ObjList list = new RZ_ObjList();
+		m_Tracker.Objectives(playerId, id, from, list);
+		return list.First(RZ_EObjState.CURRENT);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The errands this player holds (Missions/Errands), as journal records: the giver as "by", the
 	//! exact place, the real minutes left, what you said you'd do. Never on the map.
 	protected string BuildErrands(int playerId, IEntity ent, vector from)
@@ -812,21 +780,16 @@ class RZ_UIFeed
 		{
 			string dir = "";
 			if (ent)
-				dir = RZ_Util.DirectionText(from, e.m_vPlace);
+				dir = RZ_QuestText.RoughArea(m_GM, from, e.m_vPlace);
 
 			if (e.m_bStepDone && ent)
-				dir = RZ_Util.DirectionText(from, e.m_vGiver);
-
-			// The tracker's point: the step's place, then back to the giver
-			vector to = e.m_vPlace;
-			if (e.m_bStepDone)
-				to = e.m_vGiver;
+				dir = RZ_QuestText.RoughArea(m_GM, from, e.m_vGiver);
 
 			RZ_UILine lnE = new RZ_UILine("M");
 			lnE.AddInt(-(ERRAND_ID_BASE + e.m_iId)).AddInt(RZ_EMissionKindUI.ERRAND).AddInt(e.m_iFaction).Add(e.Fill(e.m_Def.m_sTitle)).Add(e.m_sGiverTitle).Add(e.GetText("here")).Add(dir);
 			lnE.AddInt(errands.MinutesLeft(e)).Add("Asked of you").AddInt(0).AddInt(0).Add(errands.JournalText(e)).Add("1");
-			if (to != vector.Zero)
-				lnE.AddInt(RZ_Util.RoundToInt(to[0])).AddInt(RZ_Util.RoundToInt(to[2])).AddInt(0);
+			int errandRow = -(ERRAND_ID_BASE + e.m_iId);
+			lnE.Add(RZ_QuestText.KindLabel(RZ_EMissionKindUI.ERRAND, false)).Add(NowFor(playerId, errandRow, from));
 			s += lnE.End();
 		}
 
@@ -854,7 +817,7 @@ class RZ_UIFeed
 		{
 			string dir = "";
 			if (ent && wheres[i] != vector.Zero)
-				dir = RZ_Util.DirectionText(from, wheres[i]);
+				dir = RZ_QuestText.RoughArea(m_GM, from, wheres[i]);
 
 			RZ_UILine ln = new RZ_UILine("M");
 			ln.AddInt(-(TRIBE_ID_BASE + tribe)).AddInt(RZ_EMissionKindUI.PACK).AddInt(-1).Add(titles[i]).Add(bys[i]).Add(titles[i]).Add(dir);
@@ -995,13 +958,46 @@ class RZ_UIFeed
 					went = parties.m_aParties[parties.m_iChosen].m_sName;
 			}
 		}
+		else if (id < 0 && id > -ERRAND_ID_BASE && m_GM.GetQuestlines())
+		{
+			// A questline the player sees: its journal text (the stage's line, the season's)
+			RZ_Questlines q = m_GM.GetQuestlines();
+			bool seen = false;
+			foreach (RZ_QuestRun run : q.GetRuns())
+			{
+				if (run.m_iId == -id && q.IsVisibleTo(run, playerId))
+				{
+					told = q.JournalFor(run);
+					seen = true;
+					break;
+				}
+			}
+
+			if (!seen)
+				return "";
+		}
 		else
 		{
 			return "";
 		}
 
+		// The objectives, O|id|state|line, before the D record so the cap cuts the brief, not them
+		string objectives = "";
+		RZ_ObjList list = new RZ_ObjList();
+		IEntity ent = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		vector from = vector.Zero;
+		if (ent)
+			from = ent.GetOrigin();
+
+		m_Tracker.Objectives(playerId, id, from, list);
+		foreach (int oi, string objLine : list.m_aLines)
+		{
+			RZ_UILine lnO = new RZ_UILine("O");
+			objectives += lnO.AddInt(id).AddInt(list.m_aStates[oi]).Add(objLine).End();
+		}
+
 		RZ_UILine ln = new RZ_UILine("D");
-		string payload = ln.AddInt(id).Add(told).Add(found.Trim()).Add(went).End();
+		string payload = objectives + ln.AddInt(id).Add(told).Add(found.Trim()).Add(went).End();
 		if (payload.Length() > DETAIL_MAX)
 			payload = payload.Substring(0, DETAIL_MAX);
 
@@ -1030,7 +1026,7 @@ class RZ_UIFeed
 			string where = run.m_sPlaceName;
 			string dir = "";
 			if (run.m_bHasPlace && ent)
-				dir = RZ_Util.DirectionText(from, run.m_vPlace);
+				dir = RZ_QuestText.RoughArea(m_GM, from, run.m_vPlace);
 
 			string part = "0";
 			if (run.PlayerTookPart(m_GM, playerId))
@@ -1040,8 +1036,7 @@ class RZ_UIFeed
 			RZ_UILine lnQ = new RZ_UILine("M");
 			lnQ.AddInt(id).AddInt(RZ_EMissionKindUI.QUESTLINE).AddInt(run.m_Line.m_iFaction).Add(run.m_Line.m_sTitle).Add(stageTitle).Add(where).Add(dir);
 			lnQ.AddInt(-1).Add("Whoever takes the next step").AddInt(0).AddInt(0).Add(q.JournalFor(run)).Add(part);
-			if (run.m_bHasPlace)
-				lnQ.AddInt(RZ_Util.RoundToInt(run.m_vPlace[0])).AddInt(RZ_Util.RoundToInt(run.m_vPlace[2])).AddInt(0);
+			lnQ.Add(RZ_QuestText.KindLabel(RZ_EMissionKindUI.QUESTLINE, run.m_Line.IsMajor())).Add(NowFor(playerId, id, from));
 			s += lnQ.End();
 
 			foreach (int n, string note : run.m_aNotes)
@@ -1160,6 +1155,9 @@ class RZ_UIFeed
 				s += lnR.Add("marker_range").AddInt(-1).AddInt(RZ_Util.RoundToInt(ring[0])).AddInt(RZ_Util.RoundToInt(ring[2])).Add(labels[r]).AddInt(RZ_Util.RoundToInt(radii[r])).End();
 			}
 		}
+
+		// The tracked job: an area ring round where it points, never a pin (UI/RZ_Quests.c)
+		s += m_Tracker.MapRing(playerId);
 
 		// World events are public; contracts aren't on the map at all
 		RZ_MissionManager mm = m_GM.GetMissions();

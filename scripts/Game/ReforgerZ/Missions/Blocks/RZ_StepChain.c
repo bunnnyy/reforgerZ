@@ -35,10 +35,53 @@ class RZ_StepChain
 
 	protected static const float LIVE_RADIUS = 250;
 
+	//! The chains by mission id, so a mission's objectives can read its chain (weak: a chain goes
+	//! with its mission)
+	protected static ref map<int, RZ_StepChain> s_mByMission;
+
 	//------------------------------------------------------------------------------------------------
 	void SetMission(int missionId)
 	{
 		m_iMissionId = missionId;
+		if (!s_mByMission)
+			s_mByMission = new map<int, RZ_StepChain>();
+
+		s_mByMission.Set(missionId, this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The chain a mission registered with SetMission, or null.
+	static RZ_StepChain ForMission(int missionId)
+	{
+		if (!s_mByMission)
+			return null;
+
+		RZ_StepChain chain;
+		s_mByMission.Find(missionId, chain);
+		return chain;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The objectives (docs/MISSIONS.md, "Objectives"): each step reached, done; the current one.
+	//! The steps after it aren't shown: its clue is what points onward.
+	void AddObjectives(notnull RZ_ObjList list)
+	{
+		foreach (int i, RZ_ChainStep st : m_aSteps)
+		{
+			if (i < m_iCurrent)
+			{
+				list.Add(string.Format("Reached %1.", st.m_sPlace), RZ_EObjState.DONE);
+				continue;
+			}
+
+			if (i > m_iCurrent)
+				break;
+
+			if (st.m_iClue >= 0 && st.m_fDwelt > 0 && !st.m_bRead)
+				list.Add(string.Format("Find what was left in %1.", st.m_sPlace), RZ_EObjState.CURRENT);
+			else
+				list.Add(string.Format("Go to %1.", st.m_sPlace), RZ_EObjState.CURRENT);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -229,6 +272,9 @@ class RZ_StepChain
 	//------------------------------------------------------------------------------------------------
 	void Cleanup()
 	{
+		if (s_mByMission)
+			s_mByMission.Remove(m_iMissionId);
+
 		foreach (RZ_ChainStep st : m_aSteps)
 		{
 			Retire(st);

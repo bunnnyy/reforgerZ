@@ -44,7 +44,9 @@ enum RZ_ENoticeTag
 	WORLD,		// the state of the world at spawn: the outbreak, the news, the season, the hall
 	URGENT,
 	HIGH,
-	LOW
+	LOW,
+	QUIET,		// into the notebook's Radio tab only, never a card (the welcome's world news, offline pay)
+	SPAWN		// the one card at spawn: who you are and where (docs/UI.md, "Notices")
 }
 
 //------------------------------------------------------------------------------------------------
@@ -94,11 +96,17 @@ class RZ_UISettings
 	[Attribute("2", desc: "Seconds between one card and the next (urgent cards don't wait)")]
 	float m_fNoticeGap;
 
-	[Attribute("45", desc: "Seconds a low or normal notice that's in the notebook's Radio tab waits for a card before it goes to the notebook only")]
+	[Attribute("45", desc: "Seconds a notice that isn't urgent waits for a card; then it goes to the notebook only (or is dropped if the notebook doesn't list it)")]
 	float m_fNoticeWait;
 
-	[Attribute("4", desc: "Calm after spawn: for this many seconds after a new life only urgent and high notices show")]
+	[Attribute("30", desc: "Quiet start: for this many seconds after a new life only the spawn card and urgent notices are cards; everything else goes quietly into the notebook")]
 	float m_fNoticeCalm;
+
+	[Attribute("300", desc: "First minutes: for this many seconds after a new life, cards that aren't urgent come at most one per First minutes gap")]
+	float m_fNoticeEarly;
+
+	[Attribute("45", desc: "First minutes gap: seconds between two cards in the first minutes after a new life (urgent cards don't wait)")]
+	float m_fNoticeEarlyGap;
 
 	[Attribute("12", desc: "Notices waiting at most; past it the least important goes to the notebook only (or is dropped if it isn't listed there)")]
 	int m_iNoticeQueue;
@@ -193,10 +201,10 @@ class RZ_UISettings
 	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Radio page layout (UI/LAYOUTS.md)", "layout")]
 	ResourceName m_sRadioPage;
 
-	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Hall of fame page layout (UI/LAYOUTS.md)", "layout")]
-	ResourceName m_sHallPage;
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: the Quests page layout (UI/LAYOUTS.md): every job you have, its objectives and Track. Empty = the tab says Nothing here yet", "layout")]
+	ResourceName m_sQuestsPage;
 
-	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: The season page layout (UI/LAYOUTS.md): the majors, and in the epilogue the season as the Zone tells it", "layout")]
+	[Attribute("", UIWidgets.ResourceNamePicker, "Notebook: The season page layout (UI/LAYOUTS.md): the majors, in the epilogue the season as the Zone tells it, then the hall of fame", "layout")]
 	ResourceName m_sSeasonPage;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The notebook item every new life is given (Prefabs/ReforgerZ/UI/RZ_Notebook.et): taken into the hand it opens the notebook, the pad's way in besides the pause menu. Empty = none", "et")]
@@ -572,6 +580,8 @@ class RZ_NoticeStyle
 	int m_iKind = RZ_ENoticeKind.PLAIN;
 	int m_iFaction = -1;
 	int m_iPriority = RZ_ENoticePriority.NORMAL;
+	bool m_bQuiet;		// the notebook only, no card: QUIET, or anything not urgent in the quiet start
+	bool m_bSpawn;		// the spawn card: the one card the quiet start lets through
 
 	//------------------------------------------------------------------------------------------------
 	//! The kind from the title, then the server's tag (RZ_ENoticeTag): a mission, event or world tag
@@ -584,9 +594,11 @@ class RZ_NoticeStyle
 			st.m_iKind = RZ_ENoticeKind.MISSION;
 		else if (tag == RZ_ENoticeTag.EVENT && !radio)
 			st.m_iKind = RZ_ENoticeKind.EVENT;
-		else if (tag == RZ_ENoticeTag.WORLD && !radio)
+		else if ((tag == RZ_ENoticeTag.WORLD || tag == RZ_ENoticeTag.QUIET) && !radio)
 			st.m_iKind = RZ_ENoticeKind.WORLD;
 
+		st.m_bQuiet = tag == RZ_ENoticeTag.QUIET;
+		st.m_bSpawn = tag == RZ_ENoticeTag.SPAWN;
 		st.m_iPriority = PriorityFor(title, st.m_iKind, tag);
 		return st;
 	}
@@ -603,6 +615,8 @@ class RZ_NoticeStyle
 			case RZ_ENoticeTag.LOW: return RZ_ENoticePriority.LOW;
 			case RZ_ENoticeTag.MISSION: return RZ_ENoticePriority.HIGH;
 			case RZ_ENoticeTag.WORLD: return RZ_ENoticePriority.LOW;
+			case RZ_ENoticeTag.QUIET: return RZ_ENoticePriority.LOW;
+			case RZ_ENoticeTag.SPAWN: return RZ_ENoticePriority.HIGH;
 		}
 
 		if (kind == RZ_ENoticeKind.INFECTION)
@@ -780,7 +794,7 @@ class RZ_NoticeStyle
 	//! Listed in the notebook's Radio tab: radio messages, missions, world events and the world at spawn.
 	bool IsLogged()
 	{
-		return IsRadio() || m_iKind == RZ_ENoticeKind.MISSION || m_iKind == RZ_ENoticeKind.EVENT || m_iKind == RZ_ENoticeKind.WORLD;
+		return m_bQuiet || IsRadio() || m_iKind == RZ_ENoticeKind.MISSION || m_iKind == RZ_ENoticeKind.EVENT || m_iKind == RZ_ENoticeKind.WORLD;
 	}
 }
 
@@ -1064,7 +1078,7 @@ class RZ_UIW
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Turns the named image, degrees clockwise from up (the map's you-are-here, the tracker's arrow).
+	//! Turns the named image, degrees clockwise from up (the map's you-are-here).
 	//! VERIFY: ImageWidget.SetRotation turns the image about its centre, clockwise in degrees.
 	static void Rotate(Widget root, string name, float degrees)
 	{

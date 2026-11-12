@@ -396,6 +396,48 @@ class RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The objectives for one player (docs/MISSIONS.md, "Objectives"): the stages they took part
+	//! in, done; then the current stage, its mission's own objectives if it has one running, or the
+	//! stage's line. The next stages are never shown: nobody knows them yet. A questline may
+	//! override this for steps of its own.
+	void GetObjectives(RZ_GameModeComponent gm, RZ_QuestRun run, int playerId, vector from, notnull RZ_ObjList list)
+	{
+		string ident = gm.GetProfile(playerId).m_sIdentity;
+		array<int> done = {};
+		foreach (RZ_QuestPart part : run.m_aParts)
+		{
+			if (part.m_sIdent != ident || part.m_iStage == run.m_iStage || done.Contains(part.m_iStage))
+				continue;
+
+			done.Insert(part.m_iStage);
+			RZ_QuestStage was = GetStage(part.m_iStage);
+			if (was)
+				list.Add(run.Fill(was.m_sTitle), RZ_EObjState.DONE);
+		}
+
+		RZ_Mission m = null;
+		if (gm.GetMissions())
+			m = gm.GetMissions().FindById(run.m_iMissionId);
+
+		if (m)
+		{
+			RZ_ObjList own = new RZ_ObjList();
+			m.GetObjectives(gm, playerId, from, own);
+			list.TakeOpen(own);
+			return;
+		}
+
+		RZ_QuestStage st = GetStage(run.m_iStage);
+		if (!st)
+			return;
+
+		if (st.m_bMission)
+			list.Add(run.Fill(st.m_sTitle), RZ_EObjState.CURRENT);
+		else
+			list.Add("Wait for word: " + run.Fill(st.m_sTitle) + ".", RZ_EObjState.CURRENT);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Gossip while it runs ({keys} filled in), "" if none.
 	string Rumour(RZ_GameModeComponent gm, RZ_QuestRun run)
 	{
