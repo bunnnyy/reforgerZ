@@ -1,6 +1,6 @@
 # ReforgerZ icons
 
-The icon set for the ReforgerZ UI: 75 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
+The icon set for the ReforgerZ UI: 88 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
 
 - **Sources:** `src/<name>.svg`, hand-written, 64×64 viewBox, one colour (`currentColor`), 4-unit strokes, transparent background.
 - **Mono exports:** `png/64/` and `png/128/`, white on transparent so the game can tint them (`ImageWidget.SetColor`).
@@ -47,7 +47,9 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/mission_perimeter.svg" width="32"> | `mission_perimeter` | A Perimeter mission: the drone line at the edge of the Zone |
 | <img src="src/mission_arc.svg" width="32"> | `mission_arc` | A story arc mission: one chapter of a longer story |
 
-## Map markers (12)
+## Map markers (18)
+
+The plated `marker_*` icons name each kind of place in the map's feed. The map itself draws a place as a disc: `marker_ring` (near-black), `marker_disc` (the owner's colour), and on it the faction's emblem or, for a place without a faction, its `glyph_*` ([docs/UI.md](../../docs/UI.md#the-map)).
 
 | Icon | Name | Use |
 |---|---|---|
@@ -63,6 +65,23 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/marker_range.svg" width="32"> | `marker_range` | A pack's ground: a broken ring with three claw marks, no plate. The map sizes it to the ground; the journal's pack rows |
 | <img src="src/marker_self.svg" width="32"> | `marker_self` | You are here: a heading arrow, turned to where you face, no plate. The map's own marker (on `marker_self_back`) and the HUD tracker's arrow |
 | <img src="src/marker_self_back.svg" width="32"> | `marker_self_back` | The disc behind you-are-here on the map, tinted dark so the arrow reads on any ground |
+| <img src="src/marker_disc.svg" width="32"> | `marker_disc` | A solid disc: a map marker's middle, tinted in its owner's colour, and the dark chip under a place badge |
+| <img src="src/marker_ring.svg" width="32"> | `marker_ring` | A thin hollow ring round a map marker's disc, with a small gap, tinted near-black |
+| <img src="src/glyph_power.svg" width="32"> | `glyph_power` | The power station's bolt, no plate: bone on its steel-grey map disc |
+| <img src="src/glyph_radio.svg" width="32"> | `glyph_radio` | The radio station's mast, no plate: bone on its steel-grey map disc |
+| <img src="src/glyph_event.svg" width="32"> | `glyph_event` | A world event's exclamation mark, no plate: dark on its hazard-yellow map disc |
+| <img src="src/glyph_checkpoint.svg" width="32"> | `glyph_checkpoint` | A sealed checkpoint's striped barrier, no plate: dark on its hazard-yellow map disc |
+
+## Map badges (4)
+
+What a faction's place is: a tiny glyph in a ring, drawn in bone on a dark chip (`marker_disc`) at a map marker's bottom right, and in the map key.
+
+| Icon | Name | Use |
+|---|---|---|
+| <img src="src/badge_stronghold.svg" width="32"> | `badge_stronghold` | A stronghold: a small keep |
+| <img src="src/badge_outpost.svg" width="32"> | `badge_outpost` | An outpost: a flag |
+| <img src="src/badge_safehouse.svg" width="32"> | `badge_safehouse` | A safehouse: a house |
+| <img src="src/badge_lab.svg" width="32"> | `badge_lab` | The lab: a flask |
 
 ## Items (18)
 
@@ -128,3 +147,13 @@ How a spoken line reaches you, before the speaker's name in a subtitle ([docs/UI
 | Icon | Name | Use |
 |---|---|---|
 | <img src="src/voice_note.svg" width="32"> | `voice_note` | A note, sign or board read out: a sheet with a turned corner and a hand's lines |
+
+## Objectives (3)
+
+The marks before a job's objectives on the quest tracker and in the Quests tab, New Vegas style.
+
+| Icon | Name | Use |
+|---|---|---|
+| <img src="src/track_current.svg" width="32"> | `track_current` | The current objective: a filled diamond (hazard yellow) |
+| <img src="src/track_next.svg" width="32"> | `track_next` | The next objective you know of, or an optional one: an open diamond (dim) |
+| <img src="src/track_done.svg" width="32"> | `track_done` | An objective done: a tick, beside the struck-through line (the Quests tab) |

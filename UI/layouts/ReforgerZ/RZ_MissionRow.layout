@@ -1,167 +1,212 @@
-ButtonWidgetClass "{6E0C75F1B1B95AB8}" {
- Name "MissionRow"
- Slot LayoutSlot "{1346038C03A1C699}" {
+VerticalLayoutWidgetClass "{966B7F63BC4A6FD1}" {
+ Name "MissionRowBox"
+ Slot LayoutSlot "{D03DC8C76EE7038F}" {
   HorizontalAlign 3
   VerticalAlign 0
  }
- style blank
  {
-  SizeLayoutWidgetClass "{2C00CC89E20F85D3}" {
-   Name "RowSize"
-   Slot ButtonWidgetSlot "{33AE556635ED72B6}" {
+  TextWidgetClass "{4742AE11CC3BBF46}" {
+   Name "RowGroup"
+   Slot LayoutSlot "{34BDDF64F212B7D6}" {
     HorizontalAlign 3
-    VerticalAlign 3
+    VerticalAlign 0
+    Padding 12 14 12 4
    }
-   AllowHeightOverride 1
-   HeightOverride 62
+   "Is Visible" 0
+   Color 0.639 0.62 0.565 1
+   Text "QUESTLINES AND JOBS"
+   "Font Size" 18
+   "Min Font Size" 18
+   FontProperties FontProperties "{8D461B1F7E2FC54E}" {
+    Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+   }
+  }
+  ButtonWidgetClass "{6E0C75F1B1B95AB8}" {
+   Name "MissionRow"
+   Slot LayoutSlot "{1346038C03A1C699}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+   }
+   style blank
    {
-    FrameWidgetClass "{8C4B16FF154EDAF1}" {
-     Name "RowFrame"
-     Slot AlignableSlot "{C6BD2F68E877734D}" {
+    SizeLayoutWidgetClass "{2C00CC89E20F85D3}" {
+     Name "RowSize"
+     Slot ButtonWidgetSlot "{33AE556635ED72B6}" {
       HorizontalAlign 3
       VerticalAlign 3
      }
+     AllowHeightOverride 1
+     HeightOverride 62
      {
-      ImageWidgetClass "{79096EDB4C4F35FA}" {
-       Name "RowSelected"
-       Slot FrameWidgetSlot "{8ED70D4F6F0688AD}" {
-        Anchor 0 0 1 1
-        PositionX 0
-        OffsetLeft 0
-        PositionY 0
-        OffsetTop 0
-        SizeX 0
-        OffsetRight 0
-        SizeY 0
-        OffsetBottom 0
-        Alignment 0 0
+      FrameWidgetClass "{8C4B16FF154EDAF1}" {
+       Name "RowFrame"
+       Slot AlignableSlot "{C6BD2F68E877734D}" {
+        HorizontalAlign 3
+        VerticalAlign 3
        }
-       "Is Visible" 0
-       Color 0.91 0.886 0.816 0.07
-       Size 1 1
-      }
-      ImageWidgetClass "{9EA15A29C309C41C}" {
-       Name "RowAccent"
-       Slot FrameWidgetSlot "{62EE0F8CA141BE58}" {
-        Anchor 0 0 0 1
-        PositionX 0
-        OffsetLeft 0
-        PositionY 0
-        OffsetTop 0
-        SizeX 4
-        OffsetRight -4
-        SizeY 0
-        OffsetBottom 0
-        Alignment 0 0
-       }
-       Color 0.949 0.761 0.188 1
-       Size 1 1
-      }
-      ImageWidgetClass "{74FBD05AED6F0F76}" {
-       Name "RowIcon"
-       Slot FrameWidgetSlot "{2943AB23E5B90CFB}" {
-        Anchor 0 0 0 0
-        PositionX 26
-        OffsetLeft 26
-        PositionY 16
-        OffsetTop 16
-        SizeX 30
-        OffsetRight -56
-        SizeY 30
-        OffsetBottom -46
-        Alignment 0 0
-       }
-       Color 0.949 0.761 0.188 1
-       Size 30 30
-      }
-      TextWidgetClass "{58266787C57250C7}" {
-       Name "RowTitle"
-       Slot FrameWidgetSlot "{5FD316A8400A6E22}" {
-        Anchor 0 0 1 0
-        PositionX 70
-        OffsetLeft 70
-        PositionY 10
-        OffsetTop 10
-        SizeX -250
-        OffsetRight 180
-        SizeY 22
-        OffsetBottom -32
-        Alignment 0 0
-       }
-       Color 0.91 0.886 0.816 1
-       Text "The Bitten Friend"
-       "Font Size" 18
-       "Min Font Size" 18
-       FontProperties FontProperties "{C94B876C213206C7}" {
-        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-       }
-      }
-      TextWidgetClass "{DE29EBA94A7508E8}" {
-       Name "RowSub"
-       Slot FrameWidgetSlot "{280FF06A62C224B1}" {
-        Anchor 0 0 1 0
-        PositionX 70
-        OffsetLeft 70
-        PositionY 34
-        OffsetTop 34
-        SizeX -250
-        OffsetRight 180
-        SizeY 22
-        OffsetBottom -56
-        Alignment 0 0
-       }
-       Color 0.639 0.62 0.565 1
-       Text "The Haven - Ines Calder"
-       "Font Size" 18
-       "Min Font Size" 18
-       FontProperties FontProperties "{375F7B9C37A9D142}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-       }
-      }
-      TextWidgetClass "{103446843C98C6D8}" {
-       Name "RowDir"
-       Slot FrameWidgetSlot "{1ABBE66847C543DC}" {
-        Anchor 1 0 1 0
-        PositionX -22
-        OffsetLeft -22
-        PositionY 10
-        OffsetTop 10
-        SizeX 150
-        OffsetRight -128
-        SizeY 22
-        OffsetBottom -32
-        Alignment 1 0
-       }
-       Color 0.91 0.886 0.816 1
-       Text "NE 1.2 km"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Right
-       FontProperties FontProperties "{8E3B0D1C09AE74B1}" {
-        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
-       }
-      }
-      TextWidgetClass "{62F0BDA3022AA91D}" {
-       Name "RowTime"
-       Slot FrameWidgetSlot "{35B2F281904A55BA}" {
-        Anchor 1 0 1 0
-        PositionX -22
-        OffsetLeft -22
-        PositionY 34
-        OffsetTop 34
-        SizeX 150
-        OffsetRight -128
-        SizeY 22
-        OffsetBottom -56
-        Alignment 1 0
-       }
-       Color 0.431 0.416 0.376 1
-       Text "31 min left"
-       "Font Size" 18
-       "Min Font Size" 18
-       "Horizontal Alignment" Right
-       FontProperties FontProperties "{F13EB699EA678AE9}" {
-        Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+       {
+        ImageWidgetClass "{79096EDB4C4F35FA}" {
+         Name "RowSelected"
+         Slot FrameWidgetSlot "{8ED70D4F6F0688AD}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.91 0.886 0.816 0.07
+         Size 1 1
+        }
+        PanelWidgetClass "{B3E41C7A0F25D968}" {
+         Name "RowSelLine"
+         Slot FrameWidgetSlot "{5C2A97E04D1B83F6}" {
+          Anchor 0 0 1 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 0
+          OffsetRight 0
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         "Is Visible" 0
+         Color 0.949 0.761 0.188 1
+         style outline_2px
+        }
+        ImageWidgetClass "{9EA15A29C309C41C}" {
+         Name "RowAccent"
+         Slot FrameWidgetSlot "{62EE0F8CA141BE58}" {
+          Anchor 0 0 0 1
+          PositionX 0
+          OffsetLeft 0
+          PositionY 0
+          OffsetTop 0
+          SizeX 4
+          OffsetRight -4
+          SizeY 0
+          OffsetBottom 0
+          Alignment 0 0
+         }
+         Color 0.949 0.761 0.188 1
+         Size 1 1
+        }
+        ImageWidgetClass "{74FBD05AED6F0F76}" {
+         Name "RowIcon"
+         Slot FrameWidgetSlot "{2943AB23E5B90CFB}" {
+          Anchor 0 0 0 0
+          PositionX 26
+          OffsetLeft 26
+          PositionY 16
+          OffsetTop 16
+          SizeX 30
+          OffsetRight -56
+          SizeY 30
+          OffsetBottom -46
+          Alignment 0 0
+         }
+         Color 0.949 0.761 0.188 1
+         Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+         Image "mission_contract"
+         Size 30 30
+        }
+        TextWidgetClass "{58266787C57250C7}" {
+         Name "RowTitle"
+         Slot FrameWidgetSlot "{5FD316A8400A6E22}" {
+          Anchor 0 0 1 0
+          PositionX 70
+          OffsetLeft 70
+          PositionY 10
+          OffsetTop 10
+          SizeX -250
+          OffsetRight 180
+          SizeY 22
+          OffsetBottom -32
+          Alignment 0 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "The Bitten Friend"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{C94B876C213206C7}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{DE29EBA94A7508E8}" {
+         Name "RowSub"
+         Slot FrameWidgetSlot "{280FF06A62C224B1}" {
+          Anchor 0 0 1 0
+          PositionX 70
+          OffsetLeft 70
+          PositionY 34
+          OffsetTop 34
+          SizeX -250
+          OffsetRight 180
+          SizeY 22
+          OffsetBottom -56
+          Alignment 0 0
+         }
+         Color 0.639 0.62 0.565 1
+         Text "The Haven - Ines Calder"
+         "Font Size" 18
+         "Min Font Size" 18
+         FontProperties FontProperties "{375F7B9C37A9D142}" {
+          Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+         }
+        }
+        TextWidgetClass "{103446843C98C6D8}" {
+         Name "RowDir"
+         Slot FrameWidgetSlot "{1ABBE66847C543DC}" {
+          Anchor 1 0 1 0
+          PositionX -22
+          OffsetLeft -22
+          PositionY 10
+          OffsetTop 10
+          SizeX 150
+          OffsetRight -128
+          SizeY 22
+          OffsetBottom -32
+          Alignment 1 0
+         }
+         Color 0.91 0.886 0.816 1
+         Text "NE 1.2 km"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Right
+         FontProperties FontProperties "{8E3B0D1C09AE74B1}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
+        TextWidgetClass "{62F0BDA3022AA91D}" {
+         Name "RowTime"
+         Slot FrameWidgetSlot "{35B2F281904A55BA}" {
+          Anchor 1 0 1 0
+          PositionX -22
+          OffsetLeft -22
+          PositionY 34
+          OffsetTop 34
+          SizeX 150
+          OffsetRight -128
+          SizeY 22
+          OffsetBottom -56
+          Alignment 1 0
+         }
+         Color 0.431 0.416 0.376 1
+         Text "31 min left"
+         "Font Size" 18
+         "Min Font Size" 18
+         "Horizontal Alignment" Right
+         FontProperties FontProperties "{F13EB699EA678AE9}" {
+          Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
+         }
+        }
        }
       }
      }

@@ -20,8 +20,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 4288689: re-check spawning in play: **one card, then quiet** (WBS §8, "Spawn: one card, then quiet"). Respawn a few times, first spawn and later ones: count the cards (one: the background and where you wake), see "+N in your notebook" and the Radio tab's World entries, one card at most every 45 s for five minutes. Report any other card in the first 30 s and its title.
 - 2026-11-12 4288689: the new settings **UI > Quiet start** (30), **First minutes** (300), **First minutes gap** (45) and **Guidance > Tips wait after spawn** (90) appear on the game mode (WBS §5): check the defaults came through.
 - 2026-11-12 4288689: **UI > Quests page** on `RZ_GameMode.et` is `RZ_QuestsPage.layout` (the cloud renamed the old `m_sHallPage` line; the layout kept the hall page's GUID `{FCD5A2E4F7512EFF}`): open the game mode and check the slot is set, then open `RZ_QuestsPage.layout`, `RZ_SeasonPage.layout` and `RZ_Hud.layout` (its new `TrackerPanel`) in the layout editor and fix what they report (UI/LAYOUTS.md).
-- 2026-11-12 4288689: with a pad, go through all five tabs (Standing, Journal, Radio, Quests, The season): the Journal has only notes, The season scrolls down to the hall of fame, and on Quests **Y** tracks the selected job (T on a keyboard; the TRACK button with the mouse): `RZ_TrackJob` is new in `chimeraInputCommon.conf`'s `MenuContext`; check Y does nothing else in the notebook (WBS §8, "Quests tab").
-- 2026-11-12 4288689: play the quest tracker (WBS §8, "The quest tracker"): take a contract, see the small box top left with a real icon (no flat square), the objective with a rough area (no metres), the other jobs as dim lines, the ring on the map; relog and it's still tracked.
+- 2026-11-12 4288689: with a pad, go through all five tabs (Standing, Journal, Radio, Quests, The season): the Journal has only notes, The season scrolls down to the hall of fame, and on Quests **A** (and Y; T or Enter on a keyboard; the TRACK button with the mouse) tracks the selected job: `RZ_TrackJob` is new in `chimeraInputCommon.conf`'s `MenuContext`; check Y does nothing else in the notebook and the footer changes with the tab (WBS §8, "Quests tab", "Track on the Quests tab").
+- 2026-11-12 9bcaf43: check the tracker shows only the tracked job: take three jobs and see one job top left, no box, with its real icon, the objective after a yellow diamond, the next dim, the rough area in yellow, no other lines and no "+N more"; the Quests tab grouped (the season's story, questlines and jobs, errands) with TRACKED; open `RZ_Hud.layout`, `RZ_QuestsPage.layout` and `RZ_MissionRow.layout` (its new root box and `RowGroup`) in the layout editor and fix what they report (WBS §8, "The quest tracker" to "Track on the Quests tab"; UI/LAYOUTS.md).
 - 2026-11-12 3e921af: your `TrackPanel` (fc7cb37) is replaced by the cloud's `TrackerPanel` and its journal Track button by the Quests tab's; the map's you-are-here stays. Nothing to do but pull; the atlas with `marker_self` still needs importing for the map's arrow (that missing texture was the flat yellow square in the author's screenshot).
 - 2026-11-12 (cloud, docs pass): `UI/layouts/Menus/DeployMenu/RespawnMenu.layout` (the override of vanilla's deploy menu) is deleted: it embedded the removed `RZ_BackgroundPanel.layout`, and our spawn screen replaces that menu. Nothing to do but pull; with **UI > Spawn row layout** empty, vanilla's own deploy menu opens.
 - 2026-11-12 (cloud, docs pass): new in play: the journal's *The finale* row while the cure's routes are open, the jobs in each player's order, and a sound on each notice card (vanilla's hint sound): check them in Workbench play (UI.md).
@@ -65,7 +65,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-12 985b210: slot **Missions > Errands > Props > Watch**: a vanilla wristwatch item (WBS §4).
 - 2026-11-12 985b210: the new Errands settings **Pay in kind**, **Meals as pay**, **When the truck comes** (on) and **Headlines a day** (2) appear on the game mode (WBS §5): check the defaults came through.
 - 2026-11-12 6fd2709: the new setting **Missions > Story > Numbered scenes** (off) appears (WBS §5); play a talk scene with it off, and on if the slots' labels don't show (WBS §8).
-- 2026-11-12 104e08d: the icon atlas holds `mission_errand` now (`UI/Textures/ReforgerZ/RZ_Icons.png`, 63 icons): import it again and run `py tools/icon_atlas.py imageset` (UI/LAYOUTS.md, "Importing the icons").
+- 2026-11-12 9bcaf43: the icon atlas holds 78 icons now (`mission_errand`, you-are-here, the subtitles' `voice_note` and the three objective marks `track_current`, `track_next`, `track_done`; re-packed after the merge, so cells moved; `UI/Textures/ReforgerZ/RZ_Icons.png`): import it again; the imageset is already written (UI/LAYOUTS.md, "Importing the icons").
 - 2026-11-12 104e08d: play-test the story jobs' talk scenes, errand pay, His Effects, strangers out of sight and the new tricks (WBS §8), and check the five new VERIFY markers (WBS §6: strangers' sight, junctions, a robbed body, locals' labels, mission goods' tag).
 
 **From the cloud's finale, majors and epilogue rest (2026-11-12)**
@@ -124,11 +124,43 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## For the cloud
 
+- 2026-11-12 (PC), **handed over from the PC, all approved by the author in play-tests. Please build these.** Work in progress is pushed as branches `pc-wip/*`. Merge `claude/sleepy-volta-nwm433` into each first. None is compiled or tested unless it says so. Briefs, as the author asked:
+  1. **Openings phase 1** (`designs/OPENINGS.md`; branch `pc-wip/openings-phase1`: the place roll at spawn, the contact and the chain on handed errands, the start picker removed; mid-task, at the talk adapter).
+     - **Spawn:** a random place that fits the background, with the spawn screen's picker removed and no chosen starts ever. The "out of the hiding place" scene.
+     - **The contact:** someone from before speaks first, never "you're new"; everyone has been trapped since the seal. Lines in `dialogue/openings/`.
+     - **The chain:** one three-step chain on the errand engine with the story beats, ending by background: Nurse, Doctor and Lab Tech at Halcyon; Ex-Con and Raider at the Red Hand; Soldier and Police at Bastion; everyone else at the Haven. About 15 minutes.
+     - **Rules:** the tracker follows each step. This is the ONLY quest that may start without interacting with someone.
+     - **Docs:** move what's built out of the design into the docs.
+  2. **Jobs only by interaction** (no branch yet).
+     - **Offers:** every job starts from a person (talk) or a thing (a board, a note, a radio set you use, a clue), except the Openings chain. No offers out of nowhere and no jobs on the radio; a job you've only heard of is a Radio-tab entry or rumour pointing to its giver.
+     - **World events:** news in the Radio tab, not quests.
+     - **Tabs:** the order becomes **Standing, Quests, Radio, Journal, The season**.
+     - **Journal:** the history of finished, failed and abandoned jobs (icon, name, giver, result, when, outcome line). Today's Journal content goes under a **What you know** group.
+     - **Check:** run the runtime test after.
+  3. **The talk screen** (branch `pc-wip/talk-typewriter-nametags`, mid-task).
+     - **Paging:** down on the last reply goes to the next page, up on the first goes back.
+     - **Advancing:** their line never auto-advances. It types out (A finishes it), then a bouncing ▼ and a "2 / 4" count show, and A goes on. The footer prompt reads "A Continue" / "A Skip".
+     - **One Talk prompt per person:** everything else becomes hub replies. Trade opens the shop; the trial dose shows only when it applies, else greyed; errands and the rest likewise. Remove **"Check standing and work"** entirely (it's in the notebook). The old actions stay only as the fallback without the talk layout. Vanilla actions are kept.
+     - **Nametags:** within about 8 m, a small tag above people who can talk: name, position (role), who they're with (faction in its colour). Line of sight only, never infected or players, a few at most, client-side.
+  4. **Radio and stove menus** (branch `pc-wip/radio-stove-menus`, mid-task, writing the stove section).
+     - **View radio:** an action next to vanilla's radio actions opens a radio screen with everything: the channels you can hear, their latest lines and the full log, with a filter. Don't edit `RZ_Notebook.c` for it.
+     - **Stove:** a stove, oven or fireplace opens a cooking screen like the crafting one: boil water, the home remedy, Metabolism's cookables. Inputs against your pack, time, Cook/Boil, server-checked, with the actions as the fallback.
+  5. **Loot** (branch `pc-wip/loot-density`, mid-task: every destructible building now reaches loot).
+     - **Amount:** the author finds "way too little loot". Fix the root causes: the protected radius around faction places, the put-out rate and radius, empty rolls, and the anchors (furniture found as static entities?). Prefer filling vanilla furniture storages ("Default first").
+     - **Duplicates:** the author saw gloves ×2 and a backpack ×2 in one room's Vicinity. Look for double put-out of a building, duplicate picks in one roll, or seeds repeating across neighbours.
+     - **Logs:** one per building (key, type, anchors, items) and a periodic summary.
+  6. **The map's objective** (no branch).
+     - **Only the tracked job's current objective** shows, for its player only.
+     - **A known spot:** an **amber diamond** (the tracker's colour, about #E8B23A, with a #121416 outline and a dark centre dot), labelled.
+     - **A search only:** **style 1**, a soft amber fill (about 12–15%) with a thin solid amber edge. Remove the old dashed and striped mission circle.
+     - **Map key:** add a row "Your objective / Search area".
+  The PC will re-import the icon atlas in Workbench after any icon change, and play-test each piece as it lands. Say on the board when one is pushed.
+
 - 2026-11-12 (PC): merged from the author's play-test: the talk screen New Vegas style (compact box, 5 replies, [Admin] sub-list, grey when heard, keys 1-5), map icons 48 px, the Standing page as G2 (rows of icons, 9 new icons, no Fame/Infamy grid), 96 people looks with RZ_Looks.c and PickLook at every faction spawn, camp life laid out by plans (kits are plans now: m_vPlan, m_fPlanYaw, footprints; counters; SetGroupSmartAction finds the sentinel), the notebook item opened by the HUD's held-gadget check, Metabolism water (RZ_Water_Dirty). Claims cleared. Not yet seen in play.
 
 ## Claims
 
-- PC, 2026-11-12: Openings phase 1 (designs/OPENINGS.md): the spawn screen's start picker and place roll (UI/RZ_SpawnMenu.c, the spawn points), the hiding-place scene, the someone-from-before contact (dialogue/openings/), the first three-step chain on the errand engine, the spawn scenarios and "a wanderer finds you" for players who get an opening. Please leave those alone until it lands.
+- Cloud, 2026-11-12: all six of "For the cloud" (openings phase 1, jobs only by interaction, the talk screen, the radio and stove menus, loot, the map's objective). Each is said here when pushed.
 
 ## Status
 
