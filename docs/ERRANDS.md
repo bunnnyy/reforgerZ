@@ -93,7 +93,7 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   the person's own topic (the cook's supper, a sentry's shift, the Courier's late letters), not as a
   reply of their own ([DIALOGUE.md](DIALOGUE.md#hubs-work-comes-out-of-talk)); the deal is the same.
 - **Waved over.** A safehouse's or holding's shown named person may call a passing player within
-  30 m: *"Mara waves you over."* Nothing more: the errand waits as their open offer (10 minutes),
+  30 m: *"You there. Have you got a minute? Something wants doing, when you're free."* Nothing more: the errand waits as their open offer (10 minutes),
   and they say what it is only when you ask **Anything need doing?** (jobs only by interaction,
   [MISSIONS.md](MISSIONS.md#who-gets-offered-what)). That's an unasked contact: it asks the notice lanes'
   [interruption budget](DESIGN.md#notice-lanes) (`TryContact`, errands last), and every rule of the
@@ -103,7 +103,7 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   *"Hand over two tins [2 food]"*, *"Wire in a car battery [Mechanic] [1 battery]"*,
   *"Soften it on the way [Trusted - Haven]"*, *"Add a threat of your own [Feared | +3 Infamy]"*.
   Tags show costs and requirements, never outcomes. The replies are that player's for 90 seconds,
-  or until they pick or walk 20 m off; anyone else at the same person hears *"Give us a minute."*
+  or until they pick or walk 20 m off; anyone else at the same person hears *"Give us a minute. I'm in the middle of something with someone else."*
 - **Not now** is always free: nothing is remembered, and the offer stands 10 minutes.
 - **On the talk screen** the ways are said as what you agree to (`RZ_TalkWords.Agree`): "Hand over
   two tins" is *I'll hand over two tins.*, with its tag in front, and "Not now" is *Not now. Ask me
@@ -332,7 +332,7 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **Wildcard Money** | crews, a Red Hand named person | Wildcard or Tolerated with the Red Hand; another Red Hand holding within 1.5 km | Carry the cut there: 6 Favor; skim a little: 8 Favor; give it to a hungry house within 1.5 km: +2 food there, 2 Haven Fame, +8 Red Hand Infamy |
 | **Clean Slate** (amends) | any faction's named person | that faction Watches you | The worst shift going (a minute): amends |
 | **Dress Rehearsal** (disguises) | crews, a Red Hand named person; Known with the Red Hand, below Known with Bastion; disguises on | a Bastion road post within 2 km | Walk up to it in Bastion kit and pass the look, 10 s at the barrier, and walk back: 10 Favor, 2 Fame. At the barrier and not passing: it's over, and the open channel laughs at someone in borrowed green (no name) |
-| **The Officer's Coat** (house; disguises) | a Haven named person; you're disguised in Bastion kit; disguises on | a Bastion holding or post within 1.5 km | Tell her you're not Bastion (regard). Take the tin "for the paperwork": the house −1 food, a lie found by rumour (+3 Haven Infamy). [Known: Bastion] ask at the post yourself (10 s): 4 Favor, and *"He's on the roster as KIA, or struck off."* |
+| **The Officer's Coat** (house; disguises) | a Haven named person; you're disguised in Bastion kit; disguises on | a Bastion holding or post within 1.5 km | Tell her you're not Bastion (regard). Take the tin "for the paperwork": the house −1 food, a lie found by rumour (+3 Haven Infamy). [Known: Bastion] ask at the post yourself (10 s): 4 Favor, and her answer: *"On the roster as killed, or struck off? Which?"* |
 | **The Name on the Tape** (the dead; disguises) | a Bastion named person; Known with Bastion; disguises on | one of Bastion's people died within 1.5 km this season day and is still out there (the nail list, [REPUTATION.md](REPUTATION.md#whose-kit-it-was)); never to whoever killed them | Bring the tag and jacket home (15 s where they fell): 4 Favor, 1 Fame; the name is marked home and read on the nightly call. [Known: Red Hand] sell the jacket to the fence: 10 Red Hand Favor, and the board lists "kit lost". Once per dead name |
 | **Spot the Tells** (Bastion; disguises) | a Bastion named person; Known with Bastion; disguises on | two or more different players caught by Bastion within 2.5 km in the last 2 season days | Find the scout by the tells (20 s among the three on duty): right (always with a Soldier or Police background, else two times in three) 5 Favor, 2 Fame; wrong, Private Hollis spends the night in the stockade and nobody pays. [Known: Red Hand] take the scout's money and point at Hollis: 10 Red Hand Favor, 35% it comes out (+5 Bastion Infamy) |
 | **Paint** (the crews; disguises; with Name Day's Brush) | a Red Hand named person; Known with the Red Hand; disguises on | night, a Bastion road post within 2.5 km | Paint a red hand on the barrier (20 s there): in Bastion kit asking for a light (you must be passing as Bastion at the barrier, else it's over), from the back unseen, or in plain sight (Bastion's timed grudge and +3 Bastion Infamy). 2 Fame, the crew name Brush if you have none, and "a civilian with a paint tin" on Bastion's board |
@@ -366,7 +366,7 @@ Four missions left the random pool for these and are gone from the code: Fuel fo
 | **The Other Half** (help across lines) | any holding's named person; Known with their rival (the Red Hand's: Bastion; everyone else's: the Red Hand) | a holding of that rival within 1.5 km | Carry the threat word for word (5 s at their gate): 4 Favor, +2 Infamy with the rival. Soften it (Trust 2 with the rival): 4 Favor |
 | **The Drawing** (the Long Table) | the clerk; Known with the Haven | the Long Table broken up and the boy not lost (`table.broken`, not `table.boy_lost`) | Put it in the drawer, keep it, or burn it on the stove. No pay; the flag `errand.drawing` (1, 2, 3) and a record |
 | **Is She Gone?** (the infected) | a Haven named person | a pack within 1.5 km standing its vigil for a leader the house knew by name (the watching place at Traces' kill-site candle, L1, when one stands within 600 m of the lair) | Watch from the lair's edge, unseen (15 s): 4 Favor. [Elder] sit at supper while they say her name (a minute): 3 Favor, a record with an epilogue line |
-| **Boarded Up** (players' traces) | a Haven named person | a town within 1.5 km that nobody holds, at 30+ infection, with a player's barricade standing; or Traces' held-out house (V2) within 1.5 km, first | Bring the family out (10 s): +1 at the house, 4 Favor. Leave a tin there: 3 Favor. *"Whoever boarded this, tell them it held."* (never the builder's name) |
+| **Boarded Up** (players' traces) | a Haven named person | a town within 1.5 km that nobody holds, at 30+ infection, with a player's barricade standing; or Traces' held-out house (V2) within 1.5 km, first | Bring the family out (10 s): +1 at the house, 4 Favor. Leave a tin there: 3 Favor. *"Their father sent word back with the lookout: whoever boarded that house, tell them it held."* (never the builder's name) |
 | **Old Habits** (backgrounds: Ex-Con) | a Bastion named person | a Red Hand camp within 1.5 km | Walk the wire and say where you'd come in (a minute at the gate): 5 Favor, 1 Fame. Tell him the wrong place: 3 Favor and a lie (+3 Bastion Infamy when found) |
 | **Names on the Call** (Bastion) | the radio operator | civilians sheltered at Bastion's posts this season (`bastion.sheltered`), a house within 1.5 km | Pin the list on the house's board (5 s there): 4 Favor |
 | **The Chalk on the Door** (the house) | the clerk | a town within 1.5 km with a work tally ([MISSIONS.md](MISSIONS.md#one-choice-jobs-and-work)) | Go and read the wall (15 s): 3 Favor. Say it's still true: 2 Favor and a lie |
@@ -541,7 +541,7 @@ Each memo has three lines, turning with the hour. **Missions > Errands > Pinned 
   player who knows them is within 100 m; otherwise it's a plain occupant.
 - **Coming to you.** Passing 80–250 m from a local's house, someone they remember helping or saving
   them may see them walk up (a stand-in 15–25 m off, out of your sight when they appear, for 90 s and
-  gone once nobody sees them) with their line and *"They could use a hand there"*; once a real day per
+  gone once nobody sees them) with their line and *"We could use a hand there"*; once a real day per
   local per player, one on the server at a time, never in a fight, a car or near a job, and only with
   room in the body budget (`errand`, [INFECTED.md](INFECTED.md#the-one-body-budget)) and a hidden spot.
 - **Their spot as a place.** A house errand's "here" step, for someone who knows a local there, is

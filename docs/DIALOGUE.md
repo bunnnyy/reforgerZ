@@ -622,8 +622,8 @@ person, **Ask for whoever's in charge** in a quartermaster's talk, **Call on the
 radio. Nobody opens it on you because you looked at them or walked up. Someone who wants your
 attention calls out instead: a subtitle with their name ([UI.md](UI.md#subtitles-and-the-reader)),
 their nametag as you come near, and, where it's a step of a job, the tracker and the map's diamond
-on them. The same holds for everyone who calls you: a named person who waves you over (*"Mara waves
-you over."*, [ERRANDS.md](ERRANDS.md#being-asked)), a stranger's call-out, a leader who catches your
+on them. The same holds for everyone who calls you: a named person who waves you over (*"You there. Have
+you got a minute?"*, [ERRANDS.md](ERRANDS.md#being-asked)), a stranger's call-out, a leader who catches your
 eye, an opening's contact ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)).
 
 **Call-outs** (**Dialogue > Opens**, on, with Trees; `RZ_DialogueOpens`). A greet written with
