@@ -137,8 +137,10 @@ and one way to end it: **research the cure.**
   lanterns where people live, dogs that go quiet before a hunt, one stroke of a church bell and the
   town loudspeaker. Every prop is optional: the words always come. Nothing pays.
 - **Notes between players**: a notice board at every Haven safehouse.
-- **Loot the world**: things lie loose in houses, on worktops and floors, and you pick them up;
-  bodies looted like any body, car wrecks' boots to open like any storage; locked doors that keep the infected out (they bang on them)
+- **Loot the world**: a few things lie loose in every building, on worktops and floors and suited
+  to it (medicine in a pharmacy, tools in a garage), and you pick them up the game's way; picked-over
+  towns are thin; bodies looted like any body, car wrecks' boots to open like any storage; treating each other is the
+  game's own, and a Nurse or Doctor also slows a bite; locked doors that keep the infected out (they bang on them)
   and keys you can lose or trade, letters that point somewhere, rare fixable cars, crafting,
   traps, fire (a full fuel can in your hands at the door), water and secure radio channels.
 - **Teaches itself**: no tutorial pop-ups, just a note where you wake, a wind-up radio and
@@ -247,7 +249,7 @@ scripts/Game/ReforgerZ/
   Guidance/      experience levels, tips, spawn scenarios, open radio channels
   Interactions/  loose loot, searching, door locks, doorway blockers and keys, building queries (mission
                  spots kept out of locked buildings), cars, crafting (and its screen's server side), water,
-                 traps, generators, fire, secure radio, treating others
+                 traps, generators, fire, secure radio, a medic slowing a bite
   Persistence/   save and load of mode state, the hall of fame
   Dialogue/      the talk screen's engine: conversations, adapters for each kind of person
                  (strangers and the open channel too), what a reply needs; the trees (hubs,

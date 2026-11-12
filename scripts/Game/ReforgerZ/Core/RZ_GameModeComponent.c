@@ -302,7 +302,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	protected ref RZ_GuidanceSettings m_GuidanceSettings;
 
 	// ---------------------------------------------------------------- World interactions
-	[Attribute(desc: "World interactions: the interaction spot prefab, scan radius and caps, bells and sirens, water, treating other players (docs/DESIGN.md, World interactions)", category: "ReforgerZ|Interactions")]
+	[Attribute(desc: "World interactions: the interaction spot prefab, scan radius and caps, bells and sirens, water, a medic slowing a bite (docs/DESIGN.md, World interactions)", category: "ReforgerZ|Interactions")]
 	protected ref RZ_InteractionSettings m_InteractionSettings;
 
 	[Attribute(desc: "Search: loot pool and tables per building type, chances, locks and keys, readable things, car boots and bodies", category: "ReforgerZ|Interactions")]
