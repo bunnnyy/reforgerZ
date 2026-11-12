@@ -187,3 +187,118 @@ class RZ_RegisterPlugin : WorkbenchPlugin
 		Workbench.ScriptDialog("ReforgerZ: Register or rebuild resources", "", this);
 	}
 }
+
+//! Lays out a group of compositions in the open world for a look (or a screenshot), and points the
+//! camera at them. The list ($profile:RZ_ShowList.txt) holds "# Title" lines that start a group and
+//! ResourceNames under them. Each run removes the last group it placed and shows the next one;
+//! after the last group it clears up. Nothing is saved: don't save the world afterwards.
+[WorkbenchPluginAttribute(name: "ReforgerZ: Show the next composition group", description: "Place the next group of compositions in front of the camera for a look", wbModules: {"WorldEditor"}, awesomeFontCode: 0xF06E)]
+class RZ_ShowcasePlugin : WorkbenchPlugin
+{
+	[Attribute("$profile:RZ_ShowList.txt", desc: "The list")]
+	protected string m_sListPath;
+
+	[Attribute("6326 0 6418", desc: "Where the first piece goes (x and z; y is the ground). 0 0 0: 40 m in front of the camera when the first group is shown")]
+	protected vector m_vOrigin;
+
+	protected static ref array<IEntitySource> s_aPlaced = {};
+	protected static int s_iGroup;
+	protected static vector s_vStart;
+
+	override void Run()
+	{
+		WorldEditorAPI api = RZ_WB.Api();
+		if (!api)
+			return;
+		api.BeginEntityAction("ReforgerZ: Showcase");
+		foreach (IEntitySource placed : s_aPlaced)
+		{
+			if (placed)
+				api.DeleteEntity(placed);
+		}
+		s_aPlaced.Clear();
+
+		array<string> items = {};
+		string title = ReadGroup(s_iGroup, items);
+		if (items.IsEmpty())
+		{
+			api.EndEntityAction();
+			s_iGroup = 0;
+			Print("[ReforgerZ] Showcase: done, all groups shown and cleared");
+			return;
+		}
+
+		// The start: the attribute, else a spot ahead of the camera, fixed at the first group
+		if (s_iGroup == 0 || s_vStart == vector.Zero)
+		{
+			s_vStart = m_vOrigin;
+			if (s_vStart == vector.Zero)
+			{
+				vector cam[4];
+				api.GetWorld().GetCurrentCamera(cam);
+				vector fwd = cam[2];
+				fwd[1] = 0;
+				fwd.Normalize();
+				s_vStart = cam[3] + fwd * 40;
+			}
+		}
+		vector origin = s_vStart;
+		int cols = 4;
+		float spaceX = 9;
+		float spaceZ = 10;
+		foreach (int i, string prefab : items)
+		{
+			int row = i / cols;
+			int col = i - row * cols;
+			float x = origin[0] + col * spaceX;
+			float z = origin[2] + row * spaceZ;
+			vector pos = Vector(x, api.GetTerrainSurfaceY(x, z), z);
+			IEntitySource src = api.CreateEntity(prefab, "", api.GetCurrentEntityLayerId(), null, pos, vector.Zero);
+			if (src)
+				s_aPlaced.Insert(src);
+		}
+		api.EndEntityAction();
+
+		int rows = (items.Count() + cols - 1) / cols;
+		float cx = origin[0] + (cols - 1) * spaceX * 0.5;
+		float cz = origin[2] + (rows - 1) * spaceZ * 0.5;
+		float back = 11 + rows * 6;
+		vector eye = Vector(cx, api.GetTerrainSurfaceY(cx, cz) + 5 + rows * 3, cz - back);
+		vector target = Vector(cx, api.GetTerrainSurfaceY(cx, cz), cz);
+		api.SetCamera(eye, (target - eye).Normalized());
+		Print(string.Format("[ReforgerZ] Showcase: group %1 '%2', %3 pieces", s_iGroup, title, items.Count()));
+		s_iGroup++;
+	}
+
+	protected string ReadGroup(int wanted, notnull array<string> items)
+	{
+		FileHandle file = FileIO.OpenFile(m_sListPath, FileMode.READ);
+		if (!file)
+			return "";
+		string line;
+		string title = "";
+		int group = -1;
+		while (file.ReadLine(line) >= 0)
+		{
+			line.Trim();
+			if (line.IsEmpty())
+				continue;
+			if (line.IndexOf("#") == 0)
+			{
+				group++;
+				if (group == wanted)
+					title = line.Substring(1, line.Length() - 1);
+				continue;
+			}
+			if (group == wanted)
+				items.Insert(line);
+		}
+		file.Close();
+		return title;
+	}
+
+	override void Configure()
+	{
+		Workbench.ScriptDialog("ReforgerZ: Show the next composition group", "", this);
+	}
+}
