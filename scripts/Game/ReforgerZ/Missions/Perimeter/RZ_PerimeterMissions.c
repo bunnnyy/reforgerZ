@@ -138,7 +138,7 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 	protected static const float WINDOW = 600;			// how long the stretch is uncovered
 	protected static const float STRETCH = 250;			// radius of the uncovered stretch
 	protected static const float MEET_DEPTH = 40;		// the smuggler waits this far inland of where the land starts
-	protected static const float HANDOVER_RADIUS = 6;
+	protected static const float HANDOVER_RADIUS = 6;	// meeting him: widened to the Arrive radius (RZ_Arrive)
 	protected static const int MAX_TRIES = 40;
 	protected static const string KEY = "The Blind Spot";
 
@@ -289,7 +289,7 @@ class RZ_Mission_BlindSpot : RZ_Mission_Delivery
 	{
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), m_vMeet) > HANDOVER_RADIUS)
+			if (!RZ_Arrive.AtSpot(p, m_vMeet, HANDOVER_RADIUS))
 				continue;
 
 			if (!SpawnItem(gm, RZ_Util.RandomPointInRing(m_vMeet, 0.5, 1), gm.GetPerimeterPackagePrefab()))

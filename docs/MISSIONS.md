@@ -93,6 +93,14 @@ How the code does it:
   gives a ping, give or take 250 m). World events stay exact. *Simplified:* the extra lines some
   contracts add (drop points, grids) also wait until you're close; a contract's own progress
   messages may still give directions.
+- **Arriving.** A step done by getting somewhere finishes within 15 m of its spot, or inside a
+  town or building or within 25 m of it, in a vehicle too (the rule and its two settings:
+  [arriving](DESIGN.md#mission-building-blocks)). It covers points to visit (Install Sensors, Water
+  Survey, Recon, the curfew, Coup Talk), step chains (Patient Zero, Struck Off, The Three Weeks, Tied
+  Down, The Book, Await Relief), vehicle zones, the puzzles' "get there" checks, Stash Note,
+  Abandoned Convoy's cache, The Blind Spot's runner, the Census's watch point and patrol points, and
+  the Long Table's meal. Working at a thing you can see keeps its short reach: Burn the Bodies'
+  piles (5 m), Blow the Bridge's charges (3 m), the tags, the tissue, a lock, a well, a grave.
 - **Where they happen.** A contract picks its town by who holds it ([DESIGN.md](DESIGN.md#world-facts)):
   work in a ruin (a nest, a cache, a town to retake, a pharmacy, a lost patrol) goes to a town
   nobody lives in; a faction's open work never goes to its rivals' holdings; a drop, a fence, a

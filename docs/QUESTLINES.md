@@ -342,6 +342,10 @@ And always:
   seal) replace them.
 - **People are data until a player is near.** Everyone a stage needs is spawned only within a
   few hundred metres of a player; nothing a questline leaves is a physical trace.
+- **Getting there is forgiving.** A stage step done by reaching a place (a chain's step, a watch or
+  patrol point, a house to walk up to) uses the one arriving rule: 15 m of a spot, 25 m of a
+  building's or town's edge, in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)). A
+  stage's talk, use or read is still the interaction it was; holding a place keeps its own radius.
 
 ### Crossing lines
 

@@ -126,8 +126,8 @@ class RZ_Mission_KillTagged : RZ_Mission
 }
 
 //------------------------------------------------------------------------------------------------
-//! Visit a set of points. Each point needs a player within m_fVisitRadius for
-//! m_fVisitSeconds (0 = just reach it).
+//! Visit a set of points. Each point needs a player at it (RZ_Arrive: m_fVisitRadius, widened to the
+//! Arrive radius) for m_fVisitSeconds (0 = just reach it).
 class RZ_Mission_VisitPoints : RZ_Mission
 {
 	protected ref array<vector> m_aPoints = {};
@@ -138,6 +138,17 @@ class RZ_Mission_VisitPoints : RZ_Mission
 	protected float m_fBonusVisitSpeed = 1;
 	protected int m_iVisited;
 	protected string m_sPointName = "point";
+	protected bool m_bHandsOn;		// the points are things you work at (a corpse pile): m_fVisitRadius as it is
+
+	//------------------------------------------------------------------------------------------------
+	//! How close counts at a point.
+	protected float VisitRadius()
+	{
+		if (m_bHandsOn)
+			return m_fVisitRadius;
+
+		return RZ_Arrive.Spot(m_fVisitRadius);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The points to visit are the job: their grids are given: never a rough area.
@@ -157,17 +168,22 @@ class RZ_Mission_VisitPoints : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
+		float radius = VisitRadius();
 		foreach (int i, vector p : m_aPoints)
 		{
 			if (m_aDone[i])
 				continue;
 
-			if (CountPlayersNear(players, p, m_fVisitRadius) == 0)
-				continue;
-
 			// Anyone at a point takes part, even if it's far from the mission centre
 			array<int> near = {};
-			GetPlayersNear(ids, players, p, m_fVisitRadius, near);
+			if (m_bHandsOn)
+				GetPlayersNear(ids, players, p, radius, near);
+			else
+				RZ_Arrive.GetAtSpot(ids, players, p, radius, near);
+
+			if (near.IsEmpty())
+				continue;
+
 			foreach (int playerId : near)
 			{
 				if (!m_aParticipants.Contains(playerId))
@@ -175,7 +191,7 @@ class RZ_Mission_VisitPoints : RZ_Mission
 			}
 
 			float rate = 1;
-			if (m_fBonusVisitSpeed != 1 && AnyBonusNear(gm, ids, players, p, m_fVisitRadius))
+			if (m_fBonusVisitSpeed != 1 && AnyBonusNear(gm, ids, players, p, radius))
 				rate = m_fBonusVisitSpeed;
 
 			m_aDwell[i] = m_aDwell[i] + dt * rate;

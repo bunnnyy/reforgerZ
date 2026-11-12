@@ -469,7 +469,7 @@ class RZ_Event_StashNote : RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	override protected void OnUpdate(RZ_GameModeComponent gm, float dt, array<int> ids, array<IEntity> players)
 	{
-		if (CountPlayersNear(players, m_vPos, 10) > 0)
+		if (RZ_Arrive.CountAtSpot(players, m_vPos, 10) > 0)
 			m_eState = RZ_EMissionState.SUCCEEDED;
 	}
 

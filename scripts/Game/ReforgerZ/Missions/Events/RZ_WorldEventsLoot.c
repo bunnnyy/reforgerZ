@@ -143,7 +143,7 @@ class RZ_Event_AbandonedConvoy : RZ_Mission
 		if (m_bTrap && !m_bTrapDone)
 			CheckTrap(gm, ids, players);
 
-		if (!m_Cache.m_bReached && CountPlayersNear(players, m_vPos, 8) > 0)
+		if (!m_Cache.m_bReached && RZ_Arrive.CountAtSpot(players, m_vPos, 8) > 0)
 			m_Cache.m_bReached = true;
 
 		if (!m_Cache.m_bReached || CountPlayersNear(players, m_vPos, LEAVE_RADIUS) > 0)

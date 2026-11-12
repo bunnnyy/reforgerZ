@@ -1315,7 +1315,7 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			if (m_aPlanted[i] >= CHARGE_SECONDS || m_iPlanted >= m_iNeeded)
 				continue;
 
-			if (!ReachedBy(ids, players, c, 3))
+			if (!ReachedBy(ids, players, c, 3, true))	// wiring a charge: at it
 				continue;
 
 			m_aPlanted[i] = m_aPlanted[i] + dt;

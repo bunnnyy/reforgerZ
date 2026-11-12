@@ -281,6 +281,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 		m_fBonusVisitSpeed = 1.5;
 		m_fVisitRadius = 5;
 		m_fVisitSeconds = 10;
+		m_bHandsOn = true;	// burning a pile you can see: at it, not near it
 		m_sPointName = "Pile";
 	}
 

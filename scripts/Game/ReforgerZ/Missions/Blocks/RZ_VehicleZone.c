@@ -113,7 +113,7 @@ class RZ_VehicleZone
 		// The specific vehicle standing in the zone on its own
 		if (m_bHasTarget && !m_bNeedDriver)
 		{
-			if (!IsLost() && RZ_Util.DistXZ(m_Target.GetOrigin(), m_vPos) <= m_fRadius)
+			if (!IsLost() && RZ_Util.DistXZ(m_Target.GetOrigin(), m_vPos) <= RZ_Arrive.Spot(m_fRadius))
 			{
 				m_Arrived = m_Target;
 				m_iDriver = DriverOf(m_Target, ids, players);
@@ -125,7 +125,7 @@ class RZ_VehicleZone
 
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), m_vPos) > m_fRadius)
+			if (!RZ_Arrive.AtSpot(p, m_vPos, m_fRadius))
 				continue;
 
 			IEntity vehicle = RZ_Util.GetVehicleOf(p);

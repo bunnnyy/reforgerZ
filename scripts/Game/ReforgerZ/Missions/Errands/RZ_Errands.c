@@ -245,7 +245,7 @@ class RZ_Errands
 	protected static const float TALK_RANGE = 20;
 	protected static const float OFFER_MINUTES = 10;
 	protected static const float CALL_RANGE = 30;
-	protected static const float RETURN_RANGE = 15;
+	protected static const float RETURN_RANGE = 15;		// back at the giver: widened to the Arrive radius (RZ_Arrive)
 	protected static const float MAX_DISTANCE = 1500;
 	protected static const float PLACE_COOL = 1200;		// per place per routine, server-wide
 	protected static const int COOL_ANYWHERE = 10800;	// per player per routine, anywhere: 3 real hours
@@ -730,7 +730,7 @@ class RZ_Errands
 				if (!e.m_Def.StepCounts(this, e, me))
 					continue;
 
-				if (RZ_Util.DistXZ(at, e.m_vPlace) > w.m_fRadius)
+				if (!w.IsAtPlace(me, e.m_vPlace))
 					continue;
 
 				if (w.m_bUnseen && !RZ_Stealth.IsHidden(e.m_iAsker))
@@ -805,7 +805,7 @@ class RZ_Errands
 				}
 
 				IEntity carrierEnt = GetGame().GetPlayerManager().GetPlayerControlledEntity(carrier);
-				if (carrier > 0 && carrierEnt && RZ_Util.DistXZ(carrierEnt.GetOrigin(), giverAt) <= RETURN_RANGE)
+				if (carrier > 0 && RZ_Arrive.AtSpot(carrierEnt, giverAt, RETURN_RANGE))
 					Resolve(e, w);
 
 				continue;
@@ -818,7 +818,7 @@ class RZ_Errands
 				continue;
 			}
 
-			if (RZ_Util.DistXZ(at, giverAt) <= RETURN_RANGE)
+			if (RZ_Arrive.AtSpot(me, giverAt, RETURN_RANGE))
 				Resolve(e, w);
 		}
 	}

@@ -1435,7 +1435,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Missions | Events | `m_EventSettings` | Fog Bank radius (700 m), heat (×0.6) and spawn distance (×0.5), mist prefab; Power Surge minutes (10); Gas Station Fire infection drop (8); Tunnel Rats infection cap (20); convict, sniper and rival group prefabs; truck wreck, camp and hatch prefabs; Remnant Camp Infamy (10); wedding guests, bride and jewellery prefabs, **jewellery keywords** |
 | Missions | Errands | `m_ErrandSettings` | **Enabled** (on), the offer gap (8 min), errands held (2), cards a day (2), pay scale (1), the Fame ceiling (39) and a faction's errand Fame a season day (10), the amends cap (8), Favor an hour (40), lapse (45 min), the fault chance (0.25), call-outs (on), wanderers' asks (on), strangers (on), found hooks (0.2 of job sites), dark cards (on), twist chance (0.2), board asks (on), radio asks (on, 60 min apart a player), the "Most people helped" line (on), telemetry (30 min), debug log (off) |
 | Missions | Story | `m_MissionStorySettings` | **Enabled** (the story kit: who decides, who benefits), the **reason lane** (on, 30 min apart, within 3 km of the reason), the one weight clamp (x0.75-1.3) |
-| Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
+| Missions | Contracts | `m_ContractSettings` | **Rough areas** (500 m circle; 0 = exact) and reveal distance (500 m); **Arrive radius** (15 m, kept to 5–40: a "go to" step counts this close to its spot) and **Arrive margin** (25 m, kept to 0–50: a town or building counts inside it or this close; [arriving](DESIGN.md#mission-building-blocks)); Max escorts (3), escort leash (150 m), body radius (300 m) and speed (1.3 m/s), escort prefabs; max captures (2), cage prefab, capture radius (4 m), restrain share (0.3), specimen wake minutes (12); bus prefab and **bus keywords**; Blood Drive cost (0.25) and floor (0.7); bounty target, Bastion squad, crashed drone and smoke prefabs |
 | Puzzles | (top level) |  | The puzzle prefabs, **Scale counts items** (off), landmark name |
 | Perimeter | Perimeter | `m_PerimeterSettings` | **Enabled**, warn (300 m) and kill (100 m) distance, grace (8 s), fit to land and sea margin (200 m), **Override** rectangle, drone height, **Checkpoints**, guards (2), max (6, at most 8), inset, spacing, warn (150 m) and kill (60 m) radius, mission prefabs |
 | Haven | Safehouses | `m_SafehouseSettings` | **Enabled**, count (3), start population (4) and food (12), visible radius (300 m), upkeep (180 min), people per food (5), **Food keywords**, Favor per food (2), heal cost (15), house-rule radii and Infamy, caught chance (0.3 a minute in Final), declare multipliers by tier (1.15/1.25/1.4/1.5), meds cost (5), stragglers (4 h), leak chance (0.25), **notice boards** (on, 8 notes, 160 characters, one every 10 min, 3 days, **note filter**), body prefabs |
@@ -1956,7 +1956,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:750` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Core/RZ_Util.c:806` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
 | `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
-| `Missions/RZ_MissionBases.c:261` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
+| `Missions/RZ_MissionBases.c:277` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_Search.c:851` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_WreckBoots.c:123` | a wreck prop faces its local +Z like a vehicle, so its rear (the boot) is its box's −Z side | **Open the boot** shows at the bonnet: flip the sign in `RZ_WreckBoots.BootPoint` |
 | `Interactions/RZ_DoorLocks.c:395` | `UserActionContext.GetOrigin()` on a door's actions manager is the world position of vanilla's Open door point (its first context) | Unlock, Lock and Force sit at 1.05 m on the leaf instead of at the handle's height (the 0.6–1.5 m guard throws out anything else) |
@@ -2935,6 +2935,14 @@ when it happens)
 - [ ] Rough areas: a Bastion contract offered to a Stranger names a 500 m circle; walk within
   500 m and you're told the spot; a Radio Operator, or someone Trusted with Bastion, gets the exact
   spot in the offer. A puzzle contract always gives its own positions.
+- [ ] Arriving ([the rule](DESIGN.md#mission-building-blocks)): Install Sensors' point ticks its 15 s
+  standing 12–14 m from the grid spot, not at 16 m; an errand's or an opening's step (Across the
+  Road, The Debt) counts 12–14 m from its place, and so does walking back to the giver; Stash Note
+  ends 12–14 m from the crate; a step chain's "Go to" turns into "Find what was left" 12–14 m from
+  the clue; drive up in a car and stay in it at 12 m: it counts too. A personal goal's town is done
+  at its edge. Burn the Bodies still wants you at the pile (5 m) and Blow the Bridge at the charge
+  (3 m). Set **Arrive radius** to 30: the same steps count at 25 m; set it to 100: they still count
+  only at 40.
 
 **UI** ([Setting up the UI](#setting-up-the-ui); the spawn screen and map items need its steps 5 and 6)
 - [ ] A Haven channel message shows as an amber card with the speaker; with **Styled notices** off

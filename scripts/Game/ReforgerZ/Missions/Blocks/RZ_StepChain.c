@@ -3,7 +3,8 @@
 //! is live: its guards and its clue appear when a player comes within 250 m of it, and go when
 //! the step is done.
 //!
-//! A step is done when a player has stood within its radius for its dwell time and, if it has a
+//! A step is done when a player has stood at it (RZ_Arrive: its radius, widened to the Arrive
+//! radius) for its dwell time and, if it has a
 //! clue, someone has read it. Clue texts live in the owning puzzle mission (AddClue); the chain
 //! only spawns the readable thing and is told when it was read (OnClueRead).
 class RZ_ChainStep
@@ -150,7 +151,7 @@ class RZ_StepChain
 			SpawnClue(gm, st); // the clue was lost (a fire, a cleanup): the chain mustn't stall
 
 		array<int> near = {};
-		RZ_Mission.GetPlayersNear(ids, players, st.m_vPos, st.m_fRadius, near);
+		RZ_Arrive.GetAtSpot(ids, players, st.m_vPos, st.m_fRadius, near);
 		foreach (int playerId : near)
 		{
 			if (!participants.Contains(playerId))

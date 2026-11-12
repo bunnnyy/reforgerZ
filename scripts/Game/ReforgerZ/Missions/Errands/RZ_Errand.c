@@ -87,7 +87,7 @@ class RZ_ErrandWay
 	// The step (none: it resolves on the spot)
 	RZ_EErrandPlace m_ePlace = RZ_EErrandPlace.NONE;
 	float m_fSeconds;			// how long to stay there
-	float m_fRadius = 25;		// within this of the place
+	float m_fRadius = 25;		// within this of the place (at least the Arrive radius: IsAtPlace)
 	bool m_bUnseen;				// only while hidden (built stealth): seen, and the clock stops
 	bool m_bQuiet;				// a shot near it spoils the "unnoticed" bonus
 	float m_fBefore = -1;		// must be done before this game hour (20.5 = half past eight), -1 none
@@ -108,6 +108,14 @@ class RZ_ErrandWay
 	ref array<string> m_aTake = {};
 	ref array<string> m_aDone = {};
 	ref array<string> m_aLater = {};	// a callback some hours of the asker's play later, near the giver (words only)
+
+	//------------------------------------------------------------------------------------------------
+	//! At the step's place (RZ_Arrive): m_fRadius, widened to the Arrive radius; in a vehicle, where
+	//! the vehicle is.
+	bool IsAtPlace(IEntity me, vector place)
+	{
+		return RZ_Arrive.AtSpot(me, place, m_fRadius);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	bool HasStep()

@@ -391,13 +391,17 @@ class RZ_PuzzleMission : RZ_Mission
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True if any player is within radius of pos; they all become participants.
-	protected bool ReachedBy(array<int> ids, array<IEntity> players, vector pos, float radius)
+	//! True if any player has reached pos (RZ_Arrive: radius, widened to the Arrive radius); they all
+	//! become participants. handsOn: a thing you work at (a charge to wire): radius as it is.
+	protected bool ReachedBy(array<int> ids, array<IEntity> players, vector pos, float radius, bool handsOn = false)
 	{
 		bool reached = false;
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), pos) > radius)
+			if (handsOn && RZ_Util.DistXZ(p.GetOrigin(), pos) > radius)
+				continue;
+
+			if (!handsOn && !RZ_Arrive.AtSpot(p, pos, radius))
 				continue;
 
 			AddParticipant(ids[i]);

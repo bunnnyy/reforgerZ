@@ -142,7 +142,7 @@ class RZ_Objectives
 			case RZ_EObjective.REACH_TOWN:
 			{
 				RZ_Settlement s = gm.GetSettlement(profile.m_iObjTarget);
-				if (s && RZ_Util.DistXZ(ent.GetOrigin(), s.m_vCenter) <= s.m_fRadius * 0.6)
+				if (s && RZ_Arrive.InArea(ent, s.m_vCenter, s.m_fRadius))	// in the town, or at its edge
 					complete = true;
 				break;
 			}
