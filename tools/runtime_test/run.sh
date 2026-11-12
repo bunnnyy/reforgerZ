@@ -45,6 +45,9 @@
 #   - then forces each registered questline's start conditions (RZT_Prep.c), begins it, fast-forwards
 #     its waits, goes to each stage mission and ends it as won (with the outcome that moves the
 #     story on), and reports which reached an ending, fizzled or got stuck;
+#   - 10 s in, runs the power station's looks once (RZT_Power.c): the dressing up beside the control,
+#     the generator's sound up while it turns and down when it stops, everything down with nobody
+#     near, and the street lamps' list dark and powered ("RZT Power test: ...");
 #   - walks the player through every settlement, the safehouses, the lab, then into the
 #     Perimeter's warning and kill zones (until then the line leaves the fake player alone);
 #     kills them if the Perimeter didn't; respawns them;
@@ -171,6 +174,10 @@ if [ "$MODE" = sites ]; then
 fi
 
 cp -r "$HERE/files/." "$ADDON/"
+# The power station's own look-only prefabs come along (the test world's Power grid slots name them),
+# so the power test spawns the real ones
+mkdir -p "$ADDON/Prefabs/ReforgerZ/World"
+cp "$ROOT"/Prefabs/ReforgerZ/World/RZ_PowerDressing.et* "$ROOT"/Prefabs/ReforgerZ/World/RZ_PowerGeneratorSound.et* "$ADDON/Prefabs/ReforgerZ/World/"
 "$PY" "$HERE/patch.py" "$ADDON/scripts/Game/ReforgerZ" || exit 2
 "$PY" "$HERE/sites.py" prepare "$ADDON" Worlds/RZTest/RZTest.ent || exit 2
 
@@ -190,6 +197,7 @@ grep -E 'RZT (fake player already dead|killing|fake player died|perimeter: )' "$
 grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did not start|why: ))' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT objective places \(' "$LOG" | tail -1 | sed 's/.*RZT /  /'
 grep -E 'RZT objplace FAIL' "$LOG" | sed 's/.*RZT objplace FAIL /  objective place wrong: /' | head -40
+grep -E 'RZT Power test: ' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E '\[ReforgerZ\] Sites audit: [0-9]+ sites,' "$LOG" | sed 's/.*\[ReforgerZ\] /  /'
@@ -197,4 +205,5 @@ echo "Place checks failed (live, docs/PLACES.md): $(grep -c '\[ReforgerZ\] Place
 grep '\[ReforgerZ\] Place check: ' "$LOG" | sed 's/.*\[ReforgerZ\] /  /' | head -20
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1
 grep -q 'RZT objplace FAIL' "$LOG" && { echo "FAILED: an objective points somewhere else than where its step is done"; exit 1; }
+grep -q 'RZT Power test: .*FAILED' "$LOG" && { echo "FAILED: the power station's looks (the dressing, the generator's sound or the lamps' list)"; exit 1; }
 exit 0

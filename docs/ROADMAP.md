@@ -25,7 +25,7 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 | Light adaptation: specials after breakthroughs, one trait per stage, favourite spots | [Infection adapts](INFECTED.md#infection-adapts) |
 | The infected, phase 1 of the tribes design: the towns' crawlers (placed by the time of day, drifting to noise, the kill ledger, reinforcements from the buildings, stir and scavengers as data, giving up on locked doors), loose ones that walk to a town or a lair, heat hordes from the nearest town, the agent budget (100 agents, a share per player cluster, 8 a tick, the engine's active-AI limit at 160; also the one body budget, with escorts and wanderers counted in it), no spawn in a player's sight within 300 m, runtime groups, per-member tracking (samples where a special fell), data parts with write-back, the silent kill, hit attribution, `/tribes` and the status line; both switches off gives the old spawner | [INFECTED.md](INFECTED.md) |
 | The Perimeter: warning and kill zones, one drone per player, sealed road checkpoints | [The Perimeter](DESIGN.md#the-perimeter) |
-| Night, rain, fog, fog banks and storms; the day's length (4 real hours by default) and the time of day kept across restarts; the power grid and power surges; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
+| Night, rain, fog, fog banks and storms; the day's length (4 real hours by default) and the time of day kept across restarts; the power grid (its station at real infrastructure, dressed with fuel drums and a sign, its generator heard while it runs, the map's lamps dark but where there's power) and power surges; the radio station; the government broadcast | [Time and environment](DESIGN.md#time-and-environment) |
 | 13 backgrounds (5 unlocked through Legacy), personal goals, Legacy points | [Backgrounds](DESIGN.md#backgrounds-and-personal-goals) |
 | Fame, Infamy and Favor; tiers; the 16 reputation names with what each counts as (the card, the debounced change notice, `/rep` for admins); Earned Fame and Feared; the credit rule at 75 Fame; rivals; amends (contracts, paying Favor, surrender, settling up in Fame, the parley's reserved job) from one forgiveness budget of 30 a life; the parley for the owed at Bastion, Red Hand and Halcyon gates and the Haven's knock (empty hands, alone, once per 2 real hours); quartermaster shops; every perk (Requisition, Fire Mission, the fence, the bounty board, Halcyon's medic and immunity booster, the Haven Champion's Safe Harbour and Remembered...); hunter squads; bounties; reputation clues | [REPUTATION.md](REPUTATION.md) |
 | Bastion checkpoints and Red Hand roadblocks inside the Zone (unsearched passage, tolls, searches; the Wildcard tier searched and tolled double; the company you keep: the whole car searched), surrender, camps that warn and refuse, safe zones | [REPUTATION.md](REPUTATION.md#checkpoints-roadblocks-and-camps) |
@@ -168,7 +168,10 @@ waits in [designs/](../designs/README.md). What waits is play, engine checks and
 - **The power station and its panel in play:** where the log says the station is, see the control
   stands at a real building or cabinet and faces out, and restore it through **Open the panel**
   with a pad: the card, the breakers, the spin-up, the switch ([UI.md](UI.md#the-power-panel),
-  [DESIGN.md](DESIGN.md#the-power-grid)).
+  [DESIGN.md](DESIGN.md#the-power-grid)). Its looks, never seen in play: the drums and the sign
+  stand beside the control and not in a doorway; the generator is heard from the moment it catches
+  and stops when it fails; at night every town's lamps are dark until the main switch, then light
+  in the region only.
 - **The object menu and vanilla fuel in play:** add the `RZ_ObjectMenu` preset, set **UI > Object row
   layout** and build `RZ_FuelPumpStation.et`; then a stove, a keypad, the Haven quartermaster, a
   house radio and a generator (their status strips and locked rows, on a TV too) and a petrol pump with a pad ([UI.md](UI.md#the-object-menu), [DESIGN.md](DESIGN.md#fuel)). At a house

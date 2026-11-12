@@ -4732,6 +4732,42 @@
    "notes": ""
   },
   {
+   "id": "PowerGeneratorSound",
+   "kind": "manual",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "an empty GenericEntity with an RplComponent, a SignalsManagerComponent and a StaticSoundComponent on vanilla's `Structures_DieselGenerator_01.acp` (the events SOUND_DIESELGENERATOR_ENGINE and SOUND_DIESELGENERATOR_HUM, as `DieselGenerator_01_active.et` has them); no mesh (`RZ_PowerGeneratorSound.et`)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_PowerSettings.m_sGeneratorSoundPrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Power grid > Generator sound prefab",
+   "required": false,
+   "minimum": false,
+   "use": "the power station's generator, heard from the moment it catches (spinning up, ready, running) while a player is within 300 m: at the map's own generator sets there (a power plant's two), else at the control; empty = silent",
+   "notes": "Built as text (set in the game mode). It plays by itself on every client that has it; nothing to script"
+  },
+  {
+   "id": "PowerDressing",
+   "kind": "manual",
+   "system": "Power grid and radio station",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "a composition like camp life's (an empty root with an RplComponent, vanilla props as children): a pallet with two fuel drums, a third drum, two jerrycans and vanilla's industrial entry-forbidden sign on its pole, its front (+Z) facing out from the wall (`RZ_PowerDressing.et`); nothing with physics, storage, fuel or actions",
+   "components": [],
+   "actions": [],
+   "slots": ["m_PowerSettings.m_sDressingPrefab"],
+   "listSlot": false,
+   "slotLabel": "World > Power grid > Dressing prefab",
+   "required": false,
+   "minimum": false,
+   "use": "the power station's dressing: stood 2.4 m along the wall from the control (in line with the map's cabinet when that carries it) while a player is within 300 m, at every step; empty = none",
+   "notes": "Built as text (set in the game mode). Look-only: it goes through the dressing guard, so a prop a player could use is removed. No dry, flat spot outside every building among the twelve tried beside the control = none there (the log's Power grid line says what was in the way)"
+  },
+  {
    "id": "RadioConsole",
    "kind": "create",
    "system": "Power grid and radio station",
@@ -6522,7 +6558,7 @@
    "category": "World",
    "object": "Power grid",
    "field": "m_PowerSettings",
-   "covers": "Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore"
+   "covers": "Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), **Generator sound prefab** and **Dressing prefab** (both set; empty = that part is off), **Street lamps** (on: the map's own lamps stay dark at night but in towns with power; off = left as the map has them), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore"
   },
   {
    "category": "World",
@@ -6875,6 +6911,7 @@
     "m_bEnabled": "1",
     "m_bUseCabinets": "1",
     "m_fControlYaw": "0",
+    "m_bStreetLamps": "1",
     "m_fRegionRadius": "2500",
     "m_fSpinUpSeconds": "90",
     "m_fNoisePerMinute": "10",

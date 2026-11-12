@@ -1,0 +1,30 @@
+GenericEntity {
+ ID "2A9AF8A6997270D9"
+ components {
+  SignalsManagerComponent "{B2A09949D23342EA}" {
+  }
+  StaticSoundComponent "{8046CB874F6CB7E5}" {
+   Filenames {
+    "{75EE466761315DE8}Sounds/Structures/BuildingParts/DieselGenerator_01/Structures_DieselGenerator_01.acp"
+   }
+   Offsets {
+    BaseStaticSoundOffsetInfo "{0D159674FCF86977}" {
+     EventName "SOUND_DIESELGENERATOR_ENGINE"
+     "Position Offset Pi" AttachPoint "{27160227AAC2C70C}" {
+      Offset 0 1.5 -0.9
+     }
+    }
+    BaseStaticSoundOffsetInfo "{2E71641F96B6BEFB}" {
+     EventName "SOUND_DIESELGENERATOR_HUM"
+     "Position Offset Pi" AttachPoint "{3531CE5530396D9F}" {
+      Offset 0 0.9 2.8
+     }
+    }
+   }
+   Signals 0xe 0
+  }
+  RplComponent "{8FA5A0BCAEE376EB}" {
+  }
+ }
+ coords 0 0 0
+}

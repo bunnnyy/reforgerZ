@@ -607,6 +607,9 @@ modded class RZ_GameModeComponent
 		// Reputation's cells, the credit rule and the budget, on the fake player (put back after)
 		if (m_iRZTSec == 9)
 			Print("RZT " + RZ_RepGates.SelfTest(this, RZT_Fake.ID));
+		// The power station's looks: the dressing, the generator's sound, the street lamps' list
+		if (m_iRZTSec == 10 && GetPowerGrid() && GetPowerGrid().IsActive())
+			Print("RZT " + GetPowerGrid().RZT_SelfTest());
 
 		// The voice: Voice > Force mood cycles the five moods (a mood check every 5 minutes), and each
 		// one's picks are printed before the next, so the in-game picker can be read against voice_sim

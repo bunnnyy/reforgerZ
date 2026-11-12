@@ -1,0 +1,73 @@
+GenericEntity {
+ ID "90162E7F44DE099F"
+ components {
+  RplComponent "{E4DE820AA03F6AAA}" {
+  }
+  Hierarchy "{F2E843EFA39EEFEB}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "18BB9735CBF8224E"
+   components {
+    Hierarchy "{9B2438DC67B6B1FB}" {
+    }
+   }
+   coords -0.1 0 0.35
+   angles 0 2 0
+  }
+  GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+   ID "3BA15EF28E96EB81"
+   components {
+    Hierarchy "{4ED3E7D4E74523CD}" {
+    }
+   }
+   coords -0.4 0.15 0.35
+  }
+  GenericEntity : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+   ID "A804D7C1B63790CF"
+   components {
+    Hierarchy "{49F801D4B982993E}" {
+    }
+   }
+   coords 0.2 0.15 0.38
+   angles 0 40 0
+  }
+  GenericEntity : "{DF3EF41CE4D441DE}Prefabs/Props/Industrial/BarrelMetal_01_rust.et" {
+   ID "76844275E5032E09"
+   components {
+    Hierarchy "{57DB903C004BDD4C}" {
+    }
+   }
+   coords 0.85 0 0.2
+   angles 0 15 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "F5290D19BEE9C53B"
+   components {
+    Hierarchy "{8E0CFD2D22323F94}" {
+    }
+   }
+   coords -0.95 0 0.5
+   angles 0 25 0
+  }
+  GenericEntity : "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et" {
+   ID "1C66F09391498312"
+   components {
+    Hierarchy "{53D694D5286E24D6}" {
+    }
+   }
+   coords -0.9 0 0.12
+   angles 0 -70 0
+  }
+  GenericEntity : "{1C5C824E26DB1D62}Prefabs/Props/Signs/Industrial/SignIndustrial_USSR_02_warnings_entryforbidden_pole.et" {
+   ID "098B8CF96E9A6570"
+   components {
+    Hierarchy "{EF2EB95343C31F90}" {
+    }
+   }
+   coords 1.25 0 -0.1
+  }
+ }
+}

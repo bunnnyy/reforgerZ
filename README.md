@@ -234,8 +234,8 @@ scripts/Game/ReforgerZ/
                  orders (one held waypoint each); the shared engine: the clocks, deeds, the
                  callback queue, names in public text
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
-                 town memory, the power grid (where its station is, the control at it, the
-                 power panel's server side and its breakers), the radio station, the world facts (what content
+                 town memory, the power grid (where its station is, the control at it, its
+                 dressing and generator sound, the power panel's server side and its breakers), the radio station, the world facts (what content
                  reads: season flags, canon, claims and soft holds, text tokens) and its world
                  memory (reasons, signals, the town log, world records, the truth deck) with its
                  writers, the marks spawner, the Long Table, the land grid (water, height, trees,
@@ -298,7 +298,7 @@ scripts/Game/ReforgerZ/
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
-                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the screen guard, the notice board, the spawn screen and loadout lock, the
+                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the street lamps (dark but where there's power), the screen guard, the notice board, the spawn screen and loadout lock, the
                  death brief, the map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist

@@ -5,6 +5,8 @@ SCR_BaseGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/GameMode_Plain.et" 
    m_sSpawnPointPrefab "{BAFE0A6ECC397363}Prefabs/ReforgerZ/Core/RZ_SpawnPoint.et"
    m_PowerSettings RZ_PowerSettings "{6AD67DC2B93AE26F}" {
     m_sControlPrefab "{9C7B3BF76C03455E}Prefabs/ReforgerZ/World/RZ_PowerControl.et"
+    m_sGeneratorSoundPrefab "{214D4068B8CA7918}Prefabs/ReforgerZ/World/RZ_PowerGeneratorSound.et"
+    m_sDressingPrefab "{829EE530B89F108D}Prefabs/ReforgerZ/World/RZ_PowerDressing.et"
    }
    m_RadioStationSettings RZ_RadioStationSettings "{6AD67DC2B9C6B8CF}" {
     m_sConsolePrefab "{374E7FE27AB0A28C}Prefabs/ReforgerZ/World/RZ_RadioConsole.et"

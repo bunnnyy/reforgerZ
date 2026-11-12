@@ -17,6 +17,10 @@ SCR_BaseGameMode RZTestGameMode : "{1B76F75A3175E85C}Prefabs/MP/Modes/Plain/Game
    m_sPuzzleNotePrefab "{13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et"
    m_sPuzzleObjectPrefab "{7030822F7A54F479}Prefabs/Props/Crates/CrateWooden_01_base.et"
    m_sCivilianPrefab "{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et"
+   m_PowerSettings RZ_PowerSettings "{4F1E2D3C4B5A697A}" {
+    m_sGeneratorSoundPrefab "{214D4068B8CA7918}Prefabs/ReforgerZ/World/RZ_PowerGeneratorSound.et"
+    m_sDressingPrefab "{829EE530B89F108D}Prefabs/ReforgerZ/World/RZ_PowerDressing.et"
+   }
    m_TribeSettings RZ_TribeSettings "{4F1E2D3C4B5A6979}" {
     m_iSlots 2
    }

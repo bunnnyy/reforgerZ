@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **332 prefab fields**: 46 on `RZ_GameModeComponent`, 272 in its settings objects, and 14 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **306 entries**: 183 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 89 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **334 prefab fields**: 46 on `RZ_GameModeComponent`, 274 in its settings objects, and 14 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **308 entries**: 183 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 91 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -739,6 +739,8 @@ and the UI files) need none, and eight have no base:
 | Prefab | Suggested base | Add | Slot | Need | Used for |
 |---|---|---|---|---|---|
 | `RZ_PowerControl.et` | a vanilla electrical cabinet that stands on the ground | `RZ_PuzzleObjectComponent`, `RZ_ClueComponent`; `RZ_ReadClueAction`, 2 × `RZ_PuzzleChoiceAction` (Option 0-1) | World > Power grid > Control prefab | optional | the power station's control, stood against the station's wall by a door when the map has no electrical cabinet of its own there (falls back to the fuse box, then the puzzle object). One prompt, Open the panel, with the power panel; the read and two choices without it. No use actions: they'd show as Use |
+| (existing prefab) | an empty GenericEntity with an RplComponent, a SignalsManagerComponent and a StaticSoundComponent on vanilla's `Structures_DieselGenerator_01.acp` (the events SOUND_DIESELGENERATOR_ENGINE and SOUND_DIESELGENERATOR_HUM, as `DieselGenerator_01_active.et` has them); no mesh (`RZ_PowerGeneratorSound.et`) | — | World > Power grid > Generator sound prefab | optional | the power station's generator, heard from the moment it catches (spinning up, ready, running) while a player is within 300 m: at the map's own generator sets there (a power plant's two), else at the control; empty = silent. Built as text (set in the game mode). It plays by itself on every client that has it; nothing to script |
+| (existing prefab) | a composition like camp life's (an empty root with an RplComponent, vanilla props as children): a pallet with two fuel drums, a third drum, two jerrycans and vanilla's industrial entry-forbidden sign on its pole, its front (+Z) facing out from the wall (`RZ_PowerDressing.et`); nothing with physics, storage, fuel or actions | — | World > Power grid > Dressing prefab | optional | the power station's dressing: stood 2.4 m along the wall from the control (in line with the map's cabinet when that carries it) while a player is within 300 m, at every step; empty = none. Built as text (set in the game mode). Look-only: it goes through the dressing guard, so a prop a player could use is removed. No dry, flat spot outside every building among the twelve tried beside the control = none there (the log's Power grid line says what was in the way) |
 | `RZ_RadioConsole.et` | a radio set on a desk | the generic set | World > Radio station > Console prefab | optional | the radio station (falls back to the radio mast, then the puzzle object) |
 
 #### World interactions
@@ -1502,7 +1504,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | ReforgerZ | Season | `m_SeasonSettings` | **Winner rules** (on), **Rule sets** (by name: Winter, Fog, Military Collapse, No Vehicles, or your own in the list), **Wipe** (On cure, the default: only after the cure; Off, or the timed After weeks and first of both, never used unless picked), epilogue (168 h, one week), minimum epilogue (56 h: a late cure pushes an After-weeks wipe back), weeks (10, timed modes only), warning (24 h), **No stand in the last hours** (off: near a timed wipe the stand is held back, [EPILOGUE.md](EPILOGUE.md#edge-cases)), **Story rules** (on: one small rule from each major that ended live, [QUESTLINES.md](QUESTLINES.md#next-season-the-story-rules)), **Hall of fame** (on) ([DESIGN.md](DESIGN.md#seasons)) |
 | World | (top level) |  | Cluster cell (300 m), buildings per settlement (8), spawn point prefab, active spawn points (6), minutes between moves (20), **Loose item minutes** (30; 0 = off) |
 | World | Town memory | `m_TownMemorySettings` | Loot return (120 min), looted below (0.5), loot floor (0.2), burned share (0.5), journal minutes (10) |
-| World | Power grid | `m_PowerSettings` | Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
+| World | Power grid | `m_PowerSettings` | Control prefab, **Use cabinets** (on: the map's own electrical cabinet at the station carries the control as an invisible spot), **Control yaw** (0: turns the control prefab if its front doesn't face out from the wall), **Generator sound prefab** and **Dressing prefab** (both set; empty = that part is off), **Street lamps** (on: the map's own lamps stay dark at night but in towns with power; off = left as the map has them), region (2.5 km), spin-up (90 s), noise (10 heat/min), run hours (4), fuel and patch restore |
 | World | Radio station | `m_RadioStationSettings` | Console prefab, takeover (30 s), cooldown (10 min, halved with power) |
 | World | Long Table | `m_LongTableSettings` | **Enabled**, **Chance** a season has one (0.75), hunger per hour (6), take hours (3, ÷ season speed), body radius (300 m), the host on the road (on), the **guest rule** (on), **trade keywords** (ammunition and medicine) ([DESIGN.md](DESIGN.md#the-long-table)) |
 | World | Traces | `m_TraceSettings` | **Enabled** (on), **Door marks** (on), doors a town (6, 8 in a stronghold's town), layers a door (3), live writes a season day (20, 2 a town), **First days** (on), **Player traces** (on), **First days' scenes** (on: the column, the gym, the church, the roadblock, the squares' notices, Rudi's shutter, the hill, the crosses and the Day 1 sheets), **Vignettes** (on), at once (12) and dealt a season day (3), **Live traces** (on) at once (24), **Sound and light** (on), **Lit windows** (off until the spike), **Door drawing** (Decals: from the kit's atlas, boards without it, else text; Boards; Text), props on the server (40) and a cluster (12), **Debug** (off: logs every door read; lets admins write a mark), and the **Kit** of optional prefabs and materials ([TRACES.md](TRACES.md)) |
@@ -1765,7 +1767,11 @@ cache, a lie found by its owner's tick, a talk scene's three options a node, mis
 reasons the story jobs and the majors answer, a free player never refused a route asset, and a
 [work site](DESIGN.md#work-site) (the crate stands in as its site prefab: opened for the fake player,
 done for it, its after look up, a held step's line without its time)
-(`RZT story check: <name>: OK|FAILED (...)`, then `RZT story done: N checks OK, N FAILED`). From then
+(`RZT story check: <name>: OK|FAILED (...)`, then `RZT story done: N checks OK, N FAILED`). 10 s in,
+the power station's looks run once (`RZT_Power.c`; the test world names the mod's own two prefabs, which
+come along): the dressing up beside the control with someone near, the generator's sound up only while
+it turns, everything down with nobody near, and the lamps' list dark (`L`) and powered (the station and
+each town in its region) (`RZT Power test: ...: OK|FAILED (...)`; the run fails on FAILED). From then
 on the fake player can't hold a prompt, so while it stands at a mission the open work sites within 25 m of
 it are done for it (the others wait until the tracker sends it there) (`RZT work sites: N done for '<title>'`), and a job finished that way ends by itself. An objection
 to a hold, a truth kept after a restart, a reason starting a contract and a locked player refused need
@@ -1980,9 +1986,9 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **159** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 34 are in `UI/`: 29 of [the UI's](#the-ui-32), the loadout
-lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
+There are **161** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 39 are in `UI/`: [the UI's](#the-ui-32), the loadout
+lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's and two the hold prompt's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
 ([1.2](#12-run-reforgerz-create-prefabs)). Every name and signature question is
@@ -2077,7 +2083,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 | `Interactions/RZ_WorkSiteAction.c:151`, `:133` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
 
-### Low risk: contained or cosmetic (42)
+### Low risk: contained or cosmetic (44)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2120,8 +2126,10 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_CampLife.c:5189` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 | `Factions/RZ_CampLife.c:4813` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
 | `Guidance/RZ_OpeningPlaces.c:457` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
-| `World/RZ_PowerSite.c:357` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
-| `World/RZ_PowerSite.c:371` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
+| `World/RZ_PowerSite.c:560` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
+| `World/RZ_PowerSite.c:574` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
+| `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
+| `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
 ### The UI (36)
 
@@ -2192,7 +2200,7 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Perimeter checkpoints: 148 roads, 10 road ends with the sea within 40 m past them: 0 usable, 7 at a junction, 0 with the barrier in the sea or outside the line, 3 with another road within 75 m of the barrier.
 [ReforgerZ] Perimeter checkpoints: 0 usable road ends at the shore: 0 used, 0 closer than 800 m to another, 0 not needed (at most 6 on a map).
 [ReforgerZ] No checkpoint barricade prefab set: road checkpoints are off (the roads give 0 spots).
-[ReforgerZ] Power grid: <the station> at grid G (picked), N towns in its region, dark, locked up. Control <where>.
+[ReforgerZ] Power grid: <the station> at grid G (picked), N towns in its region, dark, locked up. Control <where>; <its looks>.
 [ReforgerZ] Radio station: the radio mast near Beauregard at grid 31-27 (picked).
 [ReforgerZ] Haven safehouses: 2 (picked).
 [ReforgerZ] Wanderers: 7 on the roads (new roster, seed S).
@@ -2463,9 +2471,14 @@ or `... patience. Last call.`, `Majors: <key> act N (...) takes its default (squ
 `Long Table: found out (to N).`, `Long Table: the farm past ... is moving (quiet for a real day).` and
 `... opens again past ...`, `Long Table: broken up (N).`,
 `Object menu: <title> for player N.` (a prop's or place's object menu opened), `Power grid: <the station>
-at grid G (picked|marker|save), N towns in its region, <step>. Control on the cabinet there.` (or `by a door`,
+at grid G (picked|marker|save), N towns in its region, <step>. Control on the cabinet there; dressing beside it, the generator heard from N place(s).` (or `by a door`,
 `against a wall`, `beside it`, `as placed`: where the control stands; *as placed* after a pick means no
-building was found, and the control stands on bare ground), `Power panel: opened for player N (<step>).`,
+building was found, and the control stands on bare ground. Then its looks: `dressing beside it`, `no room for
+the dressing (in the way: ...)` (what stopped each of the twelve spots tried: water, a slope, the station itself
+or the building named) or `no dressing prefab`; and how many
+places the generator is heard from, 2 at a power plant's own sets, else 1 at the control, or `no generator sound
+prefab`), `Power grid: the power plant at grid G has N town(s) within its reach (3 needed): not the station.` (a
+plant too far from the towns: the pick goes on to the sites near them), `Power panel: opened for player N (<step>).`,
 `Power panel: a client couldn't open it ...` (a warning: no `RZ_PowerMenu` preset or layout on that
 client; the control's old prompts are back for everyone), `Fuel pump: N litres
 drawn at <grid> (N left).` (a vanilla jerrycan filled at a petrol pump's station),
@@ -2790,8 +2803,9 @@ session, tick off:
   infected closing in shuts it. At a house radio the object menu's View radio opens it in the
   menu's place; without power it says the batteries are weak and two open channels are TOO FAINT.
 - [ ] The power station, with a pad (**UI > Power breaker layout** set, the `RZ_PowerMenu` preset
-  added). The log's `Power grid:` line names a real station (a power plant, substation or
-  transformer yard on Everon if one is near a town; a factory's or sawmill's switch room, or a
+  added). The log's `Power grid:` line names a real station (the map's power plant when three towns are
+  within its reach: on Everon the diesel power plant, "the power station outside Étoupe"; else a
+  substation or transformer yard near a town, as on Arland; a factory's or sawmill's switch room, or a
   switch room on the biggest town's edge otherwise) and says where the control stands. Go there
   (the map's power marker): the control is the map's own electrical cabinet, or our cabinet against
   the building's wall beside a door, facing out (if it's turned, set **World > Power grid > Control
@@ -2808,6 +2822,17 @@ session, tick off:
   infected closing in shuts the panel; walking 6 m off too. All of it in under a minute but the
   spin-up. Empty the slot: the old prompts (**Read the panel**, then one choice per step), never
   **Use**.
+- [ ] The power station's looks (the `Power grid:` line ends with them). Beside the control, along
+  the same wall: two fuel drums on a pallet, a third drum, two jerrycans and the sign on its pole,
+  facing out, not in the doorway and not sunk in a slope; none of them can be picked up or opened.
+  They go when you're 350 m off and are back at 300 m. From **Start the generator** on, the diesel
+  is heard at the station (inside the hall at Everon's power plant, from its two generator sets), on a
+  second client too; it stops when the spin-up stalls and when the station fails. At night, before
+  the main switch: no street lamp and no building light is lit in any town (walk into one: lamps
+  ahead of you are already dark, none goes out as you come close within 800 m). Throw the switch:
+  the lamps of the towns in the region come on at once, and a town outside it stays dark. A Power
+  Surge lights its one town for its 10 minutes. With **Street lamps** off and a rejoin, every lamp
+  is lit as on the vanilla map.
 - [ ] A petrol pump with **Cars > Fuel pump station** set (`RZ_FuelPumpStation.et`): no prompt of
   ours at the pump; hold a vanilla jerrycan beside it and **Refuel canister** fills it; the log
   says `Fuel pump: N litres drawn`. Draw 60 litres and the next can gets nothing until the pump
@@ -4151,7 +4176,7 @@ admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)
   can (the VERIFY in `RZ_Interactions.c`): set **Traps > Fuel in your hands** off.
 - [ ] World events (raise a weight to start one): Fog Bank muffles heat and brings spawns closer
   only inside its radius, and both reset when it ends. Power Surge marks the town Powered for 10
-  minutes (status log, the lights hook, electronics in searches) and dark again after, unless the
+  minutes (status log, its lamps lit at night, the lights hook, electronics in searches) and dark again after, unless the
   grid powers it. Gas Station Fire goes up after 3 minutes and burns at most three buildings.
   Tunnel Rats' culverts each
   send infected and can be collapsed only with none within 12 m.

@@ -1,6 +1,7 @@
 //! The power grid (docs/DESIGN.md, "The power grid"). One power station per map: a placed
-//! RZ_PowerStationMarkerEntity, else real power infrastructure found by prefab name near a town
-//! (a power plant, transformer station or substation), else a factory, sawmill or warehouse, else a
+//! RZ_PowerStationMarkerEntity, else the map's power plant when towns are in its reach, else real
+//! power infrastructure found by prefab name near a town (a power plant, transformer station or
+//! substation), else a factory, sawmill or warehouse, else a
 //! real building on the edge of the biggest town (World/RZ_PowerSite.c). Its control is the map's
 //! own electrical cabinet there, else the control prefab against the station's wall by a door.
 //! A group restores it in a short sequence at the control (force the door, set the breakers and
@@ -9,7 +10,8 @@
 //! (World/RZ_PowerPanel.c, UI/RZ_PowerMenu.c); without it, the old world prompts. Then the towns
 //! in its region:
 //!
-//! - are Powered (RZ_TownMemory), the hook for lights (IsPoweredAt; no lamps are switched on),
+//! - are Powered (RZ_TownMemory), the hook for lights (IsPoweredAt), and the map's own lamps there
+//!   light at night while every other town's stay dark (Street lamps; UI/RZ_PowerLampsClient.c),
 //! - get working radios: faction chatter comes more often (ChatterMult), and the radio
 //!   station can broadcast twice as often,
 //! - give an electronics loot bonus to searches (LootMult, RZ_Search),
@@ -19,7 +21,9 @@
 //! minutes: Powered, lights, and the electronics bonus, with no generator to keep running.
 //!
 //! It slowly fails (about four hours with players online) unless someone maintains it.
-//! The control object only exists while a player is near. Its state is saved.
+//! The control object only exists while a player is near, and so do the station's dressing (fuel
+//! drums and a sign beside it) and the running generator's sound (World/RZ_PowerLooks.c). Its state
+//! is saved.
 
 //------------------------------------------------------------------------------------------------
 //! Settings on RZ_GameModeComponent > World > Power grid.
@@ -37,6 +41,15 @@ class RZ_PowerSettings
 
 	[Attribute("0", desc: "Degrees added to the control prefab's turn, if its front doesn't face out from the wall")]
 	float m_fControlYaw;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Generator sound (optional): a prefab with no mesh that plays a diesel generator by itself (vanilla's DieselGenerator_01 sounds on a StaticSoundComponent). Up at the station while the generator turns and a player is near: at the map's own generator sets there, else at the control. Empty = silent", "et")]
+	ResourceName m_sGeneratorSoundPrefab;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Dressing (optional): a composition of look-only props (fuel drums, a jerrycan, a warning sign) stood beside the control while a player is near, its front (+Z) facing out from the wall. Empty = none", "et")]
+	ResourceName m_sDressingPrefab;
+
+	[Attribute("1", desc: "Street lamps: the map's own lamps (every lamp that lights itself at night) stay dark, except in towns with power from the station or a power surge. Off = the lamps are left as the map has them")]
+	bool m_bStreetLamps;
 
 	[Attribute("2500", desc: "Towns within this distance (m) of the station get the power")]
 	float m_fRegionRadius;
@@ -143,8 +156,11 @@ class RZ_PowerGrid
 	protected static const float WARN_AT = 0.2;
 	protected static const float POWER_REACH = 500;	// power infrastructure this far (m) past a town's edge counts
 	protected static const int POWER_TOWNS = 12;		// biggest towns looked around for a station
+	protected static const int PLANT_TOWNS = 3;			// a power plant away from them is the station with this many towns in its region
 	protected static const float CABINET_REACH = 45;	// a vanilla cabinet this close (m) to the station carries the control
 	protected static const float ANCHOR_REACH = 60;		// a marker's or a saved site's building this close (m)
+	protected static const float LAMP_MARGIN = 150;		// lamps this far (m) past a powered town's edge light too
+	protected static const float LAMP_STATION = 200;	// and the station's own, this far (m) round it
 	protected static const string READ_LABEL = "Read the panel";	// the old world prompts' read
 	protected static const string OPEN_LABEL = "Open the panel";		// the one prompt that opens the panel
 
@@ -167,6 +183,7 @@ class RZ_PowerGrid
 	protected bool m_bControlSpot;				// on a vanilla cabinet: the interaction spot, not the control prefab
 	protected string m_sPlacedHow = "as placed";
 	protected ref RZ_PowerPanel m_Panel;
+	protected ref RZ_PowerLooks m_Looks;
 	protected ref array<int> m_aRegion = {};
 	protected ref map<string, float> m_mMaintained = new map<string, float>();
 	protected int m_iSurgeTown = -1;			// the Power Surge event's town, -1 = none
@@ -263,6 +280,8 @@ class RZ_PowerGrid
 		RZ_TownMemory mem = m_GM.GetTownMemory();
 		if (mem)
 			mem.SetPowered(townIdx, true);
+
+		PushLamps();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -277,6 +296,7 @@ class RZ_PowerGrid
 			mem.SetPowered(m_iSurgeTown, false);
 
 		m_iSurgeTown = -1;
+		PushLamps();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -323,6 +343,7 @@ class RZ_PowerGrid
 		}
 
 		m_Panel = new RZ_PowerPanel(m_GM, this);
+		m_Looks = new RZ_PowerLooks(m_Settings);
 		string from = "picked";
 		IEntity anchor;
 		bool placed;
@@ -342,6 +363,14 @@ class RZ_PowerGrid
 				m_vControlPos = m_vPos;
 				m_fControlYaw = angles[1] + m_Settings.m_fControlYaw;
 				placed = true;
+				// The dressing beside it, facing the way the marker does
+				float turn = angles[1] * Math.DEG2RAD;
+				RZ_PowerPlacement beside = new RZ_PowerPlacement();
+				RZ_PowerSite.DressBeside(m_vPos, Vector(Math.Sin(turn), 0, Math.Cos(turn)), null, beside);
+				if (beside.m_bDress)
+					m_Looks.SetDressing(beside.m_vDressPos, beside.m_fDressYaw);
+				else
+					m_Looks.SetNoDressing(beside.m_sDressWhy);
 			}
 		}
 		else if (keepSave)
@@ -367,6 +396,8 @@ class RZ_PowerGrid
 		if (!placed)
 			PlaceControl(anchor);
 
+		PlaceSounds();
+
 		if (m_Restored)
 		{
 			m_iStep = Math.Clamp(m_Restored.step, STEP_DARK, STEP_POWERED);
@@ -377,8 +408,26 @@ class RZ_PowerGrid
 		m_bActive = true;
 		BuildRegion();
 		ApplyPower(m_iStep == STEP_POWERED);
-		RZ_Log.Info(string.Format("Power grid: %1 at grid %2 (%3), %4 towns in its region, %5. Control %6.",
-			m_sName, RZ_SettlementScanner.GridReference(m_vPos), from, m_aRegion.Count(), StepName(), m_sPlacedHow));
+		PushLamps();
+		RZ_Log.Info(string.Format("Power grid: %1 at grid %2 (%3), %4 towns in its region, %5. Control %6; %7.",
+			m_sName, RZ_SettlementScanner.GridReference(m_vPos), from, m_aRegion.Count(), StepName(), m_sPlacedHow, m_Looks.Describe()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the running generator is heard from: the map's own generator sets at the station (a
+	//! power plant has two), else the control.
+	protected void PlaceSounds()
+	{
+		array<vector> spots = {};
+		array<float> yaws = {};
+		RZ_PowerSite.Generators(m_vPos, ANCHOR_REACH, spots, yaws);
+		foreach (int i, vector spot : spots)
+		{
+			m_Looks.AddSound(spot, yaws[i]);
+		}
+
+		if (spots.IsEmpty())
+			m_Looks.AddSound(m_vControlPos, m_fControlYaw);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -396,6 +445,10 @@ class RZ_PowerGrid
 		m_fControlYaw = p.m_fYaw + m_Settings.m_fControlYaw;
 		m_bControlSpot = p.m_bSpot;
 		m_sPlacedHow = p.m_sHow;
+		if (p.m_bDress)
+			m_Looks.SetDressing(p.m_vDressPos, p.m_fDressYaw);
+		else
+			m_Looks.SetNoDressing(p.m_sDressWhy);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -411,10 +464,12 @@ class RZ_PowerGrid
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Real power infrastructure near a town (biggest towns first: a power plant beats a substation,
-	//! a substation a transformer yard), else a factory, sawmill or warehouse, else a real building
-	//! on the edge of the biggest town. Sets m_vPos and m_sName; returns the station's building or
-	//! prop, null for a bare point (a map with no buildings in its biggest town).
+	//! The map's power plant, wherever it stands, when at least three towns are in its region (the
+	//! one with the most). Else real power infrastructure near a town (biggest towns first: a power
+	//! plant beats a substation, a substation a transformer yard), else a factory, sawmill or
+	//! warehouse, else a real building on the edge of the biggest town. Sets m_vPos and m_sName;
+	//! returns the station's building or prop, null for a bare point (a map with no buildings in its
+	//! biggest town).
 	protected IEntity PickSite()
 	{
 		array<ref RZ_Settlement> list = m_GM.GetSettlements();
@@ -432,6 +487,10 @@ class RZ_PowerGrid
 			return null;
 
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
+		IEntity plant = PickPlant(perimeter);
+		if (plant)
+			return plant;
+
 		IEntity best;
 		int bestScore;
 		RZ_Settlement bestTown;
@@ -482,6 +541,66 @@ class RZ_PowerGrid
 		m_vPos = RZ_Mission.LandPointNear(biggest.m_vCenter, biggest.m_fRadius, biggest.m_fRadius + 80);
 		m_sName = "the substation outside " + biggest.m_sName;
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A power plant anywhere on the map, off the line, with the most towns within the region's
+	//! reach of it (PLANT_TOWNS at least): a real plant beats a substation in a bigger town. One
+	//! with fewer is named in the log and left. Sets m_vPos and m_sName; null if there's none.
+	protected IEntity PickPlant(RZ_Perimeter perimeter)
+	{
+		array<IEntity> plants = {};
+		RZ_PowerSite.FindPlants(plants);
+		IEntity best;
+		int bestTowns;
+		foreach (IEntity plant : plants)
+		{
+			if (!plant || (perimeter && perimeter.IsNearLine(plant.GetOrigin())))
+				continue;
+
+			int towns = 0;
+			foreach (RZ_Settlement s : m_GM.GetSettlements())
+			{
+				if (RZ_Util.DistXZ(s.m_vCenter, plant.GetOrigin()) <= m_Settings.m_fRegionRadius)
+					towns++;
+			}
+
+			if (towns < PLANT_TOWNS)
+			{
+				RZ_Log.Info(string.Format("Power grid: the power plant at grid %1 has %2 town(s) within its reach (%3 needed): not the station.",
+					RZ_SettlementScanner.GridReference(plant.GetOrigin()), towns, PLANT_TOWNS));
+				continue;
+			}
+
+			if (towns > bestTowns)
+			{
+				best = plant;
+				bestTowns = towns;
+			}
+		}
+
+		if (!best)
+			return null;
+
+		// Named for the nearest place with a name of its own (the plant's own yard is often a cluster
+		// of buildings the scan calls "Outskirts" and a grid reference)
+		m_vPos = RZ_Util.GroundPos(best.GetOrigin());
+		RZ_Settlement near = m_GM.GetSettlement(m_GM.FindNearestSettlement(m_vPos));
+		float nearDist = float.MAX;
+		foreach (RZ_Settlement named : m_GM.GetSettlements())
+		{
+			float d = RZ_Util.DistXZ(named.m_vCenter, m_vPos);
+			if (named.m_sName.IndexOf("Outskirts ") != 0 && d < nearDist)
+			{
+				near = named;
+				nearDist = d;
+			}
+		}
+
+		if (near)
+			m_sName = RZ_PowerSite.NameFor(RZ_PowerSite.MODE_POWER, 40, near.m_sName, RZ_Util.DistXZ(m_vPos, near.m_vCenter) < near.m_fRadius);
+
+		return best;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -540,6 +659,8 @@ class RZ_PowerGrid
 
 		m_fClock += dt;
 		UpdateBody(players);
+		float reach = RZ_Util.NearestDistance(m_vPos, players);
+		m_Looks.Sync(reach <= VISIBLE_RADIUS, reach > VISIBLE_RADIUS + DESPAWN_MARGIN, m_iStep >= STEP_SPINNING);
 
 		if (m_iStep == STEP_SPINNING)
 			TickSpinUp(dt, players);
@@ -616,12 +737,49 @@ class RZ_PowerGrid
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Street lamps: where the map's own lamps may light, for every client (UI/RZ_PowerLampsClient.c).
+	//! "L" and then ";x z radius" for the station and each town it powers, and a surge's town; "L"
+	//! alone = dark everywhere; "" = the lamps are left alone (Street lamps off).
+	protected void PushLamps()
+	{
+		if (!m_bActive || !m_Settings.m_bStreetLamps)
+		{
+			m_GM.SetPowerLamps("");
+			return;
+		}
+
+		string list = "L";
+		if (IsPowered())
+		{
+			list += LampCircle(m_vPos, LAMP_STATION);
+			foreach (int idx : m_aRegion)
+			{
+				RZ_Settlement s = m_GM.GetSettlement(idx);
+				if (s)
+					list += LampCircle(s.m_vCenter, s.m_fRadius + LAMP_MARGIN);
+			}
+		}
+
+		if (m_iSurgeTown >= 0)
+			list += LampCircle(m_vSurgePos, m_fSurgeRadius + LAMP_MARGIN);
+
+		m_GM.SetPowerLamps(list);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string LampCircle(vector center, float radius)
+	{
+		return string.Format(";%1 %2 %3", RZ_Util.RoundToInt(center[0]), RZ_Util.RoundToInt(center[2]), RZ_Util.RoundToInt(radius));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Restored(int playerId)
 	{
 		SetStep(STEP_POWERED);
 		m_fCondition = 1;
 		m_bWarned = false;
 		ApplyPower(true);
+		PushLamps();
 		string text = string.Format("Somebody got %1 running. There are lights in %2 tonight, and the radios have something to run on. Everything for a mile can hear the generator.", m_sName, RegionNames());
 		m_GM.NotifyAll("Power", text);
 		if (m_GM.GetLeaders())
@@ -636,6 +794,7 @@ class RZ_PowerGrid
 		SetStep(STEP_OPEN);
 		m_fCondition = 0;
 		ApplyPower(false);
+		PushLamps();
 		NotifyRegion("Power", string.Format("%1 has quit. The lights in %2 are out again.", m_sName, RegionNames()));
 		if (m_GM.GetLeaders())
 			m_GM.GetLeaders().AddHeadline(string.Format("The power failed in %1. Nobody kept %2 going, and the towns on it are dark again.", RegionNames(), m_sName), false);

@@ -467,7 +467,7 @@ placed by hand. **Nothing is built along the edge** except the road checkpoints.
 
 ## Time and environment
 
-Code: `Director/RZ_Environment.c`, `Puzzles/RZ_GameTime.c`, `World/RZ_PowerGrid.c`, `World/RZ_RadioStation.c`, `Director/RZ_Broadcast.c`.
+Code: `Director/RZ_Environment.c`, `Puzzles/RZ_GameTime.c`, `World/RZ_PowerGrid.c`, `World/RZ_PowerLooks.c`, `UI/RZ_PowerLampsClient.c`, `World/RZ_RadioStation.c`, `Director/RZ_Broadcast.c`.
 
 Time is never skipped. The environment is read every 30 s and nudges other systems.
 
@@ -514,13 +514,18 @@ m/s); on a map without one, only night and the Storm event apply.
 ### The power grid
 
 **The station.** One power station per map, at real infrastructure (`World/RZ_PowerSite.c`): a
-placed `RZ_PowerStationMarkerEntity`; else the best power site within 500 m of the twelve biggest
-towns, by prefab name (a power plant, then a transformer station or substation, then a 110 kV or
-40 kV transformer yard, then a lone transformer); else a factory hall or boiler house, a sawmill
+placed `RZ_PowerStationMarkerEntity`; else the map's power plant wherever it stands, when at least
+three towns are within the region's 2.5 km of it (the one with the most; one pass over the map's
+buildings at the start, about a second on Everon); else the best power site within 500 m of the
+twelve biggest towns, by prefab name (a power plant, then a transformer station or substation, then
+a 110 kV or 40 kV transformer yard, then a lone transformer); else a factory hall or boiler house, a sawmill
 or concrete plant, a warehouse or workshop within 200 m of a town (buildings only: a barrel under
 `Props/Industrial` is no factory); else a real building on the edge of the biggest town. Its name
 says what it is: "the power station outside Morton", "the substation in Levie", "the factory's
-switch room outside Tyrone", "the switch room on the edge of Morton". A station saved while still
+switch room outside Tyrone", "the switch room on the edge of Morton" (a plant is named for the
+nearest place with a name of its own, not for the cluster of buildings its own yard makes). On
+the test server Everon's is its diesel power plant, "the power station outside Étoupe", with 19
+towns in its region; Arland has no plant, and its station is the substation in Beauregard. A station saved while still
 dark is picked again at the next start (an older pick may have been a field); one saved later
 keeps its place. Only a map whose biggest town has no building at all gets a bare point.
 
@@ -531,6 +536,21 @@ the town (**Use cabinets**, needs **Interactions > Spot prefab**). Else the cont
 vanilla cabinet set) stands against the station's wall, a step to the side of an outside door
 and facing out; with no door, against the wall nearest the town; at a lone transformer, beside
 it. It exists while a player is within 300 m.
+
+**How it looks and sounds.** The buildings, transformers and wires are the map's own. Three things
+are ours, each with its own setting under **World > Power grid** (`World/RZ_PowerLooks.c`,
+`UI/RZ_PowerLampsClient.c`):
+
+| | What | When |
+|---|---|---|
+| **The dressing** (**Dressing prefab**) | Two fuel drums on a pallet, a third beside it, two jerrycans and a warning sign on a pole: 2.4 m along the wall from the control, facing out (in line with the map's cabinet when that carries the control). When that spot won't do it tries the door's other side, each 2 m further along, and the same four 1.5 m and 3 m out from the wall: the first that is dry, flat (under about 12 degrees) and outside every building. None of the twelve: no dressing there, and the log says what was in the way. Look-only, through camp life's dressing guard | A player within 300 m, at every step |
+| **The generator** (**Generator sound prefab**) | Vanilla's diesel generator, engine and hum, from a prefab with no mesh: at the map's own generator sets within 60 m when the station has them (the power plant on Everon has two inside), else at the control | A player within 300 m, from the moment it catches: spinning up, ready, running. Silent again when it stalls or fails |
+| **The lamps** (**Street lamps**, on) | The map's own lamps (street lamps and the lit lights on buildings: everything that lights itself at night) stay dark, except within 150 m of a town with power (the station's region while it runs, a power surge's town) and within 200 m of the running station | Always. Off = the lamps are left as the map has them, lit every night |
+
+The lamps are put out on each client, not on the server. The server replicates one short list of
+where there's power; each client finds the lamps round its player once (a 100 m square of the map
+at a time, nearest first, out to 800 m) and puts out the ones outside the list, then again when
+the list changes. A lamp further than 800 m from you can show lit until you come nearer.
 
 **Restoring it** takes three steps, all in [the power panel](UI.md#the-power-panel) (one prompt,
 **Open the panel**):
@@ -543,8 +563,8 @@ it. It exists while a player is within 300 m.
    and it dies, and the breakers trip).
 3. **Throw the main switch.**
 
-Then every town within 2.5 km is **Powered** and everyone hears it. Power gives a lights hook
-(`RZ_PowerGrid.IsPoweredAt`; no lamps are actually switched on), more radio chatter (every
+Then every town within 2.5 km is **Powered** and everyone hears it. Power lights the map's lamps
+there at night (above), gives the lights hook other systems read (`RZ_PowerGrid.IsPoweredAt`), more radio chatter (every
 6 minutes instead of 10), faster radio station broadcasts, and electronics ×1.5 as likely in
 loot there. But the generator hums: 10 heat a minute at the station. It **slowly fails**
 over about four hours with players online (a warning at 20%). **Refuel and grease** restores
@@ -552,10 +572,11 @@ over about four hours with players online (a warning at 20%). **Refuel and greas
 to step 2 with the breakers tripped. No Fame for any of it: the power is the reward.
 
 **Power surges** (the Power Surge event): one dark town outside the region gets power for 10
-minutes, with the same lights hook and electronics bonus, and no generator to keep running.
+minutes: its lamps light, with the same lights hook and electronics bonus, and no generator to keep running.
 
 *Simplified:* the breakers are a puzzle on the screen, not switches in the world; the card is
-dealt at each server start; the generator, the door and the board are told, not modelled. With
+dealt at each server start; the door and the board are told, not modelled, and the generator is
+heard, not seen (the map's own sets at a power plant don't move); windows don't light, only the map's lamps. With
 **UI > Power breaker layout** empty the control keeps its old world prompts and the breakers are
 done in one go with the generator ([fallbacks](UI.md#the-power-panel)).
 

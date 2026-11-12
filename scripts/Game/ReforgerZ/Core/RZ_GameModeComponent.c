@@ -444,6 +444,9 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	[RplProp()]
 	protected string m_sReplTraceLights;		// lit windows near players, for the clients' lights (World/Traces/RZ_TraceSounds.c)
 
+	[RplProp()]
+	protected string m_sReplPowerLamps;			// where the map's own lamps may light, for the clients (RZ_PowerGrid.PushLamps); "" = left alone
+
 	// ---------------------------------------------------------------- Runtime (server)
 	protected static RZ_GameModeComponent s_Instance;
 
@@ -1374,6 +1377,19 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	string GetLockedBuildings() { return m_sReplLockedBuildings; }
 	string GetDoorMarks() { return m_sReplDoorMarks; }
 	string GetTraceLights() { return m_sReplTraceLights; }
+	string GetPowerLamps() { return m_sReplPowerLamps; }
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: where the map's own lamps may light (RZ_PowerGrid.PushLamps), for the clients'
+	//! street lamps (UI/RZ_PowerLampsClient.c).
+	void SetPowerLamps(string list)
+	{
+		if (list == m_sReplPowerLamps)
+			return;
+
+		m_sReplPowerLamps = list;
+		Replication.BumpMe();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the lit windows near players, for the clients' lights (RZ_TraceAmbience, S2).
