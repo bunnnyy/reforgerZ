@@ -2742,9 +2742,9 @@ class RZ_Leaders
 		}
 
 		// The first line: what this player did for the people here, said back once (errands' threads)
-		string thread = ErrandThread(l, playerId);
-		if (!thread.IsEmpty())
-			text = thread + "\n" + text;
+		string doneHere = ErrandThread(l, playerId);
+		if (!doneHere.IsEmpty())
+			text = doneHere + "\n" + text;
 
 		// What the faction needs right now, and now and then a big moment they remember
 		if (m_GM.GetFactionLife())
