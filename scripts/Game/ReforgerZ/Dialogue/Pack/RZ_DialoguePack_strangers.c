@@ -13,6 +13,28 @@ class RZ_DialoguePack_strangers
 		db.Opens(10);
 		db.Node("start");
 		db.Say("", "\"Hey. You. Sorry. Have you got a minute? I wouldn't ask.\"");
+		db.Conv("stranger.any.passed", "stranger", "", "Ask what they passed on the way.", 4, 1, "plain");
+		db.Bind("horde", "news:horde");
+		db.Bind("fire", "news:burned");
+		db.Bind("dead", "news:death");
+		db.Node("start");
+		db.Jump("news:horde", "horde");
+		db.Jump("news:burned", "fire");
+		db.Jump("news:death", "dead");
+		db.Say("rain", "\"Puddles. I counted them to stop counting other things. Forty-one.\"");
+		db.Say("night", "\"Nothing. It's dark. I passed the dark.\"");
+		db.Say("", "\"A dog that followed me for a mile and then thought better of it. That was the best part.\"");
+		db.Choice("back0", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("horde");
+		db.Say("", "\"A lot of them, near {bind:horde}. Walking the same way, like a parade nobody wanted. I hid in a ditch.\"");
+		db.Say("", "\"The ditch was nice, actually. Quiet. I might go back to the ditch.\"");
+		db.Choice("back1", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("fire");
+		db.Say("", "\"Smoke over {bind:fire}. I didn't go closer. I'm not that sort of brave. I'm the walking-away sort.\"");
+		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("dead");
+		db.Say("", "\"Somebody had died near {bind:dead}. Somebody covered them with a coat. A good coat. That stayed with me.\"");
+		db.Choice("back3", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("stranger.any.where", "stranger", "", "Ask where they're headed.", 4, 1, "plain");
 		db.Node("start");
 		db.Say("", "\"Wherever's still standing. I'll know it when I see it, I expect.\"");
@@ -137,6 +159,10 @@ class RZ_DialoguePack_strangers
 		db.Say("", "\"We're going to Gran's. Gran's dead. Dad doesn't know I know.\"");
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("stranger.warm_hands.fire", "stranger:warm_hands", "", "Ask where he's from.", 4, 1, "plain");
+	}
+
+	protected static void Add1(RZ_DialogueDB db)
+	{
 		db.Node("start");
 		db.Say("", "\"{their:house}, until last week. Upkeep. I couldn't pay it, so I'm paying it out here instead.\"");
 		db.Say("", "\"Don't feel sorry for me. The fire's good. The company's better than I'm used to.\"");
@@ -159,10 +185,6 @@ class RZ_DialoguePack_strangers
 		db.Choice("back2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("stranger.which_way.pram", "stranger:which_way", "", "Ask about the pram.", 4, 1, "plain");
 		db.Node("start");
-	}
-
-	protected static void Add1(RZ_DialogueDB db)
-	{
 		db.Say("", "\"It carries more than a bag does. Don't look at me like that. Everyone looks at me like that.\"");
 		db.Choice("fair", "\"It's a good idea.\"", "fair", "", "", "", "", "", "", "", "");
 		db.Choice("back", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");

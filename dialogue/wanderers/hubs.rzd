@@ -1,0 +1,206 @@
+# The wanderers, the hub (docs/DIALOGUE.md, "Hubs: work comes out of talk"): each role's "Need a
+# hand?" (slot 2, the wanderers' asks) comes out of their own trouble, told their way. Not while
+# they're bitten (slot 2 is the antidote then). The road's news is theirs too, and not all of it is
+# true. Voice: plain, each person their own.
+
+conv wanderer.trader.trouble
+for wanderer:trader
+when !wbitten
+topic "Ask how trade's been."
+prio ask
+voice plain
+
+node start
+  say? outbreak:overrun :: "Slow. Nobody walks to market when the market might eat them."
+  say? need:food :: "Everybody wants food and nobody's got anything to swap for it but stories. I don't eat stories."
+  say? rain :: "Wet. Wet stock is cheap stock. I'm selling damp bandages at a very fair price."
+  say "Up and down. Mostly down. I'm an optimist about the up."
+  > @why "What's the hold-up?" -> hold
+  > @cut "And if I helped? What's my cut?" -> cut
+  > @hand "Need a hand?" -> hub   do call:slot:2
+  > @no "Good luck with it." -> hub
+
+node hold
+  say "Roads. Tolls. People. Mostly people. Somebody always wants the thing you're carrying more than you do."
+  > @hand1 "Need a hand, then?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+node cut
+  say "Your cut is my gratitude and a better price next time. My gratitude is very sincere. My prices are less so."
+  > @hand2 "Fair. Need a hand?" -> hub   do call:slot:2
+  > @back2 "Something else." -> hub
+
+conv wanderer.doctor.trouble
+for wanderer:doctor
+when !wbitten
+topic "Ask who they're worried about."
+prio ask
+voice plain
+
+node start
+  say? dusk :: "Whoever's still out after dark. It's nearly dark. So, everyone."
+  say? outbreak:collapse :: "Everybody with a scratch who's telling themselves it's a fence."
+  say? symptoms :: "You, mostly. Sit down. No, really. Sit."
+  say "The ones who won't come to me. They're always the ones who should."
+  > @who "Anyone in particular?" -> who
+  > @nurse "Let me sort your bag for you." -> kit   if bg:nurse,doctor
+  > @hand "Need a hand?" -> hub   do call:slot:2
+  > @no "Take care of yourself." -> hub
+
+node who
+  say "A family on the farm road with a child who coughs. A man who won't let anyone see his leg. Ordinary things."
+  say "Ordinary things kill more people than the dead do. They're just slower about it."
+  > @hand1 "Need a hand with them?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+node kit
+  say "You know what you're looking at. Good. Half of this is expired. The other half I'm pretending isn't."
+  > @hand2 "Then need a hand?" -> hub   do call:slot:2
+  > @back2 "Something else." -> hub
+
+conv wanderer.scavenger.trouble
+for wanderer:scavenger
+when !wbitten
+topic "Ask what they're after."
+prio ask
+voice plain
+
+node start
+  say? town:looted :: "Anything nobody's taken. Round here that's a short list. This town's been picked to the bone."
+  say? night :: "Sleep. But since you're asking, batteries."
+  say "Whatever's left. Whatever's worth a tin. Same thing, these days."
+  > @where "Where's worth looking?" -> where
+  > @hand "Need a hand?" -> hub   do call:slot:2
+  > @no "Happy hunting." -> hub
+
+node where
+  say "If I told you, it'd be worth less. Help me with something and I'll think about telling you."
+  > @hand1 "Need a hand, then?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+conv wanderer.deserter.trouble
+for wanderer:deserter
+when !wbitten
+topic "Ask if they're being followed."
+prio ask
+voice plain
+
+node start
+  say? kit:other :: "Maybe. You're wearing colours. Whose? Never mind. Don't stand so close."
+  say? feud:bastion :: "By Bastion? They've got enough to do. They'd still make time for me."
+  say "Always. Or I think so, which is the same for sleeping."
+  > @why "Who'd follow you?" -> who
+  > @soldier "You left your post. That counts." -> post   if bg:soldier,police
+  > @hand "Need a hand?" -> hub   do call:slot:2
+  > @no "Keep moving." -> hub
+
+node who
+  say "People I used to stand next to. They'd say they're looking for me. They'd mean it kindly. That's worse."
+  > @hand1 "Need a hand with anything?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+node post
+  say "It isn't. I know. I still hear the roll some nights. My name's on the board as missing. That's the kind word."
+  > @hand2 "Need a hand anyway?" -> hub   do call:slot:2
+  > @back2 "Something else." -> hub
+
+conv wanderer.preacher.trouble
+for wanderer:preacher
+when !wbitten
+topic "Ask what they're praying for."
+prio ask
+voice plain
+
+node start
+  say? epilogue :: "That the road out is a road out. I've stopped praying for big things. I'm saving my breath."
+  say? cure>=75 :: "For the lab. Don't tell anyone. I'd lose my reputation for not trusting anything."
+  say? outbreak:overrun :: "For quiet. The bells were for company. They brought the wrong company."
+  say "For whoever needs it. You can have one if you like. Free. It's the only free thing left."
+  > @bells "Why the bells?" -> bells
+  > @hand "Need a hand?" -> hub   do call:slot:2
+  > @no "Pray for me, then." -> hub
+
+node bells
+  say "So the lonely ones know someone's here. The dead hear it too. Everything has a cost now. Even comfort."
+  > @hand1 "Need a hand with anything?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+conv wanderer.courier.trouble
+for wanderer:courier
+when !wbitten
+topic "Ask whose letters are late."
+prio ask
+voice plain
+
+node start
+  say? outbreak:overrun :: "Everyone's. The roads are theirs now. I go round. Round takes days."
+  say? edge :: "There's a letter for someone outside the line. I carry it anyway. One day there'll be an outside again."
+  say "A mother in one town for a son in another. Neither knows the other's alive. I'm the only one who knows both."
+  > @why "Why not deliver them?" -> why
+  > @hand "Need a hand?" -> hub   do call:slot:2
+  > @no "Safe roads." -> hub
+
+node why
+  say "Because one of the towns is a bad town now. I'd go. I'm a coward, not an idiot. Mostly a coward."
+  > @hand1 "Need a hand with it?" -> hub   do call:slot:2
+  > @back1 "Something else." -> hub
+
+# The road's news. A wanderer's version of a burned town has the Red Hand in it, which the Red Hand
+# denies with the truth (~truth:gossip.burned@burned, their leaders and people).
+conv wanderer.road.news
+for wanderer:trader, wanderer:scavenger, wanderer:deserter, wanderer:preacher, wanderer:courier, wanderer:doctor
+topic "Ask what they passed on the road."
+prio world
+voice plain
+
+bind burned = news:burned
+bind took = news:taken
+bind who = news:taken_by
+bind from = news:taken_from
+bind dead = news:leader_dead
+bind at = news:leader_dead_at
+bind horde = news:horde
+bind truck = news:truck
+bind bit = news:bite
+
+node start
+  jump news:burned -> burned
+  jump news:leader_dead -> dead
+  jump news:taken -> taken
+  jump news:horde -> horde
+  jump news:truck -> truck
+  jump news:bite -> bite
+  say? epilogue :: "Queues at the road checkpoints. People in their good coats. Processing, they call it."
+  say? edge :: "Drones. Close to the line, there's always one. It hums like it's thinking about you."
+  say? stage:fever :: "You, looking like that. Sit down a minute before you fall down."
+  say "Nothing. Empty cars. A shoe in the road. There's always a shoe in the road."
+  > @back0 "Something else." -> hub
+
+node burned
+  say "{bind:burned}, burning. The Red Hand's work. I saw their truck on the road after." ~lie:gossip.burned@burned
+  > @catch "The Red Hand say burning is waste." -> caught   callout gossip.burned@burned
+  > @back1 "Something else." -> hub
+
+node caught
+  say "Do they. Well. It was a truck. On a road. I might have filled in the rest. People like a story with someone in it."
+  > @back2 "Something else." -> hub
+
+node dead
+  say "{bind:dead} is dead. In {bind:at}. I heard it three ways. Two of them were sad about it."
+  > @back3 "Something else." -> hub
+
+node taken
+  say "{bind:who} put their flag up at {bind:took}. {bind:from} took theirs down. Nobody's flag stopped the dead."
+  > @back4 "Something else." -> hub
+
+node horde
+  say "A crowd near {bind:horde}, following some noise. I went round. Round is my favourite direction."
+  > @back5 "Something else." -> hub
+
+node truck
+  say "A truck that didn't get there. {bind:truck}. Doors open, nobody in it. I didn't look in the back."
+  > @back6 "Something else." -> hub
+
+node bite
+  say "Somebody got bitten near {bind:bit}. Saw the blood on the road. Saw the person walk on. Brave, or not thinking yet."
+  > @back7 "Something else." -> hub

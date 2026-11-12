@@ -1,0 +1,56 @@
+# Road posts: what's moving on the road (docs/DIALOGUE.md, "Hubs"), in the post's voice. The crews
+# see who lost what, and say it the way their side would.
+
+conv post.bastion.road
+for post:bastion
+when !hunted:bastion
+topic "Ask what's moving on the road."
+prio world
+voice bastion
+
+bind horde = news:horde
+bind lost = news:lost_by(redhand)
+bind truck = supply:truck
+
+node start
+  jump news:horde -> horde
+  jump news:lost_by(redhand) -> sold
+  say? supply:road & bound:truck :: "Our truck, outbound to {bind:truck}. Don't wave at it. Don't stand near it."
+  say? night :: "At night? Lights we can't explain and engines we can. Mostly the second."
+  say? fog :: "Fog. The road could be full of anything. We assume it is."
+  say "Carts, bikes, people on foot carrying everything they own. Same as every day."
+  > @back0 "Understood." -> hub
+
+node horde
+  say "Contact moving near {bind:horde}. Large. Following noise. If you're going that way, don't make any."
+  > @back1 "Understood." -> hub
+
+node sold
+  say "Red Hand lost {bind:lost}. We watched them leave it. Fast. Selling is not what that was." ~truth:gossip.sold@lost
+  > @back2 "Understood." -> hub
+
+conv post.redhand.road
+for post:redhand
+when !hunted:redhand
+topic "Ask what's moving on the road."
+prio world
+voice redhand
+
+bind lost = news:lost_by(bastion)
+bind truck = news:truck
+
+node start
+  jump news:lost_by(bastion) -> withdrew
+  jump news:truck -> truck
+  say? rain :: "Rain. People walk faster in rain. They pay faster too."
+  say? night :: "Nothing that pays. Things that bite. Different line in the book."
+  say "Business. Two carts, a bike, a man with a goat. The goat paid. The man's still thinking about it."
+  > @back0 "Lovely." -> hub
+
+node withdrew
+  say "Bastion left {bind:lost}. At a run. Watched them. Withdrew, they'll call it. Withdrew at a sprint." ~truth:gossip.withdrew@lost
+  > @back1 "Lovely." -> hub
+
+node truck
+  say "A truck didn't get there. {bind:truck}. Wasn't us. Ours get there. That's the whole point of ours."
+  > @back2 "Lovely." -> hub
