@@ -11,6 +11,8 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 - 2026-11-11 76b52d0: play the minimum subset on `Missions/RZ_Arland.conf`. Check the log lines in WBS §7, report every script exception and missing log line here, and run the play-test checklist in WBS §8.
 
 **UI (WBS §4, "Setting up the UI")**
+- 2026-11-12 (cloud, docs pass): `UI/layouts/Menus/DeployMenu/RespawnMenu.layout` (the override of vanilla's deploy menu) is deleted: it embedded the removed `RZ_BackgroundPanel.layout`, and our spawn screen replaces that menu. Nothing to do but pull; with **UI > Spawn row layout** empty, vanilla's own deploy menu opens.
+- 2026-11-12 (cloud, docs pass): new in play: the journal's *The finale* row while the cure's routes are open, the jobs in each player's order, and a sound on each notice card (vanilla's hint sound): check them in Workbench play (UI.md).
 - 2026-11-12 (cloud, docs pass): `chimeraInputCommon.conf` has pad bindings for the notebook (View + RB, in play) and the talk screen's replies (LT + D-pad up/right/down/left = 1-4, RT + D-pad up/right/down = 5-7): open the conf in Workbench, then check both with a pad, and that View alone still opens the map and RB alone does what it did (UI.md, Controllers).
 - 2026-11-12 (cloud, docs pass): `Prefabs/ReforgerZ/UI/RZ_Notebook.et:40`, the item's Description: it still lists the map key (now on the map) and lacks the season tab. Set it to exactly: `Your notebook: standing, the jobs you know of, what you heard, the hall of fame and the season. Take it in hand to read it.`
 - 2026-11-12 (cloud, docs pass): the map key moved up to offset (96, -190) in `RZ_MapLegend.layout`, clear of vanilla's key hints and scale bar: check in play that it covers none of vanilla's map widgets (WBS §8, the map key).
@@ -101,7 +103,6 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 ## For the cloud
 
 - 2026-11-12 (PC): **script fixes (one-liners, compile check OK):** negative seeds indexed arrays. `RZ_Tribes.c` CallPattern and AlphaWho, `RZ_TribePeople.c` CrewName now use `Math.AbsInt(...) % Count()` (each threw "Index out of bounds" in Workbench play on Everon); `RZ_SupplyLines.c` out-of-stock hash too (a negative seed made every item out of stock). Please scan for the same pattern in new code.
-- 2026-11-12 6c66be6 (cloud, missions, for the UI owner): order per player is a query: `RZ_MissionReasons.OrderScore(gm, mission, playerId, playerPos)` (higher first; near, reason-started, a leader they helped). The journal's and the quartermaster's lists can sort by it (DESIGN "Story blocks" says they don't yet).
 
 ## Claims
 
