@@ -14,6 +14,242 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
  }
  "Ignore Cursor" 1
  {
+  FrameWidgetClass "{0E87DF72391F5F17}" {
+   Name "NametagPanel"
+   Slot FrameWidgetSlot "{D0133AB0FD339481}" {
+    Anchor 0 0 1 1
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 0
+    OffsetRight 0
+    SizeY 0
+    OffsetBottom 0
+    Alignment 0 0
+   }
+   {
+    VerticalLayoutWidgetClass "{8D1BDDF515091E8B}" {
+     Name "Nametag0"
+     Slot FrameWidgetSlot "{90BA21F382C6A787}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 400
+      OffsetRight -400
+      SizeY 80
+      OffsetBottom -80
+      Alignment 0.5 1
+      SizeToContent 1
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{D41AED462A373B4D}" {
+       Name "NametagName"
+       Slot LayoutSlot "{D47CE0C1D27F28B9}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text ""
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{8D3E46C687EFFFDA}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+      TextWidgetClass "{8E899A5AD00F4B8F}" {
+       Name "NametagRole"
+       Slot LayoutSlot "{726ABDF42903BF07}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text ""
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{B8355C46BBF44AA0}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+      TextWidgetClass "{726C1866180B34EA}" {
+       Name "NametagFaction"
+       Slot LayoutSlot "{7F4A31BD503071F4}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text ""
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{410184B1703A3469}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{A4195DD96986B611}" {
+     Name "Nametag1"
+     Slot FrameWidgetSlot "{C475E4D818F5250C}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 400
+      OffsetRight -400
+      SizeY 80
+      OffsetBottom -80
+      Alignment 0.5 1
+      SizeToContent 1
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{1C1BD57307D6BB08}" {
+       Name "NametagName"
+       Slot LayoutSlot "{5C22F447334BCFB2}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text ""
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{5D94CC115465114D}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+      TextWidgetClass "{DB9FD17FDC6F3A6A}" {
+       Name "NametagRole"
+       Slot LayoutSlot "{5BEE08239F9403ED}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text ""
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{B4CF04C8E6D46518}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+      TextWidgetClass "{576376500D50FA95}" {
+       Name "NametagFaction"
+       Slot LayoutSlot "{83551D869E39169B}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text ""
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{90B0676FA6BB9B3F}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+     }
+    }
+    VerticalLayoutWidgetClass "{36F59883C0272855}" {
+     Name "Nametag2"
+     Slot FrameWidgetSlot "{F5BC0DDCEC022F48}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 400
+      OffsetRight -400
+      SizeY 80
+      OffsetBottom -80
+      Alignment 0.5 1
+      SizeToContent 1
+     }
+     "Is Visible" 0
+     {
+      TextWidgetClass "{B0DCFCD03913A503}" {
+       Name "NametagName"
+       Slot LayoutSlot "{DF5F5E71F6E274E0}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.91 0.886 0.816 1
+       Text ""
+       "Font Size" 24
+       "Min Font Size" 24
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{3772DDF3CFF0ACC8}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+      TextWidgetClass "{1C9AA0F786134723}" {
+       Name "NametagRole"
+       Slot LayoutSlot "{C6852563EF5AD86F}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text ""
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{2829B306B63F11E7}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+      TextWidgetClass "{85BD094A91CFC43E}" {
+       Name "NametagFaction"
+       Slot LayoutSlot "{8DD3FAC9F86813C3}" {
+        HorizontalAlign 1
+        VerticalAlign 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text ""
+       "Font Size" 20
+       "Min Font Size" 20
+       "Horizontal Alignment" Center
+       FontProperties FontProperties "{D71250FCC3728DAB}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+        ShadowColor 0 0 0 0.9
+       }
+      }
+     }
+    }
+   }
+  }
   FrameWidgetClass "{353CC5F51282D62A}" {
    Name "InfectionPanel"
    Slot FrameWidgetSlot "{5FFCEA150DD0BDF6}" {

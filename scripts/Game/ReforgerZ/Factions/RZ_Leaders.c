@@ -3016,13 +3016,22 @@ class RZ_Leaders
 //! "Talk to whoever's in charge" and friends. Put these on quartermaster prefabs (and on a
 //! leader prefab without the puzzle components): they reach the leader whose seat this is. All but
 //! Talk go into the object menu with the quartermaster's other asks (RZ_ObjectScreen.c).
+//! With the talk screen, a quartermaster's Talk is the reply "Ask for whoever's in charge" in its
+//! own conversation (RZ_TalkStaff) and the rest are the leader's replies, so none of these shows.
 class RZ_LeaderAction : RZ_GroupedAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "What this action does", "", ParamEnumArray.FromEnum(RZ_ELeaderAction))]
 	protected RZ_ELeaderAction m_eKind;
 
 	//------------------------------------------------------------------------------------------------
-	//! With the talk screen, work, news and standing are replies there; only Talk stays.
+	RZ_ELeaderAction GetKind()
+	{
+		return m_eKind;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! With the talk screen, work, news and standing are replies there; only Talk stays, and only on
+	//! someone without a Talk prompt of their own (RZ_TalkAction).
 	override bool Visible(IEntity user)
 	{
 		return m_eKind == RZ_ELeaderAction.TALK || !RZ_TalkMenu.Available();

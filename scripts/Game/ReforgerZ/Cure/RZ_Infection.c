@@ -1102,6 +1102,30 @@ class RZ_Infection
 			Math.Max(1, RZ_Util.RoundToInt(p.m_fInfectionLeft / 60))));
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! What the trial dose needs that this player lacks, for the talk screen's greyed reply ("" when
+	//! it applies now): the same checks TrialDose makes, in the same order.
+	string TrialDoseNeed(int playerId)
+	{
+		RZ_PlayerProfile p = m_GM.GetProfile(playerId);
+		if (!p)
+			return "not now";
+
+		if (RZ_Reputation.IsHunted(m_GM.GetTier(playerId, RZ_EFaction.INSTITUTE)))
+			return "not for you";
+
+		if (!p.IsInfected())
+			return "for the bitten only";
+
+		if (p.IsWoundFresh())
+			return "the bite hasn't taken yet";
+
+		if (p.m_bTrialDoseTaken)
+			return "once a life: you've had yours";
+
+		return "";
+	}
+
 	// ================================================================ Finds
 	//------------------------------------------------------------------------------------------------
 	//! One roll for a treatment in this building type (at most one): a car boot or body search, or a

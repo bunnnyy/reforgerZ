@@ -100,6 +100,15 @@ class RZ_DialogueSettings
 	[Attribute("0.15", desc: "Lies: the chance a believed lie with nothing in the world to test it is found out at each of its two rumour rounds (missions, errands and talk alike)")]
 	float m_fRumourChance;
 
+	[Attribute("1", desc: "Nametags: a small tag over people you can talk to when you're close and can see them: name, role, who they're with (needs NametagPanel in the HUD layout). Never over the infected or players")]
+	bool m_bNametags;
+
+	[Attribute("8", desc: "Nametags: shown within this distance (m)")]
+	float m_fNametagRange;
+
+	[Attribute("3", desc: "Nametags: at most this many at once, the nearest (the HUD layout has three)")]
+	int m_iNametagMax;
+
 	protected static ref RZ_DialogueSettings s_Defaults;
 
 	//------------------------------------------------------------------------------------------------
@@ -173,7 +182,7 @@ class RZ_Dialogue
 {
 	static const int LEAVE = 99;
 	static const int MORE = 98;			// the next page of replies (LB/RB, Q/E, the arrows; not a row)
-	static const int PAGE_BACK = 95;	// the page before
+	static const int PAGE_BACK = 89;	// the page before (not 95: that's Make it right's reply)
 	static const int ADMIN_BACK = 97;	// Back.: from the [Admin] list to the replies
 	static const int ADMIN = 96;		// [Admin]: a server admin's replies, as their own list
 	static const int ROWS = 5;			// replies on the screen at once, the way out included
@@ -192,6 +201,7 @@ class RZ_Dialogue
 	protected int m_iSerial;
 	protected ref RZ_DialogueTrees m_Trees;
 	protected ref RZ_DialogueScenes m_Scenes;
+	protected ref RZ_Nametags m_Nametags;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_Dialogue(RZ_GameModeComponent gm)
@@ -199,6 +209,7 @@ class RZ_Dialogue
 		m_GM = gm;
 		m_Trees = new RZ_DialogueTrees(gm);
 		m_Scenes = new RZ_DialogueScenes(gm);
+		m_Nametags = new RZ_Nametags(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -206,12 +217,13 @@ class RZ_Dialogue
 	RZ_DialogueScenes GetScenes() { return m_Scenes; }
 
 	//------------------------------------------------------------------------------------------------
-	//! On the game mode's tick: the scenes' holds, the trees' clocks and barks, and a change of
-	//! clothes ending a conversation.
+	//! On the game mode's tick: the scenes' holds, the trees' clocks and barks, the nametags' lists,
+	//! and a change of clothes ending a conversation.
 	void Tick(float dt)
 	{
 		m_Scenes.Tick(dt);
 		m_Trees.Tick(dt);
+		m_Nametags.Tick(dt);
 		WatchKit();
 	}
 
@@ -366,6 +378,50 @@ class RZ_Dialogue
 			return false;
 
 		return Start(playerId, owner, user, new RZ_TalkLeader(l));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A quartermaster's "Ask for whoever's in charge" (RZ_TalkStaff): the leader of this seat takes
+	//! the open conversation over, greeting and all, in the same screen. False: nobody's in the
+	//! chair, or they're held; the caller says so.
+	bool ToSeat(RZ_TalkSession s, IEntity owner, IEntity user)
+	{
+		if (!s || !m_GM.GetLeaders())
+			return false;
+
+		RZ_Leader l = m_GM.GetLeaders().FindSeat(owner);
+		if (!l || l.m_iHeldBy >= 0)
+			return false;
+
+		RZ_TalkLeader adapter = new RZ_TalkLeader(l);
+		s.m_Adapter = adapter;
+		s.m_sHeader = "";
+		s.m_sName = "";
+		s.m_sSub = "";
+		s.m_iFaction = -1;
+		s.m_sList = "";
+		s.m_bAdmin = false;
+		s.m_aPicked.Clear();
+		adapter.Setup(m_GM, s, s.m_iPlayer);
+		RZ_ScreenGuard guard = m_GM.GetScreenGuard();
+		if (guard)
+			guard.Open(s.m_iPlayer, RZ_ScreenGuard.KIND_TALK, owner, s.m_sName, s.m_iFaction);
+
+		s.m_Tree = m_Trees.Begin(s, user);
+		s.m_aNew.Clear();
+		adapter.Greet(m_GM, s, s.m_iPlayer, user);
+		if (!s.m_Tree)
+			return true;
+
+		// Trees: a greet whose `when` holds goes before the built greeting, as at Start
+		array<string> opening = {};
+		m_Trees.Opening(s, opening);
+		for (int i = opening.Count() - 1; i >= 0; i--)
+		{
+			s.m_aNew.InsertAt(opening[i], 0);
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -729,6 +785,7 @@ class RZ_Dialogue
 		m_mLastTalk.Remove(playerId);
 		m_mResume.Remove(playerId);
 		m_Trees.GetBarks().Forget(playerId);
+		m_Nametags.Forget(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -959,10 +1016,19 @@ class RZ_TalkNeeds
 			return;
 		}
 
-		if (label == "Share some food" && RZ_HavenQuest.CountFood(gm, user) <= 0)
+		if ((label == "Share some food" || label == "Hand over food") && RZ_HavenQuest.CountFood(gm, user) <= 0)
 		{
 			r.m_bEnabled = false;
 			r.m_sNeed = "you have nothing to eat";
+			return;
+		}
+
+		// A safehouse's (the Haven quartermaster's, the medic's): only for the bitten
+		RZ_PlayerProfile profile = gm.GetProfile(playerId);
+		if (label == "Tell them you've been bitten" && profile && !profile.IsInfected())
+		{
+			r.m_bEnabled = false;
+			r.m_sNeed = "you haven't been bitten";
 			return;
 		}
 

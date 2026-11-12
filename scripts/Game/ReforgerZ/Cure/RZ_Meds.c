@@ -79,6 +79,14 @@ class RZ_TrialDoseAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! With the talk screen it's the quartermaster's reply "Ask for the trial dose" (RZ_TalkStaff),
+	//! greyed with what it needs when it doesn't apply.
+	override bool CanBeShownScript(IEntity user)
+	{
+		return !RZ_TalkMenu.HidesActionsOn(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool HasLocalEffectOnlyScript()
 	{
 		return false;

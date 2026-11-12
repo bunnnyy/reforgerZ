@@ -3149,8 +3149,8 @@
    "baseHint": "a civilian character without AI (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=0"], "name": ""}],
    "actions": [
+    {"cls": "RZ_TalkAction", "values": [], "name": "Talk"},
     {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
-    {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
@@ -3189,8 +3189,8 @@
    "baseHint": "a soldier character without AI (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=1"], "name": ""}],
    "actions": [
+    {"cls": "RZ_TalkAction", "values": [], "name": "Talk"},
     {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
-    {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
@@ -3232,8 +3232,8 @@
    "baseHint": "a civilian character without AI in rough clothes (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=2"], "name": ""}],
    "actions": [
+    {"cls": "RZ_TalkAction", "values": [], "name": "Talk"},
     {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
-    {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
@@ -3272,8 +3272,8 @@
    "baseHint": "a character in a lab coat without AI (damage off)",
    "components": [{"cls": "RZ_QuartermasterComponent", "values": ["m_eFaction=3"], "name": ""}],
    "actions": [
+    {"cls": "RZ_TalkAction", "values": [], "name": "Talk"},
     {"cls": "RZ_ShopOpenAction", "values": [], "name": "Trade"},
-    {"cls": "RZ_StandingStatusAction", "values": [], "name": "My standing"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
@@ -3480,6 +3480,7 @@
    "baseHint": "a civilian without AI",
    "components": [],
    "actions": [
+    {"cls": "RZ_TalkAction", "values": ["m_sRole=medic", "m_eFaction=0"], "name": "Talk"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=2"], "name": "Get patched up"},
     {"cls": "RZ_SafehouseAction", "values": ["m_eKind=3"], "name": "Tell them you're bitten"}
    ],
@@ -6101,7 +6102,7 @@
   {
    "target": "quartermasters you placed by hand (not from the manifest)",
    "add": [
-    {"cls": "RZ_StandingStatusAction", "values": [], "name": ""},
+    {"cls": "RZ_TalkAction", "values": [], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=0"], "name": "Talk"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=1"], "name": "Ask for work"},
     {"cls": "RZ_LeaderAction", "values": ["m_eKind=2"], "name": "Ask for news"},
@@ -7858,7 +7859,10 @@
     "m_fBarkRadius": "6",
     "m_fBarkPerPlayer": "60",
     "m_fBarkPerSpeaker": "600",
-    "m_fRumourChance": "0.15"
+    "m_fRumourChance": "0.15",
+    "m_bNametags": "1",
+    "m_fNametagRange": "8",
+    "m_iNametagMax": "3"
    }
   },
   {

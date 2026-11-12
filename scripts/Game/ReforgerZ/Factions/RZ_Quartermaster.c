@@ -617,40 +617,6 @@ class RZ_FactionShopAction : ScriptedUserAction
 }
 
 //------------------------------------------------------------------------------------------------
-//! "Check standing": tells the player their tier, Fame, Infamy and Favor with
-//! every faction, plus this quartermaster's open contracts they qualify for.
-class RZ_StandingStatusAction : RZ_GroupedAction
-{
-	//------------------------------------------------------------------------------------------------
-	override bool Label(out string outName)
-	{
-		outName = "Check standing and work";
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override void Run(IEntity pOwnerEntity, IEntity pUserEntity)
-	{
-		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
-		int playerId = RZ_QuartermasterHelper.GetPlayerId(pUserEntity);
-		if (!gm || playerId <= 0)
-			return;
-
-		gm.NotifyPlayer(playerId, "Your standing", gm.DescribeStanding(playerId));
-
-		RZ_QuartermasterComponent qm = RZ_QuartermasterComponent.Cast(pOwnerEntity.FindComponent(RZ_QuartermasterComponent));
-		if (!qm)
-			return;
-
-		string work = gm.GetMissions().ListContractsFor(playerId, qm.GetFaction(), pUserEntity);
-		if (work.IsEmpty())
-			work = "Nothing for you right now.";
-
-		gm.NotifyPlayer(playerId, "Work from " + RZ_Factions.GetName(qm.GetFaction()), work);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! Bastion Trusted perk "Requisition": once an hour, draw ammo or rations from
 //! Bastion's stock at half the Favor cost. Put one per item on the Bastion
 //! quartermaster and set its attributes, like RZ_FactionShopAction. All of them
@@ -748,7 +714,8 @@ class RZ_ShopOpenAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return RZ_ShopMenu.Available();
+		// With the talk screen it's the reply Trade there (RZ_TalkStaff)
+		return RZ_ShopMenu.Available() && !RZ_TalkMenu.HidesActionsOn(GetOwner());
 	}
 
 	//------------------------------------------------------------------------------------------------

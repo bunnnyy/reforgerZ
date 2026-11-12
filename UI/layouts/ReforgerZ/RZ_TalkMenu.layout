@@ -76,8 +76,8 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
     OffsetTop -84
     SizeX 1320
     OffsetRight -1320
-    SizeY 222
-    OffsetBottom -138
+    SizeY 232
+    OffsetBottom -148
     Alignment 0.5 1
    }
    {
@@ -125,8 +125,8 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       OffsetTop 20
       SizeX 1256
       OffsetRight -1292
-      SizeY 144
-      OffsetBottom -164
+      SizeY 128
+      OffsetBottom -148
       Alignment 0 0
      }
      Color 0.431 0.416 0.376 1
@@ -160,62 +160,101 @@ FrameWidgetClass "{A3DBC49ED296C162}" {
       }
      }
     }
-    ImageWidgetClass "{FEFF5AD20242BD0F}" {
-     Name "LineTrack"
-     Slot FrameWidgetSlot "{4CCDDA5D9DEEB272}" {
+    TextWidgetClass "{3C4105E89425C2C5}" {
+     Name "LineCount"
+     Slot FrameWidgetSlot "{D50E88A2D5C7999B}" {
       Anchor 0 0 0 0
-      PositionX 5
-      OffsetLeft 5
-      PositionY 182
-      OffsetTop 182
-      SizeX 1315
-      OffsetRight -1320
-      SizeY 4
-      OffsetBottom -186
+      PositionX 1036
+      OffsetLeft 1036
+      PositionY 150
+      OffsetTop 150
+      SizeX 210
+      OffsetRight -1246
+      SizeY 30
+      OffsetBottom -180
       Alignment 0 0
      }
-     Color 1 1 1 0.13
+     "Is Visible" 0
+     Color 0.89 0.639 0.231 1
+     Text "2 / 4"
+     "Font Size" 22
+     "Min Font Size" 22
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{23B50F12E49827F1}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    ImageWidgetClass "{EDE2C715D0D306F4}" {
+     Name "LineMore"
+     Slot FrameWidgetSlot "{418DC12AF6C44CAC}" {
+      Anchor 0 0 0 0
+      PositionX 1258
+      OffsetLeft 1258
+      PositionY 150
+      OffsetTop 150
+      SizeX 28
+      OffsetRight -1286
+      SizeY 28
+      OffsetBottom -178
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.89 0.639 0.231 1
+     Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+     Image "marker_self"
      Size 1 1
     }
-    ProgressBarWidgetClass "{195756B85E4FD019}" {
-     Name "LineBar"
-     Slot FrameWidgetSlot "{695B5C953ACCA8E5}" {
+    HorizontalLayoutWidgetClass "{17C0623499E8185D}" {
+     Name "LinePromptsType"
+     Slot FrameWidgetSlot "{ABE1DB045758DC87}" {
       Anchor 0 0 0 0
-      PositionX 5
-      OffsetLeft 5
-      PositionY 182
-      OffsetTop 182
-      SizeX 1315
-      OffsetRight -1320
-      SizeY 4
-      OffsetBottom -186
+      PositionX 0
+      OffsetLeft 0
+      PositionY 196
+      OffsetTop 196
+      SizeX 1000
+      OffsetRight -1000
+      SizeY 34
+      OffsetBottom -230
       Alignment 0 0
      }
-     Color 0.89 0.639 0.231 1
-     style Simple
-     Maximum 1
-     Current 0
+     "Is Visible" 0
     }
-    TextWidgetClass "{492D081C4FB30376}" {
-     Name "SkipHint"
-     Slot FrameWidgetSlot "{EE1F3F2351EB3FA4}" {
+    HorizontalLayoutWidgetClass "{1064FD5570F763D4}" {
+     Name "LinePromptsRead"
+     Slot FrameWidgetSlot "{41FC0E8D94532086}" {
       Anchor 0 0 0 0
-      PositionX 820
-      OffsetLeft 820
-      PositionY 194
-      OffsetTop 194
-      SizeX 500
+      PositionX 0
+      OffsetLeft 0
+      PositionY 196
+      OffsetTop 196
+      SizeX 1000
+      OffsetRight -1000
+      SizeY 34
+      OffsetBottom -230
+      Alignment 0 0
+     }
+     "Is Visible" 0
+    }
+    TextWidgetClass "{048B959D4D896797}" {
+     Name "LinePromptsText"
+     Slot FrameWidgetSlot "{3EFE84E79DACC1E6}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 200
+      OffsetTop 200
+      SizeX 1320
       OffsetRight -1320
       SizeY 26
-      OffsetBottom -220
+      OffsetBottom -226
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "A / Space: skip"
+     Text "A: continue · B: leave"
      "Font Size" 20
      "Min Font Size" 20
-     "Horizontal Alignment" Right
-     FontProperties FontProperties "{AE8DAFA23CF89E65}" {
+     FontProperties FontProperties "{23223A5477FF6906}" {
       Font "{E2CBA6F76AAA42AF}UI/Fonts/Roboto/Roboto_Regular.fnt"
      }
     }

@@ -54,10 +54,10 @@ The audit of 2026-11-12: 8 vanilla, 20 menu, 11 quick.
 | A well (**Interactions > Well spots** on) | Menu | The object menu |
 | Puzzle objects: read, use, choose | Menu | The object menu: the read is its text, the uses and choices its rows |
 | Keypads and terminals | Menu | The object menu: the twelve keys as rows, what's typed on the Enter row |
-| Safehouse services (the Haven quartermaster and the medic) | Menu | The object menu, **Ask the quartermaster** or **Ask about the safehouse** |
-| A quartermaster's stock, requisition and services | Menu | [The shop screen](#the-shop-screen) (**Trade**) |
-| A quartermaster's **Check standing and work**, hand-overs | Menu | The object menu, with the quartermaster's other asks |
-| Leaders | Menu | [The talk screen](#the-talk-screen) (**Talk to whoever's in charge**); without it, their asks in the object menu |
+| Safehouse services (the Haven quartermaster and the medic) | Menu | [The talk screen](#the-talk-screen): **Talk to the quartermaster** or **Talk to the medic**, the services its replies; without it, the object menu (**Ask the quartermaster**, **Ask about the safehouse**) |
+| A quartermaster's stock, requisition and services | Menu | [The shop screen](#the-shop-screen): **Trade**, a reply in the quartermaster's talk (its own prompt without the talk screen) |
+| A quartermaster's trial dose (Halcyon) | Menu | The talk screen: **Ask for the trial dose**, greyed with what it needs until it applies; without it, its own prompt |
+| Leaders | Menu | The talk screen: talk to them, or **Ask for whoever's in charge** in a quartermaster's talk; without it, **Talk to whoever's in charge** and their asks in the object menu |
 | People: wanderers, residents, named people, posts | Menu | The talk screen |
 | The notebook item | Menu | In hand: [the notebook](#the-notebook). On the ground, its name and season actions are one object menu, **Your name and the season** |
 | Samples and the lab: deliver, research progress | Menu | The object menu at the lab (a single prompt where there's only one) |
@@ -71,7 +71,7 @@ The audit of 2026-11-12: 8 vanilla, 20 menu, 11 quick.
 | A fresh bite: clean it | Quick | **Clean the bite**, in a hurry |
 | A doorway to burn | Quick | **Douse the doorway**, can in hand |
 | The antidote | Quick | **Inject antidote** |
-| Meds and a trial dose | Quick | **Take it** |
+| Meds | Quick | **Take it** |
 | Tagging the leader of a pack | Quick | **Tag it**, close and unnoticed |
 | The call box | Quick | **Play the recorded call** |
 | The noisemaker | Quick | **Wind the alarm clock** or **Light the fuse** |
@@ -157,7 +157,8 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | The spawn screen | `background_picker.png` | Our own screen in place of vanilla's deploy menu: the 13 backgrounds as a list, the picked one's name, perk, flaw, starting gear, starting standing, locked or available (with how to unlock), Legacy toward the Drifter, the kind of place you start at (never a picker), and Deploy ([below](#the-spawn-screen)) | `RZ_SpawnMenu`, `RZ_LoadoutLock.c` | Built as text (layouts too); **UI > Spawn row layout** set; seen in Workbench play with the keyboard (pick, deploy, a locked background); pad not yet |
 | The death brief | — | At a death, one card over the spawn screen: the name, the background and which life, the day and place, how it ended, how long you lived, and a few of the life's numbers, then one closing line; A, Space, a click or B gives way to the spawn screen ([below](#the-death-brief)) | `RZ_DeathBrief`, `RZ_DeathBriefMenu` | Built as text (layout too), preset added; not checked in play; no mockup |
 | Notice board | — | The notes on the safehouse board you're at, newest first (author, how long ago, the note), a box to write one with a Pin it up button, and seven ready-made notes for a pad. Opened when you read the board, with **UI > Board menus** on (the default) | `RZ_NoticeBoardMenu` | Layout built, not checked in play; no mockup |
-| Talk | `talk.png` | New Vegas style, in two steps: their line on its own in a subtitle band with a reading bar, then your replies on their own in an outlined box, with what each needs; their name top right ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play |
+| Talk | `talk.png` (still shows the old reading bar) | New Vegas style, in two steps: their line on its own in a subtitle band, typed out a box at a time with a bouncing ▼ and "2 / 4", then your replies on their own in an outlined box, with what each needs; their name top right ([below](#the-talk-screen)) | `RZ_TalkMenu` | Layouts built as text, not checked in play; the boxes, typing and paging by moving compile, not played |
+| Nametags | — | A small tag over each person within 8 m you can talk to and can see: name, role, who they're with in their colour; three at most ([below](#nametags)) | `RZ_NametagClient` | `NametagPanel` built as text in the HUD layout, compiles, not checked in play |
 | Subtitles | `hud.png` (the old one-line name) | What people say outside the talk screen, at the bottom centre: how it reaches you (an icon), the name in their faction colour and their role, for someone in person an arrow to them and how far; the line in bright bone. Radio channels' voices in their own box at the top centre, clear of the quest tracker ([below](#subtitles-and-the-reader)) | `RZ_HudDisplay` | `SubtitlePanel` and `RadioLinePanel` built as text in the HUD layout, not checked in play |
 | The reader | `reader.png` | A note, letter, order or flyer on a sheet of paper in the middle of the screen, a page at a time ([below](#subtitles-and-the-reader)) | `RZ_ReaderMenu` | Layout built as text, not checked in play |
 | Car repair | `car_repair.png` | A fixable car's job card (each job, what it needs, the button that does it) beside a side view of the car with each job lit where it is, and Start the engine ([below](#the-car-repair-screen)) | `RZ_CarMenu` | Layouts built as text, not checked in play |
@@ -440,11 +441,18 @@ stays in view, and their name (bold 40) and sub-line, "The Haven - council head 
 
 1. **Their line on its own.** When they speak, only their line shows, in a subtitle band in the
    lower middle (1,320 wide, #121416 at 85%, a 5 px bar down its left in the faction colour; the
-   line regular 30, bright bone, four lines in a box that scrolls with the right stick or the wheel
-   when it's longer). A thin bar along the band's foot fills in the faction colour over the reading
-   time: **0.05 s a character, at least 2.5 s and at most 9 s**. Then the replies come by
-   themselves: nothing needs pressing. **A, Space or a click** skips straight to them ("A / Space:
-   skip" under the band). Holding the right stick to read a long line holds the bar.
+   line regular 30, bright bone), **a box at a time**: about three rows of 80 characters a box.
+   Short lines (each of their lines starts a row) share a box while they fit; a long one is cut
+   after the last sentence that fits past the box's middle, else at a space. The box **types out**
+   at 50 characters a second; **A** (or Enter, Space, a click) finishes it at once. Once it's all
+   there a small **▼** (the `marker_self` icon turned down, in the faction colour) bounces gently
+   at the band's bottom right, with **"2 / 4"** beside it when what they're saying takes more than
+   one box (this box of the speech, in the faction colour). The same press goes on: the next box,
+   or after the last, the replies. **Nothing moves on by itself.** Under the band, the footer reads
+   **"A Skip"** while it types and **"A Continue"** once the ▼ shows, with **"B Leave"** (vanilla's
+   prompt buttons, the key or the pad button by the device in use; without them, a static line
+   says the same: "A: continue · B: leave", or "Enter, Space or click: continue · Esc: leave" on
+   keys). A box that still overflows (a very long unbroken line) scrolls with the right stick.
 2. **Then your replies on their own.** The band becomes the reply box (1,440 wide, the same panel
    with a 2 px outline in the faction colour), holding only your choices (regular 28), **at most
    five**: the selected one with a fill and an outline in the faction colour; a reply's tag before
@@ -462,7 +470,10 @@ The list is built on the server ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)): a 
 page at a time, four replies and the way out. **The page indicator**: an up arrow at the box's top
 left while there's a page before, a down arrow at its bottom left while there's one after (the
 static `marker_self` icon in the faction colour; the down one is turned 180°), and "1/2" bottom right
-(bold 22, the faction colour); with one page they're hidden. LB/RB (Q/E) turn the page and go round
+(bold 22, the faction colour); with one page they're hidden. **Moving past the end turns the page:**
+down on the last reply goes to the next page with its first reply selected, up on the first to the
+page before with its last selected (the D-pad, the stick, the arrow keys or the wheel; it doesn't go
+round, and moves wait up to 1 s for the page to come). LB/RB (Q/E) also turn the page and go round
 from either end; a click on an arrow turns it too. A page turn stays on the replies. A new list (a
 node, back to the hub) starts on its first page. A server admin's replies sit under one **[Admin]**
 reply that opens them as their own list, with **Back.** as its way out (B and Esc go back too); it
@@ -470,14 +481,29 @@ stays on the replies.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
-| Skip their line | Space, Enter, or a click (`RZ_TalkSkip`) | A |
-| Choose | up/down, or **1–5** (`RZ_Reply1`–`5`) to say one at once; the cursor on a reply lights it | D-pad or left stick, or LT/RT + D-pad to say one at once ([Controllers](#controllers)) |
+| Their line: finish the typing, then go on (the next box, then the replies) | Enter, Space, or a click (`RZ_TalkSkip`) | A |
+| Choose | up/down, the wheel, or **1–5** (`RZ_Reply1`–`5`) to say one at once; the cursor on a reply lights it | D-pad or left stick, or LT/RT + D-pad to say one at once ([Controllers](#controllers)) |
 | Say it | Enter, or click | A |
 | Leave (Back. in the [Admin] list), from either step | Esc | B |
-| Turn the page ("1/2", the arrows) | Q/E, or click an arrow | LB/RB |
-| Read more of a long line | the wheel | right stick (`RZ_TalkScroll`) |
+| Turn the page ("1/2", the arrows) | down past the last reply, up past the first; Q/E, or click an arrow | the same with the D-pad; LB/RB |
+| Read the rest of a box that overflows | the wheel | right stick (`RZ_TalkScroll`) |
 
-The keys that choose, say and turn pages work only on the replies; B and Esc work on both steps.
+The keys that choose, say and turn pages work only on the replies; B and Esc work on both steps. A
+press of A sends both `MenuSelect` and `RZ_TalkSkip`; the screen takes one step a press (0.15 s
+apart), and the press that ends their line never also says the reply that comes up (0.3 s).
+
+**One Talk prompt per person.** Everyone who talks has exactly one prompt, **Talk to ...**, and
+everything else they offer is a reply on their hub (vanilla's own actions on them stay). For the
+people with the puzzle components that's their read; for a quartermaster and a safehouse's medic,
+who have none, it's **Talk to the quartermaster** / **Talk to the medic** (`RZ_TalkAction`), and
+their old prompts are replies: **Trade** opens [the shop screen](#the-shop-screen), **Ask for
+whoever's in charge** hands the conversation to the seat's leader, **Ask for the trial dose** on
+Halcyon's shows only greyed with what it needs until it applies, and the Haven's house services
+(hand over food, get patched up, tell them you're bitten, the radio, the board...) are rows, greyed
+with what they need where it's plain (no food on you, no bite) ([DIALOGUE.md](DIALOGUE.md#the-talk-screen)). The quartermasters' old
+"Check standing and work" is gone: your standing and your work are in [the notebook](#the-notebook).
+Without the talk screen (its layout slot empty, or it can't open on a client) the old prompts come
+back, as before.
 
 **With Dialogue > Trees on** ([DIALOGUE.md](DIALOGUE.md#trees-hubs-topics-and-nodes)) the same
 screen and payload carry the trees, with no new widgets: the person's built replies, then their
@@ -490,13 +516,36 @@ after a check opens with the result ("[Persuaded]"). Tags are cut at 40 characte
 How it works is in [DIALOGUE.md](DIALOGUE.md#the-talk-screen). The screen reads `PAYLOAD_TALK`:
 `T|serial|faction|name|sub|said|page|pages` (line breaks as `^`, the page from 0), then
 `R|id|label|tag|need|enabled|heard` per reply (five at most); `X|reason` closes it. The line and the replies come
-together; the two steps are the client's (`RZ_TalkMenu`): a node after a reply you said, or with a
+together; the two steps, the boxes and the typing are the client's (`RZ_TalkMenu`): a node after a reply you said, or with a
 new line, starts at step 1, and one with the same line (a page turn, the [Admin] list) stays on the
-replies. A pick goes back as `RpcAsk_TalkPick(serial, id)`, and a page turn as the same call with `RZ_Dialogue.MORE` or
+replies (a page asked for by moving selects its first or last reply). A pick goes back as `RpcAsk_TalkPick(serial, id)`, and a page turn as the same call with `RZ_Dialogue.MORE` or
 `PAGE_BACK` (the server takes it only while there's more than one page); Esc, B or another menu on
 top send Leave, which the server takes whatever the serial (B pressed while an answer is on its
 way still leaves). If the menu can't open on a client, that client shows the line as a card,
 leaves, and shows the person's actions again (`RZ_TalkMenu.Available`).
+
+### Nametags
+
+Walk up to someone you can talk to and a small tag shows over their head: their **name** (condensed
+bold 24, bone), their **role** under it (20, dim: "Council head", "Toll man", "Trader"), and **who
+they're with**, the faction's name in its colour ("The Haven"); no line for someone with none. Only
+people with a Talk prompt (never the infected, never players), only within **Dialogue > Nametag
+range** (8 m) and in sight, **three at most** (the nearest, **Nametag max**), and none while a menu
+is open or you're dead. Names are what the talk screen calls them: a wanderer's own name ("Old
+Marta"), "Resident" for a house's people, "Stranger", a quartermaster's or the medic's role
+("Quartermaster", "Medic"), a mission's people by their Talk prompt ("The captain"); a house's
+people, strangers, the Long Table, posts and a mission's people show no role. Vanilla's nametags
+(players only) stay as they are. Nothing to press, so it's the same on a pad.
+
+**Cheap by design.** The server works out who's near each player every 1.5 s (one sphere query of
+range + 4 m round them, like barks) and sends that player only the nearest four, each as its body's
+RplId, name, role and faction (`PAYLOAD_NAMETAGS`, kind 20: `N|id|name|role|faction` per person, ""
+for none), and only when the list changes; who someone is comes from the talk screen's adapters,
+worked out once a minute per body (`RZ_Nametags`). The client (`RZ_NametagClient`, from the HUD's
+update) picks who shows four times a second (the distance and one sight trace each, at most four)
+and every frame moves at most three tags (one projection each; the text is set only when a tag's
+person changes). The widgets are `NametagPanel` with `Nametag0`–`2` in the HUD layout
+([UI/LAYOUTS.md](../UI/LAYOUTS.md#hud-rz_hudlayout)); without them, nothing shows.
 
 ### Subtitles and the reader
 
@@ -1046,9 +1095,9 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | `RZ_Reply1` … `RZ_Reply5` | 1 … 5 | LT + D-pad up, right, down, left for 1–4; RT + D-pad up for 5 (the D-pad and A also pick the focused reply) | `MenuContext` |
 | `RZ_CarStart` | T | Y | `MenuContext` |
 | `RZ_TurnPreview` | none: left/right (`MenuLeft`/`MenuRight`) or a click | right stick (horizontal) | `MenuContext` |
-| `RZ_TalkScroll` | none: the mouse wheel | right stick (vertical): what they say on the talk screen, when it's long | `MenuContext` |
-| `RZ_TalkSkip` | Space, or a click (left mouse button) | A (with `MenuSelect`, which also skips; the press that skips never says a reply) | `MenuContext` |
-| The talk screen's pages (vanilla `MenuTabLeft`/`MenuTabRight`) | Q/E, or a click on an arrow | LB/RB, the page back and on (round from either end) | `MenuContext` |
+| `RZ_TalkScroll` | none: the mouse wheel | right stick (vertical): a box of what they say on the talk screen, when it overflows | `MenuContext` |
+| `RZ_TalkSkip` | Space, or a click (left mouse button) | A (with `MenuSelect`: one step a press, finishing the typing, then the next box, then the replies; the press that ends their line never says a reply) | `MenuContext` |
+| The talk screen's pages (vanilla `MenuDown`/`MenuUp` past the ends, `MenuTabLeft`/`MenuTabRight`) | down past the last reply, up past the first; Q/E, or a click on an arrow | the same with the D-pad or stick; LB/RB, the page back and on (round from either end) | `MenuContext` |
 | `RZ_MapLegend` | I | Y | `MapContext`: show or hide the map key on the full-screen map |
 | Kick free of a hold (vanilla `CharacterJump`, listened to only while held) | Space | the pad's jump button (A) | `IngameContext` |
 
@@ -1067,9 +1116,11 @@ pairs View (the map on its own) with the D-pad (weapon groups), X (the group men
 between pages (`MenuNavLeft`, `MenuNavRight`), which the talk screen doesn't use, so LT and RT with
 the D-pad say a reply at once there (the D-pad also moves the focus, harmlessly: the reply is picked
 by its number). The talk screen's pages are on LB/RB, which no reply combo uses, so a page turn never
-says a reply; what they say scrolls with the right stick instead. On their line, A only skips it:
-the replies take A once they show, and a click that skipped the line doesn't also say the reply
-that comes up under the cursor (the screen ignores row clicks for 0.3 s). Not yet checked with a pad. X is free in the board menu, so the radio filter and the board's Clear
+says a reply; what they say scrolls with the right stick instead, and moving past the last or first
+reply turns the page too (the same D-pad that chooses). On their line, A only steps it (finish the
+typing, the next box, the replies): the replies take A once they show, and a press or click that
+ended the line doesn't also say the reply that comes up under it (the screen ignores it for 0.3 s).
+Not yet checked with a pad. X is free in the board menu, so the radio filter and the board's Clear
 share it, each only in its own screen; Y and T are the car screen's Start and the notebook's Track,
 each only in its own screen.
 
@@ -1078,8 +1129,8 @@ each only in its own screen.
 | Part | Checked | Fixed |
 |---|---|---|
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
-| The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop, the crafting and cooking screens, the radio screen, the object menu and the death brief each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen and the death brief open by themselves; **View radio** on a radio held up is vanilla's inspection, which a pad reaches), close with B (the spawn screen's B opens the pause menu; the death brief's A closes it too), set the focus and move with the D-pad and shoulders. The HUD, the subtitles and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
-| Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5: a reply · Q/E: page · Esc: leave", with D-pad, A, LB/RB and B in the footer) and its skip hint ("A / Space: skip") |
+| The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop, the crafting and cooking screens, the radio screen, the object menu and the death brief each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen and the death brief open by themselves; **View radio** on a radio held up is vanilla's inspection, which a pad reaches), close with B (the spawn screen's B opens the pause menu; the death brief's A closes it too), set the focus and move with the D-pad and shoulders. The HUD, the subtitles, the nametags and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
+| Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5: a reply · Q/E: page · Esc: leave", with D-pad, A, LB/RB and B in the footer) and its line's footer (vanilla's prompts, "A Skip" while it types and "A Continue" after, with a static "A: continue · B: leave" fallback that names Enter, Space and Esc on keys) |
 | Hover, typing, chat | No screen needs hover or a tooltip (the talk screen lights the reply under the cursor and the Standing page highlights the row under it, as the D-pad does; a click opens it). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the old Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The Standing page (G2) has nothing under 18; its names are 40 and its detail text 22. |
 
@@ -1104,8 +1155,10 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_UIFeed` | server, on the game mode's tick | Works out each player's infection state, the secure channel they hear, and a noise level (0–6 from the heat where they stand), and sends each **only when it changes**; with Stealth on, stealth's own update (every second) hands it each player's visibility, sent the same way as a level 0–5 and whether it counts as hidden (the timer also resyncs every minute, and at once when the time left jumps more than 5 s from what the client is counting down; the client counts down in between). A bite cleaned in time still shows the golden window until it would have closed, so the HUD never tells early whether the clean worked. Builds the standing, journal (the jobs with their kind and current objective, the tracked one, the questlines the player is part of, the notes and the lab's line), background, map, notice board, hall of fame and season tab data when asked (the season tab its own kind, 11, after the kinds only sent). Remembers the clues each player has read while the puzzle runs, the outposts each player has been near (this session) and each loadout's gear |
 | `RZ_QuestTracker`, `RZ_QuestText`, `RZ_ObjList` (`UI/RZ_Quests.c`) | server, on the UI feed's tick | Each player's jobs, the tracked one (saved on the profile), the order they were taken in, each job's objectives and the rough-area wording; sends the HUD's tracker (payload kind 13) only when it changes, and the tracked job's current objective for the map ([The quest tracker](#the-quest-tracker)) |
 | `RZ_PlayerUIComponent` | on the player controller | The pipe: owner-only RPCs from the server, a request RPC and a command RPC from the client (each payload kind and each command at most every 2 s; a command sent too soon gets a short notice instead of vanishing), and the client's cache. Keeps the Radio tab's notices on the client for this life and the notebook's unread counts. A notice board payload from the server opens the board menu; a reader or talk payload opens those screens. Carries talk picks and closed screens back |
-| `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`), `RZ_TalkNeeds`, `RZ_DialogueTrees` | server | Conversations: sessions, capture, replies and their needs, picks; with Trees on, topics, nodes, checks and their tags ([DIALOGUE.md](DIALOGUE.md)) |
+| `RZ_Dialogue`, `RZ_TalkSpeaker` (`RZ_TalkGeneric`, `RZ_TalkLeader`, `RZ_TalkStaff`), `RZ_TalkNeeds`, `RZ_DialogueTrees` | server | Conversations: sessions, capture, replies and their needs, picks; with Trees on, topics, nodes, checks and their tags ([DIALOGUE.md](DIALOGUE.md)) |
+| `RZ_TalkAction` (`Dialogue/RZ_TalkStaff.c`) | every machine | The one **Talk to the quartermaster** / **Talk to the medic** prompt on a person with no puzzle components; while the talk screen is used, the person's other ReforgerZ actions hide (`RZ_TalkMenu.HidesActionsOn`) |
 | `RZ_TalkMenu` | client (`ChimeraMenuBase`) | The talk screen ([The talk screen](#the-talk-screen)) |
+| `RZ_Nametags`, `RZ_NametagClient` | server, on the dialogue's tick; client, from the HUD's update | [Nametags](#nametags): each player's list of the people near them to talk to, and the tags over the ones in sight |
 | `RZ_Reader`, `RZ_ReaderMenu` | server, client | The reader: one player's paper, a page at a time ([Subtitles and the reader](#subtitles-and-the-reader)) |
 | `RZ_Cars` (its repair screen part), `RZ_CarMenu` | server, client | The car repair screen ([above](#the-car-repair-screen)) |
 | `RZ_ShopScreen`, `RZ_ShopOpenAction`, `RZ_ShopMenu` | server, server, client | The shop screen ([above](#the-shop-screen)) |
@@ -1154,7 +1207,8 @@ reply (the repair, shop, crafting and cooking screens and the object menu the sa
 are open on the server; each check is a few distance tests. The client says when the player
 closes one (`RpcAsk_ScreenClosed`).
 
-**Turning it off.** Styled notices off gives the vanilla hints back. Emptying **UI > Spawn row
+**Turning it off.** Styled notices off gives the vanilla hints back. **Dialogue > Nametags** off
+(or no `NametagPanel` in the HUD layout) takes the nametags away. Emptying **UI > Spawn row
 layout** gives vanilla's deploy menu back. **UI > Death brief** off shows nothing at a death. Emptying **UI > Car job
 layout** gives a fixable car its prompts and notices back, emptying **UI > Shop item layout**
 a quartermaster its Buy actions, emptying **UI > Craft row layout** a workbench its Make actions,

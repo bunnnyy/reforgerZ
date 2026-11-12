@@ -7,7 +7,8 @@
 class RZ_TalkSpeaker
 {
 	//------------------------------------------------------------------------------------------------
-	//! The adapter for a person: a leader's own, else the generic one.
+	//! The adapter for a person: a leader's own, a stranger's, a quartermaster's or the medic's
+	//! (RZ_TalkStaff), else the generic one.
 	static RZ_TalkSpeaker For(RZ_GameModeComponent gm, IEntity owner)
 	{
 		RZ_ClueComponent clue = RZ_ClueComponent.Cast(owner.FindComponent(RZ_ClueComponent));
@@ -26,6 +27,11 @@ class RZ_TalkSpeaker
 		// An opening's contact, someone from before (Guidance/RZ_Openings.c)
 		if (obj && obj.GetMissionId() == RZ_Openings.TAG)
 			return new RZ_TalkOpening(owner, obj.GetObjectIndex());
+
+		// A quartermaster or the safehouse medic: their own actions are the replies
+		RZ_TalkAction talk = RZ_TalkAction.On(owner);
+		if (talk && !obj)
+			return new RZ_TalkStaff(owner, talk);
 
 		return new RZ_TalkGeneric(owner);
 	}

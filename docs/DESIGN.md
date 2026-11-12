@@ -359,7 +359,7 @@ and odds**; the world-level breakthroughs (spread, timers, the final stand) are 
 | Treatment | Where | Does |
 |---|---|---|
 | **Antidote** | Halcyon's quartermaster (Trusted), from the lab's stock; the Red Hand's stolen doses; very rare finds | Cures |
-| **Trial dose** | Halcyon's quartermaster, "Volunteer for the trial dose": anyone bitten, free, once per life | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
+| **Trial dose** | Halcyon's quartermaster: **Ask for the trial dose** in its talk (greyed with what it needs until it applies), or "Volunteer for the trial dose" without the talk screen: anyone bitten, free, once per life | Cures 80% of the time; otherwise the time left is halved. +3 Halcyon Fame either way. Refused to people Halcyon hunts |
 | **Stabiliser** | Halcyon's quartermaster (Known), from a small stock; rare in pharmacies and hospitals | Pauses the infection for 20 minutes, once per life |
 | **Declaring the bite** | Any safehouse | Once per life: time left ×1.15 (Shelter), ×1.25 (Community), ×1.4 (Settlement), ×1.5 (Town). A fresh bite is cleaned instead; one cleaned already uses nothing ([details](REPUTATION.md)) |
 | Doctor wanderer, Nurse or Doctor player | On the roads (the wanderer); a Nurse or Doctor treating you with vanilla's medical items ([Treating each other](#treating-each-other)) | ×1.25 / ×1.15 of the time left, once per life each |

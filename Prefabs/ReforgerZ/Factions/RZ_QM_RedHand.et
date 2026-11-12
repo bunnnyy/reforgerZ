@@ -26,20 +26,20 @@ SCR_ChimeraCharacter : "{B4977616CD19191A}Prefabs/Characters/Factions/INDFOR/FIA
   }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    additionalActions {
+    RZ_TalkAction "{466DE486522C4F8D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{83FAAC572F564652}" {
+      Name "Talk"
+     }
+    }
     RZ_ShopOpenAction "{1B1B37B85D8AAB09}" {
      ParentContextList {
       "default"
      }
      UIInfo UIInfo "{BC0EBEA9669A5C2B}" {
       Name "Trade"
-     }
-    }
-    RZ_StandingStatusAction "{6AD67DC2A235DC97}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6AD67DC2A22970E0}" {
-      Name "My standing"
      }
     }
     RZ_LeaderAction "{6AD67DC2A22A1E8F}" {

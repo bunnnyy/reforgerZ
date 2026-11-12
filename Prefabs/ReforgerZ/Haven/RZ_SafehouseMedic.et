@@ -11,6 +11,16 @@ SCR_ChimeraCharacter : "{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/Generi
   }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    additionalActions {
+    RZ_TalkAction "{27E47FFC284A2D4F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C35D7D3B92E4016E}" {
+      Name "Talk"
+     }
+     m_sRole "medic"
+     m_eFaction SURVIVORS
+    }
     RZ_SafehouseAction "{6AD67DC2A314E319}" {
      ParentContextList {
       "default"

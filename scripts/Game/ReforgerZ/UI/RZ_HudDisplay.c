@@ -1,7 +1,7 @@
 //! The ReforgerZ HUD (docs/UI.md, "HUD"): the infection timer with its stages and the golden
 //! window, the secure-radio indicator, a subtle noise meter with how visible you are above it
-//! (Stealth on), the quest tracker top left (the tracked job and the others you've taken), and the
-//! styled notice cards.
+//! (Stealth on), the quest tracker top left (the tracked job and the others you've taken), the
+//! styled notice cards, and the nametags over people near you to talk to (UI/RZ_NametagClient.c).
 //!
 //! Spoken lines (RZ_SayLine): in person, loudspeakers and notes as subtitles at the bottom centre,
 //! each with how it reaches you, the name in their colour, their role and, in person, an arrow and
@@ -160,6 +160,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		// Door marks as decals near you (docs/TRACES.md, Doors you can see)
 		RZ_DoorMarkClient.Tick(timeSlice);
 		RZ_TraceLightsClient.Tick(timeSlice);
+		// Tags over the people near you to talk to (docs/UI.md, Nametags): who, four times a second; where, every frame
+		RZ_NametagClient.Tick(timeSlice, m_wRoot);
 		// The arrow to whoever is speaking turns with you, every frame (one rotation, the text on change)
 		DrawSubtitleDir();
 		m_fRefresh -= timeSlice;
