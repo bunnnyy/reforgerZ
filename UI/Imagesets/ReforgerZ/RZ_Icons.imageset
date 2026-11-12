@@ -451,5 +451,11 @@ ImageSetClass {
    Size 128 128
    Flags 0
   }
+  ImageSetDefClass voice_note {
+   Name "voice_note"
+   Pos 256 1152
+   Size 128 128
+   Flags 0
+  }
  }
 }

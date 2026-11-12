@@ -1,6 +1,6 @@
 # ReforgerZ icons
 
-The icon set for the ReforgerZ UI: 74 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
+The icon set for the ReforgerZ UI: 75 icons. Art direction, colours and how the icons are used in the game are in [docs/UI.md](../../docs/UI.md).
 
 - **Sources:** `src/<name>.svg`, hand-written, 64×64 viewBox, one colour (`currentColor`), 4-unit strokes, transparent background.
 - **Mono exports:** `png/64/` and `png/128/`, white on transparent so the game can tint them (`ImageWidget.SetColor`).
@@ -97,8 +97,8 @@ Importing them into Workbench (`.edds` and an imageset) is in [UI/LAYOUTS.md](..
 | <img src="src/status_weakness.svg" width="32"> | `status_weakness` | Infection stage 2: Weakness (out of breath, stamina drains) |
 | <img src="src/status_final.svg" width="32"> | `status_final` | Infection stage 3: the Final stage (minutes left) |
 | <img src="src/status_secure_radio.svg" width="32"> | `status_secure_radio` | Listening on a cracked secure channel |
-| <img src="src/status_radio_open.svg" width="32"> | `status_radio_open` | An open channel on the radio (faction chatter, the Haven, Bastion net) |
-| <img src="src/status_broadcast.svg" width="32"> | `status_broadcast` | The government broadcast (and loudspeakers) |
+| <img src="src/status_radio_open.svg" width="32"> | `status_radio_open` | An open channel on the radio (faction chatter, the Haven, Bastion net); the radio-line box and a radio voice's subtitle |
+| <img src="src/status_broadcast.svg" width="32"> | `status_broadcast` | The government broadcast (and loudspeakers: a loudspeaker's subtitle) |
 | <img src="src/status_noise.svg" width="32"> | `status_noise` | Noise and heat: how much attention you're drawing |
 | <img src="src/status_shortage.svg" width="32"> | `status_shortage` | A shortage: short of food or supplies (prices up) |
 | <img src="src/status_door_locked.svg" width="32"> | `status_door_locked` | A locked door (needs its key, or force it) |
@@ -115,8 +115,16 @@ The Standing page's columns and blocks, and what a faction needs. The other two 
 | <img src="src/standing_leader.svg" width="32"> | `standing_leader` | A leader you have met: a bust with rank chevrons. The Standing page's leaders column and its *Leaders you've met* block |
 | <img src="src/standing_kit.svg" width="32"> | `standing_kit` | Their kit: a jacket. The Standing page's kit column (tinted by what they make of you in it) and its *In their kit* block |
 | <img src="src/standing_next.svg" width="32"> | `standing_next` | The next name up: two chevrons. The Standing page's *Next* line |
-| <img src="src/standing_word.svg" width="32"> | `standing_word` | How they see you: a speech bubble with quote marks. The Standing page's *How they see you* block |
+| <img src="src/standing_word.svg" width="32"> | `standing_word` | How they see you: a speech bubble with quote marks. The Standing page's *How they see you* block; someone speaking in person, before their name in a subtitle |
 | <img src="src/need_food.svg" width="32"> | `need_food` | A faction needs food: a tin can |
 | <img src="src/need_people.svg" width="32"> | `need_people` | A faction needs people: two figures |
 | <img src="src/need_ammo.svg" width="32"> | `need_ammo` | A faction needs security: three rounds |
 | <img src="src/need_revenge.svg" width="32"> | `need_revenge` | A faction wants revenge: a dagger |
+
+## Voices (1)
+
+How a spoken line reaches you, before the speaker's name in a subtitle ([docs/UI.md](../../docs/UI.md#subtitles-and-the-reader)). In person is `standing_word`, a radio channel `status_radio_open` (or `status_secure_radio`), a loudspeaker `status_broadcast`; this is the fourth.
+
+| Icon | Name | Use |
+|---|---|---|
+| <img src="src/voice_note.svg" width="32"> | `voice_note` | A note, sign or board read out: a sheet with a turned corner and a hand's lines |

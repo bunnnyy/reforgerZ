@@ -895,20 +895,93 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
           VerticalAlign 0
          }
          {
-          TextWidgetClass "{2EABBB00A9097755}" {
-           Name "SubtitleSpeaker"
-           Slot LayoutSlot "{B681C7D8437A56C8}" {
-            HorizontalAlign 3
+          HorizontalLayoutWidgetClass "{27E109C490C8644F}" {
+           Name "SubtitleHead"
+           Slot LayoutSlot "{03871AB4D7C257B3}" {
+            HorizontalAlign 1
             VerticalAlign 0
             Padding 0 0 0 6
            }
-           Color 0.89 0.639 0.231 1
-           Text ""
-           "Font Size" 24
-           "Min Font Size" 24
-           "Horizontal Alignment" Center
-           FontProperties FontProperties "{A32D62348C632EA9}" {
-            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           {
+            ImageWidgetClass "{EB1CF6A0C582E934}" {
+             Name "SubtitleSource"
+             Slot LayoutSlot "{640B92E790788526}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 0 0 10 0
+             }
+             Color 0.639 0.62 0.565 1
+             Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+             Image "standing_word"
+             Size 28 28
+            }
+            TextWidgetClass "{2EABBB00A9097755}" {
+             Name "SubtitleSpeaker"
+             Slot LayoutSlot "{B681C7D8437A56C8}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+             }
+             Color 0.89 0.639 0.231 1
+             Text ""
+             "Font Size" 24
+             "Min Font Size" 24
+             FontProperties FontProperties "{A32D62348C632EA9}" {
+              Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+             }
+            }
+            TextWidgetClass "{54B47D3EF4EA83A6}" {
+             Name "SubtitleRole"
+             Slot LayoutSlot "{C4A01E101AE12E0A}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 8 0 0 0
+             }
+             "Is Visible" 0
+             Color 0.639 0.62 0.565 1
+             Text ""
+             "Font Size" 22
+             "Min Font Size" 22
+             FontProperties FontProperties "{1100B51E8C339F17}" {
+              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+             }
+            }
+            HorizontalLayoutWidgetClass "{1282F518F8C4741E}" {
+             Name "SubtitleDir"
+             Slot LayoutSlot "{5162B0A34E040EF5}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 22 0 0 0
+             }
+             "Is Visible" 0
+             {
+              ImageWidgetClass "{8D3DF494DEC9ACAF}" {
+               Name "SubtitleArrow"
+               Slot LayoutSlot "{D6E730256CB8197B}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+                Padding 0 0 6 0
+               }
+               Color 0.91 0.886 0.816 1
+               Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+               Image "marker_self"
+               Size 24 24
+              }
+              TextWidgetClass "{1382424143FB7878}" {
+               Name "SubtitleDist"
+               Slot LayoutSlot "{04D3F553C23F8810}" {
+                HorizontalAlign 0
+                VerticalAlign 1
+               }
+               Color 0.91 0.886 0.816 1
+               Text ""
+               "Font Size" 22
+               "Min Font Size" 22
+               FontProperties FontProperties "{70650B87235C167B}" {
+                Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+               }
+              }
+             }
+            }
            }
           }
           TextWidgetClass "{5595084075B4772C}" {
@@ -924,6 +997,142 @@ FrameWidgetClass "{6AD675B480DB49AE}" {
            "Horizontal Alignment" Center
            Wrap 1
            FontProperties FontProperties "{E92FEE04024F3E2C}" {
+            Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+  VerticalLayoutWidgetClass "{ADD14B3A1918FF1C}" {
+   Name "RadioLinePanel"
+   Slot FrameWidgetSlot "{2B130845D02593FE}" {
+    Anchor 0 0 0 0
+    PositionX 96
+    OffsetLeft 96
+    PositionY 222
+    OffsetTop 222
+    SizeX 560
+    OffsetRight -656
+    SizeY 100
+    OffsetBottom -322
+    Alignment 0 0
+    SizeToContent 1
+   }
+   "Is Visible" 0
+   "Ignore Cursor" 1
+   {
+    OverlayWidgetClass "{863F84D1EDA795DB}" {
+     Name "RadioLineBox"
+     Slot LayoutSlot "{EDDD4E197A7A437E}" {
+      HorizontalAlign 3
+      VerticalAlign 0
+     }
+     {
+      ImageWidgetClass "{6D6A50CAC3977AA5}" {
+       Name "RadioLineBg"
+       Slot OverlayWidgetSlot "{5CA4DE82169CE868}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
+       Color 0.071 0.078 0.086 0.85
+       Size 1 1
+      }
+      ImageWidgetClass "{C70F4B328413596C}" {
+       Name "RadioLineAccent"
+       Slot OverlayWidgetSlot "{F6918FBCFBD85B1A}" {
+        HorizontalAlign 0
+        VerticalAlign 3
+       }
+       Color 0.639 0.62 0.565 1
+       Size 4 1
+      }
+      SizeLayoutWidgetClass "{9E0768D5D2B389A3}" {
+       Name "RadioLineWidth"
+       Slot OverlayWidgetSlot "{48906988ED874A86}" {
+        HorizontalAlign 3
+        VerticalAlign 0
+        Padding 18 10 14 12
+       }
+       AllowWidthOverride 1
+       WidthOverride 528
+       {
+        VerticalLayoutWidgetClass "{C4670E493E327BDE}" {
+         Name "RadioLineBody"
+         Slot AlignableSlot "{69ED2773FB407BD8}" {
+          HorizontalAlign 3
+          VerticalAlign 0
+         }
+         {
+          HorizontalLayoutWidgetClass "{0BE6940023C428CE}" {
+           Name "RadioLineHead"
+           Slot LayoutSlot "{AD7453A325EDD184}" {
+            HorizontalAlign 0
+            VerticalAlign 0
+            Padding 0 0 0 4
+           }
+           {
+            ImageWidgetClass "{3478CAF1F6D2EA3D}" {
+             Name "RadioLineIcon"
+             Slot LayoutSlot "{69C3909ECEFA37A2}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+              Padding 0 0 8 0
+             }
+             Color 0.639 0.62 0.565 1
+             Texture "{5663870E6CB440EA}UI/Imagesets/ReforgerZ/RZ_Icons.imageset"
+             Image "status_radio_open"
+             Size 24 24
+            }
+            TextWidgetClass "{E740A24A1B29161F}" {
+             Name "RadioLineChannel"
+             Slot LayoutSlot "{055DEB1AD13E83B3}" {
+              HorizontalAlign 0
+              VerticalAlign 1
+             }
+             Color 0.639 0.62 0.565 1
+             Text ""
+             "Font Size" 20
+             "Min Font Size" 20
+             FontProperties FontProperties "{EFA47500F4EA8302}" {
+              Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+              Italic 1
+             }
+            }
+           }
+          }
+          TextWidgetClass "{0EB462390E380DDB}" {
+           Name "RadioLineSpeaker"
+           Slot LayoutSlot "{A6AC69B4A84CEC98}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+            Padding 0 0 0 2
+           }
+           "Is Visible" 0
+           Color 0.639 0.62 0.565 1
+           Text ""
+           "Font Size" 22
+           "Min Font Size" 22
+           FontProperties FontProperties "{6FC75CF4D6E77A9E}" {
+            Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+           }
+          }
+          TextWidgetClass "{21414BE419CDD535}" {
+           Name "RadioLineText"
+           Slot LayoutSlot "{214D7D7DE71A09A5}" {
+            HorizontalAlign 3
+            VerticalAlign 0
+           }
+           Color 0.91 0.886 0.816 1
+           Text ""
+           "Font Size" 26
+           "Min Font Size" 26
+           Wrap 1
+           FontProperties FontProperties "{AB6E890850F52973}" {
             Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
            }
           }

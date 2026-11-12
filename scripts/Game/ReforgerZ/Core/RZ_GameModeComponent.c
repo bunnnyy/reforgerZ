@@ -3222,8 +3222,18 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! A person speaks to one player: a subtitle at the bottom of the screen (docs/UI.md,
-	//! "Subtitles"), owner-only like notices. speaker: their name; faction: RZ_EFaction or -1.
-	void Say(int playerId, string speaker, int faction, string text)
+	//! "Subtitles"), owner-only like notices. speaker: "Name, role", as their notices are titled;
+	//! faction: RZ_EFaction or -1. who: the speaker's body when the caller has it. The line goes with
+	//! the name, the role, how it reaches the player and, in person, where the speaker stands
+	//! (RZ_SayLine); without a body that's the nearest person within RZ_SayLine.NEAR of the player.
+	void Say(int playerId, string speaker, int faction, string text, IEntity who = null)
+	{
+		SayFrom(playerId, speaker, faction, text, who, vector.Zero);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Say, from a place when there's no body (`at`, vector.Zero for none).
+	protected void SayFrom(int playerId, string speaker, int faction, string text, IEntity who, vector at)
 	{
 		if (m_Dialogue && m_Dialogue.Capture(playerId, speaker, text, RZ_ENoticeTag.AUTO, true))
 			return;
@@ -3239,12 +3249,23 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 			return;
 		}
 
-		ui.SendSay(speaker, faction, text);
+		RZ_SayLine line = RZ_SayLine.Make(speaker, faction, text);
+		if (line.m_iSource == RZ_ESaySource.IN_PERSON)
+		{
+			IEntity listener = pc.GetControlledEntity();
+			IEntity body = who;
+			if (!body && at == vector.Zero && listener)
+				body = RZ_SpeakerFinder.Nearest(listener.GetOrigin(), RZ_SayLine.NEAR);
+
+			line.Place(body, at);
+		}
+
+		ui.SendSayLine(line);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A person speaks to everyone alive within `radius` of `pos`.
-	void SayNear(vector pos, float radius, string speaker, int faction, string text)
+	//! A person speaks to everyone alive within `radius` of `pos` (from `who`, else from `pos`).
+	void SayNear(vector pos, float radius, string speaker, int faction, string text, IEntity who = null)
 	{
 		array<int> ids = {};
 		array<IEntity> players = {};
@@ -3252,7 +3273,7 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		foreach (int i, IEntity p : players)
 		{
 			if (RZ_Util.DistXZ(p.GetOrigin(), pos) <= radius)
-				Say(ids[i], speaker, faction, text);
+				SayFrom(ids[i], speaker, faction, text, who, pos);
 		}
 	}
 
@@ -3267,17 +3288,25 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: a spoken line for this machine's player (RZ_PlayerUIComponent.RpcDo_Say): a subtitle,
-	//! or a card where the HUD has no subtitle panel.
+	//! Client: a plain spoken line for this machine's player (RZ_PlayerUIComponent.RpcDo_Say), worked
+	//! out from its title.
 	void ShowSay(string speaker, int faction, string text)
 	{
-		if (System.IsConsoleApp())
+		ShowSayLine(RZ_SayLine.Make(speaker, faction, text));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: a spoken line for this machine's player (RZ_PlayerUIComponent.RpcDo_SayLine): a
+	//! subtitle, a radio line in the radio-line box, or a card where the HUD has no place for it.
+	void ShowSayLine(RZ_SayLine line)
+	{
+		if (System.IsConsoleApp() || !line)
 			return;
 
-		if (RZ_HudDisplay.PushSubtitle(speaker, faction, text))
+		if (RZ_HudDisplay.PushLine(line))
 			return;
 
-		QueueHint(speaker, text, RZ_ENoticeTag.AUTO);
+		QueueHint(line.m_sSpeaker, line.m_sText, RZ_ENoticeTag.AUTO);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3318,6 +3347,12 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
 			ui.OnNotice(title, text, style);
+
+		// A radio channel's voice goes to the radio-line box at the top left, not a card (docs/UI.md,
+		// "Subtitles"); it's in the Radio tab all the same
+		string channel = RZ_SayLine.ChannelOf(title);
+		if (!channel.IsEmpty() && RZ_HudDisplay.PushLine(RZ_SayLine.Radio(title, channel, style.m_iFaction, text), true))
+			return;
 
 		if (RZ_HudDisplay.PushNotice(title, text, style))
 			return;

@@ -4,6 +4,10 @@
 //!
 //! The tracker: one job from the journal (RZ_Tracker), with its distance, an arrow and its time.
 //!
+//! Spoken lines (RZ_SayLine): in person, loudspeakers and notes as subtitles at the bottom centre,
+//! each with how it reaches you, the name in their colour, their role and, in person, an arrow and
+//! the distance to them; radio channels in their own box at the top left, under the tracker.
+//!
 //! An SCR_InfoDisplay: add it to the HUD manager's info displays on the player controller and
 //! give it the layout from UI/LAYOUTS.md ("HUD"). It reads only RZ_PlayerUIComponent's client
 //! cache, redraws five times a second, and changes nothing in the game.
@@ -13,12 +17,77 @@
 //! used then, exactly as before.
 
 //------------------------------------------------------------------------------------------------
-//! A spoken line waiting for the subtitle panel.
-class RZ_QueuedSubtitle
+//! One place spoken lines show (the subtitles, the radio-line box): one line at a time, each for
+//! its reading time, a long one cut into parts shown in turn.
+class RZ_LineLane
 {
-	string m_sSpeaker;
-	int m_iFaction;
-	string m_sText;
+	ref array<ref RZ_SayLine> m_aWaiting = {};
+	ref RZ_SayLine m_Shown;
+	float m_fUntil = -1;		// the line showing stays until then; -1 none showing
+
+	//------------------------------------------------------------------------------------------------
+	//! A line's parts (at most `chars` each). replace: a newer line from the same speaker replaces
+	//! theirs still waiting. At most `cap` lines' parts wait besides this one's.
+	void Add(RZ_SayLine line, int chars, int cap, bool replace)
+	{
+		if (replace)
+		{
+			string key = line.Key();
+			for (int i = m_aWaiting.Count() - 1; i >= 0; i--)
+			{
+				if (m_aWaiting[i].Key() == key)
+					m_aWaiting.RemoveOrdered(i);
+			}
+		}
+
+		array<string> parts = {};
+		RZ_UIText.SplitLine(line.m_sText, chars, parts);
+		foreach (string part : parts)
+		{
+			m_aWaiting.Insert(line.Part(part));
+		}
+
+		while (m_aWaiting.Count() > cap + parts.Count() - 1)
+		{
+			m_aWaiting.RemoveOrdered(0);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the line showing is done (its time is up, or `held`: the reader is open).
+	bool Expire(float now, bool held)
+	{
+		if (m_fUntil < 0 || (now < m_fUntil && !held))
+			return false;
+
+		m_fUntil = -1;
+		m_Shown = null;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next line to show from now for shortest to longest seconds by length, or null.
+	RZ_SayLine Next(float now, bool held, RZ_UISettings settings)
+	{
+		if (m_fUntil >= 0 || held || m_aWaiting.IsEmpty())
+			return null;
+
+		m_Shown = m_aWaiting[0];
+		m_aWaiting.RemoveOrdered(0);
+		float seconds = m_Shown.m_sText.Length() / Math.Max(1, settings.m_fSubtitleCps);
+		m_fUntil = now + Math.Clamp(seconds, settings.m_fSubtitleMin, Math.Max(settings.m_fSubtitleMin, settings.m_fSubtitleMax));
+		return m_Shown;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The line on screen now, or null.
+	RZ_SayLine Showing()
+	{
+		if (m_fUntil < 0)
+			return null;
+
+		return m_Shown;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -170,10 +239,13 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 	protected float m_fLastCardAt = -100;
 	protected int m_iToNotebook;		// notices that went to the notebook without a card
 	protected float m_fLifeSeen = -1;
-	protected ref array<ref RZ_QueuedSubtitle> m_aSubs = {};
-	protected float m_fSubUntil = -1;		// the line showing stays until then; -1 none showing
+	protected ref RZ_LineLane m_Subs = new RZ_LineLane();		// bottom centre: in person, loudspeakers, notes
+	protected ref RZ_LineLane m_Radio = new RZ_LineLane();	// top left: radio channels
+	protected string m_sSubDist;		// the distance last written, so it's set only when it changes
 	protected static const int SUB_WAITING = 4;
 	protected static const int SUB_CHARS = 130;	// about two lines at 32 px in 1,044 units
+	protected static const int RADIO_WAITING = 6;
+	protected static const int RADIO_CHARS = 130;	// about three lines at 26 px in 528 units
 	protected float m_fTrackAsk;		// counts down to the tracker's next journal ask
 	protected int m_iTrackSeen = -1;	// the journal copy the rows were read from
 	protected float m_fTrackAt;		// when it arrived (RZ_UIW.Now), for the minutes' countdown
@@ -213,6 +285,8 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 		// Door marks as decals near you (docs/TRACES.md, Doors you can see)
 		RZ_DoorMarkClient.Tick(timeSlice);
 		RZ_TraceLightsClient.Tick(timeSlice);
+		// The arrow to whoever is speaking turns with you, every frame (one rotation, the text on change)
+		DrawSubtitleDir();
 		m_fRefresh -= timeSlice;
 		if (m_fRefresh > 0)
 			return;
@@ -261,6 +335,7 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 		DrawNotices(settings);
 		DrawSubtitle(settings);
+		DrawRadioLine(settings);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -713,74 +788,122 @@ class RZ_HudDisplay : SCR_InfoDisplayExtended
 
 	// ================================================================ Subtitles
 	//------------------------------------------------------------------------------------------------
-	//! From RZ_GameModeComponent.ShowSay (client). False = no subtitle panel, or Subtitles off:
-	//! the line becomes a card instead.
-	static bool PushSubtitle(string speaker, int faction, string text)
+	//! From RZ_GameModeComponent.ShowSayLine and QueueHint (client). A radio line goes to the
+	//! radio-line box at the top left when the layout has one; everything else, and a radio line
+	//! without the box, to the subtitles at the bottom centre. radioOnly: a radio notice, which
+	//! stays a card without the box. False = Subtitles off or no place for it: a card instead.
+	static bool PushLine(RZ_SayLine line, bool radioOnly = false)
 	{
-		if (!s_Instance || !RZ_UISettings.Get().m_bSubtitles || !RZ_UIW.Find(s_Instance.m_wRoot, "SubtitlePanel"))
+		if (!s_Instance || !line || !RZ_UISettings.Get().m_bSubtitles)
 			return false;
 
-		s_Instance.EnqueueSubtitle(speaker, faction, text);
+		Widget root = s_Instance.m_wRoot;
+		if (line.m_iSource == RZ_ESaySource.RADIO && RZ_UIW.Find(root, "RadioLinePanel"))
+		{
+			s_Instance.m_Radio.Add(line, RADIO_CHARS, RADIO_WAITING, false);
+			s_Instance.DrawRadioLine(RZ_UISettings.Get());
+			return true;
+		}
+
+		if (radioOnly || !RZ_UIW.Find(root, "SubtitlePanel"))
+			return false;
+
+		// A newer line from the same speaker replaces theirs still waiting; at most four wait
+		s_Instance.m_Subs.Add(line, SUB_CHARS, SUB_WAITING, true);
+		s_Instance.DrawSubtitle(RZ_UISettings.Get());
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One line at a time; a long one is split into parts shown in turn. A newer line from the same
-	//! speaker replaces one of theirs still waiting; at most four wait.
-	protected void EnqueueSubtitle(string speaker, int faction, string text)
-	{
-		for (int i = m_aSubs.Count() - 1; i >= 0; i--)
-		{
-			if (m_aSubs[i].m_sSpeaker == speaker)
-				m_aSubs.RemoveOrdered(i);
-		}
-
-		array<string> parts = {};
-		RZ_UIText.SplitLine(text, SUB_CHARS, parts);
-		foreach (string part : parts)
-		{
-			RZ_QueuedSubtitle q = new RZ_QueuedSubtitle();
-			q.m_sSpeaker = speaker;
-			q.m_iFaction = faction;
-			q.m_sText = part;
-			m_aSubs.Insert(q);
-		}
-
-		while (m_aSubs.Count() > SUB_WAITING + parts.Count() - 1)
-		{
-			m_aSubs.RemoveOrdered(0);
-		}
-
-		DrawSubtitle(RZ_UISettings.Get());
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! On screen for shortest to longest seconds by length; held while the reader is open.
+	//! Bottom centre, one line at a time for shortest to longest seconds by length; held while the
+	//! reader is open. The source icon, the name in their colour, the role, then for someone in
+	//! person the arrow and the distance (DrawSubtitleDir), and the line under them.
 	protected void DrawSubtitle(RZ_UISettings settings)
 	{
 		float now = RZ_UIW.Now();
 		bool held = RZ_ReaderMenu.IsShowing();
-		if (m_fSubUntil >= 0 && (now >= m_fSubUntil || held))
-		{
-			m_fSubUntil = -1;
+		if (m_Subs.Expire(now, held))
 			RZ_UIW.Show(m_wRoot, "SubtitlePanel", false);
-		}
 
-		if (m_fSubUntil >= 0 || held || m_aSubs.IsEmpty())
+		RZ_SayLine q = m_Subs.Next(now, held, settings);
+		if (!q)
 			return;
 
-		RZ_QueuedSubtitle q = m_aSubs[0];
-		m_aSubs.RemoveOrdered(0);
-		Color c = RZ_UIColor.Bone();
-		if (q.m_iFaction >= 0)
-			c = RZ_UIColor.Faction(q.m_iFaction);
+		Color c = q.NameColor();
+		string name = q.m_sName;
+		if (name.IsEmpty())
+			name = q.m_sChannel;
 
-		RZ_UIW.SetText(m_wRoot, "SubtitleSpeaker", q.m_sSpeaker);
+		RZ_UIW.Icon(m_wRoot, "SubtitleSource", q.SourceIcon());
+		RZ_UIW.Tint(m_wRoot, "SubtitleSource", c);
+		RZ_UIW.SetText(m_wRoot, "SubtitleSpeaker", name);
 		RZ_UIW.Tint(m_wRoot, "SubtitleSpeaker", c);
+		RZ_UIW.Show(m_wRoot, "SubtitleRole", !q.m_sRole.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "SubtitleRole", "· " + q.m_sRole);
 		RZ_UIW.SetText(m_wRoot, "SubtitleText", q.m_sText);
+		m_sSubDist = "";
+		DrawSubtitleDir();
 		RZ_UIW.Show(m_wRoot, "SubtitlePanel", true);
-		float seconds = q.m_sText.Length() / Math.Max(1, settings.m_fSubtitleCps);
-		m_fSubUntil = now + Math.Clamp(seconds, settings.m_fSubtitleMin, Math.Max(settings.m_fSubtitleMin, settings.m_fSubtitleMax));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The arrow to an in-person speaker, turned from where you face, and how far they are ("12 m"),
+	//! from their body while it streams in, else where they stood. Hidden for radio, loudspeakers and
+	//! notes, and when the server had no place.
+	protected void DrawSubtitleDir()
+	{
+		if (!m_wRoot)
+			return;
+
+		RZ_SayLine q = m_Subs.Showing();
+		if (!q)
+			return;
+
+		vector there;
+		IEntity me = RZ_UIW.LocalEntity();
+		bool show = false;
+		if (me)
+			show = q.Where(there);
+
+		RZ_UIW.Show(m_wRoot, "SubtitleDir", show);
+		if (!show)
+			return;
+
+		vector here = me.GetOrigin();
+		RZ_UIW.Rotate(m_wRoot, "SubtitleArrow", RZ_UIW.Bearing(here, there) - RZ_UIW.Heading(me));
+		string dist = RZ_SayLine.Distance(RZ_Util.DistXZ(here, there));
+		if (dist != m_sSubDist)
+		{
+			m_sSubDist = dist;
+			RZ_UIW.SetText(m_wRoot, "SubtitleDist", dist);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Top left, under the tracker: a radio channel's voice, so it never looks like the person in
+	//! front of you. The radio in the channel's colour, the channel's name in dim italics, the
+	//! voice's name when it has one, and the line. Paced like the subtitles.
+	protected void DrawRadioLine(RZ_UISettings settings)
+	{
+		float now = RZ_UIW.Now();
+		bool held = RZ_ReaderMenu.IsShowing();
+		if (m_Radio.Expire(now, held))
+			RZ_UIW.Show(m_wRoot, "RadioLinePanel", false);
+
+		RZ_SayLine q = m_Radio.Next(now, held, settings);
+		if (!q)
+			return;
+
+		Color c = q.NameColor();
+		RZ_UIW.Tint(m_wRoot, "RadioLineAccent", c);
+		RZ_UIW.Icon(m_wRoot, "RadioLineIcon", q.SourceIcon());
+		RZ_UIW.Tint(m_wRoot, "RadioLineIcon", c);
+		RZ_UIW.SetText(m_wRoot, "RadioLineChannel", q.m_sChannel);
+		RZ_UIW.Show(m_wRoot, "RadioLineSpeaker", !q.m_sName.IsEmpty());
+		RZ_UIW.SetText(m_wRoot, "RadioLineSpeaker", q.m_sName);
+		RZ_UIW.Tint(m_wRoot, "RadioLineSpeaker", c);
+		RZ_UIW.SetText(m_wRoot, "RadioLineText", q.m_sText);
+		RZ_UIW.Show(m_wRoot, "RadioLinePanel", true);
 	}
 
 	//------------------------------------------------------------------------------------------------
