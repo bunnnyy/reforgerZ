@@ -19,6 +19,7 @@ class RZT_Obj
 	static int s_iWrong;
 	static int s_iNone;
 	static int s_iWalked;
+	static int s_iNotJobs;
 	protected static int s_iLastId;
 	protected static vector s_vLast;
 	protected static float s_fLastArrive;
@@ -67,6 +68,18 @@ class RZT_Obj
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Is job `id` one of the tester's (on his Quests tab, so the tracker can follow it)?
+	static bool IsHis(RZ_GameModeComponent gm, int id)
+	{
+		RZ_UIFeed feed = gm.GetUIFeed();
+		if (!feed || !feed.GetTracker() || !RZT_Fake.s_Ent)
+			return false;
+
+		RZ_ObjList list = new RZ_ObjList();
+		return feed.GetTracker().JobFor(RZT_Fake.ID, id, RZT_Fake.s_Ent, list) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The tracker's place for this job's current objective, as the tester sees it. False: no place.
 	static bool Place(RZ_GameModeComponent gm, int id, out vector pos, out float arrive, out float search, out string line)
 	{
@@ -98,6 +111,13 @@ class RZT_Obj
 		float arrive;
 		float search;
 		string line;
+		if (!IsHis(gm, id))
+		{
+			// A world event is news, never a job of his (docs/MISSIONS.md): nothing to point
+			s_iNotJobs++;
+			return vector.Zero;
+		}
+
 		if (!Place(gm, id, p, arrive, search, line))
 		{
 			s_iNone++;
@@ -140,7 +160,7 @@ class RZT_Obj
 	//------------------------------------------------------------------------------------------------
 	static string Summary()
 	{
-		return string.Format("%1 checked, %2 steps done where the tracker sent the tester, %3 wrong, %4 without a place", s_iChecked, s_iWalked, s_iWrong, s_iNone);
+		return string.Format("%1 checked, %2 steps done where the tracker sent the tester, %3 wrong, %4 without a place (%5 world events, not jobs)", s_iChecked, s_iWalked, s_iWrong, s_iNone, s_iNotJobs);
 	}
 }
 

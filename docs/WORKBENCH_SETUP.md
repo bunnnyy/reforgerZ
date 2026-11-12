@@ -1729,7 +1729,7 @@ else than where it sent him is wrong too. A questline stage is checked on the qu
 Each wrong place is a line `RZT objplace FAIL <type> [start|there|carried|step done|stage] '<objective>':
 the tracker points at <grid>, the step is done at <grid> (<n> m off, allowed <m>)`, the sum is
 `RZT objective places (...): N checked, N steps done where the tracker sent the tester, N wrong, N
-without a place`, and the run fails on any wrong one.
+without a place (N world events, not jobs)` (a world event is news, never on the tester's Quests tab, so nothing points), and the run fails on any wrong one.
 
 **The cure finale.** Last, after the route walk (the cure stands the line down), the questlines'
 **Wait scale** goes to 0.1 and a scripted finale runs: a commit refused below the gate; the slow
