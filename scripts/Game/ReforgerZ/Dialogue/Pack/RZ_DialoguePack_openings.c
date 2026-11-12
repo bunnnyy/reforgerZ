@@ -8,6 +8,16 @@ class RZ_DialoguePack_openings
 
 	protected static void Add0(RZ_DialogueDB db)
 	{
+		db.Conv("opening.channel", "radio:open", "cflag:opening.step=2 & cflag:opening.task=10 & cflag:opening.answered=0", "Answer the voice asking for anyone.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"...anyone at all, on this. I've been calling since it got light. Just say you're there. That's all.\"");
+		db.Choice("here", "\"I'm here. You're not on your own.\"", "heard", "", "", "", "", "", "", "", "");
+		db.Choice("where", "\"I hear you. Where are you?\"", "heard", "", "", "", "", "", "", "", "");
+		db.Node("heard");
+		db.Public();
+		db.Say("", "\"Somebody. Somebody's there. I'll keep this on. I'll call again at dusk, if you'll listen.\"");
+		db.Do("cset:opening.answered=1");
+		db.Choice("dusk", "\"I'll listen at dusk.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("opening.greet.doctor", "opening", "cflag:opening.step=1 & bg:doctor", "", 0, 5, "plain");
 		db.Node("start");
 		db.Say("", "\"Doctor. I'd know that cough through a wall. Ward three's gone, you know. All of it. We're what's left of the rota.\"");
@@ -47,6 +57,18 @@ class RZ_DialoguePack_openings
 		db.Conv("opening.greet.unemployed", "opening", "cflag:opening.step=1 & bg:unemployed", "", 0, 5, "plain");
 		db.Node("start");
 		db.Say("", "\"You're alive. Good. Don't worry about the money. Money's a joke now, and not a good one.\"");
+		db.Conv("opening.settle", "opening", "cflag:opening.step=2 & cflag:opening.task=16 & cflag:opening.settled=0", "Hear the two families out.", 0, 0, "plain");
+		db.Node("start");
+		db.Say("", "\"The Kerns say the Orlovs took the last of the coal from the shed they share. The Orlovs say it was theirs, and the Kerns' boy kicked their dog.\"");
+		db.Say("", "\"Nobody's lying, which is the trouble. Say something they can both live with.\"");
+		db.Choice("split", "\"Split the coal. Sorry to the dog.\"", "settled", "half", "half", "persuade none 1 bg:elder", "", "", "cset:opening.settled=1", "cset:opening.settled=2", "cset:opening.settled=2");
+		db.Choice("later", "\"Let me think on it.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("settled");
+		db.Say("", "\"Old Kern laughed. Nobody's heard him laugh since the roads shut. The Orlov girl is fetching the dog to be apologised to.\"");
+		db.Choice("good", "\"Good. Tell them I said so.\"", "hub", "", "", "", "", "", "", "", "");
+		db.Node("half");
+		db.Say("", "\"They heard you. They didn't like it. They'll take turns with the coal and not look at each other.\"");
+		db.Choice("enough", "\"That'll have to do for now.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Conv("opening.where_now", "opening", "cflag:opening.step=3", "Ask where they'll go now.", 4, 1, "plain");
 		db.Node("start");
 		db.Say("cflag:opening.end=3", "\"Not where you're going. They'd have the coat off my back before I'd said hello. I'll find a door.\"");

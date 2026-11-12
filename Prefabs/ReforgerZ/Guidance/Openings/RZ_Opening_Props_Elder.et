@@ -1,0 +1,54 @@
+GenericEntity {
+ ID "4D82A75970746024"
+ components {
+  RplComponent "{7B0E45E7C1CE28C6}" {
+  }
+  Hierarchy "{11579AF9EB8373F6}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{CFB893B8084ECD2B}Prefabs/Props/Furniture/Armchair_01.et" {
+   ID "BF4CAED9C0A8346B"
+   components {
+    Hierarchy "{86E10AF085B53DFE}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 170 0
+  }
+  GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+   ID "AD0778681E46EEC8"
+   components {
+    Hierarchy "{3467D88232B587B0}" {
+    }
+   }
+   coords 0.9 0 0.2
+  }
+  GenericEntity : "{D8EF213A192382E0}Prefabs/Props/Civilian/TablePhotoFrame_01/TablePhotoFrame_01.et" {
+   ID "6C79FC17F930D666"
+   components {
+    Hierarchy "{CFC834C5387FDF76}" {
+    }
+   }
+   coords 0.9 0.45 0.2
+   angles 0 200 0
+  }
+  GenericEntity : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+   ID "3EFD5DF894B2E519"
+   components {
+    Hierarchy "{F451C3702F3167FA}" {
+    }
+   }
+   coords 0.75 0.45 0.3
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "BA74D6471B74F922"
+   components {
+    Hierarchy "{877D842ACAF87EC2}" {
+    }
+   }
+   coords 0 0.45 0
+  }
+ }
+}

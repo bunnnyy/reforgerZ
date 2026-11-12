@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "00B65C998A86F295"
+ components {
+  RplComponent "{CDDEB8FB6A11EC6A}" {
+  }
+  Hierarchy "{9C73BAD751C5B806}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8FB2845D48F4E02A}Prefabs/Props/Furniture/TableOld_01/TableOld_01_white.et" {
+   ID "DAF2E24B2E113F44"
+   components {
+    Hierarchy "{EAD6D4D2D474BF14}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 5 0
+  }
+  GenericEntity : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+   ID "DA9958ADB5A84934"
+   components {
+    Hierarchy "{1228D111495E789E}" {
+    }
+   }
+   coords -0.3 0.78 0
+   angles 0 20 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "45CDD1824652ED99"
+   components {
+    Hierarchy "{D13BA321E5407D24}" {
+    }
+   }
+   coords 0.35 0.78 0.1
+  }
+  GenericEntity : "{D0FF7E066D18C383}Prefabs/Props/Furniture/Chair_01/Chair_01_white.et" {
+   ID "B86EF550ABDCE3E1"
+   components {
+    Hierarchy "{78AA1F89863B1362}" {
+    }
+   }
+   coords 0 0 -0.8
+  }
+ }
+}

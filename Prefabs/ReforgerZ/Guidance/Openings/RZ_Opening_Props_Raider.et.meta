@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{2C7F78E9BD0D6D76}Prefabs/ReforgerZ/Guidance/Openings/RZ_Opening_Props_Raider.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

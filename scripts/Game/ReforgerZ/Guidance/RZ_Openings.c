@@ -1,18 +1,28 @@
 //! Openings: how every life starts (docs/DESIGN.md, "Openings").
 //!
 //! Each life starts at a random place that fits its background (RZ_OpeningRoll, rolled when the
-//! character spawns), coming out of its hiding place: a few props by the door you open (the
-//! Guidance > Hiding place scene), the calendar with the days crossed off, and someone who knew
+//! character spawns), coming out of its hiding place: a few props by the door you open (the scene,
+//! and your background's own things), the calendar with the days crossed off, and someone who knew
 //! you before the outbreak, standing a few metres off. They speak first, on the talk screen, and
 //! the chain's first step is tracked straight away: the only job in the game that starts without
 //! you talking to anyone or using anything. The chain (RZ_OpeningChain) is three errand steps:
-//! close by and quiet, a system (water, or a hand to dress), and the walk to where your background
-//! belongs, which pays a little Fame with that faction. Players past learning (guidance level 2+)
-//! get the first step only.
+//! close by and quiet (a building of your background's kind when one is near), your background's
+//! own system (RZ_OpeningSteps.c), and the walk to where your background belongs, which pays a
+//! little Fame with that faction. Players past learning (guidance level 2+) get the first step only.
 //!
 //! It replaces the spawn scenarios' clues and "a wanderer finds you" for that life; the gentle
 //! start, the wind-up radio, the tips and the guidance levels stay. Not in the epilogue week (the
 //! place is still rolled). One log line when it starts, per step, and when it ends. Server only.
+
+//------------------------------------------------------------------------------------------------
+//! The stages a chain is made of, in its plan (RZ_Opening.m_aPlan).
+enum RZ_EOpeningStage
+{
+	NONE,
+	SEARCH,		// step 1: a building close by, quietly
+	TASK,		// step 2: your background's own system (the Drifter: up to three asks)
+	WALK		// step 3: to where your background belongs
+}
 
 //------------------------------------------------------------------------------------------------
 //! One life's opening. Runtime only: a restart or a death ends it.
@@ -23,7 +33,7 @@ class RZ_Opening
 	int m_iLife;
 	string m_sBackground;
 	int m_iLevel;
-	bool m_bFull;				// all three steps (levels 0-1), else the first only
+	bool m_bFull;				// its plan ends with the walk (levels 0-1): it replaces "Find the Haven"
 	ref RZ_OpeningPlace m_Place;
 	string m_sTown;
 	IEntity m_Contact;			// weak: someone from before
@@ -35,9 +45,18 @@ class RZ_Opening
 	int m_iEnd = -1;			// the faction the chain ends with
 	vector m_vEnd;
 	string m_sEndPlace;			// "the safehouse in Morton"
-	bool m_bWater;				// step 2 was water (else the hand)
-	int m_iStep;				// 0 before they speak, 1-3 the step under way
-	int m_iNext;				// the step that starts at m_fNextAt (0 none)
+	ref array<int> m_aPlan = {};	// the stages, in order (RZ_EOpeningStage)
+	int m_iStage = -1;			// the plan's stage under way (-1 before they speak)
+	int m_iStep;				// 0 before they speak, 1-3 the step under way (the conversations' opening.step)
+	bool m_bNext;				// the next stage starts at m_fNextAt
+	string m_sSearch;			// step 1's place: "the chemist's over the way"
+	int m_iTask;				// step 2's task (RZ_EOpeningTask)
+	ref array<int> m_aTasks = {};	// step 2's tasks still to try (the background's, or the Drifter's asks)
+	int m_iAsks;				// the Drifter's asks done
+	IEntity m_Target;			// weak: the task's building (KEYS)
+	int m_iTargetId = -1;		// the task's wanderer (SWAP) or road post (TOLL)
+	float m_fPulseAt;			// GATE: the step's progress at its next noise
+	bool m_bTold;				// the task said once what's missing
 	int m_iErrand = -1;			// the current step's errand id
 	bool m_bResolved;			// the current step is done
 	bool m_bSpoke;
@@ -55,7 +74,7 @@ class RZ_Openings
 	static const int TAG = -17;					// RZ_PuzzleObjectComponent / RZ_ClueComponent mission id: a contact
 	static const string FLAG_STEP = "opening.step";	// dialogue's character flag: the step under way (1-3), 4 when it's over
 	static const string FLAG_END = "opening.end";		// the ending faction + 1 (1 the Haven ... 4 Halcyon)
-	static const string FLAG_WATER = "opening.water";	// step 2: 1 water, 2 the hand
+	static const string FLAG_TASK = "opening.task";		// step 2's task (RZ_EOpeningTask)
 
 	protected static const float POLL = 1;
 	protected static const float SPEAK_DELAY = 4;		// seconds after the spawn before they speak
@@ -67,13 +86,13 @@ class RZ_Openings
 	protected static const float CONTACT_MAX = 2700;	// and once the opening is 45 minutes old, with nobody within 50 m
 	protected static const float SEARCH_MIN = 50;		// step 1's house: this far from the contact...
 	protected static const float SEARCH_MAX = 250;		// ...and no further
-	protected static const float WELL_RADIUS = 400;
 
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Guidance m_Guide;
 	protected RZ_GuidanceSettings m_Settings;
 	protected ref RZ_OpeningRoll m_Roll;
 	protected ref RZ_OpeningChain m_Chain;
+	protected ref RZ_OpeningTasks m_Tasks;
 	protected ref array<ref RZ_Opening> m_aOpenings = {};
 	protected ref map<int, ref RZ_OpeningPlace> m_mPending = new map<int, ref RZ_OpeningPlace>();
 	protected ref map<int, bool> m_mMoved = new map<int, bool>();
@@ -91,6 +110,7 @@ class RZ_Openings
 		m_Settings = settings;
 		m_Roll = new RZ_OpeningRoll(gm);
 		m_Chain = new RZ_OpeningChain();
+		m_Tasks = new RZ_OpeningTasks(gm);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -223,7 +243,6 @@ class RZ_Openings
 		o.m_iLife = profile.m_iLives;
 		o.m_sBackground = bg.m_sId;
 		o.m_iLevel = m_Guide.GetLevel(profile);
-		o.m_bFull = o.m_iLevel <= 1 && m_GM.GetErrands() && m_GM.GetErrands().IsOn();
 		o.m_Place = place;
 		o.m_fBorn = m_fClock;
 		RZ_Settlement town = m_GM.GetSettlement(place.m_iTown);
@@ -235,6 +254,7 @@ class RZ_Openings
 			o.m_sTown = town.m_sName;
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
+		Plan(o, rng);
 		o.m_sName = RZ_OpeningText.Name(rng);
 		o.m_sWho = RZ_OpeningText.Who(bg.m_sId);
 		o.m_sSpeaker = o.m_sName + ", " + o.m_sWho;
@@ -255,41 +275,101 @@ class RZ_Openings
 			day = m_GM.GetBroadcast().GetDay();
 
 		if (place.m_bScene)
-			PlaceScene(place, day);
+			PlaceScene(o, day);
 
 		m_Guide.MarkOpening(playerId);
 		m_Guide.SetSpawnLine(playerId, RZ_OpeningText.SpawnLine(place.m_sKind, place.m_bScene, o.m_sTown, day));
 		o.m_fNextAt = m_fClock + SPEAK_DELAY;
 		m_aOpenings.Insert(o);
 
-		string chain = "one-step";
-		if (o.m_bFull)
-			chain = "full";
+		string chain = PlanText(o);
 
 		string kind = place.m_sKind;
 		if (kind.IsEmpty())
 			kind = "spawn point";
 
-		RZ_Log.Info(string.Format("Openings: started for %1: %2, %3 in %4 (%5), level %6, someone from before (%7), %8 chain to %9",
+		RZ_Log.Info(string.Format("Openings: started for %1: %2, %3 in %4 (%5), level %6, someone from before (%7), chain %8 to %9",
 			RZ_Util.PlayerName(playerId), bg.m_sId, kind, o.m_sTown, RZ_SettlementScanner.GridReference(ent.GetOrigin()), o.m_iLevel, o.m_sWho, chain, o.m_sEndPlace));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The hiding place's props by the door (Guidance > Hiding place scene; empty: none), the
-	//! calendar to read, and the door left open. The clue clean-up removes them in time.
-	protected void PlaceScene(RZ_OpeningPlace place, int day)
+	//! The chain's plan: levels 0-1 all three steps, others the first only; nothing with errands
+	//! off. Step 2's tasks to try: the background's own, or the Drifter's asks.
+	protected void Plan(RZ_Opening o, RZ_Rng rng)
 	{
+		RZ_Errands errands = m_GM.GetErrands();
+		if (errands && errands.IsOn())
+		{
+			o.m_aPlan.Insert(RZ_EOpeningStage.SEARCH);
+			if (o.m_iLevel <= 1)
+			{
+				o.m_aPlan.Insert(RZ_EOpeningStage.TASK);
+				o.m_aPlan.Insert(RZ_EOpeningStage.WALK);
+			}
+		}
+
+		o.m_bFull = o.m_aPlan.Contains(RZ_EOpeningStage.WALK);
+		if (o.m_sBackground == "drifter")
+			RZ_OpeningTasks.DrifterPool(rng, o.m_aTasks);
+		else
+			RZ_OpeningTasks.Preferred(o.m_sBackground, o.m_aTasks);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "search, task, walk", for the log.
+	protected static string PlanText(RZ_Opening o)
+	{
+		string text = "";
+		foreach (int stage : o.m_aPlan)
+		{
+			if (!text.IsEmpty())
+				text += ", ";
+
+			text += typename.EnumToString(RZ_EOpeningStage, stage);
+		}
+
+		if (text.IsEmpty())
+			return "none";
+
+		text.ToLower();
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! By the door: your background's own things on one side (Guidance > Opening scenes, its id;
+	//! none: nothing), the calendar to read on the other, and the door left open. The clue clean-up
+	//! removes them in time.
+	protected void PlaceScene(RZ_Opening o, int day)
+	{
+		RZ_OpeningPlace place = o.m_Place;
 		RZ_GuidanceWorld world = m_Guide.GetWorld();
 		vector side = Vector(place.m_vOut[2], 0, -place.m_vOut[0]);
-		if (!m_Settings.m_sHidingScenePrefab.IsEmpty())
+		ResourceName props = SceneFor(o.m_sBackground);
+		if (!props.IsEmpty())
 		{
-			vector sceneAt = RZ_Util.GroundPos(place.m_vPos + side * 1.8 - place.m_vOut * 0.5);
-			world.TrackProp(RZ_Util.SpawnPrefab(m_Settings.m_sHidingScenePrefab, sceneAt, place.m_fYaw));
+			vector propsAt = RZ_Util.GroundPos(place.m_vPos + side * 1.8 - place.m_vOut * 0.5);
+			world.TrackProp(RZ_Util.SpawnPrefab(props, propsAt, place.m_fYaw));
 		}
 
 		vector noteAt = RZ_Util.GroundPos(place.m_vPos - side * 1.2);
 		world.PlaceReadable(noteAt, "Read the calendar", "The calendar", RZ_OpeningText.Calendar(day));
 		RZ_OpeningRoll.OpenDoor(place.m_Door);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A composition from Guidance > Opening scenes by its key (a background's id); "" if none.
+	protected ResourceName SceneFor(string key)
+	{
+		if (!m_Settings.m_aOpeningScenes)
+			return "";
+
+		foreach (RZ_OpeningSceneSlot slot : m_Settings.m_aOpeningScenes)
+		{
+			if (slot && slot.m_sKey == key)
+				return slot.m_sPrefab;
+		}
+
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -520,19 +600,18 @@ class RZ_Openings
 			return;
 		}
 
-		if (o.m_iNext > 0)
+		if (o.m_bNext)
 		{
 			if (m_fClock >= o.m_fNextAt)
 			{
-				int next = o.m_iNext;
-				o.m_iNext = 0;
-				StartStep(o, next, me);
+				o.m_bNext = false;
+				StartStage(o, me);
 			}
 
 			return;
 		}
 
-		if (o.m_iStep >= 3)
+		if (Stage(o) == RZ_EOpeningStage.WALK)
 			ContactGone(o, false);
 
 		if (o.m_bResolved || o.m_iErrand < 0)
@@ -546,11 +625,30 @@ class RZ_Openings
 
 		if (!e || e.m_eState == RZ_EErrandState.DONE)
 		{
-			Finish(o, "the step lapsed");
+			Lapsed(o);
 			return;
 		}
 
 		AskAgain(o, me, e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A step lapsed. The clock's (a bite doesn't wait): they say so, and the chain goes on; any
+	//! other ends the opening.
+	protected void Lapsed(RZ_Opening o)
+	{
+		o.m_bResolved = true;
+		if (Stage(o) == RZ_EOpeningStage.TASK && (o.m_iTask == RZ_EOpeningTask.CLOCK || o.m_iTask == RZ_EOpeningTask.CLOCK_MED))
+		{
+			if (o.m_Contact)
+				m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.ClockLost(), o.m_Contact);
+
+			RZ_Log.Info(string.Format("Openings: %1's bitten friend was lost (the clock ran out for %2)", o.m_sName, RZ_Util.PlayerName(o.m_iPlayer)));
+			Next(o);
+			return;
+		}
+
+		Finish(o, "the step lapsed");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -559,7 +657,8 @@ class RZ_Openings
 	{
 		o.m_bSpoke = true;
 		SetFlag(o, FLAG_END, o.m_iEnd + 1);
-		StartStep(o, 1, me);
+		o.m_iStage = 0;
+		StartStage(o, me);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -593,7 +692,7 @@ class RZ_Openings
 	//------------------------------------------------------------------------------------------------
 	//! What they say when a step starts: step 1 their greeting (with Dialogue > Trees on, the
 	//! conversation's greet by your background says it instead) and the seal; step 2 the broadcast
-	//! and nobody coming; step 3 the Perimeter and the cure.
+	//! and nobody coming (the Drifter's later asks: only the ask); step 3 the Perimeter and the cure.
 	void StepLines(RZ_Opening o, bool tree, notnull array<string> lines)
 	{
 		int day = 1;
@@ -602,6 +701,12 @@ class RZ_Openings
 
 		if (o.m_iStep <= 1 && !tree)
 			lines.Insert(RZ_OpeningText.GreetPlain());
+
+		if (o.m_iStep == 2 && o.m_iAsks > 0)
+		{
+			lines.Insert(RZ_OpeningText.NextAsk(o.m_iAsks));
+			return;
+		}
 
 		RZ_OpeningText.Beat(Math.Max(1, o.m_iStep), day, lines);
 	}
@@ -629,13 +734,38 @@ class RZ_Openings
 
 		o.m_bAskedAgain = true;
 		if (!OpenTalk(o, me))
-			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(1, false), o.m_Contact);
+			m_GM.Say(o.m_iPlayer, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch), o.m_Contact);
 	}
 
 	// ================================================================ The steps
 	//------------------------------------------------------------------------------------------------
-	//! Hands the step to the player through the errands and tracks it.
-	protected void StartStep(RZ_Opening o, int n, IEntity me)
+	protected static int Stage(RZ_Opening o)
+	{
+		if (o.m_iStage < 0 || o.m_iStage >= o.m_aPlan.Count())
+			return RZ_EOpeningStage.NONE;
+
+		return o.m_aPlan[o.m_iStage];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The plan's next stage, a moment from now; the end of the plan ends the opening.
+	protected void Next(RZ_Opening o)
+	{
+		o.m_iStage++;
+		if (o.m_iStage >= o.m_aPlan.Count())
+		{
+			Finish(o, "the chain is done");
+			return;
+		}
+
+		o.m_bNext = true;
+		o.m_fNextAt = m_fClock + NEXT_STEP_DELAY;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hands the plan's stage under way to the player through the errands and tracks it. A step 2
+	//! with nothing that can run here goes straight on to the next stage.
+	protected void StartStage(RZ_Opening o, IEntity me)
 	{
 		RZ_Errands errands = m_GM.GetErrands();
 		if (!errands || !errands.IsOn())
@@ -644,9 +774,10 @@ class RZ_Openings
 			return;
 		}
 
-		if (n == 2 && !o.m_bFull)
+		int stage = Stage(o);
+		if (stage == RZ_EOpeningStage.NONE)
 		{
-			Finish(o, "one step done");
+			Finish(o, "the chain is done");
 			return;
 		}
 
@@ -658,43 +789,35 @@ class RZ_Openings
 		vector place;
 		string placeText;
 		int faction = RZ_EFaction.SURVIVORS;
-		if (n == 1)
+		int step = 1;
+		if (stage == RZ_EOpeningStage.SEARCH)
 		{
 			d = m_Chain.m_Search;
-			SearchPlace(giverAt, place, placeText);
+			if (o.m_iLevel == 1)
+				d = m_Chain.m_SearchShort;
+
+			SearchPlace(o, giverAt, place, placeText);
+			o.m_sSearch = placeText;
 		}
-		else if (n == 2)
+		else if (stage == RZ_EOpeningStage.TASK)
 		{
-			bool medic = o.m_sBackground == "nurse" || o.m_sBackground == "doctor";
-			bool meds = RZ_Errands.CountItems(me, RZ_EErrandItem.MEDICAL) > 0;
-			vector well;
-			string wellText;
-			bool hasWell = WellPlace(giverAt, well, wellText);
-			if (hasWell && !(medic && meds))
+			step = 2;
+			o.m_iTask = m_Tasks.Pick(o, me, giverAt, place, placeText);
+			d = m_Chain.Def(o.m_iTask);
+			if (!d)
 			{
-				d = m_Chain.m_Water;
-				place = well;
-				placeText = wellText;
-				o.m_bWater = true;
-			}
-			else if (meds)
-			{
-				d = m_Chain.m_Hand;
-				place = giverAt;
-				placeText = o.m_sName;
-			}
-			else
-			{
-				StartStep(o, 3, me);
+				o.m_iTask = RZ_EOpeningTask.NONE;
+				RZ_Log.Info(string.Format("Openings: no step 2 can run for %1 here (%2)", RZ_Util.PlayerName(o.m_iPlayer), o.m_sBackground));
+				o.m_iStage++;
+				StartStage(o, me);
 				return;
 			}
 
-			SetFlag(o, FLAG_WATER, 2);
-			if (o.m_bWater)
-				SetFlag(o, FLAG_WATER, 1);
+			SetFlag(o, FLAG_TASK, o.m_iTask);
 		}
 		else
 		{
+			step = 3;
 			if (o.m_vEnd == vector.Zero)
 			{
 				Finish(o, "nowhere to walk to");
@@ -707,10 +830,10 @@ class RZ_Openings
 			faction = o.m_iEnd;
 		}
 
-		o.m_iStep = n;
+		o.m_iStep = step;
 		o.m_bResolved = false;
 		o.m_fStepAt = m_fClock;
-		SetFlag(o, FLAG_STEP, n);
+		SetFlag(o, FLAG_STEP, step);
 		Announce(o, me);
 		RZ_Errand e = errands.Hand(d, o.m_iPlayer, "opening:" + o.m_iId.ToString(), o.m_sName, o.m_sSpeaker, faction, giverAt, place, placeText, me);
 		if (!e)
@@ -720,26 +843,43 @@ class RZ_Openings
 		}
 
 		o.m_iErrand = e.m_iId;
+		if (stage == RZ_EOpeningStage.TASK)
+			m_Tasks.Start(o, me, e);
+
 		RZ_UIFeed feed = m_GM.GetUIFeed();
 		if (feed && feed.GetTracker())
 			feed.GetTracker().Follow(o.m_iPlayer, -(RZ_UIFeed.ERRAND_ID_BASE + e.m_iId), e.Fill(d.m_sTitle));
 
-		RZ_Log.Info(string.Format("Openings: %1 step %2 (%3) for %4, %5", o.m_sName, n, d.m_sKey, RZ_Util.PlayerName(o.m_iPlayer), RZ_Util.DirectionText(me.GetOrigin(), place)));
+		RZ_Log.Info(string.Format("Openings: %1 step %2 (%3) for %4, %5", o.m_sName, step, d.m_sKey, RZ_Util.PlayerName(o.m_iPlayer), RZ_Util.DirectionText(me.GetOrigin(), place)));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Step 1's house: a building 50-250 m from the contact that isn't locked, by it; without one, a
-	//! point among the houses over the way.
-	protected void SearchPlace(vector from, out vector place, out string text)
+	//! Step 1's building: 50-250 m from the contact, not locked, one of your background's kinds when
+	//! one is there (the chemist's for a Nurse, a garage for a Mechanic), else any; without one, a
+	//! point among the houses over the way. A Doctor's clinic has an antidote by its door (Cure >
+	//! Antidote prefab), for step 2's clock.
+	protected void SearchPlace(RZ_Opening o, vector from, out vector place, out string text)
 	{
 		array<IEntity> buildings = {};
 		RZ_BuildingQuery.FindBuildings(from, SEARCH_MAX, buildings, 40);
+		array<string> kinds = {};
+		RZ_OpeningText.SearchKinds(o.m_sBackground, kinds);
 		array<IEntity> fit = {};
+		array<IEntity> mine = {};
+		string mineKind = "";
 		foreach (IEntity b : buildings)
 		{
 			float d = RZ_Util.DistXZ(from, b.GetOrigin());
-			if (d >= SEARCH_MIN && !RZ_LockedSpots.IsLockedBuilding(b))
-				fit.Insert(b);
+			if (d < SEARCH_MIN || RZ_LockedSpots.IsLockedBuilding(b))
+				continue;
+
+			fit.Insert(b);
+			string kind = RZ_OpeningRoll.KindOf(b, kinds);
+			if (!kind.IsEmpty())
+			{
+				mine.Insert(b);
+				mineKind = kind;
+			}
 		}
 
 		if (fit.IsEmpty())
@@ -749,56 +889,86 @@ class RZ_Openings
 			return;
 		}
 
-		IEntity house = fit.GetRandomElement();
-		place = RZ_Mission.LandPointNear(house.GetOrigin(), 2, 6);
-		text = "the house over the way";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Step 2's water: the nearest well or water tower within 400 m ("the well"). False if none.
-	protected bool WellPlace(vector from, out vector place, out string text)
-	{
-		array<string> kinds = {"well", "watertower"};
-		RZ_Landmark l = RZ_LandmarkFinder.FindNearest(from, WELL_RADIUS, kinds);
-		if (!l)
-			return false;
-
-		place = RZ_Mission.LandPointNear(l.m_vPos, 1, 3);
-		text = l.m_sName;
-		return true;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! From a step's errand when it's done (RZ_OpeningStepDef.Resolve, inside the errands' tick): the
-	//! next step waits for this tick, a moment later; the walk's end is the arrival.
-	void OnStepDone(RZ_Errand e)
-	{
-		RZ_Opening o;
-		foreach (RZ_Opening each : m_aOpenings)
+		IEntity house;
+		if (!mine.IsEmpty())
 		{
-			if (each.m_iErrand == e.m_iId && !each.m_bEnded)
-				o = each;
+			house = mine.GetRandomElement();
+			text = RZ_OpeningText.SearchPlace(RZ_OpeningRoll.KindOf(house, kinds));
+		}
+		else
+		{
+			house = fit.GetRandomElement();
+			text = RZ_OpeningText.SearchPlace("");
 		}
 
+		place = RZ_Mission.LandPointNear(house.GetOrigin(), 2, 6);
+		ResourceName antidote = m_GM.GetAntidotePrefab();
+		if (o.m_sBackground == "doctor" && o.m_aPlan.Contains(RZ_EOpeningStage.TASK) && !antidote.IsEmpty())
+		{
+			IEntity dose = RZ_Util.SpawnPrefab(antidote, RZ_Util.GroundPos(place) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
+			if (dose)
+				RZ_GameModeComponent.TrackLooseItem(dose);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! While an opening's step runs (RZ_OpeningStepDef.StepCounts): step 2's own system decides.
+	bool StepCounts(RZ_Errands dealer, RZ_Errand e, IEntity me)
+	{
+		RZ_Opening o = ByErrand(e.m_iId);
+		if (!o || Stage(o) != RZ_EOpeningStage.TASK || o.m_iTask == RZ_EOpeningTask.NONE)
+			return true;
+
+		return m_Tasks.Counts(dealer, o, e, me);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected RZ_Opening ByErrand(int errandId)
+	{
+		foreach (RZ_Opening o : m_aOpenings)
+		{
+			if (o.m_iErrand == errandId && !o.m_bEnded)
+				return o;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! From a step's errand when it's done (RZ_OpeningStepDef.Resolve, inside the errands' tick):
+	//! step 2's own effect, then the next stage waits for this tick, a moment later (the Drifter's
+	//! next ask first); the walk's end is the arrival.
+	void OnStepDone(RZ_Errand e, notnull array<string> said)
+	{
+		RZ_Opening o = ByErrand(e.m_iId);
 		if (!o)
 			return;
 
 		o.m_bResolved = true;
 		RZ_Log.Info(string.Format("Openings: %1 step %2 done by %3 in %4 s", o.m_sName, o.m_iStep, RZ_Util.PlayerName(o.m_iPlayer), RZ_Util.RoundToInt(m_fClock - o.m_fStepAt)));
-		if (o.m_iStep >= 3)
+		int stage = Stage(o);
+		if (stage == RZ_EOpeningStage.WALK)
 		{
 			Arrive(o);
 			return;
 		}
 
-		if (!o.m_bFull)
+		if (stage == RZ_EOpeningStage.TASK)
 		{
-			Finish(o, "one step done");
-			return;
+			m_Tasks.Resolved(o, e, said);
+			if (o.m_sBackground == "drifter")
+			{
+				o.m_iAsks++;
+				if (o.m_iAsks < RZ_OpeningTasks.DrifterAsks() && !o.m_aTasks.IsEmpty())
+				{
+					o.m_bNext = true;
+					o.m_fNextAt = m_fClock + NEXT_STEP_DELAY;
+					return;
+				}
+			}
 		}
 
-		o.m_iNext = o.m_iStep + 1;
-		o.m_fNextAt = m_fClock + NEXT_STEP_DELAY;
+		Next(o);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -821,7 +991,7 @@ class RZ_Openings
 
 	//------------------------------------------------------------------------------------------------
 	//! The contact was killed: the step under way ends, whoever finds you says so, and the walk
-	//! goes to the nearest safehouse (the whole chain only). Nothing else depends on them.
+	//! goes to the nearest safehouse (when the plan has it). Nothing else depends on them.
 	protected void ContactDied(RZ_Opening o)
 	{
 		o.m_bContactDead = true;
@@ -841,7 +1011,8 @@ class RZ_Openings
 
 		o.m_sSpeaker = "Someone in a doorway";
 		m_GM.NotifyPlayer(o.m_iPlayer, o.m_sSpeaker, RZ_OpeningText.ContactDied(h.m_sName));
-		if (!o.m_bFull)
+		int walk = o.m_aPlan.Find(RZ_EOpeningStage.WALK);
+		if (walk < 0)
 		{
 			Finish(o, "the contact died");
 			return;
@@ -851,7 +1022,8 @@ class RZ_Openings
 		o.m_vEnd = h.m_vPos;
 		o.m_sEndPlace = RZ_OpeningText.EndPlace(RZ_EFaction.SURVIVORS, h.m_sName, false);
 		o.m_bSpoke = true;
-		o.m_iNext = 3;
+		o.m_iStage = walk;
+		o.m_bNext = true;
 		o.m_fNextAt = m_fClock + NEXT_STEP_DELAY;
 		SetFlag(o, FLAG_END, 1);
 	}
@@ -941,7 +1113,7 @@ class RZ_Openings
 
 		if (o.m_bEnded)
 		{
-			lines.Insert(RZ_OpeningText.AskAgain(3, false));
+			lines.Insert(RZ_OpeningText.AskAgain(3, RZ_EOpeningTask.NONE, ""));
 			return;
 		}
 
@@ -953,7 +1125,7 @@ class RZ_Openings
 			return;
 		}
 
-		lines.Insert(RZ_OpeningText.AskAgain(o.m_iStep, o.m_bWater));
+		lines.Insert(RZ_OpeningText.AskAgain(o.m_iStep, o.m_iTask, o.m_sSearch));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -989,6 +1161,6 @@ class RZ_Openings
 		if (o.m_bEnded)
 			step = 3;
 
-		m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(step, o.m_bWater), owner);
+		m_GM.Say(playerId, o.m_sSpeaker, -1, RZ_OpeningText.AskAgain(step, o.m_iTask, o.m_sSearch), owner);
 	}
 }

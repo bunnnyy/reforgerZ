@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "DB65134C0149D418"
+ components {
+  RplComponent "{0660A10DFFF34DCE}" {
+  }
+  Hierarchy "{530D006FFD984724}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{47AE94F99DF6445F}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_brown.et" {
+   ID "11BB5671C54B48E5"
+   components {
+    Hierarchy "{E87F58C8DB493ECA}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 80 0
+  }
+  GenericEntity : "{EA8D922E189837C2}Prefabs/Props/Civilian/Suitcase_04_open.et" {
+   ID "15A3D5FA999DC30A"
+   components {
+    Hierarchy "{229F69CB73E239D3}" {
+    }
+   }
+   coords 1.3 0 0.3
+   angles 0 20 0
+  }
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "B3C4A37E8DD7A250"
+   coords -0.6 0 0.6
+  }
+  GenericEntity : "{9F2AA7588FBE77A6}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_mug.et" {
+   ID "AC2AB6A37AC7E55E"
+   coords -0.4 0 0.8
+  }
+ }
+}

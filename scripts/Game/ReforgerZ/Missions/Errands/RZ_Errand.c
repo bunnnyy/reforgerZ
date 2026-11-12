@@ -209,6 +209,15 @@ class RZ_ErrandDef
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Each errand tick while a held step isn't done, before the place's radius is checked: it may
+	//! move e.m_vPlace (a subject that walks) and returns false to stop the step's clock. An
+	//! opening's background step reads its own system here (Guidance/RZ_OpeningSteps.c).
+	bool StepCounts(RZ_Errands dealer, RZ_Errand e, IEntity me)
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Still true (every 30 s while offered or held, and at every step). False: overtaken.
 	bool Still(RZ_Errands dealer, RZ_Errand e)
 	{

@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "31B85C1D79E74A82"
+ components {
+  RplComponent "{5B4DF9879B04C452}" {
+  }
+  Hierarchy "{F58E390B36E10297}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
+   ID "D3C113C291F617BE"
+   components {
+    Hierarchy "{1EE232ED62626469}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 30 0
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "07DBF1F0F7787DB3"
+   components {
+    Hierarchy "{A80E41DA08ADE88A}" {
+    }
+   }
+   coords 0.8 0 0.3
+   angles 0 60 0
+  }
+  GenericEntity : "{6EB3EE4FE50E0319}Prefabs/Props/Recreation/Beach/BlanketBeach_01/BlanketBeach_01_red.et" {
+   ID "76BA3BD7131CDD62"
+   components {
+    Hierarchy "{DBFDB8C5F42DFFF5}" {
+    }
+   }
+   coords -0.2 0 1.0
+   angles 0 85 0
+  }
+ }
+}

@@ -727,6 +727,9 @@ class RZ_Errands
 					continue;
 				}
 
+				if (!e.m_Def.StepCounts(this, e, me))
+					continue;
+
 				if (RZ_Util.DistXZ(at, e.m_vPlace) > w.m_fRadius)
 					continue;
 
@@ -3198,6 +3201,7 @@ class RZ_Errands
 		e.m_vPlace = place;
 		m_aErrands.Insert(e);
 		Count(d.m_sFamily).deals++;
+		PlaceProp(e, w);
 
 		Say(e, Pick(w.m_aTake), false);
 		if (w.HasStep())

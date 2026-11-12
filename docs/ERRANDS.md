@@ -584,17 +584,30 @@ found by events (a visit, a road, a rumour round, the next real reading).
 
 ## Handed errands: the openings' chain
 
-An opening's three steps ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) are errands another
-system hands a player, already taken (`RZ_Errands.Hand`, code in `Guidance/RZ_OpeningChain.c`). They
+An opening's steps ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)) are errands another
+system hands a player, already taken (`RZ_Errands.Hand`, code in `Guidance/RZ_OpeningChain.c` and
+`RZ_OpeningSteps.c`). They
 are the **only errands, and the only jobs, that start without the player talking to anyone or using
 anything**: `RZ_ErrandDef.IsOpening()` and `RZ_Errand.IsOpening()` are true for them and for nothing
 else.
 
 | Step | Key | Way | The step |
 |---|---|---|---|
-| ✅ Across the Road | `opening.search` | sneak | 20 s within 10 m of a house 50–250 m from the contact (quiet), then back to them |
+| ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | 20 s (10 s) within 10 m of a building 50–250 m from the contact (quiet), then back to them |
 | ✅ Water | `opening.water` | do | 15 s at the nearest well or water tower, then back |
 | ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact |
+| ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact; 15 s at the well |
+| ✅ The Clock | `opening.clock`, `opening.clock_med` | give | an antidote (or a medical item) at the contact; 10 minutes before it lapses |
+| ✅ The Pump | `opening.pump` | do | 5 s at a petrol station's pump with fuel in a can |
+| ✅ Downwind | `opening.downwind` | sneak | 30 s within 25 m, only while hidden (`m_bUnseen`), quiet |
+| ✅ The Station Keys | `opening.keys` | do | inside the locked building whose key the contact gave you |
+| ✅ The Toll | `opening.toll` | talk | 10 s within 30 m of a Red Hand toll with no shot near it |
+| ✅ A Sample | `opening.sample` | do | at the remains with a sample in your pack (the crate or effects prop: none) |
+| ✅ Open Channel | `opening.channel` | do | anywhere, once you've answered on the open channel |
+| ✅ A Fair Swap | `opening.swap` | give | 5 s with a wanderer (the place follows them) |
+| ✅ Hold the Gate | `opening.gate` | do | 60 s within 15 m of the gate |
+| ✅ The Debt | `opening.debt` | press | 10 s at a house's door (the crate prop) |
+| ✅ Two Families | `opening.settle` | talk | once the conversation has settled it |
 | ✅ To the Haven, To Bastion, To the Red Hand, To Halcyon | `opening.walk.<faction>` | do | within 40 m of the place, done there (`m_bEndsThere`: nobody to go back to); 90 minutes before it lapses (`m_fLapseMinutes`) |
 
 How a handed errand differs (`m_bHanded`): the dealer never deals it; its giver is the contact, not a
@@ -604,7 +617,10 @@ opening pays its own Fame at the end of the walk); the owner drops it quietly (`
 when the contact dies or the chain ends. Everything else is an errand's: the take and done lines in
 the giver's voice (into the talk screen while it's open on them), the step notice, the journal row,
 the Quests tab and the tracker, which the opening points at each step as it starts. While a
-player's chain runs, nobody waves them over for another errand.
+player's chain runs, nobody waves them over for another errand. Two hooks serve them: a handed
+errand's way puts its prop at the place as a taken one does, and `RZ_ErrandDef.StepCounts` (true for
+every other errand) lets a step 2 stop its clock while its own system isn't met, or move its place
+after someone who walks.
 
 ## Telemetry and the admin view
 

@@ -14,7 +14,8 @@ and one way to end it: **research the cure.**
   unlocked through Legacy.
 - **Openings:** every life starts somewhere random that suits who you were, coming out of the place
   you hid in since the seal, and someone who knew you before speaks first. Their three small asks
-  teach the Zone, tell its story and walk you to the Haven or the faction your background belongs with.
+  (the second your background's own: a fever to treat, a pump, a gate to hold, a locked door) teach
+  the Zone, tell its story and walk you to the Haven or the faction your background belongs with.
 - **The Director** moves the server through four outbreak stages over a season of about 45
   real days, spreads infection from town to town and sends hordes toward noise. The infected adapt
   a little as the cure advances. Research is scaled to how much the server really plays over the

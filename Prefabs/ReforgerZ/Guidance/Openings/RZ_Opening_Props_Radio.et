@@ -1,0 +1,47 @@
+GenericEntity {
+ ID "5F053926A8CA5850"
+ components {
+  RplComponent "{E76015EE78C47152}" {
+  }
+  Hierarchy "{6FD91AE4A1CB2A3D}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "20A448A85223DFCB"
+   components {
+    Hierarchy "{56C3C219699FFF62}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 10 0
+  }
+  GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+   ID "CE0FE76970310E19"
+   components {
+    Hierarchy "{B324912BD7A9D619}" {
+    }
+   }
+   coords 0 0.62 0
+   angles 0 30 0
+  }
+  GenericEntity : "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et" {
+   ID "7D3F188219A5C329"
+   components {
+    Hierarchy "{E85C127EDB36CF23}" {
+    }
+   }
+   coords -1.0 0 0.4
+  }
+  GenericEntity : "{4F6BB0502ED3EFBB}Prefabs/Props/Military/Generators/GeneratorPortable_US_01_Off.et" {
+   ID "48922D8C7B563DAB"
+   components {
+    Hierarchy "{EED811CE5AE0E93A}" {
+    }
+   }
+   coords 1.1 0 0.2
+   angles 0 75 0
+  }
+ }
+}

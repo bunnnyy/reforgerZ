@@ -2836,8 +2836,8 @@ and for the first five minutes cards come at most one every 45 s; the rules and 
 
 ### Openings: how every life starts
 
-Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningChain.c`, `RZ_OpeningText.c`,
-`Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
+Code: `Guidance/RZ_Openings.c`, `RZ_OpeningPlaces.c`, `RZ_OpeningChain.c`, `RZ_OpeningSteps.c`,
+`RZ_OpeningText.c`, `Dialogue/RZ_TalkOpenings.c`. **Guidance > Openings** (on).
 
 Every life starts somewhere random that suits who you were, coming out of the place you hid in
 since the seal, and within a few seconds someone who knew you before is talking to you and there is
@@ -2879,10 +2879,14 @@ it's handed over, and the world streams in there.
 - **Fallback:** no fitting building, any house in one of those towns (the scene still comes);
   nothing at all, the spawn point the screen asked for, with the contact but no scene.
 
-**The scene: out of the hiding place.** The door you came out of stands open behind you; by it, the
-**Guidance > Hiding place scene** composition (empty: none) and a calendar to read, every day up to
-the season's day crossed off, Day 2 ringed: ROADS SHUT. The spawn card says the place's kind, the
-town and the day. The props go with the guidance clues (20 minutes once nobody is near).
+**The scene: out of the hiding place.** The door you came out of stands open behind you; by it, on
+one side, your background's own things (**Guidance > Opening scenes**, its id: the nurse's blanket,
+bucket and sterilising drum, the mechanic's tyre and drum, the hunter's skull board and log, the
+radio operator's set on a crate under an aerial...), and on the other a calendar to read, every day
+up to the season's day crossed off, Day 2 ringed: ROADS SHUT. The spawn card says the place's kind,
+the town and the day. The props go with the guidance clues (20 minutes once nobody is near). The 13
+compositions are text in `tools/camp_kit/pieces.py` (`OPENINGS`), built with the camp pieces
+([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md)); a key with none has nothing there.
 
 **The contact: someone from before.** A few metres out of the door, facing you (**Guidance >
 Contact**, empty: **Puzzles > Civilian**; counted as a story body, so the budget doesn't refuse
@@ -2913,13 +2917,36 @@ starts (the HUD and the Quests tab), with the giver's lines on the talk screen. 
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Across the Road | Search a house 50–250 m from them for 20 s, within 10 m of it, and come back | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
-| 2. Water, or The Cut | Water: stand 15 s at the nearest well or water tower (within 400 m) and come back. The Cut: dress their hand with anything medical you carry (a Nurse or Doctor with something medical always gets this one) | where water is; treating | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
+| 1. Across the Road | Search a building 50–250 m from them for 20 s (10 s for a learning player, level 1), within 10 m of it, and come back. One of your background's kinds when one is there (below), else any house | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 2. Your background's own | Its own system (below); else water (15 s at the nearest well or water tower within 400 m, and back), else The Cut (dress their hand with anything medical you carry) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
-No step 2 (no well near and nothing medical on you): straight to the walk. With **Dialogue >
-Trees** on, the conversations `for opening` add their greeting by your background and things to ask
-on the way ([DIALOGUE.md](DIALOGUE.md#the-conversations)).
+No step 2 (yours can't run here, no well near and nothing medical on you): straight to the walk.
+With **Dialogue > Trees** on, the conversations `for opening` add their greeting by your background
+and things to ask on the way ([DIALOGUE.md](DIALOGUE.md#the-conversations)).
+
+**Step 2 by background** (`RZ_OpeningSteps.c`). Each runs on the
+errand engine like the other steps; while it runs, `RZ_ErrandDef.StepCounts` lets the background's
+own system say whether its clock runs. The first that can run here is yours; else water, else The
+Cut. Step 1's building is of your background's kind when one is 50–250 m off.
+
+| Background | Step 1's building | Step 2 | What it needs to run | Done when |
+|---|---|---|---|---|
+| Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | one medical item handed over at the contact |
+| | | else **Water for the Fever** | a well within 400 m | 15 s at the well, and back (it'll be boiled) |
+| Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | the antidote handed over at the contact |
+| | | else **The Clock** with a dressing | something medical | one medical item handed over |
+| Mechanic | a garage or petrol station | **The Pump**: fuel from the nearest petrol station within 800 m | a petrol station near | 5 s at the pump with 5 litres in a can, and back |
+| Hunter | a farm | **Downwind**: watch a pack's ground, unseen | always: 150 m short of the nearest pack's lair within 1.6 km, else the tree line 150–250 m out | 30 s within 25 m, hidden (built stealth), quiet; back |
+| Police Officer | a police post or hall | **The Station Keys**: the contact gives you the key to a locked building 40–300 m off | locks and the key prefab, a real lock near | inside that building, and back |
+| Ex-Con | — | **The Toll**: walk up to a Red Hand toll and away again, no fight | a Red Hand roadblock or camp gate within 1.5 km; not while the Red Hand hunts you | 10 s within 30 m with no shot within 80 m in the last minute, and back |
+| Lab Technician | a school or clinic | **A Sample**: from what's left of a big one 80–200 m out (a sample lies there: **Cure > Sample prefab**) | the sample prefab; not after the cure | at the remains with a sample in your pack, and back |
+| Radio Operator | the hut under a mast | **Open Channel**: answer someone calling on the open channel (**Call on the open channel**, `opening.channel`) | Dialogue > Trees and Radio calls on, a radio on you | answered, and back |
+| Unemployed | a shop | **A Fair Swap**: catch the nearest wanderer on the road within 1.5 km | a wanderer near | 5 s with them (the place follows them), and back: a tin you carry is swapped for 3 Haven Favor (small pay) |
+| Soldier | an old barracks or hall | **Hold the Gate** 15–25 m out for a minute: the gate's noise (heat 12, again every 20 s) draws the infected | always | 60 s within 15 m, and back |
+| Raider | — | **The Debt**: collect at a house 60–250 m off (the errands' crate prop at its door) | always | 10 s at the door, and back: +1 Infamy with the Haven (the word getting round, small) |
+| Elder | — | **Two Families**: hear them out with the contact, persuade 1 (factionless, [Elder] +1: `opening.settle`) | Dialogue > Trees on | the talk settled it (a Short settles it by half, said) |
+| Drifter | — | **Three asks**: up to three in a row of the gate, downwind, the swap, the debt, the two families, water and the cut, shuffled, each that can run here | — | each as above; the second and third come "from" the street's other people |
 
 **Where the chain ends** fits who you were:
 
@@ -2933,23 +2960,28 @@ on the way ([DIALOGUE.md](DIALOGUE.md#the-conversations)).
 A faction that hunts you, or holds nothing, sends you to the nearest safehouse instead. On arrival
 someone there says one line, and you get **Guidance > Opening Fame** (10) with them as small pay
 (not while they hunt you; never season Fame). The steps themselves pay nothing: no Favor, no items,
-no hall-of-fame helped line, no deeds.
+no hall-of-fame helped line, no deeds (the swap's Favor and the debt's Infamy, above, are those
+steps' own).
 
 **When it ends early.** The contact killed during steps 1–2: whoever finds you says so, the step
-ends, and the chain goes straight to the walk to the nearest safehouse. A step that lapses, death or
-leaving ends it. Nobody waves you over for errands while it runs. One opening per life, runtime only
+ends, and the chain goes straight to the walk to the nearest safehouse. The Clock lapsing loses the
+bitten friend (they say so) and the chain goes on; any other step that lapses, death or leaving ends
+it. Nobody waves you over for errands while it runs. One opening per life, runtime only
 (a restart ends it). None in the epilogue week (the place is still rolled). The contact leaves once
 nobody is within 150 m after the walk starts, or 45 minutes on with nobody within 50 m.
 
 **Log lines:** `Openings: started for ...` (background, place, town, grid, level, who, chain, where
 it ends), `... spoke first to ... at step N (the talk screen | subtitles)`, `... step N (key) for
 ...`, `... step N done by ... in N s`, `... died`, `Openings: ended for ...: why (step, minutes)`,
-and the fallbacks' `no ... place fits`, `no place`, `no contact could stand`.
+the fallbacks' `no ... place fits`, `no place`, `no contact could stand`, `no step 2 can run`, and
+`...'s bitten friend was lost`.
 
-*Simplified:* the hiding place is the only reason; one chain shape for every background (step 2 is
-water or the hand, not the background's own system); one kind of contact (someone from before, by
-background); the guidance levels only shorten it to one step; no scene composition ships (the slot
-is empty until the author makes one), so the calendar is the scene.
+*Simplified:* the hiding place is the only reason; one kind of contact (someone from before, by
+background); the guidance levels only shorten it to one step. Step 2: the Mechanic's is the pump
+only (no car to start); the Nurse's water is fetched, not boiled; the Lab Technician's big one is the
+errands' prop and a sample, not a special's body; the Ex-Con's toll is passed by talking near it
+without a fight, not by a disguise check; the Elder's two families speak through the one contact;
+the Drifter's three people are one contact passing on the street's asks.
 
 ### Experience levels
 
@@ -2989,7 +3021,7 @@ a stack at spawn. The table is data (**Guidance > Tips**, defaults in
 | hunted | Hunted or Kill on Sight | ✅ |
 | perimeter | near the edge or a checkpoint, while the line is sealed | |
 | loud | heat 45+ where you stand | |
-| bleeding | you're bleeding (checked every 10 s; VERIFY `Guidance/RZ_Guidance.c:465`) | |
+| bleeding | you're bleeding (checked every 10 s; VERIFY `Guidance/RZ_Guidance.c:477`) | |
 | quartermaster | within 25 m of a quartermaster of a faction that doesn't hunt you | |
 | night | the first night | |
 | safehouse | your first safehouse | |

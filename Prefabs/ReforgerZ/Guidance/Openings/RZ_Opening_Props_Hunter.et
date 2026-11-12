@@ -1,0 +1,47 @@
+GenericEntity {
+ ID "3813A7E73D525226"
+ components {
+  RplComponent "{CD27ADA71BF91EC9}" {
+  }
+  Hierarchy "{F6543460F560EEE8}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
+   ID "05476848179FAAEC"
+   components {
+    Hierarchy "{6E6692746ED1C97C}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 80 0
+  }
+  GenericEntity : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+   ID "1CBBA70E24673512"
+   components {
+    Hierarchy "{A03BC85D2C431C42}" {
+    }
+   }
+   coords 0.6 0 0.6
+   angles 0 30 0
+  }
+  GenericEntity : "{BC3EEB0F1E36272F}Prefabs/Props/Forest/DeerSkull_01/DeerSkull_01_board.et" {
+   ID "AC9D399EAAE2F1EA"
+   components {
+    Hierarchy "{B89F433ED8CA2E69}" {
+    }
+   }
+   coords -0.8 0 0.5
+   angles 0 200 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "C044C28DB1945FA3"
+   components {
+    Hierarchy "{A6030789F4623BA5}" {
+    }
+   }
+   coords 0.9 0 -0.3
+  }
+ }
+}

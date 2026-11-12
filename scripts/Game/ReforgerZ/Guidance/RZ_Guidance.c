@@ -94,8 +94,8 @@ class RZ_GuidanceSettings
 	[Attribute("1", desc: "Openings: every life starts at a random place that fits its background (never a chosen one), coming out of its hiding place, with someone from before who speaks first and a three-step chain on the errands (docs/DESIGN.md, Openings). It replaces that life's spawn scenario and the wanderer who finds you. Off: the spawn point the spawn screen picks at random, and the spawn scenarios")]
 	bool m_bOpenings;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the hiding place's props by the door you come out of (a small composition: an empty water bottle, a bedroll, a bucket). Empty: the calendar note only", "et")]
-	ResourceName m_sHidingScenePrefab;
+	[Attribute(desc: "Openings: the compositions by the door you come out of, by key: a background's id (its own things, by the door). Built by tools/camp_kit/build.py from pieces.py's OPENINGS. A key with none: nothing there")]
+	ref array<ref RZ_OpeningSceneSlot> m_aOpeningScenes;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Openings: the contact's body, someone from before (a person with the puzzle components). Empty: Puzzles > Civilian", "et")]
 	ResourceName m_sContactPrefab;
@@ -108,6 +108,18 @@ class RZ_GuidanceSettings
 
 	[Attribute(desc: "Tips: one line from the nearest plausible speaker when something happens. Empty = the built-in table (RZ_GuidanceTips)")]
 	ref array<ref RZ_GuidanceTip> m_aTips;
+}
+
+//------------------------------------------------------------------------------------------------
+//! One of Guidance > Opening scenes: a composition by its key.
+[BaseContainerProps(), SCR_BaseContainerCustomTitleField("m_sKey")]
+class RZ_OpeningSceneSlot
+{
+	[Attribute("", desc: "A background's id (nurse, mechanic... drifter): its own things by the door")]
+	string m_sKey;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "The composition (props only)", "et")]
+	ResourceName m_sPrefab;
 }
 
 //------------------------------------------------------------------------------------------------

@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "FA2B1BDAE190F488"
+ components {
+  RplComponent "{A26720ECCDB2A6E7}" {
+  }
+  Hierarchy "{1E5E60ACA28E900C}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+   ID "1C0FB6630B00D560"
+   components {
+    Hierarchy "{A8477115B799D4C7}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 160 0
+  }
+  GenericEntity : "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et" {
+   ID "B41858240E21C1A8"
+   components {
+    Hierarchy "{45B56C5A66AB9E24}" {
+    }
+   }
+   coords 0 0.45 0
+   angles 0 20 0
+  }
+  GenericEntity : "{48705414649E7486}Prefabs/Props/Medical/ToolsSurgical_01_autoclavedrum.et" {
+   ID "792E6A37264653EF"
+   components {
+    Hierarchy "{AD28E6C7A2DC7E4E}" {
+    }
+   }
+   coords 0.8 0 0.3
+  }
+  GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+   ID "E8983254D3AD7739"
+   components {
+    Hierarchy "{AB9DAC86681B9BE0}" {
+    }
+   }
+   coords -0.6 0 0.2
+  }
+ }
+}

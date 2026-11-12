@@ -169,19 +169,110 @@ class RZ_OpeningText
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "What was it you needed?": the step again, short.
-	static string AskAgain(int step, bool water)
+	//! "What was it you needed?": the step again, short. `search`: step 1's place.
+	static string AskAgain(int step, int task, string search)
 	{
 		if (step == 1)
-			return "\"The house over the way. Look, and come back. Walk, don't run.\"";
+		{
+			if (search.IsEmpty())
+				search = "the house over the way";
 
-		if (step == 2 && water)
-			return "\"Water. The well. Whatever you can carry.\"";
+			return string.Format("\"%1. Look, and come back. Walk, don't run.\"", Capital(search));
+		}
 
 		if (step == 2)
-			return "\"My hand. Anything clean you've got.\"";
+		{
+			switch (task)
+			{
+				case RZ_EOpeningTask.WATER: return "\"Water. The well. Whatever you can carry.\"";
+				case RZ_EOpeningTask.CUT: return "\"My hand. Anything clean you've got.\"";
+				case RZ_EOpeningTask.FEVER: return "\"The boy. Whatever's in your bag.\"";
+				case RZ_EOpeningTask.BOILED: return "\"Water for the fever. I've got the fire going.\"";
+				case RZ_EOpeningTask.PUMP: return "\"A can of fuel from the pump. Just the one.\"";
+				case RZ_EOpeningTask.DOWNWIND: return "\"Watch where they go about. Don't let them see you.\"";
+				case RZ_EOpeningTask.KEYS: return "\"The locked door. You've got the key now.\"";
+				case RZ_EOpeningTask.TOLL: return "\"The toll. Talk, look, come back. No shooting.\"";
+				case RZ_EOpeningTask.SAMPLE: return "\"The sample. By the remains, down the road.\"";
+				case RZ_EOpeningTask.CHANNEL: return "\"Call on the open channel. Somebody's asking.\"";
+				case RZ_EOpeningTask.SWAP: return "\"Catch the one on the road. See what they'll swap.\"";
+				case RZ_EOpeningTask.GATE: return "\"The gate. One minute.\"";
+				case RZ_EOpeningTask.CLOCK: return "\"The antidote. Now, while it still works.\"";
+				case RZ_EOpeningTask.CLOCK_MED: return "\"Keep him going. A dressing, anything.\"";
+				case RZ_EOpeningTask.DEBT: return "\"The house that owes. Ask them.\"";
+				case RZ_EOpeningTask.SETTLE: return "\"The two families. Sit with me and hear it.\"";
+			}
+		}
 
 		return "\"Go on. Don't wait for me. I'm slower than I look.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Drifter's next ask, said as it starts (asks 2 and 3).
+	static string NextAsk(int asksDone)
+	{
+		if (asksDone == 1)
+			return "\"That's one. The woman at the end house heard you were about. She's got a thing too.\"";
+
+		return "\"Last one, I promise. The man with the cart asked. Everyone asks, once they've seen you'll do it.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The clock ran out.
+	static string ClockLost()
+	{
+		return "\"It's taken him. I stayed till it did. Don't come back this way: I'll see to it.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The two families settled only halfway (the check came up short).
+	static string SettledHalf()
+	{
+		return "\"Half a peace. They'll take turns at the well and glare the whole time. Better than knives.\"";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Step 1's building kinds by background (RZ_OpeningRoll.KindOf), when one is near the contact.
+	static void SearchKinds(string bg, notnull array<string> result)
+	{
+		switch (bg)
+		{
+			case "nurse": result.Insert("clinic"); return;
+			case "doctor": result.Insert("clinic"); return;
+			case "mechanic": result.Insert("garage"); result.Insert("fuel"); return;
+			case "hunter": result.Insert("farm"); return;
+			case "police": result.Insert("police"); result.Insert("public"); return;
+			case "labtech": result.Insert("school"); result.Insert("clinic"); return;
+			case "radioham": result.Insert("radio"); return;
+			case "soldier": result.Insert("military"); result.Insert("public"); return;
+			case "unemployed": result.Insert("shop"); return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What step 1 calls its building: "the chemist's over the way".
+	static string SearchPlace(string kind)
+	{
+		switch (kind)
+		{
+			case "clinic": return "the chemist's over the way";
+			case "garage": return "the garage over the way";
+			case "fuel": return "the petrol station over the way";
+			case "farm": return "the farm over the way";
+			case "police": return "the police post over the way";
+			case "public": return "the hall over the way";
+			case "school": return "the school over the way";
+			case "radio": return "the hut under the mast";
+			case "military": return "the old barracks over the way";
+			case "shop": return "the shop over the way";
+		}
+
+		return "the house over the way";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string Capital(string text)
+	{
+		return RZ_Util.Capitalize(text);
 	}
 
 	//------------------------------------------------------------------------------------------------

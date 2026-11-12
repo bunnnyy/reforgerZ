@@ -621,6 +621,10 @@ occupant.nurse.symptoms
 occupant.nurse.symptoms/@back
 occupant.nurse.symptoms/@back1
 occupant.nurse.symptoms/@chest
+opening.channel
+opening.channel/@dusk
+opening.channel/@here
+opening.channel/@where
 opening.greet.doctor
 opening.greet.drifter
 opening.greet.elder
@@ -634,6 +638,11 @@ opening.greet.radioham
 opening.greet.raider
 opening.greet.soldier
 opening.greet.unemployed
+opening.settle
+opening.settle/@enough
+opening.settle/@good
+opening.settle/@later
+opening.settle/@split
 opening.where_now
 opening.where_now/@back1
 opening.where_now/@come

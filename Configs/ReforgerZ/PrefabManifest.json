@@ -4671,21 +4671,21 @@
    "notes": ""
   },
   {
-   "id": "OpeningHidingPlace",
+   "id": "OpeningScenes",
    "kind": "manual",
    "system": "New-player guidance",
    "path": "",
    "basePrefab": "",
    "baseFind": "",
-   "baseHint": "a small composition you make by hand (`RZ_Opening_HidingPlace.et` in `Prefabs/ReforgerZ/Guidance/`): an empty water bottle on its side, a rolled bedroll and a bucket, about 2 m across, nothing with physics",
+   "baseHint": "the RZ_Opening_* compositions in Prefabs/ReforgerZ/Guidance/Openings/, built by tools/camp_kit/build.py from pieces.py's OPENINGS, which also fills the slots",
    "components": [],
    "actions": [],
-   "slots": ["m_GuidanceSettings.m_sHidingScenePrefab"],
+   "slots": ["m_GuidanceSettings.m_aOpeningScenes[].m_sPrefab"],
    "listSlot": false,
-   "slotLabel": "Guidance > Hiding place scene",
+   "slotLabel": "Guidance > Opening scenes (each key's prefab)",
    "required": false,
    "minimum": false,
-   "use": "the openings' scene by the door you come out of (docs/DESIGN.md, Openings); empty = the calendar note only",
+   "use": "the openings' props by the door you come out of: each background's own things (docs/DESIGN.md, Openings); a key with none = nothing there",
    "notes": ""
   },
   {

@@ -369,3 +369,22 @@ TRACES = {
     'm_sSheets': ('RZ_Trace_Sheets', [P('Notice_A4_Vertical_V1.et', 0, 0, 20, 0.01, -90), P('Notice_A4_Vertical_V1.et', 0.35, 0.2, 75, 0.01, -90), P('Notice_A4_Vertical_V1.et', -0.3, 0.4, 140, 0.01, -90)]),
     'm_sLantern': ('RZ_Trace_Lantern_Lit', [P('LampKerosene_01_green.et', 0, 0)]),
 }
+
+# Openings (Guidance > Opening scenes on RZ_GameMode.et, docs/DESIGN.md "Openings"): key -> (composition
+# name, parts). Built into Prefabs/ReforgerZ/Guidance/Openings/<name>.et. They stand outside the door you
+# come out of, +Z away from the wall. A background's id: its own things, on one side of the door.
+OPENINGS = {
+    'nurse': ('RZ_Opening_Props_Nurse', [P('BlanketFolded_01_green.et', 0, 0, 10), P('Bucket_01.et', 0.7, 0.3), P('ToolsSurgical_01_autoclavedrum.et', -0.6, 0.2), P('LitterInterior_USSR_01_mug.et', 0.3, -0.4)]),
+    'doctor': ('RZ_Opening_Props_Doctor', [P('ChairOld_01.et', 0, 0, 160), P('FileOffice_01_Stack.et', 0, 0, 20, 0.45), P('ToolsSurgical_01_autoclavedrum.et', 0.8, 0.3), P('LampKerosene_01_green.et', -0.6, 0.2)]),
+    'mechanic': ('RZ_Opening_Props_Mechanic', [P('Tire_UAZ469.et', 0, 0, 0, 0, 90), P('Junk_01_pile_small.et', 1.4, 0.4, 30), P('BarrelMetal_01_blue.et', -1.0, 0.3), P('CrateWooden_01_plain.et', 0.4, -0.9, 15)]),
+    'hunter': ('RZ_Opening_Props_Hunter', [P('WoodLog_01_A.et', 0, 0, 80), P('SackUniversal_01.et', 0.6, 0.6, 30), P('DeerSkull_01_board.et', -0.8, 0.5, 200), P('BlanketFolded_01_green.et', 0.9, -0.3)]),
+    'police': ('RZ_Opening_Props_Police', [P('ChairOld_02.et', 0, 0, 190), P('CrateWooden_01_plain.et', 0.8, 0.2, 5), P('FileOffice_01_Stack.et', 0.8, 0.2, 40, 0.62), P('WoodenFenceOld_01_pole.et', -0.9, 0.4), P('Notice_A4_Vertical_V1.et', -0.9, 0.48, 0, 1.3)]),
+    'excon': ('RZ_Opening_Props_ExCon', [P('Junk_01_single_mattress.et', 0, 0, 85), P('BeerBottle_01_empty_brown.et', 1.2, 0.3), P('LitterInterior_USSR_01_tincan_V1.et', 1.0, -0.4), P('Stool_01.et', -1.3, 0.2)]),
+    'labtech': ('RZ_Opening_Props_LabTech', [P('TableOld_01_white.et', 0, 0, 5), P('Notebook_01_Stack.et', -0.3, 0, 20, 0.78), P('ToolsSurgical_01_autoclavedrum.et', 0.35, 0.1, 0, 0.78), P('Chair_01_white.et', 0, -0.8)]),
+    'radioham': ('RZ_Opening_Props_Radio', [P('CrateWooden_01_plain.et', 0, 0, 10), P('RadioSmall_01_black.et', 0, 0, 30, 0.62), P('Antenna_R161_01.et', -1.0, 0.4), P('GeneratorPortable_US_01_Off.et', 1.1, 0.2, 75)]),
+    'unemployed': ('RZ_Opening_Props_Unemployed', [P('BlanketBeach_01_brown.et', 0, 0, 80), P('Suitcase_04_open.et', 1.3, 0.3, 20), P('LitterInterior_USSR_01_tincan_V2.et', -0.6, 0.6), P('LitterInterior_USSR_01_mug.et', -0.4, 0.8)]),
+    'soldier': ('RZ_Opening_Props_Soldier', [P('Sandbag_01_single_burlap.et', 0, 0, 10), P('Sandbag_01_single_burlap.et', 0.1, 0, 30, 0.17), P('CrateWooden_02_1x1x1.et', 1.2, 0.4, 15), P('LanternMilitary_US_01.et', 1.2, 0.4, 0, 1.0)]),
+    'raider': ('RZ_Opening_Props_Raider', [P('SackUniversal_01_Pile.et', 0, 0, 20), P('Suitcase_01.et', 1.2, 0.2, 70, 0, 90), P('BeerBottle_01_group.et', -0.9, 0.3), P('BarrelMetal_01_rust.et', -1.2, -0.6)]),
+    'elder': ('RZ_Opening_Props_Elder', [P('Armchair_01.et', 0, 0, 170), P('Stool_01.et', 0.9, 0.2), P('TablePhotoFrame_01.et', 0.9, 0.2, 200, 0.45), P('CandleHolderDecorative_01.et', 0.75, 0.3, 0, 0.45), P('BlanketFolded_01_green.et', 0, 0, 0, 0.45)]),
+    'drifter': ('RZ_Opening_Props_Drifter', [P('Suitcase_01.et', 0, 0, 30), P('SackUniversal_01.et', 0.8, 0.3, 60), P('BlanketBeach_01_red.et', -0.2, 1.0, 85)]),
+}
