@@ -5,23 +5,23 @@
 conv finale.route.independent
 for radio:open
 when finale:open & route:none
-topic "Speak about the cure."
+topic "I want to say something about the cure."
 always
 prio quest
 voice plain
 
 node start
-  say Static, then a click. "...open channel. Go ahead."
-  > @all "This is nobody. It goes to everyone." -> card
-  > @off "Switch off." -> hub
+  say Open channel. Go ahead, whoever you are. Half the Zone has a set on tonight, waiting to hear who the cure is going to belong to.
+  > @all This is nobody. It goes to everyone. -> card
+  > @off Never mind. Out. -> hub
 
 node card confirm
-  say Once it's on the air, every faction hears that somebody said it. Nobody hears who.
-  > @say "Say it." -> said   do commit:indep
-  > @off2 "Switch off." -> hub
+  say Think before you say it. Every faction listens to this channel. They'll all hear that somebody said it. Not who. Just that somebody has, and that they're nobody's now.
+  > @say Say it on air: it goes to everyone. -> said   do commit:indep
+  > @off2 No. Not yet. Out. -> hub
 
 node said public
-  say "This is nobody. The cure goes to everyone. No crates, no lists."
-  say A long pause. Then a woman, a long way off: "Heard you. {here} heard you, anyway."
+  say This is nobody. The cure goes to everyone. No crates, no lists.
+  say Heard you, nobody. {here} heard you, anyway, and so did every set from here to the line.
   do rumour:"Someone on the open channel says the cure goes to everyone. No crates, no lists."@12
-  > @out "Out." -> hub
+  > @out Out. -> hub

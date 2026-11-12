@@ -8,251 +8,246 @@
 conv finale.leader.soon
 for leader
 when finale:soon
-topic "Ask about the cure."
+topic "What happens with the cure?"
 prio world
 voice plain
 
 node start
-  say "Ask me again when it's nearly done."
-  > @soon_back "Something else." -> hub
+  say The lab says {cure_percent} percent, and every leader in the Zone is already arguing over who it belongs to when it's done. Ask me again when it's nearly there. I'll have an answer worth giving.
+  > @soon_back I'll ask again when it's closer. -> hub
 
 # ------------------------------------------------------------------ The Haven
 conv finale.haven.pitch
 for stronghold:haven
 when finale:pitch & !finale:open
-topic "Ask about the cure."
+topic "What happens with the cure?"
 prio world
 voice haven
 
 node start
-  say "When it comes, it goes hand to hand, to the people the others would leave till last."
-  say "The houses decide who goes first. And the houses kept the List. I won't pretend that isn't both."
-  > @hp_back "Something else." -> hub
+  say When it comes, the Haven wants it to go hand to hand: house to house, to the old and the sick and the people the others would leave till last. The houses would decide who goes first.
+  say And the houses kept the List. Some names on it are crossed out in pencil, and nobody says why. I won't pretend those two things aren't both true of us.
+  > @hp_back Thank you for being straight with me. -> hub
 
 conv finale.haven.route
 for stronghold:haven
 when finale:open & route:none
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice haven
 
 node start
-  say "Nearly done. What's missing is a woman we crossed off the List to keep her alive."
-  say "The cure goes hand to hand, to the people the others would leave till last."
-  say "The houses decide who goes first. The houses kept the List, too."
-  > @hr_mean "What would it mean?" -> card
-  > @hr_later "Not yet." -> hub
+  say The lab is stuck at ninety. What's missing is a woman we crossed off our own List to keep her alive: bitten on Day 4, and never turned. Her blood, given by her own yes, would finish it.
+  say If it's ours, the cure goes hand to hand, to the people the others would leave till last, and the houses decide who goes first. The same houses that kept the List.
+  > @hr_mean What would it mean? -> card
+  > @hr_later Not yet. Let me think about it. -> hub
 
 node card confirm
-  say "Then hear it plainly. It's written in pencil, and it still doesn't rub out."
-  > @hr_sign "Write me down." -> hub   do commit:haven
-  > @hr_wait "Let me think about it." -> hub
+  say Then hear it plainly before you say yes. Your name goes on the List in pencil, beside ours. Pencil rubs out, people tell you. Not on that paper. It never has.
+  > @hr_sign Write me down. -> hub   do commit:haven
+  > @hr_wait Let me think about it. -> hub
 
 conv finale.haven.seat
 for seat:haven/council_head
 when finale:open & route:none & loyalty:loyal
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice haven
 
 node start
-  say "The chair takes names for the houses. So do I, if the road to the chair is long."
-  say "The houses decide who goes first. The houses kept the List, too."
-  > @hs_mean "What would it mean?" -> card
-  > @hs_later "Not yet." -> hub
+  say The chair takes names for the houses, and so do I, when the road to the chair is long. Her blood finishes the cure, the woman we crossed off, and the houses decide who it reaches first.
+  say I'll tell you what the chair would: the houses that hand it out are the houses that kept the List. You should know that before your name's on it.
+  > @hs_mean What would it mean? -> card
+  > @hs_later Not yet. Let me think about it. -> hub
 
 node card confirm
-  say "Then hear it plainly. It's written in pencil, and it still doesn't rub out."
-  > @hs_sign "Write me down." -> hub   do commit:haven
-  > @hs_wait "Let me think about it." -> hub
+  say Then hear it plainly before you say yes. Your name goes on the List in pencil, beside ours. Pencil rubs out, people tell you. Not on that paper. It never has.
+  > @hs_sign Write me down. -> hub   do commit:haven
+  > @hs_wait Let me think about it. -> hub
 
 # ------------------------------------------------------------------ Bastion
 conv finale.bastion.pitch
 for stronghold:bastion
 when finale:pitch & !finale:open
-topic "Ask about the cure."
+topic "What happens with the cure?"
 prio world
 voice bastion
 
 node start
-  say "Order. A queue, a register, nobody trampled at the gate."
-  say "It reaches those who comply. And the register is a census. You should know that before you queue."
-  > @bp_back "Something else." -> hub
+  say Order. A queue, a register, a dose against every name on it, and nobody trampled at the gate when it opens. We have kept a roster since Day 2. We know how to count people through a gate.
+  say It reaches those who comply. And the register is a census: every name, every address, handed over with the cure. You should know that before you queue.
+  > @bp_back Understood. Thank you for saying it. -> hub
 
 conv finale.bastion.route
 for stronghold:bastion
 when finale:open & route:none
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice bastion
 
 node start
-  say "Stores held for collection since Day 2. We mean to collect them."
-  say "Order. A queue, a register, nobody trampled at the gate."
-  say "It reaches those who comply. The register is a census."
-  > @br_mean "What would it mean?" -> card
-  > @br_later "Not yet." -> hub
+  say On Day 2 our medical officer took a tube from everyone in the north road column, three hundred people, and wrote held for collection. They're in a cold store in the hills. We mean to collect them.
+  say With those, the batch is ours, and it goes out in order: a queue, a register, nobody trampled. It reaches those who comply. The register is a census.
+  > @br_mean What would it mean? -> card
+  > @br_later Not yet, sir. -> hub
 
 node card confirm
-  say "From now until the cure. Read it before you sign."
-  > @br_sign "Sign the roster." -> hub   do commit:bastion
-  > @br_wait "Not today." -> hub
+  say From now until the cure you're on the roster, attached. Read it before you sign. Once a name goes on our board, it doesn't come off until the gates do.
+  > @br_sign Sign the roster. -> hub   do commit:bastion
+  > @br_wait Not today. -> hub
 
 conv finale.bastion.seat
 for seat:bastion/outpost_lead
 when finale:open & route:none & loyalty:loyal
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice bastion
 
 node start
-  say "The CO keeps the roster. This post keeps a copy. Same rules."
-  say "It reaches those who comply. The register is a census."
-  > @bs_mean "What would it mean?" -> card
-  > @bs_later "Not yet." -> hub
+  say The CO keeps the roster at the stronghold. This post keeps a copy in grease pencil, and the same rules hold out here: the column's tubes collected, and the cure handed out in order.
+  say It reaches those who comply. The register is a census. I'll sign you on if you want it, but you sign with your eyes open.
+  > @bs_mean What would it mean? -> card
+  > @bs_later Not yet. -> hub
 
 node card confirm
-  say "From now until the cure. Read it before you sign."
-  > @bs_sign "Sign the roster." -> hub   do commit:bastion
-  > @bs_wait "Not today." -> hub
+  say From now until the cure you're on the roster, attached. Read it before you sign. Once a name goes on our board, it doesn't come off until the gates do.
+  > @bs_sign Sign the roster. -> hub   do commit:bastion
+  > @bs_wait Not today. -> hub
 
 # ------------------------------------------------------------------ The Red Hand
 conv finale.redhand.pitch
 for stronghold:redhand
 when finale:pitch & !finale:open
-topic "Ask about the cure."
+topic "What happens with the cure?"
 prio world
 voice redhand
 
 node start
-  say "Ours reaches anyone who can pay. Including the people nobody else would serve."
-  say "The price is the queue. The cut dose was sold the same way. Nobody here pretends otherwise."
-  > @rp_back "Something else." -> hub
+  say Ours reaches anyone who can pay. Anyone at all, including the people nobody else would serve: the turned-out, the strays, the ones whose only page is in my book.
+  say The price is the queue. The cut dose was sold the same way: half the time it works, every time it's paid for. Nobody here pretends otherwise. That's our whole charm.
+  > @rp_back Honest, at least. -> hub
 
 conv finale.redhand.route
 for stronghold:redhand
 when finale:open & route:none
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice redhand
 
 node start
-  say "Our cook says she can make it keep. On a tray of theirs, every time."
-  say "Ours reaches anyone who can pay. Including the people nobody else would serve."
-  say "The price is the queue. The cut dose was sold the same way."
-  > @rr_mean "What would it mean?" -> card
-  > @rr_later "Not yet." -> hub
+  say Our cook says she can make the cure keep, cooked on one tray of the lab's own batch. Every time, not half the time. She's never once been wrong about a pan.
+  say Ours reaches anyone who can pay, including the people nobody else would serve. The price is the queue. The cut dose was sold the same way, and nobody here pretends otherwise.
+  > @rr_mean What would it mean? -> card
+  > @rr_later Not yet. -> hub
 
 node card confirm
-  say "A line in the book, and this one doesn't get paid off. Here's the page."
-  > @rr_sign "Put me in the book." -> hub   do commit:redhand
-  > @rr_wait "Let me count first." -> hub
+  say A line in the book, and this one doesn't get paid off. Here's the page, your name at the top in my hand. Read it twice. Everyone else's line, I only wrote once.
+  > @rr_sign Put me in the book. -> hub   do commit:redhand
+  > @rr_wait Let me count first. -> hub
 
 conv finale.redhand.seat
 for seat:redhand/crew_boss
 when finale:open & route:none & loyalty:loyal
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice redhand
 
 node start
-  say "The boss writes the big book. I keep a small one. Same ink."
-  say "The price is the queue. The cut dose was sold the same way."
-  > @rs_mean "What would it mean?" -> card
-  > @rs_later "Not yet." -> hub
+  say The boss writes the big book. I keep a small one for this road. Same ink, same rules: the cook's pan on a tray of theirs, and the cure sold to anyone who can pay.
+  say The price is the queue. The cut dose was sold the same way. If that bothers you, the Haven's up the road with its soup.
+  > @rs_mean What would it mean? -> card
+  > @rs_later Not yet. -> hub
 
 node card confirm
-  say "A line in the book, and this one doesn't get paid off. Here's the page."
-  > @rs_sign "Put me in the book." -> hub   do commit:redhand
-  > @rs_wait "Let me count first." -> hub
+  say A line in the book, and this one doesn't get paid off. The boss's page, copied into mine. Your name goes on both, and both of us can count.
+  > @rs_sign Put me in the book. -> hub   do commit:redhand
+  > @rs_wait Let me count first. -> hub
 
 # ------------------------------------------------------------------ Halcyon
 conv finale.halcyon.pitch
 for stronghold:halcyon
 when finale:pitch & !finale:open
-topic "Ask about the cure."
+topic "What happens with the cure?"
 prio world
 voice halcyon
 
 node start
-  say "Published, fast, checked, with every author named."
-  say "The paper starts on Day 1. The three weeks are on page one, or not at all. I haven't decided which."
-  > @cp_back "Something else." -> hub
+  say Published. Fast, checked, and with every author named: the researchers, the couriers, the guards, and the volunteers who didn't walk out, by number. Proof opens the gates, and proof is a paper.
+  say The paper starts on Day 1. The three weeks before it are on page one, or not at all. I haven't decided which.
+  > @cp_back Thank you, director. -> hub
 
 conv finale.halcyon.route
 for stronghold:halcyon
 when finale:open & route:none
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice halcyon
 
 node start
-  say "Ninety. The reference stock would take it the rest of the way. It is behind a chain."
-  say "Published, fast, checked, with every author named."
-  say "The paper starts on Day 1. The three weeks are on page one, or not at all."
-  > @cr_mean "What would it mean?" -> card
-  > @cr_later "Not yet." -> hub
+  say Ninety percent. The reference stock would take us the rest of the way: the first isolate, in a dewar in the closed site's lower store. It is behind a Bastion chain.
+  say With it, the cure is published, fast, checked, with every author named. The paper starts on Day 1. The three weeks are on page one, or not at all.
+  > @cr_mean What would it mean? -> card
+  > @cr_later Not yet. -> hub
 
 node card confirm
-  say "You would be a variable we can't control. We write those down too."
-  > @cr_sign "Write me in the notebook." -> hub   do commit:halcyon
-  > @cr_wait "Not yet." -> hub
+  say You would be a variable we can't control. We write those down too, in the volunteers' book, with a number. Yours would be the next one.
+  > @cr_sign Write me in the notebook. -> hub   do commit:halcyon
+  > @cr_wait Not yet. -> hub
 
 conv finale.halcyon.seat
 for seat:halcyon/field_lead
 when finale:open & route:none & loyalty:loyal
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice halcyon
 
 node start
-  say "The director signs the sheet. Field leads keep the volunteers' book."
-  say "The paper starts on Day 1. The three weeks are on page one, or not at all."
-  > @cs_mean "What would it mean?" -> card
-  > @cs_later "Not yet." -> hub
+  say The director signs the sheet. Field leads keep the volunteers' book, and I can write you into it from here. The route is the reference stock behind Bastion's chain, compared at the lab.
+  say The paper starts on Day 1. The three weeks are on page one, or not at all. I don't decide which. I would like you to know that nobody has decided yet.
+  > @cs_mean What would it mean? -> card
+  > @cs_later Not yet. -> hub
 
 node card confirm
-  say "You would be a variable we can't control. We write those down too."
-  > @cs_sign "Write me in the notebook." -> hub   do commit:halcyon
-  > @cs_wait "Not yet." -> hub
+  say You would be a variable we can't control. The field station keeps its own copy of the volunteers' book. Your number would go in both.
+  > @cs_sign Write me in the notebook. -> hub   do commit:halcyon
+  > @cs_wait Not yet. -> hub
 
 # ------------------------------------------------------------------ Independent
 conv finale.indep.pitch
 for wanderer:doctor, wanderer:courier
 when finale:pitch & !finale:open & finale:voice
-topic "Ask about the cure."
+topic "What happens with the cure?"
 prio world
 voice plain
 
 node start
-  say "Four lots of people are about to tell you the cure is theirs. It isn't anyone's yet."
-  say "Nobody would guard it and nobody would count it. And every faction would remember who took it."
-  > @ip_back "Something else." -> hub
+  say Four lots of people are about to tell you the cure is theirs: the houses, the soldiers, the crews and the lab. It isn't anyone's yet. That's the only true thing any of them will tell you.
+  say There's another way: one each, for everyone, no crates and no lists. Nobody would guard it and nobody would count it. And every faction would remember who took it off them.
+  > @ip_back I'll think about that. -> hub
 
 conv finale.indep.route
 for wanderer:doctor, wanderer:courier
 when finale:open & route:none & finale:voice
-topic "Ask about the cure."
+topic "What happens with the cure?"
 always
 prio quest
 voice plain
 
 node start
-  say "Eight people walked out of the Day 6 trial. They've carried it longest. Nobody owns them."
-  say "Four lots of people are about to tell you the cure is theirs. It isn't anyone's yet."
-  say "Nobody guards it and nobody counts it, and every faction remembers who took it from them."
-  > @ir_mean "What would it mean?" -> card
-  > @ir_later "Not yet." -> hub
+  say Eight people walked out of the Day 6 trial. Whatever the dose taught their blood, they've carried it longest. Three bags from them, each by their own yes, and a tray off the books, and it's done.
+  say Then it goes to everyone. Nobody guards it and nobody counts it, and every faction remembers who took it from them. It isn't anyone's yet. That's why it could be everyone's.
+  > @ir_mean What would it mean? -> card
+  > @ir_later Not yet. -> hub
 
 node card confirm
-  say "Nobody's. It's lonelier than it sounds."
-  > @ir_sign "Count me as nobody's." -> hub   do commit:indep
-  > @ir_wait "Let me think." -> hub
+  say Nobody's. That's what you'd be till the cure: no house, no roster, no book, no notebook. It's lonelier than it sounds, and it sounds lonely.
+  > @ir_sign Count me as nobody's. -> hub   do commit:indep
+  > @ir_wait Let me think. -> hub

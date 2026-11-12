@@ -710,6 +710,7 @@ post.bastion.cover/@dead
 post.bastion.cover/@leader
 post.bastion.cover/@leave
 post.bastion.cover/@wait
+post.bastion.hello
 post.bastion.opens
 post.bastion.road
 post.bastion.road/@back0
@@ -756,6 +757,7 @@ post.redhand.crewname/@back1
 post.redhand.crewname/@back2
 post.redhand.crewname/@leave
 post.redhand.crewname/@name
+post.redhand.hello
 post.redhand.opens
 post.redhand.road
 post.redhand.road/@back0

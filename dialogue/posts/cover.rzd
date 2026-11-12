@@ -6,89 +6,90 @@
 conv post.bastion.cover
 for post:bastion
 when kit:in_kit & !caught & !claimed
-topic "Give a name that vouches for you."
+topic "Somebody here will vouch for me."
 prio quest
 voice bastion
 
 node start
-  say "Whose section are you, then? Give me a name who'll stand for you."
-  > @leader "{cover:name} will stand for me." -> said   if cover:name   do cover:name
-  > @dead "{cover:dead} signed me on." -> said   if cover:dead   do cover:dead
-  > @leave "Never mind." -> hub
+  say Will they. In Bastion kit and not on my board, you'd better have a name who'll stand for you, and stand next to you on the stockade list if it's wrong. Whose section are you?
+  > @leader {cover:name} will stand for me. -> said   if cover:name   do cover:name
+  > @dead {cover:dead} signed me on. -> said   if cover:dead   do cover:dead
+  > @leave Forget it. -> hub
 
 node said
   jump caught -> wrong
-  say "I'll remember that name. Now let's see the rest of you."
-  > @claim "One of yours. Let me through." -> passed | refused   check look bastion 2
-  > @wait "I'll wait." -> hub
+  say I'll remember that name, and I'll ask after it at the shift change. Now let's see if the rest of you matches it.
+  > @claim One of yours. Let me through. -> passed | refused   check look bastion 2
+  > @wait I'll wait till you've asked. -> hub
 
 node passed
-  say "Go on. And if that name's wrong, it's both of you."
+  say Go on. And if that name's wrong, it's both of you on the stockade list, and the name gets the worse end of it.
   do call:post_wave
-  > @back1 "Something else." -> hub
+  > @back1 It isn't wrong. One more thing. -> hub
 
 node refused
-  say "No. Hands on the barrier. That kit goes back where it came from."
-  > @back2 "Understood." -> hub
+  say No. The name's real enough, but you're not on its section and you never were. Hands on the barrier. That kit goes back to the stores.
+  > @back2 Understood. -> hub
 
 node wrong
-  say "Never heard of him. Hands on the barrier."
-  > @back3 "Understood." -> hub
+  say Never heard that name on any roster I've read, and I've read every one that's come down this road. Hands on the barrier.
+  > @back3 All right. Hands on the barrier. -> hub
 
 conv post.redhand.cover
 for post:redhand
 when kit:in_kit & !caught & !claimed
-topic "Tell them what the crew calls you."
+topic "Ask anyone. The crews know me."
 prio quest
 voice redhand
 
 node start
-  say "Go on, then. What does the crew call you, and who says so?"
-  > @crew "They call me {cover:crew}." -> said   if cover:crew   do cover:crew
-  > @boss "Ask {cover:name}. He knows me." -> said   if cover:name   do cover:name
-  > @leave "Forget it." -> hub
+  say Go on, then. What does the crew call you, and who'd say so? A name's no good to me without somebody I know standing behind it.
+  > @crew They call me {cover:crew}. -> said   if cover:crew   do cover:crew
+  > @boss Ask {cover:name}. We go back. -> said   if cover:name   do cover:name
+  > @leave Forget it. -> hub
 
 node said
   jump caught -> wrong
-  say "Maybe. I've heard stupider names on better liars."
-  > @claim "One of yours. Wave me on." -> passed | caught2   check look redhand 2
-  > @wait "I'll pay the toll." -> hub
+  say Maybe. I've heard stupider names on better liars. Let's see if the rest of you matches it.
+  > @claim One of yours. Wave me on. -> passed | caught2   check look redhand 2
+  > @wait I'll just pay the toll. -> hub
 
 node passed
-  say "Go on, then. And pay next time like everyone."
+  say Go on, then. And pay next time like everyone. Crew or no crew, the lorry doesn't move for free twice.
   do call:post_wave
-  > @back1 "Something else." -> hub
+  > @back1 Cheers. One more thing. -> hub
 
 node caught2
-  say "No. Nobody's ever called you that. Turn out your pockets."
-  > @back2 "Fine." -> hub
+  say No. Nobody on any road has ever called you that. Turn out your pockets, and let's see what else you've borrowed off the dead.
+  > @back2 Fine. Pockets out. -> hub
 
 node wrong
-  say "Nobody calls you that. Nobody ever has."
-  > @back3 "Fine." -> hub
+  say Nobody calls you that. Nobody ever has. I'd know: I'm the one who writes the names in the book.
+  > @back3 Fine. You win. -> hub
 
 conv named.halcyon.cover
 for named:halcyon
 when kit:in_kit & !caught & !claimed & cover:notebook
-topic "Give them a notebook number."
+topic "I'm on the rota. Check my notebook."
 prio quest
 voice halcyon
 
 node start
-  say "I don't have you on the rota. Which notebook are you writing in?"
-  > @book "Notebook {cover:notebook}, nights." -> said   do cover:notebook
-  > @leave "I'll check the rota." -> hub
+  say I don't have you on the rota, and I write the rota. Every one of us keeps a numbered notebook, and the lab keeps the numbers. Which one are you writing in?
+  > @book Notebook {cover:notebook}, nights. -> said   do cover:notebook
+  > @leave I'll go and check the rota. -> hub
 
 node said
   jump caught -> wrong
-  say "Notebook {cover:notebook}. Yes, that's one of ours. Carry on, then, quietly."
-  > @back1 "Thank you." -> hub
+  say Notebook {cover:notebook}. Yes, that number is one of ours, night shift. Carry on, then, quietly. The incubators don't like noise.
+  > @back1 Thank you. -> hub
 
 node wrong
-  say "There's no notebook with that number. Security, please."
-  > @back2 "Understood." -> hub
+  say There is no notebook with that number. There never was. I'm calling the guard, and I'm writing down that you tried.
+  > @back2 Understood. -> hub
 
-# What the kit remembers, without any claim: their reactions to the other kit kinds.
+# What the kit remembers, without any claim: their reactions to the other kit kinds. Each line is a
+# say? on what the kit says (the hub opens on the replies, so a plain line isn't shown).
 conv named.bastion.kit_issued
 for named:bastion
 when kit:issued & tier:bastion<known
@@ -97,7 +98,7 @@ voice bastion
 daily
 
 node start
-  say "You're still in our kit. Take it off before someone asks why."
+  say? kit:issued :: You're still in our kit, and you're not on our board any more. Take it off before someone asks why, and before the stores want it back with a signature.
 
 conv named.bastion.kit_dead
 for named:bastion
@@ -107,7 +108,7 @@ voice bastion
 daily
 
 node start
-  say "That's issue kit with the name tape picked off. We know whose tape that was."
+  say? kit:dead_mans :: That's issue kit with the name tape picked off. We know whose tape that was. The tag's on our nail, and that jacket should have gone in the ground.
 
 conv named.bastion.kit_turned
 for named:bastion
@@ -117,7 +118,7 @@ voice bastion
 daily
 
 node start
-  say "That jacket's been on one of the turned. You can smell it from here. Burn it."
+  say? kit:off_turned :: That jacket's been on one of the turned. You can smell it from here. Burn it, don't wash it, and don't wear it anywhere near our wire.
 
 conv named.bastion.kit_signed
 for named:bastion
@@ -127,4 +128,4 @@ voice bastion
 daily
 
 node start
-  say "That set's signed out of our stores, and not to you. The quartermaster keeps a book."
+  say? kit:signed_other :: That set's signed out of our stores, and not to you. The quartermaster keeps a book, and that number's in it beside someone else's name.

@@ -1,76 +1,103 @@
 # Road posts: the speaker at the barrier (Dialogue > Trees puts one there while a player is within
 # 100 m). The crew stays an AI group. Search and toll are the built ones.
 
+# Who's at the barrier, said once to someone the post doesn't know: the post's speaker has no greeting
+# line of its own on the talk screen (the hub opens on the replies), so the first meeting carries it.
+conv post.bastion.hello
+for post:bastion
+when !hunted:bastion & !kit:in_kit
+greet
+prio flavour
+once
+voice bastion
+
+node start
+  say? !met :: This is Task Force Bastion's checkpoint at {here}. We were left inside when the Zone was sealed, and we hold this road for our own. You're not one of ours, so it's the pole and a search.
+
+conv post.redhand.hello
+for post:redhand
+when !hunted:redhand & !kit:in_kit
+greet
+prio flavour
+once
+voice redhand
+
+node start
+  say? !met :: This road's the Red Hand's, from the lorry to the bend, and I'm the one who takes the toll. Nobody's coming to fix the Zone, so we charge for using it. Talk nicely and you get a price.
+
 conv post.bastion.search
 for post:bastion
 when !hunted:bastion
-topic "Ask about the search."
+topic "What's the search for?"
 prio world
 voice bastion
 
 node start
-  say "Hands on the barrier, pockets out. We take suppressors and explosives. Everything else you keep."
-  say "Fifteen seconds if you don't argue. Leave before we're done and that's running the checkpoint."
-  > @drill "I know the drill. Make it quick." -> waved | short | refused   check persuade bastion 2 bg:soldier,police
-  > @why "Why search civilians at all?" -> why
-  > @fine "Fine. Search me." -> hub
+  say Every civilian through this barrier gets searched. Hands on the pole, pockets out, and it's fifteen seconds if you don't argue. Twenty if you do.
+  say We take suppressors and explosives and nothing else. Your food, your meds, your rifle, you keep. Walk off before we're done and you've run a Bastion checkpoint, and that goes in the log.
+  > @drill I've stood at a barrier. Make it quick. -> waved | short | refused   check persuade bastion 2 bg:soldier,police
+  > @why Why search civilians at all? -> why
+  > @fine Fine. Hands on the pole. Go ahead. -> hub
 
 node waved
-  say "You've done this before. From the other side. Go on, then."
+  say You've stood on this side of a pole before. Hands where I'd want them before I asked. Go on through, and keep to the left of the road past the sandbags.
   do call:post_wave
-  > @thanks "Thanks, corporal." -> hub
+  > @thanks Thanks, corporal. -> hub
 
 node short
-  say "Quick, I can do. Skipping it, I can't. Arms out."
-  > @ok "Arms out, then." -> hub
+  say Quick I can do. Skipping it I can't, not with the sergeant watching from the hut. Arms out, and I'll make it ten seconds instead of fifteen.
+  > @ok Arms out. Go on. -> hub
 
 node refused
-  say "Everybody knows the drill. Everybody gets searched. That's what makes it a drill."
-  > @ok2 "Fair." -> hub
+  say Everyone who walks up this road says they know the drill. The ones who really do don't say it. Hands on the pole, same as everyone, and you'll be through.
+  > @ok2 Fair enough. Go ahead. -> hub
 
 node why
-  say "Somebody walked a charge into a post up north. Since then, everyone gets searched. Even the ones we like."
-  say "Especially the ones we like. They're the ones who get close."
-  > @back1 "Something else." -> hub
+  say Somebody walked up to a post in the north with a smile and a charge under his coat. Two of that gate crew are tags on the nail behind the radio now. Since then, everyone gets searched.
+  say Especially the ones we like. They're the ones who get close enough to matter.
+  > @back1 Let me ask you something else. -> hub
 
 conv post.redhand.toll
 for post:redhand
 when !hunted:redhand
-topic "Ask about the toll."
+topic "What's the toll here?"
 prio world
 voice redhand
 
 node start
-  say "Red hand means stop. Stop means pay. {toll} Favor, or walk round. It's only a few kilometres. Mostly dead people."
-  > @pay "Pay the toll." -> paid   if tier:redhand>=known   do call:toll
-  > @move "Move the car out of my way." -> moved | laughed | laughed   check threaten redhand 2
-  > @rudi "Is this Rudi's road?" -> rudi
-  > @sent "Rudi sent me." -> waved | rudi_lie   check lie redhand 2   tell always
-  > @walk "I'll walk round." -> hub
+  say Red hand means stop. Stop means pay. This stretch is ours from the lorry to the bend, and for you, today, the toll is {toll} Favor. It goes in the book with your face next to it.
+  say Or you walk round through the fields. It's only a few kilometres, and the people out there are mostly dead. They don't charge. They do bite.
+  > @pay Fine. Here's your {toll} Favor. -> paid   if tier:redhand>=known   do call:toll
+  > @move Move the lorry, or I move you. -> moved | laughed | laughed   check threaten redhand 2
+  > @rudi This was Rudi's road once, wasn't it? -> rudi
+  > @sent Rudi sent me. -> waved | rudi_lie   check lie redhand 2   tell always
+  > @walk I'll take the fields, thanks. -> hub
 
 node waved
-  say "Did he. Off you pop."
-  > @back4 "Something else." -> hub
+  say Did he, now. Well, then. Off you pop, and don't let the lorry see you smile.
+  > @back4 Right. Something else, then. -> hub
 
 node rudi_lie
-  say "Rudi was bitten. Day 7. Everybody knows that. Nice try."
-  > @pay3 "Pay the toll." -> paid   if tier:redhand>=known   do call:toll
-  > @round2 "Walk round." -> hub
+  say Nice try. Everyone on this road knows that name, and nobody sends anybody anywhere in it. The toll's still {toll}.
+  say Rudi was bitten.
+  > @pay3 Fine. Here's your {toll} Favor. -> paid   if tier:redhand>=known   do call:toll
+  > @round2 I'll go round by the fields. -> hub
 
 node paid
-  say "Pleasure doing business. Mind the potholes. Some of them are people."
-  > @back1 "Something else." -> hub
+  say Pleasure doing business. That's you in the book, paid, today's date. Mind the bend past the lorry: we leave the dead where they drop, and they don't always stay dropped.
+  > @back1 I'll mind it. One more thing. -> hub
 
 node moved
-  say "Fine. Fine! Move it, lads. Somebody write this one down."
+  say Fine. Fine! Lads, shift the lorry, this one's got a face on. And somebody write it in the book: waved through, owes us a fright.
   do call:post_wave
-  > @back2 "Something else." -> hub
+  > @back2 Good. Now, something else. -> hub
 
 node laughed
-  say "Look at that, lads, a hard face. Nice. Still costs the same."
-  > @pay2 "Pay the toll." -> paid   if tier:redhand>=known   do call:toll
-  > @round "Walk round." -> hub
+  say Look at that, lads, a hard face. Lovely. There are six of us and a shotgun on the cab, so it still costs {toll}, and now the book's got your face in it twice.
+  > @pay2 Fine. Here's your {toll} Favor. -> paid   if tier:redhand>=known   do call:toll
+  > @round Keep your lorry. I'll walk round. -> hub
 
 node rudi
-  say "Rudi was bitten."
-  > @back3 "Something else." -> hub
+  say This was a garage forecourt and a crossroads before it was a toll. The shutter you walked past, the one we paint the hand on, was Rudi's.
+  say Rudi was bitten.
+  > @back3 Right. Let me ask about something else. -> hub
