@@ -465,7 +465,7 @@ class RZ_OpeningTasks
 	{
 		vector at = me.GetOrigin();
 		RZ_ErrandWay w = e.GetWay();
-		bool there = w && RZ_Util.DistXZ(at, e.m_vPlace) <= w.m_fRadius;
+		bool there = w && w.IsAtPlace(me, e.m_vPlace);
 		switch (o.m_iTask)
 		{
 			case RZ_EOpeningTask.PUMP:

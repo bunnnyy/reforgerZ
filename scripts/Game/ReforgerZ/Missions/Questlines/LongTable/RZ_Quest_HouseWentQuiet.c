@@ -983,7 +983,7 @@ class RZ_QM_TableGuest : RZ_QM_TableBase
 			int playerId = ids[i];
 
 			// The guest at the table: the meal
-			if (playerId == m_iGuest && RZ_Util.DistXZ(p.GetOrigin(), m_vHouse) <= 15)
+			if (playerId == m_iGuest && RZ_Arrive.InArea(p, m_vHouse, 0))	// at the house (RZ_Arrive: a building)
 			{
 				t.RecordMeal(playerId);
 				gm.NotifyPlayer(playerId, t.FarmTitle(), QFill(gm, "{mother} puts a bowl in front of you before you've sat down. \"Sit, sit. You're thin.\" Stew, thick, hot, more than you've seen in a week. The long table has places for twenty, and most of them are set. " + t.Grace() + " By the door there's a row of boots, in too many sizes."));

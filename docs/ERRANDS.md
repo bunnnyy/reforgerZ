@@ -191,9 +191,10 @@ Don't answer that."* Every other card keeps the rule: never to whoever made its 
 **Places**, all within 1.5 km of the offer: the giver's place, its gate (15–25 m), 200–400 m out,
 300–500 m out, the nearest empty village within 1.2 km, the nearest other town, or the card's own
 place (a wreck, an impact, another house, the warning point at the line). A way whose place doesn't
-exist here isn't offered.
+exist here isn't offered. You're at a place within the way's own radius or 15 m, whichever is wider,
+in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)).
 
-**Done** is coming back: within 15 m of the giver's place (a wanderer: where they stand now), or
+**Done** is coming back: to the giver's place, arriving as above (a wanderer: where they stand now), or
 asking them again. **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
 step was done, three at most.
 
@@ -599,7 +600,7 @@ else.
 
 | Step | Key | Way | The step |
 |---|---|---|---|
-| ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | 20 s (10 s) within 10 m of a building 50–250 m from the contact (quiet), then back to them |
+| ✅ Across the Road | `opening.search`, `opening.search.short` | sneak | 20 s (10 s) at a building 50–250 m from the contact (quiet), then back to them |
 | ✅ Water | `opening.water` | do | 15 s at the nearest well or water tower, then back |
 | ✅ The Cut | `opening.hand` | give | one medical item handed over at the contact, once you've chosen to on the talk screen (`opening.tend_cut`) |
 | ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the contact once you've chosen to on the talk screen (`opening.tend_fever`); 15 s at the well |

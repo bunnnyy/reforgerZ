@@ -12,6 +12,13 @@ class RZ_ContractSettings
 	[Attribute("500", desc: "The exact spot is revealed to a player who comes this close (m) to it")]
 	float m_fRevealDistance;
 
+	// ---------------------------------------------------------------- Arriving (RZ_Arrive)
+	[Attribute("15", desc: "Arrive radius (m): a step done by getting to a spot (a job's points, an errand's or an opening's place, a chain's step, a meeting) counts this close, or within the step's own radius if that's wider. Kept to 5-40")]
+	float m_fArriveRadius;
+
+	[Attribute("25", desc: "Arrive margin (m): a step done by getting to a town, a camp or a building counts inside it or this close to its edge. Kept to 0-50")]
+	float m_fArriveAreaMargin;
+
 	// ---------------------------------------------------------------- Escorts (RZ_Escort)
 	[Attribute("3", desc: "Most escorts (people walking with players) at once, server-wide")]
 	int m_iMaxEscorts;

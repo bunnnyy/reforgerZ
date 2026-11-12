@@ -840,7 +840,7 @@ class RZ_QM_CensusCount : RZ_QuestMission
 	{
 		foreach (int i, IEntity p : players)
 		{
-			if (RZ_Util.DistXZ(p.GetOrigin(), m_vWatch) > WATCH_RADIUS)
+			if (!RZ_Arrive.AtSpot(p, m_vWatch, WATCH_RADIUS))
 				continue;
 
 			float watched;
@@ -1343,7 +1343,7 @@ class RZ_QM_CensusCurfew : RZ_QuestMission
 
 		foreach (int i, vector p : m_aPoints)
 		{
-			if (m_aDone[i] || CountPlayersNear(players, p, POINT_RADIUS) == 0)
+			if (m_aDone[i] || RZ_Arrive.CountAtSpot(players, p, POINT_RADIUS) == 0)
 				continue;
 
 			RZ_ContractHelp.AddNear(ids, players, p, POINT_RADIUS, m_aParticipants);
