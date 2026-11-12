@@ -160,7 +160,7 @@ date and a short commit hash, and is **deleted** once it's done. Design goes in 
 
 ## Claims
 
-(none: the PC handed its claimed work to the cloud on 2026-11-12, below)
+- Cloud, 2026-11-12: all six of "For the cloud" (openings phase 1, jobs only by interaction, the talk screen, the radio and stove menus, loot, the map's objective). Each is said here when pushed.
 
 ## Status
 
