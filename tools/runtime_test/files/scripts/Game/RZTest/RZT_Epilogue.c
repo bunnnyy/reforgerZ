@@ -406,6 +406,16 @@ class RZT_Epilogue
 			RZ_EpiSpot barrier = new RZ_EpiSpot();
 			barrier.key = "barrier";
 			barrier.title = "The barrier";
+			// Processing's first day goes by the route's terms: a stranger to the route's faction
+			// waits (Bastion: "Roster first."); then the day is moved past and he walks
+			int route = epi.Route();
+			if (route >= 0 && route < RZ_CureFinale.INDEP && !RZ_Reputation.IsAtLeast(gm.GetTier(RZT_Fake.ID, route), RZ_ETier.KNOWN))
+			{
+				epi.GetClosing().Verb(RZT_Fake.ID, "walk", barrier, RZT_Fake.s_Ent);
+				Check("a stranger to the route waits on processing's first day", epi.Data().walked.Count() == 0, "walked at once");
+			}
+
+			epi.Data().cStartUnix = epi.Now() - RZ_Util.RoundToInt(86400 * epi.Scale()) - 1;
 			epi.GetClosing().Verb(RZT_Fake.ID, "walk", barrier, RZT_Fake.s_Ent);
 			Check("the tester walks out", epi.Data().walked.Count() >= 1, "not walked");
 			return false;

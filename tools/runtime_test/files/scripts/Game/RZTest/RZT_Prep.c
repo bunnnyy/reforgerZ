@@ -299,6 +299,30 @@ class RZT_Prep
 			return;
 		}
 
+		if (name == "RZ_Mission_ContactReport" && gm.GetTribes())
+		{
+			// A pack with its voice: the mission phase's earlier pack jobs can leave Arland's one
+			// pack without one (a new voice otherwise waits for the pack's own life cycle)
+			RZ_Tribe leaderless;
+			bool voiced = false;
+			foreach (RZ_Tribe tr : gm.GetTribes().GetTribeList())
+			{
+				if (tr.IsRover())
+					continue;
+
+				if (tr.m_bHasAlpha)
+					voiced = true;
+				else if (!leaderless)
+					leaderless = tr;
+			}
+
+			if (!voiced && leaderless && shift == 0)
+			{
+				bool made = gm.GetTribes().GetLife().NewAlpha(leaderless, "took the call (the runtime test)");
+				Print(string.Format("RZT forced: a new voice for pack %1 (%2), for %3", leaderless.m_iId, made, name));
+			}
+		}
+
 		if (name == "RZ_Event_LockedBunker")
 		{
 			// The keypad prop, and an empty town that isn't overrun
@@ -756,7 +780,7 @@ class RZT_Prep
 			vector site;
 			int anchor = -1;
 			string place;
-			why += string.Format("; records %1, lab %2, field lead %3, scavengers %4, a site %5", gm.GetQuestlines().WorldFlag(RZ_Quest_ThreeWeeks.FLAG_RECORDS), gm.HasLab(), RZ_QM_HalcyonScene.PickFieldLead(gm, false) != null, drivers.Count(), RZ_Quest_ThreeWeeks.FindSite(gm, rng, site, anchor, place));
+			why += string.Format("; records %1, lab %2, field lead %3, scavengers %4, a site %5", gm.GetQuestlines().WorldFlag(RZ_Quest_ThreeWeeks.FLAG_RECORDS), gm.HasLab(), RZ_QM_HalcyonScene.PickFieldLead(gm, false) != null, drivers.Count(), RZ_Quest_ThreeWeeks.PickSite(gm, rng, site, anchor, place));
 		}
 
 		Print(string.Format("RZT quest %1 why: %2", key, why));

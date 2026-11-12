@@ -7268,6 +7268,7 @@
     "m_sContainerWords": "bottle_empty,empty_bottle,emptybottle,canteen_empty,empty_canteen",
     "m_sDirtyWaterWords": "water_dirty,dirty_water,untreated,unsafe_water,water_unsafe",
     "m_sTabletWords": "purification,purifying,watertablet,water_tablet,rz_tablets",
+    "m_bWellSpots": "0",
     "m_sWellWords": "well,waterpump,water_pump,handpump,hand_pump,pump_water",
     "m_sStoveWords": "stove,oven,fireplace,campfire,furnace,hearth",
     "m_fBoilSeconds": "30",

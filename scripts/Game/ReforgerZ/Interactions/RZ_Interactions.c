@@ -81,7 +81,10 @@ class RZ_InteractionSettings
 	[Attribute("purification,purifying,watertablet,water_tablet,rz_tablets", desc: "Water purification tablet keywords (prefab name, lower case; rz_tablets is the repo's RZ_Tablets.et)")]
 	string m_sTabletWords;
 
-	[Attribute("well,waterpump,water_pump,handpump,hand_pump,pump_water", desc: "Well and water pump prefab name keywords")]
+	[Attribute("0", desc: "Well spots: our own Fill a bottle at wells and pumps. Off by default: the game already lets you fill a bottle at a well, and both at once showed two actions")]
+	bool m_bWellSpots;
+
+	[Attribute("well,waterpump,water_pump,handpump,hand_pump,pump_water", desc: "Well and water pump prefab name keywords (with Well spots on)")]
 	string m_sWellWords;
 
 	[Attribute("stove,oven,fireplace,campfire,furnace,hearth", desc: "Stove and fireplace keywords (boil water there)")]
@@ -896,7 +899,7 @@ class RZ_Interactions
 		if (RZ_LandmarkFinder.Matches("fuel", name) || name.Contains("fuelpump") || name.Contains("fuel_pump") || name.Contains("gaspump") || name.Contains("petrolpump"))
 			return KIND_FUELPUMP;
 
-		if (!building && (RZ_LandmarkFinder.Matches("well", name) || RZ_ItemHelper.NameHas(name, m_aWellWords)))
+		if (m_Settings.m_bWellSpots && !building && (RZ_LandmarkFinder.Matches("well", name) || RZ_ItemHelper.NameHas(name, m_aWellWords)))
 			return KIND_WELL;
 
 		if (!building && RZ_ItemHelper.NameHas(name, m_aStoveWords))

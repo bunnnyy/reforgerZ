@@ -56,6 +56,9 @@ grep -q "$BACON" "$ADDON/addon.gproj" || sed -i "s/^\( *\)\"58D0FB3206B6F859\"/&
 # Bacon only: with Special Zombies (69BD721866937F85) among the dependencies, the 1.9 server compiles
 # none of this addon's scripts (the Game module loses them without an error)
 sed -i 's/ *"69BD721866937F85"//' "$ADDON/addon.gproj"
+# On Linux, the other dependencies missing from EXTRA_ADDONS_DIR go too (a line for each)
+. "$ROOT/tools/strip_missing_deps.sh"
+rz_strip_missing_deps "$ADDON/addon.gproj" "$SERVER" "$EXTRA_ADDONS_DIR" || exit 2
 cp -r "$ROOT/scripts" "$ROOT/Configs" "$ADDON/"
 cp -r "$HERE/files/." "$ADDON/"
 [ "${QUICK:-0}" = 1 ] && touch "$PROFILE/profile/zlab_quick.txt"

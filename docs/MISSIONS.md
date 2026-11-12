@@ -835,9 +835,11 @@ HC1 in [QUESTLINES.md](QUESTLINES.md#hc1-the-three-weeks): what the lab did with
 before the gates closed. It replaces the old contract of the same name (its remote site and keypad
 store are stage 2 now). It starts once Patient Zero or Patient Zero's Ledger has been solved this
 season, with an Independent or Rogue field lead (she voices and pays its contracts while she's
-still in her chair), a living Scavenger wanderer (the driver) and a site: a remote spot on high
-ground between two towns, well clear of every settlement and the lab, at a mast, factory or
-barracks there if there is one. Needs a lab, the note, a civilian and the puzzle object. Code: `Missions/Questlines/Halcyon/RZ_Quest_ThreeWeeks.c`; the Halcyon lines share a scene base,
+still in her chair), a living Scavenger wanderer (the driver) and the season's closed site, the
+world fact `origin.site` that Patient Zero's records point to (a remote spot on high ground between
+two towns, well clear of every settlement and the lab, at a mast, factory or barracks there if there
+is one; on a small map like Arland, its fallback outside the town farthest from the lab;
+[DESIGN.md](DESIGN.md#world-facts)). Needs a lab, the note, a civilian and the puzzle object. Code: `Missions/Questlines/Halcyon/RZ_Quest_ThreeWeeks.c`; the Halcyon lines share a scene base,
 `RZ_QuestHalcyonScene.c` (people at several places, each put down only when a player comes near).
 
 | # | Stage | Kind | Approaches | Leads to | Status |
