@@ -921,6 +921,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		RZ_Log.Info(string.Format("Started. %1 settlements, stage %2, cure %3 percent, state %4.",
 			m_aSettlements.Count(), RZ_StageSettings.GetStageName(m_Director.GetStage()),
 			RZ_Util.RoundToInt(m_Cure.m_fProgress), loaded));
+#ifdef WORKBENCH
+		// Workbench play only, and only with $profile:RZ_PhotoTour.txt (docs/PC_SETUP.md, "Photos of the sites")
+		RZ_PhotoTour.Start(this);
+#endif
 	}
 
 	//------------------------------------------------------------------------------------------------

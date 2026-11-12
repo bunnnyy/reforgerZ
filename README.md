@@ -232,7 +232,7 @@ scripts/Game/ReforgerZ/
   Core/          game mode component (the hub), helpers, map markers, loose-item cleanup,
                  seasons (the winner's rules, rule sets, the wipe cycle), AI groups' move
                  orders (one held waypoint each); the shared engine: the clocks, deeds, the
-                 callback queue, names in public text
+                 callback queue, names in public text; the photo tour (Workbench play only)
   World/         settlements, the Perimeter, safehouses and their notice boards, wanderers,
                  town memory, the power grid (where its station is, the control at it, its
                  dressing and generator sound, the power panel's server side and its breakers), the radio station, the world facts (what content
