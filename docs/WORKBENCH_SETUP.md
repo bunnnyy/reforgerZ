@@ -2607,7 +2607,9 @@ when it happens)
 - [ ] Trees on, a promise: at a short safehouse "I'll bring two tins. Two hours." gives "(A promise:
   2 hours of your play to keep it.)"; the next Talk there lists it with the play left; handing in two
   tins says "Kept"; letting it run out (or dying) says "Broken", and the house's next greeting says
-  so once. The Bastion sentry's "I'll check the road and come back." is kept by talking to them again.
+  so once. The Bastion sentry's "I'll check the road and come back." isn't kept by reopening the
+  talk on the spot; it is after 10 minutes of play and a walk of 300 m or more, by talking to them
+  again. Kept, the choice is gone for 3 real days.
 - [ ] Trees on, in Bastion kit you aren't Known in, at a checkpoint's speaker: "Answer as one of
   theirs." shows the look's tags and "[Look - Bastion - N of 2]" before you pick; a pass waves you
   through, a catch takes the kit (and the conversation carries on). "Give the word at the wire."

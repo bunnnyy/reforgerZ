@@ -354,8 +354,12 @@ choice ("I'll bring two tins. Two hours."):
 - **Clock:** the promiser's own play (2 hours by default), and 3 real days at most. Logging off
   doesn't break one; dying does.
 - **At most 3 open** per player ("You've three promises open already. Keep one first.").
+- **Not again so soon:** a promise kept or broken can't be made again for 3 real days ("You made
+  them that promise lately. Give it a few days."); a promise choice hides with `!kept:` and `!broke:`.
 - **Kept** by `keep:<key>` on whatever does it (the house's own hand-in keeps `house.tins@here`), or,
-  for a key ending in `.visit`, by talking to the same speaker again. Regard *kept* (+1) and a notice.
+  for a key ending in `.visit`, by talking to the same speaker again once you've played 10 minutes
+  since and been 300 m from where you made it (reopening the conversation keeps nothing). Regard
+  *kept* (+1) and a notice.
 - **Broken** when the play runs out, three real days pass or you die: regard *broke* (−1) and a notice.
 - **No double pay.** A promise pays nothing of its own: the hand-in pays as built, a visit pays
   nothing.

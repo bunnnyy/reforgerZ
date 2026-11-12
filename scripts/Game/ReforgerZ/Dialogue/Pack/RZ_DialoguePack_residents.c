@@ -41,7 +41,7 @@ class RZ_DialoguePack_residents
 		db.Say("", "\"For each of the dead, the whole post answers together. It gets longer every week.\"");
 		db.Choice("hear", "\"Can I listen tonight?\"", "hear", "", "", "", "", "", "", "", "");
 		db.Choice("how", "\"How long does it take now?\"", "how", "", "", "", "", "", "", "", "");
-		db.Choice("road", "\"I'll check the road and come back.\"", "road", "", "", "", "", "!promise:sentry.road@here.visit", "promise:sentry.road@here.visit:2h", "", "");
+		db.Choice("road", "\"I'll check the road and come back.\"", "road", "", "", "", "", "!promise:sentry.road@here.visit & !kept:sentry.road@here.visit & !broke:sentry.road@here.visit", "promise:sentry.road@here.visit:2h", "", "");
 		db.Choice("other2", "\"Something else.\"", "hub", "", "", "", "", "", "", "", "");
 		db.Node("hear");
 		db.Say("night", "\"You're hearing it. Stand still and keep your mouth shut.\"");
@@ -139,7 +139,7 @@ class RZ_DialoguePack_residents
 		db.Say("", "\"The soup's mostly water. We've started calling it tea.\"");
 		db.Choice("give", "\"Put two tins in the stores.\"", "given", "", "", "", "item:food*2", "", "call:hand_in:2; regard:thanks; keep:house.tins@here", "", "");
 		db.Choice("what", "\"What are you short of most?\"", "what", "", "", "", "", "", "", "", "");
-		db.Choice("promise", "\"I'll bring two tins. Two hours.\"", "promised", "", "", "", "", "!promise:house.tins@here", "promise:house.tins@here:2h", "", "");
+		db.Choice("promise", "\"I'll bring two tins. Two hours.\"", "promised", "", "", "", "", "!promise:house.tins@here & !kept:house.tins@here & !broke:house.tins@here", "promise:house.tins@here:2h", "", "");
 		db.Choice("sorry", "\"I've nothing to give.\"", "nothing", "", "", "", "", "", "", "", "");
 		db.Node("given");
 		db.Say("", "\"That's two suppers for somebody. I won't say who.\"");
