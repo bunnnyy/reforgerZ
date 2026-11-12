@@ -338,8 +338,8 @@ class RZ_CureResearch
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A cure finale questline is registered (none is built yet; docs/DESIGN.md, "Cure research"):
-	//! research then stops at 90 percent until a finale takes it on.
+	//! A cure finale questline is registered (the five routes, docs/FINALE.md): research then stops
+	//! at 90 percent until the finale takes it on.
 	bool HasFinale()
 	{
 		return m_GM.GetQuestlines() && m_GM.GetQuestlines().HasCureFinale();
@@ -1276,7 +1276,7 @@ class RZ_CureResearch
 				m_GM.GetHall().AddStand(id);
 		}
 
-		m_GM.NotifyAll("THE CURE IS HERE", "The cure is going out over every frequency, and with it the proof. The quarantine is lifted: the drones have gone home and the line has stopped shooting. The checkpoints open for processing when the season ends: the next wipe starts a new outbreak, in a new Zone.");
+		m_GM.NotifyAll("THE CURE IS HERE", "The news is going out over every frequency, and with it the proof. The quarantine is lifted: the drones have gone home and the line has stopped shooting. In the last days the north road opens for processing; the other barriers open with the wipe, and the next season starts a new outbreak, in a new Zone.");
 		if (m_GM.GetFactionLife())
 			m_GM.GetFactionLife().OnCureDone();
 

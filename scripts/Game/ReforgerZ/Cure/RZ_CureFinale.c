@@ -678,11 +678,23 @@ class RZ_CureFinale
 
 	//------------------------------------------------------------------------------------------------
 	//! The cure percent shown while the finale runs: 90 plus the furthest track, at most 99 until the
-	//! seal. -1 when the finale isn't showing (the lab's own percent stands).
+	//! seal; after a lost stand, until the remake or the backlog makes the batch, the lab's own
+	//! research from 90 (the backlog's progress). -1 when the finale isn't showing (the lab's own
+	//! percent stands).
 	float ShownPercent()
 	{
 		if (!IsOpen() || m_S.isSealed)
 			return -1;
+
+		if (m_S.remaking && !m_S.batchReady)
+		{
+			RZ_CureResearch cure = m_GM.GetCure();
+			float lab = 90;
+			if (cure)
+				lab = cure.m_fProgress;
+
+			return Math.Clamp(lab, 90, 99);
+		}
 
 		float best = m_S.labTrack;
 		for (int r = 0; r < ROUTES; r++)
@@ -1916,11 +1928,16 @@ class RZ_CureFinale
 		m_bStandOn = false;
 		ClearGroups();
 
-		// The stand board's "CAME FOR IT: {n}": how many routes counted toward the room (never names)
+		// The stand board's "CAME FOR IT: {n}": how many routes counted toward the room, the holder's
+		// included (never names)
+		int mask = m_S.cameMask;
+		if (m_S.holder >= 0 && m_S.holder < ROUTES)
+			mask = mask | (1 << m_S.holder);
+
 		int came = 0;
 		for (int bit = 0; bit < ROUTES; bit++)
 		{
-			if ((m_S.cameMask & (1 << bit)) != 0)
+			if ((mask & (1 << bit)) != 0)
 				came++;
 		}
 
@@ -1959,7 +1976,6 @@ class RZ_CureFinale
 
 		for (int r = 0; r < ROUTES; r++)
 		{
-			facts.SetFlag(string.Format("route.%1.state", r + 1), m_S.state[r]);
 			if (m_S.finisher == r && c != r)
 				FinishedLost(r);
 		}
@@ -2075,12 +2091,14 @@ class RZ_CureFinale
 
 	//------------------------------------------------------------------------------------------------
 	//! A finisher that lost the room: its faction's morale -3 (recovering), +10 Fame to its locked.
+	//! The finisher lost the room: its faction's morale -3, and +10 Fame with it for each identity
+	//! still actively locked to the route (docs/FINALE.md, "Fame").
 	protected void FinishedLost(int r)
 	{
 		NudgeMorale(RouteFaction(r), -3);
 		foreach (int i, string ident : m_S.lockIdent)
 		{
-			if (m_S.lockRoute[i] == r)
+			if (m_S.lockRoute[i] == r && IsActive(ident))
 				PayIdent(ident, PayFaction(r), 10, 0, 0, "finished, lost the room");
 		}
 	}
@@ -2153,7 +2171,6 @@ class RZ_CureFinale
 
 		RZ_WorldFacts facts = RZ_WorldFacts.Get();
 		facts.SetFlag("finale.terms", m_S.terms);
-		facts.SetFlag("finale.condition", m_S.condition);
 		RZ_Log.Info(string.Format("Finale: controller %1, how %2, terms %3, deciders %4.", RouteName(r), HowWord(m_S.how), m_S.terms, m_S.deciders.Count()));
 		DeciderPay(r);
 		WorldEffects(r);

@@ -72,7 +72,8 @@ Research stops at **90%** while the five routes are registered and the finale is
 - each route's **desk** opens ([The lock](#the-lock)).
 
 **What players see.** The cure percent everywhere (`{cure_percent}`, the HUD, the lab's line) is
-**90 plus the furthest track**, at most 99 until the seal. Each route's journal entry ends with the
+**90 plus the furthest track**, at most 99 until the seal. After a lost stand it shows the lab's own
+research from 90 until the remake or the backlog makes the batch again. Each route's journal entry ends with the
 lab's readout, by faction, never by player: *"Ninety-four. The Haven's work is at seven... Nobody's
 is at four."* A desk's "How do things stand?" gives the readout, the route's worth (*"About 375
 season Fame to the faction that finishes."*), what you'd bring, and for a locked player their
@@ -480,6 +481,10 @@ everyone at the lab for half the stand who isn't on a rival side ("the lab never
 after the winner and the record, so it decides nothing. The hall of fame's "Held the final stand"
 lists them.
 
+**Finished, lost the room.** When the finisher's route doesn't control the cure, its faction's
+morale drops 3, and everyone still actively locked to the route gets +10 Fame with its faction (log:
+*"finished, lost the room"*).
+
 **Caps.** Over all finale content, 50 Fame per faction per player; 60 Favor and 40 Infamy per faction
 per player. The finale is the one place past the limits every questline keeps
 ([QUESTLINES.md](QUESTLINES.md#limits-every-questline-keeps)).
@@ -509,9 +514,10 @@ stock: wanted."*). Losing routes keep everything they were paid. The contest end
 stand's hostility comes off, and parley reopens.
 
 **Season flags** for the epilogue: `finale.route` (the controller, route + 1: 1 the Haven, 2 Bastion,
-3 the Red Hand, 4 Halcyon, 5 Independent; 0 nobody), `finale.finisher` (0 the lab alone), `finale.how`,
-`finale.terms`, `finale.condition`, `finale.partner`, `route.<n>.state` (0 not worked, 1 worked, 3
-finished), `finale.came` (how many routes counted toward the room at a stand: the stand board's
+3 the Red Hand, 4 Halcyon, 5 Independent; 0 nobody), `finale.finisher` (0 the lab alone; the stand
+board's *"made from the Haven's work"* when it isn't the controller), `finale.how`, `finale.terms`,
+`finale.partner` (the deal or force partner, route + 1; the stand board's two marks), `finale.came`
+(how many routes counted toward the room at a stand, the holder's included: the stand board's
 *"CAME FOR IT: {n}"*), the moves' (`finale.drained.<n>`, `finale.plan_sold`, `finale.coat_sold`,
 `finale.r1`), and the subjects' (`held.named`, `held.processed`, `cook.line_paid`, `cook.heard`,
 `cook.crew_cut`...).

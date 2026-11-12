@@ -96,7 +96,19 @@ class RZ_EpiBeats
 		{
 			vector gate = spots.LabGatePos();
 			Add("lab", "cure", "the lab gate", gate, RZ_EpiText.LabMark(route, terms, s.faction), "There's a board by the lab gate. Worth reading.");
-			string board = RZ_EpiText.StandBoard(s.how, s.cureDay, RZ_CureFinale.RouteName(route));
+			// The finale's season flags: who came for the room, the deal partner, the finisher
+			RZ_WorldFacts flags = RZ_WorldFacts.Get();
+			string partnerName = "";
+			int partnerFlag = flags.Flag("finale.partner");
+			if (partnerFlag > 0)
+				partnerName = RZ_CureFinale.RouteName(partnerFlag - 1);
+
+			string finisherName = "";
+			int finisherFlag = flags.Flag("finale.finisher");
+			if (finisherFlag > 0 && finisherFlag - 1 != route)
+				finisherName = RZ_CureFinale.RouteName(finisherFlag - 1);
+
+			string board = RZ_EpiText.StandBoard(s.how, s.cureDay, RZ_CureFinale.RouteName(route), flags.Flag("finale.came"), partnerName, finisherName);
 			RZ_EpiBeat stand = Add("stand", "cure", "the lab gate", gate + Vector(6, 0, 0), board, "There's a board by the lab gate with names on it.");
 			foreach (string n : s.standNames)
 			{
