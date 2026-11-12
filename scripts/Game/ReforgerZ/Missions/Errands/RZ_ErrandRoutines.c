@@ -133,6 +133,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 30;
 		w.m_fRadius = 60;
 		w.m_sStep = "Search the gardens and sheds at {place} for anything that grows (30 s there), then bring it to {giver}.";
+		w.m_sNeed = "errand.gardens";
 		w.Work(RZ_EWork.SEARCH, "Search the gardens and sheds");
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FOOD;
@@ -191,6 +192,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_bQuiet = true;
 		w.m_fQuietMult = 1.3;
 		w.m_sStep = "Fill two bottles at the well in {place} (20 s there) and bring them to {giver}. Don't fire near the well if you can help it.";
+		w.m_sNeed = "errand.well";
 		w.Work(RZ_EWork.FILL, "Fill the bottles");
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX_FOOD;
@@ -215,6 +217,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 25;
 		w.m_fRadius = 60;
 		w.m_sStep = "Find the pump house at {place} and take the filter housing (25 s there), then bring it to {giver}.";
+		w.m_sNeed = "errand.pumphouse";
 		w.Work(RZ_EWork.REPAIR, "Take the filter housing off");
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
@@ -228,6 +231,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 12;
 		w.m_fRadius = 60;
 		w.m_sStep = "At the pump house in {place}, take the one part worth taking (12 s there), then bring it to {giver}.";
+		w.m_sNeed = "errand.pumphouse";
 		w.Work(RZ_EWork.REPAIR, "Take the part off");
 		w.m_eProp = RZ_EErrandProp.PARTS;
 		w.m_iFavor = 8;
@@ -350,7 +354,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 300;
 		w.m_fRadius = 20;
 		w.m_bQuiet = true;
-		w.m_sStep = "Keep the children in the yard at {house} (5 real minutes there). No shooting near them.";
+		w.m_sStep = "Keep the children in the yard at {house} for 5 real minutes, without a shot fired.";
 		w.m_iFavor = 4;
 		w.Done("Count them in, count them out. Same number, ideally. Same number. Thank you.");
 	}
@@ -381,6 +385,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 15;
 		w.m_fRadius = 60;
 		w.m_sStep = "Fill the house's water cans at {place} (15 s there) and bring them to {giver}.";
+		w.m_sNeed = "errand.well";
 		w.Work(RZ_EWork.FILL, "Fill the water cans");
 		w.m_bAmends = true;
 		w.Done("Full cans. Nobody will say thank you. That's how you know it's counted.");
@@ -404,6 +409,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 10;
 		w.m_fRadius = 40;
 		w.m_sStep = "Find the private asleep in a car {place} and wake him (10 s there), then report to {giver}.";
+		w.m_sNeed = "errand.car";
+		w.m_eProp = RZ_EErrandProp.CAR;
 		w.m_iFavor = 4;
 		w.m_iEffect = FX_FIX;
 		w.Done("He'll be on the gate in five. He owes you. He'll pretend he doesn't.");
@@ -711,6 +718,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fSeconds = 5;
 		w.m_fRadius = 30;
 		w.m_sStep = "Fit a fresh battery to sensor four, {place} (at the sensor), then tell {giver}.";
+		w.m_sNeed = "errand.sensor";
 		w.Work(RZ_EWork.REPAIR, "Fit the battery", 6);
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX;
@@ -723,6 +731,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_bUnseen = true;
 		w.m_sStep = "Reset sensor four, {place}, without being seen (15 s there, hidden), then tell {giver}.";
+		w.m_sNeed = "errand.sensor";
 		w.Work(RZ_EWork.REPAIR, "Reset the sensor");
 		w.m_iFavor = 5;
 		w.m_iEffect = FX_FIX;
@@ -859,12 +868,27 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 	override bool Why(RZ_Errands dealer, RZ_Errand e)
 	{
 		RZ_GameModeComponent gm = dealer.GetGM();
-		vector next = dealer.PlaceFor(e, RZ_EErrandPlace.NEXT_TOWN);
+		// {next_town} names the town its next-town way goes to: the nearest whose place meets the way's need
+		string townNeed = "";
+		foreach (RZ_ErrandWay tw : m_aWays)
+		{
+			if (tw.m_ePlace == RZ_EErrandPlace.NEXT_TOWN)
+			{
+				townNeed = tw.NeedKey();
+				break;
+			}
+		}
+
+		vector next = dealer.PlaceFor(e, RZ_EErrandPlace.NEXT_TOWN, townNeed);
 		if (next != vector.Zero)
 		{
 			RZ_Settlement s = gm.GetSettlement(gm.FindNearestSettlement(next));
 			if (s)
 				e.SetText("next_town", s.m_sName);
+		}
+		else if (NamesNextTown())
+		{
+			return false;
 		}
 
 		if (m_iFault != 0 && !HasFault(dealer, e))
@@ -882,6 +906,19 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		}
 
 		return True(dealer, e);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Its ask names {next_town}: with no such town near, it isn't true here.
+	protected bool NamesNextTown()
+	{
+		foreach (string line : m_aOffer)
+		{
+			if (line.Contains("{next_town}"))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

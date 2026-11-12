@@ -92,6 +92,7 @@ class RZ_Mission_CurfewPatrol : RZ_Mission_VisitPoints
 		m_sTitle = "Curfew Patrol";
 		m_sDeed = "walked the curfew in {town}";
 		m_sBrief = string.Format("Curfew in %1 from dusk. The people there keep it because they think relief is coming; we keep it because the infected walk at night. Walk the beat, four points, and put down at least %2 of them inside the town before dawn. Lights low.", s.m_sName, KILLS);
+		m_sObjective = string.Format("Walk the curfew beat in %1 and put down %2 infected before dawn.", s.m_sName, KILLS);
 		return true;
 	}
 
@@ -224,6 +225,7 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 		m_sTitle = "The Armory";
 		m_sDeed = "found the rifles near {town}";
 		m_sBrief = string.Format("Our people left weapons in %1 in %2 when it fell: a long case with Bastion stencils, somewhere inside. Find it and bring it to %3. Don't get ideas about keeping it.", place, s.m_sName, meetName);
+		m_sObjective = string.Format("Find the Bastion weapons case in %1 in %2 and bring it to %3.", place, s.m_sName, meetName);
 		m_Mirror.Roll();
 		Truth(gm);
 		return true;
@@ -346,7 +348,7 @@ class RZ_Mission_WeaponsCache : RZ_Mission_Choice
 				sites.Close(key);
 
 			if (!sites.Has(key))
-				sites.Open(key, RZ_EWork.HANDS, "Drop the rifles down the well", 8, LandPointNear(m_vWell, 1.5, 2.5), m_iCarrier);
+				sites.Open(key, RZ_EWork.HANDS, "Drop the rifles down the well", 8, RZ_WorkSites.Spot(m_vWell, 1.5, 2.5), m_iCarrier);
 
 			if (!sites.IsDone(key) || sites.DoneBy(key) != m_iCarrier)
 				return;
@@ -486,6 +488,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 		m_sTitle = "Convoy Escort";
 		m_sDeed = "brought the convoy through {town}";
 		m_sBrief = string.Format("A supply truck leaves %1 for our post in %2 in two minutes: rations, rounds and diesel, signed for to the last tin. The post read 'rations low' on last night's call. Ride with it and get it there. It will break down; they always do. And the Red Hand can count trucks too.", m_Watch.m_sFrom, m_Watch.m_sTo);
+		m_sObjective = string.Format("Ride with the supply truck from %1 to the post in %2.", m_Watch.m_sFrom, m_Watch.m_sTo);
 		return true;
 	}
 
@@ -578,7 +581,7 @@ class RZ_Mission_ConvoyEscort : RZ_Mission
 		if (RZ_WorkSites.Available() && sites)
 		{
 			if (!sites.Has(key))
-				sites.Open(key, RZ_EWork.REPAIR, "Fix the engine", 15, RZ_Mission.LandPointNear(at, 2.5, 3.5));
+				sites.Open(key, RZ_EWork.REPAIR, "Fix the engine", 15, RZ_WorkSites.Spot(at, 2.5, 3.5));
 
 			foreach (int j, IEntity q : players)
 			{
@@ -775,6 +778,7 @@ class RZ_Mission_RescueThePilot : RZ_PuzzleMission
 		m_sTitle = "Rescue the Pilot";
 		m_sDeed = "brought the pilot in from {town}";
 		m_sBrief = string.Format("The last helicopter put down hard outside %1 on its run. The mechanics will get the airframe back; the pilot is still out there, hurt, and Bastion has nobody else to fly it. Find him and walk him to %2.", s.m_sName, m_sDestName);
+		m_sObjective = string.Format("Find the downed pilot outside %1 and walk the pilot to %2.", s.m_sName, m_sDestName);
 		if (!m_Escort.Begin(gm, LandPointNear(m_vWreck, 3, 8)))
 			return false;
 
@@ -1067,6 +1071,7 @@ class RZ_Mission_SecureTheShipment : RZ_PuzzleMission
 		m_Escort.SetDestination(LandPointNear(m_vLab, 6, 12));
 		m_sTitle = "Secure the Shipment";
 		m_sBrief = string.Format("Halcyon is walking a case of samples from %1 to their lab. We want it. Walk with the courier and, when nobody's looking, bring it to %2 instead. Or don't, and answer for it.", s.m_sName, m_sBastionName);
+		m_sObjective = string.Format("Walk with Halcyon's courier from %1, then take the samples to %2.", s.m_sName, m_sBastionName);
 		return m_Escort.Begin(gm, m_vPos);
 	}
 
@@ -1233,6 +1238,7 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 		m_sTitle = "Blow the Bridge";
 		m_sBrief = string.Format("A horde out of %1 is walking toward %2. There's a narrow point on its way at grid %3. Plant the charges there and blow it before they pass. You have about five minutes before they move.",
 			src.m_sName, s.m_sName, RZ_SettlementScanner.GridReference(m_vChoke));
+		m_sObjective = string.Format("Blow the narrow point at grid %1 before the horde from %2 passes.", RZ_SettlementScanner.GridReference(m_vChoke), src.m_sName);
 		return true;
 	}
 
@@ -1277,6 +1283,7 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 				m_sTitle = "Blow the Bridge";
 				m_sBrief = string.Format("%1 will come over the bridge at grid %2, toward %3. Plant the charges on the bridge and blow it before they cross. You have about five minutes before they move.",
 					RZ_Tribes.Capitalize(tribes.GetPeople().NameAt(t, RZ_EFaction.MILITARY)), RZ_SettlementScanner.GridReference(m_vChoke), s.m_sName);
+				m_sObjective = string.Format("Blow the bridge at grid %1 before %2 cross it.", RZ_SettlementScanner.GridReference(m_vChoke), tribes.GetPeople().Name(t, RZ_EFaction.MILITARY));
 				return true;
 			}
 		}
@@ -1378,7 +1385,7 @@ class RZ_Mission_BlowTheBridge : RZ_PuzzleMission
 			if (held)
 			{
 				if (!sites.Has(key))
-					sites.Open(key, RZ_EWork.HANDS, "Wire the charge", CHARGE_SECONDS, LandPointNear(c, 1, 1.5));
+					sites.Open(key, RZ_EWork.HANDS, "Wire the charge", CHARGE_SECONDS, RZ_WorkSites.Spot(c, 1, 1.5));
 
 				if (!sites.IsDone(key))
 					continue;
@@ -1666,6 +1673,7 @@ class RZ_Mission_FireMission : RZ_Mission
 		m_sTitle = "Fire Mission";
 		m_sBrief = string.Format("Three hordes are milling in %1, %2 and %3, and the guns have shells kept back for exactly this. Get within sight of each and throw smoke on it: the guns answer thirty seconds after. Don't stand in the smoke. The shells don't check who's there.",
 			gm.GetSettlement(m_aTowns[0]).m_sName, gm.GetSettlement(m_aTowns[1]).m_sName, gm.GetSettlement(m_aTowns[2]).m_sName);
+		m_sObjective = string.Format("Throw smoke on the hordes in %1, %2 and %3.", gm.GetSettlement(m_aTowns[0]).m_sName, gm.GetSettlement(m_aTowns[1]).m_sName, gm.GetSettlement(m_aTowns[2]).m_sName);
 		return true;
 	}
 

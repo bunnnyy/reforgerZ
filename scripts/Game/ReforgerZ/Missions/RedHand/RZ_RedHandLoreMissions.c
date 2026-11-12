@@ -280,6 +280,7 @@ class RZ_Mission_LearningTheDrones : RZ_PuzzleMission
 		m_sTitle = "Learning the Drones";
 		m_sBrief = string.Format("%1 is in the book for more than he'll ever pay back, so today he pays it off a different way. The crew's waiting with him at grid %2. Walk him up toward the line, stop at grid %3 and let him go on alone. Count how long the drones take. Write it down. He walks, you count. Easy.",
 			m_sDebtor, RZ_SettlementScanner.GridReference(m_vStart), RZ_SettlementScanner.GridReference(m_vMark));
+		m_sObjective = string.Format("Walk %1 to grid %2 and count the drones from there.", m_sDebtor, RZ_SettlementScanner.GridReference(m_vMark));
 		return m_Escort.Begin(gm, m_vStart);
 	}
 
@@ -595,6 +596,7 @@ class RZ_Mission_PitsDebtor : RZ_PuzzleMission
 		m_sTitle = "The Pit's Debtor";
 		m_sBrief = string.Format("Pit's on tonight at %1, and nobody volunteered, so %2 goes in. He owes the book sixty tins. The crowd wants three rounds out of him. Be his second. Make sure he lasts, pay what he owes, or do something stupid. Your choice. Not his.",
 			m_sPit, m_sDebtor);
+		m_sObjective = string.Format("Be %1's second in the pit at %2.", m_sDebtor, m_sPit);
 		return m_Escort.Begin(gm, m_vPit);
 	}
 
@@ -972,7 +974,7 @@ class RZ_CargoVan
 		if (RZ_WorkSites.Available() && sites)
 		{
 			if (!sites.Has(WorkKey()))
-				sites.Open(WorkKey(), RZ_EWork.HANDS, "Cut the padlock", CUT_SECONDS, RZ_Mission.LandPointNear(m_vDoor, 1, 1.5), m_iCutter);
+				sites.Open(WorkKey(), RZ_EWork.HANDS, "Cut the padlock", CUT_SECONDS, RZ_WorkSites.Spot(m_vDoor, 1, 1.5), m_iCutter);
 
 			if (!sites.IsDone(WorkKey()))
 				return false;
@@ -1160,6 +1162,7 @@ class RZ_Mission_TiedDown : RZ_PuzzleMission
 		m_sTitle = "Tied Down";
 		m_sBrief = string.Format("People keep going missing on the roads. Twice now someone's seen a Red Hand truck with the canvas tied down tight, and nobody ties it down like that for tins. One of our lookouts saw it again outside %1 and left us a note there. Please follow it and find out where it goes. Don't let them see you. Then do what you can.",
 			s.m_sName);
+		m_sObjective = string.Format("Follow the lookout's note from %1 to where the tied-down truck goes.", s.m_sName);
 		return true;
 	}
 

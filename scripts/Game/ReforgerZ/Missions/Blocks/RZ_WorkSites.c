@@ -303,6 +303,19 @@ class RZ_WorkSites
 		return part.Contains(" s") || part.Contains("minute");
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! A site's spot `minR`-`maxR` from `place` that meets the place need `work.site` (docs/PLACES.md:
+	//! dry, not steep, not behind a lock); `place` itself when none does (it was already picked
+	//! through its own need).
+	static vector Spot(vector place, float minR, float maxR)
+	{
+		vector at = RZ_PlaceFind.Near(place, minR, maxR, RZ_PlaceNeeds.Get("work.site"));
+		if (at == vector.Zero)
+			return place;
+
+		return at;
+	}
+
 	// ================================================================ Owners
 	//------------------------------------------------------------------------------------------------
 	//! Opens (or reopens, by key) a site at `pos`. hold: the hold in seconds (Scaled is applied);
@@ -348,6 +361,7 @@ class RZ_WorkSites
 
 		s.m_fOpenedAt = m_fClock;
 		m_aSites.Insert(s);
+		RZ_PlaceNeeds.Verify("work.site", s.m_vPos, s.m_sLabel);
 		RZ_Log.Info(string.Format("Work sites: %1 \"%2\" (%3, %4 s) at %5", key, s.m_sLabel, typename.EnumToString(RZ_EWork, kind), s.m_fSeconds, RZ_SettlementScanner.GridReference(s.m_vPos)));
 		return s.m_iId;
 	}

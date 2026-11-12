@@ -1,0 +1,28 @@
+GenericEntity {
+ ID "7F60CB5D67A28001"
+ components {
+  RplComponent "{4ECCD0682A086016}" {
+  }
+  Hierarchy "{8E184475B5BC0CF5}" {
+  }
+ }
+ coords 0 0 0
+ {
+  SCR_DestructibleEntity : "{CE65F7572D53D23B}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_3m.et" {
+   ID "C22BD965097BCD9C"
+   components {
+    Hierarchy "{4931C0B4FF47BCE2}" {
+    }
+   }
+   coords -1.55 0 0
+  }
+  SCR_DestructibleEntity : "{A8B28F7E550B0F41}Prefabs/Structures/Walls/Net/NetFence_05/NetFence_05_tall_pole.et" {
+   ID "49C1F80AD55E9760"
+   components {
+    Hierarchy "{88B9338FC495CE01}" {
+    }
+   }
+   coords 1.6 0 0
+  }
+ }
+}

@@ -92,13 +92,26 @@ class RZ_Notebook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The notebook item goes back from the hand. VERIFY: RemoveHeldGadget on the owning client
-	//! puts a held gadget away (vanilla's gadget input does the same); if not, it stays in the hand.
+	//! The notebook item goes back from the hand (only the notebook: another gadget in the hand
+	//! stays). VERIFY: RemoveHeldGadget on the owning client puts a held gadget away (vanilla's
+	//! gadget cancel input does the same); if not, it stays in the hand.
 	protected static void PutAway(IEntity holder)
 	{
 		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(holder);
-		if (gadgets)
+		if (!gadgets)
+			return;
+
+		IEntity held = gadgets.GetHeldGadget();
+		if (held && held.FindComponent(RZ_NotebookGadgetComponent))
+		{
 			gadgets.RemoveHeldGadget();
+			return;
+		}
+
+		// In the hand without the manager knowing: back to storage, as vanilla's gadget toggle does
+		IEntity item = RZ_NotebookItem.Find(holder);
+		if (item && RZ_NotebookItem.IsHeld(holder))
+			gadgets.SetGadgetMode(item, EGadgetMode.IN_STORAGE);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1582,6 +1595,10 @@ class RZ_QuestsPage : RZ_JournalPage
 {
 	protected static const int OBJ_ROWS = 6;
 	protected static const int DONE_CHARS = 80;	// a done line never wraps, so its strike fits it
+	protected static const float DOUBLE_CLICK = 0.4;	// two clicks on one row within this (s) track it
+
+	protected int m_iLastClick = -1;
+	protected float m_fLastClickAt;
 
 	//------------------------------------------------------------------------------------------------
 	override ResourceName Layout(RZ_UISettings settings)
@@ -1620,7 +1637,7 @@ class RZ_QuestsPage : RZ_JournalPage
 	//------------------------------------------------------------------------------------------------
 	override string PromptLine()
 	{
-		return "D-pad: choose · A: track / untrack · LB/RB: tabs · B: close";
+		return "D-pad: choose · A: track / untrack (or double-click, Space) · LB/RB: tabs · B: close";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1834,6 +1851,24 @@ class RZ_QuestsPage : RZ_JournalPage
 		if (name == "TrackButton")
 		{
 			Track();
+			return;
+		}
+
+		// A double click on a job's row tracks it (or untracks it), as A does with a pad
+		int idx = RZ_UIW.GetTag(w);
+		if (name == "MissionRow" && idx >= 0)
+		{
+			float now = RZ_UIW.Now();
+			bool twice = idx == m_iLastClick && now - m_fLastClickAt < DOUBLE_CLICK;
+			m_iLastClick = idx;
+			m_fLastClickAt = now;
+			super.OnClick(w, name);
+			if (twice)
+			{
+				m_iLastClick = -1;
+				Track();
+			}
+
 			return;
 		}
 

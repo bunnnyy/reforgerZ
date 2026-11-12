@@ -676,6 +676,7 @@ class RZ_QM_ListHusband : RZ_HavenQM
 		VoiceBy(gm, "asker");
 		m_sTitle = "The List: the husband";
 		m_sBrief = QFill(gm, string.Format("{wife}'s husband {husband} went on a supply run to %1. While he was still out, someone crossed his name off our list. Nobody will say who. Find him, or find what happened to him. Start with {wife}, at the safehouse in {askerhouse}.", m_aTowns[0]));
+		m_sObjective = QFill(gm, string.Format("Find out what happened to {husband} on the supply run to %1.", m_aTowns[0]));
 		return true;
 	}
 
@@ -952,6 +953,7 @@ class RZ_QM_ListCopies : RZ_HavenQM
 		VoiceBy(gm, "asker");
 		m_sTitle = "The List: the copies";
 		m_sBrief = QFill(gm, string.Format("Here's our own list. I need %1 copies to lay side by side, ours and the other houses'. Ask their council heads, or read them in their stores after dark if they won't. Food opens doors too. Don't tell {chair} who's asking.", m_iNeed));
+		m_sObjective = QFill(gm, string.Format("Get %1 copies of the other houses' lists for {asker}.", m_iNeed));
 		return true;
 	}
 
@@ -1284,6 +1286,7 @@ class RZ_QM_ListPattern : RZ_HavenQM
 		VoiceBy(gm, "asker");
 		m_sTitle = "The List: the pattern";
 		m_sBrief = QFill(gm, "The copies are on my table in {askerhouse}, with our ration notes from the first weeks. A line through one name in one house is a death. Find me what isn't.");
+		m_sObjective = QFill(gm, "Find the crossed names that aren't deaths in the copies at {askerhouse}.");
 		return true;
 	}
 
@@ -1555,6 +1558,7 @@ class RZ_QM_ListFarm : RZ_HavenQM
 		m_vPos = m_vHouse;
 		m_sTitle = "The List: the farm";
 		m_sBrief = QFill(gm, "The lists point to {farmwhere}. Go and look. Come back and tell me what's there, whatever it is.");
+		m_sObjective = QFill(gm, "Go to {farmwhere} and tell {asker} what's there.");
 		VoiceBy(gm, "asker");
 
 		// The Long Table's farm (World/RZ_LongTable.c): the house itself, lived in or left. Nothing
@@ -1816,6 +1820,7 @@ class RZ_QM_ListChair : RZ_HavenQM
 		VoiceBy(gm, "chair");
 		m_sTitle = "The List: the chair's decision";
 		m_sBrief = QFill(gm, "You've been asking about the List. So have I, for longer than you. Bring the copies to {chair_place} and we'll decide what's done with them. You'll have a say. So will I.");
+		m_sObjective = QFill(gm, "Bring the copies of the List to {chair} at {chair_place}.");
 		return true;
 	}
 

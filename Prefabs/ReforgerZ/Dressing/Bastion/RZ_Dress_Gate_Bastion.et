@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "83830BF6B1E65638"
+ components {
+  RplComponent "{8072E13DD733B3E2}" {
+  }
+  Hierarchy "{70D6CD79ED6FD725}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{C1977A326F2AA011}Prefabs/Structures/Signs/Military/SignCheckpoint_01_stop.et" {
+   ID "F8B6E4343972872D"
+   components {
+    Hierarchy "{8AE70FD4F610B032}" {
+    }
+   }
+   coords -2.2 0 0.1
+  }
+  GenericEntity : "{DDF59362051B28BC}Prefabs/Props/Military/Fortification/BarbedTape_KnifeRest.et" {
+   ID "44B1C83FC479BE8E"
+   components {
+    Hierarchy "{D42D303A3B7684FD}" {
+    }
+   }
+   coords 0.6 0 0
+   angles 0 92 0
+  }
+  GenericEntity : "{CC5453CCC311603B}Prefabs/Props/Military/Sandbags/Sandbag_01_end_burlap.et" {
+   ID "FE378ACE2DD1E824"
+   components {
+    Hierarchy "{FE36B069A7BB2442}" {
+    }
+   }
+   coords -3.1 0 -0.1
+   angles 0 90 0
+  }
+ }
+}

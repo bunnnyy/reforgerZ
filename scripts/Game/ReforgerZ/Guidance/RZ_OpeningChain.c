@@ -136,7 +136,7 @@ class RZ_OpeningChain
 			"Neat. You've done that before. Thank you.");
 
 		w = Task(RZ_EOpeningTask.FEVER, "opening.fever", "The Fever", "give", RZ_EErrandPlace.HERE, 6, 6,
-			"Treat the boy's fever with what you carry: a dressing, pills, anything medical.");
+			"Treat the fever of {giver}'s boy: a dressing, pills, anything medical.");
 		Give(w, RZ_EErrandItem.MEDICAL);
 		w.Take("My boy's burning. Since last night. Whatever's in your bag, he needs it more than the bag does.",
 			"He's inside, on the kitchen floor where it's cool. Do what you used to do. I'll hold his hand.");
@@ -144,7 +144,7 @@ class RZ_OpeningChain
 			"His forehead's wet. That's good, isn't it? Tell me that's good.");
 
 		w = Task(RZ_EOpeningTask.BOILED, "opening.boiled", "Water for the Fever", "do", RZ_EErrandPlace.SUBJECT, 15, 8,
-			"Fill what you can carry at {place}. It's for the fever: it'll be boiled.");
+			"Fill what you can carry at {place}, to be boiled for the fever.");
 		w.Work(RZ_EWork.FILL, "Fill what you can carry", 8);
 		w.Take("No medicine left anywhere, then. Water's the next best thing for a fever. There's {place}. I'll get a fire going.",
 			"If there's nothing in the bag, there's still water. Bring what you can from {place}. I'll boil it.");
@@ -168,7 +168,7 @@ class RZ_OpeningChain
 			"You weren't seen. Good. Then we know where not to be tonight.");
 
 		w = Task(RZ_EOpeningTask.KEYS, "opening.keys", "The Station Keys", "do", RZ_EErrandPlace.SUBJECT, 3, 25,
-			"Let yourself into {place} with the key, and come back.");
+			"Let yourself into {place} across the road from {giver}'s with the key.");
 		w.Take("Your lot left the station keys with me when they went. Here. There's {place}, locked tight. Nobody's been in.",
 			"You'll know what these open. I never did. Try {place}: it's been locked since the second day.");
 		w.Done("So that's what was in there. All this time, and the key on my nail.",
@@ -196,14 +196,14 @@ class RZ_OpeningChain
 			"Good. I didn't like that voice on its own.");
 
 		w = Task(RZ_EOpeningTask.SWAP, "opening.swap", "A Fair Swap", "give", RZ_EErrandPlace.SUBJECT, 5, 6,
-			"Find {place} on the road and see what they'll swap.");
+			"Find {place} on the road and see what {place} will swap.");
 		w.Take("{place} comes through about now. They swap. A tin for a word at the Haven, usually. Go and catch them.",
 			"The people on the roads know things. {place} is about. Take them something, if you've got it.");
 		w.Done("There. Now someone out there knows your face. That's worth more than the tin.",
 			"See? Nobody gets anything for nothing, but nobody has to.");
 
 		w = Task(RZ_EOpeningTask.GATE, "opening.gate", "Hold the Gate", "do", RZ_EErrandPlace.SUBJECT, 60, 15,
-			"Hold {place} for a minute. They'll come to the noise.");
+			"Hold {place} at {giver}'s against the infected for a minute.");
 		w.Take("The gate's been banging all night. They'll come to it. Hold it a minute while I wedge the back.",
 			"Stand at the gate. A minute, that's all. I'd do it myself, but my hands won't keep still.");
 		w.Done("Still standing. You and the gate both.",
@@ -275,7 +275,7 @@ class RZ_OpeningChain
 		w.m_fSeconds = seconds;
 		w.m_fRadius = 10;
 		w.m_bQuiet = true;
-		w.m_sStep = "Search {place}, quietly.";
+		w.m_sStep = "Search {place} across the road from {giver}'s, quietly.";
 		w.Work(RZ_EWork.SEARCH, "Search it, quietly");
 		w.Take("I haven't dared go into {place}. Go and look. Walk, don't run: they hear running.",
 			"I need eyes on {place}. Two days I've watched it. Nothing moves. That's what worries me.");

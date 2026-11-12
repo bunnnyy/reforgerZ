@@ -13,7 +13,11 @@ class RZ_SiteScore
 	bool m_bStronghold;
 	int m_iScore;
 	int m_iOverlaps;
-	bool m_bFailed;			// a hard failure: an overlap, a tier 1 piece dropped, a stronghold with no gate watch
+	bool m_bFailed;			// a hard failure: an overlap, a tier 1 piece dropped, a stronghold with no gate watch, a piece outside the wire, the perimeter under its bar
+	int m_iPerimeter = -1;	// percent of the wire line closed (-1: no wire)
+	int m_iTierOne;			// tier 1 pieces dropped
+	int m_iOutside;			// pieces of tier 2-4 outside the wire
+	bool m_bWet;			// the building, the yard or a piece over water
 }
 
 //------------------------------------------------------------------------------------------------
@@ -38,6 +42,8 @@ class RZ_SiteAudit
 	static const float OVERLAP_AREA = 0.1;		// m2: less than this between two footprints isn't an overlap
 	static const float FLOAT_SPREAD = 0.3;		// ground under one prop varying more than this: one edge floats or is buried
 	static const float THREAT_WATCH = 3;		// a side this threatened wants a watch facing it
+	static const int PERIMETER_STRONGHOLD = 80;	// a stronghold's wire closed this much at least (percent)
+	static const int PERIMETER_OUTPOST = 60;	// an outpost's, a field station's, a safehouse's
 
 	ref array<ref RZ_SiteScore> m_aScores = {};
 	protected int m_iDrawn;
@@ -57,6 +63,9 @@ class RZ_SiteAudit
 		array<bool> seat = {};
 		foreach (int pi, RZ_SitePlaced placed : result.m_aPlaced)
 		{
+			if (placed.m_bIndoors)
+				continue;
+
 			RZ_SiteFoot foot = placed.m_Entry.Foot();
 			for (int r = 0; r < foot.Count(); r++)
 			{
@@ -89,7 +98,7 @@ class RZ_SiteAudit
 		foreach (int k, array<vector> rect : rects)
 		{
 			RZ_DressingPiece entry = result.m_aPlaced[owner[k]].m_Entry;
-			if (entry.m_eAt == RZ_EDressAt.COUNTER)
+			if (entry.m_eAt == RZ_EDressAt.COUNTER || result.m_aPlaced[owner[k]].m_bWall)
 				continue;
 
 			foreach (array<vector> box : boxes)
@@ -111,23 +120,30 @@ class RZ_SiteAudit
 		{
 			foreach (int f, array<vector> under : rects)
 			{
-				if (!seat[f] && Spread(grid, under) > FLOAT_SPREAD)
+				RZ_SitePlaced on = result.m_aPlaced[owner[f]];
+				if (!seat[f] && !on.m_bWall && Spread(grid, under, on.m_vPos, on.m_fYaw, on.m_fSlope) > FLOAT_SPREAD)
 					floating++;
 			}
 		}
 
 		// Posts: the watch pieces and the building's lookouts, the gate, and what they see
 		vector gate = GatePoint(p);
+		if (result.m_bGate)
+			gate = result.m_vGate;
+
 		array<vector> posts = {};
 		array<float> facing = {};
 		array<string> postKind = {};
 		foreach (RZ_SitePlaced w : result.m_aPlaced)
 		{
-			if (w.m_Entry.m_eUse == RZ_EDressUse.WATCH)
+			if (w.m_Entry.m_eUse == RZ_EDressUse.WATCH && !w.m_bIndoors)
 			{
 				posts.Insert(w.m_vPos);
 				facing.Insert(w.m_fYaw);
-				postKind.Insert("nest");
+				if (w.m_iLayer == RZ_ESiteLayer.LOOKOUT)
+					postKind.Insert("side");
+				else
+					postKind.Insert("nest");
 			}
 		}
 
@@ -152,7 +168,8 @@ class RZ_SiteAudit
 		{
 			bool sees = !grid || grid.LineClear(post, gate);
 			clear.Insert(sees);
-			if (!sees)
+			// A lookout toward a threatened side watches that side, not the gate
+			if (!sees && postKind[q] != "side")
 				blindPosts++;
 
 			if (sees && RZ_Util.DistXZ(post, gate) < 80)
@@ -186,12 +203,17 @@ class RZ_SiteAudit
 		if (p.m_Site)
 			door = camp.DoorSpot(p);
 
+		if (result.m_bDoor)
+			door = result.m_vDoor;
+
 		int blockedPaths = 0;
 		string paths = "";
 		if (grid && p.m_eKind != RZ_ECampPlace.ROAD_POST)
 		{
 			bool toGate = grid.PathClear(door, gate);
 			paths = "door to gate " + OkText(toGate);
+			if (result.m_iBlockedPaths > 0)
+				paths += " (no way to keep clear)";
 			if (!toGate)
 				blockedPaths++;
 
@@ -200,7 +222,7 @@ class RZ_SiteAudit
 				if (cook.m_Entry.m_eUse != RZ_EDressUse.COOK)
 					continue;
 
-				bool toKitchen = grid.PathClear(door, cook.m_vPos);
+				bool toKitchen = grid.PathClear(door, FrontOf(cook.m_Entry, cook.m_vPos, cook.m_fYaw));
 				paths += ", door to kitchen " + OkText(toKitchen);
 				if (!toKitchen)
 					blockedPaths++;
@@ -222,6 +244,63 @@ class RZ_SiteAudit
 			routeOk.Insert(ok);
 			if (!ok)
 				badRoute++;
+		}
+
+		// Over water: the building, the yard or any piece standing over the sea, a river or a pond
+		string wet = "";
+		if (p.m_Site && RZ_CampLife.WetAt(p.m_Site.m_vCentre))
+			wet = "the building";
+
+		if (RZ_CampLife.WetAt(p.m_vHome))
+			wet = AddItem(wet, "the yard");
+
+		foreach (RZ_SitePlaced dry : result.m_aPlaced)
+		{
+			if (!dry.m_bIndoors && !dry.m_bWall && dry.m_Entry.m_eAt != RZ_EDressAt.COUNTER && RZ_CampLife.WetAt(dry.m_vPos))
+				wet = AddItem(wet, PieceName(dry.m_Entry));
+		}
+
+		// The perimeter: the wire line's share closed, and its widest gap
+		int perimeter = -1;
+		string perimeterText = "no wire";
+		bool perimeterLow = false;
+		int perimeterBar = PERIMETER_OUTPOST;
+		if (stronghold)
+			perimeterBar = PERIMETER_STRONGHOLD;
+
+		if (result.m_Wire)
+		{
+			perimeter = result.m_Wire.Share();
+			perimeterText = "perimeter " + perimeter.ToString() + "%";
+			float gapWidth;
+			float gapBearing;
+			if (result.m_Wire.WidestGap(gapWidth, gapBearing))
+				perimeterText += string.Format(" (gap %1 m at %2)", Math.Round(gapWidth * 10) / 10, RZ_Util.RoundToInt(gapBearing));
+
+			perimeterText += string.Format(", %1 gates", result.m_Wire.m_aGates.Count());
+			perimeterLow = perimeter < perimeterBar;
+		}
+
+		// Outside the wire: a piece of tier 2-4 of the plan (not a dump or the dead's) out past the line
+		int outside = 0;
+		string outsideText = "";
+		if (result.m_Wire)
+		{
+			foreach (RZ_SitePlaced o : result.m_aPlaced)
+			{
+				if (o.m_bIndoors || o.m_iLayer != RZ_ESiteLayer.PLAN || o.m_Entry.m_eZone == RZ_ESiteZone.DUMP || o.m_Entry.m_eZone == RZ_ESiteZone.DEAD || o.m_Entry.m_eZone == RZ_ESiteZone.GATE || o.m_Entry.m_eZone == RZ_ESiteZone.WIRE)
+					continue;
+
+				int ot = TierOf(o.m_Entry, p.m_eFaction);
+				if (ot < 2 || ot > 4 || result.m_Wire.Inside(o.m_vPos, 0))
+					continue;
+
+				outside++;
+				if (!outsideText.IsEmpty())
+					outsideText += ", ";
+
+				outsideText += PieceName(o.m_Entry);
+			}
 		}
 
 		// Dropped, by tier
@@ -262,6 +341,10 @@ class RZ_SiteAudit
 		score -= 10 * blockedPaths;
 		score -= dropCost;
 		score -= Math.Min(16, 4 * badRoute);
+		if (perimeterLow)
+			score -= Math.Min(15, (perimeterBar - perimeter) * 0.5);
+
+		score -= Math.Min(12, 3 * outside);
 		int scored = Math.ClampInt(RZ_Util.RoundToInt(score), 0, 100);
 
 		RZ_SiteScore kept = new RZ_SiteScore();
@@ -269,7 +352,11 @@ class RZ_SiteAudit
 		kept.m_bStronghold = stronghold;
 		kept.m_iScore = scored;
 		kept.m_iOverlaps = overlaps.Count();
-		kept.m_bFailed = !overlaps.IsEmpty() || tierOneDropped > 0 || (stronghold && !gateWatch);
+		kept.m_bFailed = !overlaps.IsEmpty() || tierOneDropped > 0 || (stronghold && !gateWatch) || outside > 0 || perimeterLow || !wet.IsEmpty();
+		kept.m_bWet = !wet.IsEmpty();
+		kept.m_iPerimeter = perimeter;
+		kept.m_iTierOne = tierOneDropped;
+		kept.m_iOutside = outside;
 		m_aScores.Insert(kept);
 
 		int planned = result.m_aPlaced.Count() + result.m_aDropped.Count();
@@ -285,8 +372,28 @@ class RZ_SiteAudit
 		if (!overlaps.IsEmpty())
 			overlapText = string.Format("%1 overlaps (%2)", overlaps.Count(), Join(overlaps));
 
-		RZ_Log.Info(string.Format("Sites: %1: score %2; %3 of %4 pieces; perimeter not built yet; %5dropped: %6; %7; %8 floating or buried; posts: %9", what, scored, result.m_aPlaced.Count(), planned, front, dropped, overlapText, floating, PostText(gateText, posts.Count(), blindPosts, watchedSides, threatSides))
-			+ string.Format("; paths: %1; patrol %2 of %3 points walkable; read %4 ms in %5 steps (most %6 ms, the longest part %7 ms), laid out in %8 ms.", paths, route.Count() - badRoute, route.Count(), grid.m_iReadMs, grid.m_iSteps, grid.m_iMaxStepMs, grid.m_iMaxUnitMs, result.m_iSolveMs));
+		// The plan laid down whole (Solver off) takes one step
+		int solveSteps = result.m_iSolveSteps;
+		int solveMost = result.m_iSolveMaxMs;
+		int solvePart = result.m_iSolveMaxUnitMs;
+		if (solveSteps == 0)
+		{
+			solveSteps = 1;
+			solveMost = result.m_iSolveMs;
+			solvePart = result.m_iSolveMs;
+		}
+
+		string layersText = string.Format("%1 indoors, %2 doors blocked, %3 windows boarded", result.m_iIndoors, result.m_iDoorsBlocked, result.m_iWindowsBoarded);
+		if (outside > 0)
+			layersText += string.Format(", %1 outside the wire (%2)", outside, outsideText);
+
+		if (!wet.IsEmpty())
+			layersText += ", over water: " + wet;
+
+		RZ_Log.Info(string.Format("Sites: %1: score %2; %3 of %4 pieces; %5; %6; %7dropped: %8; %9", what, scored, result.m_aPlaced.Count(), planned, perimeterText, layersText, front, dropped, overlapText)
+			+ string.Format("; %1 floating or buried; posts: %2", floating, PostText(gateText, posts.Count(), blindPosts, watchedSides, threatSides))
+			+ string.Format("; paths: %1; patrol %2 of %3 points walkable; read %4 ms in %5 steps (most %6 ms, the longest part %7 ms)", paths, route.Count() - badRoute, route.Count(), grid.m_iReadMs, grid.m_iSteps, grid.m_iMaxStepMs, grid.m_iMaxUnitMs)
+			+ string.Format(", laid out in %1 ms in %2 steps (most %3 ms, the longest part %4 ms).", result.m_iSolveMs, solveSteps, solveMost, solvePart));
 
 		if (!draw)
 			return;
@@ -331,6 +438,15 @@ class RZ_SiteAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected static string AddItem(string list, string item)
+	{
+		if (list.IsEmpty())
+			return item;
+
+		return list + ", " + item;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static string Join(array<string> items)
 	{
 		string text = "";
@@ -343,6 +459,13 @@ class RZ_SiteAudit
 		}
 
 		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Just in front of a piece (where its cook or worker stands): 0.8 m past its footprint's front.
+	static vector FrontOf(RZ_DressingPiece e, vector pos, float yaw)
+	{
+		return RZ_SiteGrid.Frame(pos, yaw, 0, e.m_vFootMax[2] + 0.8);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -387,11 +510,14 @@ class RZ_SiteAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Importance by the piece's kind (docs/SITES.md, "Importance tiers"): 1 security (the counter, a
-	//! watch, a barricade), 2 what the site is for, 3 life, 4 character, 5 clutter. Read from the
-	//! piece's name until the pieces carry their own tier.
+	//! Importance (docs/SITES.md, "Importance tiers"): 1 security (the counter, a watch, a barricade),
+	//! 2 what the site is for, 3 life, 4 character, 5 clutter: the piece's own Tier (pieces.py), else
+	//! read from its name.
 	static int TierOf(RZ_DressingPiece e, RZ_EFaction f)
 	{
+		if (e.m_iTier > 0)
+			return e.m_iTier;
+
 		if (e.m_eAt == RZ_EDressAt.COUNTER || e.m_eUse == RZ_EDressUse.WATCH)
 			return 1;
 
@@ -578,16 +704,21 @@ class RZ_SiteAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How much the ground under a quad varies (from the grid's heights).
-	protected static float Spread(RZ_SiteGrid grid, array<vector> quad)
+	//! How much the ground under a quad varies (from the grid's heights), less the slope a tilted
+	//! barrier run follows (`slope` a metre along the x of a piece at pos turned by yaw).
+	protected static float Spread(RZ_SiteGrid grid, array<vector> quad, vector pos, float yaw, float slope)
 	{
 		array<int> cells = {};
 		CellsIn(grid, quad, cells);
 		float lo = float.MAX;
 		float hi = -float.MAX;
+		vector right = RZ_SiteGrid.Frame(vector.Zero, yaw, 1, 0);
 		foreach (int c : cells)
 		{
-			float h = grid.HeightAt(grid.CellCentreX(c % grid.m_iN), grid.CellCentreZ(c / grid.m_iN));
+			float cx = grid.CellCentreX(c % grid.m_iN);
+			float cz = grid.CellCentreZ(c / grid.m_iN);
+			float along = (cx - pos[0]) * right[0] + (cz - pos[2]) * right[2];
+			float h = grid.HeightAt(cx, cz) - slope * along;
 			lo = Math.Min(lo, h);
 			hi = Math.Max(hi, h);
 		}
@@ -678,6 +809,32 @@ class RZ_SiteAudit
 		float sum = total;
 		int mean = RZ_Util.RoundToInt(sum / m_aScores.Count());
 		RZ_Log.Info(string.Format("Sites audit: %1 sites, mean %2, worst %3 (%4), %5 overlaps; %6 with a hard failure; %7 under %8%9", m_aScores.Count(), mean, worst.m_iScore, worst.m_sWhat, overlaps, failed, under.Count(), threshold, UnderText(under)));
+
+		// The strongholds' perimeters and what was dropped that mustn't be
+		string walls = "";
+		int tierOne = 0;
+		int outside = 0;
+		int wetSites = 0;
+		foreach (RZ_SiteScore w : m_aScores)
+		{
+			tierOne += w.m_iTierOne;
+			outside += w.m_iOutside;
+			if (w.m_bWet)
+				wetSites++;
+
+			if (!w.m_bStronghold)
+				continue;
+
+			if (!walls.IsEmpty())
+				walls += ", ";
+
+			if (w.m_iPerimeter < 0)
+				walls += w.m_sWhat + " no wire";
+			else
+				walls += w.m_sWhat + " " + w.m_iPerimeter.ToString() + "%";
+		}
+
+		RZ_Log.Info(string.Format("Sites audit perimeters: %1; %2 tier 1 pieces dropped, %3 pieces outside the wire, %4 sites with something over water.", walls, tierOne, outside, wetSites));
 		return strongholdsUnder;
 	}
 
@@ -734,8 +891,14 @@ class RZ_SiteAudit
 
 		foreach (RZ_SitePlaced placed : result.m_aPlaced)
 		{
-			Print(head + PieceText("piece", placed, p.m_eFaction));
+			if (placed.m_bIndoors)
+				Print(head + string.Format("indoors %1 %2", TierOf(placed.m_Entry, p.m_eFaction), PieceName(placed.m_Entry)));
+			else
+				Print(head + PieceText("piece", placed, p.m_eFaction));
 		}
+
+		if (result.m_Wire)
+			result.m_Wire.DrawLines(head);
 
 		foreach (RZ_SitePlaced dropped : result.m_aDropped)
 		{

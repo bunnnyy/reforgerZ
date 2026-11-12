@@ -116,6 +116,7 @@ class RZ_Mission_CourierJob : RZ_Mission_Delivery
 		m_sTitle = "Letters for " + destName;
 		m_sBrief = string.Format("%1 puts a bundle of letters tied with string at your feet. \"For %2. You won't need a gun. Stay off the main road, keep quiet, don't stop for anyone.\"",
 			m_sCourier, destName);
+		m_sObjective = string.Format("Carry %1's letters to %2.", m_sCourier, destName);
 
 		// Silent Courier merged in: the quiet way, through an infested town on the way
 		m_iQuietTown = QuietTown(gm, m_vStart, dest);
@@ -408,6 +409,7 @@ class RZ_Mission_WalkHimOut : RZ_PuzzleMission
 		m_sTitle = "Walk Him Out";
 		m_sBrief = string.Format("%1 was bitten on a supply run. He told the council himself. At dusk he walks out past the %2 edge of %3, so the children don't have to see what comes after. Walk with him. At the edge he'll ask you for one last thing.",
 			m_sMan, RZ_Compass.DirectionWord(dir), m_sTown);
+		m_sObjective = string.Format("Walk %1 out past the %2 edge of %3 at dusk.", m_sMan, RZ_Compass.DirectionWord(dir), m_sTown);
 		return true;
 	}
 
@@ -618,6 +620,7 @@ class RZ_Mission_TheLedger : RZ_PuzzleMission
 		m_sTitle = "The Ledger";
 		m_sBrief = string.Format("The council at the safehouse in %1 keeps a ledger of the stores, and %2's name is in it more often than it should be. They want %2 reminded. They didn't say how. %2 is in %3.",
 			m_sCouncil, m_sMember, s.m_sName);
+		m_sObjective = string.Format("Remind %1 in %2 about the ledger at the safehouse in %3.", m_sMember, s.m_sName, m_sCouncil);
 		return true;
 	}
 
@@ -777,6 +780,7 @@ class RZ_Mission_QuietArrangement : RZ_Mission_Delivery
 		m_sTitle = "A Quiet Arrangement";
 		m_sBrief = string.Format("The keeper at the Haven safehouse in %1 pays us so nobody burns it down. Sweet arrangement. Trouble is, he can't be seen walking it over, and you can. The envelope's under the loose board by the door. Bring it to our drop outside %2. If his own people see you with it, that's your problem, not ours.",
 			m_sHouse, s.m_sName);
+		m_sObjective = string.Format("Carry the envelope from the safehouse in %1 to the Red Hand drop outside %2.", m_sHouse, s.m_sName);
 		return true;
 	}
 

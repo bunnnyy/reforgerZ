@@ -12,7 +12,7 @@ reads it and makes what it can; the tables in sections 2 to 5 are generated from
 as the manual checklist.
 
 A first pass is done, in Workbench 1.9 on Arland and Everon: the repo holds the plugin's prefabs
-(the quartermasters' and the notebook's actions among them), camp life's 53 compositions, its
+(the quartermasters' and the notebook's actions among them), camp life's 83 compositions, its
 smart-action waypoint and eleven kits, the faction and loadout managers, the worlds (Everon, the main
 one, and Arland) and their scenarios, and most of the UI. Many prefabs are built on stand-ins
 ([what that means](#stand-in-bases)). The UI is set up ([the UI](#setting-up-the-ui)): the spawn
@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **331 prefab fields**: 46 on `RZ_GameModeComponent`, 272 in its settings objects, and 13 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **306 entries**: 183 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 89 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **332 prefab fields**: 46 on `RZ_GameModeComponent`, 272 in its settings objects, and 14 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **306 entries**: 183 prefabs the plugin creates, 34 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 89 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 47 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -717,7 +717,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | vanilla AIWaypoint_ObservationPost.et | — | Territory > Camp life > Observation waypoint | optional | a sentry with no nest, only where an observation-post smart action stands within 6 m of the spot (vanilla's waypoint needs one; elsewhere, or empty, the loiter waypoint) |
 | (existing prefab) | vanilla Group_Base.et (an AI group with no members) | — | Territory > Camp life > Group prefab | optional | lone characters (occupants, single guards) join one so they can take jobs (empty = they stand) |
 | (existing prefab) | a new prefab of class SCR_SmartActionWaypoint, saved as Prefabs/ReforgerZ/AI/RZ_WP_SmartAction.et (vanilla ships the class, not a prefab) | — | Territory > Camp life > Smart action waypoint | optional | people use a piece's sit, lean, work and watch points (empty = they loiter beside it) |
-| (existing prefab) | the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab) | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
+| (existing prefab) | the 83 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits) | — | Territory > Camp life > Kits (each piece's prefab, the plan's and the layers') | optional | scenery at holdings, safehouses and road posts (a place with no kit stays bare) |
 
 #### New-player guidance
 
@@ -804,7 +804,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the MapIcon layout (UI/LAYOUTS.md) | — | UI > Map icon layout | optional | the ReforgerZ icons on the map, per player (empty = vanilla text markers for events and the lab). Also add RZ_MapIconsUI to the map configuration's components (Setting up the UI) |
 | (existing prefab) | the SpawnRow layout (UI/LAYOUTS.md) | — | UI > Spawn row layout | optional | our spawn screen, the background picker, in place of vanilla's deploy menu (empty = vanilla's deploy menu). Needs the RZ_SpawnMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the MapLegend layout (UI/LAYOUTS.md) | — | UI > Map legend layout | optional | the map key in the full-screen map's bottom-left, shown zoomed out (empty = no legend; needs the map icon layout) |
-| `RZ_Notebook.et` | a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg | `RZ_NotebookGadgetComponent`; `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu). Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot |
+| `RZ_Notebook.et` | a gadget on vanilla's Item_Base with the notebook's mesh (Notebook_01_Single.xob, marble black); display name Notebook, weight 0.1 kg, slot type SLOT_GADGETS_STORAGE, held like the MX991 flashlight | `RZ_NotebookGadgetComponent`; `RZ_ReadNotebookAction`, `RZ_DeadNameAction`, 2 × `RZ_EpiNotebookAction` (Kind SEASON, ANONYMOUS) | UI > Notebook prefab | optional | given to every new life and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes. Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on |
 | (existing prefab) | vanilla's compass ({7CEF68E2BC68CE71}Prefabs/Items/Equipment/Compass/Compass_Adrianov.et) | — | UI > Compass prefab | optional | every new life carries one (unless the loadout has a compass) |
 | (existing prefab) | vanilla's folded paper map ({13772C903CB5E4F7}Prefabs/Items/Equipment/Maps/Map_Paper_01/PaperMap_01_folded.et) | — | UI > Map prefab | optional | every new life carries one (unless the loadout has a paper map) |
 | (existing prefab) | the Standing page layout (UI/LAYOUTS.md) | — | UI > Standing page | optional | the notebook's Standing tab (empty = Nothing here yet) |
@@ -1097,19 +1097,30 @@ kits every place stays bare, and with no waypoint slots its people walk to their
 **Zombies > Move waypoint** and stand there. The plugin fills the four vanilla waypoint slots and
 the group prefab (section 4, *Camp life*). Everything else is built from one file.
 
-**The source: `tools/camp_kit/pieces.py`.** It holds the 54 camp-life pieces (each piece's props
+**The source: `tools/camp_kit/pieces.py`.** It holds the 83 camp-life pieces (each piece's props
 with their position, turn, height and tilt, and its seats; outdoor props only, see its header), the
 eleven kits, where a piece stands by a building (`AT`, written as each kit piece's **At**; the rest
-are Auto) and the Traces compositions (section 4, *Traces*). Each kit is a **plan**: its pieces in
-order of importance with their spot and turn in the camp (metres from its middle, +Z toward the
-road in). Every kit's plan is drawn, so no place is ever dressed by chance:
+are Auto), each piece's tier, zone and rules (`RULES`, and a kit's own tier in `KIT_TIER`), each kind
+of site's doctrine (`DOCTRINE`: how much of the wire it closes, how hard its building is made, the
+wire's distance, its layers' pieces and what goes indoors; [SITES.md](SITES.md#building-in-layers))
+and the Traces compositions (section 4, *Traces*). Each kit is a **plan**: its pieces in order of
+importance with their spot and turn in the camp (metres from its middle, +Z toward the road in),
+the solver's preference. Every kit's plan is drawn, so no place is ever dressed by chance:
 
-| Kit | Pieces |
-|---|---|
-| Bastion stronghold, outpost, road post | 21, 14, 4 (each with its duckboards last) |
-| Red Hand stronghold, outpost, road post | 20, 13, 4 |
-| Haven stronghold, outpost, safehouse | 20, 13, 8 |
-| Halcyon stronghold, field station | 19, 9 |
+| Kit | Pieces | Layers' pieces |
+|---|---|---|
+| Bastion stronghold, outpost, road post | 22, 14, 4 (each with its duckboards last) | 8, 7, none |
+| Red Hand stronghold, outpost, road post | 20, 13, 4 | 6, 5, none |
+| Haven stronghold, outpost, safehouse | 22, 14, 8 | 7, 6, 7 |
+| Halcyon stronghold, field station | 20, 10 | 9, 6 |
+
+The layers' pieces (on each kit's **Layers**, by **Layer**): the barrier's runs (`Wire_Bastion_L`, `_M`,
+`_S`, `_XS`, Bastion's outpost's `Sandbags_Bastion_L` and `_M`, `Scrap_RedHand_*`, `Fence_Haven_*`,
+`Fence_Halcyon_*`; each run along its own x, its front out), the boards (`BoardWindow`, a pallet over
+a window at its own height; `BoardDoor`, `BoardDoor_Bastion` sandbags, `BoardDoor_RedHand` the
+shutter down), the lookouts (the faction's nest, `Lookout_Haven`, `GuardPost_Halcyon`), Halcyon's
+`Floodlight` and the `StoresBoard`. The new plan pieces are `Gate_Bastion` (the checkpoint),
+`Gate_Haven`, `Lookout_Haven`, `GuardPost_Halcyon` and `SmokingBench`.
 
 Each kit's first entry is its faction's **counter** (`Counter_Bastion`, `Counter_RedHand`,
 `Counter_Haven`, `Counter_Halcyon`, At **Counter**): a table the quartermaster stands behind,
@@ -1117,7 +1128,7 @@ Each kit's first entry is its faction's **counter** (`Counter_Bastion`, `Counter
 
 | Command | Does |
 |---|---|
-| `py tools/camp_kit/build.py` | Refuses a plan whose pieces overlap (with 0.3 m between them, at their real sizes). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, the piece's real footprint, **Foot** (its props' measured boxes from `footprints.json`, up to 8, and a person round each seat: [SITES.md](SITES.md#real-footprints)), and the box round it, **Foot min** and **Foot max**; **Smart action waypoint**), the composition slots of **World > Traces > Kit**, and the openings' compositions (`pieces.OPENINGS`, into `Prefabs/ReforgerZ/Guidance/Openings/`) with their slots, **Guidance > Opening scenes** |
+| `py tools/camp_kit/build.py` | Refuses a piece with no rules, an unknown zone or a doctrine naming a piece that isn't there, and a plan whose pieces overlap (with 0.3 m between them, at their real sizes). Writes `Prefabs/ReforgerZ/Dressing/<Faction>/RZ_Dress_<Name>.et` and `Prefabs/ReforgerZ/Traces/<Name>.et` (existing `.meta` files are kept, so GUIDs stay; a piece no longer in `pieces.py` has its files deleted), the kits and the smart-action waypoint on `RZ_GameMode.et` (**Camp life > Kits**: each entry's prefab, ring, use, seats, **At**, **Plan** spot and **Plan yaw**, the piece's real footprint, **Foot** (its props' measured boxes from `footprints.json`, up to 8, and a person round each seat: [SITES.md](SITES.md#real-footprints)), and the box round it, **Foot min** and **Foot max**, its **Tier**, **Zone**, **Rules** and **Indoors**; each kit's **Close**, **Harden**, **Ring**, **Yard** and **Layers**; **Smart action waypoint**), the composition slots of **World > Traces > Kit**, and the openings' compositions (`pieces.OPENINGS`, into `Prefabs/ReforgerZ/Guidance/Openings/`) with their slots, **Guidance > Opening scenes** |
 | `py tools/camp_kit/render.py` | Draws [tools/camp_kit/camp_plans.html](../tools/camp_kit/camp_plans.html): every kit's plan, a top-down plan of every piece (props at their measured size) and the faction bases' schematic plans (from `tools/camp_kit/bases.py`, drawings only) |
 | `py tools/camp_kit/render.py --placed <console.log>` | Draws `tools/camp_kit/sites_placed.html` from a site audit's log: the layouts the game actually laid out ([SITES.md](SITES.md#seeing-it)), and writes `tools/camp_kit/sites_list.txt` for **ReforgerZ: Fly to the next site** |
 | **ReforgerZ: Measure prop footprints** (Workbench plugin) | Measures every prop in `props.txt` and writes `tools/camp_kit/footprints.json`; run it after adding a prop, then `build.py` (the site audit measures them on the server too: [SITES.md](SITES.md#real-footprints)) |
@@ -1161,6 +1172,18 @@ drawn 3.2 × 0.4 m. With **ReforgerZ: Dump prefabs and classes** correct either 
 `props.txt`, measure their boxes and correct `FP` if they're another size, check the tent's door
 faces +Z (else turn it in `Tent_Halcyon`), and re-run `build.py`.
 
+**Check the layers' props** (new in `props.txt`, their boxes measured by the site audit on the
+server, their classes read from the vanilla prefabs, not yet from Workbench): `BarbedTape_01_Long`,
+`_Short` and `_Stake`, `NetFence_05_tall_6m_V1`, `_3m` and `_pole`, `WoodenFence_01_8m` and `_4m`,
+`TinWall_01_6m_A_rusty` and `TinWall_01_3m_rusty`, `Sandbag_01_long_high_burlap`, `RoadBlock_01`,
+`CzechHedgehog_01_rusty`, `BarbedTape_KnifeRest`, `SignCheckpoint_01_stop` and
+`GeneratorFloodlight_US_01` (lit, its light switch kept: the guard strips nothing from it, a
+VERIFY). With **ReforgerZ: Dump prefabs and classes** check each line's class and whether it
+already has a `Hierarchy`, then **ReforgerZ: Show the next composition group** for the new pieces:
+the runs stand along their x (a coil's length is its own z, so it's turned 90°), the boards stand
+upright (a pallet tilted 90° about its x: check it isn't lying flat or on its side), the door boards
+cover a door, the floodlight faces +Z.
+
 **Test it.** Show the pieces in Workbench with the plugin **ReforgerZ: Show the next composition group** ([PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or place each once in a test world, and check the log is silent (no
 `Dressing: removed` lines); then walk up to an outpost of each faction in Workbench play (the
 play-test checklist, *Camp life*).
@@ -1179,13 +1202,14 @@ members of the 18 faction group prefabs below; `--arrays` prints the game mode's
 any clothing ResourceName is missing from the resource index (`$profile:RZ_ResourceIndex.txt`,
 [PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)), or if a look leaves a garment you can see
 (Hat, Jacket, Pants, Boots, ArmoredVest, HandWear) to its parent. A new prefab's GUID comes from its
-path, so re-running keeps them. 109 looks: 76 characters and 33 group mixes.
+path, so re-running keeps them. 111 looks: 78 characters and 33 group mixes.
 
 | Kind | Inherits | Per faction | Fills |
 |---|---|---|---|
 | `RZ_Occupant_<Faction>_<look>` | the faction's occupant | Haven 6, Bastion 5, Red Hand 5, Halcyon 6 | **Territory > <faction> occupant looks**; the Haven's also join **Haven > Occupant prefabs** |
 | `RZ_Armed_<Faction>_<look>` | a vanilla soldier, for his weapon: FIA AC (the Haven), US Rifleman and US Team Leader (Bastion), FIA Partisan (the Red Hand), US Rifleman variant 1 (Halcyon) | Haven 8, Bastion 6, Red Hand 5, Halcyon 5 | members of the group looks and the dressed groups below (no slot of their own) |
 | `RZ_Staff_Halcyon_Researcher` | the vanilla FIA medic | 1 | the member of the escorted scientist |
+| `RZ_Civ_Haven_<look>` | a vanilla civilian (turtleneck 2, cotton shirt 3) | 2 | the survivor group's two unarmed members |
 | `RZ_QM_<Faction>_<look>` | the faction's quartermaster | 3 each | **Factions > <faction> quartermaster looks** |
 | `RZ_CouncilHead_<look>`, `RZ_Outpost_<Faction>_<look>` | the council head, the faction's outpost leader | 3; 2 each | **Leaders > Council head looks**, **<faction> outpost looks** |
 | `RZ_Leader_<Faction>_<look>` | the faction's stronghold leader | 2 each | **Leaders > <faction> leader looks** |
@@ -1199,8 +1223,34 @@ path, so re-running keeps them. 109 looks: 76 characters and 33 group mixes.
 are dressed wherever they spawn as themselves: `Territory/RZ_Guard_<Faction>`, `Haven/RZ_SafehouseGuard`,
 `Factions/RZ_BastionPostCrew`, `RZ_RedHandPostCrew`, `RZ_BastionHunters`, `RZ_RedHandHunters`,
 `Supply/RZ_TruckCrew_<Faction>`, and the missions' `RZ_BastionSquad`, `RZ_EscortSoldier`,
-`RZ_RedHandGroup`, `RZ_EscortScientist` and `RZ_SurvivorGroup` (its two civilians stay vanilla). Only
-`m_aUnitPrefabSlots` changes; the faction and the rest of each prefab are kept.
+`RZ_RedHandGroup`, `RZ_EscortScientist` and `RZ_SurvivorGroup` (its two civilians are the Haven's
+`RZ_Civ_Haven_` looks). Only `m_aUnitPrefabSlots` changes; the faction and the rest of each prefab are kept.
+
+**No random variants.** A vanilla AI group spawns each member with `SpawnEntityPrefabEx(prefab, true)`,
+which swaps the prefab for a random one of its editable-entity variants
+(`SCR_EditableCharacterComponent` > **Variants**, the prefab itself counting as one). The US rifleman
+and his variant 1 list each other, so a look built on either came out of a group as the plain US
+rifleman half the time. Every look built on a parent with variants (the Bastion and Halcyon armed
+looks, Bastion's occupants) sets each inherited variant's **Enabled** to off; the tool's `VARIANTS`
+table lists them.
+
+**The check.** `py tools/people_looks.py --check --game <game folder> --mods <Workshop mods folder>`
+writes nothing and must print `OK`. It fails if the looks on disk aren't what the tables write; if
+any faction group (the dressed groups above, the group looks, the slots' own groups) lists anything
+but a character look, its first (leader) slot included; if a look leaves a random variant on; if a
+Looks list on `RZ_GameMode.et` isn't the tables' looks, isn't registered in `RegisterLooks`, or sits
+next to a slot prefab other than the looks' parent (PickLook finds a slot's looks by that prefab);
+or if a script spawns a faction person slot without `PickLook` (it follows the slot fields
+`RegisterLooks` names, the functions that return them and the locals set from them, and lets through
+a helper that calls `PickLook` on the prefab it's given). With `--game` and `--mods` (or `RZ_GAME_DIR`
+and `RZ_MODS_DIR`) it also reads the game's and the loaded Workshop mods' `resourceDatabase.rdb` and
+`.pak` files: every garment and parent must resolve by its GUID (two mods can ship a file at the same
+path under different GUIDs, as MedicalAccessories' mask does at Zelik's `ZEL_FaceClothing_Base.et`),
+every slot a look sets must be on its parent (Zelik's **Face** and **Head** included), every item list
+packed into a garment a look changes must move with it, and `VARIANTS` must be the parents' real
+variants. The game folder is the server's or the game's (with `addons/data`); the mods folder holds
+the downloaded mods (`BaconZombies_622120A5448725E3` and the rest). Without them it says so and checks
+the rest. Run it after changing the tables, a spawn of a faction person, or a Looks list.
 
 A look overrides clothing slots only: **Hat**, **Jacket**, **Pants**, **Boots**, **Back**, **Vest**,
 **ArmoredVest**, **HandWear**, and Zelik's Character slots **Face** (balaclavas, the hazmat and
@@ -1212,8 +1262,9 @@ those item lists (`ItemsInitConfigurationItem` `TargetStorage`) at the new garme
 vest when the garment is gone. Armed looks keep the parent's **Vest** (its magazines are in it).
 
 **Test it.** Open one look of each kind in Workbench and check it shows the clothes in its name and
-no warning in the log (a wrong slot name, a garment that won't attach); open `RZ_Guard_Halcyon.et`
-and `RZ_BastionSquad.et` and check their members are the looks; then the play-test checklist,
+no warning in the log (a wrong slot name, a garment that won't attach); open `RZ_Armed_Halcyon_Hood.et`
+and check **Variants** shows its one variant disabled; open `RZ_Guard_Halcyon.et` and
+`RZ_BastionSquad.et` and check their members are the looks; then the play-test checklist,
 *People's looks*.
 
 ### Traces: the Workbench spike (phase 0)
@@ -1308,9 +1359,28 @@ in `UI/layouts/ReforgerZ/`.
       files). Check each page's content sits between the header rule and the footer, inside the
       safe area, and nothing overlaps the tabs. If a page looks squeezed, widen it in the editor:
       the script only looks up the names in UI/LAYOUTS.md.
-   2. Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as text on vanilla's carryable notebook,
-      with `RZ_NotebookGadgetComponent`): it should show the component, display name Notebook and
-      weight 0.1 kg. **UI > Notebook prefab** points at it.
+   2. **The notebook item as a gadget.** Open `Prefabs/ReforgerZ/UI/RZ_Notebook.et` (written as
+      text; [UI.md](UI.md#the-notebook) says how it works). If Workbench shows the old prop (a
+      destructible notebook, no hold), make it again by hand from these settings:
+      - **Parent:** vanilla's `Prefabs/Items/Core/Item_Base.et` (as the map and the compass), not the
+        Combat Ops notebook prop: the prop is a static, destructible prop and can't be held.
+      - **MeshObject:** `Assets/Props/Civilian/Notebook_01/Notebook_01_Single.xob`, with the
+        materials `Notebook_01` → `Notebook_01_MarbleBlack.emat` and `Palette` →
+        `Notebook_01_MarbleBlack_MLOD.emat`. **RigidBody:** Model Geometry on, not Static, damping
+        0.5 / 0.5 (as the paper map).
+      - **RZ_NotebookGadgetComponent:** **Gadget anim variable** `MX991` (the one that matters:
+        with none, the character never finishes taking it into the hand), **Can be held** on.
+      - **InventoryItemComponent > Attributes:** display name Notebook and its description; weight
+        0.1, size Manual 5 × 5 × 5, volume 50; **Item Animation Attributes** with one attachment,
+        graph `Assets/Items/Equipment/workspaces/Flashlight_MX991.agr`, instance `MX991_player.asi`,
+        binding `Gadget`, and **Allow Inspection** on; **Character Modifier Attributes** with **Can
+        be equipped in vehicle** off; Size `SLOT_1x1`, Slot type `SLOT_GADGETS_STORAGE`.
+      - **ActionsManagerComponent** (the parent's, with its "default" context and Pick up):
+        `RZ_ReadNotebookAction` (Read the notebook), `RZ_DeadNameAction` and the two
+        `RZ_EpiNotebookAction`s (Kind SEASON, ANONYMOUS), all in the "default" context.
+
+      Save, and check **UI > Notebook prefab** still points at it. Then in Workbench play: drop it
+      and **Pick up**; it sits flat and doesn't break; in the inventory it shows **Equip**.
    3. Open `RZ_ReaderMenu.layout`, `RZ_TalkMenu.layout`, `RZ_TalkReply.layout` and `RZ_Hud.layout`
       (its `SubtitlePanel` with the head row `SubtitleHead`, and `RadioLinePanel`, both hidden, and
       `NametagPanel` with its three hidden `Nametag0`–`2` first under the root) the same way. **UI > Talk reply layout** is set, so the
@@ -1373,8 +1443,10 @@ in `UI/layouts/ReforgerZ/`.
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
       on a plain dark panel. After changing `src/RZ_CarSide.svg`, run
       `node tools/render_ui.js textures` and import again.
-   11. Play: press N; open the pause menu and look for **Notebook** after Field Manual (pick it
-      with the pad); after spawning, find the notebook in the inventory and take it in hand. If
+   11. Play: press N (the notebook item comes into the left hand, then the notebook opens; B or
+      Esc puts it back); open the pause menu and look for **Notebook** after Field Manual (pick it
+      with the pad); the notebook is on a quick slot after spawning: use it from the quick slot
+      wheel, and **Equip** it in the inventory. If
       the pause menu shows no button, override vanilla's pause menu layout (same GUID) and add a
       button named `RZ_Notebook` copied from the Field Manual button: the script uses it if
       it's there.
@@ -1464,7 +1536,7 @@ what each one covers; defaults are in brackets where they matter for setup.
 | Territory | Territory | `m_TerritorySettings` | **Enabled**, outposts per faction (0 = by map size), held share (0.2), tick (45–75 min, ÷ season speed), pressure minutes (25), visible radius (300 m), guard and occupant counts, outpost quartermaster (on), guard and occupant prefabs, **Haven guard** (on: a Haven group at the lab gate in the stand after The Whole of It) |
 | Territory | Supply | `m_SupplySettings` | **Enabled**, truck and crew prefabs, departures (60–90 min, ÷ season speed), unstick radius (1 km), stuck seconds (90), stock (8), Haven food (6), drain (45 min), out-of-stock share (0.3), rewards |
 | Territory | Faction life | `m_FactionLifeSettings` | **Enabled**, chatter (10 min), life events (35 min), truces and feuds (on), false rumour chance (0.35) |
-| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)) |
+| Territory | Camp life | `m_CampLifeSettings` | **Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings)) |
 | Guidance | Guidance | `m_GuidanceSettings` | **Enabled**, meaningful minutes (10), level thresholds (1/3/8), refresher days (30), gentle mult and minutes (0.5, 15), tip gap (90 s), loud heat (45), **Tips** table, radio minutes (12), clue minutes (20), flyers, shout minutes (30), wanderer finds, the clue prefabs (car wreck, door, flyer, table radio, the two bodies, barricade); **Openings** (on), **Group gone weight** (18) and **Fever weight** (12), **Opening scenes** (the reasons' scenes and each background's props, filled by `tools/camp_kit/build.py`; a key with none: nothing there), **Contact** (empty: Puzzles > Civilian), **Opening Fame** (10) |
 | Interactions | General | `m_InteractionSettings` | **Enabled**, spot prefab, **door spot prefab** (on the door leaf), scan radius (30 m) and seconds (10), caps (10 per player, 70), bells and sirens, water items and keywords, treating others |
 | Interactions | Search | `m_SearchSettings` | **Loot pool**, loot tables, chances (find 0.6: each of a building's item slots, a wreck's boot, a body; rare 0.1, electronics 0.1), **Locks** and their shares (on the outside doors only), **Key prefab** (empty = no keys), force seconds (10) and heat (25), relock minutes (180, the reset), crowbar keywords, readable and body chances. Keeping AI out: **AI door hook** (on), **Doorway blocker** prefab, **Navmesh rebuild** (on; off = blockers only), blocker range (150 m), cap (20), cooldown (60 s), bang heat (4) and seconds (15) |
@@ -1595,6 +1667,10 @@ new finding through: fix the line.
 The talk pass ([WRITING.md](WRITING.md#talk)) added `quote`, `speaker`, `reply`, `split` and
 `ellipsis`; most of the baseline is their findings in the conversation files and the errands' cards,
 and each rewrite shrinks it. A rewritten line that still breaks one fails the lint.
+
+The objectives pass added `objective` (with an empty baseline): a new mission whose class sets a
+brief without an `m_sObjective` fails it, and so does an objective, step or stage title that leans on
+a pronoun ([WRITING.md](WRITING.md#objective-lines)).
 
 | What it shows | What it can't |
 |---|---|
@@ -1745,6 +1821,22 @@ the summary, the props measured and the `render.py --placed` command for the log
 script exception, an audit that didn't finish, or a stronghold under **Audit threshold** (today
 every map's strongholds are: the plans are fixed drawings until the solver).
 
+**The task places.** Every task that names its place or a thing at it is checked against its need
+([PLACES.md](PLACES.md)): live in play (`Place check: ...` warnings; the full test prints how many),
+and on its own on a map's own world by the place audit:
+
+```bash
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder> tools/runtime_test/run.sh tasks [arland] [everon] [cain]
+python3 tools/runtime_test/places.py draw <the log it names>      # run.sh writes task_places_<map>.html itself
+```
+
+Each map boots once with the mod's own game mode settings (Arland about 1.5 minutes, Everon about 6,
+most of it the land grid; vanilla stand-ins for the slots its spawn tests make), asks the game's
+own pickers for places (the openings' roll and every step it leads to, every errand way from a few
+givers each, the spawn points), prints `Places: ...` per need and the summary, and draws them in
+`task_places_<map>.html` in the work folder. It fails on a script exception, an audit that didn't
+finish, or a need scoring under 95 (`RZ_PlaceAudit.s_iThreshold`).
+
 | What it shows | What it can't |
 |---|---|
 | Script exceptions on real code paths; startup and save/load; missions' Setup, rewards and cleanup; questline stages, branches and endings (by success and failure only, not every approach); the Perimeter; spawn and death; the text players get | Anything a client does (UI, menus, input, replication), real AI behaviour against a player, your prefabs and their components |
@@ -1873,7 +1965,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **150** lines with the tag, all but one in the game scripts (one is the comment in
+There are **159** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 34 are in `UI/`: 29 of [the UI's](#the-ui-32), the loadout
 lock's other two and Traces' decals and lit windows on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's and two the hold prompt's in `Interactions/`), but one: the sites plugin's in
@@ -1896,7 +1988,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Persistence/RZ_SaveData.c:211` | `JsonSaveContext` and `JsonLoadContext` write and read plain class members and arrays of them | Nothing is saved: after a restart, check `$profile:ReforgerZ/state.json` has real values in it and the world came back |
 | `Interactions/RZ_Loot.c:1557` | vanilla persistence (if the server runs it) doesn't save items lying in the world | Loose loot left in houses comes back after a restart on top of the new roll: walk into a house, restart, and look. If it does, keep loose loot out of vanilla persistence (or turn **Loot > Loose loot** off) |
 
-### Medium risk: big features, with a fallback (78)
+### Medium risk: big features, with a fallback (79)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -1948,7 +2040,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_PlayerEffects.c:329` | the vanilla custom hint with its timer shows the hold's prompt over the HUD (on a pad too) | The hold still ends on its own after **Hold seconds**; Jump still kicks free |
 | `Zombies/Behaviour/RZ_Doors.c:211` | a Bacon group with a target inside a house follows a move waypoint round to another, open door (another way in, for groups the layer doesn't drive) | They wait at the locked door until the siege cap, as before |
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
-| `Factions/RZ_CampLife.c:2470` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:2867` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
+| `Factions/RZ_CampLife.c:2903` | a positive roll in `Math3D.AnglesToMatrix` lowers a piece's +x (measured: the site audit prints `RZS roll`), and a composition spawned rolled tilts its children with it, so a barrier run on a slope follows the ground | The wire's runs on slopes float at one end and sink at the other: set `ROLL_SIGN` the other way, or 0 to stand them level |
 | `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
 | `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
 | `Missions/Errands/RZ_Strangers.c:1191` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
@@ -1965,17 +2058,19 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
-| `Guidance/RZ_OpeningPlaces.c:341` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
-| `Guidance/RZ_OpeningPlaces.c:381` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
+| `Guidance/RZ_OpeningPlaces.c:447` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
+| `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 | `Interactions/RZ_WorkSiteAction.c:151`, `:133` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
 
-### Low risk: contained or cosmetic (38)
+### Low risk: contained or cosmetic (42)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
 | `Interactions/RZ_Interactions.c:187` | a static map prop's local bounds (`GetBounds`) are its mesh's box, so a stove's, workbench's or generator's spot stands at its middle, pulled toward its open side | The prompt stands at the prop's origin again (often a back corner, on the wall): the check falls back to the origin only when the bounds are empty or over 12 m, so a wrong but plausible box puts the prompt beside the prop. Report which prop, and its bounds |
 | `Director/Epilogue/RZ_EpilogueRest.c:579` | the Walk Out's fallback barrier with no north-road checkpoint: past the terrain's edge the ground reads as water, so a bearing that runs off the map counts as the land's edge only when it doesn't | An island map gets no Walk Out (as before); a wrong read puts the barrier at the last land point 12 km out |
 | `Director/Epilogue/RZ_EpilogueRest.c:677` | scene clearance: `RZ_EpiCarQuery` finds a parked vehicle within 8 m of the queue or the lab gate | Without it the scene stays where it is, beside the car |
+| `Guidance/RZ_OpeningSteps.c:516` | A Sample's remains: a special spawned and killed at once on the server (`RZ_Util.KillCharacter`) falls and lies where it was spawned, for every client | The body stands, or isn't seen: the place check still passes (it's dead there). Spawn it a frame later, or use a body prop |
+| `Guidance/RZ_OpeningSteps.c:532` | the remains withdrawn from the garbage system and blacklisted (`SCR_GarbageSystem.Withdraw`, `UpdateBlacklist`) stay until the opening ends, then go with the engine's cleanup once inserted again (as the vigil's body) | The body goes with the engine's usual cleanup during the step; the sample still lies there |
 | `Guidance/RZ_Guidance.c:480` | `SCR_CharacterDamageManagerComponent.IsBleeding()` reads true on the server while the character bleeds (the "bleeding" tip) | The tip never fires; nothing else uses it |
 | `Core/RZ_Util.c:3` | (the comment that explains VERIFY) | — |
 | `Cure/RZ_AntidoteConsumable.c:11`, `Cure/RZ_MedConsumable.c:8` | the consumable's `ApplyEffect` also runs on the server, where the cure happens | Remove the consumable effect from the prefab: the world actions ("Inject antidote", "Take ...") still work |
@@ -1985,7 +2080,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Core/RZ_Util.c:973` | `SCR_AIGroup.IsExpandComplete()` turns true once the AI world's spawn queue has given every member slot a living character | Every supply truck waits 90 s in its yard, then goes with whoever is aboard |
 | `Core/RZ_Util.c:750` | a weapon's attachments (the suppressor) are child entities of the weapon | Suppressors aren't detected (full gunfire heat) |
 | `Core/RZ_Util.c:806` | a prefab's entity source names its entity class, so `Vehicle` and its children are recognised without spawning | A vehicle outside a `/Vehicles/` folder and not in the car settings could be sold: the shop's other checks (the path, the car and part prefabs) still hold |
-| `Puzzles/Missions/RZ_PuzzleMechanism.c:425` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
+| `Puzzles/Missions/RZ_PuzzleMechanism.c:427` | `GetTotalWeight()` (weight plus "additional weight") includes a bag's contents | Turn on **Scale counts items** |
 | `Missions/RZ_MissionBases.c:361` | the target prop has an `SCR_DamageManagerComponent` | Destroy missions (Arson, Sabotage, Burn the Nest) never finish: check the prop's damage manager |
 | `Interactions/RZ_Search.c:851` | a dead infected character from the zombie mod keeps an inventory that `TryInsertItem` fills, and vanilla's inventory opens it as the body's | What the body carries lies loose beside it instead (the fallback the code takes when nothing fits): nothing is lost |
 | `Interactions/RZ_WreckBoots.c:123` | a wreck prop faces its local +Z like a vehicle, so its rear (the boot) is its box's −Z side | **Open the boot** shows at the bonnet: flip the sign in `RZ_WreckBoots.BootPoint` |
@@ -1999,19 +2094,21 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:48` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
-| `Factions/RZ_CampLife.c:3991` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
-| `Factions/RZ_CampLife.c:4094` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
-| `Factions/RZ_CampLife.c:2339` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) across each of a piece's props' boxes (its two diagonals; the site grid off: along its footprint's sides and diagonals) at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
-| `Factions/RZ_SiteGrid.c:751` | a building's ground-floor windows are its children whose prefab names say "window" (the site grid marks them) | Nothing yet reads the window cells (the harden layer will): the audit's drawing shows none; report how a building's windows are named |
+| `Factions/RZ_CampLife.c:4484` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
+| `Factions/RZ_CampLife.c:4587` | a flat physics trace 0.4–2.3 m long at waist and head height (`TraceMoveWithoutCharacters`, world and entities) stops on a building's wall, a garden wall, a fence and a spawned camp piece, so loiter and watch spots are pushed back off walls | A leaning or standing person with a head in a wall: report where; the push does nothing and spots stand where they were drawn |
+| `Factions/RZ_CampLife.c:2736` | a flat physics trace (entities only, `TraceMoveWithoutCharacters`) across each of a piece's props' boxes (its two diagonals; the site grid off: along its footprint's sides and diagonals) at knee and chest height stops on walls, fences, trees, cars and props, and passes over open ground, grass and small bushes | Pieces through a fence or a tree (the trace sees nothing), or few pieces standing at all (it hits grass or bushes: the log's `planned pieces fit` line is low everywhere); report which |
+| `Factions/RZ_SiteGrid.c:802` | a building's ground-floor windows are its children whose prefab names say "window" (the site grid marks them and keeps where they are) | No window is boarded (the `Sites:` line's `0 windows boarded` at every building): report how a building's windows are named |
+| `Factions/RZ_SiteSolver.c:964` | a ground-floor window child's origin is at the middle of its opening (a board spawned at its height covers it) and an outside door's on its sill, not its hinge | Window boards hang above or below their windows, or a door board stands beside its door: report one, with the building |
+| `Factions/RZ_SiteSolver.c:1185` | `GeneratorFloodlight_US_01` in a composition is lit when it spawns and the guard leaves it (no fuel, storage or ReforgerZ part) | Halcyon's floodlights stand dark, or the log says `Dressing: removed GeneratorFloodlight...`: use a lamp post instead |
 | `RZ_SitesPlugin.c:56` (Workbench) | `SourceToEntity` gives the entity just created in the World Editor with its mesh loaded, so `GetWorldBounds` is the prop's box (**ReforgerZ: Measure prop footprints**) | The plugin writes nothing or tiny boxes: measure on the dedicated server instead (`FOOTPRINTS=1 tools/runtime_test/run.sh sites`, which wrote today's file) |
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
-| `Factions/RZ_CampLife.c:4175` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
-| `Factions/RZ_CampLife.c:3912` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
-| `Guidance/RZ_OpeningPlaces.c:351` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
+| `Factions/RZ_CampLife.c:4668` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
+| `Factions/RZ_CampLife.c:4405` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
+| `Guidance/RZ_OpeningPlaces.c:457` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
 | `World/RZ_PowerSite.c:357` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
 | `World/RZ_PowerSite.c:371` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
 
-### The UI (32)
+### The UI (36)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2023,11 +2120,15 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | Where | Behaviour to check | If it fails |
 |---|---|---|
 | `UI/RZ_UIData.c:981` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
-| `UI/RZ_Notebook.c:194` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
+| `UI/RZ_Notebook.c:207` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
-| `UI/RZ_NotebookItem.c:27` | the notebook item's gadget mode change to `IN_HAND` reaches the owning client, which opens the notebook | The item does nothing in the hand: the pause menu's button and N still open it |
-| `UI/RZ_Notebook.c:95` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
-| `UI/RZ_Notebook.c:1067` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
+| `UI/RZ_NotebookItem.c:31` | with **Gadget anim variable** MX991 the character takes the notebook item into the left hand as it does the MX991 flashlight (with none, the take never finishes: the old bug), and its `IN_HAND` mode switch, or the HUD's watch, opens the notebook | N says in the log "not in the hand 1.5 s after N" and opens the notebook anyway; the pause menu and **Read the notebook** still work. Try the map's hold instead (**Gadget anim variable** MAP, the paper map's `paper_map.agr`/`player_map.asi`) |
+| `UI/RZ_NotebookItem.c:260` | `CanEquipGadget` is true for the notebook item on foot (the inventory's **Equip** asks the same) | N opens the notebook without taking the item; the inventory has no Equip for it. Check the prefab against vanilla's map |
+| `UI/RZ_NotebookItem.c:336` | quick slots 0–3 are the weapon slots; the notebook goes on the last free one of the others (once per item) | It lands on a weapon slot or none: drag it to one by hand |
+| `UI/RZ_NotebookItem.c:76` | a carried notebook has a parent and one on the ground has none, so **Read the notebook** shows on the ground, and in hand only while it's held up and looked at (vanilla's inspection) | The prompt shows in the wrong place: N and the pause menu still open it |
+| `UI/RZ_NotebookItem.c:94` | **Read the notebook**, a local-only action, runs `PerformAction` on the machine of the player who used it | It does nothing: N and the pause menu still open it |
+| `UI/RZ_Notebook.c:96` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
+| `UI/RZ_Notebook.c:1080` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:51` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
 | `UI/RZ_Menus.c:55` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
 | `UI/RZ_UIData.c:1050` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
@@ -2068,6 +2169,9 @@ but `RZ_GameModeComponent` on a game mode (all settings at their defaults), in t
 [ReforgerZ] Season 1 (fresh). Rules: none. Wipe: 168 h after the cure.
 [ReforgerZ] World facts: season seed S, 0 canon facts, 0 season flags.
 [ReforgerZ] Settlement scan: 2 named, 12 building clusters, took 83 ms.
+[ReforgerZ] Mainland: mainland N km2 (100 m squares, N ms); K islands: 0.8 km2 (<town on it>), 0.1 km2, ...
+[ReforgerZ] Mainland: <town> at <grid> is on an island: not a settlement
+[ReforgerZ] Settlements: <town>'s middle was in the water: moved N m to <grid>
 [ReforgerZ] Perimeter: x 70 to 3913, z 488 to 3788. Warning zone 300 m, kill zone 100 m.
 [ReforgerZ] Perimeter checkpoints: 4 roads come within 350 m of the edge; 0 crossings of the checkpoint line (60 m inside the edge): 0 used, 0 closer than 800 m to another.
 [ReforgerZ] Perimeter checkpoints: 148 roads, 10 road ends with the sea within 40 m past them: 0 usable, 7 at a junction, 0 with the barrier in the sea or outside the line, 3 with another road within 75 m of the barrier.
@@ -2213,6 +2317,7 @@ Warnings worth acting on:
 |---|---|
 | `GUI (E): Menu preset 'RZ_NotebookMenu' not found!` (or another `RZ_` preset) | An engine line, before the `[ReforgerZ]` ones: the `chimeraMenus.conf` override (`Configs/System/`) wasn't loaded ([the UI](#setting-up-the-ui)). Only the menus are missing. |
 | `No common zombie prefabs configured. ...` | Set Zombies > Common prefabs (logged as an error: no infected spawn) |
+| `Notebook item: not in the hand 1.5 s after N; the notebook opened without it ...` | (client) The notebook item couldn't be taken into the hand: check its prefab's **Gadget anim variable** (MX991) and parent ([setting up the UI](#setting-up-the-ui), 4a) |
 | `Using N hand-placed settlement markers.` | Detection is off because markers are placed |
 | `No checkpoint barricade prefab set: road checkpoints are off (the roads give N spots).` | Set Perimeter > Barricade prefab; N is how many checkpoints it would build |
 | `Perimeter checkpoints: N roads come within 350 m of the edge; M crossings of the checkpoint line ...` | Roads that cross the line. N = 0 means the edge runs at sea all round (an island): the shore lines below fill in |
@@ -2235,11 +2340,14 @@ Warnings worth acting on:
 | `Checkpoints: no road points found near players; road posts stay down.` | No roads near where players were |
 | `Dressing: no kit for <faction> (<KIND>); those places stay bare.` | Printed once per faction and kind of place, the first time one is dressed: fill **Camp life > Kits** ([the compositions and kits](#camp-life-the-compositions-and-kits)). Road posts only take a kit made for them |
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
-| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
+| `Camp life: pre-reading <n> sites in the background, strongholds first.` | Once a run, when the land grid is read (Pre-read): every site is read and laid out as data before anyone comes near |
+| `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m, <prefab>), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
 | `Camp life: <Faction> <KIND> at <grid>: <n> of <m> planned pieces fit, laid out <where>; <c> counter(s), <s> left out facing water or a drop.` | The first time a run dresses a place, once its ground is read: how much of its plan fit and where. Few fitting everywhere: the footprint traces may be catching grass or bushes (the VERIFY); the `Sites:` line says why each was dropped |
-| `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
-| `Sites: <faction> <kind> at <grid>: score <s>; <n> of <m> pieces; perimeter not built yet; front <side> (<why>), water <sides>; dropped: <piece> (<why>), ...; <k> overlaps (...); <f> floating or buried; posts: ...; paths: ...; patrol <a> of <b> points walkable; read <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms), laid out in <ms> ms.` | Once per site a run, when it's laid out on its grid (in play and in the site audit): its audit ([SITES.md](SITES.md#the-audit)). Any overlap is a bug: report the line. "Most" over **Site read ms** by a lot means one part of the reading holds the server (the longest part) |
+| `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | With **Solver** on, the first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)); the `<n> of <m> planned pieces fit` line is the same with Solver off |
+| `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces and <l> of its layers, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |
+| `Sites: <faction> <kind> at <grid>: score <s>; <n> of <m> pieces; perimeter <p>% (gap <w> m at <bearing>), <g> gates; <i> indoors, <d> doors blocked, <b> windows boarded[, <o> outside the wire (...)]; front <side> (<why>), water <sides>; dropped: <piece> (<why>), ...; <k> overlaps (...); <f> floating or buried; posts: ...; paths: ...; patrol <a> of <b> points walkable; read <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms), laid out in <ms> ms in <steps> steps (most <ms> ms, the longest part <ms> ms).` | Once per site a run, when it's laid out (in play and in the site audit): its audit ([SITES.md](SITES.md#the-audit)). Any overlap is a bug: report the line. "Most" over **Site read ms** by a lot means one part of the reading holds the server (the longest part); "laid out in" is the solver's time in all, spread over seconds (its first step, the wire's trace, runs in one go) |
 | `Sites audit: <n> sites, mean <m>, worst <w> (<site>), <k> overlaps; <h> with a hard failure; <u> under <threshold>: ...` | The runtime test's summary, once every site is audited |
+| `Sites audit perimeters: <stronghold> <p>%, ...; <t> tier 1 pieces dropped, <o> pieces outside the wire.` | With the summary: each stronghold's wire closed, and what mustn't be dropped or stand outside |
 | `Camp life jobs: <place> (phase <n>), <p> people: <job counts>; ... at a seat, ... walking the camp, ... standing at a spot, ... on the move, ... standing still (no AI or group).` | At each phase at a live place: who does what. Many standing still: those people have no AI (a prefab without an AI control component) or no group prefab |
 | `Camp life: ... smart actions off, lone characters stand.` | Set **Camp life > Smart action waypoint** (people loiter beside the pieces until then) and **Group prefab** (lone occupants and guards don't move until then) |
 | `No lab prefab set. Samples can't be delivered ...` | Set Cure > Lab prefab |
@@ -2383,8 +2491,16 @@ step N`, `Openings: <name> went on talking with <player> into step N`,
 for <player>: <why> (step N, N min)`; the fallbacks' `Openings: no step 2 can run for <player> here
 (<background>)`, `Openings: no
 <background> place fits for <player>, a house instead`, `Openings: no place for <player> (<background>),
-the spawn point instead` and `Openings: no contact could stand for <player> at <grid>, the scene's
+the spawn point instead: <why doors were refused, e.g. a pack's lair x22>`, `Openings: no house over
+the way for <player> at <grid>, step 1 skipped` and `Openings: no contact could stand for <player> at <grid>, the scene's
 read instead`; a lead's end is `Openings: ended for <player>: found work at <place> (step 3, N min)`.
+
+Task places ([PLACES.md](PLACES.md#the-live-check)): nothing while every place is true to its words;
+`Place check: <need> at <grid> ("<text>") fails: <why>` (a warning) when a placed task's place, or a
+thing its words name, isn't (`<need> things` once a step's things should stand there: `missing the
+remains (none within 4 m)`; an empty slot: `missing the sample (Cure > Sample prefab is empty)`).
+Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`, `Places audit: ...`)
+are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
 start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
@@ -2585,8 +2701,8 @@ session, tick off:
   (the services are its replies); with **UI > Talk reply layout** empty: **Trade**, **Talk to
   whoever's in charge** and one **Ask the quartermaster** with the leader's asks and the
   safehouse's services; at the lab, Deliver
-  infected samples locked with NO SAMPLES when you carry none. The notebook item on the ground: one
-  **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
+  infected samples locked with NO SAMPLES when you carry none. The notebook item on the ground:
+  **Read the notebook** and one **Your name and the season**. Bells, sirens, a locked door's Unlock, Lock and Force, Clean the
   bite and Douse the doorway are still single prompts. An infected closing in shuts it. Text reads
   from the sofa on a TV. Empty the slot: every prompt is back.
 - [ ] The status strip and locked rows, with a pad and on a TV ([UI.md](UI.md#the-status-strip-and-locked-rows)):
@@ -3038,6 +3154,16 @@ when it happens)
   one-line read, no clue, and someone outside only one time in three (without: the read's own line
   hands you *Where the Work Is*). Turn **Puzzles > Civilian** and **Contact** empty: nobody outside,
   the read hands you the work, and a brand-new player's wanderer comes looking.
+- [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
+  words say: *Across the Road* sends you to a real house (or the chemist's, the garage...) 50–250 m
+  off, never into woods; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
+  find a dead infected there with the sample beside it; *Downwind*'s tree line has trees; the well
+  has a well. On Everon and Arland take a few errands that name a place (*Water for* a house: the
+  well in the town it names; *Filter Parts*: a pump house; *Shift Change*: a car by a road; *Not Past
+  the Chapel*: a farmhouse): each is there. The log has no `Place check:` warning; report any.
+  Before the session, `run.sh tasks everon` should print `0 kinds under the threshold`. On a fresh
+  season the start's `Mainland:` line names the islands and their towns; open the map and check no
+  holding, safehouse, the lab or a job's marker is on one, and no life starts there.
 - [ ] Tips come from context, one at a time, none in the first 90 s: bleed (a bandage line), stand
   by a quartermaster (a Favor line), stay out at dusk; never two at once.
 - [ ] **The quest tracker** ([UI.md](UI.md#the-quest-tracker); the mockup `UI/Previews/tracker.png`,
@@ -3071,9 +3197,9 @@ when it happens)
   REQUIREMENTS only on an offered job. Every text 18 px or more.
 - [ ] **Track on the Quests tab**: with a pad, **A** on a row tracks it and the HUD follows within
   2 s; A on the tracked row stops tracking (the button says UNTRACK) and the tracker goes and stays
-  gone until you take a new job. Y, T, Enter and the TRACK button do the same; A on the TRACK button
-  toggles once, not twice. The footer reads "D-pad: choose · A: track / untrack · LB/RB: tabs ·
-  B: close" (as pad buttons with a pad, keys with the keyboard), and changes with the tab (Radio
+  gone until you take a new job. Y, T, Space, Enter, the TRACK button and a double click on the row do the
+  same; A on the TRACK button toggles once, not twice, and a single click only selects. The footer reads
+  "D-pad: choose · A: track / untrack (or double-click, Space) · LB/RB: tabs · B: close" (as pad buttons with a pad, keys with the keyboard), and changes with the tab (Radio
   shows its filter, Standing "open"). Relog: the same job is still tracked.
 - [ ] The three objective marks (`track_current`, `track_next`, `track_done`) show after the atlas
   is imported again (UI/LAYOUTS.md, "Importing the icons"); before that they're blank, never another icon.
@@ -3277,8 +3403,15 @@ when it happens)
   through Standing, Quests, Radio, Journal and The season with real data (the Journal has the past
   jobs, then the notes: packs, doors, the finale, promises; The season scrolls down to the hall of fame); up/down
   move the Journal's and the Quests tab's selection and scroll the other lists; X or F cycles the Radio filter through six
-  names; B or Esc closes. With a pad only: Start, Notebook, A opens it; the notebook item taken in
-  hand (inventory or quick slot) opens it and is put away when it closes.
+  names; B or Esc closes. With a pad only: Start, Notebook, A opens it.
+- [ ] The notebook item, with the keyboard: N brings it into the left hand (held like the
+  flashlight) and the notebook opens a moment later; Esc closes it and the item goes back. Its quick
+  slot does the same, and **Equip** in the inventory (the inventory closes first). With a compass in
+  hand, N puts the compass away first; after closing, the compass isn't taken out again. In a car, N
+  opens the notebook without the item. Drop it: on the ground, **Read the notebook** opens it; held
+  up and looked at (vanilla's inspection), the same. The log has no "not in the hand 1.5 s after N".
+- [ ] The same with a pad only: View + RB, then the quick slot wheel (the notebook's slot), then
+  **Equip** in the inventory with A; B closes the notebook and the item goes back.
 - [ ] A new contract offer shows a count on the Quests tab, a radio message one on Radio; looking
   at the tab clears it.
 - [ ] With **Board menus** on (the default), reading a board opens the board menu, and typing in
@@ -3685,15 +3818,16 @@ when it happens)
 
 **Camp life** ([DESIGN.md](DESIGN.md#camp-life); the kits filled, set the game clock with the
 editor's time of day)
-- [ ] Walk up to an outpost of each faction: its pieces appear over about 20 s and stand on flat
-  ground round it, none on a road, none in or through a building's wall, a fence or a tree, none on
-  the quartermaster; the log has no `Dressing: removed` line and its `Camp life: ... planned pieces
-  fit` line says most of the plan fit. Leave (past 350 m) and come back: the same pieces in the
+- [ ] Walk up to an outpost of each faction: its pieces appear over about a minute and stand on
+  flat ground round it, none on a road, none in or through a building's wall, a fence or a tree,
+  none on the quartermaster; the log has no `Dressing: removed` line and its `Camp life: ...
+  solved` line says few were dropped. Leave (past 350 m) and come back: the same pieces in the
   same places.
-- [ ] It reads as the plan in `tools/camp_kit/camp_plans.html` (perhaps mirrored): barricades, the
-  nest and the faction's sign across the front, the fire and tables in the middle, the tents
-  together at the back, the cook pot and the woodpile together on one side, the latrine and the
-  line out at the far side. Nothing indoor stands on the grass (no cabinet, shelf or sink).
+- [ ] It reads as a camp (the plan in `tools/camp_kit/camp_plans.html` bent to the ground): the
+  faction's barrier round it with a gate on the road in, the nest beside the gate looking out,
+  the fire and tables together, the cook pot and the woodpile together by the back or side door,
+  the latrine and the line out at the far side. Nothing indoor stands on the grass (no cabinet,
+  shelf or sink).
 - [ ] The quartermaster stands behind his counter facing the open side (the yard, a door, a
   kiosk's window), never into a wall or a corner; the counter isn't in a wall or on a road.
 - [ ] Halcyon's tent stands (no `Dressing: removed` line for it), its flap toward the yard and the field table.
@@ -3731,6 +3865,11 @@ editor's time of day)
   helmet, flak vest or trousers, or in the FIA's beret and dirty turtleneck: check the lab's guards
   and extras, a supply truck's crew, the stronghold leaders (Halcyon's director in a suit and mask)
   and a mission's groups (Bust Out's Bastion squad, a Red Hand group, the escorted scientist).
+- [ ] Every member of a unit wears a look, the second man as much as the first: at the lab, a
+  Halcyon field station and the Halcyon stronghold, both guards of every pair in black hazmat, never
+  one in woodland with a flak vest; the same at a Bastion holding (both in olive M65, neither in
+  rolled-up woodland sleeves). Leave and come back three times (each visit spawns them afresh).
+  A survivor group's two unarmed members wear the Haven's work clothes.
 - [ ] Leave (past 300 m) and come back: each named person wears the same look as before.
 - [ ] A guard in each faction's looks fights through more than one magazine (his starting items
   moved with his clothes); a Haven guard in overalls and a Halcyon guard in hazmat still have theirs.
@@ -3749,8 +3888,9 @@ editor's time of day)
   memorial and the decon shower stand beside the front door, the trophy wall and the stall along
   the front.
 - [ ] The gate is on the road in from the next town: the nest or the toll barrier, the red hand
-  sheet or the plague board beside the road; the other road entries have a barricade beside the
-  road. Every road stays drivable (a supply truck and a car get through).
+  sheet or the plague board beside the road; the other roads through the wire are gates too, a
+  barricade beside them. Every road stays drivable (a supply truck and a car get through), and the
+  people walk in and out through the gates, not through the wire (the navmesh VERIFY).
 - [ ] Bastion by day: a lookout at a front corner as well as the nest. Under a curfew season, two on
   watch at night.
 - [ ] Nobody leaning, loitering or on watch by a house wall (Halcyon's guard pair at a field station
@@ -3767,11 +3907,26 @@ editor's time of day)
   on its log; with **ReforgerZ: Fly to the next site** take a screenshot of each site from above
   and at its gate, and hold it against `tools/camp_kit/sites_placed.html`: the pieces stand where
   the drawing has them, and nothing clips a wall, a fence, a tree, a rock or another piece.
-- [ ] Walk up to a stronghold: its pieces start to spawn within about a minute (its `Sites:` line's
-  `read ... ms in ... steps`), the server's frame time doesn't dip while it reads, and leaving and
-  coming back lays it out again at once (`laid out again as before`).
+- [ ] Start a server and wait for `Camp life: pre-reading ... sites` and the `Sites:` lines (about half
+  an hour on Everon); then walk up to a stronghold: its pieces start to spawn at once (`laid out
+  again as before`), the server's frame time doesn't dip while the sites are read in the background
+  (the `Sites:` line's longest parts), and leaving and coming back lays it out again at once.
+- [ ] A stronghold or a safehouse in a harbour town (on Everon: La Roue, Thollevast, Lancre, the
+  north coast at 059-095; on Arland: Angler Bluff, 32-11) stands on dry ground: no boat shed, quay or
+  lighthouse is its building (its `moves into ...` line names the prefab), nobody comes out on a pier
+  or in the water, and its `Sites:` line has no `over water`.
 - [ ] A piece the log says was dropped for "something standing there" really has something there
   (the drawing's `solid` lines name it); report any that stand on open ground.
+- [ ] Each stronghold is closed off: the faction's barrier runs along the drawing's wire line
+  (Bastion's concertina, the Red Hand's rusted tin, the Haven's fences, Halcyon's chain-link),
+  meeting the walls, hedges and water already there, no run floating off a slope or sunk into it;
+  the gaps the `Sites:` line names are where the drawing has them. One way in through the main
+  gate, the way from the door to it clear.
+- [ ] The building: every outside door but the entrance shut with its board (sandbags, the tin
+  shutter, pallets), the ground-floor windows boarded at the window's own height (the window VERIFY:
+  report a board floating above or below its window, or a door board beside its door rather than
+  across it). Halcyon's lab: the floodlights lit at the gate and the corners at night, nothing but
+  the decon shower, the generators, the antenna and a bench outside, the stores board by the door.
 
 **Traces** ([TRACES.md](TRACES.md); the log's `Traces:` lines, `/traces` and `/traces town <name>` as an
 admin; [the spike](#traces-the-workbench-spike-phase-0) first for the decals)

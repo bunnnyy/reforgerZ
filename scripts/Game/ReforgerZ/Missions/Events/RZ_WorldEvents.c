@@ -59,6 +59,7 @@ class RZ_Event_SirenTest : RZ_Event_Timed
 
 		m_sTitle = "Siren Test";
 		m_sBrief = string.Format("The air-raid sirens in %1 have started wailing. Every infected around is heading there. Everywhere else is quieter for the next five minutes.", s.m_sName);
+		m_sObjective = string.Format("Keep away from the sirens in %1 for five minutes.", s.m_sName);
 		return true;
 	}
 
@@ -106,6 +107,7 @@ class RZ_Event_Storm : RZ_Event_Timed
 		gm.GetHeat().SetEventModifiers(3, 0.6);
 		m_sTitle = "Storm";
 		m_sBrief = "A storm is rolling in. Wind and rain will cover your noise for the next 15 minutes. A good time to move.";
+		m_sObjective = "Move while the storm covers your noise.";
 		return true;
 	}
 
@@ -179,6 +181,7 @@ class RZ_Event_WanderingTrader : RZ_Event_Timed
 
 		m_sTitle = "Wandering Trader";
 		m_sBrief = string.Format("A wandering trader has pulled his wagon up outside %1 for the next 20 minutes, with things nobody has seen on a shelf since the gates closed. Everyone on the open channel knows he's there. Protect him, or rob him.", s.m_sName);
+		m_sObjective = string.Format("Protect or rob the trader outside %1.", s.m_sName);
 		Truth(gm);
 		return true;
 	}
@@ -331,6 +334,7 @@ class RZ_Event_BastionShelling : RZ_Mission
 		m_vPos = s.m_vCenter;
 		m_sTitle = "Bastion Shelling";
 		m_sBrief = string.Format("Bastion's mortar crews will shell %1 in five minutes: the town has gone over, and containment says it goes. The loudspeaker gave the warning once. They don't check for survivors after. Get out, or loot fast.", s.m_sName);
+		m_sObjective = string.Format("Get out of %1 before the shells land.", s.m_sName);
 		return true;
 	}
 
@@ -401,6 +405,7 @@ class RZ_Event_MassGrave : RZ_Mission
 		gm.SpawnSamples(m_vPos, 3);
 		m_sTitle = "Mass Grave";
 		m_sBrief = string.Format("Someone found a mass grave outside %1: the first week's dead, from before anyone had time to dig them separate holes. Halcyon pays for samples from a site like that. Something underneath is still moving.", s.m_sName);
+		m_sObjective = string.Format("Take samples from the mass grave outside %1.", s.m_sName);
 		return true;
 	}
 
@@ -463,6 +468,7 @@ class RZ_Event_StashNote : RZ_Mission
 		gm.SpawnRewardCrate(m_vPos);
 		m_sTitle = "Stash Note";
 		m_sBrief = string.Format("A note was found on a body: 'Buried the good stuff at %1. Don't tell anyone.' Too late for that.", RZ_SettlementScanner.GridReference(m_vPos));
+		m_sObjective = string.Format("Dig up the stash at grid %1.", RZ_SettlementScanner.GridReference(m_vPos));
 		return true;
 	}
 
@@ -525,6 +531,7 @@ class RZ_Mission_TurnedPlayer : RZ_Mission_KillTagged
 		m_bSpawned = true;
 		m_sTitle = "Turned: " + m_sName;
 		m_sBrief = string.Format("%1 has turned, still carrying everything they had. Whoever reaches them first decides what happens to it.", m_sName);
+		m_sObjective = string.Format("Reach the turned %1 before anyone else does.", m_sName);
 		return true;
 	}
 

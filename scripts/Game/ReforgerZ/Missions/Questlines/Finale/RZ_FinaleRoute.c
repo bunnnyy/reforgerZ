@@ -333,6 +333,20 @@ class RZ_FinaleRoute : RZ_Questline
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The stage's objective in one line: who, what and where ({keys} filled by the scene).
+	protected string StageObjective(int stage)
+	{
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The release's objective, the same on every route.
+	protected static string ReleaseObjective()
+	{
+		return "Set the release's terms with the duty officer in the clean room at the lab in {lab_town}.";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The remake step after a lost stand (the finisher only).
 	protected string RemakeText()
 	{
@@ -1155,6 +1169,7 @@ class RZ_Mission_FinaleDesk : RZ_QM_HalcyonScene
 		m_iSettlement = gm.FindNearestSettlement(at);
 		m_sTitle = RZ_CureFinale.RouteTitle(m_iRoute);
 		m_sBrief = string.Format("The cure is at the gate. %1 takes names for its route here.", RZ_CureFinale.RouteName(m_iRoute));
+		m_sObjective = string.Format("Talk to %1 in %2 about %3's route.", clerk, GetLocationName(gm), RZ_CureFinale.RouteName(m_iRoute));
 		int talk = AddClue(clerk, Pitch());
 		string lockLabels = "What would it mean?|Write me down [no return]|";
 		if (TreesTakeNames() && m_iRoute != RZ_CureFinale.INDEP)

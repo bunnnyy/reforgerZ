@@ -61,10 +61,11 @@ Two layers:
 
 Errands are never stages, and on the map only while tracked (a diamond on the step's place, then the giver's: [UI.md](UI.md#the-map)). Every one has a way without a gun. They spawn no
 AI, no loot and no items. A few steps show a prop at their place while they're open (**Missions >
-Errands > Props**: a dead man's effects, a crate, papers, a part; up only while a player is within
-150 m, gone when the step is done; empty slots: words only): His Effects, The Name on the Tape,
-Notebook 31 and its fallout, Into the Record, The Truck Didn't Come, Clean Glasses, Pack for the
-Queue, Last Orders, Buy It Back and Filter Parts. Nobody in the Zone calls them errands: the Haven asks you to "do us a
+Errands > Props**: a dead man's effects, a crate, papers, a part; and the car of Shift Change, the
+openings' **Guidance > Car wreck prefab**; up only while a player is within 150 m, gone when the
+step is done; empty slots: words only, and a `Place check:` warning): His Effects, The Name on the
+Tape, Notebook 31 and its fallout, Into the Record, The Truck Didn't Come, Clean Glasses, Pack for
+the Queue, Last Orders, Buy It Back, Filter Parts and Shift Change. Nobody in the Zone calls them errands: the Haven asks you to "do us a
 turn", Bastion has "a detail", the Red Hand "a little something", Halcyon "a small request".
 
 ## Givers
@@ -194,13 +195,20 @@ Don't answer that."* Every other card keeps the rule: never to whoever made its 
 
 **Places**, all within 1.5 km of the offer: the giver's place, its gate (15–25 m), 200–400 m out,
 300–500 m out, the nearest empty village within 1.2 km, the nearest other town, or the card's own
-place (a wreck, an impact, another house, the warning point at the line). A way whose place doesn't
-exist here isn't offered. You're at a place within the way's own radius or 15 m, whichever is wider,
-in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)).
+place (a wreck, an impact, another house, the warning point at the line). Each is true to the step's
+words: the way's place need (`m_sNeed`: the well, the pump house, the farmhouse, a road for a car,
+the ridge, houses for a town by name...; [PLACES.md](PLACES.md#the-needs)) is met, or the next of
+the four nearest towns is tried. A way whose place doesn't exist here isn't offered; a routine whose
+ask names `{next_town}` isn't dealt when no town near has the place. You're at a place within the way's own
+radius or 15 m, whichever is wider, in a vehicle too ([arriving](DESIGN.md#mission-building-blocks)).
 
 **Done** is coming back: to the giver's place, arriving as above (a wanderer: where they stand now), or
 asking them again. **Helpers** are the asker's vanilla group within 50 m for 2 minutes or when the
 step was done, three at most.
+
+A way's **step** is the line the tracker shows: it names who and where with the card's tokens
+(`{giver}`, `{place}`, `{here}`...), and the way back names the giver's place
+([MISSIONS.md](MISSIONS.md#objectives); how it's written: [WRITING.md](WRITING.md#objective-lines)).
 
 ## Work sites
 
@@ -353,7 +361,7 @@ Some routines answer a small real fault at a place (`RZ_Faults`), rolled at most
 | **The Newcomer** | safehouse, the clerk | the house took someone in this season day | A coat from the next town (20 s), or [Nurse or Doctor] check him over (30 s): 4 Favor |
 | **The Children's Hour** | safehouse | 5+ people, 08:00–17:00 | Watch the yard 5 real min: 4 Favor |
 | **Make It Right** (amends) | safehouse, the lookout | the Haven Watches you | Keep the gate (3 min) or carry the night water (15 s at the next town): amends |
-| **Shift Change** | Bastion post | the relief fault | Wake the relief 200–400 m out (10 s): 4 Favor, fixed. Report him: 1 Fame. Stand the post (3 min): 6 Favor, fixed |
+| **Shift Change** | Bastion post | the relief fault | Wake the relief in a car at a road's verge 200–400 m out (10 s): 4 Favor, fixed. Report him: 1 Fame. Stand the post (3 min): 6 Favor, fixed |
 | **The Set** | Bastion post, the radio operator | the set fault, 17:30–20:30 | A battery: 5 Favor, fixed |
 | **The Wire** | Bastion post | a Bastion truck lost within 1.5 km in a season day, or a town at 50+ within 1.5 km; not Watched | Man the wire 5 min: 6 Favor |
 | **The Count** | Bastion post | a Bastion truck lost near, or the post short; Known | Count three stacks at the table (hold, 9 s), then write what's there (6 Favor) or what they want (10 Favor; a world record) |

@@ -1396,7 +1396,11 @@ class RZ_Land
 			if (!IsDry(c))
 				continue;
 
+			// An island is neither field nor wild: no pack lives where nobody can walk (RZ_Mainland)
 			vector center = CellCenter(c);
+			if (!RZ_Mainland.OnMainland(center))
+				continue;
+
 			bool atLine = perimeter && perimeter.IsNearLineWithin(center, 200);
 			if ((near[c] & 2) != 0 && (near[c] & 1) == 0 && GetTreeClass(c) == TREES_NONE && m_aRange[c] <= FIELD_RANGE && Math.AbsFloat(Relief(c)) < FIELD_RELIEF)
 			{

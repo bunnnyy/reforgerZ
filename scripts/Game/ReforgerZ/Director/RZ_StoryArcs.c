@@ -976,6 +976,7 @@ class RZ_StoryArcs
 				}
 
 				// What the black market holds right now decides the brief
+				defence.m_sObjective = "Hold the lab in {lab_town} for four minutes.";
 				if (m_GM.GetFacts().StolenDoses() > 0)
 					defence.m_sBrief = "The Red Hand is still selling our stolen antidotes, and it wants more to sell. Now it's coming to the lab for them. Hold it for four minutes.";
 				else
@@ -1432,6 +1433,7 @@ class RZ_Mission_DeserterMap : RZ_PuzzleMission
 		m_vPos = m_vBody;
 		m_sTitle = "The Deserter's Map";
 		m_sBrief = string.Format("A Bastion deserter died by the road outside %1 with part of a map on him. People say it leads to a bunker Bastion never told anyone about.", s.m_sName);
+		m_sObjective = string.Format("Find the deserter's map pieces and the bunker near %1.", s.m_sName);
 		return true;
 	}
 
@@ -1572,6 +1574,7 @@ class RZ_Mission_FeverWater : RZ_Mission_WaterSurvey
 
 		m_sTitle = "Fever Town: the water";
 		m_sBrief = string.Format("People at the safehouse in %1 are running fevers and nobody's been bitten. Halcyon wants samples from the well there and from two towns nearby. Stand at each for 10 seconds.", s.m_sName);
+		m_sObjective = string.Format("Sample the well at the safehouse in %1 and in two towns nearby.", s.m_sName);
 		return true;
 	}
 
@@ -1631,8 +1634,9 @@ class RZ_Mission_FeverEvacuation : RZ_Mission_Hold
 		m_iSettlement = h.m_iSettlement;
 		m_vPos = h.m_vPos;
 		m_fParticipationRadius = 80;
-		m_sTitle = "Fever Town: get them out";
+		m_sTitle = "Fever Town: the evacuation";
 		m_sBrief = string.Format("The well at the safehouse in %1 is poisoned. The old and the sick can't walk far. Hold the gate for two minutes while we carry them out.", h.m_sName);
+		m_sObjective = string.Format("Hold the gate of the safehouse in %1 for two minutes.", h.m_sName);
 		return true;
 	}
 

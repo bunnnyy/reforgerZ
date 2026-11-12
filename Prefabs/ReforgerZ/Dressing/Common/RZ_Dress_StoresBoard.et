@@ -1,0 +1,34 @@
+GenericEntity {
+ ID "13F8DB097932647B"
+ components {
+  RplComponent "{9A34CA0849671981}" {
+  }
+  Hierarchy "{671FF70977E318FA}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{30A3B16FEE9783B4}Prefabs/Props/Services/ChalkBoard_01/ChalkBoard_01.et" {
+   ID "64E84964613AC976"
+   components {
+    Hierarchy "{46CCAE956F02EC81}" {
+    }
+   }
+   coords 0 0 0
+  }
+  GenericEntity : "{A971B1711AC8958A}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V1.et" {
+   ID "3D98448718785545"
+   coords 0.2 1.3 -0.04
+   angles 0 180 0
+  }
+  GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+   ID "07670DB54D283E94"
+   components {
+    Hierarchy "{C15AFEF95C6C0F60}" {
+    }
+   }
+   coords 1.0 0 -0.3
+   angles 0 20 0
+  }
+ }
+}

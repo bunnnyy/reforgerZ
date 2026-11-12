@@ -142,6 +142,7 @@ class RZ_Mission_TheList : RZ_PuzzleMission
 		m_sTitle = "The List";
 		m_sBrief = string.Format("The safehouse in %1 has crossed %2 off its list, and nobody will tell %3 why. %2 is %3's %4. It isn't really our business. It's somebody's. Ask around, quietly, and then decide who ought to hear it.",
 			m_sHouse, m_sName, m_sKin, m_sKinWord);
+		m_sObjective = string.Format("Find out why the safehouse in %1 crossed %2 off its list.", m_sHouse, m_sName);
 		return true;
 	}
 

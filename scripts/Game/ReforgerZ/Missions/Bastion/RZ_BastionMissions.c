@@ -62,11 +62,13 @@ class RZ_Mission_ClearSettlement : RZ_Mission
 		{
 			m_sTitle = "Take Back " + s.m_sName;
 			m_sBrief = string.Format("The families who lived in %1 have been sleeping on other people's floors since the first week, and they want to go home. The town is still full of infected. Put down %2 of them inside it, and we can start walking people back in.", s.m_sName, m_iKillsNeeded);
+			m_sObjective = string.Format("Put down %1 infected inside %2.", m_iKillsNeeded, s.m_sName);
 			return;
 		}
 
 		m_sTitle = "Retake " + s.m_sName;
 		m_sBrief = string.Format("%1 has gone over to the infected, and every day it stays that way it spreads to the roads round it. The stronghold wants it cleared. Put down %2 of them inside the town. Count your rounds: we can't spare many.", s.m_sName, m_iKillsNeeded);
+		m_sObjective = string.Format("Put down %1 infected inside %2.", m_iKillsNeeded, s.m_sName);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -180,6 +182,7 @@ class RZ_Mission_LastHelicopter : RZ_Mission
 		m_sTitle = "Last Helicopter";
 		m_sBrief = string.Format("Our last working helicopter is setting down at the LZ outside %1 on its run between posts, with people and stock aboard. It lifts off in %2 minutes. The rotors bring in every infected for a kilometre, and anyone else who wants a look at what's aboard. Keep the LZ clear and be there when it goes.",
 			s.m_sName, RZ_Util.RoundToInt(COUNTDOWN / 60));
+		m_sObjective = string.Format("Keep the LZ outside %1 clear until the helicopter lifts off.", s.m_sName);
 
 		// The first run after a grounding says what changed (a new pilot, a patched airframe)
 		m_sBrief = RZ_Quest_LastPilot.BackLine(gm) + m_sBrief;
@@ -307,6 +310,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 			m_sTitle = "Burn the Bodies";
 			m_sDeed = "burnt the dead round the lab";
 			m_sBrief = "The dead are stacking up round the Halcyon lab: four piles, from the nights its guards held the fence. Left there, they draw more in, and the lab can't afford a siege. Burn all four. The fire is seen for miles, so don't stand admiring it.";
+			m_sObjective = "Burn the four piles of bodies round the lab in {lab_town}.";
 			return true;
 		}
 
@@ -321,6 +325,7 @@ class RZ_Mission_BurnTheBodies : RZ_Mission_VisitPoints
 		m_sTitle = "Burn the Bodies";
 		m_sDeed = "burnt the dead in {town}";
 		m_sBrief = string.Format("We put down a lot of infected in %1 and had no time to bury them. There are five piles in the streets now, and they spread it to anything that feeds there. Burn all five. Fire draws attention: expect company while it burns.", s.m_sName);
+		m_sObjective = string.Format("Burn the five piles of bodies in %1.", s.m_sName);
 		return true;
 	}
 
@@ -414,6 +419,7 @@ class RZ_Mission_Recon : RZ_Mission_VisitPoints
 		m_sTitle = "Recon";
 		m_sDeed = "scouted {town} for us";
 		m_sBrief = string.Format("We have no eyes on the hills round %1, and the next horde could be forming there for all we know. Get up to three observation points on the high ground and watch from each for 15 seconds. What you see tells the stronghold where to send the guns.", s.m_sName);
+		m_sObjective = string.Format("Watch from three observation points on the hills round %1.", s.m_sName);
 		return true;
 	}
 
@@ -516,6 +522,7 @@ class RZ_Mission_CheckpointDuty : RZ_Mission_Hold
 		m_sTitle = "Checkpoint Duty";
 		m_sDeed = "stood a shift at the checkpoint near {town}";
 		m_sBrief = string.Format("%1 is infested, and we're sealing it off before it spreads down the roads: barriers across every way in and out. Hold the checkpoint at the edge of town for 10 minutes while they go up. Survivors come through and get searched. Everything else gets stopped.", s.m_sName);
+		m_sObjective = string.Format("Hold the checkpoint at the edge of %1 for 10 minutes.", s.m_sName);
 		return true;
 	}
 
@@ -595,6 +602,7 @@ class RZ_Mission_MissingPatrol : RZ_Mission_KillTagged
 		m_sTitle = "Missing Patrol";
 		m_sDeed = "found the patrol near {town}";
 		m_sBrief = string.Format("One of our patrols went silent outside %1. The names are still on the roster, and the roster stands: we look for our own, one way or the other. Find their last position and put down whatever they've become. If they've turned, it's the last thing anyone can do for them.", s.m_sName);
+		m_sObjective = string.Format("Find the missing patrol's last position outside %1.", s.m_sName);
 
 		// A military pack near: they're its new contacts now (docs/INFECTED.md, People)
 		RZ_Tribes tribes = RZ_TribeContract.Tribes(gm);
@@ -893,6 +901,7 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 		m_fParticipationRadius = 0;
 		m_sTitle = "Crash Site";
 		m_sDeed = "went to the crash near {town}";
+		m_sObjective = string.Format("Recover the helicopter's black box from the wreck at grid %1.", RZ_SettlementScanner.GridReference(m_vPos));
 		if (!m_sPilot.IsEmpty())
 			m_sBrief = string.Format("Bastion's last helicopter came down short of the line at grid %1. %2 was flying it. The box light's still blinking. Bastion's drop is at %3. The Red Hand would pay for it at %4.", RZ_SettlementScanner.GridReference(m_vPos), m_sPilot, b.m_sName, r.m_sName);
 		else
@@ -1036,7 +1045,8 @@ class RZ_Mission_CrashSite : RZ_Mission_Choice
 
 		m_bTeam = true;
 		vector road = LandPointNear(m_vPos, 70, 110);
-		if (RZ_StoryGroups.Spawn(gm, this, RZ_Mission_BustOut.SquadPrefab(gm), road, LandPointNear(m_vPos, 8, 15), "recovery team"))
+		ResourceName team = gm.PickLook(RZ_Mission_BustOut.SquadPrefab(gm), RZ_Looks.SeedAt(road));
+		if (RZ_StoryGroups.Spawn(gm, this, team, road, LandPointNear(m_vPos, 8, 15), "recovery team"))
 			RZ_ContractHelp.NotifyNear(gm, m_vPos, 150, m_sTitle, string.Format("A truck pulls up on the road, %1, and a section climbs down and walks toward the wreck.", RZ_Util.DirectionText(m_vPos, road)));
 
 		bool trusted = false;
@@ -1452,6 +1462,7 @@ class RZ_Mission_RaidRedHand : RZ_Mission
 		m_fParticipationRadius = 250;
 		m_sTitle = "Raid the Red Hand";
 		m_sBrief = string.Format("A Red Hand crew has set up camp outside %1 and is tolling the road there: tins, fuel, sometimes people. Since the hill road on Day 8, we don't leave a crew camped near our roads. Take the camp. Their lookout sits on the edge of it, if you'd rather talk first.", s.m_sName);
+		m_sObjective = string.Format("Take the Red Hand camp outside %1.", s.m_sName);
 		Truth(gm);
 		return true;
 	}
@@ -1739,6 +1750,7 @@ class RZ_Mission_Requisition : RZ_Mission_Choice
 		m_sTitle = "Requisition";
 		m_sDeed = "brought in what the stores were short of";
 		m_sBrief = string.Format("Every name on our roster has to eat, and the Haven's stores in %1 hold more than they're letting on. Collect a contribution and bring it to our drop at %2. It's for their protection. Their people in %3 will call it theft and ask for it back, and it's for whoever carries it to decide if they get it.", s.m_sName, b.m_sName, havenName);
+		m_sObjective = string.Format("Collect a contribution from the Haven stores in %1 and bring it to the drop at %2.", s.m_sName, b.m_sName);
 		return true;
 	}
 

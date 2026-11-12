@@ -22,6 +22,8 @@ modded class RZ_GameModeComponent
 		m_bRZSOwnWorld = world.Contains("RZSites_");
 		Print(string.Format("RZS start: world %1, %2 props to measure, own world %3", world, RZS_Props.List().Count(), m_bRZSOwnWorld));
 		GetGame().GetCallqueue().CallLater(RZS_Tick, 1000, true);
+		// The audit queues every site itself (with its drawing): no pre-reading
+		RZ_CampLife.s_bNoPreRead = true;
 	}
 
 	void RZS_Tick()
@@ -63,6 +65,10 @@ modded class RZ_GameModeComponent
 
 			if (m_iRZSNext >= RZS_Props.List().Count())
 			{
+				// Which way a roll tilts a piece (RZ_CampLife.ROLL_SIGN): +x's height after a roll of 10
+				vector rolled[4];
+				Math3D.AnglesToMatrix(Vector(0, 0, 10), rolled);
+				Print(string.Format("RZS roll: angles (0, 0, 10) take +x to %1 (y over 0: a positive roll raises +x)", rolled[0]));
 				Print("RZS footprints done");
 				m_iRZSPhase = 2;
 			}
@@ -90,6 +96,7 @@ modded class RZ_GameModeComponent
 
 		m_iRZSPhase = 4;
 		int under = camp.AuditSummary();
+		RZS_PierProbe(camp);
 		Print(string.Format("RZS done: %1 strongholds under the threshold (%2), at %3 s", under, camp.GetSettings().m_iAuditThreshold, m_iRZSSec));
 		if (m_bRZSOwnWorld)
 			GetGame().GetCallqueue().CallLater(RZS_Close, 2000, false);
@@ -166,6 +173,32 @@ modded class RZ_GameModeComponent
 			RZS_Bounds(child, depth + 1, lo, hi);
 			child = child.GetSibling();
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every town as each faction's stronghold: the building picked before the waterside was ruled
+	//! out and now, printed where they differ or either is over water.
+	protected void RZS_PierProbe(RZ_CampLife camp)
+	{
+		array<RZ_EFaction> factions = {RZ_EFaction.MILITARY, RZ_EFaction.BANDITS, RZ_EFaction.SURVIVORS, RZ_EFaction.INSTITUTE};
+		int n = 0;
+		foreach (RZ_Settlement s : GetSettlements())
+		{
+			foreach (RZ_EFaction f : factions)
+			{
+				string probe = camp.ProbeSite(f, s.m_vCenter);
+				int cut = probe.IndexOf(" -> ");
+				string before = probe.Substring(0, cut);
+				string now = probe.Substring(cut + 4, probe.Length() - cut - 4);
+				if (before == now && !probe.Contains("over water"))
+					continue;
+
+				n++;
+				Print(string.Format("RZS pier: %1 stronghold at %2 (%3): %4", RZ_Factions.GetName(f), s.m_sName, RZ_SettlementScanner.GridReference(s.m_vCenter), probe));
+			}
+		}
+
+		Print(string.Format("RZS pier probe: %1 towns and factions changed or by the water", n));
 	}
 
 	void RZS_Close()

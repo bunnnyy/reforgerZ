@@ -186,6 +186,7 @@ class RZ_Mission_NoReply : RZ_PuzzleMission
 		m_vPos = m_vPost;
 		m_sTitle = "No Reply";
 		m_sBrief = string.Format("The radio operator at %1 wants a word, in person. Something about last night's call to Command, after the numbers were read and 'No reply' written in the log. Go and hear the operator out. Keep it off the open channel: a post that starts waiting again stops looking after itself.", m_sPost);
+		m_sObjective = string.Format("Hear out the radio operator at %1, in person.", m_sPost);
 		return true;
 	}
 
@@ -595,6 +596,7 @@ class RZ_Mission_StruckOff : RZ_PuzzleMission
 		m_vPos = m_vWitness;
 		m_sTitle = "Struck Off";
 		m_sBrief = string.Format("%1 walked off post at %2 with a week's rations, they say. He's on the board as killed in action. A Haven trader in %3 says she sold him fish two days ago. Bring him back, or bring back his tag.", m_sName, m_sPost, m_sTown);
+		m_sObjective = string.Format("Bring back %1, or %1's tag, from near %2.", m_sName, m_sTown);
 		return m_Escort.Begin(gm, m_vHide);
 	}
 

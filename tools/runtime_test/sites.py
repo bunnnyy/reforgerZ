@@ -75,7 +75,7 @@ def footprints(log, out):
 
 
 def summary(log):
-    keep = ("[ReforgerZ] Sites audit", "[ReforgerZ] Sites:", "RZS done", "RZS footprint missing", "RZS footprint failed", "RZS land ready", "RZS audit:")
+    keep = ("[ReforgerZ] Sites audit", "[ReforgerZ] Sites:", "RZS done", "RZS footprint missing", "RZS footprint failed", "RZS land ready", "RZS audit:", "RZS roll")
     for line in open(log, encoding="utf-8", errors="replace"):
         if any(k in line for k in keep):
             i = line.find("Sites")

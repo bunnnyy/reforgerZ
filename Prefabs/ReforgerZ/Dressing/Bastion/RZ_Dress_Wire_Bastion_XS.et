@@ -1,0 +1,21 @@
+GenericEntity {
+ ID "BA06214241939809"
+ components {
+  RplComponent "{4AB96F9093E34728}" {
+  }
+  Hierarchy "{812AFFCA8A295206}" {
+  }
+ }
+ coords 0 0 0
+ {
+  StaticModelEntity : "{AE28D47CF26E91EA}Prefabs/Props/Military/Fortification/CzechHedgehog_01_rusty.et" {
+   ID "7A6580D0B13C8330"
+   components {
+    Hierarchy "{C56FBD3FFF8F0F75}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 12 0
+  }
+ }
+}

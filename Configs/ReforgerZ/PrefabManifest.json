@@ -4510,12 +4510,12 @@
    "path": "",
    "basePrefab": "",
    "baseFind": "",
-   "baseHint": "the 49 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits)",
+   "baseHint": "the 83 RZ_Dress_* compositions in Prefabs/ReforgerZ/Dressing/ (section 4, Camp life: the compositions and kits)",
    "components": [],
    "actions": [],
-   "slots": ["m_CampLifeSettings.m_aKits[].m_aPieces[].m_sPrefab"],
+   "slots": ["m_CampLifeSettings.m_aKits[].m_aPieces[].m_sPrefab", "m_CampLifeSettings.m_aKits[].m_aLayers[].m_sPrefab"],
    "listSlot": false,
-   "slotLabel": "Territory > Camp life > Kits (each piece's prefab)",
+   "slotLabel": "Territory > Camp life > Kits (each piece's prefab, the plan's and the layers')",
    "required": false,
    "minimum": false,
    "use": "scenery at holdings, safehouses and road posts (a place with no kit stays bare)",
@@ -5662,11 +5662,12 @@
    "kind": "create",
    "system": "UI",
    "path": "Prefabs/ReforgerZ/UI/RZ_Notebook.et",
-   "basePrefab": "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_MarbleBlack_CP.et",
+   "basePrefab": "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et",
    "baseFind": "",
-   "baseHint": "a small notebook item (vanilla's carryable notebook); display name Notebook, weight 0.1 kg",
+   "baseHint": "a gadget on vanilla's Item_Base with the notebook's mesh (Notebook_01_Single.xob, marble black); display name Notebook, weight 0.1 kg, slot type SLOT_GADGETS_STORAGE, held like the MX991 flashlight",
    "components": [{"cls": "RZ_NotebookGadgetComponent", "values": [], "name": ""}],
    "actions": [
+    {"cls": "RZ_ReadNotebookAction", "values": [], "name": "Read the notebook"},
     {"cls": "RZ_DeadNameAction", "values": [], "name": "If I die: say my name, or don't"},
     {"cls": "RZ_EpiNotebookAction", "values": ["m_eKind=0"], "name": "The season, as the Zone tells it"},
     {"cls": "RZ_EpiNotebookAction", "values": ["m_eKind=1"], "name": "My name in the world"}
@@ -5676,8 +5677,8 @@
    "slotLabel": "UI > Notebook prefab",
    "required": false,
    "minimum": false,
-   "use": "given to every new life; taken into the hand it opens the notebook (the pad's way in besides the pause menu)",
-   "notes": "Built as text in the repo; check in Workbench that it can be taken into the hand and put in a quick slot"
+   "use": "given to every new life and put on a free quick slot; taken into the hand (N, the quick slot, the inventory's Equip) it opens the notebook, and goes back when it closes",
+   "notes": "Built as text in the repo. Its gadget component needs Gadget anim variable MX991 (without one the character can't take it into the hand); the item animation attributes the MX991 graph, AllowInspection on"
   },
   {
    "id": "CompassItem",
@@ -6710,7 +6711,7 @@
    "category": "Territory",
    "object": "Camp life",
    "field": "m_CampLifeSettings",
-   "covers": "**Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (90, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life))"
+   "covers": "**Dressing** (on), **Routines** (on), pieces per stronghold / outpost / safehouse / field station / road post (20 / 13 / 8 / 9 / 4), pieces at most (200, spawned 4 per tick), live places (3), shuffle minutes (3), extras per live place / at most (1 / 6), the five waypoint slots and the group prefab, **Kits** ([DESIGN.md](DESIGN.md#camp-life)), **Site grid** (on), **Site read ms** (2), **Pre-read** (on), **Audit threshold** (70), **Solver** (on), **Candidates a piece** (24), **Layers** (on), **Board windows** (on), **Layer pieces** (60) ([SITES.md](SITES.md#settings))"
   },
   {
    "category": "Guidance",
@@ -7501,14 +7502,20 @@
     "m_iPiecesSafehouse": "8",
     "m_iPiecesFieldStation": "9",
     "m_iPiecesRoadPost": "4",
-    "m_iPiecesMax": "90",
+    "m_iPiecesMax": "200",
     "m_iLivePlaces": "3",
     "m_fShuffleMinutes": "3",
     "m_iExtrasPerPlace": "1",
     "m_iExtrasMax": "6",
     "m_bSiteGrid": "1",
     "m_iSiteReadMs": "2",
-    "m_iAuditThreshold": "70"
+    "m_iAuditThreshold": "70",
+    "m_bSolver": "1",
+    "m_iCandidates": "24",
+    "m_bLayers": "1",
+    "m_bBoardWindows": "1",
+    "m_bPreRead": "1",
+    "m_iLayerPieces": "60"
    }
   },
   {

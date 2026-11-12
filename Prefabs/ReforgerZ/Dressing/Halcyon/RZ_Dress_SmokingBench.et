@@ -1,0 +1,67 @@
+GenericEntity {
+ ID "00F9B277DF08D319"
+ components {
+  RplComponent "{2786B0F3CDCFF7D3}" {
+  }
+  Hierarchy "{7763D6DDAB14179E}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D63716E01EF9AC74}Prefabs/Props/Forest/ForestBench_01/ForestBench_01.et" {
+   ID "92C6CAA25C44D90B"
+   components {
+    Hierarchy "{5457EC5774D54AF8}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 2 0
+  }
+  GenericEntity : "{E9CDDAFD49ACDE2A}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V1.et" {
+   ID "1D0216615F8721FB"
+   coords 1.3 0 0.4
+  }
+  GenericEntity : "{8599EE1DF5685104}Prefabs/Props/Garbage/Generic/LitterInterior_01/Single/LitterInterior_USSR_01_tincan_V2.et" {
+   ID "56276735969A4F75"
+   coords 1.4 0 0.2
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "0F2ECA0116EBC516"
+   components {
+    Hierarchy "{F6C2E16890F1E4F7}" {
+    }
+   }
+   coords -1.3 0 0.3
+  }
+  GenericEntity {
+   ID "0A11F6AAB257D1C0"
+   components {
+    SCR_AISmartActionSentinelComponent "{7818E4587EC9317A}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0 1.6 2.0
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{0C4716C7CE2FCAEB}" {
+    }
+   }
+   coords -0.35 0 0.3
+  }
+  GenericEntity {
+   ID "A944512D7CFF4028"
+   components {
+    SCR_AISmartActionSentinelComponent "{0E8B08BA9AB5B6D7}" {
+     Tags {
+      "RZ_Sit"
+     }
+     m_vLookPosition 0 1.6 2.0
+     m_eLoiterAnimation SMOKING
+    }
+    Hierarchy "{D117101940FCB20E}" {
+    }
+   }
+   coords 0.35 0 0.3
+  }
+ }
+}

@@ -3,6 +3,6 @@ SCR_AIGroup : "{1BB20A4B3A53D0F5}Prefabs/Groups/INDFOR/Group_FIA_LightFireTeam.e
  coords 0 0 0
  m_faction "SURV"
  m_aUnitPrefabSlots {
-  "{F7D8023C72A66D9E}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Farmhand.et" "{1FFE2B88BEF51840}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_2.et" "{6FC65ABF84F4A422}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Worker.et" "{408B8BD5E3F09FF3}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_3.et"
+  "{F7D8023C72A66D9E}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Farmhand.et" "{F210988FBB8BD70C}Prefabs/ReforgerZ/People/Haven/RZ_Civ_Haven_Knit.et" "{6FC65ABF84F4A422}Prefabs/ReforgerZ/People/Haven/RZ_Armed_Haven_Worker.et" "{8005B83AB79DCBEF}Prefabs/ReforgerZ/People/Haven/RZ_Civ_Haven_Denim.et"
  }
 }

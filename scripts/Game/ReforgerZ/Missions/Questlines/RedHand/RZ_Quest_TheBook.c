@@ -77,7 +77,7 @@ class RZ_Quest_TheBook : RZ_Questline
 		who.GiveUp(4, "Nobody found out who tore the page out of the book. {boss} has stopped asking, which is worse.");
 		who.Visits(2);
 
-		RZ_QuestStage find = MissionStage(S_FIND, "Find him", "{thief} tore the page out and ran. Follow his trail, and bring him back with the page.");
+		RZ_QuestStage find = MissionStage(S_FIND, "Find {thief_short}", "{thief} tore the page out and ran. Follow his trail, and bring him back with the page.");
 		find.GiveUp(4, "{thief} got away with the page. Somewhere out there, people the Red Hand owns are sleeping better.");
 		find.Visits(2);
 
@@ -835,6 +835,7 @@ class RZ_QM_BookWho : RZ_QuestMission
 
 		m_sTitle = "The Book: who tore it";
 		m_sBrief = QFill(gm, "Somebody tore a page out of my book. Not just any page: the one with who outside the Red Hand owes us, and for what. Three of the crew were on the night it went. Come to {boss_place}, hear them out and point. I'll do the rest.");
+		m_sObjective = QFill(gm, "Find out which of the three at {boss_place} tore the page from the book.");
 		return true;
 	}
 
@@ -973,8 +974,9 @@ class RZ_QM_BookFind : RZ_QuestMission
 		m_iThiefTalk = AddClue(QText(gm, "thief"), QFill(gm, "{thief_short} has the page down his boot and his back to the wall. \"Did {boss} send you? Course they did. Go on, then. Do what you came for.\""));
 		m_vPos = jacket.m_vPos;
 		m_iSettlement = run.Flag("t1");
-		m_sTitle = "The Book: find him";
+		m_sTitle = QFill(gm, "The Book: find {thief_short}");
 		m_sBrief = QFill(gm, "{thief_short} tore my page out and ran. He was seen in {town1}. Follow him. Bring him back with the page, and I don't much mind how.");
+		m_sObjective = QFill(gm, "Follow {thief_short} from {town1} and bring {thief_short} back with the page.");
 		return true;
 	}
 
@@ -1198,6 +1200,7 @@ class RZ_QM_BookRead : RZ_RedHandQuestMission
 		m_iSettlement = gm.FindNearestSettlement(m_vPos);
 		m_sTitle = "The Book: read the page";
 		m_sBrief = "Here's the page. Read it." + lines + " Go round them and collect. If one of them won't pay, lean on them, or pay it yourself and they owe you instead. Your choice. Just don't rat. Nobody rats.";
+		m_sObjective = "Collect what each name on the torn page owes the book.";
 		// The quiet threat (Reputation > Quiet success): Fear first, so they don't tell their own
 		m_Ways.m_iMenaceDifficulty = RZ_ReputationSettings.QuietDifficulty();
 		return true;
@@ -1565,6 +1568,7 @@ class RZ_QM_BookPage : RZ_RedHandQuestMission
 		m_iSettlement = gm.FindNearestSettlement(boss.m_vPos);
 		m_sTitle = "The Book: the page";
 		m_sBrief = QFill(gm, "Bring my page back to {boss_place}. My book-keeper will take it from you, if you're someone I trust. If you're thinking of doing anything else with it, think hard.");
+		m_sObjective = QFill(gm, "Bring the page back to the book-keeper at {boss_place}.");
 		return true;
 	}
 
@@ -1773,6 +1777,7 @@ class RZ_QM_BookThief : RZ_QuestMission
 		m_Escort.m_bHide = false;
 		m_sTitle = "The Book: the thief";
 		m_sBrief = QFill(gm, "The pit's on tonight at {pit}, and {thief_short} is going in it. Come and watch, so everyone knows what happens to people who tear pages out of my book. Or do something stupid. Everyone will know that too.");
+		m_sObjective = QFill(gm, "Be at the pit at {pit} tonight when {thief_short} goes in.");
 		return true;
 	}
 

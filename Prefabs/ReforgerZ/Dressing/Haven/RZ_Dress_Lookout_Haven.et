@@ -1,0 +1,71 @@
+GenericEntity {
+ ID "07FC550F7E115F9A"
+ components {
+  RplComponent "{C1E09F7DF3165C8A}" {
+  }
+  Hierarchy "{95697097C9BCB7C8}" {
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+   ID "FF7BF6D15BBF8692"
+   components {
+    Hierarchy "{2F7A2F49B1915B3D}" {
+    }
+   }
+   coords 0 0 0
+   angles 0 4 0
+  }
+  GenericEntity : "{261F10BDC068BB35}Prefabs/Props/Furniture/ChairOld_01.et" {
+   ID "C889C3669568F44A"
+   components {
+    Hierarchy "{2CCCF24FD668FE76}" {
+    }
+   }
+   coords 0 0.15 0
+   angles 0 180 0
+  }
+  GenericEntity : "{7A93743E525734C5}Prefabs/Props/Recreation/Beach/BlanketFolded_01/BlanketFolded_01_green.et" {
+   ID "45DF60A34E98AD30"
+   components {
+    Hierarchy "{67C2C15E793A1C9C}" {
+    }
+   }
+   coords 0 0.6 0
+   angles 0 180 0
+  }
+  SCR_DestructibleEntity : "{7C338EE3C27A0F71}Prefabs/Structures/Walls/Wooden/WoodenFenceOld_01/WoodenFenceOld_01_pole.et" {
+   ID "43C960DC8D984EB7"
+   components {
+    Hierarchy "{FAADEC5B147060B0}" {
+    }
+   }
+   coords 0.9 0 0.4
+  }
+  GameEntity : "{50E6A3845C9F20FD}Prefabs/Props/Military/Camps/LanternMilitary_US_01.et" {
+   ID "CED26AECD2800EB6"
+   components {
+    Hierarchy "{3DD6643D8CA974CC}" {
+    }
+   }
+   coords 0.9 1.6 0.4
+  }
+  GenericEntity {
+   ID "844C2724EAAB144B"
+   components {
+    SCR_AISmartActionSentinelComponent "{8EF6E65EC305FE31}" {
+     Tags {
+      "RZ_Watch"
+     }
+     m_vLookPosition 0 1.6 10
+     m_fLookDirectionRange 120
+     m_eLoiterAnimation SIT
+    }
+    Hierarchy "{3620A5695A81C712}" {
+    }
+   }
+   coords 0 0 -0.1
+  }
+ }
+}

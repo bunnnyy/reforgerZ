@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{EE0EB7D8CF961F6F}Prefabs/ReforgerZ/Dressing/Common/RZ_Dress_StoresBoard.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass PS5 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

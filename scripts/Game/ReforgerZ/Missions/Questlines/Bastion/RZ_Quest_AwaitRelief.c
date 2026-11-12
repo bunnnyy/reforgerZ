@@ -1214,6 +1214,7 @@ class RZ_QM_OrdersTape : RZ_QuestMission
 		m_vPos = m_vPost;
 		m_sTitle = "Await Relief: the operator's tape";
 		m_sBrief = QFill(gm, "My operator wrote \"Reply received\" in the log last night and crossed it out. He's not a liar and he's not mad. He's got it on tape. Take it up to the relay on the hill and find out what it is. You report to me. Not to the stronghold.");
+		m_sObjective = QFill(gm, "Take {operator}'s tape from {post} to the relay at grid {relaygrid}.");
 		return true;
 	}
 
@@ -1470,6 +1471,7 @@ class RZ_QM_OrdersRunner : RZ_QuestMission
 		m_iSettlement = towns[0];
 		m_sTitle = "Await Relief: the runner";
 		m_sBrief = QFill(gm, string.Format("The relay's log says a runner left with the decoded text on Day 3 and never arrived. {runner}. His trail starts in %1. Find him, and what he was carrying. Read it before anyone else does.", s1.m_sName));
+		m_sObjective = QFill(gm, string.Format("Find {runner} and the decoded page, starting in %1.", s1.m_sName));
 		return true;
 	}
 
@@ -1656,6 +1658,7 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 			m_vPos = from;
 			m_sTitle = "Await Relief: the copy";
 			m_sBrief = QFill(gm, "The page is ash, but whoever copied {operator}'s tape still has the Day 3 signal on it. It can go to " + who + ". Or into the stove after the page.");
+			m_sObjective = QFill(gm, "Take the copy of {operator}'s tape to " + who + ", or burn it.");
 		}
 		else
 		{
@@ -1663,6 +1666,7 @@ class RZ_QM_OrdersWho : RZ_QuestMission
 			m_iSettlement = gm.FindNearestSettlement(m_vPage);
 			m_sTitle = "Await Relief: who reads it";
 			m_sBrief = QFill(gm, "Take the page from {runner}'s body in {body_town}, and decide who reads it: the commanding officer, " + who + ". Everyone will want it.");
+			m_sObjective = QFill(gm, "Take the page from {runner}'s body in {body_town} to the reader you choose.");
 		}
 
 		return true;
@@ -1992,6 +1996,7 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 		m_vPos = m_vPost;
 		m_sTitle = "Await Relief: the reckoning";
 		m_sBrief = QFill(gm, "{cmd} read the decoded Day 3 signal, 'expended' and all, to the whole post, and two men walked off the roster that night. A squad from the stronghold is on its way to {post} to make the arrest. Go with them and see it's done properly: nobody hurt, and nobody shot for telling the truth.");
+		m_sObjective = QFill(gm, "Go with the squad to {post} and see the arrest of {cmd} done properly.");
 		return m_Him.Begin(gm, LandPointNear(m_vPost, 2, 4));
 	}
 
@@ -2023,7 +2028,8 @@ class RZ_QM_OrdersSquad : RZ_QuestMission
 		{
 			m_bShown = true;
 			SpawnObject(gm, RZ_EPuzzleProp.CIVILIAN, m_vSergeant, OBJ_SERGEANT, "", QFill(gm, "Talk {co} down on the radio (Champion, or Trusted and a Soldier)|Stand aside and let them make the arrest"), m_iSergeantClue, "Talk to the sergeant");
-			ResourceName squad = RZ_Mission_BustOut.SquadPrefab(gm);
+			// The squad wears Bastion's looks (People's looks)
+			ResourceName squad = gm.PickLook(RZ_Mission_BustOut.SquadPrefab(gm), RZ_Looks.SeedAt(m_vPost));
 			if (!squad.IsEmpty() && m_Squad.Spawn(squad, LandPointNear(m_vPost, 20, 35)))
 			{
 				TrackProp(m_Squad.m_Unit);
@@ -2233,6 +2239,7 @@ class RZ_QM_OrdersOperator : RZ_QuestMission
 		m_vPos = m_vHide;
 		m_sTitle = "Await Relief: the leak";
 		m_sBrief = QFill(gm, string.Format("{operator}, the operator from {post}, leaked classified traffic to the Red Hand and deserted. He was seen outside %1. Bring him in.", m_sTown));
+		m_sObjective = QFill(gm, string.Format("Bring {operator} in from outside %1.", m_sTown));
 		return m_Him.Begin(gm, m_vHide);
 	}
 
@@ -2398,6 +2405,7 @@ class RZ_QM_OrdersPrice : RZ_QuestMission
 		m_vPos = m_vCrate;
 		m_sTitle = "Await Relief: the chair's price";
 		m_sBrief = QFill(gm, string.Format("The Haven's chair has something of ours, and her price for keeping it in a drawer is rations. A crate is waiting at %1. Take it to her house in %2. Don't sign for it.", m_sFrom, h.m_sName));
+		m_sObjective = QFill(gm, string.Format("Take the ration crate at %1 to the Haven chair's house in %2.", m_sFrom, h.m_sName));
 		return true;
 	}
 

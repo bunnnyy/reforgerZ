@@ -635,7 +635,7 @@ class RZ_Stranger_Digger : RZ_StrangerKind
 		RZ_GameModeComponent gm = s.GetGM();
 		if (option == 0)
 		{
-			s.StartWork(v, 0, RZ_Mission.LandPointNear(v.m_vPos, 3, 5), 30, 10, false, "Dig the grave with her (30 s).", RZ_EWork.GRAVE, "Dig the grave", 15);
+			s.StartWork(v, 0, RZ_WorkSites.Spot(v.m_vPos, 3, 5), 30, 10, false, "Dig the grave with her (30 s).", RZ_EWork.GRAVE, "Dig the grave", 15);
 			return;
 		}
 

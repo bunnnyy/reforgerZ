@@ -8,8 +8,13 @@
 //!   400 m from any holding, safehouse, road post or the lab, 600 m from a sealed checkpoint, not
 //!   at the line, no player within 300 m, no running mission within 500 m, 1 km from a pack's lair,
 //!   2 km from this player's last two starts; infection under 60 for a brand-new player.
+//! - Nothing anywhere by those rules (a small map, a busy server): a second pass at half the
+//!   distances, without the last starts, before the spawn point (docs/PLACES.md: the spawn point
+//!   stood anywhere in a town's ring, on a wooded slope as often as not).
 //! - Towns within 3 km of where the chain will end (RZ_Openings.EndPoints: the ending faction's
 //!   holdings, Halcyon's lab, or the Haven's safehouses) are tried first, so the walk stays short.
+//! - A building with houses 50-250 m from it comes first (docs/PLACES.md, opening.start: step 1
+//!   searches "the house over the way"); a lone one only when no town tried has better.
 //! - The fallback chain: no fitting building in any town tried, any house in one (the scene still
 //!   comes); nothing at all, the spawn point the spawn screen asked for (the contact only).
 //!
@@ -28,6 +33,8 @@ class RZ_OpeningPlace
 	int m_iTown = -1;
 	bool m_bFits;			// one of the background's kinds (false: any house, the first fallback)
 	bool m_bScene;			// a door was found: the scene and the contact (false: a spawn point, the contact only)
+	bool m_bRelaxed;		// found by the second pass, at half the distances
+	int m_iRank;			// 0 a fitting building with houses over the way, 1 a house with them, 2 a lone fitting one, 3 a lone house
 	IEntity m_Door;			// weak: the door you come out of
 }
 
@@ -42,14 +49,20 @@ class RZ_OpeningRoll
 	protected static const float LAST_START_CLEAR = 2000;
 	protected static const float DOOR_OUT = 2;			// the player stands this far out of the doorway
 	protected static const float TOWN_QUERY = 350;		// buildings within this of a town's centre (its radius if smaller)
-	protected static const int TOWN_BUILDINGS = 48;
-	protected static const int TOWNS_TRIED = 8;
+	protected static const int TOWN_BUILDINGS = 400;
+	protected static const int TOWNS_TRIED = 12;
+	protected static const float OVER_MIN = 50;		// houses over the way: this far from the building...
+	protected static const float OVER_MAX = 250;	// ...and no further (step 1's search, RZ_Openings.PickSearch)
 	protected static const float NEW_INFECTION = 60;	// a brand-new player's town is under this
 	protected static const float ANY_INFECTION = 80;
 	protected static const float NEAR_END = 3000;		// towns this close to where the chain ends go first
 
+	protected static const float RELAXED = 0.5;		// the second pass's share of the distances above
+
 	protected RZ_GameModeComponent m_GM;
 	protected ref array<IEntity> m_aPlayers = {};
+	protected float m_fRelax = 1;					// 1: the rules above; RELAXED: the second pass
+	protected ref map<string, int> m_mWhy = new map<string, int>();	// why doors were refused, this roll
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_OpeningRoll(RZ_GameModeComponent gm)
@@ -77,12 +90,53 @@ class RZ_OpeningRoll
 		if (towns.IsEmpty() && maxInfection < ANY_INFECTION)
 			Towns(ANY_INFECTION, towns);
 
+		m_mWhy.Clear();
 		if (towns.IsEmpty())
+		{
+			m_mWhy.Set("no town nobody holds under the infection", 1);
 			return null;
+		}
 
 		RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
 		rng.ShuffleInts(towns);
 		NearEndsFirst(towns, ends);
+		m_fRelax = 1;
+		RZ_OpeningPlace strict = RollTowns(towns, kinds, profile, rng);
+		if (strict)
+			return strict;
+
+		m_fRelax = RELAXED;
+		RZ_OpeningPlace relaxed = RollTowns(towns, kinds, profile, rng);
+		m_fRelax = 1;
+		if (relaxed)
+			relaxed.m_bRelaxed = true;
+
+		return relaxed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why doors were refused in the last roll: "a pack's lair x40, a holding x3".
+	string WhyText()
+	{
+		string text = "";
+		foreach (string why, int n : m_mWhy)
+		{
+			if (!text.IsEmpty())
+				text += ", ";
+
+			text += string.Format("%1 x%2", why, n);
+		}
+
+		if (text.IsEmpty())
+			return "no building with an outside door";
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The best place in the first TOWNS_TRIED of `towns` at the current distances; null if none.
+	protected RZ_OpeningPlace RollTowns(array<int> towns, array<string> kinds, RZ_PlayerProfile profile, RZ_Rng rng)
+	{
 		RZ_OpeningPlace fallback;
 		int tried = 0;
 		foreach (int town : towns)
@@ -91,13 +145,13 @@ class RZ_OpeningRoll
 				break;
 
 			tried++;
-			RZ_OpeningPlace anyHouse;
-			RZ_OpeningPlace fits = InTown(town, kinds, profile, rng, anyHouse);
+			RZ_OpeningPlace next;
+			RZ_OpeningPlace fits = InTown(town, kinds, profile, rng, next);
 			if (fits)
 				return fits;
 
-			if (!fallback && anyHouse)
-				fallback = anyHouse;
+			if (next && (!fallback || next.m_iRank < fallback.m_iRank))
+				fallback = next;
 		}
 
 		return fallback;
@@ -144,7 +198,7 @@ class RZ_OpeningRoll
 		RZ_Territory territory = m_GM.GetTerritory();
 		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
 		{
-			if (s.m_fInfection >= maxInfection || s.m_bHasLab)
+			if (s.m_fInfection >= maxInfection || s.m_bHasLab || s.m_bIsland)
 				continue;
 
 			if (facts && facts.IsLivedIn(i))
@@ -158,17 +212,22 @@ class RZ_OpeningRoll
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The town's buildings with an outside door at a clear point: one of the background's kinds at
-	//! random, else null and `anyHouse` the first house that would do.
-	protected RZ_OpeningPlace InTown(int town, array<string> kinds, RZ_PlayerProfile profile, RZ_Rng rng, out RZ_OpeningPlace anyHouse)
+	//! The town's buildings with an outside door at a clear point: one of the background's kinds with
+	//! houses over the way at random, else null and `fallback` the best of the rest by rank (a house
+	//! with houses over the way, a lone fitting building, a lone house).
+	protected RZ_OpeningPlace InTown(int town, array<string> kinds, RZ_PlayerProfile profile, RZ_Rng rng, out RZ_OpeningPlace fallback)
 	{
-		anyHouse = null;
+		fallback = null;
 		RZ_Settlement s = m_GM.GetSettlement(town);
 		if (!s)
 			return null;
 
 		array<IEntity> buildings = {};
-		RZ_BuildingQuery.FindBuildings(s.m_vCenter, Math.Min(TOWN_QUERY, Math.Max(120, s.m_fRadius)), buildings, TOWN_BUILDINGS);
+		float reach = Math.Min(TOWN_QUERY, Math.Max(120, s.m_fRadius));
+		RZ_BuildingQuery.FindBuildings(s.m_vCenter, reach, buildings, TOWN_BUILDINGS);
+		array<IEntity> houses = {};
+		RZ_PlaceCheck.Houses(s.m_vCenter, 0, reach + OVER_MAX, houses);
+
 		array<ref RZ_OpeningPlace> fits = {};
 		foreach (IEntity b : buildings)
 		{
@@ -177,10 +236,18 @@ class RZ_OpeningRoll
 
 			string kind = KindOf(b, kinds);
 			bool fit = !kind.IsEmpty();
-			if (!fit && anyHouse)
+			if (!fit && !RZ_PlaceCheck.IsHouse(b))
 				continue;
 
-			if (!fit && RZ_DoorSlots.KindOf(b) != RZ_EDoorWant.HOUSE)
+			int rank = 1;
+			if (fit)
+				rank = 0;
+
+			if (!OverTheWay(b, houses))
+				rank += 2;
+
+			// A house no better than the fallback already found isn't worth the door search
+			if (!fit && fallback && fallback.m_iRank <= rank)
 				continue;
 
 			RZ_OpeningPlace p = AtDoor(b, profile);
@@ -188,23 +255,41 @@ class RZ_OpeningRoll
 				continue;
 
 			p.m_iTown = town;
+			p.m_iRank = rank;
 			if (fit)
 			{
 				p.m_sKind = kind;
 				p.m_bFits = true;
-				fits.Insert(p);
 			}
 			else
 			{
 				p.m_sKind = "house";
-				anyHouse = p;
 			}
+
+			if (rank == 0)
+				fits.Insert(p);
+			else if (!fallback || rank < fallback.m_iRank)
+				fallback = p;
 		}
 
 		if (fits.IsEmpty())
 			return null;
 
 		return fits[rng.Int(0, fits.Count())];
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Another house OVER_MIN-OVER_MAX from this building: step 1 has somewhere to send you.
+	protected static bool OverTheWay(IEntity b, array<IEntity> houses)
+	{
+		foreach (IEntity h : houses)
+		{
+			float d = RZ_Util.DistXZ(b.GetOrigin(), h.GetOrigin());
+			if (h != b && d >= OVER_MIN && d <= OVER_MAX)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -225,7 +310,7 @@ class RZ_OpeningRoll
 				case "garage": if (slot == RZ_EDoorWant.GARAGE) return k; break;
 				case "farm": if (slot == RZ_EDoorWant.FARM) return k; break;
 				case "public": if (slot == RZ_EDoorWant.PUBLIC) return k; break;
-				case "house": if (slot == RZ_EDoorWant.HOUSE) return k; break;
+				case "house": if (RZ_PlaceCheck.IsHouse(b)) return k; break;
 				default: if (RZ_LandmarkFinder.Matches(k, name)) return k; break;
 			}
 		}
@@ -268,59 +353,80 @@ class RZ_OpeningRoll
 	//! Safe enough to stand up in (the rules at the top of this file).
 	bool Clear(vector at, RZ_PlayerProfile profile)
 	{
-		if (RZ_Util.IsWater(at))
-			return false;
+		string why = ClearWhy(at, profile);
+		if (why.IsEmpty())
+			return true;
+
+		int n;
+		m_mWhy.Find(why, n);
+		m_mWhy.Set(why, n + 1);
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why `at` isn't clear ("" when it is), at the current pass's distances.
+	protected string ClearWhy(vector at, RZ_PlayerProfile profile)
+	{
+		if (RZ_PlaceCheck.IsWet(at))
+			return "water";
+
+		if (!RZ_Mainland.OnMainland(at))
+			return "an island";
 
 		RZ_Perimeter perimeter = m_GM.GetPerimeter();
 		vector checkpoint;
-		if (perimeter && (perimeter.IsNearLine(at) || (perimeter.GetNearestCheckpoint(at, checkpoint) && RZ_Util.DistXZ(at, checkpoint) < CHECKPOINT_CLEAR)))
-			return false;
+		if (perimeter && (perimeter.IsNearLine(at) || (perimeter.GetNearestCheckpoint(at, checkpoint) && RZ_Util.DistXZ(at, checkpoint) < CHECKPOINT_CLEAR * m_fRelax)))
+			return "the line";
 
+		float holdingClear = HOLDING_CLEAR * m_fRelax;
 		RZ_Territory territory = m_GM.GetTerritory();
-		if (territory && territory.FindHolding(-1, at, HOLDING_CLEAR))
-			return false;
+		if (territory && territory.FindHolding(-1, at, holdingClear))
+			return "a holding";
 
 		RZ_Safehouses houses = m_GM.GetSafehouses();
-		if (houses && houses.FindNearest(at, HOLDING_CLEAR) >= 0)
-			return false;
+		if (houses && houses.FindNearest(at, holdingClear) >= 0)
+			return "a safehouse";
 
 		RZ_Checkpoints posts = m_GM.GetCheckpoints();
-		if (posts && posts.PostNear(at, HOLDING_CLEAR))
-			return false;
+		if (posts && posts.PostNear(at, holdingClear))
+			return "a road post";
 
-		if (m_GM.HasLab() && RZ_Util.DistXZ(at, m_GM.GetLabPosition()) < HOLDING_CLEAR)
-			return false;
+		if (m_GM.HasLab() && RZ_Util.DistXZ(at, m_GM.GetLabPosition()) < holdingClear)
+			return "the lab";
 
 		if (RZ_Util.NearestDistance(at, m_aPlayers) < PLAYER_CLEAR)
-			return false;
+			return "a player";
 
 		RZ_MissionManager missions = m_GM.GetMissions();
 		if (missions)
 		{
 			foreach (RZ_Mission m : missions.GetActive())
 			{
-				if (m && RZ_Util.DistXZ(m.m_vPos, at) < MISSION_CLEAR)
-					return false;
+				if (m && RZ_Util.DistXZ(m.m_vPos, at) < MISSION_CLEAR * m_fRelax)
+					return "a mission";
 			}
 		}
 
 		RZ_Tribes tribes = m_GM.GetTribes();
-		if (tribes && tribes.GetPeople().IsOn() && tribes.GetPeople().NearLair(at, LAIR_CLEAR))
-			return false;
+		if (tribes && tribes.GetPeople().IsOn() && tribes.GetPeople().NearLair(at, LAIR_CLEAR * m_fRelax))
+			return "a pack's lair";
 
 		// The Long Table's farm, the evening's set piece, the lab's final stand (the errands' quiet rule)
 		RZ_Errands errands = m_GM.GetErrands();
 		if (errands && !errands.QuietHere(at))
-			return false;
+			return "a quiet place";
+
+		if (m_fRelax < 1)
+			return "";
 
 		profile.EnsureArrays();
 		for (int i = 0; i + 1 < profile.m_aStarts.Count(); i += 2)
 		{
 			if (RZ_Util.DistXZ(at, Vector(profile.m_aStarts[i], 0, profile.m_aStarts[i + 1])) < LAST_START_CLEAR)
-				return false;
+				return "a last start";
 		}
 
-		return true;
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------

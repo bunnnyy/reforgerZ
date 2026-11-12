@@ -1,10 +1,76 @@
-GenericEntity : "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_MarbleBlack_CP.et" {
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
  ID "5256876588C6DFCB"
  components {
-  RZ_NotebookGadgetComponent "{6C1F4A7B92D3E05A}" {
+  MeshObject "{6C1F4A7B92D3E0B1}" {
+   Object "{789311902B5FF0FF}Assets/Props/Civilian/Notebook_01/Notebook_01_Single.xob"
+   Materials {
+    MaterialAssignClass "{6C1F4A7B92D3E0B2}" {
+     SourceMaterial "Notebook_01"
+     AssignedMaterial "{E66EF8E8FBE826DC}Assets/Props/Civilian/Notebook_01/Data/Notebook_01_MarbleBlack.emat"
+    }
+    MaterialAssignClass "{6C1F4A7B92D3E0B3}" {
+     SourceMaterial "Palette"
+     AssignedMaterial "{FF12EFFE3CE3B723}Assets/Props/Civilian/Notebook_01/Data/Notebook_01_MarbleBlack_MLOD.emat"
+    }
+   }
+   InheritVisibility 1
   }
-  ActionsManagerComponent "{59827E6AEB7B5731}" {
+  RigidBody "{6C1F4A7B92D3E0B4}" {
+   LinearDamping 0.5
+   AngularDamping 0.5
+   ModelGeometry 1
+  }
+  RZ_NotebookGadgetComponent "{6C1F4A7B92D3E05A}" {
+   m_eAnimVariable MX991
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Notebook"
+     Description "Your notebook: standing, what you know, what you heard, your jobs and the season with its hall of fame. Take it in hand to read it."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.1
+     SizeSetupStrategy Manual
+     ItemDimensions 5 5 5
+     ItemVolume 50
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{6C1F4A7B92D3E0A1}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{6C1F4A7B92D3E0A2}" {
+       AnimGraph "{82906ACD75DF8523}Assets/Items/Equipment/workspaces/Flashlight_MX991.agr"
+       AnimInstance "{903E4A0B96B34B8F}Assets/Items/Equipment/workspaces/MX991_player.asi"
+       BindingName "Gadget"
+      }
+     }
+     AllowInspection 1
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{6C1F4A7B92D3E0B5}" {
+      CameraPreset Top
+      CameraOrbitAngles 0 0 0
+      CameraDistanceToItem 0.35
+      FOV 10
+     }
+     CharacterModifierAttributes "{6C1F4A7B92D3E0B6}" {
+      Supress1hShooting 0
+      CanBeEquippedInVehicle 0
+     }
+    }
+    m_Size SLOT_1x1
+    m_SlotType SLOT_GADGETS_STORAGE
+   }
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
    additionalActions {
+    RZ_ReadNotebookAction "{6C1F4A7B92D3E0B7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6C1F4A7B92D3E0B8}" {
+      Name "Read the notebook"
+     }
+    }
     RZ_DeadNameAction "{71E0E2394BE9939E}" {
      ParentContextList {
       "default"
@@ -30,26 +96,6 @@ GenericEntity : "{59E8CDFB824DE3B9}Prefabs/Props/Civilian/Notebook_01_Single_Mar
       Name "My name in the world"
      }
      m_eKind ANONYMOUS
-    }
-   }
-  }
-  InventoryItemComponent "{59827E686F66AA7D}" {
-   Attributes SCR_ItemAttributeCollection "{59827E680A4F5131}" {
-    ItemDisplayName UIInfo "{59827E68154045CB}" {
-     Name "Notebook"
-     Description "Your notebook: standing, what you know, what you heard, your jobs and the season with its hall of fame. Take it in hand to read it."
-    }
-    ItemPhysAttributes ItemPhysicalAttributes "{59827E68FFB78A9F}" {
-     Weight 0.1
-    }
-    ItemAnimationAttributes ItemAnimationAttributes "{6C1F4A7B92D3E0A1}" {
-     AnimationAttachments {
-      AnimationAttachmentInfo "{6C1F4A7B92D3E0A2}" {
-       AnimGraph "{82906ACD75DF8523}Assets/Items/Equipment/workspaces/Flashlight_MX991.agr"
-       AnimInstance "{903E4A0B96B34B8F}Assets/Items/Equipment/workspaces/MX991_player.asi"
-       BindingName "Gadget"
-      }
-     }
     }
    }
   }

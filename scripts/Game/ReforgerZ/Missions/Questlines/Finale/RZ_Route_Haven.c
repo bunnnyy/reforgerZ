@@ -51,6 +51,20 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	}
 
 	//------------------------------------------------------------------------------------------------
+	override protected string StageObjective(int stage)
+	{
+		switch (stage)
+		{
+			case S_ACT1: return "Find the woman the houses crossed off the List, starting with {chair}.";
+			case S_DOOR: return "Ask {woman} for a yes, and meet {woman}'s terms.";
+			case S_PIECE: return "Carry two bags of {woman}'s blood, drawn at dusk, cold to the lab in {lab_town}.";
+			case S_ACT4: return "Bring {woman} to the lab in {lab_town} at dawn for the last draw.";
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override protected string RemakeText()
 	{
 		return "The batch was lost. {woman} can give once more, if she agrees.";
@@ -132,8 +146,12 @@ class RZ_Route_Haven : RZ_FinaleRoute
 		bool here = people.IsAlive("woman");
 		scene.m_sTitle = StageTitle(stage);
 		scene.m_sBrief = run.Fill(StageKnown(stage));
+		scene.m_sObjective = run.Fill(StageObjective(stage));
 		if (!here && stage >= S_DOOR)
+		{
 			scene.m_sBrief = run.Fill("{woman} is gone. What she left is a notebook, and a man the crews call Twice has the same luck.");
+			scene.m_sObjective = run.Fill("Find the man the crews call Twice, who has {woman}'s luck.");
+		}
 
 		switch (stage)
 		{
@@ -452,6 +470,7 @@ class RZ_Route_Haven : RZ_FinaleRoute
 	{
 		scene.m_sTitle = "The release";
 		scene.m_sBrief = "The duty officer brings the release form to the clean room. The Haven's people choose the order.";
+		scene.m_sObjective = run.Fill(ReleaseObjective());
 		scene.m_vPos = gm.GetLabPosition();
 		int form = DutyOfficer(gm, scene, "Who goes first? Write it in. I'll read it out.");
 		scene.Choice(form, "Her house, and her boy").Decides(OUT_TERMS + 1).Says("The first box goes to her house. Her boy carries it.", "chose her house first");
