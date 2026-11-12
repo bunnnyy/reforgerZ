@@ -1073,7 +1073,7 @@ move in a straight line. A caught special is carried as a case, not dragged in i
 Code: `Missions/Story/` (`RZ_MissionStory.c`, `RZ_StoryKit.c`, `RZ_MissionReasons.c`, `RZ_Mirror.c`);
 settings **Missions > Story**. The mission style ([designs/MISSION_STYLE.md](../designs/MISSION_STYLE.md)
 designs what's left). The story jobs on it (Protection Racket, Lost Colleague, Crash Site,
-Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout) are in [MISSIONS.md](MISSIONS.md).
+Distress Call, Struck Off, Survivors Trapped, Missing Patrol, Missing Scout, Smuggler's Run) are in [MISSIONS.md](MISSIONS.md).
 
 - **The story kit.** A mission may carry `m_Story` (null by default: it runs exactly as before),
   with a story key that is saved in records and never renamed. The mission forwards its tick to it.

@@ -331,8 +331,21 @@ class RZ_Mission_FightPit : RZ_Mission_Hold
 class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 {
 	protected float m_fReportTimer;
+	protected string m_sTruth;		// goods (as they said), doses (a Haven house's antidotes), pages (Bastion's roster pages)
+	protected int m_iHouse = -1;	// doses: the house they came from
+	protected vector m_vDrop;
+	protected bool m_bLabelRead;
 
 	protected static const float REPORT_SECONDS = 180;
+	protected static const int OPT_HAND = 0;
+	protected static const int OPT_SECOND = 1;
+
+	//------------------------------------------------------------------------------------------------
+	void RZ_Mission_SmugglersRun()
+	{
+		m_Story = new RZ_MissionStory("smuggle");
+		m_Choice = new RZ_OneChoice();
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override void Configure(RZ_GameModeComponent gm)
@@ -374,10 +387,53 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 		if (!SpawnItem(gm, m_vPos))
 			return false;
 
-		SpawnDrop(gm, RZ_EFaction.BANDITS, LandPointNear(dest.m_vCenter, dest.m_fRadius * 0.7, dest.m_fRadius + 50));
+		m_vDrop = LandPointNear(dest.m_vCenter, dest.m_fRadius * 0.7, dest.m_fRadius + 50);
+		SpawnDrop(gm, RZ_EFaction.BANDITS, m_vDrop);
+		Truth(gm, s);
 		m_sTitle = "Smuggler's Run";
 		m_sBrief = string.Format("Pick up a Red Hand package in %1 and get it to %2. Word will get out that a courier is on the road.", s.m_sName, dest.m_sName);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! The truth (story key `smuggle`, kept per town): the package is what they said (cigarettes and
+	//! tins); a Haven house's antidotes (a house within 4 km); or pages off Bastion's roster (a Bastion
+	//! holding on the map). Whoever picks it up feels the weight and reads the tape on it; the crew's
+	//! runner at the drop asks for it.
+	protected void Truth(RZ_GameModeComponent gm, RZ_Settlement s)
+	{
+		array<string> values = {"goods", "doses", "pages"};
+		array<float> weights = {0.5, 0, 0};
+		if (gm.GetSafehouses())
+			m_iHouse = gm.GetSafehouses().FindNearest(m_vPos, 4000);
+
+		if (m_iHouse >= 0)
+			weights[1] = 0.3;
+
+		bool bastion = RZ_ErrandCard.HoldingNear(gm, RZ_EFaction.MILITARY, m_vPos, 100000) != null;
+		if (bastion)
+			weights[2] = 0.2;
+
+		m_sTruth = m_Story.Truth(RZ_WorldFacts.Town(m_iSettlement), values, weights, this);
+		if ((m_sTruth == "doses" && m_iHouse < 0) || (m_sTruth == "pages" && !bastion))
+			m_sTruth = "goods";
+
+		string prompt = "The crew's runner holds out both hands. \"All of it. Unopened, I'd hope.\"";
+		string labels = "Hand it over";
+		if (m_sTruth == "doses")
+		{
+			labels += "|Take the doses back to the house they came from";
+			m_Choice.Asset(OPT_SECOND, RZ_EFaction.SURVIVORS);
+		}
+		else if (m_sTruth == "pages")
+		{
+			labels += "|Take the pages to Bastion's post";
+			m_Choice.Asset(OPT_SECOND, RZ_EFaction.MILITARY);
+		}
+
+		m_Choice.Set(prompt, labels, "decide where the package goes", OPT_HAND);
+		RZ_Log.Info(string.Format("Story: smuggle at %1 is %2", s.m_sName, m_sTruth));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -388,7 +444,59 @@ class RZ_Mission_SmugglersRun : RZ_Mission_Delivery
 		{
 			m_fReportTimer = 0;
 			ReportCourier(gm);
+			ReadLabel(gm, carrier);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The carrier feels the weight and reads the tape: the truth, to them and the room.
+	protected void ReadLabel(RZ_GameModeComponent gm, int carrier)
+	{
+		if (m_bLabelRead)
+			return;
+
+		m_bLabelRead = true;
+		m_Story.m_Deciding.Step(gm, carrier);
+		string line = "Cigarettes and tins, by the weight. The tape says nothing at all, which is what tape's for.";
+		if (m_sTruth == "doses" && gm.GetSafehouses() && gm.GetSafehouses().Get(m_iHouse))
+			line = string.Format("It clinks. Under the tape, a Haven sticker: %1's medicine store. Somebody's antidotes.", gm.GetSafehouses().Get(m_iHouse).m_sName);
+		else if (m_sTruth == "pages")
+			line = "Paper, a lot of it. Typed names with lines through them and KIA beside the lines. Bastion's roster, or part of it.";
+
+		m_Story.Reveal(gm, this, RZ_WorldFacts.Town(m_iSettlement), carrier, "label", line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override vector ChoiceAt()
+	{
+		return m_vDrop;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The runner's ask: hand it over (the crew pays), or take it to the side it was taken from (that
+	//! side pays 10 Favor to those with the decider, +5 Red Hand Infamy, and the crew pays nothing).
+	override void OnChosen(RZ_GameModeComponent gm, int decider, int option)
+	{
+		array<int> who = {decider};
+		if (option != OPT_SECOND || m_sTruth == "goods")
+		{
+			RZ_StoryKit.Record(this, "package", RZ_WorldFacts.Town(m_iSettlement), "delivered", who);
+			return;
+		}
+
+		m_bHasGiver = false;
+		m_Choice.BlameWith(gm, this, RZ_EFaction.BANDITS, 5, "took a crew's package to its owners");
+		if (m_sTruth == "doses")
+		{
+			m_Choice.PayWith(gm, this, RZ_EFaction.SURVIVORS, 10);
+			RZ_StoryKit.Record(this, "package", RZ_WorldFacts.Town(m_iSettlement), "doses_home", who, "A box of antidotes on a Haven shelf with a red thumbprint on the tape. Nobody's scrubbed it off.", "board");
+			NotifyParticipants(gm, m_sTitle, "The doses go back on the house's shelf. The crew hears where its package went.");
+			return;
+		}
+
+		m_Choice.PayWith(gm, this, RZ_EFaction.MILITARY, 10);
+		RZ_StoryKit.Record(this, "package", RZ_WorldFacts.Town(m_iSettlement), "pages_home", who);
+		NotifyParticipants(gm, m_sTitle, "The pages go back to Bastion's post. Someone there reads every struck-out name before he says thank you.");
 	}
 
 	//------------------------------------------------------------------------------------------------

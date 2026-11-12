@@ -6,7 +6,7 @@ checks, who decides, who benefits, truths, records, lies, fallout, reasons, rout
 and [docs/MISSIONS.md](../docs/MISSIONS.md) (the six story jobs, the Tier 0 audit, the one-choice jobs
 and the work rows). This file keeps only the parts not in code yet.
 
-## The other 21 story jobs
+## The other 20 story jobs
 
 Each gets the story kit as the six built ones have it ([DESIGN.md](../docs/DESIGN.md#story-blocks)): 3+
 ways (one needs no gun, one needs no standing), 2+ parties the result can go to (at least one that isn't
@@ -17,7 +17,7 @@ never pays the Haven by default. Each has one darkly funny line, spoken by the l
 
 - **The Haven (5):** The Cache, Medicine Run, Refugee Column, Trader Caravan, The Informant.
 - **Bastion (3):** Rescue the Pilot, Raid the Red Hand, The Armory.
-- **The Red Hand (4):** Dead Drop, Smuggler's Run, Bust Out, Double Agent.
+- **The Red Hand (3):** Dead Drop, Bust Out, Double Agent.
 - **Halcyon (3):** Research Data, Cold Chain, Escort the Scientist.
 - **World events (3):** Wandering Trader, Prison Break, Collapse Shelter.
 - **Unarmed, house and perimeter (3):** Trail of Clues, Letters, The Crossing.
