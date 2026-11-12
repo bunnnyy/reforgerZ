@@ -17,7 +17,8 @@
 #     its waits, goes to each stage mission and ends it as won (with the outcome that moves the
 #     story on), and reports which reached an ending, fizzled or got stuck;
 #   - walks the player through every settlement, the safehouses, the lab, then into the
-#     Perimeter's warning and kill zones; kills them if the Perimeter didn't; respawns them;
+#     Perimeter's warning and kill zones (until then the line leaves the fake player alone);
+#     kills them if the Perimeter didn't; respawns them;
 #   - last, a scripted cure finale at Wait scale 0.1 (RZT_Finale.c): a commit refused below the
 #     gate, the slow finish, two routes racing and a pact, a stand lost and remade, a scripted
 #     take and overtime, the release's terms ("RZT finale check: ...", "RZT finale done: ...");
@@ -69,9 +70,9 @@ echo "Log: $LOG"
 echo "Script exceptions: $(grep -c 'Virtual Machine Exception' "$LOG")"
 grep -A6 'Virtual Machine Exception' "$LOG" | grep -E 'Reason|Function|scripts/' | sort | uniq -c | head -20
 grep -E 'RZT all mission types tried' "$LOG" | sed 's/.*RZT //'
-grep -E 'RZT mission .* started=0' "$LOG" | sed -E 's/.*RZT mission ([A-Za-z_]+).*/  did not start: \1/'
-grep -E 'RZT (fake player already dead|killing|fake player died)' "$LOG" | sed 's/.*RZT /  /'
-grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did not start))' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT mission .* why: ' "$LOG" | sed -E 's/.*RZT mission ([A-Za-z_]+) why: /  did not start: \1: /'
+grep -E 'RZT (fake player already dead|killing|fake player died|perimeter: )' "$LOG" | sed 's/.*RZT /  /'
+grep -E 'RZT (questlines:|all questlines tried|quest .* (ENDED|STUCK|fizzled|did not start|why: ))' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (majors done|finale check: .*FAILED|finale done|finale: )' "$LOG" | sed 's/.*RZT /  /'
 grep -E 'RZT (epilogue check: .*FAILED|epilogue done|epilogue: )' "$LOG" | sed 's/.*RZT /  /'
 grep -q 'Virtual Machine Exception' "$LOG" && exit 1

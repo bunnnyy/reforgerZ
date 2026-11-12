@@ -32,6 +32,9 @@ modded class RZ_MissionManager
 			int tries = 0;
 			while (!ok && tries < RZT_Prep.TRIES)
 			{
+				if (tries > 0)
+					RZT_Prep.BeforeMission(m_GM, t, tries);
+
 				tries++;
 				m_RZTCur = RZ_Mission.Cast(t.Spawn());
 				if (!m_RZTCur)
@@ -50,6 +53,7 @@ modded class RZ_MissionManager
 			Print(string.Format("RZT mission %1 '%2' contract=%3 started=%4 tries=%5", t.ToString(), m_RZTCur.m_sTitle, m_RZTCur.m_bContract, ok, tries));
 			if (!ok)
 			{
+				RZT_WhyNot(m_RZTCur);
 				m_RZTCur = null;
 				m_iRZTPhase = 0;
 			}
@@ -98,6 +102,61 @@ modded class RZ_MissionManager
 		return count;
 	}
 
+	//! Why a mission didn't start, as far as the test can tell from outside its Setup: what it
+	//! claims and who holds it, what else runs, the towns a Setup picks from, the packs.
+	void RZT_WhyNot(RZ_Mission m)
+	{
+		RZ_WorldFacts facts = m_GM.GetFacts();
+		array<string> subjects = {};
+		m.GetClaims(m_GM, subjects);
+		string held = "";
+		foreach (string subject : subjects)
+		{
+			if (facts.IsClaimed(subject))
+				held += string.Format(" %1 (by %2)", subject, facts.ClaimedBy(subject));
+		}
+
+		if (held.IsEmpty())
+			held = " none";
+
+		int active = 0;
+		foreach (RZ_Mission other : m_aActive)
+		{
+			if (other.m_eState == RZ_EMissionState.ACTIVE)
+				active++;
+		}
+
+		int runs = 0;
+		if (m_GM.GetQuestlines())
+		{
+			foreach (RZ_QuestRun run : m_GM.GetQuestlines().GetRuns())
+			{
+				if (!run.m_bDone)
+					runs++;
+			}
+		}
+
+		int heldTowns = 0;
+		int busy = 0;
+		int openTowns = 0;
+		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
+		{
+			if (facts.TownOwner(i).IsHeld())
+				heldTowns++;
+			else if (IsSettlementBusy(i, m))
+				busy++;
+			else
+				openTowns++;
+		}
+
+		int packs = -1;
+		if (m_GM.GetTribes())
+			packs = m_GM.GetTribes().GetTribeList().Count();
+
+		Print(string.Format("RZT mission %1 why: claims held:%2; %3 other missions active, %4 questlines running; towns %5 held, %6 busy, %7 free; packs %8; weight %9",
+			m.Type().ToString(), held, active, runs, heldTowns, busy, openTowns, packs, m.GetWeight(m_GM)));
+	}
+
 	string RZT_Summary() { return string.Format("%1 of %2 started, %3 marked won", m_iRZTStarted, m_aTypes.Count(), m_iRZTWon); }
 	int RZT_TypeCount() { return m_aTypes.Count(); }
 	int RZT_Active() { return m_aActive.Count(); }
@@ -105,10 +164,20 @@ modded class RZ_MissionManager
 
 modded class RZ_Questlines
 {
+	//! The questlines this phase runs: not the majors-only ones (Every Name, Proof), which start only
+	//! with the majors on; the majors' phase runs them (RZT_Majors.c).
 	void RZT_Keys(notnull array<string> keys)
 	{
 		foreach (RZ_Questline line : m_aLines)
+		{
+			if (line.IsMajor())
+			{
+				Print(string.Format("RZT quest %1 left to the majors' phase (a major only)", line.m_sKey));
+				continue;
+			}
+
 			keys.Insert(line.m_sKey);
+		}
 	}
 }
 
@@ -256,6 +325,7 @@ modded class RZ_GameModeComponent
 			if (!began && !q.FindRunByKey(key))
 			{
 				Print(string.Format("RZT quest %1 did not start (CanStart false)", key));
+				RZT_Prep.WhyNotQuest(this, key);
 				m_iRZTQuestSec = 999;
 				return;
 			}
@@ -273,7 +343,13 @@ modded class RZ_GameModeComponent
 				Print(string.Format("RZT quest %1 ENDED: ending %2", qkey, ending));
 			}
 			else
-				Print(string.Format("RZT quest %1 fizzled or was dropped at stage %2", qkey, m_iRZTQuestStage));
+			{
+				string said = "";
+				if (run)
+					said = run.m_sEndText;
+
+				Print(string.Format("RZT quest %1 fizzled or was dropped at stage %2: '%3'", qkey, m_iRZTQuestStage, said));
+			}
 			m_iRZTQuestSec = 999;
 			return;
 		}
@@ -376,6 +452,7 @@ modded class RZ_GameModeComponent
 			else
 			{
 				// The Perimeter: the warning zone, then the kill zone (west edge, 200 m then 50 m in from x 70)
+				RZT_Fake.s_bLineTest = true;
 				RZT_Fake.MoveTo(Vector(270, 0, 2000));
 				Print("RZT moved to the Perimeter warning zone");
 			}

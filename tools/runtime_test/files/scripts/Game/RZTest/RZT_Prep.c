@@ -95,6 +95,68 @@ modded class RZ_LongTable
 	}
 }
 
+modded class RZ_Leaders
+{
+	//! Every empty seat filled now (a season replaces them after Leaders > Replace minutes; the
+	//! mission phase kills and dismisses seats faster than that), and every leader a finished
+	//! mission still holds let go. Returns how many seats changed.
+	int RZT_FillSeats()
+	{
+		int changed = 0;
+		for (int i = 0; i < m_aList.Count(); i++)
+		{
+			RZ_Leader l = m_aList[i];
+			if (!l.m_bAlive && !l.IsStronghold())
+			{
+				m_aList[i] = Replace(l);
+				changed++;
+				continue;
+			}
+
+			if (l.m_iHeldBy < 0)
+				continue;
+
+			RZ_Mission m = m_GM.GetMissions().FindById(l.m_iHeldBy);
+			if (!m || m.m_eState != RZ_EMissionState.ACTIVE)
+			{
+				l.m_iHeldBy = -1;
+				changed++;
+			}
+		}
+
+		return changed;
+	}
+
+	//! "present P (held H, stronghold S), dead D" for one faction (the questlines' diagnostics).
+	string RZT_Seats(int f)
+	{
+		int present = 0;
+		int held = 0;
+		int strong = 0;
+		int dead = 0;
+		foreach (RZ_Leader l : m_aList)
+		{
+			if (l.m_eFaction != f)
+				continue;
+
+			if (!l.IsPresent())
+			{
+				dead++;
+				continue;
+			}
+
+			present++;
+			if (l.m_iHeldBy >= 0)
+				held++;
+
+			if (l.IsStronghold())
+				strong++;
+		}
+
+		return string.Format("present %1 (held %2, stronghold %3), away %4", present, held, strong, dead);
+	}
+}
+
 modded class RZ_Wanderers
 {
 	//! A living, free wanderer of this role: one is given it if none has it.
@@ -173,22 +235,25 @@ class RZT_Prep
 	// ================================================================ The mission phase
 	//------------------------------------------------------------------------------------------------
 	//! Before the mission phase starts a mission of type t: what it needs that a fresh test world lacks.
-	static void BeforeMission(RZ_GameModeComponent gm, typename t)
+	//! shift: the go (0 the first); each go after the first moves the spread on by one town.
+	static void BeforeMission(RZ_GameModeComponent gm, typename t, int shift = 0)
 	{
 		string name = t.ToString();
 
 		// Every mission starts from the same spread of towns, whatever the missions before it did to
-		// them (Mobile Lab's calm towns would otherwise leave nothing for the 20-90 infection range)
+		// them (Mobile Lab's calm towns would otherwise leave nothing for the 20-90 infection range).
+		// Each further go shifts it by one, so on a map where nearly every town is lived in (Arland:
+		// 13 of 14) the few empty ones still pass through every band
 		array<float> spread = {20, 45, 75, 95};
 		foreach (int idx, RZ_Settlement st : gm.GetSettlements())
 		{
-			st.m_fInfection = spread[idx % spread.Count()];
+			st.m_fInfection = spread[(idx + shift) % spread.Count()];
 		}
 
 		if (!s_bSpreadSaid)
 		{
 			s_bSpreadSaid = true;
-			Print("RZT forced: before each mission, towns at infection 20, 45, 75 and 95 in turn");
+			Print("RZT forced: before each mission, towns at infection 20, 45, 75 and 95 in turn (shifted by one town on each further go)");
 		}
 
 		StandIns(gm, name);
@@ -201,7 +266,8 @@ class RZT_Prep
 			if (ss && ss.m_sBastionCrew.IsEmpty())
 				ss.m_sBastionCrew = BASTION_CREW;
 
-			Print("RZT forced: Bastion supply truck and crew for " + name);
+			if (shift == 0)
+				Print("RZT forced: Bastion supply truck and crew for " + name);
 			return;
 		}
 
@@ -227,7 +293,8 @@ class RZT_Prep
 				}
 			}
 
-			Print(string.Format("RZT forced: Halcyon truck, %1 towns 1-4 km from the lab at infection 15, for %2", calmed, name));
+			if (shift == 0)
+				Print(string.Format("RZT forced: Halcyon truck, %1 towns 1-4 km from the lab at infection 15, for %2", calmed, name));
 			return;
 		}
 
@@ -241,7 +308,8 @@ class RZT_Prep
 					town.m_fInfection = 60;
 			}
 
-			Print("RZT forced: a keypad prefab and no town above 90 infection, for " + name);
+			if (shift == 0)
+				Print("RZT forced: a keypad prefab and no town above 90 infection, for " + name);
 		}
 	}
 
@@ -427,6 +495,14 @@ class RZT_Prep
 	{
 		RZ_Questlines q = gm.GetQuestlines();
 		HoldHour();
+		// The seats the mission phase emptied are filled (a season fills them after two hours)
+		if (gm.GetLeaders())
+		{
+			int seats = gm.GetLeaders().RZT_FillSeats();
+			if (seats > 0)
+				Print(string.Format("RZT forced: %1 empty or held seats filled, for %2", seats, key));
+		}
+
 		switch (key)
 		{
 			case "walk":
@@ -455,9 +531,10 @@ class RZT_Prep
 			}
 			case "weeks":
 			{
-				// Patient Zero's ledger was solved
+				// Patient Zero's ledger was solved; a scavenger still on the roads (the driver)
 				q.SetWorldFlag("weeks.records", 1);
-				Print("RZT forced: weeks.records");
+				bool driver = gm.GetWanderers() && gm.GetWanderers().RZT_EnsureRole(RZ_EWandererRole.SCAVENGER);
+				Print(string.Format("RZT forced: weeks.records, a scavenger %1", driver));
 				break;
 			}
 			case "place":
@@ -635,6 +712,45 @@ class RZT_Prep
 		}
 
 		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why a questline's CanStart said no, from what it reads (one line: "RZT quest <key> why: ...").
+	static void WhyNotQuest(RZ_GameModeComponent gm, string key)
+	{
+		string why = "";
+		RZ_Leaders leaders = gm.GetLeaders();
+		if (leaders)
+			why = string.Format("Red Hand seats %1; Halcyon seats %2", leaders.RZT_Seats(RZ_EFaction.BANDITS), leaders.RZT_Seats(RZ_EFaction.INSTITUTE));
+
+		why += string.Format("; clue %1, object %2, civilian %3", RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CLUE), RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.OBJECT), RZ_PuzzleMission.HasPrefab(gm, RZ_EPuzzleProp.CIVILIAN));
+		if (key == "well" || key == "cargo")
+		{
+			int traits = (1 << RZ_ELeaderTrait.RUTHLESS) | (1 << RZ_ELeaderTrait.GREEDY);
+			RZ_Leader crew = RZ_RedHandQuest.PickAny(gm, RZ_EFaction.BANDITS, traits);
+			why += string.Format("; a crew boss %1", crew != null);
+			if (key == "cargo" && crew)
+			{
+				vector toward;
+				string refuge;
+				why += string.Format(", van '%1', no vehicles %2, a Haven refuge %3", RZ_CargoVan.VanPrefab(gm), RZ_Seasons.Mods().m_bNoVehicles, RZ_RedHandEdges.HavenRefuge(gm, crew.m_vPos, toward, refuge));
+			}
+		}
+
+		if (key == "weeks")
+		{
+			array<int> drivers = {};
+			if (gm.GetWanderers())
+				gm.GetWanderers().GetLiving(RZ_Wanderers.RoleBit(RZ_EWandererRole.SCAVENGER), drivers);
+
+			RZ_Rng rng = new RZ_Rng(Math.RandomInt(1, 2000000000));
+			vector site;
+			int anchor = -1;
+			string place;
+			why += string.Format("; records %1, lab %2, field lead %3, scavengers %4, a site %5", gm.GetQuestlines().WorldFlag(RZ_Quest_ThreeWeeks.FLAG_RECORDS), gm.HasLab(), RZ_QM_HalcyonScene.PickFieldLead(gm, false) != null, drivers.Count(), RZ_Quest_ThreeWeeks.FindSite(gm, rng, site, anchor, place));
+		}
+
+		Print(string.Format("RZT quest %1 why: %2", key, why));
 	}
 
 	//------------------------------------------------------------------------------------------------

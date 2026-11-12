@@ -1467,7 +1467,12 @@ so the test forces them (each logged as `RZT forced: ...`).
 **Missions.** Before each mission the towns go back to a spread of infection (20, 45, 75 and 95 in
 turn), whatever earlier missions did to them. A Setup that misses (a random spot in the sea, every
 town of its range busy) gets up to 8 goes, as the manager would try again later (`tries=` in the
-log line). An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
+log line), and each go after the first shifts the spread by one town: on Arland 13 of the 14
+settlements are lived in, so the one or two empty towns that most contracts need must pass through
+every band. A mission that still doesn't start logs `RZT mission <type> why: ...`: who holds what it
+claims, what else runs, how many towns are held, busy and free, the packs and its weight. The test
+world sets **Zombies > Tribes > Slots** to 2, so Arland (under the wild-land floor) has a pack for the
+packs' contracts. An optional prefab a mission needs gets a vanilla stand-in, set before that mission and
 left set: a crate for the nest (Burn the Nest, Specimen from the Nest), the helicopter wreck (Crash
 Site), the dead drop, the fuel depot (Arson), the relay, the fallback landmark
 (The Smuggler's Ledger) and the scale crate (The Weighing Vault); a civilian for the trader, the
@@ -1481,7 +1486,12 @@ the roads, a Red Hand van and the clock held at dusk. Before each, the flags and
 reads: Walk Him Out done, Bastion short of supplies, the Last Helicopter's LZ kept, Patient Zero's
 ledger solved, the farm found, the host's offer to the tester (who is made a stranger to the Haven
 for it, and put back after: the offer is for someone the Haven doesn't take in), research at 80
-percent and, for Authors, the final stand, stopped again after. The Well Story runs before Cargo
+percent and, for Authors, the final stand, stopped again after. Before each, too, every seat the
+mission phase emptied is filled and every leader a finished mission still holds is let go (a season
+fills a seat after **Leaders > Replace minutes**), and The Three Weeks gets a scavenger again. A
+questline that doesn't start logs `RZT quest <key> why: ...` (the Red Hand's and Halcyon's seats, the
+puzzle prefabs, and what its own start reads). The two majors with no built questline under them
+(Every Name, Proof) are left to the majors' phase. The Well Story runs before Cargo
 (Cargo's purge ending dismisses the one crew boss it needs). While a questline waits for its stage
 mission, every mission that isn't a questline stage is ended, so a contract on the board can't hold
 the stage's town for the hour it lasts (a real stage waits hours before it gives up; the test's
@@ -1503,7 +1513,9 @@ with a scripted take by the pact's side and the tester in the clean room running
 (20 s), the stand's HUD line naming the holder's route; the win, the controller, the winner rule, the
 route's chunk and `finale.came`; and the release's terms
 (`RZT finale check: <name>: OK|FAILED (...)`, then `RZT finale done: N checks OK, N FAILED`). The
-five routes are left out of the questlines' phase: they only start at the gate.
+five routes are left out of the questlines' phase: they only start at the gate. The stand finds who
+stands in the clean room (and at the bay) by their character, and the fake player has no engine id,
+so the test's patch tells it which character is his.
 
 **The epilogue week.** Then, from the finale's cure, **Epilogue > Test scale** goes to 0.02 and the
 week runs scripted (`RZT_Epilogue.c`): the commit, the hall's freeze, beats and phase A; phase B;
@@ -1531,7 +1543,12 @@ tab's lines and the stand's groups by Bastion's stance (`RZT majors check:
 Last, it walks the player through every
 settlement, the safehouses and the lab, into the Perimeter, to death and a second life. It logs
 every notice the player is sent, and prints the script exceptions (there should be none), how many
-mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes. If the fake player dies outside the Perimeter test (a mission or the line got him), it says where and respawns him.
+mission types started and which didn't, and how far each questline got. It takes 60 to 90 minutes.
+Until the Perimeter test the line leaves the fake player alone: a spot the test moves him to may lie
+in the line's band (The Blind Spot's does by design), and a death there would end the life a
+questline was following (A Place at the Table fizzles when its guest's life ends). It logs
+`RZT perimeter: ...` once per visit instead. If the fake player dies outside the Perimeter test
+anyway, it says where and respawns him.
 
 ```bash
 SERVER_DIR=~/rz_check/server tools/runtime_test/run.sh
