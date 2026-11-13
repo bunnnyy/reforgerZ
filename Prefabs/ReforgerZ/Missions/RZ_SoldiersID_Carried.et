@@ -1,0 +1,8 @@
+GenericEntity : "{4EEEE0C165A825B9}Prefabs/ReforgerZ/Missions/RZ_SoldiersID_US.et" {
+ ID "3B7E0C5A91D24F06"
+ components {
+  RZ_MissionItemComponent "{6B2E9D41C07A3F58}" {
+  }
+ }
+ coords 0 0 0
+}

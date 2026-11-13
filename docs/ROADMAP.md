@@ -113,10 +113,9 @@ place of the stand-ins, the behavioural `VERIFY` checks and a play-test with a g
 
 ## Next
 
-Everything below is approved. One design waits in [designs/](../designs/README.md): duties
-([DUTIES.md](../designs/DUTIES.md): what the duties still want: the swap table's conversations as
-`.rzd` trees, real things standing on the tables, the Trusted rung's other versions); the duties
-themselves are built, sixty-two of them ([ERRANDS.md](ERRANDS.md#duties)). Every other approved design is built (simplified as each doc says). What
+Everything below is approved. No design waits in [designs/](../designs/README.md): the duties are
+built, sixty-nine of them, with their conversations, things on show, the whole Trusted rung and each
+faction's extras ([ERRANDS.md](ERRANDS.md#duties)). Every approved design is built (simplified as each doc says). What
 else waits is play, engine checks and the author's calls.
 
 ### Get it playable

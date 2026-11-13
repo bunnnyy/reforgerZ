@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **359 prefab fields**: 46 on `RZ_GameModeComponent`, 296 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **337 entries**: 199 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 101 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **361 prefab fields**: 46 on `RZ_GameModeComponent`, 298 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **339 entries**: 201 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 101 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -555,6 +555,8 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
+| `RZ_SoldiersID_Carried.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Soldier's ID | optional | the card The Patrol That Didn't Come Back carries home; empty = Props > Carried. Put in the player's pack as a carried item |
+| `RZ_Passport_Forged.et` | shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench | `RZ_MissionItemComponent` | Missions > Errands > Props > Forged papers | optional | the set False Hope at the Line buys off the forger; empty = Props > Carried. Put in the player's pack as a carried item |
 | `RZ_Show_Cash.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' StackofCash mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Cash | optional | banknotes on the swap table and the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
 | `RZ_Show_GoldBar.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' GoldBar mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Gold bar | optional | the gold bar on the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
 | `RZ_Show_Pearls.et` | shipped as text: a GenericEntity with an RplComponent and Suspicious Item Props' PearlNecklace mesh, and nothing else (no inventory item, no actions). Open it once in Workbench | — | Missions > Errands > Things > Pearls | optional | the pearls on the swap table and the count's tarp; empty = words only. A display copy: shown only while its beat is open and a player is there, gone after. Nothing to pick up |
@@ -571,9 +573,9 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | JTF Bronze Props' `{979D7F3B8D689B42}Prefabs/Compositions/JTF/JTF_Detainee_US_01.et` (an existing prefab from the stack) | — | Missions > Errands > Things > Lock-up pen | optional | beside a Haven or Bastion lock-up's door for the night's watch; empty = the door only. Up while the watch is on (a player is at the door), gone when the errand ends. One part logs a double Hierarchy error when spawned (the kit's note) |
 | (existing prefab) | JTF Bronze Props' `{2FEC0B67EDE06202}Prefabs/Compositions/JTF/JTF_InterrogationRoom_01.et` (an existing prefab from the stack) | — | Missions > Errands > Things > Lock-up room | optional | beside a Red Hand lock-up's door for the night's watch; empty = the door only. Up while the watch is on (a player is at the door), gone when the errand ends |
 | `RZ_Passport_US.et` | shipped as text: Suspicious Item Props' item, renamed "Passport" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a passport, for the errands that hand one over. A real item: it can be picked up and carried |
-| `RZ_Passport_UK.et` | shipped as text: Suspicious Item Props' item, renamed "Passport" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a passport, for the errands that hand one over. A real item: it can be picked up and carried |
+| `RZ_Passport_UK.et` | shipped as text: Suspicious Item Props' item, renamed "Passport" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a passport; the base of the forger's papers (RZ_Passport_Forged). A real item: it can be picked up and carried |
 | `RZ_Passport_Soviet.et` | shipped as text: Suspicious Item Props' item, renamed "Soviet passport" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a passport, for the errands that hand one over. A real item: it can be picked up and carried |
-| `RZ_SoldiersID_US.et` | shipped as text: Suspicious Item Props' item, renamed "Soldier's ID card" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a soldier's identity card, for the errands that hand one over. A real item: it can be picked up and carried |
+| `RZ_SoldiersID_US.et` | shipped as text: Suspicious Item Props' item, renamed "Soldier's ID card" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a soldier's identity card; the base of the errands' carried one (RZ_SoldiersID_Carried). A real item: it can be picked up and carried |
 | `RZ_SoldiersID_Soviet.et` | shipped as text: Suspicious Item Props' item, renamed "Soviet military card" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a soldier's identity card, for the errands that hand one over. A real item: it can be picked up and carried |
 | `RZ_Painkillers.et` | shipped as text: Suspicious Item Props' item, renamed "Painkillers" with a description of the time, its picture the 3D preview (the mod's icon file is missing). Open it once in Workbench | — |  | optional | a bottle of painkillers, for the errands that hand one over. A real item: it can be picked up and carried |
 
@@ -2661,7 +2663,7 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines, 62 duties (on) and 70 cards, N players with a ledger.`; a sorting
+start, `Errands: on, 36 routines, 69 duties (on) and 72 cards, N players with a ledger.`; a sorting
 duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
 judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
 (no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
@@ -2922,6 +2924,12 @@ session, tick off:
   you take it; two stops on the way out to the far door 180 to 350 m off; sprint, or jump off a
   wall, with the culture or the heavy box: it rings once, and a second time at most; dawdle over
   six minutes with the trial vials: it warms).
+- [ ] The two errands from the props work ([ERRANDS.md](ERRANDS.md#the-cards)): with a town near a
+  Bastion post at 50+ infected (admin), ask its named person: *The Patrol That Didn't Come Back*; take
+  the card in the town and carry it back yourself (Props > Soldier's ID slotted: it shows as a
+  soldier's card in the pack and can't be equipped). At a Haven house of five whose meal ran short,
+  *False Hope at the Line*: buy the papers at the gate and hand them in; or leave him be, and the
+  house is one fewer.
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at

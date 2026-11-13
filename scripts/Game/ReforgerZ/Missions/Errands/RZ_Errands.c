@@ -38,6 +38,12 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Carried (optional): what a carried way puts in your pack (His Effects' effects, The Name on the Tag's ID): an item with RZ_MissionItemComponent that can't be equipped. Empty = the mission item", "et")]
 	ResourceName m_sCarried;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Soldier's ID (optional): the card The Patrol That Didn't Come Back carries home, an item with RZ_MissionItemComponent (RZ_SoldiersID_Carried.et). Empty = Carried", "et")]
+	ResourceName m_sSoldiersID;
+
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Forged papers (optional): the set False Hope at the Line buys off the forger as proof, an item with RZ_MissionItemComponent (RZ_Passport_Forged.et). Empty = Carried", "et")]
+	ResourceName m_sForgedPapers;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Watch (optional): The Last Tin's watch, a real wristwatch traded for two tins. Empty = a common find", "et")]
 	ResourceName m_sWatch;
 

@@ -6297,6 +6297,42 @@
    "notes": "Put in the player's pack"
   },
   {
+   "id": "ErrandSoldiersID",
+   "kind": "create",
+   "system": "Missions",
+   "path": "Prefabs/ReforgerZ/Missions/RZ_SoldiersID_Carried.et",
+   "basePrefab": "Prefabs/ReforgerZ/Missions/RZ_SoldiersID_US.et",
+   "baseFind": "",
+   "baseHint": "shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench",
+   "components": [{"cls": "RZ_MissionItemComponent", "values": [], "name": ""}],
+   "actions": [],
+   "slots": ["m_ErrandSettings.m_Props.m_sSoldiersID"],
+   "listSlot": false,
+   "slotLabel": "Missions > Errands > Props > Soldier's ID",
+   "required": false,
+   "minimum": false,
+   "use": "the card The Patrol That Didn't Come Back carries home; empty = Props > Carried",
+   "notes": "Put in the player's pack as a carried item"
+  },
+  {
+   "id": "ErrandForgedPapers",
+   "kind": "create",
+   "system": "Missions",
+   "path": "Prefabs/ReforgerZ/Missions/RZ_Passport_Forged.et",
+   "basePrefab": "Prefabs/ReforgerZ/Missions/RZ_Passport_UK.et",
+   "baseFind": "",
+   "baseHint": "shipped as text: our item child with an RZ_MissionItemComponent added (it can't be equipped, no mission's drop takes it). Open it once in Workbench",
+   "components": [{"cls": "RZ_MissionItemComponent", "values": [], "name": ""}],
+   "actions": [],
+   "slots": ["m_ErrandSettings.m_Props.m_sForgedPapers"],
+   "listSlot": false,
+   "slotLabel": "Missions > Errands > Props > Forged papers",
+   "required": false,
+   "minimum": false,
+   "use": "the set False Hope at the Line buys off the forger; empty = Props > Carried",
+   "notes": "Put in the player's pack as a carried item"
+  },
+  {
    "id": "DutyShowCash",
    "kind": "create",
    "system": "Missions",
@@ -6599,7 +6635,7 @@
    "slotLabel": "",
    "required": false,
    "minimum": false,
-   "use": "a passport, for the errands that hand one over",
+   "use": "a passport; the base of the forger's papers (RZ_Passport_Forged)",
    "notes": "A real item: it can be picked up and carried"
   },
   {
@@ -6635,7 +6671,7 @@
    "slotLabel": "",
    "required": false,
    "minimum": false,
-   "use": "a soldier's identity card, for the errands that hand one over",
+   "use": "a soldier's identity card; the base of the errands' carried one (RZ_SoldiersID_Carried)",
    "notes": "A real item: it can be picked up and carried"
   },
   {

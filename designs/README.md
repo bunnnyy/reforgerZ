@@ -6,8 +6,6 @@ Approved designs that aren't built yet ([CLAUDE.md](../CLAUDE.md), "Designs"). E
 
 ## Order of work
 
-| Order | Design | What it is |
-|---|---|---|
-| 1 | [DUTIES.md](DUTIES.md) | What the built duties still want: the swap table's conversations as `.rzd` trees (a speaker for a duty's customer), real things standing on the tables (prop copies of Suspicious Item Props' items, and our own era-right child prefabs), the Trusted rung's other versions, and a few things per faction. The duties themselves are built ([docs/ERRANDS.md](../docs/ERRANDS.md#duties)) |
+None waits: every approved design is built.
 
 A new approved design goes here with its place in the order.
