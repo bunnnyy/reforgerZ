@@ -1792,6 +1792,10 @@ Each wrong place is a line `RZT objplace FAIL <type> [start|there|carried|step d
 the tracker points at <grid>, the step is done at <grid> (<n> m off, allowed <m>)`, the sum is
 `RZT objective places (...): N checked, N steps done where the tracker sent the tester, N wrong, N
 without a place (N world events, not jobs)` (a world event is news, never on the tester's Quests tab, so nothing points), and the run fails on any wrong one.
+**Person objectives** (`RZT_PersonObj.c`): an errand whose current objective is the way back is
+checked once while the giver's body is out; the tracker's point must be within 5 m of that body.
+Each miss is `RZT objplace FAIL person errand <id> '<objective>': the tracker points at <grid>,
+<giver> stands at <grid> (<n> m off)`, the sum `RZT person objectives: N checked, N wrong`.
 
 **The cure finale.** Last, after the route walk (the cure stands the line down), the questlines'
 **Wait scale** goes to 0.1 and a scripted finale runs: a commit refused below the gate; the slow
@@ -3508,8 +3512,11 @@ when it happens)
   the map's diamond and the Quests row point at the crate by his seat; pick it up and, within 2 s,
   all three point at the drop the brief names (the Haven safehouse), with the metres counting down
   there, not at the commander. A visit job (Recon) points at the nearest point not done, then the next.
-  An errand points at its step, then "Go back to ..." at the giver (a wanderer: where they've walked
-  to). In the Quests tab's detail a next objective somewhere else shows its place after it
+  An errand points at its step, then "Go back to ..." at the giver's body where it stands, within a
+  few metres (a wanderer: where they've walked to), never at the holding's spot. Take Halcyon's The
+  Cold Chain: the tracker shows *Take the cold box*, then *Carry the cold box to the far door*, *Hand
+  over the cold box*, *Sign the manifest* and *Go back to ...*, one at a time, each ticked as you do it
+  and the arrow moving on. A Halcyon nametag reads Doctor only under a "Dr" name. In the Quests tab's detail a next objective somewhere else shows its place after it
   ("Go back to Mara · Morton"), and so does the tracker's dim next line.
 - [ ] **Only the tracked job on the HUD**: take a second and a third job. The first stays tracked
   and the tracker still shows that one job alone: no dim lines under it and no "+N more". The others

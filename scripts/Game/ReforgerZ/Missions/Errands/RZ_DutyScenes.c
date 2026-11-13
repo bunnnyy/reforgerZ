@@ -125,6 +125,7 @@ class RZ_DutyBeat
 
 	string m_sKey;
 	string m_sLine;				// said as the player reaches it
+	string m_sGoal;				// the tracker's objective from this beat on, till the next beat with one (docs/UI.md, "The tracker"); "" carries on
 	int m_iWhere = AT_SAME;
 	vector m_vAt;
 	ResourceName m_sProp;		// what stands there (the first option's before look)
@@ -306,6 +307,67 @@ class RZ_DutyScenes
 			return s.IsIdle();
 
 		return s.m_bDone;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The scene's steps for the tracker, one objective each (docs/WRITING.md, "Objective lines"):
+	//! every beat with a goal starts one. Those behind are ticked, the one under way is current at
+	//! its beat's place, those ahead are dim (one that waits on a flag the scene hasn't got is left
+	//! out). All ticked when `done`. False: there's no scene or it names no goals.
+	bool Objectives(RZ_Errand e, notnull RZ_ObjList list, float radius, bool done)
+	{
+		RZ_DutyScene s = Find(e.m_iId);
+		if (!s)
+			return false;
+
+		int count = s.m_aBeats.Count();
+		int at = s.m_iBeat;
+		if (s.m_bDone || done)
+			at = count;
+
+		// The step under way: the last goal at or before the current beat (the first, before any)
+		int current = -1;
+		int first = -1;
+		foreach (int i, RZ_DutyBeat b : s.m_aBeats)
+		{
+			if (b.m_sGoal.IsEmpty())
+				continue;
+
+			if (first < 0)
+				first = i;
+
+			if (i <= at)
+				current = i;
+		}
+
+		if (first < 0)
+			return false;
+
+		if (current < 0)
+			current = first;
+
+		vector here = e.m_vPlace;
+		if (at < count && s.m_aBeats[at].m_vAt != vector.Zero)
+			here = s.m_aBeats[at].m_vAt;
+
+		foreach (int j, RZ_DutyBeat g : s.m_aBeats)
+		{
+			if (g.m_sGoal.IsEmpty())
+				continue;
+
+			if (j != current && !Holds(s, g))
+				continue;
+
+			string text = e.Fill(g.m_sGoal);
+			if (j < current || (j == current && at >= count))
+				list.Add(text, RZ_EObjState.DONE);
+			else if (j == current)
+				list.Add(text, RZ_EObjState.CURRENT, RZ_ObjPlace.Spot(here, radius));
+			else
+				list.Add(text, RZ_EObjState.NEXT);
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

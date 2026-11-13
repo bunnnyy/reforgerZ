@@ -587,6 +587,8 @@ so it never leans on the brief.
 
 - **Who, what and where, in one line that stands on its own.** Name the person by their name or
   token, the thing, and the town, house or grid.
+- **One thing at one place.** Steps in a row are separate objectives, never one line chained with
+  "then" (a duty's scene names its steps in `RZ_DutyGoals.c`; the way back is always its own line).
 - **Short and imperative:** a verb first, one line, no second sentence. The brief keeps the voice;
   the objective is plain.
 - **No pronoun without a named person in the same line.** "Find out his number" fails; so does "Go

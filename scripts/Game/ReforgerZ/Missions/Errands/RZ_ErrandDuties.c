@@ -905,7 +905,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case "ward":
 			{
 				m_iRung = RZ_Duties.RUNG_ARMED;
-				m_sRoles = "lab assistant,technician";
+				m_sRoles = "doctor,lab assistant,technician";
 				m_sThread = "took the observation ward's round";
 				m_sTitle = "The Observation Ward";
 				SceneWay("Take the ward round", false, "Take the round of the three beds on the observation ward at {here}: read the signs at each bed, say what it is and what's to be done. Then tell {giver}.", 8, 1);
@@ -1143,7 +1143,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	protected void DefineList()
 	{
 		m_iRung = RZ_Duties.RUNG_TRUST;
-		m_sRoles = "lab assistant,technician";
+		m_sRoles = "doctor,lab assistant,technician";
 		m_sThread = "wrote a name on the trial list";
 		m_sTitle = "The Trial List";
 		SceneWay("Choose who goes on the trial list", false, "Read the chart at each of the three beds at {here}, then write one name on the trial list by the door. Then tell {giver}.", 10, 2);
@@ -2201,6 +2201,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				}
 			}
 
+			// Its steps, one objective each, for the tracker
+			RZ_DutyGoals.Set(m_sDuty, m_iFaction, played);
 			return;
 		}
 

@@ -48,12 +48,12 @@ class RZ_Mission_SampleHunt : RZ_TribeContract
 					m_eGiver = RZ_EFaction.SURVIVORS;
 					m_Req.m_eGiver = RZ_EFaction.SURVIVORS;
 					m_sBrief = string.Format("%1 walks alone now, out past %2. We knew %1. Lay %1 down, please, and tell us when it's done.", r.m_sAlphaName, r.m_sPlace);
-					m_sObjective = string.Format("Lay %1 down, out past %2, and bring the samples to the lab.", r.m_sAlphaName, r.m_sPlace);
+					m_sObjective = string.Format("Lay %1 down, out past %2, for the samples.", r.m_sAlphaName, r.m_sPlace);
 					return true;
 				}
 
 				m_sBrief = string.Format("We've been following an isolate out past %1: a big one, on its own, with no pack round it. Kill it and bring its samples to the lab.", r.m_sPlace);
-				m_sObjective = string.Format("Kill the isolate out past %1 and bring its samples to the lab.", r.m_sPlace);
+				m_sObjective = string.Format("Kill the isolate out past %1 for its samples.", r.m_sPlace);
 				return true;
 			}
 		}
@@ -66,7 +66,7 @@ class RZ_Mission_SampleHunt : RZ_TribeContract
 		m_vPos = LandPointNear(s.m_vCenter, 0, s.m_fRadius * 0.8);
 		m_fParticipationRadius = s.m_fRadius + 100;
 		m_sBrief = string.Format("We've tracked a big one to %1, on its own, further along than anything round it. The furthest along we've seen. Kill it and bring its samples to the lab while they're fresh.", s.m_sName);
-		m_sObjective = string.Format("Kill the big one in %1 and bring its samples to the lab.", s.m_sName);
+		m_sObjective = string.Format("Kill the big one in %1 for its samples.", s.m_sName);
 
 		RZ_TrackedZombie alpha = gm.GetSpawner().SpawnZombie(m_vPos, true, m_iSettlement, m_iId);
 		return alpha != null;

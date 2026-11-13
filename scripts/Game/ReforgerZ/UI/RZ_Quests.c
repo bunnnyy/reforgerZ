@@ -53,6 +53,29 @@ class RZ_ObjPlace
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A person to go back to or talk to: their body where it stands now when it's out (it moves
+	//! with them), else `usual`, where they're put out. Every person objective comes through here
+	//! (docs/UI.md, "The tracker"), never a place's centre.
+	static RZ_ObjPlace Person(RZ_GameModeComponent gm, string key, vector usual, float radius = 0)
+	{
+		IEntity body = BodyOf(gm, key);
+		if (body)
+			return Spot(body.GetOrigin(), radius);
+
+		return Spot(usual, radius);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The body wearing the named person `key` now, or null (put away, or nobody by that key).
+	static IEntity BodyOf(RZ_GameModeComponent gm, string key)
+	{
+		if (!gm || key.IsEmpty() || !gm.GetErrands() || !gm.GetErrands().GetPeople())
+			return null;
+
+		return gm.GetErrands().GetPeople().BodyOf(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A search area: the rough circle's centre and radius. Never the hidden spot.
 	static RZ_ObjPlace Area(vector centre, float radius)
 	{
@@ -600,14 +623,14 @@ class RZ_QuestTracker
 		float wayR = 0;
 		if (w)
 		{
-			step = e.Fill(w.StepText());
+			step = e.Fill(WithoutBack(w.StepText()));
 			wayR = w.m_fRadius;
 		}
 
 		// The step where the way is done (a subject that walks moves it); back: the giver where
 		// they stand now (a wanderer walks on)
 		RZ_ObjPlace stepAt = RZ_ObjPlace.Spot(e.m_vPlace, wayR);
-		RZ_ObjPlace backAt = RZ_ObjPlace.Spot(errands.GiverAt(e), ERRAND_RETURN);
+		RZ_ObjPlace backAt = RZ_ObjPlace.Person(m_GM, e.m_sGiver, errands.GiverAt(e), ERRAND_RETURN);
 
 		// An opening's last step ends where it's done: nobody to go back to
 		if (w && w.m_bEndsThere)
@@ -617,6 +640,20 @@ class RZ_QuestTracker
 		}
 
 		string back = e.Fill(BackLine(e));
+
+		// A duty's scene names its own steps (take the box, carry it, hand it over, sign): each
+		// is one objective, then the way back
+		RZ_DutyScenes scenes = errands.GetScenes();
+		if (scenes && scenes.Objectives(e, list, wayR, e.m_bStepDone))
+		{
+			if (e.m_bStepDone || list.First(RZ_EObjState.CURRENT).IsEmpty())
+				list.Add(back, RZ_EObjState.CURRENT, backAt);
+			else
+				list.Add(back, RZ_EObjState.NEXT, backAt);
+
+			return;
+		}
+
 		if (e.m_bStepDone)
 		{
 			list.Add(step, RZ_EObjState.DONE, stepAt);
@@ -626,6 +663,58 @@ class RZ_QuestTracker
 
 		list.Add(step, RZ_EObjState.CURRENT, stepAt);
 		list.Add(back, RZ_EObjState.NEXT, backAt);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A step's words without their last clause when it only sends you back to the giver ("..., then
+	//! tell {giver}."): the way back is an objective of its own (docs/WRITING.md, "Objective lines").
+	static string WithoutBack(string step)
+	{
+		int cut = -1;
+		int from = 0;
+		array<string> joins = {", then ", ". Then ", " and bring ", ", and bring "};
+		foreach (string join : joins)
+		{
+			int k = step.LastIndexOf(join);
+			if (k > cut)
+			{
+				cut = k;
+				from = k + join.Length();
+			}
+		}
+
+		if (cut <= 0)
+			return step;
+
+		string tail = step.Substring(from, step.Length() - from);
+		if (!IsBackWord(tail))
+			return step;
+
+		string head = step.Substring(0, cut);
+		if (!head.EndsWith("."))
+			head += ".";
+
+		return head;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The clause only takes you, or what you carry, back to the giver ("tell {giver}", "come back
+	//! to {giver}", "bring it to {giver}"): it names the giver and starts with one of these.
+	protected static bool IsBackWord(string tail)
+	{
+		if (!tail.Contains("{giver}"))
+			return false;
+
+		string low = tail;
+		low.ToLower();
+		array<string> starts = {"tell ", "come back", "go back", "report", "find {giver}", "see {giver}", "hand ", "bring ", "carry it to", "carry them to", "it to {giver}", "them to {giver}"};
+		foreach (string word : starts)
+		{
+			if (low.StartsWith(word))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

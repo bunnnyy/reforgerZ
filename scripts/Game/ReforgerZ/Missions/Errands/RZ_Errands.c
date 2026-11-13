@@ -3811,6 +3811,15 @@ class RZ_Errands
 	vector GiverAt(RZ_Errand e)
 	{
 		vector giverAt = e.m_vGiver;
+
+		// Their body where it stands now, when it's out: the point is the person, not their spot
+		if (m_People)
+		{
+			IEntity body = m_People.BodyOf(e.m_sGiver);
+			if (body)
+				return body.GetOrigin();
+		}
+
 		vector walking;
 		if (e.m_iWanderer >= 0 && m_GM.GetWanderers() && m_GM.GetWanderers().GetPosition(e.m_iWanderer, walking))
 			giverAt = walking;

@@ -324,7 +324,12 @@ under the secure-radio panel while that shows), for the one job you follow. The 
 - **Where it points: the current objective.** Every objective has its own place, where that step is
   done ([MISSIONS.md](MISSIONS.md#where-each-objective-points)): a delivery's crate where it lies, then
   the drop once you carry it; the next point to visit; an escort's destination; an errand's step, then
-  the giver where they stand now. The area line, the arrow and metres, the map's mark and the Quests
+  the giver. **A person is pointed at, not their place:** their body where it stands now when it's
+  out, moving with them, and their usual spot only while they're put away (`RZ_Errands.GiverAt`,
+  `RZ_ObjPlace.Person`). **One objective is one thing at one place:** a duty played as a scene shows
+  each step as its own line (The Cold Chain: take the box, carry it to the far door, hand it over,
+  sign the manifest, then go back), each at its beat's place (`RZ_DutyGoals.c`), and an errand's
+  step drops its last "then tell {giver}" clause, since going back is the next line. The area line, the arrow and metres, the map's mark and the Quests
   tab's row all follow the current objective's place, and move on when it does. The job's own place
   (where it was given, or its town) is only the fallback for an objective without one.
 - **The area line.** Far off, the rough area in words ("Morton, a few km north-west",
