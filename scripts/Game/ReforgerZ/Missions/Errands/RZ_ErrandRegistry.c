@@ -1,5 +1,5 @@
-//! Every errand the dealer knows: the routines (rows in RZ_ErrandRoutines) and the cards (one class
-//! each in Cards/<Family>/). A card is hand-written, once per player per season, at most Cards a day.
+//! Every errand the dealer knows: the routines (rows in RZ_ErrandRoutines), the duties
+//! (RZ_ErrandDuties) and the cards (one class each in Cards/<Family>/). A card is hand-written, once per player per season, at most Cards a day.
 //! Server only.
 class RZ_ErrandRegistry
 {
@@ -126,6 +126,8 @@ class RZ_ErrandRegistry
 		list.Insert(new RZ_Errand_TheBoy());
 		list.Insert(new RZ_Errand_Processing());
 		list.Insert(new RZ_Errand_CureCosts());
+		// Duties: a place's own work, there to be asked for from the first day (RZ_ErrandDuties.c)
+		RZ_Duties.Build(list);
 	}
 }
 

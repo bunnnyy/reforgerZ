@@ -116,6 +116,13 @@ and one way to end it: **research the cure.**
   stations, the wanderers' asks, 18 strangers met only where one makes sense (a road people use, a
   campfire, a stopped car, a town edge at dusk), locals who remember what you did, board and radio
   asks, and 70 hand-written cards, each true only while its reason is; they pay little, and remember you ([ERRANDS.md](docs/ERRANDS.md)).
+- **Work from the first day, and duties**: a faction's giver with no open contract for you makes one
+  when asked, and its named people always have a duty: the place's own work, taken over for a shift.
+  Chores at first (the kitchen, wood and water, washing down), then, as they come to know your face,
+  the line at the gate and the dead (one small sorting screen: a few looks, three verdicts, and a
+  bitten one let through costs you), a patrol with their people, and for the Known a hunt with the
+  hunter and Halcyon's sample bench. Each run is drawn from the world as it is
+  ([ERRANDS.md](docs/ERRANDS.md#duties)).
 - **Hands-on work**: a step that says dig, build, board up, fix, search, fill, paint or burn is a thing
   at its place with one prompt you hold (*Dig the latrine*), and the world shows the result: the
   latrine screen, a grave, the boarded door ([work sites](docs/DESIGN.md#work-site)).
@@ -187,14 +194,14 @@ and one way to end it: **research the cure.**
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
-  repair, shop, crafting, cooking and radio screens, the object menu, the power panel, reader, death brief and subtitles are written and not yet played).
+  repair, shop, crafting, cooking and radio screens, the object menu, the power panel, the duty table, reader, death brief and subtitles are written and not yet played).
 
 ## Status
 
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
 server's runtime test and in Workbench play on Everon and Arland; every approved design is built
-(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; none waits in `designs/`. The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: a watch, stock-taking and the fourth rung's sensitive duties, built in phases; work from the first day and rungs 1 to 3 are built, with the duty table and patrols and hunts with a place's own people). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
@@ -216,7 +223,7 @@ What's built, next and to test first is in [ROADMAP.md](docs/ROADMAP.md); start 
 | [INFECTED.md](docs/INFECTED.md) | The infected: towns' crawlers, loose ones, hordes, the land grid, bodies and the agent budget, the tribes and their life cycle, borders, memory, who they are, how they move and hunt, the crawlers' life, the people's side (words, knowing, skills, your dead run, the moat, the cure, the last week), the great one, signs and sounds, the simulator's numbers |
 | [TRACES.md](docs/TRACES.md) | Traces: door marks written by the people who were there (who wrote what, how to read them by background, where they come from), doors you can see, player traces, the scenes (the first days, the line, vignettes, live traces), sound and light, the handover to the epilogue |
 | [MISSIONS.md](docs/MISSIONS.md) | Every mission and event, with requirements and status |
-| [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards |
+| [ERRANDS.md](docs/ERRANDS.md) | The small jobs named people ask in person: givers, the dealer, pay, the faults table, the routines and cards, and the duties (a place's own work, from the first day, on a trust ladder) |
 | [QUESTLINES.md](docs/QUESTLINES.md) | The four majors (one season-long story per faction) and the long questlines over many sessions, three per faction and two for the Long Table |
 | [FINALE.md](docs/FINALE.md) | The cure's finale: the five routes, the lock, the race, the stand as a fight for the clean room, terms, Fame and fallbacks |
 | [EPILOGUE.md](docs/EPILOGUE.md) | The week after the cure: its phases, beats and carriers, the dose outlets, the queue and the lab gate, the grey choices, the closing work, the hall's freeze, names |
@@ -277,7 +284,7 @@ scripts/Game/ReforgerZ/
                  capture, vehicle zones and convoys, health cost, step chains, work sites); Haven/ Bastion/ RedHand/ Halcyon/
                  Events/ Leaders/ Unarmed/ Perimeter/ Tribes/ (the packs' contracts); the shared checks (Trust, Fear, prices) and
                  ways through a job; Story/ (the story kit, who decides, who benefits, reasons);
-                 Errands/ (the dealer, the routines, Cards/ with the epilogue deck); Questlines/ (the author's base class,
+                 Errands/ (the dealer, the routines, the duties, Cards/ with the epilogue deck); Questlines/ (the author's base class,
                  approach helpers, the majors' scenes, the registry, one folder per faction with
                  its major, one for the Long Table, and Finale/: the cure finale's five routes,
                  desks, tissue hunts, items and route assets)
@@ -301,7 +308,7 @@ scripts/Game/ReforgerZ/
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
-                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the street lamps (dark but where there's power), the screen guard, the notice board, the spawn screen and loadout lock, the
+                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the duty table, the street lamps (dark but where there's power), the screen guard, the notice board, the spawn screen and loadout lock, the
                  death brief, the map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist

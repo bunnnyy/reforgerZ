@@ -1966,6 +1966,10 @@ class RZ_GameModeComponent : SCR_BaseGameModeComponent
 		// Work sites: who is at which, their props near players
 		if (m_Shared)
 			m_Shared.SecondTick(ids, players);
+
+		// A duty's table opens when its work site has been held
+		if (m_Errands)
+			m_Errands.SecondTick(ids, players);
 	}
 
 	//------------------------------------------------------------------------------------------------

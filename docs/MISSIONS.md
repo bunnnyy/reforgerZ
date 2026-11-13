@@ -48,6 +48,17 @@ to players who meet all of their requirements:
 
 How the code does it:
 
+- **Ask and you get.** The server keeps only a small shared pool of contracts alive (2, plus 1 per
+  3 players, 10 at most, one made every 75 s), so the giver you ask often has none of their own
+  open. So a leader or quartermaster asked for work, with no open contract you can take, **makes
+  one then** (`RZ_MissionManager.MakeFor`): one of their faction's that you qualify for and the
+  world can run now, picked by the same weights as the pool's. It's tried once per 90 s for a
+  player and a faction, never past the server's 10 contracts, and never with 3 of that giver's
+  alive already. Each faction has four contracts a Stranger can take (the tables below: Tier
+  *Any*), so a newcomer is given work on the first day; the only no is a stated one (a locked row's
+  need, *You've taken all they have*, or *Nothing today. Ask again later* when the world can run
+  none of them now). The named people's small work is there the same way
+  ([ERRANDS.md](ERRANDS.md#duties)).
 - **Jobs only by interaction.** Every job starts from a person you talk to or a thing you use,
   never from the radio, a timer, a spawn or walking past. The one exception is the openings'
   steps, and only their "Talk to ..." objective while someone's outside (the steps are handed when

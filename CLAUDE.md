@@ -76,7 +76,7 @@ The Doc map covers `docs/` only. Approved but unbuilt designs are in `designs/` 
 | `docs/ROADMAP.md` | Built, next, play-test priorities, and the Dropped list |
 | `docs/REPUTATION.md` | Factions, Fame/Infamy/Favor, tiers, shops, perks, leaders, AI hostility, morale/needs/truces |
 | `docs/MISSIONS.md` | Every contract, world event, puzzle, leader and arc mission, with requirements and ✅ status |
-| `docs/ERRANDS.md` | Errands: the givers (named people, the wanderers' asks), the dealer, keeping them true, ways and steps, pay, the faults table, every routine and card with ✅, telemetry |
+| `docs/ERRANDS.md` | Errands: the givers (named people, the wanderers' asks), the dealer, keeping them true, ways and steps, pay, the faults table, every routine and card with ✅, the duties (always there to be asked for), the trust ladder, the duty table and the duties' people, telemetry |
 | `docs/QUESTLINES.md` | The four majors (acts, defaults, endings) and the long questlines (three per faction, two for the Long Table): stages, approaches, endings, crossings |
 | `docs/FINALE.md` | The cure's finale: the gate, the lock and price doors, the five routes, live tissue, pacts and kills between routes, the finish, the batch and the seal, the stand as a fight for the clean room, Take the Lab and the Coat Run, terms, the route Fame, fallbacks, items and people |
 | `docs/EPILOGUE.md` | The epilogue week after the cure: its phases, the record and the hall's freeze, beats and carriers, the dose outlets, places and scenes, the grey choices, the closing work (the closure set), names, edge cases, admin tools |

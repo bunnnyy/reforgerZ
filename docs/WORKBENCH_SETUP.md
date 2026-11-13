@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **340 prefab fields**: 46 on `RZ_GameModeComponent`, 277 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **312 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 92 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **341 prefab fields**: 46 on `RZ_GameModeComponent`, 278 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **313 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 93 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -827,6 +827,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the RadioChannel layout (UI/LAYOUTS.md) | — | UI > Radio channel layout | optional | the radio screen's channel tiles (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the ObjectRow layout (UI/LAYOUTS.md) | — | UI > Object row layout | optional | the object menu's option rows: stoves, generators, house radios, wells, puzzle objects, safehouse services, a quartermaster's asks, the lab, the notebook item's name and season, a radio item (empty = no object menu: their world prompts). Needs the RZ_ObjectMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the PowerBreaker layout (UI/LAYOUTS.md) | — | UI > Power breaker layout | optional | the power panel's breakers: the power station's control gets one prompt, Open the panel, and the restore happens in the panel screen (empty = the control's old world prompts). Needs the RZ_PowerMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
+| (existing prefab) | the DutyCard layout (UI/LAYOUTS.md) | — | UI > Duty card layout | optional | the duty table's cards: a duty that sorts things (the dead, the line at the gate, the sample trays) opens the table screen when its work site is held (empty = no screen: the duty is its hold, judged the careful way for half pay). Set by the attribute's default (RZ_DutyCard.layout). Needs the RZ_DutyMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 
 #### Questlines
 
@@ -1454,6 +1455,14 @@ in `UI/layouts/ReforgerZ/`.
       the first **Open the panel** says what you see as a card and the old prompts come back for
       everyone. `RZ_PowerControl.et` now carries only the read and two choices (no use actions,
       which would show as **Use**).
+   10. **The duty table** (preset added, not checked in play). The `RZ_DutyMenu` preset is in
+      `Configs/System/chimeraMenus.conf` (layout `RZ_DutyMenu.layout`, class `RZ_DutyMenu`), and
+      **UI > Duty card layout** has `RZ_DutyCard.layout` as its default, so nothing needs slotting.
+      Both layouts are written as text: open `RZ_DutyMenu.layout` and `RZ_DutyCard.layout` in the
+      layout editor once, so Workbench registers them, and check five cards fit in `Cards` side by
+      side. If the game mode's **UI > Duty card layout** shows empty, pick `RZ_DutyCard.layout`
+      there (VERIFY `UI/RZ_DutyMenu.c:61`). Empty it on purpose and the three sorting duties have
+      no screen: each is its hold, judged the careful way for half pay.
    10. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
       transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
@@ -2004,8 +2013,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **174** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
+There are **175** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2015,7 +2024,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-39)
 come last.
 
 ### High risk: the core loop (2)
@@ -2160,7 +2169,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (38)
+### The UI (39)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2171,7 +2180,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:1014` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:1017` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:207` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:31` | with **Gadget anim variable** MX991 the character takes the notebook item into the left hand as it does the MX991 flashlight (with none, the take never finishes: the old bug), and its `IN_HAND` mode switch, or the HUD's watch, opens the notebook | N says in the log "not in the hand 1.5 s after N" and opens the notebook anyway; the pause menu and **Read the notebook** still work. Try the map's hold instead (**Gadget anim variable** MAP, the paper map's `paper_map.agr`/`player_map.asi`) |
@@ -2182,29 +2191,30 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Notebook.c:96` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_Notebook.c:1080` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:51` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
-| `UI/RZ_Menus.c:55` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
-| `UI/RZ_UIData.c:1083` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
+| `UI/RZ_Menus.c:56` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
+| `UI/RZ_UIData.c:1086` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
 | `UI/RZ_TalkMenu.c:62`, `:400` | `OnMouseWheel` reaches a reply row's `Button` and the reply box's frame (`ReplyPanel`), with `wheel` positive rolled up, so the wheel moves the selection and past the ends turns the page | The wheel does nothing or runs the wrong way (flip the sign in `RZ_TalkMenu.Wheel`); the arrow keys, Q/E and the arrows' clicks still move and turn the page |
 | `UI/RZ_TalkMenu.c:652` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls a box that overflows toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; boxes are cut to fit, so it's rarely needed |
 | `UI/RZ_TalkMenu.c:692` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
 | `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
-| `UI/RZ_UIData.c:1143` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1282` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
+| `UI/RZ_UIData.c:1146` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1285` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
 | `Dialogue/RZ_Dialogue.c:1019` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:185` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:563` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
 | `UI/RZ_ShopMenu.c:612` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
-| `UI/RZ_Menus.c:398` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
+| `UI/RZ_Menus.c:399` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:21` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
 | `UI/RZ_RadioMenu.c:395` | a layout made under an `OverlayWidget` cell (`Cell0`-`Cell11`), its root in an `OverlayWidgetSlot` with both aligns Stretch, fills the cell | The radio screen's tiles sit small in a corner of their cells, or overlap: in `RZ_RadioChannel.layout` keep `ChannelSize` at 317 × 92, or make the cells `SizeLayout` widgets |
+| `UI/RZ_DutyMenu.c:61` | a `ResourceNamePicker` attribute's default string that names a layout written as text (its GUID from the `.meta`) resolves on a client, so **UI > Duty card layout** needs no slotting in `RZ_GameMode.et` (the meat prefab's default in **Wildlife** works the same way, on a vanilla prefab) | The duty table never opens and the sorting duties judge themselves for half pay: pick `RZ_DutyCard.layout` in **UI > Duty card layout** on the game mode |
 | `Interactions/RZ_RadioScreen.c:37` | a radio item carried by a player (in hand, on a vest or in a pack) has a parent entity, and one lying on the ground has none, so **View radio** shows on the ground from the default context and in hand from the knob context | View radio shows in the wrong place or not at all: the house radio's View radio still opens the screen, and the log is on the notebook's Radio tab. Check the parent in play and change the test in `RZ_ViewRadioAction.CanBeShownScript` |
 | `Interactions/RZ_RadioScreen.c:54` | the server runs `PerformAction` for an action on a carried radio in vanilla's inspection context (`knob_toggle`, beside Turn on/off), as for vanilla's own | View radio in hand does nothing: use it with the radio on the ground or at a house radio; or make the action local and ask the server through `RZ_PlayerUIComponent` |
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
-| `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
+| `UI/RZ_UIData.c:1226` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
 | `UI/RZ_CarMenu.c:712` | `FrameSlot.SetPos` and `SetSize` on an image in a frame place and size it as the layout's position and size would: the bars of the loom's wires (`LoomBar0` … `LoomBar47`, three a wire a turn) | The loom shows its plugs and sockets with no wires between them, or every bar as a 6 × 6 dot at the top of the band: draw the tangle another way (a fixed tangle laid out in `RZ_CarMenu.layout`, its sockets lit by the script), and say so on the board |
@@ -2580,7 +2590,13 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines and 70 cards, N players with a ledger.`; while running, `Errands:
+start, `Errands: on, 36 routines, 27 duties (on) and 70 cards, N players with a ledger.`; a duty's
+table, `Duty table: the dead for <player>, N subjects, N looks (errand N).`, `Duty table: errand N
+judged for <player>: N of N right, score S, danger 0|1.`, `Duty table: errand N judged itself (no
+screen), score S.` and the warning `Duty table: a client couldn't open it ...` (no `RZ_DutyMenu`
+preset or layout on that client: tables judge themselves from then on); a duty's people, `Duty
+squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
+a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
@@ -2747,6 +2763,29 @@ session, tick off:
   picking one starts it at once (*Errand started: ...* card). Do the step, come back, and *[Errand]
   It's done: ...* (first on their list) hands it in (*Errand done: ...* with the pay); standing next to
   them doesn't. A giver with nothing shows *Anything need doing?* locked with why.
+- [ ] Work on the first day ([ERRANDS.md](ERRANDS.md#duties), [MISSIONS.md](MISSIONS.md#who-gets-offered-what)):
+  as a fresh Stranger, alone on the server, ask each faction's quartermaster for work: each lists at
+  least one [Job] you can take (the log says `made on asking` when the pool had none). Ask a named
+  person at a safehouse, a post, a camp and a station *Anything need doing?*: each names an errand or
+  a duty (Kitchen Duty, Fatigues, The Scrub, The Boiler...), its ask gives a reason that's true (rain,
+  dusk), its task is a hold at a work site, and it pays 3 Favor. Ask the same person again: *You've
+  done your shift. Ask again in a while*. After the third piece of work for one faction: *"They know
+  your face now"*.
+- [ ] The duty table ([ERRANDS.md](ERRANDS.md#the-table), [UI.md](UI.md#the-duty-table)): after
+  that third piece of work, ask a nurse, a medic or a lookout until they give The Line at the Door
+  or Laying Out (the Halcyon lab's Bench Work needs Known). Hold the work site (4 s): the table
+  opens, with a pad too. The three goal lines read at a glance; a look turns a sign and takes one
+  off LOOKS LEFT; a verdict fills amber; **Hand it in** is dark until every card has one. Close it
+  half done, hold the site again: the same table, the same signs turned. Hand in a perfect one: full
+  Favor and 1 Fame, and the giver says so. Pass a bitten one on purpose: no pay, +2 Infamy. Empty
+  **UI > Duty card layout**: the hold alone finishes it, for half.
+- [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
+  from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
+  stop when you fall more than 150 m behind; each point gives one line about what's there; back at
+  the gate with them, the step is done. The long round's reply is locked *Needs Known with ...*
+  below Known. At the Haven or a Red Hand camp, Known: the hunter follows you to the snare line and
+  *Check the snares* counts only with them beside you. With **Factions > Territory**'s guard slots
+  empty they are a civilian figure that moves as data.
 - [ ] Jobs on the first replies, with Trees on: at a leader the jobs are the first replies, above
   their topics, and never hide while a topic about the work shows; the topic's *I'll do it. Give me the
   task.* is tagged [Job] and leads to the same pitch (or is locked with *Nothing today...*). At The

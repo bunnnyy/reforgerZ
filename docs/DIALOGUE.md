@@ -187,8 +187,11 @@ adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockR
   for someone else, or one you could never take, isn't listed.
 - **Nothing to give** shows too, locked with why: *Got any work for me? (Nothing today. Ask again
   later)*, "You've taken all they have. Check your Quests", "They won't work with you" (attitude −2),
-  "Not while Hunted with Bastion"; at an errand giver *Anything need doing? (Nothing today. Ask again
-  tomorrow)* or their refusal ("Not while that lot's at the fence.", "You've your hands full already.
+  "Not while Hunted with Bastion"; a giver with no open contract for you makes one when asked, so
+  *Nothing today* is left for when the world can run none of theirs
+  ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)); at an errand giver *Anything need doing?* with
+  [the reason](ERRANDS.md#when-theres-nothing-the-reason-in-words) (*You've done your shift. Ask
+  again in a while*) or their refusal ("Not while that lot's at the fence.", "You've your hands full already.
   Finish what you've got."). A wanderer with no errand keeps *Need a hand?* open while Barter Chain
   could start from them.
 - **Who shows what:**

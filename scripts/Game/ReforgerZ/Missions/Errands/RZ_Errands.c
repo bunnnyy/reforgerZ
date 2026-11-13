@@ -103,6 +103,12 @@ class RZ_ErrandSettings
 	[Attribute("45", UIWidgets.Slider, "Real minutes a held errand lapses after it's taken (20 if the player goes offline)", "10 180 5")]
 	float m_fLapseMinutes;
 
+	[Attribute("1", desc: "Duties: a named person with nothing true to ask gives one of the place's own duties (the kitchen, the wood and water, washing down...), so work is there from the first day. Off: errands only while something is true (docs/ERRANDS.md, \"Duties\")")]
+	bool m_bDuties;
+
+	[Attribute("20", UIWidgets.Slider, "Duty gap: real minutes before one player is given the same kind of duty again (duties skip the routines' cooldowns)", "1 240 1")]
+	float m_fDutyGapMinutes;
+
 	[Attribute("0.25", UIWidgets.Slider, "Fault chance: each fault a place can have (a post's relief, a set low, a generator dry) rolls at this once a shift, with a player within 2 km", "0 1 0.05")]
 	float m_fFaultChance;
 
@@ -266,6 +272,8 @@ class RZ_Errands
 	protected static const float HELPER_SECONDS = 120;
 	protected static const int MAX_HELPERS = 3;
 	protected static const int MAX_LIVE = 12;
+	protected static const int DUTIES_PER_PLACE = 3;	// duties live at one holding or house at once
+	static const int KNOWN_FACE = 3;					// errands and duties done for a faction this season: its second rung
 	protected static const int AMENDS_FLOOR = 15;
 	protected static const int CALLOUTS_PER_TICK = 3;
 	protected static const float FALLOUT_PRIVATE = 1200;	// the participants' 20 minutes
@@ -319,10 +327,14 @@ class RZ_Errands
 		m_Locals = new RZ_Locals(gm);
 		m_PayKinds = new RZ_ErrandsPay(this);
 		m_More = new RZ_ErrandsDealer(this);
+		m_Tables = new RZ_DutyTables(gm, this);
+		m_Squads = new RZ_DutySquads(gm, this);
 	}
 
 	protected ref RZ_ErrandsPay m_PayKinds;
 	protected ref RZ_ErrandsDealer m_More;
+	protected ref RZ_DutyTables m_Tables;		// the duties' sorting tables (RZ_DutyTable.c)
+	protected ref RZ_DutySquads m_Squads;		// the people who go out with a player on a duty (RZ_DutySquads.c)
 
 	//------------------------------------------------------------------------------------------------
 	RZ_ErrandsDealer Dealer() { return m_More; }
@@ -471,6 +483,8 @@ class RZ_Errands
 	RZ_NamedPeople GetPeople() { return m_People; }
 	RZ_Faults GetFaults() { return m_Faults; }
 	RZ_GameModeComponent GetGM() { return m_GM; }
+	RZ_DutyTables GetTables() { return m_Tables; }
+	RZ_DutySquads GetSquads() { return m_Squads; }
 	float GetClock() { return m_fClock; }
 
 	//------------------------------------------------------------------------------------------------
@@ -515,13 +529,16 @@ class RZ_Errands
 			facts.Memory().PlaceSeasonMarks();
 
 		int cards = 0;
+		int duties = 0;
 		foreach (RZ_ErrandDef def : m_aDefs)
 		{
 			if (def.m_bCard)
 				cards++;
+			else if (def.m_bDuty)
+				duties++;
 		}
 
-		RZ_Log.Info(string.Format("Errands: %1, %2 routines and %3 cards, %4 players with a ledger.", OnOff(IsOn()), m_aDefs.Count() - cards, cards, m_mLedgers.Count()));
+		RZ_Log.Info(string.Format("Errands: %1, %2 routines, %3 duties (%4) and %5 cards, %6 players with a ledger.", OnOff(IsOn()), m_aDefs.Count() - cards - duties, duties, OnOff(m_Settings.m_bDuties), cards, m_mLedgers.Count()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -644,6 +661,7 @@ class RZ_Errands
 	//! A player left: a held errand waits 20 minutes for them.
 	void OnDisconnect(int playerId)
 	{
+		m_Tables.Forget(playerId);
 		foreach (RZ_Errand e : m_aErrands)
 		{
 			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
@@ -679,6 +697,7 @@ class RZ_Errands
 		if (!IsOn())
 			return;
 
+		m_Squads.Tick(dt, ids, players);
 		TickSteps(dt, ids, players);
 		m_Strangers.TickSteps(dt, ids, players);
 		m_More.Tick(dt, ids, players);
@@ -1046,6 +1065,33 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Once a second (the game mode's second tick): a duty's table opens when its work site is held.
+	void SecondTick(array<int> ids, array<IEntity> players)
+	{
+		if (IsOn())
+			m_Tables.SecondTick(ids, players);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand's work site again, where it was, to hold a second time (a duty's table was left
+	//! before it was handed in).
+	void ReopenWork(RZ_Errand e)
+	{
+		RZ_ErrandWay w = e.GetWay();
+		RZ_WorkSites sites = RZ_WorkSites.Get();
+		if (!w || !sites || !w.IsWork() || e.m_eState != RZ_EErrandState.HELD)
+			return;
+
+		string key = WorkKey(e);
+		float hold = w.m_fWorkSeconds;
+		if (hold <= 0)
+			hold = RZ_WorkSites.HoldFor(w.m_fSeconds);
+
+		sites.Close(key);
+		sites.Open(key, w.m_eWork, w.m_sWorkLabel, hold, e.m_vPlace, e.m_iAsker);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The errand's work site key (one step at a time).
 	static string WorkKey(RZ_Errand e)
 	{
@@ -1134,6 +1180,12 @@ class RZ_Errands
 			RememberEnd(e, why);
 
 		e.m_eState = RZ_EErrandState.DONE;
+		if (e.m_Def)
+			e.m_Def.Ended(this, e, why);
+
+		m_Tables.Drop(e.m_iId);
+		m_Squads.Drop(e.m_iId);
+
 		RemoveProp(e);
 		RZ_WorkSites sites = RZ_WorkSites.Get();
 		if (sites)
@@ -1450,12 +1502,48 @@ class RZ_Errands
 			m_mLastWhy.Set(playerId, why);
 			if (!mine)
 			{
-				m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, NothingLine(p));
+				string noWork = NothingWhy(why, playerId, p);
+				if (noWork == WHY_NOTHING)
+					m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, NothingLine(p));
+				else
+					m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, string.Format("%1.", noWork));
+
 				return;
 			}
 		}
 
 		ShowOffer(mine, owner);
+	}
+
+	// Why a deal dealt nothing (Deal's reasons that are said to the player, NothingWhy)
+	protected static const string NO_GAP = "on the duty gap";
+	protected static const string NO_TAKEN = "every chore here is taken";
+	protected static const string NO_MINE = "one chore here at a time";
+	static const string WHY_NOTHING = "Nothing today. Ask again tomorrow";
+
+	//------------------------------------------------------------------------------------------------
+	//! Why a giver has nothing for you now, short, for the locked reply: the stated reason among what
+	//! Deal said (`dealWhy`), the first that applies. With duties on, "nothing today" is left for a
+	//! wanderer.
+	protected string NothingWhy(string dealWhy, int playerId, RZ_NamedPerson p)
+	{
+		if (dealWhy.Contains("the server holds"))
+			return "Everyone has work in hand. Ask again shortly";
+
+		// The Watched get the amends work when there is some, and no duties
+		if (RZ_Factions.IsValid(p.m_iFaction) && m_GM.GetTier(playerId, p.m_iFaction) == RZ_ETier.WATCHED)
+			return string.Format("Nothing while you're Watched with %1, except to make amends", RZ_Factions.GetShortName(p.m_iFaction));
+
+		if (dealWhy.Contains(NO_MINE))
+			return "You've a job here already. Finish that one";
+
+		if (dealWhy.Contains(NO_GAP))
+			return string.Format("You've done your shift. Ask again in a while (%1 min at most)", RZ_Util.RoundToInt(m_Settings.m_fDutyGapMinutes));
+
+		if (dealWhy.Contains(NO_TAKEN))
+			return "Every job here is taken. Ask again when one is done";
+
+		return WHY_NOTHING;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1527,7 +1615,7 @@ class RZ_Errands
 		RZ_Errand next = Deal(playerId, p, user.GetOrigin(), false, dealWhy, true);
 		if (!next)
 		{
-			why = "Nothing today. Ask again tomorrow";
+			why = NothingWhy(dealWhy, playerId, p);
 			return false;
 		}
 
@@ -1922,6 +2010,7 @@ class RZ_Errands
 			case RZ_EErrandItem.BATTERY: return string.Format("%1 battery", count);
 			case RZ_EErrandItem.MEDICAL: return string.Format("%1 medical", count);
 			case RZ_EErrandItem.ANTIDOTE: return string.Format("%1 antidote", count);
+			case RZ_EErrandItem.MEAT: return string.Format("%1 raw meat", count);
 		}
 
 		return "";
@@ -2066,6 +2155,7 @@ class RZ_Errands
 		}
 
 		PlaceProp(e, w);
+		e.m_Def.Taken(this, e, w);
 		Say(e, Pick(w.m_aTake), false);
 		string step = e.Fill(w.StepText());
 		if (w.m_fBefore >= 0)
@@ -2108,9 +2198,14 @@ class RZ_Errands
 		bool holdingPlace = p.m_eKind == RZ_ENamedPlace.HOLDING || p.m_eKind == RZ_ENamedPlace.HOUSE;
 		int choresHere = ChoresAt(place, -1);
 		bool myChoreHere = ChoresAt(place, playerId) > 0;
+		int dutiesHere = DutiesAt(place);
 		foreach (RZ_ErrandDef d : m_aDefs)
 		{
 			if (!Anchored(d, p))
+				continue;
+
+			// A duty is asked for, never called out or waved over
+			if (d.m_bDuty && (!m_Settings.m_bDuties || unasked))
 				continue;
 
 			string no = "";
@@ -2123,14 +2218,18 @@ class RZ_Errands
 				no = "enough of these this life";
 			else if (d.m_bCard && !d.m_bAfterCure && ledger.cardsToday >= m_Settings.m_iCardsPerDay)
 				no = "two cards today";
+			else if (d.m_bDuty && ledger.CoolUntil(DutyKey(d)) > now)
+				no = NO_GAP;
+			else if (d.m_bDuty && dutiesHere >= DUTIES_PER_PLACE)
+				no = NO_TAKEN;
 			else if (!d.m_bCard && (ledger.CoolUntil(d.m_sKey) > now || ledger.CoolUntil(d.m_sKey + "|" + place) > now))
 				no = "cooling down";
 			else if (!d.m_bCard && PlaceCooling(d.m_sKey, place))
 				no = "done here lately";
 			else if (!d.m_bCard && holdingPlace && myChoreHere)
-				no = "one chore here at a time";
-			else if (!d.m_bCard && holdingPlace && choresHere >= ChoreSlots())
-				no = "every chore here is taken";
+				no = NO_MINE;
+			else if (!d.m_bCard && !d.m_bDuty && holdingPlace && choresHere >= ChoreSlots())
+				no = NO_TAKEN;
 			else if (d.m_bTimed && !RZ_GameTime.IsCalibrated())
 				no = "no clock";
 			else if (!d.ForWhom(this, playerId, p))
@@ -2182,6 +2281,25 @@ class RZ_Errands
 
 			if (m_Settings.m_bDebugLog || !no.IsEmpty())
 				why += string.Format("%1: %2. ", d.m_sKey, no);
+		}
+
+		// What's true right now comes first: with a routine or a card to ask, a duty is asked only by
+		// the one whose own work it is (the cook's kitchen, the medic's line)
+		bool anyTrue;
+		foreach (RZ_Errand mt : made)
+		{
+			if (!mt.m_Def.m_bDuty)
+				anyTrue = true;
+		}
+
+		for (int md = made.Count() - 1; md >= 0 && anyTrue; md--)
+		{
+			RZ_ErrandDef dd = made[md].m_Def;
+			if (!dd.m_bDuty || (!dd.m_sRoles.IsEmpty() && dd.m_sRoles.Contains(p.m_sRole)))
+				continue;
+
+			made.Remove(md);
+			scores.Remove(md);
 		}
 
 		if (made.IsEmpty())
@@ -2375,6 +2493,14 @@ class RZ_Errands
 
 		if (!d.m_sRoles.IsEmpty() && d.m_sRoles.Contains(p.m_sRole))
 			s *= 1.2;
+
+		// A duty: who you ask decides which you get (their own work first), and a rung you've only
+		// just reached is the one they try you on
+		if (d.m_bDuty && !d.m_sRoles.IsEmpty() && d.m_sRoles.Contains(p.m_sRole))
+			s *= 2;
+
+		if (d.m_bDuty && d.m_iRung > 1)
+			s *= 1 + 0.25 * (d.m_iRung - 1);
 
 		int regard = Regard(e.m_iAsker, p.m_sKey);
 		if (regard >= 2)
@@ -2658,6 +2784,10 @@ class RZ_Errands
 			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || (playerId > 0 && e.m_iAsker != playerId))
 				continue;
 
+			// A duty is one of yours here, but takes none of the place's chore slots
+			if (playerId <= 0 && e.m_Def.m_bDuty)
+				continue;
+
 			string at = "";
 			if (e.m_iHolding >= 0)
 				at = RZ_Faults.HoldingPlace(e.m_iHolding);
@@ -2669,6 +2799,48 @@ class RZ_Errands
 		}
 
 		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Live duties (offered or held) at this place.
+	protected int DutiesAt(string place)
+	{
+		int n = 0;
+		foreach (RZ_Errand e : m_aErrands)
+		{
+			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || !e.m_Def.m_bDuty)
+				continue;
+
+			if (e.m_iHolding >= 0 && RZ_Faults.HoldingPlace(e.m_iHolding) == place)
+				n++;
+			else if (e.m_iHouse >= 0 && e.m_iWanderer < 0 && RZ_Faults.HousePlace(e.m_iHouse) == place)
+				n++;
+		}
+
+		return n;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a duty's gap is kept under in the ledger: its kind, so the same duty in another place's
+	//! voice is the same duty.
+	static string DutyKey(RZ_ErrandDef d)
+	{
+		if (d.m_sDuty.IsEmpty())
+			return d.m_sKey;
+
+		return "duty." + d.m_sDuty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Errands and duties this player has done for a faction this season (the trust ladder's second
+	//! rung: KNOWN_FACE of them, RZ_Duties.Rung).
+	int WorkedFor(int playerId, int faction)
+	{
+		RZ_PlayerProfile profile = m_GM.FindProfile(playerId);
+		if (!profile || faction < 0 || faction >= 4)
+			return 0;
+
+		return Ledger(profile.m_sIdentity).worked[faction];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2900,6 +3072,13 @@ class RZ_Errands
 		RZ_ErrandLedger ledger = Ledger(e.m_sIdent);
 		ledger.helped++;
 		AddThread(e, w, ledger);
+		// The trust ladder's second rung: the third piece of work for a faction, and they know your face
+		if (!e.m_Def.m_bHanded && e.m_iFaction >= 0 && e.m_iFaction < 4)
+		{
+			ledger.worked[e.m_iFaction] = ledger.worked[e.m_iFaction] + 1;
+			if (ledger.worked[e.m_iFaction] == KNOWN_FACE && m_Settings.m_bDuties && RZ_Reputation.GetAccessRank(m_GM.GetTier(e.m_iAsker, e.m_iFaction)) == 0)
+				m_GM.NotifyPlayer(e.m_iAsker, RZ_Factions.GetShortName(e.m_iFaction), string.Format("That's three pieces of work for %1. They know your face now, and their people will trust you with more: ask them for work.", RZ_Factions.GetShortName(e.m_iFaction)));
+		}
 
 		// A callback: what the giver says later, near them (words only)
 		RZ_Shared callShared = m_GM.GetShared();
@@ -2908,7 +3087,11 @@ class RZ_Errands
 		if (m_Settings.m_bHelpedLine && !e.m_Def.m_bHanded && m_GM.GetHall() && !(m_GM.GetCure() && m_GM.GetCure().IsCured()))
 			m_GM.GetHall().AddHelped(e.m_iAsker);
 
-		if (!e.m_Def.m_bCard && !e.m_Def.m_bHanded)
+		if (e.m_Def.m_bDuty)
+		{
+			ledger.SetCool(DutyKey(e.m_Def), RZ_SeasonClock.Now() + RZ_Util.RoundToInt(m_Settings.m_fDutyGapMinutes * 60));
+		}
+		else if (!e.m_Def.m_bCard && !e.m_Def.m_bHanded)
 		{
 			int now = RZ_SeasonClock.Now();
 			string place = PlaceKey(m_People.Get(e.m_sGiver));
@@ -3049,6 +3232,9 @@ class RZ_Errands
 		int fame = w.m_iFame;
 		if (helper)
 			fame = Math.Min(1, fame);
+
+		if (e.m_iFameCap >= 0)
+			fame = Math.Min(fame, e.m_iFameCap);
 
 		if (fame > 0 && !amends)
 		{
@@ -3208,7 +3394,7 @@ class RZ_Errands
 		string place = PlaceKey(p);
 		foreach (RZ_ErrandDef d : m_aDefs)
 		{
-			if (d.m_bCard || !Anchored(d, p))
+			if (d.m_bCard || d.m_bDuty || !Anchored(d, p))
 				continue;
 
 			if (ledger.CoolUntil(d.m_sKey) > now || ledger.CoolUntil(d.m_sKey + "|" + place) > now || PlaceCooling(d.m_sKey, place))
@@ -3435,6 +3621,7 @@ class RZ_Errands
 
 			case RZ_EErrandItem.FUEL: result.Insert("jerrycan"); result.Insert("canister"); result.Insert("fuelcan"); break;
 			case RZ_EErrandItem.BATTERY: result.Insert("battery"); break;
+			case RZ_EErrandItem.MEAT: result.Insert("meatleg"); break;
 			case RZ_EErrandItem.MEDICAL: result.Insert("bandage"); result.Insert("medkit"); result.Insert("morphine"); result.Insert("tourniquet"); result.Insert("salin"); result.Insert("pill"); result.Insert("antibiotic"); break;
 			case RZ_EErrandItem.ANTIDOTE:
 			{
