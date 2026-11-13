@@ -892,9 +892,10 @@ Cook row layout** can name `RZ_CraftRow.layout`. The script sets `CraftText` to 
 
 ## Radio screen: `RZ_RadioMenu.layout` and `RZ_RadioChannel.layout`
 
-The radio screen (`RZ_RadioMenu` preset; behaviour in [UI.md](../docs/UI.md#the-radio-screen)), in
-the object menu's style. Written as text (by a small generator from the object menu's widgets); no
-mockup. Positions inside `RadioPanel` are from its top left.
+The radio screen (`RZ_RadioMenu` preset; behaviour in [UI.md](../docs/UI.md#the-radio-screen)):
+every channel a tile, the picked one's lines below, nothing scrolls. Written as text (by a small
+generator); mockup `UI/Mockups/radio_screen.html`. Positions inside `RadioPanel` are from its top
+left.
 
 ```
 Frame (root, full screen)
@@ -906,40 +907,45 @@ Frame (root, full screen)
    ├─ Text   RadioSub       at (48, 74), regular 22, dim: the town, and a house set's weak batteries (hidden when empty)
    ├─ Button CloseButton    44 × 44 at (1,308, 30), "X" in amber
    ├─ Image  (HeadRule)     at (48, 114), 1,304 × 2, amber
-   ├─ Text   (ChannelsLabel) at (48, 130), mono bold 18, dim, "CHANNELS"
-   ├─ Frame  (ChannelList)  at (48, 162), 1,304 × 316, #0C0E0F
-   │  ├─ ScrollLayout ChannelScroll  fills it (the pad's up/down keep the picked row in view)
-   │  │  └─ SizeLayout (ChannelWidth) 1,304 wide
-   │  │     └─ VerticalLayout Channels   the channel rows
-   │  └─ Text  (ChannelsEmpty)  centred, regular 24, dim, hidden (there's always Everything)
-   ├─ Text   LogLabel       at (48, 494), mono bold 18, dim: "THE LOG: " and the picked channel
-   ├─ Frame  (LogList)      at (48, 526), 1,304 × 296, #0C0E0F
-   │  ├─ ScrollLayout LogScroll  fills it (LB/RB and the wheel scroll it)
-   │  │  └─ SizeLayout (LogWidth) 1,304 wide
-   │  │     └─ VerticalLayout Log   the log rows: the notebook's RZ_RadioRow.layout (UI > Radio row layout)
-   │  └─ Text  LogEmpty     centred, regular 24, dim, "Nothing heard on it this life." (hidden when there are rows)
+   ├─ Overlay Cell0-Cell11  317 × 92 each, four to a row from (48, 130), 12 apart across and 10 down
+   │                        (rows at 130, 232 and 334): empty; the script makes one tile in each cell
+   │                        that has a channel (nine at most)
+   ├─ Text   LogLabel       at (48, 442), mono bold 18, dim: the picked channel's name in capitals
+   ├─ Frame  Log0-Log3      1,304 × 84 each, at (48, 474), (48, 562), (48, 650) and (48, 738), hidden
+   │  │                     until the page has a line for it
+   │  ├─ Image  (LogBgN)     fills it, #0C0E0F
+   │  ├─ Image  LogBarN      4 × 84, left edge, the line's channel colour
+   │  ├─ Text   LogTimeN     at (18, 8), mono bold 18, dim ("17:12", "NOW")
+   │  ├─ Image  LogIconN     26 × 26 at (94, 6), the channel's icon in its colour (hidden without the imageset)
+   │  ├─ Text   LogHeadN     at (132, 6), 1,156 wide, mono bold 18, the channel's colour: the channel and who spoke, or "ON THE AIR NOW"
+   │  └─ Text   LogTextN     at (132, 30), 1,156 × 52, regular 22, #F4F0E6, wraps: the line, two rows (cut at 235 characters)
+   ├─ Text   LogEmpty       at (48, 620), 1,304 wide, centred, regular 24, dim, hidden: why the channel has no lines
+   ├─ Button LogNewer       44 × 40 at (1,080, 836), "<" in amber: the newer page (hidden on the first)
+   ├─ Text   LogPage        at (1,128, 844), 176 wide, centred, mono bold 18, dim: "PAGE 1 / 3" (hidden with one page)
+   ├─ Button LogOlder       44 × 40 at (1,308, 836), ">" in amber: the older page (hidden on the last)
    ├─ HorizontalLayout Prompts  at (48, 838): the footer prompts the script makes
    └─ Text   PromptsText    at (48, 844), mono bold 18, dim: the static footer, hidden once prompts are made
 ```
 
-`RZ_RadioChannel.layout` (**UI > Radio channel layout**), one channel, created into `Channels`. The
-root is a `Button` named `ChannelRow` (a click picks it):
+`RZ_RadioChannel.layout` (**UI > Radio channel layout**), one channel's tile, made in its cell. The
+root is a `Button` named `ChannelRow` (a click picks it), in an `OverlayWidgetSlot` that fills the
+cell:
 
 ```
-Button ChannelRow (root, 4 below it)
-└─ SizeLayout (ChannelSize)    1,304 × 72
+Button ChannelRow (root, fills its cell)
+└─ SizeLayout (ChannelSize)    317 × 92
    └─ Overlay (ChannelBox)
-      ├─ Image  ChannelBg        #1B1F22, shown on the picked row
-      ├─ Image  ChannelBar       5 × 72, left edge, the channel's colour, shown on the picked row
-      └─ HorizontalLayout (ChannelRowLine)  padding 22 left and right, centred vertically
-         ├─ Image  ChannelIcon   30 × 30, the channel's icon in its colour (set by code), hidden without the imageset
-         ├─ VerticalLayout (ChannelText)  fills the row
-         │  ├─ Text  ChannelName  regular 24 (bright on the picked row, faint when nothing comes through)
-         │  └─ Text  ChannelLine  regular 20, dim: its latest line, one line (cut at 110 characters)
-         └─ Text   ChannelState  mono bold 20, right, in the channel's colour: ON AIR, QUIET, TOO FAINT, SCRAMBLED, "CRACKED: 14 MIN", "12 HEARD"
+      ├─ Image  ChannelFocus     fills it, amber, shown on the picked tile (the 3 px outline round ChannelBg)
+      ├─ Image  ChannelBg        fills it 3 in from each edge, #1B1F22 (#262B2F picked or under the mouse)
+      ├─ Image  ChannelBar       along the bottom, 4 high, the channel's colour
+      ├─ Image  ChannelIcon      30 × 30, top right, the channel's icon in its colour (set by code), hidden without the imageset
+      ├─ Text   ChannelName      top left, regular 22, wraps to two lines (56 kept clear on the right for the icon); bright on the picked tile
+      ├─ Text   ChannelState     bottom left, mono bold 18, the channel's colour: ON AIR, QUIET, TOO FAINT, SCRAMBLED, "CRACKED: 14 MIN", "12 HEARD"
+      └─ Text   ChannelNote      bottom right, regular 18, dim: "last 17:12", "operator only", "needs power"
 ```
 
-Four channel rows show at once; the rest scroll.
+The script sets a tile's opacity to 45% while nothing comes through on it (scrambled, too faint)
+and it's neither picked nor under the mouse.
 
 ## Object menu: `RZ_ObjectMenu.layout` and `RZ_ObjectRow.layout`
 

@@ -6041,7 +6041,7 @@
    "slotLabel": "UI > Radio channel layout",
    "required": false,
    "minimum": false,
-   "use": "the radio screen's channel rows (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
+   "use": "the radio screen's channel tiles (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI)",
    "notes": ""
   },
   {

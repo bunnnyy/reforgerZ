@@ -824,7 +824,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the ShopItem layout (UI/LAYOUTS.md) | — | UI > Shop item layout | optional | the quartermaster's shop screen's item rows (empty = no shop screen: the Buy, Requisition and service actions) |
 | (existing prefab) | the CraftRow layout (UI/LAYOUTS.md) | — | UI > Craft row layout | optional | the crafting screen's recipe rows at a workbench (empty = no crafting screen: the workbench's Make actions and notices). Needs the RZ_CraftMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the CraftRow layout (UI/LAYOUTS.md) | — | UI > Cook row layout | optional | the cooking screen's rows at a stove (empty = the stove's Look at the stove and its actions in the object menu). Reuses the RZ_CraftMenu preset |
-| (existing prefab) | the RadioChannel layout (UI/LAYOUTS.md) | — | UI > Radio channel layout | optional | the radio screen's channel rows (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
+| (existing prefab) | the RadioChannel layout (UI/LAYOUTS.md) | — | UI > Radio channel layout | optional | the radio screen's channel tiles (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the ObjectRow layout (UI/LAYOUTS.md) | — | UI > Object row layout | optional | the object menu's option rows: stoves, generators, house radios, wells, puzzle objects, safehouse services, a quartermaster's asks, the lab, the notebook item's name and season, a radio item (empty = no object menu: their world prompts). Needs the RZ_ObjectMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the PowerBreaker layout (UI/LAYOUTS.md) | — | UI > Power breaker layout | optional | the power panel's breakers: the power station's control gets one prompt, Open the panel, and the restore happens in the panel screen (empty = the control's old world prompts). Needs the RZ_PowerMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 
@@ -1437,8 +1437,10 @@ in `UI/layouts/ReforgerZ/`.
       Metabolism's prefab names in its Workshop folder).
    8. **The radio screen** (to do). The `RZ_RadioMenu` preset is in
       `Configs/System/chimeraMenus.conf` (layout `RZ_RadioMenu.layout`, class `RZ_RadioMenu`). Set
-      **UI > Radio channel layout** to `RZ_RadioChannel.layout` (its log uses **UI > Radio row
-      layout**, already set), and open both new layouts in the layout editor once. Open
+      **UI > Radio channel layout** to `RZ_RadioChannel.layout` (one channel's tile; the screen's
+      lines are its own widgets now, so **UI > Radio row layout** is only the notebook's), and open
+      both layouts in the layout editor once: `RZ_RadioMenu.layout` has twelve empty cells
+      (`Cell0`-`Cell11`), four line rows (`Log0`-`Log3`) and the `LogNewer` / `LogOlder` buttons. Open
       `RZ_WindupRadio.et`: it has two **View radio** actions, one in the "default" context and one in
       "knob_toggle" with **In hand** on, beside vanilla's Turn on/off. Empty the slot and no radio
       has View radio.
@@ -2002,8 +2004,8 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **169** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 40 are in `UI/`: [the UI's](#the-ui-37), the loadout
+There are **170** lines with the tag, all but one in the game scripts (one is the comment in
+`Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's and two the hold prompt's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2013,7 +2015,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-37)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38)
 come last.
 
 ### High risk: the core loop (2)
@@ -2154,7 +2156,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (37)
+### The UI (38)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2192,6 +2194,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Menus.c:398` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:21` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
+| `UI/RZ_RadioMenu.c:395` | a layout made under an `OverlayWidget` cell (`Cell0`-`Cell11`), its root in an `OverlayWidgetSlot` with both aligns Stretch, fills the cell | The radio screen's tiles sit small in a corner of their cells, or overlap: in `RZ_RadioChannel.layout` keep `ChannelSize` at 317 × 92, or make the cells `SizeLayout` widgets |
 | `Interactions/RZ_RadioScreen.c:37` | a radio item carried by a player (in hand, on a vest or in a pack) has a parent entity, and one lying on the ground has none, so **View radio** shows on the ground from the default context and in hand from the knob context | View radio shows in the wrong place or not at all: the house radio's View radio still opens the screen, and the log is on the notebook's Radio tab. Check the parent in play and change the test in `RZ_ViewRadioAction.CanBeShownScript` |
 | `Interactions/RZ_RadioScreen.c:54` | the server runs `PerformAction` for an action on a carried radio in vanilla's inspection context (`knob_toggle`, beside Turn on/off), as for vanilla's own | View radio in hand does nothing: use it with the radio on the ground or at a house radio; or make the action local and ask the server through `RZ_PlayerUIComponent` |
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
@@ -2832,10 +2835,15 @@ session, tick off:
 - [ ] The radio screen, with a pad (**UI > Radio channel layout** set): the wind-up radio on the
   ground shows **View radio**; in hand, hold it up and look at it (vanilla's inspection): View radio
   shows beside Turn on/off (VERIFY `Interactions/RZ_RadioScreen.c:37` and `:54`). It opens the radio
-  screen: Everything on the radio, the broadcast, the four open channels with what's on now, and the
-  three secure ones SCRAMBLED (as a Radio Operator with a channel cracked, CRACKED: N MIN). The
-  D-pad picks a channel and the log under it follows; LB/RB scroll the log; B closes it; an
-  infected closing in shuts it. At a house radio the object menu's View radio opens it in the
+  screen: nine tiles in three rows, all on screen with no scrollbar: Everything on the radio, the
+  broadcast, the four open channels and the three secure ones, each with its name, icon, state in
+  words (ON AIR, QUIET, SCRAMBLED; as a Radio Operator with a channel cracked, CRACKED: N MIN) and
+  a note ("last 17:12", "operator only"); each tile fills its cell (VERIFY `UI/RZ_RadioMenu.c:395`)
+  and no name runs into its state. The D-pad moves four ways over the tiles, wraps round the ends
+  and never stops on an empty cell; the picked tile has the amber outline and its lines show below,
+  four to a page, what's on now first (NOW); with more than four, PAGE 1 / N shows and LB / RB (Q / E,
+  the < and > buttons) turn the page; B closes it; an infected closing in shuts it. With the
+  mouse a tile lights under the cursor and only a click picks it. Read it from the sofa on a TV. At a house radio the object menu's View radio opens it in the
   menu's place; without power it says the batteries are weak and two open channels are TOO FAINT.
 - [ ] The power station, with a pad (**UI > Power breaker layout** set, the `RZ_PowerMenu` preset
   added). The log's `Power grid:` line names a real station (the map's power plant when three towns are

@@ -172,7 +172,7 @@ rendered to `UI/Previews/<name>.png` at 1920×1080 (×2) with `node tools/render
 | Shop | `shop.png` | A quartermaster's stock in tabs, each item with its Favor price and the standing it needs, a picture of the selected item and a details panel with Buy ([below](#the-shop-screen)) | `RZ_ShopMenu` | Layouts built as text, not checked in play |
 | Crafting | `crafting.png` | A workbench's recipes as a list, and for the picked one a picture of what it makes with its description, each input against what you carry (have or missing), how long and how loud, and Craft ([below](#the-crafting-screen)) | `RZ_CraftMenu` | Layouts built as text, preset and **UI > Craft row layout** set; seen in the layout preview, not checked in play |
 | Cooking | — (the crafting screen's) | A stove's list (boiled water, the home remedy, the stove recipes), in the crafting screen with the stove's words and a button named for what it does: Boil, Brew, Cook ([below](#the-cooking-screen)) | `RZ_CraftMenu` | Built as text (the crafting screen's layouts); **UI > Cook row layout** not set yet, not checked in play |
-| Radio | — | Every channel the radio hears with its latest line, and under them the log of what you heard this life, filtered by the picked channel ([below](#the-radio-screen)) | `RZ_RadioMenu` | Layouts built as text, preset added; **UI > Radio channel layout** not set yet, not checked in play; no mockup |
+| Radio | `radio_screen.png` | Every channel the radio hears as a tile, all on screen, and under them the picked channel's lines this life, a page at a time; nothing scrolls ([below](#the-radio-screen)) | `RZ_RadioMenu` | Layouts built as text, preset added; not checked in play |
 | Object menu | — | A prop's or a place's name, what you see, and its options as a list, with a countdown while work is under way ([below](#the-object-menu)) | `RZ_ObjectMenu` | Layouts built as text, not checked in play; no mockup |
 | Power panel | `power_panel.png` | The power station's control: its name and state, what you see, the card inside the door, a board of six breakers to close in the card's order with a READY lamp, the spin-up's countdown or the service gauge, and the step's button ([below](#the-power-panel)) | `RZ_PowerMenu` | Layouts built as text, preset and **UI > Power breaker layout** set, not checked in play; the mockup drawn from the layout tree |
 | The map | `map_legend.png` (the old line-icon style; the markers are now design A) | The markers on the vanilla map, per player (a faction-coloured disc with its emblem, a near-black ring, a badge for what the place is), the tracked job's current objective (an amber diamond, or a search area) and no other job, and the map key: a compact legend in the bottom-left, shown zoomed out and fading as you zoom in ([below](#the-map)) | `RZ_MapIconsUI` | Icon layout and **UI > Map legend layout** set; the old icons and legend seen in Workbench play with the keyboard (it fades as you zoom in, I hides it); the design A markers and key not checked in play yet (they need the atlas imported again); pad not yet |
@@ -998,26 +998,43 @@ the next time it's sent (your own pick, or your work ending).
 **View radio** opens it ([DESIGN.md](DESIGN.md#radios-open-and-secure)): on the wind-up radio held
 up in hand and looked at (vanilla's inspection, beside its **Turn on/off**), on a radio lying on the
 ground, and as a house radio's fourth option. A panel 1,400 × 900 in the middle of the screen, the
-world dimmed, in the crafting screen's style: the radio's name and the town (a house set on weak
-batteries says so), then under CHANNELS one row per channel: **Everything on the radio** (how many
-lines you heard), the **government broadcast**, the four **open channels** (the Haven, Bastion, the
-Red Hand, Halcyon) and the three **secure channels**. Each row has the channel's icon in its colour,
-its name, its latest line (what's on the air now, else the newest you heard on it) and its state:
-ON AIR, QUIET, TOO FAINT (a house set without power pulls in two open channels), SCRAMBLED, or
-CRACKED: 14 MIN while you listen to one. A channel with nothing coming through is dim. Under them,
-THE LOG: the picked channel's lines this life, newest first, in the notebook's radio rows (time,
-icon, channel, who, the line).
+world dimmed: the radio's name and the town (a house set on weak batteries says so), then **one
+tile per channel, every one on the screen at once, four to a row: nothing scrolls**. There are nine
+at most, in three rows: **Everything on the radio**, the **government broadcast**, the four **open
+channels** (the Haven, Bastion, the Red Hand, Halcyon) and the three **secure channels**.
+
+| On a tile | What it says |
+|---|---|
+| The name | Top left, two lines at most |
+| The icon | Top right, in the channel's colour |
+| The state, in words | Bottom left, in the channel's colour: ON AIR, QUIET, TOO FAINT (a house set without power pulls in two open channels), SCRAMBLED, CRACKED: 14 MIN while you listen to one, and for Everything how many lines you heard (12 HEARD) |
+| The note | Bottom right, dim: "last 17:12" (when you last heard it), "operator only" on a scrambled channel, "needs power" on one too faint |
+| The bar | Along the bottom, the channel's colour |
+
+The picked tile has an amber outline and a lighter fill. A tile nothing comes through on (scrambled,
+too faint) is dim until it's picked or the mouse is on it.
+
+Under the tiles, the picked channel's name and its lines, newest first, **four to a page**: the
+time, the channel's icon, the channel and who spoke in its colour, and the line itself (two rows
+of text at most: a longer one is cut with "..."; the notebook's Radio tab has the whole of it). What's
+on the air on it right now is the first line, marked NOW and ON THE AIR NOW, unless it's the
+newest line you heard. A channel with no lines says why: "Nothing heard on it this life.",
+"Chopped into pieces. A Radio Operator could put it back together." (scrambled) or "Too faint for
+this set. With power it would come in." With more than one page, "PAGE 1 / 3" shows bottom right
+between a **<** and a **>** button.
 
 | | Keyboard and mouse | Gamepad |
 |---|---|---|
-| Pick a channel (the log follows) | up/down, or click it | D-pad or left stick |
-| Scroll the log | Q/E, or the wheel | LB/RB |
+| Move over the tiles (the lines follow) | the arrows or WASD, or click a tile | D-pad or left stick, four ways |
+| The newer page | Q, or the **<** button | LB |
+| The older page | E, or the **>** button | RB |
 | Close | Esc, or the close button | B |
 
-The text is TV-sized: channel names 24, their lines 20, the smallest labels 18. You can't move while
-it's open; the world keeps running. The screen guard closes it in danger, or more than **Dialogue >
-Range** (6 m) from a radio that isn't on you; it never goes idle, since there's nothing to pick. The
-picked channel is kept for the session.
+Moving wraps round the ends and never lands on an empty cell (down from above the short last row
+goes to its last tile). Hover lights a tile; only a click picks it. The text is TV-sized: tile names
+and lines 22, everything else 18. You can't move while it's open; the world keeps running. The
+screen guard closes it in danger, or more than **Dialogue > Range** (6 m) from a radio that isn't on
+you; it never goes idle, since there's nothing to pick. The picked channel is kept for the session.
 
 **How it works.** The action (`RZ_ViewRadioAction`) or the house radio's option reaches the server
 (`Interactions/RZ_RadioScreen.c`), which opens a screen-guard entry (`KIND_RADIO`) and sends
@@ -1032,8 +1049,10 @@ stay the radio's own actions.
 **Fallbacks.** With **UI > Radio channel layout** empty, no radio has **View radio** and the house
 radio's options are as before. A client that can't open the menu (no `RZ_RadioMenu` preset or
 layout) says the log is in the notebook's Radio tab and hides **View radio** from then on; at the
-server's cap of open screens it hides for a minute. *Simplified:* the latest line on an open channel
-is read when the screen opens, not again while it's open (new lines you hear join the log).
+server's cap of open screens it hides for a minute. *Simplified:* what's on the air on an open
+channel is read when the screen opens, not again while it's open (new lines you hear join the
+log); a line longer than two rows is cut on this screen; and "last 17:12" is the newest line the
+notebook still keeps, so a channel heard long ago can show none.
 
 ### The object menu
 
@@ -1441,6 +1460,7 @@ as with keyboard and mouse. This is a rule for the whole mod, agreed with the au
 | `RZ_TalkScroll` | none: the mouse wheel | right stick (vertical): a box of what they say on the talk screen, when it overflows | `MenuContext` |
 | `RZ_TalkSkip` | Space, or a click (left mouse button) | A (with `MenuSelect`: one step a press, finishing the typing, then the next box, then the replies; the press that ends their line never says a reply) | `MenuContext` |
 | The talk screen's pages (vanilla `MenuDown`/`MenuUp` past the ends, `MenuTabLeft`/`MenuTabRight`) | down past the last reply, up past the first; Q/E, or a click on an arrow | the same with the D-pad or stick; LB/RB, the page back and on (round from either end) | `MenuContext` |
+| The radio screen's tiles and pages (vanilla `MenuUp`/`MenuDown`/`MenuLeft`/`MenuRight`, `MenuTabLeft`/`MenuTabRight`) | the arrows or WASD over the tiles, or a click; Q/E, or the **<** and **>** buttons, the newer and older page | D-pad or left stick, four ways, round the ends; LB newer, RB older | `MenuContext` |
 | `RZ_MapLegend` | I | Y | `MapContext`: show or hide the map key on the full-screen map |
 | Kick free of a hold (vanilla `CharacterJump`, listened to only while held) | Space | the pad's jump button (A) | `IngameContext` |
 
@@ -1610,8 +1630,8 @@ Infamy that may fade.
 
 | | |
 |---|---|
-| Built | The icon set and its renderer; fourteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and its loom, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
+| Built | The icon set and its renderer; fifteen mockups and previews (with the talk screen, the reader, a subtitle, the car repair screen and its loom, the radio screen, the shop, the crafting screen, and the quest tracker with the Quests tab, the power panel). In code: the feed, the subtitles with the speaker's name in faction colour, a source icon and, in person, an arrow and distance to them, the radio-line box, the HUD with notice cards paced by importance and subtitles, owner-only notices and spoken lines, the notebook (five tabs as pages, N, the pause menu button, the notebook item; the Quests tab with each job's objectives and Track, the per-row detail, the Journal's past jobs, the season page with the hall of fame), the quest tracker on the HUD (the tracked job only), one card at spawn and the quiet start, the talk screen and its engine (with the admins' errand view as a reply), the reader, the car repair screen, the shop screen, the crafting screen at workbenches and the cooking screen at stoves, the radio screen (View radio), the object menu on props and places with its status strip and locked rows (the strip shared with the cooking screen), the hold prompt at work sites, the power panel at the power station, the screen guard, the notice board menu, chat commands, the spawn screen in place of vanilla's deploy menu (the backgrounds with the loadout's gear, the kind of place you start at, Deploy) and locked backgrounds refused by the server, the death brief over it at each death, the map's icon layer with you-are-here, the tracked job's objective (a diamond or a search area, no other job) and the map key on the map, styled notices with the vanilla fallback, each new card with vanilla's hint sound; the journal in each player's order (`RZ_MissionReasons.OrderScore`: near, started by a reason, from a leader they helped) and its finale page, one row while the routes are open (the readout, the route's worth and your route, as a desk's *How do things stand?*) |
 | Workbench files | The layouts ([LAYOUTS.md](../UI/LAYOUTS.md)), the notebook's, talk screen's, reader's, car repair, shop, crafting, radio, object menu, power panel and spawn screens', the death brief's and the map key's written as text, with images on the static icons; the icon atlas and the `RZ_Icons` imageset; the car picture (`RZ_CarSide.edds`, set in **UI > Car picture**); the menu and input config overrides in `Configs/System/` (the notebook, notice board, reader, talk, car, shop, crafting, spawn screen, death brief, radio and power panel presets; N, 1–5, T, the right stick, the filter's X and the map key's I and Y); **Trade** on the four quartermaster prefabs; the notebook item `Prefabs/ReforgerZ/UI/RZ_Notebook.et`, written as text; the player controller `Prefabs/Characters/Core/RZ_PlayerController.et`, with the feed and the HUD; the game mode's **UI** settings, the spawn row, map legend, power breaker and season page included. What each holds is in [WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#setting-up-the-ui) |
 | Works in play | Seen in Workbench play on the repo's world, with no script exceptions: the styled notice cards, the stealth visibility bars and the noise meter; on Everon, with the keyboard (pad not yet): the spawn screen (the 13 backgrounds, the panel, the start town picker and Deploy), the map key and the map's icons (in their old line-icon style); the notebook's five pages with their icons (the Radio page's channel list too) and the HUD's noise icon. In the layout preview at 1920 × 1080: the crafting, car repair, shop, reader, talk and notice board screens, each within its slots |
 | Not checked in play | The map's design A markers (disc, ring, emblem, badge) and the key's discs and badges; the objective's diamond and search area, and their row in the key; the infection timer and the secure-radio indicator (they need a bite or a cracked channel); notice pacing, the spawn card and the quiet start; the quest tracker, the Quests tab, its groups and Track (A, Y and T); the tabs' new order and the Journal's past jobs; the notebook's pause menu button and the notebook item; the talk screen; the reader; the car repair screen, its picture, its FITTED and MISSING tags and the hotwire's loom; the shop screen and its item picture; the crafting screen; the cooking screen (**UI > Cook row layout** isn't set yet); the radio screen (**UI > Radio channel layout** isn't set yet, and **View radio** in hand needs vanilla's inspection checked); the object menu (its preset and **UI > Object row layout** aren't set yet); the power panel (its preset and **UI > Power breaker layout** are set); the death brief; the subtitles; the hold prompt (its bar's speed and its starting again when hurt are VERIFY); mouse clicks and the pad (the spawn screen and the map key with a pad too); the notice board menu and its ready-made notes; the chat commands; the season page (**UI > Season page** is set) |
-| Planned | Mockups of the notice board, the object menu, the radio screen and the season page; the Journal's mockup with its past jobs; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |
+| Planned | Mockups of the notice board, the object menu and the season page; the Journal's mockup with its past jobs; the lock card as a screen of its own (today a notice, or the [Point of no return] node with **Dialogue > Trees** on: [FINALE.md](FINALE.md#the-lock)) |
