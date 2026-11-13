@@ -190,236 +190,895 @@ FrameWidgetClass "{80423D369D4E3F82}" {
      Color 0.89 0.639 0.231 1
      Size 1 1
     }
-    TextWidgetClass "{B41B0EF7772E8A01}" {
-     Name "ChannelsLabel"
-     Slot FrameWidgetSlot "{B65A1EEB07F0B0E5}" {
+    OverlayWidgetClass "{FB8B97572171CED1}" {
+     Name "Cell0"
+     Slot FrameWidgetSlot "{16C63D931965FEEC}" {
       Anchor 0 0 0 0
       PositionX 48
       OffsetLeft 48
       PositionY 130
       OffsetTop 130
-      SizeX 600
-      OffsetRight -648
-      SizeY 26
-      OffsetBottom -156
+      SizeX 317
+      OffsetRight -365
+      SizeY 92
+      OffsetBottom -222
       Alignment 0 0
      }
-     Color 0.639 0.62 0.565 1
-     Text "CHANNELS"
-     "Font Size" 18
-     "Min Font Size" 18
-     FontProperties FontProperties "{4FB0684A85516575}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+    }
+    OverlayWidgetClass "{20D7C85B5EED2E0F}" {
+     Name "Cell1"
+     Slot FrameWidgetSlot "{AFB4D81E9C8B1C2F}" {
+      Anchor 0 0 0 0
+      PositionX 377
+      OffsetLeft 377
+      PositionY 130
+      OffsetTop 130
+      SizeX 317
+      OffsetRight -694
+      SizeY 92
+      OffsetBottom -222
+      Alignment 0 0
      }
     }
-    FrameWidgetClass "{82187906469D6749}" {
-     Name "ChannelList"
-     Slot FrameWidgetSlot "{7699EF069E645057}" {
+    OverlayWidgetClass "{48C7B327F280B03B}" {
+     Name "Cell2"
+     Slot FrameWidgetSlot "{9AE34CB187FDC62B}" {
+      Anchor 0 0 0 0
+      PositionX 706
+      OffsetLeft 706
+      PositionY 130
+      OffsetTop 130
+      SizeX 317
+      OffsetRight -1023
+      SizeY 92
+      OffsetBottom -222
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{8927B6A77CBC550F}" {
+     Name "Cell3"
+     Slot FrameWidgetSlot "{FB56DC62A61670B7}" {
+      Anchor 0 0 0 0
+      PositionX 1035
+      OffsetLeft 1035
+      PositionY 130
+      OffsetTop 130
+      SizeX 317
+      OffsetRight -1352
+      SizeY 92
+      OffsetBottom -222
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{3AA3342CFCE84EED}" {
+     Name "Cell4"
+     Slot FrameWidgetSlot "{8A0E590A99BBC913}" {
       Anchor 0 0 0 0
       PositionX 48
       OffsetLeft 48
-      PositionY 162
-      OffsetTop 162
-      SizeX 1304
-      OffsetRight -1352
-      SizeY 316
-      OffsetBottom -478
+      PositionY 232
+      OffsetTop 232
+      SizeX 317
+      OffsetRight -365
+      SizeY 92
+      OffsetBottom -324
       Alignment 0 0
      }
+    }
+    OverlayWidgetClass "{CB0B6FC77643C64E}" {
+     Name "Cell5"
+     Slot FrameWidgetSlot "{51CB323DE1E523F5}" {
+      Anchor 0 0 0 0
+      PositionX 377
+      OffsetLeft 377
+      PositionY 232
+      OffsetTop 232
+      SizeX 317
+      OffsetRight -694
+      SizeY 92
+      OffsetBottom -324
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{908CF3CDBDC89860}" {
+     Name "Cell6"
+     Slot FrameWidgetSlot "{174C8A461E0F6AB2}" {
+      Anchor 0 0 0 0
+      PositionX 706
+      OffsetLeft 706
+      PositionY 232
+      OffsetTop 232
+      SizeX 317
+      OffsetRight -1023
+      SizeY 92
+      OffsetBottom -324
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{B59CFE3D06224A48}" {
+     Name "Cell7"
+     Slot FrameWidgetSlot "{B9387E84A631C4E1}" {
+      Anchor 0 0 0 0
+      PositionX 1035
+      OffsetLeft 1035
+      PositionY 232
+      OffsetTop 232
+      SizeX 317
+      OffsetRight -1352
+      SizeY 92
+      OffsetBottom -324
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{90DD691E0280B19C}" {
+     Name "Cell8"
+     Slot FrameWidgetSlot "{C249EB702BB54403}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 334
+      OffsetTop 334
+      SizeX 317
+      OffsetRight -365
+      SizeY 92
+      OffsetBottom -426
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{EFCBEA3927E3F167}" {
+     Name "Cell9"
+     Slot FrameWidgetSlot "{9C843E66470880D8}" {
+      Anchor 0 0 0 0
+      PositionX 377
+      OffsetLeft 377
+      PositionY 334
+      OffsetTop 334
+      SizeX 317
+      OffsetRight -694
+      SizeY 92
+      OffsetBottom -426
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{601C836C5723F1CC}" {
+     Name "Cell10"
+     Slot FrameWidgetSlot "{35881EE917F7BDB5}" {
+      Anchor 0 0 0 0
+      PositionX 706
+      OffsetLeft 706
+      PositionY 334
+      OffsetTop 334
+      SizeX 317
+      OffsetRight -1023
+      SizeY 92
+      OffsetBottom -426
+      Alignment 0 0
+     }
+    }
+    OverlayWidgetClass "{F623DCFA5A6C5D2A}" {
+     Name "Cell11"
+     Slot FrameWidgetSlot "{AB40E259B5F4F55A}" {
+      Anchor 0 0 0 0
+      PositionX 1035
+      OffsetLeft 1035
+      PositionY 334
+      OffsetTop 334
+      SizeX 317
+      OffsetRight -1352
+      SizeY 92
+      OffsetBottom -426
+      Alignment 0 0
+     }
+    }
+    TextWidgetClass "{712A60FB66B3C5F4}" {
+     Name "LogLabel"
+     Slot FrameWidgetSlot "{25A73CFADFF368A8}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 442
+      OffsetTop 442
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 26
+      OffsetBottom -468
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "EVERYTHING ON THE RADIO"
+     "Font Size" 18
+     "Min Font Size" 18
+     FontProperties FontProperties "{7CDA0B6DA30369F2}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    FrameWidgetClass "{9914DE43C710ACC0}" {
+     Name "Log0"
+     Slot FrameWidgetSlot "{40746CC2962616DE}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 474
+      OffsetTop 474
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 84
+      OffsetBottom -558
+      Alignment 0 0
+     }
+     "Is Visible" 0
      {
-      ImageWidgetClass "{FCB82350E6AECBE6}" {
-       Name "ChannelListBg"
-       Slot FrameWidgetSlot "{F409B471DDC8C4BB}" {
-        Anchor 0 0 1 1
+      ImageWidgetClass "{F1755552162609FB}" {
+       Name "LogBg0"
+       Slot FrameWidgetSlot "{8E0957217FFADC31}" {
+        Anchor 0 0 0 0
         PositionX 0
         OffsetLeft 0
         PositionY 0
         OffsetTop 0
-        SizeX 0
-        OffsetRight 0
-        SizeY 0
-        OffsetBottom 0
+        SizeX 1304
+        OffsetRight -1304
+        SizeY 84
+        OffsetBottom -84
         Alignment 0 0
        }
        Color 0.047 0.055 0.059 1
        Size 1 1
       }
-      ScrollLayoutWidgetClass "{84F3B190EA91A2ED}" {
-       Name "ChannelScroll"
-       Slot FrameWidgetSlot "{11F4F2F370126AC6}" {
-        Anchor 0 0 1 1
+      ImageWidgetClass "{B522C9E179536C39}" {
+       Name "LogBar0"
+       Slot FrameWidgetSlot "{0A269EFCE3EE13C9}" {
+        Anchor 0 0 0 0
         PositionX 0
         OffsetLeft 0
         PositionY 0
         OffsetTop 0
-        SizeX 0
-        OffsetRight 0
-        SizeY 0
-        OffsetBottom 0
+        SizeX 4
+        OffsetRight -4
+        SizeY 84
+        OffsetBottom -84
         Alignment 0 0
        }
-       Color 0.431 0.416 0.376 1
-       style Small
-       {
-        SizeLayoutWidgetClass "{D1063FFF021C2C37}" {
-         Name "ChannelWidth"
-         Slot AlignableSlot "{ADF1CB1D298AD38D}" {
-          HorizontalAlign 3
-          VerticalAlign 0
-         }
-         AllowWidthOverride 1
-         WidthOverride 1304
-         {
-          VerticalLayoutWidgetClass "{84B0FE450BE2B63F}" {
-           Name "Channels"
-           Slot AlignableSlot "{BAD4E8BE04075E85}" {
-            HorizontalAlign 3
-            VerticalAlign 0
-           }
-          }
-         }
-        }
+       Color 0.89 0.639 0.231 1
+       Size 1 1
+      }
+      TextWidgetClass "{56226E5B47E21669}" {
+       Name "LogTime0"
+       Slot FrameWidgetSlot "{7D6B81EF2B289268}" {
+        Anchor 0 0 0 0
+        PositionX 18
+        OffsetLeft 18
+        PositionY 8
+        OffsetTop 8
+        SizeX 72
+        OffsetRight -90
+        SizeY 24
+        OffsetBottom -32
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "17:12"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{EB12026B584A8F49}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
        }
       }
-      TextWidgetClass "{1DC7601B3366F655}" {
-       Name "ChannelsEmpty"
-       Slot FrameWidgetSlot "{7734EFB737C42CC1}" {
+      ImageWidgetClass "{4E133C9106D16C31}" {
+       Name "LogIcon0"
+       Slot FrameWidgetSlot "{AACDE2F1A5AB5B12}" {
         Anchor 0 0 0 0
-        PositionX 0
-        OffsetLeft 0
-        PositionY 138
-        OffsetTop 138
-        SizeX 1304
-        OffsetRight -1304
-        SizeY 40
-        OffsetBottom -178
+        PositionX 94
+        OffsetLeft 94
+        PositionY 6
+        OffsetTop 6
+        SizeX 26
+        OffsetRight -120
+        SizeY 26
+        OffsetBottom -32
         Alignment 0 0
        }
-       "Is Visible" 0
        Color 0.639 0.62 0.565 1
-       Text "Static, and nothing under it."
-       "Font Size" 24
-       "Min Font Size" 24
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{F96899C4B40F0EED}" {
+       Size 1 1
+      }
+      TextWidgetClass "{D491643E7CAD584D}" {
+       Name "LogHead0"
+       Slot FrameWidgetSlot "{9AFE709E815F900F}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 6
+        OffsetTop 6
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 24
+        OffsetBottom -30
+        Alignment 0 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text "OPEN CHANNEL - HAVEN"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{472A6E7827F1A7C3}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{CB3A9375F74FDA83}" {
+       Name "LogText0"
+       Slot FrameWidgetSlot "{A747944C8A071347}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 30
+        OffsetTop 30
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 52
+        OffsetBottom -82
+        Alignment 0 0
+       }
+       Color 0.957 0.941 0.902 1
+       Text "Night watch at Benac starts at 17:30. Bring a coat, it gets cold on the roof."
+       "Font Size" 22
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{58A2BD5062C979FA}" {
         Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
        }
       }
      }
     }
-    TextWidgetClass "{3D73697D91047371}" {
-     Name "LogLabel"
-     Slot FrameWidgetSlot "{ABE2D1432CE7A6C6}" {
+    FrameWidgetClass "{339EEC5A6AA65CFA}" {
+     Name "Log1"
+     Slot FrameWidgetSlot "{1077E68CC90DBEF7}" {
       Anchor 0 0 0 0
       PositionX 48
       OffsetLeft 48
-      PositionY 494
-      OffsetTop 494
+      PositionY 562
+      OffsetTop 562
       SizeX 1304
       OffsetRight -1352
-      SizeY 26
-      OffsetBottom -520
+      SizeY 84
+      OffsetBottom -646
       Alignment 0 0
      }
-     Color 0.639 0.62 0.565 1
-     Text "THE LOG: EVERYTHING ON THE RADIO"
-     "Font Size" 18
-     "Min Font Size" 18
-     FontProperties FontProperties "{80B71BF2102C7136}" {
-      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     "Is Visible" 0
+     {
+      ImageWidgetClass "{01DD16E51757BC61}" {
+       Name "LogBg1"
+       Slot FrameWidgetSlot "{034654BF70DD6EDF}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 1304
+        OffsetRight -1304
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      ImageWidgetClass "{0A85887627B503F3}" {
+       Name "LogBar1"
+       Slot FrameWidgetSlot "{37968E89587A1920}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 4
+        OffsetRight -4
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       Color 0.89 0.639 0.231 1
+       Size 1 1
+      }
+      TextWidgetClass "{2D50E72779B316A2}" {
+       Name "LogTime1"
+       Slot FrameWidgetSlot "{AE8038075A12F76B}" {
+        Anchor 0 0 0 0
+        PositionX 18
+        OffsetLeft 18
+        PositionY 8
+        OffsetTop 8
+        SizeX 72
+        OffsetRight -90
+        SizeY 24
+        OffsetBottom -32
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "17:12"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{DB26F3490AC22927}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ImageWidgetClass "{362A2CD3BCBFB567}" {
+       Name "LogIcon1"
+       Slot FrameWidgetSlot "{8E70705DB555CCC0}" {
+        Anchor 0 0 0 0
+        PositionX 94
+        OffsetLeft 94
+        PositionY 6
+        OffsetTop 6
+        SizeX 26
+        OffsetRight -120
+        SizeY 26
+        OffsetBottom -32
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Size 1 1
+      }
+      TextWidgetClass "{327D937F45487D14}" {
+       Name "LogHead1"
+       Slot FrameWidgetSlot "{7926FD3EFBF98E2E}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 6
+        OffsetTop 6
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 24
+        OffsetBottom -30
+        Alignment 0 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text "OPEN CHANNEL - HAVEN"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{3A597D5A30C6D68E}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{A7B6DEAF082F0662}" {
+       Name "LogText1"
+       Slot FrameWidgetSlot "{8EE73A366CCCFCCA}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 30
+        OffsetTop 30
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 52
+        OffsetBottom -82
+        Alignment 0 0
+       }
+       Color 0.957 0.941 0.902 1
+       Text "Night watch at Benac starts at 17:30. Bring a coat, it gets cold on the roof."
+       "Font Size" 22
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{491AD3B1AA96FACC}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
      }
     }
-    FrameWidgetClass "{29C154DAE12FE1D4}" {
-     Name "LogList"
-     Slot FrameWidgetSlot "{7E0B4D07C85B1B77}" {
+    FrameWidgetClass "{11776ADC4A789F42}" {
+     Name "Log2"
+     Slot FrameWidgetSlot "{7B7BE4B45FEDE5D7}" {
       Anchor 0 0 0 0
       PositionX 48
       OffsetLeft 48
-      PositionY 526
-      OffsetTop 526
+      PositionY 650
+      OffsetTop 650
       SizeX 1304
       OffsetRight -1352
-      SizeY 296
+      SizeY 84
+      OffsetBottom -734
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     {
+      ImageWidgetClass "{C9DC19799E230B4C}" {
+       Name "LogBg2"
+       Slot FrameWidgetSlot "{25356A15B4BF9743}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 1304
+        OffsetRight -1304
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       Color 0.047 0.055 0.059 1
+       Size 1 1
+      }
+      ImageWidgetClass "{E71A1152A1DAC010}" {
+       Name "LogBar2"
+       Slot FrameWidgetSlot "{27A09F2F293BF46D}" {
+        Anchor 0 0 0 0
+        PositionX 0
+        OffsetLeft 0
+        PositionY 0
+        OffsetTop 0
+        SizeX 4
+        OffsetRight -4
+        SizeY 84
+        OffsetBottom -84
+        Alignment 0 0
+       }
+       Color 0.89 0.639 0.231 1
+       Size 1 1
+      }
+      TextWidgetClass "{53D013A0E481D822}" {
+       Name "LogTime2"
+       Slot FrameWidgetSlot "{FAA67DB0562D4BA9}" {
+        Anchor 0 0 0 0
+        PositionX 18
+        OffsetLeft 18
+        PositionY 8
+        OffsetTop 8
+        SizeX 72
+        OffsetRight -90
+        SizeY 24
+        OffsetBottom -32
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "17:12"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{1DDF4C662341EE65}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ImageWidgetClass "{640BBB864C3A35C9}" {
+       Name "LogIcon2"
+       Slot FrameWidgetSlot "{A7C337518E56D62A}" {
+        Anchor 0 0 0 0
+        PositionX 94
+        OffsetLeft 94
+        PositionY 6
+        OffsetTop 6
+        SizeX 26
+        OffsetRight -120
+        SizeY 26
+        OffsetBottom -32
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Size 1 1
+      }
+      TextWidgetClass "{9FDD8EE7BF12B1BD}" {
+       Name "LogHead2"
+       Slot FrameWidgetSlot "{C788BE70F58B181B}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 6
+        OffsetTop 6
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 24
+        OffsetBottom -30
+        Alignment 0 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text "OPEN CHANNEL - HAVEN"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{F3474F2CE6DF98E8}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{ABEDC52BE862E88C}" {
+       Name "LogText2"
+       Slot FrameWidgetSlot "{90457B4C0E9E5F4F}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 30
+        OffsetTop 30
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 52
+        OffsetBottom -82
+        Alignment 0 0
+       }
+       Color 0.957 0.941 0.902 1
+       Text "Night watch at Benac starts at 17:30. Bring a coat, it gets cold on the roof."
+       "Font Size" 22
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{393A2B0E9444ABEA}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    FrameWidgetClass "{43AC4B04F264B2E0}" {
+     Name "Log3"
+     Slot FrameWidgetSlot "{37D710130B929D5D}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 738
+      OffsetTop 738
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 84
       OffsetBottom -822
       Alignment 0 0
      }
+     "Is Visible" 0
      {
-      ImageWidgetClass "{4D0D91A94B508F73}" {
-       Name "LogListBg"
-       Slot FrameWidgetSlot "{F356BBC51D074A5A}" {
-        Anchor 0 0 1 1
+      ImageWidgetClass "{B413334978C0BEE6}" {
+       Name "LogBg3"
+       Slot FrameWidgetSlot "{F71B698E0BD153D0}" {
+        Anchor 0 0 0 0
         PositionX 0
         OffsetLeft 0
         PositionY 0
         OffsetTop 0
-        SizeX 0
-        OffsetRight 0
-        SizeY 0
-        OffsetBottom 0
+        SizeX 1304
+        OffsetRight -1304
+        SizeY 84
+        OffsetBottom -84
         Alignment 0 0
        }
        Color 0.047 0.055 0.059 1
        Size 1 1
       }
-      ScrollLayoutWidgetClass "{BA239E5ED3F8CF03}" {
-       Name "LogScroll"
-       Slot FrameWidgetSlot "{8D6EA9600BE386E1}" {
-        Anchor 0 0 1 1
+      ImageWidgetClass "{872C53B1156F7E9C}" {
+       Name "LogBar3"
+       Slot FrameWidgetSlot "{666F40922E0D66EB}" {
+        Anchor 0 0 0 0
         PositionX 0
         OffsetLeft 0
         PositionY 0
         OffsetTop 0
-        SizeX 0
-        OffsetRight 0
-        SizeY 0
-        OffsetBottom 0
+        SizeX 4
+        OffsetRight -4
+        SizeY 84
+        OffsetBottom -84
         Alignment 0 0
        }
-       Color 0.431 0.416 0.376 1
-       style Small
+       Color 0.89 0.639 0.231 1
+       Size 1 1
+      }
+      TextWidgetClass "{D89CED38B8B96FEC}" {
+       Name "LogTime3"
+       Slot FrameWidgetSlot "{87284D6B9953EFD3}" {
+        Anchor 0 0 0 0
+        PositionX 18
+        OffsetLeft 18
+        PositionY 8
+        OffsetTop 8
+        SizeX 72
+        OffsetRight -90
+        SizeY 24
+        OffsetBottom -32
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Text "17:12"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{1ACA78FDFC335BAA}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      ImageWidgetClass "{FBD73EFEB7E16C44}" {
+       Name "LogIcon3"
+       Slot FrameWidgetSlot "{13A6A66725937CCF}" {
+        Anchor 0 0 0 0
+        PositionX 94
+        OffsetLeft 94
+        PositionY 6
+        OffsetTop 6
+        SizeX 26
+        OffsetRight -120
+        SizeY 26
+        OffsetBottom -32
+        Alignment 0 0
+       }
+       Color 0.639 0.62 0.565 1
+       Size 1 1
+      }
+      TextWidgetClass "{B623F278EAE83504}" {
+       Name "LogHead3"
+       Slot FrameWidgetSlot "{4531046B199A8D3C}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 6
+        OffsetTop 6
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 24
+        OffsetBottom -30
+        Alignment 0 0
+       }
+       Color 0.89 0.639 0.231 1
+       Text "OPEN CHANNEL - HAVEN"
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{13F96CD459B25526}" {
+        Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+       }
+      }
+      TextWidgetClass "{7CB3E03B4C79F19F}" {
+       Name "LogText3"
+       Slot FrameWidgetSlot "{5591526ACB14DA49}" {
+        Anchor 0 0 0 0
+        PositionX 132
+        OffsetLeft 132
+        PositionY 30
+        OffsetTop 30
+        SizeX 1156
+        OffsetRight -1288
+        SizeY 52
+        OffsetBottom -82
+        Alignment 0 0
+       }
+       Color 0.957 0.941 0.902 1
+       Text "Night watch at Benac starts at 17:30. Bring a coat, it gets cold on the roof."
+       "Font Size" 22
+       "Min Font Size" 22
+       Wrap 1
+       FontProperties FontProperties "{DDD7C2682CD19642}" {
+        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       }
+      }
+     }
+    }
+    TextWidgetClass "{F47C0E57D8B71B00}" {
+     Name "LogEmpty"
+     Slot FrameWidgetSlot "{DA2E437AAA7A690D}" {
+      Anchor 0 0 0 0
+      PositionX 48
+      OffsetLeft 48
+      PositionY 620
+      OffsetTop 620
+      SizeX 1304
+      OffsetRight -1352
+      SizeY 40
+      OffsetBottom -660
+      Alignment 0 0
+     }
+     "Is Visible" 0
+     Color 0.639 0.62 0.565 1
+     Text "Nothing heard on it this life."
+     "Font Size" 24
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{1E30E3B5425EB8F2}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+    ButtonWidgetClass "{B71A78C2B22445A4}" {
+     Name "LogNewer"
+     Slot FrameWidgetSlot "{4A6749497630C867}" {
+      Anchor 0 0 0 0
+      PositionX 1080
+      OffsetLeft 1080
+      PositionY 836
+      OffsetTop 836
+      SizeX 44
+      OffsetRight -1124
+      SizeY 40
+      OffsetBottom -876
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{93D32AA44586471F}" {
+       Name "LogNewerBox"
+       Slot ButtonWidgetSlot "{12E8D2930A9CA583}" {
+        HorizontalAlign 3
+        VerticalAlign 3
+       }
        {
-        SizeLayoutWidgetClass "{EC6D757DE1F245B1}" {
-         Name "LogWidth"
-         Slot AlignableSlot "{19546CAC50B6B250}" {
+        ImageWidgetClass "{7A31E0C7F3CAD8EB}" {
+         Name "LogNewerBg"
+         Slot OverlayWidgetSlot "{E28A0D93697BF75E}" {
           HorizontalAlign 3
-          VerticalAlign 0
+          VerticalAlign 3
          }
-         AllowWidthOverride 1
-         WidthOverride 1304
-         {
-          VerticalLayoutWidgetClass "{6B0ABE364FDE9306}" {
-           Name "Log"
-           Slot AlignableSlot "{8DA99A20C8465913}" {
-            HorizontalAlign 3
-            VerticalAlign 0
-           }
-          }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{DF36B0417D41A5B0}" {
+         Name "LogNewerText"
+         Slot OverlayWidgetSlot "{A47F31ACAF1CCCFB}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text "<"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{A18BCB63B84FC430}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
          }
         }
        }
       }
-      TextWidgetClass "{B5934485B0CBC9E0}" {
-       Name "LogEmpty"
-       Slot FrameWidgetSlot "{93668477AC08E6E2}" {
-        Anchor 0 0 0 0
-        PositionX 0
-        OffsetLeft 0
-        PositionY 128
-        OffsetTop 128
-        SizeX 1304
-        OffsetRight -1304
-        SizeY 40
-        OffsetBottom -168
-        Alignment 0 0
+     }
+    }
+    TextWidgetClass "{C6F6DADDAE1673ED}" {
+     Name "LogPage"
+     Slot FrameWidgetSlot "{289CE5009877136A}" {
+      Anchor 0 0 0 0
+      PositionX 1128
+      OffsetLeft 1128
+      PositionY 844
+      OffsetTop 844
+      SizeX 176
+      OffsetRight -1304
+      SizeY 30
+      OffsetBottom -874
+      Alignment 0 0
+     }
+     Color 0.639 0.62 0.565 1
+     Text "PAGE 1 / 1"
+     "Font Size" 18
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{6148643EBDA4DBA2}" {
+      Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+     }
+    }
+    ButtonWidgetClass "{4819C5538C414016}" {
+     Name "LogOlder"
+     Slot FrameWidgetSlot "{1DD864CFDE72AC67}" {
+      Anchor 0 0 0 0
+      PositionX 1308
+      OffsetLeft 1308
+      PositionY 836
+      OffsetTop 836
+      SizeX 44
+      OffsetRight -1352
+      SizeY 40
+      OffsetBottom -876
+      Alignment 0 0
+     }
+     style blank
+     {
+      OverlayWidgetClass "{FC24FF9F0131214A}" {
+       Name "LogOlderBox"
+       Slot ButtonWidgetSlot "{0AF69D23A91E69C0}" {
+        HorizontalAlign 3
+        VerticalAlign 3
        }
-       "Is Visible" 0
-       Color 0.639 0.62 0.565 1
-       Text "Nothing heard on it this life."
-       "Font Size" 24
-       "Min Font Size" 24
-       "Horizontal Alignment" Center
-       FontProperties FontProperties "{F5089A4E548DF0D6}" {
-        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+       {
+        ImageWidgetClass "{D14DEA75F1EACAFD}" {
+         Name "LogOlderBg"
+         Slot OverlayWidgetSlot "{8DFBF52095DA37CF}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.106 0.122 0.133 1
+         Size 1 1
+        }
+        TextWidgetClass "{211CF3D5EDECFE60}" {
+         Name "LogOlderText"
+         Slot OverlayWidgetSlot "{8FE72B35856CC6EA}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+         }
+         Color 0.89 0.639 0.231 1
+         Text ">"
+         "Font Size" 22
+         "Min Font Size" 22
+         FontProperties FontProperties "{CC2979AFE724717A}" {
+          Font "{CD2634D279AB011A}UI/Fonts/Roboto/Roboto_Bold.fnt"
+         }
+        }
        }
       }
      }
@@ -454,7 +1113,7 @@ FrameWidgetClass "{80423D369D4E3F82}" {
       Alignment 0 0
      }
      Color 0.639 0.62 0.565 1
-     Text "UP / DOWN  CHANNEL    LB / RB  SCROLL THE LOG    B  CLOSE"
+     Text "D-PAD  CHANNEL    LB / RB  NEWER / OLDER    B  CLOSE"
      "Font Size" 18
      "Min Font Size" 18
      FontProperties FontProperties "{666C7F200EF86479}" {
