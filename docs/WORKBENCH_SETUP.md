@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **343 prefab fields**: 46 on `RZ_GameModeComponent`, 280 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **315 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 95 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **344 prefab fields**: 46 on `RZ_GameModeComponent`, 281 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **316 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 96 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -554,6 +554,7 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | a body under a sheet or a body bag on a board or a stretcher: a composition of vanilla props with nothing to use (`RZ_DutyBody.et`) | — | Missions > Errands > Props > Duty body | optional | the dead laid out for Laying Out, Burial Detail, The Pit's Leavings and The Cold Room: what lies there until it's lifted; empty = Props > Effects (a dead man's things). A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
 | (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
 
 #### Contracts
 
@@ -2585,7 +2586,7 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines, 52 duties (on) and 70 cards, N players with a ledger.`; a sorting
+start, `Errands: on, 36 routines, 57 duties (on) and 70 cards, N players with a ledger.`; a sorting
 duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
 judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
 (no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
@@ -2811,6 +2812,13 @@ session, tick off:
   inspection: three kits, and after a missing thing is written up, *Go and find it* leads to a
   place to search. The field telephone, Known: the test at the post, the break out along the line
   with its three looks and three readings, the splice, the ring, and the offer of new wire.
+- [ ] The Red Hand's duties ([ERRANDS.md](ERRANDS.md#the-red-hands-duties)): stripping a wreck (three
+  holds at a spot out along the road, and something under the seat). The still: the needle's line
+  comes 15 s after the fire, the cut 10 s after that, and with **Props > Duty vodka** set a bottle
+  is in your pack at the end. The count: four things, then three names. The toll: five in turn at
+  the bar, each with three looks and three calls; then the extension (the one who bolts must be
+  reached inside 50 s); then the boss. Spotter, Known: the hill 180 to 350 m out, three watches
+  20 s apart; if the glass flashes, standing still for 20 s passes it.
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at

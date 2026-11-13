@@ -6279,6 +6279,24 @@
    "notes": "A work site's look: shown only while a player is near, gone when it's taken up"
   },
   {
+   "id": "ErrandDutyVodka",
+   "kind": "manual",
+   "system": "Missions",
+   "path": "",
+   "basePrefab": "",
+   "baseFind": "",
+   "baseHint": "BanditGear's vodka bottle (an existing prefab from the stack)",
+   "components": [],
+   "actions": [],
+   "slots": ["m_ErrandSettings.m_Props.m_sDutyVodka"],
+   "listSlot": false,
+   "slotLabel": "Missions > Errands > Props > Duty vodka",
+   "required": false,
+   "minimum": false,
+   "use": "the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay",
+   "notes": "Put in the player's pack"
+  },
+  {
    "id": "MajorsLorry",
    "kind": "create",
    "system": "Questlines",

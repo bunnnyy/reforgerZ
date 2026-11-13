@@ -767,6 +767,15 @@ class RZ_DutyScenes
 					break;
 				}
 
+				case "vodka":
+				{
+					ResourceName bottle = RZ_ErrandSettings.Get().Props().m_sDutyVodka;
+					if (!bottle.IsEmpty())
+						RZ_ItemHelper.Give(bottle, me, me.GetOrigin());
+
+					break;
+				}
+
 				case "give":
 				{
 					RZ_ErrandProps props = RZ_ErrandSettings.Get().Props();

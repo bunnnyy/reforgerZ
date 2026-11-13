@@ -50,6 +50,9 @@ class RZ_ErrandProps
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty tray (optional): a sample tray on Halcyon's bench, a small rack or case of vials. Empty = Crate", "et")]
 	ResourceName m_sDutyTray;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Duty vodka (optional): the bottle the Red Hand's still gives whoever ran the batch (BanditGear's vodka bottle). Empty = no bottle, only the pay", "et")]
+	ResourceName m_sDutyVodka;
+
 	//------------------------------------------------------------------------------------------------
 	ResourceName For(RZ_EErrandProp kind)
 	{

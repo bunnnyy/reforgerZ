@@ -75,42 +75,12 @@ a Red Hand toll (today it's reported, and the routine Fell Off the Inventory is 
 
 ### The Red Hand
 
-| Duty | Kind | What it is |
-|---|---|---|
-| Stripping a wreck | S | By hand, piece by piece; something under the seat |
-| The count | W | Sort a haul on a tarp: keep, sell, the boss's; a marked item. What's marked, who skimmed |
-| The still | S | See below |
-| The toll | W | See below |
-| Spotter | W | See below |
-
-- **The still.** *"Add more varieties to this mission idea, it's good."* Batches differ (potato,
-  fruit, beet), the steps are done by hand (load the mash, light and feed the fire with wood, keep
-  the gauge in its band by feeding or damping, pour off the first runnings, bottle), and things
-  happen (a boil-over and fire, a bad batch if the cut is skipped and someone pays for it, a thief
-  at the bottles, smoke that draws a patrol or the infected, the boss wants it stronger, a Haven
-  buyer wants it for medicine, the coil cracks and needs a part, a rival crew wants the recipe). It
-  makes real vodka (BanditGear's bottle), some of it yours.
-- **The toll.** *"Add more things that can happen, more random encounters, etc. Opportunities to
-  extend mission for extra fame."* **About 50 different interactions**: distinct passers-by and
-  situations, each with who they are, what they carry, what they say, what you can do and what
-  follows; written as data the duty draws from (weighted by the world's state: the stage, feuds and
-  truces, who holds the road, the hour, the weather), so a shift of four or five never repeats
-  soon. Kinds: a family with a handcart, a Haven courier with medicine, a deserter in Bastion kit, a
-  Halcyon tech with a sealed case, a child alone, an old man with nothing but news, a bitten man
-  hiding it, a rival crew's runner, someone armed who won't pay, a cart of the dead, forged Bastion
-  papers, a man who offers to work it off, one who claims the boss's protection. Answers: take
-  goods, take a cut, wave through, turn back, rob them, take news instead. Extensions for more pay
-  and Fame: escort someone through the territory for a bigger fee, run down one who bolts without
-  killing them, follow a suspicious one to see where they go, hold or bluff when a Bastion patrol
-  comes up the road, the boss arriving to count the take.
-- **Spotter.** *"More varieties again, but very good."* A hill, binoculars, mark the board. What you
-  watch varies (a road, a Bastion post's shift change, a Haven truck's route, a Halcyon sampling
-  team, a pack's lair at dusk, a rival camp), and what happens (your glass gives you away and they
-  come looking: lie still, using stealth as built; weather closes in; another spotter climbs your
-  hill; you see what you shouldn't: a hand-over, a killing, a drop; someone you know walks into
-  what's planned: warn them or keep quiet; a night watch by sound). Work out the pattern you were
-  sent to learn. Your count goes on the camp's board and matters to what the crew does next, in
-  data.
+Built: stripping a wreck, the still, the count, the toll and spotter
+([docs/ERRANDS.md](../docs/ERRANDS.md#the-red-hands-duties)). Waiting: the toll weighted by feuds,
+truces and who holds the road (today: the stage, the hour, the weather, the town's sickness); the
+marked goods as real things on the tarp and in the toll's box (they're pick-up items: they need
+prop copies); spotter's board changing what the crew does (today it's recorded, rumoured and kept
+as a saved counter that nothing reads yet); a night watch by sound.
 
 ### Halcyon
 
