@@ -373,7 +373,7 @@ class RZ_DutyHalcyon
 		if (!rough[cargo])
 			carry += 2;
 
-		RZ_DutyScript.O("Take the box from the cold room", string.Format("In your hands: %1. %2 You're carrying it alone, and what happens on the way is yours to decide.", what[cargo], rule[cargo]), "hold:4 carry:" + carry.ToString());
+		RZ_DutyScript.O("Take the cold box", string.Format("In your hands: %1. %2 You're carrying it alone, and what happens on the way is yours to decide.", what[cargo], rule[cargo]), "take hold:4 carry:" + carry.ToString());
 		RZ_DutyScript.Pool();
 		RZ_DutyScript.G("checkpoint");
 		RZ_DutyScript.T("checkpoint", "A Bastion corporal steps into the road. Open it, he says. Orders.", RZ_DutyBeat.AT_OUT);
@@ -435,21 +435,21 @@ class RZ_DutyHalcyon
 		int end = Math.RandomInt(0, 3);
 		if (end == 0)
 		{
-			RZ_DutyScript.T("dark", "The far door. No lamp over it. The power's out here, and the cold room behind it is warming.", RZ_DutyBeat.AT_FAR);
+			RZ_DutyScript.T("dark", "The far door. No lamp over it. The power's out here, and the cold room behind it is warming.", RZ_DutyBeat.AT_FAR_DOOR);
 			RZ_DutyScript.O("Hand it in anyway", "Into a cold room that isn't. The technician looks at the box, and at the dead dial on the wall.", "wrong");
 			RZ_DutyScript.O("Pack it in the well bucket", "Down the well in the bucket, on a marked rope, and the technician told the mark. It'll keep till the power's back.", "right hold:6 +1 regard+");
 			RZ_DutyScript.O("Carry it back", "All the way back, with everything the road had on it the first time.", Code(wait[cargo]));
 		}
 		else if (end == 1)
 		{
-			RZ_DutyScript.T("nobody", "The far door. Shut. A note on it in pencil: back in an hour.", RZ_DutyBeat.AT_FAR);
+			RZ_DutyScript.T("nobody", "The far door. Shut. A note on it in pencil: back in an hour.", RZ_DutyBeat.AT_FAR_DOOR);
 			RZ_DutyScript.O("Wait by the door", "An hour on a doorstep, the box in the shade of your own body.", Code(wait[cargo]));
 			RZ_DutyScript.O("Leave it on the step with a note", "On the step, with your note under a stone. Anyone could lift it. Somebody might.", "wrong");
 			RZ_DutyScript.O("Find the cellar hatch", "Round the back, a hatch, a stone floor, the right shelf. Your note goes on the door over theirs.", "right hold:6 +1");
 		}
 		else
 		{
-			RZ_DutyScript.T("short", "The far door, and the technician with the manifest. She counts. She counts again. One short, she says.", RZ_DutyBeat.AT_FAR);
+			RZ_DutyScript.T("short", "The far door, and the technician with the manifest. She counts. She counts again. One short, she says.", RZ_DutyBeat.AT_FAR_DOOR);
 			RZ_DutyScript.O("It was short when you took it", "You say so. She looks at you for a while. Then she turns the manifest over, and there's the cold room's own note: one held back.", "right report");
 			RZ_DutyScript.O("Offer to walk back and look", "You walk the road again, looking at the verge, for something that was never in the box.", "wrong hold:8");
 			RZ_DutyScript.O("Say nothing", "You say nothing. She writes one short, and your name beside it.", "wrong regard-");

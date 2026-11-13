@@ -147,6 +147,7 @@ class RZ_Errand_VisitorsLog : RZ_ErrandCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Sign the visitors' log at {here} (10 s there).";
 		w.Work(RZ_EWork.BENCH, "Sign the log", 5);
+		w.m_sInside = "any";
 		w.m_iEffect = 1;
 		w.Done("Entry four hundred and twelve. Let me blot it. It's the first one we've had to underline.");
 

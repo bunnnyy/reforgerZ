@@ -322,6 +322,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 60;
 		w.m_sStep = "Search the shops in {place} for a coat (20 s there) and bring it to {giver}.";
 		w.Work(RZ_EWork.SEARCH, "Search the shops for a coat");
+		w.m_sNeed = "errand.shop";
+		w.m_sInside = "shop";
 		w.m_iFavor = 4;
 		w.Done("It fits. He's asked for a job already. Everyone works here, so we gave him the bucket.");
 
@@ -333,6 +335,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Check the newcomer for bites and fever at {house} (30 s there).";
 		w.Work(RZ_EWork.CARE, "Check the newcomer over");
+		w.m_sInside = "any";
+		w.m_bPerson = true;
 		w.m_iFavor = 4;
 		w.Done("No bites, no fever. Just hungry. We can fix hungry, given a week.");
 	}
@@ -488,6 +492,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Count the rations, rounds and fuel in the stores at {here} (30 s there), then hand the sheet to {giver}.";
 		w.Work(RZ_EWork.BENCH, "Count the stores");
+		w.m_sInside = "any";
 		w.m_iFavor = 6;
 		w.Done("That's short. That's very short. I'll file it as it is, and we'll see if anyone at the stronghold reads it.");
 
@@ -499,6 +504,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Count the rations, rounds and fuel in the stores at {here} (30 s there), then hand the sheet to {giver}.";
 		w.Work(RZ_EWork.BENCH, "Count the stores");
+		w.m_sInside = "any";
 		w.m_iFavor = 10;
 		w.m_iEffect = FX_RECORD;
 		w.Done("Signed correct. Every one. Don't look at me like that. The post eats either way.");
@@ -662,6 +668,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 25;
 		w.m_sStep = "Count the pit's bets into the book at {here} (2 real minutes there), then hand it to {giver}.";
 		w.Work(RZ_EWork.BENCH, "Count the bets into the book");
+		w.m_sInside = "any";
 		w.m_iFavor = 5;
 		w.Done("Balanced to the tin. You'd make a terrible gambler and a lovely bookie.");
 	}
@@ -754,6 +761,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Relabel the sample trays at the bench at {here} (2 real minutes there).";
 		w.Work(RZ_EWork.BENCH, "Relabel the sample trays");
+		w.m_sInside = "any";
 		w.m_iFavor = 4;
 		w.Done("Legible. Correct. I will sleep for an hour, if the freezers allow it.");
 
@@ -765,6 +773,7 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fRadius = 20;
 		w.m_sStep = "Relabel the sample trays at the bench at {here} (a minute there): you know the codes.";
 		w.Work(RZ_EWork.BENCH, "Relabel the sample trays");
+		w.m_sInside = "any";
 		w.m_iFavor = 4;
 		w.Done("You used the old codes. Nobody uses the old codes any more. Thank you.");
 	}
@@ -804,6 +813,8 @@ class RZ_ErrandRoutine : RZ_ErrandDef
 		w.m_fBefore = 20.5;
 		w.m_sStep = "Clean and dress the bite of the survivor in {place} (45 s there), then find {giver} again.";
 		w.Work(RZ_EWork.CARE, "Clean and dress the bite");
+		w.m_sInside = "house";
+		w.m_bPerson = true;
 		w.m_iFavor = 6;
 		w.Done("Clean dressing? Good. You'd have made a decent doctor. Shame about the world.");
 	}

@@ -2783,6 +2783,39 @@ class RZ_CampLife
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One measured box fits at `pos` (a work site's look or person, docs/DESIGN.md "Work site"): the
+	//! same checks the camps' pieces get. Indoors: a floor under every corner and nothing in the way
+	//! (FitsIndoors). Outdoors: nothing in it at knee or chest height (Blocked), nothing overhead,
+	//! and the ground under its corners within LEVEL_STEP of each other.
+	static bool BoxFits(vector pos, float yaw, vector fmin, vector fmax, bool indoors)
+	{
+		if (indoors)
+			return FitsIndoors(pos, yaw, fmin, fmax);
+
+		array<vector> quad = {};
+		Quad(pos, yaw, fmin, fmax, 0, quad);
+		float low = float.MAX;
+		float high = -float.MAX;
+		foreach (vector c : quad)
+		{
+			float y = RZ_Util.GroundPos(c)[1];
+			low = Math.Min(low, y);
+			high = Math.Max(high, y);
+		}
+
+		if (high - low > LEVEL_STEP)
+			return false;
+
+		vector mid = RZ_Util.GroundPos(pos);
+		if (TraceHits(mid + Vector(0, 0.3, 0), mid + Vector(0, 4, 0), false))
+			return false;
+
+		return !Blocked(quad);
+	}
+
+	protected static const float LEVEL_STEP = 0.4;	// BoxFits outdoors: most a box's corners may differ in height
+
+	//------------------------------------------------------------------------------------------------
 	//! Something stands in one of the footprint's props' boxes: flat traces across both its
 	//! diagonals at knee and chest height (boxes under 0.3 m either way are left to the grid).
 	protected static bool BlockedFoot(vector pos, float yaw, RZ_SiteFoot foot)

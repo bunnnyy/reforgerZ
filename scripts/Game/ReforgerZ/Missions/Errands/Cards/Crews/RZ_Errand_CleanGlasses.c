@@ -23,6 +23,7 @@ class RZ_Errand_CleanGlasses : RZ_ErrandCard
 		w.m_fRadius = 80;
 		w.m_sStep = "Search the houses at {place} for six glasses without a crack (30 s there), then bring them to {giver}.";
 		w.Work(RZ_EWork.SEARCH, "Search for whole glasses");
+		w.m_sInside = "house";
 		w.m_eProp = RZ_EErrandProp.CRATE;
 		w.m_iFavor = 5;
 		w.Done("Six, and clean. The boss holds one up to the light before reading the names. Old habit. Everybody at the table watches the glass.");

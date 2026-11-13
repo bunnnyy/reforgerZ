@@ -130,6 +130,8 @@ class RZ_Routine_SitWithHim : RZ_ErrandDef
 		w.m_fRadius = 15;
 		w.m_sStep = "Sit with the bitten man at {here} and dress the bite properly (a minute).";
 		w.Work(RZ_EWork.CARE, "Dress the bite");
+		w.m_sInside = "any";
+		w.m_bPerson = true;
 		w.Done("He's easier. You can tell when someone knows what they're doing. So can he.");
 	}
 

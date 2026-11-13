@@ -117,6 +117,7 @@ class RZ_WorkSite
 	float m_fFastSeconds;		// for the players in m_aFast (a background's bonus), 0 = none
 	ref array<int> m_aFast = {};
 	vector m_vPos;
+	bool m_bKeepHeight;			// indoors: m_vPos is on a floor, not on the terrain
 	float m_fYaw;
 	int m_iOnly;				// only this player may do it (0: anyone)
 	bool m_bUnseen;				// only while hidden (built stealth): seen, and the count starts again
@@ -127,10 +128,15 @@ class RZ_WorkSite
 	bool m_bClosed;				// the owner is done with it: dropped once nobody is near
 	float m_fOpenedAt;
 
+	int m_iFit;					// the before look's spot: 0 not checked yet, 1 its box fits, -1 nowhere (left out)
+	ResourceName m_sPerson;		// who the work is for (a patient, the newcomer), standing by it while it's open
+	vector m_vPerson;
+
 	// Props (null while nobody is near)
 	IEntity m_Box;
 	IEntity m_BeforeProp;
 	IEntity m_AfterProp;
+	IEntity m_Person;
 
 	// Who is working at it now: player, since when (the sites' clock), health then
 	ref array<int> m_aNear = {};
@@ -164,6 +170,9 @@ class RZ_WorkSites
 {
 	protected static const float SLACK = 1.5;			// seconds the server forgives (its 1 s poll, the hold's network trip)
 	protected static const float LIFT = 0.6;			// the prompt stands this high over the ground
+	protected static const float PERSON_OFF = 1.2;		// the person stands this far behind the site
+	protected static const float PERSON_HALF = 0.3;
+	protected static const ResourceName TAKE_FALLBACK = "{1284F9C5D25E263E}Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et";	// the base game's cardboard box (world_kit.txt; footprints.json 0.4 x 0.7 m)		// a person's box: a 0.6 m square (RZ_SiteFoot.SEAT)
 
 	protected RZ_SharedSettings m_Shared;
 	protected ref array<ref RZ_WorkSite> m_aSites = {};
@@ -172,6 +181,9 @@ class RZ_WorkSites
 	protected float m_fSpawnTimer;
 	protected bool m_bWarnedComponent;
 	protected bool m_bWarnedCap;
+	// Looks' real boxes in their own space (BoxOf), measured once per prefab
+	protected ref map<ResourceName, vector> m_mBoxMin = new map<ResourceName, vector>();
+	protected ref map<ResourceName, vector> m_mBoxMax = new map<ResourceName, vector>();
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_WorkSites(RZ_SharedSettings shared)
@@ -336,7 +348,7 @@ class RZ_WorkSites
 	//! Opens (or reopens, by key) a site at `pos`. hold: the hold in seconds (Scaled is applied);
 	//! only: the one player who may do it (0 anyone); before/after: this site's own looks (empty:
 	//! the kind's). Returns its id, -1 when work sites aren't available.
-	int Open(string key, RZ_EWork kind, string label, float hold, vector pos, int only = 0, ResourceName before = "", ResourceName after = "", float yaw = -1)
+	int Open(string key, RZ_EWork kind, string label, float hold, vector pos, int only = 0, ResourceName before = "", ResourceName after = "", float yaw = -1, bool keepHeight = false)
 	{
 		if (!Available() || key.IsEmpty())
 			return -1;
@@ -360,6 +372,13 @@ class RZ_WorkSites
 
 		s.m_fSeconds = Scaled(hold);
 		s.m_vPos = RZ_Util.GroundPos(pos);
+		// Indoors (Indoors below): on the building's floor, which the terrain doesn't know
+		if (keepHeight && pos[1] > s.m_vPos[1])
+		{
+			s.m_vPos = pos;
+			s.m_bKeepHeight = true;
+		}
+
 		s.m_fYaw = yaw;
 		if (yaw < 0)
 			s.m_fYaw = Math.RandomFloat(0, 360);
@@ -373,6 +392,10 @@ class RZ_WorkSites
 
 		if (look && after.IsEmpty())
 			s.m_sAfter = look.m_sAfter;
+
+		// Something to take always stands at a "Take ..." prompt: with no look or prop, a base-game box
+		if (kind == RZ_EWork.TAKE && s.m_sBefore.IsEmpty())
+			s.m_sBefore = TAKE_FALLBACK;
 
 		s.m_fOpenedAt = m_fClock;
 		m_aSites.Insert(s);
@@ -393,6 +416,80 @@ class RZ_WorkSites
 		s.m_fFastSeconds = Math.Max(3, s.m_fSeconds / speed);
 		s.m_aFast.Insert(playerId);
 		Push(s);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone the work is for stands beside the site while it's open and a player is near (the
+	//! newcomer to check over, the bitten man to sit with): a body in the errands' budget, gone with
+	//! the site's props. Empty prefab or no room in the budget: nobody, the work is done all the same.
+	void SetPerson(string key, ResourceName prefab)
+	{
+		RZ_WorkSite s = Find(key);
+		if (!s || prefab.IsEmpty())
+			return;
+
+		s.m_sPerson = prefab;
+		float rad = s.m_fYaw * Math.DEG2RAD;
+		s.m_vPerson = s.m_vPos + Vector(Math.Sin(rad), 0, Math.Cos(rad)) * PERSON_OFF;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot on the ground floor of the building nearest `near` within `radius` (of `kind`: "house",
+	//! "shop", "police", "school", "public", "church"...; empty: any): inside its walls, under its
+	//! roof, clear of furniture (the loose loot's anchors, RZ_LootAnchors). False when there's no such
+	//! building or no room inside: the caller keeps its spot in the open.
+	static bool Indoors(vector near, float radius, string kind, out vector at)
+	{
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(near, radius, buildings, 24);
+		IEntity best;
+		float bestDist = float.MAX;
+		array<string> kinds = {kind};
+		foreach (IEntity b : buildings)
+		{
+			if (!kind.IsEmpty() && RZ_OpeningRoll.KindOf(b, kinds).IsEmpty())
+				continue;
+
+			float d = RZ_Util.DistXZ(b.GetOrigin(), near);
+			if (d < bestDist)
+			{
+				bestDist = d;
+				best = b;
+			}
+		}
+
+		if (!best)
+			return false;
+
+		return FloorOf(best, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A spot on this building's ground floor: one of the loose loot's anchors (RZ_LootAnchors) at its
+	//! lowest level, at the floor's height. False: no anchors (a shed, a ruin): nowhere inside.
+	static bool FloorOf(IEntity building, out vector at)
+	{
+		array<vector> anchors = {};
+		RZ_LootAnchors.Find(building, anchors, RZ_LootAnchors.MAX_ANCHORS);
+		if (anchors.IsEmpty())
+			return false;
+
+		// The ground floor: the lowest anchors (a shelf top or an upper storey is no place to work)
+		float low = float.MAX;
+		foreach (vector a : anchors)
+		{
+			low = Math.Min(low, a[1]);
+		}
+
+		array<vector> floor = {};
+		foreach (vector f : anchors)
+		{
+			if (f[1] <= low + 0.4)
+				floor.Insert(f);
+		}
+
+		at = floor.GetRandomElement();
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -694,8 +791,18 @@ class RZ_WorkSites
 	//------------------------------------------------------------------------------------------------
 	protected void SpawnBefore(RZ_WorkSite s)
 	{
-		if (!s.m_sBefore.IsEmpty() && !s.m_BeforeProp)
+		if (!s.m_sBefore.IsEmpty() && s.m_iFit == 0)
+			FitLook(s);
+
+		if (!s.m_sBefore.IsEmpty() && s.m_iFit > 0 && !s.m_BeforeProp)
+		{
 			s.m_BeforeProp = RZ_Util.SpawnPrefab(s.m_sBefore, s.m_vPos, s.m_fYaw);
+			// A scene from the world kit can carry things a player could use: they go
+			if (s.m_BeforeProp && !RZ_DressingGuard.Strip(s.m_BeforeProp, s.m_sBefore))
+				s.m_BeforeProp = null;
+		}
+
+		SpawnPerson(s);
 
 		vector at = s.m_vPos;
 		at[1] = at[1] + LIFT;
@@ -709,7 +816,193 @@ class RZ_WorkSites
 		if (s.m_sAfter.IsEmpty() || s.m_AfterProp)
 			return;
 
+		// Its own box where the work was (the before look is gone by now)
+		vector amin;
+		vector amax;
+		if (!BoxOf(s.m_sAfter, s.m_vPos, amin, amax) || !RZ_CampLife.BoxFits(s.m_vPos, s.m_fYaw, amin, amax, s.m_bKeepHeight))
+		{
+			RZ_Log.Info(string.Format("Work sites: %1 after look %2 doesn't fit at %3, left out", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sAfter), RZ_SettlementScanner.GridReference(s.m_vPos)));
+			s.m_sAfter = "";
+			return;
+		}
+
 		s.m_AfterProp = RZ_Util.SpawnPrefab(s.m_sAfter, s.m_vPos, s.m_fYaw);
+		if (s.m_AfterProp && !RZ_DressingGuard.Strip(s.m_AfterProp, s.m_sAfter))
+			s.m_AfterProp = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where the before look goes (docs/DESIGN.md, "Work site"): its real box must fit, as a camp's
+	//! piece must (RZ_CampLife.BoxFits). Its own spot and heading first, then the other headings, then
+	//! spots around it (up to 2 m outdoors, 0.75 m indoors). Nowhere: the look is left out and the
+	//! site keeps only its prompt (drop, don't squeeze). The site moves with its look.
+	protected void FitLook(RZ_WorkSite s)
+	{
+		vector fmin;
+		vector fmax;
+		s.m_iFit = -1;
+		if (!BoxOf(s.m_sBefore, s.m_vPos, fmin, fmax))
+		{
+			s.m_sBefore = "";
+			return;
+		}
+
+		float step = 1;
+		int rings = 3;
+		if (s.m_bKeepHeight)
+		{
+			step = 0.75;
+			rings = 2;
+		}
+
+		for (int ring = 0; ring < rings; ring++)
+		{
+			int around = 1;
+			if (ring > 0)
+				around = 8;
+
+			for (int k = 0; k < around; k++)
+			{
+				float rad = (k * 45 + s.m_fYaw) * Math.DEG2RAD;
+				vector spot = s.m_vPos + Vector(Math.Sin(rad), 0, Math.Cos(rad)) * (ring * step);
+				if (!s.m_bKeepHeight)
+					spot = RZ_Util.GroundPos(spot);
+
+				for (int turn = 0; turn < 4; turn++)
+				{
+					float yaw = s.m_fYaw + turn * 90;
+					if (!RZ_CampLife.BoxFits(spot, yaw, fmin, fmax, s.m_bKeepHeight))
+						continue;
+
+					s.m_iFit = 1;
+					if (!s.m_sPerson.IsEmpty())
+						s.m_vPerson = s.m_vPerson + (spot - s.m_vPos);
+
+					s.m_vPos = spot;
+					s.m_fYaw = yaw;
+					RZ_Log.Info(string.Format("Work sites: %1 look %2 fits at %3 (%4 m off, heading %5)", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(spot), ring * step, RZ_Util.RoundToInt(yaw) % 360));
+					return;
+				}
+			}
+		}
+
+		RZ_Log.Info(string.Format("Work sites: %1 look %2 doesn't fit at %3, left out", s.m_sKey, RZ_Util.PrettyPrefabName(s.m_sBefore), RZ_SettlementScanner.GridReference(s.m_vPos)));
+		s.m_sBefore = "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A look's real box in its own space, measured on the server the first time it's needed: spawned
+	//! 60 m under the spot at heading 0, its parts' boxes joined, then deleted (the measure the site
+	//! audit gives the camps' props, docs/SITES.md "Real footprints"). False: it doesn't spawn.
+	protected bool BoxOf(ResourceName prefab, vector near, out vector fmin, out vector fmax)
+	{
+		if (m_mBoxMin.Contains(prefab))
+		{
+			fmin = m_mBoxMin.Get(prefab);
+			fmax = m_mBoxMax.Get(prefab);
+			return true;
+		}
+
+		vector below = near;
+		below[1] = below[1] - 60;
+		IEntity e = RZ_Util.SpawnPrefab(prefab, below, 0);
+		if (!e)
+			return false;
+
+		array<vector> span = {Vector(float.MAX, float.MAX, float.MAX), Vector(-float.MAX, -float.MAX, -float.MAX)};
+		JoinBounds(e, span, 0);
+		SCR_EntityHelper.DeleteEntityAndChildren(e);
+		fmin = span[0] - below;
+		fmax = span[1] - below;
+		// Nothing with a box (an empty root): half a metre across
+		if (fmax[0] - fmin[0] < 0.1 || fmax[2] - fmin[2] < 0.1)
+		{
+			fmin = Vector(-0.25, 0, -0.25);
+			fmax = Vector(0.25, 0.5, 0.25);
+		}
+
+		m_mBoxMin.Set(prefab, fmin);
+		m_mBoxMax.Set(prefab, fmax);
+		RZ_Log.Info(string.Format("Work sites: measured %1: %2 x %3 m", RZ_Util.PrettyPrefabName(prefab), fmax[0] - fmin[0], fmax[2] - fmin[2]));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void JoinBounds(IEntity e, notnull array<vector> span, int depth)
+	{
+		if (!e || depth > 6)
+			return;
+
+		vector wmin;
+		vector wmax;
+		e.GetWorldBounds(wmin, wmax); // VERIFY: a composition's root and parts give their world boxes right after spawning, so a look spawned at heading 0 measures as its local box
+		if (wmax[0] - wmin[0] > 0.01 || wmax[2] - wmin[2] > 0.01)
+		{
+			vector lo = span[0];
+			vector hi = span[1];
+			for (int i = 0; i < 3; i++)
+			{
+				lo[i] = Math.Min(lo[i], wmin[i]);
+				hi[i] = Math.Max(hi[i], wmax[i]);
+			}
+
+			span[0] = lo;
+			span[1] = hi;
+		}
+
+		IEntity child = e.GetChildren();
+		while (child)
+		{
+			JoinBounds(child, span, depth + 1);
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SpawnPerson(RZ_WorkSite s)
+	{
+		if (s.m_sPerson.IsEmpty() || s.m_Person || s.m_bDone)
+			return;
+
+		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
+		RZ_Shared shared;
+		if (gm)
+			shared = gm.GetShared();
+
+		if (shared && !shared.CanSpawnBody(RZ_BodyBudget.ERRAND, s.m_vPerson))
+			return;
+
+		// Behind the work, else to either side or in front: wherever a person's box fits
+		vector half = Vector(PERSON_HALF, 0, PERSON_HALF);
+		vector at;
+		float face = -1;
+		for (int side = 0; side < 4 && face < 0; side++)
+		{
+			float bearing = s.m_fYaw + side * 90;
+			float rad = bearing * Math.DEG2RAD;
+			vector spot = s.m_vPos + Vector(Math.Sin(rad), 0, Math.Cos(rad)) * PERSON_OFF;
+			if (!s.m_bKeepHeight)
+				spot = RZ_Util.GroundPos(spot);
+
+			if (RZ_CampLife.BoxFits(spot, bearing, -half, half, s.m_bKeepHeight))
+			{
+				at = spot;
+				face = bearing + 180;
+			}
+		}
+
+		if (face < 0)
+		{
+			RZ_Log.Info(string.Format("Work sites: %1 has no room for its person at %2, left out", s.m_sKey, RZ_SettlementScanner.GridReference(s.m_vPos)));
+			s.m_sPerson = "";
+			return;
+		}
+
+		// Facing the work
+		s.m_vPerson = at;
+		s.m_Person = RZ_Util.SpawnPrefab(s.m_sPerson, at, face);
+		if (s.m_Person && shared)
+			shared.AddBody(RZ_BodyBudget.ERRAND, s.m_Person);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -768,9 +1061,13 @@ class RZ_WorkSites
 		if (s.m_AfterProp)
 			RZ_Util.DeleteUnit(s.m_AfterProp);
 
+		if (s.m_Person)
+			RZ_Util.DeleteUnit(s.m_Person);
+
 		s.m_Box = null;
 		s.m_BeforeProp = null;
 		s.m_AfterProp = null;
+		s.m_Person = null;
 	}
 
 	//------------------------------------------------------------------------------------------------

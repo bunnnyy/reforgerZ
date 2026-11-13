@@ -2089,7 +2089,7 @@ the server's memory before and after, and the cache file. A picture of each grid
 grep -rn "VERIFY" scripts/
 ```
 
-There are **182** lines with the tag, all but one in the game scripts (one is the comment in
+There are **183** lines with the tag, all but one in the game scripts (one is the comment in
 `Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and six its animation and lock's in `Interactions/`), but one: the sites plugin's in
@@ -2193,8 +2193,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `UI/RZ_TraceLightsClient.c:56` | Lit windows (S2): a client-side `LightEntity.CreateLight` point light 1.5 m inside a lived-in building's door shows at its windows and doesn't bleed through the walls (the spike's VERIFY 5) | Leave **World > Traces > Lit windows** off (the default); the lanterns (S1) don't need it |
 | `Director/Epilogue/RZ_EpilogueClosing.c:957` | the Walk Out: a character killed by the script with the walk-out flag set sends its player to the spawn screen, its body (and the inventory with it) deleted 2 s later, and no death is recorded ([EPILOGUE.md](EPILOGUE.md#the-closing-work)) | A death screen or a body left: set **Epilogue > Walk Out** off; names put down are still read at the wipe |
 | `Director/Epilogue/RZ_EpilogueClosing.c:12` | a dynamic sphere query finds a parked vehicle at the queue (the Mechanic's *Leave a car for the queue*) | The choice never shows: the Mechanic's last goal can't finish; the other closing work is untouched |
-| `Guidance/RZ_OpeningPlaces.c:447` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
-| `Guidance/RZ_OpeningPlaces.c:487` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
+| `Guidance/RZ_OpeningPlaces.c:471` | an opening moves the new character in `SCR_SpawnPointSpawnHandlerComponent.PrepareEntity_S`, before it's handed over: `SetOrigin` and `SetAngles` (y the compass yaw) stand it at the rolled door, facing out, as vanilla's spawn point places it on itself | You come to at the random spawn point the screen asked for, or facing the wall: the log's `Openings: started` grid is the door, not where you stand. Turn **Guidance > Openings** off (the spawn point, as before) and move the character after the hand-over instead |
+| `Guidance/RZ_OpeningPlaces.c:511` | the preload `StartSpawnPreload(entity.GetOrigin())` in `OnFinalizeBegin_S` streams the world in around the rolled place, not the spawn point vanilla would preload | You stand in an empty world for a few seconds, or fall through it: report it, and preload at both places |
 | `Interactions/RZ_WorkSiteAction.c:186`, `:142` | the hold prompt at a work site: the prefab's `Duration 10` makes **RZ_WorkSiteAction** a timed hold with vanilla's progress ring; its progress comes from `GetActionProgressScript` on the holder's machine (the bar runs at 10 ÷ the site's seconds), `GetActionDuration` returns the 10, and `OnActionStart` runs there when the ring appears. Hold **Dig the latrine** (15 s) with a stopwatch; get hit by an infected half-way and watch the ring drop back | Without a Duration the prompt is instant: the server still counts the time at the site (*"Not finished"* until it's served), so the step is done by pressing it after standing there long enough. A wrong rate: set the action's Duration to the commonest hold (10) and live with the difference |
 | `Interactions/RZ_WorkHold.c:269` | `CharacterControllerComponent.SetDisableMovementControls(true)` on the player's own machine stops walking for a work site's hold while the hold key stays down and the camera still looks about (vanilla sets it for item placement); `false` gives the legs back | You can still walk off mid-hold (the bar then starts again past 1.5 m), or the look locks too, or the hold key stops counting: turn **Shared > Work sites > Lock movement** off and report which |
 | `Interactions/RZ_WorkHold.c:297` | `SCR_GadgetManagerComponent.SetGadgetMode(tool, IN_HAND)` draws a carried entrenching tool (vanilla's building-tool gadget) from the pack or a slot while the hold runs, within a couple of seconds | The tool stays put away: after 2.5 s the digging uses the hands animation instead. Take the tool in hand before you hold and it should dig |
@@ -2247,7 +2247,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_Quartermaster.c:137` | turning a standing AI character with `SetWorldTransform` on the server keeps it facing that way and replicates | The quartermaster faces where he spawned, perhaps away from his counter: report it |
 | `Factions/RZ_CampLife.c:5189` | a cycle waypoint made from script loops the patrol for our groups (as vanilla's patrol command does) | The patrol walks its loop once; each shuffle sends it round again |
 | `Factions/RZ_CampLife.c:4813` | a cycle of loiter waypoints walks a group from piece to piece and stands it a while at each (a loiter waypoint completes after its hold), round and round | People with nothing free to sit at stand at the first piece of their walk, or walk without stopping: the jobs log still counts them as walking; report what they do |
-| `Guidance/RZ_OpeningPlaces.c:457` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
+| `Guidance/RZ_OpeningPlaces.c:481` | `DoorComponent.SetControlValue(1)` on the server opens the opening's door for every client (the locks shut doors the same way) | The door you came out of stands shut behind you: nothing depends on it |
 | `World/RZ_PowerSite.c:560` | a spawned prefab's front (its local +Z) points along the compass bearing it's given as its yaw, so the power station's control cabinet faces out from the wall beside the door | The cabinet stands by the door turned sideways or backwards: set **World > Power grid > Control yaw** (90, 180 or -90) until it faces out |
 | `World/RZ_PowerSite.c:574` | a vanilla electrical cabinet's local bounds are its box, and the interaction spot put 0.25 m off its face toward the town shows **Open the panel** at it (the cabinet's own collider doesn't hide it) | No prompt at the station, or it floats beside the cabinet: turn **World > Power grid > Use cabinets** off, and the control prefab stands against the station's wall instead |
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
@@ -2653,7 +2653,7 @@ records.` and `Shared: N callbacks waiting, N season records.`
 
 Openings ([DESIGN.md](DESIGN.md#openings-how-every-life-starts)), one life each: `Openings: started
 for <player>: <background>, <kind> in <town> (<grid>), level N, <hiding|group|fever>, <before|stranger|earlier|nobody>:
-<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: <name> talked to by <player> before
+<who>, chain <search, task, walk> to <place>` (levels 2-3: `chain task, lead` or `chain lead`), `Openings: <name> called <player> over before step N`, `Openings: step 1 for <background> is <words> (<prefab>, <kind>), the spot N m from its middle` (the building step 1 sends you into, and the words its kind gave), `Openings: <name> talked to by <player> before
 step N`, `Openings: <name> went on talking with <player> into step N`,
 `Errands: opening.<step> handed to <player> (<name>)`, the pattern at the end of `started` (`, they walk with you` or `, handed on`), `Openings: <name> walks with <player>` (or `can't walk with <player> (no escort room), the steps start where you are`), `Openings: <first> sent <player> on to <next> at <place>, <direction>` (or `Openings: no house for the next person for <player> at <grid>, back to <name> instead`), `Openings: <player> handed over to <name> (step 2, task N)`, `Openings: <name> step N (<key>) for <player>,
 <direction>`, `Openings: <name> step N done by <player> in N s`, `Openings: <name> died (step N for
@@ -2687,7 +2687,9 @@ dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by
 (<way>)`, `Errands: <key> done by <player>, way N (<way>), with N helper(s)`, `Errands: <key> for
 <player> overtaken`, `Work sites: errand.N "Dig the latrine" (LATRINE, 15 s) at <grid>` and
 `Work sites: <key> "<label>" done by <player>` (a mission's are `mission.<id>.point.N`, `.truck`,
-`.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: the Site prefab has no
+`.tissue`, `.well`, `.sample`, `.chain`, `.charge.N`; the Red Hand van's `cargovan.N`; a stranger's `stranger.N`), `Work sites: measured <look>: W x D m`
+once per look, `Work sites: <key> look <look> fits at <grid> (N m off, heading N)` or `... doesn't fit at <grid>, left out`,
+`Work sites: <key> after look <look> doesn't fit ...`, `Work sites: <key> has no room for its person at <grid>, left out`, `Work sites: the Site prefab has no
 RZ_WorkSiteComponent, so it shows no prompt` once if the prefab is wrong, `Errands: faults at h12 this shift: relief, set`, `Errands: fault <kind> at
 <place> fixed`, every 30 minutes `Errands | live N | asked N, called out N | <family>: dealt N,
 declined N, lapsed N, overtaken N, done N, Favor N, Fame N (amends N), ways ...`, and `Errands admin
@@ -3504,7 +3506,9 @@ when it happens)
   only with *[Errand] It's done: ...*, never by opening the talk.
 - [ ] **Task places** ([PLACES.md](PLACES.md)). Over the openings above, every place is what its
   words say: *Down the Road* sends you to a real house (or the chemist's, the garage...) 150–450 m
-  off, never into woods; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
+  off, never into woods, and its crate stands inside that building on the ground floor; as a Nurse
+  on Arland it's never "the chemist's" at a shed or a wooden barracks (there it's the old aid post, a
+  vet's farm or the doctor's house), and `run.sh tasks` shows no `Places words:` line; a Lab Technician's *A Sample* lies by a road's verge (or in a yard) and you
   find a dead infected there with the sample beside it; *Downwind*'s tree line has trees; the well
   has a well. On Everon and Arland take a few errands that name a place (*Water for* a house: the
   well in the town it names; *Filter Parts*: a pump house; *Shift Change*: a car by a road; *Not Past
@@ -4620,6 +4624,15 @@ on the talk screen says why something wasn't dealt)
   the hold), The New Number (the stencilled board), The Pot (a crate, then clutter), His Effects (the
   effects, then nothing), Labels (a table that stays), Reset the sensor unseen (seen: *"They'd see
   you like that"*, start again hidden).
+- [ ] Indoors and with someone (the audit of errands' places): The Newcomer's **Check the newcomer
+  over** (as a Nurse) stands inside a building near the house, on its ground floor, not in the
+  street, with the newcomer standing by it facing you; Sit With Him the same with the bitten man;
+  The Count's and Labels' tables stand inside, on the floor, not floating, not in a wall or a
+  cupboard; Clean Rifles' search is in the police station, Clean Paper's in the school, Civvies' in
+  a house. The log's `Work sites: ... look ... fits at` line for each, and the measured size of the
+  table and the crate looks matches what you see (VERIFY `Missions/Blocks/RZ_WorkSites.c`'s
+  `JoinBounds`). Put a look's spot against a wall or a car on purpose: it moves up to 2 m or turns,
+  or is left out with its prompt alone.
 - [ ] Missions: Burn the Bodies (five piles, **Burn the pile**, ash after; a Nurse holds faster),
   Install Sensors (a set on a crate after; a Radio Op or Lab Tech in half the time), Convoy Escort's
   breakdown (**Fix the engine** by the bonnet; a Mechanic in a third), Specimen from the Nest

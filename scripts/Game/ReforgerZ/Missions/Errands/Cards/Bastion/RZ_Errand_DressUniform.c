@@ -22,6 +22,7 @@ class RZ_Errand_DressUniform : RZ_ErrandCard
 		w.m_fRadius = 15;
 		w.m_sStep = "Fold the dead man's dress uniform at {here} the regulation way while the private watches (30 s).";
 		w.Work(RZ_EWork.BENCH, "Fold the uniform", 12);
+		w.m_sInside = "any";
 		w.m_iFavor = 4;
 		w.Done("Regulation fold. Regulation nothing else, these days. I'll do the next one myself. Nearly right, probably.");
 	}

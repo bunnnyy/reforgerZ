@@ -1579,7 +1579,12 @@ class RZ_Openings
 		ResourceName antidote = m_GM.GetAntidotePrefab();
 		if (o.m_sBackground == "doctor" && o.m_aPlan.Contains(RZ_EOpeningStage.TASK) && !antidote.IsEmpty())
 		{
-			IEntity dose = RZ_Util.SpawnPrefab(antidote, RZ_Util.GroundPos(place) + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
+			// On the floor inside (place is on it), not under it
+			vector doseAt = RZ_Util.GroundPos(place);
+			if (place[1] > doseAt[1])
+				doseAt = place;
+
+			IEntity dose = RZ_Util.SpawnPrefab(antidote, doseAt + Vector(0, 0.3, 0), Math.RandomFloat(0, 360));
 			if (dose)
 				RZ_GameModeComponent.TrackLooseItem(dose);
 		}
@@ -1590,8 +1595,10 @@ class RZ_Openings
 	//------------------------------------------------------------------------------------------------
 	//! Step 1's building (docs/PLACES.md, opening.search): a house 50-250 m from the contact, not
 	//! locked, one of your background's kinds when one is there (the chemist's for a Nurse, a garage for
-	//! a Mechanic), else a house; the spot just outside its side facing the contact, checked against
-	//! the need. False when there's none: the words "down the road" would be false, so no step 1.
+	//! a Mechanic), else a house; checked against the need just outside its side facing the contact,
+	//! and the spot itself inside, on its ground floor (RZ_WorkSites.FloorOf): the thing to search
+	//! stands in the building its words name. False when there's none: the words "down the road"
+	//! would be false, so no step 1.
 	//! `kind`: the building's kind ("" for a house). Spawns nothing (the place audit asks it too).
 	bool PickSearch(string background, vector from, out vector place, out string text, out string kind)
 	{
@@ -1621,16 +1628,20 @@ class RZ_Openings
 
 		IEntity found = TrySearch(mine, kinds, from, place);
 		if (found)
-		{
 			kind = RZ_OpeningRoll.KindOf(found, kinds);
-			text = RZ_OpeningText.SearchPlace(kind);
+
+		// Never words the building isn't (RZ_PlaceCheck.WordsTrue): else it's a house's words
+		if (found && RZ_PlaceCheck.WordsTrue(kind, found))
+		{
+			text = RZ_OpeningText.SearchPlace(kind, background);
+			RZ_Log.Info(string.Format("Openings: step 1 for %1 is %2 (%3, %4), the spot %5 m from its middle", background, text, RZ_ItemHelper.LowerName(found), kind, RZ_Util.RoundToInt(RZ_Util.DistXZ(found.GetOrigin(), place))));
 			return true;
 		}
 
 		array<string> none = {};
 		if (TrySearch(houses, none, from, place))
 		{
-			text = RZ_OpeningText.SearchPlace("");
+			text = RZ_OpeningText.SearchPlace("", background);
 			return true;
 		}
 
@@ -1653,9 +1664,10 @@ class RZ_Openings
 
 			vector at = RZ_Util.GroundPos(RZ_DoorGeometry.SidePoint(b, from, SEARCH_OUT));
 			string why;
-			if (RZ_PlaceCheck.Check(at, need, -1, kind, why))
+			vector inside;
+			if (RZ_PlaceCheck.Check(at, need, -1, kind, why) && RZ_WorkSites.FloorOf(b, inside))
 			{
-				place = at;
+				place = inside;
 				return b;
 			}
 		}

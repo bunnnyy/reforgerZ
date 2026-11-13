@@ -503,7 +503,93 @@ class RZ_PlaceCheck
 	//! The door slots' kinds, read from a building's prefab (RZ_DoorSlots.KindOf).
 	static bool IsDoorKind(string kind)
 	{
-		return kind == "clinic" || kind == "shop" || kind == "garage" || kind == "farm" || kind == "public";
+		return kind == "clinic" || kind == "aid" || kind == "shop" || kind == "garage" || kind == "farm" || kind == "public";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The words are true of this building (docs/PLACES.md, "A place is what its words say"): the one
+	//! rule by prefab name for a kind a task's words name. "clinic" (the chemist's) is a civilian
+	//! pharmacy, surgery, clinic or hospital, never an army hut or a tent; "aid" (the old aid post) is
+	//! the army's medical building; "farm" a farmhouse, barn or stable, not a shed; "public" (the hall)
+	//! a town hall, a school, a church or an office, not a fuel or rail station; "house" a house
+	//! (IsHouse); the rest by the landmark finder's words. The pickers and the place audit both ask it.
+	static bool WordsTrue(string kind, IEntity b)
+	{
+		if (!b)
+			return false;
+
+		if (kind.IsEmpty() || kind == "any")
+			return true;
+
+		if (kind == "house")
+			return IsHouse(b);
+
+		string name = RZ_ItemHelper.LowerName(b);
+		switch (kind)
+		{
+			case "clinic":
+				return HasWord(name, {"pharmacy", "drugstore", "apothec", "clinic", "hospital", "surgery", "medical"}) && !HasWord(name, {"/military/", "tent", "barracks", "camp", "shed", "veterin"});
+			case "aid":
+				return HasWord(name, {"medical", "hospital"}) && name.Contains("/military/") && !HasWord(name, {"tent", "/camps/"});
+			case "farm":
+				return HasWord(name, {"farm", "barn", "stable", "cowshed", "pigsty"}) && !name.Contains("shed_");
+			case "garage":
+				return HasWord(name, {"garage", "workshop", "autoservice", "carservice", "car_service", "mechanic", "repair"});
+			case "shop":
+				return HasWord(name, {"shop", "store", "market", "kiosk", "grocery", "pub", "bar_", "cafe", "restaurant"}) && !HasWord(name, {"/military/", "workshop", "/industrial/"});
+			case "public":
+				return HasWord(name, {"townhall", "town_hall", "school", "church", "chapel", "office", "hall", "culture"}) && !HasWord(name, {"fuel", "gas", "/military/"});
+		}
+
+		return RZ_LandmarkFinder.Matches(kind, name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A building within range that the words naming `kind` are true of (WordsTrue). False: `seen` is
+	//! the nearest building there, by name (the place audit's fail line says what stands there).
+	static bool WordsTrueNear(vector at, string kind, float range, out string seen)
+	{
+		seen = "";
+		if (kind.IsEmpty() || kind == "any" || kind == "orchard" || kind == "well" || kind == "watertower")
+			return true;
+
+		array<IEntity> buildings = {};
+		RZ_BuildingQuery.FindBuildings(at, range + HOUSE_SIZE, buildings, QUERY_MAX);
+		float best = float.MAX;
+		foreach (IEntity b : buildings)
+		{
+			if (WordsTrue(kind, b))
+				return true;
+
+			float d = RZ_Util.DistXZ(at, b.GetOrigin());
+			if (d < best)
+			{
+				best = d;
+				seen = RZ_Util.PrettyPrefabName(RZ_Util.GetPrefabName(b));
+			}
+		}
+
+		// A landmark kind the finder knows by other things than buildings (a fuel pump, a radio mast)
+		if (!IsDoorKind(kind) && kind != "house")
+		{
+			array<string> kinds = {kind};
+			if (RZ_LandmarkFinder.FindNearest(at, range, kinds) != null)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool HasWord(string name, array<string> words)
+	{
+		foreach (string w : words)
+		{
+			if (name.Contains(w))
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1134,13 +1220,13 @@ class RZ_PlaceNeeds
 		s_mFailed = new map<string, int>();
 
 		// Openings (Guidance/): where a life starts, and its chain's steps
-		// Houses over the way are the roll's preference (its rank), not the start's words: step 1 needs them
+		// Houses down the road are the roll's preference (its rank), not the start's words: step 1 needs them
 		RZ_PlaceNeed n = Add("opening.start", "outside the door you came out of, someone waiting");
 		n.Building("any", 12);
 		n.Steep(30);
 		n.Thing(RZ_EThingKind.NPC, "the contact", "contact", 15, "nobody stands there: the scene's note points at the nearest work");
 
-		n = Add("opening.search", "the house (the chemist's, the garage...) over the way");
+		n = Add("opening.search", "the house (the chemist's, the garage...) down the road");
 		n.Building("house", 15);
 		n.Steep(30);
 
@@ -1242,6 +1328,10 @@ class RZ_PlaceNeeds
 		n = Add("errand.hall", "the hall in {place}");
 		n.InTown(300);
 		n.Building("public", 30);
+
+		n = Add("errand.shop", "the shops in {place}");
+		n.InTown(300);
+		n.Building("shop", 30);
 
 		// A way's prop (Missions > Errands > Props): the thing its words name at the place
 		n = Add("errand.prop.effects", "a dead man's things at the place");

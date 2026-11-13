@@ -252,7 +252,11 @@ A way whose step is work with your hands is a [work site](DESIGN.md#work-site) a
 thing to work at stands there (its before look, or the way's own prop), with one prompt in the step's
 words. Hold it for its time (vanilla's bar); the step is done, and the result stands there until the
 errand is over and nobody is near. Only the asker can do it (the prompt doesn't show for anyone
-else); at the giver's place or its gate it stands 3–6 m off, at water 1.5–3 m off. An item the step
+else); at the giver's place or its gate it stands 3–6 m off, at water 1.5–3 m off. Work the words
+put indoors (a bench, a sick man, a search of a house, a shop, the police station, the school or the
+hall) is on the ground floor of the nearest such building within 60 m of the place, else in the open
+as before; where the words name someone (the newcomer, the bitten man, the survivor before dark) that
+person stands at it while you work (Props > Duty person). The table says which. An item the step
 needs at its place (a battery) is handed over after the hold, there. The step's line drops its time
 there. With work sites off, these steps are done by staying there as before (the times in the
 tables below).
@@ -264,54 +268,55 @@ tables below).
 | Filter Parts | **Take the filter housing off** | 8 s | a toolbox and parts → nothing (fitted, packed away) |
 | Filter Parts | **Take the part off** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Burying | **Dig the grave** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
-| The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter |
-| The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) |
+| The Round | **See to the sick** | 20 s | a mattress, a blanket, a bucket → the same (it stays) |
+| The Newcomer | **Search the shops for a coat** | 8 s | a crate of odds and ends → rummaged clutter (in a shop) |
+| The Newcomer | **Check the newcomer over** | 9 s | a mattress, a blanket, a bucket → the same (it stays) (indoors, with him) |
 | Make It Right | **Fill the water cans** | 7 s | empty cans and buckets → nothing (carried off) |
-| The Count | **Count the stores** | 9 s | a table with a lamp → the same (it stays) |
+| The Count | **Count the stores** | 9 s | a table with a lamp → the same (it stays) (indoors) |
 | The Latrine | **Dig the latrine** | 15 s | a marked pit (stakes, planks, a sack of lime) → the latrine screen |
-| The Pit Count | **Count the bets into the book** | 20 s | a table with a lamp → the same (it stays) |
+| The Pit Count | **Count the bets into the book** | 20 s | a table with a lamp → the same (it stays) (indoors) |
 | Night Readings | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | Night Readings | **Reset the sensor** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
-| Labels | **Relabel the sample trays** | 20 s | a table with a lamp → the same (it stays) |
-| Labels | **Relabel the sample trays** | 12 s | a table with a lamp → the same (it stays) |
-| Before Dark | **Clean and dress the bite** | 11 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Labels | **Relabel the sample trays** | 20 s | a table with a lamp → the same (it stays) (indoors) |
+| Labels | **Relabel the sample trays** | 12 s | a table with a lamp → the same (it stays) (indoors) |
+| Before Dark | **Clean and dress the bite** | 11 s | a mattress, a blanket, a bucket → the same (it stays) (in a house, with the survivor) |
 | The Market | **Search the grass** | 8 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Receiver | **Fit the battery** | 6 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Receiver | **Re-seat the cable** | 7 s | a toolbox and parts → nothing (fitted, packed away) |
-| Sit With Him | **Dress the bite** | 12 s | a mattress, a blanket, a bucket → the same (it stays) |
+| Sit With Him | **Dress the bite** | 12 s | a mattress, a blanket, a bucket → the same (it stays) (indoors, with him) |
 | Sandbags | **Fill and stack the sandbags** | 18 s | a pile of empty sacks → a sandbag barricade |
 | The New Number | **Paint the new number** | 10 s | a bare board on a post, a paint tin → the stencilled board |
-| Behind the Red Door | **Search what's left** | 7 s | a crate of odds and ends → rummaged clutter |
-| Behind the Red Door | **Search the boy's room** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Rifles | **Search for cleaning kits** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) |
-| Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) |
-| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) |
+| Behind the Red Door | **Search what's left** | 7 s | a crate of odds and ends → rummaged clutter (in a house) |
+| Behind the Red Door | **Search the boy's room** | 8 s | a crate of odds and ends → rummaged clutter (in a house) |
+| Clean Rifles | **Search for cleaning kits** | 8 s | a crate of odds and ends → rummaged clutter (in the police station) |
+| Clean Rifles | **Strip and clean the rifle** | 15 s | a table with a lamp → the same (it stays) (indoors) |
+| Clean Paper | **Search for clean paper** | 8 s | a crate of odds and ends → rummaged clutter (in the school) |
+| Clean Paper | **Rule the margins** | 9 s | a table with a lamp → the same (it stays) (indoors) |
+| Chairs for the Reading | **Stack the chairs** | 9 s | a table with a lamp → the same (it stays) (in the hall) |
 | What the Cure Costs Here | **Put the name on the roster** | 8 s | a board on a post → the notice wall |
 | Into the Record | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Take a Name to the Board | **Write the name up** | 8 s | a board on a post → the notice wall |
-| Pack for the Queue | **Search the house** | 9 s | a crate of odds and ends → rummaged clutter |
+| Pack for the Queue | **Search the house** | 9 s | a crate of odds and ends → rummaged clutter (in a house) |
 | The Tags | **Take the tags** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Tags | **Take the photo frame** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Wreck's Name | **Search the cab for papers** | 8 s | a crate of odds and ends → rummaged clutter |
 | The Wreck's Name | **Search the cab** | 8 s | a crate of odds and ends → rummaged clutter |
-| Clean Glasses | **Search for whole glasses** | 9 s | a crate of odds and ends → rummaged clutter |
+| Clean Glasses | **Search for whole glasses** | 9 s | a crate of odds and ends → rummaged clutter (in a house) |
 | Name Day | **Take the clock down** | 8 s | a toolbox and parts → nothing (fitted, packed away) |
 | The Truck Didn't Come | **Search the truck** | 9 s | a crate of odds and ends → rummaged clutter |
 | Clean Slate | **Dig at the burial pit** | 15 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
-| Civvies | **Search for plain clothes** | 8 s | a crate of odds and ends → rummaged clutter |
+| Civvies | **Search for plain clothes** | 8 s | a crate of odds and ends → rummaged clutter (in a house) |
 | The Name on the Tape | **Take the tag and jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The Name on the Tape | **Take the jacket** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Take the coat and notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Take the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Notebook 31 | **Pocket the notebook** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | Paint | **Paint the hand** | 12 s | a bare board on a post, a paint tin → the stencilled board |
-| Dress Uniform | **Fold the uniform** | 12 s | a table with a lamp → the same (it stays) |
+| Dress Uniform | **Fold the uniform** | 12 s | a table with a lamp → the same (it stays) (indoors) |
 | Names on the Call | **Pin the list up** | 5 s | a board on a post → the notice wall |
 | The Last Apples | **Pick what's left** | 9 s | a crate of odds and ends → rummaged clutter |
-| You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) |
-| The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) |
+| You're the One | **Write the name in the book** | 6 s | a table with a lamp → the same (it stays) (indoors) |
+| The Visitors' Log | **Sign the log** | 5 s | a table with a lamp → the same (it stays) (indoors) |
 | Not Past the Chapel | **Board up the doors** | 15 s | planks and a bucket of nails → the boarded doorway |
 | His Effects | **Gather their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | His Effects | **Take their things** | 7 s | the effects (a kit bag, a jacket) → nothing (taken) |
@@ -319,7 +324,7 @@ tables below).
 | The Name on the Tag | **Raise the cairn** | 12 s | a marked plot (a stake, a wrapped bundle, planks) → a grave: a mound and a post |
 | The Name on the Tag | **Take the ID** | 6 s | the effects (a kit bag, a jacket) → nothing (taken) |
 | The openings: Water, Water for the Fever | **Fill what you can carry** | 8 s | empty cans and buckets → nothing |
-| The openings: Down the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter |
+| The openings: Down the Road | **Search it, quietly** | 6–8 s | a crate of odds and ends → rummaged clutter (inside the building its words name) |
 | Strangers: The Funeral for the Car, Two in the Back (push-start) | **Push the car** | 10 s | the car itself |
 | Strangers: Two in the Back ([Mechanic]) | **Fix the car** | 15 s | a toolbox and parts → nothing |
 | Strangers: The Digger | **Dig the grave** | 15 s | a marked plot → a grave |
@@ -704,7 +709,7 @@ All five are worked out and led.
 | **The Decon Line** | 2 | Always | **Five arrivals, drawn from fifteen, with five faults, drawn from twenty-five, shared among them** (one may carry two, one none). For each, two of three checks (the lamp over the suit, the seals and the visor, the case and the log), then **pass them through**, **run them through again**, **send them to the room**, or **report it to the director**. A fault shows only at its own check, and the worst one decides the right call: a splash on a boot is a re-run, a cracked visor or a bite pressed into the forearm is the room, a tube missing from a case or a kitten asleep in one is a report. **The tank and the drum run short by count**: the tank holds four rinses and the drum six sprays; passing someone uses one of each, running them through again two of each, the room one rinse. When either is empty the line stops after that arrival: carry water up (or mix a new drum from the store, 1 more Favor), or go on without (the town more infected) | Scored. A fault passed: the town 2 more infected and 1 Infamy. A clean one held or reported: morale 1 down. Carrying the water: 1 more Favor |
 | **The Incinerator** | 2 | Always | Four sealed bags, from twelve. Two of three checks (the label against the log, the weight, the feel through the bag), then **the fire**, **set aside and reported**, or **cut open**. The label, the weight and the feel don't always agree: clinical waste that's a man's weight with a wristband under the plastic; expired cultures with one tube warm; a bag that was at the other end of the trolley a minute ago; sharps that are a pound of wedding rings; a canvas bag of rifle rounds; sealed, in-date morphine written off as expired; the director's files. Then the log is one short, and a porter has one more, off the book | Scored. What's set aside is reported. The porter's bag: burn it (shady), refuse it (reported), or open it: every letter the wards have written since the road closed, to burn or to carry to the Haven's board (shady: a rumour, and the porter remembers) |
 | **The Observation Ward** | 3 | Until the cure is out | Three beds, from eight conditions (a plain fever; the infection, early; the infection, turning; the trial dose doing it; nothing wrong and wants out; nothing wrong and wants the dose; fear; hunger). At each, **six signs taken by hand and time for four** (the temperature, the pulse, the torch in the eyes, the skin and any bite, how they speak, the chart at the bed's foot). Then what it is (the true one among three), then what's to be done (fluids and cooling, isolation and the doctor, restraints, the doctor, the truth, a meal). Then the researcher at the door, who'd like the fevers written as responses | Scored on each diagnosis and each treatment. **A turning missed** (written as anything else, or not restrained) sits up behind you: morale 1 down, the town 2 more infected, and you're told. Charts written true: recorded, regard up. Written her way: shady, 1 more Favor. **A round done well counts**: every diagnosis and treatment right and the charts written true adds 1 research to the cure (as a mission's research, inside the backlog's room), once a place a season day |
-| **The Cold Chain** | 3 | Always | Take the box from the cold room. One of six cargoes, each with one thing it can't bear: trial vials (no waiting), blood samples (not opened), a culture in a flask (no rough ground), four doses (they arrive counted), sealed results (not opened), the heavy cold box (no rough ground, never set down in the wet). Two things happen on the road, from eight (a corporal who wants it opened, a toll bar, a woman on her knees for one dose, the cold pack split, the bridge out, something keeping pace in the hedge, rain like a tap, a man in a good coat who'd pay to look), and each offers three ways through: one opens it, one costs time, one is rough. Then the far door, one of three (the power out, nobody there, the count one short), and the manifest | Scored: a way the cargo can bear is right. With the doses, giving the woman one of the four is wrong, and she remembers it; telling her which door is right. Nothing in the box is ever the player's. **The rules are felt on the way**: a cargo that can't wait warms after six minutes on the road, and one that can't bear rough ground rings at a sprint, a jump or a fall (a ride counts too); each is a wrong call, two jolts at most, and is said once |
+| **The Cold Chain** | 3 | Always | Take the cold box (a case stands at the prompt: Props > Duty tray, else Crate, else the base game's cardboard box). One of six cargoes, each with one thing it can't bear: trial vials (no waiting), blood samples (not opened), a culture in a flask (no rough ground), four doses (they arrive counted), sealed results (not opened), the heavy cold box (no rough ground, never set down in the wet). Two things happen on the road, from eight (a corporal who wants it opened, a toll bar, a woman on her knees for one dose, the cold pack split, the bridge out, something keeping pace in the hedge, rain like a tap, a man in a good coat who'd pay to look), and each offers three ways through: one opens it, one costs time, one is rough. Then the far door, one of three (the power out, nobody there, the count one short), and the manifest | Scored: a way the cargo can bear is right. With the doses, giving the woman one of the four is wrong, and she remembers it; telling her which door is right. Nothing in the box is ever the player's. **The rules are felt on the way**: a cargo that can't wait warms after six minutes on the road, and one that can't bear rough ground rings at a sprint, a jump or a fall (a ride counts too); each is a wrong call, two jolts at most, and is said once |
 
 **The decon line's numbers.** Fifteen arrivals and twenty-five faults are written. Nine faults
 show under the lamp, eight at the seals and the visor, eight in the case and the log; ten are a
@@ -726,6 +731,7 @@ and remembered by whoever it concerns.
 | A find reported | Each find put in the report is the giver's regard up, and 1 more Favor for the job (twice at most). What you reported can come back as what the giver says when you hand in (*"They brought that truck's load in this morning. That was yours."*) |
 | A shady choice | Pocketing, or keeping something from the people you work for, costs only **if it's seen**: their people within 20 m of you, or the place itself within 25 m. Seen: it's undone, 1 or 2 Infamy with the faction, the giver's regard down, and they say so when you report. Unseen: it's yours, and nobody knows |
 | The pay | The choices' Favor is added to the way's before the ledger's caps, 3 at most. A scored scene (each beat has a right call) pays by the share right, with Fame only when every call was |
+| Where a beat stands | Beside the giver's place, at its gate, out on the road, or near the last beat, in the open. A beat whose words name a door stands on the doorstep of a real house's outside door (the door finder the locks use): the Cold Chain's far door 180–350 m off, a debt's door 12–60 m from the last; with no such door anywhere near, in the open as before. A thing to take (the Cold Chain's box) always stands at its prompt: Props > Duty tray, else Crate, else the base game's cardboard box |
 | Finding the next beat | The errand's place moves to each beat as it opens, so the journal and the tracker point at it, and a beat more than 15 m off is said with its direction (*About 120 m north-east.*). A patrol's finds are said by the patrol, and leave the errand's place at the gate |
 | No work sites | The first thing you could do at a beat is what's done, by standing there |
 
@@ -1091,7 +1097,7 @@ the patterns are in [DESIGN.md](DESIGN.md#openings-how-every-life-starts).
 | Step | Key | Way | The step |
 |---|---|---|---|
 | ✅ Outside the Door, Find *the next person*, Back to *the contact* (the talk objectives) | `opening.talk`, `opening.talk.find`, `opening.talk.next` | talk | "Talk to *the contact*." (Find: "Find *Ruth* at *Ruth's house in Morton*. Talk to them."; Back to only when no next person could stand): never done by being there (`StepCounts` false), only by opening talk with them, when it ends quietly (no past job); 45 minutes before it lapses, which ends the opening |
-| ✅ Down the Road | `opening.search`, `opening.search.short` | sneak | a building 150–450 m from the contact (quiet): hold **Search it, quietly** at the crate there (8 s; 6 s), done there (off: 20 s, 10 s there) |
+| ✅ Down the Road | `opening.search`, `opening.search.short` | sneak | a building 150–450 m from the contact (quiet), named for what it is (the chemist's, the old aid post, the vet's farm, the doctor's house...: [PLACES.md](PLACES.md#a-place-is-what-its-words-say)): hold **Search it, quietly** at the crate inside it (8 s; 6 s), done there (off: 20 s, 10 s there) |
 | ✅ Water | `opening.water` | do | the nearest well or water tower: hold **Fill what you can carry** at the cans by it (8 s; off: 15 s there), done there |
 | ✅ The Cut | `opening.hand` | give | one medical item handed over at the giver, when you pick the hand-over reply (*[Errand] Hold still. Let me dress that hand.*) |
 | ✅ The Fever, Water for the Fever | `opening.fever`, `opening.boiled` | give, do | a medical item at the giver when you pick the hand-over reply; **Fill what you can carry** at the well (8 s) |

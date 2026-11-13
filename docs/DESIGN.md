@@ -1459,6 +1459,24 @@ a wound, work at a bench) is done at a visible thing, not by standing somewhere 
 - **Where.** At the step's own place, picked through its place need; a spot beside it (at the
   giver's place, at water, by an engine, a well, a gate or a door) goes through the need `work.site`
   (dry, not steep, not behind a lock), and every site is checked live ([PLACES.md](PLACES.md#the-needs)).
+  Work its words put indoors (a bench, a sick man, a search of a house or a shop) is on the ground
+  floor of the nearest building of that kind near the place, at the loose loot's anchors on its
+  lowest floor (`RZ_WorkSites.Indoors`), kept at the floor's height; with no such building, or no
+  room in it, it stays in the open beside the place.
+- **It fits, or it's left out.** Before a look is put out, its real box (measured on the server the
+  first time: spawned out of sight at heading 0, its parts' boxes joined, deleted; logged as
+  `Work sites: measured <look>: W x D m`) must fit where it goes, by the same checks a camp's pieces get
+  (`RZ_CampLife.BoxFits`, [SITES.md](SITES.md)): outdoors nothing in it at knee or chest height,
+  nothing overhead and its corners within 0.4 m of level, on the ground; indoors a floor under every
+  corner and nothing in the way. Its own spot and heading first, then the other three headings, then
+  spots around it (1 and 2 m off outdoors, 0.75 m indoors), and the prompt moves with it. Nowhere:
+  the look is left out and only the prompt stands there (drop, don't squeeze). The after look gets
+  the same check where the work was. Anything in a look a player could use is stripped, as camp
+  dressing is.
+- **Someone it's for.** Where the words name a person (the newcomer, the bitten man), that person
+  stands by the site facing it while a player is near (Props > Duty person, else Puzzles >
+  Civilian; a body in the errands' budget), wherever a person's 0.6 m box fits on one of its four
+  sides; none fits, or no room in the budget: nobody, and the work is done the same.
 - **Near players only.** Its props spawn within the marks' spawn radius (150 m) and go past the
   despawn radius, like marks; **Sites at once** (40) drops the oldest whose step is over first,
   never one under way. The hold's time × **Time scale**.
@@ -3323,7 +3341,7 @@ there, one line on arrival ("Someone with a list looks up."), and no Fame. All t
 
 | Step | What you do | It teaches | The story, as it starts |
 |---|---|---|---|
-| 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot outside its side facing them; done there. One of your background's kinds when one is there (below), else a house; no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
+| 1. Down the Road | Search a building 150–450 m from them: a work site's **Search it, quietly** (8 s; 6 s for a learning player, level 1; off, 20 s and 10 s there), within 15 m ([arriving](#mission-building-blocks)) of the spot inside it, on its ground floor; done there. One of your background's kinds when one is there (below), else a house, named for what it really is ([PLACES.md](PLACES.md#a-place-is-what-its-words-say)); no house that far off, and there's no step 1 | moving quietly, searching, the infected | The seal: "Day 11. They shut the roads on the second, and nobody's opened one since." |
 | 2. Your background's own | Its own system (below); else water (**Fill what you can carry** at the nearest well or water tower within 400 m, a work site's 8 s hold), else The Cut (dress their hand with anything medical you carry: the hand-over reply on their talk screen) | your background's system | The broadcast still saying aid is on its way, and "Nobody's coming. Say it out loud once." |
 | 3. To the Haven, To Bastion, To the Red Hand, To Halcyon | Walk to the nearest place of the faction you belong with; done within 40 m of it (90 minutes to get there) | walking out, the map, the factions | The Perimeter ("The loudspeaker said his name. Then it didn't.") and the cure; their send-off says who holds the place, in a sentence |
 
@@ -3343,7 +3361,7 @@ meets its need ([PLACES.md](PLACES.md#the-needs)) or the step can't run here.
 
 | Background | Step 1's building | Step 2 | What it needs to run | Done when |
 |---|---|---|---|---|
-| Nurse | the chemist's (clinic) | **The Fever**: treat their boy | something medical on you | you pick the hand-over reply on their talk screen (*[Errand] Show me the boy. I've got something.*, first in the list, locked "Needs a dressing, or anything medical" without it); one medical item is taken then, never just for opening the talk |
+| Nurse | the chemist's, else the old aid post, the vet's farm or the doctor's house | **The Fever**: treat their boy | something medical on you | you pick the hand-over reply on their talk screen (*[Errand] Show me the boy. I've got something.*, first in the list, locked "Needs a dressing, or anything medical" without it); one medical item is taken then, never just for opening the talk |
 | | | else **Water for the Fever** | a well within 400 m | **Fill what you can carry** at the well (8 s) (it'll be boiled) |
 | Doctor | the clinic, with an antidote by its door (**Cure > Antidote prefab**) | **The Clock**: the antidote for their bitten friend, 10 minutes before it lapses | an antidote on you | the hand-over reply (*[Errand] Here's the antidote. Roll his sleeve up.*, locked "Needs the antidote"); the antidote is taken then |
 | | | else **The Clock** with a dressing | something medical | the hand-over reply (*[Errand] Let me clean it and bind it. That buys time.*); one medical item is taken then |
