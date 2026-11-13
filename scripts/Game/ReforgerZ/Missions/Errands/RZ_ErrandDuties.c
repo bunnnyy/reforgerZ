@@ -79,6 +79,13 @@ class RZ_Duties
 			list.Insert(new RZ_ErrandDuty(camp, RZ_EFaction.BANDITS));
 		}
 
+		// Halcyon's own: the sample round, the decon line, the incinerator, the ward, the cold chain
+		array<string> halcyon = {"samples", "decon", "incinerator", "ward", "coldchain"};
+		foreach (string lab : halcyon)
+		{
+			list.Insert(new RZ_ErrandDuty(lab, RZ_EFaction.INSTITUTE));
+		}
+
 		// A watch and the stores, everywhere
 		for (int g = 0; g < 4; g++)
 		{
@@ -159,6 +166,8 @@ class RZ_ErrandDuty : RZ_ErrandDef
 					DefineBastion();
 				else if (m_iFaction == RZ_EFaction.BANDITS)
 					DefineRedHand();
+				else if (m_iFaction == RZ_EFaction.INSTITUTE)
+					DefineHalcyon();
 				else
 					DefineHaven();
 
@@ -839,6 +848,79 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		}
 	}
 
+	// ================================================================ Halcyon's own
+	//------------------------------------------------------------------------------------------------
+	protected void DefineHalcyon()
+	{
+		switch (m_sDuty)
+		{
+			case "samples":
+			{
+				m_iRung = RZ_Duties.RUNG_FACE;
+				m_sRoles = "lab assistant,technician";
+				m_sThread = "walked the sample round";
+				m_sTitle = "The Sample Round";
+				SceneWay("Walk the sample round", true, "Take a swab at each of the four marked spots out from {here}, and mark on the station's map where the infection is coming from. Then tell {giver}.", 6, 1);
+				Offer("The sample round is due and my field team is in the wash. {why} Four marked spots. A swab at each, and the strip tells you how much is there. Don't just bring me four tubes. Tell me where it's coming from. That's the result.");
+				Over("The round has been walked. Thank you for offering.");
+				Said("The suit's on the hook. The strips are in the left pocket.", "You're back. One mark on the map, please, and your reasons.", "Thank you. Now, where?");
+				break;
+			}
+
+			case "decon":
+			{
+				m_iRung = RZ_Duties.RUNG_FACE;
+				m_sRoles = "lab assistant,guard,technician";
+				m_sThread = "kept the decon line";
+				m_sTitle = "The Decon Line";
+				SceneWay("Keep the decon line", true, "Keep the decon line at the door of {here}: check each of the five who come through, and pass, re-run, hold or report each one. Then close the line and tell {giver}.", 6, 1);
+				Offer("I need the decon line kept for a shift, by someone who'll actually look. {why} Five are due through. The lamp over the suit, the seals and the visor, the case and the log. You've time and disinfectant for two of those on each. Pass what's clean. Don't pass what isn't. And don't hold a clean one because you're frightened.");
+				Over("The line has been covered. Thank you.");
+				Said("The lamp's by the door. The drum is a third full, so think before you re-run.", "The line's closed. I'll read your log now, with you standing there.", "Five through. Tell me about each.");
+				break;
+			}
+
+			case "incinerator":
+			{
+				m_iRung = RZ_Duties.RUNG_FACE;
+				m_sRoles = "guard,technician";
+				m_sThread = "fed the incinerator";
+				m_sTitle = "The Incinerator";
+				SceneWay("Take the bags to the pit", true, "Take each of the four sealed bags to the burn pit behind {here}, and burn, report or open each one. Then settle the log and tell {giver}.", 6, 1);
+				Offer("There are bags for the pit, and the porter who does it has been reassigned. {why} Each has a label and a line in the log. Read the label, lift the bag, feel it. If those three agree, burn it. If they don't, that's the interesting part, and I'd like to hear about it before it's ash.");
+				Over("The pit's been fed. No need now.");
+				Said("The log's on the nail by the pit. Don't breathe the smoke.", "Done. Did the log and the bags agree?", "You smell of it. Go on, what was in them?");
+				break;
+			}
+
+			case "ward":
+			{
+				m_iRung = RZ_Duties.RUNG_ARMED;
+				m_sRoles = "lab assistant,technician";
+				m_sThread = "took the observation ward's round";
+				m_sTitle = "The Observation Ward";
+				SceneWay("Take the ward round", false, "Take the round of the three beds on the observation ward at {here}: read the signs at each bed, say what it is and what's to be done. Then tell {giver}.", 8, 1);
+				Offer("The observation ward needs its round, and I trust your eyes more than a tired nurse's. {why} Three beds. Temperature, pulse, the eyes, the skin, how they speak, the chart. You won't have time for all six on each. Then you write what it is, and you say what's done about it. If one of them is turning and you write fever, that is how a ward is lost.");
+				Over("The round has been done. The night nurse took it.");
+				Said("The torch is on the trolley. Wash between beds.", "Three beds. What did you write, and what did you do?", "Thank you. Sit down first. Then tell me.");
+				break;
+			}
+
+			case "coldchain":
+			{
+				m_iRung = RZ_Duties.RUNG_ARMED;
+				m_sRoles = "technician,guard";
+				m_sThread = "carried the cold box";
+				m_sTitle = "The Cold Chain";
+				SceneWay("Carry the cold box", false, "Take the cold box from {here} and carry the box to the far door, keeping to its rule whatever the road does. Then sign the manifest and tell {giver}.", 8, 1);
+				Offer("There's a box to go to the far door, and it can't go by truck. {why} I'll tell you what's in it and the one thing it can't bear. After that it's your road. Things will happen on it. I shan't be there to ask. Decide by the rule.");
+				Over("The box has gone with a courier. Thank you.");
+				Said("It's in the cold room, on the second shelf. Read the tag before you lift it.", "It's there? Then tell me what the road did, and what you did.", "Signed for. Good. Now the truth of how it went.");
+				break;
+			}
+		}
+	}
+
 	// ================================================================ A watch, the stores, and the Trusted rung
 	//------------------------------------------------------------------------------------------------
 	//! A way played as a scene (RZ_DutyScenes): its beats are the step.
@@ -1090,7 +1172,9 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case "garden": return !dark && e.m_iHouse >= 0;
 			case "swap": return !dark;
 			case "gate": return !dark;
-			case "toll": return !dark || m_iRung < 0;
+			case "samples": return !dark;
+			case "ward": return facts && !facts.IsCured();
+			case "toll": return !dark;
 			case "wreck": return !dark;
 			case "spotter": return !dark;
 			case "names":
@@ -1361,6 +1445,91 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				{
 					so.Insert("The snares want checking before the crows do it for us.");
 					so.Insert("Nobody here has tasted meat since last week.");
+				}
+
+				break;
+			}
+
+			case "samples":
+			{
+				if (sick && town)
+					so.Insert(string.Format("The count in %1 doubled in a week, and it's coming from somewhere.", town.m_sName));
+
+				if (rain)
+					so.Insert("It's rained, so whatever's in the ground is in the water now.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("The last round's strips didn't agree with each other, and I want to know why.");
+					so.Insert("Something's feeding it out there, and it isn't where we've been looking.");
+				}
+
+				break;
+			}
+
+			case "decon":
+			{
+				if (sick && town)
+					so.Insert(string.Format("They've been in %1 all day, and it's the worst it has been.", town.m_sName));
+
+				if (late)
+					so.Insert("We've no spare suits now, so people are mending their own, badly.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("The last shift passed everyone in under a minute each.");
+					so.Insert("Something came through that door last week, and I still don't know on whom.");
+				}
+
+				break;
+			}
+
+			case "incinerator":
+			{
+				if (late)
+					so.Insert("People have started using the pit to lose things, now nobody checks.");
+
+				if (rain)
+					so.Insert("Half of it's wet through, and wet doesn't burn clean.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("The log had nine bags yesterday, and the ash was eleven bags deep.");
+					so.Insert("One of last week's bags came back out of the ash, part of it. I'd rather not say which part.");
+				}
+
+				break;
+			}
+
+			case "ward":
+			{
+				if (facts && facts.CurePercent() >= 50)
+					so.Insert("The trial is past halfway, and every bed on that ward is a number in it.");
+
+				if (night)
+					so.Insert("They turn at night, the ones who turn. It's nearly always night.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("One of them is lying to us, and one of them is worse than they look.");
+					so.Insert("The last round wrote fever on all three, and I don't believe it.");
+				}
+
+				break;
+			}
+
+			case "coldchain":
+			{
+				if (rain)
+					so.Insert("The road's a river, so no truck will take it.");
+
+				if (late)
+					so.Insert("There's no fuel for the truck, and the box won't wait for fuel.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("The truck was stopped twice last week, and opened once.");
+					so.Insert("A person on foot is the one thing nobody thinks to search.");
 				}
 
 				break;
@@ -1841,6 +2010,11 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				case "doorround": RZ_DutyHaven.DoorRound(e, played); break;
 				case "rollcall": RZ_DutyHaven.RollCall(e, played); break;
 				case "swap": RZ_DutyHaven.SwapTable(e, played); break;
+				case "samples": RZ_DutyHalcyon.Samples(gm, e, played); break;
+				case "decon": RZ_DutyHalcyon.Decon(gm, e, played); break;
+				case "incinerator": RZ_DutyHalcyon.Incinerator(e, played); break;
+				case "ward": RZ_DutyHalcyon.Ward(e, played); break;
+				case "coldchain": RZ_DutyHalcyon.ColdChain(e, played); break;
 				case "wreck": RZ_DutyRedHand.Wreck(e, played); break;
 				case "still": RZ_DutyRedHand.Still(e, played); break;
 				case "count": RZ_DutyRedHand.Count(e, played); break;

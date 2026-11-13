@@ -123,7 +123,10 @@ and one way to end it: **research the cure.**
   looks than places, carry it to the pyre, the table or the grave, and a bitten one let through
   costs you), a watch, a patrol with their people, for the Known a hunt with the hunter, the
   stores and Halcyon's sample bench, and for the Trusted the lock-up, the names of the dead, the
-  trial list and a cull. Something happens on the way (a mark on a door, someone
+  trial list and a cull. Each faction has five of its own besides (the Haven's garden and swap
+  table, Bastion's gate duty and kit inspection, the Red Hand's toll and still, Halcyon's decon line
+  and observation ward...), most of them worked out from what you find, with the call yours.
+  Something happens on the way (a mark on a door, someone
   hiding, a truck nobody has found), and what you do about it is remembered. Each run is drawn from
   the world as it is
   ([ERRANDS.md](docs/ERRANDS.md#duties)).
@@ -205,7 +208,7 @@ and one way to end it: **research the cure.**
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
 server's runtime test and in Workbench play on Everon and Arland; every approved design is built
-(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: the twenty duties the author approved, five a faction, built in phases; work from the first day and the four rungs of the trust ladder are built, with the sorting duties played in the world, patrols and hunts with a place's own people, things that happen on the way, and the Trusted rung). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: what the built duties still want, such as the swap table's conversations as `.rzd` trees and real things standing on the tables; the duties themselves are built: work from the first day, the four rungs of the trust ladder, the sorting duties played in the world, patrols and hunts with a place's own people, things that happen on the way, the Trusted rung, and five duties of each faction's own). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
