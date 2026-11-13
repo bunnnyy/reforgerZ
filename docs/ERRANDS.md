@@ -454,9 +454,9 @@ work, and pay more. Nothing new is counted: the rungs are the tiers that exist, 
 |---|---|---|---|
 | 0 | Watched or worse | No duties: the amends work only (Make It Right, The Latrine, Clean Slate) | — |
 | 1 | Anyone else, from the first minute | Chores, watched: the kitchen, wood and water, washing down | 3–4 Favor |
-| 2 | **They know your face**: three errands or duties done for that faction this season (any of them: a routine counts), or Known | The line at the gate, the dead, a patrol's short leg with their people | 5–6 Favor, 1 Fame |
-| 3 | Known | Armed work with their people: a patrol's long round, a hunt, the sample bench | 7–8 Favor, 1 Fame |
-| 4 | Trusted | The sensitive ones ([designed, not built](../designs/DUTIES.md)) | — |
+| 2 | **They know your face**: three errands or duties done for that faction this season (any of them: a routine counts), or Known | The line at the gate, the dead, a watch, a patrol's short leg with their people | 5–6 Favor, 1 Fame |
+| 3 | Known | Armed work with their people and the stores: a patrol's long round, a hunt, the sample bench, stock-taking | 7–8 Favor, 1 Fame |
+| 4 | Trusted | [The sensitive ones](#the-trusted-rung): the lock-up, the names, the trial list, a cull. Each once a place a season day | 10 Favor, 2 Fame |
 
 The third piece of work for a faction says so (*"That's three pieces of work for the Haven. They
 know your face now..."*). Pay goes through the small-pay ledger above, so a duty can make you Known
@@ -491,13 +491,19 @@ hands at a [work site](#work-sites) at the place (or behind it), then back to th
 | A hunt | 3 | farmer, cook, lookout, toll man | For the Pot | — | The Meat Run | — | **Walk the snare line with the hunter**: 200–400 m out, the hunter following you, *Check the snares* (15 s) with them beside you. Or **hand over a leg of raw meat** | 7 Favor, 1 Fame, +1 food at a house; the meat 8 Favor, 1 Fame, +2 food | ✅ |
 | The bench | 3 | lab assistant, technician | — | — | — | Bench Work | A sorting duty: the sample trays set out. Carry each to **the bin** (a broken seal, a turned colour), **the bath** (a label that doesn't match) or **the rack** | Up to 8 Favor; 1 Fame if every one | ✅ |
 
-The duties that wait (a watch, stock-taking, and rung 4's) are in
-[designs/DUTIES.md](../designs/DUTIES.md).
+| A watch | 2 | lookout, sentry, guard, toll man | The Roof at Dusk | Stag | The Quiet Hour | The Gate Log | At dusk or night. [A scene](#things-that-happen): take the post, then three things come by, 25 to 45 s apart. Each is a threat, someone, or nothing, and its line holds the tell (*it stops at the marker and stands there* against *sits down on its pack*). **Stand the gate to**, **send someone out**, or **let it pass** | Up to 6 Favor by the calls got right; 1 Fame if all three. A false alarm is spoken of; a threat let pass is the town 2 more infected; someone sent out to a threat is morale 1 down; someone met on the road becomes a local | ✅ |
+| Stock-taking | 3 | storekeeper, clerk, mechanic, technician, toll man | The Larder Book | The Armoury Count | Counted Twice | The Cold Store | [A sorting duty](#the-sorting-duties), the fourth skin: crates against the book. *Count what's in it*, *Check the seal*, *Read the chit against the book*; carry each to **the counted stack**, **written off** (only the chit wrong) or **the query table** (short, or the seal cut: someone answers for it) | Up to 8 Favor; 1 Fame if every one. A theft passed as sound: 2 Infamy, morale 1 down | ✅ |
+| The lock-up | 4 | sentry, guard, lookout, toll man, medic | The One at the Gate | The Stockade Watch | The Debtor in the Shed | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| The names | 4 | clerk, cook, nurse; Bastion: radio operator, medic, sentry | The Book of Names | The Casualty Return | — | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| The list | 4 | lab assistant, technician | — | — | — | The Trial List | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+| A cull | 4 | lookout, sentry, guard, farmer | The Strays | Clearing the Wire | — | — | [Below](#the-trusted-rung) | 10 Favor, 2 Fame | ✅ |
+
+The duties that wait are in [designs/DUTIES.md](../designs/DUTIES.md).
 
 ### The sorting duties
 
-The line, the dead and the bench are one game in three skins, **played at the place with your
-hands**, never on a screen (`RZ_DutyGames`, `RZ_DutyGame`; the rule is
+The line, the dead, the bench and stock-taking are one game in four skins, **played at the place
+with your hands**, never on a screen (`RZ_DutyGames`, `RZ_DutyGame`; the rule is
 [UI.md](UI.md#default-first-then-menus), "Games are played in the world"). Every prompt in it is a
 [work site](#work-sites): held, animated, your feet locked while it runs, and the world showing
 the result. The server holds the truth and judges.
@@ -521,7 +527,7 @@ pays nothing, and a bad one let through is the dangerous miss.
 | The clipboard | *Read the clipboard*, by the row: the goal in three lines, the looks left, and each subject with its tell, what you've seen and where you put it, on a sheet in [the reader](UI.md#subtitles-and-the-reader). The one paper in the game, and you never need it |
 | The verdicts | In order of care: pass (the grave, the gate, the rack), check (the holding table, the wash, the bath), stop (the pyre, the holding room, the bin). The one that matches is **right**; a more careful one is **too careful**; a less careful one **missed**, or **let through** if the subject was bad |
 | The score | Judged when the last one is put down. Right 1, too careful ½, the others 0, over the number of subjects. Favor is the way's × the score (1 at least); Fame only for a perfect row, which is also a record in the world's memory (`duty.<kind>`, the giver's name) and the giver says so |
-| The dangerous miss | No pay. 2 Infamy with the giver's faction, and the place pays a little: the town is 2 more infected (the dead, the line), or the faction's morale is 1 down (the bench). It comes out when you report, or when the errand ends any other way |
+| The dangerous miss | No pay. 2 Infamy with the giver's faction, and the place pays a little: the town is 2 more infected (the dead, the line), or the faction's morale is 1 down (the bench, the stores). It comes out when you report, or when the errand ends any other way |
 | Leaving it | Nothing is lost: what you looked at and put down stays until the errand lapses. Walk back and go on |
 | What stands there | **Props > Duty body**, **Duty person** and **Duty tray** (optional): what waits in the row. Empty: Props > Effects, Puzzles > Civilian and Props > Crate. Each is a work site's look, up only while a player is near |
 | No work sites | With **Shared > Work sites** off there is nothing to handle: standing at the place sorts every one the careful way, for half pay and nothing dangerous |
@@ -547,6 +553,22 @@ Hand group, else the survivor group; with none of those, a figure that moves as 
   wait for them. Then home.
 - **If they're killed**, you're told to go back and say so: no pay, the faction's morale 1 down,
   and the giver's line. Nothing else is taken from you.
+
+### The Trusted rung
+
+For the Trusted. Each is done **once at a place on a season day**, pays 10 Favor and 2 Fame through
+the ledger, and decides something about people who have names: drawn from the place and the day,
+so the same watch has the same prisoner all night, and what you decide is written in the world's
+memory, said as a rumour, or remembered by a local. All are [scenes](#things-that-happen) played in
+person, alone: nobody of the place is watching.
+
+| Duty | True when | How it plays | What it decides |
+|---|---|---|---|
+| **The lock-up** (the Haven, Bastion, the Red Hand) | Dusk or night | Take the watch at the door by the gate (5 s). After half a minute the one inside speaks through it: the deserter who wouldn't fire on a road, the debtor with a girl at the Haven, the one who's frightened and not bitten. Then three things you can do at the door | **Keep the watch**: paid. **Write down what was said**: reported, recorded, 1 more Fame, and it changes what happens to them. **Open the door**: no pay, 3 Infamy, morale 1 down, and the giver knows whose watch it was; the one you let out becomes a local who remembers |
+| **The Book of Names** (the Haven) | The house has dead (`m_iDied`) | A door for each of the house's dead, three at most, by the gate: who's inside doesn't know yet. Then the book by the stove (*Write the names in the book*, 6 s) | At each door: **tell them all of it** (they ask for you at the burying), **tell them gently** (they hear the rest from someone else), or **leave it for the clerk** (2 Favor less, the giver's regard down). The book: recorded, morale +1, a rumour that the names were read |
+| **The Casualty Return** (Bastion) | From the Collapse on | Three bunks. What was left at each says what became of the man: kit squared away and a letter half written; kit here but rifle and water gone; the locker empty to the paint, or his tags on the pillow. Return each **killed**, **missing** or **gone of his own will**, then sign | Scored: pays by the calls got right. A deserter returned killed is seen at a toll after the letter was written; a dead man posted absent is known to his section (morale 1 down); a deserter posted right is a rumour at every gate |
+| **The Trial List** (Halcyon) | The cure 40% made, and not out | Read the chart at each of three beds (the one most likely to live, the one the trial learns most from, the night technician's sister), then write one name on the list by the door | No right answer. The name is recorded and goes round as a rumour naming all three. The one who'd live: morale +1, and the director calls it sentiment. The useful one: 1 more Favor, and the ward goes quiet. The sister: the technician becomes a local who remembers. It never touches a dose or the cure's count |
+| **A cull** (the Haven, Bastion) | The town 30+ infected, and room for an escort | Out armed with their people to one point 70 to 120 m off. There the strays come, up to five, as the spawner has room, 40 to 60 m out. They stand with you until none is within 90 m (three minutes at most), then home | The town is 2 less infected. If their people are killed: no pay, morale 1 down |
 
 ### Things that happen
 

@@ -2583,13 +2583,13 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines, 27 duties (on) and 70 cards, N players with a ledger.`; a sorting
+start, `Errands: on, 36 routines, 43 duties (on) and 70 cards, N players with a ledger.`; a sorting
 duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
 judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
 (no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
 scene, `Duty scene: errand N, <player> at <beat>: <what they chose> (seen false|true).`, its prompts
 `Work sites: errand.N.b0.0 ...`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
-from a duty`; a duty's people, `Duty
+from a duty`; a cull, `Duty squad: cull at <grid>, N strays (errand N).`; a duty's people, `Duty
 squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
 a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
@@ -2788,6 +2788,14 @@ session, tick off:
   undone"*, Infamy, and the giver says so. Take it further off: nothing is said. Report a find: the
   hand-in pays 1 more Favor. After a chore, sometimes one more prompt pair comes up where you
   worked (the pot a ladle short); the step is done only when you've chosen.
+- [ ] A watch and the Trusted rung ([ERRANDS.md](ERRANDS.md#the-trusted-rung)): at dusk, ask a lookout
+  or a sentry until they give the watch. Take the post: three lines come 25 to 45 s apart, each with
+  three prompts side by side; the giver says how you called them. As Trusted, at night: the
+  lock-up's prisoner speaks after half a minute, and opening the door costs 3 Infamy and makes a
+  local. At a house that lost someone: a door for each, then the book. At a Bastion post after the
+  Collapse: three bunks, and the return. At the lab with the cure 40% made: three charts and the
+  list. A cull: their people walk out, up to five infected come, and they hold until it's clear.
+  Ask for any of the Trusted ones again the same season day: it isn't offered.
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at

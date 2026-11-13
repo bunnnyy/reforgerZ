@@ -33,27 +33,17 @@ Keep everything inside the caps and guardrails. A longer or extended run pays a 
 duty counts toward the trust ladder at its rung. Where a routine, card or mission already is the
 duty, extend that instead of adding a twin.
 
-## Rung 4, the Trusted
+## Rung 4, what waits
 
-| Duty | The Haven (a house) | Bastion (a post) | The Red Hand (a camp) | Halcyon (a station, the lab) |
-|---|---|---|---|---|
-| The names | The Book of Names: who is told, and how | The casualty return | The debt book | The authors' list |
-| Who gets a dose | the house's one dose | the sergeant's list | who the crew pays for | The Trial List |
-| The lock-up | the one at the gate overnight | The Stockade Watch | the debtor in the shed | isolation |
-| A cull | the old man's dogs | a pack's strays at the wire | — | the animal house |
+Built: the lock-up (the Haven, Bastion, the Red Hand), the Book of Names, the casualty return, the
+trial list and a cull (the Haven, Bastion). Waiting:
 
-- **The names.** The list of the place's dead this week, and who is told. Each name is a choice
-  with a cost: tell the family, tell the leader, hold it back a day. It writes the world's memory.
-- **Who gets a dose.** A list of three, one place. It must never hand a dose to the player.
-- **The lock-up.** A night's watch on someone held: they talk. Let them out, keep them in, or pass
-  on what they said.
-- **A cull.** Out with the place's people to put down what's at the wire: a real fight, near
-  players only, with the squad the patrols use.
-
-Also waiting from the first design: **a watch** (rung 2: a post held at dusk or night, two or three
-things come by, each a choice of what it was) and **stock-taking** (rung 3: the sorting game's
-fourth skin, crates against the book: tally, write off, query; a shortage written off is someone's
-theft covered, a query is someone accused).
+| Duty | Waits for |
+|---|---|
+| The Red Hand's debt book, Halcyon's authors' list (the names) | Written the way the casualty return is: evidence at a place, a word that follows someone |
+| Who gets a dose: the house's one dose, the sergeant's list, who the crew pays for | Doses that exist outside the lab. It must never hand a dose to the player, and what it writes needs the finale's rules read first |
+| Halcyon's isolation (the lock-up), the animal house (a cull) | The observation ward and its people (below) |
+| Bastion's lock-up dressed with the blindfold and JTF Bronze Props' `Detainee` scene | The props, slotted on the PC |
 
 ## The twenty approved duties (round 3)
 
@@ -237,8 +227,8 @@ and quick.
 
 ## Order of work
 
-1. **Rung 4**, a watch and stock-taking.
-2. **The twenty**, one commit per faction, lowest rungs first.
+1. **The twenty**, one commit per faction, lowest rungs first.
+2. **Rung 4's versions that wait** (above).
 
 Rules 1 to 3 are built, with their engines (the sorting game, the scenes of beats, the squads):
 [docs/ERRANDS.md](../docs/ERRANDS.md#things-that-happen). The duties below are written on them.

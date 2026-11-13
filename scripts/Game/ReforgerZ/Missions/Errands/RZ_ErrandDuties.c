@@ -57,6 +57,22 @@ class RZ_Duties
 		list.Insert(new RZ_ErrandDuty("hunt", RZ_EFaction.SURVIVORS));
 		list.Insert(new RZ_ErrandDuty("hunt", RZ_EFaction.BANDITS));
 		list.Insert(new RZ_ErrandDuty("bench", RZ_EFaction.INSTITUTE));
+		// A watch and the stores, everywhere
+		for (int g = 0; g < 4; g++)
+		{
+			list.Insert(new RZ_ErrandDuty("watch", g));
+			list.Insert(new RZ_ErrandDuty("stock", g));
+		}
+
+		// The Trusted rung: each where it belongs
+		list.Insert(new RZ_ErrandDuty("lockup", RZ_EFaction.SURVIVORS));
+		list.Insert(new RZ_ErrandDuty("lockup", RZ_EFaction.MILITARY));
+		list.Insert(new RZ_ErrandDuty("lockup", RZ_EFaction.BANDITS));
+		list.Insert(new RZ_ErrandDuty("names", RZ_EFaction.SURVIVORS));
+		list.Insert(new RZ_ErrandDuty("names", RZ_EFaction.MILITARY));
+		list.Insert(new RZ_ErrandDuty("list", RZ_EFaction.INSTITUTE));
+		list.Insert(new RZ_ErrandDuty("cull", RZ_EFaction.SURVIVORS));
+		list.Insert(new RZ_ErrandDuty("cull", RZ_EFaction.MILITARY));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -109,6 +125,12 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case "patrol": DefinePatrol(); break;
 			case "hunt": DefineHunt(); break;
 			case "bench": DefineBench(); break;
+			case "watch": DefineWatch(); break;
+			case "stock": DefineStock(); break;
+			case "lockup": DefineLockUp(); break;
+			case "names": DefineNames(); break;
+			case "list": DefineList(); break;
+			case "cull": DefineCull(); break;
 		}
 	}
 
@@ -577,6 +599,275 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		Said("Gloves and a mask, please. The trays are numbered.", "Thank you. I'll enter your dispositions against the log.", "The bench is clear. Tell me what you filed.");
 	}
 
+	// ================================================================ A watch, the stores, and the Trusted rung
+	//------------------------------------------------------------------------------------------------
+	//! A way played as a scene (RZ_DutyScenes): its beats are the step.
+	protected RZ_ErrandWay SceneWay(string label, bool gate, string step, int favor, int fame)
+	{
+		RZ_ErrandWay w = Way("scene");
+		w.m_sLabel = label;
+		w.m_ePlace = RZ_EErrandPlace.HERE;
+		if (gate)
+			w.m_ePlace = RZ_EErrandPlace.GATE;
+
+		w.m_fSeconds = 0;
+		w.m_fRadius = 40;
+		w.m_sStep = step;
+		w.m_iFavor = favor;
+		w.m_iFame = fame;
+		return w;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineWatch()
+	{
+		m_iRung = RZ_Duties.RUNG_FACE;
+		m_sRoles = "lookout,sentry,guard,toll man";
+		m_sThread = "stood a watch";
+		SceneWay("Take the post", true, "Take the post at the gate of {here} and stand the watch: three things will come by. Stand the gate to for a threat, send someone out to a person, let the rest pass. Then tell {giver}.", 6, 1);
+		switch (m_iFaction)
+		{
+			case RZ_EFaction.SURVIVORS:
+			{
+				m_sTitle = "The Roof at Dusk";
+				Offer("Someone has to sit the roof while the light goes, and I'd rather it was someone who thinks before they shout. {why} You'll see things. Most of them are nothing. Wake the house for the ones that aren't.");
+				Over("Never mind. The roof's been sat.");
+				Said("The ladder's round the side. Take a blanket.", "Down you come. Tell me what you saw, and what you made of it.", "A quiet roof is a good roof. Tell me anyway.");
+				break;
+			}
+
+			case RZ_EFaction.MILITARY:
+			{
+				m_sTitle = "Stag";
+				Offer("Stag at the wire, one relief. {why} You report what moves and you decide what it is. Stand the gate to for nothing and the section will hate you. Miss one, and there won't be a section.");
+				Over("Stand down. Stag is covered.");
+				Said("You're relieved when you're relieved, and not a minute sooner.", "Stag complete. Let's have it.", "Relieved. What did you have?");
+				break;
+			}
+
+			case RZ_EFaction.BANDITS:
+			{
+				m_sTitle = "The Quiet Hour";
+				Offer("Sit the gate for the quiet hour. {why} It's quiet because someone's watching. Shout for the right things. The lads don't thank you for the wrong ones!");
+				Over("Forget it. Someone couldn't sleep and took it.");
+				Said("There's a crate to sit on. Don't get comfortable.", "Still here, and so are we. What came by?", "Right. Tell it.");
+				break;
+			}
+
+			case RZ_EFaction.INSTITUTE:
+			{
+				m_sTitle = "The Gate Log";
+				Offer("The gate log wants an observer for the evening interval. {why} You record what approaches and classify it. A false alarm costs the night shift an hour. A missed one costs rather more.");
+				Over("The interval has been covered. Thank you.");
+				Said("The log is on the hook. Times in the left column.", "Thank you. I'll read your entries now.", "The interval is closed. What did you record?");
+				break;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineStock()
+	{
+		m_iRung = RZ_Duties.RUNG_ARMED;
+		m_sRoles = "storekeeper,clerk,mechanic,technician,toll man";
+		m_sThread = "took stock of the stores";
+		TableWay(RZ_DutyGame.KIND_STOCK, false, "Take stock of the stores",
+			"Go to each crate set out at {here}, check the crate against the book, and carry each to the counted stack, the written-off pile or the query table. Then tell {giver}.", 8, 1);
+		switch (m_iFaction)
+		{
+			case RZ_EFaction.SURVIVORS:
+			{
+				m_sTitle = "The Larder Book";
+				Offer("The larder wants counting against the book, and it wants someone who isn't from here to do it. {why} If a crate's short and the seal's been cut, that goes on the table and someone answers. If it's only my handwriting, write it off.");
+				Over("Never mind. I counted it myself, twice, and cried once.");
+				Said("The book's on the shelf. My sevens look like ones.", "Counted. Sit down and tell me who I have to talk to.", "That's the larder. Now tell me the worst of it.");
+				break;
+			}
+
+			case RZ_EFaction.MILITARY:
+			{
+				m_sTitle = "The Armoury Count";
+				Offer("Armoury count. {why} Every crate is checked against the ledger: contents, seal, chit. A cut seal and a short count is a charge. A wrong chit is a clerk. Know the difference before you ruin a man.");
+				Over("Stand down. The count's been done.");
+				Said("Ledger's chained to the desk. It stays chained.", "Count complete. Report discrepancies.", "Signed off. Now, who do I see?");
+				break;
+			}
+
+			case RZ_EFaction.BANDITS:
+			{
+				m_sTitle = "Counted Twice";
+				Offer("The boss wants the stores counted by someone with no friends in them. That's you. {why} If it's short and the seal's cut, somebody's been at it, and I want the crate on my table. If it's just the tally wrong, lose it quietly.");
+				Over("Too late. The boss counted it himself. Somebody's limping.");
+				Said("Count it like it's yours, and remember whose it is.", "Done? Who's been at it, then?", "Right. Names. Or crates, and I'll find the names.");
+				break;
+			}
+
+			case RZ_EFaction.INSTITUTE:
+			{
+				m_sTitle = "The Cold Store";
+				Offer("The cold store is due its audit, and it should be someone outside the department. {why} Contents against the register, the seal, the requisition slip. A broken seal with a short count is a matter for the director. A clerical slip is not.");
+				Over("The audit has been completed. Another quarter, perhaps.");
+				Said("The register is by the door. Please initial each line.", "Thank you. I'll take the discrepancies first.", "The store is audited. Tell me what you found.");
+				break;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineLockUp()
+	{
+		m_iRung = RZ_Duties.RUNG_TRUST;
+		m_sRoles = "sentry,guard,lookout,toll man,medic";
+		m_sThread = "kept the door on the lock-up";
+		SceneWay("Take the night watch on the door", true, "Take the watch at the lock-up door by the gate of {here}, and keep the door until the one inside has had their say. Then tell {giver}.", 10, 2);
+		switch (m_iFaction)
+		{
+			case RZ_EFaction.SURVIVORS:
+			{
+				m_sTitle = "The One at the Gate";
+				Offer("There's someone in the gate room for the night, and we don't know yet what they are. {why} I need the door kept by someone I'd trust with my own. They'll talk. People do, in the dark. What you do about it is yours to carry.");
+				Over("Never mind. They were let in at supper. Nothing wrong with them but fear.");
+				Said("The bar's on the outside. That's all there is to it.", "Morning. Tell me how the night went.", "You look like you've been spoken to. Go on.");
+				break;
+			}
+
+			case RZ_EFaction.MILITARY:
+			{
+				m_sTitle = "The Stockade Watch";
+				Offer("Stockade watch, the night relief. One prisoner, awaiting the captain. {why} You don't speak to him and you don't open that door. He'll speak to you. Whether it goes in the watch book is your decision, and your name goes beside it.");
+				Over("Stand down. The prisoner's been moved.");
+				Said("Keys stay on the hook. You have the bar.", "Watch relieved. Anything for the book?", "Report, and leave nothing out.");
+				break;
+			}
+
+			case RZ_EFaction.BANDITS:
+			{
+				m_sTitle = "The Debtor in the Shed";
+				Offer("There's a man in the shed who owes, and the boss wants him there in the morning. {why} Sit on the door. He'll tell you a story. They've all got a story! You're trusted, so you get to decide if it's a good one.");
+				Over("Forget it. He paid. Don't ask what with.");
+				Said("Sit on the crate. Keep the bar down.", "Still in there? Good. What did he say?", "Morning. Well?");
+				break;
+			}
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineNames()
+	{
+		m_iRung = RZ_Duties.RUNG_TRUST;
+		m_sThread = "carried the names";
+		if (m_iFaction == RZ_EFaction.MILITARY)
+		{
+			m_sRoles = "radio operator,medic,sentry";
+			m_sTitle = "The Casualty Return";
+			SceneWay("Make up the casualty return", false, "Go to each of the three bunks at {here}, read what was left at the bunk, and return each man killed, missing or gone. Then sign the return and tell {giver}.", 10, 2);
+			Offer("The casualty return is three lines short and it goes up tonight. {why} Go to each man's bunk and look at what he left. Killed, missing, or walked. The return says which, and that word follows him and his family. Get it right.");
+			Over("Stand down. The adjutant made up the return.");
+			Said("Their bunks haven't been touched. Keep it that way.", "Return received. Three lines. I'll read them now.", "Signed. I hope you looked properly.");
+			return;
+		}
+
+		m_sRoles = "clerk,cook,nurse";
+		m_sTitle = "The Book of Names";
+		SceneWay("Carry the names to their doors", false, "Go to the door of each of the dead of {here} and tell whoever is inside, in your own way. Then write the names in the book by the stove and tell {giver}.", 10, 2);
+		Offer("We lost people this week, and their own don't all know yet. {why} I can't send a stranger to those doors, and I can't go to all of them myself. You're one of us now. Tell them however you think is right. Then write the names in the book.");
+		Over("Never mind. I went myself. I shouldn't have asked.");
+		Said("Take your time at each door. That's all the kindness there is.", "It's done, then. Sit. You don't have to tell me how each one took it.", "Thank you. Nobody should have to, and somebody always does.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineList()
+	{
+		m_iRung = RZ_Duties.RUNG_TRUST;
+		m_sRoles = "lab assistant,technician";
+		m_sThread = "wrote a name on the trial list";
+		m_sTitle = "The Trial List";
+		SceneWay("Choose who goes on the trial list", false, "Read the chart at each of the three beds at {here}, then write one name on the trial list by the door. Then tell {giver}.", 10, 2);
+		Offer("There is one place on the trial list this week and three people it could go to. {why} The staff are too close to choose, and the director would choose by the numbers alone. You're trusted, and you're not one of us. Read the charts. Write one name.");
+		Over("The place has been filled. The director decided.");
+		Said("The charts are at the foot of each bed. Take as long as you need.", "It's written. I'll tell the other two myself. That part isn't yours.", "Thank you. Whatever you chose, somebody had to.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void DefineCull()
+	{
+		m_iRung = RZ_Duties.RUNG_TRUST;
+		m_sRoles = "lookout,sentry,guard,farmer";
+		m_sThread = "cleared the strays with their people";
+		RZ_ErrandWay w = Way("cull");
+		w.m_sLabel = "Go out with them and clear it";
+		w.m_ePlace = RZ_EErrandPlace.GATE;
+		w.m_fSeconds = 0;
+		w.m_fRadius = 30;
+		w.m_bSquad = true;
+		w.m_sStep = "Go out armed with {squad} from the gate of {here} to where the strays gather, stand with {squad} until it's clear, and come back in with them. Then tell {giver}.";
+		w.m_iFavor = 10;
+		w.m_iFame = 2;
+		if (m_iFaction == RZ_EFaction.MILITARY)
+		{
+			m_sTitle = "Clearing the Wire";
+			Offer("There are strays gathering off the wire, a handful, and a handful becomes a hundred. {why} A section's going out to clear them and I want you on it. You've earned a place in the line. Hold it.");
+			Over("Stand down. The section cleared it without you.");
+			Said("They're at the gate. Check your magazine twice.", "All back. Clear. That's the whole report.", "Section's in. Good work out there.");
+			return;
+		}
+
+		m_sTitle = "The Strays";
+		Offer("There are strays at the bottom field again. A few, off some pack, and they bring the rest in time. {why} Two of ours are going down to see to it and they asked for you by name. That's not nothing, here.");
+		Over("Never mind. They've gone down and come back, and nobody's saying how it went.");
+		Said("They're waiting at the gate. Don't let them go first.", "Everyone home. That's the only count I want.", "It's done. Wash before you come in the kitchen.");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Done once at a place on a season day (the Trusted rung's: nothing farmable).
+	protected string DayKey(RZ_Errand e)
+	{
+		int place = e.m_iHouse;
+		if (e.m_iHolding >= 0)
+			place = 1000 + e.m_iHolding;
+
+		return string.Format("duty.%1.%2.%3", m_sDuty, place, RZ_SeasonClock.Day());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What's so for the duties that aren't always there: a watch at dusk or night, the lock-up at
+	//! night, the names when the house has dead, the return from the Collapse on, the list once the
+	//! cure is 40% made, a cull by a town 30+ infected.
+	protected bool TrueNow(RZ_Errands dealer, RZ_Errand e)
+	{
+		RZ_GameModeComponent gm = dealer.GetGM();
+		RZ_WorldFacts facts = gm.GetFacts();
+		bool dark = facts && (facts.IsDusk() || facts.IsNight());
+		if (m_iRung >= RZ_Duties.RUNG_TRUST && dealer.Counter(DayKey(e)) > 0)
+			return false;
+
+		switch (m_sDuty)
+		{
+			case "watch": return dark;
+			case "lockup": return dark;
+			case "names":
+			{
+				if (m_iFaction == RZ_EFaction.MILITARY)
+					return facts && facts.Stage() >= RZ_EOutbreakStage.COLLAPSE;
+
+				if (e.m_iHouse < 0 || !facts)
+					return false;
+
+				RZ_HouseFacts h = facts.House(e.m_iHouse);
+				return h && h.m_iDied > 0;
+			}
+
+			case "list": return facts && facts.CurePercent() >= 40 && !facts.IsCured();
+			case "cull":
+			{
+				RZ_Settlement town = gm.GetSettlement(e.m_iSettlement);
+				return town && town.m_fInfection >= 30 && RZ_Escort.HasRoom(gm);
+			}
+		}
+
+		return true;
+	}
+
 	// ================================================================ Who, why, still
 	//------------------------------------------------------------------------------------------------
 	override bool ForWhom(RZ_Errands dealer, int playerId, RZ_NamedPerson giver)
@@ -590,6 +881,9 @@ class RZ_ErrandDuty : RZ_ErrandDef
 	{
 		RZ_GameModeComponent gm = dealer.GetGM();
 		if (e.m_iHouse >= 0 && gm.GetSafehouses() && gm.GetSafehouses().IsExiled(e.m_iAsker))
+			return false;
+
+		if (!TrueNow(dealer, e))
 			return false;
 
 		if (m_iTasks > 0)
@@ -824,6 +1118,102 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				break;
 			}
 
+			case "watch":
+			{
+				if (rain)
+					so.Insert("The rain hides everything out there, and makes everything sound like feet.");
+
+				if (sick && town)
+					so.Insert(string.Format("%1 has been loud all day, and loud travels.", town.m_sName));
+
+				if (late)
+					so.Insert("There's nobody further out than us now to see it first.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("The light's going, and that's when things come to look.");
+					so.Insert("The one who had it last night saw something and won't say what.");
+				}
+
+				break;
+			}
+
+			case "stock":
+			{
+				if (hungry)
+					so.Insert("We're short, and I need to know if it's short or if it's stolen.");
+
+				if (late)
+					so.Insert("Nothing's coming in any more, so what's on the shelf is all there is.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("The book and the shelf haven't agreed since the last truck.");
+					so.Insert("Something's gone that shouldn't be, and nobody will say.");
+				}
+
+				break;
+			}
+
+			case "lockup":
+			{
+				if (rain)
+					so.Insert("It's a foul night, and nobody else will sit out in it.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("Everyone else on the rota knows them, and that's the trouble.");
+					so.Insert("It has to be someone who can hear a hard thing and stay sat.");
+				}
+
+				break;
+			}
+
+			case "names":
+			{
+				if (died)
+					so.Insert("Some of them are still laid out, and the families have only heard there was trouble.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("It's been left two days already, which is two days too long.");
+					so.Insert("The longer it waits, the more of it they hear from the wrong mouths.");
+				}
+
+				break;
+			}
+
+			case "list":
+			{
+				if (facts && facts.CurePercent() >= 70)
+					so.Insert("We're close enough now that the place on the list is very likely a life.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("The batch is due, and a dose without a name on it is wasted.");
+					so.Insert("All three were told there was a list. None was told there was one place.");
+				}
+
+				break;
+			}
+
+			case "cull":
+			{
+				if (sick && town)
+					so.Insert(string.Format("They're coming off %1 in ones and twos, and they don't go back.", town.m_sName));
+
+				if (dusk || night)
+					so.Insert("They're bolder with the light going.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("Leave five for a week and it's fifty.");
+					so.Insert("They were at the fence at first light, and they'll be back at last.");
+				}
+
+				break;
+			}
+
 			case "bench":
 			{
 				if (facts && facts.CurePercent() >= 50)
@@ -860,8 +1250,18 @@ class RZ_ErrandDuty : RZ_ErrandDef
 
 		ResolveScene(dealer, e, w, said);
 
+		if (m_iRung >= RZ_Duties.RUNG_TRUST)
+			dealer.SetCounter(DayKey(e), 1);
+
 		if (w.m_bSquad && ResolveLost(dealer, e, said))
 			return;
+
+		if (w.m_sWay == "cull")
+		{
+			RZ_Settlement cleared = dealer.GetGM().GetSettlement(e.m_iSettlement);
+			if (cleared)
+				cleared.AddInfection(-2);
+		}
 
 		switch (w.m_iEffect)
 		{
@@ -941,21 +1341,54 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			return;
 		}
 
+		if (w.m_sWay == "scene")
+		{
+			RZ_DutyScene played = dealer.GetScenes().Ensure(e, e.Fill(m_sTitle), e.m_vGiver, false);
+			played.m_vLast = e.m_vPlace;
+			switch (m_sDuty)
+			{
+				case "watch": RZ_DutyPosts.Watch(gm, e, played); break;
+				case "lockup": RZ_DutyPosts.LockUp(gm, e, played); break;
+				case "list": RZ_DutyPosts.TrialList(gm, e, played); break;
+				case "names":
+				{
+					if (m_iFaction == RZ_EFaction.MILITARY)
+					{
+						RZ_DutyPosts.Return(gm, e, played);
+						break;
+					}
+
+					int dead = 1;
+					if (facts && e.m_iHouse >= 0)
+						dead = Math.ClampInt(facts.House(e.m_iHouse).m_iDied, 1, 3);
+
+					RZ_DutyPosts.Names(gm, e, played, dead);
+					break;
+				}
+			}
+
+			return;
+		}
+
 		if (!w.m_bSquad)
 			return;
 
 		array<vector> points = {};
 		vector home = e.m_vPlace;
-		if (w.m_sWay == "leg")
+		if (w.m_sWay == "cull")
+			RZ_DutySquads.Round(home, 70, 120, 1, points);
+		else if (w.m_sWay == "leg")
 			RZ_DutySquads.Round(home, 70, 140, 3, points);
 		else if (w.m_sWay == "round")
 			RZ_DutySquads.Round(home, 180, 300, 4, points);
 		else
 			home = e.m_vGiver;
 
-		bool round = w.m_sWay == "leg" || w.m_sWay == "round";
+		bool round = w.m_sWay == "leg" || w.m_sWay == "round" || w.m_sWay == "cull";
 		if ((round && points.IsEmpty()) || !dealer.GetSquads().Start(e, e.Fill(m_sTitle), SquadName(w), home, points))
 			dealer.Notify(e, "Nobody is free to go with you after all. Do it alone, and come back.");
+		else if (w.m_sWay == "cull")
+			dealer.GetSquads().SetCull(e.m_iId);
 
 		// A hunt: something at the snare line, where its work is
 		if (m_sDuty == "hunt")
@@ -1013,7 +1446,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (!squads.Find(e.m_iId) || squads.IsLost(e.m_iId))
 			return true;
 
-		if (w.m_sWay == "leg" || w.m_sWay == "round")
+		if (w.m_sWay == "leg" || w.m_sWay == "round" || w.m_sWay == "cull")
 			return squads.IsHome(e.m_iId, me);
 
 		return squads.IsWith(e.m_iId, me) && dealer.GetScenes().IsDone(e.m_iId);
@@ -1039,7 +1472,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		if (RZ_Factions.IsValid(e.m_iFaction) && gm.FindProfile(playerId))
 			gm.AddInfamy(playerId, e.m_iFaction, 2, "a duty done carelessly: " + e.Fill(m_sTitle));
 
-		if (t.m_iKind == RZ_DutyGame.KIND_BENCH)
+		if (t.m_iKind == RZ_DutyGame.KIND_BENCH || t.m_iKind == RZ_DutyGame.KIND_STOCK)
 		{
 			dealer.Morale(e.m_iFaction, -1, m_sKey);
 			return;

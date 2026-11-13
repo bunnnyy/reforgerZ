@@ -129,6 +129,7 @@ class RZ_DutyBeat
 	float m_fWait;				// seconds after the last beat before it opens (a watch's sightings)
 	float m_fTimeout;			// > 0: left alone this long, it passes with nothing chosen
 	bool m_bScored;				// counts in the scene's score
+	bool m_bAlone;				// nobody of the place is watching here (a night post): only their people with you see
 	ref array<ref RZ_DutyOption> m_aOptions = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -502,9 +503,9 @@ class RZ_DutyScenes
 
 	//------------------------------------------------------------------------------------------------
 	//! Their people, or the place itself, can see what the player's hands do here.
-	protected bool IsSeen(RZ_DutyScene s, vector at)
+	protected bool IsSeen(RZ_DutyScene s, RZ_DutyBeat b, vector at)
 	{
-		if (RZ_Util.DistXZ(at, s.m_vHome) <= SEEN_HOME)
+		if (!b.m_bAlone && RZ_Util.DistXZ(at, s.m_vHome) <= SEEN_HOME)
 			return true;
 
 		RZ_DutySquad squad = m_Dealer.GetSquads().Find(s.m_iErrand);
@@ -531,7 +532,7 @@ class RZ_DutyScenes
 			s.m_aFlags.Insert(o.m_sFlag);
 
 		string said = o.m_sSaid;
-		bool seen = o.m_bShady && IsSeen(s, at);
+		bool seen = o.m_bShady && IsSeen(s, b, at);
 		if (o.m_bShady && !seen)
 		{
 			s.m_iFavor += o.m_iFavor;
