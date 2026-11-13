@@ -161,6 +161,7 @@ class RZ_Safehouse
 	int m_iFood = 12;
 	float m_fUpkeepTimer;
 	bool m_bAnchored;	// sits at the Haven quartermaster, which already exists: don't spawn another
+	vector m_vWas;		// where it stood before the start moved it (SettleRestored; zero: not moved; not saved)
 	bool m_bShort;		// the last upkeep ran short: the safehouse is under pressure
 	int m_iLost;		// people gone lately for any reason (left hungry, moved, taken, dead), fading by one an hour (story arcs)
 	int m_iDied;		// of those, the dead (RemoveDead), fading the same way
@@ -554,6 +555,8 @@ class RZ_Safehouses
 			{
 				m_aSafehouses.Insert(RZ_Safehouse.FromSave(s));
 			}
+
+			SettleRestored();
 		}
 		else
 		{
@@ -562,6 +565,85 @@ class RZ_Safehouses
 
 		m_aRestored.Clear();
 		RZ_Log.Info(string.Format("Haven safehouses: %1 (%2).", m_aSafehouses.Count(), source));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A safehouse (standing, or saved and not set up yet) within dist of pos: where a stronghold
+	//! moved at the start mustn't land (RZ_FactionPerks.TownOptions).
+	bool IsSavedNear(vector pos, float dist)
+	{
+		foreach (RZ_SafehouseSave s : m_aRestored)
+		{
+			if (s && RZ_Util.DistXZ(Vector(s.x, 0, s.z), pos) < dist)
+				return true;
+		}
+
+		return IsNearSafehouse(pos, dist);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Once, at the start of a saved season (docs/SITES.md, "Where a place stands"): the safehouse at
+	//! the Haven's quartermaster follows him if he moved; one with no house to move into moves to a
+	//! house in its own town; one on an island is given up and another picked.
+	protected void SettleRestored()
+	{
+		RZ_CampLife camp = m_GM.GetCampLife();
+		vector qm;
+		vector was;
+		bool qmMoved = m_GM.GetPerks().GetQuartermasterPos(RZ_EFaction.SURVIVORS, qm) && m_GM.GetPerks().GetQuartermasterMove(RZ_EFaction.SURVIVORS, was);
+		int given = 0;
+		for (int i = m_aSafehouses.Count() - 1; i >= 0; i--)
+		{
+			RZ_Safehouse h = m_aSafehouses[i];
+			if (h.m_bAnchored)
+			{
+				if (qmMoved)
+					MoveTo(h, m_GM.FindNearestSettlement(qm), qm, "with the quartermaster");
+
+				continue;
+			}
+
+			bool island = !RZ_Mainland.OnMainland(h.m_vPos);
+			if (!island && (!camp || camp.HasBuilding(RZ_EFaction.SURVIVORS, RZ_ECampPlace.SAFEHOUSE, h.m_vPos)))
+				continue;
+
+			RZ_Settlement s = m_GM.GetSettlement(h.m_iSettlement);
+			vector spot;
+			int tier;
+			if (!island && camp && s && camp.BestSpotIn(RZ_EFaction.SURVIVORS, RZ_ECampPlace.SAFEHOUSE, s.m_vCenter, Math.Clamp(s.m_fRadius, 60, 200), spot, tier))
+			{
+				MoveTo(h, h.m_iSettlement, spot, "no house where it stood");
+				continue;
+			}
+
+			// On the mainland with no house anywhere near: it keeps its camp in the open
+			if (!island)
+				continue;
+
+			RZ_Log.Info(string.Format("Haven safehouses: the one in %1 is on an island: given up, another is picked.", h.m_sName));
+			m_aSafehouses.RemoveOrdered(i);
+			given++;
+		}
+
+		if (given > 0)
+			PickMore(m_aSafehouses.Count() + given);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void MoveTo(RZ_Safehouse h, int settlementIdx, vector pos, string why)
+	{
+		string from = RZ_SettlementScanner.GridReference(h.m_vPos);
+		h.m_vWas = h.m_vPos;
+		h.m_vPos = RZ_Util.GroundPos(pos);
+		if (settlementIdx != h.m_iSettlement)
+		{
+			h.m_iSettlement = settlementIdx;
+			RZ_Settlement s = m_GM.GetSettlement(settlementIdx);
+			if (s)
+				h.m_sName = s.m_sName;
+		}
+
+		RZ_Log.Info(string.Format("Haven safehouses: the one at %1 moves to %2 in %3 (%4).", from, RZ_SettlementScanner.GridReference(h.m_vPos), h.m_sName, why));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -626,6 +708,26 @@ class RZ_Safehouses
 			first.m_bAnchored = true;
 		}
 
+		PickMore(wanted);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Quiet villages up to `wanted` safehouses, each in the yard of a house that suits it
+	//! (RZ_CampLife.BestSpotIn): villages with a house first, then with any building; only when no
+	//! village has one, near a village's middle.
+	protected void PickMore(int wanted)
+	{
+		PickMoreBy(wanted, 3);
+		PickMoreBy(wanted, 0);
+		PickMoreBy(wanted, -1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `need`: how well the village's best building must suit a safehouse (3 a house, 0 any
+	//! building, -1 none: open ground will do).
+	protected void PickMoreBy(int wanted, int need)
+	{
+		RZ_CampLife camp = m_GM.GetCampLife();
 		int labTown = m_GM.GetLabSettlement();
 		for (int pass = 0; pass < 2 && m_aSafehouses.Count() < wanted; pass++)
 		{
@@ -633,7 +735,7 @@ class RZ_Safehouses
 			array<int> candidates = {};
 			foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
 			{
-				if (i == labTown || IsSafehouseTown(i))
+				if (i == labTown || IsSafehouseTown(i) || s.m_bIsland)
 					continue;
 
 				if (pass == 0 && (s.m_iSize > 1 || s.m_fInfection > 40))
@@ -658,7 +760,16 @@ class RZ_Safehouses
 				if (IsNearSafehouse(town.m_vCenter, MIN_SPACING))
 					continue;
 
-				NewSafehouse(idx, RZ_Mission.LandPointNear(town.m_vCenter, 10, Math.Max(25, town.m_fRadius * 0.4)));
+				vector spot;
+				int tier = -1;
+				bool built = camp && camp.BestSpotIn(RZ_EFaction.SURVIVORS, RZ_ECampPlace.SAFEHOUSE, town.m_vCenter, Math.Clamp(town.m_fRadius, 60, 200), spot, tier);
+				if (camp && tier < need)
+					continue;
+
+				if (!built)
+					spot = RZ_Mission.LandPointNear(town.m_vCenter, 10, Math.Max(25, town.m_fRadius * 0.4));
+
+				NewSafehouse(idx, spot);
 			}
 		}
 	}

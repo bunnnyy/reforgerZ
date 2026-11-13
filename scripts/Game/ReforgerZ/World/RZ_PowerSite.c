@@ -463,6 +463,8 @@ class RZ_PowerSite
 	//------------------------------------------------------------------------------------------------
 	//! The first spot that will do: `first` m along the wall from `from`, else `second` m the other
 	//! way, else each DRESS_MORE further; then the same four a step out from the wall, and two steps.
+	//! With a building in the way of all twelve (a control in a yard between houses): the nearest
+	//! clear spot of three rings round the control, facing it.
 	protected static void DressAlong(vector from, vector along, vector face, float first, float second, IEntity anchor, RZ_PowerPlacement result)
 	{
 		for (int step = 0; step < 3; step++)
@@ -472,6 +474,16 @@ class RZ_PowerSite
 			{
 				float further = more * DRESS_MORE;
 				if (TryDress(line + along * (first + further), face, anchor, result) || TryDress(line - along * (second + further), face, anchor, result))
+					return;
+			}
+		}
+
+		for (int ring = 1; ring <= 3; ring++)
+		{
+			for (int k = 0; k < 8; k++)
+			{
+				vector spot = RZ_Compass.PointAt(from, k * 45, DRESS_SIDE + ring * DRESS_MORE);
+				if (TryDress(spot, Flat(from - spot, face), anchor, result))
 					return;
 			}
 		}

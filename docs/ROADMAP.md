@@ -134,9 +134,10 @@ waits in [designs/](../designs/README.md). What waits is play, engine checks and
   photographed there (the photo tour, [PC_SETUP.md](PC_SETUP.md#how-claude-drives-the-pc)). Left:
   check the new props' classes ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#camp-life-the-compositions-and-kits)),
   hold the photos against `render.py --placed`, and check the boards' heights, the barrier runs' tilt
-  and the floodlights (the VERIFY list; the play-test checklist, *Sites*). A stronghold with no
-  building to move into is the weak case: on a bare hillside or a beach it stands on rings and
-  scores low (one at 49 in play on the PC). Then the people and the story in play: a stronghold's posts manned and its
+  and the floodlights (the VERIFY list; the play-test checklist, *Sites*). Every place now stands at
+  a building that suits it ([SITES.md](SITES.md#where-a-place-stands)); the weak case left is a
+  cramped yard: the Haven's walled churchyard on the PC loses its counter, cook pot and firewood
+  and scores 47, because the pick doesn't measure how much room a yard has. Then the people and the story in play: a stronghold's posts manned and its
   walks walked (the jobs log's posts and walks), an alert at a site under attack, the road post run,
   and a site's story elements (Traces' kit prefabs, sized by hand: measure them) and its line when
   you come in (the play-test checklist, *Sites*).

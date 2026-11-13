@@ -432,7 +432,11 @@ class RZ_Territory
 				if (old.m_bStronghold || IsHoldingNear(old.m_vPos, 150))
 					continue;
 
-				AddOutpost(old.m_eFaction, old.m_iSettlement, old.m_vPos, old.m_sName, old);
+				vector stands;
+				if (!SettleSaved(old, stands))
+					continue;
+
+				AddOutpost(old.m_eFaction, old.m_iSettlement, stands, old.m_sName, old);
 			}
 		}
 		else if (fresh)
@@ -454,6 +458,42 @@ class RZ_Territory
 		}
 
 		RZ_Log.Info(string.Format("Territory: %1 holdings in %2 settlements (%3). %4", m_aHoldings.Count(), m_GM.GetSettlements().Count(), source, DescribeAll()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A saved outpost's ground, checked once at the start (docs/SITES.md, "Where a place stands"):
+	//! with no building to move into it moves to one in its own town (its leader with it), else it
+	//! keeps its camp in the open; on an island it's given up (false), and the faction founds
+	//! another if it's short.
+	protected bool SettleSaved(RZ_Holding h, out vector pos)
+	{
+		pos = h.m_vPos;
+		if (!RZ_Mainland.OnMainland(pos))
+		{
+			RZ_Log.Info(string.Format("Territory: %1 is on an island: given up.", h.GetTitle()));
+			return false;
+		}
+
+		RZ_CampLife camp = m_GM.GetCampLife();
+		RZ_Settlement s = m_GM.GetSettlement(h.m_iSettlement);
+		if (!camp || !s || camp.HasBuilding(h.m_eFaction, RZ_ECampPlace.OUTPOST, pos))
+			return true;
+
+		vector spot;
+		int tier;
+		if (!camp.BestSpotIn(h.m_eFaction, RZ_ECampPlace.OUTPOST, s.m_vCenter, Math.Clamp(s.m_fRadius, 60, 200), spot, tier))
+			return true;
+
+		if (IsHoldingNear(spot, 150))
+			return true;
+
+		RZ_Leaders leaders = m_GM.GetLeaders();
+		if (leaders)
+			leaders.MoveOutpostSeat(h.m_eFaction, RZ_CampLife.DryNear(pos), spot);
+
+		RZ_Log.Info(string.Format("Territory: %1 moves from %2 to %3 (no building where it stood).", h.GetTitle(), RZ_SettlementScanner.GridReference(pos), RZ_SettlementScanner.GridReference(spot)));
+		pos = spot;
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -534,12 +574,22 @@ class RZ_Territory
 
 		if (!found)
 		{
-			int idx = PickTown(f, false);
-			RZ_Settlement s = m_GM.GetSettlement(idx);
-			if (!s)
-				return false;
+			// Of a few towns that suit it, the first with a building to move into; else the last, near its middle
+			RZ_CampLife camp = m_GM.GetCampLife();
+			RZ_Settlement s;
+			for (int n = 0; n < 6 && !found; n++)
+			{
+				int idx = PickTown(f, false);
+				s = m_GM.GetSettlement(idx);
+				if (!s)
+					return false;
 
-			pos = RZ_Mission.LandPointNear(s.m_vCenter, 5, Math.Max(15, s.m_fRadius * 0.3));
+				int tier;
+				found = camp && camp.BestSpotIn(f, RZ_ECampPlace.STRONGHOLD, s.m_vCenter, Math.Clamp(s.m_fRadius, 80, 220), pos, tier);
+			}
+
+			if (!found)
+				pos = RZ_Mission.LandPointNear(s.m_vCenter, 5, Math.Max(15, s.m_fRadius * 0.3));
 		}
 
 		place = PlaceName(pos);
@@ -872,7 +922,7 @@ class RZ_Territory
 	//! "On the roads" is read from how many towns are near (a hub), which works on any map.
 	protected float TownScore(RZ_EFaction f, int idx, RZ_Settlement s)
 	{
-		if (FindInTown(idx) || IsHoldingNear(s.m_vCenter, TOWN_GAP))
+		if (s.m_bIsland || FindInTown(idx) || IsHoldingNear(s.m_vCenter, TOWN_GAP))
 			return 0;
 
 		RZ_Safehouses houses = m_GM.GetSafehouses();
@@ -1235,24 +1285,60 @@ class RZ_Territory
 
 	//------------------------------------------------------------------------------------------------
 	//! A new outpost in an abandoned town that suits the faction.
+	//! Of a few picks the first with a building to move into; else the last pick, in the open.
 	protected bool Found(RZ_EFaction f, bool nearOwn, bool headline)
 	{
-		int idx = PickTown(f, nearOwn);
-		RZ_Settlement s = m_GM.GetSettlement(idx);
-		if (!s)
-			return false;
+		int idx = -1;
+		for (int n = 0; n < 5; n++)
+		{
+			idx = PickTown(f, nearOwn);
+			if (idx < 0)
+				return false;
+
+			if (FoundAt(f, idx, headline, true))
+				return true;
+		}
 
 		return FoundAt(f, idx, headline);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected bool FoundAt(RZ_EFaction f, int idx, bool headline)
+	//! A saved outpost (not set up yet) within dist of pos: where a stronghold moved at the start
+	//! mustn't land (RZ_FactionPerks.TownOptions).
+	bool IsSavedOutpostNear(vector pos, float dist)
+	{
+		if (!m_Restored || !m_Restored.holdings)
+			return false;
+
+		foreach (RZ_HoldingSave hs : m_Restored.holdings)
+		{
+			if (hs && !hs.stronghold && RZ_Util.DistXZ(Vector(hs.x, 0, hs.z), pos) < dist)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! `built`: only where there's a building to move into (false when the town has none).
+	protected bool FoundAt(RZ_EFaction f, int idx, bool headline, bool built = false)
 	{
 		RZ_Settlement s = m_GM.GetSettlement(idx);
 		if (!s)
 			return false;
 
-		vector pos = RZ_Mission.LandPointNear(s.m_vCenter, 5, Math.Max(15, s.m_fRadius * 0.4));
+		// In the yard of the building that suits it best (docs/SITES.md, "Where a place stands"), else in the open
+		vector pos;
+		int tier;
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (!camp || !camp.BestSpotIn(f, RZ_ECampPlace.OUTPOST, s.m_vCenter, Math.Clamp(s.m_fRadius, 60, 200), pos, tier))
+		{
+			if (built && camp)
+				return false;
+
+			pos = RZ_Mission.LandPointNear(s.m_vCenter, 5, Math.Max(15, s.m_fRadius * 0.4));
+		}
+
 		RZ_Holding h = AddOutpost(f, idx, pos, s.m_sName, null);
 		if (!headline)
 			return true;

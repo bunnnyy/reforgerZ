@@ -435,6 +435,7 @@ class RZ_CampSite
 	int m_iMain = -1;			// the entry left open (the gate); the others are closed
 	string m_sPrefab;			// the building's prefab (the log)
 	ref array<vector> m_aLookouts = {};	// the building's lookouts the solver chose: the corners that see the wire's gate
+	int m_iTier;				// how well the building suits the faction and the kind (SiteTier)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -941,6 +942,87 @@ class RZ_CampLife
 			return DryNear(pos);
 
 		return site.m_vHome;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a place of this kind at pos finds a building to move into (false: it would stand on
+	//! rings). True with buildings off: nothing to judge by.
+	bool HasBuilding(RZ_EFaction faction, RZ_ECampPlace kind, vector pos)
+	{
+		if (!m_Settings.m_bDressing || !m_Settings.m_bBuildings || kind == RZ_ECampPlace.ROAD_POST)
+			return true;
+
+		RZ_CampPlace p = new RZ_CampPlace();
+		p.m_sKey = "probe";
+		InitPlace(p, faction, kind, pos);
+		RZ_CampGround ground = new RZ_CampGround();
+		ReadGround(p, ground);
+		RZ_CampSite site = PickSite(p, ground, false);
+		if (site.m_bNone)
+			site = PickSite(p, ground, true);
+
+		return !site.m_bNone;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a place of this kind should stand in a town (docs/SITES.md, "Where a place stands"): the
+	//! yard of the building within `radius` of the town's middle that suits it best, on dry and even
+	//! ground. `tier` is how well it suits (SiteTier). False when the town has no such building (or
+	//! buildings are off): the caller tries another town, or keeps its own spot.
+	bool BestSpotIn(RZ_EFaction faction, RZ_ECampPlace kind, vector centre, float radius, out vector spot, out int tier)
+	{
+		spot = centre;
+		tier = -1;
+		if (!m_Settings.m_bDressing || !m_Settings.m_bBuildings || kind == RZ_ECampPlace.ROAD_POST)
+			return false;
+
+		RZ_CampPlace p = new RZ_CampPlace();
+		p.m_sKey = "probe";
+		InitPlace(p, faction, kind, centre);
+		RZ_CampGround ground = new RZ_CampGround();
+		ReadGround(p, ground, radius);
+		RZ_CampSite site = PickSite(p, ground, false, radius);
+		if (site.m_bNone)
+			return false;
+
+		spot = RZ_Util.GroundPos(site.m_vHome);
+		if (WetAt(spot))
+			return false;
+
+		tier = site.m_iTier;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Dry and even round a building: eight points on a ring just outside it, none over water and no
+	//! more than a few metres between the highest and the lowest (a camp on a beach or a hillside
+	//! loses its pieces to the water and the slope).
+	protected static bool EvenGround(IEntity b, vector mins, vector maxs, RZ_ECampPlace kind)
+	{
+		vector mid = RZ_DoorGeometry.ToWorld(b, (mins + maxs) * 0.5);
+		float w = maxs[0] - mins[0];
+		float d = maxs[2] - mins[2];
+		float ring = 0.5 * Math.Sqrt(w * w + d * d) + 14;
+		float relief = 6;
+		if (kind == RZ_ECampPlace.STRONGHOLD)
+		{
+			ring += 8;
+			relief = 8;
+		}
+
+		float lo = float.MAX;
+		float hi = -float.MAX;
+		for (int k = 0; k < 8; k++)
+		{
+			vector pt = RZ_Util.GroundPos(RZ_Compass.PointAt(mid, k * 45, ring));
+			if (WetAt(pt))
+				return false;
+
+			lo = Math.Min(lo, pt[1]);
+			hi = Math.Max(hi, pt[1]);
+		}
+
+		return hi - lo <= relief;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -2988,7 +3070,7 @@ class RZ_CampLife
 
 	//------------------------------------------------------------------------------------------------
 	//! Buildings and road segments near the place, and which way its approach faces.
-	protected void ReadGround(RZ_CampPlace p, RZ_CampGround ground)
+	protected void ReadGround(RZ_CampPlace p, RZ_CampGround ground, float wide = 0)
 	{
 		// The shared placer's read (World/Traces/RZ_DressPlacer.c), further out for a building
 		float reach = RZ_DressPlacer.BUILDINGS_NEAR;
@@ -2996,6 +3078,7 @@ class RZ_CampLife
 		if (m_Settings.m_bBuildings)
 		{
 			reach = Math.Max(reach, SiteReach(p.m_eKind) + 10);
+			reach = Math.Max(reach, wide + 10);
 			roadReach = 220;
 		}
 
@@ -3206,7 +3289,8 @@ class RZ_CampLife
 			if (church)
 				return 3;
 
-			if (school || farm)
+			// A farmhouse or a barn, not a farm's metal shed
+			if (school || (farm && !name.Contains("shed") && !RZ_LandmarkFinder.Matches("industrial", name)))
 				return 2;
 
 			if (house)
@@ -3305,7 +3389,9 @@ class RZ_CampLife
 	//! The best building by kind, size and distance, then by the roads (Bastion on a road, the Red
 	//! Hand where roads meet). Never one with scenery on it, a ruin, a hangar-sized one or one
 	//! smaller than the kind needs; `relaxed`, one of 25 m² will do, up to half as far again.
-	protected RZ_CampSite PickSite(RZ_CampPlace p, RZ_CampGround ground, bool relaxed)
+	//! `wide` (BestSpotIn): anywhere within that many metres, distance counting for little, and only
+	//! on dry, even ground.
+	protected RZ_CampSite PickSite(RZ_CampPlace p, RZ_CampGround ground, bool relaxed, float wide = 0)
 	{
 		RZ_CampSite site = new RZ_CampSite();
 		site.m_sKey = p.m_sKey;
@@ -3327,8 +3413,15 @@ class RZ_CampLife
 		if (p.m_eKind == RZ_ECampPlace.SAFEHOUSE)
 			distWeight = 12;
 
+		if (wide > 0)
+		{
+			reach = wide;
+			distWeight = 0.5;
+		}
+
 		array<IEntity> shortlist = {};
 		array<float> scores = {};
+		array<int> tiers = {};
 		foreach (IEntity b : ground.m_aBuildings)
 		{
 			if (!b || IsDressing(b))
@@ -3356,7 +3449,7 @@ class RZ_CampLife
 
 			string name = RZ_Util.GetPrefabName(b);
 			name.ToLower();
-			if (name.Contains("ruin") || name.Contains("wreck") || name.Contains("bridge"))
+			if (name.Contains("ruin") || name.Contains("wreck") || name.Contains("bridge") || name.Contains("ramp"))
 				continue;
 
 			// Never by or over the water: a pier, a quay, a harbour shed, a boathouse (docs/SITES.md)
@@ -3368,6 +3461,9 @@ class RZ_CampLife
 
 			int tier = SiteTier(p.m_eFaction, p.m_eKind, name, RZ_DoorSlots.KindOf(b));
 			if (tier < 0)
+				continue;
+
+			if (wide > 0 && !EvenGround(b, mins, maxs, p.m_eKind))
 				continue;
 
 			// The largest for a stronghold; a middling one elsewhere
@@ -3387,10 +3483,12 @@ class RZ_CampLife
 
 			shortlist.InsertAt(b, at);
 			scores.InsertAt(score, at);
+			tiers.InsertAt(tier, at);
 			if (shortlist.Count() > SITE_SHORTLIST)
 			{
 				shortlist.Remove(SITE_SHORTLIST);
 				scores.Remove(SITE_SHORTLIST);
+				tiers.Remove(SITE_SHORTLIST);
 			}
 		}
 
@@ -3403,6 +3501,7 @@ class RZ_CampLife
 			{
 				bestScore = total;
 				best = cand;
+				site.m_iTier = tiers[i];
 			}
 		}
 

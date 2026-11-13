@@ -87,7 +87,9 @@ Code: `World/RZ_SettlementScanner.c`, `World/RZ_Settlement.c`, `Core/RZ_GameMode
 - **Only the mainland:** a fresh scan keeps no town on an island (close to impossible to reach on
   foot), so nothing a town anchors (holdings, safehouses, the lab, missions, spawn points, the
   Long Table, the infected's towns) is ever there; a saved season's island town is skipped by the
-  pickers until the next fresh season ([PLACES.md](PLACES.md#the-mainland)). A town whose middle
+  pickers until the next fresh season ([PLACES.md](PLACES.md#the-mainland)), and a stronghold, an
+  outpost or a safehouse standing on one is moved or given up at the start
+  ([SITES.md](SITES.md#where-a-place-stands)). A town whose middle
   came out in the water is moved to its nearest dry house.
 - **Spawn points:** 6 at a time in random towns, each just outside a house, and one is moved to a
   new town every 20 minutes. Nobody picks one: the spawn screen asks for one at random, and with openings on the
@@ -543,7 +545,7 @@ are ours, each with its own setting under **World > Power grid** (`World/RZ_Powe
 
 | | What | When |
 |---|---|---|
-| **The dressing** (**Dressing prefab**) | Two fuel drums on a pallet, a third beside it, two jerrycans and a warning sign on a pole: 2.4 m along the wall from the control, facing out (in line with the map's cabinet when that carries the control). When that spot won't do it tries the door's other side, each 2 m further along, and the same four 1.5 m and 3 m out from the wall: the first that is dry, flat (under about 12 degrees) and outside every building. None of the twelve: no dressing there, and the log says what was in the way. Look-only, through camp life's dressing guard | A player within 300 m, at every step |
+| **The dressing** (**Dressing prefab**) | Two fuel drums on a pallet, a third beside it, two jerrycans and a warning sign on a pole: 2.4 m along the wall from the control, facing out (in line with the map's cabinet when that carries the control). When that spot won't do it tries the door's other side, each 2 m further along, and the same four 1.5 m and 3 m out from the wall: the first that is dry, flat (under about 12 degrees) and outside every building. None of the twelve (a control in a yard between houses): the nearest such spot of three rings round the control (4.4, 6.4 and 8.4 m), facing it. None there either: no dressing, and the log says what was in the way. Look-only, through camp life's dressing guard | A player within 300 m, at every step |
 | **The generator** (**Generator sound prefab**) | Vanilla's diesel generator, engine and hum, from a prefab with no mesh: at the map's own generator sets within 60 m when the station has them (the power plant on Everon has two inside), else at the control | A player within 300 m, from the moment it catches: spinning up, ready, running. Silent again when it stalls or fails |
 | **The lamps** (**Street lamps**, on) | The map's own lamps (street lamps and the lit lights on buildings: everything that lights itself at night) stay dark, except within 150 m of a town with power (the station's region while it runs, a power surge's town) and within 200 m of the running station | Always. Off = the lamps are left as the map has them, lit every night |
 
@@ -814,13 +816,14 @@ distance, then roads. Road posts don't (they stand beside their barrier).
 |---|---|---|
 | Bastion | the school, town hall, police station or barracks (another public building will do; never the church), the largest, on a road | a farm or a petrol station, else a house, on a road |
 | Red Hand | a garage or petrol station (a farm or a factory will do; never the church or a clinic), where roads meet | the same, or a shop or café by the road |
-| Haven | the church (a school or a farm will do, then a house) | the same; a safehouse is its own house, the nearest one |
+| Haven | the church (a school, a farmhouse or a barn will do, not a farm's metal shed; then a house) | the same; a safehouse is its own house, the nearest one |
 | Halcyon | the lab or a clinic (another public building will do), on a road | a house: the field station |
 
-- **Which building.** Within 60 m of a stronghold's spot (its quartermaster), 90 m of an outpost's
-  (its town's middle), 30 m of a safehouse's. At least 100 m² for a stronghold, 45 m² for an
+- **Which building.** Within 60 m of a stronghold's spot (its quartermaster), 90 m of an outpost's,
+  30 m of a safehouse's (the spots themselves are put in the yard of a building that suits the
+  place: [SITES.md](SITES.md#where-a-place-stands)). At least 100 m² for a stronghold, 45 m² for an
   outpost or a field station, 30 m² for a safehouse; never a side over 70 m (a hangar, a factory
-  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a bridge, a
+  hall), under 5 m, or over four times as long as it's wide (a pier, a wall), a ruin, a bridge, a vehicle ramp, a
   building that is scenery, or anything of the waterside: a pier, jetty, dock, quay, harbour,
   breakwater, slipway, pontoon, wharf, marina, mooring, boathouse, fisherman's shed or lighthouse by
   its prefab's name, anything from the naval structures' folder, or a building whose box stands over
@@ -1292,7 +1295,7 @@ are in [MISSIONS.md](MISSIONS.md), "Leader missions".
 
 | Seat | Where |
 |---|---|
-| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Without either, a town that suits the faction: never another stronghold's town, a quartermaster's town or the lab's. Never dies, never replaced |
+| Stronghold (one per faction) | At the faction's quartermaster; Halcyon's at the lab. Without either, a town that suits the faction, at a building that suits it ([SITES.md](SITES.md#where-a-place-stands)): never another stronghold's town, a quartermaster's town or the lab's. Never dies, never replaced |
 | Haven safehouse | One council head per safehouse |
 | Outpost | One per territory outpost. With territory off, one **interim leader post** per faction for Bastion, the Red Hand and Halcyon instead |
 

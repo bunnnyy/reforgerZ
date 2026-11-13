@@ -48,7 +48,7 @@ class RZ_SiteSolver
 
 	protected RZ_CampLife m_Camp;
 	protected RZ_CampLifeSettings m_Settings;
-	protected RZ_CampGround m_Ground;
+	protected ref RZ_CampGround m_Ground;	// held, like the place: Survey gives the job a newer ground when the place comes back mid-solve
 	protected RZ_SiteGrid m_Grid;
 	protected RZ_SiteSurroundings m_Around;
 	protected RZ_DressingKit m_Kit;

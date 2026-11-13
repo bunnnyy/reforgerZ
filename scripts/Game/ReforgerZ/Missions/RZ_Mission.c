@@ -1204,20 +1204,30 @@ class RZ_Mission
 	//------------------------------------------------------------------------------------------------
 	//! Random settlement whose infection is within [minInf, maxInf] that no mission or story is
 	//! using (with `asker`, what it or its story holds counts as free). -1 if none. To filter by
-	//! who holds a town, RZ_WorldFacts.PickTown.
+	//! who holds a town, RZ_WorldFacts.PickTown. A town at the quarantine line is taken only when
+	//! there's no other: a job there has its ground in the warning zone.
 	static int PickSettlement(RZ_GameModeComponent gm, float minInf, float maxInf, RZ_Mission asker = null)
 	{
 		array<int> candidates = {};
+		array<int> atLine = {};
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
-			if (s.m_fInfection >= minInf && s.m_fInfection <= maxInf && !s.m_bIsland && !gm.GetMissions().IsSettlementBusy(i, asker))
+			if (s.m_fInfection < minInf || s.m_fInfection > maxInf || s.m_bIsland || gm.GetMissions().IsSettlementBusy(i, asker))
+				continue;
+
+			if (RZ_Perimeter.IsNearLineAt(s.m_vCenter))
+				atLine.Insert(i);
+			else
 				candidates.Insert(i);
 		}
 
-		if (candidates.IsEmpty())
+		if (!candidates.IsEmpty())
+			return candidates.GetRandomElement();
+
+		if (atLine.IsEmpty())
 			return -1;
 
-		return candidates.GetRandomElement();
+		return atLine.GetRandomElement();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1226,6 +1236,7 @@ class RZ_Mission
 	static int PickSettlementAway(RZ_GameModeComponent gm, vector from, float minDist, float maxDist, float minInf, float maxInf, int exclude = -1, RZ_Mission asker = null)
 	{
 		array<int> candidates = {};
+		array<int> atLine = {};
 		foreach (int i, RZ_Settlement s : gm.GetSettlements())
 		{
 			if (i == exclude)
@@ -1235,16 +1246,22 @@ class RZ_Mission
 			if (d < minDist || d > maxDist)
 				continue;
 
-			if (s.m_fInfection < minInf || s.m_fInfection > maxInf || gm.GetMissions().IsSettlementBusy(i, asker))
+			if (s.m_fInfection < minInf || s.m_fInfection > maxInf || s.m_bIsland || gm.GetMissions().IsSettlementBusy(i, asker))
 				continue;
 
-			candidates.Insert(i);
+			if (RZ_Perimeter.IsNearLineAt(s.m_vCenter))
+				atLine.Insert(i);
+			else
+				candidates.Insert(i);
 		}
 
-		if (candidates.IsEmpty())
+		if (!candidates.IsEmpty())
+			return candidates.GetRandomElement();
+
+		if (atLine.IsEmpty())
 			return -1;
 
-		return candidates.GetRandomElement();
+		return atLine.GetRandomElement();
 	}
 
 	//------------------------------------------------------------------------------------------------

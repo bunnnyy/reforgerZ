@@ -642,8 +642,15 @@ class RZ_Leaders
 		{
 			vector pos;
 			string place;
-			if (StrongholdSeat(f, pos, place))
-				AddSeat(saved, f, RZ_ELeaderRole.STRONGHOLD, RZ_Leader.SOURCE_AUTO, pos, place, -1);
+			if (!StrongholdSeat(f, pos, place))
+				continue;
+
+			// A stronghold the start moved (RZ_FactionPerks.MoveIfStranded) keeps its leader
+			vector was;
+			if (m_GM.GetPerks().GetQuartermasterMove(f, was))
+				MoveSaved(saved, f, RZ_ELeaderRole.STRONGHOLD, was, pos, place);
+
+			AddSeat(saved, f, RZ_ELeaderRole.STRONGHOLD, RZ_Leader.SOURCE_AUTO, pos, place, -1);
 		}
 
 		// One council head per Haven safehouse (the one at the Haven stronghold is the stronghold)
@@ -656,6 +663,9 @@ class RZ_Leaders
 				RZ_Safehouse h = houses.Get(i);
 				if (havenTop && RZ_Util.DistXZ(h.m_vPos, havenTop.m_vPos) < 80)
 					continue;
+
+				if (h.m_vWas != vector.Zero)
+					MoveSaved(saved, RZ_EFaction.SURVIVORS, RZ_ELeaderRole.SAFEHOUSE, h.m_vWas, h.m_vPos, h.m_sName);
 
 				AddSeat(saved, RZ_EFaction.SURVIVORS, RZ_ELeaderRole.SAFEHOUSE, RZ_Leader.SOURCE_AUTO, h.m_vPos, h.m_sName, i);
 			}
@@ -700,12 +710,23 @@ class RZ_Leaders
 
 		if (!found)
 		{
-			int idx = PickTownFor(f, vector.Zero, 0);
-			RZ_Settlement s = m_GM.GetSettlement(idx);
-			if (!s)
-				return false;
+			// No quartermaster: of a few towns that suit it, the first with a building to move into
+			// (docs/SITES.md, "Where a place stands"); else the last, near its middle
+			RZ_CampLife camp = m_GM.GetCampLife();
+			RZ_Settlement s;
+			for (int n = 0; n < 6 && !found; n++)
+			{
+				int idx = PickTownFor(f, vector.Zero, 0);
+				s = m_GM.GetSettlement(idx);
+				if (!s)
+					return false;
 
-			pos = RZ_Mission.LandPointNear(s.m_vCenter, 5, Math.Max(15, s.m_fRadius * 0.3));
+				int tier;
+				found = camp && camp.BestSpotIn(f, RZ_ECampPlace.STRONGHOLD, s.m_vCenter, Math.Clamp(s.m_fRadius, 80, 220), pos, tier);
+			}
+
+			if (!found)
+				pos = RZ_Mission.LandPointNear(s.m_vCenter, 5, Math.Max(15, s.m_fRadius * 0.3));
 		}
 
 		place = PlaceName(pos);
@@ -868,6 +889,35 @@ class RZ_Leaders
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A seat the start moved (docs/SITES.md, "Where a place stands"): its saved leader goes with it.
+	protected void MoveSaved(array<ref RZ_Leader> saved, RZ_EFaction f, RZ_ELeaderRole role, vector from, vector to, string place)
+	{
+		foreach (RZ_Leader old : saved)
+		{
+			if (old.m_eFaction != f || old.m_eRole != role || RZ_Util.DistXZ(old.m_vPos, from) >= 150)
+				continue;
+
+			old.m_vPos = RZ_Util.GroundPos(to);
+			old.m_sPlace = place;
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An outpost the territory moved at the start: its leader's seat goes with it.
+	void MoveOutpostSeat(RZ_EFaction f, vector from, vector to)
+	{
+		foreach (RZ_Leader l : m_aList)
+		{
+			if (l.m_eFaction == f && l.m_eRole == RZ_ELeaderRole.OUTPOST && l.m_iSource != RZ_Leader.SOURCE_MARKER && RZ_Util.DistXZ(l.m_vPos, from) < 150)
+			{
+				l.m_vPos = RZ_Util.GroundPos(to);
+				return;
+			}
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

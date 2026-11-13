@@ -755,7 +755,17 @@ class RZ_QM_EdgeTally : RZ_HavenQM
 		if (!h || !s)
 			return false;
 
+		// The edge on a side of town that is land: a harbour town's other sides are the sea
 		float dir = m_Rng.Int(0, 8) * 45;
+		for (int turn = 0; turn < 8; turn++)
+		{
+			vector probe = RZ_Util.GroundPos(RZ_Compass.PointAt(s.m_vCenter, dir, s.m_fRadius + 60));
+			if (!RZ_Util.IsWater(probe) && RZ_Mainland.OnMainland(probe))
+				break;
+
+			dir += 45;
+		}
+
 		m_vEdge = LandPointNear(RZ_Compass.PointAt(s.m_vCenter, dir, s.m_fRadius + 60), 0, 15);
 		m_vWalker = LandPointNear(RZ_Compass.PointAt(s.m_vCenter, dir, s.m_fRadius + 10), 0, 8);
 		m_vBook = LandPointNear(m_vEdge, 3, 6);

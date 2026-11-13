@@ -305,15 +305,21 @@ class RZ_WorkSites
 
 	//------------------------------------------------------------------------------------------------
 	//! A site's spot `minR`-`maxR` from `place` that meets the place need `work.site` (docs/PLACES.md:
-	//! dry, not steep, not behind a lock); `place` itself when none does (it was already picked
-	//! through its own need).
+	//! dry, not steep, not behind a lock), looking twice and four times as far when none does (a job
+	//! by the shore); `place` itself only when there's still none.
 	static vector Spot(vector place, float minR, float maxR)
 	{
-		vector at = RZ_PlaceFind.Near(place, minR, maxR, RZ_PlaceNeeds.Get("work.site"));
-		if (at == vector.Zero)
-			return place;
+		float reach = maxR;
+		for (int wider = 0; wider < 3; wider++)
+		{
+			vector at = RZ_PlaceFind.Near(place, minR, reach, RZ_PlaceNeeds.Get("work.site"));
+			if (at != vector.Zero)
+				return at;
 
-		return at;
+			reach = reach * 2;
+		}
+
+		return place;
 	}
 
 	// ================================================================ Owners

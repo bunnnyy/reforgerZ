@@ -159,8 +159,8 @@ or way isn't offered here.
 | `errand.orchard` | the orchard at {place} | IN_TOWN(+300) BUILDING(orchard/40) | | The Last Apples |
 | `errand.police`, `errand.school`, `errand.hall` | the police station, the school, the hall in {place} | IN_TOWN(+300) BUILDING(police, school, public/30) | | Clean Rifles, Clean Paper, the hall's chairs |
 | `errand.prop.effects`, `.crate`, `.papers`, `.parts`, `.car` | the way's prop at the place | | PROP within 6 m (the car 8 m; empty: words only, and a warning) | a way with a prop |
-| `work.site` | beside the thing you work at: its before look and its prompt | NOT_STEEP(25) NOT_LOCKED | SLOT the work site's prompt (empty: the step is done by staying there) | `RZ_WorkSites.Spot`: a work site's spot beside its place (an errand's at the giver's place or gate 3–6 m off, at water 1.5–3 m; a job's by its engine, well, gate, door, charge or hive), else the place itself; every site opened is checked live |
-| `mission` | at {town}: the town its brief names | IN_TOWN(+1500) | | every contract, event and stage, when it starts (live only) |
+| `work.site` | beside the thing you work at: its before look and its prompt | NOT_STEEP(25) NOT_LOCKED | SLOT the work site's prompt (empty: the step is done by staying there) | `RZ_WorkSites.Spot`: a work site's spot beside its place (an errand's at the giver's place or gate 3–6 m off, at water 1.5–3 m; a job's by its engine, well, gate, door, charge or hive), looking twice and then four times as far when none fits; else the place itself; every site opened is checked live |
+| `mission` | at {town}: the town its brief names | IN_TOWN(+1500) | | every contract, event and stage, when it starts (live only). The shared town picks (`RZ_Mission.PickSettlement`, `PickSettlementAway`) take a town at the line only when no other fits |
 | `world.place` | a town, a holding, a safehouse, the lab, the Long Table, a wanderer | DRY MAINLAND only (a town by the map's edge is by the line) | | the audit's check of what stands all season |
 
 An errand way names its need in `RZ_ErrandWay.m_sNeed`; without one, its place kind's (`NeedKey`).
@@ -297,7 +297,9 @@ police station (none near any giver tried on any map), a hall, an orchard, a pum
 
 On a fresh scan no holding, safehouse, the lab or the Long Table can stand on an island (their towns
 aren't settlements). A saved season keeps its towns: the start's warning counts any on an island,
-and the audit's `world.place` lines name any holding, safehouse or wanderer there.
+its strongholds, outposts and safehouses there are moved or given up at the start
+([SITES.md](SITES.md#where-a-place-stands)), and the audit's `world.place` lines name any holding,
+safehouse or wanderer still there.
 
 ## Not covered
 

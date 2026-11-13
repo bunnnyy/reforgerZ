@@ -939,8 +939,10 @@ and Puzzles > Fuse box, Radio mast and Civilian (generators, the relay mast, the
 to). The **unarmed missions** need no prefabs of their own.
 
 **Quartermasters and shops.** Place one quartermaster per faction, or set the four slots and they
-spawn by themselves (the Haven's in the safest town, Bastion's in a bigger town, the Red Hand's in
-a rougher town, Halcyon's next to the lab). Their positions are saved. The four `RZ_LeaderAction`s
+spawn by themselves (the Haven's in the safest town with a church, a school or a farmhouse,
+Bastion's in a bigger town, the Red Hand's in a rougher town, each in the yard of a building that
+suits it; Halcyon's next to the lab: [SITES.md](SITES.md#where-a-place-stands)). Their positions are
+saved; a saved one with no building near, or on an island, is moved once at the start. The four `RZ_LeaderAction`s
 on every quartermaster are how players reach stronghold leaders and council heads.
 
 Each `RZ_FactionShopAction` sells one thing: **Faction**, **Required tier** (Stranger, Known,
@@ -2365,6 +2367,10 @@ Warnings worth acting on:
 | `Dressing: removed <part> from <prefab> (<why>)` | A composition carries something a player could use (an arsenal, storage, an item, a support station, supplies, fuel, a vehicle or spawner, a spawn point, a ReforgerZ part but the look-only sound components `RZ_AmbientLoopComponent` and `RZ_CallSoundComponent`): the guard deleted it (or the whole piece, if its root has it). Take that prop out of the composition |
 | `Camp life: pre-reading <n> sites in the background, strongholds first.` | Once a run, when the land grid is read (Pre-read): every site is read and laid out as data before anyone comes near |
 | `Camp life: <Faction> <KIND> at <grid> moves into <the school> (<w> x <d> m, <prefab>), <n> road entries.` / `... no building fits, laid out on rings.` | Once per place a run, the first time a player comes near: the building camp life picked ([DESIGN.md](DESIGN.md#camp-life)). "Rings" means open ground: no building of 25 m² or more anywhere near; 0 road entries means the gate and barricades stand in front of the building (or off its first side facing land) |
+| `Quartermasters: <Faction>'s stronghold takes a building in <town> (suits it <n> of 3).` | A quartermaster placed by the game: the town and how well its building suits the faction ([SITES.md](SITES.md#where-a-place-stands)). 0 of 3 is any building big enough: worth a look at the photo |
+| `Quartermasters: <Faction>'s stronghold moves from <grid> to <grid> (no building to move into \| on an island).` / `... and no town has a building for it: it stays.` | Once, at the start of a saved season whose stronghold stood in the open or on an island. "It stays" on a real map is worth a report |
+| `Haven safehouses: the one at <grid> moves to <grid> in <town> (<why>).` / `... the one in <town> is on an island: given up, another is picked.` | The same for a saved safehouse: with the quartermaster, to a house in its own town, or given up |
+| `Territory: <holding> moves from <grid> to <grid> (no building where it stood).` / `Territory: <holding> is on an island: given up.` | The same for a saved outpost |
 | `Camp life: <Faction> <KIND> at <grid>: <n> of <m> planned pieces fit, laid out <where>; <c> counter(s), <s> left out facing water or a drop.` | The first time a run dresses a place, once its ground is read: how much of its plan fit and where. Few fitting everywhere: the footprint traces may be catching grass or bushes (the VERIFY); the `Sites:` line says why each was dropped |
 | `Camp life: <Faction> <KIND> at <grid>: solved, <n> pieces and <l> of its layers (the wire <p>% closed), <i> indoors, <d> dropped, laid out <where>; <c> counter(s).` | With **Solver** on, the first time a run dresses a place, once its ground is read and solved ([SITES.md](SITES.md#the-solver)); the `<n> of <m> planned pieces fit` line is the same with Solver off |
 | `Camp life: <Faction> <KIND> at <grid>: laid out again as before (<n> pieces and <l> of its layers, <where>), <c> counter(s).` | Each later visit in the run: the kept layout, no reading |

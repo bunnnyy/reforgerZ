@@ -61,6 +61,7 @@ class RZ_FactionPerks
 
 	// Quartermasters
 	protected ref array<vector> m_aQmPos = {};
+	protected ref array<vector> m_aQmWas = {};	// where a saved quartermaster stood before the start moved him (zero: not moved)
 	protected ref array<bool> m_aHasQm = {};
 	protected ref array<IEntity> m_aSpawnedQms = {};
 	protected ref map<string, float> m_mGreeted = new map<string, float>();
@@ -111,6 +112,7 @@ class RZ_FactionPerks
 		for (int i = 0; i < RZ_Factions.COUNT; i++)
 		{
 			m_aQmPos.Insert(vector.Zero);
+			m_aQmWas.Insert(vector.Zero);
 			m_aHasQm.Insert(false);
 		}
 	}
@@ -176,6 +178,10 @@ class RZ_FactionPerks
 				m_aQmPos[f] = pos;
 				m_aHasQm[f] = true;
 			}
+			else
+			{
+				MoveIfStranded(f);
+			}
 
 			IEntity qm = RZ_Util.SpawnPrefab(m_GM.PickLook(prefab, RZ_Looks.SeedAt(m_aQmPos[f])), RZ_Util.GroundPos(m_aQmPos[f]), Math.RandomFloat(0, 360));
 			if (qm)
@@ -184,6 +190,9 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where a faction's quartermaster stands, so where its stronghold is: Halcyon by the lab; the
+	//! others in the yard of a building that suits them, in a town that suits them (ChooseBuiltPos);
+	//! with no such building anywhere, near a town's middle as before.
 	protected bool ChooseQuartermasterPos(RZ_EFaction f, out vector pos)
 	{
 		if (f == RZ_EFaction.INSTITUTE && m_GM.HasLab())
@@ -192,24 +201,15 @@ class RZ_FactionPerks
 			return true;
 		}
 
-		int idx = -1;
-		switch (f)
-		{
-			case RZ_EFaction.SURVIVORS:
-				idx = RZ_Mission.PickSafestSettlement(m_GM);
-				break;
-			case RZ_EFaction.MILITARY:
-				idx = PickTown(2, 0, 60);
-				break;
-			case RZ_EFaction.BANDITS:
-				idx = PickTown(1, 20, 75);
-				break;
-		}
+		if (ChooseBuiltPos(f, pos))
+			return true;
 
-		if (idx < 0)
-			idx = PickTown(1, 0, 100);
+		array<int> towns = {};
+		StrongholdTowns(f, towns);
+		if (towns.IsEmpty())
+			return false;
 
-		RZ_Settlement s = m_GM.GetSettlement(idx);
+		RZ_Settlement s = m_GM.GetSettlement(towns[0]);
 		if (!s)
 			return false;
 
@@ -218,17 +218,171 @@ class RZ_FactionPerks
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The stronghold's building (docs/SITES.md, "Where a place stands"): of the first two dozen towns
+	//! that suit the faction, the one whose best building suits it best (a church for the Haven, a
+	//! school or a hall for Bastion, a garage for the Red Hand), on dry and even ground; the first
+	//! that is just right is taken. False when none has a building big enough.
+	protected bool ChooseBuiltPos(RZ_EFaction f, out vector pos)
+	{
+		RZ_CampLife camp = m_GM.GetCampLife();
+		if (!camp)
+			return false;
+
+		array<int> towns = {};
+		StrongholdTowns(f, towns);
+		int bestTier = -1;
+		string bestName = "";
+		foreach (int n, int idx : towns)
+		{
+			if (n >= 24)
+				break;
+
+			RZ_Settlement s = m_GM.GetSettlement(idx);
+			if (!s)
+				continue;
+
+			vector spot;
+			int tier;
+			if (!camp.BestSpotIn(f, RZ_ECampPlace.STRONGHOLD, s.m_vCenter, Math.Clamp(s.m_fRadius, 80, 220), spot, tier))
+				continue;
+
+			if (tier > bestTier)
+			{
+				bestTier = tier;
+				bestName = s.m_sName;
+				pos = spot;
+			}
+
+			if (tier >= 3)
+				break;
+		}
+
+		if (bestTier < 0)
+			return false;
+
+		RZ_Log.Info(string.Format("Quartermasters: %1's stronghold takes a building in %2 (suits it %3 of 3).", RZ_Factions.GetName(f), bestName, bestTier));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The towns a faction's stronghold may stand in, best first: the Haven's safest first; Bastion's
+	//! bigger and calmer, the Red Hand's rougher, in a random order (any town if none qualifies).
+	protected void StrongholdTowns(RZ_EFaction f, notnull array<int> towns)
+	{
+		if (f == RZ_EFaction.SURVIVORS)
+		{
+			TownOptions(1, 0, 100, towns);
+			for (int i = 1; i < towns.Count(); i++)
+			{
+				int key = towns[i];
+				float keyInf = m_GM.GetSettlement(key).m_fInfection;
+				int j = i - 1;
+				while (j >= 0 && m_GM.GetSettlement(towns[j]).m_fInfection > keyInf)
+				{
+					towns[j + 1] = towns[j];
+					j--;
+				}
+
+				towns[j + 1] = key;
+			}
+
+			return;
+		}
+
+		if (f == RZ_EFaction.MILITARY)
+			TownOptions(2, 0, 60, towns);
+		else if (f == RZ_EFaction.BANDITS)
+			TownOptions(1, 20, 75, towns);
+
+		if (towns.IsEmpty())
+			TownOptions(1, 0, 100, towns);
+
+		for (int k = towns.Count() - 1; k > 0; k--)
+		{
+			int other = Math.RandomInt(0, k + 1);
+			int held = towns[k];
+			towns[k] = towns[other];
+			towns[other] = held;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A saved quartermaster (so the faction's stronghold) on an island, or with no building near to
+	//! move into, is moved once at the start to a town with one (docs/SITES.md, "Where a place
+	//! stands"). The leader, the holding and the Haven's first safehouse follow him.
+	protected void MoveIfStranded(RZ_EFaction f)
+	{
+		if (f == RZ_EFaction.INSTITUTE && m_GM.HasLab())
+			return;
+
+		vector was = m_aQmPos[f];
+		RZ_CampLife camp = m_GM.GetCampLife();
+		string why = "";
+		if (!RZ_Mainland.OnMainland(was))
+			why = "on an island";
+		else if (camp && !camp.HasBuilding(f, RZ_ECampPlace.STRONGHOLD, was))
+			why = "no building to move into";
+
+		if (why.IsEmpty())
+			return;
+
+		// Its own town counts as free while it looks
+		m_aHasQm[f] = false;
+		vector pos;
+		bool built = ChooseBuiltPos(f, pos);
+		m_aHasQm[f] = true;
+		if (!built)
+		{
+			RZ_Log.Warn(string.Format("Quartermasters: %1's stronghold at %2 is %3, and no town has a building for it: it stays.", RZ_Factions.GetName(f), RZ_SettlementScanner.GridReference(was), why));
+			return;
+		}
+
+		m_aQmPos[f] = pos;
+		m_aQmWas[f] = was;
+		RZ_Log.Info(string.Format("Quartermasters: %1's stronghold moves from %2 to %3 (%4).", RZ_Factions.GetName(f), RZ_SettlementScanner.GridReference(was), RZ_SettlementScanner.GridReference(pos), why));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a quartermaster stood before the start moved him (MoveIfStranded). False if he wasn't.
+	bool GetQuartermasterMove(RZ_EFaction f, out vector was)
+	{
+		was = m_aQmWas[f];
+		return was != vector.Zero;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A random town of at least `minSize` in the infection range that has no quartermaster yet
 	//! and isn't the lab's (Halcyon's stronghold).
 	protected int PickTown(int minSize, float minInf, float maxInf)
 	{
 		array<int> options = {};
+		TownOptions(minSize, minInf, maxInf, options);
+		if (options.IsEmpty())
+			return -1;
+
+		return options.GetRandomElement();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every town of at least `minSize` in the infection range that has no quartermaster yet, isn't
+	//! the lab's, isn't on an island and (a saved season) holds no safehouse or outpost already.
+	protected void TownOptions(int minSize, float minInf, float maxInf, notnull array<int> options)
+	{
+		RZ_Safehouses houses = m_GM.GetSafehouses();
+		RZ_Territory territory = m_GM.GetTerritory();
 		foreach (int i, RZ_Settlement s : m_GM.GetSettlements())
 		{
-			if (s.m_iSize < minSize || s.m_fInfection < minInf || s.m_fInfection > maxInf)
+			if (s.m_iSize < minSize || s.m_fInfection < minInf || s.m_fInfection > maxInf || s.m_bIsland)
 				continue;
 
 			if (i == m_GM.GetLabSettlement())
+				continue;
+
+			float reach = Math.Max(s.m_fRadius, 300);
+			if (houses && houses.IsSavedNear(s.m_vCenter, reach))
+				continue;
+
+			if (territory && territory.IsSavedOutpostNear(s.m_vCenter, reach))
 				continue;
 
 			bool taken = false;
@@ -241,11 +395,6 @@ class RZ_FactionPerks
 			if (!taken)
 				options.Insert(i);
 		}
-
-		if (options.IsEmpty())
-			return -1;
-
-		return options.GetRandomElement();
 	}
 
 	//------------------------------------------------------------------------------------------------

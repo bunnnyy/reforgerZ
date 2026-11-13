@@ -19,6 +19,7 @@ Workbench plugins.
 
 ## Contents
 
+- [Where a place stands](#where-a-place-stands)
 - [The site grid](#the-site-grid)
 - [Real footprints](#real-footprints)
 - [The surroundings and the threat](#the-surroundings-and-the-threat)
@@ -32,6 +33,34 @@ Workbench plugins.
 - [Settings](#settings)
 - [What it costs](#what-it-costs)
 - [Simplified](#simplified)
+
+## Where a place stands
+
+A place's spot is chosen before its ground is read. The systems that own places ask camp life two
+things (`RZ_CampLife.HasBuilding`, `BestSpotIn`):
+
+| Question | Answer |
+|---|---|
+| Does a place of this kind at this spot find a building to move into? | The same pick as when it's dressed ([DESIGN.md](DESIGN.md#camp-life), "Which building") |
+| Where should a place of this kind stand in this town? | The yard of the building that suits it best within the town's radius (60 to 200 m; 80 to 220 m for a stronghold), on dry and even ground: of eight points on a ring just outside the building (14 m past its corners; 22 m for a stronghold) none is over water, and the highest is no more than 6 m above the lowest (8 m for a stronghold). No such building: the town doesn't suit |
+
+Who asks, and when:
+
+| Place | A fresh season | A saved season, once at the start |
+|---|---|---|
+| A stronghold (its quartermaster's spot; Halcyon's is the lab) | Of the first 24 towns that suit the faction (the Haven's safest first; Bastion's and the Red Hand's in a random order), the one whose best building suits it best; the first that is just right (a church; a school or a hall; a garage) is taken. No town has a building: near a town's middle, as before | On an island, or with no building to move into: moved the same way, never into a town that holds a safehouse or an outpost. Its leader, its holding and the Haven's first safehouse go with it |
+| An outpost | Of five picks, the first town with a building to move into; else the last pick, in the open | On an island: given up, and the faction founds another if it's short. No building where it stands: moved to one in its own town, its leader with it; none in town: it keeps its camp in the open |
+| A Haven safehouse | Villages with a house first, then with any building, then open ground | The one at the quartermaster follows him. No house where it stands: moved to one in its own town. On an island: given up, and another picked |
+
+A placed marker (a quartermaster, an outpost or a safehouse placed by hand) is never moved. The log
+says each move ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#7-log-lines-to-check)).
+
+**Where it stands** (the PC, 2026-11-13). Before, a stronghold could land where there was nothing to
+move into: in Workbench play the Red Hand's stood on rings on a bare hillside (score 49) and the
+Haven's on a beach, and a fresh site audit on Everon had one site at 48 with a tier 1 piece dropped
+(16 sites, mean 85). After, three fresh audits: every site moves into a building, mean 88 to 90, worst
+72 to 74, no hard failure. The saved season on the PC moved the Haven to the church in Le Moule and
+the Red Hand to a garage, and gave up two outposts and a safehouse on islands.
 
 ## The site grid
 
