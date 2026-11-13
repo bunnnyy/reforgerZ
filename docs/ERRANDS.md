@@ -122,6 +122,13 @@ errand adds "thanks". A wanderer remembers you as helped (their built memory).
   *Needs 2 food*, *Needs 8 Haven Favor*); a Trust check or a threat isn't a lock, its tag shows the
   score. While the ways show, the giver's topics wait (they're waiting on your answer). The labels
   above stay the world prompt's.
+- **Errands and jobs are separate** (the author's rule). Errands and duties count only against
+  errands and duties: the errands you may hold at once (**Errands one player may hold**, 2), one at a
+  time from a giver, one chore of yours at a place. A contract, a leader's job, a questline stage
+  and the opening's chain never count against them, and an errand never counts against a job: a
+  holding's leader offers its [Job]s and its named people their [Errand]s and [Duty]s side by side,
+  whatever you already hold from the place (`RZ_Errands.CountHeld`, `HasOpenOffer` and `ChoresAt`
+  leave the opening's handed steps out).
 - **The reason in their voice.** Asked when nothing's true, or when it isn't safe, the giver says
   why: *"Not while that lot's at the fence."*, *"You've your hands full already."*, *"Nothing on the
   board for you. Check back after the shift change."*
@@ -758,8 +765,8 @@ and the refusals in [Being asked](#being-asked)):
 | Shown | When |
 |---|---|
 | *You've done your shift. Ask again in a while (20 min at most)* | Every duty you could have is on its gap |
-| *You've a job here already. Finish that one* | You hold an errand or a duty at this place |
-| *Every job here is taken. Ask again when one is done* | Three duties are live at the place |
+| *You've a chore of theirs already. Finish that one* | You hold an errand or a duty at this place (a job, a quest or the opening's chain never counts) |
+| *Every chore here is taken. Ask again when one is done* | Three duties are live at the place |
 | *Needs Known with Bastion* (on a way's reply, not the ask) | The patrol's long round, below rung 3 |
 | *Everyone has work in hand. Ask again shortly* | The server's 12 live errands are all out |
 | *Nothing while you're Watched with Bastion, except to make amends* | Watched, and no amends work is true |

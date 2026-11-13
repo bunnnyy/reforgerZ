@@ -4547,6 +4547,10 @@ on the talk screen says why something wasn't dealt)
   yourself" pays after 3 minutes at the gate and the guard is back next visit.
 - [ ] Walk past a house or post: a named person waves you over (once, then not again for 8
   minutes); never while infected are within 30 m or someone fired near you.
+- [ ] Errands and jobs are separate: with the opening's chain still running, and with a contract
+  taken from a holding's leader, ask a named person at that holding **Anything need doing?**: an
+  errand or a duty is offered (never "You've a chore of theirs already" unless you hold one of
+  their errands or duties), and the leader still lists his jobs.
 - [ ] A held errand whose fact stops holding (the truck comes in, the fault is fixed by someone
   else) ends with the giver's line and no pay.
 - [ ] Errand Fame stops at 39 with a faction and at 10 a season day; at 15+ Infamy an errand pays

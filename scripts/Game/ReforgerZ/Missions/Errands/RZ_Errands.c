@@ -1561,13 +1561,13 @@ class RZ_Errands
 			return string.Format("Nothing while you're Watched with %1, except to make amends", RZ_Factions.GetShortName(p.m_iFaction));
 
 		if (dealWhy.Contains(NO_MINE))
-			return "You've a job here already. Finish that one";
+			return "You've a chore of theirs already. Finish that one";
 
 		if (dealWhy.Contains(NO_GAP))
 			return string.Format("You've done your shift. Ask again in a while (%1 min at most)", RZ_Util.RoundToInt(m_Settings.m_fDutyGapMinutes));
 
 		if (dealWhy.Contains(NO_TAKEN))
-			return "Every job here is taken. Ask again when one is done";
+			return "Every chore here is taken. Ask again when one is done";
 
 		return WHY_NOTHING;
 	}
@@ -1855,12 +1855,15 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Errands this player holds. An opening's chain step is the life's first quest, not an errand
+	//! (errands and quests are separate: docs/ERRANDS.md, "Errands and jobs are separate"), so it
+	//! never counts against the errands a player may hold.
 	protected int CountHeld(int playerId)
 	{
 		int n = 0;
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD)
+			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.HELD && !e.IsOpening())
 				n++;
 		}
 
@@ -1872,7 +1875,7 @@ class RZ_Errands
 	{
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.OFFERED)
+			if (e.m_iAsker == playerId && e.m_eState == RZ_EErrandState.OFFERED && !e.IsOpening())
 				return true;
 		}
 
@@ -2874,7 +2877,7 @@ class RZ_Errands
 		int n = 0;
 		foreach (RZ_Errand e : m_aErrands)
 		{
-			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || (playerId > 0 && e.m_iAsker != playerId))
+			if (e.m_eState == RZ_EErrandState.DONE || !e.m_Def || e.m_Def.m_bCard || e.IsOpening() || (playerId > 0 && e.m_iAsker != playerId))
 				continue;
 
 			// A duty is one of yours here, but takes none of the place's chore slots
