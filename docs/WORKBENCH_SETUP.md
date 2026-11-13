@@ -2763,6 +2763,10 @@ session, tick off:
   dusk), its task is a hold at a work site, and it pays 3 Favor. Ask the same person again: *You've
   done your shift. Ask again in a while*. After the third piece of work for one faction: *"They know
   your face now"*.
+- [ ] Duties alongside ([ERRANDS.md](ERRANDS.md#duties)): at a house where something is true (a thin
+  pot, a dry generator), the giver's replies list *[Errand] The Pot* and under it *[Duty] ...*. Pick
+  the duty: its ask and its ways show, as an errand's do. Without the talk screen (**Dialogue**
+  off), *Anything need doing?* gives the pressing one only.
 - [ ] The sorting duties ([ERRANDS.md](ERRANDS.md#the-sorting-duties)): after that third piece of
   work, ask a nurse, a medic or a lookout until they give The Line at the Door or Laying Out (the
   Halcyon lab's Bench Work needs Known). At the place three things wait in a row (bodies, people,

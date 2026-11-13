@@ -150,7 +150,8 @@ open offer, 8 minutes since the last unasked offer, not within 300 m of a runnin
 of the lab during the final stand, or 2 km of the Long Table's farm; and room in the budget. Three
 players at most each 30 s, round-robin.
 
-**Candidates** are the routines, [duties](#duties) and cards anchored to the giver's place (a safehouse, a Bastion
+**Candidates** are the routines, [duties](#duties) and cards anchored to the giver's place (a
+pressing one deals before any duty; the duty is dealt from its own reply beside it) (a safehouse, a Bastion
 post, a Red Hand camp, a Halcyon station or the lab, any holding, a wanderer and their role),
 checked cheapest first: the card done this season or two cards today; the routine's cooldowns; a
 running clock for timed ones; for whom (standing, background); **Why** (the live facts, which fill
@@ -424,10 +425,15 @@ and ledger), with three differences that put work in reach from the first day:
 - **It's always there to be asked for.** A routine or a card needs something to be true right now.
   A duty needs only the place to stand. So a named person asked *Anything need doing?* has work for
   a newcomer every time, unless one of the stated reasons below applies.
-- **What's true comes first.** With a routine or a card to ask, a giver asks that, and a duty only
-  if it's their own work (the cook's kitchen, the nurse's washing down: the duty's roles). With
-  nothing true, any duty of the place may be asked, the giver's own first (×2 for their role). A
-  duty is never called out, waved over, put on a board or sent as a radio ask: it's asked for.
+- **Always on offer, alongside.** A named person with a duty to give always shows one. With
+  something pressing to ask (a routine or a card that's true now), the talk screen lists that
+  first, as *[Errand] ...*, and their duty after it, as ***[Duty] Kitchen Duty***
+  (`RZ_Errands.TalkDuty`); you take one of the two. With nothing pressing, the errand reply itself
+  is the duty. Which duty: the giver's own work first (×2 for their role: the cook's kitchen, the
+  nurse's washing down), and a rung you've just reached before the ones below it.
+- **The pressing one overrides** wherever only one can be offered: the action menu's single
+  *Anything need doing?* without the talk screen, and anything unasked. A duty is never called out,
+  waved over, put on a board or sent as a radio ask: it's asked for.
 - **A short gap, not the routines' cooldowns.** One kind of duty (the kitchen, in whatever faction's
   words) isn't given to the same player again for **Duty gap** minutes (20) after it's done. No
   per-place day, no 3 hours anywhere. Three duties may be live at one place at once, one per player

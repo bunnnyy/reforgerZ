@@ -305,6 +305,9 @@ class RZ_Errands
 	protected ref map<string, float> m_mLastUnasked = new map<string, float>();	// ident -> clock
 	protected ref map<int, string> m_mLastWhy = new map<int, string>();			// playerId -> the last deal and why the rest weren't
 	protected ref map<int, string> m_mPrefer = new map<int, string>();			// playerId -> the errand the talk screen named (Peek), dealt first when asked
+	protected ref map<int, string> m_mPreferDuty = new map<int, string>();		// the same for the duty named beside it
+	static const int DEAL_ANY = 0;		// the pressing one, else a duty
+	static const int DEAL_DUTY = 1;		// a duty only (the one offered beside the pressing errand)
 	protected ref map<string, ref RZ_ErrandStats> m_mStats = new map<string, ref RZ_ErrandStats>();
 	protected ref map<string, int> m_mCounters = new map<string, int>();		// "house.<idx>": turns done there this season
 	protected ref map<int, int> m_mHousePop = new map<int, int>();			// safehouse -> people last seen
@@ -1614,6 +1617,62 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The duty a giver offers beside their pressing errand (docs/ERRANDS.md, "Duties"): true with
+	//! its `title` when they have something pressing for this player and a duty as well. False when
+	//! the errand reply is already their duty (nothing pressing), when the player holds something of
+	//! theirs, or when there's no duty to give now. Deals nothing.
+	bool TalkDuty(int playerId, string giverKey, IEntity user, out string title)
+	{
+		title = "";
+		RZ_NamedPerson p = m_People.Get(giverKey);
+		if (!IsOn() || !m_Settings.m_bDuties || !p || !user || p.m_eKind == RZ_ENamedPlace.WANDERER)
+			return false;
+
+		if (FindFor(playerId, giverKey) || !Refusal(playerId, p, user).IsEmpty())
+			return false;
+
+		string why;
+		RZ_Errand pressing = Deal(playerId, p, user.GetOrigin(), false, why, true);
+		if (!pressing || pressing.m_Def.m_bDuty)
+			return false;
+
+		RZ_Errand duty = Deal(playerId, p, user.GetOrigin(), false, why, true, DEAL_DUTY);
+		if (!duty)
+			return false;
+
+		m_mPreferDuty.Set(playerId, duty.m_Def.m_sKey);
+		title = duty.Fill(duty.m_Def.m_sTitle);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The duty beside the pressing errand, asked for (the talk screen's [Duty] reply).
+	void AskDuty(int playerId, string giverKey, IEntity owner, IEntity user)
+	{
+		RZ_NamedPerson p = m_People.Get(giverKey);
+		if (!IsOn() || !p || !user || FindFor(playerId, giverKey))
+			return;
+
+		string refusal = Refusal(playerId, p, user);
+		if (!refusal.IsEmpty())
+		{
+			m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, refusal);
+			return;
+		}
+
+		string why;
+		RZ_Errand duty = Deal(playerId, p, user.GetOrigin(), false, why, false, DEAL_DUTY);
+		m_mLastWhy.Set(playerId, why);
+		if (!duty)
+		{
+			m_GM.Say(playerId, p.m_sTitle, p.m_iFaction, string.Format("%1.", NothingWhy(why, playerId, p)));
+			return;
+		}
+
+		ShowOffer(duty, owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A held errand of this player's from this giver whose step is done: reporting back hands it in.
 	bool ReadyToHandIn(int playerId, string giverKey)
 	{
@@ -2160,7 +2219,7 @@ class RZ_Errands
 	//! Deal this giver's best true errand to this player: routines and cards anchored to the giver's
 	//! place, checked cheapest first (on, cooldowns, why, for whom, still, holds), scored, and picked
 	//! weighted among the top three. `why` says what was dealt and why the rest weren't (/errands).
-	RZ_Errand Deal(int playerId, RZ_NamedPerson p, vector from, bool unasked, out string why, bool peek = false)
+	RZ_Errand Deal(int playerId, RZ_NamedPerson p, vector from, bool unasked, out string why, bool peek = false, int mode = 0)
 	{
 		why = "";
 		if (m_aErrands.Count() >= MAX_LIVE)
@@ -2195,6 +2254,9 @@ class RZ_Errands
 
 			// A duty is asked for, never called out or waved over
 			if (d.m_bDuty && (!m_Settings.m_bDuties || unasked))
+				continue;
+
+			if (mode == DEAL_DUTY && !d.m_bDuty)
 				continue;
 
 			string no = "";
@@ -2272,8 +2334,8 @@ class RZ_Errands
 				why += string.Format("%1: %2. ", d.m_sKey, no);
 		}
 
-		// What's true right now comes first: with a routine or a card to ask, a duty is asked only by
-		// the one whose own work it is (the cook's kitchen, the medic's line)
+		// The pressing one overrides: with a routine or a card to ask, this deal is that, and the
+		// giver's duty is offered beside it (TalkDuty, AskDuty); with nothing pressing, it's a duty
 		bool anyTrue;
 		foreach (RZ_Errand mt : made)
 		{
@@ -2283,8 +2345,7 @@ class RZ_Errands
 
 		for (int md = made.Count() - 1; md >= 0 && anyTrue; md--)
 		{
-			RZ_ErrandDef dd = made[md].m_Def;
-			if (!dd.m_bDuty || (!dd.m_sRoles.IsEmpty() && dd.m_sRoles.Contains(p.m_sRole)))
+			if (!made[md].m_Def.m_bDuty)
 				continue;
 
 			made.Remove(md);
@@ -2339,7 +2400,16 @@ class RZ_Errands
 			return made[order[0]];
 
 		string prefer;
-		if (m_mPrefer.Find(playerId, prefer))
+		if (mode == DEAL_DUTY && m_mPreferDuty.Find(playerId, prefer))
+		{
+			m_mPreferDuty.Remove(playerId);
+			foreach (int di, RZ_Errand dutyCand : made)
+			{
+				if (dutyCand.m_Def.m_sKey == prefer)
+					pick = di;
+			}
+		}
+		else if (mode != DEAL_DUTY && m_mPrefer.Find(playerId, prefer))
 		{
 			m_mPrefer.Remove(playerId);
 			foreach (int pi, RZ_Errand cand : made)

@@ -1,66 +1,217 @@
 # Duties
 
-**Designed, not built.** The author's ask of 2026-11-13: work from the first day, low-rung jobs
-that build trust, taking over a place's duties (patrols, hunts with their people, lab work,
-sanitising arrivals, the morgue, the kitchen), repeatable and varied, true to the world's state,
-and more sensitive the more you're trusted.
+**Designed, not built.** What's built is in the docs and not repeated here: work from the first
+day ([docs/MISSIONS.md](../docs/MISSIONS.md#who-gets-offered-what)), the duty rules, the trust
+ladder, the duties of rungs 1 to 3, the sorting duties played at their place and the duties'
+people ([docs/ERRANDS.md](../docs/ERRANDS.md#duties)). This file holds what waits. Each commit
+moves what it builds into those docs and cuts it from here.
 
-What's built is in the docs and not repeated here: work from the first day (a giver makes a
-contract on asking, [docs/MISSIONS.md](../docs/MISSIONS.md#who-gets-offered-what)), the duty
-rules, the trust ladder, the duties of rungs 1 to 3, the sorting duties played at their place and
-the duties' people ([docs/ERRANDS.md](../docs/ERRANDS.md#duties)). This
-file holds the duties that wait. Each phase moves what it builds into those docs and is cut from
-here.
+## The author's rules for every duty
 
-## The duties that wait
+From 2026-11-13, in the author's words:
 
-The rungs are the built ladder's: 2 they know your face, 3 Known, 4 Trusted.
+1. *"Make the games preferably in person. Rather than a menu. This goes for anything that might be
+   a game. Menu can be created as part of game."* (Built as a rule:
+   [docs/UI.md](../docs/UI.md#default-first-then-menus).)
+2. *"Patrols, and others etc. something interesting should happen or see something or whatever.
+   Doesn't just have to be shooting."* Every patrol, hunt, watch and walk-out has something to see,
+   find or decide, drawn from the world's real state, most of it not a fight, with a choice where
+   one fits (report it, keep it quiet, help, take), remembered by the people it concerns. A find
+   reported well is how trust is earned; a find pocketed is how it's lost, if seen. The other
+   duties get small turns too (the kitchen runs short, the well rope snaps).
+3. *"Always have duties offer alongside. But yes, the more pressing takes over as priority."*
+4. *"Start building trusted too."*
+5. *"Adjust about 60% of these to be like the observation ward in a way, where you have to solve
+   and figure things out and you really feel like you're leading this errand/job."* For at least
+   twelve of the twenty below (and the three sorting duties), the heart is working something out
+   from what you find in person (signs, marks, counts that don't match, what people say against
+   what you see), a conclusion that can be right or wrong, and consequences either way. And you
+   lead: the people with you do what you decide. The other 40% stay simple, physical and quick, so
+   a newcomer isn't examined on day one.
 
-| Duty | Rung | The Haven (a house) | Bastion (a post) | The Red Hand (a camp) | Halcyon (a station, the lab) |
-|---|---|---|---|---|---|
-| A watch | 2 | the roof at dusk | the wire, a night hour | the toll, a quiet hour | the gate log |
-| Stock-taking | 3 | the larder against the book | the armoury count | the cut, counted twice | the cold store |
-| The names | 4 | The Book of Names: who is told, and how | The casualty return | The debt book | The authors' list |
-| Who gets a dose | 4 | the house's one dose | the sergeant's list | who the crew pays for | The Trial List |
-| The lock-up | 4 | the one at the gate overnight | The Stockade Watch | the debtor in the shed | isolation |
-| A cull | 4 | the old man's dogs | a pack's strays at the wire | — | the animal house |
+Keep everything inside the caps and guardrails. A longer or extended run pays a little more. Every
+duty counts toward the trust ladder at its rung. Where a routine, card or mission already is the
+duty, extend that instead of adding a twin.
 
-### How each would play
+## Rung 4, the Trusted
 
-- **A watch.** A post held for a stretch of the place's night or dusk: stay at it, and report
-  what passes (a light, a walker, one of the infected at the wire). Something from the world comes
-  by, or nothing does, and the report is the work. Never a timer you only wait on: two or three
-  things to mark, each a choice of what it was.
-- **Stock-taking.** The sorting duties' game with a fourth skin: crates on the shelf against the
-  book. **Tally**, **query** or **write off**. A shortage written off is someone's theft
-  covered; a query is someone accused.
-- **The names** (rung 4). The list of the place's dead this week, and who is told. Each name is a
-  choice with a cost: tell the family, tell the leader, hold it back a day. It writes the
-  world's memory, so it needs its own look at what it may record.
-- **Who gets a dose** (rung 4). Only once doses exist. A list of three, one dose. It must never
-  hand a dose to the player, and what it writes about the cure's count needs the finale's rules
-  read first.
-- **The lock-up** (rung 4). A night's watch on someone held: they talk. Let them out, keep them
-  in, or pass on what they said.
-- **A cull** (rung 4). Out with the place's people to put down what's at the wire: a real fight,
-  near players only, with the squad the patrols use.
+| Duty | The Haven (a house) | Bastion (a post) | The Red Hand (a camp) | Halcyon (a station, the lab) |
+|---|---|---|---|---|
+| The names | The Book of Names: who is told, and how | The casualty return | The debt book | The authors' list |
+| Who gets a dose | the house's one dose | the sergeant's list | who the crew pays for | The Trial List |
+| The lock-up | the one at the gate overnight | The Stockade Watch | the debtor in the shed | isolation |
+| A cull | the old man's dogs | a pack's strays at the wire | — | the animal house |
 
-### What could still vary
+- **The names.** The list of the place's dead this week, and who is told. Each name is a choice
+  with a cost: tell the family, tell the leader, hold it back a day. It writes the world's memory.
+- **Who gets a dose.** A list of three, one place. It must never hand a dose to the player.
+- **The lock-up.** A night's watch on someone held: they talk. Let them out, keep them in, or pass
+  on what they said.
+- **A cull.** Out with the place's people to put down what's at the wire: a real fight, near
+  players only, with the squad the patrols use.
 
-Complications that are one line and one change, on the duties already built: a pack was heard
-last night (the patrol's round goes the other way), the cure is close (Halcyon's trays pay a
-little more), a truck is due (the kitchen wants it done before).
+Also waiting from the first design: **a watch** (rung 2: a post held at dusk or night, two or three
+things come by, each a choice of what it was) and **stock-taking** (rung 3: the sorting game's
+fourth skin, crates against the book: tally, write off, query; a shortage written off is someone's
+theft covered, a query is someone accused).
+
+## The twenty approved duties (round 3)
+
+Approved by the author with the changes below. Lowest rungs first, each complete, in person, with
+things that happen, one commit per faction. **W** = work it out and lead; **S** = simple, physical
+and quick.
+
+### The Haven
+
+| Duty | Kind | What it is |
+|---|---|---|
+| The school room | S | Count heads, find the one hiding |
+| The door round at dusk | W | Knock, listen, chalk the mark. Which house is hiding someone |
+| The roll call | W | The list ticked in person against the kitchen's count. Who's missing, and why |
+| The garden | W | See below |
+| The swap table | W | See below |
+
+- **The garden.** *"Good general concept about working the garden, but make it more interesting and
+  interactive."* A plot of real beds you work with your hands, whose state is kept as data per
+  house between visits (dug, planted with what, watered, ripe): dig a bed, choose what goes in from
+  the seed tin (it changes what the house eats later), carry water from the well, weed, harvest
+  what's ripe to the kitchen. Things that happen: crows or rabbits at the beds (scare them, or a
+  snare gives meat), blight on a row (pull it or lose the bed; work out what's killing the row),
+  something dug up (a tin box, a bone, a buried rifle, a child's box of things: hand it in or keep
+  it), frost coming (cover the beds before dark), a stranger caught taking carrots (let go, bring
+  in, give some), a quarrel over whose bed it is, the well low.
+- **The swap table** (replaces the night candles). *"Swap table is good, make it super interesting
+  with dialogue and lots of different items."* You run the Haven's barter table in person: people
+  come up one at a time with real things laid on the table (a wide range drawn from the loot tables,
+  the stack's items and the Suspicious Item Props items: tins, tools, clothes, medicine, a watch, a
+  ring, papers, a dead man's ID, cash that's worth nothing now, something stolen), say what they
+  want for them, and you talk it through and judge it: fair, not fair, a counter-offer, refuse, call
+  someone over. Real conversations (`dialogue/**/*.rzd`, many short ones with their own people,
+  wants and tells, in the voices of docs/WRITING.md) and things to notice: a stolen item its owner
+  recognises across the room, a wedding ring for two tins, a hoarder cornering the candles, a child
+  with a dead man's watch, a man swapping his coat in the cold, medicine that's really aspirin,
+  someone trading for somebody who can't come themselves, a Red Hand face buying for the camp. What
+  you allow changes what the house has and how people speak to you after.
+
+### Bastion
+
+| Duty | Kind | What it is |
+|---|---|---|
+| Gate duty | W | Papers checked by eye at the barrier, forged ones among them, from the tells |
+| Stag at the wire | W | A night post: watch sectors, report what moves. What was it that moved |
+| The loudspeaker tape | S | Swap the tape at a perimeter post and test it |
+| Kit inspection | W | See below |
+| The field telephone | W | See below |
+
+- **Kit inspection.** *"Give more varieties to what can happen, maybe leads to a small sub-mission
+  of find the item or other things."* What's wrong varies (a magazine, a radio battery, a bayonet, a
+  canteen, the section's map, a morphine syrette, a man's tags or letters missing; a fouled barrel;
+  a round left in the chamber; a serial on the lost list; contraband in a kit: vodka, cigarettes, a
+  forged pass, a Red Hand armband), and so does what you do about it (write it up, cover for the
+  private who begs, confiscate, report who had the listed rifle). A missing item can open a short
+  follow-on to find it, where it truly went this time: under a bunk, lost at the last patrol's
+  contact point, sold at a Red Hand toll, traded for food at a Haven house, gone with a man who
+  walked off (find him: talk him back or cover). Finishing the follow-on pays more. Where did it
+  really go, and who's lying.
+- **The field telephone.** *"Add more things that can happen."* Walk the wire, find the break,
+  splice it. The break varies (a fallen tree, chewed, cut clean, wire taken for snares, a junction
+  box under water, a body or a snagged infected tangled in it, a tap spliced in that leads to a
+  hidden listening set and whoever sits at it, the line running through a house someone is living
+  in quietly), and so does the test call after the splice (the right post, nobody, a voice that
+  isn't ours, breathing). Broken or cut, by whom, from the signs at the break. Optional extension:
+  run new wire to a further post.
+
+### The Red Hand
+
+| Duty | Kind | What it is |
+|---|---|---|
+| Stripping a wreck | S | By hand, piece by piece; something under the seat |
+| The count | W | Sort a haul on a tarp: keep, sell, the boss's; a marked item. What's marked, who skimmed |
+| The still | S | See below |
+| The toll | W | See below |
+| Spotter | W | See below |
+
+- **The still.** *"Add more varieties to this mission idea, it's good."* Batches differ (potato,
+  fruit, beet), the steps are done by hand (load the mash, light and feed the fire with wood, keep
+  the gauge in its band by feeding or damping, pour off the first runnings, bottle), and things
+  happen (a boil-over and fire, a bad batch if the cut is skipped and someone pays for it, a thief
+  at the bottles, smoke that draws a patrol or the infected, the boss wants it stronger, a Haven
+  buyer wants it for medicine, the coil cracks and needs a part, a rival crew wants the recipe). It
+  makes real vodka (BanditGear's bottle), some of it yours.
+- **The toll.** *"Add more things that can happen, more random encounters, etc. Opportunities to
+  extend mission for extra fame."* **About 50 different interactions**: distinct passers-by and
+  situations, each with who they are, what they carry, what they say, what you can do and what
+  follows; written as data the duty draws from (weighted by the world's state: the stage, feuds and
+  truces, who holds the road, the hour, the weather), so a shift of four or five never repeats
+  soon. Kinds: a family with a handcart, a Haven courier with medicine, a deserter in Bastion kit, a
+  Halcyon tech with a sealed case, a child alone, an old man with nothing but news, a bitten man
+  hiding it, a rival crew's runner, someone armed who won't pay, a cart of the dead, forged Bastion
+  papers, a man who offers to work it off, one who claims the boss's protection. Answers: take
+  goods, take a cut, wave through, turn back, rob them, take news instead. Extensions for more pay
+  and Fame: escort someone through the territory for a bigger fee, run down one who bolts without
+  killing them, follow a suspicious one to see where they go, hold or bluff when a Bastion patrol
+  comes up the road, the boss arriving to count the take.
+- **Spotter.** *"More varieties again, but very good."* A hill, binoculars, mark the board. What you
+  watch varies (a road, a Bastion post's shift change, a Haven truck's route, a Halcyon sampling
+  team, a pack's lair at dusk, a rival camp), and what happens (your glass gives you away and they
+  come looking: lie still, using stealth as built; weather closes in; another spotter climbs your
+  hill; you see what you shouldn't: a hand-over, a killing, a drop; someone you know walks into
+  what's planned: warn them or keep quiet; a night watch by sound). Work out the pattern you were
+  sent to learn. Your count goes on the camp's board and matters to what the crew does next, in
+  data.
+
+### Halcyon
+
+| Duty | Kind | What it is |
+|---|---|---|
+| The sample round | W | Swabs from marked spots round a town, in the suit. Find the source from the readings |
+| The decon line | W | See below |
+| The observation ward | W | See below |
+| The incinerator | W | See below |
+| The cold chain run | W | See below |
+
+- **The decon line.** *"More varieties on what can happen, this is super good."* **15 kinds of
+  arrival and 25 faults**, combined per run. Arrivals (who, from where, in what state, how they
+  take being checked): a sampling team from a hot town, a body-bag detail, a Bastion visitor who
+  won't give up his kit, a recruit doing it wrong, a child brought for testing, the director, and
+  more. Faults (what's wrong, how it shows when you look in person, the right call, what a wrong
+  call costs): a torn suit, a cracked visor, a splash on a boot, a leaking sample case, a filter
+  past its hours, a bite under the suit, something smuggled under it (a pet, a letter, vials), and
+  more. Your stations are worked by hand (spray, brush, rinse, the lamp, the seal tug, the log) and
+  can run short (disinfectant, water); you can pass, re-run, send to the room, report or cover. A
+  bad pass has a cost later; too strict has one too.
+- **The observation ward.** *"More things you can observe, more intricate diagnosis, etc. more
+  options of what to do."* Signs taken in person at each bed (temperature, pulse, eyes to a torch,
+  the skin and the bite's edge, breath, speech, appetite, tremor, temper, sleep, the chart's
+  history at the bed's foot), a diagnosis worked out from them (a plain fever, each stage of the
+  infection, the trial dose's side-effects, someone faking to get out or to get the dose, fear),
+  and several things to do (fluids, cooling, restraints, a sedative, isolation, call the doctor,
+  tell the subject the truth, let family in, write the chart true or the way the researcher wants).
+  It feeds the research where it's done well, and a missed turn is a turned subject in the ward.
+- **The incinerator.** *"More varieties again I like it."* Sealed bags to the burn pit. What's
+  really in a bag varies against its label (clinical waste, suits, a whole body nobody logged,
+  files someone wants gone: read, burn, keep or pass on; live samples sent to burn by mistake; a bag
+  that moves; things stripped from the dead; ammunition that mustn't burn; wet bags that won't
+  light without fuel), and around it (the log doesn't match the bag count, someone asks for one
+  more off the books, the smoke draws questions). The log against the bags.
+- **The cold chain run.** *"More varieties of items, and things that can happen."* Cargo between
+  station and lab. It varies (trial vials, blood samples, a culture that must stay level, doses,
+  sealed results, a heavy cold box) with its own rule each (time, no running, upright, dark,
+  unopened), and things happen (the power out at the far end, a checkpoint wants it opened, a toll
+  wants the box, someone begs for one dose, the cold pack fails and you need a cellar, a well or a
+  stream, a fall, nobody there to receive it, the count one short at the hand-over). Your plan when
+  it goes wrong.
 
 ## Order of work
 
-1. **A watch**, then **stock-taking** (the table's fourth skin).
-2. **Rung 4**, each with its record and its consequence: the names, who gets a dose, the lock-up,
-   a cull. These touch the houses' people and the cure's doses, so each needs its own look at
-   what it may write.
+1. **Things that happen** on the duties built (rule 2), and the small turns on the chores.
+2. **Rung 4**, a watch and stock-taking.
+3. **The twenty**, one commit per faction, lowest rungs first.
 
 ## What it must not do
 
-- No new reputation system, no pay outside the ledger's caps, no loot or doses handed out.
+- No new reputation system, no pay outside the ledger's caps, no loot or doses handed out beyond
+  what a duty names (the still's vodka, a snare's meat).
 - No bodies or props away from players; a squad only while its player is near (the escort block's
   rules and cap).
 - Nothing a pad can't do, nothing that needs reading at speed.
