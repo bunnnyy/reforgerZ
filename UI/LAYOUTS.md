@@ -678,29 +678,25 @@ Frame (root, full screen)
    │     ├─ Panel  MarkerRingN   the frame's size, border, hidden unless the job is selected (tinted)
    │     ├─ Image  MarkerDotN    32 × 32 at (7, 7), tinted by the job's state
    │     └─ Text   (MarkerNumN)  over the dot, mono bold 20, #15171A, "1" … "5"
-   ├─ Text   LoomGoal       at (48, 120), 640 × 28, mono bold 22, amber, hidden: "CUT TWO WIRES: THE IGNITION AND THE STARTER", shown with the loom
-   ├─ Text   LoomGoalSub    at (48, 150), 640 × 26, condensed 20, #D9D2BE, hidden: "Leave the feed, the horn and the lamps.", shown with the loom
-   ├─ Frame  Loom           at (48, 182), 640 × 450, hidden: the loom, shown in CarView's place at a hotwire
-   │  ├─ Image  (LoomBg)      640 × 256, #0C0E0F, and Panel (LoomLine), its #2A2E31 border
-   │  ├─ Frame  WireBox0 … WireBox4   120 × 240 each at (10 + 124 × N, 8): one wire
-   │  │  ├─ Image  WireBgN      the box's size, #1B1F22, shown on the picked wire
-   │  │  ├─ Text   WireLabelN   at (0, 4), mono bold 16, centred: what it's known to be ("FEED", and
-   │  │  │                      once cut "IGNITION", "STARTER", "HORN", "LAMPS"; tinted)
-   │  │  ├─ Image  WireTopN, WireMidN, WireBotN   the wire, top to bottom: 14 wide at x 53, from y 34
-   │  │  │                      (70, 20 and 70 tall). The script places, sizes (30 wide when thick)
-   │  │  │                      and tints them; WireMidN is hidden once the wire is cut
-   │  │  ├─ Frame  WireStripesN hidden unless striped: four dark bands 14 × 8 over the wire
-   │  │  │                      (WireStripeAN … WireStripeDN at y 48, 76, 136, 164)
-   │  │  ├─ Image  WireEndAN, WireEndBN   the cut ends, hidden until cut: copper, or soot for a wrong cut
-   │  │  ├─ Text   WireNameN    at (0, 198), mono bold 18, centred, bone: the colour in words ("RED")
-   │  │  ├─ Text   WireKindN    at (0, 220), regular 16, centred, dim: "thick", "striped" or "plain"
-   │  │  ├─ Panel  WireFocusN   the box's size, amber border, shown on the picked wire
-   │  │  └─ Button WireN        the box's size, on top, no children: a click cuts the wire (its tag is N)
-   │  ├─ Text   (LoomLabel)   at (0, 268), mono bold 18, dim, "THE STICKER"
-   │  ├─ Text   LoomStrikes   right-aligned, ending at (640, 268), mono bold 18 ("RIGHT 0 OF 2 · WRONG 0 OF 2", red once a cut was wrong)
-   │  └─ Text   LoomClues     at (0, 298), 640 × 150, condensed 22, #F4F0E6, wraps: the sticker's lines
-   ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job said (hidden when
-   │                        empty). The script moves it to (48, 574) while the loom is up
+   ├─ Frame  Loom           at (48, 120), 640 × 262, hidden: the loom, shown in CarView's place at a hotwire
+   │  ├─ Image  (LoomBg)      640 × 262, #0C0E0F, and Panel (LoomLine), its #2A2E31 border
+   │  ├─ Image  LoomBar0 … LoomBar47   the wires' bars, 6 thick, #C9C3B3, hidden: the script shows,
+   │  │                      places and sizes three a wire a turn (down, across, down) between y 52
+   │  │                      and y 218, and hides the rest
+   │  ├─ Frame  PlugBox0 … PlugBox3   76 × 36 each at (72 + 140 × N, 22): a plug, over column N
+   │  │  │                      (the columns' middles are x 110, 250, 390, 530)
+   │  │  ├─ Image  PlugBodyN    64 × 24 at (6, 6), tinted: #C9C3B3, amber when picked, #3A3E42 when dead
+   │  │  ├─ Text   PlugDeadN    over the body, mono bold 18, dim, "X": shown on a dead plug
+   │  │  ├─ Panel  PlugFocusN   the box's size, amber border, shown on the picked plug
+   │  │  └─ Button PlugN        the box's size, on top, no children: a click cuts that wire (its tag is N)
+   │  ├─ Image  Socket0 … Socket3   64 × 24 at (78 + 140 × N, 218), tinted: #3A3E42, the lit one amber
+   │  ├─ Text   SocketWord0 … SocketWord3   140 × 18 at (40 + 140 × N, 243), mono bold 15, amber, centred,
+   │  │                      "IGNITION", hidden: only the lit socket's shows
+   │  ├─ Text   (LoomAsk)     at (14, 2), mono bold 18, dim, "WHICH WIRE?"
+   │  └─ Image  LoomPip0 … LoomPip3   14 × 14 at (612 − 20 × N, 6), hidden: one per wrong cut allowed
+   │                         (up to four), #3A3E42, red once used
+   ├─ Text   CarStatus      at (48, 392), 640 × 300, regular 24, #F4F0E6, wraps: what the last job or cut said
+   │                        (hidden when empty)
    ├─ Text   (JobsLabel)    at (730, 120), mono bold 18, dim, "THE JOBS"
    ├─ VerticalLayout Jobs   at (730, 152), 662 wide: the job rows
    ├─ HorizontalLayout Prompts  at (48, 740): the footer prompts the script makes
@@ -742,8 +738,7 @@ Button JobRow (root, 6 below it)
 
 State colours (the script tints them): done olive `#9AA35E`, can do now or under way amber
 `#E3A33B`, missing with nothing for it red `#D9574C`. The tag's colours are the same three, by what
-the car has. Wire colours: red `#C8352B`, yellow `#F2C230`, green `#5E9E5C`, blue `#4F8CC8`, white
-`#E8E2D0`; cut ends copper `#D69454` or soot `#46403A`. Unlike the mockup, the markers, the ring and the pad
+the car has. The loom's wires are all one colour, `#C9C3B3`, on purpose. Unlike the mockup, the markers, the ring and the pad
 keys are square (no circle texture), the row's button shows its word without the pad key (the
 footer prompts show A), and both wheels are drawn on the picture.
 

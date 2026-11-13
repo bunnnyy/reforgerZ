@@ -109,14 +109,17 @@ class RZ_CarSettings
 	[Attribute("0.1", desc: "Chance a Mechanic's hotwiring fails")]
 	float m_fMechanicHotwireFailChance;
 
-	[Attribute("1", desc: "Wire cutting: on the repair screen, Hotwire opens the loom under the column and you cut the right two of five wires (the timers and fail chances above are for the car's prompts, where the screen isn't used). Off = the timed hotwire on the screen too")]
+	[Attribute("1", desc: "Wire cutting: on the repair screen, Hotwire opens the loom under the column: four wires in a tangle, and you cut the one that runs to the ignition (the timers and fail chances above are for the car's prompts, where the screen isn't used). Off = the timed hotwire on the screen too")]
 	bool m_bWireCutting;
 
-	[Attribute("2", desc: "Wire cutting: wrong cuts before the loom shorts and the attempt fails with all of Hotwire heat (cutting the feed shorts it at once)")]
+	[Attribute("2", desc: "Wire cutting: wrong cuts before the loom shorts and the attempt fails with all of Hotwire heat")]
 	int m_iLoomStrikes;
 
-	[Attribute("0.5", desc: "Wire cutting: share of Hotwire heat a wrong cut makes (the horn wire makes all of it)")]
+	[Attribute("0.5", desc: "Wire cutting: share of Hotwire heat a wrong cut makes")]
 	float m_fWrongCutHeatShare;
+
+	[Attribute("3", desc: "Wire cutting: turns in the tangle, 1 to 4. Each turn shuffles the four wires once: more turns are harder to follow")]
+	int m_iLoomTurns;
 
 	[Attribute("15", desc: "Heat an engine starting makes")]
 	float m_fStartHeat;
@@ -235,7 +238,7 @@ class RZ_Cars
 	static const int JOB_IGNITION = 4;
 	static const int JOB_START = 5;		// not a row: the Start the engine button
 	static const int JOBS = 5;
-	static const int JOB_CUT = 10;		// not a row: cut wire JOB_CUT + its place in the loom (0 to 4)
+	static const int JOB_CUT = 10;		// not a row: cut the wire at plug JOB_CUT + n of the loom (0 to 3)
 
 	//! A job's state on the screen.
 	static const int STATE_DONE = 0;
@@ -966,38 +969,26 @@ class RZ_Cars
 			return;
 		}
 
-		if (c.m_Loom)
-		{
-			m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The panel's already off. The loom is as it was left.");
-			return;
-		}
+		if (!c.m_Loom)
+			c.m_Loom = RZ_CarLoom.Make(m_Settings.m_iLoomTurns);
 
-		c.m_Loom = RZ_CarLoom.Make();
-		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "You pull the panel under the column. Five wires, and two of them start this car.");
+		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "The panel's off.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A cut on the screen's loom (the server's word on it: RZ_CarLoom.Cut). The right two and the
-	//! car is hotwired. A wrong one sparks: heat, and a strike; the horn wire is louder. At Loom
-	//! strikes, or on the feed, the loom shorts: the attempt fails as a hotwiring always could, and
-	//! the next one starts on a fresh loom.
-	protected void CutWire(int playerId, RZ_Spot s, RZ_CarProject c, int index)
+	//! A cut on the screen's loom (the server's word on it: RZ_CarLoom.Cut). The wire that runs to
+	//! the ignition and the car is hotwired. Any other sparks: a share of Hotwire heat, a strike, and
+	//! that plug is dead. At Loom strikes the loom shorts: the attempt fails as a hotwiring always
+	//! could, and the next one starts on a fresh tangle.
+	protected void CutWire(int playerId, RZ_Spot s, RZ_CarProject c, int plug)
 	{
 		if (!c.m_Loom || c.m_bHotwired || !m_Settings.m_bWireCutting)
 			return;
 
-		string title = m_Hub.Title(s);
 		float heat = m_Settings.m_fHotwireHeat;
-		float wrongHeat = heat * Math.Clamp(m_Settings.m_fWrongCutHeatShare, 0, 1);
-		int result = c.m_Loom.Cut(index);
+		int result = c.m_Loom.Cut(plug, RZ_Interactions.IsBackground(m_GM, playerId, "mechanic"));
 		if (result == RZ_CarLoom.RESULT_NOTHING)
 			return;
-
-		if (result == RZ_CarLoom.RESULT_GOOD)
-		{
-			m_GM.NotifyPlayer(playerId, title, "Stripped back to bright copper. That's one of the two.");
-			return;
-		}
 
 		if (result == RZ_CarLoom.RESULT_DONE)
 		{
@@ -1006,37 +997,24 @@ class RZ_Cars
 			return;
 		}
 
-		if (result == RZ_CarLoom.RESULT_FEED)
-		{
-			ShortLoom(playerId, c, "You cut the feed. A crack and the smell of burnt plastic.");
-			return;
-		}
-
-		string said = "A spark, and the dash lamps go dark. Wrong wire.";
-		if (result == RZ_CarLoom.RESULT_HORN)
-		{
-			wrongHeat = heat;
-			said = "The horn blares until you tear the wire clear. Wrong wire, and everything nearby heard it.";
-		}
-
 		if (c.m_Loom.m_iStrikes >= Math.Max(1, m_Settings.m_iLoomStrikes))
 		{
-			ShortLoom(playerId, c, said);
+			ShortLoom(playerId, c);
 			return;
 		}
 
-		m_GM.GetHeat().AddHeat(c.m_vPos, wrongHeat);
-		m_GM.NotifyPlayer(playerId, title, said + " One more and the loom shorts.");
+		m_GM.GetHeat().AddHeat(c.m_vPos, heat * Math.Clamp(m_Settings.m_fWrongCutHeatShare, 0, 1));
+		m_GM.NotifyPlayer(playerId, m_Hub.Title(s), "A spark. Wrong wire.");
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The loom shorts: all of Hotwire heat, the failed hotwiring's line after `lead`, and the car
-	//! gets a fresh loom the next time someone pulls the panel.
-	protected void ShortLoom(int playerId, RZ_CarProject c, string lead)
+	//! The loom shorts: all of Hotwire heat, the failed hotwiring's line, and the car gets a fresh
+	//! loom the next time someone pulls the panel.
+	protected void ShortLoom(int playerId, RZ_CarProject c)
 	{
 		c.m_Loom = null;
 		m_GM.GetHeat().AddHeat(c.m_vPos, m_Settings.m_fHotwireHeat);
-		m_GM.NotifyPlayer(playerId, c.m_sNoun, lead + " " + HOTWIRE_FAILED);
+		m_GM.NotifyPlayer(playerId, c.m_sNoun, HOTWIRE_FAILED);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1249,7 +1227,7 @@ class RZ_Cars
 			case JOB_START: HandleProject(playerId, s, 3, user); break;
 		}
 
-		if (job >= JOB_CUT && job < JOB_CUT + RZ_CarLoom.WIRES)
+		if (job >= JOB_CUT && job < JOB_CUT + RZ_CarLoom.PLUGS)
 			CutWire(playerId, s, c, job - JOB_CUT);
 
 		Release(playerId, true);
@@ -1445,10 +1423,7 @@ class RZ_Cars
 			else if (m_Settings.m_bWireCutting)
 			{
 				state = STATE_CAN;
-				need = "Two wires to cut";
-				if (c.m_Loom && c.m_Loom.GoodCuts() > 0)
-					need = "One wire to cut";
-
+				need = "One wire to cut";
 				button = "Hotwire";
 			}
 			else

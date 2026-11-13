@@ -4,13 +4,14 @@
 //! (RZ_Cars.Inspect); every job goes back to the server, which checks it like the car's actions
 //! (RZ_Cars.DoJob).
 //!
-//! Hotwire pulls the panel under the column: the loom takes the picture's place, five wires and
-//! the sticker's lines, and you cut the right two (Interactions/RZ_CarLoom.c; the server decides
-//! every cut). Back leaves the loom as it is and returns to the jobs.
+//! Hotwire pulls the panel under the column: the loom takes the picture's place, four wires in a
+//! tangle from four plugs down to four sockets, one socket lit. You follow the wire that ends in
+//! the lit socket and cut it at its plug (Interactions/RZ_CarLoom.c; the server decides every cut).
+//! Nothing to read. Back leaves the loom as it is and returns to the jobs.
 //!
 //! Keys: up/down pick a job, Enter does it, T starts the engine, Esc closes. At the loom:
-//! left/right pick a wire, Enter cuts it, Esc goes back to the jobs. Pad: D-pad or left stick, A,
-//! Y starts the engine, B. Mouse: click a job to do it or a wire to cut it, the Start button, the
+//! left/right pick a plug, Enter cuts its wire, Esc goes back to the jobs. Pad: D-pad or left stick, A,
+//! Y starts the engine, B. Mouse: click a job to do it or a plug to cut its wire, the Start button, the
 //! close button. You can't move while it's open; a job under way goes on, and danger closes the
 //! screen (the server's screen guard).
 
@@ -18,12 +19,17 @@
 class RZ_CarMenu : RZ_MenuBase
 {
 	protected static const float CUT_GAP = 0.6;			// the server takes a pick at most every 0.5 s
-	protected static const float STATUS_X = 48;
-	protected static const float STATUS_Y = 392;		// CarStatus: under the car picture
-	protected static const float STATUS_Y_LOOM = 636;	// and under the loom's sticker
-	protected static const float WIRE_BOX = 120;		// a wire's box, across
-	protected static const float WIRE_THIN = 14;
-	protected static const float WIRE_THICK = 30;
+
+	// The loom, in its frame (640 x 262): four columns, the plugs over them and the sockets under,
+	// and between them the band the wires turn in
+	protected static const float COLUMN_X = 110;		// the first column's middle
+	protected static const float COLUMN_GAP = 140;
+	protected static const float BAND_TOP = 52;			// under the plugs
+	protected static const float BAND_BOTTOM = 218;		// over the sockets
+	protected static const float BAR = 6;				// a wire's thickness
+	protected static const float SIDE = 10;				// a wire runs this far left of its column's middle into a turn, right of it out
+	protected static const int BARS = 48;				// LoomBar0... in the layout: three a wire a turn
+	protected static const int PIPS = 4;				// LoomPip0...: the wrong cuts allowed, at most
 
 	protected static RZ_CarMenu s_Open;
 	protected static string s_sData;
@@ -43,14 +49,13 @@ class RZ_CarMenu : RZ_MenuBase
 	protected float m_fTotal;
 	protected bool m_bWantLoom;					// Hotwire was picked: the loom shows once the server sends it
 	protected bool m_bLoom;						// the loom is up, in the picture's place
-	protected int m_iWire;						// the wire picked at the loom
+	protected int m_iPlug;						// the plug picked at the loom
 	protected float m_fCutAt = -100;
-	protected string m_sLocalStatus;			// said here, not by the server (the feed isn't cut)
 	protected ref array<string> m_aHead = {};
 	protected ref array<string> m_aLoomHead = {};
 	protected ref array<ref array<string>> m_aJobs = {};
-	protected ref array<ref array<string>> m_aWires = {};
-	protected ref array<string> m_aClues = {};
+	protected ref array<string> m_aDead = {};					// the P record: a flag per plug
+	protected ref array<ref array<string>> m_aTurns = {};		// the T records, top to bottom
 	protected ref array<Widget> m_aRows = {};
 	protected Widget m_wSelectPrompt;			// the footer's A: Do it, or Cut at the loom
 	protected Widget m_wStartPrompt;
@@ -142,11 +147,11 @@ class RZ_CarMenu : RZ_MenuBase
 		input.AddActionListener("MenuSelect", EActionTrigger.DOWN, OnSelect);
 		input.AddActionListener("RZ_CarStart", EActionTrigger.DOWN, OnStart);
 		RZ_UIW.OnClick(m_wRoot, "StartButton", m_Click);
-		for (int i = 0; i < RZ_CarLoom.WIRES; i++)
+		for (int i = 0; i < RZ_CarLoom.PLUGS; i++)
 		{
-			string wire = "Wire" + i.ToString();
-			RZ_UIW.SetTag(RZ_UIW.Find(m_wRoot, wire), i);
-			RZ_UIW.OnClick(m_wRoot, wire, m_Click);
+			string plug = "Plug" + i.ToString();
+			RZ_UIW.SetTag(RZ_UIW.Find(m_wRoot, plug), i);
+			RZ_UIW.OnClick(m_wRoot, plug, m_Click);
 		}
 
 		m_wSelectPrompt = RZ_StatusStrip.MakePrompt(m_wRoot, "Prompts", "MenuSelect", "Do it");
@@ -180,7 +185,7 @@ class RZ_CarMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! New data, a new selection (a job, or a wire at the loom), something said here, and once a
+	//! New data, a new selection (a job, or a plug at the loom), leaving the loom, and once a
 	//! second while a job is under way (its countdown).
 	override protected int DataVersion()
 	{
@@ -188,7 +193,7 @@ class RZ_CarMenu : RZ_MenuBase
 		if (m_iWorking >= 0)
 			tick = RZ_Util.RoundToInt(Math.Floor(RZ_UIW.Now())) % 1000;
 
-		return s_iVersion * 1000000 + (m_iLocal % 10) * 100000 + tick * 100 + m_iWire * 10 + m_iSelected;
+		return s_iVersion * 1000000 + (m_iLocal % 10) * 100000 + tick * 100 + m_iPlug * 10 + m_iSelected;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -209,21 +214,21 @@ class RZ_CarMenu : RZ_MenuBase
 	protected void OnLeft(float value = 0, EActionTrigger reason = 0)
 	{
 		if (m_bLoom)
-			m_iWire = Math.Max(0, m_iWire - 1);
+			m_iPlug = Math.Max(0, m_iPlug - 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnRight(float value = 0, EActionTrigger reason = 0)
 	{
 		if (m_bLoom)
-			m_iWire = Math.Min(Math.Max(0, m_aWires.Count() - 1), m_iWire + 1);
+			m_iPlug = Math.Min(RZ_CarLoom.PLUGS - 1, m_iPlug + 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnSelect(float value = 0, EActionTrigger reason = 0)
 	{
 		if (m_bLoom)
-			CutWire(m_iWire);
+			CutWire(m_iPlug);
 		else
 			Do(m_iSelected);
 	}
@@ -251,12 +256,11 @@ class RZ_CarMenu : RZ_MenuBase
 
 		m_bWantLoom = false;
 		m_bLoom = false;
-		m_sLocalStatus = "";
 		m_iLocal++;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A click on a job row does it, on a wire cuts it; the Start button starts the engine.
+	//! A click on a job row does it, on a plug cuts its wire; the Start button starts the engine.
 	override protected void OnClickOther(Widget w, string name)
 	{
 		if (name == "StartButton")
@@ -265,7 +269,7 @@ class RZ_CarMenu : RZ_MenuBase
 			return;
 		}
 
-		if (IsWireName(name))
+		if (IsPlugName(name))
 		{
 			CutWire(RZ_UIW.GetTag(w));
 			return;
@@ -276,10 +280,10 @@ class RZ_CarMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! "Wire0" to "Wire4": the buttons over the loom's wires.
-	protected static bool IsWireName(string name)
+	//! "Plug0" to "Plug3": the buttons over the loom's plugs.
+	protected static bool IsPlugName(string name)
 	{
-		return name.Length() == 5 && name.StartsWith("Wire");
+		return name.Length() == 5 && name.StartsWith("Plug");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -305,24 +309,16 @@ class RZ_CarMenu : RZ_MenuBase
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Cut the wire at `index` of the loom (the server decides what it was). The feed is the one
-	//! everybody knows: it's said here and never sent.
+	//! Cut the wire at plug `index` of the loom (the server decides whether it's the one). A dead
+	//! plug does nothing.
 	protected void CutWire(int index)
 	{
-		if (!m_bLoom || index < 0 || index >= m_aWires.Count())
+		if (!m_bLoom || index < 0 || index >= RZ_CarLoom.PLUGS)
 			return;
 
-		m_iWire = index;
-		array<string> f = m_aWires[index];
-		if (RZ_UIText.Int(f, 5) != RZ_CarLoom.CUT_NONE)
+		m_iPlug = index;
+		if (IsDead(index))
 			return;
-
-		if (RZ_UIText.Int(f, 3) == 1)
-		{
-			m_sLocalStatus = "That's the battery feed. Cut that and the whole loom shorts. Leave it.";
-			m_iLocal++;
-			return;
-		}
 
 		float now = RZ_UIW.Now();
 		if (now - m_fCutAt < CUT_GAP)
@@ -331,13 +327,20 @@ class RZ_CarMenu : RZ_MenuBase
 		m_fCutAt = now;
 		RZ_PlayerUIComponent ui = RZ_PlayerUIComponent.GetLocal();
 		if (ui)
-			ui.SendCarJob(m_iSerial, RZ_Cars.JOB_CUT + RZ_UIText.Int(f, 1));
+			ui.SendCarJob(m_iSerial, RZ_Cars.JOB_CUT + index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Plug `index` is dead: cut wrong already, or the one a Mechanic knows is wrong.
+	protected bool IsDead(int index)
+	{
+		return RZ_UIText.Int(m_aDead, 1 + index) == 1;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! C|serial|title|done|jobs|status|can start|start need|what's missing|1 if anything is;
 	//! I|text; W|job|left|total; J|job|state|name|need|button|tag|tone; and at the loom
-	//! L|wrong cuts|allowed|right cuts, K|place|colour|thick|striped|cut|label, Q|sticker line
+	//! L|wrong cuts|allowed|lit socket|turns, P|dead flag per plug, T|turn|leaves by x4|crosses at x4
 	override protected void Redraw()
 	{
 		if (m_iParsed != s_iVersion)
@@ -357,10 +360,7 @@ class RZ_CarMenu : RZ_MenuBase
 
 		RZ_UIW.SetText(m_wRoot, "CarDone", missing);
 		RZ_UIW.Tint(m_wRoot, "CarDone", missingColour);
-		string status = m_sLocalStatus;
-		if (status.IsEmpty())
-			status = RZ_UIText.Str(m_aHead, 5);
-
+		string status = RZ_UIText.Str(m_aHead, 5);
 		RZ_UIW.SetText(m_wRoot, "CarStatus", status);
 		RZ_UIW.Show(m_wRoot, "CarStatus", !status.IsEmpty());
 
@@ -400,8 +400,8 @@ class RZ_CarMenu : RZ_MenuBase
 		m_aHead.Clear();
 		m_aLoomHead.Clear();
 		m_aJobs.Clear();
-		m_aWires.Clear();
-		m_aClues.Clear();
+		m_aDead.Clear();
+		m_aTurns.Clear();
 		m_iWorking = -1;
 		foreach (array<string> f : recs)
 		{
@@ -425,38 +425,37 @@ class RZ_CarMenu : RZ_MenuBase
 			{
 				m_aLoomHead.Copy(f);
 			}
-			else if (tag == "K" && m_aWires.Count() < RZ_CarLoom.WIRES)
+			else if (tag == "P")
 			{
-				m_aWires.Insert(f);
+				m_aDead.Copy(f);
 			}
-			else if (tag == "Q")
+			else if (tag == "T" && m_aTurns.Count() < RZ_CarLoom.MAX_TURNS)
 			{
-				m_aClues.Insert(RZ_UIText.Str(f, 1));
+				m_aTurns.Insert(f);
 			}
 		}
 
-		// The server's word replaces what this client said. No loom in it: the car is hotwired, the
-		// loom shorted, or Hotwire meant the key; back to the jobs
-		m_sLocalStatus = "";
+		// No loom in it: the car is hotwired, the loom shorted, or Hotwire meant the key; back to
+		// the jobs
 		bool wasLoom = m_bLoom;
-		if (m_aWires.IsEmpty())
+		if (m_aLoomHead.IsEmpty() || m_aTurns.IsEmpty())
 			m_bWantLoom = false;
 
 		m_bLoom = m_bWantLoom;
 		if (m_bLoom && !wasLoom)
-			m_iWire = FirstWire();
+			m_iPlug = FirstPlug();
 
-		m_iWire = Math.Clamp(m_iWire, 0, Math.Max(0, m_aWires.Count() - 1));
+		m_iPlug = Math.Clamp(m_iPlug, 0, RZ_CarLoom.PLUGS - 1);
 		m_iSelected = Math.Clamp(m_iSelected, 0, Math.Max(0, m_aJobs.Count() - 1));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The first wire worth a look: not the feed, not cut.
-	protected int FirstWire()
+	//! The first plug that can still be cut.
+	protected int FirstPlug()
 	{
-		foreach (int i, array<string> f : m_aWires)
+		for (int i = 0; i < RZ_CarLoom.PLUGS; i++)
 		{
-			if (RZ_UIText.Int(f, 3) != 1 && RZ_UIText.Int(f, 5) == RZ_CarLoom.CUT_NONE)
+			if (!IsDead(i))
 				return i;
 		}
 
@@ -555,9 +554,9 @@ class RZ_CarMenu : RZ_MenuBase
 		}
 
 		// Pad focus on what's lit, so the D-pad and A act on it: the selected job, or at the loom
-		// the picked wire
+		// the picked plug
 		if (m_bLoom)
-			RZ_UIW.Focus(m_wRoot, "Wire" + m_iWire.ToString());
+			RZ_UIW.Focus(m_wRoot, "Plug" + m_iPlug.ToString());
 		else if (m_iSelected >= 0 && m_iSelected < m_aRows.Count())
 			RZ_UIW.FocusWidget(m_aRows[m_iSelected]);
 	}
@@ -582,21 +581,13 @@ class RZ_CarMenu : RZ_MenuBase
 
 	// ================================================================ The loom
 	//------------------------------------------------------------------------------------------------
-	//! The loom in the picture's place while it's up: the wires, the sticker's lines and the count
-	//! of wrong cuts; what the last cut said moves under it, and the footer's A and B say Cut and
-	//! Back to the jobs.
+	//! The loom in the picture's place while it's up: the plugs, the tangle, the sockets with the
+	//! ignition's lit, and a pip per wrong cut allowed. The footer's A and B say Cut and Back to the
+	//! jobs.
 	protected void DrawLoom()
 	{
 		RZ_UIW.Show(m_wRoot, "CarView", !m_bLoom);
 		RZ_UIW.Show(m_wRoot, "Loom", m_bLoom);
-		// The goal in plain words, over the wires: which two to cut, and what to leave
-		RZ_UIW.Show(m_wRoot, "LoomGoal", m_bLoom);
-		RZ_UIW.Show(m_wRoot, "LoomGoalSub", m_bLoom);
-		float statusY = STATUS_Y;
-		if (m_bLoom)
-			statusY = STATUS_Y_LOOM;
-
-		RZ_UIW.SetPos(RZ_UIW.Find(m_wRoot, "CarStatus"), STATUS_X, statusY); // VERIFY: FrameSlot.SetPos moves a text widget placed by a frame slot (as the object menu's body)
 		if (!m_bLoom)
 		{
 			RZ_StatusStrip.SetPrompt(m_wSelectPrompt, "Do it", true);
@@ -606,139 +597,143 @@ class RZ_CarMenu : RZ_MenuBase
 			return;
 		}
 
-		RZ_StatusStrip.SetPrompt(m_wSelectPrompt, "Cut", true);
+		RZ_StatusStrip.SetPrompt(m_wSelectPrompt, "Cut", !IsDead(m_iPlug));
 		RZ_StatusStrip.SetPrompt(m_wStartPrompt, "", false);
 		RZ_StatusStrip.SetPrompt(m_wBackPrompt, "Back to the jobs", true);
 		RZ_UIW.SetText(m_wRoot, "PromptsText", "LEFT / RIGHT  PICK A WIRE    A  CUT    B  BACK TO THE JOBS");
 
+		// A pip per wrong cut allowed, red once it's used
 		int strikes = RZ_UIText.Int(m_aLoomHead, 1);
-		RZ_UIW.SetText(m_wRoot, "LoomStrikes", string.Format("RIGHT %1 OF 2 · WRONG %2 OF %3", RZ_UIText.Int(m_aLoomHead, 3), strikes, RZ_UIText.Int(m_aLoomHead, 2)));
-		Color strikeColour = RZ_UIColor.Dim();
-		if (strikes > 0)
-			strikeColour = ToneColour(RZ_Cars.TONE_MISSING);
-
-		RZ_UIW.Tint(m_wRoot, "LoomStrikes", strikeColour);
-		string clues = "";
-		foreach (int n, string clue : m_aClues)
+		int allowed = RZ_UIText.Int(m_aLoomHead, 2);
+		for (int pip = 0; pip < PIPS; pip++)
 		{
-			if (n > 0)
-				clues += "\n";
+			string pipName = "LoomPip" + pip.ToString();
+			RZ_UIW.Show(m_wRoot, pipName, pip < allowed);
+			Color pipColour = RZ_UIW.Rgb(58, 62, 66);
+			if (pip < strikes)
+				pipColour = ToneColour(RZ_Cars.TONE_MISSING);
 
-			clues += clue;
+			RZ_UIW.Tint(m_wRoot, pipName, pipColour);
 		}
 
-		RZ_UIW.SetText(m_wRoot, "LoomClues", clues);
-		foreach (int i, array<string> f : m_aWires)
+		// The sockets: only the ignition's is lit and named
+		int goal = RZ_UIText.Int(m_aLoomHead, 3);
+		for (int q = 0; q < RZ_CarLoom.PLUGS; q++)
 		{
-			DrawWire(i, f);
+			string socket = q.ToString();
+			Color socketColour = RZ_UIW.Rgb(58, 62, 66);
+			if (q == goal)
+				socketColour = RZ_UIColor.Faction(RZ_EFaction.SURVIVORS);
+
+			RZ_UIW.Tint(m_wRoot, "Socket" + socket, socketColour);
+			RZ_UIW.Show(m_wRoot, "SocketWord" + socket, q == goal);
 		}
+
+		DrawPlugs();
+		DrawTangle();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One wire: its colour (and its name in words under it), thick or striped or plain, cut or
-	//! whole, and what it's known to be. Colour is never the only thing that tells two apart.
-	protected void DrawWire(int i, array<string> f)
+	//! The plugs: the picked one lit amber with an outline, a dead one dark with a cross. Only the
+	//! plug is ever lit, never its wire: the wire is for the eye to follow.
+	protected void DrawPlugs()
 	{
-		string idx = i.ToString();
-		int colour = RZ_UIText.Int(f, 2);
-		bool thick = RZ_UIText.Int(f, 3) == 1;
-		bool striped = RZ_UIText.Int(f, 4) == 1;
-		int cut = RZ_UIText.Int(f, 5);
-		string label = RZ_UIText.Str(f, 6);
-		bool on = i == m_iWire;
-		Color c = WireColour(colour);
-		RZ_UIW.Show(m_wRoot, "WireBg" + idx, on);
-		RZ_UIW.Show(m_wRoot, "WireFocus" + idx, on);
+		for (int i = 0; i < RZ_CarLoom.PLUGS; i++)
+		{
+			string idx = i.ToString();
+			bool on = i == m_iPlug;
+			bool dead = IsDead(i);
+			Color body = RZ_UIW.Rgb(201, 195, 179);
+			if (dead)
+				body = RZ_UIW.Rgb(58, 62, 66);
+			else if (on)
+				body = RZ_UIColor.Faction(RZ_EFaction.SURVIVORS);
 
-		// The wire: two halves and the middle, which goes when it's cut
-		float w = WIRE_THIN;
-		if (thick)
-			w = WIRE_THICK;
-
-		float x = (WIRE_BOX - w) * 0.5;
-		Bar("WireTop" + idx, x, 34, w, 70, c);
-		Bar("WireMid" + idx, x, 104, w, 20, c);
-		Bar("WireBot" + idx, x, 124, w, 70, c);
-		RZ_UIW.Show(m_wRoot, "WireMid" + idx, cut == RZ_CarLoom.CUT_NONE);
-
-		// Cut ends: bright copper where it was stripped, soot where it shorted
-		Color ends = RZ_UIW.Rgb(214, 148, 84);
-		if (cut == RZ_CarLoom.CUT_BAD)
-			ends = RZ_UIW.Rgb(70, 64, 58);
-
-		Bar("WireEndA" + idx, x - 3, 98, w + 6, 8, ends);
-		Bar("WireEndB" + idx, x - 3, 122, w + 6, 8, ends);
-		RZ_UIW.Show(m_wRoot, "WireEndA" + idx, cut != RZ_CarLoom.CUT_NONE);
-		RZ_UIW.Show(m_wRoot, "WireEndB" + idx, cut != RZ_CarLoom.CUT_NONE);
-		RZ_UIW.Show(m_wRoot, "WireStripes" + idx, striped);
-
-		string name = RZ_CarLoom.ColourWord(colour);
-		name.ToUpper();
-		RZ_UIW.SetText(m_wRoot, "WireName" + idx, name);
-		string kind = "plain";
-		if (thick)
-			kind = "thick";
-		else if (striped)
-			kind = "striped";
-
-		RZ_UIW.SetText(m_wRoot, "WireKind" + idx, kind);
-
-		// What it's known to be: the feed, a wire once it's cut, a Mechanic's horn
-		Color known = RZ_UIColor.Dim();
-		if (cut == RZ_CarLoom.CUT_GOOD)
-			known = ToneColour(RZ_Cars.TONE_HAVE);
-		else if (cut == RZ_CarLoom.CUT_BAD)
-			known = ToneColour(RZ_Cars.TONE_MISSING);
-		else if (!thick && !label.IsEmpty())
-			known = RZ_UIColor.Hazard();
-
-		RZ_UIW.SetText(m_wRoot, "WireLabel" + idx, label);
-		RZ_UIW.Tint(m_wRoot, "WireLabel" + idx, known);
+			RZ_UIW.Tint(m_wRoot, "PlugBody" + idx, body);
+			RZ_UIW.Show(m_wRoot, "PlugDead" + idx, dead);
+			RZ_UIW.Show(m_wRoot, "PlugFocus" + idx, on);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Places, sizes and tints one of a wire's bars in its box.
+	//! The four wires, all one colour, each as three bars a turn: down from the column it comes in
+	//! at to the height it crosses at, across to the column it leaves by, and down again. A wire
+	//! comes into a turn just left of its column's middle and leaves just right of it (and the other
+	//! way round on the next turn), and each wire of a turn crosses at its own height, so no two
+	//! wires ever share a line and every crossing is a plain cross.
+	protected void DrawTangle()
+	{
+		int turns = m_aTurns.Count();
+		float turnH = (BAND_BOTTOM - BAND_TOP) / Math.Max(1, turns);
+		float pitch = Math.Clamp((turnH - 12) / 3, 10, 14);
+		float first = (turnH - 3 * pitch - BAR) * 0.5;
+		Color c = RZ_UIW.Rgb(201, 195, 179);
+		int bar = 0;
+		for (int wire = 0; wire < RZ_CarLoom.PLUGS; wire++)
+		{
+			int col = wire;
+			for (int t = 0; t < turns; t++)
+			{
+				array<string> f = m_aTurns[t];
+				int next = Math.Clamp(RZ_UIText.Int(f, 2 + col), 0, RZ_CarLoom.PLUGS - 1);
+				int lane = Math.Clamp(RZ_UIText.Int(f, 6 + col), 0, RZ_CarLoom.PLUGS - 1);
+				float top = BAND_TOP + t * turnH;
+				float cross = top + first + lane * pitch;
+				float xIn = WireX(col, t);
+				float xOut = WireX(next, t + 1);
+				Bar(bar, xIn, top, BAR, cross - top + BAR, c);
+				Bar(bar + 1, Math.Min(xIn, xOut), cross, Math.AbsFloat(xOut - xIn) + BAR, BAR, c);
+				Bar(bar + 2, xOut, cross, BAR, top + turnH - cross, c);
+				bar += 3;
+				col = next;
+			}
+		}
+
+		for (int spare = bar; spare < BARS; spare++)
+		{
+			RZ_UIW.Show(m_wRoot, "LoomBar" + spare.ToString(), false);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a wire in column `col` runs between turn `level - 1` and turn `level` (the left edge
+	//! of its bar): left of the column's middle at even levels, right of it at odd ones.
+	protected static float WireX(int col, int level)
+	{
+		float side = -SIDE;
+		if (level % 2 == 1)
+			side = SIDE;
+
+		return COLUMN_X + col * COLUMN_GAP + side - BAR * 0.5;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Shows, places, sizes and tints bar `index` of the tangle in the loom's frame.
 	//! VERIFY: FrameSlot.SetPos and SetSize on an image in a frame (anchored top left) move and
 	//! size it as the layout's PositionX/Y and SizeX/Y would.
-	protected void Bar(string name, float x, float y, float w, float h, Color c)
+	protected void Bar(int index, float x, float y, float w, float h, Color c)
 	{
+		string name = "LoomBar" + index.ToString();
 		Widget bar = RZ_UIW.Find(m_wRoot, name);
 		RZ_UIW.SetPos(bar, x, y);
 		RZ_UIW.SetSize(bar, w, h);
 		RZ_UIW.Tint(m_wRoot, name, c);
+		RZ_UIW.Show(m_wRoot, name, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A wire's colour on the screen (RZ_CarLoom.ColourWord names it).
-	static Color WireColour(int colour)
-	{
-		switch (colour)
-		{
-			case 0: return RZ_UIW.Rgb(200, 53, 43);
-			case 1: return RZ_UIW.Rgb(242, 194, 48);
-			case 2: return RZ_UIW.Rgb(94, 158, 92);
-			case 3: return RZ_UIW.Rgb(79, 140, 200);
-		}
-
-		return RZ_UIW.Rgb(232, 226, 208);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Mouse: the job (or at the loom, the wire) under the cursor becomes the selected one (a click
+	//! Mouse: the job (or at the loom, the plug) under the cursor becomes the selected one (a click
 	//! does it, and A or Enter then does the same), drawn in place.
 	override protected bool OnHoverRow(Widget w, string name, int tag, bool on)
 	{
-		if (IsWireName(name))
+		if (IsPlugName(name))
 		{
-			if (!on || !m_bLoom || tag < 0 || tag >= m_aWires.Count() || tag == m_iWire)
+			if (!on || !m_bLoom || tag < 0 || tag >= RZ_CarLoom.PLUGS || tag == m_iPlug)
 				return true;
 
-			m_iWire = tag;
-			foreach (int i, array<string> f : m_aWires)
-			{
-				DrawWire(i, f);
-			}
-
+			m_iPlug = tag;
+			DrawPlugs();
+			RZ_StatusStrip.SetPrompt(m_wSelectPrompt, "Cut", !IsDead(m_iPlug));
 			RZ_UIW.FocusWidget(w);
 			return true;
 		}
