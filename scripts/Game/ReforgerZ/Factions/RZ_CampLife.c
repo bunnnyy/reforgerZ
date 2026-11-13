@@ -711,6 +711,7 @@ class RZ_CampLife
 	protected static const float SITE_MAX_SIDE = 70;		// a building longer than this isn't a camp (a hangar, a factory)
 	protected static const float SITE_MIN_SIDE = 5;		// narrower than this isn't a building people live in
 	protected static const float SITE_MAX_RATIO = 4;		// longer than this many times its width: a pier, a wall, a shed row
+	protected static const float STRONGHOLD_NEED = 0.8;	// the share of its kit's yard need a stronghold's roomiest side must hold
 	protected static const float ROOM_STRONGHOLD = 0.45;	// the share of the ground round a building that must be free for a stronghold's yard...
 	protected static const float ROOM_OTHER = 0.3;			// ...and for any other place's
 	protected static const int SITE_SHORTLIST = 6;			// the best few by kind, size and distance; then the roads decide
@@ -1042,7 +1043,83 @@ class RZ_CampLife
 		array<vector> boxes = {};
 		BuildingBoxes(ground, boxes);
 		vector size = site.m_vMaxs - site.m_vMins;
-		return YardRoomOf(site.m_vCentre, 0.5 * Math.Sqrt(size[0] * size[0] + size[2] * size[2]), ground, boxes) >= RoomNeeded(kind);
+		if (YardRoomOf(site.m_vCentre, 0.5 * Math.Sqrt(size[0] * size[0] + size[2] * size[2]), ground, boxes) < RoomNeeded(kind))
+			return false;
+
+		// A stronghold's yard is on one side of its building: that side must hold what its kit brings
+		// (a village house hemmed in by its neighbours doesn't, however free the ground round it)
+		if (kind != RZ_ECampPlace.STRONGHOLD)
+			return true;
+
+		return BestSideRoom(site, ground, boxes) >= NeedOfKit(faction, kind) * STRONGHOLD_NEED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The yard's area a kit needs (as the solver counts it: RZ_SiteSolver.NeedOf): each yard piece's
+	//! measured footprint with its half-metre gap all round, at least 12 m2 a piece; the counter, the
+	//! pieces by the door, the front wall or the road entries and the ones kept indoors don't count.
+	protected float NeedOfKit(RZ_EFaction f, RZ_ECampPlace kind)
+	{
+		RZ_DressingKit kit = FindKit(f, kind);
+		if (!kit || !kit.m_aPieces)
+			return 0;
+
+		float need = 0;
+		foreach (RZ_DressingPiece e : kit.m_aPieces)
+		{
+			if (!e || e.m_bIndoors || e.m_eZone == RZ_ESiteZone.GATE || e.m_eZone == RZ_ESiteZone.WIRE || AtOf(e) != RZ_EDressAt.YARD)
+				continue;
+
+			vector size = e.m_vFootMax - e.m_vFootMin;
+			need += Math.Max((size[0] + 1) * (size[2] + 1), 12);
+		}
+
+		return need;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The free ground on a building's roomiest side, m2: points every 3 m over a strip as long as the
+	//! side and 8 m past either end, from 3 to 32 m out (the yard's deepest), each free one 9 m2.
+	protected static float BestSideRoom(RZ_CampSite site, RZ_CampGround ground, notnull array<vector> boxes)
+	{
+		vector size = site.m_vMaxs - site.m_vMins;
+		float reach = 0.5 * Math.Sqrt(size[0] * size[0] + size[2] * size[2]) + 40;
+		array<int> roads = {};
+		for (int r = 0; r + 1 < ground.m_aRoad.Count(); r += 2)
+		{
+			if (RZ_DressPlacer.DistToSegment(site.m_vCentre, ground.m_aRoad[r], ground.m_aRoad[r + 1]) <= reach)
+				roads.Insert(r);
+		}
+
+		array<int> near = {};
+		for (int b = 0; b + 4 < boxes.Count(); b += 5)
+		{
+			vector bsize = boxes[b + 4] - boxes[b + 3];
+			if (RZ_Util.DistXZ(boxes[b], site.m_vCentre) <= reach + bsize.Length())
+				near.Insert(b);
+		}
+
+		float best = 0;
+		for (int face = 0; face < 4; face++)
+		{
+			vector wall = FacePoint(site, face, 0, 0);
+			float outB = RZ_Compass.Bearing(wall, FacePoint(site, face, 0, 10));
+			float length = RZ_Util.DistXZ(FacePoint(site, face, -1, 0), FacePoint(site, face, 1, 0)) + 16;
+			int free = 0;
+			for (float z = 3; z <= 32; z += 3)
+			{
+				for (float x = -length * 0.5; x <= length * 0.5; x += 3)
+				{
+					vector pt = RZ_Util.GroundPos(RZ_Compass.PointAt(RZ_Compass.PointAt(wall, outB, z), outB + 90, x));
+					if (FreeGround(pt, ground, roads, boxes, near))
+						free++;
+				}
+			}
+
+			best = Math.Max(best, free * 9);
+		}
+
+		return best;
 	}
 
 	//------------------------------------------------------------------------------------------------
