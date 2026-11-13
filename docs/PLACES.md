@@ -23,6 +23,7 @@ same code.
 - [The live check](#the-live-check)
 - [The audit](#the-audit)
 - [Results](#results)
+- [Offer reach](#offer-reach)
 - [Not covered](#not-covered)
 
 ## Why: the forest by Camurac
@@ -300,6 +301,31 @@ aren't settlements). A saved season keeps its towns: the start's warning counts 
 its strongholds, outposts and safehouses there are moved or given up at the start
 ([SITES.md](SITES.md#where-a-place-stands)), and the audit's `world.place` lines name any holding,
 safehouse or wanderer still there.
+
+## Offer reach
+
+The audit's last phase measures the jobs' [offer reach](MISSIONS.md#who-gets-offered-what). From
+every giver of each faction (`RZ_OfferReach.Givers`), 8 contract towns are picked the shared pool's
+way (anywhere, `RZ_Mission.PickSettlement`) and 8 the way a giver asked picks them (the near hint):
+
+| Line | Means |
+|---|---|
+| `Reach jobs: <faction>: G givers, reach R m; pool before: median M max X; after: median M max X (K kept, N moved to a nearer giver)` | before: the pool's town from the giver that would have offered it; after: from the giver that offers it now |
+| `Reach jobs: <faction>: F left far (no giver in reach); made on asking: median M max X, P of A past reach` | the pool's towns no giver of the faction has within reach (offered as before, with the long walk line), and the asked picks |
+
+Everon, reach 2.5 km:
+
+| Faction | Givers | Pool before (median, max) | Pool after (median, max) | Moved | Left far | Made on asking (median, max) |
+|---|---|---|---|---|---|---|
+| Haven | 8 | 4.1 km, 9.5 km | 1.5 km, 9.4 km | 41 of 64 | 11 | 1.5 km, 2.5 km (0 of 64 past) |
+| Bastion | 5 | 3.4 km, 10.3 km | 1.9 km, 10.3 km | 16 of 40 | 9 | 1.4 km, 2.4 km (0 of 40 past) |
+| Red Hand | 5 | 3.4 km, 10.1 km | 1.9 km, 10.1 km | 14 of 40 | 14 | 1.8 km, 2.5 km (0 of 40 past) |
+| Halcyon | 3 | 7.6 km, 11.7 km | 4.6 km, 11.7 km | 4 of 24 | 15 | 1.9 km, 2.5 km (0 of 24 past) |
+
+The pool's towns are a model of the contracts' own pickers (each contract picks its place its own
+way); the towns left far are those in parts of the map no giver of the faction stands near, Halcyon's
+most of all (three givers). The errand ways' places (the `Places draw: errand.*` lines) were already
+near their givers: 89 places, median 277 m, max 1.3 km.
 
 ## Not covered
 

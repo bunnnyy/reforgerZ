@@ -109,6 +109,9 @@ class RZ_ErrandSettings
 	[Attribute("2", UIWidgets.Slider, "Cards (the hand-written errands, once per player per season) a player may be dealt a real day", "0 10 1")]
 	int m_iCardsPerDay;
 
+	[Attribute("1500", desc: "Errand reach (m): a giver deals an errand whose subject lies further than this from them only when no nearer one is true, and then says it's a long walk. Kept to 500-10000; 0 = off")]
+	float m_fErrandReach;
+
 	[Attribute("1", UIWidgets.Slider, "Pay scale: errand Favor is multiplied by this", "0 3 0.05")]
 	float m_fPayScale;
 
@@ -1871,6 +1874,40 @@ class RZ_Errands
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected float ErrandReach()
+	{
+		if (m_Settings.m_fErrandReach <= 0)
+			return 0;
+
+		return Math.Clamp(m_Settings.m_fErrandReach, 500, 10000);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The errand's subject lies past errand reach from its giver (docs/ERRANDS.md, "Errand reach").
+	bool IsFar(RZ_Errand e)
+	{
+		float reach = ErrandReach();
+		if (reach <= 0 || e.m_vSubject == vector.Zero || e.m_vGiver == vector.Zero)
+			return false;
+
+		return RZ_Util.DistXZ(e.m_vSubject, e.m_vGiver) > reach;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "It's a long walk: about 3 km north-east." for a far errand; empty otherwise.
+	protected string FarLine(RZ_Errand e)
+	{
+		if (!IsFar(e))
+			return "";
+
+		int km = RZ_Util.RoundToInt(RZ_Util.DistXZ(e.m_vGiver, e.m_vSubject) / 1000);
+		if (km < 1)
+			km = 1;
+
+		return string.Format("It's a long walk: about %1 km %2.", km, RZ_Compass.DirectionWord(RZ_Compass.Bearing(e.m_vGiver, e.m_vSubject)));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool HasOpenOffer(int playerId)
 	{
 		foreach (RZ_Errand e : m_aErrands)
@@ -1898,6 +1935,10 @@ class RZ_Errands
 			Say(e, "Where were you on Tuesday? Never mind. Don't answer that.", false);
 
 		Say(e, Pick(e.m_Def.m_aOffer), false);
+		string farLine = FarLine(e);
+		if (!farLine.IsEmpty())
+			Say(e, farLine, false);
+
 		if (!owner)
 			return;
 
@@ -2277,6 +2318,7 @@ class RZ_Errands
 
 		array<ref RZ_Errand> made = {};
 		array<float> scores = {};
+		array<bool> far = {};
 		string place = PlaceKey(p);
 		// Chore slots: 1 + 1 per 5 players online (3 at most) routines live at a holding or house at once,
 		// and one of them per player there
@@ -2364,6 +2406,7 @@ class RZ_Errands
 
 					made.Insert(e);
 					scores.Insert(score);
+					far.Insert(IsFar(e));
 				}
 			}
 
@@ -2387,6 +2430,26 @@ class RZ_Errands
 
 			made.Remove(md);
 			scores.Remove(md);
+			far.Remove(md);
+		}
+
+		// Errand reach: one whose subject is a long walk off is dealt only when nothing nearer is
+		bool anyNear;
+		foreach (bool isFar : far)
+		{
+			if (!isFar)
+				anyNear = true;
+		}
+
+		for (int fd = made.Count() - 1; fd >= 0 && anyNear; fd--)
+		{
+			if (!far[fd])
+				continue;
+
+			why += string.Format("%1: a long walk. ", made[fd].m_Def.m_sKey);
+			made.Remove(fd);
+			scores.Remove(fd);
+			far.Remove(fd);
 		}
 
 		if (made.IsEmpty())

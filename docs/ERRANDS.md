@@ -171,6 +171,13 @@ its subject (a death, a bite, a fire, shells in the last 2 played hours); and ×
 faction a dead life of yours lied to (below). The pick is weighted among the top three. At most 12
 errands live on the server.
 
+**Errand reach.** Most players run: an errand whose subject (the person, lair, house or body it's
+about) lies further than **Errand reach** from its giver (`RZ_ErrandSettings`, 1.5 km) is dealt only
+when no nearer one is true at that giver (the deal's reason says *a long walk*), and then the giver
+adds *It's a long walk: about 3 km north-east.* An errand can't move to another giver (it's about
+that person's own place), so it stays theirs. The ways' own places are picked near the giver already
+(on Everon all within 1.3 km, [PLACES.md](PLACES.md#offer-reach)).
+
 **The context cache** (`Missions/Errands/RZ_ErrandsDealer.c`, `RZ_ErrandContext`): per online player,
 remade every 30 s: the settlement you're in and who holds it, a holding within 600 m, a pack's range
 within 1.5 km, a road people use, in a car, a fight (a shot within 60 m in a minute), near a running job
