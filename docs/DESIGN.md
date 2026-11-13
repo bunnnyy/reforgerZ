@@ -34,7 +34,7 @@ Code paths are under `scripts/Game/ReforgerZ/`.
 24. [Cure research and the season's end](#cure-research-and-the-seasons-end)
 25. [Season pacing](#season-pacing)
 26. [Seasons](#seasons)
-27. [Loose items](#loose-items)
+27. [Loose items](#loose-items) (and [things players build](#things-players-build))
 28. [Persistence](#persistence)
 
 ## Principles
@@ -3788,6 +3788,38 @@ the oldest abandoned item goes early. Not saved: after a restart, older items ar
 *Simplified:* "in a pack" means the item has a parent entity or sits in an inventory slot. If a
 carried item is ever removed, set the minutes to 0.
 
+### Things players build
+
+Code: `World/RZ_PlacedThings.c`.
+
+What players build is cleared when nobody uses it, so nothing they leave behind stays in the world
+for good. Today that's the fireplace of Make Fire Campfire & Wood
+([MOD_STACK.md](MOD_STACK.md#fire-and-weather)). A tent or shelter a later mod lets players put up
+is cleared the same way once its prefab's name is in the list: no mod gives players one yet.
+
+- **Known by name.** **World > Placed things > Placed prefabs** is a list of keywords matched
+  against prefab names (`fm_campfire` by default). No script names a class of another mod.
+- **Found, not told.** Once a minute the server looks 60 m around each player. A thing with a
+  keyword in its name becomes a record (where, which prefab, when first seen, when last used)
+  unless it's ours: a prefab of ours, a part of any composition (a camp's pieces, a scene's props),
+  or anything within 10 m of a faction's own place. The map's own tents and the camps' are never
+  touched this way, but a keyword must still be a name only player-built things carry.
+- **Used** means a player within **15 m** (**Use radius**). Each look that finds one there sets
+  its last use to now.
+- **Cleared** after **3 real days** unused (**Unused days**), and only with no player within
+  **100 m** (**Clear distance**). The thing is deleted and its record dropped. It's silent: nobody
+  is told, and the log has a line. Real time counts across restarts and while the server is empty.
+- **Gone already.** A record whose thing isn't there when a player stands by it (someone
+  dismantled it, or a restart lost it) is dropped.
+- **Capped** at **40** records. Past that the longest-unused one out of sight is cleared early; if
+  every one is in sight, the oldest record is forgotten and its thing left standing.
+- **Saved** in `state.json`: the records, never the things. After a restart a record finds its
+  thing again by prefab and place the first time a player comes near.
+
+*Simplified:* the mode doesn't see a thing being built, it finds it standing, so the clock starts
+at the first look that sees it. Whether a restart keeps a built fireplace depends on the server's
+own persistence, not on this.
+
 ## Persistence
 
 Code: `Persistence/RZ_SaveData.c`.
@@ -3795,7 +3827,7 @@ Code: `Persistence/RZ_SaveData.c`.
 Mode state is saved every 2 minutes to `$profile:ReforgerZ/state.json`: the stage, every
 settlement's infection and town memory, cure progress, the lab's backlog and clock, breakthrough news nobody has heard yet, the pace by play's player-hours of the last week, antidote and stabiliser stock, player profiles (standing, Legacy,
 unlocks, guidance level), quartermaster positions, safehouses, wanderers, leaders, territory,
-supply stock, faction life, the Long Table, the power grid and radio station, story arcs, questlines,
+supply stock, faction life, the Long Table, the power grid and radio station, the things players built ([above](#things-players-build)), story arcs, questlines,
 headlines, world interactions, the crawlers' ledgers, stir and kill sites, the time of day
 ([The clock](#the-clock)), the world facts (the season's seed, flags, canon, gossip and world
 memory; claims aren't saved) and the shared engine (waiting callbacks, the season budget, the
