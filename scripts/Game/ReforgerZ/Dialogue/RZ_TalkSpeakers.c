@@ -175,6 +175,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	static const int ADMIN_REP = 33;
 	static const int ADMIN_TRACES = 34;	// /traces: the door marks near you, to the server log (docs/TRACES.md)
 	static const int ADMIN_TALKTEST = 35;	// /talkdebug test: every conversation run once for you, to the log
+	static const int DUTY_ROW = 37;			// the duty a giver offers beside their pressing errand (RZ_Errands.TalkDuty)
 	static const int ADMIN_TALKRESET = 36;	// /talkdebug reset: this person's scenes undecided again
 
 	protected IEntity m_Owner;
@@ -501,6 +502,18 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			replies.Insert(said);
 		}
 
+		// Always a duty on offer: beside a pressing errand, listed after it
+		string dutyTitle;
+		if (!ways && !giver.IsEmpty() && errands.TalkDuty(playerId, giver, user, dutyTitle))
+		{
+			RZ_TalkReply duty = Reply(DUTY_ROW, dutyTitle);
+			duty.m_bOwn = true;
+			duty.m_bJob = true;
+			duty.m_sTag = RZ_TalkJobs.Tag("Duty");
+			duty.m_iRank = RZ_TalkReply.RANK_NEW;
+			replies.Insert(duty);
+		}
+
 		for (int u = 0; u < 8; u++)
 		{
 			string use = comp.GetSlotLabel(false, u);
@@ -789,6 +802,16 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (PickAdmin(gm, s, playerId, replyId, user))
 			return;
+
+		if (replyId == DUTY_ROW)
+		{
+			int dutySlot;
+			string dutyGiver = ErrandGiver(gm, dutySlot);
+			if (!dutyGiver.IsEmpty() && gm.GetErrands())
+				gm.GetErrands().AskDuty(playerId, dutyGiver, m_Owner, user);
+
+			return;
+		}
 
 		if (replyId >= 10)
 			RZ_PuzzleActionHelper.DoUse(gm, m_Owner, playerId, replyId - 10, user);

@@ -374,7 +374,7 @@ typo. The perks and flaws are in
 ## 4. The prefab manifest
 
 <!-- manifest:counts -->
-The code has **341 prefab fields**: 46 on `RZ_GameModeComponent`, 278 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **313 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 93 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
+The code has **344 prefab fields**: 46 on `RZ_GameModeComponent`, 281 in its settings objects, and 17 in list entries and actions (shop item, requisition item, recipe output, the loot table lists). The manifest covers them in **316 entries**: 183 prefabs the plugin creates, 37 slots filled with prefabs you already have (zombie mods, vanilla cars, loot) and 96 list entries set by hand; plus the game mode prefab, 13 loadout characters, 7 additions to existing prefabs and 49 settings objects. 22 of them, counting the game mode, make up the minimum playable subset.
 <!-- /manifest:counts -->
 
 Each manifest entry fills one or more fields. **Need:** *minimum* is the
@@ -551,6 +551,10 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | a vanilla rifle magazine item (an existing prefab) | — | Missions > Errands > Props > Pay magazine | optional | a Red Hand camp's pay in kind, the same way; empty = Favor only. Tagged as the camp's goods, as the ration |
 | `RZ_ErrandCarried.et` | a small item with an InventoryItemComponent that can't be equipped (a bundle, a satchel, a small box; the mission item prefab will do), plus RZ_MissionItemComponent | `RZ_MissionItemComponent` | Missions > Errands > Props > Carried | optional | a carried way's item: His Effects' effects, The Name on the Tag's ID; only the asker or a helper hands it in; empty = the mission item. Tagged with a negative mission id (no mission's drop takes it) and as the giver's goods |
 | (existing prefab) | a vanilla wristwatch item (an existing prefab) | — | Missions > Errands > Props > Watch | optional | The Last Tin's watch, traded for two tins; empty = a common find. Put in the player's pack |
+| (existing prefab) | a body under a sheet or a body bag on a board or a stretcher: a composition of vanilla props with nothing to use (`RZ_DutyBody.et`) | — | Missions > Errands > Props > Duty body | optional | the dead laid out for Laying Out, Burial Detail, The Pit's Leavings and The Cold Room: what lies there until it's lifted; empty = Props > Effects (a dead man's things). A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | a standing civilian with no weapon and no AI, or a prop figure (`RZ_DutyPerson.et`) | — | Missions > Errands > Props > Duty person | optional | someone waiting in the line at the gate (The Line at the Door, The Wash-Down, The Look-Over, Intake): stands there until taken by the arm; empty = Puzzles > Civilian. A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | a small rack or case of vials (`RZ_DutyTray.et`; a vanilla medical case will do) | — | Missions > Errands > Props > Duty tray | optional | a sample tray set out for Bench Work; empty = Props > Crate. A work site's look: shown only while a player is near, gone when it's taken up |
+| (existing prefab) | BanditGear's vodka bottle (an existing prefab from the stack) | — | Missions > Errands > Props > Duty vodka | optional | the bottle The Still gives whoever ran the batch; empty = no bottle, only the pay. Put in the player's pack |
 
 #### Contracts
 
@@ -827,7 +831,6 @@ and the UI files) need none, and eight have no base:
 | (existing prefab) | the RadioChannel layout (UI/LAYOUTS.md) | — | UI > Radio channel layout | optional | the radio screen's channel tiles (empty = no View radio). Needs the RZ_RadioMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the ObjectRow layout (UI/LAYOUTS.md) | — | UI > Object row layout | optional | the object menu's option rows: stoves, generators, house radios, wells, puzzle objects, safehouse services, a quartermaster's asks, the lab, the notebook item's name and season, a radio item (empty = no object menu: their world prompts). Needs the RZ_ObjectMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 | (existing prefab) | the PowerBreaker layout (UI/LAYOUTS.md) | — | UI > Power breaker layout | optional | the power panel's breakers: the power station's control gets one prompt, Open the panel, and the restore happens in the panel screen (empty = the control's old world prompts). Needs the RZ_PowerMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
-| (existing prefab) | the DutyCard layout (UI/LAYOUTS.md) | — | UI > Duty card layout | optional | the duty table's cards: a duty that sorts things (the dead, the line at the gate, the sample trays) opens the table screen when its work site is held (empty = no screen: the duty is its hold, judged the careful way for half pay). Set by the attribute's default (RZ_DutyCard.layout). Needs the RZ_DutyMenu preset in Configs/System/chimeraMenus.conf (Setting up the UI) |
 
 #### Questlines
 
@@ -1457,14 +1460,6 @@ in `UI/layouts/ReforgerZ/`.
       the first **Open the panel** says what you see as a card and the old prompts come back for
       everyone. `RZ_PowerControl.et` now carries only the read and two choices (no use actions,
       which would show as **Use**).
-   10. **The duty table** (preset added, not checked in play). The `RZ_DutyMenu` preset is in
-      `Configs/System/chimeraMenus.conf` (layout `RZ_DutyMenu.layout`, class `RZ_DutyMenu`), and
-      **UI > Duty card layout** has `RZ_DutyCard.layout` as its default, so nothing needs slotting.
-      Both layouts are written as text: open `RZ_DutyMenu.layout` and `RZ_DutyCard.layout` in the
-      layout editor once, so Workbench registers them, and check five cards fit in `Cards` side by
-      side. If the game mode's **UI > Duty card layout** shows empty, pick `RZ_DutyCard.layout`
-      there (VERIFY `UI/RZ_DutyMenu.c:61`). Empty it on purpose and the three sorting duties have
-      no screen: each is its hold, judged the careful way for half pay.
    10. **The car picture** (done). `UI/Textures/ReforgerZ/RZ_CarSide.png` (a white line drawing on
       transparent, 1,440 × 480) is imported with the vanilla **TextureUIAtlas** preset as
       `RZ_CarSide.edds`, and **UI > Car picture** is set. Without it the repair screen's markers sit
@@ -1910,6 +1905,59 @@ Home** unless the pack is coming back to a house or has a party walking at that 
 in the log), so a spawned group has no members, and a mission built on one may end by itself early
 (`ended by itself` in the log). None of this is part of the mod: the test files are copied into a throwaway addon folder.
 
+### Behaviour layer test without Workbench
+
+`tools/runtime_test/run.sh layer` shows the [behaviour layer](INFECTED.md#how-they-move-and-hunt) at
+work on the same server: the mod's own tribe code puts a pack out with Bacon's real bodies, the layer
+steers them, and a fake player is hunted. The full runtime test can't show it: its world has no AI
+navigation and its "zombies" are stand-ins, so the layer finds nothing to drive (its status line's
+counts stay at zero, or the groups are `by waypoint`), no hunt's bodies appear, and its fake player is
+no engine player, so a hunt can't start on him.
+
+```bash
+SERVER_DIR=~/rz_check/server EXTRA_ADDONS_DIR=<folder holding BaconZombies_622120A5448725E3> tools/runtime_test/run.sh layer
+```
+
+It takes 17 to 30 minutes (the first pass waits up to 11 for the walk home). It boots the site audit's Arland world with the mod's own game mode settings
+(Bacon's prefabs in every slot, as the task place audit does) and adds only what bodies need
+(`layer.py prepare`, on the throwaway copy): two tribe slots (Arland is under the wild-land floor),
+Bacon's faction, Arland's navmesh and a perception manager. Without the navmesh every AI move fails
+(`Failed move from ... to waypoint ...`, a script exception) and Bacon's bodies walk off toward the
+world's origin; without the perception manager no AI sees anyone. The fake player (id 901, a civilian
+Bacon attacks, made whole twenty times a second so a fight can be measured) is no engine player, so
+in the copy the mod's player lookups under `Zombies/` and in the game mode answer for him too
+(`RZB_Who`). Nothing in the layer is changed. Like the audits it runs in its own network namespace on
+Linux; on Windows stop any other server first.
+
+Twice, at noon and at 23:00, it walks the layer through its modes:
+
+| Stage | What the test does | What it shows |
+|---|---|---|
+| Hunt | Stands the player 380–450 m from the lair, outside no man's land (a hunt ends there), and calls `RZ_TribeBodies.StartHunt` with force, the function `/tribes hunt` calls | The hunt's groups put out round him and steered in: distances, speeds, pauses, and what Bacon's own perception holds of him meanwhile |
+| Engage | Leaves him there for 50 s after the first release | The release on a strike, the chase, Bacon's melee test passing, the health he loses |
+| Away | Moves him 430–620 m off (further and the bodies he left are put away) | Take-back, recover, steered again; the hunt lost after 60 s |
+| Home | Waits for the walk home: a part sent home holds where it is up to 10 minutes first, so the first pass waits up to 11 minutes for it and the second watches 60 s | The metres the parts sent home have left to their rest spots |
+| Hear | Fires the game mode's own shot handler 105–125 m from a steered group that isn't hunting, deaf or asleep, and moves him 420 m off the next second | The group's centre closing on the spot with nobody there to see |
+| Shot | Stands him 21–26 m from a steered body for 3 s, then fires | No release before the shot; every steered body within 30 m released inside the call |
+| Contact | Stands him 5–7 m from a steered body, in its sight | The contact release, and the group members that share it |
+| Put away | Moves him 720 m or more from every body, or takes him out of the world where the map has no such spot | Every body back to data |
+
+Every second it logs a row for each tribe group (`RZB g`), each body (`RZB b`: the layer's mode and the
+hook's, distance to the player, speed, distance to its slot, whether Bacon's perception saw him lately
+and holds him as an enemy, the stored perception factor, seconds since Bacon's melee test passed) and
+the player (`RZB f`: the health he lost that second), and a row for each health drop of a body with
+who the damage manager blames (`RZB dmg`). `python3 tools/runtime_test/layer.py summary <console.log>`
+prints the results table again from a log. The test fails on a check that didn't hold, a script
+exception from ReforgerZ's code, or a run that didn't finish; `[measured]` rows are numbers without a
+pass mark, `[not shown]` a stage that found nothing to test in that run (each boot seeds another pack:
+its temperament, its strategy and where its groups stand differ).
+
+| What it shows | What it can't |
+|---|---|
+| The layer's modes, releases and take-backs on real Bacon bodies, under the mod's own spawner and settings; speeds against the caps; what Bacon's perception holds while a body is steered; the hunt put out, lost and ended; the layer's own counters | A real player: a client's movement, camera, noise and stealth; how a hop, a freeze or a stance looks; the player effects (hold, stagger, knockdown) and their RPCs; a real weapon's shot; doors, houses and stairs (the player stands in the open); more than Arland's one pack; Everon |
+
+What it showed, and what it changed: [INFECTED.md](INFECTED.md#what-the-server-test-shows).
+
 ### Zombie lab: Bacon's real AI, measured
 
 `tools/zombie_lab/run.sh` measures what Bacon Zombies' own AI does, on the same server, in a
@@ -2015,7 +2063,7 @@ grep -rn "VERIFY" scripts/
 ```
 
 There are **175** lines with the tag, all but one in the game scripts (one is the comment in
-`Core/RZ_Util.c` that explains them; 42 are in `UI/`: [the UI's](#the-ui-39), the loadout
+`Core/RZ_Util.c` that explains them; 41 are in `UI/`: [the UI's](#the-ui-38), the loadout
 lock's others, and Traces' decals and lit windows and the power grid's street lamps on the client; one is the talk screen's in
 `Dialogue/`, two are the radio screen's, two the hold prompt's and four its animation and lock's in `Interactions/`), but one: the sites plugin's in
 `scripts/WorkbenchGame` (below). The create-prefabs plugin has none left: its real run settled them
@@ -2025,7 +2073,7 @@ source (its doc comments and how vanilla uses it). Each marker left is a **behav
 play-test can show: replication, what the AI does, what a prefab carries. The land grid
 (`World/RZ_Land.c`) has none: the [land survey](#land-survey-without-workbench) ran each of its
 engine calls on Arland, Everon and Cain. They're grouped by risk;
-check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-39)
+check them in this order. Their paths are under `scripts/Game/ReforgerZ/`. The [UI's](#the-ui-38)
 come last.
 
 ### High risk: the core loop (2)
@@ -2069,8 +2117,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PlacedThings.c:438` | `SCR_EntityHelper.DeleteEntityAndChildren` on the server removes a mod's replicated thing (the fireplace, its fire and light) on every client | The log says a fireplace was cleared but a player still sees it, or its fire burns on with nothing under it |
 | `Interactions/RZ_FuelPumps.c:172` | a fuel pump station (`RZ_FuelPumpStation.et`): `SetTotalFuelPercentage` on the server replicates its litres, and a held vanilla jerrycan beside a petrol pump offers **Refuel canister**, drawing from it until it's empty | At a petrol pump with a vanilla jerrycan in hand: no Refuel canister, or it never runs dry. Empty **Cars > Fuel pump station**: the pump is the hand pump again, in the object menu |
 | `Interactions/RZ_AIDoorHook.c:15` | AI open doors on their path through `SCR_AIOpenDoor` (the vanilla door task) | Blockers and banging still keep AI out. If AI open locked doors, move the check (`RZ_DoorLocks.AiMayOpenNear`) into the task they really use, or delete the file |
-| `Core/RZ_Util.c:1155` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
-| `Core/RZ_Util.c:1360`, `:1238` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
+| `Core/RZ_Util.c:1169` | `HitZone.SetHealth` on the server replicates and doesn't knock the character out above zero | Blood Drive donors could be knocked out or see stale health; nothing else uses it |
+| `Core/RZ_Util.c:1374`, `:1252` | worn kit is read from the loadout slots (`EquipedLoadoutStorageComponent.GetClothFromArea` per area; the head slot is `LoadoutHeadCoverArea`), never from a pack; without the component, child entities are read instead | No kit is ever detected (no claims, no colours): check a character in Bastion green is reported in the log's look lines, or turn **Disguises** off |
 | `Factions/RZ_Disguise.c:1074`, `Factions/RZ_DisguiseMarks.c:779`, `Factions/RZ_Hostility.c:137` | `TryDeleteItem` on a worn piece (from `GetClothFromArea`) takes it off the character and deletes it, for every client (a catch's confiscation, and Bastion's search taking a dead man's or someone else's signed kit) | Caught players keep their kit: turn **Hostility > Confiscation** off (held, fined and blown, nothing taken); marked kit stays on at a search |
 | `Factions/RZ_DisguiseWatch.c:193` | a character's world transform's forward axis (`mat[2]`) is where its body faces | If it's another axis, guards count as turned to you at the wrong angle: again looks and their noticing line come too often or never. Check by standing behind a Bastion sentry in their kit after a passed look |
 | `Factions/RZ_DisguiseWatch.c:206` | a sight trace (`TraceMove`, world and entities) from one of their people's eyes to a player's chest stops on walls and vehicles, and reports the player when it reaches them (again looks within 15 m, seen putting kit on within 30 m, a Red Hand crew seeing Bastion colours in a feud within 150 m) | If it never reaches the player, again looks are only owed and never come (the gate pass, roll call and leaders still limit a stay); if it always does, walls don't hide you. Check with `again look at` in the log |
@@ -2079,7 +2127,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Factions/RZ_DisguiseMarks.c:643` | a worn ribbon's parent is the character, and a packed one's is the pack | Someone else's ribbon in a pack closes Haven doors, or a worn one doesn't: wear and pack one in turn |
 | `Factions/RZ_DisguiseMarks.c:225` | a worn piece's root parent is the character wearing it (kit marks saved across a restart) | Marks are never saved across a restart (no `kit mark put back` lines): after a restart a dead man's kit passes as clean, as before |
 | `Factions/RZ_DisguiseMarks.c:1019` | `TryDeleteItem` through the wearer's inventory manager takes a worn piece off (the last week's homecoming and handing back) | The piece stays on after "He's home. Mark him.": its mark is gone either way, so it passes as clean kit |
-| `Core/RZ_Util.c:1324` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
+| `Core/RZ_Util.c:1338` | `SCR_InventoryStorageManagerComponent.GetItems` walks every storage, so a rifle in a backpack is found (the parley's and the knock's empty hands) | A packed rifle passes a parley: the barrier's search uses the same check, and nobody walks out to meet you |
 | `Cure/RZ_Infection.c:1192` | `AddStamina` on the server reaches the player's stamina (vanilla also calls it only on the authority) | The Weakness and Final stages, nausea and the drunk remedy don't tire the player; their noise and the "tired" bite modifier still apply |
 | `Zombies/RZ_Stealth.c:253` | the zombie mod's AI uses the vanilla `SCR_AICombatComponent` perception multiplier (vanilla AI applies it in `SCR_AIUtilityComponent`'s update), so a lower factor makes them slower to recognise a player; without that component, or without the vanilla utility AI behind it, the factor goes on the `PerceptionComponent` | The log says once whether the infected take a factor, and once if some never do. If they don't, or nothing changes in play, the senses part does nothing: losing them (by distance), the HUD and the missions' rules still work. Compare with **Stealth** off |
 | `Zombies/RZ_Stealth.c:274` | the zombie mod's infected list players as `ENEMY` targets once they recognise them, with the time since seen and the last seen position | Infected never lose anyone they have as a target (only those without perception are judged by distance). Check by going prone out of sight of a chasing group at night |
@@ -2098,9 +2146,9 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/Behaviour/RZ_Doors.c:281` | `SetControlValue` on the server swings a broken weak door open for every client | The lock is still forced (open and broken), so a player or Bacon can open it |
 | `Factions/RZ_CampLife.c:2932` | a composition spawned at run time (its root has an `RplComponent`) shows on every client, and its props block AI paths | Pieces only the server sees, or AI walking through tents: check from a client; if AI cut through, keep footprints small and off the paths (a navmesh rebuild as the doorway blockers do is the heavier fix) |
 | `Factions/RZ_CampLife.c:2968` | a positive roll in `Math3D.AnglesToMatrix` lowers a piece's +x (measured: the site audit prints `RZS roll`), and a composition spawned rolled tilts its children with it, so a barrier run on a slope follows the ground | The wire's runs on slopes float at one end and sink at the other: set `ROLL_SIGN` the other way, or 0 to stand them level |
-| `Missions/Errands/RZ_Strangers.c:1064` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
-| `Missions/Errands/RZ_Strangers.c:815` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
-| `Missions/Errands/RZ_Strangers.c:1191` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
+| `Missions/Errands/RZ_Strangers.c:1082` | a physics trace from a player's eyes (the infected bodies' sight test) is stopped by buildings, hedges and trees, so a stranger placed 60–90 m off where nobody sees the spot doesn't visibly pop in | If one visibly pops in, set **Missions > Errands > Strangers** off |
+| `Missions/Errands/RZ_Strangers.c:833` | the road network's `GetRoadsInAABB` gives a junction's roads as pieces that end at it (three ends within 25 m), so junctions of used roads count as crossroads | Strangers keep the road posts' crossroads; nothing else changes |
+| `Missions/Errands/RZ_Strangers.c:1209` | a dead stranger's inventory (`GetItems` on the body) shrinks when a player takes from it, so robbing one is told | No robbery is ever told; killing one still costs what it did |
 | `Missions/Errands/RZ_ErrandsDealer.c:260` | a local's labels set and cleared on its body as a knower comes and goes reach clients (the same labels for everyone near: per-player labels need an engine check) | A local shows to anyone near while a knower is there, as before |
 | `Missions/RZ_MissionGoods.c:6` | an item tagged as someone's goods keeps its entity through inventory moves, a body and a car's boot (the list holds entities, like the fence's bought list) | A tagged ration or carried item may count as ordinary food after a move; pay in kind can be left empty (**Props > Pay ration**) |
 | `Zombies/RZ_TribeProps.c:68`, `:354` | a call sound prefab spawned on the server replicates, and `RZ_CallSoundComponent` plays its `SoundComponent` event once on each client that streams it in (the great one's call, the packs' dusk calls, the call box) | Nothing is heard: the lines still tell every call. Empty **Zombies > Tribes > Call sound prefab** and **Great call sound prefab** |
@@ -2122,7 +2170,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Interactions/RZ_WorkHold.c:277` | the item use vanilla's building makes (`TryUseItemOverrideParams` with `CMD_Item_Action`, argument 1, the held tool, no movement) loops the digging at a work site as at a vanilla build site, other players see it, and `FinishItemUse(true)` ends it | The tool is held still, or the digging never stops: turn **Dig with the tool** off (the hands animation is used) |
 | `Interactions/RZ_WorkHold.c:287` | the item use vanilla makes at a mine being disarmed (`CMD_Item_Action`, argument 0, on the thing itself, nothing in the hands) plays its kneel-and-work loop when the thing is our work site's invisible box, which is no item | Nothing plays (the engine refuses an entity with no item component: the lock still holds, and the work is done), or the character's hand is pulled to the box, or the box ends up in the hand: turn **Hands animation** off |
 
-### Low risk: contained or cosmetic (44)
+### Low risk: contained or cosmetic (45)
 
 | Where | Behaviour to check | Fallback |
 |---|---|---|
@@ -2151,7 +2199,8 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `Zombies/RZ_Stealth.c:218` | on the dedicated server a player's illumination factor is 0 to 1 and follows the sun, the moon, lamps and their own torch | Set **Stealth > Engine light weight** to 0: the light is the clock's (day, dusk, night) and a torch no longer gives you away |
 | `Zombies/RZ_Stealth.c:352` | a player runs at about 4 m/s and sprints at about 5.5 (measure both, and Bacon's run and sprint), so 2.6 and 5 m/s split walking, running and sprinting for visibility; the young's sprint is tuned about 10% faster than a sprinting player | Change `SPEED_WALK` and `SPEED_RUN` to the measured speeds, and the young's **Young sprint seconds** if they can't catch a sprinting player |
 | `Zombies/RZ_Stealth.c:1172` | the zombie mod's group walks to a move waypoint put in front of its own once it has nobody in sight (vanilla groups do; a mod's own wandering may ignore waypoints) | Infected that lose you don't go and search, and don't go back afterwards; the senses still change |
-| `Zombies/Behaviour/RZ_HuntPlan.c:2361` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
+| `Core/RZ_Util.c:1112` | a player's bullet or blow leaves that player as the damage manager's last instigator, so a steered body's own falls and trips (which name the body itself: the [layer test](#behaviour-layer-test-without-workbench) saw about 2 of 100 health go that way now and then) can be told from a hit | A body that fell and was then shot from beyond 30 m doesn't count the shot as a hit and stays steered: drop the check in `RZ_GroupPlan.Bodies` (falls then release bodies far out again) |
+| `Zombies/Behaviour/RZ_HuntPlan.c:2375` | moving a stuck AI character with `SetWorldTransform` out of every player's sight is picked up by its movement (the unstick ladder's step 4; the lab never needed it, B9) | Set **Behaviour > Unstick out of sight** off: a stuck body gives up and rejoins its group's anchor instead |
 | `World/Traces/RZ_DressPlacer.c:48` | the road network's points follow every drivable road near a camp or a scene (the shared placer, camp life's and Traces') | A piece can stand on a road the network doesn't list: move the composition's footprint or drop that piece from the kit |
 | `World/Traces/RZ_TraceSounds.c:471` | a camp composition's child props carry their own prefab data, so `GetPrefabName` names them (the table lamp, the generator), and their origin is their world spot | The lit lantern and the hum stand near the place's middle, as before; only a composition named for its piece (`RZ_Dress_Loudspeaker`) is found |
 | `Factions/RZ_CampLife.c:4892` | a loiter waypoint (a timed defend) with a 4 m radius holds the group at the spot and uses only the smart actions within it | People wander to other seats or leave early: the next shuffle sends them back. Empty **Loiter waypoint** to use plain move waypoints |
@@ -2170,7 +2219,7 @@ No fallback. If the first is wrong, nothing persists; if the second is, loose lo
 | `World/RZ_PowerLooks.c:102` | the power station's generator: `RZ_PowerGeneratorSound.et` (no mesh, vanilla's diesel generator sounds on a `StaticSoundComponent`), spawned by the server, plays on every client that streams it in and stops when the server deletes it, as vanilla's placed generators do | No sound at a running station: empty **World > Power grid > Generator sound prefab**; the panel and the notices still say it runs |
 | `UI/RZ_PowerLampsClient.c:185` | street lamps: `StreetLampComponent.SetBroken(true)` on a client puts that lamp out there (its light and its glow), and `SetBroken(false)` lets it light itself at night again | Lamps stay lit in dark towns, or stay out after the main switch: turn **World > Power grid > Street lamps** off, and every lamp is left as the map has it |
 
-### The UI (39)
+### The UI (38)
 
 None of these affect the game: the UI only reads, and the talk, repair, shop, crafting and cooking screens and the object menu run the
 handlers that are already built. If the HUD or a menu misbehaves, turn **UI > Styled notices** off
@@ -2181,7 +2230,7 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 
 | Where | Behaviour to check | If it fails |
 |---|---|---|
-| `UI/RZ_UIData.c:1017` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
+| `UI/RZ_UIData.c:1014` | `WorkspaceWidget.SetFocusedWidget` gives a `Button` in a `ChimeraMenuBase` the pad's focus (the notebook's tab or first row, the talk screen's selected reply, the repair screen's selected job, the reader's close button), so the D-pad moves from it | Pad players can still use LB/RB, up/down, A, X and B, which the menus listen to themselves; only the highlight is off |
 | `UI/RZ_Notebook.c:207` | the focus survives a page swap in the notebook (it's set again after every swap) | As above |
 | `UI/RZ_PauseNotebook.c:48` | the Notebook button made at run time from vanilla's pause menu button sits after Field Manual in the pad's focus column, labelled Notebook (its siblings are moved behind it with `RemoveChild`/`AddChild`) | Override vanilla's pause menu layout and add a button named `RZ_Notebook` (the script uses it); N and the notebook item still work |
 | `UI/RZ_NotebookItem.c:31` | with **Gadget anim variable** MX991 the character takes the notebook item into the left hand as it does the MX991 flashlight (with none, the take never finishes: the old bug), and its `IN_HAND` mode switch, or the HUD's watch, opens the notebook | N says in the log "not in the hand 1.5 s after N" and opens the notebook anyway; the pause menu and **Read the notebook** still work. Try the map's hold instead (**Gadget anim variable** MAP, the paper map's `paper_map.agr`/`player_map.asi`) |
@@ -2192,30 +2241,29 @@ quartermaster's Buy actions, **Craft row layout** for a workbench's Make actions
 | `UI/RZ_Notebook.c:96` | `RemoveHeldGadget` on the owning client puts the item away when the notebook closes | It stays in the hand, harmless: put it away by hand |
 | `UI/RZ_Notebook.c:1080` | `OnMouseEnter` reaches the Standing page's row `Button` when the cursor comes over its children, so the row under the mouse is highlighted | Only hover is lost: up/down highlight and a click opens |
 | `UI/RZ_TalkMenu.c:51` | `OnMouseEnter` fires on a talk reply's row `Button` when the cursor comes over its children, so the row under the mouse lights | Only hover is lost: the D-pad, keys 1–5 and a click still pick a reply |
-| `UI/RZ_Menus.c:56` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
-| `UI/RZ_UIData.c:1086` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
+| `UI/RZ_Menus.c:55` | `OnMouseEnter` and `OnMouseLeave` reach `RZ_MenuClick` on every row and button it hears clicks on (also when the cursor comes over the button's children), so on every screen the row or button under the mouse lights as the pad's selection does and goes back when the cursor leaves ([UI.md](UI.md#controllers), "Hover") | Only hover is lost: the pad, the keys and a click still work. If a lit row stays lit after the cursor leaves, the leave isn't arriving: report which screen |
+| `UI/RZ_UIData.c:1083` | the hover look on a button that isn't a row (a lighter fill and a 5-wide amber bar on its left, `ImageWidget`s made in script in the button's Overlay with `OverlaySlot` alignment) covers the button, sits over its content without hiding its text, and doesn't take the cursor or the click | Buttons show no hover, or the fill covers the label or swallows the click: make `RZ_UIW.HoverMark` return false at its top (rows still light) and report what showed |
 | `UI/RZ_TalkMenu.c:62`, `:400` | `OnMouseWheel` reaches a reply row's `Button` and the reply box's frame (`ReplyPanel`), with `wheel` positive rolled up, so the wheel moves the selection and past the ends turns the page | The wheel does nothing or runs the wrong way (flip the sign in `RZ_TalkMenu.Wheel`); the arrow keys, Q/E and the arrows' clicks still move and turn the page |
 | `UI/RZ_TalkMenu.c:652` | the right stick's vertical axis (`RZ_TalkScroll`) reads positive when pushed up, so up scrolls a box that overflows toward the top | The scroll runs the wrong way: flip the sign in `RZ_TalkMenu.UpdateLine`; boxes are cut to fit, so it's rarely needed |
 | `UI/RZ_TalkMenu.c:692` | `string.ToAscii` gives 0–127 for a plain character and something else for a byte of a longer UTF-8 one, so the typing never stops inside an accented letter | A name like "Zoë" shows a broken character for a frame while it types; the whole box is set once it's done |
 | `UI/RZ_NametagClient.c:170` | `WorkspaceWidget.ProjWorldToScreen` gives reference-resolution units with z below 0 behind the camera (vanilla's nametags read it so), so a tag's foot sits over the person's head and hides behind you | The tags sit in the wrong place or show behind you: turn **Dialogue > Nametags** off; talking isn't affected |
-| `UI/RZ_UIData.c:1146` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
-| `UI/RZ_UIData.c:1285` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
+| `UI/RZ_UIData.c:1143` | the footer prompts (vanilla's `WLib_InputNavigationButton`) switch between key and pad glyphs in our layouts | The static footer text (`PromptsText`) shows instead when they can't be made; if they show but look wrong, hide `Prompts` in the layouts |
+| `UI/RZ_UIData.c:1282` | `ImageWidget.SetRotation` turns an image about its centre, clockwise in degrees: the map's you-are-here arrow, the talk screen's down arrows (its page indicator and the ▼ at the end of their line), and the quest tracker's arrow to its objective | The arrows point the wrong way or swing about a corner: the markers still sit in the right place, and the tracker's text still gives the metres (the compass words past a km) |
 | `Dialogue/RZ_Dialogue.c:1019` | an owner-only string RPC of up to about 2,000 characters (a talk node) arrives whole | Long greetings don't arrive: lower `MAX_SAID` in `RZ_Dialogue` |
 | `UI/RZ_PlayerUIComponent.c:185` | a string RPC argument of a few KB arrives whole (payloads are capped at 6000 characters) | Long journals or standing don't arrive: lower `MAX_PAYLOAD` in `RZ_UIFeed` or trim the briefs |
 | `UI/RZ_ShopMenu.c:563` | `ItemPreviewManagerEntity.ResolvePreviewEntityForPrefab` gives the preview world's copy of the item with its `InventoryItemComponent`, so the shop screen shows its description, weight and preview attributes | The details panel shows only the name and price; the picture itself (`SetPreviewItemFromPrefab`) doesn't need it |
 | `UI/RZ_ItemPreview.c:65` | the same preview copy (`ResolvePreviewEntityForPrefab`) for the crafting screen's output: its description and weight under the picture | The details panel shows the recipe's name, what it takes and how long; the picture itself doesn't need it |
 | `UI/RZ_ShopMenu.c:612` | `PreviewRenderAttributes.RotateItemCamera` on that copy's attributes turns the item in the shop screen's picture (the inventory turns its character preview the same way), with the right stick (`RZ_TurnPreview`), left/right or a click | The picture doesn't turn; everything else on the screen works |
-| `UI/RZ_Menus.c:399` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
+| `UI/RZ_Menus.c:398` | on a console, the notice board's note box (an `EditBoxWidget`) opens the platform's on-screen keyboard | Nothing breaks: the board's ready-made notes (left and right, then A) pin a note without a keyboard ([UI.md](UI.md#controllers)) |
 | `UI/RZ_LoadoutLock.c:16` | with the spawn screen off (**UI > Spawn row layout** empty), what the player sees of a locked loadout: the 1.9 deploy menu leaves unavailable loadouts out when it builds its list, and greys their buttons when it refreshes | Only the fallback's look: the server still refuses to spawn a locked pick |
 | `UI/RZ_SpawnMenu.c:21` | the spawn screen's hook: 1.9's `DeployMenuSystem` calls `SCR_PlayerDeployMenuHandlerComponent.Update` every frame on the local player's handler while it's ready, and `CanOpenMenu` is true exactly when vanilla would show its deploy menu (at the first spawn after the welcome screen, and after each death) | The screen doesn't open, or opens late: empty **UI > Spawn row layout** and vanilla's deploy menu comes back while it's fixed |
 | `UI/RZ_RadioMenu.c:395` | a layout made under an `OverlayWidget` cell (`Cell0`-`Cell11`), its root in an `OverlayWidgetSlot` with both aligns Stretch, fills the cell | The radio screen's tiles sit small in a corner of their cells, or overlap: in `RZ_RadioChannel.layout` keep `ChannelSize` at 317 × 92, or make the cells `SizeLayout` widgets |
-| `UI/RZ_DutyMenu.c:61` | a `ResourceNamePicker` attribute's default string that names a layout written as text (its GUID from the `.meta`) resolves on a client, so **UI > Duty card layout** needs no slotting in `RZ_GameMode.et` (the meat prefab's default in **Wildlife** works the same way, on a vanilla prefab) | The duty table never opens and the sorting duties judge themselves for half pay: pick `RZ_DutyCard.layout` in **UI > Duty card layout** on the game mode |
 | `Interactions/RZ_RadioScreen.c:37` | a radio item carried by a player (in hand, on a vest or in a pack) has a parent entity, and one lying on the ground has none, so **View radio** shows on the ground from the default context and in hand from the knob context | View radio shows in the wrong place or not at all: the house radio's View radio still opens the screen, and the log is on the notebook's Radio tab. Check the parent in play and change the test in `RZ_ViewRadioAction.CanBeShownScript` |
 | `Interactions/RZ_RadioScreen.c:54` | the server runs `PerformAction` for an action on a carried radio in vanilla's inspection context (`knob_toggle`, beside Turn on/off), as for vanilla's own | View radio in hand does nothing: use it with the radio on the ground or at a house radio; or make the action local and ask the server through `RZ_PlayerUIComponent` |
 | `UI/RZ_DeathBrief.c:425` | the death brief, opened with `OpenMenu` while the spawn screen (or vanilla's deploy menu) is open, goes on top and takes the input: the screen under it ignores A and B until the brief closes, and the press that closes it (A's release, or Space, a click or B with the 0.4 s wait) doesn't deploy or open the pause menu under it | A press that closes the brief also deploys or opens the pause menu: lengthen `LEAVE_DELAY` in `RZ_DeathBriefMenu`, or turn **UI > Death brief** off |
 | `UI/RZ_DeathBrief.c:174` | a server tick after a death, the dead character's damage manager still gives the instigator of the last blow: an AI's or an infected's entity (`GetInstigatorEntity`), a player's id, nothing for a fall | The brief says "Nobody saw how" (or "The infected" with one standing over the body) where it could have named a faction; nothing else depends on it |
 | `UI/RZ_MapIcons.c:642` | the `RZ_MapLegend` input (`MapContext`, **I** and pad **Y**) fires while the full-screen map is open, and Y there does nothing else (vanilla binds Y in the map only with the D-pad's left, held, to dismiss a hint) | The map key can't be hidden: it still fades as you zoom in. Bind the action to another free pad button |
-| `UI/RZ_UIData.c:1226` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
+| `UI/RZ_UIData.c:1223` | a `CanvasWidget` made in script (`WorkspaceWidget.CreateWidget`) fills the map's root with anchors 0 to 1, and its draw commands are in screen pixels from its top left, so the tracked job's search area (a filled polygon and a 2-wide edge line) sits on its rough circle and keeps its size with the zoom | The search area is missing or off its spot: its label still sits under where it should be, and the tracker gives the rough area in words. Report what shows |
 | `UI/RZ_ObjectMenu.c:328` | `FrameSlot.SetSize` on the object menu's centred panel (anchor and alignment 0.5) keeps it centred as it grows for [the status strip](UI.md#the-status-strip-and-locked-rows) (940 tall) and shrinks without one (810) | The panel jumps off-centre or keeps one height: set its slot to 1,200 × 940 in `RZ_ObjectMenu.layout` and remove the `SetSize` line; things without a strip then have a gap above their text |
 | `UI/RZ_CraftMenu.c:384` | the same on the crafting screen's panel: 960 tall at a stove (the strip), 858 at a workbench | As above, with `RZ_CraftMenu.layout` at 1,600 × 960 |
 | `UI/RZ_CarMenu.c:712` | `FrameSlot.SetPos` and `SetSize` on an image in a frame place and size it as the layout's position and size would: the bars of the loom's wires (`LoomBar0` … `LoomBar47`, three a wire a turn) | The loom shows its plugs and sockets with no wires between them, or every bar as a 6 × 6 dot at the top of the band: draw the tangle another way (a fixed tangle laid out in `RZ_CarMenu.layout`, its sockets lit by the script), and say so on the board |
@@ -2595,11 +2643,13 @@ Report the line. The place audit's own lines (`Places: ...`, `Places fail: ...`,
 are in [PLACES.md](PLACES.md#the-audit).
 
 Errands and the story blocks ([ERRANDS.md](ERRANDS.md), [DESIGN.md](DESIGN.md#story-blocks)): at
-start, `Errands: on, 36 routines, 27 duties (on) and 70 cards, N players with a ledger.`; a duty's
-table, `Duty table: the dead for <player>, N subjects, N looks (errand N).`, `Duty table: errand N
-judged for <player>: N of N right, score S, danger 0|1.`, `Duty table: errand N judged itself (no
-screen), score S.` and the warning `Duty table: a client couldn't open it ...` (no `RZ_DutyMenu`
-preset or layout on that client: tables judge themselves from then on); a duty's people, `Duty
+start, `Errands: on, 36 routines, 62 duties (on) and 70 cards, N players with a ledger.`; a sorting
+duty, `Duty sorting: the dead for <player>, N subjects, N looks (errand N).`, `Duty sorting: errand N
+judged for <player>: N of N right, score S, danger 0|1.` and `Duty sorting: errand N judged itself
+(no work sites), score S.`, with each of its prompts a `Work sites: errand.N.s0.take ...` line; a duty's
+scene, `Duty scene: errand N, <player> at <beat>: <what they chose> (seen false|true).`, its prompts
+`Work sites: errand.N.b0.0 ...`, and a house marked by a patrol, `Errands: found hook hiding at <grid>
+from a duty`; a cull, `Duty squad: cull at <grid>, N strays (errand N).`; a duty's people, `Duty
 squad: the patrol out with <player> from <grid>, N points (errand N).`; a contract
 a giver made because they were asked, `Mission N '<title>' made on asking: <player> asked <faction>.`; while running, `Errands:
 dealt <key> to <player> by <giver> (asked|called out)`, `Errands: <key> taken by <player>, way N
@@ -2776,14 +2826,63 @@ session, tick off:
   dusk), its task is a hold at a work site, and it pays 3 Favor. Ask the same person again: *You've
   done your shift. Ask again in a while*. After the third piece of work for one faction: *"They know
   your face now"*.
-- [ ] The duty table ([ERRANDS.md](ERRANDS.md#the-table), [UI.md](UI.md#the-duty-table)): after
-  that third piece of work, ask a nurse, a medic or a lookout until they give The Line at the Door
-  or Laying Out (the Halcyon lab's Bench Work needs Known). Hold the work site (4 s): the table
-  opens, with a pad too. The three goal lines read at a glance; a look turns a sign and takes one
-  off LOOKS LEFT; a verdict fills amber; **Hand it in** is dark until every card has one. Close it
-  half done, hold the site again: the same table, the same signs turned. Hand in a perfect one: full
-  Favor and 1 Fame, and the giver says so. Pass a bitten one on purpose: no pay, +2 Infamy. Empty
-  **UI > Duty card layout**: the hold alone finishes it, for half.
+- [ ] Duties alongside ([ERRANDS.md](ERRANDS.md#duties)): at a house where something is true (a thin
+  pot, a dry generator), the giver's replies list *[Errand] The Pot* and under it *[Duty] ...*. Pick
+  the duty: its ask and its ways show, as an errand's do. Without the talk screen (**Dialogue**
+  off), *Anything need doing?* gives the pressing one only.
+- [ ] The sorting duties ([ERRANDS.md](ERRANDS.md#the-sorting-duties)): after that third piece of
+  work, ask a nurse, a medic or a lookout until they give The Line at the Door or Laying Out (the
+  Halcyon lab's Bench Work needs Known). At the place three things wait in a row (bodies, people,
+  trays: the Duty props, or their stand-ins). Walking up to one says its tell; beside it three
+  prompts sit side by side, each a 2 s hold with the hands animation, and a look is said as a line
+  with the looks left. *Lift onto the stretcher* takes it (the prop goes) and three spots show
+  6 to 10 m off; putting it down there leaves the look (a grave dug with the spade's animation, a
+  pile, a bed). *Read the clipboard* opens the sheet. After the last one a line says how it went.
+  All with a pad. Report a perfect one: full Favor and 1 Fame. Put a bitten one in a grave on
+  purpose: no pay, +2 Infamy. Check the three prompts along one body can each be aimed at
+  (0.7 m apart); if they can't, say so.
+- [ ] Things that happen ([ERRANDS.md](ERRANDS.md#things-that-happen)): on a patrol's short leg, at
+  least one point stops the patrol with *"something off the path"*. Go to it: its line is said, and
+  two or three prompts sit side by side; holding one says what follows and the patrol moves on.
+  Take the shady one (the watch, the truck's share) within 20 m of them: *"You were seen, and it was
+  undone"*, Infamy, and the giver says so. Take it further off: nothing is said. Report a find: the
+  hand-in pays 1 more Favor. After a chore, sometimes one more prompt pair comes up where you
+  worked (the pot a ladle short); the step is done only when you've chosen.
+- [ ] A watch and the Trusted rung ([ERRANDS.md](ERRANDS.md#the-trusted-rung)): at dusk, ask a lookout
+  or a sentry until they give the watch. Take the post: three lines come 25 to 45 s apart, each with
+  three prompts side by side; the giver says how you called them. As Trusted, at night: the
+  lock-up's prisoner speaks after half a minute, and opening the door costs 3 Infamy and makes a
+  local. At a house that lost someone: a door for each, then the book. At a Bastion post after the
+  Collapse: three bunks, and the return. At the lab with the cure 40% made: three charts and the
+  list. A cull: their people walk out, up to five infected come, and they hold until it's clear.
+  Ask for any of the Trusted ones again the same season day: it isn't offered.
+- [ ] The Haven's duties ([ERRANDS.md](ERRANDS.md#the-havens-duties)): by day at a safehouse, the
+  school room (count, then four places to look 9 m off, each a prompt of its own) and the garden
+  (dig a bed; ask again after the gap: the same bed now wants planting, then water, and two season
+  days later lifting, across a restart too). At dusk, the door round: four doors 18 m off, a line at
+  each, then four chalk prompts side by side. The roll call: five places, and after the third look
+  the other two prompts go. Known: the swap table, four people in turn, two looks each and then
+  three calls. Each one's hand-in says how many calls were right.
+- [ ] Bastion's duties ([ERRANDS.md](ERRANDS.md#bastions-duties)): the loudspeaker tape (a pole 60 to
+  140 m out, three holds and one thing found there). Gate duty by day: four at the barrier in turn,
+  three looks offered and two allowed, then three calls; the giver says how many were right. Kit
+  inspection: three kits, and after a missing thing is written up, *Go and find it* leads to a
+  place to search. The field telephone, Known: the test at the post, the break out along the line
+  with its three looks and three readings, the splice, the ring, and the offer of new wire.
+- [ ] The Red Hand's duties ([ERRANDS.md](ERRANDS.md#the-red-hands-duties)): stripping a wreck (three
+  holds at a spot out along the road, and something under the seat). The still: the needle's line
+  comes 15 s after the fire, the cut 10 s after that, and with **Props > Duty vodka** set a bottle
+  is in your pack at the end. The count: four things, then three names. The toll: five in turn at
+  the bar, each with three looks and three calls; then the extension (the one who bolts must be
+  reached inside 50 s); then the boss. Spotter, Known: the hill 180 to 350 m out, three watches
+  20 s apart; if the glass flashes, standing still for 20 s passes it.
+- [ ] Halcyon's duties ([ERRANDS.md](ERRANDS.md#halcyons-duties)): the sample round (four swabs 14 m
+  out, then four marks). The decon line: five arrivals in turn, each with three checks and four
+  calls, **seven prompts side by side**: say whether they can each be aimed at, and whether it reads
+  as a line of stations or as a muddle. The incinerator: four bags, then the porter. Known: the
+  ward (three beds 12 to 30 m apart, six signs and four looks at each, then two calls of three; a
+  turning written as a fever sits up at once) and the cold chain (the box's rule is said when you
+  take it; two stops on the way out to the far door 180 to 350 m off).
 - [ ] With their people ([ERRANDS.md](ERRANDS.md#with-their-people)): take a patrol's short leg
   from a lookout or a sentry. Their people stand at the gate, walk three points and come home, and
   stop when you fall more than 150 m behind; each point gives one line about what's there; back at

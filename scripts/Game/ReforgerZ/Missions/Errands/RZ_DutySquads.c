@@ -20,6 +20,10 @@ class RZ_DutySquad
 	ref array<vector> m_aPoints = {};	// a round's points (home isn't one)
 	int m_iReached;						// points whose find has been said
 	bool m_bLostSaid;
+	bool m_bHeld;						// stopped at a point while the player sees to what's there
+	bool m_bCull;						// a cull: at its point the strays come, and they stand until it's clear
+	float m_fCullAt = -1;				// the squads' clock when they came
+	int m_iFinds;						// points that held something to go and look at
 }
 
 //------------------------------------------------------------------------------------------------
@@ -31,6 +35,7 @@ class RZ_DutySquads
 	protected RZ_GameModeComponent m_GM;
 	protected RZ_Errands m_Dealer;
 	protected ref array<ref RZ_DutySquad> m_aSquads = {};
+	protected float m_fClock;
 
 	//------------------------------------------------------------------------------------------------
 	void RZ_DutySquads(RZ_GameModeComponent gm, RZ_Errands dealer)
@@ -156,6 +161,34 @@ class RZ_DutySquads
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! This errand's round is a cull: at its point the infected come, a handful, and the squad stands
+	//! with the player until none is left near.
+	void SetCull(int errandId)
+	{
+		RZ_DutySquad s = Find(errandId);
+		if (s)
+			s.m_bCull = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The strays at a cull's point: up to five, 40-60 m out, as the spawner has room. How many came.
+	protected int Strays(vector point)
+	{
+		RZ_ZombieSpawner spawner = m_GM.GetSpawner();
+		int room = Math.Min(5, spawner.SpawnRoom(point));
+		int town = m_GM.FindNearestSettlement(point);
+		int came = 0;
+		for (int i = 0; i < room; i++)
+		{
+			vector at = RZ_Util.GroundPos(RZ_Util.RandomPointInRing(point, 40, 60));
+			if (spawner.SpawnZombie(at, false, town, -1))
+				came++;
+		}
+
+		return came;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The errand is over: its people go home (the escort's slot is freed).
 	void Drop(int errandId)
 	{
@@ -213,6 +246,7 @@ class RZ_DutySquads
 	//! On the errands' tick: the escorts move, and a round says what it finds at each point.
 	void Tick(float dt, array<int> ids, array<IEntity> players)
 	{
+		m_fClock += dt;
 		foreach (RZ_DutySquad s : m_aSquads)
 		{
 			s.m_Escort.Update(m_GM, dt, ids, players);
@@ -227,6 +261,31 @@ class RZ_DutySquads
 				continue;
 			}
 
+			// A cull's stand: until none of them is left near, or three minutes
+			if (s.m_bHeld && s.m_fCullAt >= 0)
+			{
+				bool clear = m_fClock - s.m_fCullAt > 15 && m_GM.GetSpawner().CountZombiesNear(s.m_Escort.m_vPos, 90, 1) == 0;
+				if (!clear && m_fClock - s.m_fCullAt < 180)
+					continue;
+
+				s.m_fCullAt = -1;
+				s.m_bHeld = false;
+				s.m_Escort.Resume();
+				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "Clear. Count your people, and take them home.");
+				continue;
+			}
+
+			// Stopped at a find: they wait until the player has seen to it (or let it be)
+			if (s.m_bHeld)
+			{
+				if (!m_Dealer.GetScenes().IsDone(s.m_iErrand))
+					continue;
+
+				s.m_bHeld = false;
+				s.m_Escort.Resume();
+				m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("%1 move on.", RZ_Util.Capitalize(s.m_Escort.m_sName)));
+			}
+
 			if (s.m_iMode != RZ_DutySquad.MODE_ROUND || s.m_iReached >= s.m_aPoints.Count())
 				continue;
 
@@ -235,6 +294,46 @@ class RZ_DutySquads
 				continue;
 
 			s.m_iReached++;
+			if (s.m_bCull)
+			{
+				int came = Strays(point);
+				s.m_bHeld = true;
+				s.m_fCullAt = m_fClock;
+				s.m_Escort.Stop();
+				if (came > 0)
+					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("Here. %1 of them, coming in off the field. Stand with your people until it's clear.", came));
+				else
+					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "Here. Nothing shows itself. Stand a while, and be sure of it.");
+
+				RZ_Log.Info(string.Format("Duty squad: cull at %1, %2 strays (errand %3).", RZ_SettlementScanner.GridReference(point), came, s.m_iErrand));
+				continue;
+			}
+
+			// Something off the path, for the player to go and see to: at two points in three, and
+			// always at one of them
+			RZ_Errand e = m_Dealer.FindById(s.m_iErrand);
+			bool last = s.m_iReached >= s.m_aPoints.Count();
+			if (e && (Math.RandomFloat01() < 0.66 || (last && s.m_iFinds == 0)))
+			{
+				array<ref RZ_DutyBeat> beats = {};
+				RZ_DutyFinds.Patrol(m_GM, e, point, beats);
+				if (!beats.IsEmpty())
+				{
+					RZ_DutyScene scene = m_Dealer.GetScenes().Ensure(e, s.m_sTitle, s.m_vHome, true);
+					scene.m_vLast = point;
+					foreach (RZ_DutyBeat beat : beats)
+					{
+						scene.m_aBeats.Insert(beat);
+					}
+
+					s.m_iFinds++;
+					s.m_bHeld = true;
+					s.m_Escort.Stop();
+					m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, string.Format("Point %1 of %2. %3 stop. There's something off the path here: go and look. They'll wait, and they can see you within 20 m.", s.m_iReached, s.m_aPoints.Count(), RZ_Util.Capitalize(s.m_Escort.m_sName)));
+					continue;
+				}
+			}
+
 			string left = "Then home.";
 			if (s.m_iReached < s.m_aPoints.Count())
 				left = "On to the next.";

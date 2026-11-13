@@ -452,7 +452,9 @@ grammar: a marked door within 60 m of the job's site if there is one; else a mar
 for two hours (never saved) on the nearest door, by whoever holds the nearest ground within 3 km (Bastion
 CLEARED, the Red Hand's struck hand, Halcyon's beak, else the Haven's ring and dot). Whoever passes within
 30 m reads it once, at their own level, and it goes in their journal. With no town near, or Traces off,
-no old mark is made at that site.
+no old mark is made at that site. A patrol's find *a door with a mark*
+([ERRANDS.md](ERRANDS.md#things-that-happen)) reads the same old mark at the patrol's point, at the
+reader's level, when one is there.
 
 ## The Long Table: absence
 

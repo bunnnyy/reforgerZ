@@ -1,66 +1,82 @@
 # Duties
 
-**Designed, not built.** The author's ask of 2026-11-13: work from the first day, low-rung jobs
-that build trust, taking over a place's duties (patrols, hunts with their people, lab work,
-sanitising arrivals, the morgue, the kitchen), repeatable and varied, true to the world's state,
-and more sensitive the more you're trusted.
+**Designed, not built.** The duties themselves are built and are in the docs: work from the first
+day ([docs/MISSIONS.md](../docs/MISSIONS.md#who-gets-offered-what)), the duty rules, the trust
+ladder and its four rungs, the sorting duties played at their place, the duties' people, things
+that happen, the Trusted rung, and each faction's own five
+([docs/ERRANDS.md](../docs/ERRANDS.md#duties)). The author's rule that games are played in the
+world is in [docs/UI.md](../docs/UI.md#default-first-then-menus). This file holds what the
+author asked for that isn't built yet.
 
-What's built is in the docs and not repeated here: work from the first day (a giver makes a
-contract on asking, [docs/MISSIONS.md](../docs/MISSIONS.md#who-gets-offered-what)), the duty
-rules, the trust ladder, the duties of rungs 1 to 3, the duty table and the duties' people
-([docs/ERRANDS.md](../docs/ERRANDS.md#duties), [docs/UI.md](../docs/UI.md#the-duty-table)). This
-file holds the duties that wait. Each phase moves what it builds into those docs and is cut from
-here.
+## What waits
 
-## The duties that wait
+### The swap table's conversations
 
-The rungs are the built ladder's: 2 they know your face, 3 Known, 4 Trusted.
+The author: *"Swap table is good, make it super interesting with dialogue and lots of different
+items."* Asked for as real conversations (`dialogue/**/*.rzd`, many short ones with their own
+people, wants and tells, in the voices of docs/WRITING.md). As built, each of the sixteen traders
+is a beat: what they say, three things to handle and ask, three calls. To make them `.rzd` trees,
+the talk engine needs a speaker for a duty's customer (a speaker kind, a body to talk to at the
+table, and effects that come back into the duty's scene). That is its own piece of work, and it
+would serve the toll's passers-by and gate duty's arrivals as well.
 
-| Duty | Rung | The Haven (a house) | Bastion (a post) | The Red Hand (a camp) | Halcyon (a station, the lab) |
-|---|---|---|---|---|---|
-| A watch | 2 | the roof at dusk | the wire, a night hour | the toll, a quiet hour | the gate log |
-| Stock-taking | 3 | the larder against the book | the armoury count | the cut, counted twice | the cold store |
-| The names | 4 | The Book of Names: who is told, and how | The casualty return | The debt book | The authors' list |
-| Who gets a dose | 4 | the house's one dose | the sergeant's list | who the crew pays for | The Trial List |
-| The lock-up | 4 | the one at the gate overnight | The Stockade Watch | the debtor in the shed | isolation |
-| A cull | 4 | the old man's dogs | a pack's strays at the wire | — | the animal house |
+### Real things on the table
 
-### How each would play
+Suspicious Item Props' things (`PrefabsEditable/Auto/Props/Civilian/Suspicious Items/`: the stack
+of cash, the gold bar, the pearl necklace, the credit cards, the forged passports, the soldier's
+IDs, the pistol in parts, the copper wire, the pill bottle, the drug bricks, the blindfold; never
+`E_Smartphone.et`) are named in the duties' words (the swap table, the count, the toll, gate duty,
+kit inspection, the roll call, the incinerator) but don't stand there as objects. Two things are
+needed first:
 
-- **A watch.** A post held for a stretch of the place's night or dusk: stay at it, and report
-  what passes (a light, a walker, one of the infected at the wire). Something from the world comes
-  by, or nothing does, and the report is the work. Never a timer you only wait on: two or three
-  things to mark, each a choice of what it was.
-- **Stock-taking.** The duty table's screen with a fourth skin: lines of a ledger against what's
-  on the shelf. **Tally**, **query** or **write off**. A shortage written off is someone's theft
-  covered; a query is someone accused.
-- **The names** (rung 4). The list of the place's dead this week, and who is told. Each name is a
-  choice with a cost: tell the family, tell the leader, hold it back a day. It writes the
-  world's memory, so it needs its own look at what it may record.
-- **Who gets a dose** (rung 4). Only once doses exist. A list of three, one dose. It must never
-  hand a dose to the player, and what it writes about the cure's count needs the finale's rules
-  read first.
-- **The lock-up** (rung 4). A night's watch on someone held: they talk. Let them out, keep them
-  in, or pass on what they said.
-- **A cull** (rung 4). Out with the place's people to put down what's at the wire: a real fight,
-  near players only, with the squad the patrols use.
+- **Prop copies with nothing to use.** They're pick-up items, so one standing as a work site's
+  look could be taken: free loot. Each needs a copy without its pick-up action.
+- **Our own child prefabs for the papers, the IDs and the pills**, under `Prefabs/ReforgerZ/`,
+  inheriting theirs with an era-right name and description (as `RZ_Water_Dirty.et` does), written
+  as text with a `.meta`, for the PC to open: the RU passport and ID say "Russian Federation", the
+  pills name a 1996 brand, and the passports, IDs, wiring and drug bricks name an inventory icon
+  the mod doesn't ship.
 
-### What could still vary
+JTF Bronze Props' `Detainee` and `InterrogationRoom` scenes (`tools/camp_kit/world_kit.txt`) would
+dress the lock-up, with the blindfold.
 
-Complications that are one line and one change, on the duties already built: a pack was heard
-last night (the patrol's round goes the other way), the cure is close (Halcyon's trays pay a
-little more), a truck is due (the kitchen wants it done before).
+### The Trusted rung's other versions
 
-## Order of work
+| Duty | Waits for |
+|---|---|
+| The Red Hand's debt book, Halcyon's authors' list (the names) | Written the way the casualty return is: evidence at a place, a word that follows someone |
+| Who gets a dose: the house's one dose, the sergeant's list, who the crew pays for | Doses that exist outside the lab. It must never hand a dose to the player, and what it writes needs the finale's rules read first |
+| Halcyon's isolation (the lock-up), the animal house (a cull) | Their own beats, on the ward's people |
 
-1. **A watch**, then **stock-taking** (the table's fourth skin).
-2. **Rung 4**, each with its record and its consequence: the names, who gets a dose, the lock-up,
-   a cull. These touch the houses' people and the cure's doses, so each needs its own look at
-   what it may write.
+### By faction
+
+- **The Haven.** The garden's beds seen as beds (today a bed is a spot and its words; the dug,
+  planted and ripe looks need props). The roll call's reason followed up (someone sent after the
+  one who's out and not back).
+- **Bastion.** Kit inspection's missing rifle bought back at a Red Hand toll by the player (today
+  it's reported, and the routine Fell Off the Inventory is the buying back). Stag at the wire with
+  sectors to choose between.
+- **The Red Hand.** The toll weighted by feuds, truces and who holds the road (today: the stage,
+  the hour, the weather, the town's sickness). Spotter's board changing what the crew does (today
+  it's recorded, rumoured and kept as a saved counter that nothing reads). A night watch by sound.
+  Escorting someone through the territory with a body walking beside you (today it's a walk to the
+  far marker).
+- **Halcyon.** The decon line's stations running short by count (today the water fails once, after
+  the third arrival). The ward's research counted where it's done well (today a true chart is a
+  record and the giver's regard; it never touches the cure). The cold chain's rules felt in the
+  body: running, tilting, time (today the rule decides which choices are right).
+
+### Two errands from the props work
+
+To build as errands or cards if they fit cleanly: a soldier's ID brought back from a patrol that
+didn't return; a forger selling false hope at the line. Both appear inside duties today (gate
+duty's man with a missing soldier's card, the swap table's forged travel papers), not as errands
+of their own.
 
 ## What it must not do
 
-- No new reputation system, no pay outside the ledger's caps, no loot or doses handed out.
+- No new reputation system, no pay outside the ledger's caps, no loot or doses handed out beyond
+  what a duty names (the still's bottle, a snare's meat).
 - No bodies or props away from players; a squad only while its player is near (the escort block's
   rules and cap).
 - Nothing a pad can't do, nothing that needs reading at speed.

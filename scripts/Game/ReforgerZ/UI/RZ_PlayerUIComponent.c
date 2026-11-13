@@ -453,10 +453,6 @@ class RZ_PlayerUIComponent : ScriptComponent
 		{
 			RZ_PowerMenu.OnPayload(this, payload);
 		}
-		else if (kind == RZ_UIFeed.PAYLOAD_DUTY)
-		{
-			RZ_DutyMenu.OnPayload(this, payload);
-		}
 		else if (kind == RZ_UIFeed.PAYLOAD_TRACKER)
 		{
 			m_sTracker = payload;
@@ -845,34 +841,6 @@ class RZ_PlayerUIComponent : ScriptComponent
 			return;
 
 		gm.GetPowerGrid().GetPanel().Move(playerId, serial, move);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A move on a duty's table with this serial: a look, a verdict, the hand-in, or that it couldn't
-	//! open (RZ_DutyTables.MOVE_*).
-	void SendDutyMove(int serial, int move)
-	{
-		if (Replication.IsServer())
-			RpcAsk_DutyMove(serial, move);
-		else
-			Rpc(RpcAsk_DutyMove, serial, move);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Checked on the server (RZ_DutyTables.Move): the table is open on this serial and not judged.
-	//! "Couldn't open" isn't rate-limited.
-	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_DutyMove(int serial, int move)
-	{
-		RZ_GameModeComponent gm = RZ_GameModeComponent.GetInstance();
-		int playerId = OwnerPlayerId();
-		if (!gm || playerId <= 0 || !gm.GetErrands())
-			return;
-
-		if (move != RZ_DutyTables.MOVE_FAILED && !PickAllowed())
-			return;
-
-		gm.GetErrands().GetTables().Move(playerId, serial, move);
 	}
 
 	//------------------------------------------------------------------------------------------------

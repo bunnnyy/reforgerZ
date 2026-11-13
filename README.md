@@ -119,9 +119,16 @@ and one way to end it: **research the cure.**
 - **Work from the first day, and duties**: a faction's giver with no open contract for you makes one
   when asked, and its named people always have a duty: the place's own work, taken over for a shift.
   Chores at first (the kitchen, wood and water, washing down), then, as they come to know your face,
-  the line at the gate and the dead (one small sorting screen: a few looks, three verdicts, and a
-  bitten one let through costs you), a patrol with their people, and for the Known a hunt with the
-  hunter and Halcyon's sample bench. Each run is drawn from the world as it is
+  the line at the gate and the dead (sorted in person: go to each, look where you choose with fewer
+  looks than places, carry it to the pyre, the table or the grave, and a bitten one let through
+  costs you), a watch, a patrol with their people, for the Known a hunt with the hunter, the
+  stores and Halcyon's sample bench, and for the Trusted the lock-up, the names of the dead, the
+  trial list and a cull. Each faction has five of its own besides (the Haven's garden and swap
+  table, Bastion's gate duty and kit inspection, the Red Hand's toll and still, Halcyon's decon line
+  and observation ward...), most of them worked out from what you find, with the call yours.
+  Something happens on the way (a mark on a door, someone
+  hiding, a truck nobody has found), and what you do about it is remembered. Each run is drawn from
+  the world as it is
   ([ERRANDS.md](docs/ERRANDS.md#duties)).
 - **Hands-on work**: a step that says dig, build, board up, fix, search, fill, paint or burn is a thing
   at its place with one prompt you hold (*Dig the latrine*), and the world shows the result: the
@@ -194,14 +201,14 @@ and one way to end it: **research the cure.**
   and console as well as keyboard and mouse: every screen works with a pad, nothing needs typing
   or a chat command, and no text is under 18 px for a TV (the HUD and notice cards show in Workbench play,
   and the spawn screen, the map key and the map icons with the keyboard, pad not yet; the notebook, talk,
-  repair, shop, crafting, cooking and radio screens, the object menu, the power panel, the duty table, reader, death brief and subtitles are written and not yet played).
+  repair, shop, crafting, cooking and radio screens, the object menu, the power panel, reader, death brief and subtitles are written and not yet played).
 
 ## Status
 
 The game scripts, about 246,500 lines of Enforce Script under `scripts/Game/ReforgerZ/`, **compile
 without errors or warnings** against Arma Reforger 1.9 and run with no script exceptions in the
 server's runtime test and in Workbench play on Everon and Arland; every approved design is built
-(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: a watch, stock-taking and the fourth rung's sensitive duties, built in phases; work from the first day and rungs 1 to 3 are built, with the duty table and patrols and hunts with a place's own people). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
+(the last, the sites design: each site's ground read on a grid with real footprints and its surroundings, the placement rules and the solver, building in layers by each faction's doctrine, the camps' people at their posts and on their rounds, each site's story, and the site audit), simplified as each doc says; one waits in `designs/` (duties: what the built duties still want, such as the swap table's conversations as `.rzd` trees and real things standing on the tables; the duties themselves are built: work from the first day, the four rungs of the trust ladder, the sorting duties played in the world, patrols and hunts with a place's own people, things that happen on the way, the Trusted rung, and five duties of each faction's own). The repo holds 267 prefabs (many on stand-in bases), the worlds and the
 UI; before it can be called working it needs real prefabs in place of the stand-ins, the `VERIFY`
 behaviours checked and a play-test with a game client (on a Linux server, Special Zombies stops the
 mode loading: [MOD_STACK.md](docs/MOD_STACK.md#special-zombies-stops-reforgerz-loading-on-a-linux-server)).
@@ -308,7 +315,7 @@ scripts/Game/ReforgerZ/
                  Pack/: the conversations, generated from dialogue/
   UI/            the per-player data feed, HUD (notice cards, subtitles), the notebook and its
                  pages, the pause menu button and notebook item, the talk screen and the nametags, the reader,
-                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the duty table, the street lamps (dark but where there's power), the screen guard, the notice board, the spawn screen and loadout lock, the
+                 the car repair, shop, crafting and cooking screens (and the item picture), the radio screen, the object menu and the status strip, the power panel, the street lamps (dark but where there's power), the screen guard, the notice board, the spawn screen and loadout lock, the
                  death brief, the map's icon layer and key, notice styles, notice lanes (the interruption budget), chat commands
 scripts/WorkbenchGame/ReforgerZ/
                  the Workbench plugins: ReforgerZ: Create prefabs, Write prefab checklist
@@ -368,8 +375,9 @@ tools/compile_check.sh
                  or Windows in Git Bash)
 tools/runtime_test/
                  runs the game mode on that server with a fake player, (run.sh sites) the site
-                 audit and (run.sh tasks) the task place audit on Arland, Everon or Cain;
-                 places.py draws the task places (test only, not the mod)
+                 audit and (run.sh tasks) the task place audit on Arland, Everon or Cain, and
+                 (run.sh layer) the behaviour layer test: a pack of Bacon's bodies hunting the
+                 fake player on Arland; places.py draws the task places (test only, not the mod)
 tools/zombie_lab/
                  measures Bacon Zombies' own AI on that server, on Everon: groups, waypoints,
                  sight, sharing, speeds, health, the clock, frame time (test only, not the mod)

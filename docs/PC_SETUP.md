@@ -196,6 +196,14 @@ On Windows it closes itself too (Everon in about 6 minutes):
 SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh tasks everon
 ```
 
+The behaviour layer test ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#behaviour-layer-test-without-workbench))
+needs Bacon Zombies in that folder too, boots Arland once on the same port (so the same check
+applies) and takes 17 to 30 minutes; it prints its results table at the end:
+
+```bash
+SERVER_DIR="/c/Program Files (x86)/Steam/steamapps/common/Arma Reforger Server" EXTRA_ADDONS_DIR="<Documents>/My Games/ArmaReforger/addons" tools/runtime_test/run.sh layer
+```
+
 The text lint needs only Python and takes a second
 ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#text-lint)): `py tools/voice_lint.py`. The compile check
 runs the dialogue lint first (`python3`, else `py -3`), and fails if a conversation pack is stale:
@@ -278,4 +286,5 @@ What the sessions on the author's PC haven't confirmed yet. Settle each when a s
 | Step | What to check |
 |---|---|
 | 3 | The game's Workshop button names (**Subscribe** or **Download**) |
+| 4 | The behaviour layer test (`tools/runtime_test/run.sh layer`) has only run on Linux: does it run on Windows and close itself when it's done, as the audits do (else its `TIMEOUT`, 70 minutes, stops it)? |
 | 6 | **Server localhost + PeerTool** in use (found in the menu, not run yet); the game's **Direct Join** menu; whether the game client needs `-addonsDir` and `-addons` to join a server running the unpublished mod |

@@ -285,7 +285,6 @@ GUID) with the ReforgerZ presets added, each with its layout and class. Workbenc
 | `RZ_ObjectMenu` | `RZ_ObjectMenu` | `RZ_ObjectMenu.layout` (not in the conf yet: the PC adds it) |
 | `RZ_RadioMenu` | `RZ_RadioMenu` | `RZ_RadioMenu.layout` |
 | `RZ_PowerMenu` | `RZ_PowerMenu` | `RZ_PowerMenu.layout` |
-| `RZ_DutyMenu` | `RZ_DutyMenu` | `RZ_DutyMenu.layout` |
 
 The cooking screen has no preset of its own: it's `RZ_CraftMenu` in its stove mode.
 
@@ -1011,66 +1010,6 @@ Button OptionRow (root, 4 below it)
 ```
 
 Five options show at once; more scroll (a keypad's twelve keys).
-
-## Duty table: `RZ_DutyMenu.layout` and `RZ_DutyCard.layout`
-
-The duties' sorting table (`RZ_DutyMenu` preset; behaviour in
-[UI.md](../docs/UI.md#the-duty-table)), in the power panel's style. Written as text by a small
-generator, with the mockup (`Mockups/duty_table.html`, preview `Previews/duty_table.png`) drawn to
-the same numbers. Positions inside `DutyPanel` are from its top left.
-
-```
-Frame (root, full screen)
-├─ Image   Dim             full screen, #08090A at 60%
-└─ Frame   DutyPanel       1,400 × 860, centred
-   ├─ Image  (DutyBg)       #0F1113
-   ├─ Image  (DutyAccent)   full width × 5, top edge, amber
-   ├─ Text   DutyTitle      at (48, 30), 1,200 wide, condensed bold 34, bone: the duty ("Laying Out")
-   ├─ Text   DutySub        at (48, 76), regular 22, dim: where ("Levie")
-   ├─ Button CloseButton    44 × 44 at (1,308, 30), "X" in amber
-   ├─ Image  (HeadRule)     at (48, 116), 1,304 × 2, amber
-   ├─ Text   Legend0        at (48, 130), 424 × 32, bold 24, bone: "A BITE: BURN"
-   ├─ Text   Legend1        at (488, 130), the same: "PAPERS DON'T MATCH: HOLD"
-   ├─ Text   Legend2        at (928, 130), the same: "ALL CLEAR: BURY"
-   ├─ Text   LooksText      at (48, 172), bold 24, amber (red at none): "LOOKS LEFT: 6"; hidden once judged
-   ├─ HorizontalLayout Cards  at (48, 214), 1,304 × 500: the cards are created here
-   ├─ Text   DutyStatus     at (48, 728), 940 × 64, condensed 22, wraps: the hint, the last move, the result
-   ├─ Button DoneButton     344 × 60 at (1,008, 730)
-   │  └─ Overlay (DoneButtonBox)
-   │     ├─ Image (DoneBg)   #1B1F22
-   │     ├─ Image DoneLit    #2A2E31, shown when selected
-   │     ├─ Image DoneBar    5 × 60, left edge, amber, shown when selected
-   │     └─ Text  DoneText   bold 24, centred: "Hand it in" (dark until every card has a verdict), then "Close"
-   ├─ HorizontalLayout Prompts  at (48, 808), 900 × 40: the input prompts are created here
-   └─ Text   PromptsText    at (48, 814), bold 18, dim: the static footer, hidden once prompts are made
-```
-
-`RZ_DutyCard.layout` (**UI > Duty card layout**), one subject, created into `Cards`. `N` is 0, 1, 2:
-
-```
-SizeLayout DutyCard (root, 248 × 500, 14 right of it)
-└─ Frame (CardFrame)
-   ├─ Image  (CardBg)       #1B1F22
-   ├─ Image  CardBar        full width × 5, top edge: amber, or the result's colour once judged
-   ├─ Text   CardTitle      at (14, 16), bold 24, bone: "TAG 114"
-   ├─ Text   CardTell       at (14, 50), 220 × 58, condensed 20, dim, wraps: the tell
-   ├─ Button SignN          228 × 54 at (10, 116 + 60 × N): a click turns it over
-   │  └─ Overlay (SignNBox)
-   │     ├─ Image (SignBgN)   #08090A
-   │     ├─ Image SignLitN    #2A2E31, shown when selected
-   │     ├─ Image SignBarN    5 × 54, left edge, amber, shown when selected
-   │     ├─ Text  SignNameN   left, bold 20, dim: "ARMS"
-   │     └─ Text  SignWordN   right, bold 22: "?" dim, then its word in green, amber or red
-   ├─ Image  (CardRule)     at (14, 302), 220 × 2
-   ├─ Button VerdictN       228 × 44 at (10, 314 + 50 × N): a click gives it
-   │  └─ Overlay (VerdictNBox)
-   │     ├─ Image (VerdictBgN)  #08090A
-   │     ├─ Image VerdictLitN   #2A2E31, shown when selected
-   │     ├─ Image VerdictOnN    amber, shown on the verdict given
-   │     ├─ Image VerdictBarN   5 × 44, left edge, bone, shown when selected
-   │     └─ Text  VerdictTextN  bold 22, centred: "BURY" (dark on the amber one)
-   └─ Text   CardResult     at (14, 466), bold 20, centred, shown once judged: "RIGHT", "TOO CAREFUL", "MISSED", "LET THROUGH"
-```
 
 ## Power panel: `RZ_PowerMenu.layout` and `RZ_PowerBreaker.layout`
 

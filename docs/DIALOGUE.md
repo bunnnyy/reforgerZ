@@ -191,7 +191,8 @@ adapters in `Dialogue/RZ_TalkSpeakers.c` and `RZ_TalkStaff.c`, `RZ_Mission.LockR
   *Nothing today* is left for when the world can run none of theirs
   ([MISSIONS.md](MISSIONS.md#who-gets-offered-what)); at an errand giver *Anything need doing?* with
   [the reason](ERRANDS.md#when-theres-nothing-the-reason-in-words) (*You've done your shift. Ask
-  again in a while*) or their refusal ("Not while that lot's at the fence.", "You've your hands full already.
+  again in a while*) or their refusal; a giver with something pressing lists it first and their
+  duty after it, tagged *[Duty]* ([ERRANDS.md](ERRANDS.md#duties)) ("Not while that lot's at the fence.", "You've your hands full already.
   Finish what you've got."). A wanderer with no errand keeps *Need a hand?* open while Barter Chain
   could start from them.
 - **Who shows what:**
@@ -444,7 +445,7 @@ costs, never what comes of it**; the one tag about what a reply is, its job's ki
 | `callout <lie key>` (a choice option) | [Evidence] | Shown only to a player who was told that lie and knows the truth ([Lies you're told](#lies-youre-told)) |
 | `cost favor:<faction> N` | [20 Haven Favor] | Dim with what it needs when you can't pay. Paid when picked |
 | `cost item:food*N` | [2 food] | Dim with "you have 1 food" when you can't. Taken when picked |
-| A choice that starts a job or opens its pitch (`call:slot:N` on the speaker's job slot, `offer:`, `begin:`) | [Job], [Errand], [Quest], in front of any other tag | Not a check: the job's kind, as on the hub's job replies. Dim with why when the slot has nothing for you now ("Nothing today. Ask again later") |
+| A choice that starts a job or opens its pitch (`call:slot:N` on the speaker's job slot, `offer:`, `begin:`) | [Job], [Errand], [Quest] (and [Duty] on the hub, for the duty a giver offers beside a pressing errand), in front of any other tag | Not a check: the job's kind, as on the hub's job replies. Dim with why when the slot has nothing for you now ("Nothing today. Ask again later") |
 
 A trait on the speaker can move a check one step (`easier:merciful`, `harder:paranoid`).
 Difficulty runs 1 to 4.

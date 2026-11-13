@@ -1108,8 +1108,9 @@ melee test passes (for hit attribution; B14 found the melee read itself doesn't 
 | **Recover** | Our code, waiting | 0 | Its slot and Bacon's loiter point at the last-known spot or home; steered again after 15 s (B5) |
 
 - **Released** to Bacon by any of: within its kind's reach of its target on a strike; any player within
-  8 m in terrain line of sight (**Contact radius**) or 3 m without; a hit; an unsuppressed shot within
-  30 m; a member of its group released within 15 m that second.
+  8 m in terrain line of sight (**Contact radius**) or 3 m without; a hit (never its own fall or trip:
+  a running body loses about 2 of its 100 health to itself now and then); an unsuppressed shot within
+  30 m; a member of its group released within 15 m that second; a scout, by its own call.
 - **Taken back** after 10 s engaged by any of: its target beyond 2.5 × its reach for 8 s; its target
   lost for its memory time and 20 m away; its group gone home; its target dead or gone. Never with a
   player within 15 m in sight. 5 s at least before it can be released again.
@@ -1211,7 +1212,7 @@ cap; Bacon opens shut, unlocked doors itself, B10):
 **Formations** (slots written every second near players, every 3 s beyond 300 m): file on a night trail
 and going home, a loose line by day, a wedge for the core, flanking pairs, a ring at the lair, the kill
 site and the vigil. Spacing widens as the group nears its target (4 m at 200 m to 20 m within 40 m), and
-a strike fans out on an arc round the target, closing. **The re-plan:** the strategies plan round the
+a strike fans out on an arc round the target, closing by its nearest body (one held up behind doesn't hold the rest). **The re-plan:** the strategies plan round the
 target's last-known spot as it was, and move it only when the target has gone 25 m from there, so flank,
 shadow and ring points don't jitter (the strike always runs at the last-known spot itself). **The
 ETA:** in a pincer, an encircle or a herd, each element works out its time to its place (its route
@@ -1227,7 +1228,7 @@ weights; **Strategies** off: everyone rushes):
 | Strategy | Bold | Cautious | Cunning | Territorial | Nomadic | What it does |
 |---|---|---|---|---|---|---|
 | **Rush** | 3 | 0 | 0 | 1 | 1 | Fanned out, straight in at a run |
-| **Stalk** | 1 | 3 | 2 | 1 | 2 | A shadow point 80–150 m off by day (**Stalk distance**; 50–100 at night), behind the target's line of travel and toward cover (terrain that hides it, then a wooded square); walk-stop, hunters silent; frozen and low for 3–6 s when you look its way within 120 m; strikes at a moment or after 4 (night 6) minutes |
+| **Stalk** | 1 | 3 | 2 | 1 | 2 | A shadow point 80–150 m off by day (**Stalk distance**; 50–100 at night), behind the target's line of travel and toward cover (terrain that hides it, then a wooded square); walk-stop, hunters silent; frozen and low for 3–6 s when you look its way within 120 m (again for as long as you keep looking, until the strike: a strike doesn't freeze); strikes at a moment or after 4 (night 6) minutes |
 | **Pincer** | 2 | 1 | 2 | 3 | 1 | Two groups: a sidestep first, then flank points 140 m out by day (100 at night) at 70° (**Flank radius**, **Flank angle**), toward cover; both strike when both are set, or 60 s after the first; one group alone stalks |
 | **Encircle** | 3 | 0.5 | 1 | 2 | 1 | 5+ bodies, never by day: a ring of 120 m with a 60° gap (always a way out), each group a share of it, closing 0.7 m/s; strikes at 35 m, at a moment, or after 3 minutes |
 | **Flush** | 2 | 1 | 1 | 2 | 1 | The target in a wood or a building, 2 groups, at night: the first pushes in at a walk, groaning every 6 s; the others wait 40–60 m off on the far side; all strike when the target moves 8 m or breaks cover, or after 90 s |
@@ -1251,8 +1252,8 @@ in a tribe's two weak days no pincer, encircle or herd. Lone ones and splinters 
 - **Stairs** (B11: they don't climb them reliably): a target more than 2.5 m up within 15 m across, not
   reached for 20 s, and the body waits below until the target comes down. A roof or an upper floor is a
   fair escape.
-- **The unstick ladder** (a steered body that moved under 1.5 m in 10 s with its slot 8 m off, or
-  refused a climb): a 4 m sidestep, back off 10–20 m, another way 45° off, then (**Unstick out of
+- **The unstick ladder** (a steered body that moved under 1.5 m in 15 s with its slot 8 m off, or
+  refused a climb; 15 s because Bacon's own pause between two moves runs to 10): a 4 m sidestep, back off 10–20 m, another way 45° off, then (**Unstick out of
   sight**) moved up to 15 m ahead only where no player is within 60 m or has terrain line of sight within
   150 m, then give up. A 10 m square stuck in twice is avoided for 30 minutes. An engaged body that
   closes under 1 m in 8 s on a target within 40 m is taken back with a sidestep.
@@ -1291,6 +1292,67 @@ base game's hint with a timer ([UI.md](UI.md#controllers)). Each effect has one 
 every 45 s a player. **Client effects** off, or no component on the player controller: no hold,
 stagger or knockdown, and the lines and the lunge stay. The effects' calls are VERIFY items until a
 client has seen them ([WORKBENCH_SETUP.md](WORKBENCH_SETUP.md#6-the-verify-list)).
+
+### What the server test shows
+
+The layer was run on the dedicated server with the mod's own tribe code and Bacon's real bodies
+(13 November 2026, Bacon 1.8.0, Arland, one pack of 10 to 14; the
+[behaviour layer test](WORKBENCH_SETUP.md#behaviour-layer-test-without-workbench)): a fake player
+hunted at noon and at 23:00. It works on the server. The table is the run after the fixes below
+(34 bodies, 16 minutes); each boot seeds another pack, so the counts move from run to run.
+
+| What was tested | What happened | |
+|---|---|---|
+| A pack put out and steered to the player | 10 bodies of the hunt's groups put out 144–485 m off; 9 were released or came at least 40% nearer, 1 was still 317 m off when the fight stage ended; none ran off | pass |
+| Nobody stuck | No body stood a minute with a slot to walk to (0 of 34). The run before had one that stopped for good at one spot, 91 m from its target | pass, not every run |
+| Speed while steered | A capped hunter 2.0 m/s (95% under 2.2), an alpha walking 1.3, uncapped bodies 3.3 (95% under 3.8); 3 of 2,262 moving seconds over the cap's speed | pass |
+| Blind while steered | In 5,603 steered body-seconds Bacon never held the player as an enemy (0 of 236 in the open at 30–100 m, 0 of 24 under 30 m), and the stored factor was 0 throughout. Its perception still notices him (seen in the last 2 s in 139 of those 260 seconds): a factor of 0 stops it recognising, not detecting. Engaged within 30 m it held him as an enemy in 293 of 324 | pass |
+| Release on a strike | 6 releases at 18–22 m (reach 25 m and up) | pass |
+| Release on a shot | The player 22 m from a steered body for 3 s: no release; the shot released it inside the call, both passes | pass |
+| Release on contact | The player 5–7 m off in sight: released 2 s later, both passes | pass |
+| Every release has a cause | 11 releases: 6 strike, 3 contact, 2 shot. 21 falls and trips of a body's own, none released it | pass |
+| Engage | 9 of 11 bodies released within 45 m reached the player in a median 5 s at 3.7 m/s; Bacon's melee test passed in 246 body-seconds; the player lost his whole health 95 times over in 125 seconds (a pack of three takes about all of it a second) | pass |
+| Take-back and recover | 7 bodies engaged when the player was moved 430–620 m off: taken back after 4–12 s, steered again after 18–27 s, all 7 then walked or stood on their slot | pass |
+| The hunt lost, the walk home | Lost after 60 s; the parts sent home hold where they are first (up to 10 minutes, as built), then one pass saw them 41 m nearer their rest spots in 84 s | pass |
+| Put away | The player 980 m and 1,800 m from every body: all back to data in 3–4 s | pass |
+| Hearing | A shot 107 m from a hunter group that wasn't hunting, the player gone a second later: its centre came 50 m and 64 m nearer the spot in 75 s | pass |
+| The status line's counters | Releases 11 and take-backs 9, as sampled; steer, engage and recover counts matched in 83 of 85 status lines; nothing `by waypoint` | pass |
+| Script exceptions | None from ReforgerZ's code. 317 from the game's own `SCR_AIEnemyMarkingSystem.MarkTarget` (below) | pass |
+
+**What it fixed.** The first runs found five defects in the layer; each was fixed and run again:
+
+| Defect | Before | After |
+|---|---|---|
+| A body's own fall or trip counted as a hit (about 2 of its 100 health, the body itself the instigator), which released it and its neighbours | First releases 98–330 m from the player, with nobody near and no shot | 21 falls in the run above, no release |
+| A stalk's look-freeze went on during its strike: a player who kept facing the group held it for good | Three hunters stood 100 m off in their strike for 225 s; first release after 251 s | First releases after 62–119 s |
+| The stuck watch (10 s) was shorter than Bacon's own pause between two moves (up to 10 s), so the unstick ladder sent idling bodies sideways and back | 92 unsticks in 16 minutes | 32 in 14 minutes (now 15 s) |
+| A strike's fan closed by the group's centre, so one member held up behind kept the others a slot short of their reach | Two hunters 38 m from their target for 200 s, the third stuck 91 m out | The fan closes by the nearest body; 6 strike releases, 9 of 10 closed |
+| A scout's one stance (0.9–0.9) asked `Math.RandomFloat` for an empty range | A script error for every scout put out | None |
+
+**What it showed and didn't change:**
+- **They move in hops.** Bacon's Roam takes a new slot only when its last move has ended and its own
+  pause has passed (1–2 s before a move, 3–8 s after). So a strike "at a run" is a run of about 20 m,
+  then a stop of about 8 s (the longest 14): on the move half the time, 1.5 m/s nearer the player on
+  average, where the gait itself is 3.7. An approach on longer slots is on the move 89% of the time
+  (3 m/s). The speeds in [the kinds](#how-they-move-and-hunt) are right while a body moves; the
+  averages over a strike are these.
+- **A wounded hunter's break-off at the player's feet doesn't break off:** taken back with the player
+  in reach, it goes on swinging (Bacon keeps a target it already holds in view).
+- **The pack's swings hurt its own:** 23 hits on a body by another infected's swing in the fights
+  above; in one earlier fight a hunter was beaten down to 3% of its health by them.
+- **The game's own `MarkTarget` errors.** When a group of Bacon's sees an enemy, the base game's
+  group perception marks him on the map (`SCR_AIGroupPerception.MarkEnemyOnMap`), and
+  `SCR_AIEnemyMarkingSystem.MarkTarget` fails on a target whose faction has no military marker (a
+  civilian here; other factions weren't tried): a script exception
+  each time, harmless to the fight. It is the base game's code with Bacon's faction, not the layer's
+  (a steered body sees nobody; they come from engaged ones). Whether a `SURV` player sets it off is
+  for the first server log with a real player.
+
+**What only a client can show:** how the hops, a freeze and a stance look, and whether a pack that
+closes at 1.5 m/s is still a threat; a real player's movement, camera, noise and stealth (the
+notice meter was only fed a still, standing civilian in the open); a real weapon's shot; the hold,
+the stagger and the knockdown; doors, houses and stairs; the untested levers and the notice rate
+([Play-test and the author](#play-test-and-the-author)).
 
 ### Crawler life
 
