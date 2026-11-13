@@ -53,35 +53,17 @@ and quick.
 
 ### The Haven
 
-| Duty | Kind | What it is |
-|---|---|---|
-| The school room | S | Count heads, find the one hiding |
-| The door round at dusk | W | Knock, listen, chalk the mark. Which house is hiding someone |
-| The roll call | W | The list ticked in person against the kitchen's count. Who's missing, and why |
-| The garden | W | See below |
-| The swap table | W | See below |
+Built: the school room, the garden, the door round, the roll call and the swap table
+([docs/ERRANDS.md](../docs/ERRANDS.md#the-havens-duties)). Waiting on the swap table:
 
-- **The garden.** *"Good general concept about working the garden, but make it more interesting and
-  interactive."* A plot of real beds you work with your hands, whose state is kept as data per
-  house between visits (dug, planted with what, watered, ripe): dig a bed, choose what goes in from
-  the seed tin (it changes what the house eats later), carry water from the well, weed, harvest
-  what's ripe to the kitchen. Things that happen: crows or rabbits at the beds (scare them, or a
-  snare gives meat), blight on a row (pull it or lose the bed; work out what's killing the row),
-  something dug up (a tin box, a bone, a buried rifle, a child's box of things: hand it in or keep
-  it), frost coming (cover the beds before dark), a stranger caught taking carrots (let go, bring
-  in, give some), a quarrel over whose bed it is, the well low.
-- **The swap table** (replaces the night candles). *"Swap table is good, make it super interesting
-  with dialogue and lots of different items."* You run the Haven's barter table in person: people
-  come up one at a time with real things laid on the table (a wide range drawn from the loot tables,
-  the stack's items and the Suspicious Item Props items: tins, tools, clothes, medicine, a watch, a
-  ring, papers, a dead man's ID, cash that's worth nothing now, something stolen), say what they
-  want for them, and you talk it through and judge it: fair, not fair, a counter-offer, refuse, call
-  someone over. Real conversations (`dialogue/**/*.rzd`, many short ones with their own people,
-  wants and tells, in the voices of docs/WRITING.md) and things to notice: a stolen item its owner
-  recognises across the room, a wedding ring for two tins, a hoarder cornering the candles, a child
-  with a dead man's watch, a man swapping his coat in the cold, medicine that's really aspirin,
-  someone trading for somebody who can't come themselves, a Red Hand face buying for the camp. What
-  you allow changes what the house has and how people speak to you after.
+- **Its conversations as `.rzd` trees.** The author asked for real conversations
+  (`dialogue/**/*.rzd`, many short ones with their own people, wants and tells). As built, each
+  trader is a beat: what they say, three things to handle and ask, three calls. The talk engine has
+  no speaker for a duty's customer; giving it one (a speaker kind, its effects back into the scene)
+  is its own piece of work.
+- **The things on the table as real items.** The loot tables' and Suspicious Item Props' things
+  (cash, the gold bar, the necklace, the cards, a dead man's ID) are pick-up items, so they can't
+  stand as a work site's look without being lootable. They need prop copies with nothing to use.
 
 ### Bastion
 

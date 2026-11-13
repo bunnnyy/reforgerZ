@@ -57,6 +57,13 @@ class RZ_Duties
 		list.Insert(new RZ_ErrandDuty("hunt", RZ_EFaction.SURVIVORS));
 		list.Insert(new RZ_ErrandDuty("hunt", RZ_EFaction.BANDITS));
 		list.Insert(new RZ_ErrandDuty("bench", RZ_EFaction.INSTITUTE));
+		// The Haven's own: the school room, the garden, the door round, the roll call, the swap table
+		array<string> haven = {"school", "garden", "doorround", "rollcall", "swap"};
+		foreach (string own : haven)
+		{
+			list.Insert(new RZ_ErrandDuty(own, RZ_EFaction.SURVIVORS));
+		}
+
 		// A watch and the stores, everywhere
 		for (int g = 0; g < 4; g++)
 		{
@@ -131,6 +138,7 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			case "names": DefineNames(); break;
 			case "list": DefineList(); break;
 			case "cull": DefineCull(); break;
+			default: DefineHaven(); break;
 		}
 	}
 
@@ -599,6 +607,80 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		Said("Gloves and a mask, please. The trays are numbered.", "Thank you. I'll enter your dispositions against the log.", "The bench is clear. Tell me what you filed.");
 	}
 
+	// ================================================================ The Haven's own
+	//------------------------------------------------------------------------------------------------
+	protected void DefineHaven()
+	{
+		switch (m_sDuty)
+		{
+			case "school":
+			{
+				m_iRung = RZ_Duties.RUNG_CHORES;
+				m_sRoles = "clerk,nurse";
+				m_sThread = "minded the school room";
+				m_sTitle = "The School Room";
+				SceneWay("Mind the school room", false, "Count the heads in the school room at {here}, and find whoever is missing from the benches. Then tell {giver}.", 4, 0);
+				Offer("The school room wants minding for an hour, and the teacher has a tooth. {why} Count them when you go in. Count them again when you come out. The numbers are meant to match.");
+				Over("Never mind. The teacher's tooth came out and she's back.");
+				Said("They'll try it on. They try it on with everyone.", "Twelve in, twelve out. You'd be surprised how often it isn't.", "Thank you. They liked you, which they'll deny.");
+				break;
+			}
+
+			case "garden":
+			{
+				m_iRung = RZ_Duties.RUNG_CHORES;
+				m_sRoles = "farmer,cook,storekeeper";
+				m_iNeed = RZ_ENeed.FOOD;
+				m_sThread = "worked the garden";
+				m_sTitle = "The Garden";
+				SceneWay("Work the garden", true, "Work the bed that needs it in the garden behind {here}, and see to whatever else the garden shows you. Then tell {giver}.", 4, 0);
+				Offer("The garden's four beds and it's half of what we eat. {why} Go and see what it needs today. It'll be digging, or planting, or water, or lifting. And it'll be something else as well, it always is.");
+				Over("Never mind. The children did it, and trod on half of it.");
+				Said("The fork's in the first bed. Mind the string.", "Good. Whatever you did today, we eat it in a week.", "You've soil to the elbows. That's the right amount.");
+				break;
+			}
+
+			case "doorround":
+			{
+				m_iRung = RZ_Duties.RUNG_FACE;
+				m_sRoles = "lookout,clerk";
+				m_sThread = "walked the door round";
+				m_sTitle = "The Door Round";
+				SceneWay("Walk the door round", true, "Knock and listen at each of the four doors on the round from {here}, and chalk the door where somebody is living unannounced. Then tell {giver}.", 6, 1);
+				Offer("Four doors on the round tonight, and one of them has somebody behind it who hasn't told us. {why} Knock, listen, and use your head. Chalk the one. Chalk the wrong one and I send two people to a door they shouldn't open.");
+				Over("Never mind. The round's been walked.");
+				Said("Take the chalk. Knock like a neighbour, not like a patrol.", "Back. Which door, and why that one?", "Right. I'll send them in the morning, with bread.");
+				break;
+			}
+
+			case "rollcall":
+			{
+				m_iRung = RZ_Duties.RUNG_FACE;
+				m_sRoles = "clerk,cook,storekeeper";
+				m_sThread = "took the roll";
+				m_sTitle = "The Roll Call";
+				SceneWay("Take the roll", false, "Find out who of {here} is on the list and wasn't fed, from what's in the house, and write why against the name. Then tell {giver}.", 6, 1);
+				Offer("The list says twenty and the kitchen fed nineteen. {why} I could ask, and be told what people want me to hear. You go and look. Pegs, beds, the gate book. Then tell me who, and what's become of them.");
+				Over("Never mind. They walked in at supper, asking what the fuss was.");
+				Said("Look before you ask anyone. People tidy things, when asked.", "Well? Who, and where?", "Written. I'll do what has to be done about it.");
+				break;
+			}
+
+			case "swap":
+			{
+				m_iRung = RZ_Duties.RUNG_ARMED;
+				m_sRoles = "storekeeper,clerk,cook";
+				m_sThread = "kept the swap table";
+				m_sTitle = "The Swap Table";
+				SceneWay("Keep the swap table", false, "Keep the swap table at {here}: handle what each of the four brings, ask about it, and call each trade yourself. Then tell {giver}.", 8, 1);
+				Offer("It's market day and I need someone on the swap table who can't be talked round. {why} Four will come. Look at what they put down. Ask where it's from and who it's for. Then it's your call, each one. Fair isn't always the trade they ask for.");
+				Over("Never mind. I took the table myself, and gave too much away.");
+				Said("The box is under the cloth. Nothing goes in it you wouldn't explain to me.", "Table's cleared. Tell me what we took in, and what you sent away.", "Good. I'll hear about it from all four by supper, so tell me first.");
+				break;
+			}
+		}
+	}
+
 	// ================================================================ A watch, the stores, and the Trusted rung
 	//------------------------------------------------------------------------------------------------
 	//! A way played as a scene (RZ_DutyScenes): its beats are the step.
@@ -845,6 +927,10 @@ class RZ_ErrandDuty : RZ_ErrandDef
 		{
 			case "watch": return dark;
 			case "lockup": return dark;
+			case "doorround": return dark;
+			case "school": return !dark;
+			case "garden": return !dark && e.m_iHouse >= 0;
+			case "swap": return !dark;
 			case "names":
 			{
 				if (m_iFaction == RZ_EFaction.MILITARY)
@@ -1118,6 +1204,94 @@ class RZ_ErrandDuty : RZ_ErrandDef
 				break;
 			}
 
+			case "school":
+			{
+				if (rain)
+					so.Insert("It's raining, so they've been in all day and it shows.");
+
+				if (died)
+					so.Insert("One of them lost someone this week, and the others know.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("Twelve of them, and one of me.");
+					so.Insert("They've had the same lesson three days running and they've noticed.");
+				}
+
+				break;
+			}
+
+			case "garden":
+			{
+				if (hungry)
+					so.Insert("The stores are low, so the beds matter more than they did.");
+
+				if (rain)
+					so.Insert("It's rained, so the weeds are up and the slugs are out.");
+
+				if (late)
+					so.Insert("There's no truck now. What's in those beds is the winter.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("A garden left a day is a garden lost a week.");
+					so.Insert("Nobody's been down there since the day before yesterday.");
+				}
+
+				break;
+			}
+
+			case "doorround":
+			{
+				if (sick && town)
+					so.Insert(string.Format("People have been coming out of %1 for days, and not all of them came to us.", town.m_sName));
+
+				if (rain)
+					so.Insert("Nobody sleeps rough in this. They're behind a door somewhere.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("There was a light where there shouldn't be, two nights ago.");
+					so.Insert("Somebody's been taking from the gardens, carefully, like someone ashamed.");
+				}
+
+				break;
+			}
+
+			case "rollcall":
+			{
+				if (died)
+					so.Insert("We've buried one this week already, and I won't be surprised twice.");
+
+				if (late)
+					so.Insert("People walk, these days. They don't always say.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("It was nineteen at breakfast too, and nobody said.");
+					so.Insert("Somebody knows, and has decided it isn't my business.");
+				}
+
+				break;
+			}
+
+			case "swap":
+			{
+				if (hungry)
+					so.Insert("People are hungry, and hungry people sell what they shouldn't.");
+
+				if (late)
+					so.Insert("Money's paper now, so everything else has become money.");
+
+				if (so.IsEmpty())
+				{
+					so.Insert("Half of them will be honest, and you won't know which half.");
+					so.Insert("Last market someone sold us our own spoons.");
+				}
+
+				break;
+			}
+
 			case "watch":
 			{
 				if (rain)
@@ -1347,6 +1521,11 @@ class RZ_ErrandDuty : RZ_ErrandDef
 			played.m_vLast = e.m_vPlace;
 			switch (m_sDuty)
 			{
+				case "school": RZ_DutyHaven.School(e, played); break;
+				case "garden": RZ_DutyHaven.Garden(dealer, e, played); break;
+				case "doorround": RZ_DutyHaven.DoorRound(e, played); break;
+				case "rollcall": RZ_DutyHaven.RollCall(e, played); break;
+				case "swap": RZ_DutyHaven.SwapTable(e, played); break;
 				case "watch": RZ_DutyPosts.Watch(gm, e, played); break;
 				case "lockup": RZ_DutyPosts.LockUp(gm, e, played); break;
 				case "list": RZ_DutyPosts.TrialList(gm, e, played); break;

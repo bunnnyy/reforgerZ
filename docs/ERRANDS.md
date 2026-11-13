@@ -570,6 +570,40 @@ person, alone: nobody of the place is watching.
 | **The Trial List** (Halcyon) | The cure 40% made, and not out | Read the chart at each of three beds (the one most likely to live, the one the trial learns most from, the night technician's sister), then write one name on the list by the door | No right answer. The name is recorded and goes round as a rumour naming all three. The one who'd live: morale +1, and the director calls it sentiment. The useful one: 1 more Favor, and the ward goes quiet. The sister: the technician becomes a local who remembers. It never touches a dose or the cure's count |
 | **A cull** (the Haven, Bastion) | The town 30+ infected, and room for an escort | Out armed with their people to one point 70 to 120 m off. There the strays come, up to five, as the spawner has room, 40 to 60 m out. They stand with you until none is within 90 m (three minutes at most), then home | The town is 2 less infected. If their people are killed: no pay, morale 1 down |
 
+### The factions' own duties
+
+Past the duties every place has, each faction has five of its own. About three in five are
+**worked out and led**: you gather what you can see and hear, in person, and the call is yours,
+right or wrong, with a consequence either way. The rest are simple, physical and quick. All are
+[scenes](#things-that-happen): beats played with your hands, drawn from pools so a run doesn't
+repeat soon. Two things the beats can do that a patrol's finds don't:
+
+- **Places to look, and fewer looks than places.** A beat can have several things to do, each at
+  its own spot a few metres out, with only so many allowed before it moves on (the roll call: five
+  places, three looks).
+- **A call that's scored.** The beat that follows asks what you make of it; the right answer is in
+  what you saw. The scene pays by the share of calls got right, and Fame only when every one was.
+
+#### The Haven's duties
+
+| Duty | Rung | Kind | True when | How it plays | What it changes |
+|---|---|---|---|---|---|
+| **The School Room** | 1 | Simple | By day | Count the heads (eleven, and the slate says twelve). Four places a child hides, each 9 m off: look until you find them. Then why they won't come out, and what you do: sit with them, carry them in, or leave them and tell the teacher | The giver's regard; the child asks for you after |
+| **The Garden** | 1 | Simple, and worked out when a row is dying | By day, at a house | The house's **four beds are kept between visits** (below). This visit does what the neediest bed needs: dig it over, plant it from the seed tin (your choice of three), carry water to it from the well, or lift what's ripe and carry it to the kitchen. Then **one thing happens**, from eight | A harvest feeds the house (potatoes +2, beans +1, onions +1 and morale); what happens can give meat, a local, a rumour, regard either way |
+| **The Door Round** | 2 | Worked out | Dusk or night | Four doors, each 18 m off: knock and listen at every one. One has someone living behind it who hasn't said so (a kettle just lifted off the heat, a curtain an inch further across, small wet footprints going in). One has the dead behind it. Then chalk one door for the house | Scored. The right door: reported, and a face at the glass asks you not yet (leave the chalk: a local; rub it out, shady: a local who'll come in when they can). The dead's door chalked: morale 1 down, and you're told |
+| **The Roll Call** | 2 | Worked out | Always | The list has twenty names and the kitchen fed nineteen. Five places to look (the coat pegs, the gate book, the beds, the bowls, the children) and time for three. Then write against the name: out and not back, dead in the night, or gone with their things | Scored, recorded. If it was a death, a dead man's identity card is on the blanket: hand it to the clerk, or keep it (shady) |
+| **The Swap Table** | 3 | Worked out | By day | Four come to the table one at a time, drawn from sixteen, each with something laid down and something they want (a wedding ring for two tins, a child with a dead man's watch, a man selling his coat in the cold, antibiotics that are aspirin, a spoon its owner recognises across the room, a man cornering the candles, a girl trading for her gran, a Red Hand face buying for the camp, banknotes for a loaf, pearls for a place on a list, forged travel papers...). You may do two of three things first (turn it over in your hands, ask where it came from, ask who it's for), then call it: take the trade, refuse it, or find another way | Scored: the right call is in what you learned. A trade taken feeds the house; the other way, when it's right, makes a local who speaks of it after |
+
+**The garden's beds.** Four a house, saved with the errands' counters: a bed is fallow, dug,
+planted or watered, with its crop and the day it went in. Potatoes and onions are ripe two season
+days after planting, beans one; a bed must have been watered. What happens, one a visit: crows (run
+at them, or hang a tin), rabbits (a snare: a leg of meat in your pack; or mend the fence), **a row
+dying** (three looks: the leaf, the root, the soil; then say whether it's blight, wireworm or slugs,
+and do what that needs), something dug up (a tin box, bones laid straight, a greased rifle, a child's
+tin of things: hand it in, or not), frost coming at dusk (cover the beds, or lose the beans), a
+stranger in the carrots (let go, bring in, or give a tin as well: a local each way), a quarrel over
+whose bed it is, the well low.
+
 ### Things that happen
 
 The author's rule: *"something interesting should happen or see something or whatever. Doesn't

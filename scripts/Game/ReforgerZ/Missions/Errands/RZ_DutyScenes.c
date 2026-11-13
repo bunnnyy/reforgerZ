@@ -30,6 +30,9 @@ class RZ_DutyOption
 	string m_sNext;				// the beat this leads to ("": the next in order; "end": the scene ends)
 	string m_sFlag;				// set on the scene when chosen
 	string m_sTold;				// what the giver says of it when you report ("" nothing)
+	float m_fOut;				// > 0: its own spot, this far from the beat's (a place to go and look), not side by side
+	bool m_bDone;				// taken already (a beat with several picks)
+	bool m_bEnds;				// ends a beat with several picks at once ("I've seen enough")
 
 	//------------------------------------------------------------------------------------------------
 	RZ_DutyOption Fx(string fx)
@@ -130,6 +133,10 @@ class RZ_DutyBeat
 	float m_fTimeout;			// > 0: left alone this long, it passes with nothing chosen
 	bool m_bScored;				// counts in the scene's score
 	bool m_bAlone;				// nobody of the place is watching here (a night post): only their people with you see
+	int m_iPicks = 1;			// how many of its options may be taken before it moves on (looking round: fewer looks than places)
+	int m_iPicked;
+	string m_sGroup;			// the interaction it belongs to (its flags are its own)
+	string m_sPassed;			// said when it's left alone past its timeout ("" the plain line)
 	ref array<ref RZ_DutyOption> m_aOptions = {};
 
 	//------------------------------------------------------------------------------------------------
@@ -378,7 +385,7 @@ class RZ_DutyScenes
 		foreach (int i, RZ_DutyOption o : b.m_aOptions)
 		{
 			string key = Key(s, i);
-			if (!sites.IsDone(key))
+			if (o.m_bDone || !sites.IsDone(key))
 				continue;
 
 			if (o.m_iItems > 0 && RZ_Errands.CountItems(me, o.m_eItem) < o.m_iItems)
@@ -396,7 +403,11 @@ class RZ_DutyScenes
 
 		if (b.m_fTimeout > 0 && s.m_fClock - s.m_fOpened > b.m_fTimeout)
 		{
-			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, "Left as it was. Time to move on.");
+			string passed = b.m_sPassed;
+			if (passed.IsEmpty())
+				passed = "Left as it was. Time to move on.";
+
+			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, passed);
 			Advance(s, "");
 		}
 	}
@@ -408,9 +419,9 @@ class RZ_DutyScenes
 			return true;
 
 		if (b.m_sIf.StartsWith("!"))
-			return !s.Has(b.m_sIf.Substring(1, b.m_sIf.Length() - 1));
+			return !s.Has(b.m_sGroup + b.m_sIf.Substring(1, b.m_sIf.Length() - 1));
 
-		return s.Has(b.m_sIf);
+		return s.Has(b.m_sGroup + b.m_sIf);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -461,6 +472,13 @@ class RZ_DutyScenes
 		foreach (int i, RZ_DutyOption o : b.m_aOptions)
 		{
 			vector at = b.m_vAt + axis * ((i - (count - 1) * 0.5) * OPTION_STEP);
+			// A place of its own to go and look at: out from the beat, spread round it
+			if (o.m_fOut > 0)
+			{
+				float turn = (yaw + i * 360 / count) * Math.DEG2RAD;
+				at = b.m_vAt + Vector(Math.Cos(turn), 0, -Math.Sin(turn)) * o.m_fOut;
+			}
+
 			string key = Key(s, i);
 			ResourceName prop;
 			if (i == 0)
@@ -528,8 +546,8 @@ class RZ_DutyScenes
 				s.m_iWrong++;
 		}
 
-		if (!o.m_sFlag.IsEmpty() && !s.Has(o.m_sFlag))
-			s.m_aFlags.Insert(o.m_sFlag);
+		if (!o.m_sFlag.IsEmpty() && !s.Has(b.m_sGroup + o.m_sFlag))
+			s.m_aFlags.Insert(b.m_sGroup + o.m_sFlag);
 
 		string said = o.m_sSaid;
 		bool seen = o.m_bShady && IsSeen(s, b, at);
@@ -568,6 +586,29 @@ class RZ_DutyScenes
 			m_GM.NotifyPlayer(s.m_iPlayer, s.m_sTitle, said);
 
 		RZ_Log.Info(string.Format("Duty scene: errand %1, %2 at %3: %4 (seen %5).", s.m_iErrand, RZ_Util.PlayerName(s.m_iPlayer), b.m_sKey, o.m_sLabel, seen));
+		// A beat with several picks (places to look) stays until they're used up; then only what
+		// ends it is left to do, or it moves on if nothing does
+		o.m_bDone = true;
+		if (b.m_iPicks > 1 && !o.m_bEnds)
+		{
+			RZ_WorkSites sites = RZ_WorkSites.Get();
+			b.m_iPicked++;
+			if (sites)
+				sites.Close(Key(s, b.m_aOptions.Find(o)));
+
+			bool ending = false;
+			foreach (int i, RZ_DutyOption other : b.m_aOptions)
+			{
+				if (other.m_bEnds && !other.m_bDone)
+					ending = true;
+				else if (b.m_iPicked >= b.m_iPicks && !other.m_bDone && sites)
+					sites.Close(Key(s, i));
+			}
+
+			if (b.m_iPicked < b.m_iPicks || ending)
+				return;
+		}
+
 		Advance(s, o.m_sNext);
 	}
 
@@ -603,7 +644,7 @@ class RZ_DutyScenes
 	//! remembers), later (a line said to you some hours on), rumour (a rumour for 6 hours), record (the
 	//! world's memory), heat (noise where you stand), hook (someone hiding there, for the strangers),
 	//! meat (a leg of meat in your pack), give (the place's small pay item in your pack), watch (Props >
-	//! Watch, else that item).
+	//! Watch, else that item), set:<counter>=<value> (one of the errands' saved counters).
 	protected void Apply(RZ_DutyScene s, RZ_DutyBeat b, RZ_DutyOption o, IEntity me)
 	{
 		if (o.m_sFx.IsEmpty())
@@ -616,6 +657,16 @@ class RZ_DutyScenes
 		array<int> who = {s.m_iPlayer};
 		foreach (string f : fx)
 		{
+			// set:<counter>=<value>: one of the errands' saved counters (a garden bed's state)
+			if (f.StartsWith("set:"))
+			{
+				int eq = f.IndexOf("=");
+				if (eq > 4)
+					m_Dealer.SetCounter(f.Substring(4, eq - 4), f.Substring(eq + 1, f.Length() - eq - 1).ToInt());
+
+				continue;
+			}
+
 			switch (f)
 			{
 				case "report":
