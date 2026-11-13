@@ -4,7 +4,7 @@
 //! to (admins), "/traces" reads the door marks near you to the server log (admins), "/mydead
 //! hidden|shown" keeps your name out of public text if you die out there,
 //! "/season", "/anonymous [off]" and "/lastentry <text>" (the epilogue week), "/epilogue ..." (admins),
-//! "/rep <name>" reads a player's reputation (server admins;
+//! "/sites" opens the site builder (admins, game masters), "/rep <name>" reads a player's reputation (server admins;
 //! docs/REPUTATION.md, "Reputations"). The hall of fame is the notebook's Hall of fame tab.
 //! Each is sent to the server through RZ_PlayerUIComponent.SendCommand; the server checks
 //! everything again. Registered once, from the first notice the client receives
@@ -35,6 +35,7 @@ class RZ_ChatCommands
 		chat.GetCommandInvoker("anonymous").Insert(s_Instance.OnAnonymous);
 		chat.GetCommandInvoker("lastentry").Insert(s_Instance.OnLastEntry);
 		chat.GetCommandInvoker("traces").Insert(s_Instance.OnTraces);
+		chat.GetCommandInvoker("sites").Insert(s_Instance.OnSites);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -122,6 +123,14 @@ class RZ_ChatCommands
 	protected void OnTraces(SCR_ChatPanel panel, string data)
 	{
 		Send(RZ_PlayerUIComponent.CMD_TRACES, data);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "/sites" (admins, game masters): the site builder (docs/SITES.md, "Hand-built sites"). Also the
+	//! talk screen's [Admin] list and Game Master's context menu, without typing.
+	protected void OnSites(SCR_ChatPanel panel, string data)
+	{
+		Send(RZ_PlayerUIComponent.CMD_SITES, data);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -181,6 +181,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	static const int ADMIN_TALKTEST = 35;	// /talkdebug test: every conversation run once for you, to the log
 	static const int DUTY_ROW = 37;			// the duty a giver offers beside their pressing errand (RZ_Errands.TalkDuty)
 	static const int ADMIN_TALKRESET = 36;	// /talkdebug reset: this person's scenes undecided again
+	static const int ADMIN_SITES = 38;		// /sites: the site builder (World/HandBuilt/RZ_SiteBuilder.c)
 
 	protected IEntity m_Owner;
 
@@ -554,6 +555,9 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 
 		if (gm.GetTraces() && gm.GetTraces().IsOn())
 			replies.Insert(AdminReply(ADMIN_TRACES, "[Admin] Door marks near here, to the log"));
+
+		if (gm.GetCampLife())
+			replies.Insert(AdminReply(ADMIN_SITES, "[Admin] Site builder"));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -734,7 +738,7 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 	//! The admin replies (none of them changes the game). True if replyId was one.
 	protected bool PickAdmin(RZ_GameModeComponent gm, RZ_TalkSession s, int playerId, int replyId, IEntity user)
 	{
-		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES && replyId != ADMIN_TALKTEST && replyId != ADMIN_TALKRESET)
+		if (replyId != ADMIN_TREES && replyId != ADMIN_TRIBES && replyId != ADMIN_REP && replyId != ADMIN_TRACES && replyId != ADMIN_TALKTEST && replyId != ADMIN_TALKRESET && replyId != ADMIN_SITES)
 			return false;
 
 		if (!RZ_NoticeBoard.IsAdmin(playerId))
@@ -752,6 +756,8 @@ class RZ_TalkGeneric : RZ_TalkSpeaker
 			gm.GetRepWatch().Readout(playerId, NearestPlayerName(playerId, user, 50));
 		else if (replyId == ADMIN_TRACES && gm.GetTraces())
 			gm.GetTraces().Command(playerId, "");
+		else if (replyId == ADMIN_SITES)
+			RZ_SiteBuilder.Open(playerId);
 
 		return true;
 	}

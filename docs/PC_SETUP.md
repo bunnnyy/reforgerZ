@@ -264,6 +264,7 @@ in the file: it's reused every session.
 | Zombie lab | `%USERPROFILE%\rz_check\zlab_profile\logs\` (two folders: the run and the restart; the script prints both paths) |
 | Full server | `%USERPROFILE%\rz_check\server_profile\logs\<newest>\console.log` |
 | Saves (`$profile:ReforgerZ\`) | Server: `<-profile folder>\profile\ReforgerZ\`. Workbench play: `Documents\My Games\ArmaReforgerWorkbench\profile\ReforgerZ\` |
+| Hand-built sites (the site builder's saves) | `hand_built\<world>\<site id>.txt` in the same `ReforgerZ\` folder (with `.bak1` to `.bak3`). Ship them: `py tools/hand_built.py` (Workbench's profile, then the game's; `--from "<-profile folder>\profile"` for a full server's), then commit `scripts/Game/ReforgerZ/World/HandBuilt/RZ_HandBuiltPack.c` ([SITES.md](SITES.md#hand-built-sites)) |
 
 ## 7. After a session
 

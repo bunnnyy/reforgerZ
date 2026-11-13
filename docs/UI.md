@@ -215,7 +215,8 @@ are play-test aids; the status log prints the summary anyway: [INFECTED.md](INFE
 `/rep <name>` (server admins) reads a player's reputation ([REPUTATION.md](REPUTATION.md#reputations));
 `/talkdebug` (server admins) reads the conversation trees of the person you're talking to; `/traces`
 (server admins) writes the door marks near you to the server log, with `town`, `write` and `clear`
-as play-test aids ([TRACES.md](TRACES.md#admin-saving-and-the-log)); `/mydead
+as play-test aids ([TRACES.md](TRACES.md#admin-saving-and-the-log)); `/sites` (server admins and
+game masters) opens the site builder ([SITES.md](SITES.md#hand-built-sites)); `/mydead
 hidden` or `/mydead shown` keeps your name out of public text if you die out there
 ([INFECTED.md](INFECTED.md#your-dead-run)). They work without any layout. With **Board menus** off,
 reading the board is a notice and notes are written with `/note` only.
@@ -1092,7 +1093,9 @@ options or something to read ([Default first, then menus](#default-first-then-me
 quartermaster's asks, the lab, the notebook item's name and season, and a work site's spot with
 several things to do there (a duty beat, a sorting duty's subject: its rows are the spot's work
 sites, given as data, `RZ_ObjectRows`; a row picked closes the menu and becomes the spot's hold,
-and one needing something you haven't got is locked with why). The author's pick of the mockups
+and one needing something you haven't got is locked with why). The admins' **site builder** is the same menu fed rows on your own character
+([SITES.md](SITES.md#hand-built-sites)): its sites with their states in capitals, its second-press
+confirmations and its unsaved-changes question are all rows, so it needs no layout of its own; its **Go there** sends the client payload kind 23 (`PAYLOAD_SITECAM`, `x|y|z|radius`), which points Game Master's camera at the site. The author's pick of the mockups
 ("B with A's tag and the lock"). A panel 1,200 × 940 in the middle of the screen (810 for a thing
 without a status strip), the world dimmed: the name ("Radio", "Ask the quartermaster") and the
 town; under them the thing's [status strip](#the-status-strip-and-locked-rows) (a house radio's POWER
@@ -1549,7 +1552,7 @@ full-screen click-off area and the talk screen's page arrows (pictures, no Overl
 | Input actions | Every `RZ_` action in `chimeraInputCommon.conf` has a pad binding or a route (the table above) | `RZ_BoardClear` added with its pad button; `RZ_MapLegend` came with one (Y) |
 | The screens | The spawn screen, the notebook, the notice board, the talk screen, the reader, the car repair screen, the shop, the crafting and cooking screens, the radio screen, the object menu, the power panel and the death brief each open from something a pad reaches (an action, the pause menu, the notebook item, a talk; the spawn screen and the death brief open by themselves; **View radio** on a radio held up is vanilla's inspection, which a pad reaches), close with B (the spawn screen's B opens the pause menu; the death brief's A closes it too), set the focus and move with the D-pad and shoulders. The HUD, the subtitles, the nametags and the map icons only show; the map key on the map shows and hides with Y | The notice board had no prompts, no focus on its button and no way to write without typing: it now has prompts by device, A on Pin it up, seven ready-made notes on left and right, and is on by default (**UI > Board menus**) |
 | Static hints | Footers and hints that named only keys | The radio filter's hint ("F / X"), the talk screen's keys hint ("1-5: a reply · Q/E: page · Esc: leave", with D-pad, A, LB/RB and B in the footer) and its line's footer (vanilla's prompts, "A Skip" while it types and "A Continue" after, with a static "A: continue · B: leave" fallback that names Enter, Space and Esc on keys) |
-| Hover, typing, chat | No screen needs hover or a tooltip; hover only shows what the D-pad would (below). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person; `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
+| Hover, typing, chat | No screen needs hover or a tooltip; hover only shows what the D-pad would (below). The only typing is the board's note box (now optional) | Every chat command has a way without it: `/note` the board's ready-made notes, `/noteclear` the board's X, `/mydead`, `/season` (also the notebook's The season tab) and `/anonymous` the notebook item's actions, `/lastentry` the Names board's *Write your line*, `/tribes`, `/talkdebug`, `/traces`, `/sites` and `/rep` (the nearest player) as **[Admin]** replies when an admin talks to any person (`/sites` also as Game Master's context row **ReforgerZ: Site builder**); `/noteclear all`, `/rep` for a named player far away and `/epilogue` stay typed admin extras |
 | Text on a TV | Every layout's text sizes | All text in the ReforgerZ layouts is 18 or more (it was down to 11 on the old Standing page; 12–17 on the other pages, the notice board, the notice cards, the HUD and the map icons). The Standing page (G2) has nothing under 18; its names are 40 and its detail text 22. |
 
 **What needs Workbench** (it can't be checked as text):
@@ -1588,7 +1591,7 @@ Code: `scripts/Game/ReforgerZ/UI/`. The UI only reads; nothing in it changes the
 | `RZ_ScreenCapture` | server | While a screen acts for its player, catches what would have been that player's notice for the screen's status line |
 | `RZ_ScreenGuard` | server, once a second | Watches open talk, reader, repair, shop, crafting, cooking and radio screens, object menus and power panels and closes them in danger (below) |
 | `RZ_PlayerEffectsComponent` | on the player controller | The infected's close moves on the owner's machine: a hold (with the hint and Jump to kick free), a stagger, a knockdown; the server decides each one ([INFECTED.md](INFECTED.md#how-they-move-and-hunt)) |
-| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
+| `RZ_ChatCommands` | client | `/note`, `/noteclear`, `/tribes`, `/traces`, `/sites`, `/rep`, `/talkdebug`, `/mydead`, `/season`, `/anonymous`, `/lastentry`, `/epilogue`, sent as commands to the server, which checks them again. Registered with the first notice. Each has a way without typing ([Controllers](#controllers)), but the admins' `/epilogue` |
 | `RZ_HudDisplay` | client (`SCR_InfoDisplayExtended`) | Draws the HUD five times a second from the cache; shows the notice cards, the subtitles (the arrow to an in-person speaker every frame), the radio-line box and the quest tracker |
 | `RZ_SayLine`, `RZ_ESaySource` | server, client (`UI/RZ_UIData.c`) | A spoken line's who and how: name, role, faction, source, channel, where the speaker is ([Subtitles](#subtitles-and-the-reader)) |
 | `RZ_SpeakerFinder` | server (`UI/RZ_UIFeed.c`) | The nearest person to a player, for a spoken line whose caller gave no body |

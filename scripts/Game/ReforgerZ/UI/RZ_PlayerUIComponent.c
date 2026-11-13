@@ -98,6 +98,7 @@ class RZ_PlayerUIComponent : ScriptComponent
 	static const int CMD_ANON = 9;		// /anonymous [off]: keep your name out of the world's text, the reel and the hall
 	static const int CMD_LASTENTRY = 10;	// /lastentry <text>: your line on the Names board (a pad writes one without typing)
 	static const int CMD_TRACES = 11;	// /traces (admins): the door marks near you, to the server log (World/Traces)
+	static const int CMD_SITES = 12;	// /sites (admins, game masters): the site builder (World/HandBuilt/RZ_SiteBuilder.c)
 
 	//------------------------------------------------------------------------------------------------
 	//! The local player's component (client), or null.
@@ -434,6 +435,10 @@ class RZ_PlayerUIComponent : ScriptComponent
 		else if (kind == RZ_UIFeed.PAYLOAD_NAMETAGS)
 		{
 			RZ_NametagClient.OnPayload(payload);
+		}
+		else if (kind == RZ_UIFeed.PAYLOAD_SITECAM)
+		{
+			RZ_SiteBuilderCamera.OnPayload(payload);
 		}
 		else if (kind == RZ_UIFeed.PAYLOAD_POWER)
 		{
@@ -973,6 +978,11 @@ class RZ_PlayerUIComponent : ScriptComponent
 			{
 				if (gm.GetTraces())
 					gm.GetTraces().Command(playerId, note);
+				break;
+			}
+			case CMD_SITES:
+			{
+				RZ_SiteBuilder.Open(playerId);
 				break;
 			}
 			case CMD_MYDEAD:
